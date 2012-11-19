@@ -12,6 +12,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/yaakov-h/OpenSSL.git", :tag => "1.0.1c" }
 
   s.platform     = :ios, '6.0'
+  s.source_files = 'include/openssl/**/*.h'
   s.public_header_files = 'include/openssl/**/.h'
   s.preserve_paths = 'libcrypto.a', 'libssl.a'
   s.library	 = 'crypto', 'ssl'
