@@ -253,37 +253,37 @@
 		STAssertTrue([expectedOrder isEqualToArray:returnedOrder],
 		             @"Incorrect order: expected(%@) returned(%@)", expectedOrder, returnedOrder);
 		
-//		NSArray *expectedSubOrder = @[ key2, key3, key4 ];
-//		NSArray *returnedSubOrder = [transaction keysInRange:NSMakeRange(1, 3)];
-//		
-//		STAssertTrue([expectedSubOrder isEqualToArray:returnedSubOrder],
-//		             @"Incorrect sub-order: expected(%@) returned(%@)", expectedSubOrder, returnedSubOrder);
+		NSArray *expectedSubOrder = @[ key2, key3, key4 ];
+		NSArray *returnedSubOrder = [transaction keysInRange:NSMakeRange(1, 3)];
+		
+		STAssertTrue([expectedSubOrder isEqualToArray:returnedSubOrder],
+		             @"Incorrect sub-order: expected(%@) returned(%@)", expectedSubOrder, returnedSubOrder);
 	}];
 
-//	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction <YapOrderedReadWriteTransaction> *transaction){
-//		
-//		// Test remove range
-//		
-//		[transaction removeObjectsInRange:NSMakeRange(0, 3)];
-//		
-//		STAssertTrue([transaction numberOfKeys] == 2, @"Expected 2 keys");
-//		STAssertTrue([[transaction allKeys] count] == 2, @"Expected 2 keys");
-//		
-//		NSArray *expectedOrder = @[ key4, key5 ];
-//		NSArray *returnedOrder = [transaction allKeys];
-//		
-//		STAssertTrue([expectedOrder isEqualToArray:returnedOrder], @"Incorrect order");
-//	}];
-//
-//	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction <YapOrderedReadWriteTransaction> *transaction){
-//		
-//		// Test remove all objects
-//		
-//		[transaction removeAllObjects];
-//		
-//		STAssertTrue([transaction numberOfKeys] == 0, @"Expected 0 keys");
-//		STAssertTrue([[transaction allKeys] count] == 0, @"Expected 0 keys");
-//	}];
+	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction <YapOrderedReadWriteTransaction> *transaction){
+		
+		// Test remove range
+		
+		[transaction removeObjectsInRange:NSMakeRange(0, 3)];
+		
+		STAssertTrue([transaction numberOfKeys] == 2, @"Expected 2 keys");
+		STAssertTrue([[transaction allKeys] count] == 2, @"Expected 2 keys");
+		
+		NSArray *expectedOrder = @[ key4, key5 ];
+		NSArray *returnedOrder = [transaction allKeys];
+		
+		STAssertTrue([expectedOrder isEqualToArray:returnedOrder], @"Incorrect order");
+	}];
+
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction <YapOrderedReadWriteTransaction> *transaction){
+		
+		// Test remove all objects
+		
+		[transaction removeAllObjects];
+		
+		STAssertTrue([transaction numberOfKeys] == 0, @"Expected 0 keys");
+		STAssertTrue([[transaction allKeys] count] == 0, @"Expected 0 keys");
+	}];
 }
 
 @end

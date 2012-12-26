@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DC096997168B6D77001E1346 /* TestYapOrderedCollectionsDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC096996168B6D77001E1346 /* TestYapOrderedCollectionsDatabase.m */; };
 		DC24FBD81685EAB600E855DC /* YapAbstractDatabaseTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBD71685EAB600E855DC /* YapAbstractDatabaseTransaction.m */; };
 		DC24FBD91685EAB600E855DC /* YapAbstractDatabaseTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBD71685EAB600E855DC /* YapAbstractDatabaseTransaction.m */; };
 		DC24FBE41687EB9000E855DC /* YapCollectionsDatabase+Timestamp.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBDC1687EB9000E855DC /* YapCollectionsDatabase+Timestamp.m */; };
@@ -100,6 +101,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		DC096995168B6D77001E1346 /* TestYapOrderedCollectionsDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestYapOrderedCollectionsDatabase.h; path = ../../UnitTesting/TestYapOrderedCollectionsDatabase.h; sourceTree = "<group>"; };
+		DC096996168B6D77001E1346 /* TestYapOrderedCollectionsDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapOrderedCollectionsDatabase.m; path = ../../UnitTesting/TestYapOrderedCollectionsDatabase.m; sourceTree = "<group>"; };
 		DC24FBD61685EAB600E855DC /* YapAbstractDatabaseTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YapAbstractDatabaseTransaction.h; path = Internal/YapAbstractDatabaseTransaction.h; sourceTree = "<group>"; };
 		DC24FBD71685EAB600E855DC /* YapAbstractDatabaseTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YapAbstractDatabaseTransaction.m; path = Internal/YapAbstractDatabaseTransaction.m; sourceTree = "<group>"; };
 		DC24FBDB1687EB9000E855DC /* YapCollectionsDatabase+Timestamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "YapCollectionsDatabase+Timestamp.h"; sourceTree = "<group>"; };
@@ -482,6 +485,8 @@
 				DC3D2F2A1673FFEC00DFAFAA /* TestYapOrderedDatabase.m */,
 				DC24FBED1688047700E855DC /* TestYapCollectionsDatabase.h */,
 				DC24FBEE1688047700E855DC /* TestYapCollectionsDatabase.m */,
+				DC096995168B6D77001E1346 /* TestYapOrderedCollectionsDatabase.h */,
+				DC096996168B6D77001E1346 /* TestYapOrderedCollectionsDatabase.m */,
 				DCAE52181673FE2600395076 /* Supporting Files */,
 			);
 			name = UnitTests;
@@ -679,6 +684,7 @@
 				DC24FBFD1688074900E855DC /* YapOrderedCollectionsDatabase.m in Sources */,
 				DC24FBFF1688074900E855DC /* YapOrderedCollectionsDatabaseConnection.m in Sources */,
 				DC24FC011688074900E855DC /* YapOrderedCollectionsDatabaseTransaction.m in Sources */,
+				DC096997168B6D77001E1346 /* TestYapOrderedCollectionsDatabase.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
