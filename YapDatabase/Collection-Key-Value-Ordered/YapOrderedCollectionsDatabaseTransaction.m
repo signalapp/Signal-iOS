@@ -122,9 +122,14 @@
 	[order enumerateKeysUsingBlock:^(NSUInteger keyIdx, NSString *key, BOOL *stop){
 		
 		id object, metadata;
-		[transaction getObject:&object metadata:&metadata forKey:key inCollection:collection];
-		
-		block(keyIdx, key, object, metadata, stop);
+		if ([transaction getObject:&object metadata:&metadata forKey:key inCollection:collection])
+		{
+			block(keyIdx, key, object, metadata, stop);
+		}
+		else
+		{
+			YDBLogWarn(@"Missing object for collection(%@) key(%@), but key listed in order!", collection, key);
+		}
 		
 	} transaction:self];
 }
@@ -135,14 +140,20 @@
                 (void (^)(NSUInteger index, NSString *key, id object, id metadata, BOOL *stop))block
 {
 	if (block == NULL) return;
+	if (collection == nil) collection = @"";
 	
 	YapDatabaseOrder *order = [self orderForCollection:collection];
 	[order enumerateKeysWithOptions:options usingBlock:^(NSUInteger keyIdx, NSString *key, BOOL *stop){
 		
 		id object, metadata;
-		[transaction getObject:&object metadata:&metadata forKey:key inCollection:collection];
-		
-		block(keyIdx, key, object, metadata, stop);
+		if ([transaction getObject:&object metadata:&metadata forKey:key inCollection:collection])
+		{
+			block(keyIdx, key, object, metadata, stop);
+		}
+		else
+		{
+			YDBLogWarn(@"Missing object for collection(%@) key(%@), but key listed in order!", collection, key);
+		}
 		
 	} transaction:self];
 }
@@ -154,14 +165,20 @@
                 (void (^)(NSUInteger index, NSString *key, id object, id metadata, BOOL *stop))block
 {
 	if (block == NULL) return;
+	if (collection == nil) collection = @"";
 	
 	YapDatabaseOrder *order = [self orderForCollection:collection];
 	[order enumerateKeysInRange:range withOptions:options usingBlock:^(NSUInteger keyIdx, NSString *key, BOOL *stop){
 	
 		id object, metadata;
-		[transaction getObject:&object metadata:&metadata forKey:key inCollection:collection];
-		
-		block(keyIdx, key, object, metadata, stop);
+		if ([transaction getObject:&object metadata:&metadata forKey:key inCollection:collection])
+		{
+			block(keyIdx, key, object, metadata, stop);
+		}
+		else
+		{
+			YDBLogWarn(@"Missing object for collection(%@) key(%@), but key listed in order!", collection, key);
+		}
 		
 	} transaction:self];
 }
