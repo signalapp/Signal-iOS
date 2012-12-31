@@ -449,13 +449,13 @@
 			}
 			
 			if (objectData)
-				object = connection.database.objectSerializer(objectData);
+				object = connection.database.objectDeserializer(objectData);
 			
 			if (object)
 				[connection->objectCache setObject:object forKey:cacheKey];
 			
 			if (metadataData)
-				metadata = connection.database.metadataSerializer(metadataData);
+				metadata = connection.database.metadataDeserializer(metadataData);
 			
 			if (metadata)
 				[connection->metadataCache setObject:metadata forKey:cacheKey];
