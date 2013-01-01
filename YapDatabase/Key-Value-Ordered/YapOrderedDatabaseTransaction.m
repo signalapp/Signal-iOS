@@ -29,6 +29,39 @@
 	return self;
 }
 
+#pragma mark Message Forwarding
+
+/**
+ * The YapOrderedDatabaseTransaction classes don't extend the YapDatabaseTransaction classes.
+ * Instead they wrap them, and automatically forward unhandled methods.
+ *
+ * Why the funky architecture?
+ * It all has to do with YapOrderedDatabaseReadWriteTransaction.
+ * This class actually needs to extend both YapOrderedDatabaseReadTransaction and YapDatabaseReadWriteTransaction.
+**/
+- (id)forwardingTargetForSelector:(SEL)aSelector
+{
+	return transaction;
+	
+	// Since using forwardingTargetForSelector is slower than normal message invocation,
+	// we implement a few of the most common methods to speed things up a wee bit.
+}
+
+- (void)beginTransaction
+{
+	[transaction beginTransaction];
+}
+
+- (void)commitTransaction
+{
+	[transaction commitTransaction];
+}
+
+- (id)objectForKey:(NSString *)key
+{
+	return [transaction objectForKey:key];
+}
+
 #pragma mark List
 
 - (NSArray *)allKeys
@@ -151,21 +184,6 @@
 		block(keyIdx, key, object, metadata, stop);
 		
 	} transaction:self];
-}
-
-#pragma mark Message Forwarding
-
-/**
- * The YapOrderedDatabaseTransaction classes don't extend the YapDatabaseTransaction classes.
- * Instead they wrap them, and automatically forward unhandled methods.
- * 
- * Why the funky architecture?
- * It all has to do with YapOrderedDatabaseReadWriteTransaction.
- * This class actually needs to extend both YapOrderedDatabaseReadTransaction and YapDatabaseReadWriteTransaction.
-**/
-- (id)forwardingTargetForSelector:(SEL)aSelector
-{
-	return transaction;
 }
 
 #pragma mark YapOrderReadTransaction Protocol
@@ -344,19 +362,44 @@
 	[transaction removeObjectsForKeys:keys];
 }
 
-#pragma mark Message Forwarding
-
-/**
- * The YapOrderedDatabaseTransaction classes don't extend the YapDatabaseTransaction classes.
- * Instead they wrap them, and automatically forward unhandled methods.
- * 
- * Why the funky architecture?
- * It all has to do with YapOrderedDatabaseReadWriteTransaction.
- * This class actually needs to extend both YapOrderedDatabaseReadTransaction and YapDatabaseReadWriteTransaction.
-**/
-- (id)forwardingTargetForSelector:(SEL)aSelector
+- (NSArray *)removeObjectsEarlierThan:(NSDate *)date
 {
-	return transaction;
+	NSArray *keys = [transaction removeObjectsEarlierThan:date];
+	
+	[connection->order removeKeys:keys transaction:self];
+	return keys;
+}
+
+- (NSArray *)removeObjectsLaterThan:(NSDate *)date
+{
+	NSArray *keys = [transaction removeObjectsLaterThan:date];
+	
+	[connection->order removeKeys:keys transaction:self];
+	return keys;
+}
+
+- (NSArray *)removeObjectsEarlierThanOrEqualTo:(NSDate *)date
+{
+	NSArray *keys = [transaction removeObjectsEarlierThanOrEqualTo:date];
+	
+	[connection->order removeKeys:keys transaction:self];
+	return keys;
+}
+
+- (NSArray *)removeObjectsLaterThanOrEqualTo:(NSDate *)date
+{
+	NSArray *keys = [transaction removeObjectsLaterThanOrEqualTo:date];
+	
+	[connection->order removeKeys:keys transaction:self];
+	return keys;
+}
+
+- (NSArray *)removeObjectsFrom:(NSDate *)startDate to:(NSDate *)endDate
+{
+	NSArray *keys = [transaction removeObjectsFrom:startDate to:endDate];
+	
+	[connection->order removeKeys:keys transaction:self];
+	return keys;
 }
 
 #pragma mark YapOrderReadWriteTransaction Protocol

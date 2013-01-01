@@ -247,9 +247,9 @@
  * Removes any objects that have a metadata timestamp,
  * and whose timestamp is earlier than the given date.
 **/
-- (void)removeObjectsEarlierThan:(NSDate *)date
+- (NSArray *)removeObjectsEarlierThan:(NSDate *)date
 {
-	if (date == nil) return;
+	if (date == nil) return nil;
 	
 	NSMutableArray *keysToRemove = [NSMutableArray array];
 	
@@ -266,15 +266,16 @@
 	}];
 	
 	[self removeObjectsForKeys:keysToRemove];
+	return keysToRemove;
 }
 
 /**
  * Removes any objects that have a metadata timestamp,
  * and whose timestamp is later than the given date.
 **/
-- (void)removeObjectsLaterThan:(NSDate *)date
+- (NSArray *)removeObjectsLaterThan:(NSDate *)date
 {
-	if (date == nil) return;
+	if (date == nil) return nil;
 	
 	NSMutableArray *keysToRemove = [NSMutableArray array];
 	
@@ -291,24 +292,25 @@
 	}];
 	
 	[self removeObjectsForKeys:keysToRemove];
+	return keysToRemove;
 }
 
 /**
  * Removes any objects that have a metadata timestamp,
  * and whose timestamp is earlier or equal to the given data.
 **/
-- (void)removeObjectsEarlierThanOrEqualTo:(NSDate *)date
+- (NSArray *)removeObjectsEarlierThanOrEqualTo:(NSDate *)date
 {
-	[self removeObjectsFrom:nil to:date];
+	return [self removeObjectsFrom:nil to:date];
 }
 
 /**
  * Removes any objects that have a metadata timestamp,
  * and whose timestamp is later or equal to the given data.
 **/
-- (void)removeObjectsLaterThanOrEqualTo:(NSDate *)date
+- (NSArray *)removeObjectsLaterThanOrEqualTo:(NSDate *)date
 {
-	[self removeObjectsFrom:date to:nil];
+	return [self removeObjectsFrom:date to:nil];
 }
 
 /**
@@ -321,9 +323,9 @@
  * For example, if you passed nil for the endDate,
  * then all objects with timestamp later than or equal to the given startDate would be removed.
 **/
-- (void)removeObjectsFrom:(NSDate *)startDate to:(NSDate *)endDate
+- (NSArray *)removeObjectsFrom:(NSDate *)startDate to:(NSDate *)endDate
 {
-	if ((startDate == nil) && (endDate == nil)) return;
+	if ((startDate == nil) && (endDate == nil)) return nil;
 	
 	NSMutableArray *keysToRemove = [NSMutableArray array];
 	
@@ -350,6 +352,7 @@
 	}];
 	
 	[self removeObjectsForKeys:keysToRemove];
+	return keysToRemove;
 }
 
 @end

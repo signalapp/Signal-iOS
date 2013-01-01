@@ -86,16 +86,20 @@
 /**
  * Removes any objects that have a metadata timestamp,
  * and whose timestamp is earlier/later than the given date.
+ * 
+ * @return An array of keys that were removed.
 **/
-- (void)removeObjectsEarlierThan:(NSDate *)date;
-- (void)removeObjectsLaterThan:(NSDate *)date;
+- (NSArray *)removeObjectsEarlierThan:(NSDate *)date;
+- (NSArray *)removeObjectsLaterThan:(NSDate *)date;
 
 /**
  * Removes any objects that have a metadata timestamp,
  * and whose timestamp is earlier/later or equal to the given data.
+ * 
+ * @return An array of keys that were removed.
 **/
-- (void)removeObjectsEarlierThanOrEqualTo:(NSDate *)date;
-- (void)removeObjectsLaterThanOrEqualTo:(NSDate *)date;
+- (NSArray *)removeObjectsEarlierThanOrEqualTo:(NSDate *)date;
+- (NSArray *)removeObjectsLaterThanOrEqualTo:(NSDate *)date;
 
 /**
  * Removes any objects that lie within the given time range (inclusive).
@@ -106,7 +110,9 @@
  * You may optionally pass nil for one of the dates.
  * For example, if you passed nil for the endDate,
  * then all objects with timestamp later than or equal to the given startDate would be removed.
+ * 
+ * @return An array of keys that were removed.
 **/
-- (void)removeObjectsFrom:(NSDate *)startDate to:(NSDate *)endDate;
+- (NSArray *)removeObjectsFrom:(NSDate *)startDate to:(NSDate *)endDate;
 
 @end

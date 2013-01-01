@@ -253,9 +253,9 @@
  * Removes any objects, in the given collection, that have a metadata timestamp
  * and whose timestamp is earlier than the given date.
 **/
-- (void)removeObjectsEarlierThan:(NSDate *)date inCollection:(NSString *)collection
+- (NSArray *)removeObjectsEarlierThan:(NSDate *)date inCollection:(NSString *)collection
 {
-	if (date == nil) return;
+	if (date == nil) return nil;
 	
 	NSMutableArray *keysToRemove = [NSMutableArray array];
 	
@@ -272,15 +272,16 @@
 	}];
 	
 	[self removeObjectsForKeys:keysToRemove inCollection:collection];
+	return keysToRemove;
 }
 
 /**
  * Removes any objects, in the given collection, that have a metadata timestamp
  * and whose timestamp is later than the given date.
 **/
-- (void)removeObjectsLaterThan:(NSDate *)date inCollection:(NSString *)collection
+- (NSArray *)removeObjectsLaterThan:(NSDate *)date inCollection:(NSString *)collection
 {
-	if (date == nil) return;
+	if (date == nil) return nil;
 	
 	NSMutableArray *keysToRemove = [NSMutableArray array];
 	
@@ -297,24 +298,25 @@
 	}];
 	
 	[self removeObjectsForKeys:keysToRemove inCollection:collection];
+	return keysToRemove;
 }
 
 /**
  * Removes any objects, in the given collection, that have a metadata timestamp
  * and whose timestamp is earlier or equal to the given data.
 **/
-- (void)removeObjectsEarlierThanOrEqualTo:(NSDate *)date inCollection:(NSString *)collection
+- (NSArray *)removeObjectsEarlierThanOrEqualTo:(NSDate *)date inCollection:(NSString *)collection
 {
-	[self removeObjectsFrom:nil to:date inCollection:collection];
+	return [self removeObjectsFrom:nil to:date inCollection:collection];
 }
 
 /**
  * Removes any objects, in the given collection, that have a metadata timestamp
  * and whose timestamp is later or equal to the given data.
 **/
-- (void)removeObjectsLaterThanOrEqualTo:(NSDate *)date inCollection:(NSString *)collection
+- (NSArray *)removeObjectsLaterThanOrEqualTo:(NSDate *)date inCollection:(NSString *)collection
 {
-	[self removeObjectsFrom:date to:nil inCollection:collection];
+	return [self removeObjectsFrom:date to:nil inCollection:collection];
 }
 
 /**
@@ -327,9 +329,9 @@
  * For example, if you passed nil for the endDate,
  * then all objects with timestamp later than or equal to the given startDate would be removed.
 **/
-- (void)removeObjectsFrom:(NSDate *)startDate to:(NSDate *)endDate inCollection:(NSString *)collection
+- (NSArray *)removeObjectsFrom:(NSDate *)startDate to:(NSDate *)endDate inCollection:(NSString *)collection
 {
-	if ((startDate == nil) && (endDate == nil)) return;
+	if ((startDate == nil) && (endDate == nil)) return nil;
 	
 	NSMutableArray *keysToRemove = [NSMutableArray array];
 	
@@ -356,19 +358,7 @@
 	}];
 	
 	[self removeObjectsForKeys:keysToRemove inCollection:collection];
-}
-
-/**
- * Removes any objects, in any collection, that lie within the given time range (inclusive).
- * 
- * @see removeObjectsFrom:to:inCollection:
-**/
-- (void)removeObjectsInAllCollectionsFrom:(NSDate *)startDate to:(NSDate *)endDate
-{
-	for (NSString *collection in [self allCollections])
-	{
-		[self removeObjectsFrom:startDate to:endDate inCollection:collection];
-	}
+	return keysToRemove;
 }
 
 @end

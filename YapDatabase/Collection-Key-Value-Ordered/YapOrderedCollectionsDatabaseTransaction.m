@@ -30,6 +30,39 @@
 	return self;
 }
 
+#pragma mark Message Forwarding
+
+/**
+ * The YapOrderedDatabaseTransaction classes don't extend the YapDatabaseTransaction classes.
+ * Instead they wrap them, and automatically forward unhandled methods.
+ *
+ * Why the funky architecture?
+ * It all has to do with YapOrderedDatabaseReadWriteTransaction.
+ * This class actually needs to extend both YapOrderedDatabaseReadTransaction and YapDatabaseReadWriteTransaction.
+ **/
+- (id)forwardingTargetForSelector:(SEL)aSelector
+{
+	return transaction;
+	
+	// Since using forwardingTargetForSelector is slower than normal message invocation,
+	// we implement a few of the most common methods to speed things up a wee bit.
+}
+
+- (void)beginTransaction
+{
+	[transaction beginTransaction];
+}
+
+- (void)commitTransaction
+{
+	[transaction commitTransaction];
+}
+
+- (id)objectForKey:(NSString *)key inCollection:(NSString *)collection
+{
+	return [transaction objectForKey:key inCollection:collection];
+}
+
 #pragma mark List
 
 - (NSArray *)allKeysInCollection:(NSString *)collection
@@ -204,21 +237,6 @@
 	return order;
 }
 
-#pragma mark Message Forwarding
-
-/**
- * The YapOrderedDatabaseTransaction classes don't extend the YapDatabaseTransaction classes.
- * Instead they wrap them, and automatically forward unhandled methods.
- *
- * Why the funky architecture?
- * It all has to do with YapOrderedDatabaseReadWriteTransaction.
- * This class actually needs to extend both YapOrderedDatabaseReadTransaction and YapDatabaseReadWriteTransaction.
-**/
-- (id)forwardingTargetForSelector:(SEL)aSelector
-{
-	return transaction;
-}
-
 #pragma mark YapOrderReadTransaction
 
 - (NSData *)dataForKey:(NSString *)key order:(YapDatabaseOrder *)sender
@@ -328,11 +346,8 @@
 	{
 		[self removeObjectForKey:key inCollection:collection];
 	}
-	else
+	else if (key != nil)
 	{
-		if (key == nil) return;
-		if (collection == nil) collection = @"";
-		
 		[transaction setObject:object forKey:key inCollection:collection withMetadata:metadata];
 		
 		[[self orderForCollection:collection] appendKey:key transaction:self];
@@ -350,11 +365,8 @@
 	{
 		[self removeObjectForKey:key inCollection:collection];
 	}
-	else
+	else if (key != nil)
 	{
-		if (key == nil) return;
-		if (collection == nil) collection = @"";
-		
 		[transaction setObject:object forKey:key inCollection:collection withMetadata:metadata];
 		
 		[[self orderForCollection:collection] prependKey:key transaction:self];
@@ -408,8 +420,6 @@
 
 - (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection
 {
-	if (collection == nil) collection = @"";
-	
 	[transaction removeObjectForKey:key inCollection:collection];
 	
 	[[self orderForCollection:collection] removeKey:key transaction:self];
@@ -417,8 +427,6 @@
 
 - (void)removeObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection
 {
-	if (collection == nil) collection = @"";
-	
 	[transaction removeObjectsForKeys:keys inCollection:collection];
 	
 	[[self orderForCollection:collection] removeKeys:keys transaction:self];
@@ -426,8 +434,6 @@
 
 - (void)removeAllObjectsInCollection:(NSString *)collection;
 {
-	if (collection == nil) collection = @"";
-	
 	[transaction removeAllObjectsInCollection:collection];
 	
 	[[self orderForCollection:collection] removeAllKeys:self];
@@ -461,8 +467,6 @@
 
 - (void)removeObjectAtIndex:(NSUInteger)index inCollection:(NSString *)collection
 {
-	if (collection == nil) collection = @"";
-	
 	NSString *key = [[self orderForCollection:collection] removeKeyAtIndex:index transaction:self];
 	
 	[transaction removeObjectForKey:key inCollection:collection];
@@ -470,11 +474,49 @@
 
 - (void)removeObjectsInRange:(NSRange)range collection:(NSString *)collection
 {
-	if (collection == nil) collection = @"";
-	
 	NSArray *keys = [[self orderForCollection:collection] removeKeysInRange:range transaction:self];
 	
 	[transaction removeObjectsForKeys:keys inCollection:collection];
+}
+
+- (NSArray *)removeObjectsEarlierThan:(NSDate *)date inCollection:(NSString *)collection
+{
+	NSArray *keys = [transaction removeObjectsEarlierThan:date inCollection:collection];
+	
+	[[self orderForCollection:collection] removeKeys:keys transaction:self];
+	return keys;
+}
+
+- (NSArray *)removeObjectsLaterThan:(NSDate *)date inCollection:(NSString *)collection
+{
+	NSArray *keys = [transaction removeObjectsLaterThan:date inCollection:collection];
+	
+	[[self orderForCollection:collection] removeKeys:keys transaction:self];
+	return keys;
+}
+
+- (NSArray *)removeObjectsEarlierThanOrEqualTo:(NSDate *)date inCollection:(NSString *)collection
+{
+	NSArray *keys = [transaction removeObjectsEarlierThanOrEqualTo:date inCollection:collection];
+	
+	[[self orderForCollection:collection] removeKeys:keys transaction:self];
+	return keys;
+}
+
+- (NSArray *)removeObjectsLaterThanOrEqualTo:(NSDate *)date inCollection:(NSString *)collection
+{
+	NSArray *keys = [transaction removeObjectsLaterThanOrEqualTo:date inCollection:collection];
+	
+	[[self orderForCollection:collection] removeKeys:keys transaction:self];
+	return keys;
+}
+
+- (NSArray *)removeObjectsFrom:(NSDate *)startDate to:(NSDate *)endDate inCollection:(NSString *)collection
+{
+	NSArray *keys = [transaction removeObjectsFrom:startDate to:endDate inCollection:collection];
+	
+	[[self orderForCollection:collection] removeKeys:keys transaction:self];
+	return keys;
 }
 
 #pragma mark YapOrderReadWriteTransaction
