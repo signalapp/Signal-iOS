@@ -2,6 +2,12 @@
 
 @class YapAbstractDatabase;
 
+typedef enum  {
+	YapDatabaseConnectionFlushMemoryLevelNone     = 0,
+	YapDatabaseConnectionFlushMemoryLevelMild     = 1,
+	YapDatabaseConnectionFlushMemoryLevelModerate = 2,
+	YapDatabaseConnectionFlushMemoryLevelFull     = 3,
+} YapDatabaseConnectionFlushMemoryLevel;
 
 /**
  * This base class is shared by YapDatabaseConnection and YapCollectionsDatabaseConnection.
@@ -57,16 +63,36 @@
 @property (atomic, assign, readwrite) BOOL metadataCacheEnabled;
 @property (atomic, assign, readwrite) NSUInteger metadataCacheLimit;
 
+#if TARGET_OS_IPHONE
+/**
+ * When a UIApplicationDidReceiveMemoryWarningNotification is received,
+ * the code automatically invokes flushMemoryWithLevel and passes this set level.
+ * 
+ * The default value is YapDatabaseConnectionFlushMemoryLevelMild.
+ * 
+ * @see flushMemoryWithLevel:
+**/
+@property (atomic, assign, readwrite) int autoFlushMemoryLevel;
+#endif
+
 /**
  * This method may be used to flush the internal caches used by the connection,
  * as well as flushing pre-compiled sqlite statements.
  * Depending upon how often you use the database connection,
  * you may want to be more or less aggressive on how much stuff you flush.
  *
- * 0 == Mild     : Flushes the object cache, and decreases the size of the metadata cache.
- * 1 == Moderate : Mild plus full flush of metadata cache, and drops less common pre-compiled sqlite statements.
- * 2 == Full     : Full flush of all caches, and removes all pre-compiled sqlite statements.
+ * YapDatabaseConnectionFlushMemoryLevelNone (0):
+ *     No-op. Doesn't flush any caches or anything from internal memory.
+ * 
+ * YapDatabaseConnectionFlushMemoryLevelMild (1):
+ *     Flushes the object cache and metadata cache.
+ * 
+ * YapDatabaseConnectionFlushMemoryLevelModerate (2):
+ *     Mild plus drops less common pre-compiled sqlite statements.
+ * 
+ * YapDatabaseConnectionFlushMemoryLevelFull (3):
+ *     Full flush of all caches and removes all pre-compiled sqlite statements.
 **/
-- (void)trimMemory:(int)aggressiveLevel;
+- (void)flushMemoryWithLevel:(int)level;
 
 @end

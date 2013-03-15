@@ -44,7 +44,7 @@
  * See YapDatabaseLogging.h for more information.
 **/
 #if DEBUG
-  static const int ydbFileLogLevel = YDB_LOG_LEVEL_INFO;
+  static const int ydbFileLogLevel = YDB_LOG_LEVEL_VERBOSE;
 #else
   static const int ydbFileLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
@@ -245,6 +245,10 @@
 #endif
 		
 		connectionStates = [[NSMutableArray alloc] init];
+		changesets = [[NSMutableArray alloc] init];
+		
+		sharedObjectCache   = [[YapSharedCache alloc] initWithKeyClass:[self cacheKeyClass]];
+		sharedMetadataCache = [[YapSharedCache alloc] initWithKeyClass:[self cacheKeyClass]];
 		
 		// Mark the snapshotQueue so we can identify it.
 		// There are several methods whose use is restricted to within the snapshotQueue.
@@ -392,6 +396,28 @@
 	}
 	
 	return YES;
+}
+
+/**
+ * REQUIRED OVERRIDE HOOK.
+ * 
+ * Subclasses must implement this method and return the proper class to use for the cache.
+**/
+- (Class)cacheKeyClass
+{
+	NSAssert(NO, @"Missing required override method in subclass");
+	return nil;
+}
+
+/**
+ * REQUIRED OVERRIDE HOOK.
+ * 
+ * Subclasses must implement this method and return the proper block to use for the cache.
+**/
+- (int (^)(id key))cacheChangesetBlockFromChanges:(NSDictionary *)changeset
+{
+	NSAssert(NO, @"Missing required override method in subclass");
+	return nil;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -656,8 +682,9 @@
 		YapDatabaseConnectionState *state = [[YapDatabaseConnectionState alloc] initWithConnection:connection];
 		[connectionStates addObject:state];
 		
-		YDBLogVerbose(@"Created new connection for <%@ %p: databaseName=%@, connectionCount=%lu>",
-					  [self class], self, [databasePath lastPathComponent], (unsigned long)[connectionStates count]);
+		YDBLogVerbose(@"Created new connection(%p) for <%@ %p: databaseName=%@, connectionCount=%lu>",
+		              connection,
+		              [self class], self, [databasePath lastPathComponent], (unsigned long)[connectionStates count]);
 	}};
 	
 	// We can asynchronously add the connection to the state table.
@@ -696,9 +723,9 @@
 		if (index < [connectionStates count])
 			[connectionStates removeObjectAtIndex:index];
 		
-		YDBLogVerbose(@"Removed connection from <%@ %p: databaseName=%@, connectionCount=%lu>",
+		YDBLogVerbose(@"Removed connection(%p) from <%@ %p: databaseName=%@, connectionCount=%lu>",
+		              connection,
 		              [self class], self, [databasePath lastPathComponent], (unsigned long)[connectionStates count]);
-		
 	}};
 	
 	// We prefer to invoke this method synchronously.
@@ -765,6 +792,62 @@
 
 /**
  * This method is only accessible from within the snapshotQueue.
+ * 
+ * Prior to starting the sqlite commit, the connection must report its changeset to the database.
+ * The database will store the changeset, and provide it to other connections if needed (due to a race condition).
+ * 
+ * The following MUST be in the dictionary:
+ *
+ * - lastWriteTimestamp : NSNumber double with the changeset's timestamp
+**/
+- (void)notePendingChanges:(NSDictionary *)pendingChangeset fromConnection:(YapAbstractDatabaseConnection *)sender
+{
+	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
+	NSAssert([pendingChangeset objectForKey:@"lastWriteTimestamp"], @"Missing required change key: lastWriteTimestamp");
+	
+	// The sender is preparing to start the sqlite commit.
+	// We save the changeset in advance to handle possible edge cases.
+	
+	[changesets addObject:pendingChangeset];
+	
+	// And we pass the changeset into the shared cache(s).
+	
+	NSTimeInterval changesetTimestamp = [[pendingChangeset objectForKey:@"lastWriteTimestamp"] doubleValue];
+	
+	int (^changesetBlock)(id key) = [self cacheChangesetBlockFromChanges:pendingChangeset];
+	
+	[sharedObjectCache notePendingChangesetBlock:changesetBlock writeTimestamp:changesetTimestamp];
+	[sharedMetadataCache notePendingChangesetBlock:changesetBlock writeTimestamp:changesetTimestamp];
+}
+
+/**
+ * This method is only accessible from within the snapshotQueue.
+ *
+ * This method is used if a transaction finds itself in a race condition.
+ * It should retrieve the database's pending and/or committed changes,
+ * and then process them via [connection noteCommittedChanges:].
+**/
+- (NSArray *)pendingAndCommittedChangesSince:(NSTimeInterval)connectionTimestamp until:(NSTimeInterval)maxTimestamp
+{
+	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
+	
+	NSMutableArray *relevantChangesets = [NSMutableArray arrayWithCapacity:[changesets count]];
+	
+	for (NSDictionary *changeset in changesets)
+	{
+		NSTimeInterval changesetTimestamp = [[changeset objectForKey:@"lastWriteTimestamp"] doubleValue];
+		
+		if ((changesetTimestamp > connectionTimestamp) && (changesetTimestamp <= maxTimestamp))
+		{
+			[relevantChangesets addObject:changeset];
+		}
+	}
+	
+	return relevantChangesets;
+}
+
+/**
+ * This method is only accessible from within the snapshotQueue.
  *
  * Upon completion of a readwrite transaction, the connection should report it's changeset to the database.
  * The database will then forward the changes to all other connection's.
@@ -773,24 +856,57 @@
  *
  * - lastWriteTimestamp : NSNumber double with the changeset's timestamp
 **/
-- (void)noteChanges:(NSDictionary *)changeset fromConnection:(YapAbstractDatabaseConnection *)sender
+- (void)noteCommittedChanges:(NSDictionary *)changeset fromConnection:(YapAbstractDatabaseConnection *)sender
 {
 	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
 	NSAssert([changeset objectForKey:@"lastWriteTimestamp"], @"Missing required change key: lastWriteTimestamp");
 	
-	lastWriteTimestamp = [[changeset objectForKey:@"lastWriteTimestamp"] doubleValue];
+	NSTimeInterval changesetTimestamp = [[changeset objectForKey:@"lastWriteTimestamp"] doubleValue];
+	
+	// The sender has finished the sqlite commit, and all data is now written to disk.
+	// We forward the changeset to all other connections so they can perform any needed updates.
+	// Generally this means updating the in-memory components such as the cache.
+	
+	dispatch_group_t group = dispatch_group_create();
 	
 	for (YapDatabaseConnectionState *state in connectionStates)
 	{
 		if (state.connection != sender)
 		{
 			YapAbstractDatabaseConnection *connection = state.connection;
-			dispatch_async(connection.connectionQueue, ^{ @autoreleasepool {
+			dispatch_group_async(group, connection.connectionQueue, ^{ @autoreleasepool {
 				
-				[connection noteChanges:changeset];
+				[connection noteCommittedChanges:changeset];
 			}});
 		}
 	}
+	
+	// Schedule block to be executed once all connections have processed the changes.
+	
+	dispatch_group_notify(group, snapshotQueue, ^{
+		
+		// All connections have now processed the changes.
+		// So we no longer need to retain the changeset in memory.
+		
+		NSDictionary *changeset = [changesets objectAtIndex:0];
+		[changesets removeObjectAtIndex:0];
+		
+		// We can also tell the shared cache to cleanup all old/outdates data up to the changeset timestamp.
+		
+		int (^changesetBlock)(id key) = [self cacheChangesetBlockFromChanges:changeset];
+		
+		[sharedObjectCache noteCommittedChangesetBlock:changesetBlock
+		                                writeTimestamp:changesetTimestamp];
+		
+		#if NEEDS_DISPATCH_RETAIN_RELEASE
+		dispatch_release(group);
+		#endif
+	});
+	
+	// And finally, update the lastWriteTimestamp,
+	// which represents the most recent timestamp of the last committed readwrite transaction.
+	
+	lastWriteTimestamp = changesetTimestamp;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

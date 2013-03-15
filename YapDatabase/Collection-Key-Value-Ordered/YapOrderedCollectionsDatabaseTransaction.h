@@ -8,10 +8,22 @@
 @protocol YapOrderedCollectionsReadTransaction <NSObject>
 
 /**
- * Returns a list of keys, either all of them, or within a given range.
- * The lists are given in order.
+ * Returns a full list of keys, sorted by the order in which the keys were explicitly appended/prepended/inserted.
+ * 
+ * This method is similar to allKeysInCollection, but ordered.
 **/
-- (NSArray *)allKeysInCollection:(NSString *)collection;
+- (NSArray *)orderedKeysInCollection:(NSString *)collection;
+
+/**
+ * Equivalent to calling [[transaction orderedKeysInCollection:collection] count],
+ * but performs faster.
+**/
+- (NSUInteger)orderedKeysCountInCollection:(NSString *)collection;
+
+/**
+ * Equivalent to calling [[transaction orderedKeysInCollection:collection] subarrayWithRange:range],
+ * but performs faster.
+**/
 - (NSArray *)keysInRange:(NSRange)range collection:(NSString *)collection;
 
 /**

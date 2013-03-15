@@ -64,7 +64,7 @@
 
 /**
  * Object access.
- * Objects are automatically deserialized using database's configured serializer/deserializer.
+ * Objects are automatically deserialized using database's configured deserializer.
 **/
 - (id)objectForKey:(NSString *)key;
 
@@ -99,6 +99,21 @@
 **/
 - (void)enumerateKeys:(void (^)(NSString *key, BOOL *stop))block;
 
+/**
+ * Enumerates over the given list of keys (unordered).
+ *
+ * This method is faster than objectForKey when fetching multiple objects, as it optimizes cache access.
+ * That is, it will first enumerate over cached objects, and then fetch objects from the database,
+ * thus optimizing the available cache.
+ *
+ * If any keys are missing from the database, the 'object' parameter will be nil.
+ * 
+ * IMPORTANT:
+ *     Due to cache optimizations, the objects may not be enumerated in the same order as the 'keys' parameter.
+ *     That is, objects that are cached will be enumerated over first, before fetching objects from the database.
+**/
+- (void)enumerateObjects:(void (^)(NSUInteger keyIndex, id object, BOOL *stop))block
+                 forKeys:(NSArray *)keys;
 /**
  * Fast enumeration over all keys and metadata in the database.
  * 
@@ -190,7 +205,7 @@
 
 /**
  * Sets the object for the given key.
- * Objects are automatically serialized/deserialized using the database's configured serializer/deserializer.
+ * Objects are automatically serialized using the database's configured serializer.
  * 
  * You may optionally pass metadata about the object.
  * The metadata is kept in memory, within a mutable dictionary, and can be accessed very quickly.

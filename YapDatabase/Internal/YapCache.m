@@ -48,7 +48,7 @@
 	__unsafe_unretained YapCacheItem *prev; // retained by cfdict
 	__unsafe_unretained YapCacheItem *next; // retained by cfdict
 
-	__unsafe_unretained id key; // retained by cfdict as key (immutable copy of original key is always made)
+	__unsafe_unretained id key; // retained by cfdict as key
 	__strong id value;          // retained only by us
 }
 
@@ -86,19 +86,23 @@
 	
 	NSUInteger countLimit;
 	
-	NSUInteger hitCount;
-	NSUInteger missCount;
-	NSUInteger evictionCount;
-	
 	__unsafe_unretained YapCacheItem *mostRecentCacheItem;
 	__unsafe_unretained YapCacheItem *leastRecentCacheItem;
 	
 	__strong YapCacheItem *evictedCacheItem;
+	
+#if YAP_CACHE_DEBUG
+	NSUInteger hitCount;
+	NSUInteger missCount;
+	NSUInteger evictionCount;
+#endif
 }
 
+#if YAP_CACHE_DEBUG
 @synthesize hitCount = hitCount;
 @synthesize missCount = missCount;
 @synthesize evictionCount = evictionCount;
+#endif
 
 - (id)init
 {
@@ -167,7 +171,9 @@
 				evictedCacheItem->key = nil;
 				evictedCacheItem->value = nil;
 				
+				#if YAP_CACHE_DEBUG
 				evictionCount++;
+				#endif
 			}
 		}
 	}
@@ -205,12 +211,16 @@
 			mostRecentCacheItem = item;
 		}
 		
+		#if YAP_CACHE_DEBUG
 		hitCount++;
+		#endif
 		return item->value;
 	}
 	else
 	{
+		#if YAP_CACHE_DEBUG
 		missCount++;
+		#endif
 		return nil;
 	}
 }
@@ -296,15 +306,16 @@
 			evictedCacheItem = leastRecentCacheItem;
 			leastRecentCacheItem = leastRecentCacheItem->prev;
 
-			NSString *evictedKey = evictedCacheItem->key;
-			CFDictionaryRemoveValue(cfdict, (const void *)evictedKey);
+			CFDictionaryRemoveValue(cfdict, (const void *)(evictedCacheItem->key));
 			
 			evictedCacheItem->prev = nil;
 			evictedCacheItem->next = nil;
 			evictedCacheItem->key = nil;
 			evictedCacheItem->value = nil;
 			
+			#if YAP_CACHE_DEBUG
 			evictionCount++;
+			#endif
 		}
 		else
 		{
@@ -342,6 +353,7 @@
 {
 	mostRecentCacheItem = nil;
 	leastRecentCacheItem = nil;
+	evictedCacheItem = nil;
 	
 	CFDictionaryRemoveAllValues(cfdict);
 }
@@ -457,493 +469,5 @@
 	NSAssert([forwardsKeys isEqual:backwardsKeys], @"Invalid order");
 }
 */
-
-@end
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * How should we implement the thread-safety mechanism?
- * 
- * If contention for the cache is low (not many simulataneous invocations on the cache from multiple threads)
- * then a spinlock is the fastest implementation.
- * 
- * However, if contention is an issue, then using GCD dispatch queues is a better way to go.
-**/
-#define USE_SPINLOCK 1
-#define USE_DISPATCH !USE_SPINLOCK
-
-@implementation YapThreadSafeCache
-{
-#if USE_SPINLOCK
-	OSSpinLock lock;
-#else
-	dispatch_queue_t internalSerialQueue;
-#endif
-}
-
-- (id)initWithKeyClass:(Class)inKeyClass countLimit:(NSUInteger)inCountLimit
-{
-	if ((self = [super initWithKeyClass:inKeyClass countLimit:inCountLimit]))
-	{
-	#if USE_SPINLOCK
-		lock = OS_SPINLOCK_INIT;
-	#else
-		internalSerialQueue = dispatch_queue_create("YapCache", NULL);
-	#endif
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-		                                         selector:@selector(didReceiveMemoryWarning:)
-		                                             name:UIApplicationDidReceiveMemoryWarningNotification
-		                                           object:nil];
-	}
-	return self;
-}
-
-- (void)dealloc
-{
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	
-#if USE_DISPATCH
-#if NEEDS_DISPATCH_RETAIN_RELEASE
-	if (internalSerialQueue)
-		dispatch_release(internalSerialQueue);
-#endif
-#endif
-}
-
-- (void)didReceiveMemoryWarning:(NSNotification *)notification
-{
-	[self removeAllObjects];
-}
-
-- (NSUInteger)countLimit
-{
-#if USE_SPINLOCK
-	
-	NSUInteger result = 0;
-	
-	OSSpinLockLock(&lock);
-	result = [super countLimit];
-	OSSpinLockUnlock(&lock);
-	
-	return result;
-#else
-	
-	__block NSUInteger result = 0;
-	
-	dispatch_sync(internalSerialQueue, ^{
-		result = [super countLimit];
-	});
-	
-	return result;
-	
-#endif
-}
-
-- (void)setCountLimit:(NSUInteger)newCountLimit
-{
-#if USE_SPINLOCK
-	
-	OSSpinLockLock(&lock);
-	[super setCountLimit:newCountLimit];
-	OSSpinLockUnlock(&lock);
-	
-#else
-	
-	dispatch_sync(internalSerialQueue, ^{
-		[super setCountLimit:newCountLimit];
-	});
-	
-#endif
-}
-
-- (NSUInteger)hitCount
-{
-#if USE_SPINLOCK
-	
-	NSUInteger result = 0;
-	
-	OSSpinLockLock(&lock);
-	result = [super hitCount];
-	OSSpinLockUnlock(&lock);
-	
-	return result;
-	
-#else
-	
-	__block NSUInteger result = 0;
-	
-	dispatch_sync(internalSerialQueue, ^{
-		result = [super hitCount];
-	});
-	
-	return result;
-	
-#endif
-}
-
-- (NSUInteger)missCount
-{
-#if USE_SPINLOCK
-	
-	NSUInteger result = 0;
-	
-	OSSpinLockLock(&lock);
-	result = [super missCount];
-	OSSpinLockUnlock(&lock);
-	
-	return result;
-	
-#else
-	
-	__block NSUInteger result = 0;
-	
-	dispatch_sync(internalSerialQueue, ^{
-		result = [super missCount];
-	});
-	
-	return result;
-	
-#endif
-}
-
-- (NSUInteger)evictionCount
-{
-#if USE_SPINLOCK
-	
-	NSUInteger result = 0;
-	
-	OSSpinLockLock(&lock);
-	result = [super evictionCount];
-	OSSpinLockUnlock(&lock);
-	
-	return result;
-	
-#else
-	
-	__block NSUInteger result = 0;
-	
-	dispatch_sync(internalSerialQueue, ^{
-		result = [super evictionCount];
-	});
-	
-	return result;
-	
-#endif
-}
-
-- (id)objectForKey:(id)key
-{
-#if USE_SPINLOCK
-	
-	id result = nil;
-	
-	OSSpinLockLock(&lock);
-	result = [super objectForKey:key];
-	OSSpinLockUnlock(&lock);
-	
-	return result;
-#else
-	
-	__block id result = nil;
-	
-	dispatch_sync(internalSerialQueue, ^{
-		result = [super objectForKey:key];
-	});
-	
-	return result;
-	
-#endif
-}
-
-- (void)setObject:(id)object forKey:(id)key
-{
-#if USE_SPINLOCK
-	
-	OSSpinLockLock(&lock);
-	[super setObject:object forKey:key];
-	OSSpinLockUnlock(&lock);
-	
-#else
-	
-	dispatch_sync(internalSerialQueue, ^{
-		[super setObject:object forKey:key];
-	});
-	
-#endif
-}
-
-- (NSUInteger)count
-{
-#if USE_SPINLOCK
-	
-	NSUInteger result = 0;
-	
-	OSSpinLockLock(&lock);
-	result = [super count];
-	OSSpinLockUnlock(&lock);
-	
-	return result;
-#else
-	
-	__block NSUInteger result = 0;
-	
-	dispatch_sync(internalSerialQueue, ^{
-		result = [super count];
-	});
-	
-	return result;
-	
-#endif
-}
-
-- (void)removeAllObjects
-{
-#if USE_SPINLOCK
-	
-	OSSpinLockLock(&lock);
-	[super removeAllObjects];
-	OSSpinLockUnlock(&lock);
-	
-#else
-	
-	dispatch_sync(internalSerialQueue, ^{
-		[super removeAllObjects];
-	});
-	
-#endif
-}
-
-- (void)removeObjectForKey:(id)key
-{
-#if USE_SPINLOCK
-	
-	OSSpinLockLock(&lock);
-	[super removeObjectForKey:key];
-	OSSpinLockUnlock(&lock);
-	
-#else
-	
-	dispatch_sync(internalSerialQueue, ^{
-		[super removeObjectForKey:key];
-	});
-	
-#endif
-}
-
-- (void)removeObjectsForKeys:(NSArray *)keys
-{
-#if USE_SPINLOCK
-	
-	OSSpinLockLock(&lock);
-	[super removeObjectsForKeys:keys];
-	OSSpinLockUnlock(&lock);
-	
-#else
-	
-	dispatch_sync(internalSerialQueue, ^{
-		[super removeObjectsForKeys:keys];
-	});
-	
-#endif
-}
-
-- (NSSet *)keysOfEntriesPassingTest:(BOOL (^)(id key, id obj, BOOL *stop))block
-{
-#if USE_SPINLOCK
-	
-	NSSet *result = nil;
-	
-	OSSpinLockLock(&lock);
-	result = [super keysOfEntriesPassingTest:block];
-	OSSpinLockUnlock(&lock);
-	
-	return result;
-	
-#else
-	
-	__block NSSet *result = nil;
-	
-	dispatch_sync(internalSerialQueue, ^{
-		result = [super keysOfEntriesPassingTest:block];
-	});
-	
-	return result;
-	
-#endif
-}
-
-@end
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-@implementation YapCacheCollectionKey
-{
-	NSString *collection;
-	NSString *key;
-}
-
-@synthesize collection = collection;
-@synthesize key = key;
-
-- (id)initWithCollection:(NSString *)aCollection key:(NSString *)aKey
-{
-	if ((self = [super init]))
-	{
-		collection = aCollection;
-		key = aKey;
-	}
-	return self;
-}
-
-- (id)copyWithZone:(NSZone *)zone
-{
-	return self; // Immutable
-}
-
-- (BOOL)isEqual:(id)obj
-{
-	if ([obj isMemberOfClass:[YapCacheCollectionKey class]])
-	{
-		YapCacheCollectionKey *ck = (YapCacheCollectionKey *)obj;
-		
-		return [key isEqualToString:ck->key] && [collection isEqualToString:ck->collection];
-	}
-	
-	return NO;
-}
-
-- (NSUInteger)hash
-{
-	// We need a fast way to combine 2 hashes without creating a new string (which is slow).
-	// To accomplish this we use the murmur hashing algorithm.
-	//
-	// MurmurHash2 was written by Austin Appleby, and is placed in the public domain.
-	// http://code.google.com/p/smhasher
-	
-	NSUInteger chash = [collection hash];
-	NSUInteger khash = [key hash];
-	
-	if (NSUIntegerMax == UINT32_MAX) // Should be optimized out via compiler since these are constants
-	{
-		// MurmurHash2 (32-bit)
-		//
-		// uint32_t MurmurHash2 ( const void * key, int len, uint32_t seed )
-		//
-		// Normally one would pass a chunk of data ('key') and associated data chunk length ('len').
-		// Instead we're going to use our 2 hashes.
-		// And we're going to randomly make up a 'seed'.
-		
-		const uint32_t seed = 0xa2f1b6f; // Some random value I made up
-		const uint32_t len = 8;          // 2 hashes, each 4 bytes = 8 bytes
-		
-		// 'm' and 'r' are mixing constants generated offline.
-		// They're not really 'magic', they just happen to work well.
-		
-		const uint32_t m = 0x5bd1e995;
-		const int r = 24;
-		
-		// Initialize the hash to a 'random' value
-		
-		uint32_t h = seed ^ len;
-		uint32_t k;
-		
-		// Mix chash
-		
-		k = chash;
-		
-		k *= m;
-		k ^= k >> r;
-		k *= m;
-		
-		h *= m;
-		h ^= k;
-		
-		// Mix khash
-		
-		k = khash;
-		
-		k *= m;
-		k ^= k >> r;
-		k *= m;
-		
-		h *= m;
-		h ^= k;
-		
-		// Do a few final mixes of the hash to ensure the last few
-		// bytes are well-incorporated.
-		
-		h ^= h >> 13;
-		h *= m;
-		h ^= h >> 15;
-		
-		return (NSUInteger)h;
-	}
-	else
-	{
-		// MurmurHash2 (64-bit)
-		//
-		// uint64_t MurmurHash64A ( const void * key, int len, uint64_t seed )
-		//
-		// Normally one would pass a chunk of data ('key') and associated data chunk length ('len').
-		// Instead we're going to use our 3 hashes.
-		// And we're going to randomly make up a 'seed'.
-		
-		const uint32_t seed = 0xa2f1b6f; // Some random value I made up
-		const uint32_t len = 16;         // 2 hashes, each 8 bytes = 16 bytes
-		
-		// 'm' and 'r' are mixing constants generated offline.
-		// They're not really 'magic', they just happen to work well.
-		
-		const uint64_t m = 0xc6a4a7935bd1e995LLU;
-		const int r = 47;
-		
-		// Initialize the hash to a 'random' value
-		
-		uint64_t h = seed ^ (len * m);
-		uint64_t k;
-		
-		// Mix chash
-		
-		k = chash;
-		
-		k *= m;
-		k ^= k >> r;
-		k *= m;
-		
-		h ^= k;
-		h *= m;
-		
-		// Mix khash
-		
-		k = khash;
-		
-		k *= m;
-		k ^= k >> r;
-		k *= m;
-		
-		h ^= k;
-		h *= m;
-		
-		// Do a few final mixes of the hash to ensure the last few
-		// bytes are well-incorporated.
-		
-		h ^= h >> r;
-		h *= m;
-		h ^= h >> r;
-		
-		return (NSUInteger)h;
-	}
-}
-
-- (NSString *)description
-{
-	return [NSString stringWithFormat:@"<YapCacheCollectionKey[%p] collection(%@) key(%@)>", self, collection, key];
-}
 
 @end

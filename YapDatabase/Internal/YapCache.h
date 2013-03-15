@@ -1,7 +1,8 @@
 #import <Foundation/Foundation.h>
 
-@class YapThreadSafeCache;
 @class YapThreadUnsafeCache;
+
+#define YAP_CACHE_DEBUG 0
 
 /**
  * YapCache implements a simple strict cache.
@@ -18,11 +19,8 @@
  * So when you fetch an item from the cache, that item goes to the end of the eviction list.
  * Thus, the item evicted is always the least recently used item.
  *
- * There are 2 versions of YapCache: one that is thread-safe, and another that is not.
- * 
- * - If you are already serializing access to the cache (via a single thread or serial dispatch queue),
- *   then you can use the thread-unsafe version which is slightly faster.
- * - Otherwise you should use the thread-safe version.
+ * YapCache is NOT thread-safe.
+ * It is designed to be used by the various YapDatabase classes, which inherently serialize access to the cache.
 **/
 
 @interface YapThreadUnsafeCache : NSObject
@@ -31,9 +29,7 @@
  * Initializes a cache.
  *
  * Since the countLimit is a common configuration, it may optionally be passed during initialization.
- * This is als used as hint internally when initializing components (i.e. [NSMutableDictionary initWithCapacity:]).
- *
- * Unless configured otherwise, the cache will be thread-safe.
+ * This is also used as a hint internally when initializing components (i.e. [NSMutableDictionary initWithCapacity:]).
 **/
 - (id)initWithKeyClass:(Class)keyClass;
 - (id)initWithKeyClass:(Class)keyClass countLimit:(NSUInteger)countLimit;
@@ -52,6 +48,28 @@
 **/
 @property (nonatomic, assign, readwrite) NSUInteger countLimit;
 
+//
+// The normal cache stuff...
+//
+
+- (void)setObject:(id)object forKey:(id)key;
+
+- (id)objectForKey:(id)key;
+
+- (NSUInteger)count;
+
+- (void)removeAllObjects;
+- (void)removeObjectForKey:(id)key;
+- (void)removeObjectsForKeys:(NSArray *)keys;
+
+- (NSSet *)keysOfEntriesPassingTest:(BOOL (^)(id key, id obj, BOOL *stop))predicate;
+
+//
+// Some debugging stuff that gets compiled out
+//
+
+#if YAP_CACHE_DEBUG
+
 /**
  * When querying the cache for an object via objectForKey,
  * the hitCount is incremented if the object is in the cache,
@@ -67,44 +85,6 @@
 **/
 @property (nonatomic, readonly) NSUInteger evictionCount;
 
-/**
- * The normal cache stuff...
-**/
-
-- (void)setObject:(id)object forKey:(id)key;
-
-- (id)objectForKey:(id)key;
-
-- (NSUInteger)count;
-
-- (void)removeAllObjects;
-- (void)removeObjectForKey:(id)key;
-- (void)removeObjectsForKeys:(NSArray *)keys;
-
-- (NSSet *)keysOfEntriesPassingTest:(BOOL (^)(id key, id obj, BOOL *stop))predicate;
-
-@end
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-@interface YapThreadSafeCache : YapThreadUnsafeCache
-
-@end
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-@interface YapCacheCollectionKey : NSObject <NSCopying>
-
-- (id)initWithCollection:(NSString *)collection key:(NSString *)key;
-
-@property (nonatomic, strong, retain) NSString *collection;
-@property (nonatomic, strong, retain) NSString *key;
-
-- (BOOL)isEqual:(id)anObject;
-- (NSUInteger)hash;
+#endif
 
 @end

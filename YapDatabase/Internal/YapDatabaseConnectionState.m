@@ -56,10 +56,13 @@
 #endif
 }
 
-- (void)prepareWriteLock
+- (void)setWaitingForWriteLock:(BOOL)newWaitingForWriteLock
 {
-	if (writeSemaphore == NULL)
+	waitingForWriteLock = newWaitingForWriteLock;
+	
+	if (waitingForWriteLock && writeSemaphore == NULL) {
 		writeSemaphore = dispatch_semaphore_create(0);
+	}
 }
 
 - (void)waitForWriteLock

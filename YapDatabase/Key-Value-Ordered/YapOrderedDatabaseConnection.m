@@ -58,9 +58,7 @@
 	NSUInteger metadataCacheLimit;        // Read-only by transaction. Use as consideration of whether to add to cache.
 	
 	BOOL hasMarkedSqlLevelSharedReadLock; // Read-only by transaction. Use as consideration of whether to invoke method.
-	
-	NSMutableSet *changedKeys;
-	BOOL allKeysRemoved;
+
 */
 }
 
@@ -84,11 +82,11 @@
 /**
  * Optional override hook from YapAbstractDatabaseConnection.
 **/
-- (void)_trimMemory:(int)aggressiveLevel
+- (void)_flushMemoryWithLevel:(int)level
 {
-	[super _trimMemory:aggressiveLevel];
+	[super _flushMemoryWithLevel:level];
 	
-	if (aggressiveLevel >= 1) // Moderate
+	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
 	{
 		sqlite_finalize_null(&getOrderDataForKeyStatement);
 		sqlite_finalize_null(&setOrderDataForKeyStatement);
@@ -389,26 +387,13 @@
 }
 
 /**
- * This method is invoked if our cacheLastWriteTimestamp gets out-of-sync with the master lastWriteTimestamp.
- * It means a race condition was detected and our in-memory objects are out-of-sync with what's on disk.
- * 
- * When this happens we need to flush the caches,
- * and any other in memory data that's assumed to be in-sync with the disk.
-**/
-- (void)flushCaches
-{
-	[super flushCaches];
-	[order reset];
-}
-
-/**
  * This method is invoked from within the postReadWriteTransaction operations.
  * This method is invoked before anything has been committed.
  * 
  * If changes have been made, it should return a changeset dictionary.
  * If no changes have been made, it should return nil.
  *
- * The changeset will ultimatesly be passed to sibling connections via noteChanges:.
+ * @see [YapAbstractDatabase cacheChangesetBlockFromChanges:]
 **/
 - (NSMutableDictionary *)changeset
 {
@@ -429,7 +414,7 @@
 
 /**
  * Optional override hook.
- * Don't forget to invoke [super noteChanges:changeset].
+ * You should likely invoke [super noteCommittedChanges:changeset] if you do.
  *
  * This method is invoked when a sibling connection (a separate connection for the same database)
  * finishes making a change to the database. We take this opportunity to flush from our cache anything that changed.
@@ -441,9 +426,9 @@
  * and will detect the race condition, and fully flush the cache. This method is an optimization that
  * allows us to avoid the full flush a majority of the time.
 **/
-- (void)noteChanges:(NSDictionary *)changeset
+- (void)noteCommittedChanges:(NSDictionary *)changeset
 {
-	[super noteChanges:changeset];
+	[super noteCommittedChanges:changeset];
 	
 	NSDictionary *orderChangeset = [changeset objectForKey:@"order"];
 	if (orderChangeset)

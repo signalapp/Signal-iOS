@@ -247,9 +247,9 @@
  * Removes any objects that have a metadata timestamp,
  * and whose timestamp is earlier than the given date.
 **/
-- (NSArray *)removeObjectsEarlierThan:(NSDate *)date
+- (NSArray *)removeObjectsEarlierThan:(NSDate *)inDate
 {
-	if (date == nil) return nil;
+	if (inDate == nil) return nil;
 	
 	NSMutableArray *keysToRemove = [NSMutableArray array];
 	
@@ -258,8 +258,10 @@
 		
 		if ([metadata isKindOfClass:NSDateClass])
 		{
-			if (metadata == [date earlierDate:(NSDate *)metadata]) // date must be receiver in case of equality
+			NSLog(@"Key(%@): Comparing date(%@) vs existing metadata(%@)", key, inDate, metadata);
+			if ([(NSDate *)metadata compare:inDate] == NSOrderedAscending)
 			{
+				NSLog(@"Found earlier date to remove (A): %@", key);
 				[keysToRemove addObject:key];
 			}
 		}
@@ -273,9 +275,9 @@
  * Removes any objects that have a metadata timestamp,
  * and whose timestamp is later than the given date.
 **/
-- (NSArray *)removeObjectsLaterThan:(NSDate *)date
+- (NSArray *)removeObjectsLaterThan:(NSDate *)inDate
 {
-	if (date == nil) return nil;
+	if (inDate == nil) return nil;
 	
 	NSMutableArray *keysToRemove = [NSMutableArray array];
 	
@@ -284,8 +286,10 @@
 		
 		if ([metadata isKindOfClass:NSDateClass])
 		{
-			if (metadata == [date laterDate:(NSDate *)metadata]) // date must be receiver in case of equality
+			NSLog(@"Key(%@): Comparing date(%@) vs existing metadata(%@)", key, inDate, metadata);
+			if ([(NSDate *)metadata compare:inDate] == NSOrderedDescending)
 			{
+				NSLog(@"Found later date to remove (A): %@", key);
 				[keysToRemove addObject:key];
 			}
 		}

@@ -5,6 +5,7 @@
 #import "YapAbstractDatabaseTransaction.h"
 
 #import "YapDatabaseConnectionState.h"
+#import "YapSharedCache.h"
 
 #import "sqlite3.h"
 
@@ -45,6 +46,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 #endif
 	
 	NSMutableArray *connectionStates;
+	NSMutableArray *changesets;
 	NSTimeInterval lastWriteTimestamp;
 	
 #if YAP_DATABASE_USE_CHECKPOINT_QUEUE
@@ -57,6 +59,11 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	sqlite3 *db;
 	
 	void *IsOnSnapshotQueueKey;
+	
+@public
+	
+	YapSharedCache *sharedObjectCache;
+	YapSharedCache *sharedMetadataCache;
 }
 
 /**
@@ -95,13 +102,27 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 - (void)prepare;
 
 /**
- * Use the addConnection method from withing newConnection.
+ * Use the addConnection method from within newConnection.
  *
  * And when a connection is deallocated,
  * it should remove itself from the list of connections by calling removeConnection.
 **/
 - (void)addConnection:(YapAbstractDatabaseConnection *)connection;
 - (void)removeConnection:(YapAbstractDatabaseConnection *)connection;
+
+/**
+ * REQUIRED OVERRIDE METHOD
+ *
+ * This method is used to generate the changeset block used with YapSharedCache & YapSharedCacheConnection.
+ * The given changeset comes directly from a readwrite transaction.
+ * 
+ * The output block should return one of the following:
+ * 
+ *  0 if the changeset indicates the key/value pair was unchanged.
+ * -1 if the changeset indicates the key/value pair was deleted.
+ * +1 if the changeset indicates the key/value pair was modified.
+**/
+- (int (^)(id key))cacheChangesetBlockFromChanges:(NSDictionary *)changeset;
 
 /**
  * This method is only accessible from within the snapshotQueue.
@@ -140,14 +161,36 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 /**
  * This method is only accessible from within the snapshotQueue.
  * 
- * Upon completion of a readwrite transaction, the connection should report it's changeset to the database.
- * The database will then forward the changes to all other connection's.
+ * Prior to starting the sqlite commit, the connection must report its changeset to the database.
+ * The database will store the changeset, and provide it to other connections if needed (due to a race condition).
+ * 
+ * The following MUST be in the dictionary:
+ *
+ * - lastWriteTimestamp : NSNumber double with the changeset's timestamp
+**/
+- (void)notePendingChanges:(NSDictionary *)changeset fromConnection:(YapAbstractDatabaseConnection *)connection;
+
+/**
+ * This method is only accessible from within the snapshotQueue.
+ * 
+ * This method is used if a transaction finds itself in a race condition.
+ * That is, the transaction started before it was able to process changesets from sibling connections.
+ * 
+ * It should fetch the changesets needed and then process them via [connection noteCommittedChanges:].
+**/
+- (NSArray *)pendingAndCommittedChangesSince:(NSTimeInterval)connectionTimestamp until:(NSTimeInterval)maxTimestamp;
+
+/**
+ * This method is only accessible from within the snapshotQueue.
+ * 
+ * Upon completion of a readwrite transaction, the connection must report its changeset to the database.
+ * The database will then forward the changeset to all other connections.
  * 
  * The following MUST be in the dictionary:
  * 
  * - lastWriteTimestamp : NSNumber double with the changeset's timestamp
 **/
-- (void)noteChanges:(NSDictionary *)changeset fromConnection:(YapAbstractDatabaseConnection *)connection;
+- (void)noteCommittedChanges:(NSDictionary *)changeset fromConnection:(YapAbstractDatabaseConnection *)connection;
 
 #if YAP_DATABASE_USE_CHECKPOINT_QUEUE
 
@@ -190,23 +233,20 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 @public
 	sqlite3 *db;
 	
-	id objectCache;   // Either NSMutableDictionary (if unlimited) or YapCache (if limited)
-	id metadataCache; // Either NSMutableDictionary (if unlimited) or YapCache (if limited)
+	YapSharedCacheConnection *objectCache;
+	YapSharedCacheConnection *metadataCache;
 	
 	NSUInteger objectCacheLimit;          // Read-only by transaction. Use as consideration of whether to add to cache.
 	NSUInteger metadataCacheLimit;        // Read-only by transaction. Use as consideration of whether to add to cache.
 	
 	BOOL hasMarkedSqlLevelSharedReadLock; // Read-only by transaction. Use as consideration of whether to invoke method.
-	
-	NSMutableSet *changedKeys;
-	BOOL allKeysRemoved;
 }
 
 - (id)initWithDatabase:(YapAbstractDatabase *)database;
 
 @property (nonatomic, readonly) dispatch_queue_t connectionQueue;
 
-- (void)_trimMemory:(int)aggressiveLevel;
+- (void)_flushMemoryWithLevel:(int)level;
 
 - (sqlite3_stmt *)beginTransactionStatement;
 - (sqlite3_stmt *)commitTransactionStatement;
@@ -231,14 +271,10 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 - (void)preReadWriteTransaction:(YapAbstractDatabaseTransaction *)transaction;
 - (void)postReadWriteTransaction:(YapAbstractDatabaseTransaction *)transaction;
 
-- (NSTimeInterval)selectLastWriteTimestamp;
-- (NSTimeInterval)updateLastWriteTimestamp;
-
 - (void)markSqlLevelSharedReadLockAcquired;
 
-- (void)flushCaches;
 - (NSMutableDictionary *)changeset;
-- (void)noteChanges:(NSDictionary *)changeset;
+- (void)noteCommittedChanges:(NSDictionary *)changeset;
 
 @end
 

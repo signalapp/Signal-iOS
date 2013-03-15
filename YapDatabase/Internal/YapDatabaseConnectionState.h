@@ -16,8 +16,6 @@
 @property (nonatomic, readwrite, assign) BOOL yapLevelExclusiveWriteLock;
 @property (nonatomic, readwrite, assign) BOOL waitingForWriteLock;
 
-- (void)prepareWriteLock;
-
 - (void)waitForWriteLock;
 - (void)signalWriteLock;
 

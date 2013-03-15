@@ -2,10 +2,10 @@
 #import "YapCollectionsDatabasePrivate.h"
 
 #import "YapAbstractDatabasePrivate.h"
+#import "YapCacheCollectionKey.h"
 
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
-#import "YapCache.h"
 
 #if ! __has_feature(objc_arc)
 #warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
@@ -67,9 +67,6 @@
 	NSUInteger metadataCacheLimit;        // Read-only by transaction. Use as consideration of whether to add to cache.
 	
 	BOOL hasMarkedSqlLevelSharedReadLock; // Read-only by transaction. Use as consideration of whether to invoke method.
-	
-	NSMutableSet *changedKeys;
-	BOOL allKeysRemoved;
 */
 }
 
@@ -96,11 +93,11 @@
 /**
  * Optional override hook from YapAbstractDatabaseConnection.
 **/
-- (void)_trimMemory:(int)aggressiveLevel
+- (void)_flushMemoryWithLevel:(int)level
 {
-	[super _trimMemory:aggressiveLevel];
+	[super _flushMemoryWithLevel:level];
 	
-	if (aggressiveLevel >= 1) // Moderate
+	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
 	{
 		sqlite_finalize_null(&getCollectionCountStatement);
 		sqlite_finalize_null(&getKeyCountForAllStatement);
@@ -117,7 +114,7 @@
 		sqlite_finalize_null(&enumerateAllInAllCollectionsStatement);
 	}
 	
-	if (aggressiveLevel >= 2) // Full
+	if (level >= YapDatabaseConnectionFlushMemoryLevelFull)
 	{
 		sqlite_finalize_null(&getDataForKeyStatement);
 		sqlite_finalize_null(&setAllForKeyStatement);
@@ -131,11 +128,6 @@
 - (YapCollectionsDatabase *)database
 {
 	return (YapCollectionsDatabase *)database;
-}
-
-- (Class)cacheKeyClass
-{
-	return [YapCacheCollectionKey class];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -584,85 +576,63 @@
 }
 
 /**
- * We override this method to ensure 'resetCollections' is prepared for use.
+ * We override this method to ensure our changeset variables are prepared for use.
 **/
 - (void)preReadWriteTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
 	[super preReadWriteTransaction:transaction];
 	
-	if (resetCollections == nil)
+	if (changedKeys == nil) {
+		changedKeys = [[NSMutableSet alloc] init];
+	}
+	if (resetCollections == nil) {
 		resetCollections = [[NSMutableSet alloc] init];
+	}
+	allKeysRemoved = NO;
 }
 
 /**
- * We override this method to purge 'resetCollections'.
+ * We override this method to reset our changeset variables.
 **/
 - (void)postReadWriteTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
 	[super postReadWriteTransaction:transaction];
 	
+	[changedKeys removeAllObjects];
 	[resetCollections removeAllObjects];
 }
 
 /**
+ * Required method.
+ * 
  * This method is invoked from within the postReadWriteTransaction operations.
  * This method is invoked before anything has been committed.
  *
  * If changes have been made, it should return a changeset dictionary.
  * If no changes have been made, it should return nil.
- *
- * The changeset will ultimatesly be passed to sibling connections via noteChanges:.
+ * 
+ * @see [YapAbstractDatabase cacheChangesetBlockFromChanges:]
 **/
 - (NSMutableDictionary *)changeset
 {
-	NSMutableDictionary *changeset = [super changeset];
-	
-	if ([resetCollections count] > 0)
+	if ([changedKeys count] > 0 || [resetCollections count] > 0 || allKeysRemoved)
 	{
-		if (changeset == nil)
-			changeset = [NSMutableDictionary dictionaryWithCapacity:2]; // For "resetCollections" & "lastWriteTimestamp"
+		NSMutableDictionary *changeset = [NSMutableDictionary dictionaryWithCapacity:4];
 		
-		[changeset setObject:[resetCollections allObjects] forKey:@"resetCollections"];
+		if ([changedKeys count] > 0)
+			[changeset setObject:[changedKeys copy] forKey:@"changedKeys"];
+		
+		if ([resetCollections count] > 0)
+			[changeset setObject:[resetCollections copy] forKey:@"resetCollections"];
+		
+		if (allKeysRemoved)
+			[changeset setObject:@(YES) forKey:@"allKeysRemoved"];
+		
+		return changeset;
 	}
-	
-	return changeset;
-}
-
-/**
- * Optional override hook.
- * Don't forget to invoke [super noteChanges:changeset].
- *
- * This method is invoked when a sibling connection (a separate connection for the same database)
- * finishes making a change to the database. We take this opportunity to flush from our cache anything that changed.
- * This allows us to keep our cache mostly full, and just discard changed items.
- * 
- * Note: This is an optimization that may occasionally be spoiled due to the multi-threaded nature of connections.
- * For example, if a separate connection in another thread makes a change, then by the time we get this notification,
- * our connection may have already begun a transaction. The atomic snapshot architecture takes over at that point,
- * and will detect the race condition, and fully flush the cache. This method is an optimization that
- * allows us to avoid the full flush a majority of the time.
-**/
-- (void)noteChanges:(NSDictionary *)changeset
-{
-	[super noteChanges:changeset];
-	
-	NSArray *_resetCollections = [changeset objectForKey:@"resetCollections"];
-	if (_resetCollections)
+	else
 	{
-		for (NSString *collection in _resetCollections)
-		{
-			BOOL(^filter)(id, id, BOOL*) = ^BOOL (id key, id obj, BOOL *stop) {
-				
-				__unsafe_unretained YapCacheCollectionKey *cacheKey = (YapCacheCollectionKey *)key;
-				return [cacheKey.collection isEqualToString:collection];
-			};
-			
-			NSSet *objectCacheKeys = [objectCache keysOfEntriesPassingTest:filter];
-			NSSet *metadataCacheKeys = [metadataCache keysOfEntriesPassingTest:filter];
-			
-			[objectCache removeObjectsForKeys:[objectCacheKeys allObjects]];
-			[metadataCache removeObjectsForKeys:[metadataCacheKeys allObjects]];
-		}
+		return nil;
 	}
 }
 

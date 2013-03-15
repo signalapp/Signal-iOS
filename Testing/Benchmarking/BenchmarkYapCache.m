@@ -1,5 +1,6 @@
 #import "BenchmarkYapCache.h"
 #import "YapCache.h"
+#import "YapCacheCollectionKey.h"
 
 #define LOOP_COUNT 25000
 
@@ -60,10 +61,8 @@ static NSMutableArray *cacheSizes;
 
 + (void)runTest1:(NSUInteger)cacheSize
 {
-	Class keyClass = [YapCacheCollectionKey class];
-	
-	YapThreadUnsafeCache *cache = [[YapThreadUnsafeCache alloc] initWithKeyClass:keyClass countLimit:cacheSize];
-//	YapThreadSafeCache *cache = [[YapThreadUnsafeCache alloc] initWithKeyClass:keyClass countLimit:cacheSize];
+	NSCache *cache = [[NSCache alloc] init];
+	cache.countLimit = cacheSize;
 	
 	NSDate *start = [NSDate date];
 	
@@ -75,8 +74,8 @@ static NSMutableArray *cacheSizes;
 	}
 	
 	NSTimeInterval elapsed = [start timeIntervalSinceNow] * -1.0;
-	NSLog(@"%@: elapsed = %.6f (loop=%d, cache=%d, hit=%d, evict=%d)",
-	      NSStringFromSelector(_cmd), elapsed, LOOP_COUNT, cacheSize, cache.hitCount, cache.evictionCount);
+	NSLog(@"%@: elapsed = %.6f (loop=%d, cache=%d)",
+	      NSStringFromSelector(_cmd), elapsed, LOOP_COUNT, cacheSize);
 }
 
 + (void)runTest2:(NSUInteger)cacheSize
@@ -84,7 +83,6 @@ static NSMutableArray *cacheSizes;
 	Class keyClass = [NSString class];
 	
 	YapThreadUnsafeCache *cache = [[YapThreadUnsafeCache alloc] initWithKeyClass:keyClass countLimit:cacheSize];
-//	YapThreadSafeCache *cache = [[YapThreadUnsafeCache alloc] initWithKeyClass:keyClass countLimit:cacheSize];
 	
 	NSDate *start = [NSDate date];
 	
@@ -96,8 +94,8 @@ static NSMutableArray *cacheSizes;
 	}
 	
 	NSTimeInterval elapsed = [start timeIntervalSinceNow] * -1.0;
-	NSLog(@"%@: elapsed = %.6f (loop=%d, cache=%d, hit=%d, evict=%d)",
-	      NSStringFromSelector(_cmd), elapsed, LOOP_COUNT, cacheSize, cache.hitCount, cache.evictionCount);
+	NSLog(@"%@: elapsed = %.6f (loop=%d, cache=%d)",
+	      NSStringFromSelector(_cmd), elapsed, LOOP_COUNT, cacheSize);
 }
 
 + (void)runTests
@@ -109,9 +107,9 @@ static NSMutableArray *cacheSizes;
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
+		NSLog(@" \n\n\n ");
 		NSLog(@"====================================================");
-		NSLog(@"====================================================");
-		NSLog(@"CACHE SIZE: %lu\n\n", (unsigned long)cacheSize);
+		NSLog(@"CACHE SIZE: %lu, HIT PERCENTAGE: 5%% \n\n", (unsigned long)cacheSize);
 		
 		[self generateKeysWithCacheSize:cacheSize hitPercentage:0.05];
 		[self runTest1:cacheSize];
@@ -124,6 +122,8 @@ static NSMutableArray *cacheSizes;
 	});
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
+		NSLog(@"CACHE SIZE: %lu, HIT PERCENTAGE: 25%% \n\n", (unsigned long)cacheSize);
+		
 		[self generateKeysWithCacheSize:cacheSize hitPercentage:0.25];
 		[self runTest1:cacheSize];
 		[self runTest2:cacheSize];
@@ -134,6 +134,8 @@ static NSMutableArray *cacheSizes;
 		NSLog(@"====================================================");
 	});
 	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		NSLog(@"CACHE SIZE: %lu, HIT PERCENTAGE: 50%% \n\n", (unsigned long)cacheSize);
 		
 		[self generateKeysWithCacheSize:cacheSize hitPercentage:0.5];
 		[self runTest1:cacheSize];
@@ -146,6 +148,8 @@ static NSMutableArray *cacheSizes;
 	});
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
+		NSLog(@"CACHE SIZE: %lu, HIT PERCENTAGE: 75%% \n\n", (unsigned long)cacheSize);
+		
 		[self generateKeysWithCacheSize:cacheSize hitPercentage:0.75];
 		[self runTest1:cacheSize];
 		[self runTest2:cacheSize];
@@ -156,6 +160,8 @@ static NSMutableArray *cacheSizes;
 		NSLog(@"====================================================");
 	});
 	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		NSLog(@"CACHE SIZE: %lu, HIT PERCENTAGE: 95%% \n\n", (unsigned long)cacheSize);
 		
 		[self generateKeysWithCacheSize:cacheSize hitPercentage:0.95];
 		[self runTest1:cacheSize];
@@ -178,7 +184,12 @@ static NSMutableArray *cacheSizes;
 {
 	cacheSizes = [@[ @(40), @(100), @(500), @(1000) ] mutableCopy];
 	
-	[self runTests];
+	double delayInSeconds = 0.1;
+	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+		
+		[self runTests];
+	});
 }
 
 @end

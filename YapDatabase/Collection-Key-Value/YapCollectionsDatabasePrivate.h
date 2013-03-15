@@ -31,7 +31,10 @@
 	sqlite3_stmt *enumerateAllInAllCollectionsStatement;
 	
 @public
+	
+	NSMutableSet *changedKeys;
 	NSMutableSet *resetCollections;
+	BOOL allKeysRemoved;
 
 /* Inherited from YapAbstractDatabaseConnection (see YapAbstractDatabasePrivate.h):
 	
@@ -53,9 +56,6 @@
 	NSUInteger metadataCacheLimit;        // Read-only by transaction. Use as consideration of whether to add to cache.
 	
 	BOOL hasMarkedSqlLevelSharedReadLock; // Read-only by transaction. Use as consideration of whether to invoke method.
-	
-	NSMutableSet *changedKeys;
-	BOOL allKeysRemoved;	
 	
 */
 }

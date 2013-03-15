@@ -19,6 +19,8 @@
 #define KEY_PAGE_INFOS    @"order_infos"
 #define KEY_MAX_PAGE_SIZE @"order_max_page_size"
 
+#define NO_DUPLICATES_OPTIMIZATION 0
+
 
 @interface YapDatabasePageInfo : NSObject <NSCoding, NSCopying> {
 @public
@@ -1463,15 +1465,27 @@
 		{
 			NSString *key = [page objectAtIndex:i];
 			
-			if ([keys containsObject:[page objectAtIndex:i]])
+			if ([keys containsObject:key])
 			{
-				[keys removeObject:key];
+				// Remove key from page
+				
 				[page removeObjectAtIndex:i];
 				
 				pageInfo->pageSize--;
 				[dirtyPageKeys addObject:pageInfo->pageKey];
 				
+				#if NO_DUPLICATES_OPTIMIZATION
+				
+				// Remove key from set of keys.
+				//
+				// Since there's a verbal guarantee there won't be any duplicate keys appended/prepended,
+				// we can optimize the removal process by only looking for each key once.
+				
+				[keys removeObject:key];
+				
 				if ([keys count] == 0) break;
+				
+				#endif
 			}
 			else
 			{
@@ -1490,7 +1504,11 @@
 			[pageInfos removeObjectAtIndex:pageIndex];
 		}
 		
+		#if NO_DUPLICATES_OPTIMIZATION
+		
 		if ([keys count] == 0) break;
+		
+		#endif
 	}
 }
 

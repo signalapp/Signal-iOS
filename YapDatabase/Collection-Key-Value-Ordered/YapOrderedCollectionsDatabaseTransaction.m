@@ -65,11 +65,14 @@
 
 #pragma mark List
 
-- (NSArray *)allKeysInCollection:(NSString *)collection
+- (NSArray *)orderedKeysInCollection:(NSString *)collection
 {
-	// This method is overriden because we need to return the list in the proper order.
-	
 	return [[self orderForCollection:collection] allKeys:self];
+}
+
+- (NSUInteger)orderedKeysCountInCollection:(NSString *)collection
+{
+	return [[self orderForCollection:collection] numberOfKeys];
 }
 
 - (NSArray *)keysInRange:(NSRange)range collection:(NSString *)collection
@@ -342,16 +345,27 @@
 
 - (void)appendObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection withMetadata:(id)metadata
 {
+	if (key == nil)
+	{
+		YDBLogWarn(@"Cannot append object for collection(%@) with nil key.", collection);
+		return;
+	}
 	if (object == nil)
 	{
-		[self removeObjectForKey:key inCollection:collection];
+		YDBLogWarn(@"Cannot append nil object for collection(%@) key(%@).", collection, key);
+		return;
 	}
-	else if (key != nil)
+	
+	// Duplicates are allowed, but a warning is helpful for now.
+	if ([transaction hasObjectForKey:key inCollection:collection])
 	{
-		[transaction setObject:object forKey:key inCollection:collection withMetadata:metadata];
-		
-		[[self orderForCollection:collection] appendKey:key transaction:self];
+		YDBLogWarn(@"Object for collection(%@) key(%@) already listed in order. Appending duplicate key to order...",
+		           collection, key);
 	}
+	
+	[transaction setObject:object forKey:key inCollection:collection withMetadata:metadata];
+	
+	[[self orderForCollection:collection] appendKey:key transaction:self];
 }
 
 - (void)prependObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection
@@ -361,16 +375,27 @@
 
 - (void)prependObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection withMetadata:(id)metadata
 {
+	if (key == nil)
+	{
+		YDBLogWarn(@"Cannot prepend object for collection(%@) with nil key.", collection);
+		return;
+	}
 	if (object == nil)
 	{
-		[self removeObjectForKey:key inCollection:collection];
+		YDBLogWarn(@"Cannot prepend nil object for collection(%@) key(%@).", collection, key);
+		return;
 	}
-	else if (key != nil)
+	
+	// Duplicates are allowed, but a warning is helpful for now.
+	if ([transaction hasObjectForKey:key inCollection:collection])
 	{
-		[transaction setObject:object forKey:key inCollection:collection withMetadata:metadata];
-		
-		[[self orderForCollection:collection] prependKey:key transaction:self];
+		YDBLogWarn(@"Object for collection(%@) key(%@) already listed in order. Prepending duplicate key to order...",
+		           collection, key);
 	}
+	
+	[transaction setObject:object forKey:key inCollection:collection withMetadata:metadata];
+	
+	[[self orderForCollection:collection] prependKey:key transaction:self];
 }
 
 - (void)insertObject:(id)object atIndex:(NSUInteger)index forKey:(NSString *)key inCollection:(NSString *)collection
@@ -384,19 +409,27 @@
         inCollection:(NSString *)collection
         withMetadata:(id)metadata
 {
+	if (key == nil)
+	{
+		YDBLogWarn(@"Cannot insert object in collection(%@) atIndex(%ud) with nil key.", collection, index);
+		return;
+	}
 	if (object == nil)
 	{
-		[self removeObjectForKey:key inCollection:collection];
+		YDBLogWarn(@"Cannot insert nil object for collection(%@) key(%@) atIndex(%ud).", collection, key, index);
+		return;
 	}
-	else
+	
+	// Duplicates are allowed, but a warning is helpful for now.
+	if ([transaction hasObjectForKey:key inCollection:collection])
 	{
-		if (key == nil) return;
-		if (collection == nil) collection = @"";
-		
-		[transaction setObject:object forKey:key inCollection:collection withMetadata:metadata];
-		
-		[[self orderForCollection:collection] insertKey:key atIndex:index transaction:self];
+		YDBLogWarn(@"Object for collection(%@) key(%@) already listed in order. Inserting duplicate key in order...",
+		           collection, key);
 	}
+	
+	[transaction setObject:object forKey:key inCollection:collection withMetadata:metadata];
+	
+	[[self orderForCollection:collection] insertKey:key atIndex:index transaction:self];
 }
 
 - (void)updateObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection

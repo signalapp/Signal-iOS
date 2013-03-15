@@ -86,6 +86,11 @@
 	sqlite3_stmt *enumerateMetadataStatement;
 	sqlite3_stmt *enumerateAllStatement;
 
+@public
+
+	NSMutableSet *changedKeys;
+	BOOL allKeysRemoved;
+
 */
 /* Defined in YapAbstractDatabasePrivate.h:
 
@@ -107,9 +112,7 @@
 	NSUInteger metadataCacheLimit;        // Read-only by transaction. Use as consideration of whether to add to cache.
 	
 	BOOL hasMarkedSqlLevelSharedReadLock; // Read-only by transaction. Use as consideration of whether to invoke method.
-	
-	NSMutableSet *changedKeys;
-	BOOL allKeysRemoved;
+ 
 */
 }
 
@@ -132,11 +135,11 @@
 /**
  * Optional override hook from YapAbstractDatabaseConnection.
 **/
-- (void)_trimMemory:(int)aggressiveLevel
+- (void)_flushMemoryWithLevel:(int)level
 {
-	[super _trimMemory:aggressiveLevel];
+	[super _flushMemoryWithLevel:level];
 	
-	if (aggressiveLevel >= 1) // Moderate
+	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
 	{
 		sqlite_finalize_null(&getCountStatement);
 		sqlite_finalize_null(&getCountForKeyStatement);
@@ -150,7 +153,7 @@
 		sqlite_finalize_null(&enumerateAllStatement);
 	}
 	
-	if (aggressiveLevel >= 2) // Full
+	if (level >= YapDatabaseConnectionFlushMemoryLevelFull)
 	{
 		sqlite_finalize_null(&getDataForKeyStatement);
 		sqlite_finalize_null(&setAllForKeyStatement);
@@ -164,11 +167,6 @@
 - (YapDatabase *)database
 {
 	return (YapDatabase *)database;
-}
-
-- (Class)cacheKeyClass
-{
-	return [NSString class];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -515,5 +513,61 @@
 {
 	return [[YapDatabaseReadWriteTransaction alloc] initWithConnection:self];
 }
+
+/**
+ * We override this method to ensure our changeset variables are prepared for use.
+**/
+- (void)preReadWriteTransaction:(YapAbstractDatabaseTransaction *)transaction
+{
+	[super preReadWriteTransaction:transaction];
+	
+	if (changedKeys == nil) {
+		changedKeys = [[NSMutableSet alloc] init];
+	}
+	allKeysRemoved = NO;
+}
+
+/**
+ * We override this method to reset our changeset variables.
+**/
+- (void)postReadWriteTransaction:(YapAbstractDatabaseTransaction *)transaction
+{
+	[super postReadWriteTransaction:transaction];
+	
+	[changedKeys removeAllObjects];
+}
+
+/**
+ * Required method.
+ *
+ * This method is invoked from within the postReadWriteTransaction operation.
+ * This method is invoked before anything has been committed.
+ *
+ * If changes have been made, it should return a changeset dictionary.
+ * If no changes have been made, it should return nil.
+ * 
+ * @see [YapAbstractDatabaseConnection noteCommittedChanges:]
+ * @see [YapAbstractDatabase cacheChangesetBlockFromChanges:]
+**/
+- (NSMutableDictionary *)changeset
+{
+	if ([changedKeys count] > 0 || allKeysRemoved)
+	{
+		NSMutableDictionary *changeset = [NSMutableDictionary dictionaryWithCapacity:4];
+		
+		if ([changedKeys count] > 0)
+			[changeset setObject:[changedKeys copy] forKey:@"changedKeys"];
+		
+		if (allKeysRemoved)
+			[changeset setObject:@(YES) forKey:@"allKeysRemoved"];
+		
+		return changeset;
+	}
+	else
+	{
+		return nil;
+	}
+}
+
 
 @end

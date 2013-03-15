@@ -51,12 +51,7 @@
 
 /**
  * Object access.
- * Objects are automatically serialized/deserialized using database's configured serializer/deserializer.
- *
- * You may optionally pass metadata about the object.
- * The metadata is kept in memory, within a mutable dictionary, and can be accessed very quickly.
- * The metadata is also written to the database for persistent storage, and thus persists between sessions.
- * Metadata is serialized/deserialized to/from disk just like the object.
+ * Objects are automatically deserialized using database's configured deserializer.
 **/
 - (id)objectForKey:(NSString *)key inCollection:(NSString *)collection;
 
@@ -84,10 +79,73 @@
 #pragma mark Enumerate
 
 /**
- * Extremely fast in-memory enumeration over all keys and associated metadata in the given collection.
+ * Fast enumeration over all keys in the given collection.
  *
- * Recall that metadata is kept in RAM for performance (as well as persisted to disk),
- * so enumerating over metadata doesn't touch the disk.
+ * This uses a "SELECT key FROM database WHERE collection = ?" operation,
+ * and then steps over the results invoking the given block handler.
+**/
+- (void)enumerateKeysInCollection:(NSString *)collection
+                       usingBlock:(void (^)(NSString *key, BOOL *stop))block;
+
+/**
+ * Enumerates over the given list of keys (unordered).
+ *
+ * This method is faster than fetching individual items as it optimizes cache access.
+ * That is, it will first enumerate over items in the cache, and then fetch items from the database,
+ * thus optimizing the available cache.
+ *
+ * If any keys are missing from the database, the 'metadata' parameter will be nil.
+ *
+ * IMPORTANT:
+ *     Due to cache optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
+ *     That is, items in the cache will be enumerated over first, before fetching items from the database.
+**/
+- (void)enumerateMetadataForKeys:(NSArray *)keys
+                    inCollection:(NSString *)collection
+                      usingBlock:(void (^)(NSUInteger keyIndex, id metadata, BOOL *stop))block;
+
+/**
+ * Enumerates over the given list of keys (unordered).
+ *
+ * This method is faster than fetching individual items as it optimizes cache access.
+ * That is, it will first enumerate over items in the cache, and then fetch items from the database,
+ * thus optimizing the available cache.
+ *
+ * If any keys are missing from the database, the 'object' parameter will be nil.
+ *
+ * IMPORTANT:
+ *     Due to cache optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
+ *     That is, items in the cache will be enumerated over first, before fetching items from the database.
+**/
+- (void)enumerateObjectsForKeys:(NSArray *)keys
+                   inCollection:(NSString *)collection
+                     usingBlock:(void (^)(NSUInteger keyIndex, id object, BOOL *stop))block;
+
+/**
+ * Enumerates over the given list of keys (unordered).
+ *
+ * This method is faster than fetching individual items as it optimizes cache access.
+ * That is, it will first enumerate over items in the cache, and then fetch items from the database,
+ * thus optimizing the available cache.
+ *
+ * If any keys are missing from the database, the 'object' parameter will be nil.
+ *
+ * IMPORTANT:
+ *     Due to cache optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
+ *     That is, items in the cache will be enumerated over first, before fetching items from the database.
+**/
+- (void)enumerateForKeys:(NSArray *)keys
+            inCollection:(NSString *)collection
+              usingBlock:(void (^)(NSUInteger keyIndex, id object, id metadata, BOOL *stop))block;
+
+/**
+ * Fast enumeration over all keys and associated metadata in the given collection.
+ * 
+ * This uses a "SELECT key, metadata FROM database WHERE collection = ?" operation and steps over the results.
+ * 
+ * If you only need to enumerate over certain items (e.g. keys with a particular prefix),
+ * consider using the alternative version below which provides a filter,
+ * allowing you to skip the deserialization step for those items you're not interested in.
  * 
  * Keep in mind that you cannot modify the collection mid-enumeration (just like any other kind of enumeration).
 **/
@@ -95,15 +153,47 @@
                                   usingBlock:(void (^)(NSString *key, id metadata, BOOL *stop))block;
 
 /**
- * Extremely fast in-memory enumeration over all key/metadata pairs in all collections.
- * 
- * Recall that metadata is kept in RAM for performance (as well as persisted to disk),
- * so enumerating over metadata doesn't touch the disk.
+ * Fast enumeration over all keys and associated metadata in the given collection.
  *
+ * From the filter block, simply return YES if you'd like the block handler to be invoked for the given key.
+ * If the filter block returns NO, then the block handler is skipped for the given key,
+ * which avoids the cost associated with deserializing the object.
+ * 
+ * Keep in mind that you cannot modify the collection mid-enumeration (just like any other kind of enumeration).
+**/
+- (void)enumerateKeysAndMetadataInCollection:(NSString *)collection
+                                 usingFilter:(BOOL (^)(NSString *key))filter
+                                       block:(void (^)(NSString *key, id metadata, BOOL *stop))block;
+
+
+/**
+ * Fast enumeration over all key/metadata pairs in all collections.
+ * 
+ * This uses a "SELECT metadata FROM database ORDER BY collection ASC" operation, and steps over the results.
+ * 
+ * If you only need to enumerate over certain objects (e.g. keys with a particular prefix),
+ * consider using the alternative version below which provides a filter,
+ * allowing you to skip the deserialization step for those objects you're not interested in.
+ * 
  * Keep in mind that you cannot modify the database mid-enumeration (just like any other kind of enumeration).
 **/
 - (void)enumerateKeysAndMetadataInAllCollectionsUsingBlock:
                             (void (^)(NSString *collection, NSString *key, id metadata, BOOL *stop))block;
+
+/**
+ * Fast enumeration over all key/metadata pairs in all collections.
+ *
+ * This uses a "SELECT metadata FROM database ORDER BY collection ASC" operation and steps over the results.
+ * 
+ * From the filter block, simply return YES if you'd like the block handler to be invoked for the given key.
+ * If the filter block returns NO, then the block handler is skipped for the given key,
+ * which avoids the cost associated with deserializing the object.
+ *
+ * Keep in mind that you cannot modify the database mid-enumeration (just like any other kind of enumeration).
+ **/
+- (void)enumerateKeysAndMetadataInAllCollectionsUsingFilter:
+                            (BOOL (^)(NSString *collection, NSString *key))filter
+					  block:(void (^)(NSString *collection, NSString *key, id metadata, BOOL *stop))block;
 
 /**
  * Fast enumeration over all objects in the database.
@@ -186,7 +276,7 @@
 
 /**
  * Sets the object for the given key/collection.
- * Objects are automatically serialized/deserialized using the database's configured serializer/deserializer.
+ * Objects are automatically serialized using the database's configured serializer.
  * 
  * You may optionally pass metadata about the object.
  * The metadata is kept in memory, within a mutable dictionary, and can be accessed very quickly.
