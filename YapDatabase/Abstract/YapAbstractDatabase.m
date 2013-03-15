@@ -102,10 +102,7 @@
 		{
 			NSTimeInterval timestamp = [(NSDate *)object timeIntervalSinceReferenceDate];
 			
-			Byte buffer[sizeof(NSTimeInterval)];
-			memcpy(buffer, (void *)&timestamp, sizeof(NSTimeInterval));
-			
-			return [[NSData alloc] initWithBytes:buffer length:sizeof(NSTimeInterval)];
+			return [[NSData alloc] initWithBytes:(void *)&timestamp length:sizeof(NSTimeInterval)];
 		}
 		else
 		{
