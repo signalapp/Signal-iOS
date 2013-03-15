@@ -96,17 +96,12 @@
 - (void)startReadTransaction:(NSTimeInterval)lastWriteTimestamp;
 
 /**
- * The lastWriteTimestamp comes from the database layer, and represents the snapshot timestamp.
- * The timestamp is used when reading objects from the shared cache,
- * to ensure we don't read stale data (in relation to the given timestamp).
- * 
- * The newWriteTimestamp represents the timestamp of objects that get changed during this transaction.
+ * The newLastWriteTimestamp represents the timestamp of objects that get changed during this transaction.
  * It ensures that other connections don't read future data accidentally.
  * 
  * The changesetBlock is retained, and used throughout the transaction.
 **/
-- (void)startReadWriteTransaction:(NSTimeInterval)lastWriteTimestamp
-			withNewWriteTimestamp:(NSTimeInterval)newWriteTimestamp
+- (void)startReadWriteTransaction:(NSTimeInterval)newLastWriteTimestamp
                    changesetBlock:(int (^)(id key))changesetBlock;
 
 /**

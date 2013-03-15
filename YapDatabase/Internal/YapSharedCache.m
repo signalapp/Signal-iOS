@@ -91,11 +91,17 @@
 
 /**
  * Create a new shared cache item with the given object and timestamp.
- * 
- * Also takes into account the master update list,
- * and inserts placeholders for future timestamps when the object is later modified (if needed).
 **/
-- (id)initWithObject:(id)object timestamp:(NSTimeInterval)lastWriteTimestamp forKey:(id)key;
+- (id)initWithObject:(id)object timestamp:(NSTimeInterval)lastWriteTimestamp;
+
+/**
+ * Older connections (those viewing an older snapshot of the database)
+ * are still able to add objects to the shared cache. But it's important that newer connections don't use
+ * potentially stale data from the older connections. Thus the changeset information is required when a new value
+ * is added to the shared cache. The changeset info is inspected, and if the value changes in the future,
+ * then proper placeholders are added for the change.
+**/
+- (void)updateWithRecentChangesetBlocksAndTimestamps:(NSArray *)recentChanges forKey:(id)key;
 
 /**
  * Adds/sets the value corresponding to the given timestamp.
@@ -158,7 +164,10 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@interface YapSharedCache () {	
+@interface YapSharedCache () {
+@private
+	NSMutableArray *changesetBlocksAndTimestamps;
+	
 @public
 	Class keyClass;
 	
@@ -166,7 +175,7 @@
 	CFMutableDictionaryRef shared_cfdict;
 }
 
-- (NSArray *)pendingAndCommittedChangesetBlocksSince:(NSTimeInterval)writeTimestamp;
+- (NSArray *)pendingAndCommittedChangesetBlocksAndTimestampsSince:(NSTimeInterval)writeTimestamp;
 
 @end
 
@@ -178,8 +187,7 @@
 	__strong YapSharedCache *parent;
 	NSUInteger countLimit;
 	
-	NSTimeInterval lastWriteTimestamp;
-	NSTimeInterval newWriteTimestamp;
+	NSTimeInterval timestamp;
 	
 	int (^changesetBlock)(id key);
 	
@@ -216,6 +224,8 @@
 			keyClass = [NSString class];
 		else
 			keyClass = inKeyClass;
+		
+		changesetBlocksAndTimestamps = [[NSMutableArray alloc] init];
 		
 		// Multiple concurrent readers, single atomic writer
 		shared_queue = dispatch_queue_create("YapSharedCache", DISPATCH_QUEUE_CONCURRENT);
@@ -256,11 +266,39 @@
 	return [[YapSharedCacheConnection alloc] initWithParent:self];
 }
 
-
+/**
+ * This method works in conjuction with [YapAbstractDatabase notePendingChanges:fromConnection:].
+ * It allows the shared cache to update the shared data.
+ *
+ * The changeset block is retained until noteCommittedChangesetBlock:: is invoked.
+**/
 - (void)notePendingChangesetBlock:(int (^)(id key))changesetBlock
                    writeTimestamp:(NSTimeInterval)writeTimestamp
 {
+	// This method is invoked from (stack trace):
+	//
+	// - YapAbstractDatabase - notePendingChanges:fromConnection:
+	// - YapAbstractDatabaseConnection - postReadWriteTransaction:
+	// - YapAbstractDatabaseConnection - _readWriteWithBlock:
+	//
+	// In other words, it is invoked at the end of a readwrite transaction, before the sql commit is finalized.
+	// The goal is to update the shared cache/dictionary before another transaction begins which uses this changeset.
+	//
+	// Immediately after this method executes, other YapAbstractDatabaseConnection's will receive the
+	// noteCommittedChanges notification, and will begin updating their YapSharedCacheConnection via the
+	// noteCommittedChangesetBlock method.
+	
 	dispatch_barrier_async(shared_queue, ^{
+		
+		// And to list of changesets (will be removed once committed)
+		
+		NSArray *changesetAndTimestampPair = @[ changesetBlock, @(writeTimestamp) ];
+		[changesetBlocksAndTimestamps addObject:changesetAndTimestampPair];
+		
+		// Update shared dictionary, which allows multiple values per key.
+		//
+		// Each database key points to a YapSharedCacheItem.
+		// Each YapSharedCacheItem contains a linked list of YapSharedCacheValue's, ordered by timestamp.
 		
 		NSDictionary *shared_nsdict = (__bridge NSDictionary *)shared_cfdict;
 		
@@ -270,7 +308,10 @@
 			if (status != 0)
 			{
 				// Object was deleted or modified during transaction.
-				// Make sure there's a corresponding YapSharedCacheValue with proper timestamp.
+				//
+				// We use a method that checks for a corresponding YapSharedCacheValue with the writeTimestamp.
+				// If the value exists, the value is left alone.
+				// Otherwise a placeholder value (with object == nil) is inserted.
 				
 				__unsafe_unretained YapSharedCacheItem *sharedItem = (YapSharedCacheItem *)obj;
 				
@@ -280,15 +321,37 @@
 	});
 }
 
-- (NSArray *)pendingAndCommittedChangesetBlocksSince:(NSTimeInterval)writeTimestamp
+/**
+ * Returns recent changesetBlocks (and associated timestamps) since the given timestamp.
+ * These changesets should be consulted when adding new YapSharedCacheItem's to the shared cache.
+**/
+- (NSArray *)pendingAndCommittedChangesetBlocksAndTimestampsSince:(NSTimeInterval)writeTimestamp
 {
+	NSMutableArray *relevantItems = [NSMutableArray arrayWithCapacity:[changesetBlocksAndTimestamps count]];
 	
+	for (NSArray *changesetAndTimestampPair in changesetBlocksAndTimestamps)
+	{
+		NSTimeInterval changesetWriteTimestamp = [[changesetAndTimestampPair objectAtIndex:1] doubleValue];
+		
+		if (changesetWriteTimestamp > writeTimestamp)
+		{
+			[relevantItems addObject:changesetAndTimestampPair];
+		}
+	}
+	
+	return relevantItems;
 }
 
 - (void)noteCommittedChangesetBlock:(int (^)(id key))changesetBlock
                      writeTimestamp:(NSTimeInterval)writeTimestamp
 {
 	dispatch_barrier_async(shared_queue, ^{
+		
+		// Remove from list of changesets (was added in notePendingChangesetBlock::)
+		
+		[changesetBlocksAndTimestamps removeObjectAtIndex:0];
+		
+		// Clean the shared dictionary by deleting stale YapSharedCacheValue's.
 		
 		NSDictionary *shared_nsdict = (__bridge NSDictionary *)shared_cfdict;
 		
@@ -342,32 +405,30 @@
 
 #pragma mark Transaction State
 
-- (void)startReadTransaction:(NSTimeInterval)inLastWriteTimestamp
+- (void)startReadTransaction:(NSTimeInterval)inTimestamp
 {
-	NSAssert(lastWriteTimestamp == 0.0, @"Transaction already in progress");
+	NSAssert(timestamp == 0.0, @"Transaction already in progress");
 	
 	isReadWriteTransaction = NO;
-	lastWriteTimestamp = inLastWriteTimestamp;
+	timestamp = inTimestamp;
 }
 
-- (void)startReadWriteTransaction:(NSTimeInterval)inLastWriteTimestamp
-            withNewWriteTimestamp:(NSTimeInterval)inNewWriteTimestamp
+- (void)startReadWriteTransaction:(NSTimeInterval)inNewTimestamp
                    changesetBlock:(int (^)(id key))inChangesetBlock
 {
-	NSAssert(lastWriteTimestamp == 0.0, @"Transaction already in progress");
+	NSAssert(timestamp == 0.0, @"Transaction already in progress");
 	
 	isReadWriteTransaction = YES;
-	lastWriteTimestamp = inLastWriteTimestamp;
-	newWriteTimestamp = inNewWriteTimestamp;
+	timestamp = inNewTimestamp;
 	changesetBlock = inChangesetBlock;
 }
 
 - (void)endTransaction
 {
-	NSAssert(lastWriteTimestamp != 0.0, @"There is no transaction in progress");
+	NSAssert(timestamp != 0.0, @"There is no transaction in progress");
 	
 	isReadWriteTransaction = NO;
-	lastWriteTimestamp = 0.0;
+	timestamp = 0.0;
 }
 
 #pragma mark Properties & Count
@@ -442,7 +503,7 @@
 
 - (id)objectForKey:(id)key
 {
-	NSAssert(lastWriteTimestamp > 0.0, @"Must be in a transaction.");
+	NSAssert(timestamp > 0.0, @"Must be in a transaction.");
 	NSAssert([key isKindOfClass:parent->keyClass],
 	         @"Unexpected key class. Expected %@, passed %@", parent->keyClass, [key class]);
 	
@@ -516,7 +577,7 @@
 				// We only care about the item if it has an object for us.
 				// Otherwise we don't want to become an owner / add it to our local cache.
 				
-				object = [sharedItem objectForTimestamp:lastWriteTimestamp];
+				object = [sharedItem objectForTimestamp:timestamp];
 				if (object)
 				{
 					sharedItem->ownerCount++;
@@ -610,7 +671,7 @@
 
 - (void)setObject:(id)object forKey:(id)key
 {
-	NSAssert(lastWriteTimestamp > 0.0, @"Must be in a transaction.");
+	NSAssert(timestamp > 0.0, @"Must be in a transaction.");
 	NSAssert([key isKindOfClass:parent->keyClass],
 	         @"Unexpected key class. Expected %@, passed %@", parent->keyClass, [key class]);
 	
@@ -622,7 +683,7 @@
 		
 		dispatch_barrier_sync(parent->shared_queue, ^{
 			
-			[localItem->shared_item setObject:object forTimestamp:lastWriteTimestamp];
+			[localItem->shared_item setObject:object forTimestamp:timestamp];
 		});
 		
 		// Since we accessed the item, move it to the front of our access list
@@ -668,13 +729,16 @@
 			
 			if (sharedItem)
 			{
-				[sharedItem setObject:object forTimestamp:lastWriteTimestamp];
+				[sharedItem setObject:object forTimestamp:timestamp];
 			}
 			else
 			{
-				sharedItem = [[YapSharedCacheItem alloc] initWithObject:object
-				                                              timestamp:lastWriteTimestamp
-				                                                 forKey:key];
+				sharedItem = [[YapSharedCacheItem alloc] initWithObject:object timestamp:timestamp];
+				
+				NSArray *recentChanges =
+				    [parent pendingAndCommittedChangesetBlocksAndTimestampsSince:timestamp];
+				
+				[sharedItem updateWithRecentChangesetBlocksAndTimestamps:recentChanges forKey:key];
 				
 				CFDictionarySetValue(parent->shared_cfdict, (const void *)key, (const void *)sharedItem);
 			}
@@ -907,63 +971,69 @@
 			[keysToUpdate addObject:key];
 	}
 	
-	// Step 2:
-	// Update any keys in local cache that were updated.
-	// If no update is available then add to delete list.
-	
-	dispatch_sync(parent->shared_queue, ^{
-		
-		for (id key in keysToUpdate)
-		{
-			YapLocalCacheItem *localItem = CFDictionaryGetValue(local_cfdict, (const void *)key);
-			
-			localItem->object = [localItem->shared_item objectForTimestamp:writeTimestamp];
-			if (localItem->object == nil)
-			{
-				[keysToRemove addObject:key];
-			}
-		}
-	});
-	
-	// Step 3:
-	// Remove any keys from local cache that were deleted.
-	
-	for (id key in keysToRemove)
+	if ([keysToUpdate count] > 0)
 	{
-		YapLocalCacheItem *localItem = CFDictionaryGetValue(local_cfdict, (const void *)key);
+		// Step 2:
+		// Update any keys in local cache that were updated.
+		// If no update is available then add to delete list.
 		
-		if (localItem->prev)
-			localItem->prev->next = localItem->next;
-		
-		if (localItem->next)
-			localItem->next->prev = localItem->prev;
-		
-		if (mostRecentCacheItem == localItem)
-			mostRecentCacheItem = localItem->next;
-		
-		if (leastRecentCacheItem == localItem)
-			leastRecentCacheItem = localItem->prev;
-		
-		CFDictionaryRemoveValue(local_cfdict, (const void *)key);
+		dispatch_sync(parent->shared_queue, ^{
+			
+			for (id key in keysToUpdate)
+			{
+				YapLocalCacheItem *localItem = CFDictionaryGetValue(local_cfdict, (const void *)key);
+				
+				localItem->object = [localItem->shared_item objectForTimestamp:writeTimestamp];
+				if (localItem->object == nil)
+				{
+					[keysToRemove addObject:key];
+				}
+			}
+		});
 	}
-
-	// Step 4:
-	// Decrement ownerCount or remove items from shared cache that we deleted from local cache.
 	
-	dispatch_barrier_async(parent->shared_queue, ^{
+	if ([keysToRemove count] > 0)
+	{
+		// Step 3:
+		// Remove any keys from local cache that were deleted.
 		
 		for (id key in keysToRemove)
 		{
-			YapSharedCacheItem *sharedItem = CFDictionaryGetValue(parent->shared_cfdict, (const void *)key);
-			if (sharedItem)
-			{
-				if (sharedItem->ownerCount == 1)
-					CFDictionaryRemoveValue(parent->shared_cfdict, (const void *)key);
-				else
-					sharedItem->ownerCount--;
-			}
+			YapLocalCacheItem *localItem = CFDictionaryGetValue(local_cfdict, (const void *)key);
+			
+			if (localItem->prev)
+				localItem->prev->next = localItem->next;
+			
+			if (localItem->next)
+				localItem->next->prev = localItem->prev;
+			
+			if (mostRecentCacheItem == localItem)
+				mostRecentCacheItem = localItem->next;
+			
+			if (leastRecentCacheItem == localItem)
+				leastRecentCacheItem = localItem->prev;
+			
+			CFDictionaryRemoveValue(local_cfdict, (const void *)key);
 		}
-	});
+
+		// Step 4:
+		// Decrement ownerCount or remove items from shared cache that we deleted from local cache.
+		
+		dispatch_barrier_async(parent->shared_queue, ^{
+			
+			for (id key in keysToRemove)
+			{
+				YapSharedCacheItem *sharedItem = CFDictionaryGetValue(parent->shared_cfdict, (const void *)key);
+				if (sharedItem)
+				{
+					if (sharedItem->ownerCount == 1)
+						CFDictionaryRemoveValue(parent->shared_cfdict, (const void *)key);
+					else
+						sharedItem->ownerCount--;
+				}
+			}
+		});
+	}
 }
 
 @end
@@ -981,7 +1051,8 @@
 
 - (NSString *)description
 {
-	return [NSString stringWithFormat:@"<YapSharedCacheValue %@:%.4f>", (object ? @"obj" : @"nil"), lastWriteTimestamp];
+	return [NSString stringWithFormat:@"<YapSharedCacheValue %@:%.4f>", object, lastWriteTimestamp];
+//	return [NSString stringWithFormat:@"<YapSharedCacheValue %@:%.4f>", (object ? @"obj" : @"nil"), lastWriteTimestamp];
 }
 
 @end
@@ -989,7 +1060,7 @@
 
 @implementation YapSharedCacheItem
 
-- (id)initWithObject:(id)object timestamp:(NSTimeInterval)lastWriteTimestamp forKey:(id)key
+- (id)initWithObject:(id)object timestamp:(NSTimeInterval)lastWriteTimestamp
 {
 	if ((self = [super init]))
 	{
@@ -1001,6 +1072,28 @@
 		ownerCount = 1;
 	}
 	return self;
+}
+
+/**
+ * Older connections (those viewing an older snapshot of the database)
+ * are still able to add objects to the shared cache. But it's important that newer connections don't use
+ * potentially stale data from the older connections. Thus the changeset information is required when a new value
+ * is added to the shared cache. The changeset info is inspected, and if the value changes in the future,
+ * then proper placeholders are added for the change.
+**/
+- (void)updateWithRecentChangesetBlocksAndTimestamps:(NSArray *)recentChanges forKey:(id)key
+{
+	for (NSArray *changesetBlockAndTimestampPair in recentChanges)
+	{
+		int (^changesetBlock)(id key) = (int(^)(id))[changesetBlockAndTimestampPair objectAtIndex:0];
+		
+		if (changesetBlock(key) != 0)
+		{
+			NSTimeInterval writeTimestamp = [[changesetBlockAndTimestampPair objectAtIndex:1] doubleValue];
+			
+			[self setObject:nil forTimestamp:writeTimestamp];
+		}
+	}
 }
 
 - (void)setObject:(id)object forTimestamp:(NSTimeInterval)lastWriteTimestamp
