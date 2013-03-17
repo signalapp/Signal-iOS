@@ -884,7 +884,7 @@
 			evictedCacheItem->object = nil;
 			evictedCacheItem->shared_item = nil;
 			
-			CFDictionaryRemoveValue(local_cfdict, (const void *)(evictedCacheItem->key));
+			CFDictionaryRemoveValue(local_cfdict, (const void *)evictedKey);
 			
 			#if YAP_SHARED_CACHE_STATISTICS
 			evictionCount++;
