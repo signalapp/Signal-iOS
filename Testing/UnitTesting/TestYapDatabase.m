@@ -33,7 +33,6 @@
 	[super setUp];
 	
 	[[NSFileManager defaultManager] removeItemAtPath:[self databasePath] error:NULL];
-	
 	database = [[YapDatabase alloc] initWithPath:[self databasePath]];
 }
 
@@ -286,45 +285,37 @@
 		STAssertNil([transaction metadataForKey:key5], @"Expected nil metadata");
 	}];
 	
+	// Small workaround:
+	//
+	// We use flushMemoryWithLevel to synchronously go through the connection's internal serial queue,
+	// and hopefully flush all pending asyncronous operations so the connection gets deallocated immediately.
+	// 
+	// If the connection doesn't get deallocated, then the database doesn't get deallocated,
+	// and the next setup operation will fail to create the database
+	// since an existing database with the same filepath is still active.
+	
+	[connection1 flushMemoryWithLevel:YapDatabaseConnectionFlushMemoryLevelNone];
+	[connection2 flushMemoryWithLevel:YapDatabaseConnectionFlushMemoryLevelNone];
+	
 	connection1 = nil;
 	connection2 = nil;
 }
 
-- (void)testMetadataTimestamp
+- (void)testTimestampSerializerDeserializer
 {
-	NSString *databaseName = @"TestYapDatabase2.sqlite";
+	STAssertNotNil(database, @"Oops");
 	
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-	NSString *baseDir = ([paths count] > 0) ? [paths objectAtIndex:0] : NSTemporaryDirectory();
+	NSData *(^timestampSerializer)(id) = [YapDatabase timestampSerializer];
+	id (^timestampDeserializer)(NSData *) = [YapDatabase timestampDeserializer];
 	
-	NSString *databasePath = [baseDir stringByAppendingPathComponent:databaseName];
+	NSDate *originalDate = [NSDate date];
 	
-	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	NSData *data = timestampSerializer(originalDate);
 	
-	YapDatabase *database2 = [[YapDatabase alloc] initWithPath:databasePath
-											  objectSerializer:NULL
-											objectDeserializer:NULL
-											metadataSerializer:[YapDatabase timestampSerializer]
-										  metadataDeserializer:[YapDatabase timestampDeserializer]];
+	NSDate *deserializedDate = timestampDeserializer(data);
 	
-	YapDatabaseConnection *connection = [database2 newConnection];
-	connection.objectCacheEnabled = NO;
-	connection.metadataCacheEnabled = NO;
-	
-	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
-		
-		NSString *key = @"key";
-		id object = [NSNull null];
-		NSDate *date = [NSDate date];
-		
-		[transaction setObject:object forKey:key withTimestamp:date];
-		
-		NSDate *aDate = [transaction timestampForKey:key];
-		
-		STAssertTrue([date isEqual:aDate], @"Oops");
-	}];
+	STAssertTrue([originalDate isEqual:deserializedDate], @"Oops");
 }
-
 /*
 - (void)test2
 {
@@ -357,7 +348,7 @@
 		
 	});
 	
-	// This transaction should start before the read-write transaction
+	// This transaction should start before the read-write transaction has started
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
 		
 		STAssertNil([transaction objectForKey:key], @"Expected nil object");
@@ -366,7 +357,7 @@
 	
 	[NSThread sleepForTimeInterval:1.0]; // Zzzzzz
 	
-	// This transaction should start during the read-write transaction
+	// This transaction should start after the read-write transaction has started, but before it has committed
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
 		
 		STAssertNil([transaction objectForKey:key], @"Expected nil object");
@@ -375,12 +366,27 @@
 	
 	[NSThread sleepForTimeInterval:5.0]; // Zzzzzzzzzzzzzzzzzzzzzzzzzz
 	
-	// This transaction should start after the read-write transaction
+	// This transaction should start after the read-write transaction has completed
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
 		
 		STAssertNotNil([transaction objectForKey:key], @"Expected non-nil object");
 		STAssertNotNil([transaction metadataForKey:key], @"Expected non-nil metadata");
 	}];
+	
+	// Small workaround:
+	//
+	// We use flushMemoryWithLevel to synchronously go through the connection's internal serial queue,
+	// and hopefully flush all pending asyncronous operations so the connection gets deallocated immediately.
+	//
+	// If the connection doesn't get deallocated, then the database doesn't get deallocated,
+	// and the next setup operation will fail to create the database
+	// since an existing database with the same filepath is still active.
+	
+	[connection1 flushMemoryWithLevel:YapDatabaseConnectionFlushMemoryLevelNone];
+	[connection2 flushMemoryWithLevel:YapDatabaseConnectionFlushMemoryLevelNone];
+	
+	connection1 = nil;
+	connection2 = nil;
 }
 */
 /*
@@ -481,80 +487,6 @@
 		
 		STAssertTrue(elapsed < 0.05, @"Read-Write transaction maybe blocking read-only transaction?");
 	}
-}
-*/
-/*
-- (void)test5
-{
-	STAssertNotNil(database, @"Oops");
-	
-	/// Test race condition.
-	/// 
-	/// Need to modify YapDatabaseConnection:
-	//  - add [NSThread sleepForTimeInterval:1.0] after read-write commit.
-	
-	YapDatabaseConnection *connection1 = [database newConnection];
-	YapDatabaseConnection *connection2 = [database newConnection];
-	
-	__block int32_t doneWritingFlag = 0;
-	
-	dispatch_queue_t concurrentQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-	dispatch_async(concurrentQueue, ^{
-		
-		[NSThread sleepForTimeInterval:0.2];
-		
-		NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
-		
-		[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
-			
-			int i;
-			for (i = 0; i < 10; i++)
-			{
-				NSString *key = [NSString stringWithFormat:@"some-key-%d", i];
-				TestObject *object = [TestObject generateTestObject];
-				TestObjectMetadata *metadata = [object extractMetadata];
-				
-				[transaction setObject:object forKey:key withMetadata:metadata];
-			}
-		}];
-		
-		NSTimeInterval elapsed = [NSDate timeIntervalSinceReferenceDate] - start;
-		NSLog(@"Write operation: %.6f", elapsed);
-		
-		OSAtomicAdd32(1, &doneWritingFlag);
-	});
-	
-	while (OSAtomicAdd32(0, &doneWritingFlag) == 0)
-	{
-		NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
-		
-		[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
-			
-			(void)[transaction objectForKey:@"some-key-0"];
-		}];
-		
-		NSTimeInterval elapsed = [NSDate timeIntervalSinceReferenceDate] - start;
-		NSLog(@"Read operation: %.6f", elapsed);
-		
-		[NSThread sleepForTimeInterval:0.2];
-	}
-	
-	for (int i = 0; i < 5; i++)
-	{
-		NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
-		
-		[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
-			
-			(void)[transaction objectForKey:@"some-key-0"];
-		}];
-		
-		NSTimeInterval elapsed = [NSDate timeIntervalSinceReferenceDate] - start;
-		NSLog(@"Read operation: %.6f", elapsed);
-		
-		[NSThread sleepForTimeInterval:0.2];
-	}
-	
-	[database syncCheckpoint];
 }
 */
 @end

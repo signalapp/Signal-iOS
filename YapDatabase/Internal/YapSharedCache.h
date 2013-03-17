@@ -37,7 +37,7 @@
  * The changeset block is retained until noteCommittedChangesetBlock:: is invoked.
 **/
 - (void)notePendingChangesetBlock:(int (^)(id key))changesetBlock
-                   writeTimestamp:(NSTimeInterval)writeTimestamp;
+                         snapshot:(uint64_t)snapshot;
 
 /**
  * This method works in conjuction with [YapAbstractDatabase noteCommittedChanges:fromConnection:].
@@ -45,7 +45,7 @@
  * It allows the shared cache to delete stale data.
 **/
 - (void)noteCommittedChangesetBlock:(int (^)(id key))changesetBlock
-                     writeTimestamp:(NSTimeInterval)writeTimestamp;
+                           snapshot:(uint64_t)snapshot;
 
 @end
 
@@ -89,20 +89,20 @@
 /**
  * Begins a read only transaction.
  * 
- * The lastWriteTimestamp comes from the database layer, and represents the snapshot timestamp.
- * The timestamp is used when reading objects from the shared cache,
- * to ensure we don't read stale data or future data (in relation to the given timestamp).
+ * The snapshot comes from the database layer, and represents the snapshot number (modification count).
+ * The snapshot is used when reading objects from the shared cache,
+ * to ensure we don't read stale data or future data (in relation to the given snapshot).
 **/
-- (void)startReadTransaction:(NSTimeInterval)lastWriteTimestamp;
+- (void)startReadTransaction:(uint64_t)snapshot;
 
 /**
- * The newLastWriteTimestamp represents the timestamp of objects that get changed during this transaction.
+ * The newSnapshot represents the snapshot of objects that get changed during this transaction.
  * It ensures that other connections don't read future data accidentally.
  * 
  * The changesetBlock is retained, and used throughout the transaction.
 **/
-- (void)startReadWriteTransaction:(NSTimeInterval)newLastWriteTimestamp
-                   changesetBlock:(int (^)(id key))changesetBlock;
+- (void)startReadWriteTransaction:(uint64_t)newSnapshot
+               withChangesetBlock:(int (^)(id key))changesetBlock;
 
 /**
  * Ends the current transaction.
@@ -124,7 +124,10 @@
 - (id)objectForKey:(id)key;
 
 /**
+ * Adds the object to the local and shared cache.
  * 
+ * The object will be associated with the current snapshot,
+ * and so will only be readable by other connections on a snapshot greather-than or equal-to our snapshot.
 **/
 - (void)setObject:(id)object forKey:(id)key;
 
@@ -161,11 +164,11 @@
  *      0 : No changes made to key/value pair. The connection will leave the value untouched.
  *      1 : The value for the key was changed. The connection will refresh the value from the shared cache.
  * 
- * @param minLastWriteTimestamp
- *      
+ * @param snapshot
+ *      The snapshot number of the modification.
 **/
 - (void)noteCommittedChangesetBlock:(int (^)(id key))changesetBlock
-                     writeTimestamp:(NSTimeInterval)writeTimestamp;
+                           snapshot:(uint64_t)snapshot;
 
 //
 // Some debugging stuff that gets compiled out
@@ -174,18 +177,21 @@
 #if YAP_CACHE_DEBUG
 
 /**
- * When querying the cache for an object via objectForKey,
- * the hitCount is incremented if the object is in the cache,
- * and the missCount is incremented if the object is not in the cache.
+ * When querying the cache for an object via objectForKey:
+ * 
+ * - the localHitCount is incremented if the object is in the local cache
+ * - the sharedHitCount is incremented if the object isn't in the local cache, but is found in the shared cache
+ * - and the missCount is incremented if the object is not in either cache
 **/
 @property (nonatomic, readonly) NSUInteger localHitCount;
 @property (nonatomic, readonly) NSUInteger sharedHitCount;
 @property (nonatomic, readonly) NSUInteger missCount;
 
 /**
- * When adding objects to the cache via setObject:forKey:,
- * the evictionCount is incremented if the cache is full,
- * and the added object causes another object (the least recently used object) to be evicted.
+ * When adding objects to the cache via setObject:forKey:
+ * 
+ * - the evictionCount is incremented if the cache is full,
+ *   and the added object causes another object (the least recently used object) to be evicted.
 **/
 @property (nonatomic, readonly) NSUInteger evictionCount;
 

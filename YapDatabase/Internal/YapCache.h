@@ -1,7 +1,5 @@
 #import <Foundation/Foundation.h>
 
-@class YapThreadUnsafeCache;
-
 #define YAP_CACHE_DEBUG 0
 
 /**
@@ -23,7 +21,7 @@
  * It is designed to be used by the various YapDatabase classes, which inherently serialize access to the cache.
 **/
 
-@interface YapThreadUnsafeCache : NSObject
+@interface YapCache : NSObject
 
 /**
  * Initializes a cache.

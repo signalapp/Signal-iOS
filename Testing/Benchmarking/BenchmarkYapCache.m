@@ -74,15 +74,14 @@ static NSMutableArray *cacheSizes;
 	}
 	
 	NSTimeInterval elapsed = [start timeIntervalSinceNow] * -1.0;
-	NSLog(@"%@: elapsed = %.6f (loop=%d, cache=%d)",
-	      NSStringFromSelector(_cmd), elapsed, LOOP_COUNT, cacheSize);
+	NSLog(@"NSCache : elapsed = %.6f (loop=%d, cache=%d)", elapsed, LOOP_COUNT, cacheSize);
 }
 
 + (void)runTest2:(NSUInteger)cacheSize
 {
 	Class keyClass = [NSString class];
 	
-	YapThreadUnsafeCache *cache = [[YapThreadUnsafeCache alloc] initWithKeyClass:keyClass countLimit:cacheSize];
+	YapCache *cache = [[YapCache alloc] initWithKeyClass:keyClass countLimit:cacheSize];
 	
 	NSDate *start = [NSDate date];
 	
@@ -94,8 +93,7 @@ static NSMutableArray *cacheSizes;
 	}
 	
 	NSTimeInterval elapsed = [start timeIntervalSinceNow] * -1.0;
-	NSLog(@"%@: elapsed = %.6f (loop=%d, cache=%d)",
-	      NSStringFromSelector(_cmd), elapsed, LOOP_COUNT, cacheSize);
+	NSLog(@"YapCache: elapsed = %.6f (loop=%d, cache=%d)", elapsed, LOOP_COUNT, cacheSize);
 }
 
 + (void)runTests

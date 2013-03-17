@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import "YapSharedCache.h"
 
 @class YapAbstractDatabase;
 

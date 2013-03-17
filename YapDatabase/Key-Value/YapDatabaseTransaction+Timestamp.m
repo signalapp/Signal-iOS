@@ -258,10 +258,8 @@
 		
 		if ([metadata isKindOfClass:NSDateClass])
 		{
-			NSLog(@"Key(%@): Comparing date(%@) vs existing metadata(%@)", key, inDate, metadata);
 			if ([(NSDate *)metadata compare:inDate] == NSOrderedAscending)
 			{
-				NSLog(@"Found earlier date to remove (A): %@", key);
 				[keysToRemove addObject:key];
 			}
 		}
@@ -286,10 +284,8 @@
 		
 		if ([metadata isKindOfClass:NSDateClass])
 		{
-			NSLog(@"Key(%@): Comparing date(%@) vs existing metadata(%@)", key, inDate, metadata);
 			if ([(NSDate *)metadata compare:inDate] == NSOrderedDescending)
 			{
-				NSLog(@"Found later date to remove (A): %@", key);
 				[keysToRemove addObject:key];
 			}
 		}

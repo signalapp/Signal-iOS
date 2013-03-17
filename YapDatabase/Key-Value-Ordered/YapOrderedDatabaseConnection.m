@@ -46,7 +46,7 @@
 	
 	YapAbstractDatabase *database;
 	
-	NSTimeInterval cacheLastWriteTimestamp;
+	uint64_t snapshot;
 	
 @public
 	sqlite3 *db;
@@ -404,7 +404,7 @@
 		NSDictionary *orderChangeset = [order changeset];
 		
 		if (changeset == nil)
-			changeset = [NSMutableDictionary dictionaryWithCapacity:2]; // For "order" & "lastWriteTimestamp"
+			changeset = [NSMutableDictionary dictionaryWithCapacity:2]; // For "order" & "snapshot"
 		
 		[changeset setObject:orderChangeset forKey:@"order"];
 	}

@@ -47,7 +47,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	
 	NSMutableArray *connectionStates;
 	NSMutableArray *changesets;
-	NSTimeInterval lastWriteTimestamp;
+	uint64_t snapshot;
 	
 #if YAP_DATABASE_USE_CHECKPOINT_QUEUE
 	int walPendingPageCount;
@@ -127,29 +127,28 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 /**
  * This method is only accessible from within the snapshotQueue.
  * 
- * The lastWriteTimestamp represents the last time the database was modified by a read-write transaction.
+ * The snapshot represents when the database was last modified by a read-write transaction.
  * This information isn persisted to the 'yap' database, and is separately held in memory.
  * It serves multiple purposes.
  * 
  * First is assists in validation of a connection's cache.
  * When a connection begins a new transaction, it may have items sitting in the cache.
  * However the connection doesn't know if the items are still valid because another connection may have made changes.
- * The cache is valid if the lastWriteTimestamp hasn't changed since the connection's last transaction.
- * Otherwise the entire cache should be invalidated / flushed.
  * 
- * The lastWriteTimestamp also assists in correcting for a rare race condition.
+ * The snapshot also assists in correcting for a race condition.
  * It order to minimize blocking we allow read-write transactions to commit outside the context
  * of the snapshotQueue. This is because the commit may be a time consuming operation, and we
  * don't want to block read-only transactions during this period. The race condition occurs if a read-only
  * transactions starts in the midst of a read-write commit, and the read-only transaction gets
  * a "yap-level" snapshot that's out of sync with the "sql-level" snapshot. This is easily correctable if caught.
- * Thus we maintain the lastWriteTimestamp in memory, and fetchable via a select query.
+ * Thus we maintain the snapshot in memory, and fetchable via a select query.
  * One represents the "yap-level" snapshot, and the other represents the "sql-level" snapshot.
  *
- * The timestamp comes from the [NSProcessInfo systemUptime]. Thus it can never decrease.
- * It is reset when the YapDatabase instance is initialized, and updated by each read-write transaction.
+ * The snapshot is simply a 64-bit integer.
+ * It is reset when the YapDatabase instance is initialized,
+ * and incremented by each read-write transaction (if changes are actually made).
 **/
-- (NSTimeInterval)lastWriteTimestamp;
+- (uint64_t)snapshot;
 
 /**
  * This method is only accessible from within the snapshotQueue.
@@ -166,7 +165,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
  * 
  * The following MUST be in the dictionary:
  *
- * - lastWriteTimestamp : NSNumber double with the changeset's timestamp
+ * - snapshot : NSNumber with the changeset's snapshot
 **/
 - (void)notePendingChanges:(NSDictionary *)changeset fromConnection:(YapAbstractDatabaseConnection *)connection;
 
@@ -178,7 +177,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
  * 
  * It should fetch the changesets needed and then process them via [connection noteCommittedChanges:].
 **/
-- (NSArray *)pendingAndCommittedChangesSince:(NSTimeInterval)connectionTimestamp until:(NSTimeInterval)maxTimestamp;
+- (NSArray *)pendingAndCommittedChangesSince:(uint64_t)connectionSnapshot until:(uint64_t)maxSnapshot;
 
 /**
  * This method is only accessible from within the snapshotQueue.
@@ -188,7 +187,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
  * 
  * The following MUST be in the dictionary:
  * 
- * - lastWriteTimestamp : NSNumber double with the changeset's timestamp
+ * - snapshot : NSNumber with the changeset's snapshot
 **/
 - (void)noteCommittedChanges:(NSDictionary *)changeset fromConnection:(YapAbstractDatabaseConnection *)connection;
 
@@ -228,7 +227,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	
 	YapAbstractDatabase *database;
 	
-	NSTimeInterval cacheLastWriteTimestamp;
+	uint64_t cacheSnapshot;
 	
 @public
 	sqlite3 *db;

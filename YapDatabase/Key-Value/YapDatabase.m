@@ -64,7 +64,7 @@
 }
 
 /**
- * REQUIRED OVERRIDE METHOD
+ * Required override method from YapAbstractDatabase.
  *
  * This method is used to generate the changeset block used with YapSharedCache & YapSharedCacheConnection.
  * The given changeset comes directly from a readwrite transaction.

@@ -63,7 +63,7 @@
 	
 	YapAbstractDatabase *database;
 	
-	NSTimeInterval cacheLastWriteTimestamp;
+	uint64_t cacheSnapshot;
 	
 @public
 	sqlite3 *db;
@@ -413,7 +413,7 @@
 	if (dispatch_get_specific(IsOnConnectionQueueKey))
 		block();
 	else
-		dispatch_async(connectionQueue, block);
+		dispatch_sync(connectionQueue, block);
 }
 
 - (void)didReceiveMemoryWarning:(NSNotification *)notification
@@ -672,7 +672,7 @@
 **/
 - (void)preReadTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
-	// Pre-Read-Transaction: Step 1 of 3
+	// Pre-Read-Transaction: Step 1 of 4
 	//
 	// Execute "BEGIN TRANSACTION" on database connection.
 	// This is actually a deferred transaction, meaning the sqlite connection won't actually
@@ -686,7 +686,7 @@
 		
 	dispatch_sync(database.snapshotQueue, ^{ @autoreleasepool {
 		
-		// Pre-Read-Transaction: Step 2 of 3
+		// Pre-Read-Transaction: Step 2 of 4
 		//
 		// Update our connection state within the state table.
 		//
@@ -721,7 +721,7 @@
 			}
 		}];
 		
-		// Pre-Read-Transaction: Step 3 of 3
+		// Pre-Read-Transaction: Step 3 of 4
 		//
 		// Update our in-memory data (caches, etc) if needed.
 		
@@ -733,27 +733,28 @@
 			// Furthermore, we MUST ensure that our "yap-level" snapshot of the in-memory data (caches, etc)
 			// is in sync with our "sql-level" snapshot of the database.
 			//
-			// We can check this by comparing the connection's lastWriteTimestamp ivar with
-			// the lastWriteTimestamp read from disk (via sqlite select).
+			// We can check this by comparing the connection's cacheSnapshot ivar with
+			// the snapshot read from disk (via sqlite select).
 			//
 			// If the two match then our snapshots are in sync.
 			// If they don't then we need to get caught up by processing changesets.
 			
-			NSTimeInterval yapLastWriteTimestamp = cacheLastWriteTimestamp;
-			NSTimeInterval sqlLastWriteTimestamp = [self selectLastWriteTimestamp];
+			uint64_t yapSnapshot = cacheSnapshot;
+			uint64_t sqlSnapshot = [self readSnapshotFromDatabase];
 			
-			if (yapLastWriteTimestamp < sqlLastWriteTimestamp)
+			if (yapSnapshot < sqlSnapshot)
 			{
 				// The transaction can see the sqlite commit from another transaction,
 				// and it hasn't processed the changeset(s) yet. We need to process them now.
 				
-				NSArray *changesets = [database pendingAndCommittedChangesSince:yapLastWriteTimestamp
-				                                                          until:sqlLastWriteTimestamp];
+				NSArray *changesets = [database pendingAndCommittedChangesSince:yapSnapshot until:sqlSnapshot];
 				
 				for (NSDictionary *changeset in changesets)
 				{
 					[self noteCommittedChanges:changeset];
 				}
+				
+				NSAssert(cacheSnapshot == sqlSnapshot, @"Invalid connection state");
 			}
 			
 			myState.sqlLevelSharedReadLock = YES;
@@ -771,20 +772,21 @@
 			// able to process a changeset from a sibling connection.
 			// If this is the case then we need to get caught up by processing the changeset(s).
 			
-			NSTimeInterval localLastWriteTimestamp = cacheLastWriteTimestamp;
-			NSTimeInterval globalLastWriteTimestamp = [database lastWriteTimestamp];
+			uint64_t localSnapshot = cacheSnapshot;
+			uint64_t globalSnapshot = [database snapshot];
 			
-			if (localLastWriteTimestamp < globalLastWriteTimestamp)
+			if (localSnapshot < globalSnapshot)
 			{
 				// The transaction hasn't processed recent changeset(s) yet. We need to process them now.
 				
-				NSArray *changesets = [database pendingAndCommittedChangesSince:localLastWriteTimestamp
-				                                                          until:globalLastWriteTimestamp];
+				NSArray *changesets = [database pendingAndCommittedChangesSince:localSnapshot until:globalSnapshot];
 				
 				for (NSDictionary *changeset in changesets)
 				{
 					[self noteCommittedChanges:changeset];
 				}
+				
+				NSAssert(cacheSnapshot == globalSnapshot, @"Invalid connection state");
 			}
 			
 			myState.yapLevelSharedReadLock = YES;
@@ -792,6 +794,13 @@
 			hasMarkedSqlLevelSharedReadLock = NO;
 		}
 	}});
+	
+	// Pre-Read-Transaction: Step 4 of 4
+	//
+	// Prep caches for transaction.
+	
+	[objectCache startReadTransaction:cacheSnapshot];
+	[metadataCache startReadTransaction:cacheSnapshot];
 }
 
 /**
@@ -801,7 +810,7 @@
 **/
 - (void)postReadTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
-	// Post-Read-Transaction: Step 1 of 3
+	// Post-Read-Transaction: Step 1 of 4
 	//
 	// 1. Execute "COMMIT TRANSACTION" on database connection.
 	// If we had acquired "sql-level" shared read lock, this will release associated resources.
@@ -812,7 +821,7 @@
 	__block YapDatabaseConnectionState *writeStateToSignal = nil;
 	dispatch_sync(database.snapshotQueue, ^{ @autoreleasepool {
 		
-		// Post-Read-Transaction: Step 2 of 3
+		// Post-Read-Transaction: Step 2 of 4
 		//
 		// Update our connection state within the state table.
 		//
@@ -862,7 +871,7 @@
 		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-only transaction.", self);
 	}});
 	
-	// Post-Read-Transaction: Step 3 of 3
+	// Post-Read-Transaction: Step 3 of 4
 	//
 	// If we discovered a blocked write transaction,
 	// and it was blocked waiting on us (because we had a "yap-level" snapshot without an "sql-level" snapshot),
@@ -876,6 +885,13 @@
 		
 		[writeStateToSignal signalWriteLock];
 	}
+	
+	// Post-Read-Transaction: Step 3 of 4
+	//
+	// Deprep caches.
+	
+	[objectCache endTransaction];
+	[metadataCache endTransaction];
 }
 
 /**
@@ -886,7 +902,7 @@
 **/
 - (void)preReadWriteTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
-	// Pre-Write-Transaction: Step 1 of 3
+	// Pre-Write-Transaction: Step 1 of 4
 	//
 	// Execute "BEGIN TRANSACTION" on database connection.
 	// This is actually a deferred transaction, meaning the sqlite connection won't actually
@@ -905,7 +921,7 @@
 	
 	dispatch_sync(database.snapshotQueue, ^{ @autoreleasepool {
 		
-		// Pre-Write-Transaction: Step 2 of 3
+		// Pre-Write-Transaction: Step 2 of 4
 		//
 		// Update our connection state within the state table.
 		//
@@ -920,28 +936,34 @@
 			}
 		}];
 		
-		// Pre-Write-Transaction: Step 3 of 3
+		// Pre-Write-Transaction: Step 3 of 4
 		//
-		// Validate our caches based on lastWriteTimestamp
+		// Validate our caches based on snapshot numbers
 		
-		NSTimeInterval localLastWriteTimestamp = cacheLastWriteTimestamp;
-		NSTimeInterval globalLastWriteTimestamp = [database lastWriteTimestamp];
+		uint64_t localSnapshot = cacheSnapshot;
+		uint64_t globalSnapshot = [database snapshot];
 		
-		if (localLastWriteTimestamp < globalLastWriteTimestamp)
+		if (localSnapshot < globalSnapshot)
 		{
-			NSArray *changesets = [database pendingAndCommittedChangesSince:localLastWriteTimestamp
-			                                                          until:globalLastWriteTimestamp];
+			NSArray *changesets = [database pendingAndCommittedChangesSince:localSnapshot until:globalSnapshot];
 			
 			for (NSDictionary *changeset in changesets)
 			{
 				[self noteCommittedChanges:changeset];
 			}
 			
-			NSAssert(cacheLastWriteTimestamp == globalLastWriteTimestamp, @"Invalid connection state");
+			NSAssert(cacheSnapshot == globalSnapshot, @"Invalid connection state");
 		}
 		
 		YDBLogVerbose(@"YapDatabaseConnection(%p) starting read-write transaction.", self);
 	}});
+	
+	// Pre-Write-Transaction: Step 4 of 4
+	
+	int (^cacheChangesetBlock)(id key) = [self cacheChangesetBlock];
+	
+	[objectCache startReadWriteTransaction:(cacheSnapshot + 1) withChangesetBlock:cacheChangesetBlock];
+	[metadataCache startReadWriteTransaction:(cacheSnapshot + 1) withChangesetBlock:cacheChangesetBlock];
 }
 
 /**
@@ -952,20 +974,20 @@
 **/
 - (void)postReadWriteTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
-	// Post-Write-Transaction: Step 1 of 6
+	// Post-Write-Transaction: Step 1 of 7
 	//
-	// Update the lastWriteTimestamp in the 'yap' database (if any changes were made).
+	// Update the snapshot in the 'yap' database (if any changes were made).
 	// We use this to check for a race condition.
 	
 	NSMutableDictionary *changeset = [self changeset];
 	if (changeset)
 	{
-		cacheLastWriteTimestamp = [self updateLastWriteTimestamp];
+		cacheSnapshot = [self incrementSnapshotInDatabase];
 		
-		[changeset setObject:@(cacheLastWriteTimestamp) forKey:@"lastWriteTimestamp"];
+		[changeset setObject:@(cacheSnapshot) forKey:@"snapshot"];
 	}
 	
-	// Post-Write-Transaction: Step 2 of 6
+	// Post-Write-Transaction: Step 2 of 7
 	//
 	// Check to see if it's safe to commit our changes.
 	//
@@ -1015,7 +1037,7 @@
 				myState.waitingForWriteLock = NO;
 				safeToCommit = YES;
 				
-				// Post-Write-Transaction: Step 3 of 6
+				// Post-Write-Transaction: Step 3 of 7
 				//
 				// Register pending changeset with database.
 				// Our commit is actually a two step process.
@@ -1026,7 +1048,8 @@
 				// where another connection could come around and begin its yap level transaction
 				// before this connections yap level commit, but after this connections sqlite level commit.
 				//
-				// By registering the pending changeset in advance, we provide a near seamless workaround for the edge case.
+				// By registering the pending changeset in advance,
+				// we provide a near seamless workaround for the edge case.
 				
 				if (changeset)
 				{
@@ -1053,7 +1076,7 @@
 		
 	} while (!safeToCommit);
 	
-	// Post-Write-Transaction: Step 4 of 6
+	// Post-Write-Transaction: Step 4 of 7
 	//
 	// Execute "COMMIT TRANSACTION" on database connection.
 	// This will write the changes to the WAL, and may invoke a checkpoint.
@@ -1076,7 +1099,7 @@
 	
 	dispatch_sync(database.snapshotQueue, ^{ @autoreleasepool {
 		
-		// Post-Write-Transaction: Step 5 of 6
+		// Post-Write-Transaction: Step 5 of 7
 		//
 		// Notify database of changes, and drop reference to set of changed keys.
 		
@@ -1085,7 +1108,7 @@
 			[database noteCommittedChanges:changeset fromConnection:self];
 		}
 		
-		// Post-Write-Transaction: Step 6 of 6
+		// Post-Write-Transaction: Step 6 of 7
 		//
 		// Update our connection state within the state table.
 		//
@@ -1097,6 +1120,13 @@
 		
 		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-write transaction.", self);
 	}});
+	
+	// Post-Write-Transaction: Step 7 of 7
+	//
+	// Deprep caches.
+	
+	[objectCache endTransaction];
+	[metadataCache endTransaction];
 }
 
 /**
@@ -1110,16 +1140,16 @@
  * Second, it reads a specific value from the database, and tells us which commit record in the WAL its using.
  * This allows us to validate the transaction, and check for a particular race condition.
 **/
-- (NSTimeInterval)selectLastWriteTimestamp
+- (uint64_t)readSnapshotFromDatabase
 {
 	sqlite3_stmt *statement = [self yapGetDataForKeyStatement];
 	if (statement == NULL) return 0.0;
 	
-	NSTimeInterval result = 0.0;
+	uint64_t result = 0;
 	
 	// SELECT data FROM 'yap' WHERE key = ? ;
 	
-	char *key = "lastWriteTimestamp";
+	char *key = "snapshot";
 	sqlite3_bind_text(statement, 1, key, strlen(key), SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
@@ -1128,12 +1158,12 @@
 		const void *blob = sqlite3_column_blob(statement, 0);
 		int blobSize = sqlite3_column_bytes(statement, 0);
 		
-		if (blobSize >= sizeof(double))
+		if (blobSize >= sizeof(uint64_t))
 		{
 			NSData *data = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
 			NSNumber *number = [NSKeyedUnarchiver unarchiveObjectWithData:data];
 			
-			result = [number doubleValue];
+			result = [number unsignedLongLongValue];
 		}
 		else
 		{
@@ -1155,20 +1185,20 @@
 }
 
 /**
- * This method updates the 'lastWriteTimestamp' row in the database.
+ * This method updates the 'snapshot' row in the database.
 **/
-- (NSTimeInterval)updateLastWriteTimestamp
+- (uint64_t)incrementSnapshotInDatabase
 {
-	NSTimeInterval newLastWriteTimestamp = [[NSProcessInfo processInfo] systemUptime];
+	uint64_t newSnapshot = cacheSnapshot + 1;
 	
 	sqlite3_stmt *statement = [self yapSetDataForKeyStatement];
-	if (statement == NULL) return newLastWriteTimestamp;
+	if (statement == NULL) return newSnapshot;
 	
-	NSNumber *number = [NSNumber numberWithDouble:newLastWriteTimestamp];
+	NSNumber *number = [NSNumber numberWithUnsignedLongLong:newSnapshot];
 	
 	// INSERT OR REPLACE INTO "yap" ("key", "data") VALUES (?, ?);
 	
-	char *key = "lastWriteTimestamp";
+	char *key = "snapshot";
 	sqlite3_bind_text(statement, 1, key, strlen(key), SQLITE_STATIC);
 	
 	__attribute__((objc_precise_lifetime)) NSData *data = [NSKeyedArchiver archivedDataWithRootObject:number];
@@ -1184,7 +1214,7 @@
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
 	
-	return newLastWriteTimestamp;
+	return newSnapshot;
 }
 
 - (void)markSqlLevelSharedReadLockAcquired
@@ -1267,6 +1297,24 @@
 }
 
 /**
+ * REQUIRED OVERRIDE HOOK.
+ * 
+ * This method is invoked from within the preReadWriteTransaction operation.
+ * It is used to generate the changesetBlock to be passed to objectCache & metadataCache.
+ * 
+ * The output block should return one of the following:
+ *
+ *  0 if the key/value pair is unchanged (this transaction).
+ * -1 if the key/value pair is deleted (this transaction).
+ * +1 if the key/value pair was modified (this transaction).
+**/
+- (int (^)(id key))cacheChangesetBlock
+{
+	NSAssert(NO, @"Missing required override method in subclass");
+	return nil;
+}
+
+/**
  * Optional override hook.
  * You should likely invoke [super noteCommittedChanges:changeset] if you do.
  *
@@ -1284,12 +1332,12 @@
 {
 	NSAssert(dispatch_get_specific(IsOnConnectionQueueKey), @"Method must be invoked on connectionQueue");
 	
-	// Grab the new lastWriteTimestamp.
-	// This tells us the minimum lastWriteTimestamp we could get if we started a transaction right now.
+	// Grab the new snapshot.
+	// This tells us the minimum snapshot we could get if we started a transaction right now.
 	
-	NSTimeInterval newCacheLastWriteTimestamp = [[changeset objectForKey:@"lastWriteTimestamp"] doubleValue];
+	uint64_t changesetSnapshot = [[changeset objectForKey:@"snapshot"] unsignedLongLongValue];
 	
-	if (newCacheLastWriteTimestamp <= cacheLastWriteTimestamp)
+	if (changesetSnapshot <= cacheSnapshot)
 	{
 		// We already noted this changeset.
 		//
@@ -1309,6 +1357,8 @@
 		return;
 	}
 	
+	cacheSnapshot = changesetSnapshot;
+	
 	// Update the caches.
 	// 
 	// Each cache will iterate over its local list of keys, and invoke our changeset_block.
@@ -1317,17 +1367,17 @@
 	// If our changeset_block returns +1, the cache will update its cached value for that key from the shared cache.
 	//
 	// If a cached value is updated from the shared cache,
-	// it will used the cacheLastWriteTimestamp to fetch the proper value.
+	// it will use the cacheSnapshot to fetch the proper updated value.
 	//
-	// Recall that the shared cache stores multiple values per key, based on timestamp.
-	// The timestamps allow concurrency while maintaining the atomic nature of the database transaction.
+	// Recall that the shared cache stores multiple values per key, based on snapshot.
+	// The snapshots allow concurrency while maintaining the atomic nature of the database transaction.
 	// Thus an active readwrite connection can be making changes to the shared cache
 	// while a readonly connection continues using the shared cache for its current transaction.
 	
-	int (^changeset_block)(id key) = [database cacheChangesetBlockFromChanges:changeset];
+	int (^changesetBlock)(id key) = [database cacheChangesetBlockFromChanges:changeset];
 	
-	[objectCache noteCommittedChangesetBlock:changeset_block writeTimestamp:cacheLastWriteTimestamp];
-	[metadataCache noteCommittedChangesetBlock:changeset_block writeTimestamp:cacheLastWriteTimestamp];
+	[objectCache noteCommittedChangesetBlock:changesetBlock snapshot:changesetSnapshot];
+	[metadataCache noteCommittedChangesetBlock:changesetBlock snapshot:changesetSnapshot];
 }
 
 @end

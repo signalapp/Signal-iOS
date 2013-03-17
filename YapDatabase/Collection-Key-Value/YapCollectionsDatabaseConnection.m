@@ -55,7 +55,7 @@
 	
 	YapAbstractDatabase *database;
 	
-	NSTimeInterval cacheLastWriteTimestamp;
+	uint64_t cacheSnapshot;
 	
 @public
 	sqlite3 *db;
@@ -576,22 +576,6 @@
 }
 
 /**
- * We override this method to ensure our changeset variables are prepared for use.
-**/
-- (void)preReadWriteTransaction:(YapAbstractDatabaseTransaction *)transaction
-{
-	[super preReadWriteTransaction:transaction];
-	
-	if (changedKeys == nil) {
-		changedKeys = [[NSMutableSet alloc] init];
-	}
-	if (resetCollections == nil) {
-		resetCollections = [[NSMutableSet alloc] init];
-	}
-	allKeysRemoved = NO;
-}
-
-/**
  * We override this method to reset our changeset variables.
 **/
 - (void)postReadWriteTransaction:(YapAbstractDatabaseTransaction *)transaction
@@ -603,7 +587,7 @@
 }
 
 /**
- * Required method.
+ * Required override method from YapAbstractDatabaseConnection.
  * 
  * This method is invoked from within the postReadWriteTransaction operations.
  * This method is invoked before anything has been committed.
@@ -634,6 +618,58 @@
 	{
 		return nil;
 	}
+}
+
+/**
+ * Required override method from YapAbstractDatabaseConnection.
+ *
+ * This method is invoked from within the preReadWriteTransaction operation.
+ * It is used to generate the changesetBlock to be passed to objectCache & metadataCache.
+ *
+ * The output block should return one of the following:
+ *
+ *  0 if the key/value pair is unchanged (this transaction).
+ * -1 if the key/value pair is deleted (this transaction).
+ * +1 if the key/value pair was modified (this transaction).
+ **/
+- (int (^)(id key))cacheChangesetBlock
+{
+	if (changedKeys == nil) {
+		changedKeys = [[NSMutableSet alloc] init];
+	}
+	if (resetCollections == nil) {
+		resetCollections = [[NSMutableSet alloc] init];
+	}
+	allKeysRemoved = NO;
+	
+	return ^int (id key){
+		
+		YapCacheCollectionKey *cacheKey = (YapCacheCollectionKey *)key;
+		
+		// Order matters.
+		// Imagine the following scenario:
+		//
+		// A database transaction removes all items from the database.
+		// Then it adds a single key/value pair.
+		//
+		// In this case, the proper return value for the single added key is 1 (modified).
+		// The proper return value for all other keys is -1 (deleted).
+		
+		if ([changedKeys containsObject:cacheKey])
+		{
+			return 1; // Collection/Key/value pair was modified
+		}
+		if ([resetCollections containsObject:cacheKey.collection])
+		{
+			return -1; // Collection/Key/value pair was deleted
+		}
+		if (allKeysRemoved)
+		{
+			return -1; // Collection/Key/value pair was deleted
+		}
+		
+		return 0; // Collection/Key/value pair wasn't modified
+	};
 }
 
 @end

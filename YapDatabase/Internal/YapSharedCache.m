@@ -56,9 +56,9 @@
  *
  * This presents a unique property of the cache:
  * - the cache may store multiple values for a single key.
- * - the stored values are associated with a timestamp (which represents the last time the db was modified)
+ * - the stored values are associated with a snapshot (which represents the last time the db was modified)
  * 
- * This class represents a single stored value and its associated timestamp.
+ * This class represents a single stored value and its associated snapshot.
  * It is one value contained within a linked-list of possibly multiple values for the same key.
  * The linked-list remains sorted, with the most recent value at the front of the linked-list.
 **/
@@ -66,7 +66,7 @@
 @public
 	YapSharedCacheValue *olderValue;
 	
-	NSTimeInterval lastWriteTimestamp;
+	uint64_t snapshot;
 	id object;
 }
 
@@ -90,46 +90,50 @@
 }
 
 /**
- * Create a new shared cache item with the given object and timestamp.
-**/
-- (id)initWithObject:(id)object timestamp:(NSTimeInterval)lastWriteTimestamp;
-
-/**
+ * Create a new shared cache item with the given object and snapshot.
+ * It then inserts placeholders (if needed) for any changes to this object that have occurred after the given snapshot.
+ *
+ * The recentChanges parameter should come from [YapSharedCache pendingAndCommittedChangesetBlocksAndSnapshotsSince:].
+ * 
  * Older connections (those viewing an older snapshot of the database)
  * are still able to add objects to the shared cache. But it's important that newer connections don't use
  * potentially stale data from the older connections. Thus the changeset information is required when a new value
  * is added to the shared cache. The changeset info is inspected, and if the value changes in the future,
  * then proper placeholders are added for the change.
 **/
-- (void)updateWithRecentChangesetBlocksAndTimestamps:(NSArray *)recentChanges forKey:(id)key;
+- (id)initWithObject:(id)object snapshot:(uint64_t)snapshot andRecentChanges:(NSArray *)recentChanges forKey:(id)key;
 
 /**
- * Adds/sets the value corresponding to the given timestamp.
- * The value will only be readable by other connections with a timestamp greater-than or equal to the given timestamp.
- * This method does not delete older values associated with older timestamps.
+ * Adds/sets the value corresponding to the given snapshot.
+ * The value will only be readable by other connections with a snapshot greater-than or equal to the given snapshot.
+ * This method does not delete older values associated with older snapshots.
  *
  * A YapSharedCacheItem must only be updated from withing YapSharedCache->shared_queue.
 **/
-- (void)setObject:(id)object forTimestamp:(NSTimeInterval)lastWriteTimestamp;
+- (void)setObject:(id)object forSnapshot:(uint64_t)snapshot;
 
 /**
- * Returns the most recently set value associated with a timestamp less-than or equal to the given timestamp.
+ * Returns the most recently set value associated with a snapshot less-than or equal to the given snapshot.
  * 
  * A YapSharedCacheItem must only be updated from withing YapSharedCache->shared_queue.
 **/
-- (id)objectForTimestamp:(NSTimeInterval)lastWriteTimestamp;
+- (id)objectForSnapshot:(uint64_t)snapshot;
 
 /**
- * - If the most recent YapSharedCacheValue has a timestamp equal to the given timestamp, does nothing.
- * - If the most recent YapSharedCacheValue has a timestamp less than the given timestamp,
- *   then adds a new YapSharedCacheValue with a nil object,
+ * - If the most recent YapSharedCacheValue has a snapshot equal to the given snapshot, does nothing.
+ * - If the most recent YapSharedCacheValue has a snapshot less than the given snapshot,
+ *   then adds a new YapSharedCacheValue with a nil object.
+ * 
+ * A YapSharedCacheItem must only be updated from withing YapSharedCache->shared_queue.
 **/
-- (void)markUpdatedForTimestamp:(NSTimeInterval)updatedLastWriteTimestamp;
+- (void)markUpdatedForSnapshot:(uint64_t)snapshot;
 
 /**
- * Deletes values associated with timestamps less than the given minimum.
+ * Deletes values associated with snapshots less than the given minimum.
+ * 
+ * A YapSharedCacheItem must only be updated from withing YapSharedCache->shared_queue.
 **/
-- (void)cleanWithMinTimestamp:(NSTimeInterval)minLastWriteTimestamp;
+- (void)cleanWithMinSnapshot:(uint64_t)minSnapshot;
 
 @end
 
@@ -166,7 +170,7 @@
 
 @interface YapSharedCache () {
 @private
-	NSMutableArray *changesetBlocksAndTimestamps;
+	NSMutableArray *changesetBlocksAndSnapshots;
 	
 @public
 	Class keyClass;
@@ -175,7 +179,7 @@
 	CFMutableDictionaryRef shared_cfdict;
 }
 
-- (NSArray *)pendingAndCommittedChangesetBlocksAndTimestampsSince:(NSTimeInterval)writeTimestamp;
+- (NSArray *)pendingAndCommittedChangesetBlocksAndSnapshotsSince:(uint64_t)snapshot;
 
 @end
 
@@ -187,7 +191,7 @@
 	__strong YapSharedCache *parent;
 	NSUInteger countLimit;
 	
-	NSTimeInterval timestamp;
+	uint64_t snapshot;
 	
 	int (^changesetBlock)(id key);
 	
@@ -199,6 +203,13 @@
 	__unsafe_unretained YapLocalCacheItem *leastRecentCacheItem;
 	
 	__strong YapLocalCacheItem *evictedCacheItem;
+	
+#if YAP_CACHE_DEBUG
+	NSUInteger localHitCount;
+	NSUInteger sharedHitCount;
+	NSUInteger missCount;
+	NSUInteger evictionCount;
+#endif
 }
 
 - (id)initWithParent:(YapSharedCache *)parent;
@@ -225,7 +236,7 @@
 		else
 			keyClass = inKeyClass;
 		
-		changesetBlocksAndTimestamps = [[NSMutableArray alloc] init];
+		changesetBlocksAndSnapshots = [[NSMutableArray alloc] init];
 		
 		// Multiple concurrent readers, single atomic writer
 		shared_queue = dispatch_queue_create("YapSharedCache", DISPATCH_QUEUE_CONCURRENT);
@@ -255,6 +266,11 @@
 	
 	dispatch_sync(shared_queue, ^{
 		
+		// Concurrent access to shared_queue:
+		//
+		// We can read from shared_dict and from shared_item(s), but we cannot make modifications.
+		// If we increment ownerCount, it must be done atomically.
+		
 		count = (NSUInteger)CFDictionaryGetCount(shared_cfdict);
 	});
 	
@@ -273,7 +289,7 @@
  * The changeset block is retained until noteCommittedChangesetBlock:: is invoked.
 **/
 - (void)notePendingChangesetBlock:(int (^)(id key))changesetBlock
-                   writeTimestamp:(NSTimeInterval)writeTimestamp
+                         snapshot:(uint64_t)snapshot
 {
 	// This method is invoked from (stack trace):
 	//
@@ -290,15 +306,20 @@
 	
 	dispatch_barrier_async(shared_queue, ^{
 		
+		// Serial access to shared_queue:
+		//
+		// We can freely modify shared_dict and shared_item(s).
+		// Shared_items should only be removed if ownerCount drops to zero.
+		
 		// And to list of changesets (will be removed once committed)
 		
-		NSArray *changesetAndTimestampPair = @[ changesetBlock, @(writeTimestamp) ];
-		[changesetBlocksAndTimestamps addObject:changesetAndTimestampPair];
+		NSArray *changesetAndSnapshotPair = @[ changesetBlock, @(snapshot) ];
+		[changesetBlocksAndSnapshots addObject:changesetAndSnapshotPair];
 		
 		// Update shared dictionary, which allows multiple values per key.
 		//
 		// Each database key points to a YapSharedCacheItem.
-		// Each YapSharedCacheItem contains a linked list of YapSharedCacheValue's, ordered by timestamp.
+		// Each YapSharedCacheItem contains a linked list of YapSharedCacheValue's, ordered descending by snapshot.
 		
 		NSDictionary *shared_nsdict = (__bridge NSDictionary *)shared_cfdict;
 		
@@ -309,33 +330,33 @@
 			{
 				// Object was deleted or modified during transaction.
 				//
-				// We use a method that checks for a corresponding YapSharedCacheValue with the writeTimestamp.
+				// We use a method that checks for a corresponding YapSharedCacheValue with the snapshot.
 				// If the value exists, the value is left alone.
 				// Otherwise a placeholder value (with object == nil) is inserted.
 				
 				__unsafe_unretained YapSharedCacheItem *sharedItem = (YapSharedCacheItem *)obj;
 				
-				[sharedItem markUpdatedForTimestamp:writeTimestamp];
+				[sharedItem markUpdatedForSnapshot:snapshot];
 			}
 		}];
 	});
 }
 
 /**
- * Returns recent changesetBlocks (and associated timestamps) since the given timestamp.
+ * Returns recent changesetBlocks (and associated snapshots) since the given snapshot.
  * These changesets should be consulted when adding new YapSharedCacheItem's to the shared cache.
 **/
-- (NSArray *)pendingAndCommittedChangesetBlocksAndTimestampsSince:(NSTimeInterval)writeTimestamp
+- (NSArray *)pendingAndCommittedChangesetBlocksAndSnapshotsSince:(uint64_t)snapshot
 {
-	NSMutableArray *relevantItems = [NSMutableArray arrayWithCapacity:[changesetBlocksAndTimestamps count]];
+	NSMutableArray *relevantItems = [NSMutableArray arrayWithCapacity:[changesetBlocksAndSnapshots count]];
 	
-	for (NSArray *changesetAndTimestampPair in changesetBlocksAndTimestamps)
+	for (NSArray *changesetAndSnapshotPair in changesetBlocksAndSnapshots)
 	{
-		NSTimeInterval changesetWriteTimestamp = [[changesetAndTimestampPair objectAtIndex:1] doubleValue];
+		uint64_t changesetSnapshot = [[changesetAndSnapshotPair objectAtIndex:1] unsignedLongLongValue];
 		
-		if (changesetWriteTimestamp > writeTimestamp)
+		if (changesetSnapshot > snapshot)
 		{
-			[relevantItems addObject:changesetAndTimestampPair];
+			[relevantItems addObject:changesetAndSnapshotPair];
 		}
 	}
 	
@@ -343,13 +364,18 @@
 }
 
 - (void)noteCommittedChangesetBlock:(int (^)(id key))changesetBlock
-                     writeTimestamp:(NSTimeInterval)writeTimestamp
+                           snapshot:(uint64_t)snapshot
 {
 	dispatch_barrier_async(shared_queue, ^{
 		
+		// Serial access to shared_queue:
+		//
+		// We can freely modify shared_dict and shared_item(s).
+		// Shared_items should only be removed if ownerCount drops to zero.
+		
 		// Remove from list of changesets (was added in notePendingChangesetBlock::)
 		
-		[changesetBlocksAndTimestamps removeObjectAtIndex:0];
+		[changesetBlocksAndSnapshots removeObjectAtIndex:0];
 		
 		// Clean the shared dictionary by deleting stale YapSharedCacheValue's.
 		
@@ -366,7 +392,7 @@
 				
 				__unsafe_unretained YapSharedCacheItem *sharedItem = (YapSharedCacheItem *)obj;
 				
-				[sharedItem cleanWithMinTimestamp:writeTimestamp];
+				[sharedItem cleanWithMinSnapshot:snapshot];
 			}
 		}];
 	});
@@ -405,36 +431,38 @@
 
 #pragma mark Transaction State
 
-- (void)startReadTransaction:(NSTimeInterval)inTimestamp
+- (void)startReadTransaction:(uint64_t)inSnapshot
 {
-	NSAssert(timestamp == 0.0, @"Transaction already in progress");
-	
 	isReadWriteTransaction = NO;
-	timestamp = inTimestamp;
+	snapshot = inSnapshot;
 }
 
-- (void)startReadWriteTransaction:(NSTimeInterval)inNewTimestamp
-                   changesetBlock:(int (^)(id key))inChangesetBlock
+- (void)startReadWriteTransaction:(uint64_t)inSnapshot
+               withChangesetBlock:(int (^)(id key))inChangesetBlock
 {
-	NSAssert(timestamp == 0.0, @"Transaction already in progress");
-	
 	isReadWriteTransaction = YES;
-	timestamp = inNewTimestamp;
+	snapshot = inSnapshot;
 	changesetBlock = inChangesetBlock;
 }
 
 - (void)endTransaction
 {
-	NSAssert(timestamp != 0.0, @"There is no transaction in progress");
-	
 	isReadWriteTransaction = NO;
-	timestamp = 0.0;
+	snapshot = 0;
+	changesetBlock = NULL;
 }
 
 #pragma mark Properties & Count
 
 @synthesize sharedCache = parent;
 @synthesize countLimit = countLimit;
+
+#if YAP_CACHE_DEBUG
+@synthesize localHitCount = localHitCount;
+@synthesize sharedHitCount = sharedHitCount;
+@synthesize missCount = missCount;
+@synthesize evictionCount = evictionCount;
+#endif
 
 - (void)setCountLimit:(NSUInteger)newCountLimit
 {
@@ -455,12 +483,12 @@
 			return;
 		}
 		
-		NSUInteger evictionCount = localCount - countLimit;
+		NSUInteger evictCount = localCount - countLimit;
 		
-		NSMutableArray *evictedKeys = [NSMutableArray arrayWithCapacity:evictionCount];
-		NSMutableArray *evictedSharedItems = [NSMutableArray arrayWithCapacity:evictionCount];
+		NSMutableArray *evictedKeys = [NSMutableArray arrayWithCapacity:evictCount];
+		NSMutableArray *evictedSharedItems = [NSMutableArray arrayWithCapacity:evictCount];
 		
-		for (NSUInteger i = 0; i < evictionCount; i++)
+		for (NSUInteger i = 0; i < evictCount; i++)
 		{
 			[evictedKeys addObject:leastRecentCacheItem->key];
 			[evictedSharedItems addObject:leastRecentCacheItem->shared_item];
@@ -477,18 +505,27 @@
 			evictedCacheItem->key = nil;
 			evictedCacheItem->object = nil;
 			evictedCacheItem->shared_item = nil;
+			
+			#if YAP_CACHE_DEBUG
+			evictionCount++;
+			#endif
 		}
 		
 		dispatch_barrier_async(parent->shared_queue, ^{
 			
-			for (NSUInteger i = 0; i < evictionCount; i++)
+			// Serial access to shared_queue:
+			//
+			// We can freely modify shared_dict and shared_item(s).
+			// Shared_items should only be removed if ownerCount drops to zero.
+			
+			for (NSUInteger i = 0; i < evictCount; i++)
 			{
 				YapSharedCacheItem *evictedSharedItem = [evictedSharedItems objectAtIndex:i];
-					
-				if (evictedSharedItem->ownerCount == 1)
-					CFDictionaryRemoveValue(parent->shared_cfdict, (const void *)[evictedKeys objectAtIndex:i]);
-				else
+				
+				if (evictedSharedItem->ownerCount > 1)
 					evictedSharedItem->ownerCount--;
+				else
+					CFDictionaryRemoveValue(parent->shared_cfdict, (const void *)[evictedKeys objectAtIndex:i]);
 			}
 		});
 	}
@@ -503,7 +540,6 @@
 
 - (id)objectForKey:(id)key
 {
-	NSAssert(timestamp > 0.0, @"Must be in a transaction.");
 	NSAssert([key isKindOfClass:parent->keyClass],
 	         @"Unexpected key class. Expected %@, passed %@", parent->keyClass, [key class]);
 	
@@ -541,6 +577,10 @@
 			mostRecentCacheItem = localItem;
 		}
 		
+		#if YAP_CACHE_DEBUG
+		localHitCount++;
+		#endif
+		
 		return localItem->object;
 	}
 	else
@@ -555,6 +595,10 @@
 				// The value for this key has been deleted or modified during this transaction.
 				// Ignore any previous values in shared cache.
 				
+				#if YAP_CACHE_DEBUG
+				missCount++;
+				#endif
+				
 				return nil;
 			}
 		}
@@ -566,27 +610,39 @@
 		
 		dispatch_sync(parent->shared_queue, ^{
 			
+			// Concurrent access to shared_queue:
+			//
+			// We can read from shared_dict and from shared_item(s), but we cannot make modifications.
+			// If we increment ownerCount, it must be done atomically.
+			
 			sharedItem = CFDictionaryGetValue(parent->shared_cfdict, (const void *)key);
 			if (sharedItem)
 			{
 				// An associated item exists in the master cache.
-				// However, this doesn't necessarily mean it contains an appropriate object for our timestamp.
-				// For example, it may contain an object for a future timestamp.
+				// However, this doesn't necessarily mean it contains an appropriate object for our snapstho.
+				// For example, it may contain an object for a future snapshot.
 				// Or it may be empty (with a modified/deleted "flag").
 				//
 				// We only care about the item if it has an object for us.
 				// Otherwise we don't want to become an owner / add it to our local cache.
 				
-				object = [sharedItem objectForTimestamp:timestamp];
+				object = [sharedItem objectForSnapshot:snapshot];
 				if (object)
 				{
-					sharedItem->ownerCount++;
+					// We're concurrently (within a concurrent queue without a barrier),
+					// so we need to maintain thread safety.
+					
+					OSAtomicIncrement32(&(sharedItem->ownerCount));
 				}
 			}
 		});
 		
 		if (sharedItem && object)
 		{
+			#if YAP_CACHE_DEBUG
+			sharedHitCount++;
+			#endif
+			
 			// Create new item (or recycle old evicted item) and add to local cache
 			
 			if (evictedCacheItem)
@@ -645,10 +701,15 @@
 				
 				dispatch_barrier_async(parent->shared_queue, ^{
 					
-					if (evictedSharedItem->ownerCount == 1)
-						CFDictionaryRemoveValue(parent->shared_cfdict, (const void *)evictedKey);
-					else
+					// Serial access to shared_queue:
+					//
+					// We can freely modify shared_dict and shared_item(s).
+					// Shared_items should only be removed if ownerCount drops to zero.
+					
+					if (evictedSharedItem->ownerCount > 1)
 						evictedSharedItem->ownerCount--;
+					else
+						CFDictionaryRemoveValue(parent->shared_cfdict, (const void *)evictedKey);
 				});
 			}
 			else
@@ -664,6 +725,10 @@
 		}
 		else
 		{
+			#if YAP_CACHE_DEBUG
+			missCount++;
+			#endif
+			
 			return nil;
 		}
 	}
@@ -671,19 +736,27 @@
 
 - (void)setObject:(id)object forKey:(id)key
 {
-	NSAssert(timestamp > 0.0, @"Must be in a transaction.");
 	NSAssert([key isKindOfClass:parent->keyClass],
 	         @"Unexpected key class. Expected %@, passed %@", parent->keyClass, [key class]);
 	
 	YapLocalCacheItem *localItem = CFDictionaryGetValue(local_cfdict, (const void *)key);
 	if (localItem)
 	{
-		// Add the updated object to the sharedItem.
-		// The object is tied to the timestamp, so older connections will ignore it.
+		// Update the local value
+		
+		localItem->object = object;
+		
+		// Update the shared value.
+		// The shared value is tied to the snapshot, so older connections will ignore it.
 		
 		dispatch_barrier_sync(parent->shared_queue, ^{
 			
-			[localItem->shared_item setObject:object forTimestamp:timestamp];
+			// Serial access to shared_queue:
+			//
+			// We can freely modify shared_dict and shared_item(s).
+			// Shared_items should only be removed if ownerCount drops to zero.
+			
+			[localItem->shared_item setObject:object forSnapshot:snapshot];
 		});
 		
 		// Since we accessed the item, move it to the front of our access list
@@ -725,20 +798,27 @@
 		
 		dispatch_barrier_sync(parent->shared_queue, ^{
 			
+			// Serial access to shared_queue:
+			//
+			// We can freely modify shared_dict and shared_item(s).
+			// Shared_items should only be removed if ownerCount drops to zero.
+			
 			sharedItem = CFDictionaryGetValue(parent->shared_cfdict, (const void *)key);
 			
 			if (sharedItem)
 			{
-				[sharedItem setObject:object forTimestamp:timestamp];
+				sharedItem->ownerCount++;
+				[sharedItem setObject:object forSnapshot:snapshot];
 			}
 			else
 			{
-				sharedItem = [[YapSharedCacheItem alloc] initWithObject:object timestamp:timestamp];
-				
 				NSArray *recentChanges =
-				    [parent pendingAndCommittedChangesetBlocksAndTimestampsSince:timestamp];
+				    [parent pendingAndCommittedChangesetBlocksAndSnapshotsSince:snapshot];
 				
-				[sharedItem updateWithRecentChangesetBlocksAndTimestamps:recentChanges forKey:key];
+				sharedItem = [[YapSharedCacheItem alloc] initWithObject:object
+				                                               snapshot:snapshot
+				                                       andRecentChanges:recentChanges
+				                                                 forKey:key];
 				
 				CFDictionarySetValue(parent->shared_cfdict, (const void *)key, (const void *)sharedItem);
 			}
@@ -802,6 +882,11 @@
 			
 			dispatch_barrier_async(parent->shared_queue, ^{
 				
+				// Serial access to shared_queue:
+				//
+				// We can freely modify shared_dict and shared_item(s).
+				// Shared_items should only be removed if ownerCount drops to zero.
+				
 				if (evictedSharedItem->ownerCount > 1)
 					evictedSharedItem->ownerCount--;
 				else
@@ -844,6 +929,11 @@
 		CFDictionaryRemoveValue(local_cfdict, (const void *)key);
 		
 		dispatch_barrier_async(parent->shared_queue, ^{
+			
+			// Serial access to shared_queue:
+			//
+			// We can freely modify shared_dict and shared_item(s).
+			// Shared_items should only be removed if ownerCount drops to zero.
 			
 			YapSharedCacheItem *sharedItem = CFDictionaryGetValue(parent->shared_cfdict, (const void *)key);
 			if (sharedItem)
@@ -891,6 +981,11 @@
 	
 	dispatch_barrier_async(parent->shared_queue, ^{
 		
+		// Serial access to shared_queue:
+		//
+		// We can freely modify shared_dict and shared_item(s).
+		// Shared_items should only be removed if ownerCount drops to zero.
+		
 		for (id key in removedLocalKeys) // Only remove keys which were removed locally
 		{
 			YapSharedCacheItem *sharedItem = CFDictionaryGetValue(parent->shared_cfdict, (const void *)key);
@@ -917,15 +1012,20 @@
 	
 	dispatch_barrier_async(parent->shared_queue, ^{
 		
+		// Serial access to shared_queue:
+		//
+		// We can freely modify shared_dict and shared_item(s).
+		// Shared_items should only be removed if ownerCount drops to zero.
+		
 		for (id key in removedLocalKeys)
 		{
 			YapSharedCacheItem *sharedItem = CFDictionaryGetValue(parent->shared_cfdict, (const void *)key);
 			if (sharedItem)
 			{
-				if (sharedItem->ownerCount == 1)
-					CFDictionaryRemoveValue(parent->shared_cfdict, (const void *)key);
-				else
+				if (sharedItem->ownerCount > 1)
 					sharedItem->ownerCount--;
+				else
+					CFDictionaryRemoveValue(parent->shared_cfdict, (const void *)key);
 			}
 		}
 	});
@@ -951,7 +1051,7 @@
  * and updates the local cache accordingly.
 **/
 - (void)noteCommittedChangesetBlock:(int (^)(id key))committedChangesetBlock
-                     writeTimestamp:(NSTimeInterval)writeTimestamp
+                           snapshot:(uint64_t)committedSnapshot
 {
 	NSDictionary *local_nsdict = (__bridge NSDictionary *)local_cfdict;
 	
@@ -979,11 +1079,16 @@
 		
 		dispatch_sync(parent->shared_queue, ^{
 			
+			// Concurrent access to shared_queue:
+			// 
+			// We can read from shared_dict and from shared_item(s), but we cannot make modifications.
+			// If we increment ownerCount, it must be done atomically.
+			
 			for (id key in keysToUpdate)
 			{
 				YapLocalCacheItem *localItem = CFDictionaryGetValue(local_cfdict, (const void *)key);
 				
-				localItem->object = [localItem->shared_item objectForTimestamp:writeTimestamp];
+				localItem->object = [localItem->shared_item objectForSnapshot:committedSnapshot];
 				if (localItem->object == nil)
 				{
 					[keysToRemove addObject:key];
@@ -1021,15 +1126,20 @@
 		
 		dispatch_barrier_async(parent->shared_queue, ^{
 			
+			// Serial access to shared_queue:
+			//
+			// We can freely modify shared_dict and shared_item(s).
+			// Shared_items should only be removed if ownerCount drops to zero.
+			
 			for (id key in keysToRemove)
 			{
 				YapSharedCacheItem *sharedItem = CFDictionaryGetValue(parent->shared_cfdict, (const void *)key);
 				if (sharedItem)
 				{
-					if (sharedItem->ownerCount == 1)
-						CFDictionaryRemoveValue(parent->shared_cfdict, (const void *)key);
-					else
+					if (sharedItem->ownerCount > 1)
 						sharedItem->ownerCount--;
+					else
+						CFDictionaryRemoveValue(parent->shared_cfdict, (const void *)key);
 				}
 			}
 		});
@@ -1044,15 +1154,9 @@
 
 @implementation YapSharedCacheValue
 
-- (void)dealloc
-{
-	NSLog(@"Dealloc: <YapSharedCacheValue %@:%.4f>", (object ? @"obj" : @"nil"), lastWriteTimestamp);
-}
-
 - (NSString *)description
 {
-	return [NSString stringWithFormat:@"<YapSharedCacheValue %@:%.4f>", object, lastWriteTimestamp];
-//	return [NSString stringWithFormat:@"<YapSharedCacheValue %@:%.4f>", (object ? @"obj" : @"nil"), lastWriteTimestamp];
+	return [NSString stringWithFormat:@"<YapSharedCacheValue %@:%llu>", (object ? @"obj" : @"nil"), snapshot];
 }
 
 @end
@@ -1060,59 +1164,54 @@
 
 @implementation YapSharedCacheItem
 
-- (id)initWithObject:(id)object timestamp:(NSTimeInterval)lastWriteTimestamp
+- (id)initWithObject:(id)object snapshot:(uint64_t)snapshot andRecentChanges:(NSArray *)recentChanges forKey:(id)key
 {
 	if ((self = [super init]))
 	{
 		YapSharedCacheValue *value = [[YapSharedCacheValue alloc] init];
 		value->object = object;
-		value->lastWriteTimestamp = lastWriteTimestamp;
+		value->snapshot = snapshot;
 		
 		values = value;
 		ownerCount = 1;
+		
+		for (NSArray *changesetBlockAndSnapshotPair in recentChanges)
+		{
+			int (^changesetBlock)(id key) = (int(^)(id))[changesetBlockAndSnapshotPair objectAtIndex:0];
+			
+			if (changesetBlock(key) != 0)
+			{
+				uint64_t changesetSnapshot = [[changesetBlockAndSnapshotPair objectAtIndex:1] unsignedLongLongValue];
+				
+				YapSharedCacheValue *placeholderValue = [[YapSharedCacheValue alloc] init];
+				placeholderValue->snapshot = changesetSnapshot;
+				placeholderValue->object = nil;
+				
+				placeholderValue->olderValue = values;
+				values = placeholderValue;
+			}
+		}
 	}
 	return self;
 }
 
-/**
- * Older connections (those viewing an older snapshot of the database)
- * are still able to add objects to the shared cache. But it's important that newer connections don't use
- * potentially stale data from the older connections. Thus the changeset information is required when a new value
- * is added to the shared cache. The changeset info is inspected, and if the value changes in the future,
- * then proper placeholders are added for the change.
-**/
-- (void)updateWithRecentChangesetBlocksAndTimestamps:(NSArray *)recentChanges forKey:(id)key
-{
-	for (NSArray *changesetBlockAndTimestampPair in recentChanges)
-	{
-		int (^changesetBlock)(id key) = (int(^)(id))[changesetBlockAndTimestampPair objectAtIndex:0];
-		
-		if (changesetBlock(key) != 0)
-		{
-			NSTimeInterval writeTimestamp = [[changesetBlockAndTimestampPair objectAtIndex:1] doubleValue];
-			
-			[self setObject:nil forTimestamp:writeTimestamp];
-		}
-	}
-}
-
-- (void)setObject:(id)object forTimestamp:(NSTimeInterval)lastWriteTimestamp
+- (void)setObject:(id)object forSnapshot:(uint64_t)snapshot
 {
 	__unsafe_unretained YapSharedCacheValue *value = values;
 	
-	if (value == nil || value->lastWriteTimestamp < lastWriteTimestamp)
+	if (value == nil || value->snapshot < snapshot)
 	{
 		// Most common case.
 		// We're appending the most recent value to the front of the linked list.
 		
 		YapSharedCacheValue *newValue = [[YapSharedCacheValue alloc] init];
-		newValue->lastWriteTimestamp = lastWriteTimestamp;
+		newValue->snapshot = snapshot;
 		newValue->object = object;
 		
 		newValue->olderValue = value;
 		values = newValue;
 	}
-	else if (value->lastWriteTimestamp == lastWriteTimestamp)
+	else if (value->snapshot == snapshot)
 	{
 		// Edge case #1.
 		// The connection has set the object multiple times during a single transaction.
@@ -1122,42 +1221,42 @@
 	else
 	{
 		// Edge case #2
-		// Another connection further ahead of us in lastWriteTimestamp,
+		// Another connection further ahead of us in snapshot,
 		// most likely a readwrite transaction, has also set the value.
 		// So we need to insert our value further back in the linked list.
 		
 		__unsafe_unretained YapSharedCacheValue *newerValue = value;
 		__unsafe_unretained YapSharedCacheValue *olderValue = value->olderValue;
 		
-		while (olderValue && olderValue->lastWriteTimestamp > lastWriteTimestamp)
+		while (olderValue && olderValue->snapshot > snapshot)
 		{
 			newerValue = olderValue;
 			olderValue = olderValue->olderValue;
 		}
 		
-		if (olderValue == nil || olderValue->lastWriteTimestamp < lastWriteTimestamp)
+		if (olderValue == nil || olderValue->snapshot < snapshot)
 		{
 			YapSharedCacheValue *insertedValue = [[YapSharedCacheValue alloc] init];
-			insertedValue->lastWriteTimestamp = lastWriteTimestamp;
+			insertedValue->snapshot = snapshot;
 			insertedValue->object = object;
 			
 			insertedValue->olderValue = olderValue;
 			newerValue->olderValue = insertedValue;
 		}
-		else // olderValue->lastWriteTimestamp == lastWriteTimestamp
+		else // olderValue->snapshot == snapshot
 		{
 			olderValue->object = object;
 		}
 	}
 }
 
-- (id)objectForTimestamp:(NSTimeInterval)lastWriteTimestamp
+- (id)objectForSnapshot:(uint64_t)snapshot
 {
 	__unsafe_unretained YapSharedCacheValue *value = values;
 	
 	while (value)
 	{
-		if (value->lastWriteTimestamp <= lastWriteTimestamp) {
+		if (value->snapshot <= snapshot) {
 			break;
 		}
 		else {
@@ -1172,18 +1271,18 @@
 }
 
 /**
- * - If the most recent YapSharedCacheValue has a timestamp equal to the given timestamp, does nothing.
- * - If the most recent YapSharedCacheValue has a timestamp less than the given timestamp,
+ * - If the most recent YapSharedCacheValue has a snapshot equal to the given snapshot, does nothing.
+ * - If the most recent YapSharedCacheValue has a snapshot less than the given snapshot,
  *   then adds a new YapSharedCacheValue with a nil object,
 **/
-- (void)markUpdatedForTimestamp:(NSTimeInterval)updatedLastWriteTimestamp
+- (void)markUpdatedForSnapshot:(uint64_t)snapshot
 {
 	__unsafe_unretained YapSharedCacheValue *value = values;
 	
-	if (value->lastWriteTimestamp < updatedLastWriteTimestamp)
+	if (value->snapshot < snapshot)
 	{
 		YapSharedCacheValue *newValue = [[YapSharedCacheValue alloc] init];
-		newValue->lastWriteTimestamp = updatedLastWriteTimestamp;
+		newValue->snapshot = snapshot;
 		newValue->object = nil;
 		newValue->olderValue = value;
 		
@@ -1192,14 +1291,14 @@
 }
 
 /**
- * Deletes values associated with timestamps less than the given minimum.
+ * Deletes values associated with snapshots less than the given minimum.
 **/
-- (void)cleanWithMinTimestamp:(NSTimeInterval)minLastWriteTimestamp
+- (void)cleanWithMinSnapshot:(uint64_t)minSnapshot
 {
 	__unsafe_unretained YapSharedCacheValue *prvValue = nil;
 	__unsafe_unretained YapSharedCacheValue *value = values;
 	
-	while (value && (value->lastWriteTimestamp >= minLastWriteTimestamp))
+	while (value && (value->snapshot >= minSnapshot))
 	{
 		prvValue = value;
 		value = value->olderValue;
@@ -1215,15 +1314,15 @@
 - (NSString *)description
 {
 	NSMutableString *string = [NSMutableString stringWithCapacity:30];
-	[string appendString:@"<YapSharedCacheItem:"];
+	[string appendFormat:@"<YapSharedCacheItem[%p]: ownerCount(%i)", self, ownerCount];
 	
 	__unsafe_unretained YapSharedCacheValue *value = values;
 	while (value)
 	{
-		[string appendFormat:@"%@%@:%.4f",
+		[string appendFormat:@"%@%@:%llu",
 		                       ((value == values) ? @" " : @", "),
 		                       ((value->object == nil) ? @"nil" : @"obj"),
-		                       value->lastWriteTimestamp];
+		                       value->snapshot];
 		
 		value = value->olderValue;
 	}

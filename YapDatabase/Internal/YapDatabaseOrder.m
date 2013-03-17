@@ -664,11 +664,14 @@
 				}
 			}
 			
-			YDBLogInfo(@"%@: UnLoading page at index %lu with key %@",
-			    NSStringFromSelector(_cmd), (unsigned long)oldestPageInfo->tempPageIndex, oldestPageInfo->pageKey);
-			
-			oldestPageInfo->lastAccess = nil;
-			[pages removeObjectForKey:oldestPageInfo->pageKey];
+			if (oldestPageInfo)
+			{
+				YDBLogInfo(@"%@: UnLoading page at index %lu with key %@",
+				    NSStringFromSelector(_cmd), (unsigned long)oldestPageInfo->tempPageIndex, oldestPageInfo->pageKey);
+				
+				oldestPageInfo->lastAccess = nil;
+				[pages removeObjectForKey:oldestPageInfo->pageKey];
+			}
 		}
 	}
 	

@@ -44,7 +44,7 @@
 	
 	YapAbstractDatabase *database;
 	
-	NSTimeInterval cacheLastWriteTimestamp;
+	uint64_t cacheSnapshot;
 	
 @public
 	sqlite3 *db;

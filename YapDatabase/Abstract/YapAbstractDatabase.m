@@ -618,23 +618,23 @@
 		return;
 	}
 	
-	// Step 2 of 4: Populate lastWriteTimestamp and write to disk
+	// Step 2 of 4: Populate snapshot and write to disk
 	
-	lastWriteTimestamp = [[NSProcessInfo processInfo] systemUptime];
+	snapshot = 0;
 	
 	query = "INSERT OR REPLACE INTO \"yap\" (\"key\", \"data\") VALUES (?, ?);";
 	
 	status = sqlite3_prepare_v2(db, query, strlen(query)+1, &statement, NULL);
 	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"%@: Error creating update lastWriteTimestamp statement: %d %s",
+		YDBLogError(@"%@: Error creating update snapshot statement: %d %s",
 		              NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 	}
 	else
 	{
-		NSNumber *number = [NSNumber numberWithDouble:lastWriteTimestamp];
+		NSNumber *number = [NSNumber numberWithUnsignedLongLong:snapshot];
 		
-		char *key = "lastWriteTimestamp";
+		char *key = "snapshot";
 		sqlite3_bind_text(statement, 1, key, strlen(key), SQLITE_STATIC);
 		
 		__attribute__((objc_precise_lifetime)) NSData *data = [NSKeyedArchiver archivedDataWithRootObject:number];
@@ -643,7 +643,7 @@
 		status = sqlite3_step(statement);
 		if (status != SQLITE_DONE)
 		{
-			YDBLogError(@"%@: Error executing update lastWriteTimestamp statement': %d %s",
+			YDBLogError(@"%@: Error executing update snapshot statement': %d %s",
 			              NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 		
@@ -744,35 +744,34 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * These methods are only accessible from within the snapshotQueue.
- * 
- * The lastWriteTimestamp represents the last time the database was modified by a read-write transaction.
+ * This method is only accessible from within the snapshotQueue.
+ *
+ * The snapshot represents when the database was last modified by a read-write transaction.
  * This information isn persisted to the 'yap' database, and is separately held in memory.
  * It serves multiple purposes.
- * 
+ *
  * First is assists in validation of a connection's cache.
  * When a connection begins a new transaction, it may have items sitting in the cache.
  * However the connection doesn't know if the items are still valid because another connection may have made changes.
- * The cache is valid if the lastWriteTimestamp hasn't changed since the connection's last transaction.
- * Otherwise the entire cache should be invalidated / flushed.
- * 
- * The lastWriteTimestamp also assists in correcting for a rare race condition.
+ *
+ * The snapshot also assists in correcting for a race condition.
  * It order to minimize blocking we allow read-write transactions to commit outside the context
  * of the snapshotQueue. This is because the commit may be a time consuming operation, and we
  * don't want to block read-only transactions during this period. The race condition occurs if a read-only
  * transactions starts in the midst of a read-write commit, and the read-only transaction gets
  * a "yap-level" snapshot that's out of sync with the "sql-level" snapshot. This is easily correctable if caught.
- * Thus we maintain the lastWriteTimestamp in memory, and fetchable via a select query.
+ * Thus we maintain the snapshot in memory, and fetchable via a select query.
  * One represents the "yap-level" snapshot, and the other represents the "sql-level" snapshot.
  *
- * The timestamp comes from the [NSProcessInfo systemUptime]. Thus it can never decrease.
- * It is reset when the YapDatabase instance is initialized, and updated by each read-write transaction.
+ * The snapshot is simply a 64-bit integer.
+ * It is reset when the YapDatabase instance is initialized,
+ * and incremented by each read-write transaction (if changes are actually made).
 **/
-- (NSTimeInterval)lastWriteTimestamp
+- (uint64_t)snapshot
 {
 	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
 	
-	return lastWriteTimestamp;
+	return snapshot;
 }
 
 /**
@@ -798,12 +797,12 @@
  * 
  * The following MUST be in the dictionary:
  *
- * - lastWriteTimestamp : NSNumber double with the changeset's timestamp
+ * - snapshot : NSNumber with the changeset's snapshot
 **/
 - (void)notePendingChanges:(NSDictionary *)pendingChangeset fromConnection:(YapAbstractDatabaseConnection *)sender
 {
 	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
-	NSAssert([pendingChangeset objectForKey:@"lastWriteTimestamp"], @"Missing required change key: lastWriteTimestamp");
+	NSAssert([pendingChangeset objectForKey:@"snapshot"], @"Missing required change key: snapshot");
 	
 	// The sender is preparing to start the sqlite commit.
 	// We save the changeset in advance to handle possible edge cases.
@@ -812,12 +811,12 @@
 	
 	// And we pass the changeset into the shared cache(s).
 	
-	NSTimeInterval changesetTimestamp = [[pendingChangeset objectForKey:@"lastWriteTimestamp"] doubleValue];
+	uint64_t changesetSnapshot = [[pendingChangeset objectForKey:@"snapshot"] unsignedLongLongValue];
 	
 	int (^changesetBlock)(id key) = [self cacheChangesetBlockFromChanges:pendingChangeset];
 	
-	[sharedObjectCache notePendingChangesetBlock:changesetBlock writeTimestamp:changesetTimestamp];
-	[sharedMetadataCache notePendingChangesetBlock:changesetBlock writeTimestamp:changesetTimestamp];
+	[sharedObjectCache notePendingChangesetBlock:changesetBlock snapshot:changesetSnapshot];
+	[sharedMetadataCache notePendingChangesetBlock:changesetBlock snapshot:changesetSnapshot];
 }
 
 /**
@@ -827,7 +826,7 @@
  * It should retrieve the database's pending and/or committed changes,
  * and then process them via [connection noteCommittedChanges:].
 **/
-- (NSArray *)pendingAndCommittedChangesSince:(NSTimeInterval)connectionTimestamp until:(NSTimeInterval)maxTimestamp
+- (NSArray *)pendingAndCommittedChangesSince:(uint64_t)connectionSnapshot until:(uint64_t)maxSnapshot
 {
 	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
 	
@@ -835,9 +834,9 @@
 	
 	for (NSDictionary *changeset in changesets)
 	{
-		NSTimeInterval changesetTimestamp = [[changeset objectForKey:@"lastWriteTimestamp"] doubleValue];
+		uint64_t changesetSnapshot = [[changeset objectForKey:@"snapshot"] unsignedLongLongValue];
 		
-		if ((changesetTimestamp > connectionTimestamp) && (changesetTimestamp <= maxTimestamp))
+		if ((changesetSnapshot > connectionSnapshot) && (changesetSnapshot <= maxSnapshot))
 		{
 			[relevantChangesets addObject:changeset];
 		}
@@ -854,14 +853,14 @@
  *
  * The following MUST be in the dictionary:
  *
- * - lastWriteTimestamp : NSNumber double with the changeset's timestamp
+ * - snapshot : NSNumber with the changeset's snapshot
 **/
 - (void)noteCommittedChanges:(NSDictionary *)changeset fromConnection:(YapAbstractDatabaseConnection *)sender
 {
 	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
-	NSAssert([changeset objectForKey:@"lastWriteTimestamp"], @"Missing required change key: lastWriteTimestamp");
+	NSAssert([changeset objectForKey:@"snapshot"], @"Missing required change key: snapshot");
 	
-	NSTimeInterval changesetTimestamp = [[changeset objectForKey:@"lastWriteTimestamp"] doubleValue];
+	uint64_t changesetSnapshot = [[changeset objectForKey:@"snapshot"] unsignedLongLongValue];
 	
 	// The sender has finished the sqlite commit, and all data is now written to disk.
 	// We forward the changeset to all other connections so they can perform any needed updates.
@@ -895,18 +894,18 @@
 		
 		int (^changesetBlock)(id key) = [self cacheChangesetBlockFromChanges:changeset];
 		
-		[sharedObjectCache noteCommittedChangesetBlock:changesetBlock
-		                                writeTimestamp:changesetTimestamp];
+		[sharedObjectCache noteCommittedChangesetBlock:changesetBlock snapshot:changesetSnapshot];
+		[sharedMetadataCache noteCommittedChangesetBlock:changesetBlock snapshot:changesetSnapshot];
 		
 		#if NEEDS_DISPATCH_RETAIN_RELEASE
 		dispatch_release(group);
 		#endif
 	});
 	
-	// And finally, update the lastWriteTimestamp,
-	// which represents the most recent timestamp of the last committed readwrite transaction.
+	// And finally, update the in-memory snapshot,
+	// which represents the most recent snapshot of the last committed readwrite transaction.
 	
-	lastWriteTimestamp = changesetTimestamp;
+	snapshot = changesetSnapshot;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
