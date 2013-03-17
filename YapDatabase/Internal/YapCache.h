@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-#define YAP_CACHE_DEBUG 0
+#define YAP_CACHE_STATISTICS 0
 
 /**
  * YapCache implements a simple strict cache.
@@ -66,7 +66,7 @@
 // Some debugging stuff that gets compiled out
 //
 
-#if YAP_CACHE_DEBUG
+#if YAP_CACHE_STATISTICS
 
 /**
  * When querying the cache for an object via objectForKey,

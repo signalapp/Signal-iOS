@@ -91,14 +91,14 @@
 	
 	__strong YapCacheItem *evictedCacheItem;
 	
-#if YAP_CACHE_DEBUG
+#if YAP_CACHE_STATISTICS
 	NSUInteger hitCount;
 	NSUInteger missCount;
 	NSUInteger evictionCount;
 #endif
 }
 
-#if YAP_CACHE_DEBUG
+#if YAP_CACHE_STATISTICS
 @synthesize hitCount = hitCount;
 @synthesize missCount = missCount;
 @synthesize evictionCount = evictionCount;
@@ -171,7 +171,7 @@
 				evictedCacheItem->key = nil;
 				evictedCacheItem->value = nil;
 				
-				#if YAP_CACHE_DEBUG
+				#if YAP_CACHE_STATISTICS
 				evictionCount++;
 				#endif
 			}
@@ -211,14 +211,14 @@
 			mostRecentCacheItem = item;
 		}
 		
-		#if YAP_CACHE_DEBUG
+		#if YAP_CACHE_STATISTICS
 		hitCount++;
 		#endif
 		return item->value;
 	}
 	else
 	{
-		#if YAP_CACHE_DEBUG
+		#if YAP_CACHE_STATISTICS
 		missCount++;
 		#endif
 		return nil;
@@ -313,7 +313,7 @@
 			evictedCacheItem->key = nil;
 			evictedCacheItem->value = nil;
 			
-			#if YAP_CACHE_DEBUG
+			#if YAP_CACHE_STATISTICS
 			evictionCount++;
 			#endif
 		}

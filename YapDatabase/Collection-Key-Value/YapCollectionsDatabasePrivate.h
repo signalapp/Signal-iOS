@@ -49,8 +49,8 @@
 @public
 	sqlite3 *db;
 	
-	id objectCache;   // Either NSMutableDictionary (if unlimited) or YapCache (if limited)
-	id metadataCache; // Either NSMutableDictionary (if unlimited) or YapCache (if limited)
+	YapSharedCacheConnection *objectCache;
+	YapSharedCacheConnection *metadataCache;
 	
 	NSUInteger objectCacheLimit;          // Read-only by transaction. Use as consideration of whether to add to cache.
 	NSUInteger metadataCacheLimit;        // Read-only by transaction. Use as consideration of whether to add to cache.

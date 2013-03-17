@@ -2,13 +2,17 @@
 #import "ViewController.h"
 
 #import "BenchmarkYapCache.h"
-
+#import "BenchmarkYapDatabase.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-	[BenchmarkYapCache startTests];
+	dispatch_async(dispatch_get_main_queue(), ^(void){
+		
+	//	[BenchmarkYapCache startTests];
+		[BenchmarkYapDatabase startTests];
+	});
 	
 	// Normal UI stuff
 	

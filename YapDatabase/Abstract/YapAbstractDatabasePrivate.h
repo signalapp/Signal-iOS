@@ -39,13 +39,11 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 
 @interface YapAbstractDatabase () {
 @private
-	dispatch_queue_t snapshotQueue;
-	dispatch_queue_t writeQueue;
+	
 #if YAP_DATABASE_USE_CHECKPOINT_QUEUE
 	dispatch_queue_t checkpointQueue;
 #endif
 	
-	NSMutableArray *connectionStates;
 	NSMutableArray *changesets;
 	uint64_t snapshot;
 	
@@ -62,25 +60,14 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	
 @public
 	
+	dispatch_queue_t snapshotQueue;   // Only to be used by YapAbstractDatabaseConnection
+	dispatch_queue_t writeQueue;      // Only to be used by YapAbstractDatabaseConnection
+	
+	NSMutableArray *connectionStates; // Only to be used by YapAbstractDatabaseConnection
+	
 	YapSharedCache *sharedObjectCache;
 	YapSharedCache *sharedMetadataCache;
 }
-
-/**
- * Many of the methods below are only accessible from within the snapshotQueue.
- *
- * This queue is used to synchronize access to variables related to acquiring "snapshots"
- * of a particular state of the database.
-**/
-@property (nonatomic, readonly) dispatch_queue_t snapshotQueue;
-
-/**
- * All read-write transactions must go through this serial queue.
- *
- * In sqlite there can only be a single writer at a time.
- * We enforce this externally to avoid busy errors and to help keep yap-level contructs synchronized.
-**/
-@property (nonatomic, readonly) dispatch_queue_t writeQueue;
 
 /**
  * Required override hook.
@@ -149,13 +136,6 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
  * and incremented by each read-write transaction (if changes are actually made).
 **/
 - (uint64_t)snapshot;
-
-/**
- * This method is only accessible from within the snapshotQueue.
- * 
- * A transaction must update its state in accordance with the state transaction rules
-**/
-- (void)enumerateConnectionStates:(void (^)(YapDatabaseConnectionState *state))block;
 
 /**
  * This method is only accessible from within the snapshotQueue.

@@ -204,7 +204,7 @@
 	
 	__strong YapLocalCacheItem *evictedCacheItem;
 	
-#if YAP_CACHE_DEBUG
+#if YAP_SHARED_CACHE_STATISTICS
 	NSUInteger localHitCount;
 	NSUInteger sharedHitCount;
 	NSUInteger missCount;
@@ -457,7 +457,7 @@
 @synthesize sharedCache = parent;
 @synthesize countLimit = countLimit;
 
-#if YAP_CACHE_DEBUG
+#if YAP_SHARED_CACHE_STATISTICS
 @synthesize localHitCount = localHitCount;
 @synthesize sharedHitCount = sharedHitCount;
 @synthesize missCount = missCount;
@@ -506,7 +506,7 @@
 			evictedCacheItem->object = nil;
 			evictedCacheItem->shared_item = nil;
 			
-			#if YAP_CACHE_DEBUG
+			#if YAP_SHARED_CACHE_STATISTICS
 			evictionCount++;
 			#endif
 		}
@@ -535,6 +535,16 @@
 {
 	return CFDictionaryGetCount(local_cfdict);
 }
+
+#if YAP_SHARED_CACHE_STATISTICS
+- (void)resetStatistics
+{
+	localHitCount = 0;
+	sharedHitCount = 0;
+	missCount = 0;
+	evictionCount = 0;
+}
+#endif
 
 #pragma mark Cache Access
 
@@ -577,7 +587,7 @@
 			mostRecentCacheItem = localItem;
 		}
 		
-		#if YAP_CACHE_DEBUG
+		#if YAP_SHARED_CACHE_STATISTICS
 		localHitCount++;
 		#endif
 		
@@ -595,7 +605,7 @@
 				// The value for this key has been deleted or modified during this transaction.
 				// Ignore any previous values in shared cache.
 				
-				#if YAP_CACHE_DEBUG
+				#if YAP_SHARED_CACHE_STATISTICS
 				missCount++;
 				#endif
 				
@@ -639,7 +649,7 @@
 		
 		if (sharedItem && object)
 		{
-			#if YAP_CACHE_DEBUG
+			#if YAP_SHARED_CACHE_STATISTICS
 			sharedHitCount++;
 			#endif
 			
@@ -695,7 +705,7 @@
 				
 				CFDictionaryRemoveValue(local_cfdict, (const void *)evictedKey);
 				
-				#if YAP_CACHE_DEBUG
+				#if YAP_SHARED_CACHE_STATISTICS
 				evictionCount++;
 				#endif
 				
@@ -725,7 +735,7 @@
 		}
 		else
 		{
-			#if YAP_CACHE_DEBUG
+			#if YAP_SHARED_CACHE_STATISTICS
 			missCount++;
 			#endif
 			
@@ -876,7 +886,7 @@
 			
 			CFDictionaryRemoveValue(local_cfdict, (const void *)(evictedCacheItem->key));
 			
-			#if YAP_CACHE_DEBUG
+			#if YAP_SHARED_CACHE_STATISTICS
 			evictionCount++;
 			#endif
 			

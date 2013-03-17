@@ -68,7 +68,7 @@ static NSMutableArray *cacheSizes;
 	
 	for (NSNumber *number in keysOrder)
 	{
-		id cacheKey = [keys_ckv objectAtIndex:[number unsignedIntegerValue]];
+		id cacheKey = [keys_kv objectAtIndex:[number unsignedIntegerValue]];
 		
 		[cache setObject:[NSNull null] forKey:cacheKey];
 	}

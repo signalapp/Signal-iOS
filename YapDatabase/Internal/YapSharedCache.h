@@ -2,7 +2,7 @@
 
 @class YapSharedCacheConnection;
 
-#define YAP_CACHE_DEBUG 0
+#define YAP_SHARED_CACHE_STATISTICS 0
 
 
 @interface YapSharedCache : NSObject
@@ -174,7 +174,7 @@
 // Some debugging stuff that gets compiled out
 //
 
-#if YAP_CACHE_DEBUG
+#if YAP_SHARED_CACHE_STATISTICS
 
 /**
  * When querying the cache for an object via objectForKey:
@@ -194,6 +194,8 @@
  *   and the added object causes another object (the least recently used object) to be evicted.
 **/
 @property (nonatomic, readonly) NSUInteger evictionCount;
+
+- (void)resetStatistics;
 
 #endif
 

@@ -543,7 +543,7 @@
 	// No other transaction can possibly modify the database except us, even in other connections.
 	
 	dispatch_sync(connectionQueue, ^{
-	dispatch_sync(database.writeQueue, ^{ @autoreleasepool {
+	dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
 		
 		YapAbstractDatabaseTransaction *transaction = [self newReadWriteTransaction];
 		
@@ -553,7 +553,7 @@
 		
 		[self postReadWriteTransaction:transaction];
 		
-	}}); // End dispatch_sync(database.writeQueue)
+	}}); // End dispatch_sync(database->writeQueue)
 	});  // End dispatch_sync(connectionQueue)
 	
 	#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
@@ -625,7 +625,7 @@
 	// No other transaction can possibly modify the database except us, even in other connections.
 	
 	dispatch_async(connectionQueue, ^{
-	dispatch_sync(database.writeQueue, ^{ @autoreleasepool {
+	dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
 		
 		YapAbstractDatabaseTransaction *transaction = [self newReadWriteTransaction];
 		
@@ -645,7 +645,7 @@
 		
 		#endif
 		
-	}}); // End dispatch_sync(database.writeQueue)
+	}}); // End dispatch_sync(database->writeQueue)
 	});  // End dispatch_async(connectionQueue)
 }
 
@@ -684,7 +684,7 @@
 	
 	[transaction beginTransaction];
 		
-	dispatch_sync(database.snapshotQueue, ^{ @autoreleasepool {
+	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
 		// Pre-Read-Transaction: Step 2 of 4
 		//
@@ -705,11 +705,11 @@
 		// Thus, we look to see if there are any write transactions.
 		// If there are, then we immediately acquire the "sql-level" shared read lock.
 		
-		__block BOOL hasActiveWriteTransaction = NO;
-		__block YapDatabaseConnectionState *myState = nil;
+		BOOL hasActiveWriteTransaction = NO;
+		YapDatabaseConnectionState *myState = nil;
 		
-		[database enumerateConnectionStates:^(YapDatabaseConnectionState *state){
-			
+		for (YapDatabaseConnectionState *state in database->connectionStates)
+		{
 			if (state.connection == self)
 			{
 				myState = state;
@@ -719,7 +719,7 @@
 			{
 				hasActiveWriteTransaction = YES;
 			}
-		}];
+		}
 		
 		// Pre-Read-Transaction: Step 3 of 4
 		//
@@ -819,7 +819,7 @@
 	[transaction commitTransaction];
 	
 	__block YapDatabaseConnectionState *writeStateToSignal = nil;
-	dispatch_sync(database.snapshotQueue, ^{ @autoreleasepool {
+	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
 		// Post-Read-Transaction: Step 2 of 4
 		//
@@ -841,12 +841,12 @@
 		// So if we never acquired an "sql-level" snapshot of the database, and we were the last transaction
 		// in such a state, and there's a blocked write transaction, then we need to signal it.
 		
-		__block BOOL wasMaybeBlockingWriteTransaction = NO;
-		__block NSUInteger countOtherMaybeBlockingWriteTransaction = 0;
-		__block YapDatabaseConnectionState *blockedWriteState = nil;
+		BOOL wasMaybeBlockingWriteTransaction = NO;
+		NSUInteger countOtherMaybeBlockingWriteTransaction = 0;
+		YapDatabaseConnectionState *blockedWriteState = nil;
 		
-		[database enumerateConnectionStates:^(YapDatabaseConnectionState *state){
-			
+		for (YapDatabaseConnectionState *state in database->connectionStates)
+		{
 			if (state.connection == self)
 			{
 				wasMaybeBlockingWriteTransaction = state.yapLevelSharedReadLock && !state.sqlLevelSharedReadLock;
@@ -861,7 +861,7 @@
 			{
 				blockedWriteState = state;
 			}
-		}];
+		}
 		
 		if (wasMaybeBlockingWriteTransaction && countOtherMaybeBlockingWriteTransaction == 0 && blockedWriteState)
 		{
@@ -919,7 +919,7 @@
 	
 	[transaction beginTransaction];
 	
-	dispatch_sync(database.snapshotQueue, ^{ @autoreleasepool {
+	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
 		// Pre-Write-Transaction: Step 2 of 4
 		//
@@ -928,13 +928,13 @@
 		// We are the only write transaction for this database.
 		// It is important for read-only transactions on other connections to know there's a writer.
 		
-		[database enumerateConnectionStates:^(YapDatabaseConnectionState *state){
-	
+		for (YapDatabaseConnectionState *state in database->connectionStates)
+		{
 			if (state.connection == self)
 			{
 				state.yapLevelExclusiveWriteLock = YES;
 			}
-		}];
+		}
 		
 		// Pre-Write-Transaction: Step 3 of 4
 		//
@@ -1014,10 +1014,10 @@
 	{
 		__block BOOL waitForReadOnlyTransactions = NO;
 		
-		dispatch_sync(database.snapshotQueue, ^{ @autoreleasepool {
+		dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 			
-			[database enumerateConnectionStates:^(YapDatabaseConnectionState *state){
-				
+			for (YapDatabaseConnectionState *state in database->connectionStates)
+			{
 				if (state.connection == self)
 				{
 					myState = state;
@@ -1026,7 +1026,7 @@
 				{
 					waitForReadOnlyTransactions = YES;
 				}
-			}];
+			}
 			
 			if (waitForReadOnlyTransactions)
 			{
@@ -1097,7 +1097,7 @@
 	
 	[transaction commitTransaction];
 	
-	dispatch_sync(database.snapshotQueue, ^{ @autoreleasepool {
+	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
 		// Post-Write-Transaction: Step 5 of 7
 		//
@@ -1224,7 +1224,7 @@
 	
 	__block YapDatabaseConnectionState *writeStateToSignal = nil;
 	
-	dispatch_sync(database.snapshotQueue, ^{ @autoreleasepool {
+	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
 		// Update our connection state within the state table.
 		//
@@ -1246,8 +1246,8 @@
 		__block NSUInteger countOtherMaybeBlockingWriteTransaction = 0;
 		__block YapDatabaseConnectionState *blockedWriteState = nil;
 		
-		[database enumerateConnectionStates:^(YapDatabaseConnectionState *state){
-			
+		for (YapDatabaseConnectionState *state in database->connectionStates)
+		{
 			if (state.connection == self)
 			{
 				state.sqlLevelSharedReadLock = YES;
@@ -1260,7 +1260,7 @@
 			{
 				blockedWriteState = state;
 			}
-		}];
+		}
 		
 		if (countOtherMaybeBlockingWriteTransaction == 0 && blockedWriteState)
 		{

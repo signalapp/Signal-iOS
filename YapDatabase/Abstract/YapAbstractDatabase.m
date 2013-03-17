@@ -142,8 +142,6 @@
 @synthesize objectDeserializer;
 @synthesize metadataSerializer;
 @synthesize metadataDeserializer;
-@synthesize snapshotQueue;
-@synthesize writeQueue;
 
 - (id)initWithPath:(NSString *)inPath
 {
@@ -772,21 +770,6 @@
 	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
 	
 	return snapshot;
-}
-
-/**
- * This method is only accessible from within the snapshotQueue.
- *
- * A transaction must update its state in accordance with the state transaction rules
-**/
-- (void)enumerateConnectionStates:(void (^)(YapDatabaseConnectionState *state))block
-{
-	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
-	
-	for (YapDatabaseConnectionState *state in connectionStates)
-	{
-		block(state);
-	}
 }
 
 /**
