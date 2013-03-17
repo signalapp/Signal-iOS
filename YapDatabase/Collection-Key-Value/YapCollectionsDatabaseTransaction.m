@@ -3,6 +3,7 @@
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
 #import "YapCacheCollectionKey.h"
+#import "YapNull.h"
 
 #if ! __has_feature(objc_arc)
 #warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
@@ -382,7 +383,7 @@
 	{
 		// Both object and metadata were in cache.
 		// Just need to check for empty metadata placeholder from cache.
-		if (metadata == [NSNull null])
+		if (metadata == [YapNull null])
 			metadata = nil;
 	}
 	else if (!object && metadata)
@@ -392,7 +393,7 @@
 		object = [self objectForKey:key inCollection:collection];
 		
 		// And check for empty metadata placeholder from cache.
-		if (metadata == [NSNull null])
+		if (metadata == [YapNull null])
 			metadata = nil;
 	}
 	else if (object && !metadata)
@@ -460,7 +461,7 @@
 			if (metadata)
 				[connection->metadataCache setObject:metadata forKey:cacheKey];
 			else if (object)
-				[connection->metadataCache setObject:[NSNull null] forKey:cacheKey];
+				[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
 			
 			sqlite3_clear_bindings(statement);
 			sqlite3_reset(statement);
@@ -491,7 +492,7 @@
 	id metadata = [connection->metadataCache objectForKey:cacheKey];
 	if (metadata)
 	{
-		if (metadata == [NSNull null])
+		if (metadata == [YapNull null])
 			return nil;
 		else
 			return metadata;
@@ -544,7 +545,7 @@
 		if (metadata)
 			[connection->metadataCache setObject:metadata forKey:cacheKey];
 		else
-			[connection->metadataCache setObject:[NSNull null] forKey:cacheKey];
+			[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
 	}
 	
 	sqlite3_clear_bindings(statement);
@@ -640,7 +641,7 @@
 		id metadata = [connection->metadataCache objectForKey:cacheKey];
 		if (metadata)
 		{
-			if (metadata == [NSNull null])
+			if (metadata == [YapNull null])
 				block(keyIndex, nil, &stop);
 			else
 				block(keyIndex, metadata, &stop);
@@ -979,7 +980,7 @@
 		{
 			if (metadata)
 			{
-				if (metadata == [NSNull null])
+				if (metadata == [YapNull null])
 					block(keyIndex, object, nil, &stop);
 				else
 					block(keyIndex, object, metadata, &stop);
@@ -1041,7 +1042,7 @@
 			
 			id metadata = [connection->metadataCache objectForKey:cacheKey];
 			
-			if (metadata == [NSNull null])
+			if (metadata == [YapNull null])
 				block(keyIndex, object, nil, &stop);
 			else
 				block(keyIndex, object, metadata, &stop);
@@ -1146,7 +1147,7 @@
 				if (metadata)
 					[connection->metadataCache setObject:metadata forKey:cacheKey];
 				else
-					[connection->metadataCache setObject:[NSNull null] forKey:cacheKey];
+					[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
 			}
 			
 			block(keyIndex, object, metadata, &stop);
@@ -1231,7 +1232,7 @@
 			id metadata = [connection->metadataCache objectForKey:cacheKey];
 			if (metadata)
 			{
-				if (metadata == [NSNull null])
+				if (metadata == [YapNull null])
 					metadata = nil;
 			}
 			else
@@ -1250,7 +1251,7 @@
 					if (metadata)
 						[connection->metadataCache setObject:metadata forKey:cacheKey];
 					else
-						[connection->metadataCache setObject:[NSNull null] forKey:cacheKey];
+						[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
 				}
 			}
 			
@@ -1323,7 +1324,7 @@
 			id metadata = [connection->metadataCache objectForKey:cacheKey];
 			if (metadata)
 			{
-				if (metadata == [NSNull null])
+				if (metadata == [YapNull null])
 					metadata = nil;
 			}
 			else
@@ -1342,7 +1343,7 @@
 					if (metadata)
 						[connection->metadataCache setObject:metadata forKey:cacheKey];
 					else
-						[connection->metadataCache setObject:[NSNull null] forKey:cacheKey];
+						[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
 				}
 			}
 			
@@ -1406,7 +1407,7 @@
 		id metadata = [connection->metadataCache objectForKey:cacheKey];
 		if (metadata)
 		{
-			if (metadata == [NSNull null])
+			if (metadata == [YapNull null])
 				metadata = nil;
 		}
 		else
@@ -1425,7 +1426,7 @@
 				if (metadata)
 					[connection->metadataCache setObject:metadata forKey:cacheKey];
 				else
-					[connection->metadataCache setObject:[NSNull null] forKey:cacheKey];
+					[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
 			}
 		}
 		
@@ -1505,7 +1506,7 @@
 		id metadata = [connection->metadataCache objectForKey:cacheKey];
 		if (metadata)
 		{
-			if (metadata == [NSNull null])
+			if (metadata == [YapNull null])
 				metadata = nil;
 		}
 		else
@@ -1524,7 +1525,7 @@
 				if (metadata)
 					[connection->metadataCache setObject:metadata forKey:cacheKey];
 				else
-					[connection->metadataCache setObject:[NSNull null] forKey:cacheKey];
+					[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
 			}
 		}
 		
@@ -1623,16 +1624,17 @@
 	
 	YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
 	
-	if (connection->metadataCacheLimit == 0 || [connection->metadataCache objectForKey:cacheKey])
-	{
-		if (metadata)
-			[connection->metadataCache setObject:metadata forKey:cacheKey];
-		else
-			[connection->metadataCache setObject:[NSNull null] forKey:cacheKey];
-	}
-	
 	[connection->objectCache removeObjectForKey:cacheKey];
-	[connection->changedKeys addObject:cacheKey];
+	[connection->objectChanges setObject:[YapNull null] forKey:cacheKey];
+	
+	if (metadata) {
+		[connection->metadataCache setObject:metadata forKey:cacheKey];
+		[connection->metadataChanges setObject:metadata forKey:cacheKey];
+	}
+	else {
+		[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
+		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
+	}
 }
 
 #pragma mark Object
@@ -1690,19 +1692,17 @@
 	
 	YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
 	
-	if (connection->metadataCacheLimit == 0 || [connection->metadataCache objectForKey:cacheKey])
-	{
-		if (metadata)
-			[connection->metadataCache setObject:metadata forKey:cacheKey];
-		else
-			[connection->metadataCache setObject:[NSNull null] forKey:cacheKey];
-	}
-	if (connection->objectCacheLimit == 0 || [connection->objectCache objectForKey:cacheKey])
-	{
-		[connection->objectCache setObject:object forKey:cacheKey];
-	}
+	[connection->objectCache setObject:object forKey:cacheKey];
+	[connection->objectChanges setObject:object forKey:cacheKey];
 	
-	[connection->changedKeys addObject:cacheKey];
+	if (metadata) {
+		[connection->metadataCache setObject:metadata forKey:cacheKey];
+		[connection->metadataChanges setObject:metadata forKey:cacheKey];
+	}
+	else {
+		[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
+		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
+	}
 }
 
 #pragma mark Metadata
@@ -1752,15 +1752,14 @@
 	{
 		YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
 		
-		if (connection->metadataCacheLimit == 0 || [connection->metadataCache objectForKey:cacheKey])
-		{
-			if (metadata)
-				[connection->metadataCache setObject:metadata forKey:cacheKey];
-			else
-				[connection->metadataCache setObject:[NSNull null] forKey:cacheKey];
+		if (metadata) {
+			[connection->metadataCache setObject:metadata forKey:cacheKey];
+			[connection->metadataChanges setObject:metadata forKey:cacheKey];
 		}
-		
-		[connection->changedKeys addObject:cacheKey];
+		else {
+			[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
+			[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
+		}
 	}
 }
 
@@ -1804,9 +1803,12 @@
 	{
 		YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
 		
-		[connection->metadataCache removeObjectForKey:cacheKey];
 		[connection->objectCache removeObjectForKey:cacheKey];
-		[connection->changedKeys addObject:cacheKey];
+		[connection->metadataCache removeObjectForKey:cacheKey];
+		
+		[connection->objectChanges removeObjectForKey:cacheKey];
+		[connection->metadataChanges removeObjectForKey:cacheKey];
+		[connection->removedKeys addObject:cacheKey];
 	}
 }
 
@@ -1895,17 +1897,17 @@
 	
 	// Clear items from cache
 	
-	NSMutableArray *cacheKeys = [NSMutableArray arrayWithCapacity:[keys count]];
-	
 	for (NSString *key in keys)
 	{
 		YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
-		[cacheKeys addObject:cacheKey];
+		
+		[connection->objectCache removeObjectForKey:cacheKey];
+		[connection->metadataCache removeObjectForKey:cacheKey];
+		
+		[connection->objectChanges removeObjectForKey:cacheKey];
+		[connection->metadataChanges removeObjectForKey:cacheKey];
+		[connection->removedKeys addObject:cacheKey];
 	}
-	
-	[connection->metadataCache removeObjectsForKeys:cacheKeys];
-	[connection->objectCache removeObjectsForKeys:cacheKeys];
-	[connection->changedKeys addObjectsFromArray:cacheKeys];
 }
 
 - (void)removeAllObjectsInCollection:(NSString *)collection
@@ -1953,7 +1955,7 @@
 	[connection->metadataCache enumerateKeysWithBlock:block];
 	[connection->metadataCache removeObjectsForKeys:keysToRemove];
 	
-	[connection->resetCollections addObject:collection];
+	[connection->removedCollections addObject:collection];
 }
 
 - (void)removeAllObjectsInAllCollections
@@ -1972,10 +1974,13 @@
 	
 	sqlite3_reset(statement);
 	
-	[connection->metadataCache removeAllObjects];
 	[connection->objectCache removeAllObjects];
-	[connection->changedKeys removeAllObjects];
-	[connection->resetCollections removeAllObjects];
+	[connection->metadataCache removeAllObjects];
+	
+	[connection->objectChanges removeAllObjects];
+	[connection->metadataChanges removeAllObjects];
+	[connection->removedKeys removeAllObjects];
+	[connection->removedCollections removeAllObjects];
 	connection->allKeysRemoved = YES;
 }
 

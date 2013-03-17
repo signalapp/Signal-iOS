@@ -407,19 +407,17 @@
 	}
 }
 
-- (NSSet *)keysOfEntriesPassingTest:(BOOL (^)(id key, id obj, BOOL *stop))block
+- (void)enumerateKeysWithBlock:(void (^)(id key, BOOL *stop))block
 {
-	NSMutableArray *keys = [NSMutableArray arrayWithCapacity:(CFDictionaryGetCount(cfdict) / 2)];
+	NSDictionary *nsdict = (__bridge NSDictionary *)cfdict;
+	BOOL stop = NO;
 	
-	[(__bridge NSDictionary *)cfdict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+	for (id key in [nsdict keyEnumerator])
+	{
+		block(key, &stop);
 		
-		if (block(key, obj, stop))
-		{
-			[keys addObject:key];
-		}
-	}];
-	
-	return [NSSet setWithArray:keys];
+		if (stop) break;
+	}
 }
 
 - (NSString *)description

@@ -60,7 +60,7 @@
 - (void)removeObjectForKey:(id)key;
 - (void)removeObjectsForKeys:(NSArray *)keys;
 
-- (NSSet *)keysOfEntriesPassingTest:(BOOL (^)(id key, id obj, BOOL *stop))predicate;
+- (void)enumerateKeysWithBlock:(void (^)(id key, BOOL *stop))block;
 
 //
 // Some debugging stuff that gets compiled out

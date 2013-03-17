@@ -5,7 +5,7 @@
 #import "YapAbstractDatabaseTransaction.h"
 
 #import "YapDatabaseConnectionState.h"
-#import "YapSharedCache.h"
+#import "YapCache.h"
 
 #import "sqlite3.h"
 
@@ -64,9 +64,6 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	dispatch_queue_t writeQueue;      // Only to be used by YapAbstractDatabaseConnection
 	
 	NSMutableArray *connectionStates; // Only to be used by YapAbstractDatabaseConnection
-	
-	YapSharedCache *sharedObjectCache;
-	YapSharedCache *sharedMetadataCache;
 }
 
 /**
@@ -89,6 +86,12 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 - (void)prepare;
 
 /**
+ * Required override hook.
+ * Subclasses must implement this method and return the proper class to use for the cache.
+**/
+- (Class)cacheKeyClass;
+
+/**
  * Use the addConnection method from within newConnection.
  *
  * And when a connection is deallocated,
@@ -96,20 +99,6 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 **/
 - (void)addConnection:(YapAbstractDatabaseConnection *)connection;
 - (void)removeConnection:(YapAbstractDatabaseConnection *)connection;
-
-/**
- * REQUIRED OVERRIDE METHOD
- *
- * This method is used to generate the changeset block used with YapSharedCache & YapSharedCacheConnection.
- * The given changeset comes directly from a readwrite transaction.
- * 
- * The output block should return one of the following:
- * 
- *  0 if the changeset indicates the key/value pair was unchanged.
- * -1 if the changeset indicates the key/value pair was deleted.
- * +1 if the changeset indicates the key/value pair was modified.
-**/
-- (int (^)(id key))cacheChangesetBlockFromChanges:(NSDictionary *)changeset;
 
 /**
  * This method is only accessible from within the snapshotQueue.
@@ -212,8 +201,8 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 @public
 	sqlite3 *db;
 	
-	YapSharedCacheConnection *objectCache;
-	YapSharedCacheConnection *metadataCache;
+	YapCache *objectCache;
+	YapCache *metadataCache;
 	
 	NSUInteger objectCacheLimit;          // Read-only by transaction. Use as consideration of whether to add to cache.
 	NSUInteger metadataCacheLimit;        // Read-only by transaction. Use as consideration of whether to add to cache.
@@ -253,6 +242,8 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 - (void)markSqlLevelSharedReadLockAcquired;
 
 - (NSMutableDictionary *)changeset;
+- (void)processChangeset:(NSDictionary *)changeset;
+
 - (void)noteCommittedChanges:(NSDictionary *)changeset;
 
 @end

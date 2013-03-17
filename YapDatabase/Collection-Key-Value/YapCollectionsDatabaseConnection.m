@@ -3,6 +3,7 @@
 
 #import "YapAbstractDatabasePrivate.h"
 #import "YapCacheCollectionKey.h"
+#import "YapNull.h"
 
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
@@ -60,8 +61,8 @@
 @public
 	sqlite3 *db;
 	
-	YapSharedCacheConnection *objectCache;
-	YapSharedCacheConnection *metadataCache;
+	YapCache *objectCache;
+	YapCache *metadataCache;
 	
 	NSUInteger objectCacheLimit;          // Read-only by transaction. Use as consideration of whether to add to cache.
 	NSUInteger metadataCacheLimit;        // Read-only by transaction. Use as consideration of whether to add to cache.
@@ -576,14 +577,37 @@
 }
 
 /**
+ * We override this method to setup our changeset variables.
+**/
+- (void)preReadWriteTransaction:(YapAbstractDatabaseTransaction *)transaction
+{
+	[super preReadWriteTransaction:transaction];
+	
+	if (objectChanges == nil)
+		objectChanges = [[NSMutableDictionary alloc] init];
+	if (metadataChanges == nil)
+		metadataChanges = [[NSMutableDictionary alloc] init];
+	if (removedKeys == nil)
+		removedKeys = [[NSMutableSet alloc] init];
+	if (removedCollections == nil)
+		removedCollections = [[NSMutableSet alloc] init];
+}
+
+/**
  * We override this method to reset our changeset variables.
 **/
 - (void)postReadWriteTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
 	[super postReadWriteTransaction:transaction];
 	
-	[changedKeys removeAllObjects];
-	[resetCollections removeAllObjects];
+	if ([objectChanges count] > 0)
+		objectChanges = nil;
+	if ([metadataChanges count] > 0)
+		metadataChanges = nil;
+	if ([removedKeys count] > 0)
+		removedKeys = nil;
+	if ([removedCollections count] > 0)
+		removedCollections = nil;
 }
 
 /**
@@ -595,19 +619,28 @@
  * If changes have been made, it should return a changeset dictionary.
  * If no changes have been made, it should return nil.
  * 
- * @see [YapAbstractDatabase cacheChangesetBlockFromChanges:]
+ * @see processChangeset:
 **/
 - (NSMutableDictionary *)changeset
 {
-	if ([changedKeys count] > 0 || [resetCollections count] > 0 || allKeysRemoved)
+	if ([objectChanges count] > 0      ||
+		[metadataChanges count] > 0    ||
+		[removedKeys count] > 0        ||
+		[removedCollections count] > 0 || allKeysRemoved)
 	{
-		NSMutableDictionary *changeset = [NSMutableDictionary dictionaryWithCapacity:4];
+		NSMutableDictionary *changeset = [NSMutableDictionary dictionaryWithCapacity:5];
 		
-		if ([changedKeys count] > 0)
-			[changeset setObject:[changedKeys copy] forKey:@"changedKeys"];
+		if ([objectChanges count] > 0)
+			[changeset setObject:objectChanges forKey:@"objectChanges"];
 		
-		if ([resetCollections count] > 0)
-			[changeset setObject:[resetCollections copy] forKey:@"resetCollections"];
+		if ([metadataChanges count] > 0)
+			[changeset setObject:metadataChanges forKey:@"metadataChanges"];
+		
+		if ([removedKeys count] > 0)
+			[changeset setObject:removedKeys forKey:@"removedKeys"];
+		
+		if ([removedCollections count] > 0)
+			[changeset setObject:removedCollections forKey:@"removedCollections"];
 		
 		if (allKeysRemoved)
 			[changeset setObject:@(YES) forKey:@"allKeysRemoved"];
@@ -623,53 +656,98 @@
 /**
  * Required override method from YapAbstractDatabaseConnection.
  *
- * This method is invoked from within the preReadWriteTransaction operation.
- * It is used to generate the changesetBlock to be passed to objectCache & metadataCache.
- *
- * The output block should return one of the following:
- *
- *  0 if the key/value pair is unchanged (this transaction).
- * -1 if the key/value pair is deleted (this transaction).
- * +1 if the key/value pair was modified (this transaction).
- **/
-- (int (^)(id key))cacheChangesetBlock
+ * This method is invoked with the changeset from a sibling connection.
+ * The connection should update any in-memory components (such as the cache) to properly reflect the changeset.
+**/
+- (void)processChangeset:(NSDictionary *)changeset
 {
-	if (changedKeys == nil) {
-		changedKeys = [[NSMutableSet alloc] init];
-	}
-	if (resetCollections == nil) {
-		resetCollections = [[NSMutableSet alloc] init];
-	}
-	allKeysRemoved = NO;
+	NSDictionary *c_objectChanges   =  [changeset objectForKey:@"objectChanges"];
+	NSDictionary *c_metadataChanges =  [changeset objectForKey:@"metadataChanges"];
+	NSSet *c_removedKeys            =  [changeset objectForKey:@"removedKeys"];
+	NSSet *c_removedCollections     =  [changeset objectForKey:@"removedCollections"];
+	BOOL c_allKeysRemoved           = [[changeset objectForKey:@"allKeysRemoved"] boolValue];
 	
-	return ^int (id key){
+	if ([c_objectChanges count] || [c_removedKeys count] || [c_removedCollections count] || c_allKeysRemoved)
+	{
+		NSUInteger updateCapacity = MIN([objectCache count], [c_objectChanges count]);
+		NSUInteger removeCapacity = MIN([objectCache count], [c_removedKeys count]);
 		
-		YapCacheCollectionKey *cacheKey = (YapCacheCollectionKey *)key;
+		NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
+		NSMutableArray *keysToRemove = [NSMutableArray arrayWithCapacity:removeCapacity];
 		
-		// Order matters.
-		// Imagine the following scenario:
-		//
-		// A database transaction removes all items from the database.
-		// Then it adds a single key/value pair.
-		//
-		// In this case, the proper return value for the single added key is 1 (modified).
-		// The proper return value for all other keys is -1 (deleted).
+		[objectCache enumerateKeysWithBlock:^(id key, BOOL *stop) {
+			
+			// Order matters.
+			// Consider the following database change:
+			//
+			// [transaction removeAllObjectsInAllCollections];
+			// [transaction setObject:obj forKey:key inCollection:collection];
+			
+			__unsafe_unretained YapCacheCollectionKey *cacheKey = (YapCacheCollectionKey *)key;
+			
+			if ([c_objectChanges objectForKey:key])
+			{
+				[keysToUpdate addObject:key];
+			}
+			else if ([c_removedKeys containsObject:key] ||
+					 [c_removedCollections containsObject:cacheKey.collection] || c_allKeysRemoved)
+			{
+				[keysToRemove addObject:key];
+			}
+		}];
 		
-		if ([changedKeys containsObject:cacheKey])
+		id yapnull = [YapNull null];
+		
+		for (id key in keysToUpdate)
 		{
-			return 1; // Collection/Key/value pair was modified
-		}
-		if ([resetCollections containsObject:cacheKey.collection])
-		{
-			return -1; // Collection/Key/value pair was deleted
-		}
-		if (allKeysRemoved)
-		{
-			return -1; // Collection/Key/value pair was deleted
+			id newObject = [c_objectChanges objectForKey:key];
+			
+			if (newObject == yapnull) // setPrimitiveDataForKey was used on key
+				[objectCache removeObjectForKey:key];
+			else
+				[objectCache setObject:newObject forKey:key];
 		}
 		
-		return 0; // Collection/Key/value pair wasn't modified
-	};
+		[objectCache removeObjectsForKeys:keysToRemove];
+	}
+	
+	if ([c_metadataChanges count] || [c_removedKeys count] || [c_removedCollections count] || c_allKeysRemoved)
+	{
+		NSUInteger updateCapacity = MIN([metadataCache count], [c_metadataChanges count]);
+		NSUInteger removeCapacity = MIN([metadataCache count], [c_removedKeys count]);
+		
+		NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
+		NSMutableArray *keysToRemove = [NSMutableArray arrayWithCapacity:removeCapacity];
+		
+		[metadataCache enumerateKeysWithBlock:^(id key, BOOL *stop) {
+			
+			// Order matters.
+			// Consider the following database change:
+			//
+			// [transaction removeAllObjectsInAllCollections];
+			// [transaction setObject:obj forKey:key inCollection:collection];
+			
+			__unsafe_unretained YapCacheCollectionKey *cacheKey = (YapCacheCollectionKey *)key;
+			
+			if ([c_metadataChanges objectForKey:key])
+			{
+				[keysToUpdate addObject:key];
+			}
+			else if ([c_removedKeys containsObject:key] ||
+					 [c_removedCollections containsObject:cacheKey.collection] || c_allKeysRemoved)
+			{
+				[keysToRemove addObject:key];
+			}
+		}];
+		
+		for (id key in keysToUpdate)
+		{
+			id newObject = [c_metadataChanges objectForKey:key];
+			[metadataCache setObject:newObject forKey:key];
+		}
+		
+		[metadataCache removeObjectsForKeys:keysToRemove];
+	}
 }
 
 @end

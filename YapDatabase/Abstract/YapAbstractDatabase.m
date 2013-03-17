@@ -245,9 +245,6 @@
 		connectionStates = [[NSMutableArray alloc] init];
 		changesets = [[NSMutableArray alloc] init];
 		
-		sharedObjectCache   = [[YapSharedCache alloc] initWithKeyClass:[self cacheKeyClass]];
-		sharedMetadataCache = [[YapSharedCache alloc] initWithKeyClass:[self cacheKeyClass]];
-		
 		// Mark the snapshotQueue so we can identify it.
 		// There are several methods whose use is restricted to within the snapshotQueue.
 		
@@ -402,17 +399,6 @@
  * Subclasses must implement this method and return the proper class to use for the cache.
 **/
 - (Class)cacheKeyClass
-{
-	NSAssert(NO, @"Missing required override method in subclass");
-	return nil;
-}
-
-/**
- * REQUIRED OVERRIDE HOOK.
- * 
- * Subclasses must implement this method and return the proper block to use for the cache.
-**/
-- (int (^)(id key))cacheChangesetBlockFromChanges:(NSDictionary *)changeset
 {
 	NSAssert(NO, @"Missing required override method in subclass");
 	return nil;
@@ -791,15 +777,6 @@
 	// We save the changeset in advance to handle possible edge cases.
 	
 	[changesets addObject:pendingChangeset];
-	
-	// And we pass the changeset into the shared cache(s).
-	
-	uint64_t changesetSnapshot = [[pendingChangeset objectForKey:@"snapshot"] unsignedLongLongValue];
-	
-	int (^changesetBlock)(id key) = [self cacheChangesetBlockFromChanges:pendingChangeset];
-	
-	[sharedObjectCache notePendingChangesetBlock:changesetBlock snapshot:changesetSnapshot];
-	[sharedMetadataCache notePendingChangesetBlock:changesetBlock snapshot:changesetSnapshot];
 }
 
 /**
@@ -843,10 +820,14 @@
 	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
 	NSAssert([changeset objectForKey:@"snapshot"], @"Missing required change key: snapshot");
 	
-	uint64_t changesetSnapshot = [[changeset objectForKey:@"snapshot"] unsignedLongLongValue];
-	
 	// The sender has finished the sqlite commit, and all data is now written to disk.
-	// We forward the changeset to all other connections so they can perform any needed updates.
+	
+	// Update the in-memory snapshot,
+	// which represents the most recent snapshot of the last committed readwrite transaction.
+	
+	snapshot = [[changeset objectForKey:@"snapshot"] unsignedLongLongValue];
+	
+	// Forward the changeset to all other connections so they can perform any needed updates.
 	// Generally this means updating the in-memory components such as the cache.
 	
 	dispatch_group_t group = dispatch_group_create();
@@ -870,25 +851,12 @@
 		// All connections have now processed the changes.
 		// So we no longer need to retain the changeset in memory.
 		
-		NSDictionary *changeset = [changesets objectAtIndex:0];
 		[changesets removeObjectAtIndex:0];
-		
-		// We can also tell the shared cache to cleanup all old/outdates data up to the changeset timestamp.
-		
-		int (^changesetBlock)(id key) = [self cacheChangesetBlockFromChanges:changeset];
-		
-		[sharedObjectCache noteCommittedChangesetBlock:changesetBlock snapshot:changesetSnapshot];
-		[sharedMetadataCache noteCommittedChangesetBlock:changesetBlock snapshot:changesetSnapshot];
 		
 		#if NEEDS_DISPATCH_RETAIN_RELEASE
 		dispatch_release(group);
 		#endif
 	});
-	
-	// And finally, update the in-memory snapshot,
-	// which represents the most recent snapshot of the last committed readwrite transaction.
-	
-	snapshot = changesetSnapshot;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

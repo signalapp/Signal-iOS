@@ -68,8 +68,8 @@
 @public
 	sqlite3 *db;
 	
-	YapSharedCacheConnection *objectCache;
-	YapSharedCacheConnection *metadataCache;
+	YapCache *objectCache;
+	YapCache *metadataCache;
 	
 	NSUInteger objectCacheLimit;          // Read-only by transaction. Use as consideration of whether to add to cache.
 	NSUInteger metadataCacheLimit;        // Read-only by transaction. Use as consideration of whether to add to cache.
@@ -91,11 +91,11 @@
 		dispatch_queue_set_specific(connectionQueue, IsOnConnectionQueueKey, nonNullUnusedPointer, NULL);
 		
 		objectCacheLimit = 40;
-		objectCache = [inDatabase->sharedObjectCache newConnection];
+		objectCache = [[YapCache alloc] initWithKeyClass:[database cacheKeyClass]];
 		objectCache.countLimit = objectCacheLimit;
 		
 		metadataCacheLimit = 0;
-		metadataCache = [inDatabase->sharedMetadataCache newConnection];
+		metadataCache = [[YapCache alloc] initWithKeyClass:[database cacheKeyClass]];
 		metadataCache.countLimit = metadataCacheLimit;
 		
 		self.autoFlushMemoryLevel = YapDatabaseConnectionFlushMemoryLevelMild;
@@ -209,7 +209,7 @@
 		{
 			if (objectCache == nil)
 			{
-				objectCache = [database->sharedObjectCache newConnection];
+				objectCache = [[YapCache alloc] initWithKeyClass:[database cacheKeyClass]];
 				objectCache.countLimit = objectCacheLimit;
 			}
 		}
@@ -290,7 +290,7 @@
 		{
 			if (metadataCache == nil)
 			{
-				metadataCache = [database->sharedMetadataCache newConnection];
+				metadataCache = [[YapCache alloc] initWithKeyClass:[database cacheKeyClass]];
 				metadataCache.countLimit = metadataCacheLimit;
 			}
 		}
@@ -794,13 +794,6 @@
 			hasMarkedSqlLevelSharedReadLock = NO;
 		}
 	}});
-	
-	// Pre-Read-Transaction: Step 4 of 4
-	//
-	// Prep caches for transaction.
-	
-	[objectCache startReadTransaction:cacheSnapshot];
-	[metadataCache startReadTransaction:cacheSnapshot];
 }
 
 /**
@@ -885,13 +878,6 @@
 		
 		[writeStateToSignal signalWriteLock];
 	}
-	
-	// Post-Read-Transaction: Step 3 of 4
-	//
-	// Deprep caches.
-	
-	[objectCache endTransaction];
-	[metadataCache endTransaction];
 }
 
 /**
@@ -957,13 +943,6 @@
 		
 		YDBLogVerbose(@"YapDatabaseConnection(%p) starting read-write transaction.", self);
 	}});
-	
-	// Pre-Write-Transaction: Step 4 of 4
-	
-	int (^cacheChangesetBlock)(id key) = [self cacheChangesetBlock];
-	
-	[objectCache startReadWriteTransaction:(cacheSnapshot + 1) withChangesetBlock:cacheChangesetBlock];
-	[metadataCache startReadWriteTransaction:(cacheSnapshot + 1) withChangesetBlock:cacheChangesetBlock];
 }
 
 /**
@@ -1120,13 +1099,6 @@
 		
 		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-write transaction.", self);
 	}});
-	
-	// Post-Write-Transaction: Step 7 of 7
-	//
-	// Deprep caches.
-	
-	[objectCache endTransaction];
-	[metadataCache endTransaction];
 }
 
 /**
@@ -1299,19 +1271,12 @@
 /**
  * REQUIRED OVERRIDE HOOK.
  * 
- * This method is invoked from within the preReadWriteTransaction operation.
- * It is used to generate the changesetBlock to be passed to objectCache & metadataCache.
- * 
- * The output block should return one of the following:
- *
- *  0 if the key/value pair is unchanged (this transaction).
- * -1 if the key/value pair is deleted (this transaction).
- * +1 if the key/value pair was modified (this transaction).
+ * This method is invoked with the changeset from a sibling connection.
+ * The connection should update any in-memory components (such as the cache) to properly reflect the changeset.
 **/
-- (int (^)(id key))cacheChangesetBlock
+- (void)processChangeset:(NSDictionary *)changeset
 {
 	NSAssert(NO, @"Missing required override method in subclass");
-	return nil;
 }
 
 /**
@@ -1359,25 +1324,7 @@
 	
 	cacheSnapshot = changesetSnapshot;
 	
-	// Update the caches.
-	// 
-	// Each cache will iterate over its local list of keys, and invoke our changeset_block.
-	// If our changeset_block returns 0, the cache will continue and leave its cached value for that key unchanged.
-	// If our changeset_block returns -1, the cache will delete its cached value for that key.
-	// If our changeset_block returns +1, the cache will update its cached value for that key from the shared cache.
-	//
-	// If a cached value is updated from the shared cache,
-	// it will use the cacheSnapshot to fetch the proper updated value.
-	//
-	// Recall that the shared cache stores multiple values per key, based on snapshot.
-	// The snapshots allow concurrency while maintaining the atomic nature of the database transaction.
-	// Thus an active readwrite connection can be making changes to the shared cache
-	// while a readonly connection continues using the shared cache for its current transaction.
-	
-	int (^changesetBlock)(id key) = [database cacheChangesetBlockFromChanges:changeset];
-	
-	[objectCache noteCommittedChangesetBlock:changesetBlock snapshot:changesetSnapshot];
-	[metadataCache noteCommittedChangesetBlock:changesetBlock snapshot:changesetSnapshot];
+	[self processChangeset:changeset];
 }
 
 @end

@@ -69,56 +69,6 @@
 }
 
 /**
- * Required override method from YapAbstractDatabase.
- *
- * This method is used to generate the changeset block used with YapSharedCache & YapSharedCacheConnection.
- * The given changeset comes directly from a readwrite transaction.
- *
- * The output block should return one of the following:
- *
- *  0 if the changeset indicates the key/value pair was unchanged.
- * -1 if the changeset indicates the key/value pair was deleted.
- * +1 if the changeset indicates the key/value pair was modified.
-**/
-- (int (^)(id key))cacheChangesetBlockFromChanges:(NSDictionary *)changeset
-{
-	NSSet *changeset_changedKeys = [changeset objectForKey:@"changedKeys"];
-	NSSet *changeset_resetCollections = [changeset objectForKey:@"resetCollections"];
-	BOOL changeset_allKeysRemoved = [[changeset objectForKey:@"allKeysRemoved"] boolValue];
-	
-	int (^changeset_block)(id key) = ^(id key){
-		
-		YapCacheCollectionKey *cacheKey = (YapCacheCollectionKey *)key;
-		
-		// Order matters.
-		// Imagine the following scenario:
-		//
-		// A database transaction removes all items from the database.
-		// Then it adds a single key/value pair.
-		//
-		// In this case, the proper return value for the single added key is 1 (modified).
-		// The proper return value for all other keys is -1 (deleted).
-		
-		if ([changeset_changedKeys containsObject:cacheKey])
-		{
-			return 1; // Collection/Key/value pair was modified
-		}
-		if ([changeset_resetCollections containsObject:cacheKey.collection])
-		{
-			return -1; // Collection/Key/value pair was deleted
-		}
-		if (changeset_allKeysRemoved)
-		{
-			return -1; // Collection/Key/value pair was deleted
-		}
-		
-		return 0; // Collection/Key/value pair wasn't modified
-	};
-	
-	return changeset_block;
-}
-
-/**
  * This is a public method called to create a new connection.
  *
  * All the details of managing connections, and managing connection state, is handled by YapAbstractDatabase.

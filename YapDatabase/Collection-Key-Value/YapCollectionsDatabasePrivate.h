@@ -32,8 +32,10 @@
 	
 @public
 	
-	NSMutableSet *changedKeys;
-	NSMutableSet *resetCollections;
+	NSMutableDictionary *objectChanges;
+	NSMutableDictionary *metadataChanges;
+	NSMutableSet *removedKeys;
+	NSMutableSet *removedCollections;
 	BOOL allKeysRemoved;
 
 /* Inherited from YapAbstractDatabaseConnection (see YapAbstractDatabasePrivate.h):
@@ -49,8 +51,8 @@
 @public
 	sqlite3 *db;
 	
-	YapSharedCacheConnection *objectCache;
-	YapSharedCacheConnection *metadataCache;
+	YapCache *objectCache;
+	YapCache *metadataCache;
 	
 	NSUInteger objectCacheLimit;          // Read-only by transaction. Use as consideration of whether to add to cache.
 	NSUInteger metadataCacheLimit;        // Read-only by transaction. Use as consideration of whether to add to cache.
