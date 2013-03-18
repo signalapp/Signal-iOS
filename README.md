@@ -17,7 +17,6 @@ It has the following features:
 * **Objective-C**. A simple to use Objective-C API means you'll be up and running in no time.
 
 <br/>
-<br/>
 
 **[Learn more about the features listed above](https://github.com/yaptv/YapDatabase/wiki/What-is-YapDatabase)**<br/>
 **[See what the API looks like in "hello world" for YapDatabase](https://github.com/yaptv/YapDatabase/wiki/Hello-World)**<br/>
