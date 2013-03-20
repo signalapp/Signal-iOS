@@ -106,6 +106,7 @@ static NSMutableArray *keys;
 	// Generate a random list of keys to fetch which satisfies the requested hit percentage
 	
 	NSUInteger cacheSize = connection.objectCacheLimit;
+	NSAssert(cacheSize < loopCount, @"Can't satisfy hitPercentage because cacheSize is too big");
 	
 	NSMutableOrderedSet *keysInCache = [NSMutableOrderedSet orderedSetWithCapacity:cacheSize];
 	NSMutableArray *keysToFetch = [NSMutableArray arrayWithCapacity:loopCount];
@@ -166,8 +167,8 @@ static NSMutableArray *keys;
 	
 	NSTimeInterval elapsed = [start timeIntervalSinceNow] * -1.0;
 	
-	NSLog(@"Fetching keys: total time: %.6f, average time per key: %.6f (cache hit percentage: %.2f)",
-		  elapsed, (elapsed / loopCount), hitPercentage);
+	NSLog(@"Fetch %lu random objs: total time: %.6f, average time per key: %.6f (cache hit percentage: %.2f)",
+		  (unsigned long)loopCount, elapsed, (elapsed / loopCount), hitPercentage);
 }
 
 + (void)readTransactionOverhead:(NSUInteger)loopCount
@@ -183,8 +184,7 @@ static NSMutableArray *keys;
 	}
 	
 	NSTimeInterval elapsed = [start timeIntervalSinceNow] * -1.0;
-	NSLog(@"ReadOnly transaction overhead: total time: %.8f, average time per transaction: %.8f",
-		  elapsed, (elapsed / loopCount));
+	NSLog(@"ReadOnly transaction overhead: %.8f", (elapsed / loopCount));
 }
 
 + (void)readWriteTransactionOverhead:(NSUInteger)loopCount
@@ -200,8 +200,7 @@ static NSMutableArray *keys;
 	}
 	
 	NSTimeInterval elapsed = [start timeIntervalSinceNow] * -1.0;
-	NSLog(@"ReadWrite transaction overhead: total time: %.8f, average time per transaction: %.8f",
-		  elapsed, (elapsed / loopCount));
+	NSLog(@"ReadWrite transaction overhead: %.8f", (elapsed / loopCount));
 }
 
 + (void)removeAllValues
@@ -229,7 +228,7 @@ static NSMutableArray *keys;
 	
 	// Create database connection (can have multiple for concurrency)
 	connection = [database newConnection];
-	connection.objectCacheLimit = 40;
+	connection.objectCacheLimit = 250; // default size
 	
 	// Setup
 	[self generateKeys:1000];
@@ -258,11 +257,11 @@ static NSMutableArray *keys;
 		
 		NSLog(@"FETCH DATABASE");
 		
-		[self fetchValuesInLoop:10000 withCacheHitPercentage:0.05];
-		[self fetchValuesInLoop:10000 withCacheHitPercentage:0.25];
-		[self fetchValuesInLoop:10000 withCacheHitPercentage:0.50];
-		[self fetchValuesInLoop:10000 withCacheHitPercentage:0.75];
-		[self fetchValuesInLoop:10000 withCacheHitPercentage:0.95];
+		[self fetchValuesInLoop:1000 withCacheHitPercentage:0.05];
+		[self fetchValuesInLoop:1000 withCacheHitPercentage:0.25];
+		[self fetchValuesInLoop:1000 withCacheHitPercentage:0.50];
+		[self fetchValuesInLoop:1000 withCacheHitPercentage:0.75];
+		[self fetchValuesInLoop:1000 withCacheHitPercentage:0.95];
 		
 		NSLog(@"====================================================");
 	});
