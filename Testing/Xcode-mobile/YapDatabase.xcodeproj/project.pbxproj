@@ -93,7 +93,6 @@
 		DCF7E10D16F57CDA000C2184 /* BenchmarkYapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF7E10C16F57CDA000C2184 /* BenchmarkYapDatabase.m */; };
 		DCF7E11016F5BC6A000C2184 /* YapNull.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF7E10F16F5BC6A000C2184 /* YapNull.m */; };
 		DCF7E11116F5BC6A000C2184 /* YapNull.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF7E10F16F5BC6A000C2184 /* YapNull.m */; };
-		DCFDB06916D562810011FA2B /* TestSharedCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DCFDB06816D562810011FA2B /* TestSharedCache.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -210,8 +209,6 @@
 		DCF7E10C16F57CDA000C2184 /* BenchmarkYapDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BenchmarkYapDatabase.m; path = ../Benchmarking/BenchmarkYapDatabase.m; sourceTree = "<group>"; };
 		DCF7E10E16F5BC6A000C2184 /* YapNull.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapNull.h; sourceTree = "<group>"; };
 		DCF7E10F16F5BC6A000C2184 /* YapNull.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapNull.m; sourceTree = "<group>"; };
-		DCFDB06716D562810011FA2B /* TestSharedCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestSharedCache.h; path = ../../UnitTesting/TestSharedCache.h; sourceTree = "<group>"; };
-		DCFDB06816D562810011FA2B /* TestSharedCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestSharedCache.m; path = ../../UnitTesting/TestSharedCache.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -497,8 +494,6 @@
 		DCAE52171673FE2600395076 /* UnitTests */ = {
 			isa = PBXGroup;
 			children = (
-				DCFDB06716D562810011FA2B /* TestSharedCache.h */,
-				DCFDB06816D562810011FA2B /* TestSharedCache.m */,
 				DC3D2F251673FFEC00DFAFAA /* TestObject.h */,
 				DC3D2F261673FFEC00DFAFAA /* TestObject.m */,
 				DC3D2F271673FFEC00DFAFAA /* TestYapDatabase.h */,
@@ -710,7 +705,6 @@
 				DC81B6CA16921F66006FA74B /* YapAbstractDatabase.m in Sources */,
 				DC81B6CC16921F66006FA74B /* YapAbstractDatabaseConnection.m in Sources */,
 				DC81B6CE16921F66006FA74B /* YapAbstractDatabaseTransaction.m in Sources */,
-				DCFDB06916D562810011FA2B /* TestSharedCache.m in Sources */,
 				DC0B8C0F16EFE5F500896C6C /* YapCacheCollectionKey.m in Sources */,
 				DCF7E11116F5BC6A000C2184 /* YapNull.m in Sources */,
 			);
