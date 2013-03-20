@@ -316,7 +316,7 @@
 	
 	STAssertTrue([originalDate isEqual:deserializedDate], @"Oops");
 }
-/*
+
 - (void)test2
 {
 	STAssertNotNil(database, @"Oops");
@@ -388,8 +388,8 @@
 	connection1 = nil;
 	connection2 = nil;
 }
-*/
-/*
+
+
 - (void)test3
 {
 	STAssertNotNil(database, @"Oops");
@@ -436,8 +436,8 @@
 		STAssertNotNil([transaction metadataForKey:key], @"Expected non-nil metadata");
 	}];
 }
-*/
-/*
+
+
 - (void)test4
 {
 	STAssertNotNil(database, @"Oops");
@@ -488,5 +488,5 @@
 		STAssertTrue(elapsed < 0.05, @"Read-Write transaction maybe blocking read-only transaction?");
 	}
 }
-*/
+
 @end
