@@ -10,17 +10,21 @@
 #pragma mark Count
 
 /**
- * Returns a full list of keys, sorted by the order in which the keys were explicitly appended/prepended/inserted.
+ * Returns the total number of keys in the given collection.
+ * Returns zero if the collection doesn't exist (or all key/object pairs from the collection have been removed).
  * 
- * This method is similar to allKeysInCollection, but ordered.
+ * Since ordered collections allow duplicates, this method will include duplicates (if any).
 **/
-- (NSArray *)orderedKeysInCollection:(NSString *)collection;
+- (NSUInteger)numberOfKeysInCollection:(NSString *)collection;
+
+#pragma mark List
 
 /**
- * Equivalent to calling [[transaction orderedKeysInCollection:collection] count],
- * but performs faster.
+ * Returns the list of keys, sorted by the order in which the keys were explicitly appended/prepended/inserted.
+ * 
+ * Since ordered collections allow duplicates, the list will include duplicates (if any).
 **/
-- (NSUInteger)orderedKeysCountInCollection:(NSString *)collection;
+- (NSArray *)allKeysInCollection:(NSString *)collection;
 
 /**
  * Equivalent to calling [[transaction orderedKeysInCollection:collection] subarrayWithRange:range],

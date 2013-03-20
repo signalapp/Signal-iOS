@@ -65,16 +65,16 @@
 
 #pragma mark Count
 
-- (NSArray *)orderedKeysInCollection:(NSString *)collection
+- (NSUInteger)numberOfKeysInCollection:(NSString *)collection
 {
-	return [[self orderForCollection:collection] allKeys:self];
+	return [[self orderForCollection:collection] numberOfKeys];
 }
 
 #pragma mark List
 
-- (NSUInteger)orderedKeysCountInCollection:(NSString *)collection
+- (NSArray *)allKeysInCollection:(NSString *)collection
 {
-	return [[self orderForCollection:collection] numberOfKeys];
+	return [[self orderForCollection:collection] allKeys:self];
 }
 
 - (NSArray *)keysInRange:(NSRange)range collection:(NSString *)collection
