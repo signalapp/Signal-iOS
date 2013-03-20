@@ -63,12 +63,14 @@
 	return [transaction objectForKey:key inCollection:collection];
 }
 
-#pragma mark List
+#pragma mark Count
 
 - (NSArray *)orderedKeysInCollection:(NSString *)collection
 {
 	return [[self orderForCollection:collection] allKeys:self];
 }
+
+#pragma mark List
 
 - (NSUInteger)orderedKeysCountInCollection:(NSString *)collection
 {

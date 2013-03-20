@@ -7,6 +7,8 @@
 **/
 @protocol YapOrderedCollectionsReadTransaction <NSObject>
 
+#pragma mark Count
+
 /**
  * Returns a full list of keys, sorted by the order in which the keys were explicitly appended/prepended/inserted.
  * 
@@ -26,12 +28,16 @@
 **/
 - (NSArray *)keysInRange:(NSRange)range collection:(NSString *)collection;
 
+#pragma mark Index
+
 /**
  * Returns the key/object/metadata at the index in the given collection.
 **/
 - (NSString *)keyAtIndex:(NSUInteger)index inCollection:(NSString *)collection;
 - (id)objectAtIndex:(NSUInteger)index inCollection:(NSString *)collection;
 - (id)metadataAtIndex:(NSUInteger)index inCollection:(NSString *)collection;
+
+#pragma mark Enumerate
 
 /**
  * Extremely fast in-memory enumeration over keys (in their set order) and associated metadata in the database.

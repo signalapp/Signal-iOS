@@ -697,7 +697,7 @@
 		{
 			YDBLogError(@"Error creating 'metadataForKeys' statement: %d %s",
 						status, sqlite3_errmsg(connection->db));
-			return;
+			break; // Break from do/while. Still need to free _collection.
 		}
 		
 		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numHostParams];
@@ -747,7 +747,7 @@
 		sqlite3_finalize(statement);
 		statement = NULL;
 		
-		if (stop) return;
+		if (stop) break; // Break from do/while. Still need to free _collection.
 		
 		// If there are any remaining items in the keyIndexDict,
 		// then those items didn't exist in the database.
@@ -761,7 +761,7 @@
 		
 		[missingIndexes removeObjectsInRange:NSMakeRange(0, numHostParams)];
 		
-	} while ([missingIndexes count] > 0);
+	} while (!stop && [missingIndexes count] > 0);
 	
 	FreeYapDatabaseString(&_collection);
 }
@@ -857,7 +857,7 @@
 		{
 			YDBLogError(@"Error creating 'objectsForKeys' statement: %d %s",
 						status, sqlite3_errmsg(connection->db));
-			return;
+			break; // Break from do/while. Still need to free _collection.
 		}
 		
 		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numHostParams];
@@ -907,7 +907,7 @@
 		sqlite3_finalize(statement);
 		statement = NULL;
 		
-		if (stop) return;
+		if (stop) break; // Break from do/while. Still need to free _collection.
 		
 		// If there are any remaining items in the keyIndexDict,
 		// then those items didn't exist in the database.
@@ -921,7 +921,7 @@
 		
 		[missingIndexes removeObjectsInRange:NSMakeRange(0, numHostParams)];
 		
-	} while ([missingIndexes count] > 0);
+	} while (!stop && [missingIndexes count] > 0);
 	
 	FreeYapDatabaseString(&_collection);
 }
@@ -1092,7 +1092,7 @@
 		{
 			YDBLogError(@"Error creating 'objectsAndMetadataForKeys' statement: %d %s",
 						status, sqlite3_errmsg(connection->db));
-			return;
+			break; // Break from do/while. Still need to free _collection.
 		}
 		
 		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numHostParams];
@@ -1158,7 +1158,7 @@
 		sqlite3_finalize(statement);
 		statement = NULL;
 		
-		if (stop) return;
+		if (stop) break; // Break from do/while. Still need to free _collection.
 		
 		// If there are any remaining items in the keyIndexDict,
 		// then those items didn't exist in the database.
@@ -1172,7 +1172,7 @@
 		
 		[missingIndexes removeObjectsInRange:NSMakeRange(0, numHostParams)];
 		
-	} while ([missingIndexes count] > 0);
+	} while (!stop && [missingIndexes count] > 0);
 	
 	FreeYapDatabaseString(&_collection);
 }
@@ -1867,7 +1867,7 @@
 		{
 			YDBLogError(@"Error creating 'removeKeysInCollection' statement: %d %s",
 			                                                             status, sqlite3_errmsg(connection->db));
-			return;
+			break; // Break from do/while. Still need to free _collection.
 		}
 		
 		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);

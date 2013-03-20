@@ -50,7 +50,7 @@
 #define YapDatabaseLoggingTechnique_NSLog      1 // slower
 #define YapDatabaseLoggingTechnique_Disabled   0 // disabled
 
-#define YapDatabaseLoggingTechnique YapDatabaseLoggingTechnique_NSLog
+#define YapDatabaseLoggingTechnique YapDatabaseLoggingTechnique_Lumberjack
 
 /**
  * Todo...

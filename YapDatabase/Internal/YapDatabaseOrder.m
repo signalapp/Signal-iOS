@@ -6,7 +6,7 @@
 #endif
 
 #if DEBUG && robbie_hanson
-  static const int ydbFileLogLevel = YDB_LOG_LEVEL_VERBOSE;
+  static const int ydbFileLogLevel = YDB_LOG_LEVEL_WARN;
 #elif DEBUG
   static const int ydbFileLogLevel = YDB_LOG_LEVEL_WARN;
 #else
