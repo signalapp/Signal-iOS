@@ -5,10 +5,12 @@
 #warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
 #endif
 
-#if DEBUG && robbie_hanson
-  static const int ydbFileLogLevel = YDB_LOG_LEVEL_WARN;
-#elif DEBUG
-  static const int ydbFileLogLevel = YDB_LOG_LEVEL_WARN;
+/**
+ * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
+ * See YapDatabaseLogging.h for more information.
+**/
+#if DEBUG
+  static const int ydbFileLogLevel = YDB_LOG_LEVEL_INFO;
 #else
   static const int ydbFileLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
@@ -372,7 +374,7 @@
 	
 	if (maxPagesInMemory > 0) // if there's a restriction on how many pages to keep in memory
 	{
-		YDBLogInfo(@"%@: Looking for pages to unload due to new maxPagesInMemory: %lu",
+		YDBLogVerbose(@"%@: Looking for pages to unload due to new maxPagesInMemory: %lu",
 		          NSStringFromSelector(_cmd), (unsigned long)maxPagesInMemory);
 	
 		NSUInteger inMemoryDirtyPageCount = 0;
@@ -421,7 +423,7 @@
 				YapDatabasePageInfo *pageInfo = [inMemoryNonDirtyPages objectAtIndex:0];
 				[inMemoryNonDirtyPages removeObjectAtIndex:0];
 				
-				YDBLogInfo(@"%@: UnLoading page at index %lu with key %@",
+				YDBLogVerbose(@"%@: UnLoading page at index %lu with key %@",
 				    NSStringFromSelector(_cmd), (unsigned long)pageInfo->tempPageIndex, pageInfo->pageKey);
 				
 				pageInfo->lastAccess = nil;
@@ -471,7 +473,7 @@
 	// 
 	// We're going to create new versions of 'pageInfos' and 'pages'.
 	
-	YDBLogInfo(@"%@: Restructuring pages due to new maxPageSize: %lu",
+	YDBLogVerbose(@"%@: Restructuring pages due to new maxPageSize: %lu",
 	          NSStringFromSelector(_cmd), (unsigned long)maxPageSize);
 	
 	NSMutableArray *newPageInfos = [NSMutableArray array];
@@ -568,7 +570,7 @@
 		{
 			// We need to load the page from disk and deserialize it
 			
-			YDBLogInfo(@"%@: Loading page at index %lu with key %@",
+			YDBLogVerbose(@"%@: Loading page at index %lu with key %@",
 			    NSStringFromSelector(_cmd), (unsigned long)index, pageInfo->pageKey);
 			
 			// Request page data from disk
@@ -666,7 +668,7 @@
 			
 			if (oldestPageInfo)
 			{
-				YDBLogInfo(@"%@: UnLoading page at index %lu with key %@",
+				YDBLogVerbose(@"%@: UnLoading page at index %lu with key %@",
 				    NSStringFromSelector(_cmd), (unsigned long)oldestPageInfo->tempPageIndex, oldestPageInfo->pageKey);
 				
 				oldestPageInfo->lastAccess = nil;
@@ -1329,7 +1331,7 @@
 			
 			if ((pageInfo->pageSize == 0) && ([pageInfos count] > 1))
 			{
-				YDBLogInfo(@"%@: Dropping empty page at index %lu with key %@",
+				YDBLogVerbose(@"%@: Dropping empty page at index %lu with key %@",
 				    NSStringFromSelector(_cmd), (unsigned long)pageIndex, pageInfo->pageKey);
 				
 				[pages removeObjectForKey:pageInfo->pageKey];
@@ -1396,7 +1398,7 @@
 			
 		 	if ((pageInfo->pageSize == 0) && ([pageInfos count] > 1))
 			{
-				YDBLogInfo(@"%@: Dropping empty page at index %lu with key %@",
+				YDBLogVerbose(@"%@: Dropping empty page at index %lu with key %@",
 				    NSStringFromSelector(_cmd), (unsigned long)pageIndex, pageInfo->pageKey);
 				
 				[pages removeObjectForKey:pageInfo->pageKey];
@@ -1500,7 +1502,7 @@
 		
 		if ((pageInfo->pageSize == 0) && ([pageInfos count] > 1))
 		{
-			YDBLogInfo(@"%@: Dropping empty page at index %lu with key %@",
+			YDBLogVerbose(@"%@: Dropping empty page at index %lu with key %@",
 			    NSStringFromSelector(_cmd), (unsigned long)pageIndex, pageInfo->pageKey);
 			
 			[pages removeObjectForKey:pageInfo->pageKey];

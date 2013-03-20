@@ -36,7 +36,7 @@
 #endif
 
 /**
- * Define log level for this file.
+ * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
  * See YapDatabaseLogging.h for more information.
 **/
 #if DEBUG
@@ -1259,8 +1259,7 @@
  * If changes have been made, it should return a changeset dictionary.
  * If no changes have been made, it should return nil.
  * 
- * @see [YapAbstractDatabaseConnection noteCommittedChanges:]
- * @see [YapAbstractDatabase cacheChangesetBlockFromChanges:]
+ * @see processChangeset:
 **/
 - (NSMutableDictionary *)changeset
 {
@@ -1273,6 +1272,8 @@
  * 
  * This method is invoked with the changeset from a sibling connection.
  * The connection should update any in-memory components (such as the cache) to properly reflect the changeset.
+ * 
+ * @see changeset
 **/
 - (void)processChangeset:(NSDictionary *)changeset
 {
@@ -1280,18 +1281,9 @@
 }
 
 /**
- * Optional override hook.
- * You should likely invoke [super noteCommittedChanges:changeset] if you do.
+ * Internal method. Do not override.
  *
- * This method is invoked when a sibling connection (a separate connection for the same database)
- * finishes making a change to the database. We take this opportunity to flush from our cache anything that changed.
- * This allows us to keep our cache mostly full, and just discard changed items.
- * 
- * Note: This is an optimization that may occasionally be spoiled due to the multi-threaded nature of connections.
- * For example, if a separate connection in another thread makes a change, then by the time we get this notification,
- * our connection may have already begun a transaction. The atomic snapshot architecture takes over at that point,
- * and will detect the race condition, and fully flush the cache. This method is an optimization that
- * allows us to avoid the full flush a majority of the time.
+ * This method is invoked with the changeset from a sibling connection.
 **/
 - (void)noteCommittedChanges:(NSDictionary *)changeset
 {

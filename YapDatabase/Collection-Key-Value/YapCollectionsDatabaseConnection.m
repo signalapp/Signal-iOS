@@ -13,7 +13,7 @@
 #endif
 
 /**
- * Define log level for this file.
+ * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
  * See YapDatabaseLogging.h for more information.
 **/
 #if DEBUG
@@ -658,6 +658,8 @@
  *
  * This method is invoked with the changeset from a sibling connection.
  * The connection should update any in-memory components (such as the cache) to properly reflect the changeset.
+ * 
+ * @see changeset
 **/
 - (void)processChangeset:(NSDictionary *)changeset
 {

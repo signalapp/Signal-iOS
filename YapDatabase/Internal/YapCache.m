@@ -29,9 +29,11 @@
 
 #endif
 
-#if DEBUG && robbie_hanson
-  static const int ydbFileLogLevel = YDB_LOG_LEVEL_OFF;
-#elif DEBUG
+/**
+ * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
+ * See YapDatabaseLogging.h for more information.
+**/
+#if DEBUG
   static const int ydbFileLogLevel = YDB_LOG_LEVEL_OFF;
 #else
   static const int ydbFileLogLevel = YDB_LOG_LEVEL_OFF;

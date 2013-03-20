@@ -40,11 +40,11 @@
 #endif
 
 /**
- * Define log level for this file.
+ * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
  * See YapDatabaseLogging.h for more information.
 **/
 #if DEBUG
-  static const int ydbFileLogLevel = YDB_LOG_LEVEL_VERBOSE;
+  static const int ydbFileLogLevel = YDB_LOG_LEVEL_INFO;
 #else
   static const int ydbFileLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
@@ -558,7 +558,6 @@
 			if ([self performSelector:sel])
 			#pragma clang diagnostic pop
 			{
-				YDBLogInfo(@"Done");
 				[self set_user_version:new_user_version];
 			}
 			else

@@ -41,7 +41,7 @@
 #endif
 
 /**
- * Define log level for this file.
+ * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
  * See YapDatabaseLogging.h for more information.
 **/
 #if DEBUG
