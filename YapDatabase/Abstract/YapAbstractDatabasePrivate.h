@@ -56,9 +56,9 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	
 	sqlite3 *db;
 	
-	void *IsOnSnapshotQueueKey;
-	
 @public
+	
+	void *IsOnSnapshotQueueKey;       // Only to be used by YapAbstractDatabaseConnection
 	
 	dispatch_queue_t snapshotQueue;   // Only to be used by YapAbstractDatabaseConnection
 	dispatch_queue_t writeQueue;      // Only to be used by YapAbstractDatabaseConnection
@@ -196,10 +196,10 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	
 	YapAbstractDatabase *database;
 	
-	uint64_t cacheSnapshot;
-	
 @public
 	sqlite3 *db;
+	
+	uint64_t cacheSnapshot;
 	
 	YapCache *objectCache;
 	YapCache *metadataCache;

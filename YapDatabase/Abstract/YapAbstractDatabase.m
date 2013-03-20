@@ -662,6 +662,10 @@
 {
 	dispatch_block_t block = ^{ @autoreleasepool {
 		
+		// Initialize the connection's snapshot to the current snapshot
+		connection->cacheSnapshot = snapshot;
+		
+		// Add the connection to the state table
 		YapDatabaseConnectionState *state = [[YapDatabaseConnectionState alloc] initWithConnection:connection];
 		[connectionStates addObject:state];
 		
@@ -776,6 +780,9 @@
 	// We save the changeset in advance to handle possible edge cases.
 	
 	[changesets addObject:pendingChangeset];
+	
+	YDBLogVerbose(@"Adding pending changeset %@ for database: %@",
+	              [[changesets lastObject] objectForKey:@"snapshot"], self);
 }
 
 /**
@@ -849,6 +856,9 @@
 		
 		// All connections have now processed the changes.
 		// So we no longer need to retain the changeset in memory.
+		
+		YDBLogVerbose(@"Dropping processed changeset %@ for database: %@",
+		              [[changesets objectAtIndex:0] objectForKey:@"snapshot"], self);
 		
 		[changesets removeObjectAtIndex:0];
 		

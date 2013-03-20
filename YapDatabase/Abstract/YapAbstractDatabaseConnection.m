@@ -1287,7 +1287,23 @@
 **/
 - (void)noteCommittedChanges:(NSDictionary *)changeset
 {
-	NSAssert(dispatch_get_specific(IsOnConnectionQueueKey), @"Method must be invoked on connectionQueue");
+	// This method must be invoked from within connectionQueue.
+	// It may be invoked from:
+	//
+	// 1. [database noteCommittedChanges:fromConnection:]
+	//   via dispatch_async(connectionQueue, ...)
+	//
+	// 2. [self  preReadTransaction:]
+	//   via dispatch_X(connectionQueue) -> dispatch_sync(database->snapshotQueue)
+	//
+	// 3. [self preReadWriteTransaction:]
+	//   via dispatch_X(connectionQueue) -> dispatch_sync(database->snapshotQueue)
+	//
+	// In case 1 (the common case) we can see IsOnConnectionQueueKey.
+	// In case 2 & 3 (the edge cases) we can see IsOnSnapshotQueueKey.
+	
+	NSAssert(dispatch_get_specific(IsOnConnectionQueueKey) ||
+			 dispatch_get_specific(database->IsOnSnapshotQueueKey), @"Must be invoked within connectionQueue");
 	
 	// Grab the new snapshot.
 	// This tells us the minimum snapshot we could get if we started a transaction right now.
@@ -1311,10 +1327,16 @@
 		// Thus this method could be invoked twice to handle the same changeset.
 		// So catching it here and ignoring it is simply a minor optimization to avoid duplicate work.
 		
+		YDBLogVerbose(@"Ignoring previously processed changeset %@ for connection %@, database %@",
+		              [changeset objectForKey:@"snapshot"], self, self->database);
+		
 		return;
 	}
 	
 	cacheSnapshot = changesetSnapshot;
+	
+	YDBLogVerbose(@"Processing changeset %@ for connection %@, database %@",
+	              [changeset objectForKey:@"snapshot"], self, self->database);
 	
 	[self processChangeset:changeset];
 }
