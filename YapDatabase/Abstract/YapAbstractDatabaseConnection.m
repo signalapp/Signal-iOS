@@ -45,6 +45,9 @@
   static const int ydbFileLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
+#define DEFAULT_OBJECT_CACHE_LIMIT   250
+#define DEFAULT_METADATA_CACHE_LIMIT 500
+
 
 @implementation YapAbstractDatabaseConnection {
 
@@ -90,11 +93,11 @@
 		void *nonNullUnusedPointer = (__bridge void *)self;
 		dispatch_queue_set_specific(connectionQueue, IsOnConnectionQueueKey, nonNullUnusedPointer, NULL);
 		
-		objectCacheLimit = 40;
+		objectCacheLimit = DEFAULT_OBJECT_CACHE_LIMIT;
 		objectCache = [[YapCache alloc] initWithKeyClass:[database cacheKeyClass]];
 		objectCache.countLimit = objectCacheLimit;
 		
-		metadataCacheLimit = 0;
+		metadataCacheLimit = DEFAULT_METADATA_CACHE_LIMIT;
 		metadataCache = [[YapCache alloc] initWithKeyClass:[database cacheKeyClass]];
 		metadataCache.countLimit = metadataCacheLimit;
 		

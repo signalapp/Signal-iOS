@@ -38,7 +38,7 @@ typedef enum  {
  *
  * The cache is properly kept in sync with the atomic snapshot architecture of the database system.
  *
- * By default the objectCache is enabled and has a limit of 40.
+ * By default the objectCache is enabled and has a limit of 250.
  *
  * You can configure the objectCache at any time, including within readBlocks or readWriteBlocks.
  * To disable the object cache entirely, set objectCacheEnabled to NO.
@@ -54,7 +54,7 @@ typedef enum  {
  *
  * The cache is properly kept in sync with the atomic snapshot architecture of the database system.
  *
- * By default the metadataCache is enabled and has an infinite limit.
+ * By default the metadataCache is enabled and has a limit of 500.
  *
  * You can configure the metadataCache at any time, including within readBlocks or readWriteBlocks.
  * To disable the metadata cache entirely, set metadataCacheEnabled to NO.
