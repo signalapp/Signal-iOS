@@ -24,7 +24,7 @@
 
 /**
  * We must be cautious and conservative so as to avoid stack overflow.
- * This is possibly if really huge key names or collection names are used.
+ * This is possibe if really huge key names or collection names are used.
  *
  * The number below represents the largest amount of memory (in bytes) that will be allocated on the stack per string.
 **/
@@ -113,5 +113,6 @@ NS_INLINE void FreeYapDatabaseString(YapDatabaseString *dbStr)
 	{
 		free(dbStr->strHeap);
 		dbStr->strHeap = NULL;
+		dbStr->str = NULL;
 	}
 }

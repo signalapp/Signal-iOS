@@ -120,7 +120,7 @@
  * Read-write access to the database.
  *
  * Only a single read-write block can execute among all sibling connections.
- * Thus the execution of the block may be delayted if another sibling connection
+ * Thus the execution of the block may be delayed if another sibling connection
  * is currently executing a read-write block.
  *
  * This method is asynchronous.
@@ -135,7 +135,7 @@
  * Read-write access to the database.
  *
  * Only a single read-write block can execute among all sibling connections.
- * Thus the execution of the block may be delayted if another sibling connection
+ * Thus the execution of the block may be delayed if another sibling connection
  * is currently executing a read-write block.
  *
  * This method is asynchronous.
