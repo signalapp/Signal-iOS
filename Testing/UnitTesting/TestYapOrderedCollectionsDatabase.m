@@ -3,41 +3,24 @@
 #import "TestObject.h"
 
 @implementation TestYapOrderedCollectionsDatabase
-{
-	YapOrderedCollectionsDatabase *database;
-}
 
-- (NSString *)databaseName
-{
-	return @"TestYapOrderedCollectionsDatabase.sqlite";
-}
-
-- (NSString *)databasePath
+- (NSString *)databasePath:(NSString *)suffix
 {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
 	NSString *baseDir = ([paths count] > 0) ? [paths objectAtIndex:0] : NSTemporaryDirectory();
 	
-	return [baseDir stringByAppendingPathComponent:[self databaseName]];
-}
-
-- (void)setUp
-{
-	[super setUp];
+	NSString *databaseName = [NSString stringWithFormat:@"TestYapOrderedCollectionsDatabase-%@.sqlite", suffix];
 	
-	[[NSFileManager defaultManager] removeItemAtPath:[self databasePath] error:NULL];
-	database = [[YapOrderedCollectionsDatabase alloc] initWithPath:[self databasePath]];
-}
-
-- (void)tearDown
-{
-	database = nil;
-	[[NSFileManager defaultManager] removeItemAtPath:[self databasePath] error:NULL];
-	
-	[super tearDown];
+	return [baseDir stringByAppendingPathComponent:databaseName];
 }
 
 - (void)test
 {
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapOrderedCollectionsDatabase *database = [[YapOrderedCollectionsDatabase alloc] initWithPath:databasePath];
+	
 	STAssertNotNil(database, @"Oops");
 	
 	YapCollectionsDatabaseConnection *connection1 = [database newConnection];

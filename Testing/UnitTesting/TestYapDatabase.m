@@ -9,49 +9,24 @@
 
 
 @implementation TestYapDatabase
-{
-	YapDatabase *database;
-}
 
-- (NSString *)databaseName
-{
-	return @"TestYapDatabase.sqlite";
-}
-
-- (NSString *)databasePath
+- (NSString *)databasePath:(NSString *)suffix
 {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
 	NSString *baseDir = ([paths count] > 0) ? [paths objectAtIndex:0] : NSTemporaryDirectory();
 	
-	return [baseDir stringByAppendingPathComponent:[self databaseName]];
-}
-
-- (void)setUp
-{
-	NSLog(@"TestYapDatabase: setUp");
+	NSString *databaseName = [NSString stringWithFormat:@"TestYapDatabase-%@.sqlite", suffix];
 	
-	[super setUp];
-	
-	[[NSFileManager defaultManager] removeItemAtPath:[self databasePath] error:NULL];
-	database = [[YapDatabase alloc] initWithPath:[self databasePath]];
-}
-
-- (void)tearDown
-{
-	NSLog(@"TestYapDatabase: tearDown");
-	
-#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-	[database syncCheckpoint];
-#endif
-	
-	database = nil;
-	[[NSFileManager defaultManager] removeItemAtPath:[self databasePath] error:NULL];
-	
-	[super tearDown];
+	return [baseDir stringByAppendingPathComponent:databaseName];
 }
 
 - (void)test1
 {
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
 	STAssertNotNil(database, @"Oops");
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
@@ -284,27 +259,24 @@
 		STAssertNil([transaction metadataForKey:key4], @"Expected nil metadata");
 		STAssertNil([transaction metadataForKey:key5], @"Expected nil metadata");
 	}];
+}
+
+- (void)testPropertyListSerializerDeserializer
+{
+	NSData *(^propertyListSerializer)(id) = [YapDatabase propertyListSerializer];
+	id (^propertyListDeserializer)(NSData *) = [YapDatabase propertyListDeserializer];
 	
-	// Small workaround:
-	//
-	// We use flushMemoryWithLevel to synchronously go through the connection's internal serial queue,
-	// and hopefully flush all pending asyncronous operations so the connection gets deallocated immediately.
-	// 
-	// If the connection doesn't get deallocated, then the database doesn't get deallocated,
-	// and the next setup operation will fail to create the database
-	// since an existing database with the same filepath is still active.
+	NSDictionary *originalDict = @{ @"date":[NSDate date], @"string":@"string" };
 	
-	[connection1 flushMemoryWithLevel:YapDatabaseConnectionFlushMemoryLevelNone];
-	[connection2 flushMemoryWithLevel:YapDatabaseConnectionFlushMemoryLevelNone];
+	NSData *data = propertyListSerializer(originalDict);
 	
-	connection1 = nil;
-	connection2 = nil;
+	NSDictionary *deserializedDictionary = propertyListDeserializer(data);
+	
+	STAssertTrue([originalDict isEqualToDictionary:deserializedDictionary], @"PropertyList serialization broken");
 }
 
 - (void)testTimestampSerializerDeserializer
 {
-	STAssertNotNil(database, @"Oops");
-	
 	NSData *(^timestampSerializer)(id) = [YapDatabase timestampSerializer];
 	id (^timestampDeserializer)(NSData *) = [YapDatabase timestampDeserializer];
 	
@@ -314,11 +286,16 @@
 	
 	NSDate *deserializedDate = timestampDeserializer(data);
 	
-	STAssertTrue([originalDate isEqual:deserializedDate], @"Oops");
+	STAssertTrue([originalDate isEqual:deserializedDate], @"Timestamp serialization broken");
 }
 
 - (void)test2
 {
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
 	STAssertNotNil(database, @"Oops");
 	
 	/// Test concurrent connections.
@@ -372,26 +349,16 @@
 		STAssertNotNil([transaction objectForKey:key], @"Expected non-nil object");
 		STAssertNotNil([transaction metadataForKey:key], @"Expected non-nil metadata");
 	}];
-	
-	// Small workaround:
-	//
-	// We use flushMemoryWithLevel to synchronously go through the connection's internal serial queue,
-	// and hopefully flush all pending asyncronous operations so the connection gets deallocated immediately.
-	//
-	// If the connection doesn't get deallocated, then the database doesn't get deallocated,
-	// and the next setup operation will fail to create the database
-	// since an existing database with the same filepath is still active.
-	
-	[connection1 flushMemoryWithLevel:YapDatabaseConnectionFlushMemoryLevelNone];
-	[connection2 flushMemoryWithLevel:YapDatabaseConnectionFlushMemoryLevelNone];
-	
-	connection1 = nil;
-	connection2 = nil;
 }
 
 
 - (void)test3
 {
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
 	STAssertNotNil(database, @"Oops");
 	
 	/// Test concurrent connections.
@@ -440,6 +407,11 @@
 
 - (void)test4
 {
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
 	STAssertNotNil(database, @"Oops");
 	
 	/// Ensure large write doesn't block concurrent read operations on other connections.
@@ -483,9 +455,8 @@
 		}];
 		
 		NSTimeInterval elapsed = [NSDate timeIntervalSinceReferenceDate] - start;
-		NSLog(@"Read operation: %.6f", elapsed);
 		
-		STAssertTrue(elapsed < 0.05, @"Read-Write transaction maybe blocking read-only transaction?");
+		STAssertTrue(elapsed < 0.05, @"Read-Only transaction taking too long...");
 	}
 }
 
