@@ -91,6 +91,41 @@
 }
 
 /**
+ * Property lists ONLY support the following: NSData, NSString, NSArray, NSDictionary, NSDate, and NSNumber.
+ * Property lists are highly optimized and are used extensively Apple.
+ *
+ * Property lists make a good fit when your existing code already uses them,
+ * such as replacing NSUserDefaults with a database.
+**/
++ (NSData *(^)(id object))propertyListSerializer
+{
+	NSData *(^serializer)(id) = ^(id object){
+		return [NSPropertyListSerialization dataWithPropertyList:object
+		                                                  format:NSPropertyListBinaryFormat_v1_0
+		                                                 options:NSPropertyListImmutable
+		                                                   error:NULL];
+	};
+	
+	return serializer;
+}
+
+/**
+ * Property lists ONLY support the following: NSData, NSString, NSArray, NSDictionary, NSDate, and NSNumber.
+ * Property lists are highly optimized and are used extensively Apple.
+ *
+ * Property lists make a good fit when your existing code already uses them,
+ * such as replacing NSUserDefaults with a database.
+**/
++ (id (^)(NSData *))propertyListDeserializer
+{
+	id (^deserializer)(NSData *) = ^(NSData *data){
+		return [NSPropertyListSerialization propertyListWithData:data options:0 format:NULL error:NULL];
+	};
+	
+	return deserializer;
+}
+
+/**
  * A FASTER serializer than the default, if serializing ONLY a NSDate object.
  * You may want to use timestampSerializer & timestampDeserializer if your metadata is simply an NSDate.
 **/

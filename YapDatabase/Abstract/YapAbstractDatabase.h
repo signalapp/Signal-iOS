@@ -16,10 +16,23 @@
 
 /**
  * The default serializer & deserializer use NSCoding (NSKeyedArchiver & NSKeyedUnarchiver).
- * Thus the objects need only support the NSCoding protocol.
+ * Thus any objects that support the NSCoding protocol may be used.
+ *
+ * Many of Apple's primary data types support NSCoding out of the box.
+ * It's easy to add NSCoding support to your own custom objects.
 **/
 + (NSData *(^)(id object))defaultSerializer;
 + (id (^)(NSData *))defaultDeserializer;
+
+/**
+ * Property lists ONLY support the following: NSData, NSString, NSArray, NSDictionary, NSDate, and NSNumber.
+ * Property lists are highly optimized and are used extensively Apple.
+ * 
+ * Property lists make a good fit when your existing code already uses them,
+ * such as replacing NSUserDefaults with a database.
+**/
++ (NSData *(^)(id object))propertyListSerializer;
++ (id (^)(NSData *))propertyListDeserializer;
 
 /**
  * A FASTER serializer & deserializer than the default, if serializing ONLY a NSDate object.
