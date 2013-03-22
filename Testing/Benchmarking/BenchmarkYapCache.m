@@ -4,6 +4,7 @@
 
 #define LOOP_COUNT 25000
 
+#define TEST_COLLECTION_KEY 0 // 0:Key=NSString, 1:Key=YapCacheCollectionKey
 
 @implementation BenchmarkYapCache
 
@@ -68,7 +69,11 @@ static NSMutableArray *cacheSizes;
 	
 	for (NSNumber *number in keysOrder)
 	{
+		#if TEST_COLLECTION_KEY
+		id cacheKey = [keys_ckv objectAtIndex:[number unsignedIntegerValue]];
+		#else
 		id cacheKey = [keys_kv objectAtIndex:[number unsignedIntegerValue]];
+		#endif
 		
 		[cache setObject:[NSNull null] forKey:cacheKey];
 	}
@@ -87,7 +92,11 @@ static NSMutableArray *cacheSizes;
 	
 	for (NSNumber *number in keysOrder)
 	{
+		#if TEST_COLLECTION_KEY
+		NSString *key = [keys_ckv objectAtIndex:[number unsignedIntegerValue]];
+		#else
 		NSString *key = [keys_kv objectAtIndex:[number unsignedIntegerValue]];
+		#endif
 		
 		[cache setObject:[NSNull null] forKey:key];
 	}
