@@ -437,7 +437,6 @@
 				DC3D2F311674002200DFAFAA /* Benchmarking */,
 				DCAE51F01673FE2600395076 /* App */,
 				DCAE51E91673FE2600395076 /* Frameworks */,
-				DC3D2F3D1675657100DFAFAA /* libsqlite3.dylib */,
 				DCAE51E81673FE2600395076 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -458,6 +457,7 @@
 				DCAE51EC1673FE2600395076 /* Foundation.framework */,
 				DCAE51EE1673FE2600395076 /* CoreGraphics.framework */,
 				DCAE52111673FE2600395076 /* SenTestingKit.framework */,
+				DC3D2F3D1675657100DFAFAA /* libsqlite3.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -810,7 +810,7 @@
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
+				VALIDATE_PRODUCT = NO;
 			};
 			name = Release;
 		};
