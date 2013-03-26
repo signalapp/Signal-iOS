@@ -6,13 +6,15 @@
 
 #define TEST_COLLECTION_KEY 0 // 0:Key=NSString, 1:Key=YapCacheCollectionKey
 
+
+/**
+ * Head-to-head stress test.
+ * We generate the exact same sequence of keys, and iterate over them as fast as possible.
+**/
 @implementation BenchmarkYapCache
 
-static NSMutableArray *keys_kv;
-static NSMutableArray *keys_ckv;
-static NSMutableArray *keysOrder;
-
 static NSMutableArray *cacheSizes;
+static NSMutableArray *keys;
 
 + (NSString *)randomLetters:(NSUInteger)length
 {
@@ -32,82 +34,111 @@ static NSMutableArray *cacheSizes;
 	return result;
 }
 
-+ (void)generateKeysWithCacheSize:(NSUInteger)cacheSize hitPercentage:(double)hitPercentage
++ (void)generateKeysWithCacheSize:(NSUInteger)cacheSize targetHitPercentage:(double)hitPercentage
 {
-	keys_kv = nil;
-	keys_ckv = nil;
-	keysOrder = nil;
+	keys = [NSMutableArray arrayWithCapacity:LOOP_COUNT];
 	
-	NSUInteger keysCount = (cacheSize / hitPercentage);
-	keys_kv = [NSMutableArray arrayWithCapacity:keysCount];
-	keys_ckv = [NSMutableArray arrayWithCapacity:keysCount];
-	
-	for (NSUInteger i = 0; i < keysCount; i++)
-	{
-		NSString *key = [self randomLetters:24];
-		YapCacheCollectionKey *ckey = [[YapCacheCollectionKey alloc] initWithCollection:@"" key:key];
-		
-		[keys_kv addObject:key];
-		[keys_ckv addObject:ckey];
-	}
-	
-	NSUInteger loopCount = LOOP_COUNT;
-	keysOrder = [NSMutableArray arrayWithCapacity:loopCount];
+	NSMutableArray *recentKeys = [NSMutableArray arrayWithCapacity:cacheSize];
 	
 	for (NSUInteger i = 0; i < LOOP_COUNT; i++)
 	{
-		[keysOrder addObject:@(arc4random_uniform(keysCount))];
+		NSString *key;
+		
+		if (arc4random_uniform(100) > (100 * hitPercentage) || [recentKeys count] == 0)
+		{
+			key = [self randomLetters:24];
+			
+			[recentKeys addObject:key];
+			if ([recentKeys count] > cacheSize)
+				[recentKeys removeObjectAtIndex:0];
+		}
+		else
+		{
+			NSUInteger recentIndex = arc4random_uniform([recentKeys count]);
+			
+			key = [recentKeys objectAtIndex:recentIndex];
+			
+			[recentKeys removeObjectAtIndex:recentIndex];
+			[recentKeys addObject:key];
+		}
+		
+	#if TEST_COLLECTION_KEY
+		YapCacheCollectionKey *ckey = [[YapCacheCollectionKey alloc] initWithCollection:@"" key:key];
+		[keys addObject:ckey];
+	#else
+		[keys addObject:key];
+	#endif
 	}
 }
 
-+ (void)runTest1:(NSUInteger)cacheSize
++ (NSTimeInterval)testNSCache:(NSUInteger)cacheSize
 {
 	NSCache *cache = [[NSCache alloc] init];
 	cache.countLimit = cacheSize;
 	
+	NSUInteger hitCount = 0;
+	
 	NSDate *start = [NSDate date];
 	
-	for (NSNumber *number in keysOrder)
+	for (id key in keys)
 	{
-		#if TEST_COLLECTION_KEY
-		id cacheKey = [keys_ckv objectAtIndex:[number unsignedIntegerValue]];
-		#else
-		id cacheKey = [keys_kv objectAtIndex:[number unsignedIntegerValue]];
-		#endif
-		
-		[cache setObject:[NSNull null] forKey:cacheKey];
+		if ([cache objectForKey:key] == nil)
+		{
+			[cache setObject:[NSNull null] forKey:key];
+		}
+		else
+		{
+			hitCount++;
+		}
 	}
 	
 	NSTimeInterval elapsed = [start timeIntervalSinceNow] * -1.0;
-	NSLog(@"NSCache : elapsed = %.6f (loop=%d, cache=%d)", elapsed, LOOP_COUNT, cacheSize);
+	double hitPercentage = (double)hitCount / (double)[keys count];
+	
+	NSLog(@"NSCache : elapsed = %.6f (actual hit percentage = %.2f)", elapsed, hitPercentage);
+	
+	return elapsed;
 }
 
-+ (void)runTest2:(NSUInteger)cacheSize
++ (NSTimeInterval)testYapCache:(NSUInteger)cacheSize
 {
+#if TEST_COLLECTION_KEY
+	Class keyClass = [YapCacheCollectionKey class];
+#else
 	Class keyClass = [NSString class];
+#endif
 	
 	YapCache *cache = [[YapCache alloc] initWithKeyClass:keyClass countLimit:cacheSize];
 	
+	NSUInteger hitCount = 0;
+	
 	NSDate *start = [NSDate date];
 	
-	for (NSNumber *number in keysOrder)
+	for (id key in keys)
 	{
-		#if TEST_COLLECTION_KEY
-		NSString *key = [keys_ckv objectAtIndex:[number unsignedIntegerValue]];
-		#else
-		NSString *key = [keys_kv objectAtIndex:[number unsignedIntegerValue]];
-		#endif
-		
-		[cache setObject:[NSNull null] forKey:key];
+		if ([cache objectForKey:key] == nil)
+		{
+			[cache setObject:[NSNull null] forKey:key];
+		}
+		else
+		{
+			hitCount++;
+		}
 	}
 	
 	NSTimeInterval elapsed = [start timeIntervalSinceNow] * -1.0;
-	NSLog(@"YapCache: elapsed = %.6f (loop=%d, cache=%d)", elapsed, LOOP_COUNT, cacheSize);
+	double hitPercentage = (double)hitCount / (double)[keys count];
+	
+	NSLog(@"YapCache: elapsed = %.6f (actual hit percentage = %.2f)", elapsed, hitPercentage);
+	
+	return elapsed;
 }
 
-+ (void)runTests
++ (void)test
 {
-	if ([cacheSizes count] == 0) return;
+	if ([cacheSizes count] == 0) {
+		return;
+	}
 	
 	NSUInteger cacheSize = [[cacheSizes objectAtIndex:0] unsignedIntegerValue];
 	[cacheSizes removeObjectAtIndex:0];
@@ -116,86 +147,147 @@ static NSMutableArray *cacheSizes;
 		
 		NSLog(@" \n\n\n ");
 		NSLog(@"====================================================");
-		NSLog(@"CACHE SIZE: %lu, HIT PERCENTAGE: 5%% \n\n", (unsigned long)cacheSize);
+		NSLog(@"CACHE SIZE: %lu, TARGET HIT PERCENTAGE: 5%% \n\n", (unsigned long)cacheSize);
 		
-		[self generateKeysWithCacheSize:cacheSize hitPercentage:0.05];
-		[self runTest1:cacheSize];
-		[self runTest2:cacheSize];
-		[self runTest1:cacheSize];
-		[self runTest2:cacheSize];
-		[self runTest1:cacheSize];
-		[self runTest2:cacheSize];
+		NSTimeInterval ns = 0.0;
+		NSTimeInterval yap = 0.0;
+		
+		[self generateKeysWithCacheSize:cacheSize targetHitPercentage:0.05];
+		ns  += [self testNSCache:cacheSize];
+		yap += [self testYapCache:cacheSize];
+		ns  += [self testNSCache:cacheSize];
+		yap += [self testYapCache:cacheSize];
+		ns  += [self testNSCache:cacheSize];
+		yap += [self testYapCache:cacheSize];
+		
+		ns  = ns  / 3.0;
+		yap = yap / 3.0;
+		
+		if (ns < yap)
+			NSLog(@"Winner: NSCache (%.2f%% faster) \n ", ((1.0-(ns/yap))*100) );
+		else
+			NSLog(@"Winner: YapCache (%.2f%% faster) \n ", ((1.0-(yap/ns))*100) );
+		
 		NSLog(@"====================================================");
 	});
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		NSLog(@"CACHE SIZE: %lu, HIT PERCENTAGE: 25%% \n\n", (unsigned long)cacheSize);
+		NSLog(@"CACHE SIZE: %lu, TARGET HIT PERCENTAGE: 25%% \n\n", (unsigned long)cacheSize);
 		
-		[self generateKeysWithCacheSize:cacheSize hitPercentage:0.25];
-		[self runTest1:cacheSize];
-		[self runTest2:cacheSize];
-		[self runTest1:cacheSize];
-		[self runTest2:cacheSize];
-		[self runTest1:cacheSize];
-		[self runTest2:cacheSize];
+		NSTimeInterval ns = 0.0;
+		NSTimeInterval yap = 0.0;
+		
+		[self generateKeysWithCacheSize:cacheSize targetHitPercentage:0.25];
+		ns  += [self testNSCache:cacheSize];
+		yap += [self testYapCache:cacheSize];
+		ns  += [self testNSCache:cacheSize];
+		yap += [self testYapCache:cacheSize];
+		ns  += [self testNSCache:cacheSize];
+		yap += [self testYapCache:cacheSize];
+		
+		ns  = ns  / 3.0;
+		yap = yap / 3.0;
+		
+		if (ns < yap)
+			NSLog(@"Winner: NSCache (%.2f%% faster) \n ", ((1.0-(ns/yap))*100) );
+		else
+			NSLog(@"Winner: YapCache (%.2f%% faster) \n ", ((1.0-(yap/ns))*100) );
+		
 		NSLog(@"====================================================");
 	});
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		NSLog(@"CACHE SIZE: %lu, HIT PERCENTAGE: 50%% \n\n", (unsigned long)cacheSize);
+		NSLog(@"CACHE SIZE: %lu, TARGET HIT PERCENTAGE: 50%% \n\n", (unsigned long)cacheSize);
 		
-		[self generateKeysWithCacheSize:cacheSize hitPercentage:0.5];
-		[self runTest1:cacheSize];
-		[self runTest2:cacheSize];
-		[self runTest1:cacheSize];
-		[self runTest2:cacheSize];
-		[self runTest1:cacheSize];
-		[self runTest2:cacheSize];
+		NSTimeInterval ns = 0.0;
+		NSTimeInterval yap = 0.0;
+		
+		[self generateKeysWithCacheSize:cacheSize targetHitPercentage:0.5];
+		ns  += [self testNSCache:cacheSize];
+		yap += [self testYapCache:cacheSize];
+		ns  += [self testNSCache:cacheSize];
+		yap += [self testYapCache:cacheSize];
+		ns  += [self testNSCache:cacheSize];
+		yap += [self testYapCache:cacheSize];
+		
+		ns  = ns  / 3.0;
+		yap = yap / 3.0;
+		
+		if (ns < yap)
+			NSLog(@"Winner: NSCache (%.2f%% faster) \n ", ((1.0-(ns/yap))*100) );
+		else
+			NSLog(@"Winner: YapCache (%.2f%% faster) \n ", ((1.0-(yap/ns))*100) );
+		
 		NSLog(@"====================================================");
 	});
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		NSLog(@"CACHE SIZE: %lu, HIT PERCENTAGE: 75%% \n\n", (unsigned long)cacheSize);
+		NSLog(@"CACHE SIZE: %lu, TARGET HIT PERCENTAGE: 75%% \n\n", (unsigned long)cacheSize);
 		
-		[self generateKeysWithCacheSize:cacheSize hitPercentage:0.75];
-		[self runTest1:cacheSize];
-		[self runTest2:cacheSize];
-		[self runTest1:cacheSize];
-		[self runTest2:cacheSize];
-		[self runTest1:cacheSize];
-		[self runTest2:cacheSize];
+		NSTimeInterval ns = 0.0;
+		NSTimeInterval yap = 0.0;
+		
+		[self generateKeysWithCacheSize:cacheSize targetHitPercentage:0.75];
+		ns  += [self testNSCache:cacheSize];
+		yap += [self testYapCache:cacheSize];
+		ns  += [self testNSCache:cacheSize];
+		yap += [self testYapCache:cacheSize];
+		ns  += [self testNSCache:cacheSize];
+		yap += [self testYapCache:cacheSize];
+		
+		ns  = ns  / 3.0;
+		yap = yap / 3.0;
+		
+		if (ns < yap)
+			NSLog(@"Winner: NSCache (%.2f%% faster) \n ", ((1.0-(ns/yap))*100) );
+		else
+			NSLog(@"Winner: YapCache (%.2f%% faster) \n ", ((1.0-(yap/ns))*100) );
+		
 		NSLog(@"====================================================");
 	});
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		NSLog(@"CACHE SIZE: %lu, HIT PERCENTAGE: 95%% \n\n", (unsigned long)cacheSize);
+		NSLog(@"CACHE SIZE: %lu, TARGET HIT PERCENTAGE: 95%% \n\n", (unsigned long)cacheSize);
 		
-		[self generateKeysWithCacheSize:cacheSize hitPercentage:0.95];
-		[self runTest1:cacheSize];
-		[self runTest2:cacheSize];
-		[self runTest1:cacheSize];
-		[self runTest2:cacheSize];
-		[self runTest1:cacheSize];
-		[self runTest2:cacheSize];
+		NSTimeInterval ns = 0.0;
+		NSTimeInterval yap = 0.0;
+		
+		[self generateKeysWithCacheSize:cacheSize targetHitPercentage:0.95];
+		ns  += [self testNSCache:cacheSize];
+		yap += [self testYapCache:cacheSize];
+		ns  += [self testNSCache:cacheSize];
+		yap += [self testYapCache:cacheSize];
+		ns  += [self testNSCache:cacheSize];
+		yap += [self testYapCache:cacheSize];
+		
+		ns  = ns  / 3.0;
+		yap = yap / 3.0;
+		
+		if (ns < yap)
+			NSLog(@"Winner: NSCache (%.2f%% faster) \n ", ((1.0-(ns/yap))*100) );
+		else
+			NSLog(@"Winner: YapCache (%.2f%% faster) \n ", ((1.0-(yap/ns))*100) );
+		
 		NSLog(@"====================================================");
 	});
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		// Run the next test (with a different cacheSize)
-		[self runTests];
+		[self test];
 	});
 }
 
 + (void)startTests
 {
-	cacheSizes = [@[ @(40), @(100), @(500), @(1000) ] mutableCopy];
-	
 	double delayInSeconds = 0.1;
 	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
 	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 		
-		[self runTests];
+		// Run test for each of the cache sizes listed below
+		
+		cacheSizes = [@[ @(40), @(100), @(500), @(1000), @(5000) ] mutableCopy];
+		[self test];
 	});
 }
 
