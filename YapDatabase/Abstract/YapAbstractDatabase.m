@@ -710,7 +710,7 @@
 		NSUInteger index = 0;
 		for (YapDatabaseConnectionState *state in connectionStates)
 		{
-			if (state.connection == connection)
+			if (state->connection == connection)
 				break;
 			else
 				index++;
@@ -849,9 +849,9 @@
 	
 	for (YapDatabaseConnectionState *state in connectionStates)
 	{
-		if (state.connection != sender)
+		if (state->connection != sender)
 		{
-			YapAbstractDatabaseConnection *connection = state.connection;
+			YapAbstractDatabaseConnection *connection = state->connection;
 			dispatch_group_async(group, connection.connectionQueue, ^{ @autoreleasepool {
 				
 				[connection noteCommittedChanges:changeset];

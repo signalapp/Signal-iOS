@@ -703,12 +703,12 @@
 		
 		for (YapDatabaseConnectionState *state in database->connectionStates)
 		{
-			if (state.connection == self)
+			if (state->connection == self)
 			{
 				myState = state;
-				myState.yapLevelSharedReadLock = YES;
+				myState->yapLevelSharedReadLock = YES;
 			}
-			else if (state.yapLevelExclusiveWriteLock)
+			else if (state->yapLevelExclusiveWriteLock)
 			{
 				hasActiveWriteTransaction = YES;
 			}
@@ -750,7 +750,7 @@
 				NSAssert(cacheSnapshot == sqlSnapshot, @"Invalid connection state");
 			}
 			
-			myState.sqlLevelSharedReadLock = YES;
+			myState->sqlLevelSharedReadLock = YES;
 			hasMarkedSqlLevelSharedReadLock = YES;
 		}
 		else
@@ -782,8 +782,8 @@
 				NSAssert(cacheSnapshot == globalSnapshot, @"Invalid connection state");
 			}
 			
-			myState.yapLevelSharedReadLock = YES;
-			myState.sqlLevelSharedReadLock = NO;
+			myState->yapLevelSharedReadLock = YES;
+			myState->sqlLevelSharedReadLock = NO;
 			hasMarkedSqlLevelSharedReadLock = NO;
 		}
 	}});
@@ -833,17 +833,17 @@
 		
 		for (YapDatabaseConnectionState *state in database->connectionStates)
 		{
-			if (state.connection == self)
+			if (state->connection == self)
 			{
-				wasMaybeBlockingWriteTransaction = state.yapLevelSharedReadLock && !state.sqlLevelSharedReadLock;
-				state.yapLevelSharedReadLock = NO;
-				state.sqlLevelSharedReadLock = NO;
+				wasMaybeBlockingWriteTransaction = state->yapLevelSharedReadLock && !state->sqlLevelSharedReadLock;
+				state->yapLevelSharedReadLock = NO;
+				state->sqlLevelSharedReadLock = NO;
 			}
-			else if (state.yapLevelSharedReadLock && !state.sqlLevelSharedReadLock)
+			else if (state->yapLevelSharedReadLock && !state->sqlLevelSharedReadLock)
 			{
 				countOtherMaybeBlockingWriteTransaction++;
 			}
-			else if (state.waitingForWriteLock)
+			else if (state->waitingForWriteLock)
 			{
 				blockedWriteState = state;
 			}
@@ -867,7 +867,7 @@
 	if (writeStateToSignal)
 	{
 		YDBLogVerbose(@"YapDatabaseConnection(%p) signaling blocked write on connection(%p)",
-		                                    self, writeStateToSignal.connection);
+		                                    self, writeStateToSignal->connection);
 		
 		[writeStateToSignal signalWriteLock];
 	}
@@ -909,9 +909,9 @@
 		
 		for (YapDatabaseConnectionState *state in database->connectionStates)
 		{
-			if (state.connection == self)
+			if (state->connection == self)
 			{
-				state.yapLevelExclusiveWriteLock = YES;
+				state->yapLevelExclusiveWriteLock = YES;
 			}
 		}
 		
@@ -963,9 +963,9 @@
 		
 		for (YapDatabaseConnectionState *state in database->connectionStates)
 		{
-			if (state.connection == self)
+			if (state->connection == self)
 			{
-				state.yapLevelExclusiveWriteLock = NO;
+				state->yapLevelExclusiveWriteLock = NO;
 				break;
 			}
 		}
@@ -1032,11 +1032,11 @@
 			
 			for (YapDatabaseConnectionState *state in database->connectionStates)
 			{
-				if (state.connection == self)
+				if (state->connection == self)
 				{
 					myState = state;
 				}
-				else if (state.yapLevelSharedReadLock && !state.sqlLevelSharedReadLock)
+				else if (state->yapLevelSharedReadLock && !state->sqlLevelSharedReadLock)
 				{
 					waitForReadOnlyTransactions = YES;
 				}
@@ -1044,11 +1044,12 @@
 			
 			if (waitForReadOnlyTransactions)
 			{
-				myState.waitingForWriteLock = YES;
+				myState->waitingForWriteLock = YES;
+				[myState prepareWriteLock];
 			}
 			else
 			{
-				myState.waitingForWriteLock = NO;
+				myState->waitingForWriteLock = NO;
 				safeToCommit = YES;
 				
 				// Post-Write-Transaction: Step 3 of 7
@@ -1129,8 +1130,8 @@
 		// We are the only write transaction for this database.
 		// It is important for read-only transactions on other connections to know we're no longer a writer.
 		
-		myState.yapLevelExclusiveWriteLock = NO;
-		myState.waitingForWriteLock = NO;
+		myState->yapLevelExclusiveWriteLock = NO;
+		myState->waitingForWriteLock = NO;
 		
 		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-write transaction.", self);
 	}});
@@ -1255,15 +1256,15 @@
 		
 		for (YapDatabaseConnectionState *state in database->connectionStates)
 		{
-			if (state.connection == self)
+			if (state->connection == self)
 			{
-				state.sqlLevelSharedReadLock = YES;
+				state->sqlLevelSharedReadLock = YES;
 			}
-			else if (state.yapLevelSharedReadLock && !state.sqlLevelSharedReadLock)
+			else if (state->yapLevelSharedReadLock && !state->sqlLevelSharedReadLock)
 			{
 				countOtherMaybeBlockingWriteTransaction++;
 			}
-			else if (state.waitingForWriteLock)
+			else if (state->waitingForWriteLock)
 			{
 				blockedWriteState = state;
 			}
@@ -1280,7 +1281,7 @@
 	if (writeStateToSignal)
 	{
 		YDBLogVerbose(@"YapDatabaseConnection(%p) signaling blocked write on connection(%p)",
-											 self, writeStateToSignal.connection);
+											 self, writeStateToSignal->connection);
 		[writeStateToSignal signalWriteLock];
 	}
 }

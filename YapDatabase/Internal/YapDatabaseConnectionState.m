@@ -7,12 +7,6 @@
 
 @implementation YapDatabaseConnectionState
 
-@synthesize connection;
-@synthesize yapLevelSharedReadLock;
-@synthesize sqlLevelSharedReadLock;
-@synthesize yapLevelExclusiveWriteLock;
-@synthesize waitingForWriteLock;
-
 - (id)initWithConnection:(YapAbstractDatabaseConnection *)inConnection
 {
 	if ((self = [super init]))
@@ -30,11 +24,9 @@
 #endif
 }
 
-- (void)setWaitingForWriteLock:(BOOL)newWaitingForWriteLock
+- (void)prepareWriteLock;
 {
-	waitingForWriteLock = newWaitingForWriteLock;
-	
-	if (waitingForWriteLock && writeSemaphore == NULL) {
+	if (writeSemaphore == NULL) {
 		writeSemaphore = dispatch_semaphore_create(0);
 	}
 }
