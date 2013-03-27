@@ -256,6 +256,12 @@
 
 @interface YapCollectionsDatabaseReadWriteTransaction : YapCollectionsDatabaseReadTransaction
 
+/* Inherited from YapAbstractDatabaseTransaction
+
+- (void)rollback;
+
+*/
+
 #pragma mark Primitive
 
 /**

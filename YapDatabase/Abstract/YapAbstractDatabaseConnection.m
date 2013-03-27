@@ -434,6 +434,22 @@
 	return commitTransactionStatement;
 }
 
+- (sqlite3_stmt *)rollbackTransactionStatement
+{
+	if (rollbackTransactionStatement == NULL)
+	{
+		char *stmt = "ROLLBACK TRANSACTION;";
+		
+		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &rollbackTransactionStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating 'rollbackTransactionStatement': %d %s", status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return rollbackTransactionStatement;
+}
+
 - (sqlite3_stmt *)yapGetDataForKeyStatement
 {
 	if (yapGetDataForKeyStatement == NULL)
@@ -649,7 +665,7 @@
 **/
 - (void)preReadTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
-	// Pre-Read-Transaction: Step 1 of 4
+	// Pre-Read-Transaction: Step 1 of 3
 	//
 	// Execute "BEGIN TRANSACTION" on database connection.
 	// This is actually a deferred transaction, meaning the sqlite connection won't actually
@@ -663,7 +679,7 @@
 		
 	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
-		// Pre-Read-Transaction: Step 2 of 4
+		// Pre-Read-Transaction: Step 2 of 3
 		//
 		// Update our connection state within the state table.
 		//
@@ -675,10 +691,10 @@
 		// If there are write transactions in progress, this is a big problem for us.
 		// Here's why:
 		//
-		// We have an in-memory snapshot of the metadata dictionary.
-		// This is kept in-sync with what's in the database.
+		// We have an in-memory snapshot via the caches.
+		// This is kept in-sync with what's on disk (in the sqlite database file).
 		// But what happens if the write transaction commits its changes before we perform our select statement?
-		// Our select statement would acquire a different snapshot than our in-memory metadata snapshot.
+		// Our select statement would acquire a different snapshot than our in-memory snapshot.
 		// Thus, we look to see if there are any write transactions.
 		// If there are, then we immediately acquire the "sql-level" shared read lock.
 		
@@ -698,7 +714,7 @@
 			}
 		}
 		
-		// Pre-Read-Transaction: Step 3 of 4
+		// Pre-Read-Transaction: Step 3 of 3
 		//
 		// Update our in-memory data (caches, etc) if needed.
 		
@@ -780,7 +796,7 @@
 **/
 - (void)postReadTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
-	// Post-Read-Transaction: Step 1 of 4
+	// Post-Read-Transaction: Step 1 of 3
 	//
 	// 1. Execute "COMMIT TRANSACTION" on database connection.
 	// If we had acquired "sql-level" shared read lock, this will release associated resources.
@@ -791,7 +807,7 @@
 	__block YapDatabaseConnectionState *writeStateToSignal = nil;
 	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
-		// Post-Read-Transaction: Step 2 of 4
+		// Post-Read-Transaction: Step 2 of 3
 		//
 		// Update our connection state within the state table.
 		//
@@ -841,7 +857,7 @@
 		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-only transaction.", self);
 	}});
 	
-	// Post-Read-Transaction: Step 3 of 4
+	// Post-Read-Transaction: Step 3 of 3
 	//
 	// If we discovered a blocked write transaction,
 	// and it was blocked waiting on us (because we had a "yap-level" snapshot without an "sql-level" snapshot),
@@ -920,6 +936,12 @@
 		
 		YDBLogVerbose(@"YapDatabaseConnection(%p) starting read-write transaction.", self);
 	}});
+	
+	// Pre-Write-Transaction: Step 4 of 4
+	//
+	// Reset read-write transaction variables.
+	
+	rollback = NO;
 }
 
 /**
@@ -930,10 +952,46 @@
 **/
 - (void)postReadWriteTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
+	if (rollback)
+	{
+		// Rollback-Write-Transaction: Step 1 of 2
+		//
+		// Update our connection state within the state table.
+		//
+		// We are the only write transaction for this database.
+		// It is important for read-only transactions on other connections to know we're no longer a writer.
+		
+		for (YapDatabaseConnectionState *state in database->connectionStates)
+		{
+			if (state.connection == self)
+			{
+				state.yapLevelExclusiveWriteLock = NO;
+				break;
+			}
+		}
+		
+		// Rollback-Write-Transaction: Step 2 of 3
+		//
+		// Rollback sqlite database transaction.
+		
+		[transaction rollbackTransaction];
+		
+		// Rollback-Write-Transaction: Step 3 of 3
+		//
+		// Reset any in-memory variable which may be out-of-sync with the database.
+		
+		[self postRollbackCleanup];
+		
+		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-write transaction (rollback).", self);
+		
+		return;
+	}
+	
 	// Post-Write-Transaction: Step 1 of 7
 	//
-	// Update the snapshot in the 'yap' database (if any changes were made).
-	// We use this to check for a race condition.
+	// First fetch changeset.
+	// Then update the snapshot in the 'yap' database (if any changes were made).
+	// We use 'yap' database and snapshot value to check for a race condition.
 	
 	NSMutableDictionary *changeset = [self changeset];
 	if (changeset)
@@ -1225,6 +1283,18 @@
 											 self, writeStateToSignal.connection);
 		[writeStateToSignal signalWriteLock];
 	}
+}
+
+/**
+ * This method is invoked after a read-write transaction completes, which was rolled-back.
+ * You should flush anything from memory that may be out-of-sync with the database.
+ * 
+ * If you override this method, be sure to invoke [super postRollbackCleanup]
+**/
+- (void)postRollbackCleanup
+{
+	[objectCache removeAllObjects];
+	[metadataCache removeAllObjects];
 }
 
 /**

@@ -349,6 +349,22 @@
 }
 
 /**
+ * This method is invoked after a read-write transaction completes, which was rolled-back.
+ * You should flush anything from memory that may be out-of-sync with the database.
+ *
+ * If you override this method, be sure to invoke [super postRollbackCleanup]
+**/
+- (void)postRollbackCleanup
+{
+	[super postRollbackCleanup];
+	
+	for (YapDatabaseOrder *order in [orderDict objectEnumerator])
+	{
+		[order reset];
+	}
+}
+
+/**
  * This method is invoked from within the postReadWriteTransaction operations.
  * This method is invoked before anything has been committed.
  * 

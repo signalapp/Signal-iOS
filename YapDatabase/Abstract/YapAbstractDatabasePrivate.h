@@ -186,6 +186,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 @private
 	sqlite3_stmt *beginTransactionStatement;
 	sqlite3_stmt *commitTransactionStatement;
+	sqlite3_stmt *rollbackTransactionStatement;
 	
 	sqlite3_stmt *yapGetDataForKeyStatement; // Against "yap" database, for internal use
 	sqlite3_stmt *yapSetDataForKeyStatement; // Against "yap" database, for internal use
@@ -200,6 +201,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	sqlite3 *db;
 	
 	uint64_t cacheSnapshot;
+	BOOL rollback;
 	
 	YapCache *objectCache;
 	YapCache *metadataCache;
@@ -214,10 +216,11 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 
 @property (nonatomic, readonly) dispatch_queue_t connectionQueue;
 
-- (void)_flushMemoryWithLevel:(int)level;
-
 - (sqlite3_stmt *)beginTransactionStatement;
 - (sqlite3_stmt *)commitTransactionStatement;
+- (sqlite3_stmt *)rollbackTransactionStatement;
+
+- (void)_flushMemoryWithLevel:(int)level;
 
 - (void)_readWithBlock:(void (^)(id))block;
 - (void)_readWriteWithBlock:(void (^)(id))block;
@@ -241,6 +244,8 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 
 - (void)markSqlLevelSharedReadLockAcquired;
 
+- (void)postRollbackCleanup;
+
 - (NSMutableDictionary *)changeset;
 - (void)processChangeset:(NSDictionary *)changeset;
 
@@ -262,5 +267,6 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 
 - (void)beginTransaction;
 - (void)commitTransaction;
+- (void)rollbackTransaction;
 
 @end

@@ -188,6 +188,12 @@
 **/
 @interface YapDatabaseReadWriteTransaction : YapDatabaseReadTransaction
 
+/* Inherited from YapAbstractDatabaseTransaction
+
+- (void)rollback;
+
+*/
+
 #pragma mark Primitive
 
 /**
