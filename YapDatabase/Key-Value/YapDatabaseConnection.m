@@ -502,6 +502,8 @@
 		metadataChanges = [[NSMutableDictionary alloc] init];
 	if (removedKeys == nil)
 		removedKeys = [[NSMutableSet alloc] init];
+	
+	allKeysRemoved = NO;
 }
 
 /**

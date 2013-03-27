@@ -259,6 +259,41 @@
 		STAssertNil([transaction metadataForKey:key4], @"Expected nil metadata");
 		STAssertNil([transaction metadataForKey:key5], @"Expected nil metadata");
 	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		// Test all objects have been removed
+		
+		STAssertTrue([transaction numberOfKeys] == 0, @"Expected 0 objects in database");
+	}];
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+		
+		// Test add object again
+		
+		[transaction setObject:object forKey:key1];
+		
+		STAssertTrue([transaction numberOfKeys] == 1, @"Expected 1 key");
+		STAssertTrue([[transaction allKeys] count] == 1, @"Expected 1 key");
+		
+		STAssertNotNil([transaction objectForKey:key1], @"Expected non-nil object");
+		STAssertNotNil([transaction primitiveDataForKey:key1], @"Expected non-nil data");
+		
+		STAssertTrue([transaction hasObjectForKey:key1], @"Expected YES");
+	}];
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+		
+		// Test object back again
+		
+		STAssertTrue([transaction numberOfKeys] == 1, @"Expected 1 key");
+		STAssertTrue([[transaction allKeys] count] == 1, @"Expected 1 key");
+		
+		STAssertNotNil([transaction objectForKey:key1], @"Expected non-nil object");
+		STAssertNotNil([transaction primitiveDataForKey:key1], @"Expected non-nil data");
+		
+		STAssertTrue([transaction hasObjectForKey:key1], @"Expected YES");
+	}];
 }
 
 - (void)testPropertyListSerializerDeserializer

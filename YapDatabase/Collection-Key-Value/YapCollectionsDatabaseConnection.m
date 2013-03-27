@@ -591,6 +591,8 @@
 		removedKeys = [[NSMutableSet alloc] init];
 	if (removedCollections == nil)
 		removedCollections = [[NSMutableSet alloc] init];
+	
+	allKeysRemoved = NO;
 }
 
 /**
