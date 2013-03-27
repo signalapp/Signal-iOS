@@ -219,10 +219,10 @@
 - (void)reset
 {
 	// Do not touch non-persistent configuration
-	// - maxPageSize
+	// - maxPagesInMemory
 	// - userInfo
 	
-	maxPagesInMemory = DEFAULT_MAX_PAGES_IN_MEMORY;
+	maxPageSize = DEFAULT_MAX_PAGE_SIZE;
 	
 	pageInfos = nil;
 	[pages removeAllObjects];
