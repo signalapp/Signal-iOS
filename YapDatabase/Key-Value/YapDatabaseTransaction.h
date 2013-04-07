@@ -174,6 +174,14 @@
 - (void)enumerateKeysAndObjectsUsingBlock:(void (^)(NSString *key, id object, id metadata, BOOL *stop))block
                        withMetadataFilter:(BOOL (^)(NSString *key, id metadata))filter;
 
+#pragma mark Views
+
+- (id)view:(NSString *)view;
+
+- (NSArray *)views;
+- (BOOL)containsView:(NSString *)viewName;
+- (Class)classOfView:(NSString *)viewName;
+
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -249,5 +257,10 @@
  * Deletes every row from the database.
 **/
 - (void)removeAllObjects;
+
+#pragma mark Views
+
+- (void)createOrOpenView:(id)view;
+- (void)removeView:(NSString *)view;
 
 @end
