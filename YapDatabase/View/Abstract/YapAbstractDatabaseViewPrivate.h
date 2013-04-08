@@ -20,6 +20,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface YapAbstractDatabaseConnection () {
+@public
+	YapAbstractDatabaseView *abstractView;
+	
 @protected
 	
 }
@@ -32,17 +35,20 @@
 
 @interface YapAbstractDatabaseViewTransaction () {
 @protected
-	__strong YapAbstractDatabaseConnection *connection;
+	__unsafe_unretained YapAbstractDatabaseViewConnection *viewConnection;
+	__unsafe_unretained YapAbstractDatabaseConnection *databaseConnection;
 	
 	__unsafe_unretained YapAbstractDatabaseTransaction *readTransaction;
 	__unsafe_unretained YapAbstractDatabaseTransaction *readWriteTransaction;
 }
 
-- (id)initWithConnection:(YapAbstractDatabaseConnection *)connection
-         readTransaction:(YapAbstractDatabaseTransaction *)transaction;
+- (id)initWithViewConnection:(YapAbstractDatabaseViewConnection *)viewConnection
+		  databaseConnection:(YapAbstractDatabaseConnection *)databaseConnection
+             readTransaction:(YapAbstractDatabaseTransaction *)transaction;
 
-- (id)initWithConnection:(YapAbstractDatabaseConnection *)connection
-    readWriteTransaction:(YapAbstractDatabaseTransaction *)transaction;
+- (id)initWithViewConnection:(YapAbstractDatabaseViewConnection *)viewConnection
+		  databaseConnection:(YapAbstractDatabaseConnection *)databaseConnection
+        readWriteTransaction:(YapAbstractDatabaseTransaction *)transaction;
 
 - (void)handleInsertKey:(NSString *)key withObject:(id)object metadata:(id)metadata;
 - (void)handleUpdateKey:(NSString *)key withObject:(id)object metadata:(id)metadata;

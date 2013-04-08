@@ -4,23 +4,27 @@
 
 @implementation YapAbstractDatabaseViewTransaction
 
-- (id)initWithConnection:(YapAbstractDatabaseConnection *)inConnection
+- (id)initWithViewConnection:(YapAbstractDatabaseViewConnection *)inViewConnection
+          databaseConnection:(YapAbstractDatabaseConnection *)inDatabaseConnection
          readTransaction:(YapAbstractDatabaseTransaction *)inTransaction
 {
 	if ((self = [super init]))
 	{
-		connection = inConnection;
+		viewConnection = inViewConnection;
+		databaseConnection = inDatabaseConnection;
 		readTransaction = inTransaction;
 	}
 	return self;
 }
 
-- (id)initWithConnection:(YapAbstractDatabaseConnection *)inConnection
-    readWriteTransaction:(YapAbstractDatabaseTransaction *)inTransaction
+- (id)initWithViewConnection:(YapAbstractDatabaseViewConnection *)inViewConnection
+          databaseConnection:(YapAbstractDatabaseConnection *)inDatabaseConnection
+        readWriteTransaction:(YapAbstractDatabaseTransaction *)inTransaction
 {
 	if ((self = [super init]))
 	{
-		connection = inConnection;
+		viewConnection = inViewConnection;
+		databaseConnection = inDatabaseConnection;
 		readTransaction = inTransaction;
 		readWriteTransaction = inTransaction;
 	}
@@ -54,7 +58,8 @@
 
 - (void)commitTransaction
 {
-	connection = nil;
+	viewConnection = nil;
+	databaseConnection = nil;
 	readTransaction = nil;
 	readWriteTransaction = nil;
 }
