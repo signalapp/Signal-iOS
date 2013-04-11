@@ -9,8 +9,8 @@
 /* Begin PBXBuildFile section */
 		DC0B8C0E16EFE5F500896C6C /* YapCacheCollectionKey.m in Sources */ = {isa = PBXBuildFile; fileRef = DC0B8C0D16EFE5F500896C6C /* YapCacheCollectionKey.m */; };
 		DC0B8C0F16EFE5F500896C6C /* YapCacheCollectionKey.m in Sources */ = {isa = PBXBuildFile; fileRef = DC0B8C0D16EFE5F500896C6C /* YapCacheCollectionKey.m */; };
-		DC24FBE41687EB9000E855DC /* YapCollectionsDatabase+Timestamp.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBDC1687EB9000E855DC /* YapCollectionsDatabase+Timestamp.m */; };
-		DC24FBE51687EB9000E855DC /* YapCollectionsDatabase+Timestamp.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBDC1687EB9000E855DC /* YapCollectionsDatabase+Timestamp.m */; };
+		DC24FBE41687EB9000E855DC /* YapCollectionsDatabaseTransaction+Timestamp.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBDC1687EB9000E855DC /* YapCollectionsDatabaseTransaction+Timestamp.m */; };
+		DC24FBE51687EB9000E855DC /* YapCollectionsDatabaseTransaction+Timestamp.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBDC1687EB9000E855DC /* YapCollectionsDatabaseTransaction+Timestamp.m */; };
 		DC24FBE61687EB9000E855DC /* YapCollectionsDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBDE1687EB9000E855DC /* YapCollectionsDatabase.m */; };
 		DC24FBE71687EB9000E855DC /* YapCollectionsDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBDE1687EB9000E855DC /* YapCollectionsDatabase.m */; };
 		DC24FBE81687EB9000E855DC /* YapCollectionsDatabaseConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBE01687EB9000E855DC /* YapCollectionsDatabaseConnection.m */; };
@@ -100,8 +100,8 @@
 /* Begin PBXFileReference section */
 		DC0B8C0C16EFE5F500896C6C /* YapCacheCollectionKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCacheCollectionKey.h; sourceTree = "<group>"; };
 		DC0B8C0D16EFE5F500896C6C /* YapCacheCollectionKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapCacheCollectionKey.m; sourceTree = "<group>"; };
-		DC24FBDB1687EB9000E855DC /* YapCollectionsDatabase+Timestamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "YapCollectionsDatabase+Timestamp.h"; sourceTree = "<group>"; };
-		DC24FBDC1687EB9000E855DC /* YapCollectionsDatabase+Timestamp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "YapCollectionsDatabase+Timestamp.m"; sourceTree = "<group>"; };
+		DC24FBDB1687EB9000E855DC /* YapCollectionsDatabaseTransaction+Timestamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "YapCollectionsDatabaseTransaction+Timestamp.h"; sourceTree = "<group>"; };
+		DC24FBDC1687EB9000E855DC /* YapCollectionsDatabaseTransaction+Timestamp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "YapCollectionsDatabaseTransaction+Timestamp.m"; sourceTree = "<group>"; };
 		DC24FBDD1687EB9000E855DC /* YapCollectionsDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCollectionsDatabase.h; sourceTree = "<group>"; };
 		DC24FBDE1687EB9000E855DC /* YapCollectionsDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapCollectionsDatabase.m; sourceTree = "<group>"; };
 		DC24FBDF1687EB9000E855DC /* YapCollectionsDatabaseConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCollectionsDatabaseConnection.h; sourceTree = "<group>"; };
@@ -236,8 +236,8 @@
 				DC24FBE01687EB9000E855DC /* YapCollectionsDatabaseConnection.m */,
 				DC24FBE21687EB9000E855DC /* YapCollectionsDatabaseTransaction.h */,
 				DC24FBE31687EB9000E855DC /* YapCollectionsDatabaseTransaction.m */,
-				DC24FBDB1687EB9000E855DC /* YapCollectionsDatabase+Timestamp.h */,
-				DC24FBDC1687EB9000E855DC /* YapCollectionsDatabase+Timestamp.m */,
+				DC24FBDB1687EB9000E855DC /* YapCollectionsDatabaseTransaction+Timestamp.h */,
+				DC24FBDC1687EB9000E855DC /* YapCollectionsDatabaseTransaction+Timestamp.m */,
 			);
 			path = "Collection-Key-Value";
 			sourceTree = "<group>";
@@ -287,7 +287,7 @@
 				DC99366A1683B52F00348B6C /* Abstract */,
 				DC3D2EE41673FF9500DFAFAA /* Key-Value */,
 				DC24FBDA1687EB9000E855DC /* Collection-Key-Value */,
-				DCB21449171135FB00719845 /* View */,
+				DCB21449171135FB00719845 /* Views */,
 			);
 			name = YapDatabase;
 			path = ../../YapDatabase;
@@ -458,13 +458,13 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		DCB21449171135FB00719845 /* View */ = {
+		DCB21449171135FB00719845 /* Views */ = {
 			isa = PBXGroup;
 			children = (
 				DCB2146217120F3900719845 /* Abstract */,
 				DCB2146A17120F3900719845 /* Basic */,
 			);
-			name = View;
+			name = Views;
 			sourceTree = "<group>";
 		};
 		DCB2146217120F3900719845 /* Abstract */ = {
@@ -626,7 +626,7 @@
 				DC3D2F131673FF9500DFAFAA /* YapDatabaseTransaction+Timestamp.m in Sources */,
 				DC3D2F151673FF9500DFAFAA /* YapDatabaseTransaction.m in Sources */,
 				DC3D2F301674001600DFAFAA /* BenchmarkYapCache.m in Sources */,
-				DC24FBE41687EB9000E855DC /* YapCollectionsDatabase+Timestamp.m in Sources */,
+				DC24FBE41687EB9000E855DC /* YapCollectionsDatabaseTransaction+Timestamp.m in Sources */,
 				DC24FBE61687EB9000E855DC /* YapCollectionsDatabase.m in Sources */,
 				DC24FBE81687EB9000E855DC /* YapCollectionsDatabaseConnection.m in Sources */,
 				DC24FBEA1687EB9000E855DC /* YapCollectionsDatabaseTransaction.m in Sources */,
@@ -666,7 +666,7 @@
 				DC3D2F161673FF9500DFAFAA /* YapDatabaseTransaction.m in Sources */,
 				DC3D2F2B1673FFEC00DFAFAA /* TestObject.m in Sources */,
 				DC3D2F2C1673FFEC00DFAFAA /* TestYapDatabase.m in Sources */,
-				DC24FBE51687EB9000E855DC /* YapCollectionsDatabase+Timestamp.m in Sources */,
+				DC24FBE51687EB9000E855DC /* YapCollectionsDatabaseTransaction+Timestamp.m in Sources */,
 				DC24FBE71687EB9000E855DC /* YapCollectionsDatabase.m in Sources */,
 				DC24FBE91687EB9000E855DC /* YapCollectionsDatabaseConnection.m in Sources */,
 				DC24FBEB1687EB9000E855DC /* YapCollectionsDatabaseTransaction.m in Sources */,

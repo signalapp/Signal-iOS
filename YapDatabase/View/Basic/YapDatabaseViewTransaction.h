@@ -1,26 +1,21 @@
 #import <Foundation/Foundation.h>
+#import "YapAbstractDatabaseViewTransaction.h"
 
 
-@interface YapDatabaseViewReadTransaction : NSObject
+@interface YapDatabaseViewTransaction : YapAbstractDatabaseViewTransaction
 
 - (NSUInteger)numberOfSections;
-- (NSUInteger)numberOfKeysInSection:(id)section;
+- (NSUInteger)numberOfKeysInSection:(NSUInteger)section;
 
 - (NSUInteger)numberOfKeysInAllSections;
 
 - (NSString *)keyAtIndex:(NSUInteger)keyIndex inSection:(NSUInteger)sectionIndex;
-- (id)objectAtIndex:(NSUInteger)keyIndex inSection:(NSUInteger)sectionIndex;
-
 - (NSString *)keyAtIndexPath:(NSIndexPath *)indexPath;
+
+- (id)objectAtIndex:(NSUInteger)keyIndex inSection:(NSUInteger)sectionIndex;
 - (id)objectAtIndexPath:(NSIndexPath *)indexPath;
 
-- (void)getIndex:(NSUInteger *)indexPtr section:(NSUInteger *)sectionIndex forKey:(NSString *)key;
 - (NSIndexPath *)indexPathForKey:(NSString *)key;
-
-@end
-
-@interface YapDatabaseViewReadWriteTransaction : YapDatabaseViewReadTransaction
-
-// YapDatabaseReadWriteTransaction needs a method to create a view.
+- (void)getIndex:(NSUInteger *)indexPtr section:(NSUInteger *)sectionIndex forKey:(NSString *)key;
 
 @end

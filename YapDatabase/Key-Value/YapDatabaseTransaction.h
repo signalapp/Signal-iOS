@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
+
 #import "YapAbstractDatabaseTransaction.h"
+#import "YapAbstractDatabaseViewTransaction.h"
 
 /**
  * Transactions represent atomic access to a database.
@@ -174,14 +176,6 @@
 - (void)enumerateKeysAndObjectsUsingBlock:(void (^)(NSString *key, id object, id metadata, BOOL *stop))block
                        withMetadataFilter:(BOOL (^)(NSString *key, id metadata))filter;
 
-#pragma mark Views
-
-- (id)view:(NSString *)view;
-
-- (NSArray *)views;
-- (BOOL)containsView:(NSString *)viewName;
-- (Class)classOfView:(NSString *)viewName;
-
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -260,7 +254,14 @@
 
 #pragma mark Views
 
-- (void)createOrOpenView:(id)view;
-- (void)removeView:(NSString *)view;
+/**
+ * 
+**/
+- (BOOL)createOrOpenView:(NSString *)viewName;
+
+/**
+ * 
+**/
+- (void)dropView:(NSString *)viewName;
 
 @end

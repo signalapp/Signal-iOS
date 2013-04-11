@@ -59,8 +59,10 @@
 	sqlite3_stmt *enumerateMetadataStatement;
 	sqlite3_stmt *enumerateAllStatement;
 
-@public
+@protected
+	NSMutableDictionary *views;
 
+@public
 	NSMutableDictionary *objectChanges;
 	NSMutableDictionary *metadataChanges;
 	NSMutableSet *removeKeys;
@@ -477,7 +479,7 @@
 **/
 - (YapAbstractDatabaseTransaction *)newReadTransaction
 {
-	return [[YapDatabaseReadTransaction alloc] initWithConnection:self];
+	return [[YapDatabaseReadTransaction alloc] initWithConnection:self isReadWriteTransaction:NO];
 }
 
 /**
@@ -486,7 +488,7 @@
 **/
 - (YapAbstractDatabaseTransaction *)newReadWriteTransaction
 {
-	return [[YapDatabaseReadWriteTransaction alloc] initWithConnection:self];
+	return [[YapDatabaseReadWriteTransaction alloc] initWithConnection:self isReadWriteTransaction:YES];
 }
 
 /**

@@ -44,6 +44,8 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	dispatch_queue_t checkpointQueue;
 #endif
 	
+	NSMutableDictionary *views;
+	
 	NSMutableArray *changesets;
 	uint64_t snapshot;
 	
@@ -197,6 +199,8 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	
 	YapAbstractDatabase *database;
 	
+	NSMutableDictionary *views;
+	
 @public
 	sqlite3 *db;
 	
@@ -259,11 +263,15 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 
 @interface YapAbstractDatabaseTransaction () {
 @protected
+	NSMutableDictionary *views;
 	
+@public
 	__unsafe_unretained YapAbstractDatabaseConnection *abstractConnection;
+	
+	BOOL isReadWriteTransaction;
 }
 
-- (id)initWithConnection:(YapAbstractDatabaseConnection *)connection;
+- (id)initWithConnection:(YapAbstractDatabaseConnection *)connection isReadWriteTransaction:(BOOL)flag;
 
 - (void)beginTransaction;
 - (void)commitTransaction;

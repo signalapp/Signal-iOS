@@ -1,5 +1,8 @@
 #import <Foundation/Foundation.h>
+
 #import "YapAbstractDatabaseView.h"
+#import "YapDatabaseViewConnection.h"
+#import "YapDatabaseViewTransaction.h"
 
 /**
  * Welcome to YapDatabase!
@@ -9,6 +12,8 @@
  *
  * If you're new to the project you may want to check out the wiki
  * https://github.com/yaptv/YapDatabase/wiki
+ * 
+ * 
 **/
 
 typedef id YapDatabaseViewFilterBlock; // One of the YapDatabaseViewFilterX types below.
@@ -28,10 +33,11 @@ typedef NSComparisonResult (^YapDatabaseViewSortWithBothBlock) \
 
 
 typedef enum {
-	BlockWithObject,
-	BlockWithMetadata,
-	BlockWithBoth
+	YapDatabaseViewBlockTypeWithObject,
+	YapDatabaseViewBlockTypeWithMetadata,
+	YapDatabaseViewBlockTypeWithBoth
 } YapDatabaseViewBlockType;
+
 
 
 @interface YapDatabaseView : YapAbstractDatabaseView
@@ -42,11 +48,10 @@ typedef enum {
 
 */
 
-- (id)initWithName:(NSString *)name
-       filterBlock:(YapDatabaseViewFilterBlock)filterBlock
-        filterType:(YapDatabaseViewBlockType)filterBlockType
-         sortBlock:(YapDatabaseViewSortBlock)sortBlock
-          sortType:(YapDatabaseViewBlockType)sortBlockType;
+- (id)initWithFilterBlock:(YapDatabaseViewFilterBlock)filterBlock
+               filterType:(YapDatabaseViewBlockType)filterBlockType
+                sortBlock:(YapDatabaseViewSortBlock)sortBlock
+                 sortType:(YapDatabaseViewBlockType)sortBlockType;
 
 @property (nonatomic, strong, readonly) YapDatabaseViewFilterBlock filterBlock;
 @property (nonatomic, strong, readonly) YapDatabaseViewSortBlock sortBlock;

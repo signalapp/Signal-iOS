@@ -1,5 +1,6 @@
 #import "YapAbstractDatabase.h"
 #import "YapAbstractDatabasePrivate.h"
+#import "YapAbstractDatabaseViewPrivate.h"
 
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
@@ -251,8 +252,10 @@
 		checkpointQueue = dispatch_queue_create("YapDatabase-Checkpoint", NULL);
 #endif
 		
-		connectionStates = [[NSMutableArray alloc] init];
+		views = [[NSMutableDictionary alloc] init];
+		
 		changesets = [[NSMutableArray alloc] init];
+		connectionStates = [[NSMutableArray alloc] init];
 		
 		// Mark the snapshotQueue so we can identify it.
 		// There are several methods whose use is restricted to within the snapshotQueue.
@@ -733,6 +736,54 @@
 		block();
 	else
 		dispatch_sync(snapshotQueue, block);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Views
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (BOOL)registerView:(YapAbstractDatabaseView *)view withName:(NSString *)viewName
+{
+	if (view == nil)
+	{
+		YDBLogError(@"Error registering view: view parameter is nil");
+		return NO;
+	}
+	if ([viewName length] == 0)
+	{
+		YDBLogError(@"Error registering view: viewName parameter is nil or empty string");
+		return NO;
+	}
+	
+	BOOL result = YES;
+	
+	@synchronized(views)
+	{
+		if ([views objectForKey:viewName] == nil)
+		{
+			[views setObject:view forKey:viewName];
+			[view setRegisteredName:viewName];
+		}
+		else
+		{
+			YDBLogError(@"Error registering view: viewName is already registered");
+			result = NO;
+		}
+	}
+	
+	return result;
+}
+
+- (YapAbstractDatabaseView *)registeredView:(NSString *)viewName
+{
+	YapAbstractDatabaseView *result = nil;
+	
+	@synchronized(views)
+	{
+		result = [views objectForKey:viewName];
+	}
+	
+	return result;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

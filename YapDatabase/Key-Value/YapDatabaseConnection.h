@@ -33,6 +33,8 @@
 @property (atomic, assign, readwrite) BOOL metadataCacheEnabled;
 @property (atomic, assign, readwrite) NSUInteger metadataCacheLimit;
 
+- (id)view:(NSString *)view;
+
 */
 
 /**
@@ -45,6 +47,9 @@
  * it is sometimes convenient to retain an ivar only for the connection, and not the database itself.
 **/
 @property (nonatomic, strong, readonly) YapDatabase *database;
+
+
+#pragma mark Transactions
 
 /**
  * Read-only access to the database.
@@ -150,5 +155,6 @@
 - (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
                 completionBlock:(dispatch_block_t)completionBlock
                 completionQueue:(dispatch_queue_t)completionQueue;
+
 
 @end

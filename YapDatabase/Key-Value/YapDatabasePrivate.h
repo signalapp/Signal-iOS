@@ -23,9 +23,8 @@
 	sqlite3_stmt *enumerateKeysStatement;
 	sqlite3_stmt *enumerateMetadataStatement;
 	sqlite3_stmt *enumerateAllStatement;
-
-@public
 	
+@public
 	NSMutableDictionary *objectChanges;
 	NSMutableDictionary *metadataChanges;
 	NSMutableSet *removedKeys;

@@ -564,7 +564,7 @@
 **/
 - (YapAbstractDatabaseTransaction *)newReadTransaction
 {
-	return [[YapCollectionsDatabaseReadTransaction alloc] initWithConnection:self];
+	return [[YapCollectionsDatabaseReadTransaction alloc] initWithConnection:self isReadWriteTransaction:NO];
 }
 
 /**
@@ -573,7 +573,7 @@
 **/
 - (YapAbstractDatabaseTransaction *)newReadWriteTransaction
 {
-	return [[YapCollectionsDatabaseReadWriteTransaction alloc] initWithConnection:self];
+	return [[YapCollectionsDatabaseReadWriteTransaction alloc] initWithConnection:self isReadWriteTransaction:YES];
 }
 
 /**

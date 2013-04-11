@@ -10,16 +10,13 @@
 @synthesize filterBlockType;
 @synthesize sortBlockType;
 
-- (id)initWithName:(NSString *)inName
-       filterBlock:(YapDatabaseViewFilterBlock)inFilterBlock
-        filterType:(YapDatabaseViewBlockType)inFilterBlockType
-         sortBlock:(YapDatabaseViewSortBlock)inSortBlock
-          sortType:(YapDatabaseViewBlockType)inSortBlockType
+- (id)initWithFilterBlock:(YapDatabaseViewFilterBlock)inFilterBlock
+               filterType:(YapDatabaseViewBlockType)inFilterBlockType
+                sortBlock:(YapDatabaseViewSortBlock)inSortBlock
+                 sortType:(YapDatabaseViewBlockType)inSortBlockType
 {
 	if ((self = [super init]))
 	{
-		name = [inName copy];
-		
 		filterBlock = inFilterBlock;
 		filterBlockType = inFilterBlockType;
 		
@@ -27,6 +24,11 @@
 		sortBlockType = inSortBlockType;
 	}
 	return self;
+}
+
+- (YapAbstractDatabaseViewConnection *)newConnection
+{
+	return [[YapDatabaseViewConnection alloc] initWithDatabaseView:self];
 }
 
 @end

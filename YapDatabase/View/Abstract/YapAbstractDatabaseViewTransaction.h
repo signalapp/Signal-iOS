@@ -3,4 +3,8 @@
 
 @interface YapAbstractDatabaseViewTransaction : NSObject
 
+/**
+ * This class provides the 
+**/
+
 @end

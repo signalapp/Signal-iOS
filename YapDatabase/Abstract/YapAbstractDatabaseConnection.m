@@ -1,5 +1,6 @@
 #import "YapAbstractDatabaseConnection.h"
 #import "YapAbstractDatabasePrivate.h"
+#import "YapAbstractDatabaseViewPrivate.h"
 
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
@@ -322,6 +323,60 @@
 		block();
 	else
 		dispatch_async(connectionQueue, block);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Views
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Creates or fetches the view with the given name.
+ * If this connection has not yet initialized the proper view connection, it is done automatically.
+ *
+ * @return
+ *     A subclass of YapAbstractDatabaseViewConnection,
+ *     according to the type of view registered under the given name.
+ *
+ * One must register a view with the database before it can be accessed from within connections or transactions.
+ * After registration everything works automatically using just the view name.
+ *
+ * @see [YapAbstractDatabase registerView:withName:]
+**/
+- (id)view:(NSString *)viewName
+{
+	// This method returns a subclass of YapAbstractDatabaseViewConnection.
+	// To get:
+	// - YapAbstractDatabaseView => [database registeredView:@"nameOfView"]
+	// - YapAbstractDatabaseViewConnection => [databaseConnection view:@"nameOfView"]
+	// - YapAbstractDatabaseViewTransaction => [databaseTransaction view:@"nameOfView"]
+	//
+	
+	__block id viewConnection = nil;
+	
+	dispatch_block_t block = ^{
+		
+		viewConnection = [views objectForKey:viewName];
+		
+		if (viewConnection == nil)
+		{
+			// We don't have an existing connection for the view.
+			// Create one (if we can).
+			
+			YapAbstractDatabaseView *view = [database registeredView:viewName];
+			if (view)
+			{
+				viewConnection = [view newConnection];
+				[views setObject:viewConnection forKey:viewName];
+			}
+		}
+	};
+	
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+		block();
+	else
+		dispatch_sync(connectionQueue, block);
+	
+	return viewConnection;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

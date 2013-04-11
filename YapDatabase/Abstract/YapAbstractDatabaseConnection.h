@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import "YapAbstractDatabaseViewConnection.h"
 
 @class YapAbstractDatabase;
 
@@ -30,6 +31,8 @@ typedef enum  {
  * it is sometimes convenient to retain an ivar only for the connection, and not the database itself.
 **/
 @property (nonatomic, strong, readonly) YapAbstractDatabase *abstractDatabase;
+
+#pragma mark Cache
 
 /**
  * Each database connection maintains an independent cache of deserialized objects.
@@ -63,17 +66,24 @@ typedef enum  {
 @property (atomic, assign, readwrite) BOOL metadataCacheEnabled;
 @property (atomic, assign, readwrite) NSUInteger metadataCacheLimit;
 
-#if TARGET_OS_IPHONE
+#pragma mark Views
+
 /**
- * When a UIApplicationDidReceiveMemoryWarningNotification is received,
- * the code automatically invokes flushMemoryWithLevel and passes this set level.
+ * Creates or fetches the view with the given name.
+ * If this connection has not yet initialized the proper view connection, it is done automatically.
  * 
- * The default value is YapDatabaseConnectionFlushMemoryLevelMild.
+ * @return
+ *     A subclass of YapAbstractDatabaseViewConnection,
+ *     according to the type of view registered under the given name.
+ *
+ * One must register a view with the database before it can be accessed from within connections or transactions.
+ * After registration everything works automatically using just the view name.
  * 
- * @see flushMemoryWithLevel:
+ * @see [YapAbstractDatabase registerView:withName:]
 **/
-@property (atomic, assign, readwrite) int autoFlushMemoryLevel;
-#endif
+- (id)view:(NSString *)viewName;
+
+#pragma mark Memory
 
 /**
  * This method may be used to flush the internal caches used by the connection,
@@ -94,5 +104,17 @@ typedef enum  {
  *     Full flush of all caches and removes all pre-compiled sqlite statements.
 **/
 - (void)flushMemoryWithLevel:(int)level;
+
+#if TARGET_OS_IPHONE
+/**
+ * When a UIApplicationDidReceiveMemoryWarningNotification is received,
+ * the code automatically invokes flushMemoryWithLevel and passes this set level.
+ * 
+ * The default value is YapDatabaseConnectionFlushMemoryLevelMild.
+ * 
+ * @see flushMemoryWithLevel:
+**/
+@property (atomic, assign, readwrite) int autoFlushMemoryLevel;
+#endif
 
 @end

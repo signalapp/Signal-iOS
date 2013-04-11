@@ -1,11 +1,7 @@
 #import <Foundation/Foundation.h>
+#import "YapAbstractDatabaseViewConnection.h"
 
 
-@interface YapDatabaseViewConnection : NSObject
-
-- (void)prepare;
-- (BOOL)isPrepared;
-
-- (void)mergeChangeset:(NSDictionary *)changeset;
+@interface YapDatabaseViewConnection : YapAbstractDatabaseViewConnection
 
 @end

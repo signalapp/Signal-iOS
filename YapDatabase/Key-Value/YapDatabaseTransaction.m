@@ -1,5 +1,6 @@
 #import "YapDatabaseTransaction.h"
 #import "YapDatabasePrivate.h"
+#import "YapAbstractDatabaseViewPrivate.h"
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
 #import "YapCache.h"
@@ -1227,6 +1228,38 @@
 	[connection->metadataChanges removeAllObjects];
 	[connection->removedKeys removeAllObjects];
 	connection->allKeysRemoved = YES;
+}
+
+#pragma mark Views
+
+- (BOOL)createOrOpenView:(NSString *)viewName
+{
+	if (views)
+	{
+		if ([views objectForKey:viewName] != nil)
+		{
+			return YES;
+		}
+	}
+	else
+	{
+		views = [[NSMutableDictionary alloc] init];
+	}
+	
+	YapAbstractDatabaseViewConnection *viewConnection = [abstractConnection view:viewName];
+	if (viewConnection == nil)
+	{
+		return NO;
+	}
+	
+	YapAbstractDatabaseViewTransaction *viewTransaction = [viewConnection newTransaction:self];
+	
+	return [viewTransaction createOrOpen];
+}
+
+- (void)dropView:(NSString *)viewName
+{
+	// Todo...
 }
 
 @end
