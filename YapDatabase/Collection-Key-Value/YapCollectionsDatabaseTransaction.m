@@ -1204,15 +1204,15 @@
 	// Cache considerations:
 	// Do we want to add the objects/metadata to the cache here?
 	// If the cache is unlimited then we should.
-	// But if the cache is limited then we shouldn't. The cache should be reserved for items that are
-	// explicitly fetched via objectForKey:. Adding objects to the cache here crowds out the items
-	// that are explicitly cached. Plus, if the database has even a small number of objects, then
-	// we'll overflow our cache quickly during the enumeration and it won't do any good.
+	// Otherwise we should only add to the cache if its not full.
+	// The cache should generally be reserved for items that are explicitly fetched,
+	// and we don't want to crowd them out during enumerations.
 	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
 	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
 	
 	BOOL stop = NO;
+	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
 	
 	while (sqlite3_step(statement) == SQLITE_ROW)
 	{
@@ -1246,7 +1246,7 @@
 					metadata = connection.database.metadataDeserializer(mData);
 				}
 				
-				if (connection->metadataCacheLimit == 0 /* unlimited */)
+				if (unlimitedMetadataCacheLimit || [connection->metadataCache count] < connection->metadataCacheLimit)
 				{
 					if (metadata)
 						[connection->metadataCache setObject:metadata forKey:cacheKey];
@@ -1292,12 +1292,12 @@
 	// Cache considerations:
 	// Do we want to add the objects/metadata to the cache here?
 	// If the cache is unlimited then we should.
-	// But if the cache is limited then we shouldn't. The cache should be reserved for items that are
-	// explicitly fetched via objectForKey:. Adding objects to the cache here crowds out the items
-	// that are explicitly cached. Plus, if the database has even a small number of objects, then
-	// we'll overflow our cache quickly during the enumeration and it won't do any good.
+	// Otherwise we should only add to the cache if its not full.
+	// The cache should generally be reserved for items that are explicitly fetched,
+	// and we don't want to crowd them out during enumerations.
 	
 	BOOL stop = NO;
+	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
 	
 	while (sqlite3_step(statement) == SQLITE_ROW)
 	{
@@ -1338,7 +1338,7 @@
 					metadata = connection.database.metadataDeserializer(mData);
 				}
 				
-				if (connection->metadataCacheLimit == 0 /* unlimited */)
+				if (unlimitedMetadataCacheLimit || [connection->metadataCache count] < connection->metadataCacheLimit)
 				{
 					if (metadata)
 						[connection->metadataCache setObject:metadata forKey:cacheKey];
@@ -1385,13 +1385,16 @@
 	// Cache considerations:
 	// Do we want to add the objects/metadata to the cache here?
 	// If the cache is unlimited then we should.
-	// But if the cache is limited then we shouldn't. The cache should be reserved for items that are
-	// explicitly fetched via objectForKey:. Adding objects to the cache here crowds out the items
-	// that are explicitly cached. Plus, if the database has even a small number of objects, then
-	// we'll overflow our cache quickly during the enumeration and it won't do any good.
+	// Otherwise we should only add to the cache if its not full.
+	// The cache should generally be reserved for items that are explicitly fetched,
+	// and we don't want to crowd them out during enumerations.
 	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
 	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+	
+	BOOL stop = NO;
+	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
+	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
 	
 	while (sqlite3_step(statement) == SQLITE_ROW)
 	{
@@ -1421,7 +1424,7 @@
 				metadata = connection.database.metadataDeserializer(mData);
 			}
 			
-			if (connection->metadataCacheLimit == 0 /* unlimited */)
+			if (unlimitedMetadataCacheLimit || [connection->metadataCache count] < connection->metadataCacheLimit)
 			{
 				if (metadata)
 					[connection->metadataCache setObject:metadata forKey:cacheKey];
@@ -1442,13 +1445,11 @@
 				NSData *oData = [[NSData alloc] initWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
 				object = connection.database.objectDeserializer(oData);
 				
-				if (connection->objectCacheLimit == 0 /* unlimited */)
+				if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
 				{
 					[connection->objectCache setObject:object forKey:cacheKey];
 				}
 			}
-			
-			BOOL stop = NO;
 			
 			block(key, object, metadata, &stop);
 			
@@ -1483,6 +1484,10 @@
 	
 	// SELECT "collection", "key", "data", "metadata" FROM "database" ORDER BY \"collection\" ASC;";
 	//              0         1       2         3
+	
+	BOOL stop = NO;
+	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
+	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
 	
 	while (sqlite3_step(statement) == SQLITE_ROW)
 	{
@@ -1520,7 +1525,7 @@
 				metadata = connection.database.metadataDeserializer(mData);
 			}
 			
-			if (connection->metadataCacheLimit == 0 /* unlimited */)
+			if (unlimitedMetadataCacheLimit || [connection->metadataCache count] < connection->metadataCacheLimit)
 			{
 				if (metadata)
 					[connection->metadataCache setObject:metadata forKey:cacheKey];
@@ -1541,13 +1546,11 @@
 				NSData *oData = [[NSData alloc] initWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
 				object = connection.database.objectDeserializer(oData);
 				
-				if (connection->objectCacheLimit == 0 /* unlimited */)
+				if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
 				{
 					[connection->objectCache setObject:object forKey:cacheKey];
 				}
 			}
-			
-			BOOL stop = NO;
 			
 			block(collection, key, object, metadata, &stop);
 			
