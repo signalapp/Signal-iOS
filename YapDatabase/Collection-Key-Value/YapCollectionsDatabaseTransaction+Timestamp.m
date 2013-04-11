@@ -37,7 +37,11 @@
 {
 	// Extract the key/timestamp pairs (those that have a metadata timestamp).
 	
-	NSMutableDictionary *subMetadataDict = [NSMutableArray array];
+	NSUInteger count = [self numberOfKeysInCollection:collection];
+	if (count == 0)
+		return [NSArray array];
+	
+	NSMutableDictionary *subMetadataDict = [NSMutableDictionary dictionaryWithCapacity:count];
 	
 	Class NSDateClass = [NSDate class];
 	[self enumerateKeysAndMetadataInCollection:collection usingBlock:^(NSString *key, id metadata, BOOL *stop){
@@ -47,6 +51,9 @@
 			[subMetadataDict setObject:metadata forKey:key];
 		}
 	}];
+	
+	if ([subMetadataDict count] == 0)
+		return [NSArray array];
 	
 	// Check desired sorting order.
 	// Default (if passed inappropriate value) is NSOrderedAscending.
@@ -95,9 +102,13 @@
 {
 	if (!block) return;
 	
+	NSUInteger count = [self numberOfKeysInCollection:collection];
+	if (count == 0)
+		return;
+	
 	// Extract the key/timestamp pairs (those that have a metadata timestamp).
 	
-	NSMutableDictionary *subMetadataDict = [NSMutableArray array];
+	NSMutableDictionary *subMetadataDict = [NSMutableDictionary dictionaryWithCapacity:count];
 	
 	Class NSDateClass = [NSDate class];
 	[self enumerateKeysAndMetadataInCollection:collection usingBlock:^(NSString *key, id metadata, BOOL *stop){
@@ -107,6 +118,9 @@
 			[subMetadataDict setObject:metadata forKey:key];
 		}
 	}];
+	
+	if ([subMetadataDict count] == 0)
+		return;
 	
 	// Check desired sorting order.
 	// Default (if passed inappropriate value) is NSOrderedAscending.
@@ -166,9 +180,13 @@
 {
 	if (!block) return;
 	
+	NSUInteger count = [self numberOfKeysInCollection:collection];
+	if (count == 0)
+		return;
+	
 	// Extract the key/timestamp pairs (those that have a metadata timestamp).
 	
-	NSMutableDictionary *subMetadataDict = [NSMutableArray array];
+	NSMutableDictionary *subMetadataDict = [NSMutableDictionary dictionaryWithCapacity:count];
 	
 	Class NSDateClass = [NSDate class];
 	[self enumerateKeysAndMetadataInCollection:collection usingBlock:^(NSString *key, id metadata, BOOL *stop){
@@ -178,6 +196,9 @@
 			[subMetadataDict setObject:metadata forKey:key];
 		}
 	}];
+	
+	if ([subMetadataDict count] == 0)
+		return;
 	
 	// Check desired sorting order.
 	// Default (if passed inappropriate value) is NSOrderedAscending.
