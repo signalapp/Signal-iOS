@@ -12,8 +12,8 @@
 
 - (id)initWithCollection:(NSString *)collection key:(NSString *)key;
 
-@property (nonatomic, strong, retain) NSString *collection;
-@property (nonatomic, strong, retain) NSString *key;
+@property (nonatomic, strong, readonly) NSString *collection;
+@property (nonatomic, strong, readonly) NSString *key;
 
 - (BOOL)isEqual:(id)anObject;
 - (NSUInteger)hash;
