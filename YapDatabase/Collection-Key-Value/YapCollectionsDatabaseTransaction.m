@@ -1375,8 +1375,6 @@
 	sqlite3_stmt *statement = [connection enumerateAllInCollectionStatement];
 	if (statement == NULL) return;
 	
-	YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:nil];
-	
 	// SELECT "key", "data", "metadata" FROM "database" WHERE "collection" = ?;
 	//
 	// Performance tuning:
@@ -1405,7 +1403,8 @@
 		int _keySize = sqlite3_column_bytes(statement, 0);
 		
 		NSString *key = [[NSString alloc] initWithBytes:_key length:_keySize encoding:NSUTF8StringEncoding];
-		cacheKey.key = key;
+		
+		YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
 		
 		id metadata = [connection->metadataCache objectForKey:cacheKey];
 		if (metadata)
@@ -1480,8 +1479,6 @@
 	sqlite3_stmt *statement = [connection enumerateAllInAllCollectionsStatement];
 	if (statement == NULL) return;
 	
-	YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:nil key:nil];
-	
 	// SELECT "collection", "key", "data", "metadata" FROM "database" ORDER BY \"collection\" ASC;";
 	//              0         1       2         3
 	
@@ -1505,8 +1502,7 @@
 		collection = [[NSString alloc] initWithBytes:_collection length:_collectionSize encoding:NSUTF8StringEncoding];
 		key = [[NSString alloc] initWithBytes:_key length:_keySize encoding:NSUTF8StringEncoding];
 		
-		cacheKey.collection = collection;
-		cacheKey.key = key;
+		YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
 		
 		id metadata = [connection->metadataCache objectForKey:cacheKey];
 		if (metadata)
