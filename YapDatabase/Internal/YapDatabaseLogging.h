@@ -36,6 +36,11 @@
 #define YDB_LOG_LEVEL_INFO    (YDB_LOG_LEVEL_WARN  | YDB_LOG_FLAG_INFO)    // 0...00111
 #define YDB_LOG_LEVEL_VERBOSE (YDB_LOG_LEVEL_INFO  | YDB_LOG_FLAG_VERBOSE) // 0...01111
 
+#define YDB_LOG_ERROR   (YDBLogLevel & YDB_LOG_LEVEL_ERROR)
+#define YDB_LOG_WARN    (YDBLogLevel & YDB_LOG_LEVEL_WARN)
+#define YDB_LOG_INFO    (YDBLogLevel & YDB_LOG_LEVEL_INFO)
+#define YDB_LOG_VERBOSE (YDBLogLevel & YDB_LOG_LEVEL_VERBOSE)
+
 /**
  * YapDatabase supports multiple logging techniques.
  * 
@@ -44,13 +49,19 @@
  *
  * If you're not using Lumberjack then you can downgrade to NSLog.
  * You can also completely disable logging throughout the entire library.
+ * 
+ * You are strongly discouraged from modifying this file.
+ * If you do, you make it more difficult on yourself to merge future bug fixes and improvements from the project.
+ * Instead, you should override the default values in your own application.
 **/
 
 #define YapDatabaseLoggingTechnique_Lumberjack 2 // optimal
 #define YapDatabaseLoggingTechnique_NSLog      1 // slower
 #define YapDatabaseLoggingTechnique_Disabled   0 // disabled
 
+#ifndef YapDatabaseLoggingTechnique
 #define YapDatabaseLoggingTechnique YapDatabaseLoggingTechnique_Lumberjack
+#endif
 
 /**
  * Todo...
@@ -108,6 +119,16 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Logging Disabled
+
+#undef YDB_LOG_ERROR
+#undef YDB_LOG_WARN
+#undef YDB_LOG_INFO
+#undef YDB_LOG_VERBOSE
+
+#define YDB_LOG_ERROR   (NO)
+#define YDB_LOG_WARN    (NO)
+#define YDB_LOG_INFO    (NO)
+#define YDB_LOG_VERBOSE (NO)
 
 #define YDBLogError(frmt, ...)     {}
 #define YDBLogWarn(frmt, ...)      {}
