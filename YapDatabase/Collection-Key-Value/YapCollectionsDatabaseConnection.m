@@ -2,7 +2,8 @@
 #import "YapCollectionsDatabasePrivate.h"
 
 #import "YapAbstractDatabasePrivate.h"
-#import "YapCacheCollectionKey.h"
+#import "YapCache.h"
+#import "YapCacheMultiKey.h"
 #import "YapNull.h"
 
 #import "YapDatabaseString.h"

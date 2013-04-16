@@ -24,7 +24,8 @@
 
 @interface YapAbstractDatabaseViewConnection () {
 @public
-	YapAbstractDatabaseView *abstractView;
+	__strong YapAbstractDatabaseView *abstractView;
+	__unsafe_unretained YapAbstractDatabaseConnection *databaseConnection;
 }
 
 - (id)initWithDatabaseView:(YapAbstractDatabaseView *)parent;
@@ -67,22 +68,21 @@
 @protocol YapAbstractDatabaseViewKeyValueTransaction
 @required
 
-- (void)handleInsertKey:(NSString *)key withObject:(id)object metadata:(id)metadata;
-- (void)handleUpdateKey:(NSString *)key withObject:(id)object metadata:(id)metadata;
-- (void)handleUpdateKey:(NSString *)key withMetadata:(id)metadata;
-- (void)handleRemoveKey:(NSString *)key;
-- (void)handleRemoveAllKeys;
+- (void)handleSetObject:(id)object forKey:(NSString *)key withMetadata:(id)metadata;
+- (void)handleSetMetadata:(id)metadata forKey:(NSString *)key;
+- (void)handleRemoveObjectForKey:(NSString *)key;
+- (void)handleRemoveObjectsForKeys:(NSArray *)keys;
+- (void)handleRemoveAllObjects;
 
 @end
 
 @protocol YapAbstractDatabaseViewCollectionKeyValueTransaction
 @required
 
-- (void)handleInsertKey:(NSString *)key withObject:(id)object metadata:(id)metadata inCollection:(NSString *)collection;
-- (void)handleUpdateKey:(NSString *)key withObject:(id)object metadata:(id)metadata inCollection:(NSString *)collection;
-- (void)handleUpdateKey:(NSString *)key withMetadata:(id)metadata inCollection:(NSString *)collection;
-- (void)handleRemoveKey:(NSString *)key inCollection:(NSString *)collection;
-- (void)handleRemoveAllKeysInCollection:(NSString *)collection;
-- (void)handleRemoveAllKeys;
+- (void)handleSetObject:(id)object forKey:(NSString *)key withMetadata:(id)metadata inCollection:(NSString *)collection;
+- (void)handleSetMetadata:(id)metadata forKey:(NSString *)key inCollection:(NSString *)collection;
+- (void)handleRemoveObjectForKey:(NSString *)key inCollection:(NSString *)collection;
+- (void)handleRemoveAllObjectsInCollection:(NSString *)collection;
+- (void)handleRemoveAllObjectsInAllCollections;
 
 @end

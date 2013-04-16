@@ -15,7 +15,7 @@
 - (id)objectAtIndex:(NSUInteger)keyIndex inSection:(NSUInteger)sectionIndex;
 - (id)objectAtIndexPath:(NSIndexPath *)indexPath;
 
+- (BOOL)getIndex:(NSUInteger *)indexPtr section:(NSUInteger *)sectionPtr forKey:(NSString *)key;
 - (NSIndexPath *)indexPathForKey:(NSString *)key;
-- (void)getIndex:(NSUInteger *)indexPtr section:(NSUInteger *)sectionIndex forKey:(NSString *)key;
 
 @end

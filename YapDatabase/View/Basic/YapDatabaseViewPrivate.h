@@ -4,6 +4,8 @@
 #import "YapDatabaseViewConnection.h"
 #import "YapDatabaseViewTransaction.h"
 
+#import "sqlite3.h"
+
 @class YapCache;
 
 
@@ -23,54 +25,32 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface YapDatabaseViewConnection () {
+@private
+	sqlite3_stmt *getDataForKeyStatement;
+	sqlite3_stmt *setMetadataForKeyStatement;
+	sqlite3_stmt *setAllForKeyStatement;
+	sqlite3_stmt *removeForKeyStatement;
+	sqlite3_stmt *removeAllStatement;
+	sqlite3_stmt *enumerateMetadataStatement;
+	
 @public
 	
-	NSData *(^serializer)(id object);
-	id (^deserializer)(NSData *);
+	NSMutableDictionary *sectionPagesDict; // section -> @[ pageMetadata, ... ]
 	
-	NSMutableArray *hashPages;
-	NSMutableDictionary *keyPagesDict;
+	NSMutableDictionary *dirtyKeys;
+	NSMutableDictionary *dirtyPages;
 	
-	YapCache *cache;
+	YapCache *keyCache;
+	YapCache *pageCache;
 }
 
 - (BOOL)isOpen;
 
-@end
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-@interface YapDatabaseViewHashPage : NSObject <NSCoding> {
-@public
-	
-	// Transient (not saved to disk)
-	NSString *key;
-	
-	// Persistent (saved to disk)
-	NSString *nextKey;
-	NSUInteger firstHash;
-	NSUInteger lastHash;
-	NSUInteger count;
-}
-
-@end
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-@interface YapDatabaseViewKeyPage : NSObject <NSCoding> {
-@public
-	
-	// Transient (not saved to disk)
-	NSString *key;
-	
-	// Persistent (saved to disk)
-	NSString *nextKey;
-	NSUInteger section;
-	NSUInteger count;
-}
+- (sqlite3_stmt *)getDataForKeyStatement;
+//- (sqlite3_stmt *)setMetadataForKeyStatement;
+//- (sqlite3_stmt *)setAllForKeyStatement;
+//- (sqlite3_stmt *)removeForKeyStatement;
+//- (sqlite3_stmt *)removeAllStatement;
+//- (sqlite3_stmt *)enumerateMetadataStatement;
 
 @end

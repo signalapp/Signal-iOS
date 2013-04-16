@@ -1,6 +1,6 @@
 #import "BenchmarkYapCache.h"
 #import "YapCache.h"
-#import "YapCacheCollectionKey.h"
+#import "YapCacheMultiKey.h"
 
 #define LOOP_COUNT 25000
 

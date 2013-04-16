@@ -19,7 +19,7 @@
 typedef id YapDatabaseViewFilterBlock; // One of the YapDatabaseViewFilterX types below.
 
 typedef BOOL (^YapDatabaseViewFilterWithObjectBlock)(NSString *key, id object, NSUInteger *sectionOut);
-typedef BOOL (^YapDatabaseViewFilterWithMetadataMetadataBlock)(NSString *key, id metadata, NSUInteger *sectionOut);
+typedef BOOL (^YapDatabaseViewFilterWithMetadataBlock)(NSString *key, id metadata, NSUInteger *sectionOut);
 typedef BOOL (^YapDatabaseViewFilterWithBothBlock)(NSString *key, id object, id metadata, NSUInteger *sectionOut);
 
 typedef id YapDatabaseViewSortBlock; // One of the YapDatabaseViewSortX types below.

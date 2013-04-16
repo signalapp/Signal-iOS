@@ -1,7 +1,23 @@
 #import "YapDatabaseViewConnection.h"
 #import "YapDatabaseViewPrivate.h"
 #import "YapAbstractDatabaseViewPrivate.h"
+#import "YapAbstractDatabasePrivate.h"
 #import "YapCache.h"
+#import "YapDatabaseLogging.h"
+
+#if ! __has_feature(objc_arc)
+#warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
+#endif
+
+/**
+ * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
+ * See YapDatabaseLogging.h for more information.
+**/
+#if DEBUG
+  static const int ydbFileLogLevel = YDB_LOG_LEVEL_INFO;
+#else
+  static const int ydbFileLogLevel = YDB_LOG_LEVEL_WARN;
+#endif
 
 
 @implementation YapDatabaseViewConnection
@@ -10,7 +26,8 @@
 {
 	if ((self = [super initWithDatabaseView:parent]))
 	{
-		cache = [[YapCache alloc] init];
+		keyCache = [[YapCache alloc] init];
+		pageCache = [[YapCache alloc] init];
 	}
 	return self;
 }
@@ -26,69 +43,30 @@
 
 - (BOOL)isOpen
 {
-	return (hashPages && keyPagesDict);
+	return (sectionPagesDict != nil);
 }
 
-@end
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
+#pragma mark Statements
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@implementation YapDatabaseViewHashPage
-
-- (id)initWithCoder:(NSCoder *)decoder
+- (sqlite3_stmt *)getDataForKeyStatement
 {
-	if ((self = [super init]))
+	if (getDataForKeyStatement == NULL)
 	{
-		// Note: 'key' is transient
+		NSString *statement = [NSString stringWithFormat:
+		    @"SELECT \"data\" FROM \"%@\" WHERE \"type\" = ? AND \"key\" = ?;", [abstractView tableName]];
 		
-		nextKey = [decoder decodeObjectForKey:@"nextKey"];
-		firstHash = [decoder decodeIntegerForKey:@"firstHash"];
-		lastHash = [decoder decodeIntegerForKey:@"lastHash"];
-		count = [decoder decodeIntegerForKey:@"count"];
-	}
-	return self;
-}
-
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-	// Note: 'key' is transient
-	
-	[coder encodeObject:nextKey forKey:@"nextKey"];
-	[coder encodeInteger:firstHash forKey:@"firstHash"];
-	[coder encodeInteger:lastHash forKey:@"lastHash"];
-	[coder encodeInteger:count forKey:@"count"];
-}
-
-@end
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-@implementation YapDatabaseViewKeyPage
-
-- (id)initWithCoder:(NSCoder *)decoder
-{
-	if ((self = [super init]))
-	{
-		// Note: 'key' is transient
+		sqlite3 *db = databaseConnection->db;
 		
-		nextKey = [decoder decodeObjectForKey:@"nextKey"];
-		section = [decoder decodeIntegerForKey:@"section"];
-		count = [decoder decodeIntegerForKey:@"count"];
+		int status = sqlite3_prepare_v2(db, [statement UTF8String], -1, &getDataForKeyStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating '%@': %d %s", THIS_FILE, THIS_METHOD, status, sqlite3_errmsg(db));
+		}
 	}
-	return self;
-}
-
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-	// Note: 'key' is transient
 	
-	[coder encodeObject:nextKey forKey:@"nextKey"];
-	[coder encodeInteger:section forKey:@"section"];
-	[coder encodeInteger:count forKey:@"count"];
+	return getDataForKeyStatement;
 }
 
 @end
