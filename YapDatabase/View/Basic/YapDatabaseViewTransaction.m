@@ -1,6 +1,6 @@
 #import "YapDatabaseViewTransaction.h"
 #import "YapDatabaseViewPrivate.h"
-#import "YapDatabaseViewInternal.h"
+#import "YapDatabaseViewPageMetadata.h"
 #import "YapAbstractDatabaseViewPrivate.h"
 #import "YapAbstractDatabasePrivate.h"
 #import "YapDatabaseTransaction.h"
@@ -12,9 +12,6 @@
 #if ! __has_feature(objc_arc)
 #warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
 #endif
-
-#define YDB_VIEW_TYPE_KEY  0
-#define YDB_VIEW_TYPE_PAGE 1
 
 /**
  * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
@@ -30,71 +27,94 @@
  * ARCHITECTURE OVERVIEW:
  * 
  * A YapDatabaseView allows one to store a ordered array of keys.
- * Furthermore, sections are supported, which means there may be multiple ordered arrays of keys, one per section.
+ * Furthermore, groups are supported, which means there may be multiple ordered arrays of keys, one per group.
  * 
  * Conceptually this is a very simple concept.
- * But obviously there are memory and performance requirements the add complexity.
+ * But obviously there are memory and performance requirements that add complexity.
  * 
- * One possibility is to use a database table with fields for 'section', 'key', and 'index'.
- * However, this is a performance nightmare.
- * Inserting a key into the beginning of the order causes every other row in the section to be
- * updated in order to increment the 'index' value.
+ * The view creates two database tables:
  * 
- * Instead we take the array and split it into pages.
+ * view_name_key:
+ * - key     (string, primary key) : a key from the database table
+ * - pageKey (string)              : the primary key in the page table
+ * 
+ * view_name_page:
+ * - pageKey  (string, primary key) : a uuid
+ * - data     (blob)                : an NSArray of keys (the page)
+ * - metadata (blob)                : a YapDatabaseViewPageMetadata object
+ * 
+ * For both tables "name" is replaced by the registered name of the view.
+ * 
+ * Thus, given a key, we can quickly identify if the key exists in the view (via the key table).
+ * And if so we can use the associated pageKey to figure out the group and index of the key.
+ * 
+ * When we open the view, we read all the metadata objects from the page table into memory.
+ * We use the metadata to create the two primary data structures:
+ * 
+ * - groupPagesDict   (NSMutableDictionary) : key(group), value(array of YapDatabaseViewPageMetadata objects)
+ * - pageKeyGroupDict (NSMutableDictionary) : key(pageKey), value(group)
+ * 
+ * Using the groupPagesDict we can quickly find the 
 **/
 @implementation YapDatabaseViewTransaction
+{
+	BOOL lastInsertWasAtFirstIndex;
+	BOOL lastInsertWasAtLastIndex;
+}
 
 - (BOOL)open
 {
-	NSString *tableName = [abstractViewConnection->abstractView tableName];
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
+	    (YapDatabaseViewConnection *)abstractViewConnection;
+	
+	__unsafe_unretained YapDatabaseView *view =
+	    (YapDatabaseView *)(abstractViewConnection->abstractView);
+	
 	sqlite3 *db = databaseTransaction->abstractConnection->db;
 	
-	NSString *selectStatement = [NSString stringWithFormat:
-	    @"SELECT \"key\", \"metadata\" FROM \"%@\" WHERE type = %d;", tableName, YDB_VIEW_TYPE_PAGE];
+	NSString *string = [NSString stringWithFormat:
+	    @"SELECT \"pagKey\", \"metadata\" FROM \"%@\" ;", [view pageTableName]];
 	
-	sqlite3_stmt *enumerateStatement;
+	sqlite3_stmt *statement;
 	
-	int status = sqlite3_prepare_v2(db, [selectStatement UTF8String], -1, &enumerateStatement, NULL);
+	int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &statement, NULL);
 	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"Error creating 'enumerateAllStatement': %d %s", status, sqlite3_errmsg(db));
+		YDBLogError(@"%@: %@ (%@): Cannot create 'enumerate_stmt': %d %s",
+		            THIS_FILE, THIS_METHOD, [self registeredViewName], status, sqlite3_errmsg(db));
 		return NO;
 	}
 	
 	// Enumerate over the page rows in the database, and populate our data structure.
 	// Each row gives us the following fields:
 	//
-	// - section
-	// - key
-	// - nextKey
+	// - group
+	// - pageKey
+	// - nextPageKey
 	//
-	// From this information we need to piece together the keyPagesDict:
-	// - key = section
-	// - value = ordered array of YapDatabaseViewKeyPageMetadata objects
+	// From this information we need to piece together the groupPagesDict:
+	// - dict.key = group
+	// - dict.value = properly ordered array of YapDatabaseViewKeyPageMetadata objects
 	//
-	// In order to stitch everything together we make a temporary dictionary with the reverse link.
+	// To piece together the proper page order we make a temporary dictionary with each link (in linked-list) reversed.
 	// For example:
 	//
 	// pageA.nextPage = pageB  =>      B ->A
 	// pageB.nextPage = pageC  =>      C -> B
 	// pageC.nextPage = nil    => NSNull -> C
 	//
-	// After the enumeration is complete, we can easily stitch together the order by
-	// working backwards from the last page.
+	// After the enumeration of all rows is complete, we can walk the linked list backwards from the last page.
 	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	    (YapDatabaseViewConnection *)abstractViewConnection;
+	NSMutableDictionary *groupPageDict = [[NSMutableDictionary alloc] init];
+	NSMutableDictionary *groupOrderDict = [[NSMutableDictionary alloc] init];
 	
-	NSMutableDictionary *sectionKeyPageDict = [[NSMutableDictionary alloc] init];
-	NSMutableDictionary *sectionKeyOrderDict = [[NSMutableDictionary alloc] init];
-	
-	while (sqlite3_step(enumerateStatement) == SQLITE_ROW)
+	while (sqlite3_step(statement) == SQLITE_ROW)
 	{
-		const unsigned char *text = sqlite3_column_text(enumerateStatement, 0);
-		int textSize = sqlite3_column_bytes(enumerateStatement, 0);
+		const unsigned char *text = sqlite3_column_text(statement, 0);
+		int textSize = sqlite3_column_bytes(statement, 0);
 		
-		const void *blob = sqlite3_column_blob(enumerateStatement, 1);
-		int blobSize = sqlite3_column_bytes(enumerateStatement, 1);
+		const void *blob = sqlite3_column_blob(statement, 1);
+		int blobSize = sqlite3_column_bytes(statement, 1);
 		
 		NSString *pageKey = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 		NSData *data = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
@@ -106,33 +126,33 @@
 			YapDatabaseViewPageMetadata *pageMetadata = (YapDatabaseViewPageMetadata *)metadata;
 			pageMetadata->pageKey = pageKey;
 			
-			NSNumber *section = @(pageMetadata->section);
+			NSString *group = pageMetadata->group;
 			
-			NSMutableDictionary *keyPageDict = [sectionKeyPageDict objectForKey:section];
-			if (keyPageDict == nil)
+			NSMutableDictionary *pageDict = [groupPageDict objectForKey:group];
+			if (pageDict == nil)
 			{
-				keyPageDict = [[NSMutableDictionary alloc] init];
-				[sectionKeyPageDict setObject:keyPageDict forKey:section];
+				pageDict = [[NSMutableDictionary alloc] init];
+				[groupPageDict setObject:pageDict forKey:group];
 			}
 			
-			NSMutableDictionary *keyOrderDict = [sectionKeyOrderDict objectForKey:section];
-			if (keyOrderDict == nil)
+			NSMutableDictionary *orderDict = [groupOrderDict objectForKey:group];
+			if (orderDict == nil)
 			{
-				keyOrderDict = [[NSMutableDictionary alloc] init];
-				[sectionKeyOrderDict setObject:keyOrderDict forKey:section];
+				orderDict = [[NSMutableDictionary alloc] init];
+				[groupOrderDict setObject:orderDict forKey:group];
 			}
 			
-			[keyPageDict setObject:pageMetadata forKey:pageKey];
+			[pageDict setObject:pageMetadata forKey:pageKey];
 			
 			if (pageMetadata->nextPageKey)
-				[keyOrderDict setObject:pageMetadata->pageKey forKey:pageMetadata->nextPageKey];
+				[orderDict setObject:pageMetadata->pageKey forKey:pageMetadata->nextPageKey];
 			else
-				[keyOrderDict setObject:pageMetadata->pageKey forKey:[NSNull null]];
+				[orderDict setObject:pageMetadata->pageKey forKey:[NSNull null]];
 		}
 		else
 		{
-			YDBLogWarn(@"%@: While opening view(%@) encountered unknown metadata class: %@",
-					   THIS_FILE, [self registeredViewName], [metadata class]);
+			YDBLogWarn(@"%@: %@ (%@): Encountered unknown metadata class: %@",
+					   THIS_FILE, THIS_METHOD, [self registeredViewName], [metadata class]);
 		}
 	}
 	
@@ -143,22 +163,17 @@
 		// Initialize ivars in viewConnection.
 		// We try not to do this before we know the table exists.
 		
-		viewConnection->sectionPagesDict = [[NSMutableDictionary alloc] init];
+		viewConnection->groupPagesDict = [[NSMutableDictionary alloc] init];
+		viewConnection->pageKeyGroupDict = [[NSMutableDictionary alloc] init];
 		
-		viewConnection->dirtyKeys = [[NSMutableDictionary alloc] init];
-		viewConnection->dirtyPages = [[NSMutableDictionary alloc] init];
+		// Enumerate over each group
 		
-		// Enumerate over each section
-		
-		[sectionKeyOrderDict enumerateKeysAndObjectsUsingBlock:^(id _section, id _keyOrderDict, BOOL *stop) {
+		[groupOrderDict enumerateKeysAndObjectsUsingBlock:^(id _group, id _orderDict, BOOL *stop) {
 			
-			NSNumber *section = (NSNumber *)_section;
-			NSMutableDictionary *keyOrderDict = (NSMutableDictionary *)_keyOrderDict;
+			NSString *group = (NSString *)_group;
+			NSMutableDictionary *orderDict = (NSMutableDictionary *)_orderDict;
 			
-			NSMutableDictionary *keyPageDict = [sectionKeyPageDict objectForKey:section];
-			
-			NSMutableArray *pagesForSection = [[NSMutableArray alloc] initWithCapacity:[keyPageDict count]];
-			[viewConnection->sectionPagesDict setObject:pagesForSection forKey:section];
+			NSMutableDictionary *pageDict = [groupPageDict objectForKey:group];
 			
 			// Work backwards to stitch together the pages for this section.
 			//
@@ -167,24 +182,37 @@
 			// ...
 			// secondPageKey -> firstPageKey
 			//
-			// And from the keys, we can get the actual page using the keyPageDict.
+			// And from the keys, we can get the actual pageMetadata using the pageDict.
 			
-			NSString *key = [keyOrderDict objectForKey:[NSNull null]];
-			while (key)
+			NSMutableArray *pagesForGroup = [[NSMutableArray alloc] initWithCapacity:[pageDict count]];
+			[viewConnection->groupPagesDict setObject:pagesForGroup forKey:group];
+			
+			NSString *pageKey = [orderDict objectForKey:[NSNull null]];
+			while (pageKey)
 			{
-				YapDatabaseViewPageMetadata *pageMetadata = [keyPageDict objectForKey:key];
+				[viewConnection->pageKeyGroupDict setObject:group forKey:pageKey];
 				
-				[pagesForSection insertObject:pageMetadata atIndex:0];
+				YapDatabaseViewPageMetadata *pageMetadata = [pageDict objectForKey:pageKey];
+				[pagesForGroup insertObject:pageMetadata atIndex:0];
 				
-				key = [keyOrderDict objectForKey:key];
+				pageKey = [orderDict objectForKey:pageKey];
+				
+				if ([pagesForGroup count] > [orderDict count])
+				{
+					YDBLogError(@"%@: %@ (%@): Circular key ordering detected in group(%@)",
+					            THIS_FILE, THIS_METHOD, [self registeredViewName], group);
+					
+					error = YES;
+					break;
+				}
 			}
 			
 			// Validate data for this section
 			
-			if ([pagesForSection count] < [keyOrderDict count])
+			if (!error && ([pagesForGroup count] != [orderDict count]))
 			{
-				YDBLogError(@"%@: Error opening view(%@): Missing key page(s) in section(%lu)",
-				            THIS_FILE, [self registeredViewName], (unsigned long)section);
+				YDBLogError(@"%@: %@ (%@): Missing key page(s) in group(%@)",
+				            THIS_FILE, THIS_METHOD, [self registeredViewName], group);
 				
 				error = YES;
 			}
@@ -198,13 +226,17 @@
 		// The isOpen method of YapDatabaseViewConnection inspects sectionPagesDict.
 		// So if there was an error opening the view, we need to reset this variable to nil.
 		
-		viewConnection->sectionPagesDict = nil;
-		
-		viewConnection->dirtyKeys = nil;
-		viewConnection->dirtyPages = nil;
+		viewConnection->groupPagesDict = nil;
+		viewConnection->pageKeyGroupDict = nil;
+	}
+	else
+	{
+		viewConnection->dirtyKeys = [[NSMutableDictionary alloc] init];
+		viewConnection->dirtyPages = [[NSMutableDictionary alloc] init];
+		viewConnection->dirtyMetadata = [[NSMutableDictionary alloc] init];
 	}
 	
-	sqlite3_finalize(enumerateStatement);
+	sqlite3_finalize(statement);
 	return !error;
 }
 
@@ -212,23 +244,42 @@
 {
 	NSAssert(databaseTransaction->isReadWriteTransaction, @"Attempt to create a view outside a readwrite transaction");
 	
-	NSString *tableName = [abstractViewConnection->abstractView tableName];
+	__unsafe_unretained YapDatabaseView *view =
+	    (YapDatabaseView *)(abstractViewConnection->abstractView);
+	
+	NSString *keyTableName = [view keyTableName];
+	NSString *pageTableName = [view pageTableName];
+	
 	sqlite3 *db = databaseTransaction->abstractConnection->db;
 	
-	NSString *statement = [NSString stringWithFormat:
+	NSString *createKeyTable = [NSString stringWithFormat:
 	    @"CREATE TABLE IF NOT EXISTS \"%@\""
-	    @" (\"type\" INTEGER NOT NULL, "
-	    @"  \"key\" CHAR NOT NULL, "
-	    @"  \"data\" BLOB, "
-	    @"  \"metadata\" BLOB, "
-	    @"  PRIMARY KEY (\"type\", \"key\")"
-	    @" );", tableName];
+	    @" (\"key\" CHAR NOT NULL PRIMARY KEY,"
+	    @"  \"pageKey\" CHAR NOT NULL"
+	    @" );", keyTableName];
 	
-	int status = sqlite3_exec(db, [statement UTF8String], NULL, NULL, NULL);
+	NSString *createPageTable = [NSString stringWithFormat:
+	    @"CREATE TABLE IF NOT EXISTS \"%@\""
+	    @" (\"pageKey\" CHAR NOT NULL PRIMARY KEY,"
+	    @"  \"data\" BLOB,"
+		@"  \"metadata\" BLOB"
+	    @" );", pageTableName];
+	
+	int status;
+	
+	status = sqlite3_exec(db, [createKeyTable UTF8String], NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"Failed creating table for view(%@): %d %s",
-		            [abstractViewConnection->abstractView registeredName], status, sqlite3_errmsg(db));
+		YDBLogError(@"%@: %@ (%@): Failed creating key table: %d %s",
+		            THIS_FILE, THIS_METHOD, [self registeredViewName], status, sqlite3_errmsg(db));
+		return NO;
+	}
+	
+	status = sqlite3_exec(db, [createPageTable UTF8String], NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@: %@ (%@): Failed creating page table: %d %s",
+		            THIS_FILE, THIS_METHOD, [self registeredViewName], status, sqlite3_errmsg(db));
 		return NO;
 	}
 	
@@ -265,6 +316,50 @@
 	return view.registeredName;
 }
 
+- (id)objectForKey:(NSString *)key
+{
+	__unsafe_unretained YapDatabaseReadTransaction *transaction =
+	    (YapDatabaseReadTransaction *)databaseTransaction;
+	
+	return [transaction objectForKey:key];
+}
+
+- (id)metadataForKey:(NSString *)key
+{
+	__unsafe_unretained YapDatabaseReadTransaction *transaction =
+	    (YapDatabaseReadTransaction *)databaseTransaction;
+	
+	return [transaction metadataForKey:key];
+}
+
+- (BOOL)getObject:(id *)objectPtr metadata:(id *)metadataPtr forKey:(NSString *)key
+{
+	__unsafe_unretained YapDatabaseReadTransaction *transaction =
+	    (YapDatabaseReadTransaction *)databaseTransaction;
+	
+	return [transaction getObject:objectPtr metadata:metadataPtr forKey:key];
+}
+
+- (NSString *)generatePageKey
+{
+	NSString *key = nil;
+	
+	CFUUIDRef uuid = CFUUIDCreate(NULL);
+	if (uuid)
+	{
+		key = (__bridge_transfer NSString *)CFUUIDCreateString(NULL, uuid);
+		CFRelease(uuid);
+	}
+	
+	return key;
+}
+
+/**
+ * If the given key is in the view, returns the associated pageKey.
+ *
+ * This method will use the cache(s) if possible.
+ * Otherwise it will lookup the value in the key table.
+**/
 - (NSString *)pageKeyForKey:(NSString *)key
 {
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
@@ -275,61 +370,182 @@
 	// Check dirty cache & clean cache
 	
 	pageKey = [viewConnection->dirtyKeys objectForKey:key];
-	if (pageKey) return pageKey;
+	if (pageKey)
+	{
+		if ((__bridge void *)pageKey == (__bridge void *)[NSNull null])
+			return nil;
+		else
+			return pageKey;
+	}
 	
 	pageKey = [viewConnection->keyCache objectForKey:key];
-	if (pageKey) return pageKey;
+	if (pageKey)
+	{
+		if ((__bridge void *)pageKey == (__bridge void *)[NSNull null])
+			return nil;
+		else
+			return pageKey;
+	}
 	
 	// Otherwise pull from the database
 	
-	sqlite3_stmt *statement = [viewConnection getDataForKeyStatement];
+	sqlite3_stmt *statement = [viewConnection keyTable_getPageKeyForKeyStatement];
 	if (statement == NULL)
 		return nil;
 	
-	// SELECT data FROM 'tablename' WHERE type = ? AND key = ? ;
-	
-	sqlite3_bind_int(statement, 1, YDB_VIEW_TYPE_KEY);
+	// SELECT pageKey FROM 'keyTableName' WHERE key = ? ;
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, 1, _key.str, _key.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		const void *blob = sqlite3_column_blob(statement, 0);
-		int blobSize = sqlite3_column_bytes(statement, 0);
+		const unsigned char *text = sqlite3_column_text(statement, 0);
+		int textSize = sqlite3_column_bytes(statement, 0);
 		
-		NSData *data = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-		
-		id obj = [NSPropertyListSerialization propertyListWithData:data options:0 format:nil error:nil];
-		
-		if ([obj isKindOfClass:[NSString class]])
-		{
-			pageKey = (NSString *)obj;
-		}
-		else
-		{
-			YDBLogError(@"%@: Found invalid pageKey data with class: %@", THIS_FILE, [obj class]);
-		}
+		pageKey = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 	}
 	else if (status == SQLITE_ERROR)
 	{
-		YDBLogError(@"Error executing 'getDataForKeyStatement': %d %s, key(%@)",
-					status, sqlite3_errmsg(databaseTransaction->abstractConnection->db), key);
+		YDBLogError(@"%@: %@ (%@): Error executing statement: %d %s, key(%@)",
+		            THIS_FILE, THIS_METHOD, [self registeredViewName],
+		            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db), key);
 	}
 	
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
 	FreeYapDatabaseString(&_key);
 	
-	// Store in cache if found
 	if (pageKey)
 		[viewConnection->keyCache setObject:pageKey forKey:key];
+	else
+		[viewConnection->keyCache setObject:[NSNull null] forKey:key];
 	
 	return pageKey;
 }
 
-- (NSMutableArray *)pageForPageKey:(NSString *)key
+/**
+ * This method looks up a whole bunch of keys using only a few queries.
+ *
+ * It returns an array of the same size as the given keys parameter,
+ * where keys[0] corresponds to pageKeys[0].
+ * 
+ * If any keys are missing, they will be represented by NSNull in the resulting array.
+**/
+- (NSArray *)pageKeysForKeys:(NSArray *)keys
+{
+	if ([keys count] == 0)
+	{
+		return [NSArray array];
+	}
+	
+	NSMutableDictionary *pageKeysDict = [NSMutableDictionary dictionaryWithCapacity:[keys count]];
+	
+	__unsafe_unretained YapDatabaseView *view =
+	    (YapDatabaseView *)(abstractViewConnection->abstractView);
+	
+	sqlite3 *db = databaseTransaction->abstractConnection->db;
+	
+	// Sqlite has an upper bound on the number of host parameters that may be used in a single query.
+	// We need to watch out for this in case a large array of keys is passed.
+	
+	NSUInteger maxHostParams = (NSUInteger) sqlite3_limit(db, SQLITE_LIMIT_VARIABLE_NUMBER, -1);
+	
+	NSUInteger keysIndex = 0;
+	NSUInteger keysCount = [keys count];
+	
+	do
+	{
+		NSUInteger keysLeft = keysCount - keysIndex;
+		NSUInteger numHostParams = MIN(keysLeft, maxHostParams);
+		
+		// SELECT \"key\", "pageKey" FROM "keyTableName" WHERE "key" IN (?, ?, ...);
+		
+		NSUInteger capacity = 50 + (numHostParams * 3);
+		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
+		
+		[query appendFormat:@"SELECT \"key\", \"pagKey\", FROM \"%@\" WHERE \"key\" IN (", [view pageTableName]];
+		
+		NSUInteger i;
+		for (i = 0; i < numHostParams; i++)
+		{
+			if (i == 0)
+				[query appendFormat:@"?"];
+			else
+				[query appendFormat:@", ?"];
+		}
+		
+		[query appendString:@");"];
+		
+		sqlite3_stmt *statement;
+		int status;
+		
+		status = sqlite3_prepare_v2(db, [query UTF8String], -1, &statement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: %@ (%@): Error creating statement: %d %s",
+			            THIS_FILE, THIS_METHOD, [self registeredViewName], status, sqlite3_errmsg(db));
+			return nil;
+		}
+		
+		for (i = 0; i < numHostParams; i++)
+		{
+			NSString *key = [keys objectAtIndex:(keysIndex + i)];
+			
+			sqlite3_bind_text(statement, (int)(i + 1), [key UTF8String], -1, SQLITE_TRANSIENT);
+		}
+		
+		status = sqlite3_step(statement);
+		while (status == SQLITE_ROW)
+		{
+			const unsigned char *text0 = sqlite3_column_text(statement, 0);
+			int textSize0 = sqlite3_column_bytes(statement, 0);
+			
+			const unsigned char *text1 = sqlite3_column_text(statement, 1);
+			int textSize1 = sqlite3_column_bytes(statement, 1);
+			
+			NSString *key = [[NSString alloc] initWithBytes:text0 length:textSize0 encoding:NSUTF8StringEncoding];
+			NSString *pageKey = [[NSString alloc] initWithBytes:text1 length:textSize1 encoding:NSUTF8StringEncoding];
+			
+			[pageKeysDict setObject:pageKey forKey:key];
+			
+			status = sqlite3_step(statement);
+		}
+		
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"%@: %@ (%@): Error executing statement: %d %s",
+			            THIS_FILE, THIS_METHOD, [self registeredViewName], status, sqlite3_errmsg(db));
+			return nil;
+		}
+		
+		
+		keysIndex += numHostParams;
+	}
+	while (keysIndex < keysCount);
+	
+	NSMutableArray *pageKeys = [NSMutableArray arrayWithCapacity:[pageKeysDict count]];
+	
+	for (NSString *key in keys)
+	{
+		NSString *pageKey = [pageKeysDict objectForKey:key];
+		if (pageKey)
+			[pageKeys addObject:pageKey];
+		else
+			[pageKeys addObject:[NSNull null]];
+	}
+	
+	return pageKeys;
+}
+
+/**
+ * Fetches the page data for the given pageKey.
+ * 
+ * This method will use the cache(s) if possible.
+ * Otherwise it will load the data from the page table and deserialize it.
+**/
+- (NSMutableArray *)pageForPageKey:(NSString *)pageKey
 {
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
 	    (YapDatabaseViewConnection *)abstractViewConnection;
@@ -338,24 +554,22 @@
 	
 	// Check dirty cache & clean cache
 	
-	page = [viewConnection->dirtyPages objectForKey:key];
+	page = [viewConnection->dirtyPages objectForKey:pageKey];
 	if (page) return page;
 	
-	page = [viewConnection->pageCache objectForKey:key];
+	page = [viewConnection->pageCache objectForKey:pageKey];
 	if (page) return page;
 	
 	// Otherwise pull from the database
 	
-	sqlite3_stmt *statement = [viewConnection getDataForKeyStatement];
+	sqlite3_stmt *statement = [viewConnection pageTable_getDataForPageKeyStatement];
 	if (statement == NULL)
 		return nil;
 	
-	// SELECT data FROM 'database' WHERE type = ? AND key = ? ;
+	// SELECT data FROM 'pageTableName' WHERE pageKey = ? ;
 	
-	sqlite3_bind_int(statement, 1, YDB_VIEW_TYPE_PAGE);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
+	sqlite3_bind_text(statement, 1, _pageKey.str, _pageKey.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
@@ -373,53 +587,549 @@
 		}
 		else
 		{
-			YDBLogError(@"%@: Found invalid page data with class: %@", THIS_FILE, [obj class]);
+			YDBLogError(@"%@: %@ (%@): Found invalid page data with class(%@) for pageKey(%@)",
+			            THIS_FILE, THIS_METHOD, [self registeredViewName], [obj class], pageKey);
 		}
 	}
 	else if (status == SQLITE_ERROR)
 	{
-		YDBLogError(@"Error executing 'getDataForKeyStatement': %d %s, key(%@)",
-					status, sqlite3_errmsg(databaseTransaction->abstractConnection->db), key);
+		YDBLogError(@"%@: %@ (%@): Error executing statement: %d %s",
+		            THIS_FILE, THIS_METHOD, [self registeredViewName],
+		            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
 	}
 	
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_key);
+	FreeYapDatabaseString(&_pageKey);
 	
 	// Store in cache if found
 	if (page)
-		[viewConnection->pageCache setObject:page forKey:key];
+		[viewConnection->pageCache setObject:page forKey:pageKey];
 	
 	return page;
 }
 
-- (void)removeKey:(NSString *)key
+- (NSString *)groupForPageKey:(NSString *)pageKey
 {
-	NSString *pageKey = [self pageKeyForKey:key];
-	if (pageKey == nil) return;
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
+	    (YapDatabaseViewConnection *)abstractViewConnection;
+	
+	return [viewConnection->pageKeyGroupDict objectForKey:pageKey];
+}
+
+/**
+ * Use this method (instead of removeKey:) when the pageKey and group are already known.
+**/
+- (void)removeKey:(NSString *)key withPageKey:(NSString *)pageKey group:(NSString *)group
+{
+	if (key == nil) return;
+	
+	NSParameterAssert(pageKey != nil);
+	NSParameterAssert(group != nil);
 	
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
 	    (YapDatabaseViewConnection *)abstractViewConnection;
 	
-	[viewConnection->sectionPagesDict enumerateKeysAndObjectsUsingBlock:^(id _key, id _object, BOOL *stop) {
+	// Update page (by removing key from array)
+	
+	NSMutableArray *page = [self pageForPageKey:pageKey];
+	
+	NSUInteger index = [page indexOfObject:key];
+	if (index == NSNotFound)
+	{
+		YDBLogError(@"%@: %@ (%@): Key(%@) expected to be in page(%@), but is missing",
+		            THIS_FILE, THIS_METHOD, [self registeredViewName], key, pageKey);
+		return;
+	}
+	
+	[page removeObjectAtIndex:index];
+	NSUInteger pageCount = [page count];
+	
+	if (pageCount > 0)
+	{
+		// Mark page as dirty
 		
-		NSNumber *section = (NSNumber *)_key;
-		NSMutableArray *pagesInSection = (NSMutableArray *)_object;
+		[viewConnection->dirtyPages setObject:page forKey:pageKey];
+		[viewConnection->pageCache removeObjectForKey:pageKey];
+	}
+	else
+	{
+		// Drop page
 		
-		for (YapDatabaseViewPageMetadata *pageMetadata in pagesInSection)
+		[viewConnection->dirtyPages setObject:[NSNull null] forKey:pageKey];
+		[viewConnection->pageCache removeObjectForKey:pageKey];
+	}
+	
+	// Update page metadata (by decrementing count)
+	
+	YapDatabaseViewPageMetadata *pageMetadata = nil;
+	NSUInteger pageMetadataIndex = 0;
+	
+	NSMutableArray *pages = [viewConnection->groupPagesDict objectForKey:group];
+	
+	for (YapDatabaseViewPageMetadata *pm in pages)
+	{
+		if ([pm->pageKey isEqualToString:pageKey])
 		{
-			if ([pageMetadata->pageKey isEqualToString:pageKey])
+			pageMetadata = pm;
+			break;
+		}
+		
+		pageMetadataIndex++;
+	}
+	
+	pageMetadata->count = pageCount;
+	
+	if (pageCount > 0)
+	{
+		// Mark page metadata as dirty
+		
+		[viewConnection->dirtyMetadata setObject:pageMetadata forKey:pageKey];
+	}
+	else
+	{
+		// Drop page metadata
+		
+		[pages removeObjectAtIndex:pageMetadataIndex];
+		[viewConnection->dirtyMetadata setObject:[NSNull null] forKey:pageKey];
+		
+		if (pageMetadataIndex > 0)
+		{
+			// Update linked-list pointers. E.g.:
+			//
+			// link->prev->next = link->next (except we only use next pointers)
+			
+			YapDatabaseViewPageMetadata *prevPageMetadata = [pages objectAtIndex:(pageMetadataIndex - 1)];
+			prevPageMetadata->nextPageKey = pageMetadata->nextPageKey;
+			
+			[viewConnection->dirtyMetadata setObject:prevPageMetadata forKey:prevPageMetadata->pageKey];
+		}
+	}
+	
+	// Mark key for deletion
+	
+	[viewConnection->dirtyKeys setObject:[NSNull null] forKey:key];
+	[viewConnection->keyCache removeObjectForKey:key];
+}
+
+/**
+ * Use this method to remove a set of 1 or more keys from a given pageKey & group.
+**/
+- (void)removeKeys:(NSSet *)keys withPageKey:(NSString *)pageKey group:(NSString *)group
+{
+	if ([keys count] < 2)
+	{
+		[self removeKey:[keys anyObject] withPageKey:pageKey group:group];
+		return;
+	}
+	
+	NSParameterAssert(pageKey != nil);
+	NSParameterAssert(group != nil);
+	
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
+	    (YapDatabaseViewConnection *)abstractViewConnection;
+	
+	// Update page (by removing keys from array)
+	
+	NSMutableArray *page = [self pageForPageKey:pageKey];
+	
+	NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSet];
+	NSUInteger index = 0;
+	
+	for (NSString *key in page)
+	{
+		if ([keys containsObject:key])
+		{
+			[indexSet addIndex:index];
+		}
+		
+		index++;
+	}
+	
+	if ([indexSet count] != [keys count])
+	{
+		YDBLogWarn(@"%@: %@ (%@): Keys expected to be in page(%@), but are missing",
+		           THIS_FILE, THIS_METHOD, [self registeredViewName], pageKey);
+	}
+	
+	[page removeObjectsAtIndexes:indexSet];
+	NSUInteger pageCount = [page count];
+	
+	if (pageCount > 0)
+	{
+		// Mark page as dirty
+		
+		[viewConnection->dirtyPages setObject:page forKey:pageKey];
+		[viewConnection->pageCache removeObjectForKey:pageKey];
+	}
+	else
+	{
+		// Drop page
+		
+		[viewConnection->dirtyPages setObject:[NSNull null] forKey:pageKey];
+		[viewConnection->pageCache removeObjectForKey:pageKey];
+	}
+	
+	// Update page metadata (by decrementing count)
+	
+	YapDatabaseViewPageMetadata *pageMetadata = nil;
+	NSUInteger pageMetadataIndex = 0;
+	
+	NSMutableArray *pages = [viewConnection->groupPagesDict objectForKey:group];
+	
+	for (YapDatabaseViewPageMetadata *currentPageMetadata in pages)
+	{
+		if ([currentPageMetadata->pageKey isEqualToString:pageKey])
+		{
+			pageMetadata = currentPageMetadata;
+			break;
+		}
+		
+		pageMetadataIndex++;
+	}
+	
+	pageMetadata->count = pageCount;
+	
+	if (pageCount > 0)
+	{
+		// Mark page metadata as dirty
+		
+		[viewConnection->dirtyMetadata setObject:pageMetadata forKey:pageKey];
+	}
+	else
+	{
+		// Drop page metadata
+		
+		[pages removeObjectAtIndex:pageMetadataIndex];
+		if ([pages count] == 0)
+		{
+			[viewConnection->groupPagesDict removeObjectForKey:group];
+		}
+		
+		[viewConnection->dirtyMetadata setObject:[NSNull null] forKey:pageKey];
+		
+		if (pageMetadataIndex > 0)
+		{
+			// Update linked-list pointers. E.g.:
+			//
+			// link->prev->next = link->next (except we only use next pointers)
+			
+			YapDatabaseViewPageMetadata *prevPageMetadata = [pages objectAtIndex:(pageMetadataIndex - 1)];
+			prevPageMetadata->nextPageKey = pageMetadata->nextPageKey;
+			
+			[viewConnection->dirtyMetadata setObject:prevPageMetadata forKey:prevPageMetadata->pageKey];
+		}
+	}
+	
+	// Mark keys for deletion
+	
+	for (NSString *key in keys)
+	{
+		[viewConnection->dirtyKeys setObject:[NSNull null] forKey:key];
+		[viewConnection->keyCache removeObjectForKey:key];
+	}
+}
+
+/**
+ * Use this method when you don't know if the key exists in the view.
+**/
+- (void)removeKey:(NSString *)key
+{
+	// Find out if key is in view
+	
+	NSString *pageKey = [self pageKeyForKey:key];
+	if (pageKey)
+	{
+		[self removeKey:key withPageKey:pageKey group:[self groupForPageKey:pageKey]];
+	}
+}
+
+- (void)insertKey:(NSString *)key inGroup:(NSString *)group atIndex:(NSUInteger)index
+{
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
+	    (YapDatabaseViewConnection *)abstractViewConnection;
+	
+	YapDatabaseViewPageMetadata *pageMetadata = nil;
+	NSString *pageKey = nil;
+	
+	// Find page
+	
+	NSMutableArray *pages = [viewConnection->groupPagesDict objectForKey:group];
+	
+	NSUInteger pageOffset = 0;
+	for (YapDatabaseViewPageMetadata *currentPageMetadata in pages)
+	{
+		if (index < (pageOffset + pageMetadata->count))
+		{
+			pageMetadata = currentPageMetadata;
+			pageKey = pageMetadata->pageKey;
+			break;
+		}
+		
+		pageOffset += pageMetadata->count;
+	}
+	
+	// Update page
+	
+	NSMutableArray *page = [self pageForPageKey:pageKey];
+	
+	[page insertObject:key atIndex:(index - pageOffset)];
+	NSUInteger pageCount = [page count];
+	
+	[viewConnection->dirtyPages setObject:page forKey:pageKey];
+	[viewConnection->pageCache removeObjectForKey:pageKey];
+	
+	// Update page metadata (by incrementing count)
+	
+	pageMetadata->count = pageCount;
+	[viewConnection->dirtyMetadata setObject:pageMetadata forKey:pageKey];
+	
+	// Mark key for insertion
+	
+	[viewConnection->dirtyKeys setObject:pageKey forKey:key];
+}
+
+/**
+ * Use this method after it has been determined that the key should be inserted into the given group.
+ * The object and metadata parameters must be properly set (if needed by the sorting block).
+ * 
+ * This method will use the configured sorting block to find the proper index for the key.
+ * 
+**/
+- (void)insertObject:(id)object forKey:(NSString *)key withMetadata:(id)metadata inGroup:(NSString *)group
+{
+	// Is the key already in the view?
+	// If so:
+	// - we may need to change its group and/or update its position.
+	// - if the group hasn't changed, we can use its existing position as an optimization during sorting.
+	
+	BOOL tryExistingIndexInGroup = NO;
+	
+	NSString *existingPageKey = [self pageKeyForKey:key];
+	if (existingPageKey)
+	{
+		NSString *existingGroup = [self groupForPageKey:existingPageKey];
+		
+		if ([group isEqualToString:existingGroup])
+		{
+			tryExistingIndexInGroup = YES;
+		}
+		else
+		{
+			[self removeKey:key withPageKey:existingPageKey group:existingGroup];
+		}
+	}
+	
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
+	    (YapDatabaseViewConnection *)abstractViewConnection;
+	
+	NSMutableArray *pagesMetadataInGroup = [viewConnection->groupPagesDict objectForKey:group];
+	
+	if (pagesMetadataInGroup == nil)
+	{
+		// First object added to group.
+		
+		NSString *pageKey = [self generatePageKey];
+		
+		YapDatabaseViewPageMetadata *pageMetadata = [[YapDatabaseViewPageMetadata alloc] init];
+		pageMetadata->pageKey = pageKey;
+		pageMetadata->nextPageKey = nil;
+		pageMetadata->group = group;
+		pageMetadata->count = 1;
+		
+		pagesMetadataInGroup = [[NSMutableArray alloc] initWithCapacity:1];
+		[pagesMetadataInGroup addObject:pageMetadata];
+		
+		NSMutableArray *page = [[NSMutableArray alloc] initWithCapacity:1];
+		[page addObject:key];
+		
+		[viewConnection->groupPagesDict setObject:pagesMetadataInGroup forKey:group];
+		
+		[viewConnection->dirtyPages setObject:page forKey:pageKey];
+		[viewConnection->dirtyMetadata setObject:pageMetadata forKey:pageKey];
+		
+		[viewConnection->dirtyKeys setObject:pageKey forKey:key];
+	}
+	else
+	{
+		// Calculate out how many keys are in the group.
+		
+		NSUInteger count = 0;
+		
+		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataInGroup)
+		{
+			count += pageMetadata->count;
+		}
+		
+		__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(viewConnection->abstractView);
+		
+		NSComparisonResult (^compare)(NSUInteger) = ^NSComparisonResult (NSUInteger index){
+			
+			NSString *anotherKey = nil;
+			
+			NSUInteger pageOffset = 0;
+			for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataInGroup)
 			{
-				// Found it
+				if (index < (pageOffset + pageMetadata->count))
+				{
+					NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
+					
+					anotherKey = [page objectAtIndex:(index - pageOffset)];
+					break;
+				}
+				else
+				{
+					pageOffset += pageMetadata->count;
+				}
+			}
+			
+			if (view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
+			{
+				__unsafe_unretained YapDatabaseViewSortingWithObjectBlock sortingBlock =
+				    (YapDatabaseViewSortingWithObjectBlock)view->sortingBlock;
+				
+				id anotherObject = [self objectForKey:anotherKey];
+				
+				return sortingBlock(group, key, object, anotherKey, anotherObject);
+			}
+			else if (view->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+			{
+				__unsafe_unretained YapDatabaseViewSortingWithMetadataBlock sortingBlock =
+				    (YapDatabaseViewSortingWithMetadataBlock)view->sortingBlock;
+				
+				id anotherMetadata = [self metadataForKey:anotherKey];
+				
+				return sortingBlock(group, key, metadata, anotherKey, anotherMetadata);
+			}
+			else
+			{
+				__unsafe_unretained YapDatabaseViewSortingWithBothBlock sortingBlock =
+				    (YapDatabaseViewSortingWithBothBlock)view->sortingBlock;
+				
+				id anotherObject = nil;
+				id anotherMetadata = nil;
+				
+				[self getObject:&anotherObject metadata:&anotherMetadata forKey:anotherKey];
+				
+				return sortingBlock(group, key, object, metadata, anotherKey, anotherObject, anotherMetadata);
+			}
+		};
+		
+		NSComparisonResult cmp;
+		
+		// Optimization 1:
+		//
+		// If key is already in group, check to see if its index is the same as before.
+		
+		if (tryExistingIndexInGroup)
+		{
+			NSMutableArray *existingPage = [self pageForPageKey:existingPageKey];
+			NSUInteger existingIndex = [existingPage indexOfObject:key];
+			
+			BOOL useExistingIndexInGroup = NO;
+			
+			if (existingIndex > 0)
+			{
+				cmp = compare(existingIndex - 1); // compare vs prev
+				
+				useExistingIndexInGroup = (cmp != NSOrderedAscending); // object >= prev
+			}
+			
+			if ((existingIndex + 1) < count && useExistingIndexInGroup)
+			{
+				cmp = compare(existingIndex + 1); // compare vs next
+				
+				useExistingIndexInGroup = (cmp != NSOrderedDescending); // object <= next
+			}
+			
+			if (useExistingIndexInGroup)
+			{
+				// The key doesn't change position.
+				
+				return;
+			}
+			else
+			{
+				// The key has changed position.
+				// Remove it from previous position (and don't forget to decrement count).
+				
+				[self removeKey:key withPageKey:existingPageKey group:group];
+				count--;
 			}
 		}
-	}];
+		
+		// Optimization 2:
+		//
+		// A very common operation is to insert objects at the beginning or end of the array.
+		// We attempt to notice this trend and optimize around it.
+		
+		if (lastInsertWasAtFirstIndex && (count > 1))
+		{
+			cmp = compare(0);
+			
+			if (cmp == NSOrderedAscending) // object < first
+			{
+				[self insertKey:key inGroup:group atIndex:count];
+				return;
+			}
+		}
+		
+		if (lastInsertWasAtLastIndex && (count > 1))
+		{
+			cmp = compare(count - 1);
+			
+			if (cmp != NSOrderedAscending) // object >= last
+			{
+				[self insertKey:key inGroup:group atIndex:count];
+				return;
+			}
+		}
+		
+		// Otherwise:
+		//
+		// Binary search operation.
+		//
+		// This particular algorithm accounts for cases where the objects are not unique.
+		// That is, if some objects are NSOrderedSame, then the algorithm returns the largest index possible
+		// (within the region where elements are "equal").
+		
+		NSUInteger min = 0;
+		NSUInteger max = count;
+		
+		while (min < max)
+		{
+			NSUInteger mid = (min + max) / 2;
+			
+			cmp = compare(mid);
+			
+			if (cmp == NSOrderedAscending)
+				max = mid;
+			else
+				min = mid + 1;
+		}
+		
+		[self insertKey:key inGroup:group atIndex:min];
+		
+		if (min == 0)
+			lastInsertWasAtFirstIndex = YES;
+		else
+			lastInsertWasAtFirstIndex = NO;
+		
+		if (min == count)
+			lastInsertWasAtLastIndex = YES;
+		else
+			lastInsertWasAtLastIndex = NO;
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark YapAbstractDatabaseViewKeyValueTransaction
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * YapDatabase view hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
 - (void)handleSetObject:(id)object forKey:(NSString *)key withMetadata:(id)metadata
 {
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
@@ -427,62 +1137,187 @@
 	
 	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(viewConnection->abstractView);
 	
-	// Invoke the filter block and find out if the object should be included in the view.
-	// And if so, what section is it in?
+	// Invoke the grouping block to find out if the object should be included in the view.
 	
-	NSUInteger section = 0;
-	BOOL isInView;
+	NSString *group;
 	
-	if (view->filterBlockType == YapDatabaseViewBlockTypeWithObject)
+	if (view->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
 	{
-		YapDatabaseViewFilterWithObjectBlock filterBlock = (YapDatabaseViewFilterWithObjectBlock)view->filterBlock;
-		isInView = filterBlock(key, object, &section);
+		__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
+		    (YapDatabaseViewGroupingWithObjectBlock)view->groupingBlock;
+		
+		group = groupingBlock(key, object);
 	}
-	else if (view->filterBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	else if (view->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
 	{
-		YapDatabaseViewFilterWithMetadataBlock filterBlock = (YapDatabaseViewFilterWithMetadataBlock)view->filterBlock;
-		isInView = filterBlock(key, metadata, &section);
+		__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
+		    (YapDatabaseViewGroupingWithMetadataBlock)view->groupingBlock;
+		
+		group = groupingBlock(key, metadata);
 	}
 	else
 	{
-		YapDatabaseViewFilterWithBothBlock filterBlock = (YapDatabaseViewFilterWithBothBlock)view->filterBlock;
-		isInView = filterBlock(key, object, metadata, &section);
+		__unsafe_unretained YapDatabaseViewGroupingWithBothBlock groupingBlock =
+		    (YapDatabaseViewGroupingWithBothBlock)view->groupingBlock;
+		
+		group = groupingBlock(key, object, metadata);
 	}
 	
-	// Figure out where the key is currently located within the view (if at all).
-	
-	if (!isInView)
+	if (group == nil)
 	{
-		// Remove the key from its current location.
+		// Remove key from view (if needed)
 		
 		[self removeKey:key];
 	}
-	else if (isInView)
+	else
 	{
+		// Add key to view (or update position)
 		
-		
-		NSUInteger existingSection = 0;
-		NSUInteger existingIndex = 0;
-		
-		BOOL isAlreadyInView = [self getIndex:&existingIndex section:&existingSection forKey:key];
+		[self insertObject:object forKey:key withMetadata:metadata inGroup:group];
 	}
 }
 
+/**
+ * YapDatabase view hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
 - (void)handleSetMetadata:(id)metadata forKey:(NSString *)key
 {
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
+	    (YapDatabaseViewConnection *)abstractViewConnection;
 	
+	__unsafe_unretained YapDatabaseView *view =
+	    (YapDatabaseView *)(viewConnection->abstractView);
+	
+	// Can a metadata change affect the order?
+	
+	if (view->groupingBlockType == YapDatabaseViewBlockTypeWithObject &&
+	    view->sortingBlockType != YapDatabaseViewBlockTypeWithObject)
+	{
+		// Grouping and sorting are based entirely on objects,
+		// and don't take into account metadata changes.
+		return;
+	}
+	
+	// Invoke the grouping block to find out if the object should be included in the view.
+	
+	id object = nil;
+	NSString *group;
+	
+	if (view->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
+	{
+		// The object has not changed, and thus the group hasn't changed.
+		
+		group = [self groupForPageKey:[self pageKeyForKey:key]];
+		if (group == nil)
+		{
+			// Shortcut: No need to remove key as we know object wasn't previously in view.
+			return;
+		}
+	}
+	else if (view->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	{
+		__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
+		    (YapDatabaseViewGroupingWithMetadataBlock)view->groupingBlock;
+		
+		group = groupingBlock(key, metadata);
+		if (group == nil)
+		{
+			// Remove key from view (if needed)
+			[self removeKey:key];
+			return;
+		}
+	}
+	else
+	{
+		__unsafe_unretained YapDatabaseViewGroupingWithBothBlock groupingBlock =
+		    (YapDatabaseViewGroupingWithBothBlock)view->groupingBlock;
+		
+		object = [self objectForKey:key];
+		
+		group = groupingBlock(key, object, metadata);
+		if (group == nil)
+		{
+			// Remove key from view (if needed)
+			[self removeKey:key];
+			return;
+		}
+	}
+	
+	// Add key to view (or update position)
+	
+	if (object == nil && (view->sortingBlockType != YapDatabaseViewBlockTypeWithMetadata))
+	{
+		object = [self objectForKey:key];
+	}
+	
+	[self insertObject:object forKey:key withMetadata:metadata inGroup:group];
 }
 
+/**
+ * YapDatabase view hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
 - (void)handleRemoveObjectForKey:(NSString *)key
 {
+	[self removeKey:key];
 }
 
+/**
+ * YapDatabase view hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
 - (void)handleRemoveObjectsForKeys:(NSArray *)keys
 {
+	// We could loop over each key and simply invoke [self removeKey:key]...
+	// 
+	// However, we can do better than that by optimizing cache access.
+	// That is, if we arrange the keys by associated pageKey,
+	// then we can simply enumerate over each pageKey,
+	// and remove all keys within that page in a single operation.
+	
+	NSUInteger count = [keys count];
+	NSArray *pageKeys = [self pageKeysForKeys:keys];
+	
+	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+	
+	for (NSUInteger i = 0; i < count; i++)
+	{
+		NSString *pageKey = [pageKeys objectAtIndex:i];
+		
+		if ((id)pageKey == (id)[NSNull null])
+		{
+			// This key doesn't exist in the view
+			continue;
+		}
+		
+		NSString *key = [keys objectAtIndex:i];
+		
+		NSMutableSet *keysSet = [dict objectForKey:pageKey];
+		if (keysSet == nil)
+		{
+			keysSet = [NSMutableSet setWithCapacity:1];
+			[dict setObject:keysSet forKey:pageKey];
+		}
+		
+		[keysSet addObject:key];
+	}
+	
+	// dict.key = pageKey
+	// dict.value = NSSet of keys within the page that are to be removed
+	
+	[dict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		
+		NSString *pageKey = (NSString *)key;
+		NSSet *keysSet = (NSSet *)obj;
+		
+		[self removeKeys:keysSet withPageKey:pageKey group:[self groupForPageKey:pageKey]];
+	}];
 }
 
 - (void)handleRemoveAllObjects
 {
+	
 }
 
 - (void)commitTransaction
@@ -496,93 +1331,88 @@
 #pragma mark Public API
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (NSUInteger)numberOfSections
+- (NSUInteger)numberOfGroups
 {
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
 	    (YapDatabaseViewConnection *)abstractViewConnection;
 	
-	return [viewConnection->keyPagesDict count];
+	return [viewConnection->groupPagesDict count];
 }
 
-- (NSUInteger)numberOfKeysInSection:(NSUInteger)sectionIndex
+- (NSArray *)allGroups
 {
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
 	    (YapDatabaseViewConnection *)abstractViewConnection;
 	
-	NSMutableArray *keyPagesForSection = [viewConnection->keyPagesDict objectForKey:@(sectionIndex)];
-	if (keyPagesForSection == nil) {
+	return [viewConnection->groupPagesDict allKeys];
+}
+
+- (NSUInteger)numberOfKeysInGroup:(NSString *)group
+{
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
+	    (YapDatabaseViewConnection *)abstractViewConnection;
+	
+	NSMutableArray *pagesForGroup = [viewConnection->groupPagesDict objectForKey:group];
+	if (pagesForGroup == nil) {
 		return 0;
 	}
 	
 	NSUInteger count = 0;
 	
-	for (YapDatabaseViewKeyPageMetadata *keyPageMetadata in keyPagesForSection)
+	for (YapDatabaseViewPageMetadata *pageMetadata in pagesForGroup)
 	{
-		count += keyPageMetadata->count;
+		count += pageMetadata->count;
 	}
 	
 	return count;
 }
 
-- (NSUInteger)numberOfKeysInAllSections
+- (NSUInteger)numberOfKeysInAllGroups
 {
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
 	    (YapDatabaseViewConnection *)abstractViewConnection;
 	
 	NSUInteger count = 0;
 	
-	for (NSMutableArray *keyPagesForSection in [viewConnection->keyPagesDict objectEnumerator])
+	for (NSMutableArray *pagesForSection in [viewConnection->groupPagesDict objectEnumerator])
 	{
-		for (YapDatabaseViewKeyPageMetadata *keyPageMetadata in keyPagesForSection)
+		for (YapDatabaseViewPageMetadata *pageMetadata in pagesForSection)
 		{
-			count += keyPageMetadata->count;
+			count += pageMetadata->count;
 		}
 	}
 	
 	return count;
 }
 
-- (NSString *)keyAtIndex:(NSUInteger)keyIndex inSection:(NSUInteger)sectionIndex
+- (NSString *)keyAtIndex:(NSUInteger)index inGroup:(NSString *)group
 {
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
 	    (YapDatabaseViewConnection *)abstractViewConnection;
 	
-	NSMutableArray *keyPagesForSection = [viewConnection->keyPagesDict objectForKey:@(sectionIndex)];
+	NSMutableArray *pagesForGroup = [viewConnection->groupPagesDict objectForKey:group];
 	
-	NSUInteger offset = 0;
-	for (YapDatabaseViewKeyPageMetadata *keyPageMetadata in keyPagesForSection)
+	NSUInteger pageOffset = 0;
+	for (YapDatabaseViewPageMetadata *pageMetadata in pagesForGroup)
 	{
-		if (keyIndex < (offset + keyPageMetadata->count))
+		if (index < (pageOffset + pageMetadata->count))
 		{
-			NSMutableArray *keyPage = [self keyPageForKey:keyPageMetadata->key];
-			NSUInteger keyPageIndex = keyIndex - offset;
+			NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
 			
-			if (keyPageIndex < [keyPage count])
-			{
-				return [keyPage objectAtIndex:keyPageIndex];
-			}
-			else
-			{
-				YDBLogWarn(@"%@: keyPage(%@) count doesn't match metadata info!", THIS_FILE, keyPageMetadata->key);
-			}
+			return [page objectAtIndex:(index - pageOffset)];
 		}
 		else
 		{
-			offset += keyPageMetadata->count;
+			pageOffset += pageMetadata->count;
 		}
 	}
 	
 	return nil;
 }
 
-- (NSString *)keyAtIndexPath:(NSIndexPath *)indexPath
+- (id)objectAtIndex:(NSUInteger)keyIndex inGroup:(NSString *)group
 {
-	return [self keyAtIndex:indexPath.row inSection:indexPath.section];
-}
-
-- (id)objectAtIndex:(NSUInteger)keyIndex inSection:(NSUInteger)sectionIndex
-{
-	NSString *key = [self keyAtIndex:keyIndex inSection:sectionIndex];
+	NSString *key = [self keyAtIndex:keyIndex inGroup:group];
 	if (key)
 	{
 		__unsafe_unretained YapDatabaseReadTransaction *transaction =
@@ -596,82 +1426,64 @@
 	}
 }
 
-- (id)objectAtIndexPath:(NSIndexPath *)indexPath
+- (NSString *)groupForKey:(NSString *)key
 {
-	return [self objectAtIndex:indexPath.row inSection:indexPath.section];
+	return [self groupForPageKey:[self pageKeyForKey:key]];
 }
 
-- (BOOL)getIndex:(NSUInteger *)indexPtr section:(NSUInteger *)sectionPtr forKey:(NSString *)key
+- (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forKey:(NSString *)key
 {
-	NSUInteger keyHash = [key hash];
-	
-	BOOL found = 0;
+	BOOL found = NO;
+	NSString *group = nil;
 	NSUInteger index = 0;
-	NSUInteger section = 0;
 	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	    (YapDatabaseViewConnection *)abstractViewConnection;
+	// Query the database to see if the given key is in the view.
+	// If it is, the query will return the corresponding page the key is in.
 	
-	for (YapDatabaseViewHashPageMetadata *hashPageMetadata in viewConnection->hashPages)
+	NSString *pageKey = [self pageKeyForKey:key];
+	if (pageKey)
 	{
-		if (keyHash > hashPageMetadata->lastHash)
+		// Now that we have the pageKey, fetch the corresponding group.
+		// This is done using an in-memory cache.
+		
+		group = [self groupForPageKey:pageKey];
+		
+		// Calculate the offset of the corresponding page within the group.
+		
+		__unsafe_unretained YapDatabaseViewConnection *viewConnection =
+	        (YapDatabaseViewConnection *)abstractViewConnection;
+		
+		NSUInteger pageOffset = 0;
+		NSMutableArray *pagesMetadataForGroup = [viewConnection->groupPagesDict objectForKey:group];
+		
+		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 		{
-			// The key wouldn't be in this page.
-			// It would be in a later page.
-			
-			continue;
-		}
-		else if ((keyHash >= hashPageMetadata->firstHash) && (keyHash <= hashPageMetadata->lastHash))
-		{
-			// The key could possibly be in this page.
-			
-			NSMutableArray *hashPage = [self pageForKey:hashPageMetadata->key];
-			if (hashPage)
+			if ([pageMetadata->pageKey isEqualToString:pageKey])
 			{
-				index = [hashPage->keys indexOfObject:key];
-				if (index != NSNotFound)
-				{
-					section = [[hashPage->sections objectAtIndex:index] unsignedIntegerValue];
-					found = YES;
-					break;
-				}
+				break;
 			}
-		}
-		else
-		{
-			// The key wouldn't be in this page.
-			// It would have been in an earlier page.
-			// Thus, the key doesn't exist in the hashPages.
 			
-			break;
+			pageOffset += pageMetadata->count;
+		}
+		
+		// Fetch the actual page (ordered array of keys)
+		
+		NSMutableArray *page = [self pageForPageKey:pageKey];
+		
+		// And find the exact index of the key within the page
+		
+		NSUInteger keyIndexWithinPage = [page indexOfObject:key];
+		if (keyIndexWithinPage != NSNotFound)
+		{
+			index = pageOffset + keyIndexWithinPage;
+			found = YES;
 		}
 	}
 	
-	if (found)
-	{
-		if (indexPtr) *indexPtr = index;
-		if (sectionPtr) *sectionPtr = section;
-		return YES;
-	}
-	else
-	{
-		if (indexPtr) *indexPtr = 0;
-		if (sectionPtr) *sectionPtr = 0;
-		return NO;
-	}
-}
-
-- (NSIndexPath *)indexPathForKey:(NSString *)key
-{
-	NSUInteger index = 0;
-	NSUInteger section = 0;
+	if (groupPtr) *groupPtr = group;
+	if (indexPtr) *indexPtr = index;
 	
-	if ([self getIndex:&index section:&section forKey:key]) {
-		return [NSIndexPath indexPathForRow:index inSection:section];
-	}
-	else {
-		return nil;
-	}
+	return found;
 }
 
 @end

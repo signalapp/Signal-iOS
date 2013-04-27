@@ -1,4 +1,4 @@
-#import "YapDatabaseViewInternal.h"
+#import "YapDatabaseViewPageMetadata.h"
 
 
 @implementation YapDatabaseViewPageMetadata
@@ -10,7 +10,7 @@
 		// Note: 'pageKey' is transient
 		
 		nextPageKey = [decoder decodeObjectForKey:@"nextPageKey"];
-		section = [decoder decodeIntegerForKey:@"section"];
+		group = [decoder decodeObjectForKey:@"group"];
 		count = [decoder decodeIntegerForKey:@"count"];
 	}
 	return self;
@@ -21,7 +21,7 @@
 	// Note: 'pageKey' is transient
 	
 	[coder encodeObject:nextPageKey forKey:@"nextPageKey"];
-	[coder encodeInteger:section forKey:@"section"];
+	[coder encodeObject:group forKey:@"group"];
 	[coder encodeInteger:count forKey:@"count"];
 }
 
@@ -31,7 +31,7 @@
 	
 	copy->pageKey = pageKey;
 	copy->nextPageKey = nextPageKey;
-	copy->section = section;
+	copy->group = group;
 	copy->count = count;
 	
 	return copy;

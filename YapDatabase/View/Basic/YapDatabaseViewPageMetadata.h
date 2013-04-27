@@ -7,8 +7,8 @@
 	NSString *pageKey;
 	
 	// Persistent (saved to disk)
-	NSString *nextPageKey;
-	NSUInteger section;
+	NSString * nextPageKey;
+	NSString * group;
 	NSUInteger count;
 }
 

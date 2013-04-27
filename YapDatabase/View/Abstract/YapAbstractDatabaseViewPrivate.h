@@ -12,8 +12,6 @@
 
 @property (atomic, copy, readwrite) NSString *registeredName;
 
-- (NSString *)tableName;
-
 - (YapAbstractDatabaseViewConnection *)newConnection;
 
 @end

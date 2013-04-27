@@ -16,20 +16,20 @@
  * 
 **/
 
-typedef id YapDatabaseViewFilterBlock; // One of the YapDatabaseViewFilterX types below.
+typedef id YapDatabaseViewGroupingBlock; // One of the YapDatabaseViewGroupingX types below.
 
-typedef BOOL (^YapDatabaseViewFilterWithObjectBlock)(NSString *key, id object, NSUInteger *sectionOut);
-typedef BOOL (^YapDatabaseViewFilterWithMetadataBlock)(NSString *key, id metadata, NSUInteger *sectionOut);
-typedef BOOL (^YapDatabaseViewFilterWithBothBlock)(NSString *key, id object, id metadata, NSUInteger *sectionOut);
+typedef NSString* (^YapDatabaseViewGroupingWithObjectBlock)(NSString *key, id object);
+typedef NSString* (^YapDatabaseViewGroupingWithMetadataBlock)(NSString *key, id metadata);
+typedef NSString* (^YapDatabaseViewGroupingWithBothBlock)(NSString *key, id object, id metadata);
 
-typedef id YapDatabaseViewSortBlock; // One of the YapDatabaseViewSortX types below.
+typedef id YapDatabaseViewSortingBlock; // One of the YapDatabaseViewSortingX types below.
 
-typedef NSComparisonResult (^YapDatabaseViewSortWithObjectBlock) \
-                           (NSString *key1, id object1, NSString *key2, id object2);
-typedef NSComparisonResult (^YapDatabaseViewSortWithMetadataBlock) \
-                           (NSString *key1, id metadata, NSString *key2, id metadata2);
-typedef NSComparisonResult (^YapDatabaseViewSortWithBothBlock) \
-                           (NSString *key1, id object1, id metadata1, NSString *key2, id object2, id metadata2);
+typedef NSComparisonResult (^YapDatabaseViewSortingWithObjectBlock) \
+                 (NSString *group, NSString *key1, id object1, NSString *key2, id object2);
+typedef NSComparisonResult (^YapDatabaseViewSortingWithMetadataBlock) \
+                 (NSString *group, NSString *key1, id metadata, NSString *key2, id metadata2);
+typedef NSComparisonResult (^YapDatabaseViewSortingWithBothBlock) \
+                 (NSString *group, NSString *key1, id object1, id metadata1, NSString *key2, id object2, id metadata2);
 
 
 typedef enum {
@@ -48,15 +48,18 @@ typedef enum {
 
 */
 
-- (id)initWithFilterBlock:(YapDatabaseViewFilterBlock)filterBlock
-               filterType:(YapDatabaseViewBlockType)filterBlockType
-                sortBlock:(YapDatabaseViewSortBlock)sortBlock
-                 sortType:(YapDatabaseViewBlockType)sortBlockType;
+/**
+ * To create a view you 
+**/
+- (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
+          groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
+               sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
+           sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType;
 
-@property (nonatomic, strong, readonly) YapDatabaseViewFilterBlock filterBlock;
-@property (nonatomic, strong, readonly) YapDatabaseViewSortBlock sortBlock;
+@property (nonatomic, strong, readonly) YapDatabaseViewGroupingBlock groupingBlock;
+@property (nonatomic, strong, readonly) YapDatabaseViewSortingBlock sortingBlock;
 
-@property (nonatomic, assign, readonly) YapDatabaseViewBlockType filterBlockType;
-@property (nonatomic, assign, readonly) YapDatabaseViewBlockType sortBlockType;
+@property (nonatomic, assign, readonly) YapDatabaseViewBlockType groupingBlockType;
+@property (nonatomic, assign, readonly) YapDatabaseViewBlockType sortingBlockType;
 
 @end

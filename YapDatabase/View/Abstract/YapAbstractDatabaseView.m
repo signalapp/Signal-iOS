@@ -6,11 +6,6 @@
 
 @synthesize registeredName;
 
-- (NSString *)tableName
-{
-	return [NSString stringWithFormat:@"view_%@", self.registeredName];
-}
-
 - (YapAbstractDatabaseViewConnection *)newConnection
 {
 	NSAssert(NO, @"Missing required override method in subclass");

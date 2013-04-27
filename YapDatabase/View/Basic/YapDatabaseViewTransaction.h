@@ -4,18 +4,23 @@
 
 @interface YapDatabaseViewTransaction : YapAbstractDatabaseViewTransaction
 
-- (NSUInteger)numberOfSections;
-- (NSUInteger)numberOfKeysInSection:(NSUInteger)section;
+- (NSUInteger)numberOfGroups;
+- (NSArray *)allGroups;
 
-- (NSUInteger)numberOfKeysInAllSections;
+- (NSUInteger)numberOfKeysInGroup:(NSString *)group;
+- (NSUInteger)numberOfKeysInAllGroups;
 
-- (NSString *)keyAtIndex:(NSUInteger)keyIndex inSection:(NSUInteger)sectionIndex;
-- (NSString *)keyAtIndexPath:(NSIndexPath *)indexPath;
+- (NSString *)keyAtIndex:(NSUInteger)keyIndex inGroup:(NSString *)group;
 
-- (id)objectAtIndex:(NSUInteger)keyIndex inSection:(NSUInteger)sectionIndex;
-- (id)objectAtIndexPath:(NSIndexPath *)indexPath;
+- (id)objectAtIndex:(NSUInteger)keyIndex inGroup:(NSString *)group;
 
-- (BOOL)getIndex:(NSUInteger *)indexPtr section:(NSUInteger *)sectionPtr forKey:(NSString *)key;
-- (NSIndexPath *)indexPathForKey:(NSString *)key;
+- (NSString *)groupForKey:(NSString *)key;
+
+- (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forKey:(NSString *)key;
 
 @end
+
+// - (NSString *)keyAtIndexPath:(NSIndexPath *)indexPath;
+// - (id)objectAtIndexPath:(NSIndexPath *)indexPath;
+// 
+// - (NSIndexPath *)indexPathForKey:(NSString *)key;

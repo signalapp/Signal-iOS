@@ -11,12 +11,15 @@
 
 @interface YapDatabaseView () {
 @public
-	YapDatabaseViewFilterBlock filterBlock;
-	YapDatabaseViewSortBlock sortBlock;
+	YapDatabaseViewGroupingBlock groupingBlock;
+	YapDatabaseViewSortingBlock sortingBlock;
 	
-	YapDatabaseViewBlockType filterBlockType;
-	YapDatabaseViewBlockType sortBlockType;
+	YapDatabaseViewBlockType groupingBlockType;
+	YapDatabaseViewBlockType sortingBlockType;
 }
+
+- (NSString *)keyTableName;
+- (NSString *)pageTableName;
 
 @end
 
@@ -25,20 +28,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface YapDatabaseViewConnection () {
-@private
-	sqlite3_stmt *getDataForKeyStatement;
-	sqlite3_stmt *setMetadataForKeyStatement;
-	sqlite3_stmt *setAllForKeyStatement;
-	sqlite3_stmt *removeForKeyStatement;
-	sqlite3_stmt *removeAllStatement;
-	sqlite3_stmt *enumerateMetadataStatement;
-	
 @public
 	
-	NSMutableDictionary *sectionPagesDict; // section -> @[ pageMetadata, ... ]
+	NSMutableDictionary *groupPagesDict;   // section -> @[ YapDatabaseViewPageMetadata, ... ]
+	NSMutableDictionary *pageKeyGroupDict; // pageKey -> group
 	
 	NSMutableDictionary *dirtyKeys;
 	NSMutableDictionary *dirtyPages;
+	NSMutableDictionary *dirtyMetadata;
 	
 	YapCache *keyCache;
 	YapCache *pageCache;
@@ -46,11 +43,15 @@
 
 - (BOOL)isOpen;
 
-- (sqlite3_stmt *)getDataForKeyStatement;
-//- (sqlite3_stmt *)setMetadataForKeyStatement;
-//- (sqlite3_stmt *)setAllForKeyStatement;
-//- (sqlite3_stmt *)removeForKeyStatement;
-//- (sqlite3_stmt *)removeAllStatement;
-//- (sqlite3_stmt *)enumerateMetadataStatement;
+- (sqlite3_stmt *)keyTable_getPageKeyForKeyStatement;
+- (sqlite3_stmt *)keyTable_setPageKeyForKeyStatement;
+- (sqlite3_stmt *)keyTable_removeForKeyStatement;
+- (sqlite3_stmt *)keyTable_removeAllStatement;
+
+- (sqlite3_stmt *)pageTable_getDataForPageKeyStatement;
+- (sqlite3_stmt *)pageTable_setAllForPageKeyStatement;
+- (sqlite3_stmt *)pageTable_setMetadataForPageKeyStatement;
+- (sqlite3_stmt *)pageTable_removeForPageKeyStatement;
+- (sqlite3_stmt *)pageTable_removeAllStatement;
 
 @end

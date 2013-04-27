@@ -4,24 +4,24 @@
 
 @implementation YapDatabaseView
 
-@synthesize filterBlock;
-@synthesize sortBlock;
+@synthesize groupingBlock;
+@synthesize sortingBlock;
 
-@synthesize filterBlockType;
-@synthesize sortBlockType;
+@synthesize groupingBlockType;
+@synthesize sortingBlockType;
 
-- (id)initWithFilterBlock:(YapDatabaseViewFilterBlock)inFilterBlock
-               filterType:(YapDatabaseViewBlockType)inFilterBlockType
-                sortBlock:(YapDatabaseViewSortBlock)inSortBlock
-                 sortType:(YapDatabaseViewBlockType)inSortBlockType
+- (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)inGroupingBlock
+          groupingBlockType:(YapDatabaseViewBlockType)inGroupingBlockType
+               sortingBlock:(YapDatabaseViewSortingBlock)inSortingBlock
+           sortingBlockType:(YapDatabaseViewBlockType)inSortingBlockType
 {
 	if ((self = [super init]))
 	{
-		filterBlock = inFilterBlock;
-		filterBlockType = inFilterBlockType;
+		groupingBlock = inGroupingBlock;
+		groupingBlockType = inGroupingBlockType;
 		
-		sortBlock = inSortBlock;
-		sortBlockType = inSortBlockType;
+		sortingBlock = inSortingBlock;
+		sortingBlockType = inSortingBlockType;
 	}
 	return self;
 }
@@ -29,6 +29,16 @@
 - (YapAbstractDatabaseViewConnection *)newConnection
 {
 	return [[YapDatabaseViewConnection alloc] initWithDatabaseView:self];
+}
+
+- (NSString *)keyTableName
+{
+	return [NSString stringWithFormat:@"view_%@_key", self.registeredName];
+}
+
+- (NSString *)pageTableName
+{
+	return [NSString stringWithFormat:@"view_%@_page", self.registeredName];
 }
 
 /*
