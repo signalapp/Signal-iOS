@@ -1643,7 +1643,6 @@
 	if (block == NULL) return;
 	
 	NSEnumerationOptions options = (inOptions & NSEnumerationReverse); // We only support NSEnumerationReverse
-	BOOL forwardEnumeration = (options == NSEnumerationReverse);
 	
 	
 	__block NSUInteger pageOffset;
