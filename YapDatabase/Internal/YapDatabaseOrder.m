@@ -689,7 +689,7 @@
 }
 
 /**
- * Returns the pageOffset for the indicated page.
+ * Returns the pageOffset for the indicated page index.
  *
  * For example, if there are 3 pages with counts [10, 5, 10] :
  * Page 0 offset = 0
@@ -712,6 +712,33 @@
 		pageOffset += pageInfo->pageSize;
 	}
 	
+	return 0;
+}
+
+/**
+ * Returns the pageOffset for the indicated page.
+ *
+ * For example, if there are 3 pages with counts [10, 5, 10] :
+ * Page 0 offset = 0
+ * Page 1 offset = 10
+ * Page 2 offset = 15
+ **/
+- (NSUInteger)pageOffsetForPage:(YapDatabasePageInfo *)inPageInfo
+{
+	NSUInteger pageIndex = 0;
+	NSUInteger pageOffset = 0;
+
+	for (YapDatabasePageInfo *pageInfo in pageInfos)
+	{
+		if (pageInfo == inPageInfo)
+		{
+			return pageOffset;
+		}
+
+		pageIndex++;
+		pageOffset += pageInfo->pageSize;
+	}
+
 	return 0;
 }
 
@@ -1616,22 +1643,17 @@
 	if (block == NULL) return;
 	
 	NSEnumerationOptions options = (inOptions & NSEnumerationReverse); // We only support NSEnumerationReverse
-	BOOL forwardEnumeration = (options == NSEnumerationReverse);
 	
 	
 	__block NSUInteger pageOffset;
-	if (forwardEnumeration)
-		pageOffset = 0;
-	else
-		pageOffset = [self pageOffsetForPageAtIndex:([self numberOfPages] - 1)];
-		
 	__block NSUInteger keysLeft = range.length;
 	__block BOOL startedRange = NO;
 	
 	[pageInfos enumerateObjectsWithOptions:options usingBlock:^(id pageInfoObj, NSUInteger pageIndex, BOOL *outerStop){
 	
 		YapDatabasePageInfo *pageInfo = (YapDatabasePageInfo *)pageInfoObj;
-		
+
+        pageOffset = [self pageOffsetForPage:pageInfo];
 		NSRange pageRange = NSMakeRange(pageOffset, pageInfo->pageSize);
 		NSRange keysRange = NSIntersectionRange(pageRange, range);
 		
@@ -1669,8 +1691,6 @@
 			*outerStop = YES;
 		}
 		
-		pageIndex++;
-		pageOffset += pageInfo->pageSize;
 	}];
 	
 	if (keysLeft > 0)
