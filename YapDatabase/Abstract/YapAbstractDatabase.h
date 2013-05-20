@@ -98,4 +98,10 @@
 **/
 - (YapAbstractDatabaseView *)registeredView:(NSString *)viewName;
 
+/**
+ * Returns all currently registered views as a dictionary.
+ * The key is the registed name (NSString), and the value is the view (YapAbstractDatabaseView subclass).
+**/
+- (NSDictionary *)registeredViews;
+
 @end

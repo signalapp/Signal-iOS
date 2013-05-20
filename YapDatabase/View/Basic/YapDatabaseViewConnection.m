@@ -34,9 +34,9 @@
 	sqlite3_stmt *pageTable_removeAllStatement;
 }
 
-- (id)initWithDatabaseView:(YapAbstractDatabaseView *)parent
+- (id)initWithView:(YapAbstractDatabaseView *)view databaseConnection:(YapAbstractDatabaseConnection *)connection
 {
-	if ((self = [super initWithDatabaseView:parent]))
+	if ((self = [super initWithView:view databaseConnection:connection]))
 	{
 		keyCache = [[YapCache alloc] init];
 		pageCache = [[YapCache alloc] init];
@@ -88,7 +88,7 @@
 		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &keyTable_getPageKeyForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"%@: Error creating '%@': %d %s", THIS_FILE, THIS_METHOD, status, sqlite3_errmsg(db));
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -107,7 +107,7 @@
 		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &keyTable_setPageKeyForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"%@: Error creating '%@': %d %s", THIS_FILE, THIS_METHOD, status, sqlite3_errmsg(db));
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -126,7 +126,7 @@
 		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &keyTable_removeForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"%@: Error creating '%@': %d %s", THIS_FILE, THIS_METHOD, status, sqlite3_errmsg(db));
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -145,7 +145,7 @@
 		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &keyTable_removeAllStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"%@: Error creating '%@': %d %s", THIS_FILE, THIS_METHOD, status, sqlite3_errmsg(db));
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -164,7 +164,7 @@
 		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_getDataForPageKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"%@: Error creating '%@': %d %s", THIS_FILE, THIS_METHOD, status, sqlite3_errmsg(db));
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -184,7 +184,7 @@
 		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_setAllForPageKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"%@: Error creating '%@': %d %s", THIS_FILE, THIS_METHOD, status, sqlite3_errmsg(db));
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -203,7 +203,7 @@
 		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_getDataForPageKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"%@: Error creating '%@': %d %s", THIS_FILE, THIS_METHOD, status, sqlite3_errmsg(db));
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -222,7 +222,7 @@
 		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_removeForPageKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"%@: Error creating '%@': %d %s", THIS_FILE, THIS_METHOD, status, sqlite3_errmsg(db));
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 
 	}
@@ -242,7 +242,7 @@
 		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_removeAllStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"%@: Error creating '%@': %d %s", THIS_FILE, THIS_METHOD, status, sqlite3_errmsg(db));
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	

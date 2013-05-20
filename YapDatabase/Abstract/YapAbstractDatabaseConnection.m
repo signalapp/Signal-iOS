@@ -40,11 +40,14 @@
 	void *IsOnConnectionQueueKey;
 	
 	YapAbstractDatabase *database;
-	
-	uint64_t cacheSnapshot;
+
+	NSMutableDictionary *views;
 	
 @public
 	sqlite3 *db;
+	
+	uint64_t cacheSnapshot;
+	BOOL rollback
 	
 	YapCache *objectCache;
 	YapCache *metadataCache;
@@ -67,6 +70,9 @@
 		IsOnConnectionQueueKey = &IsOnConnectionQueueKey;
 		void *nonNullUnusedPointer = (__bridge void *)self;
 		dispatch_queue_set_specific(connectionQueue, IsOnConnectionQueueKey, nonNullUnusedPointer, NULL);
+		
+		dirtyViews = YES;
+		views = [[NSMutableDictionary alloc] init];
 		
 		objectCacheLimit = DEFAULT_OBJECT_CACHE_LIMIT;
 		objectCache = [[YapCache alloc] initWithKeyClass:[database cacheKeyClass]];
@@ -98,19 +104,9 @@
 		}
 		else
 		{
-		#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-			
-			// Disable autocheckpointing.
-			// We have a separate dedicated connection that handles checkpointing.
-			sqlite3_wal_autocheckpoint(db, 0);
-			
-		#else
-			
 			// Configure autocheckpointing.
 			// Decrease size of WAL from default 1,000 pages to something more mobile friendly.
 			sqlite3_wal_autocheckpoint(db, 100);
-			
-		#endif
 		}
 		
 		#if TARGET_OS_IPHONE
@@ -121,6 +117,20 @@
 		#endif
 	}
 	return self;
+}
+
+/**
+ * This method will be invoked before any other method.
+ * It is invoked on the connectionQueue, as well as the snapshotQueue of the parent database.
+ * It can be used to do any setup that may be needed.
+ * 
+ * Subclasses may override this method if needed.
+ * They must invoke [super prepare] at some point within their implementation.
+**/
+- (void)prepare
+{
+	cacheSnapshot = [database snapshot];
+	registeredViews = [database registeredViews];
 }
 
 - (void)dealloc
@@ -344,12 +354,13 @@
 **/
 - (id)view:(NSString *)viewName
 {
+	// This method is PUBLIC.
+	//
 	// This method returns a subclass of YapAbstractDatabaseViewConnection.
 	// To get:
 	// - YapAbstractDatabaseView => [database registeredView:@"nameOfView"]
 	// - YapAbstractDatabaseViewConnection => [databaseConnection view:@"nameOfView"]
 	// - YapAbstractDatabaseViewTransaction => [databaseTransaction view:@"nameOfView"]
-	//
 	
 	__block id viewConnection = nil;
 	
@@ -362,10 +373,10 @@
 			// We don't have an existing connection for the view.
 			// Create one (if we can).
 			
-			YapAbstractDatabaseView *view = [database registeredView:viewName];
+			YapAbstractDatabaseView *view = [registeredViews objectForKey:viewName];
 			if (view)
 			{
-				viewConnection = [view newConnection];
+				viewConnection = [view newConnection:self];
 				[views setObject:viewConnection forKey:viewName];
 			}
 		}
@@ -377,6 +388,33 @@
 		dispatch_sync(connectionQueue, block);
 	
 	return viewConnection;
+}
+
+- (NSDictionary *)views
+{
+	// This method is INTERNAL
+	
+	NSAssert(dispatch_get_specific(IsOnConnectionQueueKey) ||
+	         dispatch_get_specific(database->IsOnSnapshotQueueKey), @"Must be invoked within connectionQueue");
+	
+	if (dirtyViews)
+	{
+		[registeredViews enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+			
+			NSString *viewName = (NSString *)key;
+			YapAbstractDatabaseView *view = (YapAbstractDatabaseView *)obj;
+			
+			if ([views objectForKey:viewName] == nil)
+			{
+				id viewConnection = [view newConnection:self];
+				[views setObject:viewConnection forKey:viewName];
+			}
+		}];
+		
+		dirtyViews = NO;
+	}
+	
+	return views;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -564,13 +602,6 @@
 		
 		[self postReadTransaction:transaction];
 	}});
-	
-	#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-	
-	// If needed, execute a passive checkpoint operation on a low-priority background thread.
-	[database maybeRunCheckpointInBackground];
-	
-	#endif
 }
 
 /**
@@ -603,13 +634,6 @@
 		
 	}}); // End dispatch_sync(database->writeQueue)
 	});  // End dispatch_sync(connectionQueue)
-	
-	#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-	
-	// Execute a passive checkpoint operation on a low-priority background thread.
-	[database runCheckpointInBackground];
-	
-	#endif
 }
 
 /**
@@ -639,13 +663,6 @@
 		
 		if (completionBlock)
 			dispatch_async(completionQueue, completionBlock);
-		
-		#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-		
-		// If needed, execute a passive checkpoint operation on a low-priority background thread.
-		[database maybeRunCheckpointInBackground];
-		
-		#endif
 	}});
 }
 
@@ -685,13 +702,6 @@
 		
 		if (completionBlock)
 			dispatch_async(completionQueue, completionBlock);
-		
-		#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-		
-		// Execute a passive checkpoint operation on a low-priority background thread.
-		[database runCheckpointInBackground];
-		
-		#endif
 		
 	}}); // End dispatch_sync(database->writeQueue)
 	});  // End dispatch_async(connectionQueue)
@@ -1440,6 +1450,35 @@
 	
 	YDBLogVerbose(@"Processing changeset %@ for connection %@, database %@",
 	              [changeset objectForKey:@"snapshot"], self, self->database);
+	
+	// Internal processing
+	
+	NSDictionary *newRegisteredViews = [changeset objectForKey:@"registeredViews"];
+	if (newRegisteredViews)
+	{
+		// Retain new list
+		
+		registeredViews = newRegisteredViews;
+		
+		// Remove any views that have been dropped
+		
+		for (NSString *viewName in [views allKeys])
+		{
+			if ([registeredViews objectForKey:viewName] == nil)
+			{
+				YDBLogVerbose(@"Dropping view: %@", viewName);
+				
+				[views removeObjectForKey:viewName];
+			}
+		}
+		
+		// Make a note if there are views for which we haven't instantiated a viewConnection instance.
+		// We lazily load these later, if needed.
+		
+		dirtyViews = [registeredViews count] != [views count];
+	}
+	
+	// Subclass processing
 	
 	[self processChangeset:changeset];
 }

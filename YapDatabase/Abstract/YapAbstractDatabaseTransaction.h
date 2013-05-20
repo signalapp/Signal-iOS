@@ -22,24 +22,6 @@
 - (void)rollback;
 
 /**
- * Attempts to open the view with the given name.
- *
- * Views are automatically opened using the view: method, if they're not yet open.
- * However there is a small overhead involved with opening a view.
- * Thus this method may be used to incur the cost ahead of time before the application requires use of the view.
- *
- * @return
- *    YES if the view was successfully opened or was already open.
- *    NO otherwise.
- * 
- * One must register a view with the database before it can be accessed from within connections or transactions.
- * After registration everything works automatically using just the view name.
- * 
- * @see [YapAbstractDatabase registerView:withName:]
-**/
-- (BOOL)openView:(NSString *)viewName;
-
-/**
  * Returns a view transaction corresponding to the view type registered under the given name.
  * If the view has not yet been opened, it is done so automatically.
  *

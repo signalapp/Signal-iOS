@@ -19,8 +19,3 @@
 - (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forKey:(NSString *)key;
 
 @end
-
-// - (NSString *)keyAtIndexPath:(NSIndexPath *)indexPath;
-// - (id)objectAtIndexPath:(NSIndexPath *)indexPath;
-// 
-// - (NSIndexPath *)indexPathForKey:(NSString *)key;

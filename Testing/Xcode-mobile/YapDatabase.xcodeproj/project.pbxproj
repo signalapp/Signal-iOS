@@ -178,7 +178,7 @@
 		DCAE52091673FE2600395076 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController_iPad.xib; sourceTree = "<group>"; };
 		DCAE52101673FE2600395076 /* YapDatabaseTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YapDatabaseTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCAE52111673FE2600395076 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
-		DCAE52191673FE2600395076 /* YapDatabaseTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "YapDatabaseTests-Info.plist"; sourceTree = "<group>"; };
+		DCAE52191673FE2600395076 /* YapDatabaseTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "YapDatabaseTests-Info.plist"; path = "YapDatabaseTests/YapDatabaseTests-Info.plist"; sourceTree = SOURCE_ROOT; };
 		DCAE521B1673FE2600395076 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DCB2146317120F3900719845 /* YapAbstractDatabaseView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapAbstractDatabaseView.h; sourceTree = "<group>"; };
 		DCB2146417120F3900719845 /* YapAbstractDatabaseView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapAbstractDatabaseView.m; sourceTree = "<group>"; };
@@ -382,6 +382,7 @@
 				DCAE52171673FE2600395076 /* UnitTests */,
 				DC3D2F311674002200DFAFAA /* Benchmarking */,
 				DCAE51F01673FE2600395076 /* App */,
+				DCAE51F11673FE2600395076 /* Supporting Files */,
 				DCAE51E91673FE2600395076 /* Frameworks */,
 				DCAE51E81673FE2600395076 /* Products */,
 			);
@@ -417,7 +418,6 @@
 				DCAE52031673FE2600395076 /* ViewController.m */,
 				DCAE52051673FE2600395076 /* ViewController_iPhone.xib */,
 				DCAE52081673FE2600395076 /* ViewController_iPad.xib */,
-				DCAE51F11673FE2600395076 /* Supporting Files */,
 			);
 			name = App;
 			path = YapDatabase;
@@ -426,15 +426,11 @@
 		DCAE51F11673FE2600395076 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				DCAE51F21673FE2600395076 /* YapDatabase-Info.plist */,
-				DCAE51F31673FE2600395076 /* InfoPlist.strings */,
-				DCAE51F61673FE2600395076 /* main.m */,
-				DCAE51F81673FE2600395076 /* YapDatabase-Prefix.pch */,
-				DCAE51FC1673FE2600395076 /* Default.png */,
-				DCAE51FE1673FE2600395076 /* Default@2x.png */,
-				DCAE52001673FE2600395076 /* Default-568h@2x.png */,
+				DCCA963417458C730022CCF3 /* YapDatabase */,
+				DCCA963517458C810022CCF3 /* YapDatabaseTests */,
 			);
 			name = "Supporting Files";
+			path = YapDatabase;
 			sourceTree = "<group>";
 		};
 		DCAE52171673FE2600395076 /* UnitTests */ = {
@@ -455,11 +451,10 @@
 		DCAE52181673FE2600395076 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				DCAE52191673FE2600395076 /* YapDatabaseTests-Info.plist */,
-				DCAE521A1673FE2600395076 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
+			path = YapDatabaseTests;
+			sourceTree = SOURCE_ROOT;
 		};
 		DCB21449171135FB00719845 /* Views */ = {
 			isa = PBXGroup;
@@ -473,7 +468,7 @@
 		DCB2146217120F3900719845 /* Abstract */ = {
 			isa = PBXGroup;
 			children = (
-				DCB2146717120F3900719845 /* YapAbstractDatabaseViewPrivate.h */,
+				DCCA963617459A870022CCF3 /* Private */,
 				DCB2146317120F3900719845 /* YapAbstractDatabaseView.h */,
 				DCB2146417120F3900719845 /* YapAbstractDatabaseView.m */,
 				DCB2146517120F3900719845 /* YapAbstractDatabaseViewConnection.h */,
@@ -488,9 +483,8 @@
 		DCB2146A17120F3900719845 /* Basic */ = {
 			isa = PBXGroup;
 			children = (
-				DCB2146F17120F3900719845 /* YapDatabaseViewPrivate.h */,
-				DCD7AC091718DAE400FADF64 /* YapDatabaseViewPageMetadata.h */,
-				DCD7AC0A1718DAE500FADF64 /* YapDatabaseViewPageMetadata.m */,
+				DCCA963717459AC10022CCF3 /* Private */,
+				DCCA963817459AD10022CCF3 /* Internal */,
 				DCB2146B17120F3900719845 /* YapDatabaseView.h */,
 				DCB2146C17120F3900719845 /* YapDatabaseView.m */,
 				DCB2146D17120F3900719845 /* YapDatabaseViewConnection.h */,
@@ -500,6 +494,54 @@
 			);
 			name = Basic;
 			path = View/Basic;
+			sourceTree = "<group>";
+		};
+		DCCA963417458C730022CCF3 /* YapDatabase */ = {
+			isa = PBXGroup;
+			children = (
+				DCAE51F21673FE2600395076 /* YapDatabase-Info.plist */,
+				DCAE51F31673FE2600395076 /* InfoPlist.strings */,
+				DCAE51F61673FE2600395076 /* main.m */,
+				DCAE51F81673FE2600395076 /* YapDatabase-Prefix.pch */,
+				DCAE51FC1673FE2600395076 /* Default.png */,
+				DCAE51FE1673FE2600395076 /* Default@2x.png */,
+				DCAE52001673FE2600395076 /* Default-568h@2x.png */,
+			);
+			name = YapDatabase;
+			sourceTree = "<group>";
+		};
+		DCCA963517458C810022CCF3 /* YapDatabaseTests */ = {
+			isa = PBXGroup;
+			children = (
+				DCAE52191673FE2600395076 /* YapDatabaseTests-Info.plist */,
+				DCAE521A1673FE2600395076 /* InfoPlist.strings */,
+			);
+			name = YapDatabaseTests;
+			sourceTree = "<group>";
+		};
+		DCCA963617459A870022CCF3 /* Private */ = {
+			isa = PBXGroup;
+			children = (
+				DCB2146717120F3900719845 /* YapAbstractDatabaseViewPrivate.h */,
+			);
+			name = Private;
+			sourceTree = "<group>";
+		};
+		DCCA963717459AC10022CCF3 /* Private */ = {
+			isa = PBXGroup;
+			children = (
+				DCB2146F17120F3900719845 /* YapDatabaseViewPrivate.h */,
+			);
+			name = Private;
+			sourceTree = "<group>";
+		};
+		DCCA963817459AD10022CCF3 /* Internal */ = {
+			isa = PBXGroup;
+			children = (
+				DCD7AC091718DAE400FADF64 /* YapDatabaseViewPageMetadata.h */,
+				DCD7AC0A1718DAE500FADF64 /* YapDatabaseViewPageMetadata.m */,
+			);
+			name = Internal;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -727,7 +769,8 @@
 				DCAE521B1673FE2600395076 /* en */,
 			);
 			name = InfoPlist.strings;
-			sourceTree = "<group>";
+			path = YapDatabaseTests;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXVariantGroup section */
 

@@ -33,15 +33,17 @@
 	NSMutableDictionary *groupPagesDict;   // section -> @[ YapDatabaseViewPageMetadata, ... ]
 	NSMutableDictionary *pageKeyGroupDict; // pageKey -> group
 	
+	YapCache *keyCache;
+	YapCache *pageCache;
+	
 	NSMutableDictionary *dirtyKeys;
 	NSMutableDictionary *dirtyPages;
 	NSMutableDictionary *dirtyMetadata;
+	BOOL reset;
 	
-	YapCache *keyCache;
-	YapCache *pageCache;
+	BOOL lastInsertWasAtFirstIndex;
+	BOOL lastInsertWasAtLastIndex;
 }
-
-- (BOOL)isOpen;
 
 - (sqlite3_stmt *)keyTable_getPageKeyForKeyStatement;
 - (sqlite3_stmt *)keyTable_setPageKeyForKeyStatement;

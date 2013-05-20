@@ -6,11 +6,12 @@
 
 @synthesize abstractView = abstractView;
 
-- (id)initWithDatabaseView:(YapAbstractDatabaseView *)parent
+- (id)initWithView:(YapAbstractDatabaseView *)view databaseConnection:(YapAbstractDatabaseConnection *)connection
 {
 	if ((self = [super init]))
 	{
-		abstractView = parent;
+		abstractView = view;
+		databaseConnection = connection;
 	}
 	return self;
 }
@@ -19,6 +20,22 @@
 {
 	NSAssert(NO, @"Missing required override method in subclass");
 	return nil;
+}
+
+- (void)postRollbackCleanup
+{
+	NSAssert(NO, @"Missing required override method in subclass");
+}
+
+- (NSMutableDictionary *)changeset
+{
+	NSAssert(NO, @"Missing required override method in subclass");
+	return nil;
+}
+
+- (void)processChangeset:(NSDictionary *)changeset
+{
+	NSAssert(NO, @"Missing required override method in subclass");
 }
 
 @end

@@ -42,6 +42,13 @@
 #define YDB_LOG_VERBOSE (YDBLogLevel & YDB_LOG_LEVEL_VERBOSE)
 
 /**
+ * Define trace, which is in addition to log levels.
+ * It may be turned on/off independent of the log level.
+**/
+
+#define YDB_LOG_FLAG_TRACE   (1 << 4) // 0...10000
+
+/**
  * YapDatabase supports multiple logging techniques.
  * 
  * YapDatabase supports the CocoaLumberjack logging framework.
@@ -100,6 +107,9 @@
 #define YDBLogInfo(frmt, ...)      YDBLogMaybe(YDB_LOG_FLAG_INFO,    (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
 #define YDBLogVerbose(frmt, ...)   YDBLogMaybe(YDB_LOG_FLAG_VERBOSE, (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
 
+#define YDBLogTrace(frmt, ...) YDBLogMaybe(YDB_LOG_FLAG_TRACE, (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
+#define YDBLogAutoTrace()      YDBLogMaybe(YDB_LOG_FLAG_TRACE,  @"%@: %@",     THIS_FILE, THIS_METHOD)
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #elif (YapDatabaseLoggingTechnique == YapDatabaseLoggingTechnique_NSLog)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -113,6 +123,11 @@
 #define YDBLogWarn(frmt, ...)     YDBLogMaybe(YDB_LOG_FLAG_WARN,    frmt, ##__VA_ARGS__)
 #define YDBLogInfo(frmt, ...)     YDBLogMaybe(YDB_LOG_FLAG_INFO,    frmt, ##__VA_ARGS__)
 #define YDBLogVerbose(frmt, ...)  YDBLogMaybe(YDB_LOG_FLAG_VERBOSE, frmt, ##__VA_ARGS__)
+
+// Todo: Need to define THIS_FILE and THIS_METHOD
+
+#define YDBLogTrace(frmt, ...) {}
+#define YDBLogAutoTrace()      {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #else
@@ -134,5 +149,8 @@
 #define YDBLogWarn(frmt, ...)      {}
 #define YDBLogInfo(frmt, ...)      {}
 #define YDBLogVerbose(frmt, ...)   {}
+
+#define YDBLogTrace(frmt, ...)     {}
+#define YDBLogAutoTrace()          {}
 
 #endif

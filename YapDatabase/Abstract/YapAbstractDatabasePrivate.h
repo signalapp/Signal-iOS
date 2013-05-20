@@ -10,22 +10,6 @@
 #import "sqlite3.h"
 
 /**
- * Do we use a dedicated background thread/queue to run checkpoint operations?
- *
- * If YES (1), then auto-checkpoint is disabled on all connections.
- * A dedicated background connection runs checkpoint operations after transactions complete.
- *
- * If NO (0), then auto-checkpoint is enabled on all connections.
- * And the typical auto-checkpoint operations are run during commit operations of read-write transactions.
- *
- * If YES, then write operations will complete faster (but the WAL may grow faster).
- * If NO, then write operations will complete slower (but the WAL stays slim).
- *
- * A large size WAL seems to have some kind of negative performance during app launch.
-**/
-#define YAP_DATABASE_USE_CHECKPOINT_QUEUE 0
-
-/**
  * Helper method to conditionally invoke sqlite3_finalize on a statement, and then set the ivar to NULL.
 **/
 NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
@@ -40,19 +24,10 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 @interface YapAbstractDatabase () {
 @private
 	
-#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-	dispatch_queue_t checkpointQueue;
-#endif
-	
 	NSMutableDictionary *views;
 	
 	NSMutableArray *changesets;
 	uint64_t snapshot;
-	
-#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-	int walPendingPageCount;
-	int32_t walCheckpointSchedule;
-#endif
 	
 @protected
 	
@@ -162,22 +137,6 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 **/
 - (void)noteCommittedChanges:(NSDictionary *)changeset fromConnection:(YapAbstractDatabaseConnection *)connection;
 
-#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-
-/**
- * All checkpointing is done on a low-priority background thread.
- * We checkpoint continuously to keep the WAL-index small.
-**/
-- (void)maybeRunCheckpointInBackground;
-- (void)runCheckpointInBackground;
-
-/**
- * Primarily for debugging.
-**/
-- (void)syncCheckpoint;
-
-#endif
-
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -193,13 +152,15 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	sqlite3_stmt *yapGetDataForKeyStatement; // Against "yap" database, for internal use
 	sqlite3_stmt *yapSetDataForKeyStatement; // Against "yap" database, for internal use
 	
+	BOOL dirtyViews;
+	NSDictionary *registeredViews;
+	NSMutableDictionary *views;
+	
 @protected
 	dispatch_queue_t connectionQueue;
 	void *IsOnConnectionQueueKey;
 	
 	YapAbstractDatabase *database;
-	
-	NSMutableDictionary *views;
 	
 @public
 	sqlite3 *db;
@@ -219,6 +180,10 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 - (id)initWithDatabase:(YapAbstractDatabase *)database;
 
 @property (nonatomic, readonly) dispatch_queue_t connectionQueue;
+
+- (void)prepare;
+
+- (NSDictionary *)views;
 
 - (sqlite3_stmt *)beginTransactionStatement;
 - (sqlite3_stmt *)commitTransactionStatement;
@@ -262,7 +227,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface YapAbstractDatabaseTransaction () {
-@protected
+@private
 	NSMutableDictionary *views;
 	
 @public
@@ -276,5 +241,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 - (void)beginTransaction;
 - (void)commitTransaction;
 - (void)rollbackTransaction;
+
+- (NSDictionary *)views;
 
 @end

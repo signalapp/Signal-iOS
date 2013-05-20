@@ -6,8 +6,11 @@
 
 #import "YapDatabase.h"
 #import "YapDatabaseView.h"
-
 #import "TestObject.h"
+
+#import "DDLog.h"
+#import "DDTTYLogger.h"
+
 
 @implementation AppDelegate
 {
@@ -18,6 +21,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+	[DDLog addLogger:[DDTTYLogger sharedInstance]];
+	
 	dispatch_async(dispatch_get_main_queue(), ^(void){
 		
 	//	[BenchmarkYapCache startTests];
@@ -59,61 +64,48 @@
 	database = [[YapDatabase alloc] initWithPath:databasePath];
 	databaseConnection = [database newConnection];
 	
-//	YapDatabaseViewFilterWithBothBlock filterBlock;
-//	YapDatabaseViewSortWithBothBlock sortBlock;
-//	
-//	filterBlock = ^BOOL (NSString *key, id object, id metadata, NSUInteger *outSection){
-//		
-//		return YES;
-//	};
-//	
-//	sortBlock = ^NSComparisonResult (NSString *key1, id obj1, id meta1, NSString *key2, id obj2, id meta2){
-//		
-//		TestObject *object1 = (TestObject *)obj1;
-//		TestObject *object2 = (TestObject *)obj2;
-//		
-//		return [object1.string1 compare:object2.string1];
-//	};
-//	
-//	databaseView = [[YapDatabaseView alloc] initWithFilterBlock:filterBlock
-//	                                                 filterType:YapDatabaseViewBlockTypeWithBoth
-//	                                                  sortBlock:sortBlock
-//	                                                   sortType:YapDatabaseViewBlockTypeWithBoth];
-//	
-//	[database registerView:databaseView withName:@"view"];
-//	
-//	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-//		
-//		NSError *error = nil;
-//		if ([transaction createOrOpenView:@"view"])
-//		{
-//			NSLog(@"Created view !");
-//		}
-//		else
-//		{
-//			NSLog(@"Error creating view: %@", error);
-//		}
-//	}];
+	YapDatabaseViewGroupingWithBothBlock groupingBlock;
+	YapDatabaseViewSortingWithObjectBlock sortingBlock;
+	
+	groupingBlock = ^(NSString *key, id object, id metadata){
+		
+		return @"";
+	};
+	
+	sortingBlock = ^(NSString *group, NSString *key1, id obj1, NSString *key2, id obj2){
+		
+		TestObject *object1 = (TestObject *)obj1;
+		TestObject *object2 = (TestObject *)obj2;
+		
+		return [object1.string1 compare:object2.string1];
+	};
+	
+	databaseView = [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
+	                                            groupingBlockType:YapDatabaseViewBlockTypeWithBoth
+	                                                 sortingBlock:sortingBlock
+	                                             sortingBlockType:YapDatabaseViewBlockTypeWithObject];
+	
+	[database registerView:databaseView withName:@"view"];
 	
 	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
 		NSLog(@"setObject:forKey: 1");
 		[transaction setObject:@"objectA" forKey:@"key1"];
 		
-		NSLog(@"setObject:forKey: 2");
-		[transaction setObject:@"objectA" forKey:@"key2"];
+//		NSLog(@"setObject:forKey: 2");
+//		[transaction setObject:@"objectA" forKey:@"key2"];
 		
-		NSLog(@"setObject:forKey: 3");
-		[transaction setObject:@"objectA" forKey:@"key2"];
+//		NSLog(@"setObject:forKey: 3");
+//		[transaction setObject:@"objectA" forKey:@"key2"];
 		
-		NSLog(@"setObject:forKey: 1");
-		[transaction setObject:@"objectB" forKey:@"key1"];
+//		NSLog(@"setObject:forKey: 1");
+//		[transaction setObject:@"objectB" forKey:@"key1"];
 		
-		NSLog(@"removeObjectForKey: 2");
-		[transaction removeObjectForKey:@"key2"];
+//		NSLog(@"removeObjectForKey: 2");
+//		[transaction removeObjectForKey:@"key2"];
 		
-		NSLog(@"removeAllObjects");
-		[transaction removeAllObjects];
+//		NSLog(@"removeAllObjects");
+//		[transaction removeAllObjects];
 	}];
 }
 

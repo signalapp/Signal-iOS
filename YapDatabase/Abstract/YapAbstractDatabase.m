@@ -248,9 +248,6 @@
 		
 		snapshotQueue   = dispatch_queue_create("YapDatabase-Snapshot", NULL);
 		writeQueue      = dispatch_queue_create("YapDatabase-Write", NULL);
-#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-		checkpointQueue = dispatch_queue_create("YapDatabase-Checkpoint", NULL);
-#endif
 		
 		views = [[NSMutableDictionary alloc] init];
 		
@@ -263,14 +260,6 @@
 		IsOnSnapshotQueueKey = &IsOnSnapshotQueueKey;
 		void *nonNullUnusedPointer = (__bridge void *)self;
 		dispatch_queue_set_specific(snapshotQueue, IsOnSnapshotQueueKey, nonNullUnusedPointer, NULL);
-		
-#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-		
-		// And configure the priority of the checkpointQueue.
-		
-		dispatch_queue_t lowPriorityQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0);
-		dispatch_set_target_queue(checkpointQueue, lowPriorityQueue);
-#endif
 		
 		// Complete database setup in the background
 		dispatch_async(snapshotQueue, ^{ @autoreleasepool {
@@ -298,10 +287,6 @@
 		dispatch_release(snapshotQueue);
 	if (writeQueue)
 		dispatch_release(writeQueue);
-#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-	if (checkpointQueue)
-		dispatch_release(checkpointQueue);
-#endif
 #endif
 }
 
@@ -365,19 +350,9 @@
 		return NO;
 	}
 	
-#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-	
-	// Disable autocheckpointing.
-	// We have a dedicated background operation that manually runs checkpoint operations when needed.
-	sqlite3_wal_autocheckpoint(db, 0);
-	
-#else
-	
 	// Configure autocheckpointing.
 	// Decrease size of WAL from default 1,000 pages to something more mobile friendly.
 	sqlite3_wal_autocheckpoint(db, 100);
-	
-#endif
 	
 	return YES;
 }
@@ -599,25 +574,25 @@
 **/
 - (void)prepare
 {
-	int status;
-	char *query;
-	sqlite3_stmt *statement;
-	
-	// Step 1 of 4: Begin transaction
-	
-	status = sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
-	if (status != SQLITE_OK)
-	{
-		YDBLogError(@"%@: Error starting transaction: %d %s",
-		              NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
-		return;
-	}
-	
-	// Step 2 of 4: Populate snapshot and write to disk
+	// Initialize snapshot
 	
 	snapshot = 0;
 	
-	query = "INSERT OR REPLACE INTO \"yap\" (\"key\", \"data\") VALUES (?, ?);";
+	// Write it to disk (replacing any previous value from last app run)
+	
+	[self writeSnapshotToDatabase];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Utilities
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)writeSnapshotToDatabase
+{
+	int status;
+	sqlite3_stmt *statement;
+	
+	char *query = "INSERT OR REPLACE INTO \"yap\" (\"key\", \"data\") VALUES (?, ?);";
 	
 	status = sqlite3_prepare_v2(db, query, strlen(query)+1, &statement, NULL);
 	if (status != SQLITE_OK)
@@ -645,22 +620,6 @@
 		sqlite3_finalize(statement);
 		statement = NULL;
 	}
-	
-	// Step 3 of 4: Commit transaction
-	
-	status = sqlite3_exec(db, "COMMIT TRANSACTION;", NULL, NULL, NULL);
-	if (status != SQLITE_OK)
-	{
-		YDBLogError(@"%@: Error committing transaction: %d %s",
-		              NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
-	}
-	
-#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-	
-	// Step 4 of 4: Start background checkpoint operations
-	[self runCheckpointInBackground];
-
-#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -742,6 +701,14 @@
 #pragma mark Views
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Registers the view with the database using the given name.
+ * After registration everything works automatically using just the view name.
+ *
+ * @return
+ *     YES if the view was properly registered.
+ *     NO if an error occurred, such as the viewName is already registered.
+**/
 - (BOOL)registerView:(YapAbstractDatabaseView *)view withName:(NSString *)viewName
 {
 	if (view == nil)
@@ -755,35 +722,101 @@
 		return NO;
 	}
 	
-	BOOL result = YES;
+	__block BOOL result = YES;
 	
-	@synchronized(views)
-	{
-		if ([views objectForKey:viewName] == nil)
+	dispatch_sync(writeQueue, ^{
+		
+		// Check to make sure the viewName is available
+		
+		dispatch_sync(snapshotQueue, ^{
+			
+			if ([views objectForKey:viewName] != nil)
+			{
+				result = NO;
+			}
+		});
+		
+		if (!result)
 		{
+			YDBLogError(@"Error registering view: The viewName is already registered.");
+			return;
+		}
+		
+		// Prepare the view (create the table(s) for it and/or any other needed tasks)
+		
+		result = [[view class] createTablesForRegisteredName:viewName database:self sqlite:db error:NULL];
+		
+		if (!result)
+		{
+			YDBLogError(@"Error registering view: View reported errors during setup process.");
+			return;
+		}
+		
+		// Register the view
+		
+		dispatch_sync(snapshotQueue, ^{
+			
 			[views setObject:view forKey:viewName];
 			[view setRegisteredName:viewName];
-		}
-		else
-		{
-			YDBLogError(@"Error registering view: viewName is already registered");
-			result = NO;
-		}
-	}
+			
+			snapshot++;
+			[self writeSnapshotToDatabase];
+			
+			NSDictionary *changeset = @{
+				@"snapshot" : @(snapshot),
+				@"registeredViews" : [views copy]
+			};
+			
+			[self noteCommittedChanges:changeset fromConnection:nil];
+		});
+	});
 	
 	return result;
 }
 
+/**
+ * Returns the registered view with the given name.
+**/
 - (YapAbstractDatabaseView *)registeredView:(NSString *)viewName
 {
-	YapAbstractDatabaseView *result = nil;
+	// This method is public
 	
-	@synchronized(views)
-	{
+	__block YapAbstractDatabaseView *result = nil;
+	
+	dispatch_block_t block = ^{
+		
 		result = [views objectForKey:viewName];
-	}
+	};
+	
+	if (dispatch_get_specific(IsOnSnapshotQueueKey))
+		block();
+	else
+		dispatch_sync(snapshotQueue, block);
 	
 	return result;
+}
+
+/**
+ * Returns all currently registered views as a dictionary.
+ * The key is the registed name (NSString), and the value is the view (YapAbstractDatabaseView subclass).
+**/
+- (NSDictionary *)registeredViews
+{
+	// This method is public
+	
+	__block NSDictionary *viewsCopy = nil;
+	
+	dispatch_block_t block = ^{
+		
+		viewsCopy = [views copy];
+	};
+	
+	if (dispatch_get_specific(IsOnSnapshotQueueKey))
+		block();
+	else
+		dispatch_sync(snapshotQueue, block);
+	
+	return viewsCopy;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -927,84 +960,5 @@
 		#endif
 	});
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Checkpoint
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-
-- (void)runCheckpointInBackground:(BOOL)force
-{
-	// Since we run the checkpoint on a low-priority background thread, these scheduled operations tend to pile up.
-	// So we do a bit of consolidation here.
-	//
-	// IF force is NO:
-	//
-	// Typically run after a read-only transaction completes.
-	// Since it was a read-only transaction, it didn't add pages to the WAL,
-	// but the transaction itself may have prevented previous checkpoints from fully completing.
-	// Thus unforced checkpoints skip the operation unless they know there's work to do.
-	//
-	// IF force is YES:
-	//
-	// Typically run after a read-write transaction completes.
-	// Since it was a read-write transaction, it likely wrote pages to the WAL.
-	// Thus forced checkpoints always run the checkpoint operation.
-	//
-	// To handle consolidation of both forced and unforced checkpoint requests in a single place,
-	// we use bit flags as follows:
-	// 
-	// walCheckpointSchedule == 000 => Not scheduled
-	// walCheckpointSchedule == 001 => Scheduled, unforced
-	// walCheckpointSchedule == 010 => Scheduled, forced
-	// walCheckpointSchedule == 011 => Scheduled, both (forced wins)
-	
-	BOOL schedule;
-	if (force)
-		schedule = OSAtomicTestAndSet(2, &walCheckpointSchedule) == 0;
-	else
-		schedule = OSAtomicTestAndSet(1, &walCheckpointSchedule) == 0;
-	
-	if (schedule)
-	{
-		dispatch_async(checkpointQueue, ^{
-			
-			BOOL scheduledForced  =
-			OSAtomicTestAndClear(2, &walCheckpointSchedule) == 1;
-			OSAtomicTestAndClear(1, &walCheckpointSchedule);
-			
-			if (!scheduledForced && walPendingPageCount == 0) return;
-			
-			int pageCount = 0;
-			int ckptCount = 0;
-			int status = sqlite3_wal_checkpoint_v2(db, "main", SQLITE_CHECKPOINT_PASSIVE, &pageCount, &ckptCount);
-			
-			walPendingPageCount = pageCount - ckptCount;
-			
-			if (status == SQLITE_OK)
-				YDBLogVerbose(@"Checkpoint: %d pages remaining to be checkpointed", walPendingPageCount);
-			else if (status != SQLITE_BUSY)
-				YDBLogVerbose(@"Checkpoint error: %d %s", status, sqlite3_errmsg(db));
-		});
-	}
-}
-
-- (void)maybeRunCheckpointInBackground
-{
-	[self runCheckpointInBackground:/*force = */NO];
-}
-
-- (void)runCheckpointInBackground
-{
-	[self runCheckpointInBackground:/*force = */YES];
-}
-
-- (void)syncCheckpoint
-{
-	dispatch_sync(checkpointQueue, ^{ });
-}
-
-#endif
 
 @end

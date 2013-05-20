@@ -97,55 +97,6 @@
 }
 
 /**
- * Attempts to open the view with the given name.
- *
- * Views are automatically opened using the view: method, if they're not yet open.
- * However there is a small overhead involved with opening a view.
- * Thus this method may be used to incur the cost ahead of time before the application requires use of the view.
- *
- * @return
- *    YES if the view was successfully opened or was already open.
- *    NO otherwise, in which case an error is set.
- *
- * One must register a view with the database before it can be accessed from within connections or transactions.
- * After registration everything works automatically using just the view name.
- *
- * @see [YapAbstractDatabase registerView:withName:]
-**/
-- (BOOL)openView:(NSString *)viewName
-{
-	if (views)
-	{
-		if ([views objectForKey:viewName] != nil)
-		{
-			return YES;
-		}
-	}
-	else
-	{
-		views = [[NSMutableDictionary alloc] init];
-	}
-	
-	YapAbstractDatabaseViewConnection *viewConnection = [abstractConnection view:viewName];
-	if (viewConnection == nil)
-	{
-		return NO;
-	}
-	
-	YapAbstractDatabaseViewTransaction *viewTransaction = [viewConnection newTransaction:self];
-	
-	if ([viewTransaction open])
-	{
-		[views setObject:viewTransaction forKey:viewName];
-		return YES;
-	}
-	else
-	{
-		return NO;
-	}
-}
-
-/**
  * Returns a view transaction corresponding to the view type registered under the given name.
  * If the view has not yet been opened, it is done so automatically.
  *
@@ -160,16 +111,63 @@
 **/
 - (id)view:(NSString *)viewName
 {
+	if (views == nil)
+		views = [[NSMutableDictionary alloc] init];
+	
 	YapAbstractDatabaseViewTransaction *viewTransaction = [views objectForKey:viewName];
 	if (viewTransaction == nil)
 	{
-		if ([self openView:viewName])
+		YapAbstractDatabaseViewConnection *viewConnection = [abstractConnection view:viewName];
+		if (viewConnection)
 		{
-			viewTransaction = [views objectForKey:viewName];
+			viewTransaction = [viewConnection newTransaction:self];
+			if ([viewTransaction prepareIfNeeded])
+			{
+				[views setObject:viewTransaction forKey:viewName];
+			}
 		}
+	}
+	else if (![viewTransaction prepareIfNeeded])
+	{
+		[views removeObjectForKey:viewName];
+		viewTransaction = nil;
 	}
 	
 	return viewTransaction;
+}
+
+#pragma mark Internal API
+
+- (NSDictionary *)views
+{
+	if (views == nil)
+		views = [[NSMutableDictionary alloc] init];
+		
+	NSDictionary *viewConnections = [abstractConnection views];
+	NSLog(@"viewConnections: %@", viewConnections);
+	
+	[viewConnections enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		
+		NSString *viewName = (NSString *)key;
+		YapAbstractDatabaseViewTransaction *viewTransaction = [views objectForKey:viewName];
+		
+		if (viewTransaction == nil)
+		{
+			YapAbstractDatabaseViewConnection *viewConnection = (YapAbstractDatabaseViewConnection *)obj;
+			
+			viewTransaction = [viewConnection newTransaction:self];
+			if ([viewTransaction prepareIfNeeded])
+			{
+				[views setObject:viewTransaction forKey:viewName];
+			}
+		}
+		else if (![viewTransaction prepareIfNeeded])
+		{
+			[views removeObjectForKey:viewName];
+		}
+	}];
+	
+	return views;
 }
 
 @end

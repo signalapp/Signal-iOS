@@ -257,11 +257,6 @@
 /**
  * 
 **/
-- (BOOL)createOrOpenView:(NSString *)viewName;
-
-/**
- * 
-**/
 - (void)dropView:(NSString *)viewName;
 
 @end

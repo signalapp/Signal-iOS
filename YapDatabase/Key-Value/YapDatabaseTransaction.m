@@ -970,6 +970,8 @@
 		[connection->metadataCache setObject:[YapNull null] forKey:key];
 		[connection->metadataChanges setObject:[YapNull null] forKey:key];
 	}
+	
+	// Todo: How best to handle for views?
 }
 
 #pragma mark Object
@@ -1030,6 +1032,14 @@
 		[connection->metadataCache setObject:[YapNull null] forKey:key];
 		[connection->metadataChanges setObject:[YapNull null] forKey:key];
 	}
+	
+	NSDictionary *views = [self views];
+	NSLog(@"views: %@", views);
+	
+	for (YapAbstractDatabaseViewTransaction *view in [views objectEnumerator])
+	{
+		[(id <YapAbstractDatabaseViewKeyValueTransaction>)view handleSetObject:object forKey:key withMetadata:metadata];
+	}
 }
 
 #pragma mark Metadata
@@ -1078,6 +1088,11 @@
 			[connection->metadataCache setObject:[YapNull null] forKey:key];
 			[connection->metadataChanges setObject:[YapNull null] forKey:key];
 		}
+		
+		for (YapAbstractDatabaseViewTransaction *view in [[self views] objectEnumerator])
+		{
+			[(id <YapAbstractDatabaseViewKeyValueTransaction>)view handleSetMetadata:metadata forKey:key];
+		}
 	}
 }
 
@@ -1119,6 +1134,11 @@
 		[connection->objectChanges removeObjectForKey:key];
 		[connection->metadataChanges removeObjectForKey:key];
 		[connection->removedKeys addObject:key];
+		
+		for (YapAbstractDatabaseViewTransaction *view in [[self views] objectEnumerator])
+		{
+			[(id <YapAbstractDatabaseViewKeyValueTransaction>)view handleRemoveObjectForKey:key];
+		}
 	}
 }
 
@@ -1202,6 +1222,11 @@
 	[connection->objectChanges removeObjectsForKeys:keys];
 	[connection->metadataChanges removeObjectsForKeys:keys];
 	[connection->removedKeys addObjectsFromArray:keys];
+	
+	for (YapAbstractDatabaseViewTransaction *view in [[self views] objectEnumerator])
+	{
+		[(id <YapAbstractDatabaseViewKeyValueTransaction>)view handleRemoveObjectsForKeys:keys];
+	}
 }
 
 - (void)removeAllObjects
@@ -1228,34 +1253,14 @@
 	[connection->metadataChanges removeAllObjects];
 	[connection->removedKeys removeAllObjects];
 	connection->allKeysRemoved = YES;
+	
+	for (YapAbstractDatabaseViewTransaction *view in [[self views] objectEnumerator])
+	{
+		[(id <YapAbstractDatabaseViewKeyValueTransaction>)view handleRemoveAllObjects];
+	}
 }
 
 #pragma mark Views
-
-- (BOOL)createOrOpenView:(NSString *)viewName
-{
-	if (views)
-	{
-		if ([views objectForKey:viewName] != nil)
-		{
-			return YES;
-		}
-	}
-	else
-	{
-		views = [[NSMutableDictionary alloc] init];
-	}
-	
-	YapAbstractDatabaseViewConnection *viewConnection = [abstractConnection view:viewName];
-	if (viewConnection == nil)
-	{
-		return NO;
-	}
-	
-	YapAbstractDatabaseViewTransaction *viewTransaction = [viewConnection newTransaction:self];
-	
-	return [viewTransaction createOrOpen];
-}
 
 - (void)dropView:(NSString *)viewName
 {
