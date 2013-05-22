@@ -246,8 +246,8 @@
 			return nil;
 		}
 		
-		snapshotQueue   = dispatch_queue_create("YapDatabase-Snapshot", NULL);
-		writeQueue      = dispatch_queue_create("YapDatabase-Write", NULL);
+		snapshotQueue = dispatch_queue_create("YapDatabase-Snapshot", NULL);
+		writeQueue    = dispatch_queue_create("YapDatabase-Write", NULL);
 		
 		views = [[NSMutableDictionary alloc] init];
 		
@@ -258,8 +258,7 @@
 		// There are several methods whose use is restricted to within the snapshotQueue.
 		
 		IsOnSnapshotQueueKey = &IsOnSnapshotQueueKey;
-		void *nonNullUnusedPointer = (__bridge void *)self;
-		dispatch_queue_set_specific(snapshotQueue, IsOnSnapshotQueueKey, nonNullUnusedPointer, NULL);
+		dispatch_queue_set_specific(snapshotQueue, IsOnSnapshotQueueKey, IsOnSnapshotQueueKey, NULL);
 		
 		// Complete database setup in the background
 		dispatch_async(snapshotQueue, ^{ @autoreleasepool {
@@ -633,9 +632,6 @@
 {
 	dispatch_block_t block = ^{ @autoreleasepool {
 		
-		// Initialize the connection's snapshot to the current snapshot
-		connection->cacheSnapshot = snapshot;
-		
 		// Add the connection to the state table
 		YapDatabaseConnectionState *state = [[YapDatabaseConnectionState alloc] initWithConnection:connection];
 		[connectionStates addObject:state];
@@ -660,6 +656,13 @@
 		block();
 	else
 		dispatch_async(snapshotQueue, block);
+	
+	// Invoke the one-time prepare method, so the connection can perform any needed initialization.
+	
+	dispatch_async(connection.connectionQueue, ^{ @autoreleasepool {
+		
+		[connection prepare];
+	}});
 }
 
 /**
@@ -945,15 +948,25 @@
 	
 	// Schedule block to be executed once all connections have processed the changes.
 	
+	BOOL isInternalChangeset = (sender == nil);
+	
 	dispatch_group_notify(group, snapshotQueue, ^{
 		
 		// All connections have now processed the changes.
 		// So we no longer need to retain the changeset in memory.
 		
-		YDBLogVerbose(@"Dropping processed changeset %@ for database: %@",
-		              [[changesets objectAtIndex:0] objectForKey:@"snapshot"], self);
-		
-		[changesets removeObjectAtIndex:0];
+		if (isInternalChangeset)
+		{
+			YDBLogVerbose(@"Completed internal changeset %@ for database: %@",
+			              [changeset objectForKey:@"snapshot"], self);
+		}
+		else
+		{
+			YDBLogVerbose(@"Dropping processed changeset %@ for database: %@",
+			              [changeset objectForKey:@"snapshot"], self);
+			
+			[changesets removeObjectAtIndex:0];
+		}
 		
 		#if !OS_OBJECT_USE_OBJC
 		dispatch_release(group);

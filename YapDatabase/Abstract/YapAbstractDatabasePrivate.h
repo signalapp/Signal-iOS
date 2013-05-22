@@ -228,6 +228,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 
 @interface YapAbstractDatabaseTransaction () {
 @private
+	BOOL viewsReady;
 	NSMutableDictionary *views;
 	
 @public

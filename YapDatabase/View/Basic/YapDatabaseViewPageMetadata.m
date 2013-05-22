@@ -37,4 +37,11 @@
 	return copy;
 }
 
+- (NSString *)description
+{
+	return [NSString stringWithFormat:
+	    @"<YapDatabaseViewPageMetadata[%p]: group(%@) count(%lu) pageKey(%@) nextPageKey(%@)>",
+	    self, group, (unsigned long)count, pageKey, nextPageKey];
+}
+
 @end

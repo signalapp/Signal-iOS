@@ -25,9 +25,11 @@
 	
 /* As defined in YapAbstractDatabasePrivate.h :
  
-@protected
-	
+@public
+
 	__unsafe_unretained YapAbstractDatabaseConnection *abstractConnection;
+
+	BOOL isReadWriteTransaction;
 */
 }
 
@@ -1033,13 +1035,12 @@
 		[connection->metadataChanges setObject:[YapNull null] forKey:key];
 	}
 	
-	NSDictionary *views = [self views];
-	NSLog(@"views: %@", views);
-	
-	for (YapAbstractDatabaseViewTransaction *view in [views objectEnumerator])
-	{
-		[(id <YapAbstractDatabaseViewKeyValueTransaction>)view handleSetObject:object forKey:key withMetadata:metadata];
-	}
+	[[self views] enumerateKeysAndObjectsUsingBlock:^(id viewNameObj, id viewTransactionObj, BOOL *stop) {
+		
+		__unsafe_unretained id <YapAbstractDatabaseViewKeyValueTransaction> viewTransaction = viewTransactionObj;
+		
+		[viewTransaction handleSetObject:object forKey:key withMetadata:metadata];
+	}];
 }
 
 #pragma mark Metadata
@@ -1089,10 +1090,12 @@
 			[connection->metadataChanges setObject:[YapNull null] forKey:key];
 		}
 		
-		for (YapAbstractDatabaseViewTransaction *view in [[self views] objectEnumerator])
-		{
-			[(id <YapAbstractDatabaseViewKeyValueTransaction>)view handleSetMetadata:metadata forKey:key];
-		}
+		[[self views] enumerateKeysAndObjectsUsingBlock:^(id viewNameObj, id viewTransactionObj, BOOL *stop) {
+			
+			__unsafe_unretained id <YapAbstractDatabaseViewKeyValueTransaction> viewTransaction = viewTransactionObj;
+			
+			[viewTransaction handleSetMetadata:metadata forKey:key];
+		}];
 	}
 }
 
@@ -1135,10 +1138,12 @@
 		[connection->metadataChanges removeObjectForKey:key];
 		[connection->removedKeys addObject:key];
 		
-		for (YapAbstractDatabaseViewTransaction *view in [[self views] objectEnumerator])
-		{
-			[(id <YapAbstractDatabaseViewKeyValueTransaction>)view handleRemoveObjectForKey:key];
-		}
+		[[self views] enumerateKeysAndObjectsUsingBlock:^(id viewNameObj, id viewTransactionObj, BOOL *stop) {
+			
+			__unsafe_unretained id <YapAbstractDatabaseViewKeyValueTransaction> viewTransaction = viewTransactionObj;
+			
+			[viewTransaction handleRemoveObjectForKey:key];
+		}];
 	}
 }
 
@@ -1223,10 +1228,12 @@
 	[connection->metadataChanges removeObjectsForKeys:keys];
 	[connection->removedKeys addObjectsFromArray:keys];
 	
-	for (YapAbstractDatabaseViewTransaction *view in [[self views] objectEnumerator])
-	{
-		[(id <YapAbstractDatabaseViewKeyValueTransaction>)view handleRemoveObjectsForKeys:keys];
-	}
+	[[self views] enumerateKeysAndObjectsUsingBlock:^(id viewNameObj, id viewTransactionObj, BOOL *stop) {
+		
+		__unsafe_unretained id <YapAbstractDatabaseViewKeyValueTransaction> viewTransaction = viewTransactionObj;
+		
+		[viewTransaction handleRemoveObjectsForKeys:keys];
+	}];
 }
 
 - (void)removeAllObjects
@@ -1254,10 +1261,12 @@
 	[connection->removedKeys removeAllObjects];
 	connection->allKeysRemoved = YES;
 	
-	for (YapAbstractDatabaseViewTransaction *view in [[self views] objectEnumerator])
-	{
-		[(id <YapAbstractDatabaseViewKeyValueTransaction>)view handleRemoveAllObjects];
-	}
+	[[self views] enumerateKeysAndObjectsUsingBlock:^(id viewNameObj, id viewTransactionObj, BOOL *stop) {
+		
+		__unsafe_unretained id <YapAbstractDatabaseViewKeyValueTransaction> viewTransaction = viewTransactionObj;
+		
+		[viewTransaction handleRemoveAllObjects];
+	}];
 }
 
 #pragma mark Views

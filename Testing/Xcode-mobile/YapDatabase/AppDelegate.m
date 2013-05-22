@@ -10,6 +10,7 @@
 
 #import "DDLog.h"
 #import "DDTTYLogger.h"
+#import "YapDatabaseLogging.h"
 
 
 @implementation AppDelegate
@@ -22,6 +23,12 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 	[DDLog addLogger:[DDTTYLogger sharedInstance]];
+	
+	[[DDTTYLogger sharedInstance] setColorsEnabled:YES];
+	[[DDTTYLogger sharedInstance] setForegroundColor:[UIColor darkGrayColor]
+	                                 backgroundColor:nil
+	                                         forFlag:YDB_LOG_FLAG_TRACE
+	                                         context:YDBLogContext];
 	
 	dispatch_async(dispatch_get_main_queue(), ^(void){
 		
@@ -74,10 +81,10 @@
 	
 	sortingBlock = ^(NSString *group, NSString *key1, id obj1, NSString *key2, id obj2){
 		
-		TestObject *object1 = (TestObject *)obj1;
-		TestObject *object2 = (TestObject *)obj2;
+		NSString *object1 = (NSString *)obj1;
+		NSString *object2 = (NSString *)obj2;
 		
-		return [object1.string1 compare:object2.string1];
+		return [object1 compare:object2];
 	};
 	
 	databaseView = [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
@@ -85,28 +92,42 @@
 	                                                 sortingBlock:sortingBlock
 	                                             sortingBlockType:YapDatabaseViewBlockTypeWithObject];
 	
-	[database registerView:databaseView withName:@"view"];
+	[database registerView:databaseView withName:@"test"];
+	
+	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		(void)[transaction view:@"test"];
+	}];
 	
 	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
 		NSLog(@"setObject:forKey: 1");
-		[transaction setObject:@"objectA" forKey:@"key1"];
+		[transaction setObject:@"object1" forKey:@"key1"];
 		
-//		NSLog(@"setObject:forKey: 2");
-//		[transaction setObject:@"objectA" forKey:@"key2"];
+		NSLog(@"setObject:forKey: 2");
+		[transaction setObject:@"object2" forKey:@"key2"];
 		
-//		NSLog(@"setObject:forKey: 3");
-//		[transaction setObject:@"objectA" forKey:@"key2"];
+		NSLog(@"setObject:forKey: 3");
+		[transaction setObject:@"object3" forKey:@"key3"];
+	}];
+	
+	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-//		NSLog(@"setObject:forKey: 1");
-//		[transaction setObject:@"objectB" forKey:@"key1"];
-		
+		NSLog(@"setObject:forKey: 1");
+		[transaction setObject:@"Z-object1" forKey:@"key1"];
+	}];
+	
+//	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+//		
 //		NSLog(@"removeObjectForKey: 2");
 //		[transaction removeObjectForKey:@"key2"];
-		
+//	}];
+	
+//	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+//		
 //		NSLog(@"removeAllObjects");
 //		[transaction removeAllObjects];
-	}];
+//	}];
 }
 
 @end

@@ -68,10 +68,8 @@
 		connectionQueue = dispatch_queue_create("YapDatabaseConnection", NULL);
 		
 		IsOnConnectionQueueKey = &IsOnConnectionQueueKey;
-		void *nonNullUnusedPointer = (__bridge void *)self;
-		dispatch_queue_set_specific(connectionQueue, IsOnConnectionQueueKey, nonNullUnusedPointer, NULL);
+		dispatch_queue_set_specific(connectionQueue, IsOnConnectionQueueKey, IsOnConnectionQueueKey, NULL);
 		
-		dirtyViews = YES;
 		views = [[NSMutableDictionary alloc] init];
 		
 		objectCacheLimit = DEFAULT_OBJECT_CACHE_LIMIT;
@@ -121,7 +119,7 @@
 
 /**
  * This method will be invoked before any other method.
- * It is invoked on the connectionQueue, as well as the snapshotQueue of the parent database.
+ * It is invoked on our connectionQueue.
  * It can be used to do any setup that may be needed.
  * 
  * Subclasses may override this method if needed.
@@ -129,8 +127,13 @@
 **/
 - (void)prepare
 {
-	cacheSnapshot = [database snapshot];
-	registeredViews = [database registeredViews];
+	dispatch_sync(database->snapshotQueue, ^{
+		
+		cacheSnapshot = [database snapshot];
+		registeredViews = [database registeredViews];
+		
+		dirtyViews = [registeredViews count] > 0;
+	});
 }
 
 - (void)dealloc
@@ -393,9 +396,6 @@
 - (NSDictionary *)views
 {
 	// This method is INTERNAL
-	
-	NSAssert(dispatch_get_specific(IsOnConnectionQueueKey) ||
-	         dispatch_get_specific(database->IsOnSnapshotQueueKey), @"Must be invoked within connectionQueue");
 	
 	if (dirtyViews)
 	{
@@ -1007,6 +1007,13 @@
 	// Reset read-write transaction variables.
 	
 	rollback = NO;
+	
+	// Pre-Write-Transaction: Step 5 of 5
+	//
+	// Add IsOnConnectionQueueKey flag to writeQueue.
+	// This allows various methods that depend on the flag to operate correctly.
+	
+	dispatch_queue_set_specific(database->writeQueue, IsOnConnectionQueueKey, IsOnConnectionQueueKey, NULL);
 }
 
 /**
@@ -1043,7 +1050,7 @@
 		
 		// Rollback-Write-Transaction: Step 3 of 3
 		//
-		// Reset any in-memory variable which may be out-of-sync with the database.
+		// Reset any in-memory variables which may be out-of-sync with the database.
 		
 		[self postRollbackCleanup];
 		
@@ -1200,6 +1207,12 @@
 		
 		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-write transaction.", self);
 	}});
+	
+	// Post-Write-Transaction: Step 7 of 7
+	//
+	// Drop IsOnConnectionQueueKey flag from writeQueue since we're exiting writeQueue.
+	
+	dispatch_queue_set_specific(database->writeQueue, IsOnConnectionQueueKey, NULL, NULL);
 }
 
 /**
@@ -1361,6 +1374,14 @@
 {
 	[objectCache removeAllObjects];
 	[metadataCache removeAllObjects];
+	
+	// Use existing views (views ivar, not [self views]).
+	// There's no need to create any new viewConnections at this point.
+	
+	[views enumerateKeysAndObjectsUsingBlock:^(id viewNameObj, id viewConnectionObj, BOOL *stop) {
+		
+		[(YapAbstractDatabaseViewConnection *)viewConnectionObj postRollbackCleanup];
+	}];
 }
 
 /**
@@ -1372,12 +1393,42 @@
  * If changes have been made, it should return a changeset dictionary.
  * If no changes have been made, it should return nil.
  * 
+ * Subclasses must first invoke [super changeset] in order to get the changeset(s) from the view(s).
+ * 
  * @see processChangeset:
 **/
 - (NSMutableDictionary *)changeset
 {
-	NSAssert(NO, @"Missing required override method in subclass");
-	return nil;
+	// Use existing views (views ivar, not [self views]).
+	// There's no need to create any new viewConnections at this point.
+	
+	__block NSMutableDictionary *changeset_views = nil;
+	
+	[views enumerateKeysAndObjectsUsingBlock:^(id viewName, id viewConnectionObj, BOOL *stop) {
+		
+		__unsafe_unretained YapAbstractDatabaseViewConnection *viewConnection = viewConnectionObj;
+		
+		NSMutableDictionary *viewChangeset = [viewConnection changeset];
+		if (viewChangeset)
+		{
+			if (changeset_views == nil)
+				changeset_views = [NSMutableDictionary dictionaryWithCapacity:[views count]];
+			
+			[changeset_views setObject:viewChangeset forKey:viewName];
+		}
+	}];
+	
+	if (changeset_views)
+	{
+		NSMutableDictionary *changeset = [NSMutableDictionary dictionaryWithCapacity:8];
+		[changeset setObject:changeset_views forKey:@"views"];
+		
+		return changeset;
+	}
+	else
+	{
+		return nil;
+	}
 }
 
 /**
@@ -1386,11 +1437,30 @@
  * This method is invoked with the changeset from a sibling connection.
  * The connection should update any in-memory components (such as the cache) to properly reflect the changeset.
  * 
+ * Subclasses must invoke [super processChangeset:changeset] in order to propogate the changeset(s) to the view(s).
+ *
  * @see changeset
 **/
 - (void)processChangeset:(NSDictionary *)changeset
 {
-	NSAssert(NO, @"Missing required override method in subclass");
+	NSDictionary *changeset_views = [changeset objectForKey:@"views"];
+	
+	if ([changeset_views count] == 0)
+		return;
+	
+	// Use existing views (views ivar, not [self views]).
+	// There's no need to create any new viewConnections at this point.
+	
+	[views enumerateKeysAndObjectsUsingBlock:^(id viewName, id viewConnectionObj, BOOL *stop) {
+		
+		NSDictionary *changeset_views_viewName = [changeset_views objectForKey:viewName];
+		if (changeset_views_viewName)
+		{
+			__unsafe_unretained YapAbstractDatabaseViewConnection *viewConnection = viewConnectionObj;
+			
+			[viewConnection processChangeset:changeset_views_viewName];
+		}
+	}];
 }
 
 /**

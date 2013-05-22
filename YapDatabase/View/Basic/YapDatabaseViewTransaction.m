@@ -18,7 +18,7 @@
  * See YapDatabaseLogging.h for more information.
 **/
 #if DEBUG
-  static const int ydbFileLogLevel = YDB_LOG_LEVEL_INFO;
+  static const int ydbFileLogLevel = YDB_LOG_LEVEL_VERBOSE | YDB_LOG_FLAG_TRACE;
 #else
   static const int ydbFileLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
@@ -75,7 +75,7 @@
 	sqlite3 *db = databaseTransaction->abstractConnection->db;
 	
 	NSString *string = [NSString stringWithFormat:
-	    @"SELECT \"pagKey\", \"metadata\" FROM \"%@\" ;", [view pageTableName]];
+	    @"SELECT \"pageKey\", \"metadata\" FROM \"%@\" ;", [view pageTableName]];
 	
 	sqlite3_stmt *statement;
 	
@@ -110,8 +110,12 @@
 	NSMutableDictionary *groupPageDict = [[NSMutableDictionary alloc] init];
 	NSMutableDictionary *groupOrderDict = [[NSMutableDictionary alloc] init];
 	
+	unsigned int stepCount = 0;
+	
 	while (sqlite3_step(statement) == SQLITE_ROW)
 	{
+		stepCount++;
+		
 		const unsigned char *text = sqlite3_column_text(statement, 0);
 		int textSize = sqlite3_column_bytes(statement, 0);
 		
@@ -157,6 +161,11 @@
 					   THIS_METHOD, [self registeredViewName], [metadata class]);
 		}
 	}
+	
+	YDBLogVerbose(@"Processing %u items from %@...", stepCount, [view pageTableName]);
+	
+	YDBLogVerbose(@"groupPageDict: %@", groupPageDict);
+	YDBLogVerbose(@"groupOrderDict: %@", groupOrderDict);
 	
 	__block BOOL error = ((status != SQLITE_OK) && (status != SQLITE_DONE));
 	
@@ -230,8 +239,8 @@
 	
 	if (error)
 	{
-		// The isOpen method of YapDatabaseViewConnection inspects sectionPagesDict.
-		// So if there was an error opening the view, we need to reset this variable to nil.
+		// If there was an error opening the view, we need to reset the ivars to nil.
+		// These are checked at the beginning of this method as a shortcut.
 		
 		viewConnection->groupPagesDict = nil;
 		viewConnection->pageKeyGroupDict = nil;
@@ -284,8 +293,17 @@
 
 - (NSString *)registeredViewName
 {
-	YapAbstractDatabaseView *view = abstractViewConnection->abstractView;
-	return view.registeredName;
+	return [abstractViewConnection->abstractView registeredName];
+}
+
+- (NSString *)keyTableName
+{
+	return [(YapDatabaseView *)(abstractViewConnection->abstractView) keyTableName];
+}
+
+- (NSString *)pageTableName
+{
+	return [(YapDatabaseView *)(abstractViewConnection->abstractView) pageTableName];
 }
 
 - (NSData *)serializePage:(NSMutableArray *)page
@@ -298,7 +316,10 @@
 
 - (NSMutableArray *)deserializePage:(NSData *)data
 {
-	return [NSPropertyListSerialization propertyListWithData:data options:0 format:nil error:nil];
+	return [NSPropertyListSerialization propertyListWithData:data
+	                                                 options:NSPropertyListMutableContainers
+	                                                  format:nil
+	                                                   error:nil];
 }
 
 - (NSData *)serializeMetadata:(YapDatabaseViewPageMetadata *)metadata
@@ -436,7 +457,7 @@
 		NSUInteger capacity = 50 + (numHostParams * 3);
 		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 		
-		[query appendFormat:@"SELECT \"key\", \"pagKey\", FROM \"%@\" WHERE \"key\" IN (", [view pageTableName]];
+		[query appendFormat:@"SELECT \"key\", \"pageKey\", FROM \"%@\" WHERE \"key\" IN (", [view pageTableName]];
 		
 		NSUInteger i;
 		for (i = 0; i < numHostParams; i++)
@@ -601,37 +622,18 @@
 	
 	NSMutableArray *page = [self pageForPageKey:pageKey];
 	
-	NSUInteger index = [page indexOfObject:key];
-	if (index == NSNotFound)
+	NSUInteger keyIndex = [page indexOfObject:key];
+	if (keyIndex == NSNotFound)
 	{
 		YDBLogError(@"%@ (%@): Key(%@) expected to be in page(%@), but is missing",
 		            THIS_METHOD, [self registeredViewName], key, pageKey);
 		return;
 	}
 	
-	YDBLogVerbose(@"Removing key(%@) from page(%@) at index(%lu)", key, page, (unsigned long)index);
+	YDBLogVerbose(@"Removing key(%@) from page(%@) at index(%lu)", key, page, (unsigned long)keyIndex);
 	
-	[page removeObjectAtIndex:index];
+	[page removeObjectAtIndex:keyIndex];
 	NSUInteger pageCount = [page count];
-	
-	if (pageCount > 0)
-	{
-		// Mark page as dirty
-		
-		YDBLogVerbose(@"Dirty page(%@)", pageKey);
-		
-		[viewConnection->dirtyPages setObject:page forKey:pageKey];
-		[viewConnection->pageCache removeObjectForKey:pageKey];
-	}
-	else
-	{
-		// Drop page
-		
-		YDBLogVerbose(@"Dropping empty page(%@)", pageKey);
-		
-		[viewConnection->dirtyPages setObject:[NSNull null] forKey:pageKey];
-		[viewConnection->pageCache removeObjectForKey:pageKey];
-	}
 	
 	// Update page metadata (by decrementing count)
 	
@@ -653,22 +655,44 @@
 	
 	pageMetadata->count = pageCount;
 	
+	// Mark page as dirty, or drop page
+	
 	if (pageCount > 0)
 	{
+		YDBLogVerbose(@"Dirty page(%@)", pageKey);
+		
+		// Mark page as dirty
+		
+		[viewConnection->dirtyPages setObject:page forKey:pageKey];
+		[viewConnection->pageCache removeObjectForKey:pageKey];
+		
 		// Mark page metadata as dirty
 		
 		[viewConnection->dirtyMetadata setObject:pageMetadata forKey:pageKey];
 	}
 	else
 	{
-		// Drop page metadata
+		YDBLogVerbose(@"Dropping empty page(%@)", pageKey);
+		
+		// Drop page
 		
 		[pages removeObjectAtIndex:pageIndex];
+		[viewConnection->pageKeyGroupDict removeObjectForKey:pageKey];
+		
+		// Mark page as dropped
+		
+		[viewConnection->dirtyPages setObject:[NSNull null] forKey:pageKey];
+		[viewConnection->pageCache removeObjectForKey:pageKey];
+		
+		// Mark page metadata as dropped
+		
 		[viewConnection->dirtyMetadata setObject:[NSNull null] forKey:pageKey];
+		
+		// Update page metadata linked-list pointers
 		
 		if (pageIndex > 0)
 		{
-			// Update linked-list pointers. E.g.:
+			// In pseudo-code:
 			//
 			// link->prev->next = link->next (except we only use next pointers)
 			
@@ -677,7 +701,10 @@
 			
 			[viewConnection->dirtyMetadata setObject:prevPageMetadata forKey:prevPageMetadata->pageKey];
 		}
-		else if ([pages count] == 0)
+		
+		// Maybe drop group
+		
+		if ([pages count] == 0)
 		{
 			YDBLogVerbose(@"Dropping empty group(%@)", group);
 			
@@ -721,48 +748,29 @@
 	
 	NSMutableArray *page = [self pageForPageKey:pageKey];
 	
-	NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSet];
-	NSUInteger index = 0;
+	NSMutableIndexSet *keyIndexSet = [NSMutableIndexSet indexSet];
+	NSUInteger keyIndex = 0;
 	
 	for (NSString *key in page)
 	{
 		if ([keys containsObject:key])
 		{
-			[indexSet addIndex:index];
+			[keyIndexSet addIndex:keyIndex];
 		}
 		
-		index++;
+		keyIndex++;
 	}
 	
-	if ([indexSet count] != [keys count])
+	if ([keyIndexSet count] != [keys count])
 	{
 		YDBLogWarn(@"%@ (%@): Keys expected to be in page(%@), but are missing",
 		           THIS_METHOD, [self registeredViewName], pageKey);
 	}
 	
-	YDBLogVerbose(@"Removing %lu key(s) from page(%@)", (unsigned long)[indexSet count], page);
+	YDBLogVerbose(@"Removing %lu key(s) from page(%@)", (unsigned long)[keyIndexSet count], page);
 	
-	[page removeObjectsAtIndexes:indexSet];
+	[page removeObjectsAtIndexes:keyIndexSet];
 	NSUInteger pageCount = [page count];
-	
-	if (pageCount > 0)
-	{
-		// Mark page as dirty
-		
-		YDBLogVerbose(@"Dirty page(%@)", pageKey);
-		
-		[viewConnection->dirtyPages setObject:page forKey:pageKey];
-		[viewConnection->pageCache removeObjectForKey:pageKey];
-	}
-	else
-	{
-		// Drop page
-		
-		YDBLogVerbose(@"Dropping empty page(%@)", pageKey);
-		
-		[viewConnection->dirtyPages setObject:[NSNull null] forKey:pageKey];
-		[viewConnection->pageCache removeObjectForKey:pageKey];
-	}
 	
 	// Update page metadata (by decrementing count)
 	
@@ -784,22 +792,44 @@
 	
 	pageMetadata->count = pageCount;
 	
+	// Mark page as dirty, or drop page
+	
 	if (pageCount > 0)
 	{
+		YDBLogVerbose(@"Dirty page(%@)", pageKey);
+		
+		// Mark page as dirty
+		
+		[viewConnection->dirtyPages setObject:page forKey:pageKey];
+		[viewConnection->pageCache removeObjectForKey:pageKey];
+		
 		// Mark page metadata as dirty
 		
 		[viewConnection->dirtyMetadata setObject:pageMetadata forKey:pageKey];
 	}
 	else
 	{
-		// Drop page metadata
+		YDBLogVerbose(@"Dropping empty page(%@)", pageKey);
+		
+		// Drop page
 		
 		[pages removeObjectAtIndex:pageMetadataIndex];
+		[viewConnection->pageKeyGroupDict removeObjectForKey:pageKey];
+		
+		// Mark page as dropped
+		
+		[viewConnection->dirtyPages setObject:[NSNull null] forKey:pageKey];
+		[viewConnection->pageCache removeObjectForKey:pageKey];
+		
+		// Mark page metadata as dropped
+		
 		[viewConnection->dirtyMetadata setObject:[NSNull null] forKey:pageKey];
+		
+		// Update page metadata linked-list pointers
 		
 		if (pageMetadataIndex > 0)
 		{
-			// Update linked-list pointers. E.g.:
+			// In pseudo-code:
 			//
 			// link->prev->next = link->next (except we only use next pointers)
 			
@@ -808,7 +838,10 @@
 			
 			[viewConnection->dirtyMetadata setObject:prevPageMetadata forKey:prevPageMetadata->pageKey];
 		}
-		else if ([pages count] == 0)
+		
+		// Maybe drop group
+		
+		if ([pages count] == 0)
 		{
 			YDBLogVerbose(@"Dropping empty group(%@)", group);
 			
@@ -906,19 +939,27 @@
 	NSMutableArray *pages = [viewConnection->groupPagesDict objectForKey:group];
 	
 	NSUInteger pageOffset = 0;
+	NSUInteger pageIndex = 0;
+	NSUInteger lastPageIndex = [pages count] - 1;
+	
 	for (YapDatabaseViewPageMetadata *currentPageMetadata in pages)
 	{
-		if (index < (pageOffset + pageMetadata->count))
+		// Edge case: key is being inserted at the very end.
+		//
+		// index == numberOfKeysInTheEntireGroup
+		
+		if ((index < (pageOffset + currentPageMetadata->count)) || (pageIndex == lastPageIndex))
 		{
 			pageMetadata = currentPageMetadata;
-			pageKey = pageMetadata->pageKey;
+			pageKey = currentPageMetadata->pageKey;
 			break;
 		}
 		
-		pageOffset += pageMetadata->count;
+		pageIndex++;
+		pageOffset += currentPageMetadata->count;
 	}
 	
-	YDBLogVerbose(@"Inserting key(%@) in group(%@:%lu), page(%@:%lu)",
+	YDBLogVerbose(@"Inserting key(%@) in group(%@) at index(%lu) with page(%@) pageOffset(%lu)",
 	              key, group, (unsigned long)index, pageKey, (unsigned long)(index - pageOffset));
 	
 	// Update page
@@ -939,6 +980,7 @@
 	// Mark key for insertion
 	
 	[viewConnection->dirtyKeys setObject:pageKey forKey:key];
+	[viewConnection->keyCache removeObjectForKey:key];
 }
 
 /**
@@ -987,7 +1029,7 @@
 		
 		NSString *pageKey = [self generatePageKey];
 		
-		YDBLogVerbose(@"Inserting key(%@) in new group(%@), page(%@)", key, group, pageKey);
+		YDBLogVerbose(@"Inserting key(%@) in new group(%@) with page(%@)", key, group, pageKey);
 		
 		YapDatabaseViewPageMetadata *pageMetadata = [[YapDatabaseViewPageMetadata alloc] init];
 		pageMetadata->pageKey = pageKey;
@@ -1089,9 +1131,23 @@
 		if (tryExistingIndexInGroup)
 		{
 			NSMutableArray *existingPage = [self pageForPageKey:existingPageKey];
-			NSUInteger existingIndex = [existingPage indexOfObject:key];
 			
-			BOOL useExistingIndexInGroup = NO;
+			NSUInteger existingPageOffset = 0;
+			for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataInGroup)
+			{
+				if ([pageMetadata->pageKey isEqualToString:existingPageKey])
+					break;
+				else
+					existingPageOffset += pageMetadata->count;
+			}
+			
+			NSUInteger existingIndex = existingPageOffset + [existingPage indexOfObject:key];
+			
+			// Edge case: existing key is the only key in the group
+			//
+			// (existingIndex == 0) && (count == 1)
+			
+			BOOL useExistingIndexInGroup = YES;
 			
 			if (existingIndex > 0)
 			{
@@ -1434,6 +1490,10 @@
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
 	    (YapDatabaseViewConnection *)abstractViewConnection;
 	
+	YDBLogVerbose(@"viewConnection->dirtyPages: %@", viewConnection->dirtyPages);
+	YDBLogVerbose(@"viewConnection->dirtyMetadata: %@", viewConnection->dirtyMetadata);
+	YDBLogVerbose(@"viewConnection->dirtyKeys: %@", viewConnection->dirtyKeys);
+	
 	// Write dirty pages to table (along with associated dirty metadata)
 	
 	[viewConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
@@ -1460,6 +1520,9 @@
 			
 			// DELETE FROM "pageTableName" WHERE "pageKey" = ?;
 			
+			YDBLogVerbose(@"DELETE FROM '%@' WHERE 'pageKey' = ?;\n"
+			              @" - pageKey: %@", [self pageTableName], pageKey);
+			
 			YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
 			sqlite3_bind_text(statement, 1, _pageKey.str, _pageKey.length, SQLITE_STATIC);
 			
@@ -1485,6 +1548,11 @@
 			}
 			
 			// INSERT OR REPLACE INTO "pageTableName" ("pageKey", "data", "metadata") VALUES (?, ?, ?);
+			
+			YDBLogVerbose(@"INSERT OR REPLACE INTO '%@' ('pageKey', 'data', 'metadata) VALUES (?, ?, ?);\n"
+			              @" - pageKey : %@\n"
+			              @" - data    : %@\n"
+			              @" - metadata: %@", [self pageTableName], pageKey, page, pageMetadata);
 			
 			YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
 			sqlite3_bind_text(statement, 1, _pageKey.str, _pageKey.length, SQLITE_STATIC);
@@ -1543,6 +1611,10 @@
 			
 			// UPDATE "pageTableName" SET "metadata" = ? WHERE "pageKey" = ?;
 			
+			YDBLogVerbose(@"UPDATE '%@' SET 'metadata' = ? WHERE 'pageKey' = ?;\n"
+			              @" - metadata: %@\n"
+			              @" - pageKey : %@", [self pageTableName], pageMetadata, pageKey);
+			
 			__attribute__((objc_precise_lifetime)) NSData *rawMeta = [self serializeMetadata:pageMetadata];
 			sqlite3_bind_blob(statement, 1, rawMeta.bytes, rawMeta.length, SQLITE_STATIC);
 			
@@ -1583,6 +1655,9 @@
 			
 			// DELETE FROM "keyTableName" WHERE "key" = ?;
 			
+			YDBLogVerbose(@"DELETE FROM '%@' WHERE 'key' = ?;\n"
+			              @" - key : %@", [self keyTableName], key);
+			
 			YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
 			sqlite3_bind_text(statement, 1, _key.str, _key.length, SQLITE_STATIC);
 			
@@ -1609,11 +1684,15 @@
 			
 			// INSERT OR REPLACE INTO "keyTableName" ("key", "pageKey") VALUES (?, ?);
 			
+			YDBLogVerbose(@"INSERT OR REPLACE INTO '%@' ('key', 'pageKey') VALUES (?, ?);\n"
+			              @" - key    : %@\n"
+			              @" - pageKey: %@", [self keyTableName], key, pageKey);
+			
 			YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
 			sqlite3_bind_text(statement, 1, _key.str, _key.length, SQLITE_STATIC);
 			
 			YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
-			sqlite3_bind_text(statement, 1, _pageKey.str, _pageKey.length, SQLITE_STATIC);
+			sqlite3_bind_text(statement, 2, _pageKey.str, _pageKey.length, SQLITE_STATIC);
 			
 			int status = sqlite3_step(statement);
 			if (status != SQLITE_DONE)
@@ -1628,6 +1707,10 @@
 			FreeYapDatabaseString(&_key);
 		}
 	}];
+	
+	[viewConnection->dirtyPages removeAllObjects];
+	[viewConnection->dirtyMetadata removeAllObjects];
+	[viewConnection->dirtyKeys removeAllObjects];
 	
 	[super commitTransaction];
 }

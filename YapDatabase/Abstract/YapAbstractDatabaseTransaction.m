@@ -48,6 +48,14 @@
 
 - (void)commitTransaction
 {
+	if (isReadWriteTransaction)
+	{
+		[views enumerateKeysAndObjectsUsingBlock:^(id viewNameObj, id viewTransactionObj, BOOL *stop) {
+			
+			[(YapAbstractDatabaseViewTransaction *)viewTransactionObj commitTransaction];
+		}];
+	}
+	
 	sqlite3_stmt *statement = [abstractConnection commitTransactionStatement];
 	if (statement == NULL) return;
 	
@@ -111,6 +119,9 @@
 **/
 - (id)view:(NSString *)viewName
 {
+	if (viewsReady)
+		return [views objectForKey:viewName];
+	
 	if (views == nil)
 		views = [[NSMutableDictionary alloc] init];
 	
@@ -140,21 +151,22 @@
 
 - (NSDictionary *)views
 {
+	if (viewsReady)
+		return views;
+	
 	if (views == nil)
 		views = [[NSMutableDictionary alloc] init];
-		
+	
 	NSDictionary *viewConnections = [abstractConnection views];
-	NSLog(@"viewConnections: %@", viewConnections);
 	
 	[viewConnections enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 		
-		NSString *viewName = (NSString *)key;
-		YapAbstractDatabaseViewTransaction *viewTransaction = [views objectForKey:viewName];
+		__unsafe_unretained NSString *viewName = key;
+		__unsafe_unretained YapAbstractDatabaseViewConnection *viewConnection = obj;
 		
+		YapAbstractDatabaseViewTransaction *viewTransaction = [views objectForKey:viewName];
 		if (viewTransaction == nil)
 		{
-			YapAbstractDatabaseViewConnection *viewConnection = (YapAbstractDatabaseViewConnection *)obj;
-			
 			viewTransaction = [viewConnection newTransaction:self];
 			if ([viewTransaction prepareIfNeeded])
 			{
@@ -167,6 +179,7 @@
 		}
 	}];
 	
+	viewsReady = YES;
 	return views;
 }
 

@@ -536,9 +536,18 @@
 **/
 - (NSMutableDictionary *)changeset
 {
-	if ([objectChanges count] > 0 || [metadataChanges count] > 0 || allKeysRemoved)
+	NSMutableDictionary *changeset = [super changeset];
+	
+	// Reserved keys:
+	//
+	// - views
+	// - viewNames
+	// - snapshot
+	
+	if ([objectChanges count] > 0 || [metadataChanges count] > 0 || [removedKeys count] > 0 ||allKeysRemoved)
 	{
-		NSMutableDictionary *changeset = [NSMutableDictionary dictionaryWithCapacity:5];
+		if (changeset == nil)
+			changeset = [NSMutableDictionary dictionaryWithCapacity:5]; // +1 for snapshot
 		
 		if ([objectChanges count] > 0)
 			[changeset setObject:objectChanges forKey:@"objectChanges"];
@@ -551,13 +560,9 @@
 		
 		if (allKeysRemoved)
 			[changeset setObject:@(YES) forKey:@"allKeysRemoved"];
-		
-		return changeset;
 	}
-	else
-	{
-		return nil;
-	}
+	
+	return changeset;
 }
 
 /**
