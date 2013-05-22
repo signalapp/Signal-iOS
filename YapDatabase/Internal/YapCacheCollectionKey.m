@@ -1,4 +1,4 @@
-#import "YapCacheMultiKey.h"
+#import "YapCacheCollectionKey.h"
 
 
 /**
@@ -166,55 +166,6 @@ static NSUInteger YDB_MurmurHash(NSUInteger hash1, NSUInteger hash2)
 - (NSString *)description
 {
 	return [NSString stringWithFormat:@"<YapCacheCollectionKey[%p] collection(%@) key(%@)>", self, collection, key];
-}
-
-@end
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-@implementation YapCacheSectionKey
-
-@synthesize section;
-@synthesize key;
-
-- (id)initWithSection:(NSUInteger)aSection key:(NSString *)aKey
-{
-	if ((self = [super init]))
-	{
-		section = aSection;
-		key = [aKey copy]; 
-	}
-	return self;
-}
-
-- (id)copyWithZone:(NSZone *)zone
-{
-	return self; // Immutable
-}
-
-- (BOOL)isEqual:(id)obj
-{
-	if ([obj isMemberOfClass:[YapCacheSectionKey class]])
-	{
-		YapCacheSectionKey *sk = (YapCacheSectionKey *)obj;
-		
-		return (section == sk->section) && [key isEqualToString:sk->key];
-	}
-	
-	return NO;
-}
-
-- (NSUInteger)hash
-{
-	return YDB_MurmurHash(section, [key hash]);
-}
-
-- (NSString *)description
-{
-	return [NSString stringWithFormat:@"<YapCacheSectionKey[%p] section(%lu) key(%@)>",
-	                                                        self, (unsigned long)section, key];
 }
 
 @end

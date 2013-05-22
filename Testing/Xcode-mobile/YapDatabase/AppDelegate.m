@@ -25,7 +25,7 @@
 	[DDLog addLogger:[DDTTYLogger sharedInstance]];
 	
 	[[DDTTYLogger sharedInstance] setColorsEnabled:YES];
-	[[DDTTYLogger sharedInstance] setForegroundColor:[UIColor darkGrayColor]
+	[[DDTTYLogger sharedInstance] setForegroundColor:[UIColor grayColor]
 	                                 backgroundColor:nil
 	                                         forFlag:YDB_LOG_FLAG_TRACE
 	                                         context:YDBLogContext];
@@ -114,20 +114,20 @@
 	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
 		NSLog(@"setObject:forKey: 1");
-		[transaction setObject:@"Z-object1" forKey:@"key1"];
+		[transaction setObject:@"z-object1" forKey:@"key1"];
 	}];
 	
-//	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-//		
-//		NSLog(@"removeObjectForKey: 2");
-//		[transaction removeObjectForKey:@"key2"];
-//	}];
+	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		NSLog(@"removeObjectForKey: 2");
+		[transaction removeObjectForKey:@"key2"];
+	}];
 	
-//	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-//		
-//		NSLog(@"removeAllObjects");
-//		[transaction removeAllObjects];
-//	}];
+	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		NSLog(@"removeAllObjects");
+		[transaction removeAllObjects];
+	}];
 }
 
 @end

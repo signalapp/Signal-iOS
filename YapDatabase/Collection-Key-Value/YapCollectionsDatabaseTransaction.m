@@ -3,7 +3,7 @@
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
 #import "YapCache.h"
-#import "YapCacheMultiKey.h"
+#import "YapCacheCollectionKey.h"
 #import "YapNull.h"
 
 #if ! __has_feature(objc_arc)

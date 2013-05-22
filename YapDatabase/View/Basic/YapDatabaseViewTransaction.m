@@ -5,7 +5,6 @@
 #import "YapAbstractDatabasePrivate.h"
 #import "YapDatabaseTransaction.h"
 #import "YapCache.h"
-#import "YapCacheMultiKey.h"
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
 
@@ -889,6 +888,10 @@
 	
 	int status;
 	
+	// DELETE FROM "keyTableName";
+	
+	YDBLogVerbose(@"DELETE FROM '%@';", [self keyTableName]);
+	
 	status = sqlite3_step(keyStatement);
 	if (status != SQLITE_DONE)
 	{
@@ -896,6 +899,10 @@
 		            THIS_METHOD, [self registeredViewName],
 		            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
 	}
+	
+	// DELETE FROM 'pageTableName';
+	
+	YDBLogVerbose(@"DELETE FROM '%@';", [self pageTableName]);
 	
 	status = sqlite3_step(pageStatement);
 	if (status != SQLITE_DONE)
@@ -1047,9 +1054,12 @@
 		[viewConnection->pageKeyGroupDict setObject:group forKey:pageKey];
 		
 		[viewConnection->dirtyPages setObject:page forKey:pageKey];
+		[viewConnection->pageCache removeObjectForKey:pageKey];
+		
 		[viewConnection->dirtyMetadata setObject:pageMetadata forKey:pageKey];
 		
 		[viewConnection->dirtyKeys setObject:pageKey forKey:key];
+		[viewConnection->keyCache removeObjectForKey:key];
 	}
 	else
 	{
