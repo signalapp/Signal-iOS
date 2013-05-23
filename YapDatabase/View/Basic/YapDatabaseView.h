@@ -20,7 +20,7 @@ typedef id YapDatabaseViewGroupingBlock; // One of the YapDatabaseViewGroupingX 
 
 typedef NSString* (^YapDatabaseViewGroupingWithObjectBlock)(NSString *key, id object);
 typedef NSString* (^YapDatabaseViewGroupingWithMetadataBlock)(NSString *key, id metadata);
-typedef NSString* (^YapDatabaseViewGroupingWithBothBlock)(NSString *key, id object, id metadata);
+typedef NSString* (^YapDatabaseViewGroupingWithObjectAndMetadataBlock)(NSString *key, id object, id metadata);
 
 typedef id YapDatabaseViewSortingBlock; // One of the YapDatabaseViewSortingX types below.
 
@@ -28,14 +28,14 @@ typedef NSComparisonResult (^YapDatabaseViewSortingWithObjectBlock) \
                  (NSString *group, NSString *key1, id object1, NSString *key2, id object2);
 typedef NSComparisonResult (^YapDatabaseViewSortingWithMetadataBlock) \
                  (NSString *group, NSString *key1, id metadata, NSString *key2, id metadata2);
-typedef NSComparisonResult (^YapDatabaseViewSortingWithBothBlock) \
+typedef NSComparisonResult (^YapDatabaseViewSortingWithObjectAndMetadataBlock) \
                  (NSString *group, NSString *key1, id object1, id metadata1, NSString *key2, id object2, id metadata2);
 
 
 typedef enum {
 	YapDatabaseViewBlockTypeWithObject,
 	YapDatabaseViewBlockTypeWithMetadata,
-	YapDatabaseViewBlockTypeWithBoth
+	YapDatabaseViewBlockTypeWithObjectAndMetadata
 } YapDatabaseViewBlockType;
 
 

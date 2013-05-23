@@ -53,6 +53,13 @@
 		DC3D2F3F1675657C00DFAFAA /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC3D2F3D1675657100DFAFAA /* libsqlite3.dylib */; };
 		DC3D2F4016756E9C00DFAFAA /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCAE51EE1673FE2600395076 /* CoreGraphics.framework */; };
 		DC5BAD82174D4EB500DF9465 /* TestYapDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC5BAD81174D4EB500DF9465 /* TestYapDatabaseView.m */; };
+		DC5BAD83174E748300DF9465 /* YapAbstractDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DCB2146417120F3900719845 /* YapAbstractDatabaseView.m */; };
+		DC5BAD84174E748600DF9465 /* YapAbstractDatabaseViewConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DCB2146617120F3900719845 /* YapAbstractDatabaseViewConnection.m */; };
+		DC5BAD85174E748900DF9465 /* YapAbstractDatabaseViewTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DCB2146917120F3900719845 /* YapAbstractDatabaseViewTransaction.m */; };
+		DC5BAD86174E748C00DF9465 /* YapDatabaseViewPageMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = DCD7AC0A1718DAE500FADF64 /* YapDatabaseViewPageMetadata.m */; };
+		DC5BAD87174E749000DF9465 /* YapDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DCB2146C17120F3900719845 /* YapDatabaseView.m */; };
+		DC5BAD88174E749200DF9465 /* YapDatabaseViewConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DCB2146E17120F3900719845 /* YapDatabaseViewConnection.m */; };
+		DC5BAD89174E749500DF9465 /* YapDatabaseViewTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DCB2147117120F3900719845 /* YapDatabaseViewTransaction.m */; };
 		DC81B6C916921F66006FA74B /* YapAbstractDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC81B6C316921F66006FA74B /* YapAbstractDatabase.m */; };
 		DC81B6CA16921F66006FA74B /* YapAbstractDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC81B6C316921F66006FA74B /* YapAbstractDatabase.m */; };
 		DC81B6CB16921F66006FA74B /* YapAbstractDatabaseConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC81B6C516921F66006FA74B /* YapAbstractDatabaseConnection.m */; };
@@ -349,6 +356,26 @@
 			name = Private;
 			sourceTree = "<group>";
 		};
+		DC5BAD8A174E75B000DF9465 /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				DC3D2F271673FFEC00DFAFAA /* TestYapDatabase.h */,
+				DC3D2F281673FFEC00DFAFAA /* TestYapDatabase.m */,
+				DC24FBED1688047700E855DC /* TestYapCollectionsDatabase.h */,
+				DC24FBEE1688047700E855DC /* TestYapCollectionsDatabase.m */,
+			);
+			name = Database;
+			sourceTree = "<group>";
+		};
+		DC5BAD8B174E75C500DF9465 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				DC5BAD80174D4EB500DF9465 /* TestYapDatabaseView.h */,
+				DC5BAD81174D4EB500DF9465 /* TestYapDatabaseView.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
 		DC99366A1683B52F00348B6C /* Abstract */ = {
 			isa = PBXGroup;
 			children = (
@@ -435,12 +462,8 @@
 			children = (
 				DC3D2F251673FFEC00DFAFAA /* TestObject.h */,
 				DC3D2F261673FFEC00DFAFAA /* TestObject.m */,
-				DC3D2F271673FFEC00DFAFAA /* TestYapDatabase.h */,
-				DC3D2F281673FFEC00DFAFAA /* TestYapDatabase.m */,
-				DC24FBED1688047700E855DC /* TestYapCollectionsDatabase.h */,
-				DC24FBEE1688047700E855DC /* TestYapCollectionsDatabase.m */,
-				DC5BAD80174D4EB500DF9465 /* TestYapDatabaseView.h */,
-				DC5BAD81174D4EB500DF9465 /* TestYapDatabaseView.m */,
+				DC5BAD8A174E75B000DF9465 /* Database */,
+				DC5BAD8B174E75C500DF9465 /* Views */,
 				DCAE52181673FE2600395076 /* Supporting Files */,
 			);
 			name = UnitTests;
@@ -723,6 +746,13 @@
 				DC0B8C0F16EFE5F500896C6C /* YapCacheCollectionKey.m in Sources */,
 				DCF7E11116F5BC6A000C2184 /* YapNull.m in Sources */,
 				DC5BAD82174D4EB500DF9465 /* TestYapDatabaseView.m in Sources */,
+				DC5BAD83174E748300DF9465 /* YapAbstractDatabaseView.m in Sources */,
+				DC5BAD84174E748600DF9465 /* YapAbstractDatabaseViewConnection.m in Sources */,
+				DC5BAD85174E748900DF9465 /* YapAbstractDatabaseViewTransaction.m in Sources */,
+				DC5BAD86174E748C00DF9465 /* YapDatabaseViewPageMetadata.m in Sources */,
+				DC5BAD87174E749000DF9465 /* YapDatabaseView.m in Sources */,
+				DC5BAD88174E749200DF9465 /* YapDatabaseViewConnection.m in Sources */,
+				DC5BAD89174E749500DF9465 /* YapDatabaseViewTransaction.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
