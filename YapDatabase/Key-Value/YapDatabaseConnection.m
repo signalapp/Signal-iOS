@@ -575,6 +575,8 @@
 **/
 - (void)processChangeset:(NSDictionary *)changeset
 {
+	[super processChangeset:changeset];
+	
 	NSDictionary *c_objectChanges = [changeset objectForKey:@"objectChanges"];
 	NSDictionary *c_metadataChanges = [changeset objectForKey:@"metadataChanges"];
 	NSSet *c_removedKeys = [changeset objectForKey:@"removedKeys"];

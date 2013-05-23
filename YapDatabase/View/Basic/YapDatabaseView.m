@@ -26,17 +26,21 @@
                                sqlite:(sqlite3 *)db
                                 error:(NSError **)errorPtr
 {
-	if (![database isKindOfClass:[YapDatabase class]])
-	{
-		if (errorPtr)
-		{
-			NSDictionary *userInfo = @{
-				NSLocalizedDescriptionKey: @"YapDatabaseView only supports YapDatabase, not YapCollectionsDatabase" };
-			
-			*errorPtr = [NSError errorWithDomain:@"YapDatabase" code:501 userInfo:userInfo];
-		}
-		return NO;
-	}
+	NSLog(@"database: %@", database);
+	NSLog(@"? = %@", ([database isKindOfClass:[YapDatabase class]] ? @"YES" : @"NO"));
+	NSLog(@"? = %@", ([database isKindOfClass:[YapAbstractDatabase class]] ? @"YES" : @"NO"));
+	
+//	if (![database isKindOfClass:[YapDatabase class]])
+//	{
+//		if (errorPtr)
+//		{
+//			NSDictionary *userInfo = @{
+//				NSLocalizedDescriptionKey: @"YapDatabaseView only supports YapDatabase, not YapCollectionsDatabase" };
+//			
+//			*errorPtr = [NSError errorWithDomain:@"YapDatabase" code:501 userInfo:userInfo];
+//		}
+//		return NO;
+//	}
 	
 	NSString *keyTableName = [self keyTableNameForRegisteredName:registeredName];
 	NSString *pageTableName = [self pageTableNameForRegisteredName:registeredName];

@@ -1808,22 +1808,6 @@
 	return nil;
 }
 
-- (id)objectAtIndex:(NSUInteger)keyIndex inGroup:(NSString *)group
-{
-	NSString *key = [self keyAtIndex:keyIndex inGroup:group];
-	if (key)
-	{
-		__unsafe_unretained YapDatabaseReadTransaction *transaction =
-		    (YapDatabaseReadTransaction *)databaseTransaction;
-		
-		return [transaction objectForKey:key];
-	}
-	else
-	{
-		return nil;
-	}
-}
-
 - (NSString *)groupForKey:(NSString *)key
 {
 	return [self groupForPageKey:[self pageKeyForKey:key]];
@@ -1882,6 +1866,22 @@
 	if (indexPtr) *indexPtr = index;
 	
 	return found;
+}
+
+- (id)objectAtIndex:(NSUInteger)keyIndex inGroup:(NSString *)group
+{
+	NSString *key = [self keyAtIndex:keyIndex inGroup:group];
+	if (key)
+	{
+		__unsafe_unretained YapDatabaseReadTransaction *transaction =
+		(YapDatabaseReadTransaction *)databaseTransaction;
+		
+		return [transaction objectForKey:key];
+	}
+	else
+	{
+		return nil;
+	}
 }
 
 @end
