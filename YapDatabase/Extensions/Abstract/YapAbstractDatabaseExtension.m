@@ -1,20 +1,21 @@
-#import "YapAbstractDatabaseView.h"
-#import "YapAbstractDatabaseViewPrivate.h"
+#import "YapAbstractDatabaseExtension.h"
+#import "YapAbstractDatabaseExtensionPrivate.h"
 
 
-@implementation YapAbstractDatabaseView
+@implementation YapAbstractDatabaseExtension
 
 + (BOOL)createTablesForRegisteredName:(NSString *)registeredName
                              database:(YapAbstractDatabase *)database
                                sqlite:(sqlite3 *)db
                                 error:(NSError **)errorPtr
 {
-	NSAssert(NO, @"Missing required override method in subclass of YapAbstractDatabaseView");
+	NSAssert(NO, @"Missing required override method in subclass of YapAbstractDatabaseExtension");
 	
 	if (errorPtr)
 	{
 		NSDictionary *userInfo = @{
-		    NSLocalizedDescriptionKey: @"Missing required override method in subclass of YapAbstractDatabaseView" };
+		    NSLocalizedDescriptionKey: @"Missing required override method in subclass of YapAbstractDatabaseExtension"
+		};
 		
 		*errorPtr = [NSError errorWithDomain:@"YapDatabase" code:404 userInfo:userInfo];
 	}
@@ -26,12 +27,13 @@
                              sqlite:(sqlite3 *)db
                               error:(NSError **)errorPtr
 {
-	NSAssert(NO, @"Missing required override method in subclass of YapAbstractDatabaseView");
+	NSAssert(NO, @"Missing required override method in subclass of YapAbstractDatabaseExtension");
 	
 	if (errorPtr)
 	{
 		NSDictionary *userInfo = @{
-		    NSLocalizedDescriptionKey: @"Missing required override method in subclass of YapAbstractDatabaseView" };
+		    NSLocalizedDescriptionKey: @"Missing required override method in subclass of YapAbstractDatabaseExtension"
+		};
 		
 		*errorPtr = [NSError errorWithDomain:@"YapDatabase" code:404 userInfo:userInfo];
 	}
@@ -40,9 +42,9 @@
 
 @synthesize registeredName;
 
-- (YapAbstractDatabaseViewConnection *)newConnection:(YapAbstractDatabaseConnection *)databaseConnection
+- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapAbstractDatabaseConnection *)databaseConnection
 {
-	NSAssert(NO, @"Missing required override method in subclass of YapAbstractDatabaseView");
+	NSAssert(NO, @"Missing required override method in subclass of YapAbstractDatabaseExtension");
 	return nil;
 }
 

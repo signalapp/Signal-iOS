@@ -33,7 +33,7 @@
 @property (atomic, assign, readwrite) BOOL metadataCacheEnabled;
 @property (atomic, assign, readwrite) NSUInteger metadataCacheLimit;
 
-- (id)view:(NSString *)view;
+- (id)extension:(NSString *)extensionView;
 
 */
 

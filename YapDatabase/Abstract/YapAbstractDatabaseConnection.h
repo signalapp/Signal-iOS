@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "YapAbstractDatabaseViewConnection.h"
+#import "YapAbstractDatabaseExtensionConnection.h"
 
 @class YapAbstractDatabase;
 
@@ -66,22 +66,22 @@ typedef enum  {
 @property (atomic, assign, readwrite) BOOL metadataCacheEnabled;
 @property (atomic, assign, readwrite) NSUInteger metadataCacheLimit;
 
-#pragma mark Views
+#pragma mark Extensions
 
 /**
- * Creates or fetches the view with the given name.
- * If this connection has not yet initialized the proper view connection, it is done automatically.
+ * Creates or fetches the extension with the given name.
+ * If this connection has not yet initialized the proper extension connection, it is done automatically.
  * 
  * @return
- *     A subclass of YapAbstractDatabaseViewConnection,
- *     according to the type of view registered under the given name.
+ *     A subclass of YapAbstractDatabaseExtensionConnection,
+ *     according to the type of extension registered under the given name.
  *
- * One must register a view with the database before it can be accessed from within connections or transactions.
- * After registration everything works automatically using just the view name.
+ * One must register an extension with the database before it can be accessed from within connections or transactions.
+ * After registration everything works automatically using just the registered extension name.
  * 
- * @see [YapAbstractDatabase registerView:withName:]
+ * @see [YapAbstractDatabase registerExtension:withName:]
 **/
-- (id)view:(NSString *)viewName;
+- (id)extension:(NSString *)extensionName;
 
 #pragma mark Memory
 

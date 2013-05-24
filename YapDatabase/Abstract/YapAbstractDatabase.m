@@ -1,6 +1,6 @@
 #import "YapAbstractDatabase.h"
 #import "YapAbstractDatabasePrivate.h"
-#import "YapAbstractDatabaseViewPrivate.h"
+#import "YapAbstractDatabaseExtensionPrivate.h"
 
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
@@ -249,7 +249,7 @@
 		snapshotQueue = dispatch_queue_create("YapDatabase-Snapshot", NULL);
 		writeQueue    = dispatch_queue_create("YapDatabase-Write", NULL);
 		
-		views = [[NSMutableDictionary alloc] init];
+		extensions = [[NSMutableDictionary alloc] init];
 		
 		changesets = [[NSMutableArray alloc] init];
 		connectionStates = [[NSMutableArray alloc] init];
@@ -701,27 +701,27 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Views
+#pragma mark Extensions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Registers the view with the database using the given name.
- * After registration everything works automatically using just the view name.
+ * Registers the extension with the database using the given name.
+ * After registration everything works automatically using just the extension name.
  *
  * @return
- *     YES if the view was properly registered.
- *     NO if an error occurred, such as the viewName is already registered.
+ *     YES if the extension was properly registered.
+ *     NO if an error occurred, such as the extensionName is already registered.
 **/
-- (BOOL)registerView:(YapAbstractDatabaseView *)view withName:(NSString *)viewName
+- (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
 {
-	if (view == nil)
+	if (extension == nil)
 	{
-		YDBLogError(@"Error registering view: view parameter is nil");
+		YDBLogError(@"Error registering extension: extension parameter is nil");
 		return NO;
 	}
-	if ([viewName length] == 0)
+	if ([extensionName length] == 0)
 	{
-		YDBLogError(@"Error registering view: viewName parameter is nil or empty string");
+		YDBLogError(@"Error registering extension: extensionName parameter is nil or empty string");
 		return NO;
 	}
 	
@@ -729,11 +729,11 @@
 	
 	dispatch_sync(writeQueue, ^{
 		
-		// Check to make sure the viewName is available
+		// Check to make sure the extensionName is available
 		
 		dispatch_sync(snapshotQueue, ^{
 			
-			if ([views objectForKey:viewName] != nil)
+			if ([extensions objectForKey:extensionName] != nil)
 			{
 				result = NO;
 			}
@@ -741,33 +741,33 @@
 		
 		if (!result)
 		{
-			YDBLogError(@"Error registering view: The viewName is already registered.");
+			YDBLogError(@"Error registering extension: The extensionName is already registered.");
 			return;
 		}
 		
-		// Prepare the view (create the table(s) for it and/or any other needed tasks)
+		// Prepare the extension (create the table(s) for it and/or any other needed tasks)
 		
-		result = [[view class] createTablesForRegisteredName:viewName database:self sqlite:db error:NULL];
+		result = [[extension class] createTablesForRegisteredName:extensionName database:self sqlite:db error:NULL];
 		
 		if (!result)
 		{
-			YDBLogError(@"Error registering view: View reported errors during setup process.");
+			YDBLogError(@"Error registering extension: Extension reported errors during setup process.");
 			return;
 		}
 		
-		// Register the view
+		// Register the extension
 		
 		dispatch_sync(snapshotQueue, ^{
 			
-			[views setObject:view forKey:viewName];
-			[view setRegisteredName:viewName];
+			[extensions setObject:extension forKey:extensionName];
+			[extension setRegisteredName:extensionName];
 			
 			snapshot++;
 			[self writeSnapshotToDatabase];
 			
 			NSDictionary *changeset = @{
 				@"snapshot" : @(snapshot),
-				@"registeredViews" : [views copy]
+				@"registeredExtensions" : [extensions copy]
 			};
 			
 			[self noteCommittedChanges:changeset fromConnection:nil];
@@ -778,17 +778,17 @@
 }
 
 /**
- * Returns the registered view with the given name.
+ * Returns the registered extension with the given name.
 **/
-- (YapAbstractDatabaseView *)registeredView:(NSString *)viewName
+- (id)registeredExtension:(NSString *)extensionName
 {
 	// This method is public
 	
-	__block YapAbstractDatabaseView *result = nil;
+	__block YapAbstractDatabaseExtension *result = nil;
 	
 	dispatch_block_t block = ^{
 		
-		result = [views objectForKey:viewName];
+		result = [extensions objectForKey:extensionName];
 	};
 	
 	if (dispatch_get_specific(IsOnSnapshotQueueKey))
@@ -800,18 +800,18 @@
 }
 
 /**
- * Returns all currently registered views as a dictionary.
- * The key is the registed name (NSString), and the value is the view (YapAbstractDatabaseView subclass).
+ * Returns all currently registered extensions as a dictionary.
+ * The key is the registed name (NSString), and the value is the extension (YapAbstractDatabaseExtension subclass).
 **/
-- (NSDictionary *)registeredViews
+- (NSDictionary *)registeredExtensions
 {
 	// This method is public
 	
-	__block NSDictionary *viewsCopy = nil;
+	__block NSDictionary *extensionsCopy = nil;
 	
 	dispatch_block_t block = ^{
 		
-		viewsCopy = [views copy];
+		extensionsCopy = [extensions copy];
 	};
 	
 	if (dispatch_get_specific(IsOnSnapshotQueueKey))
@@ -819,7 +819,7 @@
 	else
 		dispatch_sync(snapshotQueue, block);
 	
-	return viewsCopy;
+	return extensionsCopy;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

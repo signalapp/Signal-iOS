@@ -59,9 +59,6 @@
 	sqlite3_stmt *enumerateMetadataStatement;
 	sqlite3_stmt *enumerateAllStatement;
 
-@protected
-	NSMutableDictionary *views;
-
 @public
 	NSMutableDictionary *objectChanges;
 	NSMutableDictionary *metadataChanges;
@@ -540,8 +537,8 @@
 	
 	// Reserved keys:
 	//
-	// - views
-	// - viewNames
+	// - extensions
+	// - extensionNames
 	// - snapshot
 	
 	if ([objectChanges count] > 0 || [metadataChanges count] > 0 || [removedKeys count] > 0 ||allKeysRemoved)

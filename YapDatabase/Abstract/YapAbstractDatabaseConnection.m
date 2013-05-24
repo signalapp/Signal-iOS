@@ -1,6 +1,6 @@
 #import "YapAbstractDatabaseConnection.h"
 #import "YapAbstractDatabasePrivate.h"
-#import "YapAbstractDatabaseViewPrivate.h"
+#import "YapAbstractDatabaseExtensionPrivate.h"
 
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
@@ -41,7 +41,7 @@
 	
 	YapAbstractDatabase *database;
 
-	NSMutableDictionary *views;
+	NSMutableDictionary *extensions;
 	
 @public
 	sqlite3 *db;
@@ -70,7 +70,7 @@
 		IsOnConnectionQueueKey = &IsOnConnectionQueueKey;
 		dispatch_queue_set_specific(connectionQueue, IsOnConnectionQueueKey, IsOnConnectionQueueKey, NULL);
 		
-		views = [[NSMutableDictionary alloc] init];
+		extensions = [[NSMutableDictionary alloc] init];
 		
 		objectCacheLimit = DEFAULT_OBJECT_CACHE_LIMIT;
 		objectCache = [[YapCache alloc] initWithKeyClass:[database cacheKeyClass]];
@@ -130,9 +130,9 @@
 	dispatch_sync(database->snapshotQueue, ^{
 		
 		cacheSnapshot = [database snapshot];
-		registeredViews = [database registeredViews];
+		registeredExtensions = [database registeredExtensions];
 		
-		dirtyViews = [registeredViews count] > 0;
+		dirtyExtensions = [registeredExtensions count] > 0;
 	});
 }
 
@@ -339,48 +339,48 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Views
+#pragma mark Extensions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Creates or fetches the view with the given name.
- * If this connection has not yet initialized the proper view connection, it is done automatically.
+ * Creates or fetches the extension with the given name.
+ * If this connection has not yet initialized the proper extensions connection, it is done automatically.
  *
  * @return
- *     A subclass of YapAbstractDatabaseViewConnection,
- *     according to the type of view registered under the given name.
+ *     A subclass of YapAbstractDatabaseExtensionConnection,
+ *     according to the type of extension registered under the given name.
  *
- * One must register a view with the database before it can be accessed from within connections or transactions.
- * After registration everything works automatically using just the view name.
+ * One must register an extension with the database before it can be accessed from within connections or transactions.
+ * After registration everything works automatically using just the registered extension name.
  *
- * @see [YapAbstractDatabase registerView:withName:]
+ * @see [YapAbstractDatabase registerExtension:withName:]
 **/
-- (id)view:(NSString *)viewName
+- (id)extension:(NSString *)extName
 {
 	// This method is PUBLIC.
 	//
-	// This method returns a subclass of YapAbstractDatabaseViewConnection.
+	// This method returns a subclass of YapAbstractDatabaseExtensionConnection.
 	// To get:
-	// - YapAbstractDatabaseView => [database registeredView:@"nameOfView"]
-	// - YapAbstractDatabaseViewConnection => [databaseConnection view:@"nameOfView"]
-	// - YapAbstractDatabaseViewTransaction => [databaseTransaction view:@"nameOfView"]
+	// - YapAbstractDatabaseExtension            => [database registeredExtension:@"registeredNameOfExtension"]
+	// - YapAbstractDatabaseExtensionConnection  => [databaseConnection extension:@"registeredNameOfExtension"]
+	// - YapAbstractDatabaseExtensionTransaction => [databaseTransaction extension:@"registeredNameOfExtension"]
 	
-	__block id viewConnection = nil;
+	__block id extConnection = nil;
 	
 	dispatch_block_t block = ^{
 		
-		viewConnection = [views objectForKey:viewName];
+		extConnection = [extensions objectForKey:extName];
 		
-		if (viewConnection == nil)
+		if (extConnection == nil)
 		{
-			// We don't have an existing connection for the view.
+			// We don't have an existing connection for the extension.
 			// Create one (if we can).
 			
-			YapAbstractDatabaseView *view = [registeredViews objectForKey:viewName];
-			if (view)
+			YapAbstractDatabaseExtension *ext = [registeredExtensions objectForKey:extName];
+			if (ext)
 			{
-				viewConnection = [view newConnection:self];
-				[views setObject:viewConnection forKey:viewName];
+				extConnection = [ext newConnection:self];
+				[extensions setObject:extConnection forKey:extName];
 			}
 		}
 	};
@@ -390,31 +390,31 @@
 	else
 		dispatch_sync(connectionQueue, block);
 	
-	return viewConnection;
+	return extConnection;
 }
 
-- (NSDictionary *)views
+- (NSDictionary *)extensions
 {
 	// This method is INTERNAL
 	
-	if (dirtyViews)
+	if (dirtyExtensions)
 	{
-		[registeredViews enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		[registeredExtensions enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 			
-			NSString *viewName = (NSString *)key;
-			YapAbstractDatabaseView *view = (YapAbstractDatabaseView *)obj;
+			__unsafe_unretained NSString *extName = key;
+			__unsafe_unretained YapAbstractDatabaseExtension *ext = obj;
 			
-			if ([views objectForKey:viewName] == nil)
+			if ([extensions objectForKey:extName] == nil)
 			{
-				id viewConnection = [view newConnection:self];
-				[views setObject:viewConnection forKey:viewName];
+				id extConnection = [ext newConnection:self];
+				[extensions setObject:extConnection forKey:extName];
 			}
 		}];
 		
-		dirtyViews = NO;
+		dirtyExtensions = NO;
 	}
 	
-	return views;
+	return extensions;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1375,12 +1375,12 @@
 	[objectCache removeAllObjects];
 	[metadataCache removeAllObjects];
 	
-	// Use existing views (views ivar, not [self views]).
-	// There's no need to create any new viewConnections at this point.
+	// Use existing extensions (extensions ivar, not [self extensions]).
+	// There's no need to create any new extConnections at this point.
 	
-	[views enumerateKeysAndObjectsUsingBlock:^(id viewNameObj, id viewConnectionObj, BOOL *stop) {
+	[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extConnectionObj, BOOL *stop) {
 		
-		[(YapAbstractDatabaseViewConnection *)viewConnectionObj postRollbackCleanup];
+		[(YapAbstractDatabaseExtensionConnection *)extConnectionObj postRollbackCleanup];
 	}];
 }
 
@@ -1393,35 +1393,35 @@
  * If changes have been made, it should return a changeset dictionary.
  * If no changes have been made, it should return nil.
  * 
- * Subclasses must first invoke [super changeset] in order to get the changeset(s) from the view(s).
+ * Subclasses must first invoke [super changeset] in order to get the changesets from the extensions.
  * 
  * @see processChangeset:
 **/
 - (NSMutableDictionary *)changeset
 {
-	// Use existing views (views ivar, not [self views]).
-	// There's no need to create any new viewConnections at this point.
+	// Use existing extensions (extensions ivar, not [self extensions]).
+	// There's no need to create any new extConnections at this point.
 	
-	__block NSMutableDictionary *changeset_views = nil;
+	__block NSMutableDictionary *changeset_extensions = nil;
 	
-	[views enumerateKeysAndObjectsUsingBlock:^(id viewName, id viewConnectionObj, BOOL *stop) {
+	[extensions enumerateKeysAndObjectsUsingBlock:^(id extName, id extConnectionObj, BOOL *stop) {
 		
-		__unsafe_unretained YapAbstractDatabaseViewConnection *viewConnection = viewConnectionObj;
+		__unsafe_unretained YapAbstractDatabaseExtensionConnection *extConnection = extConnectionObj;
 		
-		NSMutableDictionary *viewChangeset = [viewConnection changeset];
-		if (viewChangeset)
+		NSMutableDictionary *extChangeset = [extConnection changeset];
+		if (extChangeset)
 		{
-			if (changeset_views == nil)
-				changeset_views = [NSMutableDictionary dictionaryWithCapacity:[views count]];
+			if (changeset_extensions == nil)
+				changeset_extensions = [NSMutableDictionary dictionaryWithCapacity:[extensions count]];
 			
-			[changeset_views setObject:viewChangeset forKey:viewName];
+			[changeset_extensions setObject:extChangeset forKey:extName];
 		}
 	}];
 	
-	if (changeset_views)
+	if (changeset_extensions)
 	{
 		NSMutableDictionary *changeset = [NSMutableDictionary dictionaryWithCapacity:8];
-		[changeset setObject:changeset_views forKey:@"views"];
+		[changeset setObject:changeset_extensions forKey:@"extensions"];
 		
 		return changeset;
 	}
@@ -1437,28 +1437,28 @@
  * This method is invoked with the changeset from a sibling connection.
  * The connection should update any in-memory components (such as the cache) to properly reflect the changeset.
  * 
- * Subclasses must invoke [super processChangeset:changeset] in order to propogate the changeset(s) to the view(s).
+ * Subclasses must invoke [super processChangeset:changeset] in order to propogate the changeset(s) to the extension(s).
  *
  * @see changeset
 **/
 - (void)processChangeset:(NSDictionary *)changeset
 {
-	NSDictionary *changeset_views = [changeset objectForKey:@"views"];
+	NSDictionary *changeset_extensions = [changeset objectForKey:@"extensions"];
 	
-	if ([changeset_views count] == 0)
+	if ([changeset_extensions count] == 0)
 		return;
 	
-	// Use existing views (views ivar, not [self views]).
-	// There's no need to create any new viewConnections at this point.
+	// Use existing extensions (extensions ivar, not [self extensions]).
+	// There's no need to create any new extConnections at this point.
 	
-	[views enumerateKeysAndObjectsUsingBlock:^(id viewName, id viewConnectionObj, BOOL *stop) {
+	[extensions enumerateKeysAndObjectsUsingBlock:^(id extName, id extConnectionObj, BOOL *stop) {
 		
-		NSDictionary *changeset_views_viewName = [changeset_views objectForKey:viewName];
-		if (changeset_views_viewName)
+		__unsafe_unretained YapAbstractDatabaseExtensionConnection *extConnection = extConnectionObj;
+		
+		NSDictionary *changeset_extensions_extName = [changeset_extensions objectForKey:extName];
+		if (changeset_extensions_extName)
 		{
-			__unsafe_unretained YapAbstractDatabaseViewConnection *viewConnection = viewConnectionObj;
-			
-			[viewConnection processChangeset:changeset_views_viewName];
+			[extConnection processChangeset:changeset_extensions_extName];
 		}
 	}];
 }
@@ -1523,29 +1523,29 @@
 	
 	// Internal processing
 	
-	NSDictionary *newRegisteredViews = [changeset objectForKey:@"registeredViews"];
-	if (newRegisteredViews)
+	NSDictionary *newRegisteredExtensions = [changeset objectForKey:@"registeredExtensions"];
+	if (newRegisteredExtensions)
 	{
 		// Retain new list
 		
-		registeredViews = newRegisteredViews;
+		registeredExtensions = newRegisteredExtensions;
 		
-		// Remove any views that have been dropped
+		// Remove any extensions that have been dropped
 		
-		for (NSString *viewName in [views allKeys])
+		for (NSString *extName in [extensions allKeys])
 		{
-			if ([registeredViews objectForKey:viewName] == nil)
+			if ([registeredExtensions objectForKey:extName] == nil)
 			{
-				YDBLogVerbose(@"Dropping view: %@", viewName);
+				YDBLogVerbose(@"Dropping extension: %@", extName);
 				
-				[views removeObjectForKey:viewName];
+				[extensions removeObjectForKey:extName];
 			}
 		}
 		
-		// Make a note if there are views for which we haven't instantiated a viewConnection instance.
+		// Make a note if there are extensions for which we haven't instantiated an extConnection instance.
 		// We lazily load these later, if needed.
 		
-		dirtyViews = [registeredViews count] != [views count];
+		dirtyExtensions = [registeredExtensions count] != [extensions count];
 	}
 	
 	// Subclass processing

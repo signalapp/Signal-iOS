@@ -1,15 +1,32 @@
 #import <Foundation/Foundation.h>
-
-#import "YapAbstractDatabaseView.h"
+#import "YapAbstractDatabaseExtension.h"
 
 /**
- * This base class is shared by YapDatabase and YapCollectionsDatabase.
+ * Welcome to YapDatabase!
+ *
+ * The project page has a wealth of documentation if you have any questions.
+ * https://github.com/yaptv/YapDatabase
+ *
+ * If you're new to the project you may wish to read the "Hello World" wiki.
+ * https://github.com/yaptv/YapDatabase/wiki/Hello-World
+ *
+ * This is the base database class which is shared by YapDatabase and YapCollectionsDatabase.
+ *
+ * - YapDatabase = Key/Value
+ * - YapCollectionsDatabase = Collection/Key/Value
  * 
- * It provides the generic implementation of a database such as:
+ * You do not directly create instances of YapAbstractDatabase.
+ * You instead create instances of YapDatabase or YapCollectionsDatabase.
+ * Both YapDatabase and YapCollectionsDatabase extend YapAbstractDatabase.
+ * 
+ * YapAbstractDatabase provides the generic implementation of a database such as:
  * - common properties
  * - common initializers
  * - common setup code
- * - stub methods which are overriden by subclasses
+ * - stub methods which are overriden by the subclasses
+ * 
+ * @see YapDatabase.h
+ * @see YapCollectionsDatabase.h
 **/
 @interface YapAbstractDatabase : NSObject
 
@@ -81,27 +98,28 @@
 @property (nonatomic, strong, readonly) id (^metadataDeserializer)(NSData *data);
 
 
-#pragma mark Views
+#pragma mark Extensions
 
 /**
- * Registers the view with the database using the given name.
- * After registration everything works automatically using just the view name.
+ * Registers the extension with the database using the given name.
+ * After registration everything works automatically using just the extension name.
  * 
  * @return
- *     YES if the view was properly registered.
- *     NO if an error occurred, such as the viewName is already registered.
+ *     YES if the extension was properly registered.
+ *     NO if an error occurred, such as the extensionName is already registered.
 **/
-- (BOOL)registerView:(YapAbstractDatabaseView *)view withName:(NSString *)viewName;
+- (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName;
 
 /**
- * Returns the registered view with the given name.
+ * Returns the registered extension with the given name.
+ * The returned object will be a subclass of YapAbstractDatabaseExtension.
 **/
-- (YapAbstractDatabaseView *)registeredView:(NSString *)viewName;
+- (id)registeredExtension:(NSString *)extensionName;
 
 /**
- * Returns all currently registered views as a dictionary.
- * The key is the registed name (NSString), and the value is the view (YapAbstractDatabaseView subclass).
+ * Returns all currently registered extensions as a dictionary.
+ * The key is the registed name (NSString), and the value is the extension (YapAbstractDatabaseExtension subclass).
 **/
-- (NSDictionary *)registeredViews;
+- (NSDictionary *)registeredExtensions;
 
 @end

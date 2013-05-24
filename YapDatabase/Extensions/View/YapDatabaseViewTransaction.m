@@ -1,7 +1,7 @@
 #import "YapDatabaseViewTransaction.h"
 #import "YapDatabaseViewPrivate.h"
 #import "YapDatabaseViewPageMetadata.h"
-#import "YapAbstractDatabaseViewPrivate.h"
+#import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapAbstractDatabasePrivate.h"
 #import "YapDatabaseTransaction.h"
 #import "YapCache.h"
@@ -59,8 +59,7 @@
 
 - (BOOL)prepareIfNeeded
 {
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	    (YapDatabaseViewConnection *)abstractViewConnection;
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	if (viewConnection->groupPagesDict && viewConnection->pageKeyGroupDict)
 	{
@@ -68,8 +67,7 @@
 		return YES;
 	}
 	
-	__unsafe_unretained YapDatabaseView *view =
-	    (YapDatabaseView *)(abstractViewConnection->abstractView);
+	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
 	
 	sqlite3 *db = databaseTransaction->abstractConnection->db;
 	
@@ -292,17 +290,17 @@
 
 - (NSString *)registeredViewName
 {
-	return [abstractViewConnection->abstractView registeredName];
+	return [extensionConnection->extension registeredName];
 }
 
 - (NSString *)keyTableName
 {
-	return [(YapDatabaseView *)(abstractViewConnection->abstractView) keyTableName];
+	return [(YapDatabaseView *)(extensionConnection->extension) keyTableName];
 }
 
 - (NSString *)pageTableName
 {
-	return [(YapDatabaseView *)(abstractViewConnection->abstractView) pageTableName];
+	return [(YapDatabaseView *)(extensionConnection->extension) pageTableName];
 }
 
 - (NSData *)serializePage:(NSMutableArray *)page
@@ -353,8 +351,7 @@
 **/
 - (NSString *)pageKeyForKey:(NSString *)key
 {
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	    (YapDatabaseViewConnection *)abstractViewConnection;
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	NSString *pageKey = nil;
 	
@@ -433,8 +430,7 @@
 	
 	NSMutableDictionary *pageKeysDict = [NSMutableDictionary dictionaryWithCapacity:[keys count]];
 	
-	__unsafe_unretained YapDatabaseView *view =
-	    (YapDatabaseView *)(abstractViewConnection->abstractView);
+	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
 	
 	sqlite3 *db = databaseTransaction->abstractConnection->db;
 	
@@ -540,8 +536,7 @@
 **/
 - (NSMutableArray *)pageForPageKey:(NSString *)pageKey
 {
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	    (YapDatabaseViewConnection *)abstractViewConnection;
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	NSMutableArray *page = nil;
 	
@@ -594,8 +589,7 @@
 
 - (NSString *)groupForPageKey:(NSString *)pageKey
 {
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	    (YapDatabaseViewConnection *)abstractViewConnection;
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	return [viewConnection->pageKeyGroupDict objectForKey:pageKey];
 }
@@ -616,8 +610,7 @@
 	NSParameterAssert(pageKey != nil);
 	NSParameterAssert(group != nil);
 	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	    (YapDatabaseViewConnection *)abstractViewConnection;
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	// Update page (by removing key from array)
 	
@@ -742,8 +735,7 @@
 	NSParameterAssert(pageKey != nil);
 	NSParameterAssert(group != nil);
 	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	    (YapDatabaseViewConnection *)abstractViewConnection;
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	// Update page (by removing keys from array)
 	
@@ -879,8 +871,7 @@
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	    (YapDatabaseViewConnection *)abstractViewConnection;
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	sqlite3_stmt *keyStatement = [viewConnection keyTable_removeAllStatement];
 	sqlite3_stmt *pageStatement = [viewConnection pageTable_removeAllStatement];
@@ -937,8 +928,7 @@
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	    (YapDatabaseViewConnection *)abstractViewConnection;
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	YapDatabaseViewPageMetadata *pageMetadata = nil;
 	NSString *pageKey = nil;
@@ -1003,8 +993,7 @@
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-		(YapDatabaseViewConnection *)abstractViewConnection;
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	// Is the key already in the group?
 	// If so:
@@ -1074,7 +1063,7 @@
 			count += pageMetadata->count;
 		}
 		
-		__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(viewConnection->abstractView);
+		__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
 		
 		// Create a block to do a single sorting comparison between the object to be inserted,
 		// and some other object within the group at a given index.
@@ -1278,21 +1267,18 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark YapAbstractDatabaseViewKeyValueTransaction
+#pragma mark YapAbstractDatabaseExtensionTransaction_KeyValue
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * YapDatabase view hook.
+ * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
 - (void)handleSetObject:(id)object forKey:(NSString *)key withMetadata:(id)metadata
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	    (YapDatabaseViewConnection *)abstractViewConnection;
-	
-	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(viewConnection->abstractView);
+	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
 	
 	// Invoke the grouping block to find out if the object should be included in the view.
 	
@@ -1335,15 +1321,14 @@
 }
 
 /**
- * YapDatabase view hook.
+ * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
 - (void)handleSetMetadata:(id)metadata forKey:(NSString *)key
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseView *view =
-	    (YapDatabaseView *)(abstractViewConnection->abstractView);
+	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
 	
 	// Invoke the grouping block to find out if the object should be included in the view.
 	
@@ -1451,7 +1436,7 @@
 }
 
 /**
- * YapDatabase view hook.
+ * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
 - (void)handleRemoveObjectForKey:(NSString *)key
@@ -1462,7 +1447,7 @@
 }
 
 /**
- * YapDatabase view hook.
+ * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
 - (void)handleRemoveObjectsForKeys:(NSArray *)keys
@@ -1518,7 +1503,7 @@
 }
 
 /**
- * YapDatabase view hook.
+ * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
 - (void)handleRemoveAllObjects
@@ -1529,7 +1514,7 @@
 }
 
 /**
- * YapDatabase view hook.
+ * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
 - (void)commitTransaction
@@ -1539,8 +1524,7 @@
 	// During the transaction we stored all changes in the "dirty" dictionaries.
 	// This allows the view to make multiple changes to a page, yet only write it once.
 	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	    (YapDatabaseViewConnection *)abstractViewConnection;
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	YDBLogVerbose(@"viewConnection->dirtyPages: %@", viewConnection->dirtyPages);
 	YDBLogVerbose(@"viewConnection->dirtyMetadata: %@", viewConnection->dirtyMetadata);
@@ -1773,8 +1757,7 @@
 
 - (NSUInteger)numberOfGroups
 {
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	    (YapDatabaseViewConnection *)abstractViewConnection;
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	return [viewConnection->groupPagesDict count];
 }
@@ -1782,15 +1765,14 @@
 - (NSArray *)allGroups
 {
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	    (YapDatabaseViewConnection *)abstractViewConnection;
+	    (YapDatabaseViewConnection *)extensionConnection;
 	
 	return [viewConnection->groupPagesDict allKeys];
 }
 
 - (NSUInteger)numberOfKeysInGroup:(NSString *)group
 {
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	    (YapDatabaseViewConnection *)abstractViewConnection;
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	NSMutableArray *pagesForGroup = [viewConnection->groupPagesDict objectForKey:group];
 	if (pagesForGroup == nil) {
@@ -1809,8 +1791,7 @@
 
 - (NSUInteger)numberOfKeysInAllGroups
 {
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	    (YapDatabaseViewConnection *)abstractViewConnection;
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	NSUInteger count = 0;
 	
@@ -1827,8 +1808,7 @@
 
 - (NSString *)keyAtIndex:(NSUInteger)index inGroup:(NSString *)group
 {
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	    (YapDatabaseViewConnection *)abstractViewConnection;
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	NSMutableArray *pagesForGroup = [viewConnection->groupPagesDict objectForKey:group];
 	
@@ -1875,7 +1855,7 @@
 		// Calculate the offset of the corresponding page within the group.
 		
 		__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	        (YapDatabaseViewConnection *)abstractViewConnection;
+	        (YapDatabaseViewConnection *)extensionConnection;
 		
 		NSUInteger pageOffset = 0;
 		NSMutableArray *pagesMetadataForGroup = [viewConnection->groupPagesDict objectForKey:group];

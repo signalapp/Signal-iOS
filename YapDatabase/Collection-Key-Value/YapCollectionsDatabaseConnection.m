@@ -630,8 +630,8 @@
 	
 	// Reserved keys:
 	//
-	// - views
-	// - viewNames
+	// - extensions
+	// - extensionNames
 	// - snapshot
 	
 	if ([objectChanges count]      > 0 ||

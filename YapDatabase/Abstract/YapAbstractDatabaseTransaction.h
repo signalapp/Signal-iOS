@@ -22,18 +22,19 @@
 - (void)rollback;
 
 /**
- * Returns a view transaction corresponding to the view type registered under the given name.
- * If the view has not yet been opened, it is done so automatically.
+ * Returns an extension transaction corresponding to the extension type registered under the given name.
+ * If the extension has not yet been opened, it is done so automatically.
  *
  * @return
- *     A subclass of YapAbstractDatabaseViewTransaction,
- *     according to the type of view registered under the given name.
+ *     A subclass of YapAbstractDatabaseExtensionTransaction,
+ *     according to the type of extension registered under the given name.
  * 
- * One must register a view with the database before it can be accessed from within connections or transactions.
- * After registration everything works automatically using just the view name.
+ * One must register an extension with the database before it can be accessed from within connections or transactions.
+ * After registration everything works automatically using just the registered extension name.
  *
- * @see [YapAbstractDatabase registerView:withName:]
+ * @see [YapAbstractDatabase registerExtension:withName:]
 **/
-- (id)view:(NSString *)viewName;
+- (id)extension:(NSString *)extensionName;
+- (id)ext:(NSString *)extensionName; // <-- Save yourself some typing
 
 @end

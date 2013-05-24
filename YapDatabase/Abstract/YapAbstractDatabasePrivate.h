@@ -24,7 +24,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 @interface YapAbstractDatabase () {
 @private
 	
-	NSMutableDictionary *views;
+	NSMutableDictionary *extensions;
 	
 	NSMutableArray *changesets;
 	uint64_t snapshot;
@@ -152,9 +152,9 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	sqlite3_stmt *yapGetDataForKeyStatement; // Against "yap" database, for internal use
 	sqlite3_stmt *yapSetDataForKeyStatement; // Against "yap" database, for internal use
 	
-	BOOL dirtyViews;
-	NSDictionary *registeredViews;
-	NSMutableDictionary *views;
+	BOOL dirtyExtensions;
+	NSDictionary *registeredExtensions;
+	NSMutableDictionary *extensions;
 	
 @protected
 	dispatch_queue_t connectionQueue;
@@ -183,7 +183,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 
 - (void)prepare;
 
-- (NSDictionary *)views;
+- (NSDictionary *)extensions;
 
 - (sqlite3_stmt *)beginTransactionStatement;
 - (sqlite3_stmt *)commitTransactionStatement;
@@ -228,8 +228,8 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 
 @interface YapAbstractDatabaseTransaction () {
 @private
-	BOOL viewsReady;
-	NSMutableDictionary *views;
+	BOOL extensionsReady;
+	NSMutableDictionary *extensions;
 	
 @public
 	__unsafe_unretained YapAbstractDatabaseConnection *abstractConnection;
@@ -243,6 +243,6 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 - (void)commitTransaction;
 - (void)rollbackTransaction;
 
-- (NSDictionary *)views;
+- (NSDictionary *)extensions;
 
 @end

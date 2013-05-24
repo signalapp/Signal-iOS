@@ -1,8 +1,8 @@
 #import <Foundation/Foundation.h>
-#import "YapAbstractDatabaseViewTransaction.h"
+#import "YapAbstractDatabaseExtensionTransaction.h"
 
 
-@interface YapDatabaseViewTransaction : YapAbstractDatabaseViewTransaction
+@interface YapDatabaseViewTransaction : YapAbstractDatabaseExtensionTransaction
 
 - (NSUInteger)numberOfGroups;
 - (NSArray *)allGroups;

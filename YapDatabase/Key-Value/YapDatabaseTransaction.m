@@ -1,6 +1,6 @@
 #import "YapDatabaseTransaction.h"
 #import "YapDatabasePrivate.h"
-#import "YapAbstractDatabaseViewPrivate.h"
+#import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
 #import "YapCache.h"
@@ -973,7 +973,7 @@
 		[connection->metadataChanges setObject:[YapNull null] forKey:key];
 	}
 	
-	// Todo: How best to handle for views?
+	// Todo: How best to handle for extension?
 }
 
 #pragma mark Object
@@ -1035,11 +1035,11 @@
 		[connection->metadataChanges setObject:[YapNull null] forKey:key];
 	}
 	
-	[[self views] enumerateKeysAndObjectsUsingBlock:^(id viewNameObj, id viewTransactionObj, BOOL *stop) {
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
 		
-		__unsafe_unretained id <YapAbstractDatabaseViewKeyValueTransaction> viewTransaction = viewTransactionObj;
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_KeyValue> extTransaction = extTransactionObj;
 		
-		[viewTransaction handleSetObject:object forKey:key withMetadata:metadata];
+		[extTransaction handleSetObject:object forKey:key withMetadata:metadata];
 	}];
 }
 
@@ -1079,24 +1079,23 @@
 	sqlite3_reset(statement);
 	FreeYapDatabaseString(&_key);
 	
-	if (updated)
-	{
-		if (metadata) {
-			[connection->metadataCache setObject:metadata forKey:key];
-			[connection->metadataChanges setObject:metadata forKey:key];
-		}
-		else {
-			[connection->metadataCache setObject:[YapNull null] forKey:key];
-			[connection->metadataChanges setObject:[YapNull null] forKey:key];
-		}
-		
-		[[self views] enumerateKeysAndObjectsUsingBlock:^(id viewNameObj, id viewTransactionObj, BOOL *stop) {
-			
-			__unsafe_unretained id <YapAbstractDatabaseViewKeyValueTransaction> viewTransaction = viewTransactionObj;
-			
-			[viewTransaction handleSetMetadata:metadata forKey:key];
-		}];
+	if (!updated) return;
+	
+	if (metadata) {
+		[connection->metadataCache setObject:metadata forKey:key];
+		[connection->metadataChanges setObject:metadata forKey:key];
 	}
+	else {
+		[connection->metadataCache setObject:[YapNull null] forKey:key];
+		[connection->metadataChanges setObject:[YapNull null] forKey:key];
+	}
+	
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
+		
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_KeyValue> extTransaction = extTransactionObj;
+		
+		[extTransaction handleSetMetadata:metadata forKey:key];
+	}];
 }
 
 #pragma mark Remove
@@ -1129,22 +1128,21 @@
 	sqlite3_reset(statement);
 	FreeYapDatabaseString(&_key);
 	
-	if (removed)
-	{
-		[connection->objectCache removeObjectForKey:key];
-		[connection->metadataCache removeObjectForKey:key];
+	if (!removed) return;
+	
+	[connection->objectCache removeObjectForKey:key];
+	[connection->metadataCache removeObjectForKey:key];
+	
+	[connection->objectChanges removeObjectForKey:key];
+	[connection->metadataChanges removeObjectForKey:key];
+	[connection->removedKeys addObject:key];
+	
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
 		
-		[connection->objectChanges removeObjectForKey:key];
-		[connection->metadataChanges removeObjectForKey:key];
-		[connection->removedKeys addObject:key];
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_KeyValue> extTransaction = extTransactionObj;
 		
-		[[self views] enumerateKeysAndObjectsUsingBlock:^(id viewNameObj, id viewTransactionObj, BOOL *stop) {
-			
-			__unsafe_unretained id <YapAbstractDatabaseViewKeyValueTransaction> viewTransaction = viewTransactionObj;
-			
-			[viewTransaction handleRemoveObjectForKey:key];
-		}];
-	}
+		[extTransaction handleRemoveObjectForKey:key];
+	}];
 }
 
 - (void)removeObjectsForKeys:(NSArray *)keys
@@ -1228,11 +1226,11 @@
 	[connection->metadataChanges removeObjectsForKeys:keys];
 	[connection->removedKeys addObjectsFromArray:keys];
 	
-	[[self views] enumerateKeysAndObjectsUsingBlock:^(id viewNameObj, id viewTransactionObj, BOOL *stop) {
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
 		
-		__unsafe_unretained id <YapAbstractDatabaseViewKeyValueTransaction> viewTransaction = viewTransactionObj;
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_KeyValue> extTransaction = extTransactionObj;
 		
-		[viewTransaction handleRemoveObjectsForKeys:keys];
+		[extTransaction handleRemoveObjectsForKeys:keys];
 	}];
 }
 
@@ -1261,17 +1259,17 @@
 	[connection->removedKeys removeAllObjects];
 	connection->allKeysRemoved = YES;
 	
-	[[self views] enumerateKeysAndObjectsUsingBlock:^(id viewNameObj, id viewTransactionObj, BOOL *stop) {
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
 		
-		__unsafe_unretained id <YapAbstractDatabaseViewKeyValueTransaction> viewTransaction = viewTransactionObj;
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_KeyValue> extTransaction = extTransactionObj;
 		
-		[viewTransaction handleRemoveAllObjects];
+		[extTransaction handleRemoveAllObjects];
 	}];
 }
 
-#pragma mark Views
+#pragma mark Extensions
 
-- (void)dropView:(NSString *)viewName
+- (void)dropExtension:(NSString *)extensionName
 {
 	// Todo...
 }

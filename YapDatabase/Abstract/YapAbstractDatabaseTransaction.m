@@ -1,6 +1,6 @@
 #import "YapAbstractDatabaseTransaction.h"
 #import "YapAbstractDatabasePrivate.h"
-#import "YapAbstractDatabaseViewPrivate.h"
+#import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapDatabaseLogging.h"
 
 #if ! __has_feature(objc_arc)
@@ -50,9 +50,9 @@
 {
 	if (isReadWriteTransaction)
 	{
-		[views enumerateKeysAndObjectsUsingBlock:^(id viewNameObj, id viewTransactionObj, BOOL *stop) {
+		[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
 			
-			[(YapAbstractDatabaseViewTransaction *)viewTransactionObj commitTransaction];
+			[(YapAbstractDatabaseExtensionTransaction *)extTransactionObj commitTransaction];
 		}];
 	}
 	
@@ -105,82 +105,79 @@
 }
 
 /**
- * Returns a view transaction corresponding to the view type registered under the given name.
- * If the view has not yet been opened, it is done so automatically.
+ * Returns an extension transaction corresponding to the extension type registered under the given name.
+ * If the extension has not yet been prepared, it is done so automatically.
  *
  * @return
- *     A subclass of YapAbstractDatabaseViewTransaction,
- *     according to the type of view registered under the given name.
+ *     A subclass of YapAbstractDatabaseExtensionTransaction,
+ *     according to the type of extension registered under the given name.
  *
- * One must register a view with the database before it can be accessed from within connections or transactions.
- * After registration everything works automatically using just the view name.
+ * One must register an extension with the database before it can be accessed from within connections or transactions.
+ * After registration everything works automatically using just the registered extension name.
  *
- * @see [YapAbstractDatabase registerView:withName:]
+ * @see [YapAbstractDatabase registerExtension:withName:]
 **/
-- (id)view:(NSString *)viewName
+- (id)extension:(NSString *)extensionName { return [self ext:extensionName]; }
+- (id)ext:(NSString *)extensionName
 {
-	if (viewsReady)
-		return [views objectForKey:viewName];
+	if (extensionsReady)
+		return [extensions objectForKey:extensionName];
 	
-	if (views == nil)
-		views = [[NSMutableDictionary alloc] init];
+	if (extensions == nil)
+		extensions = [[NSMutableDictionary alloc] init];
 	
-	YapAbstractDatabaseViewTransaction *viewTransaction = [views objectForKey:viewName];
-	if (viewTransaction == nil)
+	YapAbstractDatabaseExtensionTransaction *extTransaction = [extensions objectForKey:extensionName];
+	if (extTransaction == nil)
 	{
-		YapAbstractDatabaseViewConnection *viewConnection = [abstractConnection view:viewName];
-		if (viewConnection)
+		YapAbstractDatabaseExtensionConnection *extConnection = [abstractConnection extension:extensionName];
+		if (extConnection)
 		{
-			viewTransaction = [viewConnection newTransaction:self];
-			if ([viewTransaction prepareIfNeeded])
+			extTransaction = [extConnection newTransaction:self];
+			
+			if ([extTransaction prepareIfNeeded])
 			{
-				[views setObject:viewTransaction forKey:viewName];
+				[extensions setObject:extTransaction forKey:extensionName];
+			}
+			else
+			{
+				extTransaction = nil;
 			}
 		}
 	}
-	else if (![viewTransaction prepareIfNeeded])
-	{
-		[views removeObjectForKey:viewName];
-		viewTransaction = nil;
-	}
 	
-	return viewTransaction;
+	return extTransaction;
 }
 
 #pragma mark Internal API
 
-- (NSDictionary *)views
+- (NSDictionary *)extensions
 {
-	if (viewsReady)
-		return views;
+	if (extensionsReady)
+		return extensions;
 	
-	if (views == nil)
-		views = [[NSMutableDictionary alloc] init];
+	if (extensions == nil)
+		extensions = [[NSMutableDictionary alloc] init];
 	
-	NSDictionary *viewConnections = [abstractConnection views];
+	NSDictionary *extConnections = [abstractConnection extensions];
 	
-	[viewConnections enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+	[extConnections enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 		
-		__unsafe_unretained NSString *viewName = key;
-		__unsafe_unretained YapAbstractDatabaseViewConnection *viewConnection = obj;
+		__unsafe_unretained NSString *extName = key;
+		__unsafe_unretained YapAbstractDatabaseExtensionConnection *extConnection = obj;
 		
-		YapAbstractDatabaseViewTransaction *viewTransaction = [views objectForKey:viewName];
-		if (viewTransaction == nil)
+		YapAbstractDatabaseExtensionTransaction *extTransaction = [extensions objectForKey:extName];
+		if (extTransaction == nil)
 		{
-			viewTransaction = [viewConnection newTransaction:self];
-			if ([viewTransaction prepareIfNeeded])
+			extTransaction = [extConnection newTransaction:self];
+			if ([extTransaction prepareIfNeeded])
 			{
-				[views setObject:viewTransaction forKey:viewName];
+				[extensions setObject:extTransaction forKey:extName];
 			}
-		}
-		else if (![viewTransaction prepareIfNeeded])
-		{
-			[views removeObjectForKey:viewName];
 		}
 	}];
 	
-	viewsReady = YES;
-	return views;
+	extensionsReady = YES;
+	return extensions;
 }
 
 @end

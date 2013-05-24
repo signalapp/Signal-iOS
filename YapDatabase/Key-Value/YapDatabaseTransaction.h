@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 
 #import "YapAbstractDatabaseTransaction.h"
-#import "YapAbstractDatabaseViewTransaction.h"
+#import "YapAbstractDatabaseExtensionTransaction.h"
 
 /**
  * Transactions represent atomic access to a database.
@@ -252,11 +252,11 @@
 **/
 - (void)removeAllObjects;
 
-#pragma mark Views
+#pragma mark Extensions
 
 /**
  * 
 **/
-- (void)dropView:(NSString *)viewName;
+- (void)dropExtension:(NSString *)extensionName;
 
 @end

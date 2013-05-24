@@ -1,6 +1,6 @@
 #import "YapDatabaseViewConnection.h"
 #import "YapDatabaseViewPrivate.h"
-#import "YapAbstractDatabaseViewPrivate.h"
+#import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapAbstractDatabasePrivate.h"
 #import "YapCache.h"
 #import "YapDatabaseLogging.h"
@@ -34,9 +34,10 @@
 	sqlite3_stmt *pageTable_removeAllStatement;
 }
 
-- (id)initWithView:(YapAbstractDatabaseView *)view databaseConnection:(YapAbstractDatabaseConnection *)connection
+- (id)initWithExtension:(YapAbstractDatabaseExtension *)inExtension
+     databaseConnection:(YapAbstractDatabaseConnection *)inDatabaseConnection
 {
-	if ((self = [super initWithView:view databaseConnection:connection]))
+	if ((self = [super initWithExtension:inExtension databaseConnection:inDatabaseConnection]))
 	{
 		keyCache = [[YapCache alloc] init];
 		pageCache = [[YapCache alloc] init];
@@ -44,13 +45,18 @@
 	return self;
 }
 
+- (YapDatabaseView *)view
+{
+	return (YapDatabaseView *)extension;
+}
+
 /**
- * Required override method from YapAbstractDatabaseViewConnection.
+ * Required override method from YapAbstractDatabaseExtensionConnection.
 **/
 - (id)newTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
 {
-	return [[YapDatabaseViewTransaction alloc] initWithViewConnection:self
-	                                              databaseTransaction:databaseTransaction];
+	return [[YapDatabaseViewTransaction alloc] initWithExtensionConnection:self
+	                                                   databaseTransaction:databaseTransaction];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59,12 +65,12 @@
 
 - (NSString *)keyTableName
 {
-	return [(YapDatabaseView *)abstractView keyTableName];
+	return [(YapDatabaseView *)extension keyTableName];
 }
 
 - (NSString *)pageTableName
 {
-	return [(YapDatabaseView *)abstractView pageTableName];
+	return [(YapDatabaseView *)extension pageTableName];
 }
 
 - (NSMutableDictionary *)groupPagesDictDeepCopy:(NSDictionary *)inGroupPagesDict

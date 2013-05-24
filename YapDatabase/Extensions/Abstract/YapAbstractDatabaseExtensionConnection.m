@@ -1,17 +1,18 @@
-#import "YapAbstractDatabaseViewConnection.h"
-#import "YapAbstractDatabaseViewPrivate.h"
+#import "YapAbstractDatabaseExtensionConnection.h"
+#import "YapAbstractDatabaseExtensionPrivate.h"
 
 
-@implementation YapAbstractDatabaseViewConnection
+@implementation YapAbstractDatabaseExtensionConnection
 
-@synthesize abstractView = abstractView;
+@synthesize abstractExtension = extension;
 
-- (id)initWithView:(YapAbstractDatabaseView *)view databaseConnection:(YapAbstractDatabaseConnection *)connection
+- (id)initWithExtension:(YapAbstractDatabaseExtension *)inExtension
+     databaseConnection:(YapAbstractDatabaseConnection *)inDatabaseConnection
 {
 	if ((self = [super init]))
 	{
-		abstractView = view;
-		databaseConnection = connection;
+		extension = inExtension;
+		databaseConnection = inDatabaseConnection;
 	}
 	return self;
 }
