@@ -249,10 +249,10 @@
 		snapshotQueue = dispatch_queue_create("YapDatabase-Snapshot", NULL);
 		writeQueue    = dispatch_queue_create("YapDatabase-Write", NULL);
 		
-		extensions = [[NSMutableDictionary alloc] init];
-		
 		changesets = [[NSMutableArray alloc] init];
 		connectionStates = [[NSMutableArray alloc] init];
+		
+		extensions = [[NSMutableDictionary alloc] init];
 		
 		// Mark the snapshotQueue so we can identify it.
 		// There are several methods whose use is restricted to within the snapshotQueue.

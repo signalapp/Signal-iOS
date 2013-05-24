@@ -132,7 +132,7 @@
 		cacheSnapshot = [database snapshot];
 		registeredExtensions = [database registeredExtensions];
 		
-		dirtyExtensions = [registeredExtensions count] > 0;
+		extensionsReady = ([registeredExtensions count] == 0);
 	});
 }
 
@@ -371,7 +371,7 @@
 		
 		extConnection = [extensions objectForKey:extName];
 		
-		if (extConnection == nil)
+		if (!extConnection && !extensionsReady)
 		{
 			// We don't have an existing connection for the extension.
 			// Create one (if we can).
@@ -397,7 +397,7 @@
 {
 	// This method is INTERNAL
 	
-	if (dirtyExtensions)
+	if (!extensionsReady)
 	{
 		[registeredExtensions enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 			
@@ -411,7 +411,7 @@
 			}
 		}];
 		
-		dirtyExtensions = NO;
+		extensionsReady = YES;
 	}
 	
 	return extensions;
@@ -1443,24 +1443,48 @@
 **/
 - (void)processChangeset:(NSDictionary *)changeset
 {
-	NSDictionary *changeset_extensions = [changeset objectForKey:@"extensions"];
-	
-	if ([changeset_extensions count] == 0)
-		return;
-	
-	// Use existing extensions (extensions ivar, not [self extensions]).
-	// There's no need to create any new extConnections at this point.
-	
-	[extensions enumerateKeysAndObjectsUsingBlock:^(id extName, id extConnectionObj, BOOL *stop) {
+	NSDictionary *changeset_registeredExtensions = [changeset objectForKey:@"registeredExtensions"];
+	if (changeset_registeredExtensions)
+	{
+		// Retain new list
 		
-		__unsafe_unretained YapAbstractDatabaseExtensionConnection *extConnection = extConnectionObj;
+		registeredExtensions = changeset_registeredExtensions;
 		
-		NSDictionary *changeset_extensions_extName = [changeset_extensions objectForKey:extName];
-		if (changeset_extensions_extName)
+		// Remove any extensions that have been dropped
+		
+		for (NSString *extName in [extensions allKeys])
 		{
-			[extConnection processChangeset:changeset_extensions_extName];
+			if ([registeredExtensions objectForKey:extName] == nil)
+			{
+				YDBLogVerbose(@"Dropping extension: %@", extName);
+				
+				[extensions removeObjectForKey:extName];
+			}
 		}
-	}];
+		
+		// Make a note if there are extensions for which we haven't instantiated an extConnection instance.
+		// We lazily load these later, if needed.
+		
+		extensionsReady = ([registeredExtensions count] == [extensions count]);
+	}
+	
+	NSDictionary *changeset_extensions = [changeset objectForKey:@"extensions"];
+	if (changeset_extensions)
+	{
+		// Use existing extensions (extensions ivar, not [self extensions]).
+		// There's no need to create any new extConnections at this point.
+		
+		[extensions enumerateKeysAndObjectsUsingBlock:^(id extName, id extConnectionObj, BOOL *stop) {
+			
+			__unsafe_unretained YapAbstractDatabaseExtensionConnection *extConnection = extConnectionObj;
+			
+			NSDictionary *changeset_extensions_extName = [changeset_extensions objectForKey:extName];
+			if (changeset_extensions_extName)
+			{
+				[extConnection processChangeset:changeset_extensions_extName];
+			}
+		}];
+	}
 }
 
 /**
@@ -1521,34 +1545,7 @@
 	YDBLogVerbose(@"Processing changeset %@ for connection %@, database %@",
 	              [changeset objectForKey:@"snapshot"], self, self->database);
 	
-	// Internal processing
-	
-	NSDictionary *newRegisteredExtensions = [changeset objectForKey:@"registeredExtensions"];
-	if (newRegisteredExtensions)
-	{
-		// Retain new list
-		
-		registeredExtensions = newRegisteredExtensions;
-		
-		// Remove any extensions that have been dropped
-		
-		for (NSString *extName in [extensions allKeys])
-		{
-			if ([registeredExtensions objectForKey:extName] == nil)
-			{
-				YDBLogVerbose(@"Dropping extension: %@", extName);
-				
-				[extensions removeObjectForKey:extName];
-			}
-		}
-		
-		// Make a note if there are extensions for which we haven't instantiated an extConnection instance.
-		// We lazily load these later, if needed.
-		
-		dirtyExtensions = [registeredExtensions count] != [extensions count];
-	}
-	
-	// Subclass processing
+	// Changeset processing
 	
 	[self processChangeset:changeset];
 }

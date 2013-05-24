@@ -7,8 +7,8 @@
  * The project page has a wealth of documentation if you have any questions.
  * https://github.com/yaptv/YapDatabase
  *
- * If you're new to the project you may wish to read the "Hello World" wiki.
- * https://github.com/yaptv/YapDatabase/wiki/Hello-World
+ * If you're new to the project you may want to visit the wiki.
+ * https://github.com/yaptv/YapDatabase/wiki
  *
  * This is the base database class which is shared by YapDatabase and YapCollectionsDatabase.
  *
@@ -31,6 +31,22 @@
 @interface YapAbstractDatabase : NSObject
 
 #pragma mark Shared class methods
+
+/**
+ * How does YapDatabase store my objects to disk?
+ *
+ * That question is answered extensively in the wiki article "Storing Objects":
+ * https://github.com/yaptv/YapDatabase/wiki/Storing-Objects
+ * 
+ * Here's the intro from the wiki article:
+ * 
+ * > In order to store an object to disk (via YapDatabase or any other protocol) you need some way of
+ * > serializing the object. That is, convert the object into a big blob of bytes. And then, to get your
+ * > object back from the disk you deserialize it (convert big blob of bytes back into object form).
+ * >
+ * > With YapDatabase, you can choose the default serialization/deserialization process,
+ * > or you can customize it and use your own routines.
+**/
 
 /**
  * The default serializer & deserializer use NSCoding (NSKeyedArchiver & NSKeyedUnarchiver).

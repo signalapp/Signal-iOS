@@ -3,6 +3,33 @@
 
 @class YapAbstractDatabase;
 
+/**
+ * Welcome to YapDatabase!
+ *
+ * The project page has a wealth of documentation if you have any questions.
+ * https://github.com/yaptv/YapDatabase
+ *
+ * If you're new to the project you may want to visit the wiki.
+ * https://github.com/yaptv/YapDatabase/wiki
+ * 
+ * This is the base class which is shared by YapDatabaseConnection and YapCollectionsDatabaseConnection.
+ *
+ * - YapDatabase = Key/Value
+ * - YapCollectionsDatabase = Collection/Key/Value
+ * 
+ * From a single YapDatabase (or YapCollectionsDatabase) instance you can create multiple connections.
+ * Each connection is thread-safe and may be used concurrently.
+ *
+ * YapAbstractDatabaseConnection provides the generic implementation of a database connection such as:
+ * - common properties
+ * - common initializers
+ * - common setup code
+ * - stub methods which are overriden by subclasses
+ * 
+ * @see YapDatabaseConnection.h
+ * @see YapCollectionsDatabaseConnection.h
+**/
+
 typedef enum  {
 	YapDatabaseConnectionFlushMemoryLevelNone     = 0,
 	YapDatabaseConnectionFlushMemoryLevelMild     = 1,
@@ -10,15 +37,7 @@ typedef enum  {
 	YapDatabaseConnectionFlushMemoryLevelFull     = 3,
 } YapDatabaseConnectionFlushMemoryLevel;
 
-/**
- * This base class is shared by YapDatabaseConnection and YapCollectionsDatabaseConnection.
- *
- * It provides the generic implementation of a database such as:
- * - common properties
- * - common initializers
- * - common setup code
- * - stub methods which are overriden by subclasses
-**/
+
 @interface YapAbstractDatabaseConnection : NSObject
 
 /**

@@ -2,9 +2,20 @@
 
 
 /**
- * This base class is shared by YapDatabaseTransaction and YapCollectionsDatabaseTransaction.
+ * Welcome to YapDatabase!
  *
- * It provides the generic implementation of a transaction.
+ * The project page has a wealth of documentation if you have any questions.
+ * https://github.com/yaptv/YapDatabase
+ *
+ * If you're new to the project you may want to visit the wiki.
+ * https://github.com/yaptv/YapDatabase/wiki
+ *
+ * This is the base database class which is shared by YapDatabaseTransaction and YapCollectionsDatabaseTransaction.
+ *
+ * - YapDatabase = Key/Value
+ * - YapCollectionsDatabase = Collection/Key/Value
+ *
+ * YapAbstractDatabaseTransaction provides the generic implementation of a transaction.
 **/
 @interface YapAbstractDatabaseTransaction : NSObject
 
