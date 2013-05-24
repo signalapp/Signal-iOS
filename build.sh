@@ -20,7 +20,7 @@ IPHONESIMULATOR_GCC="${IPHONESIMULATOR_PLATFORM}/Developer/usr/bin/gcc"
 
 # Download OpenSSL
 
-curl -O http://www.openssl.org/source/openssl-${OPENSSL_VERSION} .tar.gz
+curl -O http://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz
 
 # Clean up whatever was left from our previous build
 
