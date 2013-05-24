@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.public_header_files = 'include/openssl/**/.h'
   s.preserve_paths = 'lib/libcrypto.a', 'lib/libssl.a'
   s.library	  = 'crypto', 'ssl'
-  s.xcconfig	 = { 'LIBRARY_SEARCH_PATHS' => '"$(SRCROOT)/Pods/lib/OpenSSL"' }
+  s.xcconfig	 = { 'LIBRARY_SEARCH_PATHS' => '"$(SRCROOT)/Pods/OpenSSL"' }
   
   s.pre_install do |pod, target_definition|
     Dir.chdir(pod.root){ `sh ./build.sh` }
