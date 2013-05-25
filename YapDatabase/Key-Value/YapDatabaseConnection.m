@@ -541,7 +541,7 @@
 	// - extensionNames
 	// - snapshot
 	
-	if ([objectChanges count] > 0 || [metadataChanges count] > 0 || [removedKeys count] > 0 ||allKeysRemoved)
+	if ([objectChanges count] > 0 || [metadataChanges count] > 0 || [removedKeys count] > 0 || allKeysRemoved)
 	{
 		if (changeset == nil)
 			changeset = [NSMutableDictionary dictionaryWithCapacity:5]; // +1 for snapshot

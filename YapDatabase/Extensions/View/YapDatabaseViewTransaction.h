@@ -1,7 +1,9 @@
 #import <Foundation/Foundation.h>
 #import "YapAbstractDatabaseExtensionTransaction.h"
 
-
+/**
+ * 
+**/
 @interface YapDatabaseViewTransaction : YapAbstractDatabaseExtensionTransaction
 
 - (NSUInteger)numberOfGroups;
@@ -15,6 +17,7 @@
 - (NSString *)groupForKey:(NSString *)key;
 
 - (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forKey:(NSString *)key;
+
 
 - (id)objectAtIndex:(NSUInteger)keyIndex inGroup:(NSString *)group;
 
