@@ -1594,10 +1594,10 @@
 			sqlite3_bind_text(statement, 1, _pageKey.str, _pageKey.length, SQLITE_STATIC);
 			
 			__attribute__((objc_precise_lifetime)) NSData *rawData = [self serializePage:page];
-			sqlite3_bind_blob(statement, 2, rawData.bytes, rawData.length, SQLITE_STATIC);
+			sqlite3_bind_blob(statement, 2, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
 			
 			__attribute__((objc_precise_lifetime)) NSData *rawMeta = [self serializeMetadata:pageMetadata];
-			sqlite3_bind_blob(statement, 3, rawMeta.bytes, rawMeta.length, SQLITE_STATIC);
+			sqlite3_bind_blob(statement, 3, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
 			
 			int status = sqlite3_step(statement);
 			if (status != SQLITE_DONE)
@@ -1652,7 +1652,7 @@
 			              @" - pageKey : %@", [self pageTableName], pageMetadata, pageKey);
 			
 			__attribute__((objc_precise_lifetime)) NSData *rawMeta = [self serializeMetadata:pageMetadata];
-			sqlite3_bind_blob(statement, 1, rawMeta.bytes, rawMeta.length, SQLITE_STATIC);
+			sqlite3_bind_blob(statement, 1, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
 			
 			YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
 			sqlite3_bind_text(statement, 2, _pageKey.str, _pageKey.length, SQLITE_STATIC);
