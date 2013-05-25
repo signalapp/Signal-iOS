@@ -154,7 +154,7 @@
 	{
 		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database\";";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &getCountStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getCountStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'getCountStatement': %d %s", status, sqlite3_errmsg(db));
@@ -170,7 +170,7 @@
 	{
 		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database\" WHERE \"key\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &getCountForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getCountForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'getCountForKeyStatement': %d %s", status, sqlite3_errmsg(db));
@@ -186,7 +186,7 @@
 	{
 		char *stmt = "SELECT \"data\" FROM \"database\" WHERE \"key\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &getDataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getDataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'getDataForKeyStatement': %d %s", status, sqlite3_errmsg(db));
@@ -202,7 +202,7 @@
 	{
 		char *stmt = "SELECT \"metadata\" FROM \"database\" WHERE \"key\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &getMetadataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getMetadataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'getMetadataForKeyStatement': %d %s", status, sqlite3_errmsg(db));
@@ -218,7 +218,7 @@
 	{
 		char *stmt = "SELECT \"data\", \"metadata\" FROM \"database\" WHERE \"key\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &getAllForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getAllForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'getAllForKeyStatement': %d %s", status, sqlite3_errmsg(db));
@@ -234,7 +234,7 @@
 	{
 		char *stmt = "UPDATE \"database\" SET \"metadata\" = ? WHERE \"key\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &setMetadataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &setMetadataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'setMetadataForKeyStatement': %d %s", status, sqlite3_errmsg(db));
@@ -250,7 +250,7 @@
 	{
 		char *stmt = "INSERT OR REPLACE INTO \"database\" (\"key\", \"data\", \"metadata\") VALUES (?, ?, ?);";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &setAllForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &setAllForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'setAllForKeyStatement': %d %s", status, sqlite3_errmsg(db));
@@ -266,7 +266,7 @@
 	{
 		char *stmt = "DELETE FROM \"database\" WHERE \"key\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &removeForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'removeForKeyStatement': %d %s", status, sqlite3_errmsg(db));
@@ -282,7 +282,7 @@
 	{
 		char *stmt = "DELETE FROM \"database\"";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &removeAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeAllStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'removeAllStatement': %d %s", status, sqlite3_errmsg(db));
@@ -298,7 +298,7 @@
 	{
 		char *stmt = "SELECT \"key\" FROM \"database\";";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &enumerateKeysStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateKeysStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'enumerateKeysStatement': %d %s", status, sqlite3_errmsg(db));
@@ -315,7 +315,7 @@
 	{
 		char *stmt = "SELECT \"key\", \"metadata\" FROM \"database\";";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &enumerateMetadataStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateMetadataStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'enumerateMetadataStatement': %d %s", status, sqlite3_errmsg(db));
@@ -331,7 +331,7 @@
 	{
 		char *stmt = "SELECT \"key\", \"data\", \"metadata\" FROM \"database\";";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &enumerateAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateAllStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'enumerateAllStatement': %d %s", status, sqlite3_errmsg(db));
