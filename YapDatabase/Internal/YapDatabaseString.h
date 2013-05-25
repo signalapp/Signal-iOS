@@ -59,7 +59,7 @@
  * But in the common case of short key/collection names, we can skip the more expensive heap allocation/deallocation.
 **/
 struct YapDatabaseString {
-	NSUInteger length;
+	int length;
 	char strStack[YapDatabaseStringMaxStackLength];
 	char *strHeap;
 	char *str; // Pointer to either strStack or strHeap
@@ -76,7 +76,10 @@ NS_INLINE void MakeYapDatabaseString(YapDatabaseString *dbStr, NSString *nsStr)
 {
 	if (nsStr)
 	{
-		dbStr->length = [nsStr lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+		// We convert to int because the sqlite3_bind_text() function expects an int parameter.
+		// So we can change it to int here, or we can cast everywhere throughout the project.
+		
+		dbStr->length = (int)[nsStr lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
 	
 		if ((dbStr->length + 1) <= YapDatabaseStringMaxStackLength)
 		{

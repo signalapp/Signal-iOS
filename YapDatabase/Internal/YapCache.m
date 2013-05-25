@@ -298,8 +298,8 @@
 			if (leastRecentCacheItem == nil)
 				leastRecentCacheItem = item;
 			
-			YDBLogVerbose(@"key(%@) <- new, new mostRecent [%ld of %d]",
-			              key, CFDictionaryGetCount(cfdict), countLimit);
+			YDBLogVerbose(@"key(%@) <- new, new mostRecent [%ld of %lu]",
+			              key, CFDictionaryGetCount(cfdict), (unsigned long)countLimit);
 		}
 	}
 	
@@ -312,7 +312,7 @@
 		
 		while (loopItem != nil)
 		{
-			YDBLogVerbose(@"%d: %@", i, loopItem);
+			YDBLogVerbose(@"%lu: %@", (unsigned long)i, loopItem);
 			
 			loopItem = loopItem->next;
 			i++;
