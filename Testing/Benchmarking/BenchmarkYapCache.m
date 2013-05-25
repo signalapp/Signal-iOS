@@ -26,7 +26,7 @@ static NSMutableArray *keys;
 	NSUInteger i;
 	for (i = 0; i < length; i++)
 	{
-		unichar c = [alphabet characterAtIndex:arc4random_uniform(alphabetLength)];
+		unichar c = [alphabet characterAtIndex:(NSUInteger)arc4random_uniform((uint32_t)alphabetLength)];
 		
 		[result appendFormat:@"%C", c];
 	}
@@ -54,7 +54,7 @@ static NSMutableArray *keys;
 		}
 		else
 		{
-			NSUInteger recentIndex = arc4random_uniform([recentKeys count]);
+			NSUInteger recentIndex = (NSUInteger)arc4random_uniform((uint32_t)[recentKeys count]);
 			
 			key = [recentKeys objectAtIndex:recentIndex];
 			

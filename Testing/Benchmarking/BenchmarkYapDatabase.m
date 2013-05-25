@@ -2,6 +2,8 @@
 #import "YapDatabase.h"
 #import "YapDatabaseConnection.h"
 
+#import <stdlib.h>
+
 @implementation BenchmarkYapDatabase
 
 static YapDatabase *database;
@@ -32,7 +34,8 @@ static NSMutableArray *keys;
 	NSUInteger i;
 	for (i = 0; i < length; i++)
 	{
-		unichar c = [alphabet characterAtIndex:arc4random_uniform(alphabetLength)];
+		uint32_t randomIndex = arc4random_uniform((uint32_t)alphabetLength);
+		unichar c = [alphabet characterAtIndex:(NSUInteger)randomIndex];
 		
 		[result appendFormat:@"%C", c];
 	}
@@ -119,8 +122,8 @@ static NSMutableArray *keys;
 		{
 			// Pick a random key in the cache
 			
-			NSUInteger index = arc4random_uniform([keysInCache count]);
-			NSString *key = [keysInCache objectAtIndex:index];
+			uint32_t randomIndex = arc4random_uniform((uint32_t)[keysInCache count]);
+			NSString *key = [keysInCache objectAtIndex:(NSUInteger)randomIndex];
 			
 			[keysToFetch addObject:key];
 			
@@ -134,8 +137,8 @@ static NSMutableArray *keys;
 			BOOL found = NO;
 			do {
 				
-				NSUInteger index = arc4random_uniform([keys count]);
-				NSString *key = [keys objectAtIndex:index];
+				uint32_t randomIndex = arc4random_uniform((uint32_t)[keys count]);
+				NSString *key = [keys objectAtIndex:(NSUInteger)randomIndex];
 				
 				if (![keysInCache containsObject:key])
 				{
