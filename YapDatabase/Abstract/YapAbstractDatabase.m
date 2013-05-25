@@ -423,12 +423,10 @@
 - (NSArray *)tableColumnNames
 {
 	sqlite3_stmt *pragmaStatement;
-	int status;
 	
-	char *query = "PRAGMA table_info(database);";
-	int query_length = strlen(query);
+	char *stmt = "PRAGMA table_info(database);";
 	
-	status = sqlite3_prepare_v2(db, query, query_length+1, &pragmaStatement, NULL);
+	int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &pragmaStatement, NULL);
 	if (status != SQLITE_OK)
 	{
 		YDBLogError(@"Error creating pragma table_info statement! %d %s", status, sqlite3_errmsg(db));
@@ -465,10 +463,9 @@
 	int status;
 	int user_version;
 	
-	char *query = "PRAGMA user_version;";
-	int query_length = strlen(query);
+	char *stmt = "PRAGMA user_version;";
 	
-	status = sqlite3_prepare_v2(db, query, query_length+1, &pragmaStatement, NULL);
+	status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &pragmaStatement, NULL);
 	if (status != SQLITE_OK)
 	{
 		YDBLogError(@"Error creating pragma user_version statement! %d %s", status, sqlite3_errmsg(db));
@@ -597,7 +594,6 @@
 - (void)prepare
 {
 	int status;
-	char *query;
 	sqlite3_stmt *statement;
 	
 	// Step 1 of 4: Begin transaction
@@ -614,9 +610,9 @@
 	
 	snapshot = 0;
 	
-	query = "INSERT OR REPLACE INTO \"yap\" (\"key\", \"data\") VALUES (?, ?);";
+	char *stmt = "INSERT OR REPLACE INTO \"yap\" (\"key\", \"data\") VALUES (?, ?);";
 	
-	status = sqlite3_prepare_v2(db, query, strlen(query)+1, &statement, NULL);
+	status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &statement, NULL);
 	if (status != SQLITE_OK)
 	{
 		YDBLogError(@"%@: Error creating update snapshot statement: %d %s",
@@ -627,10 +623,10 @@
 		NSNumber *number = [NSNumber numberWithUnsignedLongLong:snapshot];
 		
 		char *key = "snapshot";
-		sqlite3_bind_text(statement, 1, key, strlen(key), SQLITE_STATIC);
+		sqlite3_bind_text(statement, 1, key, (int)strlen(key), SQLITE_STATIC);
 		
 		__attribute__((objc_precise_lifetime)) NSData *data = [NSKeyedArchiver archivedDataWithRootObject:number];
-		sqlite3_bind_blob(statement, 2, data.bytes, data.length, SQLITE_STATIC);
+		sqlite3_bind_blob(statement, 2, data.bytes, (int)data.length, SQLITE_STATIC);
 		
 		status = sqlite3_step(statement);
 		if (status != SQLITE_DONE)

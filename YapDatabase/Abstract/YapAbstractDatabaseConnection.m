@@ -412,7 +412,7 @@
 	{
 		char *stmt = "BEGIN TRANSACTION;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &beginTransactionStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &beginTransactionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'beginTransactionStatement': %d %s", status, sqlite3_errmsg(db));
@@ -428,7 +428,7 @@
 	{
 		char *stmt = "COMMIT TRANSACTION;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &commitTransactionStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &commitTransactionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'commitTransactionStatement': %d %s", status, sqlite3_errmsg(db));
@@ -444,7 +444,7 @@
 	{
 		char *stmt = "ROLLBACK TRANSACTION;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &rollbackTransactionStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &rollbackTransactionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'rollbackTransactionStatement': %d %s", status, sqlite3_errmsg(db));
@@ -460,7 +460,7 @@
 	{
 		char *stmt = "SELECT \"data\" FROM \"yap\" WHERE \"key\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &yapGetDataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &yapGetDataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'yapGetDataForKeyStatement': %d %s", status, sqlite3_errmsg(db));
@@ -476,7 +476,7 @@
 	{
 		char *stmt = "INSERT OR REPLACE INTO \"yap\" (\"key\", \"data\") VALUES (?, ?);";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &yapSetDataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &yapSetDataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'yapSetDataForKeyStatement': %d %s", status, sqlite3_errmsg(db));
@@ -1162,7 +1162,7 @@
 	// SELECT data FROM 'yap' WHERE key = ? ;
 	
 	char *key = "snapshot";
-	sqlite3_bind_text(statement, 1, key, strlen(key), SQLITE_STATIC);
+	sqlite3_bind_text(statement, 1, key, (int)strlen(key), SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
@@ -1211,10 +1211,10 @@
 	// INSERT OR REPLACE INTO "yap" ("key", "data") VALUES (?, ?);
 	
 	char *key = "snapshot";
-	sqlite3_bind_text(statement, 1, key, strlen(key), SQLITE_STATIC);
+	sqlite3_bind_text(statement, 1, key, (int)strlen(key), SQLITE_STATIC);
 	
 	__attribute__((objc_precise_lifetime)) NSData *data = [NSKeyedArchiver archivedDataWithRootObject:number];
-	sqlite3_bind_blob(statement, 2, data.bytes, data.length, SQLITE_STATIC);
+	sqlite3_bind_blob(statement, 2, data.bytes, (int)data.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
