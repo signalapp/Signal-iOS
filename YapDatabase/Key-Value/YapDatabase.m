@@ -79,8 +79,7 @@
 	
 	int status;
 	sqlite3_stmt *statement;
-	char *query;
-	int queryLength;
+	char *stmt;
 	
 	__block BOOL error = NO;
 	
@@ -111,10 +110,9 @@
 	// Step 3 of 6:
 	// Read the "__indexes" field from the database
 	
-	query = "SELECT \"data\" FROM \"database\" WHERE \"key\" = __indexes;";
-	queryLength = strlen(query);
+	stmt = "SELECT \"data\" FROM \"database\" WHERE \"key\" = __indexes;";
 	
-	status = sqlite3_prepare_v2(db, query, queryLength+1, &statement, NULL);
+	status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &statement, NULL);
 	if (status != SQLITE_OK)
 	{
 		YDBLogError(@"%@: Error creating select statement: %d %s",
@@ -154,10 +152,9 @@
 	
 	if ([timestamps count] > 0)
 	{
-		query = "UPDATE \"database\" SET \"metadata\" = ? WHERE \"key\" = ?;";
-		queryLength = strlen(query);
+		stmt = "UPDATE \"database\" SET \"metadata\" = ? WHERE \"key\" = ?;";
 		
-		status = sqlite3_prepare_v2(db, query, queryLength+1, &statement, NULL);
+		status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating update statement: %d %s",
@@ -176,7 +173,7 @@
 					
 					__attribute__((objc_precise_lifetime)) NSData *rawMeta = self.metadataSerializer(obj);
 					
-					sqlite3_bind_blob(statement, 1, rawMeta.bytes, rawMeta.length, SQLITE_STATIC);
+					sqlite3_bind_blob(statement, 1, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
 					sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
 					
 					int status = sqlite3_step(statement);

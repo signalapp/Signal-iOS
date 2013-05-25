@@ -945,10 +945,10 @@
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
 	sqlite3_bind_text(statement, 1, _key.str, _key.length, SQLITE_STATIC);
 	
-	sqlite3_bind_blob(statement, 2, data.bytes, data.length, SQLITE_STATIC);
+	sqlite3_bind_blob(statement, 2, data.bytes, (int)data.length, SQLITE_STATIC);
 	
 	__attribute__((objc_precise_lifetime)) NSData *rawMeta = connection.database.metadataSerializer(metadata);
-	sqlite3_bind_blob(statement, 3, rawMeta.bytes, rawMeta.length, SQLITE_STATIC);
+	sqlite3_bind_blob(statement, 3, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
@@ -1007,10 +1007,10 @@
 	sqlite3_bind_text(statement, 1, _key.str, _key.length, SQLITE_STATIC);
 	
 	__attribute__((objc_precise_lifetime)) NSData *rawData = connection.database.objectSerializer(object);
-	sqlite3_bind_blob(statement, 2, rawData.bytes, rawData.length, SQLITE_STATIC);
+	sqlite3_bind_blob(statement, 2, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
 	
 	__attribute__((objc_precise_lifetime)) NSData *rawMeta = connection.database.metadataSerializer(metadata);
-	sqlite3_bind_blob(statement, 3, rawMeta.bytes, rawMeta.length, SQLITE_STATIC);
+	sqlite3_bind_blob(statement, 3, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
@@ -1060,7 +1060,7 @@
 	// This ensures the data isn't released until it goes out of scope.
 	
 	__attribute__((objc_precise_lifetime)) NSData *rawMeta = connection.database.metadataSerializer(metadata);
-	sqlite3_bind_blob(statement, 1, rawMeta.bytes, rawMeta.length, SQLITE_STATIC);
+	sqlite3_bind_blob(statement, 1, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
 	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);

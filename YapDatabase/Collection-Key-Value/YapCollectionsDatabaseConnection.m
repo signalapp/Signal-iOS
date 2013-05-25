@@ -142,7 +142,7 @@
 	{
 		char *stmt = "SELECT COUNT(DISTINCT collection) AS NumberOfRows FROM \"database\";";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &getCollectionCountStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getCollectionCountStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'getCollectionCountStatement': %d %s", status, sqlite3_errmsg(db));
@@ -158,7 +158,7 @@
 	{
 		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database\" WHERE \"collection\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &getKeyCountForCollectionStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getKeyCountForCollectionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'getKeyCountForCollectionStatement': %d %s", status, sqlite3_errmsg(db));
@@ -174,7 +174,7 @@
 	{
 		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database\";";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &getKeyCountForAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getKeyCountForAllStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'getKeyCountForAllStatement': %d %s", status, sqlite3_errmsg(db));
@@ -190,7 +190,7 @@
 	{
 		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database\" WHERE \"collection\" = ? AND \"key\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &getCountForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getCountForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'getCountForKeyStatement': %d %s", status, sqlite3_errmsg(db));
@@ -206,7 +206,7 @@
 	{
 		char *stmt = "SELECT \"data\" FROM \"database\" WHERE \"collection\" = ? AND \"key\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &getDataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getDataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'getDataForKeyStatement'! %d %s", status, sqlite3_errmsg(db));
@@ -222,7 +222,7 @@
 	{
 		char *stmt = "SELECT \"metadata\" FROM \"database\" WHERE \"collection\" = ? AND \"key\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &getMetadataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getMetadataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'getMetadataForKeyStatement': %d %s", status, sqlite3_errmsg(db));
@@ -238,7 +238,7 @@
 	{
 		char *stmt = "SELECT \"data\", \"metadata\" FROM \"database\" WHERE \"collection\" = ? AND \"key\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &getAllForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getAllForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'getAllForKeyStatement': %d %s", status, sqlite3_errmsg(db));
@@ -254,7 +254,7 @@
 	{
 		char *stmt = "UPDATE \"database\" SET \"metadata\" = ? WHERE \"collection\" = ? AND \"key\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &setMetaForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &setMetaForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'setMetaForKeyStatement'! %d %s", status, sqlite3_errmsg(db));
@@ -271,7 +271,7 @@
 		char *stmt = "INSERT OR REPLACE INTO \"database\""
 		              " (\"collection\", \"key\", \"data\", \"metadata\") VALUES (?, ?, ?, ?);";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &setAllForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &setAllForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'setAllForKeyStatement'! %d %s", status, sqlite3_errmsg(db));
@@ -287,7 +287,7 @@
 	{
 		char *stmt = "DELETE FROM \"database\" WHERE \"collection\" = ? AND \"key\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &removeForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'removeForKeyStatement'! %d %s", status, sqlite3_errmsg(db));
@@ -303,7 +303,7 @@
 	{
 		char *stmt = "DELETE FROM \"database\" WHERE \"collection\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &removeCollectionStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeCollectionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'removeAllStatement'! %d %s", status, sqlite3_errmsg(db));
@@ -319,7 +319,7 @@
 	{
 		char *stmt = "DELETE FROM \"database\";";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &removeAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeAllStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'removeAllStatement'! %d %s", status, sqlite3_errmsg(db));
@@ -335,7 +335,7 @@
 	{
 		char *stmt = "SELECT DISTINCT \"collection\" FROM \"database\";";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &enumerateCollectionsStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateCollectionsStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'enumerateCollectionsStatement'! %d %s", status, sqlite3_errmsg(db));
@@ -351,7 +351,7 @@
 	{
 		char *stmt = "SELECT \"key\" FROM \"database\" WHERE collection = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &enumerateKeysInCollectionStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateKeysInCollectionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'enumerateKeysInCollectionStatement'! %d %s", status, sqlite3_errmsg(db));
@@ -367,7 +367,7 @@
 	{
 		char *stmt = "SELECT \"key\", \"metadata\" FROM \"database\" WHERE collection = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &enumerateMetadataInCollectionStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateMetadataInCollectionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'enumerateMetadataInCollectionStatement'! %d %s", status, sqlite3_errmsg(db));
@@ -382,8 +382,9 @@
 	if (enumerateMetadataInAllCollectionsStatement == NULL)
 	{
 		char *stmt = "SELECT \"collection\", \"key\", \"metadata\" FROM \"database\" ORDER BY \"collection\" ASC;";
+		int status;
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &enumerateMetadataInAllCollectionsStatement, NULL);
+		status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateMetadataInAllCollectionsStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'enumerateMetadataInAllCollectionsStatement'! %d %s",
@@ -399,8 +400,8 @@
 	if (enumerateAllInCollectionStatement == NULL)
 	{
 		char *stmt = "SELECT \"key\", \"data\", \"metadata\" FROM \"database\" WHERE \"collection\" = ?;";
-		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &enumerateAllInCollectionStatement, NULL);
+				
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateAllInCollectionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'enumerateAllInCollectionStatement'! %d %s", status, sqlite3_errmsg(db));
@@ -419,7 +420,7 @@
 		    " FROM \"database\""
 		    " ORDER BY \"collection\" ASC;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &enumerateAllInAllCollectionsStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateAllInAllCollectionsStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'enumerateAllInAllCollectionsStatement'! %d %s", status, sqlite3_errmsg(db));
