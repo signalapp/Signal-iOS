@@ -30,7 +30,8 @@
 	NSUInteger i;
 	for (i = 0; i < length; i++)
 	{
-		unichar c = [alphabet characterAtIndex:(arc4random_uniform(alphabetLength))];
+		uint32_t randomIndex = arc4random_uniform((uint32_t)alphabetLength);
+		unichar c = [alphabet characterAtIndex:(NSUInteger)randomIndex];
 		
 		[result appendFormat:@"%C", c];
 	}
