@@ -417,12 +417,14 @@
 {
 	if (key == nil)
 	{
-		YDBLogWarn(@"Cannot insert object in collection(%@) atIndex(%ud) with nil key.", collection, index);
+		YDBLogWarn(@"Cannot insert object in collection(%@) atIndex(%lu) with nil key.",
+		           collection, (unsigned long)index);
 		return;
 	}
 	if (object == nil)
 	{
-		YDBLogWarn(@"Cannot insert nil object for collection(%@) key(%@) atIndex(%ud).", collection, key, index);
+		YDBLogWarn(@"Cannot insert nil object for collection(%@) key(%@) atIndex(%lu).",
+		           collection, key, (unsigned long)index);
 		return;
 	}
 	
@@ -581,7 +583,7 @@
 	
 	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
 	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
-	sqlite3_bind_blob(statement, 3, data.bytes, data.length, SQLITE_STATIC);
+	sqlite3_bind_blob(statement, 3, data.bytes, (int)data.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)

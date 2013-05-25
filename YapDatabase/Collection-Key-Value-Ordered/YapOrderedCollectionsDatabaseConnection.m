@@ -89,7 +89,7 @@
 	{
 		char *stmt = "SELECT \"data\" FROM \"order\" WHERE \"collection\" = ? AND \"key\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &getOrderDataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getOrderDataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'getOrderDataForKeyStatement': %d %s", status, sqlite3_errmsg(db));
@@ -105,7 +105,7 @@
 	{
 		char *stmt = "INSERT OR REPLACE INTO \"order\" (\"collection\", \"key\", \"data\") VALUES (?, ?, ?);";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &setOrderDataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &setOrderDataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'setOrderDataForKeyStatement': %d %s", status, sqlite3_errmsg(db));
@@ -121,7 +121,7 @@
 	{
 		char *stmt = "DELETE FROM \"order\" WHERE \"collection\" = ? AND \"key\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &removeOrderDataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeOrderDataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'removeOrderDataForKeyStatement': %d %s", status, sqlite3_errmsg(db));
@@ -137,7 +137,7 @@
 	{
 		char *stmt = "DELETE FROM \"order\" WHERE \"collection\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &removeOrderDataForCollectionStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeOrderDataForCollectionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'removeOrderDataForCollectionStatement': %d %s", status, sqlite3_errmsg(db));
@@ -153,7 +153,7 @@
 	{
 		char *stmt = "DELETE FROM \"order\";";
 		
-		int status = sqlite3_prepare_v2(db, stmt, strlen(stmt)+1, &removeAllOrderDataStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeAllOrderDataStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating 'removeAllOrderDataStatement'! %d %s", status, sqlite3_errmsg(db));

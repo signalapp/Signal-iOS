@@ -426,7 +426,7 @@
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
 	
 	sqlite3_bind_text(statement, 1, _key.str, _key.length, SQLITE_STATIC);
-	sqlite3_bind_blob(statement, 2, data.bytes, data.length, SQLITE_STATIC);
+	sqlite3_bind_blob(statement, 2, data.bytes, (int)data.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
