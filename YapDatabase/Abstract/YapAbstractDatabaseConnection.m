@@ -80,7 +80,9 @@
 		metadataCache = [[YapCache alloc] initWithKeyClass:[database cacheKeyClass]];
 		metadataCache.countLimit = metadataCacheLimit;
 		
+		#if TARGET_OS_IPHONE
 		self.autoFlushMemoryLevel = YapDatabaseConnectionFlushMemoryLevelMild;
+		#endif
 		
 		// Open the database connection.
 		//
@@ -486,10 +488,12 @@
 		dispatch_sync(connectionQueue, block);
 }
 
+#if TARGET_OS_IPHONE
 - (void)didReceiveMemoryWarning:(NSNotification *)notification
 {
 	[self flushMemoryWithLevel:[self autoFlushMemoryLevel]];
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Statements
