@@ -849,6 +849,237 @@
 		}
 	}];
 	
+	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+		
+		// Add all the keys back. Some are already included.
+		
+		[transaction setObject:object0 forKey:key0];              // Already included
+		[transaction setObject:object1 forKey:key1];              // Already included
+		[transaction setObject:object2 forKey:key2]; keysCount++; // Included
+		[transaction setObject:object3 forKey:key3]; keysCount++; // Included
+		[transaction setObject:object4 forKey:key4]; keysCount++; // Included
+		[transaction setObject:objectX forKey:keyX];              // Excluded !
+		
+		STAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
+		STAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
+		
+		STAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
+		STAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		
+		NSArray *keys = @[ key0, key1, key2, key3, key4 ];
+		
+		NSUInteger index = 0;
+		for (NSString *key in keys)
+		{
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];;
+			
+			STAssertTrue([fetchedKey isEqualToString:key],
+						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+			
+			index++;
+		}
+		
+		for (NSString *key in keys)
+		{
+			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key];
+			
+			STAssertTrue([fetchedGroup isEqualToString:@""], @"Wrong group(%@) for key(%@)", fetchedGroup, key);
+		}
+		
+		index = 0;
+		for (NSString *key in keys)
+		{
+			NSString *fetchedGroup = nil;
+			NSUInteger fetchedIndex = NSNotFound;
+			
+			BOOL result = [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key];
+			
+			STAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
+			
+			STAssertTrue([fetchedGroup isEqualToString:@""],
+			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, index);
+			
+			STAssertTrue(fetchedIndex == index,
+			             @"Wrong index(%d) for key(%@) at index(%d)", fetchedIndex, key, index);
+			
+			index++;
+		}
+	}];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction){
+		
+		// Read the changes
+		
+		STAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
+		STAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
+		
+		STAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
+		STAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		
+		NSArray *keys = @[ key0, key1, key2, key3, key4 ];
+		
+		NSUInteger index = 0;
+		for (NSString *key in keys)
+		{
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];;
+			
+			STAssertTrue([fetchedKey isEqualToString:key],
+						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+			
+			index++;
+		}
+		
+		for (NSString *key in keys)
+		{
+			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key];
+			
+			STAssertTrue([fetchedGroup isEqualToString:@""], @"Wrong group(%@) for key(%@)", fetchedGroup, key);
+		}
+		
+		index = 0;
+		for (NSString *key in keys)
+		{
+			NSString *fetchedGroup = nil;
+			NSUInteger fetchedIndex = NSNotFound;
+			
+			BOOL result = [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key];
+			
+			STAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
+			
+			STAssertTrue([fetchedGroup isEqualToString:@""],
+			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, index);
+			
+			STAssertTrue(fetchedIndex == index,
+			             @"Wrong index(%d) for key(%@) at index(%d)", fetchedIndex, key, index);
+			
+			index++;
+		}
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
+		
+		// Test enumeration
+		
+		__block NSUInteger correctIndex;
+		
+		NSArray *keys = @[ key0, key1, key2, key3, key4 ];
+		
+		// Basic enumeration
+		
+		correctIndex = 0;
+		[[transaction ext:@"order"] enumerateKeysInGroup:@""
+		                                      usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+			
+			STAssertTrue(index == correctIndex,
+						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
+			correctIndex++;
+			
+			NSString *correctKey = [keys objectAtIndex:index];
+			STAssertTrue([key isEqual:correctKey],
+						 @"Enumeration mismatch: (%@) vs (%@) at index %lu", key, correctKey, (unsigned long)index);
+		}];
+		
+		// Enumerate with options: forwards
+		
+		correctIndex = 0;
+		[[transaction ext:@"order"] enumerateKeysInGroup:@""
+		                                     withOptions:0
+		                                      usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+			
+			STAssertTrue(index == correctIndex,
+						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
+			correctIndex++;
+			
+			NSString *correctKey = [keys objectAtIndex:index];
+			STAssertTrue([key isEqual:correctKey],
+						 @"Enumeration mismatch: (%@) vs (%@) at index %lu", key, correctKey, (unsigned long)index);
+		}];
+		
+		// Enumerate with options: backwards
+		
+		correctIndex = 4;
+		[[transaction ext:@"order"] enumerateKeysInGroup:@""
+		                                     withOptions:NSEnumerationReverse
+		                                      usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+			
+			STAssertTrue(index == correctIndex,
+						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
+			correctIndex--;
+			
+			NSString *correctKey = [keys objectAtIndex:index];
+			STAssertTrue([key isEqual:correctKey],
+						 @"Enumeration mismatch: (%@) vs (%@) at index %lu", key, correctKey, (unsigned long)index);
+		}];
+		
+		// Enumerate with options & range: forwards, full range
+		
+		correctIndex = 0;
+		[[transaction ext:@"order"] enumerateKeysInGroup:@""
+		                                     withOptions:0
+		                                           range:NSMakeRange(0, 5)
+		                                      usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+			
+			STAssertTrue(index == correctIndex,
+						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
+			correctIndex++;
+			
+			NSString *correctKey = [keys objectAtIndex:index];
+			STAssertTrue([key isEqual:correctKey],
+						 @"Enumeration mismatch: (%@) vs (%@) at index %lu", key, correctKey, (unsigned long)index);
+		}];
+		
+		// Enumerate with options & range: backwards, full range
+		
+		correctIndex = 4;
+		[[transaction ext:@"order"] enumerateKeysInGroup:@""
+		                                     withOptions:NSEnumerationReverse
+		                                           range:NSMakeRange(0, 5)
+		                                      usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+			
+			STAssertTrue(index == correctIndex,
+						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
+			correctIndex--;
+			
+			NSString *correctKey = [keys objectAtIndex:index];
+			STAssertTrue([key isEqual:correctKey],
+						 @"Enumeration mismatch: (%@) vs (%@) at index %lu", key, correctKey, (unsigned long)index);
+		}];
+		
+		// Enumerate with options & range: forwards, subset range
+		
+		correctIndex = 1;
+		[[transaction ext:@"order"] enumerateKeysInGroup:@""
+		                                     withOptions:0
+		                                           range:NSMakeRange(1, 3)
+		                                      usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+			
+			STAssertTrue(index == correctIndex,
+						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
+			correctIndex++;
+			
+			NSString *correctKey = [keys objectAtIndex:index];
+			STAssertTrue([key isEqual:correctKey],
+						 @"Enumeration mismatch: (%@) vs (%@) at index %lu", key, correctKey, (unsigned long)index);
+		}];
+		
+		// Enumerate with options & range: backwards, subset range
+		
+		correctIndex = 3;
+		[[transaction ext:@"order"] enumerateKeysInGroup:@""
+		                                     withOptions:NSEnumerationReverse
+		                                           range:NSMakeRange(1, 3)
+		                                      usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+			
+			STAssertTrue(index == correctIndex,
+						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
+			correctIndex--;
+			
+			NSString *correctKey = [keys objectAtIndex:index];
+			STAssertTrue([key isEqual:correctKey],
+						 @"Enumeration mismatch: (%@) vs (%@) at index %lu", key, correctKey, (unsigned long)index);
+		}];
+	}];
+	
 	connection1 = nil;
 	connection2 = nil;
 }

@@ -634,9 +634,9 @@
 	YapDatabaseViewPageMetadata *pageMetadata = nil;
 	NSUInteger pageIndex = 0;
 	
-	NSMutableArray *pages = [viewConnection->groupPagesDict objectForKey:group];
+	NSMutableArray *pagesMetadataForGroup = [viewConnection->groupPagesDict objectForKey:group];
 	
-	for (YapDatabaseViewPageMetadata *pm in pages)
+	for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 	{
 		if ([pm->pageKey isEqualToString:pageKey])
 		{
@@ -670,7 +670,7 @@
 		
 		// Drop page
 		
-		[pages removeObjectAtIndex:pageIndex];
+		[pagesMetadataForGroup removeObjectAtIndex:pageIndex];
 		[viewConnection->pageKeyGroupDict removeObjectForKey:pageKey];
 		
 		// Mark page as dropped
@@ -690,7 +690,7 @@
 			//
 			// link->prev->next = link->next (except we only use next pointers)
 			
-			YapDatabaseViewPageMetadata *prevPageMetadata = [pages objectAtIndex:(pageIndex - 1)];
+			YapDatabaseViewPageMetadata *prevPageMetadata = [pagesMetadataForGroup objectAtIndex:(pageIndex - 1)];
 			prevPageMetadata->nextPageKey = pageMetadata->nextPageKey;
 			
 			[viewConnection->dirtyMetadata setObject:prevPageMetadata forKey:prevPageMetadata->pageKey];
@@ -698,7 +698,7 @@
 		
 		// Maybe drop group
 		
-		if ([pages count] == 0)
+		if ([pagesMetadataForGroup count] == 0)
 		{
 			YDBLogVerbose(@"Dropping empty group(%@)", group);
 			
@@ -768,19 +768,19 @@
 	// Update page metadata (by decrementing count)
 	
 	YapDatabaseViewPageMetadata *pageMetadata = nil;
-	NSUInteger pageMetadataIndex = 0;
+	NSUInteger pageIndex = 0;
 	
-	NSMutableArray *pages = [viewConnection->groupPagesDict objectForKey:group];
+	NSMutableArray *pagesMetadataForGroup = [viewConnection->groupPagesDict objectForKey:group];
 	
-	for (YapDatabaseViewPageMetadata *currentPageMetadata in pages)
+	for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 	{
-		if ([currentPageMetadata->pageKey isEqualToString:pageKey])
+		if ([pm->pageKey isEqualToString:pageKey])
 		{
-			pageMetadata = currentPageMetadata;
+			pageMetadata = pm;
 			break;
 		}
 		
-		pageMetadataIndex++;
+		pageIndex++;
 	}
 	
 	pageMetadata->count = pageCount;
@@ -806,7 +806,7 @@
 		
 		// Drop page
 		
-		[pages removeObjectAtIndex:pageMetadataIndex];
+		[pagesMetadataForGroup removeObjectAtIndex:pageIndex];
 		[viewConnection->pageKeyGroupDict removeObjectForKey:pageKey];
 		
 		// Mark page as dropped
@@ -820,13 +820,13 @@
 		
 		// Update page metadata linked-list pointers
 		
-		if (pageMetadataIndex > 0)
+		if (pageIndex > 0)
 		{
 			// In pseudo-code:
 			//
 			// link->prev->next = link->next (except we only use next pointers)
 			
-			YapDatabaseViewPageMetadata *prevPageMetadata = [pages objectAtIndex:(pageMetadataIndex - 1)];
+			YapDatabaseViewPageMetadata *prevPageMetadata = [pagesMetadataForGroup objectAtIndex:(pageIndex - 1)];
 			prevPageMetadata->nextPageKey = pageMetadata->nextPageKey;
 			
 			[viewConnection->dirtyMetadata setObject:prevPageMetadata forKey:prevPageMetadata->pageKey];
@@ -834,7 +834,7 @@
 		
 		// Maybe drop group
 		
-		if ([pages count] == 0)
+		if ([pagesMetadataForGroup count] == 0)
 		{
 			YDBLogVerbose(@"Dropping empty group(%@)", group);
 			
@@ -923,6 +923,8 @@
 
 /**
  * Use this method once the insertion index of a key is known.
+ * 
+ * Note: This method assumes the group already exists.
 **/
 - (void)insertKey:(NSString *)key inGroup:(NSString *)group
                                   atIndex:(NSUInteger)index
@@ -932,50 +934,50 @@
 	
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
+	// Find pageMetadata, pageKey and page
+	
 	YapDatabaseViewPageMetadata *pageMetadata = nil;
-	NSString *pageKey = nil;
 	
-	// Find pageKey and pageMetadata
+	NSMutableArray *pagesMetadataForGroup = [viewConnection->groupPagesDict objectForKey:group];
 	
-	NSMutableArray *pages = [viewConnection->groupPagesDict objectForKey:group];
+	NSUInteger pagesCount = [pagesMetadataForGroup count];
+	NSUInteger lastPageIndex = (pagesCount > 0) ? (pagesCount - 1) : 0;
 	
 	NSUInteger pageOffset = 0;
 	NSUInteger pageIndex = 0;
-	NSUInteger lastPageIndex = [pages count] - 1;
 	
-	for (YapDatabaseViewPageMetadata *currentPageMetadata in pages)
+	for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 	{
 		// Edge case: key is being inserted at the very end.
 		//
 		// index == numberOfKeysInTheEntireGroup
 		
-		if ((index < (pageOffset + currentPageMetadata->count)) || (pageIndex == lastPageIndex))
+		if ((index < (pageOffset + pm->count)) || (pageIndex == lastPageIndex))
 		{
-			pageMetadata = currentPageMetadata;
-			pageKey = currentPageMetadata->pageKey;
+			pageMetadata = pm;
 			break;
 		}
 		
 		pageIndex++;
-		pageOffset += currentPageMetadata->count;
+		pageOffset += pm->count;
 	}
+	
+	NSString *pageKey = pageMetadata->pageKey;
+	NSMutableArray *page = [self pageForPageKey:pageKey];
 	
 	YDBLogVerbose(@"Inserting key(%@) in group(%@) at index(%lu) with page(%@) pageOffset(%lu)",
 	              key, group, (unsigned long)index, pageKey, (unsigned long)(index - pageOffset));
 	
 	// Update page
 	
-	NSMutableArray *page = [self pageForPageKey:pageKey];
-	
 	[page insertObject:key atIndex:(index - pageOffset)];
-	NSUInteger pageCount = [page count];
 	
 	[viewConnection->dirtyPages setObject:page forKey:pageKey];
 	[viewConnection->pageCache removeObjectForKey:pageKey];
 	
 	// Update page metadata (by incrementing count)
 	
-	pageMetadata->count = pageCount;
+	pageMetadata->count = [page count]; // number of keys in page
 	[viewConnection->dirtyMetadata setObject:pageMetadata forKey:pageKey];
 	
 	// Mark key for insertion
@@ -1803,8 +1805,7 @@
 
 - (NSArray *)allGroups
 {
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	    (YapDatabaseViewConnection *)extensionConnection;
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	return [viewConnection->groupPagesDict allKeys];
 }
@@ -1813,14 +1814,10 @@
 {
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
-	NSMutableArray *pagesForGroup = [viewConnection->groupPagesDict objectForKey:group];
-	if (pagesForGroup == nil) {
-		return 0;
-	}
-	
+	NSMutableArray *pagesMetadataForGroup = [viewConnection->groupPagesDict objectForKey:group];
 	NSUInteger count = 0;
 	
-	for (YapDatabaseViewPageMetadata *pageMetadata in pagesForGroup)
+	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 	{
 		count += pageMetadata->count;
 	}
@@ -1849,10 +1846,10 @@
 {
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
-	NSMutableArray *pagesForGroup = [viewConnection->groupPagesDict objectForKey:group];
-	
+	NSMutableArray *pagesMetadataForGroup = [viewConnection->groupPagesDict objectForKey:group];
 	NSUInteger pageOffset = 0;
-	for (YapDatabaseViewPageMetadata *pageMetadata in pagesForGroup)
+	
+	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 	{
 		if (index < (pageOffset + pageMetadata->count))
 		{
@@ -1929,20 +1926,262 @@
 	return found;
 }
 
+- (void)enumerateKeysInGroup:(NSString *)group
+                  usingBlock:(void (^)(NSUInteger index, NSString *key, BOOL *stop))block
+{
+	if (block == NULL) return;
+	
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
+	
+	BOOL stop = NO;
+	
+	NSUInteger pageOffset = 0;
+	NSMutableArray *pagesMetadataForGroup = [viewConnection->groupPagesDict objectForKey:group];
+	
+	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
+	{
+		NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
+		
+		NSUInteger index = pageOffset;
+		for (NSString *key in page)
+		{
+			block(index, key, &stop);
+			
+			index++;
+			if (stop) break;
+		}
+		
+		if (stop) break;
+		
+		pageOffset += pageMetadata->count;
+	}
+}
+
+- (void)enumerateKeysInGroup:(NSString *)group
+                 withOptions:(NSEnumerationOptions)inOptions
+                  usingBlock:(void (^)(NSUInteger index, NSString *key, BOOL *stop))block
+{
+	if (block == NULL) return;
+	
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
+	
+	NSEnumerationOptions options = (inOptions & NSEnumerationReverse); // We only support NSEnumerationReverse
+	BOOL forwardEnumeration = (options != NSEnumerationReverse);
+	
+	__block BOOL stop = NO;
+	__block NSUInteger keyIndex;
+	
+	if (forwardEnumeration)
+		keyIndex = 0;
+	else
+		keyIndex = [self numberOfKeysInGroup:group] - 1;
+	
+	NSMutableArray *pagesMetadataForGroup = [viewConnection->groupPagesDict objectForKey:group];
+	
+	[pagesMetadataForGroup enumerateObjectsWithOptions:options
+	                                        usingBlock:^(id pageMetadataObj, NSUInteger pageIdx, BOOL *outerStop){
+		
+		__unsafe_unretained YapDatabaseViewPageMetadata *pageMetadata =
+		    (YapDatabaseViewPageMetadata *)pageMetadataObj;
+		
+		NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
+		
+		[page enumerateObjectsWithOptions:options usingBlock:^(id keyObj, NSUInteger idx, BOOL *innerStop){
+			
+			block(keyIndex, (NSString *)keyObj, &stop);
+			
+			if (forwardEnumeration)
+				keyIndex++;
+			else
+				keyIndex--;
+			
+			if (stop) *innerStop = YES;
+		}];
+		
+		if (stop) *outerStop = YES;
+	}];
+}
+
+- (void)enumerateKeysInGroup:(NSString *)group
+                 withOptions:(NSEnumerationOptions)inOptions
+                       range:(NSRange)range
+                  usingBlock:(void (^)(NSUInteger index, NSString *key, BOOL *stop))block
+{
+	if (block == NULL) return;
+	
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
+	
+	NSEnumerationOptions options = (inOptions & NSEnumerationReverse); // We only support NSEnumerationReverse
+	
+	NSMutableArray *pagesMetadataForGroup = [viewConnection->groupPagesDict objectForKey:group];
+	
+	// Helper block to fetch the pageOffset for some page.
+	
+	NSUInteger (^pageOffsetForPageMetadata)(YapDatabaseViewPageMetadata *inPageMetadata);
+	pageOffsetForPageMetadata = ^ NSUInteger (YapDatabaseViewPageMetadata *inPageMetadata){
+		
+		NSUInteger pageOffset = 0;
+		
+		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
+		{
+			if (pageMetadata == inPageMetadata)
+				return pageOffset;
+			else
+				pageOffset += pageMetadata->count;
+		}
+		
+		return pageOffset;
+	};
+	
+	__block BOOL stop = NO;
+	__block BOOL startedRange = NO;
+	__block NSUInteger keysLeft = range.length;
+	
+	[pagesMetadataForGroup enumerateObjectsWithOptions:options
+	                                        usingBlock:^(id pageMetadataObj, NSUInteger pageIndex, BOOL *outerStop){
+	
+		__unsafe_unretained YapDatabaseViewPageMetadata *pageMetadata =
+		    (YapDatabaseViewPageMetadata *)pageMetadataObj;
+		
+		NSUInteger pageOffset = pageOffsetForPageMetadata(pageMetadata);
+		NSRange pageRange = NSMakeRange(pageOffset, pageMetadata->count);
+		NSRange keysRange = NSIntersectionRange(pageRange, range);
+		
+		if (keysRange.length > 0)
+		{
+			startedRange = YES;
+			NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
+			
+			// Enumerate the subset
+			
+			NSRange subsetRange = NSMakeRange(keysRange.location-pageOffset, keysRange.length);
+			NSIndexSet *subset = [NSIndexSet indexSetWithIndexesInRange:subsetRange];
+			
+			[page enumerateObjectsAtIndexes:subset
+			                        options:options
+			                     usingBlock:^(id keyObj, NSUInteger idx, BOOL *innerStop){
+				
+				block(pageOffset+idx, (NSString *)keyObj, &stop);
+				
+				if (stop) *innerStop = YES;
+			}];
+			
+			keysLeft -= keysRange.length;
+			
+			if (stop) *outerStop = YES;
+		}
+		else if (startedRange)
+		{
+			// We've completed the range
+			*outerStop = YES;
+		}
+		
+	}];
+	
+	if (!stop && keysLeft > 0)
+	{
+		YDBLogWarn(@"%@: Range out of bounds: range(%lu, %lu) >= numberOfKeys(%lu) in group %@", THIS_METHOD,
+		    (unsigned long)range.location, (unsigned long)range.length,
+		    (unsigned long)[self numberOfKeysInGroup:group], group);
+	}
+}
+
+@end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@implementation YapDatabaseViewTransaction (Convenience)
+
 - (id)objectAtIndex:(NSUInteger)keyIndex inGroup:(NSString *)group
 {
 	NSString *key = [self keyAtIndex:keyIndex inGroup:group];
 	if (key)
-	{
-		__unsafe_unretained YapDatabaseReadTransaction *transaction =
-		(YapDatabaseReadTransaction *)databaseTransaction;
-		
-		return [transaction objectForKey:key];
-	}
+		return [(YapDatabaseReadTransaction *)databaseTransaction objectForKey:key];
 	else
-	{
 		return nil;
-	}
+}
+
+- (void)enumerateKeysAndMetadataInGroup:(NSString *)group
+                             usingBlock:(void (^)(NSUInteger index, NSString *key, id metadata, BOOL *stop))block
+{
+	[self enumerateKeysInGroup:group usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+		
+		block(index, key, [self metadataForKey:key], stop);
+	}];
+}
+
+- (void)enumerateKeysAndMetadataInGroup:(NSString *)group
+                            withOptions:(NSEnumerationOptions)options
+                             usingBlock:(void (^)(NSUInteger index, NSString *key, id metadata, BOOL *stop))block
+{
+	[self enumerateKeysInGroup:group withOptions:options usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+		
+		block(index, key, [self metadataForKey:key], stop);
+	}];
+}
+
+- (void)enumerateKeysAndMetadataInGroup:(NSString *)group
+                            withOptions:(NSEnumerationOptions)options
+                                  range:(NSRange)range
+                             usingBlock:(void (^)(NSUInteger index, NSString *key, id metadata, BOOL *stop))block
+{
+	[self enumerateKeysInGroup:group
+	               withOptions:options
+	                     range:range
+	                usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+		
+		block(index, key, [self metadataForKey:key], stop);
+	}];
+}
+
+- (void)enumerateKeysAndObjectsInGroup:(NSString *)group
+                            usingBlock:
+                                 (void (^)(NSUInteger index, NSString *key, id object, id metadata, BOOL *stop))block
+{
+	[self enumerateKeysInGroup:group usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+		
+		id object = nil;
+		id metadata = nil;
+		[self getObject:&object metadata:&metadata forKey:key];
+		
+		block(index, key, object, metadata, stop);
+	}];
+}
+
+- (void)enumerateKeysAndObjectsInGroup:(NSString *)group
+                           withOptions:(NSEnumerationOptions)options
+                            usingBlock:
+                                 (void (^)(NSUInteger index, NSString *key, id object, id metadata, BOOL *stop))block
+{
+	[self enumerateKeysInGroup:group withOptions:options usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+		
+		id object = nil;
+		id metadata = nil;
+		[self getObject:&object metadata:&metadata forKey:key];
+		
+		block(index, key, object, metadata, stop);
+	}];
+}
+
+- (void)enumerateKeysAndObjectsInGroup:(NSString *)group
+                           withOptions:(NSEnumerationOptions)options
+                                 range:(NSRange)range
+                            usingBlock:
+                                 (void (^)(NSUInteger index, NSString *key, id object, id metadata, BOOL *stop))block
+{
+	[self enumerateKeysInGroup:group
+	               withOptions:options
+	                     range:range
+	                usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+		
+		id object = nil;
+		id metadata = nil;
+		[self getObject:&object metadata:&metadata forKey:key];
+		
+		block(index, key, object, metadata, stop);
+	}];
 }
 
 @end
