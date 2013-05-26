@@ -924,7 +924,9 @@
 /**
  * Use this method once the insertion index of a key is known.
 **/
-- (void)insertKey:(NSString *)key inGroup:(NSString *)group atIndex:(NSUInteger)index
+- (void)insertKey:(NSString *)key inGroup:(NSString *)group
+                                  atIndex:(NSUInteger)index
+                      withExistingPageKey:(NSString *)existingPageKey
 {
 	YDBLogAutoTrace();
 	
@@ -978,8 +980,11 @@
 	
 	// Mark key for insertion
 	
-	[viewConnection->dirtyKeys setObject:pageKey forKey:key];
-	[viewConnection->keyCache removeObjectForKey:key];
+	if (![pageKey isEqualToString:existingPageKey])
+	{
+		[viewConnection->dirtyKeys setObject:pageKey forKey:key];
+		[viewConnection->keyCache removeObjectForKey:key];
+	}
 }
 
 /**
@@ -1031,6 +1036,10 @@
 		else
 		{
 			[self removeKey:key withPageKey:existingPageKey group:existingGroup];
+			
+			// Don't forget to reset the existingPageKey ivar!
+			// Or else 'insertKey:inGroup:atIndex:withExistingPageKey:' will be given an invalid existingPageKey.
+			existingPageKey = nil;
 		}
 	}
 	
@@ -1200,6 +1209,10 @@
 				
 				[self removeKey:key withPageKey:existingPageKey group:group];
 				count--;
+				
+				// Don't forget to reset the existingPageKey ivar!
+				// Or else 'insertKey:inGroup:atIndex:withExistingPageKey:' will be given an invalid existingPageKey.
+				existingPageKey = nil;
 			}
 		}
 		
@@ -1217,7 +1230,7 @@
 				YDBLogVerbose(@"Insert key(%@) in group(%@) at beginning (lastInsertWasAtFirstIndex optimization)",
 				              key, group);
 				
-				[self insertKey:key inGroup:group atIndex:count];
+				[self insertKey:key inGroup:group atIndex:count withExistingPageKey:existingPageKey];
 				return;
 			}
 		}
@@ -1231,7 +1244,7 @@
 				YDBLogVerbose(@"Insert key(%@) in group(%@) at end (lastInsertWasAtLastIndex optimization)",
 				              key, group);
 				
-				[self insertKey:key inGroup:group atIndex:count];
+				[self insertKey:key inGroup:group atIndex:count withExistingPageKey:existingPageKey];
 				return;
 			}
 		}
@@ -1265,7 +1278,7 @@
 		
 		YDBLogVerbose(@"Insert key(%@) in group(%@) took %lu comparisons", key, group, (unsigned long)loopCount);
 		
-		[self insertKey:key inGroup:group atIndex:min];
+		[self insertKey:key inGroup:group atIndex:min withExistingPageKey:existingPageKey];
 		
 		viewConnection->lastInsertWasAtFirstIndex = (min == 0);
 		viewConnection->lastInsertWasAtLastIndex  = (min == count);
