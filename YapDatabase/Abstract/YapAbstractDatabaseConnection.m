@@ -1175,10 +1175,10 @@
 		
 		if (blobSize >= sizeof(uint64_t))
 		{
-			NSData *data = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-			NSNumber *number = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+			uint64_t *littleEndianPtr = (uint64_t *)blob;
+			uint64_t littleEndian = *littleEndianPtr;
 			
-			result = [number unsignedLongLongValue];
+			result = CFSwapInt64LittleToHost(littleEndian);
 		}
 		else
 		{
@@ -1209,15 +1209,13 @@
 	sqlite3_stmt *statement = [self yapSetDataForKeyStatement];
 	if (statement == NULL) return newSnapshot;
 	
-	NSNumber *number = [NSNumber numberWithUnsignedLongLong:newSnapshot];
-	
 	// INSERT OR REPLACE INTO "yap" ("key", "data") VALUES (?, ?);
 	
 	char *key = "snapshot";
 	sqlite3_bind_text(statement, 1, key, (int)strlen(key), SQLITE_STATIC);
 	
-	__attribute__((objc_precise_lifetime)) NSData *data = [NSKeyedArchiver archivedDataWithRootObject:number];
-	sqlite3_bind_blob(statement, 2, data.bytes, (int)data.length, SQLITE_STATIC);
+	uint64_t littleEndian = CFSwapInt64HostToLittle(newSnapshot);
+	sqlite3_bind_blob(statement, 2, &littleEndian, (int)sizeof(uint64_t), SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
