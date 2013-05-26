@@ -965,14 +965,17 @@
 		// We are the only write transaction for this database.
 		// It is important for read-only transactions on other connections to know we're no longer a writer.
 		
-		for (YapDatabaseConnectionState *state in database->connectionStates)
-		{
-			if (state->connection == self)
+		dispatch_sync(database->snapshotQueue, ^{
+		
+			for (YapDatabaseConnectionState *state in database->connectionStates)
 			{
-				state->yapLevelExclusiveWriteLock = NO;
-				break;
+				if (state->connection == self)
+				{
+					state->yapLevelExclusiveWriteLock = NO;
+					break;
+				}
 			}
-		}
+		});
 		
 		// Rollback-Write-Transaction: Step 2 of 3
 		//
