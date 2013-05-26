@@ -598,13 +598,11 @@
 	}
 	else
 	{
-		NSNumber *number = [NSNumber numberWithUnsignedLongLong:snapshot];
-		
 		char *key = "snapshot";
 		sqlite3_bind_text(statement, 1, key, (int)strlen(key), SQLITE_STATIC);
 		
-		__attribute__((objc_precise_lifetime)) NSData *data = [NSKeyedArchiver archivedDataWithRootObject:number];
-		sqlite3_bind_blob(statement, 2, data.bytes, (int)data.length, SQLITE_STATIC);
+		uint64_t littleEndian = CFSwapInt64HostToLittle(snapshot);
+		sqlite3_bind_blob(statement, 2, &littleEndian, (int)sizeof(uint64_t), SQLITE_STATIC);
 		
 		status = sqlite3_step(statement);
 		if (status != SQLITE_DONE)
