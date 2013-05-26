@@ -1926,6 +1926,29 @@
 	return found;
 }
 
+- (NSArray *)keysInRange:(NSRange)range group:(NSString *)group
+{
+	NSMutableArray *result = [NSMutableArray arrayWithCapacity:range.length];
+	id placeholder = [NSNull null];
+	
+	for (NSUInteger i = 0; i < range.length; i++)
+	{
+		[result addObject:placeholder];
+	}
+
+	// Todo: Optimize cache access.
+
+	[self enumerateKeysInGroup:group
+	               withOptions:0
+	                     range:range
+	                usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+		
+		[result replaceObjectAtIndex:(index - range.location) withObject:key];
+	}];
+
+	return result;
+}
+
 - (void)enumerateKeysInGroup:(NSString *)group
                   usingBlock:(void (^)(NSUInteger index, NSString *key, BOOL *stop))block
 {
