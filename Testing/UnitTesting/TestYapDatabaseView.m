@@ -37,13 +37,13 @@
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
 	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithObjectAndMetadataBlock groupingBlock;
+	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
 	
 	YapDatabaseViewBlockType sortingBlockType;
 	YapDatabaseViewSortingWithObjectBlock sortingBlock;
 	
-	groupingBlockType = YapDatabaseViewBlockTypeWithObjectAndMetadata;
-	groupingBlock = ^NSString *(NSString *key, id object, id metadata){
+	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
+	groupingBlock = ^NSString *(NSString *key){
 		
 		if ([key isEqualToString:@"keyX"]) // Exclude keyX from view
 			return nil;

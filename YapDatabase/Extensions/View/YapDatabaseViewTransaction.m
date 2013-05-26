@@ -993,6 +993,7 @@
 {
 	YDBLogAutoTrace();
 	
+	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	// Is the key already in the group?
@@ -1005,11 +1006,27 @@
 	NSString *existingPageKey = [self pageKeyForKey:key];
 	if (existingPageKey)
 	{
+		// The key is already in the view.
+		// Has it changed groups?
+		
 		NSString *existingGroup = [self groupForPageKey:existingPageKey];
 		
 		if ([group isEqualToString:existingGroup])
 		{
-			tryExistingIndexInGroup = YES;
+			// The key is already in the group.
+			
+			if (view->sortingBlockType == YapDatabaseViewBlockTypeWithKey)
+			{
+				// Sorting is based entirely on the key, which hasn't changed.
+				// Thus the position within the view hasn't changed.
+				return;
+			}
+			else
+			{
+				// Possible optimization:
+				// Object or metadata was updated, but doesn't affect the position of the row within the view.
+				tryExistingIndexInGroup = YES;
+			}
 		}
 		else
 		{
@@ -1063,8 +1080,6 @@
 			count += pageMetadata->count;
 		}
 		
-		__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
-		
 		// Create a block to do a single sorting comparison between the object to be inserted,
 		// and some other object within the group at a given index.
 		// 
@@ -1090,7 +1105,14 @@
 				}
 			}
 			
-			if (view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
+			if (view->sortingBlockType == YapDatabaseViewBlockTypeWithKey)
+			{
+				__unsafe_unretained YapDatabaseViewSortingWithKeyBlock sortingBlock =
+				    (YapDatabaseViewSortingWithKeyBlock)view->sortingBlock;
+				
+				return sortingBlock(group, key, anotherKey);
+			}
+			else if (view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
 			{
 				__unsafe_unretained YapDatabaseViewSortingWithObjectBlock sortingBlock =
 				    (YapDatabaseViewSortingWithObjectBlock)view->sortingBlock;
@@ -1284,7 +1306,14 @@
 	
 	NSString *group;
 	
-	if (view->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
+	if (view->groupingBlockType == YapDatabaseViewBlockTypeWithKey)
+	{
+		__unsafe_unretained YapDatabaseViewGroupingWithKeyBlock groupingBlock =
+		    (YapDatabaseViewGroupingWithKeyBlock)view->groupingBlock;
+		
+		group = groupingBlock(key);
+	}
+	else if (view->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
 		    (YapDatabaseViewGroupingWithObjectBlock)view->groupingBlock;
@@ -1335,40 +1364,66 @@
 	id object = nil;
 	NSString *group;
 	
-	if (view->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
+	if (view->groupingBlockType == YapDatabaseViewBlockTypeWithKey ||
+	    view->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
 	{
-		// Grouping is based on the object.
-		// The object has not changed, and thus the group hasn't changed.
+		// Grouping is based on the key or object.
+		// Neither have changed, and thus the group hasn't changed.
 		
-		if (view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
-		{
-			// Absolutely nothing to do.
-			// Both grouping and sorting are based on the object.
-			// The object has not changed, and thus nothing has changed.
-			return;
-		}
-		
-		// Sorting is based on the metadata, which has changed.
-		// So the sort order may possibly have changed.
-		//
-		// Fetch the existing group
-		group = [self groupForPageKey:[self pageKeyForKey:key]];
-		
-		if (group == nil)
+		if (view->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
+		    view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
 		{
 			// Nothing to do.
-			// The key wasn't previously in the view (and still isn't in the view).
-			return;
+			// Nothing has changed that relates to sorting either.
+		}
+		else
+		{
+			// Sorting is based on the metadata, which has changed.
+			// So the sort order may possibly have changed.
+			//
+			// Fetch existing group
+			group = [self groupForPageKey:[self pageKeyForKey:key]];
+			
+			if (group == nil)
+			{
+				// Nothing to do.
+				// The key wasn't previously in the view (and still isn't in the view).
+			}
+			else
+			{
+				// From previous if statement (above) we know:
+				// sortingBlockType is metadata or objectAndMetadata
+				
+				if (view->sortingBlockType == YapDatabaseViewBlockTypeWithObjectAndMetadata)
+				{
+					// Need the object for the sorting block
+					object = [self objectForKey:key];
+				}
+				
+				[self insertObject:object forKey:key withMetadata:metadata inGroup:group];
+			}
 		}
 	}
-	else if (view->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	else
 	{
-		__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
-		    (YapDatabaseViewGroupingWithMetadataBlock)view->groupingBlock;
-		
+		// Grouping is based on metadata or objectAndMetadata.
 		// Invoke groupingBlock to see what the new group is.
 		
-		group = groupingBlock(key, metadata);
+		if (view->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+		{
+			__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
+		        (YapDatabaseViewGroupingWithMetadataBlock)view->groupingBlock;
+			
+			group = groupingBlock(key, metadata);
+		}
+		else
+		{
+			__unsafe_unretained YapDatabaseViewGroupingWithObjectAndMetadataBlock groupingBlock =
+		        (YapDatabaseViewGroupingWithObjectAndMetadataBlock)view->groupingBlock;
+			
+			object = [self objectForKey:key];
+			group = groupingBlock(key, object, metadata);
+		}
 		
 		if (group == nil)
 		{
@@ -1376,63 +1431,34 @@
 			// Remove key from view (if needed).
 			
 			[self removeKey:key];
-			return;
 		}
-		else if (view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
+		else
 		{
-			// Sorting is based on the object, which hasn't changed.
-			// So if the group hasn't changed, then the sort order hasn't changed.
-			
-			NSString *existingGroup = [self groupForPageKey:[self pageKeyForKey:key]];
-			if ([group isEqualToString:existingGroup])
+			if (view->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
+			    view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
 			{
-				// Nothing left to do.
-				// The group didn't change, and the sort order cannot change (because the object didn't change).
-				return;
+				// Sorting is based on the key or object, neither of which has changed.
+				// So if the group hasn't changed, then the sort order hasn't changed.
+				
+				NSString *existingGroup = [self groupForPageKey:[self pageKeyForKey:key]];
+				if ([group isEqualToString:existingGroup])
+				{
+					// Nothing left to do.
+					// The group didn't change, and the sort order cannot change (because the object didn't change).
+					return;
+				}
 			}
-		}
-	}
-	else
-	{
-		__unsafe_unretained YapDatabaseViewGroupingWithObjectAndMetadataBlock groupingBlock =
-		    (YapDatabaseViewGroupingWithObjectAndMetadataBlock)view->groupingBlock;
-		
-		// Invoke groupingBlock to see what the new group is.
-		
-		object = [self objectForKey:key];
-		group = groupingBlock(key, object, metadata);
-		
-		if (group == nil)
-		{
-			// The key is not included in the view.
-			// Remove key from view (if needed)
 			
-			[self removeKey:key];
-			return;
-		}
-		else if (view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
-		{
-			// Sorting is based on the object, which hasn't changed.
-			// So if the group hasn't changed, then the sort order hasn't changed.
-			
-			NSString *existingGroup = [self groupForPageKey:[self pageKeyForKey:key]];
-			if ([group isEqualToString:existingGroup])
+			if (object == nil && (view->sortingBlockType == YapDatabaseViewBlockTypeWithObject ||
+			                      view->sortingBlockType == YapDatabaseViewBlockTypeWithObjectAndMetadata))
 			{
-				// Nothing left to do.
-				// The group didn't change, and the sort order cannot change (because the object didn't change).
-				return;
+				// Need the object for the sorting block
+				object = [self objectForKey:key];
 			}
+			
+			[self insertObject:object forKey:key withMetadata:metadata inGroup:group];
 		}
 	}
-	
-	// Add key to view (or update position)
-	
-	if (object == nil && (view->sortingBlockType != YapDatabaseViewBlockTypeWithMetadata))
-	{
-		object = [self objectForKey:key];
-	}
-	
-	[self insertObject:object forKey:key withMetadata:metadata inGroup:group];
 }
 
 /**
