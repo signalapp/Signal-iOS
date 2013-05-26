@@ -349,13 +349,13 @@
 	dispatch_queue_t concurrentQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 	dispatch_async(concurrentQueue, ^{
 		
-		[NSThread sleepForTimeInterval:0.2]; // Zz
+		[NSThread sleepForTimeInterval:0.1]; // Zz
 		
 		[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 			
 			[transaction setObject:object forKey:key withMetadata:metadata];
 			
-			[NSThread sleepForTimeInterval:5.0]; // Zzzzzzzzzzzzzzzzzzzzzzzzzz
+			[NSThread sleepForTimeInterval:0.4]; // Zzzzzzzzzzzzzzzzzzzzzzzzzz
 		}];
 		
 	});
@@ -367,7 +367,7 @@
 		STAssertNil([transaction metadataForKey:key], @"Expected nil metadata");
 	}];
 	
-	[NSThread sleepForTimeInterval:1.0]; // Zzzzzz
+	[NSThread sleepForTimeInterval:0.2]; // Zzzzzz
 	
 	// This transaction should start after the read-write transaction has started, but before it has committed
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
@@ -376,7 +376,7 @@
 		STAssertNil([transaction metadataForKey:key], @"Expected nil metadata");
 	}];
 	
-	[NSThread sleepForTimeInterval:5.0]; // Zzzzzzzzzzzzzzzzzzzzzzzzzz
+	[NSThread sleepForTimeInterval:0.4]; // Zzzzzzzzzzzzzzzzzzzzzzzzzz
 	
 	// This transaction should start after the read-write transaction has completed
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
