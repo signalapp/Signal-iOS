@@ -841,13 +841,17 @@
 	// Forward the changeset to all other connections so they can perform any needed updates.
 	// Generally this means updating the in-memory components such as the cache.
 	
-	dispatch_group_t group = dispatch_group_create();
+	dispatch_group_t group = NULL;
 	
 	for (YapDatabaseConnectionState *state in connectionStates)
 	{
 		if (state->connection != sender)
 		{
 			YapAbstractDatabaseConnection *connection = state->connection;
+			
+			if (group == NULL)
+				group = dispatch_group_create();
+			
 			dispatch_group_async(group, connection.connectionQueue, ^{ @autoreleasepool {
 				
 				[connection noteCommittedChanges:changeset];
@@ -857,7 +861,7 @@
 	
 	// Schedule block to be executed once all connections have processed the changes.
 	
-	dispatch_group_notify(group, snapshotQueue, ^{
+	dispatch_block_t block = ^{
 		
 		// All connections have now processed the changes.
 		// So we no longer need to retain the changeset in memory.
@@ -868,9 +872,15 @@
 		[changesets removeObjectAtIndex:0];
 		
 		#if !OS_OBJECT_USE_OBJC
-		dispatch_release(group);
+		if (group)
+			dispatch_release(group);
 		#endif
-	});
+	};
+	
+	if (group)
+		dispatch_group_notify(group, snapshotQueue, block);
+	else
+		block();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
