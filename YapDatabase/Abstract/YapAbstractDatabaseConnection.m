@@ -844,7 +844,6 @@
 				NSAssert(cacheSnapshot == globalSnapshot, @"Invalid connection state");
 			}
 			
-			myState->yapLevelSharedReadLock = YES;
 			myState->sqlLevelSharedReadLock = NO;
 			hasMarkedSqlLevelSharedReadLock = NO;
 		}
