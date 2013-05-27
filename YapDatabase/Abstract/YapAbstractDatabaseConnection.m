@@ -131,17 +131,11 @@
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
-	if (beginTransactionStatement)
-		sqlite3_finalize(beginTransactionStatement);
-	
-	if (commitTransactionStatement)
-		sqlite3_finalize(commitTransactionStatement);
-	
-	if (yapGetDataForKeyStatement)
-		sqlite3_finalize(yapGetDataForKeyStatement);
-	
-	if (yapSetDataForKeyStatement)
-		sqlite3_finalize(yapSetDataForKeyStatement);
+	sqlite_finalize_null(&yapGetDataForKeyStatement);
+	sqlite_finalize_null(&yapSetDataForKeyStatement);
+	sqlite_finalize_null(&rollbackTransactionStatement);
+	sqlite_finalize_null(&beginTransactionStatement);
+	sqlite_finalize_null(&commitTransactionStatement);
 	
 	if (db)
 		sqlite3_close(db);
