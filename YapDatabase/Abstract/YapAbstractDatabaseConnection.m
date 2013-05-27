@@ -435,24 +435,17 @@
 		[metadataCache removeAllObjects];
 	}
 	
+	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
+	{
+		sqlite_finalize_null(&rollbackTransactionStatement);
+	}
+	
 	if (level >= YapDatabaseConnectionFlushMemoryLevelFull)
 	{
-		if (yapGetDataForKeyStatement) {
-			sqlite3_finalize(yapGetDataForKeyStatement);
-			yapGetDataForKeyStatement = NULL;
-		}
-		if (yapSetDataForKeyStatement) {
-			sqlite3_finalize(yapSetDataForKeyStatement);
-			yapSetDataForKeyStatement = NULL;
-		}
-		if (beginTransactionStatement) {
-			sqlite3_finalize(beginTransactionStatement);
-			beginTransactionStatement = NULL;
-		}
-		if (commitTransactionStatement) {
-			sqlite3_finalize(commitTransactionStatement);
-			commitTransactionStatement = NULL;
-		}
+		sqlite_finalize_null(&yapGetDataForKeyStatement);
+		sqlite_finalize_null(&yapSetDataForKeyStatement);
+		sqlite_finalize_null(&beginTransactionStatement);
+		sqlite_finalize_null(&commitTransactionStatement);
 	}
 }
 
