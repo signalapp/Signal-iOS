@@ -3,6 +3,8 @@
 #import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapDatabaseLogging.h"
 
+#import <objc/runtime.h>
+
 #if ! __has_feature(objc_arc)
 #warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
 #endif
@@ -19,6 +21,23 @@
 
 
 @implementation YapAbstractDatabaseTransaction
+
++ (void)load
+{
+	static BOOL loaded = NO;
+	if (!loaded)
+	{
+		// Method swizzle:
+		// Both extension: and ext: are designed to be the same method (with ext: shorthand for extension:).
+		// So swap out the ext: method to point to extension:.
+		
+		Method extMethod = class_getInstanceMethod([self class], @selector(ext:));
+		IMP extensionIMP = class_getMethodImplementation([self class], @selector(extension:));
+		
+		method_setImplementation(extMethod, extensionIMP);
+		loaded = YES;
+	}
+}
 
 - (id)initWithConnection:(YapAbstractDatabaseConnection *)aConnection isReadWriteTransaction:(BOOL)flag
 {
@@ -138,8 +157,7 @@
  *
  * @see [YapAbstractDatabase registerExtension:withName:]
 **/
-- (id)extension:(NSString *)extensionName { return [self ext:extensionName]; }
-- (id)ext:(NSString *)extensionName
+- (id)extension:(NSString *)extensionName
 {
 	if (extensionsReady)
 		return [extensions objectForKey:extensionName];
@@ -167,6 +185,16 @@
 	}
 	
 	return extTransaction;
+}
+
+- (id)ext:(NSString *)extensionName
+{
+	// The "+ (void)load" method swizzles the implementation of this class
+	// to point to the implementation of the extension: method.
+	//
+	// So the two methods are literally the same thing.
+	
+	return [self extension:extensionName]; // This method is swizzled !
 }
 
 #pragma mark Internal API
