@@ -143,7 +143,7 @@
 	
 	if ([dirtyKeys count] || [dirtyPages count] || [dirtyMetadata count] || reset)
 	{
-		internalChangeset = [NSMutableDictionary dictionaryWithCapacity:4];
+		internalChangeset = [NSMutableDictionary dictionaryWithCapacity:5];
 		
 		if ([dirtyKeys count] > 0)
 		{
