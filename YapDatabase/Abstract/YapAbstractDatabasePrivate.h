@@ -152,6 +152,8 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	sqlite3_stmt *yapGetDataForKeyStatement; // Against "yap" database, for internal use
 	sqlite3_stmt *yapSetDataForKeyStatement; // Against "yap" database, for internal use
 	
+	uint64_t snapshot;
+	
 	YapAbstractDatabaseTransaction *longLivedReadTransaction;
 	NSMutableArray *pendingChangesets;
 	
@@ -164,7 +166,6 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	void *IsOnConnectionQueueKey;
 	
 	YapAbstractDatabase *database;
-	uint64_t cacheSnapshot;
 	
 @public
 	sqlite3 *db;

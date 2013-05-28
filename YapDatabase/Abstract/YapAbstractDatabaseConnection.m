@@ -44,7 +44,6 @@
 	void *IsOnConnectionQueueKey;
 	
 	YapAbstractDatabase *database;
-	uint64_t cacheSnapshot;
 	
 @public
 	sqlite3 *db;
@@ -134,7 +133,7 @@
 {
 	dispatch_sync(database->snapshotQueue, ^{
 		
-		cacheSnapshot = [database snapshot];
+		snapshot = [database snapshot];
 		registeredExtensions = [database registeredExtensions];
 		
 		extensionsReady = ([registeredExtensions count] == 0);
@@ -916,13 +915,13 @@
 			// During this process we need to ensure that our "yap-level" snapshot of the in-memory data (caches, etc)
 			// is in sync with our "sql-level" snapshot of the database.
 			//
-			// We can check this by comparing the connection's cacheSnapshot ivar with
+			// We can check this by comparing the connection's snapshot ivar with
 			// the snapshot read from disk (via sqlite select).
 			//
 			// If the two match then our snapshots are in sync.
 			// If they don't then we need to get caught up by processing changesets.
 			
-			uint64_t yapSnapshot = cacheSnapshot;
+			uint64_t yapSnapshot = snapshot;
 			uint64_t sqlSnapshot = [self readSnapshotFromDatabase];
 			
 			if (yapSnapshot < sqlSnapshot)
@@ -945,7 +944,7 @@
 					[pendingChangesets addObjectsFromArray:changesets];
 				}
 				
-				NSAssert(cacheSnapshot == sqlSnapshot, @"Invalid connection state");
+				NSAssert(snapshot == sqlSnapshot, @"Invalid connection state");
 			}
 			
 			myState->sqlLevelSharedReadLock = YES;
@@ -963,7 +962,7 @@
 			// able to process a changeset from a sibling connection.
 			// If this is the case then we need to get caught up by processing the changeset(s).
 			
-			uint64_t localSnapshot = cacheSnapshot;
+			uint64_t localSnapshot = snapshot;
 			uint64_t globalSnapshot = [database snapshot];
 			
 			if (localSnapshot < globalSnapshot)
@@ -977,7 +976,7 @@
 					[self noteCommittedChanges:changeset];
 				}
 				
-				NSAssert(cacheSnapshot == globalSnapshot, @"Invalid connection state");
+				NSAssert(snapshot == globalSnapshot, @"Invalid connection state");
 			}
 			
 			myState->sqlLevelSharedReadLock = NO;
@@ -1116,7 +1115,7 @@
 		//
 		// Validate our caches based on snapshot numbers
 		
-		uint64_t localSnapshot = cacheSnapshot;
+		uint64_t localSnapshot = snapshot;
 		uint64_t globalSnapshot = [database snapshot];
 		
 		if (localSnapshot < globalSnapshot)
@@ -1128,7 +1127,7 @@
 				[self noteCommittedChanges:changeset];
 			}
 			
-			NSAssert(cacheSnapshot == globalSnapshot, @"Invalid connection state");
+			NSAssert(snapshot == globalSnapshot, @"Invalid connection state");
 		}
 		
 		YDBLogVerbose(@"YapDatabaseConnection(%p) starting read-write transaction.", self);
@@ -1202,9 +1201,9 @@
 	[self getInternalChangeset:&changeset externalChangeset:&userInfo];
 	if (changeset)
 	{
-		cacheSnapshot = [self incrementSnapshotInDatabase];
+		snapshot = [self incrementSnapshotInDatabase];
 		
-		[changeset setObject:@(cacheSnapshot) forKey:@"snapshot"];
+		[changeset setObject:@(snapshot) forKey:@"snapshot"];
 		
 		if (userInfo == nil)
 			userInfo = [NSMutableDictionary dictionaryWithCapacity:2];
@@ -1430,7 +1429,7 @@
 **/
 - (uint64_t)incrementSnapshotInDatabase
 {
-	uint64_t newSnapshot = cacheSnapshot + 1;
+	uint64_t newSnapshot = snapshot + 1;
 	
 	sqlite3_stmt *statement = [self yapSetDataForKeyStatement];
 	if (statement == NULL) return newSnapshot;
@@ -1689,7 +1688,7 @@
 	
 	uint64_t changesetSnapshot = [[changeset objectForKey:@"snapshot"] unsignedLongLongValue];
 	
-	if (changesetSnapshot <= cacheSnapshot)
+	if (changesetSnapshot <= snapshot)
 	{
 		// We already noted this changeset.
 		//
@@ -1726,7 +1725,7 @@
 	YDBLogVerbose(@"Processing changeset %lu for connection %@, database %@",
 	              (unsigned long)changesetSnapshot, self, self->database);
 	
-	cacheSnapshot = changesetSnapshot;
+	snapshot = changesetSnapshot;
 	[self processChangeset:changeset];
 }
 
