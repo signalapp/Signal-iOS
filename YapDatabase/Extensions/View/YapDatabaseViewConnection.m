@@ -133,35 +133,38 @@
 	reset = NO;
 }
 
-- (NSMutableDictionary *)changeset
+- (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
+           externalChangeset:(NSMutableDictionary **)externalChangesetPtr
 {
 	YDBLogAutoTrace();
 	
+	NSMutableDictionary *internalChangeset = nil;
+	NSMutableDictionary *externalChangeset = nil;
+	
 	if ([dirtyKeys count] || [dirtyPages count] || [dirtyMetadata count] || reset)
 	{
-		NSMutableDictionary *changeset = [NSMutableDictionary dictionaryWithCapacity:4];
+		internalChangeset = [NSMutableDictionary dictionaryWithCapacity:4];
 		
 		if ([dirtyKeys count] > 0)
 		{
-			[changeset setObject:[dirtyKeys copy] forKey:@"dirtyKeys"];
+			[internalChangeset setObject:[dirtyKeys copy] forKey:@"dirtyKeys"];
 		}
 		if ([dirtyPages count] > 0)
 		{
-			[changeset setObject:[self dirtyPagesDeepCopy:dirtyPages] forKey:@"dirtyPages"];
+			[internalChangeset setObject:[self dirtyPagesDeepCopy:dirtyPages] forKey:@"dirtyPages"];
 		}
 		
 		if (reset)
 		{
-			[changeset setObject:@(reset) forKey:@"reset"];
+			[internalChangeset setObject:@(reset) forKey:@"reset"];
 		}
 		
-		[changeset setObject:[self groupPagesDictDeepCopy:groupPagesDict] forKey:@"groupPagesDict"];
-		[changeset setObject:[pageKeyGroupDict mutableCopy] forKey:@"pageKeyGroupDict"];
-		
-		return changeset;
+		[internalChangeset setObject:[self groupPagesDictDeepCopy:groupPagesDict] forKey:@"groupPagesDict"];
+		[internalChangeset setObject:[pageKeyGroupDict mutableCopy] forKey:@"pageKeyGroupDict"];
 	}
 	
-	return nil;
+	*internalChangesetPtr = internalChangeset;
+	*externalChangesetPtr = externalChangeset;
 }
 
 - (void)processChangeset:(NSDictionary *)changeset

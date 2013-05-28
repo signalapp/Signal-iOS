@@ -28,6 +28,29 @@
  * @see YapDatabase.h
  * @see YapCollectionsDatabase.h
 **/
+
+/**
+ * This notification is posted following a readwrite transaction where the database was modified.
+ *
+ * The notification object will be the database instance itself.
+ * That is, it will be an instance of YapDatabase or YapCollectionsDatabase.
+ * 
+ * The userInfo dictionary will look something like this:
+ * @{
+ *     YapDatabaseConnectionKey = <YapDatabaseConnection instance that made the modification(s)>,
+ *     YapDatabaseExtensionsKey = <NSDictionary>,
+ *     YapDatabaseCustomKey = <Optional object associated with this change, set by you>,
+ * }
+ * 
+ * The notification may be posted from any thread.
+**/
+extern NSString *const YapDatabaseModifiedNotification;
+
+extern NSString *const YapDatabaseConnectionKey;
+extern NSString *const YapDatabaseExtensionsKey;
+extern NSString *const YapDatabaseCustomKey;
+
+
 @interface YapAbstractDatabase : NSObject
 
 #pragma mark Shared class methods

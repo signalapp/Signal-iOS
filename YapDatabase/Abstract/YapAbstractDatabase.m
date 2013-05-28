@@ -24,6 +24,12 @@
   static const int ydbFileLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
+NSString *const YapDatabaseModifiedNotification = @"YapDatabaseModifiedNotification";
+
+NSString *const YapDatabaseConnectionKey = @"connection";
+NSString *const YapDatabaseExtensionsKey = @"extensions";
+NSString *const YapDatabaseCustomKey     = @"custom";
+
 /**
  * The database version is stored (via pragma user_version) to sqlite.
  * It is used to represent the version of the userlying architecture of YapDatabase.

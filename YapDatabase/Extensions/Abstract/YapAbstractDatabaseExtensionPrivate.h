@@ -87,7 +87,7 @@
 
 - (void)postRollbackCleanup;
 
-- (NSMutableDictionary *)changeset;
+- (void)getInternalChangeset:(NSMutableDictionary **)internalPtr externalChangeset:(NSMutableDictionary **)externalPtr;
 - (void)processChangeset:(NSDictionary *)changeset;
 
 @end

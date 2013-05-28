@@ -28,10 +28,12 @@
 	NSAssert(NO, @"Missing required override method in subclass");
 }
 
-- (NSMutableDictionary *)changeset
+- (void)getInternalChangeset:(NSMutableDictionary **)internalPtr externalChangeset:(NSMutableDictionary **)externalPtr
 {
 	NSAssert(NO, @"Missing required override method in subclass");
-	return nil;
+	
+	*internalPtr = nil;
+	*externalPtr = nil;
 }
 
 - (void)processChangeset:(NSDictionary *)changeset

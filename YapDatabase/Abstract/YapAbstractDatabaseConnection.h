@@ -85,6 +85,21 @@ typedef enum  {
 @property (atomic, assign, readwrite) BOOL metadataCacheEnabled;
 @property (atomic, assign, readwrite) NSUInteger metadataCacheLimit;
 
+#pragma mark Long-Lived Transactions
+
+/**
+ * Invoke this method to start a long-lived read-only transaction.
+ * This allows you to effectively create a stable state for the connection.
+ * This is most often used for connections that service the main thread for UI data.
+ * 
+ * Example:
+ * 
+**/
+- (NSArray *)beginLongLivedReadTransaction;
+- (NSArray *)endLongLivedReadTransaction;
+
+- (BOOL)isInLongLivedReadTransaction;
+
 #pragma mark Extensions
 
 /**

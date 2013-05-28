@@ -35,18 +35,20 @@
 	sqlite3_stmt *yapGetDataForKeyStatement; // Against "yap" database, for internal use
 	sqlite3_stmt *yapSetDataForKeyStatement; // Against "yap" database, for internal use
 	
+	NSDictionary *registeredExtensions;
+	NSMutableDictionary *extensions;
+	BOOL extensionsReady;
+ 
 @protected
 	dispatch_queue_t connectionQueue;
 	void *IsOnConnectionQueueKey;
 	
 	YapAbstractDatabase *database;
-
-	NSMutableDictionary *extensions;
+	uint64_t cacheSnapshot;
 	
 @public
 	sqlite3 *db;
 	
-	uint64_t cacheSnapshot;
 	BOOL rollback
 	
 	YapCache *objectCache;
@@ -70,6 +72,7 @@
 		IsOnConnectionQueueKey = &IsOnConnectionQueueKey;
 		dispatch_queue_set_specific(connectionQueue, IsOnConnectionQueueKey, IsOnConnectionQueueKey, NULL);
 		
+		pendingChangesets = [[NSMutableArray alloc] init];
 		extensions = [[NSMutableDictionary alloc] init];
 		
 		objectCacheLimit = DEFAULT_OBJECT_CACHE_LIMIT;
@@ -335,6 +338,110 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Long-Lived Transactions
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSArray *)beginLongLivedReadTransaction
+{
+	__block NSMutableArray *notifications = nil;
+	
+	dispatch_block_t block = ^{ @autoreleasepool {
+		
+		if (longLivedReadTransaction)
+		{
+			// Caller using implicit atomic reBeginLongLivedReadTransaction
+			notifications = (NSMutableArray *)[self endLongLivedReadTransaction];
+		}
+		
+		longLivedReadTransaction = [self newReadTransaction];
+		[self preReadTransaction:longLivedReadTransaction];
+		
+		// The preReadTransaction method acquires the "sqlite-level" snapshot.
+		// In doing so, if it needs to fetch and process any changesets,
+		// then it adds them to the pendingChangesets ivar for us.
+		
+		if (notifications == nil)
+			notifications = [NSMutableArray arrayWithCapacity:[pendingChangesets count]];
+		
+		for (NSDictionary *changeset in pendingChangesets)
+		{
+			// The changeset has already been processed.
+			
+			NSNotification *notification = [changeset objectForKey:@"notification"];
+			if (notification) {
+				[notifications addObject:notification];
+			}
+		}
+		
+		[pendingChangesets removeAllObjects];
+	}};
+	
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+		block();
+	else
+		dispatch_sync(connectionQueue, block);
+	
+	return notifications;
+}
+
+- (NSArray *)endLongLivedReadTransaction
+{
+	__block NSMutableArray *notifications = nil;
+	
+	dispatch_block_t block = ^{ @autoreleasepool {
+		
+		if (longLivedReadTransaction)
+		{
+			// End the transaction (sqlite commit)
+			
+			[self postReadTransaction:longLivedReadTransaction];
+			longLivedReadTransaction = nil;
+			
+			// Now process any changesets that were pending.
+			// And extract the corresponding external notifications to return the the caller.
+			
+			notifications = [NSMutableArray arrayWithCapacity:[pendingChangesets count]];
+			
+			for (NSDictionary *changeset in pendingChangesets)
+			{
+				[self noteCommittedChanges:changeset];
+				
+				NSNotification *notification = [changeset objectForKey:@"notification"];
+				if (notification) {
+					[notifications addObject:notification];
+				}
+			}
+			
+			[pendingChangesets removeAllObjects];
+		}
+	}};
+	
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+		block();
+	else
+		dispatch_sync(connectionQueue, block);
+	
+	return notifications;
+}
+
+- (BOOL)isInLongLivedReadTransaction
+{
+	__block BOOL result = NO;
+	
+	dispatch_block_t block = ^{
+		
+		result = (longLivedReadTransaction != nil);
+	};
+	
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+		block();
+	else
+		dispatch_sync(connectionQueue, block);
+	
+	return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Extensions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -585,13 +692,18 @@
 {
 	dispatch_sync(connectionQueue, ^{ @autoreleasepool {
 		
-		YapAbstractDatabaseTransaction *transaction = [self newReadTransaction];
+		if (longLivedReadTransaction)
+		{
+			block(longLivedReadTransaction);
+		}
+		else
+		{
+			YapAbstractDatabaseTransaction *transaction = [self newReadTransaction];
 		
-		[self preReadTransaction:transaction];
-		
-		block(transaction);
-		
-		[self postReadTransaction:transaction];
+			[self preReadTransaction:transaction];
+			block(transaction);
+			[self postReadTransaction:transaction];
+		}
 	}});
 }
 
@@ -613,18 +725,25 @@
 	// No other transaction can possibly modify the database except us, even in other connections.
 	
 	dispatch_sync(connectionQueue, ^{
-	dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
 		
-		YapAbstractDatabaseTransaction *transaction = [self newReadWriteTransaction];
+		if (longLivedReadTransaction)
+		{
+			YDBLogWarn(@"Implicitly ending long-lived read transaction on connection %@, database %@",
+			           self, self->database);
+			
+			[self endLongLivedReadTransaction];
+		}
 		
-		[self preReadWriteTransaction:transaction];
-		
-		block(transaction);
-		
-		[self postReadWriteTransaction:transaction];
-		
-	}}); // End dispatch_sync(database->writeQueue)
-	});  // End dispatch_sync(connectionQueue)
+		dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
+			
+			YapAbstractDatabaseTransaction *transaction = [self newReadWriteTransaction];
+			
+			[self preReadWriteTransaction:transaction];
+			block(transaction);
+			[self postReadWriteTransaction:transaction];
+			
+		}}); // End dispatch_sync(database->writeQueue)
+	});      // End dispatch_sync(connectionQueue)
 }
 
 /**
@@ -644,13 +763,18 @@
 	
 	dispatch_async(connectionQueue, ^{ @autoreleasepool {
 		
-		YapAbstractDatabaseTransaction *transaction = [self newReadTransaction];
-		
-		[self preReadTransaction:transaction];
-		
-		block(transaction);
-		
-		[self postReadTransaction:transaction];
+		if (longLivedReadTransaction)
+		{
+			block(longLivedReadTransaction);
+		}
+		else
+		{
+			YapAbstractDatabaseTransaction *transaction = [self newReadTransaction];
+			
+			[self preReadTransaction:transaction];
+			block(transaction);
+			[self postReadTransaction:transaction];
+		}
 		
 		if (completionBlock)
 			dispatch_async(completionQueue, completionBlock);
@@ -681,21 +805,28 @@
 	// No other transaction can possibly modify the database except us, even in other connections.
 	
 	dispatch_async(connectionQueue, ^{
-	dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
 		
-		YapAbstractDatabaseTransaction *transaction = [self newReadWriteTransaction];
+		if (longLivedReadTransaction)
+		{
+			YDBLogWarn(@"Implicitly ending long-lived read transaction on connection %@, database %@",
+			           self, self->database);
+			
+			[self endLongLivedReadTransaction];
+		}
 		
-		[self preReadWriteTransaction:transaction];
-		
-		block(transaction);
-		
-		[self postReadWriteTransaction:transaction];
-		
-		if (completionBlock)
-			dispatch_async(completionQueue, completionBlock);
-		
-	}}); // End dispatch_sync(database->writeQueue)
-	});  // End dispatch_async(connectionQueue)
+		dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
+			
+			YapAbstractDatabaseTransaction *transaction = [self newReadWriteTransaction];
+			
+			[self preReadWriteTransaction:transaction];
+			block(transaction);
+			[self postReadWriteTransaction:transaction];
+			
+			if (completionBlock)
+				dispatch_async(completionQueue, completionBlock);
+			
+		}}); // End dispatch_sync(database->writeQueue)
+	});      // End dispatch_async(connectionQueue)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -774,12 +905,15 @@
 		//
 		// Update our in-memory data (caches, etc) if needed.
 		
-		if (hasActiveWriteTransaction)
+		if (hasActiveWriteTransaction || longLivedReadTransaction)
 		{
-			// There IS a write transaction in progress.
-			// Thus it is not safe to proceed until we acquire a "sql-level" snapshot.
+			// If this is for a longLivedReadTransaction,
+			// then we need to immediately acquire a "sql-level" snapshot.
 			//
-			// Furthermore, we MUST ensure that our "yap-level" snapshot of the in-memory data (caches, etc)
+			// Otherwise if there is a write transaction in progress,
+			// then it's not safe to proceed until we acquire a "sql-level" snapshot.
+			//
+			// During this process we need to ensure that our "yap-level" snapshot of the in-memory data (caches, etc)
 			// is in sync with our "sql-level" snapshot of the database.
 			//
 			// We can check this by comparing the connection's cacheSnapshot ivar with
@@ -801,6 +935,14 @@
 				for (NSDictionary *changeset in changesets)
 				{
 					[self noteCommittedChanges:changeset];
+				}
+				
+				if (longLivedReadTransaction)
+				{
+					// This method is being invoked from the beginLongLivedReadTransaction method.
+					// Add the changesets to the pendingChangesets ivar,
+					// so the calling method can extract the notifications (needed for its return variable).
+					[pendingChangesets addObjectsFromArray:changesets];
 				}
 				
 				NSAssert(cacheSnapshot == sqlSnapshot, @"Invalid connection state");
@@ -1052,21 +1194,40 @@
 		return;
 	}
 	
-	// Post-Write-Transaction: Step 1 of 7
+	// Post-Write-Transaction: Step 1 of 8
 	//
 	// First fetch changeset.
 	// Then update the snapshot in the 'yap' database (if any changes were made).
 	// We use 'yap' database and snapshot value to check for a race condition.
 	
-	NSMutableDictionary *changeset = [self changeset];
+	NSNotification *notification = nil;
+	
+	NSMutableDictionary *changeset = nil;
+	NSMutableDictionary *userInfo = nil;
+	
+	[self getInternalChangeset:&changeset externalChangeset:&userInfo];
 	if (changeset)
 	{
 		cacheSnapshot = [self incrementSnapshotInDatabase];
 		
 		[changeset setObject:@(cacheSnapshot) forKey:@"snapshot"];
+		
+		if (userInfo == nil)
+			userInfo = [NSMutableDictionary dictionaryWithCapacity:2];
+		
+		[userInfo setObject:self forKey:YapDatabaseConnectionKey];
+		
+		if (transaction->customObjectForNotification)
+			[userInfo setObject:transaction->customObjectForNotification forKey:YapDatabaseCustomKey];
+		
+		notification = [NSNotification notificationWithName:YapDatabaseModifiedNotification
+		                                             object:database
+		                                           userInfo:userInfo];
+		
+		[changeset setObject:notification forKey:@"notification"];
 	}
 	
-	// Post-Write-Transaction: Step 2 of 7
+	// Post-Write-Transaction: Step 2 of 8
 	//
 	// Check to see if it's safe to commit our changes.
 	//
@@ -1117,7 +1278,7 @@
 				myState->waitingForWriteLock = NO;
 				safeToCommit = YES;
 				
-				// Post-Write-Transaction: Step 3 of 7
+				// Post-Write-Transaction: Step 3 of 8
 				//
 				// Register pending changeset with database.
 				// Our commit is actually a two step process.
@@ -1156,7 +1317,7 @@
 		
 	} while (!safeToCommit);
 	
-	// Post-Write-Transaction: Step 4 of 7
+	// Post-Write-Transaction: Step 4 of 8
 	//
 	// Execute "COMMIT TRANSACTION" on database connection.
 	// This will write the changes to the WAL, and may invoke a checkpoint.
@@ -1179,7 +1340,7 @@
 	
 	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
-		// Post-Write-Transaction: Step 5 of 7
+		// Post-Write-Transaction: Step 5 of 8
 		//
 		// Notify database of changes, and drop reference to set of changed keys.
 		
@@ -1188,7 +1349,7 @@
 			[database noteCommittedChanges:changeset fromConnection:self];
 		}
 		
-		// Post-Write-Transaction: Step 6 of 7
+		// Post-Write-Transaction: Step 6 of 8
 		//
 		// Update our connection state within the state table.
 		//
@@ -1201,7 +1362,14 @@
 		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-write transaction.", self);
 	}});
 	
-	// Post-Write-Transaction: Step 7 of 7
+	// Post-Write-Transaction: Step 7 of 8
+	//
+	// Post YapDatabaseModifiedNotification
+	
+	if (notification)
+		[[NSNotificationCenter defaultCenter] postNotification:notification];
+	
+	// Post-Write-Transaction: Step 8 of 8
 	//
 	// Drop IsOnConnectionQueueKey flag from writeQueue since we're exiting writeQueue.
 	
@@ -1384,42 +1552,61 @@
  * If changes have been made, it should return a changeset dictionary.
  * If no changes have been made, it should return nil.
  * 
- * Subclasses must first invoke [super changeset] in order to get the changesets from the extensions.
+ * Subclasses must first invoke super in order to get the changesets from the extensions.
  * 
  * @see processChangeset:
 **/
-- (NSMutableDictionary *)changeset
+- (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
+           externalChangeset:(NSMutableDictionary **)externalChangesetPtr
 {
 	// Use existing extensions (extensions ivar, not [self extensions]).
 	// There's no need to create any new extConnections at this point.
 	
-	__block NSMutableDictionary *changeset_extensions = nil;
+	__block NSMutableDictionary *internalChangeset_extensions = nil;
+	__block NSMutableDictionary *externalChangeset_extensions = nil;
 	
 	[extensions enumerateKeysAndObjectsUsingBlock:^(id extName, id extConnectionObj, BOOL *stop) {
 		
 		__unsafe_unretained YapAbstractDatabaseExtensionConnection *extConnection = extConnectionObj;
 		
-		NSMutableDictionary *extChangeset = [extConnection changeset];
-		if (extChangeset)
+		NSMutableDictionary *internal = nil;
+		NSMutableDictionary *external = nil;
+		
+		[extConnection getInternalChangeset:&internal externalChangeset:&external];
+		
+		if (internal)
 		{
-			if (changeset_extensions == nil)
-				changeset_extensions = [NSMutableDictionary dictionaryWithCapacity:[extensions count]];
+			if (internalChangeset_extensions == nil)
+				internalChangeset_extensions = [NSMutableDictionary dictionaryWithCapacity:[extensions count]];
 			
-			[changeset_extensions setObject:extChangeset forKey:extName];
+			[internalChangeset_extensions setObject:internal forKey:extName];
+		}
+		if (external)
+		{
+			if (externalChangeset_extensions == nil)
+				externalChangeset_extensions = [NSMutableDictionary dictionaryWithCapacity:[extensions count]];
+			
+			[externalChangeset_extensions setObject:external forKey:extName];
 		}
 	}];
 	
-	if (changeset_extensions)
+	NSMutableDictionary *internalChangeset = nil;
+	NSMutableDictionary *externalChangeset = nil;
+	
+	if (internalChangeset_extensions)
 	{
-		NSMutableDictionary *changeset = [NSMutableDictionary dictionaryWithCapacity:8];
-		[changeset setObject:changeset_extensions forKey:@"extensions"];
-		
-		return changeset;
+		internalChangeset = [NSMutableDictionary dictionaryWithCapacity:8];
+		[internalChangeset setObject:internalChangeset_extensions forKey:@"extensions"];
 	}
-	else
+	
+	if (externalChangeset_extensions)
 	{
-		return nil;
+		externalChangeset = [NSMutableDictionary dictionaryWithCapacity:8];
+		[externalChangeset setObject:externalChangeset_extensions forKey:YapDatabaseExtensionsKey];
 	}
+	
+	*internalChangesetPtr = internalChangeset;
+	*externalChangesetPtr = externalChangeset;
 }
 
 /**
@@ -1525,19 +1712,27 @@
 		// Thus this method could be invoked twice to handle the same changeset.
 		// So catching it here and ignoring it is simply a minor optimization to avoid duplicate work.
 		
-		YDBLogVerbose(@"Ignoring previously processed changeset %@ for connection %@, database %@",
-		              [changeset objectForKey:@"snapshot"], self, self->database);
+		YDBLogVerbose(@"Ignoring previously processed changeset %lu for connection %@, database %@",
+		              (unsigned long)changesetSnapshot, self, self->database);
 		
 		return;
 	}
 	
-	cacheSnapshot = changesetSnapshot;
-	
-	YDBLogVerbose(@"Processing changeset %@ for connection %@, database %@",
-	              [changeset objectForKey:@"snapshot"], self, self->database);
+	if (longLivedReadTransaction)
+	{
+		YDBLogVerbose(@"Storing pending changeset %lu for connection %@, database %@",
+		              (unsigned long)changesetSnapshot, self, self->database);
+		
+		[pendingChangesets addObject:changeset];
+		return;
+	}
 	
 	// Changeset processing
 	
+	YDBLogVerbose(@"Processing changeset %lu for connection %@, database %@",
+	              (unsigned long)changesetSnapshot, self, self->database);
+	
+	cacheSnapshot = changesetSnapshot;
 	[self processChangeset:changeset];
 }
 

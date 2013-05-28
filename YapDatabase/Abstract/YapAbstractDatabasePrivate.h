@@ -152,6 +152,9 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	sqlite3_stmt *yapGetDataForKeyStatement; // Against "yap" database, for internal use
 	sqlite3_stmt *yapSetDataForKeyStatement; // Against "yap" database, for internal use
 	
+	YapAbstractDatabaseTransaction *longLivedReadTransaction;
+	NSMutableArray *pendingChangesets;
+	
 	NSDictionary *registeredExtensions;
 	NSMutableDictionary *extensions;
 	BOOL extensionsReady;
@@ -161,11 +164,11 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	void *IsOnConnectionQueueKey;
 	
 	YapAbstractDatabase *database;
+	uint64_t cacheSnapshot;
 	
 @public
 	sqlite3 *db;
 	
-	uint64_t cacheSnapshot;
 	BOOL rollback;
 	
 	YapCache *objectCache;
@@ -215,7 +218,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 
 - (void)postRollbackCleanup;
 
-- (NSMutableDictionary *)changeset;
+- (void)getInternalChangeset:(NSMutableDictionary **)internalPtr externalChangeset:(NSMutableDictionary **)externalPtr;
 - (void)processChangeset:(NSDictionary *)changeset;
 
 - (void)noteCommittedChanges:(NSDictionary *)changeset;
@@ -236,6 +239,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	__unsafe_unretained YapAbstractDatabaseConnection *abstractConnection;
 	
 	BOOL isReadWriteTransaction;
+	id customObjectForNotification;
 }
 
 - (id)initWithConnection:(YapAbstractDatabaseConnection *)connection isReadWriteTransaction:(BOOL)flag;

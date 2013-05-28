@@ -625,9 +625,13 @@
  * 
  * @see processChangeset:
 **/
-- (NSMutableDictionary *)changeset
+- (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
+           externalChangeset:(NSMutableDictionary **)externalChangesetPtr
 {
-	NSMutableDictionary *changeset = [super changeset];
+	NSMutableDictionary *internalChangeset = nil;
+	NSMutableDictionary *externalChangeset = nil;
+	
+	[super getInternalChangeset:&internalChangeset externalChangeset:&externalChangeset];
 	
 	// Reserved keys:
 	//
@@ -640,30 +644,27 @@
 		[removedKeys count]        > 0 ||
 		[removedCollections count] > 0 || allKeysRemoved)
 	{
-		if (changeset == nil)
-			changeset = [NSMutableDictionary dictionaryWithCapacity:6]; // +1 for snapshot
+		if (internalChangeset == nil)
+			internalChangeset = [NSMutableDictionary dictionaryWithCapacity:6]; // +1 for snapshot
 		
 		if ([objectChanges count] > 0)
-			[changeset setObject:objectChanges forKey:@"objectChanges"];
+			[internalChangeset setObject:objectChanges forKey:@"objectChanges"];
 		
 		if ([metadataChanges count] > 0)
-			[changeset setObject:metadataChanges forKey:@"metadataChanges"];
+			[internalChangeset setObject:metadataChanges forKey:@"metadataChanges"];
 		
 		if ([removedKeys count] > 0)
-			[changeset setObject:removedKeys forKey:@"removedKeys"];
+			[internalChangeset setObject:removedKeys forKey:@"removedKeys"];
 		
 		if ([removedCollections count] > 0)
-			[changeset setObject:removedCollections forKey:@"removedCollections"];
+			[internalChangeset setObject:removedCollections forKey:@"removedCollections"];
 		
 		if (allKeysRemoved)
-			[changeset setObject:@(YES) forKey:@"allKeysRemoved"];
-		
-		return changeset;
+			[internalChangeset setObject:@(YES) forKey:@"allKeysRemoved"];
 	}
-	else
-	{
-		return nil;
-	}
+	
+	*internalChangesetPtr = internalChangeset;
+	*externalChangesetPtr = externalChangeset;
 }
 
 /**
