@@ -101,7 +101,8 @@
 **/
 - (void)rollback
 {
-	abstractConnection->rollback = YES;
+	if (isReadWriteTransaction)
+		rollback = YES;
 }
 
 /**

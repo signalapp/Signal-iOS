@@ -1136,12 +1136,6 @@
 	
 	// Pre-Write-Transaction: Step 4 of 4
 	//
-	// Reset read-write transaction variables.
-	
-	rollback = NO;
-	
-	// Pre-Write-Transaction: Step 5 of 5
-	//
 	// Add IsOnConnectionQueueKey flag to writeQueue.
 	// This allows various methods that depend on the flag to operate correctly.
 	
@@ -1156,7 +1150,7 @@
 **/
 - (void)postReadWriteTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
-	if (rollback)
+	if (transaction->rollback)
 	{
 		// Rollback-Write-Transaction: Step 1 of 2
 		//

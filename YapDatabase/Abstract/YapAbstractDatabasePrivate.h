@@ -169,8 +169,6 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 @public
 	sqlite3 *db;
 	
-	BOOL rollback;
-	
 	YapCache *objectCache;
 	YapCache *metadataCache;
 	
@@ -239,6 +237,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	__unsafe_unretained YapAbstractDatabaseConnection *abstractConnection;
 	
 	BOOL isReadWriteTransaction;
+	BOOL rollback;
 	id customObjectForNotification;
 }
 
