@@ -136,6 +136,7 @@ extern NSString *const YapDatabaseCustomKey;
 @property (nonatomic, strong, readonly) NSData *(^metadataSerializer)(id object);
 @property (nonatomic, strong, readonly) id (^metadataDeserializer)(NSData *data);
 
+@property (atomic, assign, readonly) uint64_t snapshot;
 
 #pragma mark Extensions
 

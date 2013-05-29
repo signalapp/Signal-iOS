@@ -336,6 +336,22 @@
 		dispatch_async(connectionQueue, block);
 }
 
+- (uint64_t)snapshot
+{
+	__block uint64_t result = 0;
+	
+	dispatch_block_t block = ^{
+		result = snapshot;
+	};
+	
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+		block();
+	else
+		dispatch_sync(connectionQueue, block);
+	
+	return result;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Long-Lived Transactions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

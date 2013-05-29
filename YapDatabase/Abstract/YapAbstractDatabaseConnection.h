@@ -85,6 +85,67 @@ typedef enum  {
 @property (atomic, assign, readwrite) BOOL metadataCacheEnabled;
 @property (atomic, assign, readwrite) NSUInteger metadataCacheLimit;
 
+#pragma mark State
+
+/**
+ * The snapshot number is the internal synchronization state primitive for the connection.
+ * Although it sometimes comes in handy (in a pinch), or for general debugging of your app.
+ *
+ * The snapshot is a simple 64-bit number that gets incremented upon every readwrite transaction
+ * that makes modifications to the database. Due to the concurrent architecture of YapDatabase,
+ * there may be multiple concurrent connections that are inspecting the database at similar times,
+ * yet they are looking at slightly different "snapshots" of the database.
+ * 
+ * The snapshot number may thus be inspected to determine (in a general fashion) what state the connection
+ * is in compared with other connections.
+ * 
+ * You may also query YapAbstractDatabase.snapshot to determine the most up-to-date snapshot among all connections.
+ *
+ * Example:
+ * 
+ * YapDatabase *database = [[YapDatabase alloc] init...];
+ * database.snapshot; // returns zero
+ *
+ * YapDatabaseConnection *connection1 = [database newConnection];
+ * YapDatabaseConnection *connection2 = [database newConnection];
+ * 
+ * connection1.snapshot; // returns zero
+ * connection2.snapshot; // returns zero
+ * 
+ * [connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ *     [transaction setObject:objectA forKey:keyA];
+ * }];
+ * 
+ * database.snapshot;    // returns 1
+ * connection1.snapshot; // returns 1
+ * connection2.snapshot; // returns 1
+ * 
+ * [connection1 asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ *     [transaction setObject:objectB forKey:keyB];
+ *     [NSThread sleepForTimeInterval:1.0]; // sleep for 1 second
+ *     
+ *     connection1.snapshot; // returns 1 (we know it will turn into 2 once the transaction completes)
+ * } completion:^{
+ *     
+ *     connection1.snapshot; // returns 2
+ * }];
+ * 
+ * [connection2 asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction){
+ *     [NSThread sleepForTimeInterval:5.0]; // sleep for 5 seconds
+ * 
+ *     connection2.snapshot; // returns 1. See why?
+ * }];
+ *
+ * It's because connection2 started its transaction when the database was in snapshot 1.
+ * Thus, for the duration of its transaction, the database remains in that state.
+ * 
+ * However, once connection2 completes its transaction, it will automatically update itself to snapshot 2.
+ *
+ * In general, the snapshot is primarily for internal use.
+ * However, it may come in handy for some tricky edge-case bugs, or for general debugging.
+**/
+@property (atomic, assign, readonly) uint64_t snapshot;
+
 #pragma mark Long-Lived Transactions
 
 /**

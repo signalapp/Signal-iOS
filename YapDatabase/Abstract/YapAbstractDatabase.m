@@ -853,9 +853,24 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 **/
 - (uint64_t)snapshot
 {
-	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
-	
-	return snapshot;
+	if (dispatch_get_specific(IsOnSnapshotQueueKey))
+	{
+		// Very common case.
+		// This method is called on just about every transaction.
+		return snapshot;
+	}
+	else
+	{
+		// Non-common case.
+		// Public access implementation.
+		__block uint64_t result = 0;
+		
+		dispatch_sync(snapshotQueue, ^{
+			result = snapshot;
+		});
+		
+		return result;
+	}
 }
 
 /**
