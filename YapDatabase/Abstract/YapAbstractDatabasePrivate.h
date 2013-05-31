@@ -28,6 +28,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	uint64_t snapshot;
 	
 	NSMutableDictionary *extensions;
+	sqlite3 *extensionsDb;
 	
 @protected
 	

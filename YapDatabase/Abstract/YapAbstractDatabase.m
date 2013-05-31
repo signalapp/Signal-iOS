@@ -582,25 +582,25 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	
 	// Write it to disk (replacing any previous value from last app run)
 	
-	[self writeSnapshotToDatabase];
+	[self writeSnapshotToDatabase:db];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)writeSnapshotToDatabase
+- (void)writeSnapshotToDatabase:(sqlite3 *)aDb
 {
 	int status;
 	sqlite3_stmt *statement;
 	
 	char *stmt = "INSERT OR REPLACE INTO \"yap\" (\"key\", \"data\") VALUES (?, ?);";
 	
-	status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &statement, NULL);
+	status = sqlite3_prepare_v2(aDb, stmt, (int)strlen(stmt)+1, &statement, NULL);
 	if (status != SQLITE_OK)
 	{
 		YDBLogError(@"%@: Error creating update snapshot statement: %d %s",
-		              NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		              NSStringFromSelector(_cmd), status, sqlite3_errmsg(aDb));
 	}
 	else
 	{
@@ -705,6 +705,37 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 #pragma mark Extensions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+- (BOOL)openExtensionsDb
+{
+	int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX;
+	
+	int status = sqlite3_open_v2([databasePath UTF8String], &extensionsDb, flags, NULL);
+	if (status != SQLITE_OK)
+	{
+		// Sometimes the open function returns a db to allow us to query it for the error message
+		if (extensionsDb) {
+			YDBLogWarn(@"Error opening extensionsDb: %d %s", status, sqlite3_errmsg(extensionsDb));
+		}
+		else {
+			YDBLogError(@"Error opening extensionsDb: %d", status);
+		}
+		
+		return NO;
+	}
+	
+	sqlite3_wal_autocheckpoint(extensionsDb, 100);
+	
+	return YES;
+}
+
+- (void)closeExtensionsDb
+{
+	if (extensionsDb) {
+		sqlite3_close(extensionsDb);
+		extensionsDb = NULL;
+	}
+}
+
 /**
  * Registers the extension with the database using the given name.
  * After registration everything works automatically using just the extension name.
@@ -748,7 +779,32 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		
 		// Prepare the extension (create the table(s) for it and/or any other needed tasks)
 		
-		result = [[extension class] createTablesForRegisteredName:extensionName database:self sqlite:db error:NULL];
+		if (extensionsDb == NULL && ![self openExtensionsDb])
+		{
+			result = NO;
+			return;
+		}
+		
+		// Todo: Someone needs to be in charge of the begin/end commit...
+		
+		result = [[extension class] createTablesForRegisteredName:extensionName
+		                                                 database:self
+		                                                   sqlite:extensionsDb
+		                                                    error:NULL];
+		
+		double delayInSeconds = 5.0;
+		dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+		dispatch_after(popTime, writeQueue, ^(void){
+			
+			// There's no reason to keep the extensionsDb open.
+			// Extensions are generally setup at app launch, and then left alone.
+			// And even if they're setup on the fly, extensions are generally a long-lived.
+			//
+			// So we tear it down after a slight delay.
+			// The delay should allow multiple extension registrations to share a single db instance.
+			
+			[self closeExtensionsDb];
+		});
 		
 		if (!result)
 		{
@@ -764,7 +820,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 			[extension setRegisteredName:extensionName];
 			
 			snapshot++;
-			[self writeSnapshotToDatabase];
+			[self writeSnapshotToDatabase:extensionsDb];
 			
 			NSDictionary *changeset = @{
 				@"snapshot" : @(snapshot),
