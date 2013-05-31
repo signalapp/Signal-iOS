@@ -963,6 +963,8 @@
 				NSAssert(snapshot == sqlSnapshot, @"Invalid connection state");
 			}
 			
+			myState->lastKnownSnapshot = snapshot;
+			myState->longLivedReadTransaction = (longLivedReadTransaction != nil);
 			myState->sqlLevelSharedReadLock = YES;
 			needsMarkSqlLevelSharedReadLock = NO;
 		}
@@ -995,6 +997,7 @@
 				NSAssert(snapshot == globalSnapshot, @"Invalid connection state");
 			}
 			
+			myState->lastKnownSnapshot = snapshot;
 			myState->sqlLevelSharedReadLock = NO;
 			needsMarkSqlLevelSharedReadLock = YES;
 		}
@@ -1050,6 +1053,7 @@
 				wasMaybeBlockingWriteTransaction = state->yapLevelSharedReadLock && !state->sqlLevelSharedReadLock;
 				state->yapLevelSharedReadLock = NO;
 				state->sqlLevelSharedReadLock = NO;
+				state->longLivedReadTransaction = NO;
 			}
 			else if (state->yapLevelSharedReadLock && !state->sqlLevelSharedReadLock)
 			{
@@ -1119,11 +1123,14 @@
 		// We are the only write transaction for this database.
 		// It is important for read-only transactions on other connections to know there's a writer.
 		
+		YapDatabaseConnectionState *myState = nil;
+		
 		for (YapDatabaseConnectionState *state in database->connectionStates)
 		{
 			if (state->connection == self)
 			{
-				state->yapLevelExclusiveWriteLock = YES;
+				myState = state;
+				myState->yapLevelExclusiveWriteLock = YES;
 			}
 		}
 		
@@ -1146,6 +1153,7 @@
 			NSAssert(snapshot == globalSnapshot, @"Invalid connection state");
 		}
 		
+		myState->lastKnownSnapshot = snapshot;
 		needsMarkSqlLevelSharedReadLock = NO;
 		
 		YDBLogVerbose(@"YapDatabaseConnection(%p) starting read-write transaction.", self);

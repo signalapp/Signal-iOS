@@ -11,8 +11,12 @@
 	
 	BOOL yapLevelSharedReadLock;
 	BOOL sqlLevelSharedReadLock;
+	BOOL longLivedReadTransaction;
+	
 	BOOL yapLevelExclusiveWriteLock;
 	BOOL waitingForWriteLock;
+	
+	uint64_t lastKnownSnapshot;
 }
 
 - (id)initWithConnection:(YapAbstractDatabaseConnection *)connection;
