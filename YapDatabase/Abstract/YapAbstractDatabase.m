@@ -193,7 +193,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	if (![YapDatabaseManager registerDatabaseForPath:path])
 	{
 		YDBLogError(@"Only a single database instance is allowed per file. "
-		            @"However, you may create multiple connections from a single database instance.");
+		            @"For concurrency you create multiple connections from a single database instance.");
 		return nil;
 	}
 	
