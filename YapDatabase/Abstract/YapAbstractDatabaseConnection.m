@@ -51,7 +51,7 @@
 	NSUInteger objectCacheLimit;          // Read-only by transaction. Use as consideration of whether to add to cache.
 	NSUInteger metadataCacheLimit;        // Read-only by transaction. Use as consideration of whether to add to cache.
 	
-	BOOL hasMarkedSqlLevelSharedReadLock; // Read-only by transaction. Use as consideration of whether to invoke method.
+	BOOL needsMarkSqlLevelSharedReadLock; // Read-only by transaction. Use as consideration of whether to invoke method.
 
 */
 }
@@ -742,7 +742,7 @@
 			}
 			
 			myState->sqlLevelSharedReadLock = YES;
-			hasMarkedSqlLevelSharedReadLock = YES;
+			needsMarkSqlLevelSharedReadLock = NO;
 		}
 		else
 		{
@@ -774,7 +774,7 @@
 			}
 			
 			myState->sqlLevelSharedReadLock = NO;
-			hasMarkedSqlLevelSharedReadLock = NO;
+			needsMarkSqlLevelSharedReadLock = YES;
 		}
 	}});
 }
@@ -923,6 +923,8 @@
 			
 			NSAssert(cacheSnapshot == globalSnapshot, @"Invalid connection state");
 		}
+		
+		needsMarkSqlLevelSharedReadLock = NO;
 		
 		YDBLogVerbose(@"YapDatabaseConnection(%p) starting read-write transaction.", self);
 	}});
@@ -1218,8 +1220,8 @@
 
 - (void)markSqlLevelSharedReadLockAcquired
 {
-	NSAssert(hasMarkedSqlLevelSharedReadLock == NO, @"Method called but unneeded. Unnecessary overhead.");
-	if (hasMarkedSqlLevelSharedReadLock) return;
+	NSAssert(needsMarkSqlLevelSharedReadLock, @"Method called but unneeded. Unnecessary overhead.");
+	if (!needsMarkSqlLevelSharedReadLock) return;
 	
 	__block YapDatabaseConnectionState *writeStateToSignal = nil;
 	
@@ -1267,7 +1269,7 @@
 		}
 	}});
 	
-	hasMarkedSqlLevelSharedReadLock = YES;
+	needsMarkSqlLevelSharedReadLock = NO;
 	
 	if (writeStateToSignal)
 	{

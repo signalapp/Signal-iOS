@@ -44,7 +44,7 @@
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		if (!connection->hasMarkedSqlLevelSharedReadLock)
+		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
 		result = (NSUInteger)sqlite3_column_int64(statement, 0);
@@ -75,7 +75,7 @@
 	
 	while (sqlite3_step(statement) == SQLITE_ROW)
 	{
-		if (!connection->hasMarkedSqlLevelSharedReadLock)
+		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
 		const unsigned char *text = sqlite3_column_text(statement, 0);
@@ -112,7 +112,7 @@
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		if (!connection->hasMarkedSqlLevelSharedReadLock)
+		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
 		const void *blob = sqlite3_column_blob(statement, 0);
@@ -158,7 +158,7 @@
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		if (!connection->hasMarkedSqlLevelSharedReadLock)
+		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
 		const void *blob = sqlite3_column_blob(statement, 0);
@@ -216,7 +216,7 @@
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		if (!connection->hasMarkedSqlLevelSharedReadLock)
+		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
 		result = (sqlite3_column_int64(statement, 0) > 0);
@@ -291,7 +291,7 @@
 			int status = sqlite3_step(statement);
 			if (status == SQLITE_ROW)
 			{
-				if (!connection->hasMarkedSqlLevelSharedReadLock)
+				if (connection->needsMarkSqlLevelSharedReadLock)
 					[connection markSqlLevelSharedReadLockAcquired];
 				
 				const void *oBlob = sqlite3_column_blob(statement, 0);
@@ -373,7 +373,7 @@
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		if (!connection->hasMarkedSqlLevelSharedReadLock)
+		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
 		found = YES;
@@ -434,7 +434,7 @@
 	
 	while (sqlite3_step(statement) == SQLITE_ROW)
 	{
-		if (!connection->hasMarkedSqlLevelSharedReadLock)
+		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
 		const unsigned char *text = sqlite3_column_text(statement, 0);
@@ -551,7 +551,7 @@
 		
 		while (sqlite3_step(statement) == SQLITE_ROW && !stop)
 		{
-			if (!connection->hasMarkedSqlLevelSharedReadLock)
+			if (connection->needsMarkSqlLevelSharedReadLock)
 				[connection markSqlLevelSharedReadLockAcquired];
 			
 			const unsigned char *text = sqlite3_column_text(statement, 0);
@@ -647,7 +647,7 @@
 	
 	while (sqlite3_step(statement) == SQLITE_ROW)
 	{
-		if (!connection->hasMarkedSqlLevelSharedReadLock)
+		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
 		const unsigned char *text = sqlite3_column_text(statement, 0);
@@ -745,7 +745,7 @@
 
 	while (sqlite3_step(statement) == SQLITE_ROW)
 	{
-		if (!connection->hasMarkedSqlLevelSharedReadLock)
+		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
 		const unsigned char *text = sqlite3_column_text(statement, 0);
@@ -843,7 +843,7 @@
 
 	while (sqlite3_step(statement) == SQLITE_ROW)
 	{
-		if (!connection->hasMarkedSqlLevelSharedReadLock)
+		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
 		const unsigned char *text = sqlite3_column_text(statement, 0);
