@@ -106,9 +106,13 @@
 		}
 		else
 		{
-			// Configure autocheckpointing.
-			// Decrease size of WAL from default 1,000 pages to something more mobile friendly.
-			sqlite3_wal_autocheckpoint(db, 100);
+			// Disable autocheckpointing.
+			//
+			// YapDatabase has its own optimized checkpointing algorithm built-in.
+			// It knows the state of every active connection for the database,
+			// so it can invoke the checkpoint methods at the precise time in which a checkpoint can be most effective.
+			
+			sqlite3_wal_autocheckpoint(db, 0);
 		}
 		
 		#if TARGET_OS_IPHONE
@@ -1011,7 +1015,7 @@
 **/
 - (void)postReadTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
-	// Post-Read-Transaction: Step 1 of 3
+	// Post-Read-Transaction: Step 1 of 4
 	//
 	// 1. Execute "COMMIT TRANSACTION" on database connection.
 	// If we had acquired "sql-level" shared read lock, this will release associated resources.
@@ -1019,10 +1023,12 @@
 	
 	[transaction commitTransaction];
 	
+	__block uint64_t minSnapshot = 0;
 	__block YapDatabaseConnectionState *writeStateToSignal = nil;
+	
 	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
-		// Post-Read-Transaction: Step 2 of 3
+		// Post-Read-Transaction: Step 2 of 4
 		//
 		// Update our connection state within the state table.
 		//
@@ -1042,6 +1048,8 @@
 		// So if we never acquired an "sql-level" snapshot of the database, and we were the last transaction
 		// in such a state, and there's a blocked write transaction, then we need to signal it.
 		
+		minSnapshot = [database snapshot];
+		
 		BOOL wasMaybeBlockingWriteTransaction = NO;
 		NSUInteger countOtherMaybeBlockingWriteTransaction = 0;
 		YapDatabaseConnectionState *blockedWriteState = nil;
@@ -1055,13 +1063,23 @@
 				state->sqlLevelSharedReadLock = NO;
 				state->longLivedReadTransaction = NO;
 			}
-			else if (state->yapLevelSharedReadLock && !state->sqlLevelSharedReadLock)
+			else if (state->yapLevelSharedReadLock)
 			{
-				countOtherMaybeBlockingWriteTransaction++;
+				// Active sibling connection: read-only
+				
+				minSnapshot = MIN(state->lastKnownSnapshot, minSnapshot);
+				
+				if (!state->sqlLevelSharedReadLock)
+					countOtherMaybeBlockingWriteTransaction++;
 			}
-			else if (state->waitingForWriteLock)
+			else if (state->yapLevelExclusiveWriteLock)
 			{
-				blockedWriteState = state;
+				// Active sibling connection: read-write
+				
+				minSnapshot = MIN(state->lastKnownSnapshot, minSnapshot);
+				
+				if (state->waitingForWriteLock)
+					blockedWriteState = state;
 			}
 		}
 		
@@ -1073,7 +1091,22 @@
 		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-only transaction.", self);
 	}});
 	
-	// Post-Read-Transaction: Step 3 of 3
+	// Post-Read-Transaction: Step 3 of 4
+	//
+	// Check to see if this connection has been holding back the checkpoint process.
+	// That is, was this connection the last active connection on an old snapshot?
+	
+	if (snapshot < minSnapshot)
+	{
+		// There are commits ahead of us that need to be checkpointed.
+		// And we were the oldest active connection,
+		// so we were previously preventing the checkpoint from progressing.
+		// Thus we can now continue the checkpoint operation.
+		
+		[database asyncCheckpoint:minSnapshot];
+	}
+	
+	// Post-Read-Transaction: Step 4 of 4
 	//
 	// If we discovered a blocked write transaction,
 	// and it was blocked waiting on us (because we had a "yap-level" snapshot without an "sql-level" snapshot),
@@ -1357,6 +1390,8 @@
 	
 	[transaction commitTransaction];
 	
+	__block uint64_t minSnapshot = UINT64_MAX;
+	
 	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
 		// Post-Write-Transaction: Step 5 of 8
@@ -1375,20 +1410,41 @@
 		// We are the only write transaction for this database.
 		// It is important for read-only transactions on other connections to know we're no longer a writer.
 		
+		for (YapDatabaseConnectionState *state in database->connectionStates)
+		{
+			if (state->yapLevelSharedReadLock)
+			{
+				minSnapshot = MIN(state->lastKnownSnapshot, minSnapshot);
+			}
+		}
+		
 		myState->yapLevelExclusiveWriteLock = NO;
 		myState->waitingForWriteLock = NO;
 		
 		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-write transaction.", self);
 	}});
 	
-	// Post-Write-Transaction: Step 7 of 8
+	// Post-Write-Transaction: Step 7 of 9
+	
+	if (changeset)
+	{
+		// We added frames to the WAL.
+		// We can invoke a checkpoint if there are no other active connections.
+		
+		if (minSnapshot == UINT64_MAX)
+		{
+			[database asyncCheckpoint:snapshot];
+		}
+	}
+	
+	// Post-Write-Transaction: Step 8 of 9
 	//
 	// Post YapDatabaseModifiedNotification
 	
 	if (notification)
 		[[NSNotificationCenter defaultCenter] postNotification:notification];
 	
-	// Post-Write-Transaction: Step 8 of 8
+	// Post-Write-Transaction: Step 9 of 9
 	//
 	// Drop IsOnConnectionQueueKey flag from writeQueue since we're exiting writeQueue.
 	

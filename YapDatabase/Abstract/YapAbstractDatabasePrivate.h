@@ -27,12 +27,14 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	NSMutableArray *changesets;
 	uint64_t snapshot;
 	
+	dispatch_queue_t checkpointQueue;
+	
 	NSMutableDictionary *extensions;
 	sqlite3 *extensionsDb;
 	
 @protected
 	
-	sqlite3 *db;
+	sqlite3 *db; // Used for setup & checkpoints
 	
 @public
 	
@@ -137,6 +139,11 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
  * - snapshot : NSNumber with the changeset's snapshot
 **/
 - (void)noteCommittedChanges:(NSDictionary *)changeset fromConnection:(YapAbstractDatabaseConnection *)connection;
+
+/**
+ * 
+**/
+- (void)asyncCheckpoint:(uint64_t)maxCheckpointableSnapshot;
 
 @end
 

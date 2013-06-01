@@ -252,8 +252,9 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 			return nil;
 		}
 		
-		snapshotQueue = dispatch_queue_create("YapDatabase-Snapshot", NULL);
-		writeQueue    = dispatch_queue_create("YapDatabase-Write", NULL);
+		checkpointQueue = dispatch_queue_create("YapDatabase-Checkpoint", NULL);
+		snapshotQueue   = dispatch_queue_create("YapDatabase-Snapshot", NULL);
+		writeQueue      = dispatch_queue_create("YapDatabase-Write", NULL);
 		
 		changesets = [[NSMutableArray alloc] init];
 		connectionStates = [[NSMutableArray alloc] init];
@@ -355,9 +356,13 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		return NO;
 	}
 	
-	// Configure autocheckpointing.
-	// Decrease size of WAL from default 1,000 pages to something more mobile friendly.
-	sqlite3_wal_autocheckpoint(db, 100);
+	// Disable autocheckpointing.
+	//
+	// YapDatabase has its own optimized checkpointing algorithm built-in.
+	// It knows the state of every active connection for the database,
+	// so it can invoke the checkpoint methods at the precise time in which a checkpoint can be most effective.
+	
+	sqlite3_wal_autocheckpoint(db, 0);
 	
 	return YES;
 }
@@ -1054,6 +1059,53 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		dispatch_group_notify(group, snapshotQueue, block);
 	else
 		block();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Manual Checkpointing
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * 
+**/
+- (void)asyncCheckpoint:(uint64_t)maxCheckpointableSnapshot
+{
+	dispatch_async(checkpointQueue, ^{ @autoreleasepool {
+		
+		YDBLogVerbose(@"Checkpointing up to snapshot %llu", maxCheckpointableSnapshot);
+		
+		// We're ready to checkpoint more frames.
+		//
+		// So we're going to execute a passive checkpoint.
+		// That is, without disrupting any connections, we're going to write pages from the WAL into the database.
+		// The checkpoint can only write pages from snapshots if all connections are at or beyond the snapshot.
+		// Thus, this method is only called by a connection that moves the min snapshot forward.
+		
+		int frameCount = 0;
+		int checkpointCount = 0;
+		
+		int result = sqlite3_wal_checkpoint_v2(db, "main",
+		                                       SQLITE_CHECKPOINT_PASSIVE, &frameCount, &checkpointCount);
+		
+		// frameCount      = total number of frames in the log file
+		// checkpointCount = total number of checkpointed frames
+		//                  (including any that were already checkpointed before the function was called)
+		
+		if (result != SQLITE_OK)
+		{
+			if (result == SQLITE_BUSY)
+				YDBLogVerbose(@"sqlite3_wal_checkpoint_v2 returned SQLITE_BUSY");
+			else
+				YDBLogWarn(@"sqlite3_wal_checkpoint_v2 returned error code: %d", result);
+			
+			return;// from_block
+		}
+		
+		YDBLogVerbose(@"Post-checkpoint (%llu): frames(%d) checkpointed(%d)",
+		              maxCheckpointableSnapshot, frameCount, checkpointCount);
+		
+		// Todo: Notify any long-lived transactions
+	}});
 }
 
 @end
