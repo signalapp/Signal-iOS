@@ -1070,7 +1070,12 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 **/
 - (void)asyncCheckpoint:(uint64_t)maxCheckpointableSnapshot
 {
+	__weak YapAbstractDatabase *weakSelf = self;
+	
 	dispatch_async(checkpointQueue, ^{ @autoreleasepool {
+		
+		__strong YapAbstractDatabase *strongSelf = weakSelf;
+		if (strongSelf == nil) return;
 		
 		YDBLogVerbose(@"Checkpointing up to snapshot %llu", maxCheckpointableSnapshot);
 		
@@ -1084,7 +1089,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		int frameCount = 0;
 		int checkpointCount = 0;
 		
-		int result = sqlite3_wal_checkpoint_v2(db, "main",
+		int result = sqlite3_wal_checkpoint_v2(strongSelf->db, "main",
 		                                       SQLITE_CHECKPOINT_PASSIVE, &frameCount, &checkpointCount);
 		
 		// frameCount      = total number of frames in the log file
