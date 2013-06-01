@@ -36,10 +36,10 @@
 #define YDB_LOG_LEVEL_INFO    (YDB_LOG_LEVEL_WARN  | YDB_LOG_FLAG_INFO)    // 0...00111
 #define YDB_LOG_LEVEL_VERBOSE (YDB_LOG_LEVEL_INFO  | YDB_LOG_FLAG_VERBOSE) // 0...01111
 
-#define YDB_LOG_ERROR   (YDBLogLevel & YDB_LOG_LEVEL_ERROR)
-#define YDB_LOG_WARN    (YDBLogLevel & YDB_LOG_LEVEL_WARN)
-#define YDB_LOG_INFO    (YDBLogLevel & YDB_LOG_LEVEL_INFO)
-#define YDB_LOG_VERBOSE (YDBLogLevel & YDB_LOG_LEVEL_VERBOSE)
+#define YDB_LOG_ERROR   (ydbLogLevel & YDB_LOG_LEVEL_ERROR)
+#define YDB_LOG_WARN    (ydbLogLevel & YDB_LOG_LEVEL_WARN)
+#define YDB_LOG_INFO    (ydbLogLevel & YDB_LOG_LEVEL_INFO)
+#define YDB_LOG_VERBOSE (ydbLogLevel & YDB_LOG_LEVEL_VERBOSE)
 
 /**
  * Define trace, which is in addition to log levels.
@@ -70,21 +70,6 @@
 #define YapDatabaseLoggingTechnique YapDatabaseLoggingTechnique_Lumberjack
 #endif
 
-/**
- * Todo...
-**/
-
-#define YapDatabaseLoggingConfig_PerFileOnly          0
-#define YapDatabaseLoggingConfig_PerFileAndConnection 1
-
-#define YapDatabaseLoggingConfig YapDatabaseLoggingConfig_PerFileOnly
-
-#if (YapDatabaseLoggingConfig == YapDatabaseLoggingConfig_PerFileAndConnection)
-  #define YDBLogLevel (ydbFileLogLevel | ydpConnectionLogLevel)
-#else
-  #define YDBLogLevel (ydbFileLogLevel)
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #if (YapDatabaseLoggingTechnique == YapDatabaseLoggingTechnique_Lumberjack)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,7 +85,7 @@
 #define YDBLogAsync   NO
 #define YDBLogContext 27017
 
-#define YDBLogMaybe(flg, frmt, ...) LOG_OBJC_MAYBE(YDBLogAsync, YDBLogLevel, flg, YDBLogContext, frmt, ##__VA_ARGS__)
+#define YDBLogMaybe(flg, frmt, ...) LOG_OBJC_MAYBE(YDBLogAsync, ydbLogLevel, flg, YDBLogContext, frmt, ##__VA_ARGS__)
 
 #define YDBLogError(frmt, ...)     YDBLogMaybe(YDB_LOG_FLAG_ERROR,   (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
 #define YDBLogWarn(frmt, ...)      YDBLogMaybe(YDB_LOG_FLAG_WARN,    (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
@@ -117,7 +102,7 @@
 // Logging Enabled.
 // Logging uses plain old NSLog. (slower)
 
-#define YDBLogMaybe(flg, frmt, ...) do{ if(YDBLogLevel & flg) NSLog((frmt), ##__VA_ARGS__); } while(0)
+#define YDBLogMaybe(flg, frmt, ...) do{ if(ydbLogLevel & flg) NSLog((frmt), ##__VA_ARGS__); } while(0)
 
 #define YDBLogError(frmt, ...)    YDBLogMaybe(YDB_LOG_FLAG_ERROR,   frmt, ##__VA_ARGS__)
 #define YDBLogWarn(frmt, ...)     YDBLogMaybe(YDB_LOG_FLAG_WARN,    frmt, ##__VA_ARGS__)

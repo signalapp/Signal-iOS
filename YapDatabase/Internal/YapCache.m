@@ -8,9 +8,9 @@
  * See YapDatabaseLogging.h for more information.
 **/
 #if DEBUG
-  static const int ydbFileLogLevel = YDB_LOG_LEVEL_OFF;
+  static const int ydbLogLevel = YDB_LOG_LEVEL_OFF;
 #else
-  static const int ydbFileLogLevel = YDB_LOG_LEVEL_OFF;
+  static const int ydbLogLevel = YDB_LOG_LEVEL_OFF;
 #endif
 
 /**
@@ -303,7 +303,7 @@
 		}
 	}
 	
-	if (YDBLogLevel & YDB_LOG_FLAG_VERBOSE)
+	if (ydbLogLevel & YDB_LOG_FLAG_VERBOSE)
 	{
 		YDBLogVerbose(@"cfdict: %@", cfdict);
 		
