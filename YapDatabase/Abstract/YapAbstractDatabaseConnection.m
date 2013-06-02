@@ -149,6 +149,14 @@
 	YDBLogVerbose(@"Dealloc <YapDatabaseConnection %p: databaseName=%@>",
 				  self, [database.databasePath lastPathComponent]);
 	
+	dispatch_sync(connectionQueue, ^{ @autoreleasepool {
+		
+		if (longLivedReadTransaction) {
+			[self postReadTransaction:longLivedReadTransaction];
+			longLivedReadTransaction = nil;
+		}
+	}});
+	
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
 	sqlite_finalize_null(&yapGetDataForKeyStatement);
