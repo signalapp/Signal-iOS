@@ -1066,7 +1066,12 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * 
+ * This method should be called whenever the maximum checkpointable snapshot is incremented.
+ * That is, the state of every connection is known to the system.
+ * And a snaphot cannot be checkpointed until every connection is at or past that snapshot.
+ * Thus, we can know the point at which a snapshot becomes checkpointable,
+ * and we can thus optimize the checkpoint invocations such that
+ * each invocation is able to checkpoint one or more commits.
 **/
 - (void)asyncCheckpoint:(uint64_t)maxCheckpointableSnapshot
 {
