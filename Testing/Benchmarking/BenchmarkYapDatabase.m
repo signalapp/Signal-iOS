@@ -187,7 +187,7 @@ static NSMutableArray *keys;
 	}
 	
 	NSTimeInterval elapsed = [start timeIntervalSinceNow] * -1.0;
-	NSLog(@"ReadOnly transaction overhead: %.8f", (elapsed / loopCount));
+	NSLog(@"ReadOnly transaction overhead : %.8f", (elapsed / loopCount));
 }
 
 + (void)readWriteTransactionOverhead:(NSUInteger)loopCount

@@ -728,7 +728,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		return NO;
 	}
 	
-	sqlite3_wal_autocheckpoint(extensionsDb, 100);
+	sqlite3_wal_autocheckpoint(extensionsDb, 0);
 	
 	return YES;
 }
@@ -1115,6 +1115,42 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		              maxCheckpointableSnapshot, frameCount, checkpointCount);
 		
 		// Todo: Notify any long-lived transactions
+		//
+		// But how?
+		// - if we're caught up (frameCount == checkpointCount) then
+		// - dispatch_async into snapshotQueue, and enumerate connections
+		// - identify those that have active longLivedReadTransactions on the frontmost snapshot
+		// - invoke a method on them
+		
+		if (frameCount == checkpointCount)
+		{
+			// We've checkpointed every single frame.
+			// This means the next read-write transaction will reset the WAL (instead of appending to it).
+			//
+			// However, this will get spoiled if there are active read-only transactions that
+			// were started before our checkpoint finished, and continue to exist during the next read-write.
+			// It's not a big deal if the occasional read-only transaction happens to spoil the WAL reset.
+			// In those cases, the WAL generally gets reset shortly thereafter.
+			// Long-lived read transactions are a different case entirely.
+			// These transactions spoil it every single time, and could potentially cause the WAL to grow indefinitely.
+			// 
+			// The solution is to notify active long-lived connections, and tell them to re-begin their transaction
+			// on the same snapshot. But this time the sqlite machinery will read directly from the database,
+			// and thus unlock the WAL so it can be reset.
+			
+			dispatch_async(snapshotQueue, ^{
+				
+				for (YapDatabaseConnectionState *state in connectionStates)
+				{
+					if (state->yapLevelSharedReadLock &&
+					    state->longLivedReadTransaction &&
+					    state->lastKnownSnapshot == snapshot)
+					{
+						[state->connection maybeResetLongLivedReadTransaction];
+					}
+				}
+			});
+		}
 	}});
 }
 

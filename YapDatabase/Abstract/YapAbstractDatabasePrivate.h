@@ -235,6 +235,8 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 
 - (void)noteCommittedChanges:(NSDictionary *)changeset;
 
+- (void)maybeResetLongLivedReadTransaction;
+
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

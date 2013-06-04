@@ -6,6 +6,8 @@
 #import "YapDatabaseLogging.h"
 #import "YapCache.h"
 
+#import <libkern/OSAtomic.h>
+
 #if ! __has_feature(objc_arc)
 #warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
 #endif
@@ -26,6 +28,10 @@
 
 @implementation YapAbstractDatabaseConnection {
 
+	OSSpinLock lock;
+	BOOL writeQueueSuspended;
+	BOOL activeReadWriteTransaction;
+	
 /* As declared in YapAbstractDatabasePrivate.h :
 
 @private
@@ -85,6 +91,8 @@
 		#if TARGET_OS_IPHONE
 		self.autoFlushMemoryLevel = YapDatabaseConnectionFlushMemoryLevelMild;
 		#endif
+		
+		lock = OS_SPINLOCK_INIT;
 		
 		// Open the database connection.
 		//
@@ -761,6 +769,7 @@
 			[self endLongLivedReadTransaction];
 		}
 		
+		__preWriteQueue(self);
 		dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
 			
 			YapAbstractDatabaseTransaction *transaction = [self newReadWriteTransaction];
@@ -770,6 +779,7 @@
 			[self postReadWriteTransaction:transaction];
 			
 		}}); // End dispatch_sync(database->writeQueue)
+		__postWriteQueue(self);
 	});      // End dispatch_sync(connectionQueue)
 }
 
@@ -841,6 +851,7 @@
 			[self endLongLivedReadTransaction];
 		}
 		
+		__preWriteQueue(self);
 		dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
 			
 			YapAbstractDatabaseTransaction *transaction = [self newReadWriteTransaction];
@@ -853,11 +864,12 @@
 				dispatch_async(completionQueue, completionBlock);
 			
 		}}); // End dispatch_sync(database->writeQueue)
+		__postWriteQueue(self);
 	});      // End dispatch_async(connectionQueue)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark States
+#pragma mark Transactions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (YapAbstractDatabaseTransaction *)newReadTransaction
@@ -1626,6 +1638,10 @@
 	}];
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Changeset Management
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * REQUIRED OVERRIDE HOOK.
  *
@@ -1817,6 +1833,98 @@
 	
 	snapshot = changesetSnapshot;
 	[self processChangeset:changeset];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Utilities
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Long-lived read transactions are a great way to achive stability, especially in places like the main-thread.
+ * However, they pose a unique problem. These long-lived transactions often start out by
+ * locking the WAL (write ahead log). This prevents the WAL from ever getting reset,
+ * and thus causes the WAL to potentially grow infinitely large. In order to allow the WAL to get properly reset,
+ * we need the long-lived read transactions to "reset". That is, without changing their stable state (their snapshot),
+ * we need them to restart the transaction, but this time without locking this WAL.
+ * 
+ * We use the maybeResetLongLivedReadTransaction method to achieve this.
+**/
+- (void)maybeResetLongLivedReadTransaction
+{
+	// Async dispatch onto the writeQueue so we know there aren't any other active readWrite transactions
+	
+	dispatch_async(database->writeQueue, ^{
+		
+		// Pause the writeQueue so readWrite operations can't interfere with us.
+		// We abort if our connection has a readWrite transaction pending.
+		
+		BOOL abort = NO;
+		
+		OSSpinLockLock(&lock);
+		{
+			if (activeReadWriteTransaction) {
+				abort = YES;
+			}
+			else if (!writeQueueSuspended) {
+				dispatch_suspend(database->writeQueue);
+				writeQueueSuspended = YES;
+			}
+		}
+		OSSpinLockUnlock(&lock);
+		
+		if (abort) return;
+		
+		// Async dispatch onto our connectionQueue.
+		
+		dispatch_async(connectionQueue, ^{
+			
+			// If possible, silently reset the longLivedReadTransaction (same snapshot, no longer locking the WAL)
+			
+			if (longLivedReadTransaction && (snapshot == [database snapshot]))
+			{
+				NSArray *empty = [self beginLongLivedReadTransaction];
+				
+				if ([empty count] != 0)
+				{
+					YDBLogError(@"Core logic failure! "
+					            @"Silent longLivedReadTransaction reset resulted in non-empty notification array!");
+				}
+			}
+			
+			// Resume the writeQueue
+			
+			OSSpinLockLock(&lock);
+			{
+				if (writeQueueSuspended) {
+					dispatch_resume(database->writeQueue);
+					writeQueueSuspended = NO;
+				}
+			}
+			OSSpinLockUnlock(&lock);
+		});
+	});
+}
+
+NS_INLINE void __preWriteQueue(YapAbstractDatabaseConnection *connection)
+{
+	OSSpinLockLock(&connection->lock);
+	{
+		if (connection->writeQueueSuspended) {
+			dispatch_resume(connection->database->writeQueue);
+			connection->writeQueueSuspended = NO;
+		}
+		connection->activeReadWriteTransaction = YES;
+	}
+	OSSpinLockUnlock(&connection->lock);
+}
+
+NS_INLINE void __postWriteQueue(YapAbstractDatabaseConnection *connection)
+{
+	OSSpinLockLock(&connection->lock);
+	{
+		connection->activeReadWriteTransaction = NO;
+	}
+	OSSpinLockUnlock(&connection->lock);
 }
 
 @end
