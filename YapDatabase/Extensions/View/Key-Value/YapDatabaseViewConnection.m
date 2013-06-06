@@ -310,12 +310,12 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Statements
+#pragma mark Statements - KeyTable
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (sqlite3_stmt *)keyTable_getPageKeyForKeyStatement
 {
-	if (keyTable_getPageKeyForKeyStatement == nil)
+	if (keyTable_getPageKeyForKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"SELECT \"pageKey\" FROM \"%@\" WHERE \"key\" = ? ;", [self keyTableName]];
@@ -334,7 +334,7 @@
 
 - (sqlite3_stmt *)keyTable_setPageKeyForKeyStatement
 {
-	if (keyTable_setPageKeyForKeyStatement == nil)
+	if (keyTable_setPageKeyForKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"INSERT OR REPLACE INTO \"%@\" (\"key\", \"pageKey\") VALUES (?, ?);", [self keyTableName]];
@@ -353,7 +353,7 @@
 
 - (sqlite3_stmt *)keyTable_removeForKeyStatement
 {
-	if (keyTable_removeForKeyStatement == nil)
+	if (keyTable_removeForKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"DELETE FROM \"%@\" WHERE \"key\" = ?;", [self keyTableName]];
@@ -372,7 +372,7 @@
 
 - (sqlite3_stmt *)keyTable_removeAllStatement
 {
-	if (keyTable_removeAllStatement == nil)
+	if (keyTable_removeAllStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"DELETE FROM \"%@\";", [self keyTableName]];
@@ -389,9 +389,13 @@
 	return keyTable_removeAllStatement;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Statements - PageTable
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 - (sqlite3_stmt *)pageTable_getDataForPageKeyStatement
 {
-	if (pageTable_getDataForPageKeyStatement == nil)
+	if (pageTable_getDataForPageKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"SELECT \"data\" FROM \"%@\" WHERE \"pageKey\" = ? ;", [self pageTableName]];
@@ -410,7 +414,7 @@
 
 - (sqlite3_stmt *)pageTable_setAllForPageKeyStatement
 {
-	if (pageTable_setAllForPageKeyStatement == nil)
+	if (pageTable_setAllForPageKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"INSERT OR REPLACE INTO \"%@\" (\"pageKey\", \"data\", \"metadata\") VALUES (?, ?, ?);",
@@ -430,7 +434,7 @@
 
 - (sqlite3_stmt *)pageTable_setMetadataForPageKeyStatement
 {
-	if (pageTable_setMetadataForPageKeyStatement == nil)
+	if (pageTable_setMetadataForPageKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"UPDATE \"%@\" SET \"metadata\" = ? WHERE \"pageKey\" = ?;", [self pageTableName]];
@@ -449,7 +453,7 @@
 
 - (sqlite3_stmt *)pageTable_removeForPageKeyStatement
 {
-	if (pageTable_removeForPageKeyStatement == nil)
+	if (pageTable_removeForPageKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"DELETE FROM \"%@\" WHERE \"pageKey\" = ?;", [self pageTableName]];
@@ -469,7 +473,7 @@
 
 - (sqlite3_stmt *)pageTable_removeAllStatement
 {
-	if (pageTable_removeAllStatement == nil)
+	if (pageTable_removeAllStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"DELETE FROM \"%@\";", [self pageTableName]];

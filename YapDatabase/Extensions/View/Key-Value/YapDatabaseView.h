@@ -155,10 +155,10 @@ typedef NSComparisonResult (^YapDatabaseViewSortingWithObjectAndMetadataBlock) \
  * Thus, unfortunately (for now), you will have to specify what kind of block you're passing.
 **/
 typedef enum {
-	YapDatabaseViewBlockTypeWithKey,
-	YapDatabaseViewBlockTypeWithObject,
-	YapDatabaseViewBlockTypeWithMetadata,
-	YapDatabaseViewBlockTypeWithObjectAndMetadata
+	YapDatabaseViewBlockTypeWithKey               = 101,
+	YapDatabaseViewBlockTypeWithObject            = 102,
+	YapDatabaseViewBlockTypeWithMetadata          = 103,
+	YapDatabaseViewBlockTypeWithObjectAndMetadata = 104
 } YapDatabaseViewBlockType;
 
 
@@ -171,9 +171,6 @@ typedef enum {
 
 */
 
-/**
- * To create a view you 
-**/
 - (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
           groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
                sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock

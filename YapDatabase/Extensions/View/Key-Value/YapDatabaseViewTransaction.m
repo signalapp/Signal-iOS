@@ -351,6 +351,8 @@
 **/
 - (NSString *)pageKeyForKey:(NSString *)key
 {
+	if (key == nil) return nil;
+	
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	NSString *pageKey = nil;
@@ -416,19 +418,17 @@
 /**
  * This method looks up a whole bunch of keys using only a few queries.
  *
- * It returns an array of the same size as the given keys parameter,
- * where keys[0] corresponds to pageKeys[0].
- * 
- * If any keys are missing, they will be represented by NSNull in the resulting array.
+ * It returns a dictionary where the keys are pageKeys, and the value is an NSSet
+ * of keys within the associated page.
 **/
-- (NSArray *)pageKeysForKeys:(NSArray *)keys
+- (NSDictionary *)pageKeysForKeys:(NSArray *)keys
 {
 	if ([keys count] == 0)
 	{
-		return [NSArray array];
+		return [NSDictionary dictionary];
 	}
 	
-	NSMutableDictionary *pageKeysDict = [NSMutableDictionary dictionaryWithCapacity:[keys count]];
+	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[keys count]];
 	
 	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
 	
@@ -488,6 +488,8 @@
 		status = sqlite3_step(statement);
 		while (status == SQLITE_ROW)
 		{
+			// Extract key & pageKey from row
+			
 			const unsigned char *text0 = sqlite3_column_text(statement, 0);
 			int textSize0 = sqlite3_column_bytes(statement, 0);
 			
@@ -497,7 +499,18 @@
 			NSString *key = [[NSString alloc] initWithBytes:text0 length:textSize0 encoding:NSUTF8StringEncoding];
 			NSString *pageKey = [[NSString alloc] initWithBytes:text1 length:textSize1 encoding:NSUTF8StringEncoding];
 			
-			[pageKeysDict setObject:pageKey forKey:key];
+			// Add to result dictionary
+			
+			NSMutableSet *keysInPage = [result objectForKey:pageKey];
+			if (keysInPage == nil)
+			{
+				keysInPage = [NSMutableSet setWithCapacity:1];
+				[result setObject:keysInPage forKey:pageKey];
+			}
+			
+			[keysInPage addObject:key];
+			
+			// Step to next row
 			
 			status = sqlite3_step(statement);
 		}
@@ -514,22 +527,11 @@
 	}
 	while (keysIndex < keysCount);
 	
-	NSMutableArray *pageKeys = [NSMutableArray arrayWithCapacity:[pageKeysDict count]];
-	
-	for (NSString *key in keys)
-	{
-		NSString *pageKey = [pageKeysDict objectForKey:key];
-		if (pageKey)
-			[pageKeys addObject:pageKey];
-		else
-			[pageKeys addObject:[NSNull null]];
-	}
-	
-	return pageKeys;
+	return result;
 }
 
 /**
- * Fetches the page data for the given pageKey.
+ * Fetches the page for the given pageKey.
  * 
  * This method will use the cache(s) if possible.
  * Otherwise it will load the data from the page table and deserialize it.
@@ -1495,49 +1497,17 @@
 {
 	YDBLogAutoTrace();
 	
-	// We could loop over each key and simply invoke [self removeKey:key]...
-	// 
-	// However, we can do better than that by optimizing cache access.
-	// That is, if we arrange the keys by associated pageKey,
-	// then we can simply enumerate over each pageKey,
-	// and remove all keys within that page in a single operation.
-	
-	NSUInteger count = [keys count];
-	NSArray *pageKeys = [self pageKeysForKeys:keys];
-	
-	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-	
-	for (NSUInteger i = 0; i < count; i++)
-	{
-		NSString *pageKey = [pageKeys objectAtIndex:i];
-		
-		if ((id)pageKey == (id)[NSNull null])
-		{
-			// This key doesn't exist in the view
-			continue;
-		}
-		
-		NSString *key = [keys objectAtIndex:i];
-		
-		NSMutableSet *keysSet = [dict objectForKey:pageKey];
-		if (keysSet == nil)
-		{
-			keysSet = [NSMutableSet setWithCapacity:1];
-			[dict setObject:keysSet forKey:pageKey];
-		}
-		
-		[keysSet addObject:key];
-	}
+	NSDictionary *dict = [self pageKeysForKeys:keys];
 	
 	// dict.key = pageKey
 	// dict.value = NSSet of keys within the page that are to be removed
 	
-	[dict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+	[dict enumerateKeysAndObjectsUsingBlock:^(id pageKeyObj, id keysInPageObj, BOOL *stop) {
 		
-		NSString *pageKey = (NSString *)key;
-		NSSet *keysSet = (NSSet *)obj;
+		__unsafe_unretained NSString *pageKey = (NSString *)pageKeyObj;
+		__unsafe_unretained NSSet *keysInPage = (NSSet *)keysInPageObj;
 		
-		[self removeKeys:keysSet withPageKey:pageKey group:[self groupForPageKey:pageKey]];
+		[self removeKeys:keysInPage withPageKey:pageKey group:[self groupForPageKey:pageKey]];
 	}];
 	
 	// Todo: page consolidation in modified groups

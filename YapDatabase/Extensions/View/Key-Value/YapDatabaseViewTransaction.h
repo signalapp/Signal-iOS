@@ -37,7 +37,7 @@
 - (NSUInteger)numberOfKeysInGroup:(NSString *)group;
 - (NSUInteger)numberOfKeysInAllGroups;
 
-- (NSString *)keyAtIndex:(NSUInteger)keyIndex inGroup:(NSString *)group;
+- (NSString *)keyAtIndex:(NSUInteger)index inGroup:(NSString *)group;
 - (NSString *)groupForKey:(NSString *)key;
 
 - (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forKey:(NSString *)key;

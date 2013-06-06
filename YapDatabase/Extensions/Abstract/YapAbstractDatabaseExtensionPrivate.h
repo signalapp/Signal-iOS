@@ -38,16 +38,14 @@
 **/
 + (BOOL)createTablesForRegisteredName:(NSString *)registeredName
                              database:(YapAbstractDatabase *)database
-                               sqlite:(sqlite3 *)db
-                                error:(NSError **)errorPtr;
+                               sqlite:(sqlite3 *)db;
 
 /**
  * 
 **/
 + (BOOL)dropTablesForRegisteredName:(NSString *)registeredName
                            database:(YapAbstractDatabase *)database
-                             sqlite:(sqlite3 *)db
-                              error:(NSError **)errorPtr;
+                             sqlite:(sqlite3 *)db;
 
 /**
  * After an extension has been successfully registered with a database,

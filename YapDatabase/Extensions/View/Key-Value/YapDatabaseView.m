@@ -25,17 +25,10 @@
 + (BOOL)createTablesForRegisteredName:(NSString *)registeredName
                              database:(YapAbstractDatabase *)database
                                sqlite:(sqlite3 *)db
-                                error:(NSError **)errorPtr
 {
 	if (![database isKindOfClass:[YapDatabase class]])
 	{
-		if (errorPtr)
-		{
-			NSDictionary *userInfo = @{
-				NSLocalizedDescriptionKey: @"YapDatabaseView only supports YapDatabase, not YapCollectionsDatabase" };
-			
-			*errorPtr = [NSError errorWithDomain:@"YapDatabase" code:501 userInfo:userInfo];
-		}
+		YDBLogError(@"YapDatabaseView only supports YapDatabase, not YapCollectionsDatabase");
 		return NO;
 	}
 	
@@ -64,16 +57,6 @@
 	{
 		YDBLogError(@"%@ - Failed creating key table (%@): %d %s",
 		            THIS_METHOD, keyTableName, status, sqlite3_errmsg(db));
-		
-		if (errorPtr)
-		{
-			NSDictionary *userInfo = @{
-			    NSLocalizedDescriptionKey : @"Error creating key table",
-				@"sqlite3_status" : @(status),
-				@"sqlite3_errmsg" : [NSString stringWithFormat:@"%s", sqlite3_errmsg(db)]
-			};
-			*errorPtr = [NSError errorWithDomain:@"YapDatabase" code:500 userInfo:userInfo];
-		}
 		return NO;
 	}
 	
@@ -82,15 +65,6 @@
 	{
 		YDBLogError(@"%@ - Failed creating page table (%@): %d %s",
 		            THIS_METHOD, pageTableName, status, sqlite3_errmsg(db));
-		if (errorPtr)
-		{
-			NSDictionary *userInfo = @{
-				NSLocalizedDescriptionKey : @"Error creating page table",
-				@"sqlite3_status" : @(status),
-				@"sqlite3_errmsg" : [NSString stringWithFormat:@"%s", sqlite3_errmsg(db)]
-			};
-			*errorPtr = [NSError errorWithDomain:@"YapDatabase" code:500 userInfo:userInfo];
-		}
 		return NO;
 	}
 	
@@ -100,17 +74,10 @@
 + (BOOL)dropTablesForRegisteredName:(NSString *)registeredName
                            database:(YapAbstractDatabase *)database
                              sqlite:(sqlite3 *)db
-                              error:(NSError **)errorPtr
 {
 	if (![database isKindOfClass:[YapDatabase class]])
 	{
-		if (errorPtr)
-		{
-			NSDictionary *userInfo = @{
-				NSLocalizedDescriptionKey: @"YapDatabaseView only supports YapDatabase, not YapCollectionsDatabase" };
-			
-			*errorPtr = [NSError errorWithDomain:@"YapDatabase" code:501 userInfo:userInfo];
-		}
+		YDBLogError(@"YapDatabaseView only supports YapDatabase, not YapCollectionsDatabase");
 		return NO;
 	}
 	
@@ -127,15 +94,6 @@
 	{
 		YDBLogError(@"%@ - Failed dropping key table (%@): %d %s",
 		            THIS_METHOD, keyTableName, status, sqlite3_errmsg(db));
-		if (errorPtr)
-		{
-			NSDictionary *userInfo = @{
-			    NSLocalizedDescriptionKey : @"Error dropping key table",
-				@"sqlite3_status" : @(status),
-				@"sqlite3_errmsg" : [NSString stringWithFormat:@"%s", sqlite3_errmsg(db)]
-			};
-			*errorPtr = [NSError errorWithDomain:@"YapDatabase" code:500 userInfo:userInfo];
-		}
 		return NO;
 	}
 	
@@ -144,15 +102,6 @@
 	{
 		YDBLogError(@"%@ - Failed dropping page table (%@): %d %s",
 		            THIS_METHOD, pageTableName, status, sqlite3_errmsg(db));
-		if (errorPtr)
-		{
-			NSDictionary *userInfo = @{
-				NSLocalizedDescriptionKey : @"Error dropping page table",
-				@"sqlite3_status" : @(status),
-				@"sqlite3_errmsg" : [NSString stringWithFormat:@"%s", sqlite3_errmsg(db)]
-			};
-			*errorPtr = [NSError errorWithDomain:@"YapDatabase" code:500 userInfo:userInfo];
-		}
 		return NO;
 	}
 	
@@ -161,12 +110,12 @@
 
 + (NSString *)keyTableNameForRegisteredName:(NSString *)registeredName
 {
-	return [NSString stringWithFormat:@"view_%@_key", registeredName];
+	return [NSString stringWithFormat:@"kv_view_%@_key", registeredName];
 }
 
 + (NSString *)pageTableNameForRegisteredName:(NSString *)registeredName
 {
-	return [NSString stringWithFormat:@"view_%@_page", registeredName];
+	return [NSString stringWithFormat:@"kv_view_%@_page", registeredName];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

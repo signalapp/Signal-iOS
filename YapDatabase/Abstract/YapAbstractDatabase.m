@@ -794,8 +794,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		
 		result = [[extension class] createTablesForRegisteredName:extensionName
 		                                                 database:self
-		                                                   sqlite:extensionsDb
-		                                                    error:NULL];
+		                                                   sqlite:extensionsDb];
 		
 		double delayInSeconds = 5.0;
 		dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
