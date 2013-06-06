@@ -670,18 +670,18 @@
 	
 	do
 	{
-		NSUInteger numHostParams = MIN([missingIndexes count], maxHostParams);
+		NSUInteger numKeyParams = MIN([missingIndexes count], (maxHostParams-1)); // minus 1 for collection param
 		
 		// SELECT "key", "metadata" FROM "database" WHERE "collection" = ? AND key IN (?, ?, ...);
 		
-		NSUInteger capacity = 80 + (numHostParams * 3);
+		NSUInteger capacity = 80 + (numKeyParams * 3);
 		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 		
 		[query appendString:@"SELECT \"key\", \"metadata\" FROM \"database\""];
 		[query appendString:@" WHERE \"collection\" = ? AND \"key\" IN ("];
 		
 		NSUInteger i;
-		for (i = 0; i < numHostParams; i++)
+		for (i = 0; i < numKeyParams; i++)
 		{
 			if (i == 0)
 				[query appendFormat:@"?"];
@@ -701,11 +701,11 @@
 			break; // Break from do/while. Still need to free _collection.
 		}
 		
-		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numHostParams];
+		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numKeyParams];
 		
 		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
 		
-		for (i = 0; i < numHostParams; i++)
+		for (i = 0; i < numKeyParams; i++)
 		{
 			NSNumber *keyIndexNumber = [missingIndexes objectAtIndex:i];
 			NSString *key = [keys objectAtIndex:[keyIndexNumber unsignedIntegerValue]];
@@ -760,7 +760,7 @@
 			if (stop) break;
 		}
 		
-		[missingIndexes removeObjectsInRange:NSMakeRange(0, numHostParams)];
+		[missingIndexes removeObjectsInRange:NSMakeRange(0, numKeyParams)];
 		
 	} while (!stop && [missingIndexes count] > 0);
 	
@@ -830,18 +830,18 @@
 	
 	do
 	{
-		NSUInteger numHostParams = MIN([missingIndexes count], maxHostParams);
+		NSUInteger numKeyParams = MIN([missingIndexes count], (maxHostParams-1)); // minus 1 for collection param
 		
 		// SELECT "key", "data" FROM "database" WHERE "collection" = ? AND key IN (?, ?, ...);
 		
-		NSUInteger capacity = 80 + (numHostParams * 3);
+		NSUInteger capacity = 80 + (numKeyParams * 3);
 		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 		
 		[query appendString:@"SELECT \"key\", \"data\" FROM \"database\""];
 		[query appendString:@" WHERE \"collection\" = ? AND \"key\" IN ("];
 		
 		NSUInteger i;
-		for (i = 0; i < numHostParams; i++)
+		for (i = 0; i < numKeyParams; i++)
 		{
 			if (i == 0)
 				[query appendFormat:@"?"];
@@ -861,11 +861,11 @@
 			break; // Break from do/while. Still need to free _collection.
 		}
 		
-		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numHostParams];
+		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numKeyParams];
 		
 		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
 		
-		for (i = 0; i < numHostParams; i++)
+		for (i = 0; i < numKeyParams; i++)
 		{
 			NSNumber *keyIndexNumber = [missingIndexes objectAtIndex:i];
 			NSString *key = [keys objectAtIndex:[keyIndexNumber unsignedIntegerValue]];
@@ -920,7 +920,7 @@
 			if (stop) break;
 		}
 		
-		[missingIndexes removeObjectsInRange:NSMakeRange(0, numHostParams)];
+		[missingIndexes removeObjectsInRange:NSMakeRange(0, numKeyParams)];
 		
 	} while (!stop && [missingIndexes count] > 0);
 	
@@ -1065,18 +1065,18 @@
 	
 	do
 	{
-		NSUInteger numHostParams = MIN([missingIndexes count], maxHostParams);
+		NSUInteger numKeyParams = MIN([missingIndexes count], (maxHostParams-1)); // minus 1 for collection param
 		
 		// SELECT "key", "data", "metadata" FROM "database" WHERE "collection" = ? AND key IN (?, ?, ...);
 		
-		NSUInteger capacity = 80 + (numHostParams * 3);
+		NSUInteger capacity = 80 + (numKeyParams * 3);
 		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 		
 		[query appendString:@"SELECT \"key\", \"data\", \"metadata\" FROM \"database\""];
 		[query appendString:@" WHERE \"collection\" = ? AND \"key\" IN ("];
 		
 		NSUInteger i;
-		for (i = 0; i < numHostParams; i++)
+		for (i = 0; i < numKeyParams; i++)
 		{
 			if (i == 0)
 				[query appendFormat:@"?"];
@@ -1096,11 +1096,11 @@
 			break; // Break from do/while. Still need to free _collection.
 		}
 		
-		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numHostParams];
+		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numKeyParams];
 		
 		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
 		
-		for (i = 0; i < numHostParams; i++)
+		for (i = 0; i < numKeyParams; i++)
 		{
 			NSNumber *keyIndexNumber = [missingIndexes objectAtIndex:i];
 			NSString *key = [keys objectAtIndex:[keyIndexNumber unsignedIntegerValue]];
@@ -1171,7 +1171,7 @@
 			if (stop) break;
 		}
 		
-		[missingIndexes removeObjectsInRange:NSMakeRange(0, numHostParams)];
+		[missingIndexes removeObjectsInRange:NSMakeRange(0, numKeyParams)];
 		
 	} while (!stop && [missingIndexes count] > 0);
 	
@@ -1840,17 +1840,17 @@
 	do
 	{
 		NSUInteger keysLeft = keysCount - keysIndex;
-		NSUInteger numHostParams = MIN(keysLeft, maxHostParams);
+		NSUInteger numKeyParams = MIN(keysLeft, (maxHostParams-1)); // minus 1 for collectionParam
 		
 		// DELETE FROM "database" WHERE "collection" = ? AND "key" IN (?, ?, ...);
 	
-		NSUInteger capacity = 100 + (numHostParams * 3);
+		NSUInteger capacity = 100 + (numKeyParams * 3);
 		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 		
 		[query appendString:@"DELETE FROM \"database\" WHERE \"collection\" = ? AND \"key\" IN ("];
 		
 		NSUInteger i;
-		for (i = 0; i < numHostParams; i++)
+		for (i = 0; i < numKeyParams; i++)
 		{
 			if (i == 0)
 				[query appendFormat:@"?"];
@@ -1872,7 +1872,7 @@
 		
 		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
 		
-		for (i = 0; i < numHostParams; i++)
+		for (i = 0; i < numKeyParams; i++)
 		{
 			NSString *key = [keys objectAtIndex:(keysIndex + i)];
 			sqlite3_bind_text(statement, (int)(i + 2), [key UTF8String], -1, SQLITE_TRANSIENT);
@@ -1888,7 +1888,7 @@
 		sqlite3_reset(statement);
 		sqlite3_finalize(statement);
 		
-		keysIndex += numHostParams;
+		keysIndex += numKeyParams;
 		
 	} while (keysIndex < keysCount);
 	
