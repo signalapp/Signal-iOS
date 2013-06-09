@@ -968,7 +968,7 @@
 		
 		correctIndex = 0;
 		[[transaction ext:@"order"] enumerateKeysInGroup:@""
-		                                      usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+		                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
 			
 			STAssertTrue(index == correctIndex,
 						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
@@ -984,7 +984,7 @@
 		correctIndex = 0;
 		[[transaction ext:@"order"] enumerateKeysInGroup:@""
 		                                     withOptions:0
-		                                      usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+		                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
 			
 			STAssertTrue(index == correctIndex,
 						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
@@ -1000,7 +1000,7 @@
 		correctIndex = 4;
 		[[transaction ext:@"order"] enumerateKeysInGroup:@""
 		                                     withOptions:NSEnumerationReverse
-		                                      usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+		                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
 			
 			STAssertTrue(index == correctIndex,
 						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
@@ -1017,7 +1017,7 @@
 		[[transaction ext:@"order"] enumerateKeysInGroup:@""
 		                                     withOptions:0
 		                                           range:NSMakeRange(0, 5)
-		                                      usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+		                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
 			
 			STAssertTrue(index == correctIndex,
 						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
@@ -1034,7 +1034,7 @@
 		[[transaction ext:@"order"] enumerateKeysInGroup:@""
 		                                     withOptions:NSEnumerationReverse
 		                                           range:NSMakeRange(0, 5)
-		                                      usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+		                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
 			
 			STAssertTrue(index == correctIndex,
 						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
@@ -1051,7 +1051,7 @@
 		[[transaction ext:@"order"] enumerateKeysInGroup:@""
 		                                     withOptions:0
 		                                           range:NSMakeRange(1, 3)
-		                                      usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+		                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
 			
 			STAssertTrue(index == correctIndex,
 						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
@@ -1068,7 +1068,7 @@
 		[[transaction ext:@"order"] enumerateKeysInGroup:@""
 		                                     withOptions:NSEnumerationReverse
 		                                           range:NSMakeRange(1, 3)
-		                                      usingBlock:^(NSUInteger index, NSString *key, BOOL *stop) {
+		                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
 			
 			STAssertTrue(index == correctIndex,
 						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);

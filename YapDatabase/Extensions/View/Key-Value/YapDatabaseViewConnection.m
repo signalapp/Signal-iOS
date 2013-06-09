@@ -73,21 +73,21 @@
 	return [(YapDatabaseView *)extension pageTableName];
 }
 
-- (NSMutableDictionary *)groupPagesDictDeepCopy:(NSDictionary *)inGroupPagesDict
+- (NSMutableDictionary *)group_pagesMetadata_dict_deepCopy:(NSDictionary *)in_group_pagesMetadata_dict
 {
-	NSMutableDictionary *deepCopy = [NSMutableDictionary dictionaryWithCapacity:[inGroupPagesDict count]];
+	NSMutableDictionary *deepCopy = [NSMutableDictionary dictionaryWithCapacity:[in_group_pagesMetadata_dict count]];
 	
-	[inGroupPagesDict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+	[in_group_pagesMetadata_dict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 		
 		__unsafe_unretained NSString *group = (NSString *)key;
-		__unsafe_unretained NSMutableArray *pages = (NSMutableArray *)obj;
+		__unsafe_unretained NSMutableArray *pagesMetadata = (NSMutableArray *)obj;
 		
 		// We need a mutable copy of the pages array,
 		// and we need a copy of each YapDatabaseViewPageMetadata object within the pages array.
 		
-		NSMutableArray *pagesDeepCopy = [[NSMutableArray alloc] initWithArray:pages copyItems:YES];
+		NSMutableArray *pagesMetadataDeepCopy = [[NSMutableArray alloc] initWithArray:pagesMetadata copyItems:YES];
 		
-		[deepCopy setObject:pagesDeepCopy forKey:group];
+		[deepCopy setObject:pagesMetadataDeepCopy forKey:group];
 	}];
 	
 	return deepCopy;
@@ -121,8 +121,8 @@
 {
 	YDBLogAutoTrace();
 	
-	groupPagesDict = nil;
-	pageKeyGroupDict = nil;
+	group_pagesMetadata_dict = nil;
+	pageKey_group_dict = nil;
 	
 	[keyCache removeAllObjects];
 	[pageCache removeAllObjects];
@@ -159,8 +159,14 @@
 			[internalChangeset setObject:@(reset) forKey:@"reset"];
 		}
 		
-		[internalChangeset setObject:[self groupPagesDictDeepCopy:groupPagesDict] forKey:@"groupPagesDict"];
-		[internalChangeset setObject:[pageKeyGroupDict mutableCopy] forKey:@"pageKeyGroupDict"];
+		NSMutableDictionary *group_pagesMetadata_dict_copy;
+		NSMutableDictionary *pageKey_group_dict_copy;
+		
+		group_pagesMetadata_dict_copy = [self group_pagesMetadata_dict_deepCopy:group_pagesMetadata_dict];
+		pageKey_group_dict_copy = [pageKey_group_dict mutableCopy];
+		
+		[internalChangeset setObject:group_pagesMetadata_dict_copy forKey:@"group_pagesMetadata_dict"];
+		[internalChangeset setObject:pageKey_group_dict_copy       forKey:@"pageKey_group_dict"];
 	}
 	
 	*internalChangesetPtr = internalChangeset;
@@ -171,8 +177,8 @@
 {
 	YDBLogAutoTrace();
 	
-	NSMutableDictionary *changeset_groupPagesDict = [changeset objectForKey:@"groupPagesDict"];
-	NSMutableDictionary *changeset_pageKeyGroupDict = [changeset objectForKey:@"pageKeyGroupDict"];
+	NSMutableDictionary *changeset_group_pagesMetadata_dict = [changeset objectForKey:@"group_pagesMetadata_dict"];
+	NSMutableDictionary *changeset_pageKey_group_dict = [changeset objectForKey:@"pageKey_group_dict"];
 	
 	NSDictionary *changeset_dirtyKeys = [changeset objectForKey:@"dirtyKeys"];
 	NSDictionary *changeset_dirtyPages = [changeset objectForKey:@"dirtyPages"];
@@ -181,8 +187,8 @@
 	
 	// Process new top level objects
 	
-	groupPagesDict = [self groupPagesDictDeepCopy:changeset_groupPagesDict];
-	pageKeyGroupDict = [changeset_pageKeyGroupDict mutableCopy];
+	group_pagesMetadata_dict = [self group_pagesMetadata_dict_deepCopy:changeset_group_pagesMetadata_dict];
+	pageKey_group_dict = [changeset_pageKey_group_dict mutableCopy];
 	
 	// Update caches
 	

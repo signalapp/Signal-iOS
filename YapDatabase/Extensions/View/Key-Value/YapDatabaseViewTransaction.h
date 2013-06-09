@@ -45,22 +45,26 @@
 - (NSArray *)keysInRange:(NSRange)range group:(NSString *)group;
 
 - (void)enumerateKeysInGroup:(NSString *)group
-                  usingBlock:(void (^)(NSUInteger index, NSString *key, BOOL *stop))block;
+                  usingBlock:(void (^)(NSString *key, NSUInteger index, BOOL *stop))block;
 
 - (void)enumerateKeysInGroup:(NSString *)group
                  withOptions:(NSEnumerationOptions)options
-                  usingBlock:(void (^)(NSUInteger index, NSString *key, BOOL *stop))block;
+                  usingBlock:(void (^)(NSString *key, NSUInteger index, BOOL *stop))block;
 
 - (void)enumerateKeysInGroup:(NSString *)group
                  withOptions:(NSEnumerationOptions)options
                        range:(NSRange)range
-                  usingBlock:(void (^)(NSUInteger index, NSString *key, BOOL *stop))block;
+                  usingBlock:(void (^)(NSString *key, NSUInteger index, BOOL *stop))block;
 
 @end
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * YapDatabaseView deals with ordered arrays of keys.
- * So, strictly speaking, it only knows about key, groups, and indexes.
+ * So, strictly speaking, it only knows about keys, groups, and indexes.
  * 
  * But it's really convenient to have methods that put it all together to fetch an object in a single method.
 **/
@@ -69,9 +73,9 @@
 /**
  * Equivalent to invoking:
  *
- * [transaction objectForKey:[[transaction ext:@"myView"] keyAtIndex:keyIndex inGroup:group]];
+ * [transaction objectForKey:[[transaction ext:@"myView"] keyAtIndex:index inGroup:group]];
 **/
-- (id)objectAtIndex:(NSUInteger)keyIndex inGroup:(NSString *)group;
+- (id)objectAtIndex:(NSUInteger)index inGroup:(NSString *)group;
 
 /**
  * The following methods are equivalent to invoking the enumerateKeysInGroup:... methods,
@@ -79,16 +83,16 @@
 **/
 
 - (void)enumerateKeysAndMetadataInGroup:(NSString *)group
-                             usingBlock:(void (^)(NSUInteger index, NSString *key, id metadata, BOOL *stop))block;
+                             usingBlock:(void (^)(NSString *key, id metadata, NSUInteger index, BOOL *stop))block;
 
 - (void)enumerateKeysAndMetadataInGroup:(NSString *)group
                             withOptions:(NSEnumerationOptions)options
-                             usingBlock:(void (^)(NSUInteger index, NSString *key, id metadata, BOOL *stop))block;
+                             usingBlock:(void (^)(NSString *key, id metadata, NSUInteger index, BOOL *stop))block;
 
 - (void)enumerateKeysAndMetadataInGroup:(NSString *)group
                             withOptions:(NSEnumerationOptions)options
                                   range:(NSRange)range
-                             usingBlock:(void (^)(NSUInteger index, NSString *key, id metadata, BOOL *stop))block;
+                             usingBlock:(void (^)(NSString *key, id metadata, NSUInteger index, BOOL *stop))block;
 
 /**
  * The following methods are equivalent to invoking the enumerateKeysInGroup:... methods,
@@ -97,17 +101,17 @@
 
 - (void)enumerateKeysAndObjectsInGroup:(NSString *)group
                             usingBlock:
-                                 (void (^)(NSUInteger index, NSString *key, id object, id metadata, BOOL *stop))block;
+                                 (void (^)(NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block;
 
 - (void)enumerateKeysAndObjectsInGroup:(NSString *)group
                            withOptions:(NSEnumerationOptions)options
                             usingBlock:
-                                 (void (^)(NSUInteger index, NSString *key, id object, id metadata, BOOL *stop))block;
+                                 (void (^)(NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block;
 
 - (void)enumerateKeysAndObjectsInGroup:(NSString *)group
                            withOptions:(NSEnumerationOptions)options
                                  range:(NSRange)range
                             usingBlock:
-                                 (void (^)(NSUInteger index, NSString *key, id object, id metadata, BOOL *stop))block;
+                                 (void (^)(NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block;
 
 @end

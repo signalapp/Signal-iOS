@@ -30,8 +30,8 @@
 @interface YapDatabaseViewConnection () {
 @public
 	
-	NSMutableDictionary *groupPagesDict;   // section -> @[ YapDatabaseViewPageMetadata, ... ]
-	NSMutableDictionary *pageKeyGroupDict; // pageKey -> group
+	NSMutableDictionary *group_pagesMetadata_dict; // group -> @[ YapDatabaseViewPageMetadata, ... ]
+	NSMutableDictionary *pageKey_group_dict;       // pageKey -> group
 	
 	YapCache *keyCache;
 	YapCache *pageCache;

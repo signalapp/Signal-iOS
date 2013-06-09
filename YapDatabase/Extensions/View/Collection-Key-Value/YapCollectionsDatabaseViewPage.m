@@ -26,8 +26,8 @@
 {
 	if ((self = [super init]))
 	{
-	//	collections = nil;
-	//	keys        = nil;
+		// The 'collections' and 'keys' ivars remain nil.
+		// They will be setup by the caller method (copyWithZone:)
 	}
 	return self;
 }
@@ -118,6 +118,15 @@
 	[keys        removeObjectsAtIndexes:indexes];
 }
 
+- (void)addCollection:(NSString *)collection key:(NSString *)key
+{
+	if (collection == nil)
+		collection = @"";
+	
+	[collections addObject:collection];
+	[keys        addObject:key];
+}
+
 - (void)insertCollection:(NSString *)collection key:(NSString *)key atIndex:(NSUInteger)index
 {
 	if (collection == nil)
@@ -130,6 +139,27 @@
 - (void)enumerateWithBlock:(void (^)(NSString *collection, NSString *key, NSUInteger idx, BOOL *stop))block
 {
 	[collections enumerateObjectsUsingBlock:^(id collectionObj, NSUInteger idx, BOOL *stop) {
+		
+		block((NSString *)collectionObj, [keys objectAtIndex:idx], idx, stop);
+	}];
+}
+
+- (void)enumerateWithOptions:(NSEnumerationOptions)options
+                  usingBlock:(void (^)(NSString *collection, NSString *key, NSUInteger idx, BOOL *stop))block
+{
+	[collections enumerateObjectsWithOptions:options usingBlock:^(id collectionObj, NSUInteger idx, BOOL *stop) {
+		
+		block((NSString *)collectionObj, [keys objectAtIndex:idx], idx, stop);
+	}];
+}
+
+- (void)enumerateIndexes:(NSIndexSet *)indexSet
+             withOptions:(NSEnumerationOptions)options
+              usingBlock:(void (^)(NSString *collection, NSString *key, NSUInteger idx, BOOL *stop))block
+{
+	[collections enumerateObjectsAtIndexes:indexSet
+	                               options:options
+	                            usingBlock:^(id collectionObj, NSUInteger idx, BOOL *stop) {
 		
 		block((NSString *)collectionObj, [keys objectAtIndex:idx], idx, stop);
 	}];

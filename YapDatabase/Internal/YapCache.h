@@ -13,9 +13,10 @@
  * It doesn't happen at a later time as with NSCache. It happens atomically during the addition of the 5th item.
  
  * Which item gets evicted? That depends entirely on usage.
- * YapCache maintains an ordered list based on which keys have been most recently accessed or added.
- * So when you fetch an item from the cache, that item goes to the end of the eviction list.
- * Thus, the item evicted is always the least recently used item.
+ * YapCache maintains a doubly linked-list of keys ordered by access.
+ * The most recently accessed key is at the front of the linked-list,
+ * and the least recently accessed key is at the back.
+ * So it's very quick and efficient to evict items based on recent usage.
  *
  * YapCache is NOT thread-safe.
  * It is designed to be used by the various YapDatabase classes, which inherently serialize access to the cache.

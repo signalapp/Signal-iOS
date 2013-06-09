@@ -83,8 +83,8 @@
 {
 	YDBLogAutoTrace();
 	
-	groupPagesDict = nil;
-	pageKeyGroupDict = nil;
+	group_pagesMetadata_dict = nil;
+	pageKey_group_dict = nil;
 	
 	[keyCache removeAllObjects];
 	[pageCache removeAllObjects];
