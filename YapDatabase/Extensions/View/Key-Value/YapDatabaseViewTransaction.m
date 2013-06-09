@@ -1839,11 +1839,15 @@
 
 - (NSString *)groupForKey:(NSString *)key
 {
+	key = [key copy]; // mutable string protection (public method)
+	
 	return [self groupForPageKey:[self pageKeyForKey:key]];
 }
 
 - (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forKey:(NSString *)key
 {
+	key = [key copy]; // mutable string protection (public method)
+	
 	BOOL found = NO;
 	NSString *group = nil;
 	NSUInteger index = 0;

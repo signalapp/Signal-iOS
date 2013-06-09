@@ -352,11 +352,8 @@
 **/
 - (NSString *)pageKeyForKey:(NSString *)key inCollection:(NSString *)collection
 {
-	if (key == nil)
-		return nil;
-	
-	if (collection == nil)
-		collection = @"";
+	NSParameterAssert(key != nil);
+	NSParameterAssert(collection != nil);
 	
 	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
 	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
@@ -435,13 +432,12 @@
 **/
 - (NSDictionary *)pageKeysForKeys:(NSArray *)keys inCollection:(NSString *)collection
 {
+	NSParameterAssert(collection != nil);
+	
 	if ([keys count] == 0)
 	{
 		return [NSDictionary dictionary];
 	}
-	
-	if (collection == nil)
-		collection = @"";
 	
 	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[keys count]];
 	
@@ -562,8 +558,7 @@
 **/
 - (NSDictionary *)pageKeysAndKeysForCollection:(NSString *)collection
 {
-	if (collection == nil)
-		collection = @"";
+	NSParameterAssert(collection != nil);
 	
 	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
 	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
@@ -1103,10 +1098,8 @@
 {
 	YDBLogAutoTrace();
 	
-	if (key == nil) return;
-	if (collection == nil)
-		collection = @"";
-	
+	NSParameterAssert(key != nil);
+	NSParameterAssert(collection != nil);
 	NSParameterAssert(pageKey != nil);
 	NSParameterAssert(group != nil);
 	
@@ -1238,9 +1231,7 @@
 		return;
 	}
 	
-	if (collection == nil)
-		collection = @"";
-	
+	NSParameterAssert(collection != nil);
 	NSParameterAssert(pageKey != nil);
 	NSParameterAssert(group != nil);
 	
@@ -1462,8 +1453,8 @@
 {
 	YDBLogAutoTrace();
 	
-	if (collection == nil)
-		collection = @"";
+	NSParameterAssert(key != nil);
+	NSParameterAssert(collection != nil);
 	
 	__unsafe_unretained YapCollectionsDatabaseView *view =
 	    (YapCollectionsDatabaseView *)(extensionConnection->extension);
@@ -1521,6 +1512,11 @@
 **/
 - (void)handleSetMetadata:(id)metadata forKey:(NSString *)key inCollection:(NSString *)collection
 {
+	YDBLogAutoTrace();
+	
+	NSParameterAssert(key != nil);
+	NSParameterAssert(collection != nil);
+	
 	__unsafe_unretained YapCollectionsDatabaseView *view =
 	    (YapCollectionsDatabaseView *)(extensionConnection->extension);
 	
@@ -1634,6 +1630,9 @@
 {
 	YDBLogAutoTrace();
 	
+	NSParameterAssert(key != nil);
+	NSParameterAssert(collection != nil);
+	
 	[self removeKey:key inCollection:collection];
 }
 
@@ -1644,6 +1643,8 @@
 - (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection
 {
 	YDBLogAutoTrace();
+	
+	NSParameterAssert(collection != nil);
 	
 	NSDictionary *dict = [self pageKeysForKeys:keys inCollection:collection];
 	
@@ -1668,6 +1669,8 @@
 - (void)handleRemoveAllObjectsInCollection:(NSString *)collection
 {
 	YDBLogAutoTrace();
+	
+	NSParameterAssert(collection != nil);
 	
 	NSDictionary *dict = [self pageKeysAndKeysForCollection:collection];
 	
@@ -1786,6 +1789,16 @@
 
 - (NSString *)groupForKey:(NSString *)key inCollection:(NSString *)collection
 {
+	if (key == nil)
+		return nil;
+	else
+		key = [key copy]; // mutable string protection (public method)
+	
+	if (collection == nil)
+		collection = @"";
+	else
+		collection = [collection copy]; // mutable string protection (public method)
+	
 	return [self groupForPageKey:[self pageKeyForKey:key inCollection:collection]];
 }
 
@@ -1794,6 +1807,21 @@
           forKey:(NSString *)key
 	inCollection:(NSString *)collection
 {
+	if (key == nil)
+	{
+		if (groupPtr) *groupPtr = nil;
+		if (indexPtr) *indexPtr = 0;
+		
+		return NO;
+	}
+	else
+		key = [key copy]; // mutable string protection (public method)
+	
+	if (collection == nil)
+		collection = @"";
+	else
+		collection = [collection copy]; // mutable string protection (public method)
+	
 	BOOL found = NO;
 	NSString *group = nil;
 	NSUInteger index = 0;
