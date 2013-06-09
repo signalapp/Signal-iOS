@@ -99,23 +99,38 @@
  * This uses a "SELECT key FROM database" operation, and then steps over the results
  * and invoking the given block handler.
 **/
-- (void)enumerateKeys:(void (^)(NSString *key, BOOL *stop))block;
+- (void)enumerateKeysUsingBlock:(void (^)(NSString *key, BOOL *stop))block;
 
 /**
- * Enumerates over the given list of keys (unordered).
+ * Enumerates over the given list of keys (unordered), and fetches the associated metadata.
+ * 
+ * This method is faster than metadataForKey when fetching multiple items, as it optimizes cache access.
+ * That is, it will first enumerate over cached items and then fetch items from the database,
+ * thus optimizing the cache and reducing the query size.
  *
- * This method is faster than objectForKey when fetching multiple objects, as it optimizes cache access.
- * That is, it will first enumerate over cached objects, and then fetch objects from the database,
- * thus optimizing the available cache.
+ * If any keys are missing from the database, the 'metadata' parameter will be nil.
+ *
+ * IMPORTANT:
+ * Due to various optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
+**/
+- (void)enumerateMetadataForKeys:(NSArray *)keys
+             unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id metadata, BOOL *stop))block;
+
+/**
+ * Enumerates over the given list of keys (unordered), and fetches the associated objects.
+ *
+ * This method is faster than objectForKey when fetching multiple items, as it optimizes cache access.
+ * That is, it will first enumerate over cached items and then fetch items from the database,
+ * thus optimizing the cache and reducing the query size.
  *
  * If any keys are missing from the database, the 'object' parameter will be nil.
  * 
  * IMPORTANT:
- *     Due to cache optimizations, the objects may not be enumerated in the same order as the 'keys' parameter.
- *     That is, objects that are cached will be enumerated over first, before fetching objects from the database.
+ * Due to various optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
 **/
-- (void)enumerateObjects:(void (^)(NSUInteger keyIndex, id object, BOOL *stop))block
-                 forKeys:(NSArray *)keys;
+- (void)enumerateObjectsForKeys:(NSArray *)keys
+            unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id object, BOOL *stop))block;
+
 /**
  * Fast enumeration over all keys and metadata in the database.
  * 
