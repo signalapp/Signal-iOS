@@ -25,10 +25,13 @@
 	sqlite3_stmt *removeAllStatement;
 	sqlite3_stmt *enumerateCollectionsStatement;
 	sqlite3_stmt *enumerateKeysInCollectionStatement;
-	sqlite3_stmt *enumerateMetadataInCollectionStatement;
-	sqlite3_stmt *enumerateMetadataInAllCollectionsStatement;
-	sqlite3_stmt *enumerateAllInCollectionStatement;
-	sqlite3_stmt *enumerateAllInAllCollectionsStatement;
+	sqlite3_stmt *enumerateKeysInAllCollectionsStatement;
+	sqlite3_stmt *enumerateKeysAndMetadataInCollectionStatement;
+	sqlite3_stmt *enumerateKeysAndMetadataInAllCollectionsStatement;
+	sqlite3_stmt *enumerateKeysAndObjectsInCollectionStatement;
+	sqlite3_stmt *enumerateKeysAndObjectsInAllCollectionsStatement;
+	sqlite3_stmt *enumerateRowsInCollectionStatement;
+	sqlite3_stmt *enumerateRowsInAllCollectionsStatement;
 	
 @public
 	
@@ -74,9 +77,12 @@
 - (sqlite3_stmt *)removeAllStatement;
 - (sqlite3_stmt *)enumerateCollectionsStatement;
 - (sqlite3_stmt *)enumerateKeysInCollectionStatement;
-- (sqlite3_stmt *)enumerateMetadataInCollectionStatement;
-- (sqlite3_stmt *)enumerateMetadataInAllCollectionsStatement;
-- (sqlite3_stmt *)enumerateAllInCollectionStatement;
-- (sqlite3_stmt *)enumerateAllInAllCollectionsStatement;
+- (sqlite3_stmt *)enumerateKeysInAllCollectionsStatement;
+- (sqlite3_stmt *)enumerateKeysAndMetadataInCollectionStatement;
+- (sqlite3_stmt *)enumerateKeysAndMetadataInAllCollectionsStatement;
+- (sqlite3_stmt *)enumerateKeysAndObjectsInCollectionStatement;
+- (sqlite3_stmt *)enumerateKeysAndObjectsInAllCollectionsStatement;
+- (sqlite3_stmt *)enumerateRowsInCollectionStatement;
+- (sqlite3_stmt *)enumerateRowsInAllCollectionsStatement;
 
 @end

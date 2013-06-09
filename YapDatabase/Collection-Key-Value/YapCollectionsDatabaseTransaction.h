@@ -88,6 +88,14 @@
                        usingBlock:(void (^)(NSString *key, BOOL *stop))block;
 
 /**
+ * Fast enumeration over all keys in the given collection.
+ *
+ * This uses a "SELECT collection, key FROM database" operation,
+ * and then steps over the results invoking the given block handler.
+**/
+- (void)enumerateKeysInAllCollectionsUsingBlock:(void (^)(NSString *collection, NSString *key, BOOL *stop))block;
+
+/**
  * Enumerates over the given list of keys (unordered).
  *
  * This method is faster than fetching individual items as it optimizes cache access.
@@ -159,8 +167,9 @@
  * Keep in mind that you cannot modify the collection mid-enumeration (just like any other kind of enumeration).
 **/
 - (void)enumerateKeysAndMetadataInCollection:(NSString *)collection
-                                 usingFilter:(BOOL (^)(NSString *key))filter
-                                       block:(void (^)(NSString *key, id metadata, BOOL *stop))block;
+                                  usingBlock:(void (^)(NSString *key, id metadata, BOOL *stop))block
+                                  withFilter:(BOOL (^)(NSString *key))filter;
+
 
 
 /**
@@ -175,7 +184,7 @@
  * Keep in mind that you cannot modify the database mid-enumeration (just like any other kind of enumeration).
 **/
 - (void)enumerateKeysAndMetadataInAllCollectionsUsingBlock:
-                            (void (^)(NSString *collection, NSString *key, id metadata, BOOL *stop))block;
+                                        (void (^)(NSString *collection, NSString *key, id metadata, BOOL *stop))block;
 
 /**
  * Fast enumeration over all key/metadata pairs in all collections.
@@ -188,14 +197,14 @@
  *
  * Keep in mind that you cannot modify the database mid-enumeration (just like any other kind of enumeration).
  **/
-- (void)enumerateKeysAndMetadataInAllCollectionsUsingFilter:
-                            (BOOL (^)(NSString *collection, NSString *key))filter
-					  block:(void (^)(NSString *collection, NSString *key, id metadata, BOOL *stop))block;
+- (void)enumerateKeysAndMetadataInAllCollectionsUsingBlock:
+                                        (void (^)(NSString *collection, NSString *key, id metadata, BOOL *stop))block
+                             withFilter:(BOOL (^)(NSString *collection, NSString *key))filter;
 
 /**
  * Fast enumeration over all objects in the database.
  *
- * This uses a "SELECT * from database" operation, and then steps over the results,
+ * This uses a "SELECT key, object from database WHERE collection = ?" operation, and then steps over the results,
  * deserializing each object, and then invoking the given block handler.
  *
  * If you only need to enumerate over certain objects (e.g. keys with a particular prefix),
@@ -203,7 +212,7 @@
  * allowing you to skip the serialization step for those objects you're not interested in.
 **/
 - (void)enumerateKeysAndObjectsInCollection:(NSString *)collection
-                                 usingBlock:(void (^)(NSString *key, id object, id metadata, BOOL *stop))block;
+                                 usingBlock:(void (^)(NSString *key, id object, BOOL *stop))block;
 
 /**
  * Fast enumeration over objects in the database for which you're interested in.
@@ -214,8 +223,8 @@
  * which avoids the cost associated with deserializing the object.
 **/
 - (void)enumerateKeysAndObjectsInCollection:(NSString *)collection
-                                 usingBlock:(void (^)(NSString *key, id object, id metadata, BOOL *stop))block
-                                 withFilter:(BOOL (^)(NSString *key, id metadata))filter;
+                                 usingBlock:(void (^)(NSString *key, id object, BOOL *stop))block
+                                 withFilter:(BOOL (^)(NSString *key))filter;
 
 /**
  * Enumerates all key/object pairs in all collections.
@@ -228,7 +237,7 @@
  * allowing you to skip the serialization step for those objects you're not interested in.
 **/
 - (void)enumerateKeysAndObjectsInAllCollectionsUsingBlock:
-                            (void (^)(NSString *collection, NSString *key, id object, id metadata, BOOL *stop))block;
+                                            (void (^)(NSString *collection, NSString *key, id object, BOOL *stop))block;
 
 /**
  * Enumerates all key/object pairs in all collections.
@@ -242,8 +251,61 @@
  * which avoids the cost associated with deserializing the object.
 **/
 - (void)enumerateKeysAndObjectsInAllCollectionsUsingBlock:
+                                            (void (^)(NSString *collection, NSString *key, id object, BOOL *stop))block
+                                 withFilter:(BOOL (^)(NSString *collection, NSString *key))filter;
+
+/**
+ * Fast enumeration over all rows in the database.
+ *
+ * This uses a "SELECT key, data, metadata from database WHERE collection = ?" operation,
+ * and then steps over the results, deserializing each object & metadata, and then invoking the given block handler.
+ *
+ * If you only need to enumerate over certain rows (e.g. keys with a particular prefix),
+ * consider using the alternative version below which provides a filter,
+ * allowing you to skip the serialization step for those rows you're not interested in.
+**/
+- (void)enumerateRowsInCollection:(NSString *)collection
+                       usingBlock:(void (^)(NSString *key, id object, id metadata, BOOL *stop))block;
+
+/**
+ * Fast enumeration over rows in the database for which you're interested in.
+ * The filter block allows you to decide which rows you're interested in.
+ *
+ * From the filter block, simply return YES if you'd like the block handler to be invoked for the given key.
+ * If the filter block returns NO, then the block handler is skipped for the given key,
+ * which avoids the cost associated with deserializing the object & metadata.
+**/
+- (void)enumerateRowsInCollection:(NSString *)collection
+                       usingBlock:(void (^)(NSString *key, id object, id metadata, BOOL *stop))block
+                       withFilter:(BOOL (^)(NSString *key))filter;
+
+/**
+ * Enumerates all rows in all collections.
+ * 
+ * The enumeration is sorted by collection. That is, it will enumerate fully over a single collection
+ * before moving onto another collection.
+ * 
+ * If you only need to enumerate over certain rows (e.g. subset of collections, or keys with a particular prefix),
+ * consider using the alternative version below which provides a filter,
+ * allowing you to skip the serialization step for those objects you're not interested in.
+**/
+- (void)enumerateRowsInAllCollectionsUsingBlock:
+                            (void (^)(NSString *collection, NSString *key, id object, id metadata, BOOL *stop))block;
+
+/**
+ * Enumerates all rows in all collections.
+ * The filter block allows you to decide which objects you're interested in.
+ *
+ * The enumeration is sorted by collection. That is, it will enumerate fully over a single collection
+ * before moving onto another collection.
+ * 
+ * From the filter block, simply return YES if you'd like the block handler to be invoked for the given
+ * collection/key pair. If the filter block returns NO, then the block handler is skipped for the given pair,
+ * which avoids the cost associated with deserializing the object.
+**/
+- (void)enumerateRowsInAllCollectionsUsingBlock:
                             (void (^)(NSString *collection, NSString *key, id object, id metadata, BOOL *stop))block
-                 withFilter:(BOOL (^)(NSString *collection, NSString *key, id metadata))filter;
+                 withFilter:(BOOL (^)(NSString *collection, NSString *key))filter;
 
 @end
 

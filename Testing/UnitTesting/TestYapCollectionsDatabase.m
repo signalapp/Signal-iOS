@@ -74,7 +74,7 @@
 		STAssertTrue(count == 0, @"Expceted zero keys");
 		
 		[transaction enumerateKeysAndObjectsInCollection:nil
-		                                      usingBlock:^(NSString *key, id object, id metadata, BOOL *stop){
+		                                      usingBlock:^(NSString *key, id object, BOOL *stop){
 			count++;
 		}];
 		
@@ -122,7 +122,13 @@
 		}];
 		
 		[transaction enumerateKeysAndObjectsInCollection:nil
-		                                      usingBlock:^(NSString *key, id object, id metadata, BOOL *stop){
+		                                      usingBlock:^(NSString *key, id object, BOOL *stop){
+			
+			STAssertNotNil(aObj, @"Expected non-nil object");
+		}];
+		
+		[transaction enumerateRowsInCollection:nil
+		                            usingBlock:^(NSString *key, id object, id metadata, BOOL *stop){
 			
 			STAssertNotNil(aObj, @"Expected non-nil object");
 			STAssertNil(metadata, @"Expected nil metadata");
@@ -172,7 +178,13 @@
 		}];
 		
 		[transaction enumerateKeysAndObjectsInCollection:nil
-		                                      usingBlock:^(NSString *key, id object, id metadata, BOOL *stop){
+		                                      usingBlock:^(NSString *key, id object, BOOL *stop){
+			
+			STAssertNotNil(aObj, @"Expected non-nil object");
+		}];
+		
+		[transaction enumerateRowsInCollection:nil
+		                            usingBlock:^(NSString *key, id object, id metadata, BOOL *stop){
 			
 			STAssertNotNil(aObj, @"Expected non-nil object");
 			STAssertNotNil(metadata, @"Expected non-nil metadata");
