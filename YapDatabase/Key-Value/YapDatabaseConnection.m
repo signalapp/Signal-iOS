@@ -56,8 +56,9 @@
 	sqlite3_stmt *removeForKeyStatement;
 	sqlite3_stmt *removeAllStatement;
 	sqlite3_stmt *enumerateKeysStatement;
-	sqlite3_stmt *enumerateMetadataStatement;
-	sqlite3_stmt *enumerateAllStatement;
+	sqlite3_stmt *enumerateKeysAndMetadataStatement;
+    sqlite3_stmt *enumerateKeysAndObjectsStatement;
+	sqlite3_stmt *enumerateRowsStatement;
 
 @public
 	NSMutableDictionary *objectChanges;
@@ -100,8 +101,9 @@
 	sqlite_finalize_null(&removeForKeyStatement);
 	sqlite_finalize_null(&removeAllStatement);
 	sqlite_finalize_null(&enumerateKeysStatement);
-	sqlite_finalize_null(&enumerateMetadataStatement);
-	sqlite_finalize_null(&enumerateAllStatement);
+	sqlite_finalize_null(&enumerateKeysAndMetadataStatement);
+	sqlite_finalize_null(&enumerateKeysAndObjectsStatement);
+	sqlite_finalize_null(&enumerateRowsStatement);
 }
 
 /**
@@ -121,8 +123,9 @@
 		sqlite_finalize_null(&removeForKeyStatement);
 		sqlite_finalize_null(&removeAllStatement);
 		sqlite_finalize_null(&enumerateKeysStatement);
-		sqlite_finalize_null(&enumerateMetadataStatement);
-		sqlite_finalize_null(&enumerateAllStatement);
+		sqlite_finalize_null(&enumerateKeysAndMetadataStatement);
+		sqlite_finalize_null(&enumerateKeysAndObjectsStatement);
+		sqlite_finalize_null(&enumerateRowsStatement);
 	}
 	
 	if (level >= YapDatabaseConnectionFlushMemoryLevelFull)
@@ -154,7 +157,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getCountStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'getCountStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -170,7 +173,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getCountForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'getCountForKeyStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -186,7 +189,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getDataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'getDataForKeyStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -202,7 +205,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getMetadataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'getMetadataForKeyStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -218,7 +221,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getAllForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'getAllForKeyStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -234,7 +237,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &setMetadataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'setMetadataForKeyStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -250,7 +253,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &setAllForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'setAllForKeyStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -266,7 +269,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'removeForKeyStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -282,7 +285,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeAllStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'removeAllStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -298,7 +301,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateKeysStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'enumerateKeysStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 
 	}
@@ -306,36 +309,52 @@
 	return enumerateKeysStatement;
 }
 
-- (sqlite3_stmt *)enumerateMetadataStatement
+- (sqlite3_stmt *)enumerateKeysAndMetadataStatement
 {
-	if (enumerateMetadataStatement == NULL)
+	if (enumerateKeysAndMetadataStatement == NULL)
 	{
 		char *stmt = "SELECT \"key\", \"metadata\" FROM \"database\";";
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateMetadataStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateKeysAndMetadataStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'enumerateMetadataStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return enumerateMetadataStatement;
+	return enumerateKeysAndMetadataStatement;
 }
 
-- (sqlite3_stmt *)enumerateAllStatement
+- (sqlite3_stmt *)enumerateKeysAndObjectsStatement
 {
-	if (enumerateAllStatement == NULL)
+	if (enumerateKeysAndObjectsStatement == NULL)
+	{
+		char *stmt = "SELECT \"key\", \"data\" FROM \"database\";";
+		
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateKeysAndObjectsStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return enumerateKeysAndObjectsStatement;
+}
+
+- (sqlite3_stmt *)enumerateRowsStatement
+{
+	if (enumerateRowsStatement == NULL)
 	{
 		char *stmt = "SELECT \"key\", \"data\", \"metadata\" FROM \"database\";";
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateRowsStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'enumerateAllStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return enumerateAllStatement;
+	return enumerateRowsStatement;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

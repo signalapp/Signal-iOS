@@ -94,7 +94,7 @@ static NSMutableArray *keys;
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, id metadata, BOOL *stop) {
+		[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop) {
 			
 			// Nothing to do, just testing overhead
 		}];

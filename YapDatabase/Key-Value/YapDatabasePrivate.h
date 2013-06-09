@@ -21,8 +21,9 @@
 	sqlite3_stmt *removeForKeyStatement;
 	sqlite3_stmt *removeAllStatement;
 	sqlite3_stmt *enumerateKeysStatement;
-	sqlite3_stmt *enumerateMetadataStatement;
-	sqlite3_stmt *enumerateAllStatement;
+	sqlite3_stmt *enumerateKeysAndMetadataStatement;
+	sqlite3_stmt *enumerateKeysAndObjectsStatement;
+	sqlite3_stmt *enumerateRowsStatement;
 	
 @public
 	NSMutableDictionary *objectChanges;
@@ -62,7 +63,8 @@
 - (sqlite3_stmt *)removeForKeyStatement;
 - (sqlite3_stmt *)removeAllStatement;
 - (sqlite3_stmt *)enumerateKeysStatement;
-- (sqlite3_stmt *)enumerateMetadataStatement;
-- (sqlite3_stmt *)enumerateAllStatement;
+- (sqlite3_stmt *)enumerateKeysAndMetadataStatement;
+- (sqlite3_stmt *)enumerateKeysAndObjectsStatement;
+- (sqlite3_stmt *)enumerateRowsStatement;
 
 @end

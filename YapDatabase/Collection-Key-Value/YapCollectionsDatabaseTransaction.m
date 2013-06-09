@@ -608,18 +608,17 @@
  * Enumerates over the given list of keys (unordered).
  *
  * This method is faster than fetching individual items as it optimizes cache access.
- * That is, it will first enumerate over items in the cache, and then fetch items from the database,
- * thus optimizing the available cache.
+ * That is, it will first enumerate over items in the cache and then fetch items from the database,
+ * thus optimizing the cache and reducing query size.
  *
  * If any keys are missing from the database, the 'metadata' parameter will be nil.
  *
  * IMPORTANT:
- *     Due to cache optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
- *     That is, items in the cache will be enumerated over first, before fetching items from the database.
+ * Due to cache optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
 **/
 - (void)enumerateMetadataForKeys:(NSArray *)keys
                     inCollection:(NSString *)collection
-                      usingBlock:(void (^)(NSUInteger keyIndex, id metadata, BOOL *stop))block
+             unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id metadata, BOOL *stop))block
 {
 	if ([keys count] == 0) return;
 	if (block == NULL) return;
@@ -771,18 +770,17 @@
  * Enumerates over the given list of keys (unordered).
  *
  * This method is faster than fetching individual items as it optimizes cache access.
- * That is, it will first enumerate over items in the cache, and then fetch items from the database,
- * thus optimizing the available cache.
+ * That is, it will first enumerate over items in the cache and then fetch items from the database,
+ * thus optimizing the cache and reducing query size.
  *
  * If any keys are missing from the database, the 'object' parameter will be nil.
  *
  * IMPORTANT:
- *     Due to cache optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
- *     That is, items in the cache will be enumerated over first, before fetching items from the database.
+ * Due to cache optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
 **/
 - (void)enumerateObjectsForKeys:(NSArray *)keys
                    inCollection:(NSString *)collection
-                     usingBlock:(void (^)(NSUInteger keyIndex, id object, BOOL *stop))block
+            unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id object, BOOL *stop))block
 {
 	if ([keys count] == 0) return;
 	if (block == NULL) return;
@@ -931,18 +929,17 @@
  * Enumerates over the given list of keys (unordered).
  *
  * This method is faster than fetching individual items as it optimizes cache access.
- * That is, it will first enumerate over items in the cache, and then fetch items from the database,
- * thus optimizing the available cache.
+ * That is, it will first enumerate over items in the cache and then fetch items from the database,
+ * thus optimizing the cache and reducing query size.
  *
  * If any keys are missing from the database, the 'object' parameter will be nil.
  *
  * IMPORTANT:
- *     Due to cache optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
- *     That is, items in the cache will be enumerated over first, before fetching items from the database.
+ * Due to cache optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
 **/
-- (void)enumerateForKeys:(NSArray *)keys
-            inCollection:(NSString *)collection
-              usingBlock:(void (^)(NSUInteger keyIndex, id object, id metadata, BOOL *stop))block
+- (void)enumerateRowsForKeys:(NSArray *)keys
+                inCollection:(NSString *)collection
+         unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id object, id metadata, BOOL *stop))block
 {
 	if ([keys count] == 0) return;
 	if (block == NULL) return;
@@ -1014,7 +1011,7 @@
 		
 		[self enumerateMetadataForKeys:keysInObjectCacheOnly
 		                  inCollection:collection
-		                    usingBlock:^(NSUInteger keyIndex, id metadata, BOOL *subStop){
+		           unorderedUsingBlock:^(NSUInteger keyIndex, id metadata, BOOL *subStop){
 			
 			NSString *key = [keysInObjectCacheOnly objectAtIndex:keyIndex];
 			YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
@@ -1036,7 +1033,7 @@
 		
 		[self enumerateObjectsForKeys:keysInMetadataCacheOnly
 		                 inCollection:collection
-		                   usingBlock:^(NSUInteger keyIndex, id object, BOOL *subStop){
+		          unorderedUsingBlock:^(NSUInteger keyIndex, id object, BOOL *subStop){
 			
 			NSString *key = [keysInMetadataCacheOnly objectAtIndex:keyIndex];
 			YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];

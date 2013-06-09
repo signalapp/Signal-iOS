@@ -153,43 +153,55 @@
  * which avoids the cost associated with deserialization process.
 **/
 - (void)enumerateKeysAndMetadataUsingBlock:(void (^)(NSString *key, id metadata, BOOL *stop))block
-                             withKeyFilter:(BOOL (^)(NSString *key))filter;
+                                withFilter:(BOOL (^)(NSString *key))filter;
 
 /**
- * Fast enumeration over all objects in the database.
+ * Fast enumeration over all keys and objects in the database.
  * 
- * This uses a "SELECT * FROM database" operation, and then steps over the results,
- * deserializing each object and metadata (if not cached), and then invoking the given block handler.
+ * This uses a "SELECT key, object FROM database" operation, and then steps over the results,
+ * deserializing each object (if not cached), and then invoking the given block handler.
  * 
  * If you only need to enumerate over certain objects (e.g. keys with a particular prefix),
- * consider using the alternative versions below which provide a filter,
+ * consider using the alternative version below which provide a filter,
  * allowing you to skip the serialization steps for those rows you're not interested in.
 **/
-- (void)enumerateKeysAndObjectsUsingBlock:(void (^)(NSString *key, id object, id metadata, BOOL *stop))block;
+- (void)enumerateKeysAndObjectsUsingBlock:(void (^)(NSString *key, id object, BOOL *stop))block;
 
 /**
  * Fast enumeration over objects in the database for which you're interested in.
- * The filter block allows you to specify which objects you're interested in,
+ * The filter block allows you to specify which rows you're interested in,
  * allowing you to skip the deserialization step for ignored rows.
  *
  * From the filter block, simply return YES if you'd like the block handler to be invoked for the given row.
  * If the filter block returns NO, then the block handler is skipped for the given row,
  * which avoids the cost associated with deserialization process.
 **/
-- (void)enumerateKeysAndObjectsUsingBlock:(void (^)(NSString *key, id object, id metadata, BOOL *stop))block
-                            withKeyFilter:(BOOL (^)(NSString *key))filter;
+- (void)enumerateKeysAndObjectsUsingBlock:(void (^)(NSString *key, id object, BOOL *stop))block
+                               withFilter:(BOOL (^)(NSString *key))filter;
 
 /**
- * Fast enumeration over objects in the database for which you're interested in.
- * The filter block allows you to specify which objects you're interested in,
+ * Fast enumeration over all objects in the database.
+ *
+ * This uses a "SELECT * FROM database" operation, and then steps over the results,
+ * deserializing each object and metadata (if not cached), and then invoking the given block handler.
+ *
+ * If you only need to enumerate over certain objects (e.g. keys with a particular prefix),
+ * consider using the alternative version below which provide a filter,
+ * allowing you to skip the serialization steps for those rows you're not interested in.
+**/
+- (void)enumerateRowsUsingBlock:(void (^)(NSString *key, id object, id metadata, BOOL *stop))block;
+
+/**
+ * Fast enumeration over rows in the database for which you're interested in.
+ * The filter block allows you to specify which rows you're interested in,
  * allowing you to skip the deserialization step for ignored rows.
- * 
+ *
  * From the filter block, simply return YES if you'd like the block handler to be invoked for the given row.
  * If the filter block returns NO, then the block handler is skipped for the given row,
  * which avoids the cost associated with deserialization process.
 **/
-- (void)enumerateKeysAndObjectsUsingBlock:(void (^)(NSString *key, id object, id metadata, BOOL *stop))block
-                       withMetadataFilter:(BOOL (^)(NSString *key, id metadata))filter;
+- (void)enumerateRowsUsingBlock:(void (^)(NSString *key, id object, id metadata, BOOL *stop))block
+                     withFilter:(BOOL (^)(NSString *key))filter;
 
 @end
 
