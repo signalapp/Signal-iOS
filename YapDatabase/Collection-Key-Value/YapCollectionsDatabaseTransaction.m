@@ -1,5 +1,6 @@
 #import "YapCollectionsDatabaseTransaction.h"
 #import "YapCollectionsDatabasePrivate.h"
+#import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
 #import "YapCache.h"
@@ -1905,6 +1906,8 @@
 		[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
 		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 	}
+	
+	// Todo: How best to handle for extension?
 }
 
 #pragma mark Object
@@ -1973,6 +1976,13 @@
 		[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
 		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 	}
+	
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
+		
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
+		
+		[extTransaction handleSetObject:object forKey:key inCollection:collection withMetadata:metadata];
+	}];
 }
 
 #pragma mark Metadata
@@ -2030,6 +2040,13 @@
 			[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
 			[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 		}
+		
+		[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
+			
+			__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
+			
+			[extTransaction handleSetMetadata:metadata forKey:key inCollection:collection];
+		}];
 	}
 }
 
@@ -2079,6 +2096,13 @@
 		[connection->objectChanges removeObjectForKey:cacheKey];
 		[connection->metadataChanges removeObjectForKey:cacheKey];
 		[connection->removedKeys addObject:cacheKey];
+		
+		[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
+			
+			__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
+			
+			[extTransaction handleRemoveObjectForKey:key inCollection:collection];
+		}];
 	}
 }
 
@@ -2178,6 +2202,13 @@
 		[connection->metadataChanges removeObjectForKey:cacheKey];
 		[connection->removedKeys addObject:cacheKey];
 	}
+	
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
+		
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
+		
+		[extTransaction handleRemoveObjectsForKeys:keys inCollection:collection];
+	}];
 }
 
 - (void)removeAllObjectsInCollection:(NSString *)collection
@@ -2226,6 +2257,13 @@
 	[connection->metadataCache removeObjectsForKeys:keysToRemove];
 	
 	[connection->removedCollections addObject:collection];
+	
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
+		
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
+		
+		[extTransaction handleRemoveAllObjectsInCollection:collection];
+	}];
 }
 
 - (void)removeAllObjectsInAllCollections

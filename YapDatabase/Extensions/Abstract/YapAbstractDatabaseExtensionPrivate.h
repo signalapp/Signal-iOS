@@ -182,7 +182,7 @@
 @protocol YapAbstractDatabaseExtensionTransaction_CollectionKeyValue
 @required
 
-- (void)handleSetObject:(id)object forKey:(NSString *)key withMetadata:(id)metadata inCollection:(NSString *)collection;
+- (void)handleSetObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection withMetadata:(id)metadata;
 - (void)handleSetMetadata:(id)metadata forKey:(NSString *)key inCollection:(NSString *)collection;
 - (void)handleRemoveObjectForKey:(NSString *)key inCollection:(NSString *)collection;
 - (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection;

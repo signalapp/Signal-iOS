@@ -1458,7 +1458,7 @@
  * YapCollectionsDatabase extension hook.
  * This method is invoked by a YapCollectionsDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleSetObject:(id)object forKey:(NSString *)key withMetadata:(id)metadata inCollection:(NSString *)collection
+- (void)handleSetObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection withMetadata:(id)metadata
 {
 	YDBLogAutoTrace();
 	
