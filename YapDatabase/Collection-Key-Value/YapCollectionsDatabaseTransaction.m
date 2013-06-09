@@ -1977,6 +1977,9 @@
 		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 	}
 	
+	collection = cacheKey.collection; // mutable string protection
+	key = cacheKey.key;               // mutable string protection
+	
 	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
 		
 		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
@@ -2041,6 +2044,9 @@
 			[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 		}
 		
+		collection = cacheKey.collection; // mutable string protection
+		key = cacheKey.key;               // mutable string protection
+		
 		[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
 			
 			__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
@@ -2097,6 +2103,9 @@
 		[connection->metadataChanges removeObjectForKey:cacheKey];
 		[connection->removedKeys addObject:cacheKey];
 		
+		collection = cacheKey.collection; // mutable string protection
+		key = cacheKey.key;               // mutable string protection
+		
 		[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
 			
 			__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
@@ -2116,7 +2125,10 @@
 		return;
 	}
 	
-	if (collection == nil) collection = @"";
+	if (collection == nil)
+		collection = @"";
+	else
+		collection = [collection copy]; // mutable string protection
 	
 	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
 	    (YapCollectionsDatabaseConnection *)abstractConnection;
@@ -2203,6 +2215,8 @@
 		[connection->removedKeys addObject:cacheKey];
 	}
 	
+	keys = [[NSMutableArray alloc] initWithArray:keys copyItems:YES]; // mutable string protection
+	
 	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
 		
 		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
@@ -2213,7 +2227,10 @@
 
 - (void)removeAllObjectsInCollection:(NSString *)collection
 {
-	if (collection == nil) collection  = @"";
+	if (collection == nil)
+		collection  = @"";
+	else
+		collection = [collection copy]; // mutable string protection
 	
 	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
 	    (YapCollectionsDatabaseConnection *)abstractConnection;
