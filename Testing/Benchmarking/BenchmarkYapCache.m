@@ -1,10 +1,10 @@
 #import "BenchmarkYapCache.h"
 #import "YapCache.h"
-#import "YapCacheCollectionKey.h"
+#import "YapCollectionKey.h"
 
 #define LOOP_COUNT 25000
 
-#define TEST_COLLECTION_KEY 0 // 0:Key=NSString, 1:Key=YapCacheCollectionKey
+#define TEST_COLLECTION_KEY 0 // 0:Key=NSString, 1:Key=YapCollectionKey
 
 
 /**
@@ -63,7 +63,7 @@ static NSMutableArray *keys;
 		}
 		
 	#if TEST_COLLECTION_KEY
-		YapCacheCollectionKey *ckey = [[YapCacheCollectionKey alloc] initWithCollection:@"" key:key];
+		YapCollectionKey *ckey = [[YapCollectionKey alloc] initWithCollection:@"" key:key];
 		[keys addObject:ckey];
 	#else
 		[keys addObject:key];
@@ -103,7 +103,7 @@ static NSMutableArray *keys;
 + (NSTimeInterval)testYapCache:(NSUInteger)cacheSize
 {
 #if TEST_COLLECTION_KEY
-	Class keyClass = [YapCacheCollectionKey class];
+	Class keyClass = [YapCollectionKey class];
 #else
 	Class keyClass = [NSString class];
 #endif

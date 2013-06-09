@@ -6,7 +6,7 @@
 #import "YapAbstractDatabasePrivate.h"
 #import "YapCollectionsDatabaseTransaction.h"
 #import "YapCache.h"
-#import "YapCacheCollectionKey.h"
+#import "YapCollectionKey.h"
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
 
@@ -365,7 +365,7 @@
 	
 	// Check dirty cache & clean cache
 	
-	YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	pageKey = [viewConnection->dirtyKeys objectForKey:cacheKey];
 	if (pageKey)
@@ -765,7 +765,7 @@
 	
 	if (![pageKey isEqualToString:existingPageKey])
 	{
-		YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+		YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
 		[viewConnection->dirtyKeys setObject:pageKey forKey:cacheKey];
 		[viewConnection->keyCache removeObjectForKey:cacheKey];
@@ -1209,7 +1209,7 @@
 	
 	// Mark key for deletion
 	
-	YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	[viewConnection->dirtyKeys setObject:[NSNull null] forKey:cacheKey];
 	[viewConnection->keyCache removeObjectForKey:cacheKey];
@@ -1356,7 +1356,7 @@
 	
 	for (NSString *key in keys)
 	{
-		YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+		YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
 		[viewConnection->dirtyKeys setObject:[NSNull null] forKey:cacheKey];
 		[viewConnection->keyCache removeObjectForKey:cacheKey];

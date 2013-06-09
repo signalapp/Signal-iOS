@@ -3,7 +3,7 @@
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
 #import "YapCache.h"
-#import "YapCacheCollectionKey.h"
+#import "YapCollectionKey.h"
 #import "YapNull.h"
 
 #if ! __has_feature(objc_arc)
@@ -254,7 +254,7 @@
 	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
 	    (YapCollectionsDatabaseConnection *)abstractConnection;
 	
-	YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	id object = [connection->objectCache objectForKey:cacheKey];
 	if (object)
@@ -319,7 +319,7 @@
 	// Shortcut:
 	// We may not need to query the database if we have the key in any of our caches.
 	
-	YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	if ([connection->metadataCache objectForKey:cacheKey]) return YES;
 	if ([connection->objectCache objectForKey:cacheKey]) return YES;
@@ -375,7 +375,7 @@
 	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
 	    (YapCollectionsDatabaseConnection *)abstractConnection;
 	
-	YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	id object = [connection->objectCache objectForKey:cacheKey];
 	id metadata = [connection->metadataCache objectForKey:cacheKey];
@@ -488,7 +488,7 @@
 	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
 	    (YapCollectionsDatabaseConnection *)abstractConnection;
 	
-	YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	id metadata = [connection->metadataCache objectForKey:cacheKey];
 	if (metadata)
@@ -637,7 +637,7 @@
 	
 	for (NSString *key in keys)
 	{
-		YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+		YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
 		id metadata = [connection->metadataCache objectForKey:cacheKey];
 		if (metadata)
@@ -735,7 +735,7 @@
 			
 			if (metadata)
 			{
-				YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+				YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 				
 				[connection->metadataCache setObject:metadata forKey:cacheKey];
 			}
@@ -800,7 +800,7 @@
 	
 	for (NSString *key in keys)
 	{
-		YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+		YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
 		id object = [connection->objectCache objectForKey:cacheKey];
 		if (object)
@@ -895,7 +895,7 @@
 			
 			if (object)
 			{
-				YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+				YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 				
 				[connection->objectCache setObject:object forKey:cacheKey];
 			}
@@ -972,7 +972,7 @@
 	
 	for (NSString *key in keys)
 	{
-		YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+		YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
 		id object = [connection->objectCache objectForKey:cacheKey];
 		id metadata = [connection->metadataCache objectForKey:cacheKey];
@@ -1017,7 +1017,7 @@
 		                    usingBlock:^(NSUInteger keyIndex, id metadata, BOOL *subStop){
 			
 			NSString *key = [keysInObjectCacheOnly objectAtIndex:keyIndex];
-			YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+			YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 			
 			id object = [connection->objectCache objectForKey:cacheKey];
 			
@@ -1039,7 +1039,7 @@
 		                   usingBlock:^(NSUInteger keyIndex, id object, BOOL *subStop){
 			
 			NSString *key = [keysInMetadataCacheOnly objectAtIndex:keyIndex];
-			YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+			YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 			
 			id metadata = [connection->metadataCache objectForKey:cacheKey];
 			
@@ -1141,7 +1141,7 @@
 			
 			if (object)
 			{
-				YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+				YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 				
 				[connection->objectCache setObject:object forKey:cacheKey];
 				
@@ -1228,7 +1228,7 @@
 		BOOL invokeBlock = (filter == NULL) ? YES : filter(key);
 		if (invokeBlock)
 		{
-			YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+			YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
 			id metadata = [connection->metadataCache objectForKey:cacheKey];
 			if (metadata)
@@ -1320,7 +1320,7 @@
 		BOOL invokeBlock = (filter == NULL) ? YES : filter(collection, key);
 		if (invokeBlock)
 		{
-			YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+			YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 			
 			id metadata = [connection->metadataCache objectForKey:cacheKey];
 			if (metadata)
@@ -1405,7 +1405,7 @@
 		
 		NSString *key = [[NSString alloc] initWithBytes:_key length:_keySize encoding:NSUTF8StringEncoding];
 		
-		YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+		YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
 		id metadata = [connection->metadataCache objectForKey:cacheKey];
 		if (metadata)
@@ -1503,7 +1503,7 @@
 		collection = [[NSString alloc] initWithBytes:_collection length:_collectionSize encoding:NSUTF8StringEncoding];
 		key = [[NSString alloc] initWithBytes:_key length:_keySize encoding:NSUTF8StringEncoding];
 		
-		YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+		YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
 		id metadata = [connection->metadataCache objectForKey:cacheKey];
 		if (metadata)
@@ -1622,7 +1622,7 @@
 	FreeYapDatabaseString(&_collection);
 	FreeYapDatabaseString(&_key);
 	
-	YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	[connection->objectCache removeObjectForKey:cacheKey];
 	[connection->objectChanges setObject:[YapNull null] forKey:cacheKey];
@@ -1690,7 +1690,7 @@
 	FreeYapDatabaseString(&_collection);
 	FreeYapDatabaseString(&_key);
 	
-	YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	[connection->objectCache setObject:object forKey:cacheKey];
 	[connection->objectChanges setObject:object forKey:cacheKey];
@@ -1750,7 +1750,7 @@
 	
 	if (updated)
 	{
-		YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+		YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
 		if (metadata) {
 			[connection->metadataCache setObject:metadata forKey:cacheKey];
@@ -1801,7 +1801,7 @@
 	
 	if (removed)
 	{
-		YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+		YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
 		[connection->objectCache removeObjectForKey:cacheKey];
 		[connection->metadataCache removeObjectForKey:cacheKey];
@@ -1899,7 +1899,7 @@
 	
 	for (NSString *key in keys)
 	{
-		YapCacheCollectionKey *cacheKey = [[YapCacheCollectionKey alloc] initWithCollection:collection key:key];
+		YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
 		[connection->objectCache removeObjectForKey:cacheKey];
 		[connection->metadataCache removeObjectForKey:cacheKey];
@@ -1940,7 +1940,7 @@
 	
 	void(^block)(id, BOOL*) = ^void (id key, BOOL *stop) {
 		
-		__unsafe_unretained YapCacheCollectionKey *cacheKey = (YapCacheCollectionKey *)key;
+		__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
 		if ([cacheKey.collection isEqualToString:collection])
 		{
 			[keysToRemove addObject:cacheKey];

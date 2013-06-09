@@ -1,7 +1,7 @@
 #import "YapCollectionsDatabase.h"
 #import "YapCollectionsDatabasePrivate.h"
 #import "YapAbstractDatabasePrivate.h"
-#import "YapCacheCollectionKey.h"
+#import "YapCollectionKey.h"
 #import "YapDatabaseLogging.h"
 
 #import "sqlite3.h"
@@ -63,7 +63,7 @@
 **/
 - (Class)cacheKeyClass
 {
-	return [YapCacheCollectionKey class];
+	return [YapCollectionKey class];
 }
 
 /**

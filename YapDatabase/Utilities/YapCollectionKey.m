@@ -1,4 +1,4 @@
-#import "YapCacheCollectionKey.h"
+#import "YapCollectionKey.h"
 
 
 /**
@@ -123,7 +123,7 @@ static NSUInteger YDB_MurmurHash(NSUInteger hash1, NSUInteger hash2)
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@implementation YapCacheCollectionKey
+@implementation YapCollectionKey
 
 @synthesize collection = collection;
 @synthesize key = key;
@@ -145,9 +145,9 @@ static NSUInteger YDB_MurmurHash(NSUInteger hash1, NSUInteger hash2)
 
 - (BOOL)isEqual:(id)obj
 {
-	if ([obj isMemberOfClass:[YapCacheCollectionKey class]])
+	if ([obj isMemberOfClass:[YapCollectionKey class]])
 	{
-		YapCacheCollectionKey *ck = (YapCacheCollectionKey *)obj;
+		YapCollectionKey *ck = (YapCollectionKey *)obj;
 		
 		return [key isEqualToString:ck->key] && [collection isEqualToString:ck->collection];
 	}
@@ -165,7 +165,7 @@ static NSUInteger YDB_MurmurHash(NSUInteger hash1, NSUInteger hash2)
 
 - (NSString *)description
 {
-	return [NSString stringWithFormat:@"<YapCacheCollectionKey[%p] collection(%@) key(%@)>", self, collection, key];
+	return [NSString stringWithFormat:@"<YapCollectionKey[%p] collection(%@) key(%@)>", self, collection, key];
 }
 
 @end

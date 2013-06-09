@@ -3,7 +3,7 @@
 
 #import "YapAbstractDatabasePrivate.h"
 #import "YapCache.h"
-#import "YapCacheCollectionKey.h"
+#import "YapCollectionKey.h"
 #import "YapNull.h"
 
 #import "YapDatabaseString.h"
@@ -699,7 +699,7 @@
 			// [transaction removeAllObjectsInAllCollections];
 			// [transaction setObject:obj forKey:key inCollection:collection];
 			
-			__unsafe_unretained YapCacheCollectionKey *cacheKey = (YapCacheCollectionKey *)key;
+			__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
 			
 			if ([c_objectChanges objectForKey:key])
 			{
@@ -743,7 +743,7 @@
 			// [transaction removeAllObjectsInAllCollections];
 			// [transaction setObject:obj forKey:key inCollection:collection];
 			
-			__unsafe_unretained YapCacheCollectionKey *cacheKey = (YapCacheCollectionKey *)key;
+			__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
 			
 			if ([c_metadataChanges objectForKey:key])
 			{
