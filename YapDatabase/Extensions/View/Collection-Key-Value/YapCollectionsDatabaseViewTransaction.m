@@ -349,10 +349,9 @@
  * This method will use the cache(s) if possible.
  * Otherwise it will lookup the value in the key table.
 **/
-- (NSString *)pageKeyForKey:(NSString *)key inCollection:(NSString *)collection
+- (NSString *)pageKeyForCollectionKey:(YapCollectionKey *)collectionKey
 {
-	NSParameterAssert(key != nil);
-	NSParameterAssert(collection != nil);
+	NSParameterAssert(collectionKey != nil);
 	
 	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
 	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
@@ -361,9 +360,7 @@
 	
 	// Check dirty cache & clean cache
 	
-	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-	
-	pageKey = [viewConnection->dirtyKeys objectForKey:cacheKey];
+	pageKey = [viewConnection->dirtyKeys objectForKey:collectionKey];
 	if (pageKey)
 	{
 		if ((__bridge void *)pageKey == (__bridge void *)[NSNull null])
@@ -372,7 +369,7 @@
 			return pageKey;
 	}
 	
-	pageKey = [viewConnection->keyCache objectForKey:cacheKey];
+	pageKey = [viewConnection->keyCache objectForKey:collectionKey];
 	if (pageKey)
 	{
 		if ((__bridge void *)pageKey == (__bridge void *)[NSNull null])
@@ -389,10 +386,10 @@
 	
 	// SELECT "pageKey" FROM "keyTableName" WHERE collection = ? AND key = ? ;
 	
-	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
+	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collectionKey.collection);
 	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
 	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+	YapDatabaseString _key; MakeYapDatabaseString(&_key, collectionKey.key);
 	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
@@ -405,9 +402,10 @@
 	}
 	else if (status == SQLITE_ERROR)
 	{
-		YDBLogError(@"%@ (%@): Error executing statement: %d %s, key(%@)",
+		YDBLogError(@"%@ (%@): Error executing statement: %d %s, collection(%@) key(%@)",
 		            THIS_METHOD, [self registeredViewName],
-		            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db), key);
+		            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db),
+		            collectionKey.collection, collectionKey.key);
 	}
 	
 	sqlite3_clear_bindings(statement);
@@ -416,9 +414,9 @@
 	FreeYapDatabaseString(&_key);
 	
 	if (pageKey)
-		[viewConnection->keyCache setObject:pageKey forKey:cacheKey];
+		[viewConnection->keyCache setObject:pageKey forKey:collectionKey];
 	else
-		[viewConnection->keyCache setObject:[NSNull null] forKey:cacheKey];
+		[viewConnection->keyCache setObject:[NSNull null] forKey:collectionKey];
 	
 	return pageKey;
 }
@@ -695,15 +693,14 @@
  * 
  * Note: This method assumes the group already exists.
 **/
-- (void)insertKey:(NSString *)key inCollection:(NSString *)collection
-                                       inGroup:(NSString *)group
-                                       atIndex:(NSUInteger)index
-                           withExistingPageKey:(NSString *)existingPageKey
+- (void)insertCollectionKey:(YapCollectionKey *)collectionKey
+                    inGroup:(NSString *)group
+                    atIndex:(NSUInteger)index
+        withExistingPageKey:(NSString *)existingPageKey
 {
 	YDBLogAutoTrace();
 	
-	NSParameterAssert(key != nil);
-	NSParameterAssert(collection != nil);
+	NSParameterAssert(collectionKey != nil);
 	NSParameterAssert(existingPageKey != nil);
 	
 	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
@@ -741,11 +738,10 @@
 	NSMutableArray *page = [self pageForPageKey:pageKey];
 	
 	YDBLogVerbose(@"Inserting key(%@) collection(%@) in group(%@) at index(%lu) with page(%@) pageOffset(%lu)",
-	              key, collection, group, (unsigned long)index, pageKey, (unsigned long)(index - pageOffset));
+	              collectionKey.key, collectionKey.collection, group,
+	              (unsigned long)index, pageKey, (unsigned long)(index - pageOffset));
 	
 	// Update page
-	
-	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	[page insertObject:collectionKey atIndex:(index - pageOffset)];
 	
@@ -773,11 +769,10 @@
  * This method will use the configured sorting block to find the proper index for the key.
  * It will attempt to optimize this operation as best as possible using a variety of techniques.
 **/
-- (void)insertObject:(id)object
-              forKey:(NSString *)key
-        inCollection:(NSString *)collection
-        withMetadata:(id)metadata
-             inGroup:(NSString *)group
+- (void)insertCollectionKey:(YapCollectionKey *)collectionKey
+                 withObject:(id)object
+                   metadata:(id)metadata
+                    inGroup:(NSString *)group
 {
 	YDBLogAutoTrace();
 	
@@ -787,8 +782,6 @@
 	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
 	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
 	
-	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-	
 	// Is the key already in the group?
 	// If so:
 	// - its index within the group may or may not have changed.
@@ -796,7 +789,7 @@
 	
 	BOOL tryExistingIndexInGroup = NO;
 	
-	NSString *existingPageKey = [self pageKeyForKey:key inCollection:collection];
+	NSString *existingPageKey = [self pageKeyForCollectionKey:collectionKey];
 	if (existingPageKey)
 	{
 		// The key is already in the view.
@@ -823,7 +816,7 @@
 		}
 		else
 		{
-			[self removeKey:key inCollection:collection withPageKey:existingPageKey group:existingGroup];
+			[self removeCollectionKey:collectionKey withPageKey:existingPageKey group:existingGroup];
 			
 			// Don't forget to reset the existingPageKey ivar!
 			// Or else 'insertKey:inGroup:atIndex:withExistingPageKey:' will be given an invalid existingPageKey.
@@ -842,7 +835,7 @@
 		NSString *pageKey = [self generatePageKey];
 		
 		YDBLogVerbose(@"Inserting key(%@) collection(%@) in new group(%@) with page(%@)",
-		              key, collection, group, pageKey);
+		              collectionKey.key, collectionKey.collection, group, pageKey);
 		
 		YapDatabaseViewPageMetadata *pageMetadata = [[YapDatabaseViewPageMetadata alloc] init];
 		pageMetadata->pageKey = pageKey;
@@ -908,8 +901,8 @@
 				__unsafe_unretained YapCollectionsDatabaseViewSortingWithKeyBlock sortingBlock =
 				    (YapCollectionsDatabaseViewSortingWithKeyBlock)view->sortingBlock;
 				
-				return sortingBlock(group,         collection,         key,
-				                           another.collection, another.key);
+				return sortingBlock(group, collectionKey.collection, collectionKey.key,
+				                                 another.collection,       another.key);
 			}
 			else if (view->sortingBlockType == YapCollectionsDatabaseViewBlockTypeWithObject)
 			{
@@ -918,8 +911,8 @@
 				
 				id anotherObject = [self objectForKey:another.key inCollection:another.collection];
 				
-				return sortingBlock(group,         collection,         key,        object,
-				                           another.collection, another.key, anotherObject);
+				return sortingBlock(group, collectionKey.collection, collectionKey.key,        object,
+				                                 another.collection,       another.key, anotherObject);
 			}
 			else if (view->sortingBlockType == YapCollectionsDatabaseViewBlockTypeWithMetadata)
 			{
@@ -928,8 +921,8 @@
 				
 				id anotherMetadata = [self metadataForKey:another.key inCollection:another.collection];;
 				
-				return sortingBlock(group,         collection,         key,        metadata,
-				                           another.collection, another.key, anotherMetadata);
+				return sortingBlock(group, collectionKey.collection, collectionKey.key,        metadata,
+				                                 another.collection,       another.key, anotherMetadata);
 			}
 			else
 			{
@@ -944,8 +937,8 @@
 				         forKey:another.key
 				   inCollection:another.collection];
 				
-				return sortingBlock(group,         collection,         key,        object,        metadata,
-				                           another.collection, another.key, anotherObject, anotherMetadata);
+				return sortingBlock(group, collectionKey.collection, collectionKey.key,        object,        metadata,
+				                                 another.collection,       another.key, anotherObject, anotherMetadata);
 			}
 		};
 		
@@ -995,7 +988,7 @@
 			{
 				// The key doesn't change position.
 				
-				YDBLogVerbose(@"Updated key(%@) in group(%@) maintains current index", key, group);
+				YDBLogVerbose(@"Updated key(%@) in group(%@) maintains current index", collectionKey.key, group);
 				return;
 			}
 			else
@@ -1003,7 +996,7 @@
 				// The key has changed position.
 				// Remove it from previous position (and don't forget to decrement count).
 				
-				[self removeKey:key inCollection:collection withPageKey:existingPageKey group:group];
+				[self removeCollectionKey:collectionKey withPageKey:existingPageKey group:group];
 				count--;
 				
 				// Don't forget to reset the existingPageKey ivar!
@@ -1024,12 +1017,12 @@
 			if (cmp == NSOrderedAscending) // object < first
 			{
 				YDBLogVerbose(@"Insert key(%@) collection(%@) in group(%@) at beginning (optimization)",
-				              key, collection, group);
+				              collectionKey.key, collectionKey.collection, group);
 				
-				[self insertKey:key inCollection:collection
-				                         inGroup:group
-				                         atIndex:0
-				             withExistingPageKey:existingPageKey];
+				[self insertCollectionKey:collectionKey
+				                  inGroup:group
+				                  atIndex:0
+				      withExistingPageKey:existingPageKey];
 				return;
 			}
 		}
@@ -1041,12 +1034,12 @@
 			if (cmp != NSOrderedAscending) // object >= last
 			{
 				YDBLogVerbose(@"Insert key(%@) collection(%@) in group(%@) at end (optimization)",
-				              key, collection, group);
+				              collectionKey.key, collectionKey.collection, group);
 				
-				[self insertKey:key inCollection:collection
-				                         inGroup:group
-				                         atIndex:count
-				             withExistingPageKey:existingPageKey];
+				[self insertCollectionKey:collectionKey
+				                  inGroup:group
+				                  atIndex:count
+				      withExistingPageKey:existingPageKey];
 				return;
 			}
 		}
@@ -1079,9 +1072,9 @@
 		}
 		
 		YDBLogVerbose(@"Insert key(%@) collection(%@) in group(%@) took %lu comparisons",
-		              key, collection, group, (unsigned long)loopCount);
+		              collectionKey.key, collectionKey.collection, group, (unsigned long)loopCount);
 		
-		[self insertKey:key inCollection:collection inGroup:group atIndex:min withExistingPageKey:existingPageKey];
+		[self insertCollectionKey:collectionKey inGroup:group atIndex:min withExistingPageKey:existingPageKey];
 		
 		viewConnection->lastInsertWasAtFirstIndex = (min == 0);
 		viewConnection->lastInsertWasAtLastIndex  = (min == count);
@@ -1091,22 +1084,18 @@
 /**
  * Use this method (instead of removeKey:) when the pageKey and group are already known.
 **/
-- (void)removeKey:(NSString *)key
-     inCollection:(NSString *)collection
-      withPageKey:(NSString *)pageKey
-            group:(NSString *)group
+- (void)removeCollectionKey:(YapCollectionKey *)collectionKey
+                withPageKey:(NSString *)pageKey
+                      group:(NSString *)group
 {
 	YDBLogAutoTrace();
 	
-	NSParameterAssert(key != nil);
-	NSParameterAssert(collection != nil);
+	NSParameterAssert(collectionKey != nil);
 	NSParameterAssert(pageKey != nil);
 	NSParameterAssert(group != nil);
 	
 	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
 	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
-	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	// Update page (by removing key from array)
 	
@@ -1116,11 +1105,12 @@
 	if (keyIndex == NSNotFound)
 	{
 		YDBLogError(@"%@ (%@): Collection(%@) Key(%@) expected to be in page(%@), but is missing",
-		            THIS_METHOD, [self registeredViewName], collection, key, pageKey);
+		            THIS_METHOD, [self registeredViewName], collectionKey.collection, collectionKey.key, pageKey);
 		return;
 	}
 	
-	YDBLogVerbose(@"Removing key(%@) from page(%@) at index(%lu)", key, page, (unsigned long)keyIndex);
+	YDBLogVerbose(@"Removing collection(%@) key(%@) from page(%@) at index(%lu)",
+	              collectionKey.collection, collectionKey.key, page, (unsigned long)keyIndex);
 	
 	[page removeObjectAtIndex:keyIndex];
 	NSUInteger pageCount = [page count];
@@ -1216,6 +1206,22 @@
 }
 
 /**
+ * Use this method when you don't know if the collection/key exists in the view.
+**/
+- (void)removeCollectionKey:(YapCollectionKey *)collectionKey
+{
+	YDBLogAutoTrace();
+	
+	// Find out if collection/key is in view
+	
+	NSString *pageKey = [self pageKeyForCollectionKey:collectionKey];
+	if (pageKey)
+	{
+		[self removeCollectionKey:collectionKey withPageKey:pageKey group:[self groupForPageKey:pageKey]];
+	}
+}
+
+/**
  * Use this method to remove a set of 1 or more keys (in a single collection) from a given pageKey & group.
 **/
 - (void)removeKeys:(NSSet *)keys
@@ -1225,9 +1231,13 @@
 {
 	YDBLogAutoTrace();
 	
-	if ([keys count] < 2) // 0 or 1
+	if ([keys count] == 0) return;
+	if ([keys count] == 1)
 	{
-		[self removeKey:[keys anyObject] inCollection:collection withPageKey:pageKey group:group];
+		NSString *key = [keys anyObject];
+		YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+		
+		[self removeCollectionKey:collectionKey withPageKey:pageKey group:group];
 		return;
 	}
 	
@@ -1349,26 +1359,10 @@
 	
 	for (NSString *key in keys)
 	{
-		YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+		YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
-		[viewConnection->dirtyKeys setObject:[NSNull null] forKey:cacheKey];
-		[viewConnection->keyCache removeObjectForKey:cacheKey];
-	}
-}
-
-/**
- * Use this method when you don't know if the collection/key exists in the view.
-**/
-- (void)removeKey:(NSString *)key inCollection:(NSString *)collection
-{
-	YDBLogAutoTrace();
-	
-	// Find out if collection/key is in view
-	
-	NSString *pageKey = [self pageKeyForKey:key inCollection:collection];
-	if (pageKey)
-	{
-		[self removeKey:key inCollection:collection withPageKey:pageKey group:[self groupForPageKey:pageKey]];
+		[viewConnection->dirtyKeys setObject:[NSNull null] forKey:collectionKey];
+		[viewConnection->keyCache removeObjectForKey:collectionKey];
 	}
 }
 
@@ -1494,17 +1488,19 @@
 		group = groupingBlock(collection, key, object, metadata);
 	}
 	
+	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	
 	if (group == nil)
 	{
 		// Remove key from view (if needed)
 		
-		[self removeKey:key inCollection:collection];
+		[self removeCollectionKey:collectionKey];
 	}
 	else
 	{
 		// Add key to view (or update position)
 		
-		[self insertObject:object forKey:key inCollection:collection withMetadata:metadata inGroup:group];
+		[self insertCollectionKey:collectionKey withObject:object metadata:metadata inGroup:group];
 	}
 }
 
@@ -1521,6 +1517,8 @@
 	
 	__unsafe_unretained YapCollectionsDatabaseView *view =
 	    (YapCollectionsDatabaseView *)(extensionConnection->extension);
+	
+	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	// Invoke the grouping block to find out if the object should be included in the view.
 	
@@ -1545,7 +1543,7 @@
 			// So the sort order may possibly have changed.
 			//
 			// Fetch existing group
-			group = [self groupForPageKey:[self pageKeyForKey:key inCollection:collection]];
+			group = [self groupForPageKey:[self pageKeyForCollectionKey:collectionKey]];
 			
 			if (group == nil)
 			{
@@ -1563,7 +1561,7 @@
 					object = [self objectForKey:key inCollection:collection];
 				}
 				
-				[self insertObject:object forKey:key inCollection:collection withMetadata:metadata inGroup:group];
+				[self insertCollectionKey:collectionKey withObject:object metadata:metadata inGroup:group];
 			}
 		}
 	}
@@ -1593,7 +1591,7 @@
 			// The key is not included in the view.
 			// Remove key from view (if needed).
 			
-			[self removeKey:key inCollection:collection];
+			[self removeCollectionKey:collectionKey];
 		}
 		else
 		{
@@ -1603,7 +1601,7 @@
 				// Sorting is based on the key or object, neither of which has changed.
 				// So if the group hasn't changed, then the sort order hasn't changed.
 				
-				NSString *existingGroup = [self groupForPageKey:[self pageKeyForKey:key inCollection:collection]];
+				NSString *existingGroup = [self groupForPageKey:[self pageKeyForCollectionKey:collectionKey]];
 				if ([group isEqualToString:existingGroup])
 				{
 					// Nothing left to do.
@@ -1619,7 +1617,7 @@
 				object = [self objectForKey:key inCollection:collection];
 			}
 			
-			[self insertObject:object forKey:key inCollection:collection withMetadata:metadata inGroup:group];
+			[self insertCollectionKey:collectionKey withObject:object metadata:metadata inGroup:group];
 		}
 	}
 }
@@ -1635,7 +1633,9 @@
 	NSParameterAssert(key != nil);
 	NSParameterAssert(collection != nil);
 	
-	[self removeKey:key inCollection:collection];
+	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	
+	[self removeCollectionKey:collectionKey];
 }
 
 /**
@@ -1792,15 +1792,13 @@
 {
 	if (key == nil)
 		return nil;
-	else
-		key = [key copy]; // mutable string protection (public method)
 	
 	if (collection == nil)
 		collection = @"";
-	else
-		collection = [collection copy]; // mutable string protection (public method)
 	
-	return [self groupForPageKey:[self pageKeyForKey:key inCollection:collection]];
+	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	
+	return [self groupForPageKey:[self pageKeyForCollectionKey:collectionKey]];
 }
 
 - (BOOL)getGroup:(NSString **)groupPtr
@@ -1815,13 +1813,11 @@
 		
 		return NO;
 	}
-	else
-		key = [key copy]; // mutable string protection (public method)
 	
 	if (collection == nil)
 		collection = @"";
-	else
-		collection = [collection copy]; // mutable string protection (public method)
+	
+	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	BOOL found = NO;
 	NSString *group = nil;
@@ -1830,7 +1826,7 @@
 	// Query the database to see if the given key is in the view.
 	// If it is, the query will return the corresponding page the key is in.
 	
-	NSString *pageKey = [self pageKeyForKey:key inCollection:collection];
+	NSString *pageKey = [self pageKeyForCollectionKey:collectionKey];
 	if (pageKey)
 	{
 		// Now that we have the pageKey, fetch the corresponding group.
@@ -1861,8 +1857,6 @@
 		NSMutableArray *page = [self pageForPageKey:pageKey];
 		
 		// And find the exact index of the key within the page
-		
-		YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
 		NSUInteger keyIndexWithinPage = [page indexOfObject:collectionKey];
 		if (keyIndexWithinPage != NSNotFound)
