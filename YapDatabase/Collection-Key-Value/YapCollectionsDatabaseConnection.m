@@ -751,16 +751,24 @@
 {
 	[super processChangeset:changeset];
 	
-	NSDictionary *c_objectChanges   =  [changeset objectForKey:@"objectChanges"];
-	NSDictionary *c_metadataChanges =  [changeset objectForKey:@"metadataChanges"];
-	NSSet *c_removedKeys            =  [changeset objectForKey:@"removedKeys"];
-	NSSet *c_removedCollections     =  [changeset objectForKey:@"removedCollections"];
-	BOOL c_allKeysRemoved           = [[changeset objectForKey:@"allKeysRemoved"] boolValue];
+	NSDictionary *changeset_objectChanges   =  [changeset objectForKey:@"objectChanges"];
+	NSDictionary *changeset_metadataChanges =  [changeset objectForKey:@"metadataChanges"];
 	
-	if ([c_objectChanges count] || [c_removedKeys count] || [c_removedCollections count] || c_allKeysRemoved)
+	NSSet *changeset_removedKeys        =  [changeset objectForKey:@"removedKeys"];
+	NSSet *changeset_removedCollections =  [changeset objectForKey:@"removedCollections"];
+	
+	BOOL changeset_allKeysRemoved = [[changeset objectForKey:@"allKeysRemoved"] boolValue];
+	
+	// Update objectCache
+	
+	if (changeset_allKeysRemoved && ([changeset_objectChanges count] == 0))
 	{
-		NSUInteger updateCapacity = MIN([objectCache count], [c_objectChanges count]);
-		NSUInteger removeCapacity = MIN([objectCache count], [c_removedKeys count]);
+		[objectCache removeAllObjects];
+	}
+	else if ([changeset_objectChanges count] || [changeset_removedKeys count] || [changeset_removedCollections count])
+	{
+		NSUInteger updateCapacity = MIN([objectCache count], [changeset_objectChanges count]);
+		NSUInteger removeCapacity = MIN([objectCache count], [changeset_removedKeys count]);
 		
 		NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
 		NSMutableArray *keysToRemove = [NSMutableArray arrayWithCapacity:removeCapacity];
@@ -775,36 +783,42 @@
 			
 			__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
 			
-			if ([c_objectChanges objectForKey:key])
+			if ([changeset_objectChanges objectForKey:key])
 			{
 				[keysToUpdate addObject:key];
 			}
-			else if ([c_removedKeys containsObject:key] ||
-					 [c_removedCollections containsObject:cacheKey.collection] || c_allKeysRemoved)
+			else if ([changeset_removedKeys containsObject:key] ||
+					 [changeset_removedCollections containsObject:cacheKey.collection] || changeset_allKeysRemoved)
 			{
 				[keysToRemove addObject:key];
 			}
 		}];
 		
+		[objectCache removeObjectsForKeys:keysToRemove];
+		
 		id yapnull = [YapNull null];
 		
 		for (id key in keysToUpdate)
 		{
-			id newObject = [c_objectChanges objectForKey:key];
+			id newObject = [changeset_objectChanges objectForKey:key];
 			
 			if (newObject == yapnull) // setPrimitiveDataForKey was used on key
 				[objectCache removeObjectForKey:key];
 			else
 				[objectCache setObject:newObject forKey:key];
 		}
-		
-		[objectCache removeObjectsForKeys:keysToRemove];
 	}
 	
-	if ([c_metadataChanges count] || [c_removedKeys count] || [c_removedCollections count] || c_allKeysRemoved)
+	// Update metadataCache
+	
+	if (changeset_allKeysRemoved && ([changeset_metadataChanges count] == 0))
 	{
-		NSUInteger updateCapacity = MIN([metadataCache count], [c_metadataChanges count]);
-		NSUInteger removeCapacity = MIN([metadataCache count], [c_removedKeys count]);
+		[metadataCache removeAllObjects];
+	}
+	else if ([changeset_metadataChanges count] || [changeset_removedKeys count] || [changeset_removedCollections count])
+	{
+		NSUInteger updateCapacity = MIN([metadataCache count], [changeset_metadataChanges count]);
+		NSUInteger removeCapacity = MIN([metadataCache count], [changeset_removedKeys count]);
 		
 		NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
 		NSMutableArray *keysToRemove = [NSMutableArray arrayWithCapacity:removeCapacity];
@@ -819,24 +833,25 @@
 			
 			__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
 			
-			if ([c_metadataChanges objectForKey:key])
+			if ([changeset_metadataChanges objectForKey:key])
 			{
 				[keysToUpdate addObject:key];
 			}
-			else if ([c_removedKeys containsObject:key] ||
-					 [c_removedCollections containsObject:cacheKey.collection] || c_allKeysRemoved)
+			else if ([changeset_removedKeys containsObject:key] ||
+					 [changeset_removedCollections containsObject:cacheKey.collection] || changeset_allKeysRemoved)
 			{
 				[keysToRemove addObject:key];
 			}
 		}];
 		
+		[metadataCache removeObjectsForKeys:keysToRemove];
+		
 		for (id key in keysToUpdate)
 		{
-			id newObject = [c_metadataChanges objectForKey:key];
+			id newObject = [changeset_metadataChanges objectForKey:key];
+			
 			[metadataCache setObject:newObject forKey:key];
 		}
-		
-		[metadataCache removeObjectsForKeys:keysToRemove];
 	}
 }
 
