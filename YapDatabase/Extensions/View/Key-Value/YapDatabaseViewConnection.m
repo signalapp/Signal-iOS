@@ -190,128 +190,93 @@
 	group_pagesMetadata_dict = [self group_pagesMetadata_dict_deepCopy:changeset_group_pagesMetadata_dict];
 	pageKey_group_dict = [changeset_pageKey_group_dict mutableCopy];
 	
-	// Update caches
+	// Update keyCache
 	
-	if (changeset_reset)
+	if (changeset_reset && ([changeset_dirtyKeys count] == 0))
 	{
-		if (changeset_dirtyKeys == nil)
-		{
-			[keyCache removeAllObjects];
-		}
-		else
-		{
-			NSUInteger removeCapacity = [keyCache count];
-			NSUInteger updateCapacity = MIN([keyCache count], [changeset_dirtyKeys count]);
-			
-			NSMutableArray *keysToRemove = [NSMutableArray arrayWithCapacity:removeCapacity];
-			NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
-			
-			[keyCache enumerateKeysWithBlock:^(id key, BOOL *stop) {
-				
-				// Order matters.
-				// Consider the following database change:
-				//
-				// [transaction removeAllObjects];
-				// [transaction setObject:obj forKey:key];
-				
-				if ([changeset_dirtyKeys objectForKey:key] != [NSNull null])
-					[keysToUpdate addObject:key];
-				else
-					[keysToRemove addObject:key];
-			}];
-			
-			[keyCache removeObjectsForKeys:keysToRemove];
-			
-			for (NSString *key in keysToUpdate)
-			{
-				NSString *pageKey = [changeset_dirtyKeys objectForKey:key];
-				
-				[keyCache setObject:pageKey forKey:key];
-			}
-		}
+		[keyCache removeAllObjects];
+	}
+	else if ([changeset_dirtyKeys count])
+	{
+		NSUInteger removeCapacity = [keyCache count];
+		NSUInteger updateCapacity = MIN([keyCache count], [changeset_dirtyKeys count]);
 		
-		if (changeset_dirtyPages == nil)
+		NSMutableArray *keysToRemove = [NSMutableArray arrayWithCapacity:removeCapacity];
+		NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
+		
+		[keyCache enumerateKeysWithBlock:^(id key, BOOL *stop) {
+			
+			// Order matters.
+			// Consider the following database change:
+			//
+			// [transaction removeAllObjects];
+			// [transaction setObject:obj forKey:key];
+			
+			if ([changeset_dirtyKeys objectForKey:key])
+				[keysToUpdate addObject:key];
+			else
+				[keysToRemove addObject:key];
+		}];
+		
+		[keyCache removeObjectsForKeys:keysToRemove];
+		
+		NSNull *nsnull = [NSNull null];
+		
+		for (NSString *key in keysToUpdate)
 		{
-			[pageCache removeAllObjects];
-		}
-		else
-		{
-			NSUInteger removeCapacity = [pageCache count];
-			NSUInteger updateCapacity = MIN([pageCache count], [changeset_dirtyPages count]);
+			id pageKey = [changeset_dirtyKeys objectForKey:key];
 			
-			NSMutableArray *keysToRemove = [NSMutableArray arrayWithCapacity:removeCapacity];
-			NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
-			
-			[pageCache enumerateKeysWithBlock:^(id key, BOOL *stop) {
-				
-				// Order matters.
-				// Consider the following database change:
-				//
-				// [transaction removeAllObjects];
-				// [transaction setObject:obj forKey:key];
-				
-				if ([changeset_dirtyPages objectForKey:key] != [NSNull null])
-					[keysToUpdate addObject:key];
-				else
-					[keysToRemove addObject:key];
-			}];
-			
-			[pageCache removeObjectsForKeys:keysToRemove];
-			
-			for (NSString *pageKey in keysToUpdate)
-			{
-				NSMutableArray *page = [changeset_dirtyPages objectForKey:pageKey];
-				
-				// Each viewConnection needs its own independent mutable copy of the page.
-				// Mutable pages cannot be shared between multiple view connections.
-				
-				[pageCache setObject:[page mutableCopy] forKey:pageKey];
-			}
+			if (pageKey == nsnull)
+				[keyCache removeObjectForKey:key];
+			else
+				[keyCache setObject:pageKey forKey:key];
 		}
 	}
-	else
+	
+	// Update pageCache
+	
+	if (changeset_reset && ([changeset_dirtyPages count] == 0))
 	{
-		// The database wasn't reset.
-		// So we only have to worry about the changes in dirtyKeys & dirtyPages.
+		[pageCache removeAllObjects];
+	}
+	else if ([changeset_dirtyPages count])
+	{
+		NSUInteger removeCapacity = [pageCache count];
+		NSUInteger updateCapacity = MIN([pageCache count], [changeset_dirtyPages count]);
 		
-		[changeset_dirtyKeys enumerateKeysAndObjectsUsingBlock:^(id keyObj, id pageKeyObj, BOOL *stop) {
+		NSMutableArray *keysToRemove = [NSMutableArray arrayWithCapacity:removeCapacity];
+		NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
+		
+		[pageCache enumerateKeysWithBlock:^(id key, BOOL *stop) {
 			
-			__unsafe_unretained NSString *key = (NSString *)keyObj;
-			__unsafe_unretained NSString *pageKey = (NSString *)pageKeyObj;
+			// Order matters.
+			// Consider the following database change:
+			//
+			// [transaction removeAllObjects];
+			// [transaction setObject:obj forKey:key];
 			
-			if ([keyCache objectForKey:key] != nil)
-			{
-				if ((id)pageKey == (id)[NSNull null])
-				{
-					[keyCache removeObjectForKey:key];
-				}
-				else
-				{
-					[keyCache setObject:pageKey forKey:key];
-				}
-			}
+			if ([changeset_dirtyPages objectForKey:key])
+				[keysToUpdate addObject:key];
+			else
+				[keysToRemove addObject:key];
 		}];
 		
-		[changeset_dirtyPages enumerateKeysAndObjectsUsingBlock:^(id pageKeyObj, id pageObj, BOOL *stop) {
+		[pageCache removeObjectsForKeys:keysToRemove];
+		
+		NSNull *nsnull = [NSNull null];
+		
+		for (NSString *pageKey in keysToUpdate)
+		{
+			id page = [changeset_dirtyPages objectForKey:pageKey];
 			
-			__unsafe_unretained NSString *pageKey = (NSString *)pageKeyObj;
-			__unsafe_unretained NSMutableArray *page = (NSMutableArray *)pageObj;
+			// Each viewConnection needs its own independent mutable copy of the page.
+			// Mutable pages cannot be shared between multiple view connections.
 			
-			if ([pageCache objectForKey:pageKey] != nil)
-			{
-				if ((id)page == (id)[NSNull null])
-				{
-					[pageCache removeObjectForKey:pageKey];
-				}
-				else
-				{
-					// Each viewConnection needs its own independent mutable copy of the page.
-					// Mutable pages cannot be shared between multiple view connections.
-					
-					[pageCache setObject:[page mutableCopy] forKey:pageKey];
-				}
-			}
-		}];
+			if (page == nsnull)
+				[pageCache removeObjectForKey:pageKey];
+			else
+				[pageCache setObject:[page mutableCopy] forKey:pageKey];
+		}
 	}
 }
 
