@@ -7,7 +7,7 @@
  * Combines collection & key into a single object,
  * and provides the proper methods to use the object in various classes (such as NSDictionary, NSSet, etc).
 **/
-@interface YapCollectionKey : NSObject <NSCopying>
+@interface YapCollectionKey : NSObject <NSCopying, NSCoding>
 
 - (id)initWithCollection:(NSString *)collection key:(NSString *)key;
 

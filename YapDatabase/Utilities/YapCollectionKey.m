@@ -138,6 +138,22 @@ static NSUInteger YDB_MurmurHash(NSUInteger hash1, NSUInteger hash2)
 	return self;
 }
 
+- (id)initWithCoder:(NSCoder *)decoder
+{
+	if ((self = [super init]))
+	{
+		collection = [decoder decodeObjectForKey:@"collection"];
+		key        = [decoder decodeObjectForKey:@"key"];
+	}
+	return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+	[coder encodeObject:collection forKey:@"collection"];
+	[coder encodeObject:key        forKey:@"key"];
+}
+
 - (id)copyWithZone:(NSZone *)zone
 {
 	return self; // Immutable
