@@ -95,20 +95,20 @@
 	//
 	// - group
 	// - pageKey
-	// - nextPageKey
+	// - prevPageKey
 	//
 	// From this information we need to piece together the group_pagesMetadata_dict:
 	// - dict.key = group
 	// - dict.value = properly ordered array of YapDatabaseViewKeyPageMetadata objects
 	//
-	// To piece together the proper page order we make a temporary dictionary with each link (in linked-list) reversed.
+	// To piece together the proper page order we make a temporary dictionary with each link in the linked-list.
 	// For example:
 	//
-	// pageA.nextPage = pageB  =>      B ->A
-	// pageB.nextPage = pageC  =>      C -> B
-	// pageC.nextPage = nil    => NSNull -> C
+	// pageC.prevPage = pageB  =>      B -> C
+	// pageB.prevPage = pageA  =>      A -> B
+	// pageA.prevPage = nil    => NSNull -> A
 	//
-	// After the enumeration of all rows is complete, we can walk the linked list backwards from the last page.
+	// After the enumeration of all rows is complete, we can simply walk the linked list from the first page.
 	
 	NSMutableDictionary *groupPageDict = [[NSMutableDictionary alloc] init];
 	NSMutableDictionary *groupOrderDict = [[NSMutableDictionary alloc] init];
@@ -153,8 +153,8 @@
 			
 			[pageDict setObject:pageMetadata forKey:pageKey];
 			
-			if (pageMetadata->nextPageKey)
-				[orderDict setObject:pageMetadata->pageKey forKey:pageMetadata->nextPageKey];
+			if (pageMetadata->prevPageKey)
+				[orderDict setObject:pageMetadata->pageKey forKey:pageMetadata->prevPageKey];
 			else
 				[orderDict setObject:pageMetadata->pageKey forKey:[NSNull null]];
 		}
@@ -194,17 +194,19 @@
 			
 			NSMutableDictionary *pageDict = [groupPageDict objectForKey:group];
 			
-			// Work backwards to stitch together the pages for this section.
+			// Walk the linked-list to stitch together the pages for this section.
 			//
-			// NSNull -> lastPageKey
-			// lastPageKey -> secondToLastPageKey
+			// NSNull -> firstPageKey
+			// firstPageKey -> secondPageKey
 			// ...
-			// secondPageKey -> firstPageKey
+			// secondToLastPageKey -> lastPageKey
 			//
 			// And from the keys, we can get the actual pageMetadata using the pageDict.
 			
 			NSMutableArray *pagesForGroup = [[NSMutableArray alloc] initWithCapacity:[pageDict count]];
 			[viewConnection->group_pagesMetadata_dict setObject:pagesForGroup forKey:group];
+			
+			YapDatabaseViewPageMetadata *prevPageMetadata = nil;
 			
 			NSString *pageKey = [orderDict objectForKey:[NSNull null]];
 			while (pageKey)
@@ -212,8 +214,21 @@
 				[viewConnection->pageKey_group_dict setObject:group forKey:pageKey];
 				
 				YapDatabaseViewPageMetadata *pageMetadata = [pageDict objectForKey:pageKey];
+				if (pageMetadata == nil)
+				{
+					YDBLogError(@"%@ (%@): Invalid key ordering detected in group(%@)",
+					            THIS_METHOD, [self registeredViewName], group);
+					
+					error = YES;
+					break;
+				}
+				
 				[pagesForGroup insertObject:pageMetadata atIndex:0];
 				
+				if (prevPageMetadata)
+					prevPageMetadata->nextPageKey = pageKey;
+				
+				prevPageMetadata = pageMetadata;
 				pageKey = [orderDict objectForKey:pageKey];
 				
 				if ([pagesForGroup count] > [orderDict count])
@@ -1196,13 +1211,6 @@
 	
 	[viewConnection->dirtyKeys setObject:[NSNull null] forKey:collectionKey];
 	[viewConnection->keyCache removeObjectForKey:collectionKey];
-	
-	// Cleanup
-	
-	if (pageCount > 0)
-	{
-		[self maybeConsolidatePage:page atIndex:pageIndex inGroup:group withMetadata:pageMetadata];
-	}
 }
 
 /**
@@ -1421,18 +1429,7 @@
 	viewConnection->reset = YES;
 }
 
-- (void)maybeConsolidatePage:(NSMutableArray *)page
-                     atIndex:(NSUInteger)pageIndex
-                     inGroup:(NSString *)group
-                withMetadata:(YapDatabaseViewPageMetadata *)metadata
-{
-	// Todo...
-}
-
-- (void)maybeExpandPage:(NSMutableArray *)page
-                atIndex:(NSUInteger)pageIndex
-                inGroup:(NSString *)group
-           withMetadata:(YapDatabaseViewPageMetadata *)metadata
+- (void)maybeConsolidateOrExpandDirtyPages
 {
 	// Todo...
 }
@@ -1660,8 +1657,6 @@
 		
 		[self removeKeys:keysInPage inCollection:collection withPageKey:pageKey group:[self groupForPageKey:pageKey]];
 	}];
-	
-	// Todo: page consolidation in modified groups
 }
 
 /**
@@ -1686,8 +1681,6 @@
 		
 		[self removeKeys:keysInPage inCollection:collection withPageKey:pageKey group:[self groupForPageKey:pageKey]];
 	}];
-	
-	// Todo: page consolidation in modified groups
 }
 
 /**

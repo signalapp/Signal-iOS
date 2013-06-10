@@ -1678,8 +1678,6 @@
 		
 		[self removeKeys:keysInPage withPageKey:pageKey group:[self groupForPageKey:pageKey]];
 	}];
-	
-	// Todo: page consolidation in modified groups
 }
 
 /**
