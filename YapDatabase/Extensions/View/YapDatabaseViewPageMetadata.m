@@ -7,9 +7,9 @@
 {
 	if ((self = [super init]))
 	{
-		// Note: 'pageKey' is transient
+		// Note: 'pageKey' and 'nextPageKey' are transient
 		
-		nextPageKey = [decoder decodeObjectForKey:@"nextPageKey"];
+		prevPageKey = [decoder decodeObjectForKey:@"prevPageKey"];
 		group = [decoder decodeObjectForKey:@"group"];
 		count = [decoder decodeIntegerForKey:@"count"];
 	}
@@ -18,9 +18,9 @@
 
 - (void)encodeWithCoder:(NSCoder *)coder
 {
-	// Note: 'pageKey' is transient
+	// Note: 'pageKey' and 'nextPageKey' are transient
 	
-	[coder encodeObject:nextPageKey forKey:@"nextPageKey"];
+	[coder encodeObject:prevPageKey forKey:@"prevPageKey"];
 	[coder encodeObject:group forKey:@"group"];
 	[coder encodeInteger:count forKey:@"count"];
 }
@@ -30,6 +30,7 @@
 	YapDatabaseViewPageMetadata *copy = [[YapDatabaseViewPageMetadata alloc] init];
 	
 	copy->pageKey = pageKey;
+	copy->prevPageKey = prevPageKey;
 	copy->nextPageKey = nextPageKey;
 	copy->group = group;
 	copy->count = count;
@@ -40,8 +41,8 @@
 - (NSString *)description
 {
 	return [NSString stringWithFormat:
-	    @"<YapDatabaseViewPageMetadata[%p]: group(%@) count(%lu) pageKey(%@) nextPageKey(%@)>",
-	    self, group, (unsigned long)count, pageKey, nextPageKey];
+	    @"<YapDatabaseViewPageMetadata[%p]: group(%@) count(%lu) pageKey(%@) prev(%@) next(%@)>",
+	    self, group, (unsigned long)count, pageKey, prevPageKey, nextPageKey];
 }
 
 @end
