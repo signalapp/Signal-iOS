@@ -2,6 +2,7 @@
 #import "YapCollectionsDatabaseViewPrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapAbstractDatabasePrivate.h"
+#import "YapCollectionKey.h"
 #import "YapCache.h"
 #import "YapDatabaseLogging.h"
 
@@ -41,8 +42,8 @@
 {
 	if ((self = [super initWithExtension:inExtension databaseConnection:inDatabaseConnection]))
 	{
-		keyCache = [[YapCache alloc] init];
-		pageCache = [[YapCache alloc] init];
+		keyCache = [[YapCache alloc] initWithKeyClass:[YapCollectionKey class]];
+		pageCache = [[YapCache alloc] initWithKeyClass:[NSString class]];
 	}
 	return self;
 }

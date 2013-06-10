@@ -39,8 +39,8 @@
 {
 	if ((self = [super initWithExtension:inExtension databaseConnection:inDatabaseConnection]))
 	{
-		keyCache = [[YapCache alloc] init];
-		pageCache = [[YapCache alloc] init];
+		keyCache = [[YapCache alloc] initWithKeyClass:[NSString class]];
+		pageCache = [[YapCache alloc] initWithKeyClass:[NSString class]];
 	}
 	return self;
 }
