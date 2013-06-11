@@ -53,7 +53,16 @@
 /**
  * Required override method from YapAbstractDatabaseExtensionConnection.
 **/
-- (id)newTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
+- (id)newReadTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
+{
+	return [[YapDatabaseViewTransaction alloc] initWithExtensionConnection:self
+	                                                   databaseTransaction:databaseTransaction];
+}
+
+/**
+ * Required override method from YapAbstractDatabaseExtensionConnection.
+**/
+- (id)newReadWriteTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
 {
 	return [[YapDatabaseViewTransaction alloc] initWithExtensionConnection:self
 	                                                   databaseTransaction:databaseTransaction];

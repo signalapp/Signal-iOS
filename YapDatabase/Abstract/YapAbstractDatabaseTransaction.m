@@ -171,7 +171,10 @@
 		YapAbstractDatabaseExtensionConnection *extConnection = [abstractConnection extension:extensionName];
 		if (extConnection)
 		{
-			extTransaction = [extConnection newTransaction:self];
+			if (isReadWriteTransaction)
+				extTransaction = [extConnection newReadWriteTransaction:self];
+			else
+				extTransaction = [extConnection newReadTransaction:self];
 			
 			if ([extTransaction prepareIfNeeded])
 			{
@@ -217,7 +220,11 @@
 		YapAbstractDatabaseExtensionTransaction *extTransaction = [extensions objectForKey:extName];
 		if (extTransaction == nil)
 		{
-			extTransaction = [extConnection newTransaction:self];
+			if (isReadWriteTransaction)
+				extTransaction = [extConnection newReadWriteTransaction:self];
+			else
+				extTransaction = [extConnection newReadTransaction:self];
+			
 			if ([extTransaction prepareIfNeeded])
 			{
 				[extensions setObject:extTransaction forKey:extName];

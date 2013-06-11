@@ -78,10 +78,11 @@
      databaseConnection:(YapAbstractDatabaseConnection *)connection;
 
 /**
- * Subclasses must override this method to create and return a proper instance of the
+ * Subclasses must override these methods to create and return a proper instance of the
  * YapAbstractDatabaseExtensionTransaction subclass.
 **/
-- (id)newTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction;
+- (id)newReadTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction;
+- (id)newReadWriteTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction;
 
 - (void)postRollbackCleanup;
 

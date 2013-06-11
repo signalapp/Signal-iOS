@@ -17,7 +17,13 @@
 	return self;
 }
 
-- (id)newTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
+- (id)newReadTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
+{
+	NSAssert(NO, @"Missing required override method in subclass");
+	return nil;
+}
+
+- (id)newReadWriteTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
 {
 	NSAssert(NO, @"Missing required override method in subclass");
 	return nil;
