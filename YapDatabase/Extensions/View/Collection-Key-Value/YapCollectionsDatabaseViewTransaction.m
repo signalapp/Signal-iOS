@@ -306,7 +306,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Utilities
+#pragma mark YapCollectionsDatabaseView
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSString *)registeredViewName
@@ -323,6 +323,10 @@
 {
 	return [(YapCollectionsDatabaseView *)(extensionConnection->extension) pageTableName];
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Utilities
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSData *)serializePage:(NSMutableArray *)page
 {
@@ -1341,6 +1345,10 @@
 	viewConnection->reset = YES;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Cleanup & Commit
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 - (void)splitOversizedPage:(YapDatabaseViewPageMetadata *)pageMetadata
 {
 	int maxPageSize = 50; // Todo...
@@ -1610,6 +1618,254 @@
 	}
 }
 
+- (void)commitTransaction
+{
+	YDBLogAutoTrace();
+	
+	// During the transaction we stored all changes in the "dirty" dictionaries.
+	// This allows the view to make multiple changes to a page, yet only write it once.
+	
+	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
+	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
+	
+	[self maybeConsolidateOrExpandDirtyPages];
+	
+	YDBLogVerbose(@"viewConnection->dirtyPages: %@", viewConnection->dirtyPages);
+	YDBLogVerbose(@"viewConnection->dirtyMetadata: %@", viewConnection->dirtyMetadata);
+	YDBLogVerbose(@"viewConnection->dirtyKeys: %@", viewConnection->dirtyKeys);
+	
+	// Write dirty pages to table (along with associated dirty metadata)
+	
+	[viewConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		
+		NSString *pageKey = (NSString *)key;
+		NSMutableArray *page = (NSMutableArray *)obj;
+		
+		YapDatabaseViewPageMetadata *pageMetadata = [viewConnection->dirtyMetadata objectForKey:pageKey];
+		if (pageMetadata == nil)
+		{
+			YDBLogError(@"%@ (%@): Missing metadata for dirty page with pageKey: %@",
+			            THIS_METHOD, [self registeredViewName], pageKey);
+			return;//continue;
+		}
+		
+		if ((id)page == (id)[NSNull null])
+		{
+			sqlite3_stmt *statement = [viewConnection pageTable_removeForPageKeyStatement];
+			if (statement == NULL)
+			{
+				*stop = YES;
+				return;//continue;
+			}
+			
+			// DELETE FROM "pageTableName" WHERE "pageKey" = ?;
+			
+			YDBLogVerbose(@"DELETE FROM '%@' WHERE 'pageKey' = ?;\n"
+			              @" - pageKey: %@", [self pageTableName], pageKey);
+			
+			YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
+			sqlite3_bind_text(statement, 1, _pageKey.str, _pageKey.length, SQLITE_STATIC);
+			
+			int status = sqlite3_step(statement);
+			if (status != SQLITE_DONE)
+			{
+				YDBLogError(@"%@ (%@): Error executing statement[1a]: %d %s",
+				            THIS_METHOD, [self registeredViewName],
+				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
+			}
+			
+			sqlite3_clear_bindings(statement);
+			sqlite3_reset(statement);
+			FreeYapDatabaseString(&_pageKey);
+		}
+		else
+		{
+			sqlite3_stmt *statement = [viewConnection pageTable_setAllForPageKeyStatement];
+			if (statement == NULL)
+			{
+				*stop = YES;
+				return;//continue;
+			}
+			
+			// INSERT OR REPLACE INTO "pageTableName" ("pageKey", "data", "metadata") VALUES (?, ?, ?);
+			
+			YDBLogVerbose(@"INSERT OR REPLACE INTO '%@' ('pageKey', 'data', 'metadata) VALUES (?, ?, ?);\n"
+			              @" - pageKey : %@\n"
+			              @" - data    : %@\n"
+			              @" - metadata: %@", [self pageTableName], pageKey, page, pageMetadata);
+			
+			YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
+			sqlite3_bind_text(statement, 1, _pageKey.str, _pageKey.length, SQLITE_STATIC);
+			
+			__attribute__((objc_precise_lifetime)) NSData *rawData = [self serializePage:page];
+			sqlite3_bind_blob(statement, 2, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
+			
+			__attribute__((objc_precise_lifetime)) NSData *rawMeta = [self serializeMetadata:pageMetadata];
+			sqlite3_bind_blob(statement, 3, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
+			
+			int status = sqlite3_step(statement);
+			if (status != SQLITE_DONE)
+			{
+				YDBLogError(@"%@ (%@): Error executing statement[1b]: %d %s",
+				            THIS_METHOD, [self registeredViewName],
+				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
+			}
+			
+			sqlite3_clear_bindings(statement);
+			sqlite3_reset(statement);
+			FreeYapDatabaseString(&_pageKey);
+		}
+	}];
+	
+	// Write dirty page metadata to table (those not associated with dirty pages).
+	// This happens when the nextPageKey pointer is changed.
+	
+	[viewConnection->dirtyMetadata enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		
+		NSString *pageKey = (NSString *)key;
+		YapDatabaseViewPageMetadata *pageMetadata = (YapDatabaseViewPageMetadata *)obj;
+		
+		if ([viewConnection->dirtyPages objectForKey:pageKey])
+		{
+			// Both the page and metadata were dirty, so we wrote them both to disk at the same time.
+			// No need to write the metadata again.
+			
+			return;//continue;
+		}
+		
+		if ((id)pageMetadata == (id)[NSNull null])
+		{
+			// This shouldn't happen
+			
+			YDBLogWarn(@"%@ (%@): NULL metadata without matching dirty page with pageKey: %@",
+			           THIS_METHOD, [self registeredViewName], pageKey);
+		}
+		else
+		{
+			sqlite3_stmt *statement = [viewConnection pageTable_setMetadataForPageKeyStatement];
+			if (statement == NULL)
+			{
+				*stop = YES;
+				return;//continue;
+			}
+			
+			// UPDATE "pageTableName" SET "metadata" = ? WHERE "pageKey" = ?;
+			
+			YDBLogVerbose(@"UPDATE '%@' SET 'metadata' = ? WHERE 'pageKey' = ?;\n"
+			              @" - metadata: %@\n"
+			              @" - pageKey : %@", [self pageTableName], pageMetadata, pageKey);
+			
+			__attribute__((objc_precise_lifetime)) NSData *rawMeta = [self serializeMetadata:pageMetadata];
+			sqlite3_bind_blob(statement, 1, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
+			
+			YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
+			sqlite3_bind_text(statement, 2, _pageKey.str, _pageKey.length, SQLITE_STATIC);
+			
+			int status = sqlite3_step(statement);
+			if (status != SQLITE_DONE)
+			{
+				YDBLogError(@"%@ (%@): Error executing statement[2]: %d %s",
+				            THIS_METHOD, [self registeredViewName],
+				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
+			}
+			
+			sqlite3_clear_bindings(statement);
+			sqlite3_reset(statement);
+			FreeYapDatabaseString(&_pageKey);
+		}
+	}];
+	
+	// Update the dirty key -> pageKey mappings.
+	// We do this at the end because keys may get moved around from
+	// page to page during processing, and page consolidation/expansion.
+	
+	[viewConnection->dirtyKeys enumerateKeysAndObjectsUsingBlock:^(id collectionKeyObj, id pageKeyObj, BOOL *stop) {
+		
+		__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)collectionKeyObj;
+		__unsafe_unretained NSString *pageKey = (NSString *)pageKeyObj;
+		
+		if ((id)pageKey == (id)[NSNull null])
+		{
+			sqlite3_stmt *statement = [viewConnection keyTable_removeForCollectionKeyStatement];
+			if (statement == NULL)
+			{
+				*stop = YES;
+				return;//continue;
+			}
+			
+			// DELETE FROM "keyTableName" WHERE "collection" = ? AND "key" = ?;
+			
+			YDBLogVerbose(@"DELETE FROM '%@' WHERE 'collection' = ? AND'key' = ?;\n"
+			              @" - collection : %@\n"
+						  @" - key : %@", [self keyTableName], collectionKey.collection, collectionKey.key);
+			
+			YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collectionKey.collection);
+			sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+			
+			YapDatabaseString _key; MakeYapDatabaseString(&_key, collectionKey.key);
+			sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+			
+			int status = sqlite3_step(statement);
+			if (status != SQLITE_DONE)
+			{
+				YDBLogError(@"%@ (%@): Error executing statement[3a]: %d %s",
+				            THIS_METHOD, [self registeredViewName],
+				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
+			}
+			
+			sqlite3_clear_bindings(statement);
+			sqlite3_reset(statement);
+			FreeYapDatabaseString(&_collection);
+			FreeYapDatabaseString(&_key);
+		}
+		else
+		{
+			sqlite3_stmt *statement = [viewConnection keyTable_setPageKeyForCollectionKeyStatement];
+			if (statement == NULL)
+			{
+				*stop = YES;
+				return;//continue;
+			}
+			
+			// INSERT OR REPLACE INTO "keyTableName" ("collection", "key", "pageKey") VALUES (?, ?, ?);
+			
+			YDBLogVerbose(@"INSERT OR REPLACE INTO '%@' ('collection', 'key', 'pageKey') VALUES (?, ?);\n"
+			              @" - collection: %@\n"
+			              @" - key       : %@\n"
+			              @" - pageKey   : %@",
+			              [self keyTableName], collectionKey.collection, collectionKey.key, pageKey);
+			
+			YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collectionKey.collection);
+			sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+			
+			YapDatabaseString _key; MakeYapDatabaseString(&_key, collectionKey.key);
+			sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+			
+			YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
+			sqlite3_bind_text(statement, 3, _pageKey.str, _pageKey.length, SQLITE_STATIC);
+			
+			int status = sqlite3_step(statement);
+			if (status != SQLITE_DONE)
+			{
+				YDBLogError(@"%@ (%@): Error executing statement[3b]: %d %s",
+				            THIS_METHOD, [self registeredViewName],
+				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
+			}
+			
+			sqlite3_clear_bindings(statement);
+			sqlite3_reset(statement);
+			FreeYapDatabaseString(&_collection);
+			FreeYapDatabaseString(&_key);
+		}
+	}];
+	
+	[viewConnection->dirtyPages removeAllObjects];
+	[viewConnection->dirtyMetadata removeAllObjects];
+	[viewConnection->dirtyKeys removeAllObjects];
+	
+	[super commitTransaction];
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark YapAbstractDatabaseExtensionTransaction_CollectionKeyValue
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1868,258 +2124,6 @@
 	YDBLogAutoTrace();
 	
 	[self removeAllKeysInAllCollections];
-}
-
-/**
- * YapDatabase extension hook.
- * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
-**/
-- (void)commitTransaction
-{
-	YDBLogAutoTrace();
-	
-	// During the transaction we stored all changes in the "dirty" dictionaries.
-	// This allows the view to make multiple changes to a page, yet only write it once.
-	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
-	[self maybeConsolidateOrExpandDirtyPages];
-	
-	YDBLogVerbose(@"viewConnection->dirtyPages: %@", viewConnection->dirtyPages);
-	YDBLogVerbose(@"viewConnection->dirtyMetadata: %@", viewConnection->dirtyMetadata);
-	YDBLogVerbose(@"viewConnection->dirtyKeys: %@", viewConnection->dirtyKeys);
-	
-	// Write dirty pages to table (along with associated dirty metadata)
-	
-	[viewConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-		
-		NSString *pageKey = (NSString *)key;
-		NSMutableArray *page = (NSMutableArray *)obj;
-		
-		YapDatabaseViewPageMetadata *pageMetadata = [viewConnection->dirtyMetadata objectForKey:pageKey];
-		if (pageMetadata == nil)
-		{
-			YDBLogError(@"%@ (%@): Missing metadata for dirty page with pageKey: %@",
-			            THIS_METHOD, [self registeredViewName], pageKey);
-			return;//continue;
-		}
-		
-		if ((id)page == (id)[NSNull null])
-		{
-			sqlite3_stmt *statement = [viewConnection pageTable_removeForPageKeyStatement];
-			if (statement == NULL)
-			{
-				*stop = YES;
-				return;//continue;
-			}
-			
-			// DELETE FROM "pageTableName" WHERE "pageKey" = ?;
-			
-			YDBLogVerbose(@"DELETE FROM '%@' WHERE 'pageKey' = ?;\n"
-			              @" - pageKey: %@", [self pageTableName], pageKey);
-			
-			YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
-			sqlite3_bind_text(statement, 1, _pageKey.str, _pageKey.length, SQLITE_STATIC);
-			
-			int status = sqlite3_step(statement);
-			if (status != SQLITE_DONE)
-			{
-				YDBLogError(@"%@ (%@): Error executing statement[1a]: %d %s",
-				            THIS_METHOD, [self registeredViewName],
-				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
-			}
-			
-			sqlite3_clear_bindings(statement);
-			sqlite3_reset(statement);
-			FreeYapDatabaseString(&_pageKey);
-		}
-		else
-		{
-			sqlite3_stmt *statement = [viewConnection pageTable_setAllForPageKeyStatement];
-			if (statement == NULL)
-			{
-				*stop = YES;
-				return;//continue;
-			}
-			
-			// INSERT OR REPLACE INTO "pageTableName" ("pageKey", "data", "metadata") VALUES (?, ?, ?);
-			
-			YDBLogVerbose(@"INSERT OR REPLACE INTO '%@' ('pageKey', 'data', 'metadata) VALUES (?, ?, ?);\n"
-			              @" - pageKey : %@\n"
-			              @" - data    : %@\n"
-			              @" - metadata: %@", [self pageTableName], pageKey, page, pageMetadata);
-			
-			YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
-			sqlite3_bind_text(statement, 1, _pageKey.str, _pageKey.length, SQLITE_STATIC);
-			
-			__attribute__((objc_precise_lifetime)) NSData *rawData = [self serializePage:page];
-			sqlite3_bind_blob(statement, 2, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
-			
-			__attribute__((objc_precise_lifetime)) NSData *rawMeta = [self serializeMetadata:pageMetadata];
-			sqlite3_bind_blob(statement, 3, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
-			
-			int status = sqlite3_step(statement);
-			if (status != SQLITE_DONE)
-			{
-				YDBLogError(@"%@ (%@): Error executing statement[1b]: %d %s",
-				            THIS_METHOD, [self registeredViewName],
-				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
-			}
-			
-			sqlite3_clear_bindings(statement);
-			sqlite3_reset(statement);
-			FreeYapDatabaseString(&_pageKey);
-		}
-	}];
-	
-	// Write dirty page metadata to table (those not associated with dirty pages).
-	// This happens when the nextPageKey pointer is changed.
-	
-	[viewConnection->dirtyMetadata enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-		
-		NSString *pageKey = (NSString *)key;
-		YapDatabaseViewPageMetadata *pageMetadata = (YapDatabaseViewPageMetadata *)obj;
-		
-		if ([viewConnection->dirtyPages objectForKey:pageKey])
-		{
-			// Both the page and metadata were dirty, so we wrote them both to disk at the same time.
-			// No need to write the metadata again.
-			
-			return;//continue;
-		}
-		
-		if ((id)pageMetadata == (id)[NSNull null])
-		{
-			// This shouldn't happen
-			
-			YDBLogWarn(@"%@ (%@): NULL metadata without matching dirty page with pageKey: %@",
-			           THIS_METHOD, [self registeredViewName], pageKey);
-		}
-		else
-		{
-			sqlite3_stmt *statement = [viewConnection pageTable_setMetadataForPageKeyStatement];
-			if (statement == NULL)
-			{
-				*stop = YES;
-				return;//continue;
-			}
-			
-			// UPDATE "pageTableName" SET "metadata" = ? WHERE "pageKey" = ?;
-			
-			YDBLogVerbose(@"UPDATE '%@' SET 'metadata' = ? WHERE 'pageKey' = ?;\n"
-			              @" - metadata: %@\n"
-			              @" - pageKey : %@", [self pageTableName], pageMetadata, pageKey);
-			
-			__attribute__((objc_precise_lifetime)) NSData *rawMeta = [self serializeMetadata:pageMetadata];
-			sqlite3_bind_blob(statement, 1, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
-			
-			YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
-			sqlite3_bind_text(statement, 2, _pageKey.str, _pageKey.length, SQLITE_STATIC);
-			
-			int status = sqlite3_step(statement);
-			if (status != SQLITE_DONE)
-			{
-				YDBLogError(@"%@ (%@): Error executing statement[2]: %d %s",
-				            THIS_METHOD, [self registeredViewName],
-				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
-			}
-			
-			sqlite3_clear_bindings(statement);
-			sqlite3_reset(statement);
-			FreeYapDatabaseString(&_pageKey);
-		}
-	}];
-	
-	// Update the dirty key -> pageKey mappings.
-	// We do this at the end because keys may get moved around from
-	// page to page during processing, and page consolidation/expansion.
-	
-	[viewConnection->dirtyKeys enumerateKeysAndObjectsUsingBlock:^(id collectionKeyObj, id pageKeyObj, BOOL *stop) {
-		
-		__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)collectionKeyObj;
-		__unsafe_unretained NSString *pageKey = (NSString *)pageKeyObj;
-		
-		if ((id)pageKey == (id)[NSNull null])
-		{
-			sqlite3_stmt *statement = [viewConnection keyTable_removeForCollectionKeyStatement];
-			if (statement == NULL)
-			{
-				*stop = YES;
-				return;//continue;
-			}
-			
-			// DELETE FROM "keyTableName" WHERE "collection" = ? AND "key" = ?;
-			
-			YDBLogVerbose(@"DELETE FROM '%@' WHERE 'collection' = ? AND'key' = ?;\n"
-			              @" - collection : %@\n"
-						  @" - key : %@", [self keyTableName], collectionKey.collection, collectionKey.key);
-			
-			YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collectionKey.collection);
-			sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
-			
-			YapDatabaseString _key; MakeYapDatabaseString(&_key, collectionKey.key);
-			sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
-			
-			int status = sqlite3_step(statement);
-			if (status != SQLITE_DONE)
-			{
-				YDBLogError(@"%@ (%@): Error executing statement[3a]: %d %s",
-				            THIS_METHOD, [self registeredViewName],
-				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
-			}
-			
-			sqlite3_clear_bindings(statement);
-			sqlite3_reset(statement);
-			FreeYapDatabaseString(&_collection);
-			FreeYapDatabaseString(&_key);
-		}
-		else
-		{
-			sqlite3_stmt *statement = [viewConnection keyTable_setPageKeyForCollectionKeyStatement];
-			if (statement == NULL)
-			{
-				*stop = YES;
-				return;//continue;
-			}
-			
-			// INSERT OR REPLACE INTO "keyTableName" ("collection", "key", "pageKey") VALUES (?, ?, ?);
-			
-			YDBLogVerbose(@"INSERT OR REPLACE INTO '%@' ('collection', 'key', 'pageKey') VALUES (?, ?);\n"
-			              @" - collection: %@\n"
-			              @" - key       : %@\n"
-			              @" - pageKey   : %@",
-			              [self keyTableName], collectionKey.collection, collectionKey.key, pageKey);
-			
-			YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collectionKey.collection);
-			sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
-			
-			YapDatabaseString _key; MakeYapDatabaseString(&_key, collectionKey.key);
-			sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
-			
-			YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
-			sqlite3_bind_text(statement, 3, _pageKey.str, _pageKey.length, SQLITE_STATIC);
-			
-			int status = sqlite3_step(statement);
-			if (status != SQLITE_DONE)
-			{
-				YDBLogError(@"%@ (%@): Error executing statement[3b]: %d %s",
-				            THIS_METHOD, [self registeredViewName],
-				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
-			}
-			
-			sqlite3_clear_bindings(statement);
-			sqlite3_reset(statement);
-			FreeYapDatabaseString(&_collection);
-			FreeYapDatabaseString(&_key);
-		}
-	}];
-	
-	[viewConnection->dirtyPages removeAllObjects];
-	[viewConnection->dirtyMetadata removeAllObjects];
-	[viewConnection->dirtyKeys removeAllObjects];
-	
-	[super commitTransaction];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

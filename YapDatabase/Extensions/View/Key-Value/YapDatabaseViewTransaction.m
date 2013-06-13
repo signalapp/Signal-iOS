@@ -301,7 +301,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Utilities
+#pragma mark YapDatabaseView
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSString *)registeredViewName
@@ -318,6 +318,10 @@
 {
 	return [(YapDatabaseView *)(extensionConnection->extension) pageTableName];
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Utilities
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSData *)serializePage:(NSMutableArray *)page
 {
@@ -1211,6 +1215,10 @@
 	viewConnection->reset = YES;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Cleanup & Commit
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 - (void)splitOversizedPage:(YapDatabaseViewPageMetadata *)pageMetadata
 {
 	int maxPageSize = 50; // Todo...
@@ -1477,227 +1485,6 @@
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark YapAbstractDatabaseExtensionTransaction_KeyValue
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * YapDatabase extension hook.
- * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
-**/
-- (void)handleSetObject:(id)object forKey:(NSString *)key withMetadata:(id)metadata
-{
-	YDBLogAutoTrace();
-	
-	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
-	
-	// Invoke the grouping block to find out if the object should be included in the view.
-	
-	NSString *group;
-	
-	if (view->groupingBlockType == YapDatabaseViewBlockTypeWithKey)
-	{
-		__unsafe_unretained YapDatabaseViewGroupingWithKeyBlock groupingBlock =
-		    (YapDatabaseViewGroupingWithKeyBlock)view->groupingBlock;
-		
-		group = groupingBlock(key);
-	}
-	else if (view->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
-	{
-		__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
-		    (YapDatabaseViewGroupingWithObjectBlock)view->groupingBlock;
-		
-		group = groupingBlock(key, object);
-	}
-	else if (view->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
-	{
-		__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
-		    (YapDatabaseViewGroupingWithMetadataBlock)view->groupingBlock;
-		
-		group = groupingBlock(key, metadata);
-	}
-	else
-	{
-		__unsafe_unretained YapDatabaseViewGroupingWithObjectAndMetadataBlock groupingBlock =
-		    (YapDatabaseViewGroupingWithObjectAndMetadataBlock)view->groupingBlock;
-		
-		group = groupingBlock(key, object, metadata);
-	}
-	
-	if (group == nil)
-	{
-		// Remove key from view (if needed)
-		
-		[self removeKey:key];
-	}
-	else
-	{
-		// Add key to view (or update position)
-		
-		[self insertObject:object forKey:key withMetadata:metadata inGroup:group];
-	}
-}
-
-/**
- * YapDatabase extension hook.
- * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
-**/
-- (void)handleSetMetadata:(id)metadata forKey:(NSString *)key
-{
-	YDBLogAutoTrace();
-	
-	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
-	
-	// Invoke the grouping block to find out if the object should be included in the view.
-	
-	id object = nil;
-	NSString *group;
-	
-	if (view->groupingBlockType == YapDatabaseViewBlockTypeWithKey ||
-	    view->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
-	{
-		// Grouping is based on the key or object.
-		// Neither have changed, and thus the group hasn't changed.
-		
-		if (view->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
-		    view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
-		{
-			// Nothing to do.
-			// Nothing has changed that relates to sorting either.
-		}
-		else
-		{
-			// Sorting is based on the metadata, which has changed.
-			// So the sort order may possibly have changed.
-			//
-			// Fetch existing group
-			group = [self groupForPageKey:[self pageKeyForKey:key]];
-			
-			if (group == nil)
-			{
-				// Nothing to do.
-				// The key wasn't previously in the view (and still isn't in the view).
-			}
-			else
-			{
-				// From previous if statement (above) we know:
-				// sortingBlockType is metadata or objectAndMetadata
-				
-				if (view->sortingBlockType == YapDatabaseViewBlockTypeWithObjectAndMetadata)
-				{
-					// Need the object for the sorting block
-					object = [self objectForKey:key];
-				}
-				
-				[self insertObject:object forKey:key withMetadata:metadata inGroup:group];
-			}
-		}
-	}
-	else
-	{
-		// Grouping is based on metadata or objectAndMetadata.
-		// Invoke groupingBlock to see what the new group is.
-		
-		if (view->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
-		{
-			__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
-		        (YapDatabaseViewGroupingWithMetadataBlock)view->groupingBlock;
-			
-			group = groupingBlock(key, metadata);
-		}
-		else
-		{
-			__unsafe_unretained YapDatabaseViewGroupingWithObjectAndMetadataBlock groupingBlock =
-		        (YapDatabaseViewGroupingWithObjectAndMetadataBlock)view->groupingBlock;
-			
-			object = [self objectForKey:key];
-			group = groupingBlock(key, object, metadata);
-		}
-		
-		if (group == nil)
-		{
-			// The key is not included in the view.
-			// Remove key from view (if needed).
-			
-			[self removeKey:key];
-		}
-		else
-		{
-			if (view->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
-			    view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
-			{
-				// Sorting is based on the key or object, neither of which has changed.
-				// So if the group hasn't changed, then the sort order hasn't changed.
-				
-				NSString *existingGroup = [self groupForPageKey:[self pageKeyForKey:key]];
-				if ([group isEqualToString:existingGroup])
-				{
-					// Nothing left to do.
-					// The group didn't change, and the sort order cannot change (because the object didn't change).
-					return;
-				}
-			}
-			
-			if (object == nil && (view->sortingBlockType == YapDatabaseViewBlockTypeWithObject ||
-			                      view->sortingBlockType == YapDatabaseViewBlockTypeWithObjectAndMetadata))
-			{
-				// Need the object for the sorting block
-				object = [self objectForKey:key];
-			}
-			
-			[self insertObject:object forKey:key withMetadata:metadata inGroup:group];
-		}
-	}
-}
-
-/**
- * YapDatabase extension hook.
- * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
-**/
-- (void)handleRemoveObjectForKey:(NSString *)key
-{
-	YDBLogAutoTrace();
-	
-	[self removeKey:key];
-}
-
-/**
- * YapDatabase extension hook.
- * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
-**/
-- (void)handleRemoveObjectsForKeys:(NSArray *)keys
-{
-	YDBLogAutoTrace();
-	
-	NSDictionary *dict = [self pageKeysForKeys:keys];
-	
-	// dict.key = pageKey
-	// dict.value = NSSet of keys within the page that are to be removed
-	
-	[dict enumerateKeysAndObjectsUsingBlock:^(id pageKeyObj, id keysInPageObj, BOOL *stop) {
-		
-		__unsafe_unretained NSString *pageKey = (NSString *)pageKeyObj;
-		__unsafe_unretained NSSet *keysInPage = (NSSet *)keysInPageObj;
-		
-		[self removeKeys:keysInPage withPageKey:pageKey group:[self groupForPageKey:pageKey]];
-	}];
-}
-
-/**
- * YapDatabase extension hook.
- * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
-**/
-- (void)handleRemoveAllObjects
-{
-	YDBLogAutoTrace();
-	
-	[self removeAllKeys];
-}
-
-/**
- * YapDatabase extension hook.
- * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
-**/
 - (void)commitTransaction
 {
 	YDBLogAutoTrace();
@@ -1932,6 +1719,223 @@
 	[viewConnection->dirtyKeys removeAllObjects];
 	
 	[super commitTransaction];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark YapAbstractDatabaseExtensionTransaction_KeyValue
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)handleSetObject:(id)object forKey:(NSString *)key withMetadata:(id)metadata
+{
+	YDBLogAutoTrace();
+	
+	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
+	
+	// Invoke the grouping block to find out if the object should be included in the view.
+	
+	NSString *group;
+	
+	if (view->groupingBlockType == YapDatabaseViewBlockTypeWithKey)
+	{
+		__unsafe_unretained YapDatabaseViewGroupingWithKeyBlock groupingBlock =
+		    (YapDatabaseViewGroupingWithKeyBlock)view->groupingBlock;
+		
+		group = groupingBlock(key);
+	}
+	else if (view->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
+	{
+		__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
+		    (YapDatabaseViewGroupingWithObjectBlock)view->groupingBlock;
+		
+		group = groupingBlock(key, object);
+	}
+	else if (view->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	{
+		__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
+		    (YapDatabaseViewGroupingWithMetadataBlock)view->groupingBlock;
+		
+		group = groupingBlock(key, metadata);
+	}
+	else
+	{
+		__unsafe_unretained YapDatabaseViewGroupingWithObjectAndMetadataBlock groupingBlock =
+		    (YapDatabaseViewGroupingWithObjectAndMetadataBlock)view->groupingBlock;
+		
+		group = groupingBlock(key, object, metadata);
+	}
+	
+	if (group == nil)
+	{
+		// Remove key from view (if needed)
+		
+		[self removeKey:key];
+	}
+	else
+	{
+		// Add key to view (or update position)
+		
+		[self insertObject:object forKey:key withMetadata:metadata inGroup:group];
+	}
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)handleSetMetadata:(id)metadata forKey:(NSString *)key
+{
+	YDBLogAutoTrace();
+	
+	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
+	
+	// Invoke the grouping block to find out if the object should be included in the view.
+	
+	id object = nil;
+	NSString *group;
+	
+	if (view->groupingBlockType == YapDatabaseViewBlockTypeWithKey ||
+	    view->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
+	{
+		// Grouping is based on the key or object.
+		// Neither have changed, and thus the group hasn't changed.
+		
+		if (view->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
+		    view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
+		{
+			// Nothing to do.
+			// Nothing has changed that relates to sorting either.
+		}
+		else
+		{
+			// Sorting is based on the metadata, which has changed.
+			// So the sort order may possibly have changed.
+			//
+			// Fetch existing group
+			group = [self groupForPageKey:[self pageKeyForKey:key]];
+			
+			if (group == nil)
+			{
+				// Nothing to do.
+				// The key wasn't previously in the view (and still isn't in the view).
+			}
+			else
+			{
+				// From previous if statement (above) we know:
+				// sortingBlockType is metadata or objectAndMetadata
+				
+				if (view->sortingBlockType == YapDatabaseViewBlockTypeWithObjectAndMetadata)
+				{
+					// Need the object for the sorting block
+					object = [self objectForKey:key];
+				}
+				
+				[self insertObject:object forKey:key withMetadata:metadata inGroup:group];
+			}
+		}
+	}
+	else
+	{
+		// Grouping is based on metadata or objectAndMetadata.
+		// Invoke groupingBlock to see what the new group is.
+		
+		if (view->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+		{
+			__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
+		        (YapDatabaseViewGroupingWithMetadataBlock)view->groupingBlock;
+			
+			group = groupingBlock(key, metadata);
+		}
+		else
+		{
+			__unsafe_unretained YapDatabaseViewGroupingWithObjectAndMetadataBlock groupingBlock =
+		        (YapDatabaseViewGroupingWithObjectAndMetadataBlock)view->groupingBlock;
+			
+			object = [self objectForKey:key];
+			group = groupingBlock(key, object, metadata);
+		}
+		
+		if (group == nil)
+		{
+			// The key is not included in the view.
+			// Remove key from view (if needed).
+			
+			[self removeKey:key];
+		}
+		else
+		{
+			if (view->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
+			    view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
+			{
+				// Sorting is based on the key or object, neither of which has changed.
+				// So if the group hasn't changed, then the sort order hasn't changed.
+				
+				NSString *existingGroup = [self groupForPageKey:[self pageKeyForKey:key]];
+				if ([group isEqualToString:existingGroup])
+				{
+					// Nothing left to do.
+					// The group didn't change, and the sort order cannot change (because the object didn't change).
+					return;
+				}
+			}
+			
+			if (object == nil && (view->sortingBlockType == YapDatabaseViewBlockTypeWithObject ||
+			                      view->sortingBlockType == YapDatabaseViewBlockTypeWithObjectAndMetadata))
+			{
+				// Need the object for the sorting block
+				object = [self objectForKey:key];
+			}
+			
+			[self insertObject:object forKey:key withMetadata:metadata inGroup:group];
+		}
+	}
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)handleRemoveObjectForKey:(NSString *)key
+{
+	YDBLogAutoTrace();
+	
+	[self removeKey:key];
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)handleRemoveObjectsForKeys:(NSArray *)keys
+{
+	YDBLogAutoTrace();
+	
+	NSDictionary *dict = [self pageKeysForKeys:keys];
+	
+	// dict.key = pageKey
+	// dict.value = NSSet of keys within the page that are to be removed
+	
+	[dict enumerateKeysAndObjectsUsingBlock:^(id pageKeyObj, id keysInPageObj, BOOL *stop) {
+		
+		__unsafe_unretained NSString *pageKey = (NSString *)pageKeyObj;
+		__unsafe_unretained NSSet *keysInPage = (NSSet *)keysInPageObj;
+		
+		[self removeKeys:keysInPage withPageKey:pageKey group:[self groupForPageKey:pageKey]];
+	}];
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)handleRemoveAllObjects
+{
+	YDBLogAutoTrace();
+	
+	[self removeAllKeys];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
