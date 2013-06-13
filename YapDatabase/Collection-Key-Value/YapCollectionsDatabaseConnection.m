@@ -751,6 +751,8 @@
 {
 	[super processChangeset:changeset];
 	
+	// Extract changset information
+	
 	NSDictionary *changeset_objectChanges   =  [changeset objectForKey:@"objectChanges"];
 	NSDictionary *changeset_metadataChanges =  [changeset objectForKey:@"metadataChanges"];
 	
@@ -759,13 +761,33 @@
 	
 	BOOL changeset_allKeysRemoved = [[changeset objectForKey:@"allKeysRemoved"] boolValue];
 	
+	BOOL hasObjectChanges      = [changeset_objectChanges count] > 0;
+	BOOL hasMetadataChanges    = [changeset_metadataChanges count] > 0;
+	BOOL hasRemovedKeys        = [changeset_removedKeys count] > 0;
+	BOOL hasRemovedCollections = [changeset_removedCollections count] > 0;
+	
 	// Update objectCache
 	
-	if (changeset_allKeysRemoved && ([changeset_objectChanges count] == 0))
+	if (changeset_allKeysRemoved && !hasObjectChanges)
 	{
+		// Shortcut: Everything was removed from the database
+		
 		[objectCache removeAllObjects];
 	}
-	else if ([changeset_objectChanges count] || [changeset_removedKeys count] || [changeset_removedCollections count])
+	else if (hasObjectChanges && !hasRemovedKeys && !hasRemovedCollections && !changeset_allKeysRemoved)
+	{
+		// Shortcut: Nothing was removed from the database.
+		// So we can simply enumerate over the changes and update the cache inline as needed.
+		
+		[changeset_objectChanges enumerateKeysAndObjectsUsingBlock:^(id key, id object, BOOL *stop) {
+			
+			__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
+			
+			if ([objectCache containsKey:cacheKey])
+				[objectCache setObject:object forKey:cacheKey];
+		}];
+	}
+	else if (hasObjectChanges || hasRemovedKeys || hasRemovedCollections)
 	{
 		NSUInteger updateCapacity = MIN([objectCache count], [changeset_objectChanges count]);
 		NSUInteger removeCapacity = MIN([objectCache count], [changeset_removedKeys count]);
@@ -811,11 +833,26 @@
 	
 	// Update metadataCache
 	
-	if (changeset_allKeysRemoved && ([changeset_metadataChanges count] == 0))
+	if (changeset_allKeysRemoved && !hasMetadataChanges)
 	{
+		// Shortcut: Everything was removed from the database
+		
 		[metadataCache removeAllObjects];
 	}
-	else if ([changeset_metadataChanges count] || [changeset_removedKeys count] || [changeset_removedCollections count])
+	else if (hasMetadataChanges && !hasRemovedKeys && !hasRemovedCollections && !changeset_allKeysRemoved)
+	{
+		// Shortcut: Nothing was removed from the database.
+		// So we can simply enumerate over the changes and update the cache inline as needed.
+		
+		[changeset_metadataChanges enumerateKeysAndObjectsUsingBlock:^(id key, id object, BOOL *stop) {
+			
+			__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
+			
+			if ([metadataCache containsKey:cacheKey])
+				[metadataCache setObject:object forKey:cacheKey];
+		}];
+	}
+	else if (hasMetadataChanges || hasRemovedKeys || hasRemovedCollections)
 	{
 		NSUInteger updateCapacity = MIN([metadataCache count], [changeset_metadataChanges count]);
 		NSUInteger removeCapacity = MIN([metadataCache count], [changeset_removedKeys count]);

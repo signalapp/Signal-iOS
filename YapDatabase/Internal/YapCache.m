@@ -201,6 +201,13 @@
 	}
 }
 
+- (BOOL)containsKey:(id)key
+{
+	NSAssert([key isKindOfClass:keyClass], @"Unexpected key class. Expected %@, passed %@", keyClass, [key class]);
+	
+	return CFDictionaryContainsKey(cfdict, (const void *)key);
+}
+
 - (void)setObject:(id)object forKey:(id)key
 {
 	NSAssert([key isKindOfClass:keyClass], @"Unexpected key class. Expected %@, passed %@", keyClass, [key class]);

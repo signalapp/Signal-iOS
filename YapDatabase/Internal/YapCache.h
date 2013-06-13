@@ -54,6 +54,7 @@
 - (void)setObject:(id)object forKey:(id)key;
 
 - (id)objectForKey:(id)key;
+- (BOOL)containsKey:(id)key;
 
 - (NSUInteger)count;
 
