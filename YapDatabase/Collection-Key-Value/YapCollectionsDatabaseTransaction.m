@@ -2307,6 +2307,13 @@
 	[connection->removedKeys removeAllObjects];
 	[connection->removedCollections removeAllObjects];
 	connection->allKeysRemoved = YES;
+	
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
+		
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
+		
+		[extTransaction handleRemoveAllObjectsInAllCollections];
+	}];
 }
 
 @end

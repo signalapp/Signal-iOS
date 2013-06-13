@@ -17,7 +17,7 @@
  * See YapDatabaseLogging.h for more information.
 **/
 #if DEBUG
-  static const int ydbLogLevel = YDB_LOG_LEVEL_VERBOSE | YDB_LOG_FLAG_TRACE;
+  static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #else
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
@@ -626,6 +626,9 @@
                       withExistingPageKey:(NSString *)existingPageKey
 {
 	YDBLogAutoTrace();
+	
+	NSParameterAssert(key != nil);
+	NSParameterAssert(group != nil);
 	
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	

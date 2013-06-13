@@ -15,7 +15,7 @@
  * See YapDatabaseLogging.h for more information.
 **/
 #if DEBUG
-  static const int ydbLogLevel = YDB_LOG_LEVEL_VERBOSE | YDB_LOG_FLAG_TRACE;
+  static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #else
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
@@ -85,6 +85,46 @@
 	return [(YapCollectionsDatabaseView *)extension pageTableName];
 }
 
+- (NSMutableDictionary *)group_pagesMetadata_dict_deepCopy:(NSDictionary *)in_group_pagesMetadata_dict
+{
+	NSMutableDictionary *deepCopy = [NSMutableDictionary dictionaryWithCapacity:[in_group_pagesMetadata_dict count]];
+	
+	[in_group_pagesMetadata_dict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		
+		__unsafe_unretained NSString *group = (NSString *)key;
+		__unsafe_unretained NSMutableArray *pagesMetadata = (NSMutableArray *)obj;
+		
+		// We need a mutable copy of the pages array,
+		// and we need a copy of each YapDatabaseViewPageMetadata object within the pages array.
+		
+		NSMutableArray *pagesMetadataDeepCopy = [[NSMutableArray alloc] initWithArray:pagesMetadata copyItems:YES];
+		
+		[deepCopy setObject:pagesMetadataDeepCopy forKey:group];
+	}];
+	
+	return deepCopy;
+}
+
+- (NSMutableDictionary *)dirtyPagesDeepCopy:(NSDictionary *)inDirtyPages
+{
+	NSMutableDictionary *deepCopy = [NSMutableDictionary dictionaryWithCapacity:[inDirtyPages count]];
+	
+	[inDirtyPages enumerateKeysAndObjectsUsingBlock:^(id pageKeyObj, id pageObj, BOOL *stop) {
+		
+		__unsafe_unretained NSString *pageKey = (NSString *)pageKeyObj;
+		__unsafe_unretained NSMutableArray *page = (NSMutableArray *)pageObj;
+		
+		// We need a mutable copy of the page array,
+		// but we don't have to copy all the immutable collectionKeys within the page.
+		
+		NSMutableArray *pageDeepCopy = [[NSMutableArray alloc] initWithArray:page copyItems:NO];
+		
+		[deepCopy setObject:pageDeepCopy forKey:pageKey];
+	}];
+	
+	return deepCopy;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Changeset
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,16 +150,148 @@
 {
 	YDBLogAutoTrace();
 	
-	// Todo...
-	NSAssert(NO, @"Not implemented...");
+	YDBLogAutoTrace();
+	
+	NSMutableDictionary *internalChangeset = nil;
+	NSMutableDictionary *externalChangeset = nil;
+	
+	if ([dirtyKeys count] || [dirtyPages count] || [dirtyMetadata count] || reset)
+	{
+		internalChangeset = [NSMutableDictionary dictionaryWithCapacity:5];
+		
+		if ([dirtyKeys count] > 0)
+		{
+			[internalChangeset setObject:[dirtyKeys copy] forKey:@"dirtyKeys"];
+		}
+		if ([dirtyPages count] > 0)
+		{
+			[internalChangeset setObject:[self dirtyPagesDeepCopy:dirtyPages] forKey:@"dirtyPages"];
+		}
+		
+		if (reset)
+		{
+			[internalChangeset setObject:@(reset) forKey:@"reset"];
+		}
+		
+		NSMutableDictionary *group_pagesMetadata_dict_copy;
+		NSMutableDictionary *pageKey_group_dict_copy;
+		
+		group_pagesMetadata_dict_copy = [self group_pagesMetadata_dict_deepCopy:group_pagesMetadata_dict];
+		pageKey_group_dict_copy = [pageKey_group_dict mutableCopy];
+		
+		[internalChangeset setObject:group_pagesMetadata_dict_copy forKey:@"group_pagesMetadata_dict"];
+		[internalChangeset setObject:pageKey_group_dict_copy       forKey:@"pageKey_group_dict"];
+	}
+	
+	*internalChangesetPtr = internalChangeset;
+	*externalChangesetPtr = externalChangeset;
 }
 
 - (void)processChangeset:(NSDictionary *)changeset
 {
 	YDBLogAutoTrace();
 	
-	// Todo...
-	NSAssert(NO, @"Not implemented...");
+	NSMutableDictionary *changeset_group_pagesMetadata_dict = [changeset objectForKey:@"group_pagesMetadata_dict"];
+	NSMutableDictionary *changeset_pageKey_group_dict = [changeset objectForKey:@"pageKey_group_dict"];
+	
+	NSDictionary *changeset_dirtyKeys = [changeset objectForKey:@"dirtyKeys"];
+	NSDictionary *changeset_dirtyPages = [changeset objectForKey:@"dirtyPages"];
+	
+	BOOL changeset_reset = [[changeset objectForKey:@"reset"] boolValue];
+	
+	// Process new top level objects
+	
+	group_pagesMetadata_dict = [self group_pagesMetadata_dict_deepCopy:changeset_group_pagesMetadata_dict];
+	pageKey_group_dict = [changeset_pageKey_group_dict mutableCopy];
+	
+	// Update keyCache
+	
+	if (changeset_reset && ([changeset_dirtyKeys count] == 0))
+	{
+		[keyCache removeAllObjects];
+	}
+	else if ([changeset_dirtyKeys count])
+	{
+		NSUInteger removeCapacity = [keyCache count];
+		NSUInteger updateCapacity = MIN([keyCache count], [changeset_dirtyKeys count]);
+		
+		NSMutableArray *keysToRemove = [NSMutableArray arrayWithCapacity:removeCapacity];
+		NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
+		
+		[keyCache enumerateKeysWithBlock:^(id key, BOOL *stop) {
+			
+			// Order matters.
+			// Consider the following database change:
+			//
+			// [transaction removeAllObjects];
+			// [transaction setObject:obj forKey:key];
+			
+			if ([changeset_dirtyKeys objectForKey:key])
+				[keysToUpdate addObject:key];
+			else
+				[keysToRemove addObject:key];
+		}];
+		
+		[keyCache removeObjectsForKeys:keysToRemove];
+		
+		NSNull *nsnull = [NSNull null];
+		
+		for (NSString *key in keysToUpdate)
+		{
+			id pageKey = [changeset_dirtyKeys objectForKey:key];
+			
+			if (pageKey == nsnull)
+				[keyCache removeObjectForKey:key];
+			else
+				[keyCache setObject:pageKey forKey:key];
+		}
+	}
+	
+	// Update pageCache
+	
+	if (changeset_reset && ([changeset_dirtyPages count] == 0))
+	{
+		[pageCache removeAllObjects];
+	}
+	else if ([changeset_dirtyPages count])
+	{
+		NSUInteger removeCapacity = [pageCache count];
+		NSUInteger updateCapacity = MIN([pageCache count], [changeset_dirtyPages count]);
+		
+		NSMutableArray *keysToRemove = [NSMutableArray arrayWithCapacity:removeCapacity];
+		NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
+		
+		[pageCache enumerateKeysWithBlock:^(id key, BOOL *stop) {
+			
+			// Order matters.
+			// Consider the following database change:
+			//
+			// [transaction removeAllObjects];
+			// [transaction setObject:obj forKey:key];
+			
+			if ([changeset_dirtyPages objectForKey:key])
+				[keysToUpdate addObject:key];
+			else
+				[keysToRemove addObject:key];
+		}];
+		
+		[pageCache removeObjectsForKeys:keysToRemove];
+		
+		NSNull *nsnull = [NSNull null];
+		
+		for (NSString *pageKey in keysToUpdate)
+		{
+			id page = [changeset_dirtyPages objectForKey:pageKey];
+			
+			// Each viewConnection needs its own independent mutable copy of the page.
+			// Mutable pages cannot be shared between multiple view connections.
+			
+			if (page == nsnull)
+				[pageCache removeObjectForKey:pageKey];
+			else
+				[pageCache setObject:[page mutableCopy] forKey:pageKey];
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,7 +341,7 @@
 
 - (sqlite3_stmt *)keyTable_enumerateForCollectionStatement
 {
-	if (keyTable_enumerateForCollectionStatement)
+	if (keyTable_enumerateForCollectionStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"SELECT \"key\", \"pageKey\" FROM \"%@\" WHERE \"collection\" = ?;", [self keyTableName]];
@@ -229,7 +401,7 @@
 
 - (sqlite3_stmt *)keyTable_removeAllStatement
 {
-	if (keyTable_removeAllStatement == nil)
+	if (keyTable_removeAllStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"DELETE FROM \"%@\";", [self keyTableName]];

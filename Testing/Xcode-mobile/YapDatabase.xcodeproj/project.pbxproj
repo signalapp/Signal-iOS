@@ -14,6 +14,13 @@
 		DC23CFA31764028700E103A9 /* YapCollectionsDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CF9B1764028700E103A9 /* YapCollectionsDatabaseView.m */; };
 		DC23CFA41764028700E103A9 /* YapCollectionsDatabaseViewConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CF9D1764028700E103A9 /* YapCollectionsDatabaseViewConnection.m */; };
 		DC23CFA61764028700E103A9 /* YapCollectionsDatabaseViewTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CFA21764028700E103A9 /* YapCollectionsDatabaseViewTransaction.m */; };
+		DC23CFAB1766A17100E103A9 /* TestYapCollectionsDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CFAA1766A17100E103A9 /* TestYapCollectionsDatabaseView.m */; };
+		DC23CFAC1766A4D700E103A9 /* YapDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CF901764027500E103A9 /* YapDatabaseView.m */; };
+		DC23CFAD1766A4DA00E103A9 /* YapDatabaseViewConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CF921764027500E103A9 /* YapDatabaseViewConnection.m */; };
+		DC23CFAE1766A4DD00E103A9 /* YapDatabaseViewTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CF951764027500E103A9 /* YapDatabaseViewTransaction.m */; };
+		DC23CFAF1766A4E000E103A9 /* YapCollectionsDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CF9B1764028700E103A9 /* YapCollectionsDatabaseView.m */; };
+		DC23CFB01766A4E300E103A9 /* YapCollectionsDatabaseViewConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CF9D1764028700E103A9 /* YapCollectionsDatabaseViewConnection.m */; };
+		DC23CFB11766A4E600E103A9 /* YapCollectionsDatabaseViewTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CFA21764028700E103A9 /* YapCollectionsDatabaseViewTransaction.m */; };
 		DC24FBE41687EB9000E855DC /* YapCollectionsDatabaseTransaction+Timestamp.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBDC1687EB9000E855DC /* YapCollectionsDatabaseTransaction+Timestamp.m */; };
 		DC24FBE51687EB9000E855DC /* YapCollectionsDatabaseTransaction+Timestamp.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBDC1687EB9000E855DC /* YapCollectionsDatabaseTransaction+Timestamp.m */; };
 		DC24FBE61687EB9000E855DC /* YapCollectionsDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBDE1687EB9000E855DC /* YapCollectionsDatabase.m */; };
@@ -120,6 +127,8 @@
 		DC23CFA01764028700E103A9 /* YapCollectionsDatabaseViewPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YapCollectionsDatabaseViewPrivate.h; path = "Collection-Key-Value/YapCollectionsDatabaseViewPrivate.h"; sourceTree = "<group>"; };
 		DC23CFA11764028700E103A9 /* YapCollectionsDatabaseViewTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YapCollectionsDatabaseViewTransaction.h; path = "Collection-Key-Value/YapCollectionsDatabaseViewTransaction.h"; sourceTree = "<group>"; };
 		DC23CFA21764028700E103A9 /* YapCollectionsDatabaseViewTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YapCollectionsDatabaseViewTransaction.m; path = "Collection-Key-Value/YapCollectionsDatabaseViewTransaction.m"; sourceTree = "<group>"; };
+		DC23CFA91766A17100E103A9 /* TestYapCollectionsDatabaseView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestYapCollectionsDatabaseView.h; path = ../../UnitTesting/TestYapCollectionsDatabaseView.h; sourceTree = "<group>"; };
+		DC23CFAA1766A17100E103A9 /* TestYapCollectionsDatabaseView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapCollectionsDatabaseView.m; path = ../../UnitTesting/TestYapCollectionsDatabaseView.m; sourceTree = "<group>"; };
 		DC24FBDB1687EB9000E855DC /* YapCollectionsDatabaseTransaction+Timestamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "YapCollectionsDatabaseTransaction+Timestamp.h"; sourceTree = "<group>"; };
 		DC24FBDC1687EB9000E855DC /* YapCollectionsDatabaseTransaction+Timestamp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "YapCollectionsDatabaseTransaction+Timestamp.m"; sourceTree = "<group>"; };
 		DC24FBDD1687EB9000E855DC /* YapCollectionsDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCollectionsDatabase.h; sourceTree = "<group>"; };
@@ -439,6 +448,8 @@
 			children = (
 				DC5BAD80174D4EB500DF9465 /* TestYapDatabaseView.h */,
 				DC5BAD81174D4EB500DF9465 /* TestYapDatabaseView.m */,
+				DC23CFA91766A17100E103A9 /* TestYapCollectionsDatabaseView.h */,
+				DC23CFAA1766A17100E103A9 /* TestYapCollectionsDatabaseView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -795,6 +806,13 @@
 				DC84FF74174EF4B0003BFBB2 /* YapAbstractDatabaseExtensionConnection.m in Sources */,
 				DC84FF76174EF4B0003BFBB2 /* YapAbstractDatabaseExtensionTransaction.m in Sources */,
 				DC84FF7C174EF4B0003BFBB2 /* YapDatabaseViewPageMetadata.m in Sources */,
+				DC23CFAB1766A17100E103A9 /* TestYapCollectionsDatabaseView.m in Sources */,
+				DC23CFAC1766A4D700E103A9 /* YapDatabaseView.m in Sources */,
+				DC23CFAD1766A4DA00E103A9 /* YapDatabaseViewConnection.m in Sources */,
+				DC23CFAE1766A4DD00E103A9 /* YapDatabaseViewTransaction.m in Sources */,
+				DC23CFAF1766A4E000E103A9 /* YapCollectionsDatabaseView.m in Sources */,
+				DC23CFB01766A4E300E103A9 /* YapCollectionsDatabaseViewConnection.m in Sources */,
+				DC23CFB11766A4E600E103A9 /* YapCollectionsDatabaseViewTransaction.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
