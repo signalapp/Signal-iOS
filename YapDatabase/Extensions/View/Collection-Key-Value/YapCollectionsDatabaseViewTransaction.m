@@ -278,6 +278,40 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Configuration
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * The view is tasked with storing ordered arrays of keys.
+ * In doing so, it splits the array into "pages" of keys,
+ * and stores the pages in the database.
+ * This reduces disk IO, as only the contents of a single page are written for a single change.
+ * And only the contents of a single page need be read to fetch a single key.
+ *
+ * The default pageSize if 50.
+ * That is, the view will split up arrays into groups of up to 50 keys,
+ * and store each as a separate page.
+**/
+- (NSUInteger)pageSize
+{
+	return 50; // Todo...
+}
+
+/**
+ * Allows you to configure the pageSize.
+ *
+ * Note: Changing the pageSize for an active view may cause some IO as
+ *       the view may need to restructure its existing pages.
+ *
+ * This method only works from within a readwrite transaction.
+ * Invoking this method from within a readonly transaction does nothing.
+**/
+- (void)setPageSize:(NSUInteger)pageSize
+{
+	// Todo...
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark YapCollectionsDatabaseTransaction
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1351,12 +1385,12 @@
 
 - (void)splitOversizedPage:(YapDatabaseViewPageMetadata *)pageMetadata
 {
-	int maxPageSize = 50; // Todo...
-	
 	YDBLogAutoTrace();
 	
 	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
 	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
+	
+	NSUInteger maxPageSize = [self pageSize];
 	
 	NSUInteger overflow = pageMetadata->count - maxPageSize;
 	
@@ -1577,12 +1611,12 @@
 
 - (void)maybeConsolidateOrExpandDirtyPages
 {
-	int maxPageSize = 50; // Todo...
-	
 	YDBLogAutoTrace();
 	
 	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
 	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
+	
+	NSUInteger maxPageSize = [self pageSize];
 	
 	// Get all the dirty pageMetadata objects.
 	// We snapshot the items so we can make modifications as we enumerate.
