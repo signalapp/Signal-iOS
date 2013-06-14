@@ -30,6 +30,13 @@
  * concurrent access to the database from multiple threads.
  * You can even read from the database while writing to it from another connection on another thread.
 **/
+
+extern NSString *const YapDatabaseObjectChangesKey;
+extern NSString *const YapDatabaseMetadataChangesKey;
+extern NSString *const YapDatabaseRemovedKeysKey;
+extern NSString *const YapDatabaseAllKeysRemovedKey;
+
+
 @interface YapDatabase : YapAbstractDatabase
 
 /* Inherited from YapAbstractDatabase

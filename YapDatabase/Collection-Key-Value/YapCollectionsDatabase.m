@@ -20,6 +20,11 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
+NSString *const YapCollectionsDatabaseObjectChangesKey      = @"objectChanges";
+NSString *const YapCollectionsDatabaseMetadataChangesKey    = @"metadataChanges";
+NSString *const YapCollectionsDatabaseRemovedKeysKey        = @"removedKeys";
+NSString *const YapCollectionsDatabaseRemovedCollectionsKey = @"removedCollections";
+NSString *const YapCollectionsDatabaseAllKeysRemovedKey     = @"allKeysRemoved";
 
 /**
  * YapDatabase provides concurrent thread-safe access to a key-value database backed by sqlite.

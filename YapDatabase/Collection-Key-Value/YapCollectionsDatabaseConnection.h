@@ -148,4 +148,53 @@
                 completionBlock:(dispatch_block_t)completionBlock
                 completionQueue:(dispatch_queue_t)completionQueue;
 
+#pragma mark Changesets
+
+/**
+ * A YapDatabaseModifiedNotification is posted for every readwrite transaction that makes changes to the database.
+ * The notification itself is documented further in YapAbstractDatabase.h.
+ *
+ * Given one or more notifications, these methods allow you to easily
+ * query to see if a change affects a given collection, key, or combinary.
+ *
+ * This is most often used in conjunction with longLivedReadTransactions.
+ *
+ * For more information on longLivedReadTransaction, see the following wiki article:
+ * https://github.com/yaptv/YapDatabase/wiki/LongLivedReadTransactions
+**/
+
+// Query for any change to a collection
+
+- (BOOL)hasChangeForCollection:(NSString *)collection inNotifications:(NSArray *)notifications;
+- (BOOL)hasObjectChangeForCollection:(NSString *)collection inNotifications:(NSArray *)notifications;
+- (BOOL)hasMetadataChangeForCollection:(NSString *)collection inNotifications:(NSArray *)notifications;
+
+// Query for a change to a particular key/collection tuple
+
+- (BOOL)hasChangeForKey:(NSString *)key
+           inCollection:(NSString *)collection
+        inNotifications:(NSArray *)notifications;
+
+- (BOOL)hasObjectChangeForKey:(NSString *)key
+                 inCollection:(NSString *)collection
+               inNotification:(NSArray *)notifications;
+
+- (BOOL)hasMetadataChangeForKey:(NSString *)key
+                   inCollection:(NSString *)collection
+                 inNotification:(NSArray *)notifications;
+
+// Query for a change to a particular set of keys in a collection
+
+- (BOOL)hasChangeForAnyKeys:(NSSet *)keys
+               inCollection:(NSString *)collection
+            inNotifications:(NSArray *)notifications;
+
+- (BOOL)hasObjectChangeForAnyKeys:(NSSet *)keys
+                     inCollection:(NSString *)collection
+                   inNotification:(NSArray *)notifications;
+
+- (BOOL)hasMetadataChangeForAnyKeys:(NSSet *)keys
+                       inCollection:(NSString *)collection
+                     inNotification:(NSArray *)notifications;
+
 @end

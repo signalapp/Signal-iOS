@@ -156,5 +156,27 @@
                 completionBlock:(dispatch_block_t)completionBlock
                 completionQueue:(dispatch_queue_t)completionQueue;
 
+#pragma mark Changesets
+
+/**
+ * A YapDatabaseModifiedNotification is posted for every readwrite transaction that makes changes to the database.
+ * The notification itself is documented further in YapAbstractDatabase.h.
+ * 
+ * Given one or more notifications, these methods allow you to easily
+ * query to see if a change affects a given key or keys.
+ * 
+ * This is most often used in conjunction with longLivedReadTransactions.
+ * 
+ * For more information on longLivedReadTransaction, see the following wiki article:
+ * https://github.com/yaptv/YapDatabase/wiki/LongLivedReadTransactions
+**/
+
+- (BOOL)hasChangeForKey:(NSString *)key inNotifications:(NSArray *)notifications;
+- (BOOL)hasObjectChangeForKey:(NSString *)key inNotification:(NSArray *)notifications;
+- (BOOL)hasMetadataChangeForKey:(NSString *)key inNotification:(NSArray *)notifications;
+
+- (BOOL)hasChangeForAnyKeys:(NSSet *)key inNotifications:(NSArray *)notifications;
+- (BOOL)hasObjectChangeForAnyKeys:(NSSet *)keys inNotification:(NSArray *)notifications;
+- (BOOL)hasMetadataChangeForAnyKeys:(NSSet *)keys inNotification:(NSArray *)notifications;
 
 @end

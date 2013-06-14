@@ -2,9 +2,11 @@
 #import "YapCollectionsDatabasePrivate.h"
 
 #import "YapAbstractDatabasePrivate.h"
-#import "YapCache.h"
+
 #import "YapCollectionKey.h"
+#import "YapCache.h"
 #import "YapNull.h"
+#import "YapSet.h"
 
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
@@ -686,6 +688,10 @@
 		removedCollections = nil;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Changesets
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Required override method from YapAbstractDatabaseConnection.
  * 
@@ -719,20 +725,47 @@
 		if (internalChangeset == nil)
 			internalChangeset = [NSMutableDictionary dictionaryWithCapacity:6]; // +1 for snapshot
 		
+		if (externalChangeset == nil)
+			externalChangeset = [NSMutableDictionary dictionaryWithCapacity:6]; // +1 for snapshot
+		
 		if ([objectChanges count] > 0)
-			[internalChangeset setObject:objectChanges forKey:@"objectChanges"];
+		{
+			[internalChangeset setObject:objectChanges forKey:YapCollectionsDatabaseObjectChangesKey];
+			
+			YapSet *immutableObjectChanges = [[YapSet alloc] initWithDictionary:objectChanges];
+			[externalChangeset setObject:immutableObjectChanges forKey:YapCollectionsDatabaseObjectChangesKey];
+		}
 		
 		if ([metadataChanges count] > 0)
-			[internalChangeset setObject:metadataChanges forKey:@"metadataChanges"];
+		{
+			[internalChangeset setObject:metadataChanges forKey:YapCollectionsDatabaseMetadataChangesKey];
+			
+			YapSet *immutableMetadataChanges = [[YapSet alloc] initWithDictionary:metadataChanges];
+			[externalChangeset setObject:immutableMetadataChanges forKey:YapCollectionsDatabaseMetadataChangesKey];
+		}
 		
 		if ([removedKeys count] > 0)
-			[internalChangeset setObject:removedKeys forKey:@"removedKeys"];
+		{
+			[internalChangeset setObject:removedKeys forKey:YapCollectionsDatabaseRemovedKeysKey];
+			
+			YapSet *immutableRemovedKeys = [[YapSet alloc] initWithSet:removedKeys];
+			[externalChangeset setObject:immutableRemovedKeys forKey:YapCollectionsDatabaseRemovedKeysKey];
+		}
 		
 		if ([removedCollections count] > 0)
-			[internalChangeset setObject:removedCollections forKey:@"removedCollections"];
+		{
+			[internalChangeset setObject:removedCollections forKey:YapCollectionsDatabaseRemovedCollectionsKey];
+			
+			YapSet *immutableRemovedCollections = [[YapSet alloc] initWithSet:removedCollections];
+			[externalChangeset setObject:immutableRemovedCollections
+			                      forKey:YapCollectionsDatabaseRemovedCollectionsKey];
+		}
 		
 		if (allKeysRemoved)
-			[internalChangeset setObject:@(YES) forKey:@"allKeysRemoved"];
+		{
+			[internalChangeset setObject:@(YES) forKey:YapCollectionsDatabaseAllKeysRemovedKey];
+			[externalChangeset setObject:@(YES) forKey:YapCollectionsDatabaseAllKeysRemovedKey];
+		}
 	}
 	
 	*internalChangesetPtr = internalChangeset;
@@ -753,13 +786,13 @@
 	
 	// Extract changset information
 	
-	NSDictionary *changeset_objectChanges   =  [changeset objectForKey:@"objectChanges"];
-	NSDictionary *changeset_metadataChanges =  [changeset objectForKey:@"metadataChanges"];
+	NSDictionary *changeset_objectChanges   =  [changeset objectForKey:YapCollectionsDatabaseObjectChangesKey];
+	NSDictionary *changeset_metadataChanges =  [changeset objectForKey:YapCollectionsDatabaseMetadataChangesKey];
 	
-	NSSet *changeset_removedKeys        =  [changeset objectForKey:@"removedKeys"];
-	NSSet *changeset_removedCollections =  [changeset objectForKey:@"removedCollections"];
+	NSSet *changeset_removedKeys        =  [changeset objectForKey:YapCollectionsDatabaseRemovedKeysKey];
+	NSSet *changeset_removedCollections =  [changeset objectForKey:YapCollectionsDatabaseRemovedCollectionsKey];
 	
-	BOOL changeset_allKeysRemoved = [[changeset objectForKey:@"allKeysRemoved"] boolValue];
+	BOOL changeset_allKeysRemoved = [[changeset objectForKey:YapCollectionsDatabaseAllKeysRemovedKey] boolValue];
 	
 	BOOL hasObjectChanges      = [changeset_objectChanges count] > 0;
 	BOOL hasMetadataChanges    = [changeset_metadataChanges count] > 0;
@@ -890,6 +923,303 @@
 			[metadataCache setObject:newObject forKey:key];
 		}
 	}
+}
+
+- (BOOL)hasChangeForCollection:(NSString *)collection
+               inNotifications:(NSArray *)notifications
+        includingObjectChanges:(BOOL)includeObjectChanges
+               metadataChanges:(BOOL)includeMetadataChanges
+{
+	for (NSNotification *notification in notifications)
+	{
+		if (![notification isKindOfClass:[NSNotification class]])
+		{
+			YDBLogWarn(@"%@ - notifications parameter contains non-NSNotification object", THIS_METHOD);
+			continue;
+		}
+		
+		NSDictionary *changeset = notification.userInfo;
+		__block BOOL found = NO;
+		
+		if (includeObjectChanges)
+		{
+			YapSet *changeset_objectChanges = [changeset objectForKey:YapCollectionsDatabaseObjectChangesKey];
+			[changeset_objectChanges enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+				
+				__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
+				if ([collectionKey.collection isEqualToString:collection])
+				{
+					found = YES;
+					*stop = YES;
+				}
+			}];
+			if (found) return YES;
+		}
+		
+		if (includeMetadataChanges)
+		{
+			YapSet *changeset_metadataChanges = [changeset objectForKey:YapCollectionsDatabaseMetadataChangesKey];
+			[changeset_metadataChanges enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+				
+				__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
+				if ([collectionKey.collection isEqualToString:collection])
+				{
+					found = YES;
+					*stop = YES;
+				}
+			}];
+			if (found) return YES;
+		}
+		
+		YapSet *changeset_removedKeys = [changeset objectForKey:YapCollectionsDatabaseRemovedKeysKey];
+		[changeset_removedKeys enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+			
+			__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
+			if ([collectionKey.collection isEqualToString:collection])
+			{
+				found = YES;
+				*stop = YES;
+			}
+		}];
+		if (found) return YES;
+		
+		YapSet *changeset_removedCollections = [changeset objectForKey:YapCollectionsDatabaseRemovedCollectionsKey];
+		if ([changeset_removedCollections containsObject:collection])
+			return YES;
+		
+		BOOL changeset_allKeysRemoved = [[changeset objectForKey:YapCollectionsDatabaseAllKeysRemovedKey] boolValue];
+		if (changeset_allKeysRemoved)
+			return YES;
+	}
+	
+	return NO;
+}
+
+- (BOOL)hasChangeForCollection:(NSString *)collection inNotifications:(NSArray *)notifications
+{
+	return [self hasChangeForCollection:collection
+	                    inNotifications:notifications
+	             includingObjectChanges:YES
+	                    metadataChanges:YES];
+}
+
+- (BOOL)hasObjectChangeForCollection:(NSString *)collection inNotifications:(NSArray *)notifications
+{
+	return [self hasChangeForCollection:collection
+	                    inNotifications:notifications
+	             includingObjectChanges:YES
+	                    metadataChanges:NO];
+}
+
+- (BOOL)hasMetadataChangeForCollection:(NSString *)collection inNotifications:(NSArray *)notifications
+{
+	return [self hasChangeForCollection:collection
+	                    inNotifications:notifications
+	             includingObjectChanges:NO
+	                    metadataChanges:YES];
+}
+
+// Query for a change to a particular key/collection tuple
+
+- (BOOL)hasChangeForKey:(NSString *)key
+           inCollection:(NSString *)collection
+        inNotifications:(NSArray *)notifications
+ includingObjectChanges:(BOOL)includeObjectChanges
+        metadataChanges:(BOOL)includeMetadataChanges
+{
+	if (collection == nil)
+		collection = @"";
+	
+	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	
+	for (NSNotification *notification in notifications)
+	{
+		if (![notification isKindOfClass:[NSNotification class]])
+		{
+			YDBLogWarn(@"%@ - notifications parameter contains non-NSNotification object", THIS_METHOD);
+			continue;
+		}
+		
+		NSDictionary *changeset = notification.userInfo;
+		
+		if (includeObjectChanges)
+		{
+			YapSet *changeset_objectChanges = [changeset objectForKey:YapCollectionsDatabaseObjectChangesKey];
+			if ([changeset_objectChanges containsObject:collectionKey])
+				return YES;
+		}
+		
+		if (includeMetadataChanges)
+		{
+			YapSet *changeset_metadataChanges = [changeset objectForKey:YapCollectionsDatabaseMetadataChangesKey];
+			if ([changeset_metadataChanges containsObject:collectionKey])
+				return YES;
+		}
+		
+		YapSet *changeset_removedKeys = [changeset objectForKey:YapCollectionsDatabaseRemovedKeysKey];
+		if ([changeset_removedKeys containsObject:collectionKey])
+			return YES;
+		
+		YapSet *changeset_removedCollections = [changeset objectForKey:YapCollectionsDatabaseRemovedCollectionsKey];
+		if ([changeset_removedCollections containsObject:collection])
+			return YES;
+		
+		BOOL changeset_allKeysRemoved = [[changeset objectForKey:YapCollectionsDatabaseAllKeysRemovedKey] boolValue];
+		if (changeset_allKeysRemoved)
+			return YES;
+	}
+	
+	return NO;
+}
+
+- (BOOL)hasChangeForKey:(NSString *)key
+           inCollection:(NSString *)collection
+        inNotifications:(NSArray *)notifications
+{
+	return [self hasChangeForKey:key
+	                inCollection:collection
+	             inNotifications:notifications
+	      includingObjectChanges:YES
+	             metadataChanges:YES];
+}
+
+- (BOOL)hasObjectChangeForKey:(NSString *)key
+                 inCollection:(NSString *)collection
+               inNotification:(NSArray *)notifications
+{
+	return [self hasChangeForKey:key
+	                inCollection:collection
+	             inNotifications:notifications
+	      includingObjectChanges:YES
+	             metadataChanges:NO];
+}
+
+- (BOOL)hasMetadataChangeForKey:(NSString *)key
+                   inCollection:(NSString *)collection
+                 inNotification:(NSArray *)notifications
+{
+	return [self hasChangeForKey:key
+	                inCollection:collection
+	             inNotifications:notifications
+	      includingObjectChanges:NO
+	             metadataChanges:YES];
+}
+
+// Query for a change to a particular set of keys in a collection
+
+- (BOOL)hasChangeForAnyKeys:(NSSet *)keys
+               inCollection:(NSString *)collection
+            inNotifications:(NSArray *)notifications
+     includingObjectChanges:(BOOL)includeObjectChanges
+            metadataChanges:(BOOL)includeMetadataChanges
+{
+	if ([keys count] == 0) return NO;
+	if (collection == nil)
+		collection = @"";
+	
+	for (NSNotification *notification in notifications)
+	{
+		if (![notification isKindOfClass:[NSNotification class]])
+		{
+			YDBLogWarn(@"%@ - notifications parameter contains non-NSNotification object", THIS_METHOD);
+			continue;
+		}
+		
+		NSDictionary *changeset = notification.userInfo;
+		__block BOOL found = NO;
+		
+		if (includeObjectChanges)
+		{
+			YapSet *changeset_objectChanges = [changeset objectForKey:YapCollectionsDatabaseObjectChangesKey];
+			[changeset_objectChanges enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+				
+				__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
+				if ([collectionKey.collection isEqualToString:collection])
+				{
+					if ([keys containsObject:collectionKey.key])
+					{
+						found = YES;
+						*stop = YES;
+					}
+				}
+			}];
+			if (found) return YES;
+		}
+		
+		if (includeMetadataChanges)
+		{
+			YapSet *changeset_metadataChanges = [changeset objectForKey:YapCollectionsDatabaseMetadataChangesKey];
+			[changeset_metadataChanges enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+				
+				__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
+				if ([collectionKey.collection isEqualToString:collection])
+				{
+					if ([keys containsObject:collectionKey.key])
+					{
+						found = YES;
+						*stop = YES;
+					}
+				}
+			}];
+		}
+		
+		YapSet *changeset_removedKeys = [changeset objectForKey:YapCollectionsDatabaseRemovedKeysKey];
+		[changeset_removedKeys enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+			
+			__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
+			if ([collectionKey.collection isEqualToString:collection])
+			{
+				if ([keys containsObject:collectionKey.key])
+				{
+					found = YES;
+					*stop = YES;
+				}
+			}
+		}];
+		
+		YapSet *changeset_removedCollections = [changeset objectForKey:YapCollectionsDatabaseRemovedCollectionsKey];
+		if ([changeset_removedCollections containsObject:collection])
+			return YES;
+		
+		BOOL changeset_allKeysRemoved = [[changeset objectForKey:YapCollectionsDatabaseAllKeysRemovedKey] boolValue];
+		if (changeset_allKeysRemoved)
+			return YES;
+	}
+	
+	return NO;
+}
+
+- (BOOL)hasChangeForAnyKeys:(NSSet *)keys
+               inCollection:(NSString *)collection
+            inNotifications:(NSArray *)notifications
+{
+	return [self hasChangeForAnyKeys:keys
+	                    inCollection:collection
+	                 inNotifications:notifications
+	          includingObjectChanges:YES
+	                 metadataChanges:YES];
+}
+
+- (BOOL)hasObjectChangeForAnyKeys:(NSSet *)keys
+                     inCollection:(NSString *)collection
+                   inNotification:(NSArray *)notifications
+{
+	return [self hasChangeForAnyKeys:keys
+	                    inCollection:collection
+	                 inNotifications:notifications
+	          includingObjectChanges:YES
+	                 metadataChanges:NO];
+}
+
+- (BOOL)hasMetadataChangeForAnyKeys:(NSSet *)keys
+                       inCollection:(NSString *)collection
+                     inNotification:(NSArray *)notifications
+{
+	return [self hasChangeForAnyKeys:keys
+	                    inCollection:collection
+	                 inNotifications:notifications
+	          includingObjectChanges:NO
+	                 metadataChanges:YES];
 }
 
 @end

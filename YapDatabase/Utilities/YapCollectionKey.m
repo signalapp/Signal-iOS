@@ -132,8 +132,15 @@ static NSUInteger YDB_MurmurHash(NSUInteger hash1, NSUInteger hash2)
 {
 	if ((self = [super init]))
 	{
-		collection = [aCollection copy]; // copy == retain if aCollection is immutable
-		key = [aKey copy];               // copy == retain if aKey is immutable
+		if (aCollection == nil)
+			collection = @"";
+		else
+			collection = [aCollection copy]; // copy == retain if aCollection is immutable
+		
+		if (aKey == nil)
+			return nil;
+		else
+			key = [aKey copy];               // copy == retain if aKey is immutable
 	}
 	return self;
 }
