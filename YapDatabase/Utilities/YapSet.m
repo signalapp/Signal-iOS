@@ -69,4 +69,14 @@
 	}
 }
 
+- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state
+                                  objects:(__unsafe_unretained id *)stackbuf
+                                    count:(NSUInteger)len
+{
+	if (set)
+		return [set countByEnumeratingWithState:state objects:stackbuf count:len];
+	else
+		return [dictionary countByEnumeratingWithState:state objects:stackbuf count:len];
+}
+
 @end

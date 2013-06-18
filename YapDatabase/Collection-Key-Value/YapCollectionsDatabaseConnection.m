@@ -939,49 +939,39 @@
 		}
 		
 		NSDictionary *changeset = notification.userInfo;
-		__block BOOL found = NO;
 		
 		if (includeObjectChanges)
 		{
 			YapSet *changeset_objectChanges = [changeset objectForKey:YapCollectionsDatabaseObjectChangesKey];
-			[changeset_objectChanges enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
-				
-				__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
+			for (YapCollectionKey *collectionKey in changeset_objectChanges)
+			{
 				if ([collectionKey.collection isEqualToString:collection])
 				{
-					found = YES;
-					*stop = YES;
+					return YES;
 				}
-			}];
-			if (found) return YES;
+			}
 		}
 		
 		if (includeMetadataChanges)
 		{
 			YapSet *changeset_metadataChanges = [changeset objectForKey:YapCollectionsDatabaseMetadataChangesKey];
-			[changeset_metadataChanges enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
-				
-				__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
+			for (YapCollectionKey *collectionKey in changeset_metadataChanges)
+			{
 				if ([collectionKey.collection isEqualToString:collection])
 				{
-					found = YES;
-					*stop = YES;
+					return YES;
 				}
-			}];
-			if (found) return YES;
+			}
 		}
 		
 		YapSet *changeset_removedKeys = [changeset objectForKey:YapCollectionsDatabaseRemovedKeysKey];
-		[changeset_removedKeys enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
-			
-			__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
+		for (YapCollectionKey *collectionKey in changeset_removedKeys)
+		{
 			if ([collectionKey.collection isEqualToString:collection])
 			{
-				found = YES;
-				*stop = YES;
+				return YES;
 			}
-		}];
-		if (found) return YES;
+		}
 		
 		YapSet *changeset_removedCollections = [changeset objectForKey:YapCollectionsDatabaseRemovedCollectionsKey];
 		if ([changeset_removedCollections containsObject:collection])
@@ -1126,56 +1116,48 @@
 		}
 		
 		NSDictionary *changeset = notification.userInfo;
-		__block BOOL found = NO;
 		
 		if (includeObjectChanges)
 		{
 			YapSet *changeset_objectChanges = [changeset objectForKey:YapCollectionsDatabaseObjectChangesKey];
-			[changeset_objectChanges enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
-				
-				__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
+			for (YapCollectionKey *collectionKey in changeset_objectChanges)
+			{
 				if ([collectionKey.collection isEqualToString:collection])
 				{
 					if ([keys containsObject:collectionKey.key])
 					{
-						found = YES;
-						*stop = YES;
+						return YES;
 					}
 				}
-			}];
-			if (found) return YES;
+			}
 		}
 		
 		if (includeMetadataChanges)
 		{
 			YapSet *changeset_metadataChanges = [changeset objectForKey:YapCollectionsDatabaseMetadataChangesKey];
-			[changeset_metadataChanges enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
-				
-				__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
+			for (YapCollectionKey *collectionKey in changeset_metadataChanges)
+			{
 				if ([collectionKey.collection isEqualToString:collection])
 				{
 					if ([keys containsObject:collectionKey.key])
 					{
-						found = YES;
-						*stop = YES;
+						return YES;
 					}
 				}
-			}];
+			}
 		}
 		
 		YapSet *changeset_removedKeys = [changeset objectForKey:YapCollectionsDatabaseRemovedKeysKey];
-		[changeset_removedKeys enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
-			
-			__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
+		for (YapCollectionKey *collectionKey in changeset_removedKeys)
+		{
 			if ([collectionKey.collection isEqualToString:collection])
 			{
 				if ([keys containsObject:collectionKey.key])
 				{
-					found = YES;
-					*stop = YES;
+					return YES;
 				}
 			}
-		}];
+		}
 		
 		YapSet *changeset_removedCollections = [changeset objectForKey:YapCollectionsDatabaseRemovedCollectionsKey];
 		if ([changeset_removedCollections containsObject:collection])

@@ -15,7 +15,7 @@
  * 
  * @see YapCollectionsDatabaseConnection ...
 **/
-@interface YapSet : NSObject
+@interface YapSet : NSObject <NSFastEnumeration>
 
 - (id)initWithSet:(NSMutableSet *)set;
 - (id)initWithDictionary:(NSMutableDictionary *)dictionary;
