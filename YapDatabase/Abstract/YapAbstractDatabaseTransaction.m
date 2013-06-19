@@ -236,4 +236,16 @@
 	return extensions;
 }
 
+- (NSException *)mutationDuringEnumerationException
+{
+	NSString *reason = [NSString stringWithFormat:
+	    @"Database <%@: %p> was mutated while being enumerated.", NSStringFromClass([self class]), self];
+	
+	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
+	    @"If you modify the database during enumeration"
+		@" you MUST set the 'stop' parameter of the enumeration block to YES (*stop = YES;)."};
+	
+	return [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
+}
+
 @end

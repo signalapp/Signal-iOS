@@ -435,9 +435,13 @@
 	sqlite3_stmt *statement = [connection enumerateKeysStatement];
 	if (statement == NULL) return;
 	
+	BOOL stop = NO;
+	isMutated = NO; // mutation during enumeration protection
+	
 	// SELECT "key" FROM "database";
 	
-	while (sqlite3_step(statement) == SQLITE_ROW)
+	int status;
+	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
@@ -447,14 +451,22 @@
 		
 		NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 		
-		BOOL stop = NO;
-		
 		block(key, &stop);
 		
-		if (stop) break;
+		if (stop || isMutated) break;
+	}
+	
+	if ((status != SQLITE_DONE) && !stop && !isMutated)
+	{
+		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
 	sqlite3_reset(statement);
+	
+	if (isMutated && !stop)
+	{
+		@throw [self mutationDuringEnumerationException];
+	}
 }
 
 /**
@@ -476,10 +488,12 @@
 	
 	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
 	
-	NSMutableArray *missingIndexes = [NSMutableArray arrayWithCapacity:[keys count]];
 	BOOL stop = NO;
+	isMutated = NO; // mutation during enumeration protection
 	
 	// Check the cache first (to optimize cache)
+	
+	NSMutableArray *missingIndexes = [NSMutableArray arrayWithCapacity:[keys count]];
 	
 	NSUInteger keyIndex = 0;
 	
@@ -490,7 +504,7 @@
 		{
 			block(keyIndex, metadata, &stop);
 			
-			if (stop) break;
+			if (stop || isMutated) break;
 		}
 		else
 		{
@@ -500,7 +514,15 @@
 		keyIndex++;
 	}
 	
-	if (stop || [missingIndexes count] == 0) return;
+	if (stop) {
+		return;
+	}
+	if (isMutated) {
+		@throw [self mutationDuringEnumerationException];
+	}
+	if ([missingIndexes count] == 0) {
+		return;
+	}
 	
 	// Go to database for any missing keys (if needed)
 	
@@ -511,8 +533,11 @@
 	
 	do
 	{
+		// Determine how many parameters to use in the query
+		
 		NSUInteger numHostParams = MIN([missingIndexes count], maxHostParams);
 		
+		// Create the SQL query:
 		// SELECT "key", "metadata" FROM "database" WHERE key IN (?, ?, ...);
 		
 		NSUInteger capacity = 80 + (numHostParams * 3);
@@ -541,6 +566,8 @@
 			return;
 		}
 		
+		// Move objects from the missingIndexes array into keyIndexDict
+		
 		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numHostParams];
 		
 		for (i = 0; i < numHostParams; i++)
@@ -553,7 +580,11 @@
 			sqlite3_bind_text(statement, (int)(i + 1), [key UTF8String], -1, SQLITE_TRANSIENT);
 		}
 		
-		while (sqlite3_step(statement) == SQLITE_ROW && !stop)
+		[missingIndexes removeObjectsInRange:NSMakeRange(0, numHostParams)];
+		
+		// Execute the query and step over the results
+		
+		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 		{
 			if (connection->needsMarkSqlLevelSharedReadLock)
 				[connection markSqlLevelSharedReadLockAcquired];
@@ -579,12 +610,24 @@
 			block(keyIndex, metadata, &stop);
 			
 			[keyIndexDict removeObjectForKey:key];
+			
+			if (stop || isMutated) break;
+		}
+		
+		if ((status != SQLITE_DONE) && !stop && !isMutated)
+		{
+			YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 		}
 		
 		sqlite3_finalize(statement);
 		statement = NULL;
 		
-		if (stop) return;
+		if (stop) {
+			return;
+		}
+		if (isMutated) {
+			@throw [self mutationDuringEnumerationException];
+		}
 		
 		// If there are any remaining items in the keyIndexDict,
 		// then those items didn't exist in the database.
@@ -597,10 +640,16 @@
 			NSString *key = [[keys objectAtIndex:keyIndex] copy]; // mutable string protection
 			[connection->metadataCache setObject:[YapNull null] forKey:key];
 			
-			if (stop) break;
+			if (stop || isMutated) break;
 		}
 		
-		[missingIndexes removeObjectsInRange:NSMakeRange(0, numHostParams)];
+		if (stop) {
+			return;
+		}
+		if (isMutated) {
+			@throw [self mutationDuringEnumerationException];
+		}
+		
 		
 	} while ([missingIndexes count] > 0);
 }
@@ -624,11 +673,12 @@
 	
 	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
 	
-	NSMutableArray *missingIndexes = [NSMutableArray arrayWithCapacity:[keys count]];
 	BOOL stop = NO;
+	isMutated = NO; // mutation during enumeration protection
 	
 	// Check the cache first (to optimize cache)
 	
+	NSMutableArray *missingIndexes = [NSMutableArray arrayWithCapacity:[keys count]];
 	NSUInteger keyIndex = 0;
 	
 	for (NSString *key in keys)
@@ -638,7 +688,7 @@
 		{
 			block(keyIndex, object, &stop);
 			
-			if (stop) break;
+			if (stop || isMutated) break;
 		}
 		else
 		{
@@ -648,7 +698,15 @@
 		keyIndex++;
 	}
 	
-	if (stop || [missingIndexes count] == 0) return;
+	if (stop) {
+		return;
+	}
+	if (isMutated) {
+		@throw [self mutationDuringEnumerationException];
+	}
+	if ([missingIndexes count] == 0) {
+		return;
+	}
 	
 	// Go to database for any missing keys (if needed)
 	
@@ -659,8 +717,11 @@
 	
 	do
 	{
+		// Determine how many parameters to use in the query
+		
 		NSUInteger numHostParams = MIN([missingIndexes count], maxHostParams);
 		
+		// Create the SQL query:
 		// SELECT "key", "data" FROM "database" WHERE key IN (?, ?, ...);
 		
 		NSUInteger capacity = 80 + (numHostParams * 3);
@@ -689,6 +750,8 @@
 			return;
 		}
 		
+		// Move objects from the missingIndexes array into keyIndexDict
+		
 		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numHostParams];
 		
 		for (i = 0; i < numHostParams; i++)
@@ -701,7 +764,11 @@
 			sqlite3_bind_text(statement, (int)(i + 1), [key UTF8String], -1, SQLITE_TRANSIENT);
 		}
 		
-		while (sqlite3_step(statement) == SQLITE_ROW && !stop)
+		[missingIndexes removeObjectsInRange:NSMakeRange(0, numHostParams)];
+		
+		// Execute the query and step over the results
+		
+		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 		{
 			if (connection->needsMarkSqlLevelSharedReadLock)
 				[connection markSqlLevelSharedReadLockAcquired];
@@ -726,12 +793,24 @@
 			block(keyIndex, object, &stop);
 			
 			[keyIndexDict removeObjectForKey:key];
+			
+			if (stop || isMutated) break;
+		}
+		
+		if ((status != SQLITE_DONE) && !stop && !isMutated)
+		{
+			YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 		}
 		
 		sqlite3_finalize(statement);
 		statement = NULL;
 		
-		if (stop) return;
+		if (stop) {
+			return;
+		}
+		if (isMutated) {
+			@throw [self mutationDuringEnumerationException];
+		}
 		
 		// If there are any remaining items in the keyIndexDict,
 		// then those items didn't exist in the database.
@@ -741,10 +820,16 @@
 			NSUInteger keyIndex = [keyIndexNumber unsignedIntegerValue];
 			block(keyIndex, nil, &stop);
 			
-			if (stop) break;
+			if (stop || isMutated) break;
 		}
 		
-		[missingIndexes removeObjectsInRange:NSMakeRange(0, numHostParams)];
+		if (stop) {
+			return;
+		}
+		if (isMutated) {
+			@throw [self mutationDuringEnumerationException];
+		}
+		
 		
 	} while ([missingIndexes count] > 0);
 }
@@ -783,6 +868,8 @@
 	sqlite3_stmt *statement = [connection enumerateKeysAndMetadataStatement];
 	if (statement == NULL) return;
 	
+	isMutated = NO; // mutation during enumeration protection
+	
 	// SELECT "key", "metadata" FROM "database";
 	//
 	// Performance tuning:
@@ -798,7 +885,8 @@
 	BOOL stop = NO;
 	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
 	
-	while (sqlite3_step(statement) == SQLITE_ROW)
+	int status;
+	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
@@ -839,11 +927,21 @@
 			
 			block(key, metadata, &stop);
 			
-			if (stop) break;
+			if (stop || isMutated) break;
 		}
 	}
 	
+	if ((status != SQLITE_DONE) && !stop && !isMutated)
+	{
+		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
+	}
+	
 	sqlite3_reset(statement);
+	
+	if (isMutated && !stop)
+	{
+		@throw [self mutationDuringEnumerationException];
+	}
 }
 
 /**
@@ -880,6 +978,8 @@
 	sqlite3_stmt *statement = [connection enumerateKeysAndObjectsStatement];
 	if (statement == NULL) return;
 	
+	isMutated = NO; // mutation during enumeration protection
+	
 	// SELECT "key", "data", FROM "database";
 	//
 	// Performance tuning:
@@ -895,7 +995,8 @@
 	BOOL stop = NO;
 	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
 
-	while (sqlite3_step(statement) == SQLITE_ROW)
+	int status;
+	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
@@ -925,11 +1026,21 @@
 			
 			block(key, object, &stop);
 			
-			if (stop) break;
+			if (stop || isMutated) break;
 		}
 	}
 	
+	if ((status != SQLITE_DONE) && !stop && !isMutated)
+	{
+		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
+	}
+	
 	sqlite3_reset(statement);
+	
+	if (isMutated && !stop)
+	{
+		@throw [self mutationDuringEnumerationException];
+	}
 }
 
 /**
@@ -966,6 +1077,8 @@
 	sqlite3_stmt *statement = [connection enumerateRowsStatement];
 	if (statement == NULL) return;
 	
+	isMutated = NO; // mutation during enumeration protection
+	
 	// SELECT "key", "data", "metadata" FROM "database";
 	//
 	// Performance tuning:
@@ -982,7 +1095,8 @@
 	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
 	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
 
-	while (sqlite3_step(statement) == SQLITE_ROW)
+	int status;
+	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
@@ -1038,11 +1152,21 @@
 			
 			block(key, object, metadata, &stop);
 			
-			if (stop) break;
+			if (stop || isMutated) break;
 		}
 	}
 	
+	if ((status != SQLITE_DONE) && !stop && !isMutated)
+	{
+		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
+	}
+	
 	sqlite3_reset(statement);
+	
+	if (isMutated && !stop)
+	{
+		@throw [self mutationDuringEnumerationException];
+	}
 }
 
 @end
@@ -1088,17 +1212,23 @@
 	__attribute__((objc_precise_lifetime)) NSData *rawMeta = connection.database.metadataSerializer(metadata);
 	sqlite3_bind_blob(statement, 3, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
 	
+	BOOL set = YES;
+	
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
 	{
 		YDBLogError(@"Error executing 'setAllForKeyStatement': %d %s, key(%@)",
 		                                                   status, sqlite3_errmsg(connection->db), key);
+		set = NO;
 	}
 	
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
 	FreeYapDatabaseString(&_key);
 	
+	if (!set) return;
+	
+	isMutated = YES;  // mutation during enumeration protection
 	key = [key copy]; // mutable string protection
 	
 	[connection->objectCache removeObjectForKey:key];
@@ -1152,17 +1282,23 @@
 	__attribute__((objc_precise_lifetime)) NSData *rawMeta = connection.database.metadataSerializer(metadata);
 	sqlite3_bind_blob(statement, 3, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
 	
+	BOOL set = YES;
+	
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
 	{
 		YDBLogError(@"Error executing 'setAllForKeyStatement': %d %s, key(%@)",
 		                                                   status, sqlite3_errmsg(connection->db), key);
+		set = NO;
 	}
 	
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
 	FreeYapDatabaseString(&_key);
 	
+	if (!set) return;
+	
+	isMutated = YES;  // mutation during enumeration protection
 	key = [key copy]; // mutable string protection
 	
 	[connection->objectCache setObject:object forKey:key];
@@ -1223,6 +1359,7 @@
 	
 	if (!updated) return;
 	
+	isMutated = YES;  // mutation during enumeration protection
 	key = [key copy]; // mutable string protection
 	
 	if (metadata) {
@@ -1274,6 +1411,7 @@
 	
 	if (!removed) return;
 	
+	isMutated = YES;  // mutation during enumeration protection
 	key = [key copy]; // mutable string protection
 	
 	[connection->objectCache removeObjectForKey:key];
@@ -1365,6 +1503,7 @@
 		
 	} while (keysIndex < keysCount);
 	
+	isMutated = YES; // mutation during enumeration protection
 	keys = [[NSMutableArray alloc] initWithArray:keys copyItems:YES]; // mutable string protection
 	
 	[connection->objectCache removeObjectsForKeys:keys];
@@ -1398,6 +1537,8 @@
 	}
 	
 	sqlite3_reset(statement);
+	
+	isMutated = YES; // mutation during enumeration protection
 	
 	[connection->objectCache removeAllObjects];
 	[connection->metadataCache removeAllObjects];

@@ -249,6 +249,10 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	NSMutableDictionary *extensions;
 	BOOL extensionsReady;
 	
+@protected
+	
+	BOOL isMutated; // Used for "mutation during enumeration" protection
+	
 @public
 	__unsafe_unretained YapAbstractDatabaseConnection *abstractConnection;
 	
@@ -264,5 +268,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 - (void)rollbackTransaction;
 
 - (NSDictionary *)extensions;
+
+- (NSException *)mutationDuringEnumerationException;
 
 @end
