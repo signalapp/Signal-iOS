@@ -484,6 +484,7 @@
 - (void)enumerateMetadataForKeys:(NSArray *)keys
              unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id metadata, BOOL *stop))block
 {
+	if (block == NULL) return;
 	if ([keys count] == 0) return;
 	
 	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
@@ -669,6 +670,7 @@
 - (void)enumerateObjectsForKeys:(NSArray *)keys
             unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id object, BOOL *stop))block
 {
+	if (block == NULL) return;
 	if ([keys count] == 0) return;
 	
 	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;

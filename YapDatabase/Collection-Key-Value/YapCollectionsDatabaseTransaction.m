@@ -665,8 +665,8 @@
                     inCollection:(NSString *)collection
              unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id metadata, BOOL *stop))block
 {
-	if ([keys count] == 0) return;
 	if (block == NULL) return;
+	if ([keys count] == 0) return;
 	if (collection == nil) collection = @"";
 	
 	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
@@ -827,8 +827,8 @@
                    inCollection:(NSString *)collection
             unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id object, BOOL *stop))block
 {
-	if ([keys count] == 0) return;
 	if (block == NULL) return;
+	if ([keys count] == 0) return;
 	if (collection == nil) collection = @"";
 	
 	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
@@ -986,8 +986,8 @@
                 inCollection:(NSString *)collection
          unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id object, id metadata, BOOL *stop))block
 {
-	if ([keys count] == 0) return;
 	if (block == NULL) return;
+	if ([keys count] == 0) return;
 	if (collection == nil) collection = @"";
 	
 	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
