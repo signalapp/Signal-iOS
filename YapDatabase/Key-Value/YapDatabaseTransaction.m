@@ -520,6 +520,7 @@
 	}
 	if (isMutated) {
 		@throw [self mutationDuringEnumerationException];
+		return;
 	}
 	if ([missingIndexes count] == 0) {
 		return;
@@ -567,7 +568,8 @@
 			return;
 		}
 		
-		// Move objects from the missingIndexes array into keyIndexDict
+		// Bind parameters.
+		// And move objects from the missingIndexes array into keyIndexDict.
 		
 		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numHostParams];
 		
@@ -628,6 +630,7 @@
 		}
 		if (isMutated) {
 			@throw [self mutationDuringEnumerationException];
+			return;
 		}
 		
 		// If there are any remaining items in the keyIndexDict,
@@ -649,6 +652,7 @@
 		}
 		if (isMutated) {
 			@throw [self mutationDuringEnumerationException];
+			return;
 		}
 		
 		
@@ -705,6 +709,7 @@
 	}
 	if (isMutated) {
 		@throw [self mutationDuringEnumerationException];
+		return;
 	}
 	if ([missingIndexes count] == 0) {
 		return;
@@ -752,7 +757,8 @@
 			return;
 		}
 		
-		// Move objects from the missingIndexes array into keyIndexDict
+		// Bind parameters.
+		// And move objects from the missingIndexes array into keyIndexDict.
 		
 		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numHostParams];
 		
@@ -812,6 +818,7 @@
 		}
 		if (isMutated) {
 			@throw [self mutationDuringEnumerationException];
+			return;
 		}
 		
 		// If there are any remaining items in the keyIndexDict,
@@ -830,6 +837,7 @@
 		}
 		if (isMutated) {
 			@throw [self mutationDuringEnumerationException];
+			return;
 		}
 		
 		
