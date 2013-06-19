@@ -513,7 +513,7 @@
 	}
 }
 
-- (void)test5
+- (void)testMutationDuringEnumerationProtection
 {
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
 	
@@ -535,8 +535,12 @@
 		[transaction setObject:@"object" forKey:@"key5"];
 	}];
 	
+	NSArray *keys = @[@"key1", @"key2", @"key3"];
+	
 	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
+		// enumerateKeysUsingBlock:
+		
 		STAssertThrows(
 			[transaction enumerateKeysUsingBlock:^(NSString *key, BOOL *stop) {
 				
@@ -553,7 +557,7 @@
 				
 			}], @"Should NOT throw exception");
 		
-		NSArray *keys = @[@"key1", @"key2", @"key3"];
+		// enumerateMetadataForKeys:unorderedUsingBlock:
 		
 		STAssertThrows(
 			[transaction enumerateMetadataForKeys:keys
@@ -573,6 +577,28 @@
 			
 			}], @"Should NOT throw exception");
 		
+		// enumerateObjectsForKeys:unorderedUsingBlock:
+		
+		STAssertThrows(
+			[transaction enumerateObjectsForKeys:keys
+			                 unorderedUsingBlock:^(NSUInteger keyIndex, id object, BOOL *stop) {
+				
+				[transaction setObject:@"object" forKey:@"key5"];
+				// Missing stop; Will cause exception.
+				
+			}], @"Should throw exception");
+		
+		STAssertNoThrow(
+			[transaction enumerateObjectsForKeys:keys
+			                 unorderedUsingBlock:^(NSUInteger keyIndex, id object, BOOL *stop) {
+			
+				[transaction setObject:@"object" forKey:@"key5"];
+				*stop = YES;
+			
+			}], @"Should NOT throw exception");
+		
+		// enumerateKeysAndMetadataUsingBlock:
+		
 		STAssertThrows(
 			[transaction enumerateKeysAndMetadataUsingBlock:^(NSString *key, id metadata, BOOL *stop) {
 			
@@ -589,6 +615,8 @@
 				
 			}], @"Should NOT throw exception");
 		
+		// enumerateKeysAndObjectsUsingBlock:
+		
 		STAssertThrows(
 			[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop) {
 			
@@ -604,6 +632,8 @@
 				*stop = YES;
 				
 			}], @"Should NOT throw exception");
+		
+		// enumerateRowsUsingBlock:
 		
 		STAssertThrows(
 			[transaction enumerateRowsUsingBlock:^(NSString *key, id object, id metadata, BOOL *stop) {
