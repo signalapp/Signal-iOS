@@ -1907,7 +1907,13 @@
 		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 	}
 	
-	// Todo: How best to handle for extension?
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
+		
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
+		
+		[extTransaction handleRemoveObjectForKey:cacheKey.key          // mutable string protection
+		                            inCollection:cacheKey.collection]; // mutable string protection
+	}];
 }
 
 #pragma mark Object
