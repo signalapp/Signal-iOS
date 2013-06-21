@@ -1266,11 +1266,21 @@
 		return;
 	}
 	
-	// Post-Write-Transaction: Step 1 of 8
+	// Post-Write-Transaction: Step 1 of 10
 	//
-	// First fetch changeset.
+	// Run any pre-commit operations.
+	// This allows extensions to to perform any cleanup before the changeset is requested.
+	
+	[transaction preCommitTransaction];
+	
+	// Post-Write-Transaction: Step 2 of 10
+	//
+	// Fetch changesets.
 	// Then update the snapshot in the 'yap' database (if any changes were made).
 	// We use 'yap' database and snapshot value to check for a race condition.
+	//
+	// The "internal" changeset gets sent directly to sibling database connections.
+	// The "external" changeset gets plugged into the YapDatabaseModifiedNotification as the userInfo dict.
 	
 	NSNotification *notification = nil;
 	
@@ -1299,7 +1309,7 @@
 		[changeset setObject:notification forKey:@"notification"];
 	}
 	
-	// Post-Write-Transaction: Step 2 of 8
+	// Post-Write-Transaction: Step 3 of 10
 	//
 	// Check to see if it's safe to commit our changes.
 	//
@@ -1350,7 +1360,7 @@
 				myState->waitingForWriteLock = NO;
 				safeToCommit = YES;
 				
-				// Post-Write-Transaction: Step 3 of 8
+				// Post-Write-Transaction: Step 4 of 10
 				//
 				// Register pending changeset with database.
 				// Our commit is actually a two step process.
@@ -1389,7 +1399,7 @@
 		
 	} while (!safeToCommit);
 	
-	// Post-Write-Transaction: Step 4 of 8
+	// Post-Write-Transaction: Step 5 of 10
 	//
 	// Execute "COMMIT TRANSACTION" on database connection.
 	// This will write the changes to the WAL, and may invoke a checkpoint.
@@ -1414,7 +1424,7 @@
 	
 	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
-		// Post-Write-Transaction: Step 5 of 8
+		// Post-Write-Transaction: Step 6 of 10
 		//
 		// Notify database of changes, and drop reference to set of changed keys.
 		
@@ -1423,7 +1433,7 @@
 			[database noteCommittedChanges:changeset fromConnection:self];
 		}
 		
-		// Post-Write-Transaction: Step 6 of 8
+		// Post-Write-Transaction: Step 7 of 10
 		//
 		// Update our connection state within the state table.
 		//
@@ -1444,7 +1454,7 @@
 		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-write transaction.", self);
 	}});
 	
-	// Post-Write-Transaction: Step 7 of 9
+	// Post-Write-Transaction: Step 8 of 10
 	
 	if (changeset)
 	{
@@ -1457,14 +1467,14 @@
 		}
 	}
 	
-	// Post-Write-Transaction: Step 8 of 9
+	// Post-Write-Transaction: Step 9 of 10
 	//
 	// Post YapDatabaseModifiedNotification
 	
 	if (notification)
 		[[NSNotificationCenter defaultCenter] postNotification:notification];
 	
-	// Post-Write-Transaction: Step 9 of 9
+	// Post-Write-Transaction: Step 10 of 10
 	//
 	// Drop IsOnConnectionQueueKey flag from writeQueue since we're exiting writeQueue.
 	

@@ -26,6 +26,16 @@
 }
 
 /**
+ * This method is called if within a readwrite transaction.
+ * This method is optional.
+**/
+- (void)preCommitTransaction
+{
+	// Subclasses may optionally override this method to perform any "cleanup" before the changesets are requested.
+	// Remember, the changesets are requested before the commitTransaction method is invoked.
+}
+
+/**
  * Subclasses should invoke [super commitTransaction] at the END of their implementation.
 **/
 - (void)commitTransaction

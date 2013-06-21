@@ -1519,6 +1519,19 @@
 	}
 }
 
+/**
+ * This method is only called if within a readwrite transaction.
+ * 
+ * Extensions may implement it to perform any "cleanup" before the changeset is requested.
+ * Remember, the changeset is requested before the commitTransaction method is invoked.
+**/
+- (void)preCommitTransaction
+{
+	YDBLogAutoTrace();
+	
+	[self maybeConsolidateOrExpandDirtyPages];
+}
+
 - (void)commitTransaction
 {
 	YDBLogAutoTrace();
@@ -1527,8 +1540,6 @@
 	// This allows the view to make multiple changes to a page, yet only write it once.
 	
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
-	
-	[self maybeConsolidateOrExpandDirtyPages];
 	
 	YDBLogVerbose(@"viewConnection->dirtyPages: %@", viewConnection->dirtyPages);
 	YDBLogVerbose(@"viewConnection->dirtyMetadata: %@", viewConnection->dirtyMetadata);

@@ -1652,6 +1652,13 @@
 	}
 }
 
+- (void)preCommitTransaction
+{
+	YDBLogAutoTrace();
+	
+	[self maybeConsolidateOrExpandDirtyPages];
+}
+
 - (void)commitTransaction
 {
 	YDBLogAutoTrace();
@@ -1661,8 +1668,6 @@
 	
 	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
 	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
-	[self maybeConsolidateOrExpandDirtyPages];
 	
 	YDBLogVerbose(@"viewConnection->dirtyPages: %@", viewConnection->dirtyPages);
 	YDBLogVerbose(@"viewConnection->dirtyMetadata: %@", viewConnection->dirtyMetadata);
