@@ -1,6 +1,7 @@
 #import "YapDatabaseViewTransaction.h"
 #import "YapDatabaseViewPrivate.h"
 #import "YapDatabaseViewPageMetadata.h"
+#import "YapDatabaseViewOperation.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapAbstractDatabasePrivate.h"
 #import "YapDatabaseTransaction.h"
@@ -266,6 +267,8 @@
 		viewConnection->dirtyKeys = [[NSMutableDictionary alloc] init];
 		viewConnection->dirtyPages = [[NSMutableDictionary alloc] init];
 		viewConnection->dirtyMetadata = [[NSMutableDictionary alloc] init];
+		
+		viewConnection->operations = [[NSMutableArray alloc] init];
 	}
 	
 	sqlite3_finalize(statement);
@@ -678,9 +681,8 @@
 	
 	NSUInteger pagesCount = [pagesMetadataForGroup count];
 	NSUInteger lastPageIndex = (pagesCount > 0) ? (pagesCount - 1) : 0;
-	
-	NSUInteger pageOffset = 0;
 	NSUInteger pageIndex = 0;
+	NSUInteger pageOffset = 0;
 	
 	for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 	{
@@ -723,6 +725,10 @@
 		[viewConnection->dirtyKeys setObject:pageKey forKey:key];
 		[viewConnection->keyCache removeObjectForKey:key];
 	}
+	
+	// Add operation to log
+	
+	[viewConnection->operations addObject:[YapDatabaseViewOperation insertKey:key inGroup:group atIndex:index]];
 }
 
 /**
@@ -1038,27 +1044,12 @@
 	
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
-	// Update page (by removing key from array)
+	// Fetch page & pageMetadata
 	
 	NSMutableArray *page = [self pageForPageKey:pageKey];
 	
-	NSUInteger keyIndex = [page indexOfObject:key];
-	if (keyIndex == NSNotFound)
-	{
-		YDBLogError(@"%@ (%@): Key(%@) expected to be in page(%@), but is missing",
-		            THIS_METHOD, [self registeredViewName], key, pageKey);
-		return;
-	}
-	
-	YDBLogVerbose(@"Removing key(%@) from page(%@) at index(%lu)", key, page, (unsigned long)keyIndex);
-	
-	[page removeObjectAtIndex:keyIndex];
-	NSUInteger pageCount = [page count];
-	
-	// Update page metadata (by decrementing count)
-	
 	YapDatabaseViewPageMetadata *pageMetadata = nil;
-	NSUInteger pageIndex = 0;
+	NSUInteger pageOffset = 0;
 	
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	
@@ -1070,10 +1061,33 @@
 			break;
 		}
 		
-		pageIndex++;
+		pageOffset += pm->count;
 	}
 	
-	pageMetadata->count = pageCount;
+	// Find index within page
+	
+	NSUInteger keyIndexWithinPage = [page indexOfObject:key];
+	if (keyIndexWithinPage == NSNotFound)
+	{
+		YDBLogError(@"%@ (%@): Key(%@) expected to be in page(%@), but is missing",
+		            THIS_METHOD, [self registeredViewName], key, pageKey);
+		return;
+	}
+	
+	YDBLogVerbose(@"Removing key(%@) from page(%@) at index(%lu)", key, page, (unsigned long)keyIndexWithinPage);
+	
+	// Add operation to log
+	
+	[viewConnection->operations addObject:
+	    [YapDatabaseViewOperation deleteKey:key inGroup:group atIndex:(pageOffset + keyIndexWithinPage)]];
+	
+	// Update page (by removing key from array)
+	
+	[page removeObjectAtIndex:keyIndexWithinPage];
+	
+	// Update page metadata (by decrementing count)
+	
+	pageMetadata->count = [page count];
 	
 	// Mark page as dirty
 	
@@ -1111,38 +1125,12 @@
 	
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
-	// Update page (by removing keys from array)
+	// Fetch page & pageMetadata
 	
 	NSMutableArray *page = [self pageForPageKey:pageKey];
 	
-	NSMutableIndexSet *keyIndexSet = [NSMutableIndexSet indexSet];
-	NSUInteger keyIndex = 0;
-	
-	for (NSString *key in page)
-	{
-		if ([keys containsObject:key])
-		{
-			[keyIndexSet addIndex:keyIndex];
-		}
-		
-		keyIndex++;
-	}
-	
-	if ([keyIndexSet count] != [keys count])
-	{
-		YDBLogWarn(@"%@ (%@): Keys expected to be in page(%@), but are missing",
-		           THIS_METHOD, [self registeredViewName], pageKey);
-	}
-	
-	YDBLogVerbose(@"Removing %lu key(s) from page(%@)", (unsigned long)[keyIndexSet count], page);
-	
-	[page removeObjectsAtIndexes:keyIndexSet];
-	NSUInteger pageCount = [page count];
-	
-	// Update page metadata (by decrementing count)
-	
 	YapDatabaseViewPageMetadata *pageMetadata = nil;
-	NSUInteger pageIndex = 0;
+	NSUInteger pageOffset = 0;
 	
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	
@@ -1154,10 +1142,57 @@
 			break;
 		}
 		
-		pageIndex++;
+		pageOffset += pm->count;
 	}
 	
-	pageMetadata->count = pageCount;
+	// Find indexes within page
+	
+	NSMutableIndexSet *keyIndexSet = [NSMutableIndexSet indexSet];
+	NSUInteger keyIndexWithinPage = 0;
+	
+	for (NSString *key in page)
+	{
+		if ([keys containsObject:key])
+		{
+			[keyIndexSet addIndex:keyIndexWithinPage];
+		}
+		
+		keyIndexWithinPage++;
+	}
+	
+	if ([keyIndexSet count] != [keys count])
+	{
+		YDBLogWarn(@"%@ (%@): Keys expected to be in page(%@), but are missing",
+		           THIS_METHOD, [self registeredViewName], pageKey);
+	}
+	
+	YDBLogVerbose(@"Removing %lu key(s) from page(%@)", (unsigned long)[keyIndexSet count], page);
+	
+	// Add operation to log
+	// Notes:
+	// 
+	// - We have to do this before we update the page
+	//     so we can fetch the keys that are being removed.
+	//
+	// - We must add the operations in reverse order,
+	//     just as if we were deleting them from the array one-at-a-time.
+	
+	[keyIndexSet enumerateIndexesWithOptions:NSEnumerationReverse
+	                              usingBlock:^(NSUInteger keyIndexWithinPage, BOOL *stop) {
+		
+		NSString *key = [page objectAtIndex:keyIndexWithinPage];
+		
+		[viewConnection->operations addObject:
+		    [YapDatabaseViewOperation deleteKey:key inGroup:group atIndex:(pageOffset + keyIndexWithinPage)]];
+	}];
+	
+	// Update page (by removing keys from array)
+	
+	[page removeObjectsAtIndexes:keyIndexSet];
+	
+	// Update page metadata (by decrementing count)
+	
+	pageMetadata->count = [page count];
 	
 	// Mark page as dirty
 	
@@ -1247,6 +1282,8 @@
 	[viewConnection->dirtyMetadata removeAllObjects];
 	
 	viewConnection->reset = YES;
+	
+	// Todo: Need remove group mechanism
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1477,13 +1514,19 @@
 	}
 }
 
+/**
+ * During the readwrite transaction we do nothing to enforce the pageSize restriction.
+ * Multiple modifications during a transaction make it non worthwhile.
+ * 
+ * Instead we wait til the transaction has completed
+ * and then we can perform all such cleanup in a single step.
+**/
 - (void)maybeConsolidateOrExpandDirtyPages
 {
-	NSUInteger maxPageSize = [self pageSize];
-	
 	YDBLogAutoTrace();
-	
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
+	
+	NSUInteger maxPageSize = [self pageSize];
 	
 	// Get all the dirty pageMetadata objects.
 	// We snapshot the items so we can make modifications as we enumerate.
@@ -1505,8 +1548,8 @@
 	
 	// Step 2 is to "collapse" undersized pages.
 	//
-	// This means dropping empty pages,
-	// and maybe combining a page with a neighboring page (that has room).
+	// For now, this simply means dropping empty pages.
+	// In the future we may also combine neighboring pages if they're small enough.
 	//
 	// Note: We do this after "expansion" to allow undersized pages to first accomodate overflow.
 	
@@ -1529,7 +1572,10 @@
 {
 	YDBLogAutoTrace();
 	
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
+	
 	[self maybeConsolidateOrExpandDirtyPages];
+	[YapDatabaseViewOperation postProcessAndConsolidateOperations:viewConnection->operations];
 }
 
 - (void)commitTransaction
@@ -1762,6 +1808,7 @@
 	[viewConnection->dirtyPages removeAllObjects];
 	[viewConnection->dirtyMetadata removeAllObjects];
 	[viewConnection->dirtyKeys removeAllObjects];
+	[viewConnection->operations removeAllObjects];
 	
 	[super commitTransaction];
 }

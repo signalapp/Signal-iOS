@@ -43,6 +43,8 @@
 	
 	BOOL lastInsertWasAtFirstIndex;
 	BOOL lastInsertWasAtLastIndex;
+	
+	NSMutableArray *operations;
 }
 
 - (sqlite3_stmt *)keyTable_getPageKeyForKeyStatement;

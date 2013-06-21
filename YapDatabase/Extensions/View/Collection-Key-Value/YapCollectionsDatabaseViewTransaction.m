@@ -1,6 +1,7 @@
 #import "YapCollectionsDatabaseViewTransaction.h"
 #import "YapCollectionsDatabaseViewPrivate.h"
 #import "YapDatabaseViewPageMetadata.h"
+#import "YapDatabaseViewOperation.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapAbstractDatabasePrivate.h"
 #import "YapCollectionsDatabaseTransaction.h"
@@ -271,6 +272,8 @@
 		viewConnection->dirtyKeys = [[NSMutableDictionary alloc] init];
 		viewConnection->dirtyPages = [[NSMutableDictionary alloc] init];
 		viewConnection->dirtyMetadata = [[NSMutableDictionary alloc] init];
+		
+		viewConnection->operations = [[NSMutableArray alloc] init];
 	}
 	
 	sqlite3_finalize(statement);
@@ -813,6 +816,11 @@
 		[viewConnection->dirtyKeys setObject:pageKey forKey:collectionKey];
 		[viewConnection->keyCache removeObjectForKey:collectionKey];
 	}
+	
+	// Add operation to log
+	
+	[viewConnection->operations addObject:
+	    [YapDatabaseViewOperation insertKey:collectionKey inGroup:group atIndex:index]];
 }
 
 /**
@@ -1150,28 +1158,12 @@
 	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
 	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
 	
-	// Update page (by removing key from array)
+	// Fetch page & pageMetadata
 	
 	NSMutableArray *page = [self pageForPageKey:pageKey];
 	
-	NSUInteger keyIndex = [page indexOfObject:collectionKey];
-	if (keyIndex == NSNotFound)
-	{
-		YDBLogError(@"%@ (%@): Collection(%@) Key(%@) expected to be in page(%@), but is missing",
-		            THIS_METHOD, [self registeredViewName], collectionKey.collection, collectionKey.key, pageKey);
-		return;
-	}
-	
-	YDBLogVerbose(@"Removing collection(%@) key(%@) from page(%@) at index(%lu)",
-	              collectionKey.collection, collectionKey.key, page, (unsigned long)keyIndex);
-	
-	[page removeObjectAtIndex:keyIndex];
-	NSUInteger pageCount = [page count];
-	
-	// Update page metadata (by decrementing count)
-	
 	YapDatabaseViewPageMetadata *pageMetadata = nil;
-	NSUInteger pageIndex = 0;
+	NSUInteger pageOffset = 0;
 	
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	
@@ -1183,16 +1175,38 @@
 			break;
 		}
 		
-		pageIndex++;
+		pageOffset += pm->count;
 	}
 	
-	pageMetadata->count = pageCount;
+	// Find index within page
 	
-	// Mark page as dirty, or drop page
+	NSUInteger keyIndexWithinPage = [page indexOfObject:collectionKey];
+	if (keyIndexWithinPage == NSNotFound)
+	{
+		YDBLogError(@"%@ (%@): Collection(%@) Key(%@) expected to be in page(%@), but is missing",
+		            THIS_METHOD, [self registeredViewName], collectionKey.collection, collectionKey.key, pageKey);
+		return;
+	}
 	
-	YDBLogVerbose(@"Dirty page(%@)", pageKey);
+	YDBLogVerbose(@"Removing collection(%@) key(%@) from page(%@) at index(%lu)",
+	              collectionKey.collection, collectionKey.key, page, (unsigned long)keyIndexWithinPage);
+	
+	// Add operation to log
+	
+	[viewConnection->operations addObject:
+	    [YapDatabaseViewOperation deleteKey:collectionKey inGroup:group atIndex:(pageOffset + keyIndexWithinPage)]];
+	
+	// Update page (by removing key from array)
+	
+	[page removeObjectAtIndex:keyIndexWithinPage];
+	
+	// Update page metadata (by decrementing count)
+	
+	pageMetadata->count = [page count];
 	
 	// Mark page as dirty
+	
+	YDBLogVerbose(@"Dirty page(%@)", pageKey);
 	
 	[viewConnection->dirtyPages setObject:page forKey:pageKey];
 	[viewConnection->pageCache removeObjectForKey:pageKey];
@@ -1250,40 +1264,12 @@
 	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
 	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
 	
-	// Update page (by removing keys from array)
+	// Fetch page & pageMetadata
 	
 	NSMutableArray *page = [self pageForPageKey:pageKey];
 	
-	NSIndexSet *indexesToRemove = [page indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-		
-		__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
-		
-		if ([collection isEqualToString:collectionKey.collection])
-		{
-			if ([keys containsObject:collectionKey.key])
-			{
-				return YES;
-			}
-		}
-		
-		return NO;
-	}];
-	
-	if ([indexesToRemove count] != [keys count])
-	{
-		YDBLogWarn(@"%@ (%@): Keys expected to be in page(%@), but are missing",
-		           THIS_METHOD, [self registeredViewName], pageKey);
-	}
-	
-	YDBLogVerbose(@"Removing %lu key(s) from page(%@)", (unsigned long)[indexesToRemove count], page);
-	
-	[page removeObjectsAtIndexes:indexesToRemove];
-	NSUInteger pageCount = [page count];
-	
-	// Update page metadata (by decrementing count)
-	
 	YapDatabaseViewPageMetadata *pageMetadata = nil;
-	NSUInteger pageIndex = 0;
+	NSUInteger pageOffset = 0;
 	
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	
@@ -1295,16 +1281,69 @@
 			break;
 		}
 		
-		pageIndex++;
+		pageOffset += pm->count;
 	}
 	
-	pageMetadata->count = pageCount;
+	// Find indexes within page
 	
-	// Mark page as dirty, or drop page
+	NSMutableIndexSet *keyIndexSet = [NSMutableIndexSet indexSet];
+	NSUInteger keyIndexWithinPage = 0;
 	
-	YDBLogVerbose(@"Dirty page(%@)", pageKey);
+	NSMutableArray *collectionKeys = [NSMutableArray arrayWithCapacity:[keys count]];
+	
+	for (YapCollectionKey *collectionKey in page)
+	{
+		if ([collection isEqualToString:collectionKey.collection])
+		{
+			if ([keys containsObject:collectionKey.key])
+			{
+				[keyIndexSet addIndex:keyIndexWithinPage];
+				[collectionKeys addObject:collectionKey];
+			}
+		}
+		
+		keyIndexWithinPage++;
+	}
+	
+	if ([keyIndexSet count] != [keys count])
+	{
+		YDBLogWarn(@"%@ (%@): Keys expected to be in page(%@), but are missing",
+		           THIS_METHOD, [self registeredViewName], pageKey);
+	}
+	
+	YDBLogVerbose(@"Removing %lu key(s) from page(%@)", (unsigned long)[keyIndexSet count], page);
+	
+	// Add operation to log
+	// Notes:
+	// 
+	// - We have to do this before we update the page
+	//     so we can fetch the keys that are being removed.
+	//
+	// - We must add the operations in reverse order,
+	//     just as if we were deleting them from the array one-at-a-time.
+	
+	__block NSUInteger i = [collectionKeys count] - 1;
+	[keyIndexSet enumerateIndexesWithOptions:NSEnumerationReverse
+	                              usingBlock:^(NSUInteger keyIndexWithinPage, BOOL *stop) {
+		
+		YapCollectionKey *collectionKey = [collectionKeys objectAtIndex:i];
+		i--;
+									  
+		[viewConnection->operations addObject:
+		    [YapDatabaseViewOperation deleteKey:collectionKey inGroup:group atIndex:(pageOffset + keyIndexWithinPage)]];
+	}];
+	
+	// Update page (by removing keys from array)
+	
+	[page removeObjectsAtIndexes:keyIndexSet];
+	
+	// Update page metadata (by decrementing count)
+	
+	pageMetadata->count = [page count];
 	
 	// Mark page as dirty
+	
+	YDBLogVerbose(@"Dirty page(%@)", pageKey);
 	
 	[viewConnection->dirtyPages setObject:page forKey:pageKey];
 	[viewConnection->pageCache removeObjectForKey:pageKey];
@@ -1315,10 +1354,8 @@
 	
 	// Mark keys for deletion
 	
-	for (NSString *key in keys)
+	for (YapCollectionKey *collectionKey in collectionKeys)
 	{
-		YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-		
 		[viewConnection->dirtyKeys setObject:[NSNull null] forKey:collectionKey];
 		[viewConnection->keyCache removeObjectForKey:collectionKey];
 	}
@@ -1656,7 +1693,11 @@
 {
 	YDBLogAutoTrace();
 	
+	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
+	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
+	
 	[self maybeConsolidateOrExpandDirtyPages];
+	[YapDatabaseViewOperation postProcessAndConsolidateOperations:viewConnection->operations];
 }
 
 - (void)commitTransaction
@@ -1901,6 +1942,7 @@
 	[viewConnection->dirtyPages removeAllObjects];
 	[viewConnection->dirtyMetadata removeAllObjects];
 	[viewConnection->dirtyKeys removeAllObjects];
+	[viewConnection->operations removeAllObjects];
 	
 	[super commitTransaction];
 }
