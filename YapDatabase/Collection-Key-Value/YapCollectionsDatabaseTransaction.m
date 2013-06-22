@@ -1675,7 +1675,8 @@
 				
 				if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
 				{
-					[connection->objectCache setObject:object forKey:cacheKey];
+					if (object)
+						[connection->objectCache setObject:object forKey:cacheKey];
 				}
 			}
 			
@@ -1759,7 +1760,8 @@
 				
 				if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
 				{
-					[connection->objectCache setObject:object forKey:cacheKey];
+					if (object)
+						[connection->objectCache setObject:object forKey:cacheKey];
 				}
 			}
 			
