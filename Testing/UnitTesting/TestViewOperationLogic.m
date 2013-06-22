@@ -84,11 +84,11 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Delete: 2 (bear)
 	// Delete: 0 (lion)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(0)->original == 2, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(1)->original == 0, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).originalIndex == 0, @"");
 }
 
 - (void)test1B
@@ -112,11 +112,11 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Delete: (2 -> ~) (bear)
 	// Delete: (3 -> ~) (cat)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(0)->original == 2, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(1)->original == 3, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).originalIndex == 3, @"");
 }
 
 - (void)test1C
@@ -140,11 +140,11 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Delete: (2 -> ~) (bear)
 	// Delete: (4 -> ~) (dog)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(0)->original == 2, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(1)->original == 4, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).originalIndex == 4, @"");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -174,11 +174,11 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Insert: (~ -> 3) (zebra)
 	// Insert: (~ -> 0) (goat)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(0)->final == 3, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).finalIndex == 3, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(1)->final == 0, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).finalIndex == 0, @"");
 }
 
 - (void)test2B
@@ -204,11 +204,11 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Insert: (~ -> 3) (zebra)
 	// Insert: (~ -> 2) (goat)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(0)->final == 3, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).finalIndex == 3, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(1)->final == 2, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).finalIndex == 2, @"");
 }
 
 - (void)test2C
@@ -234,11 +234,11 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Insert: (~ -> 2) (zebra)
 	// Insert: (~ -> 6) (goat)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(0)->final == 2, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).finalIndex == 2, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(1)->final == 6, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).finalIndex == 6, @"");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -266,11 +266,11 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Delete: 2 (bear)
 	// Insert: 0 (zebra)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(0)->original == 2, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(1)->final == 0, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).finalIndex == 0, @"");
 }
 
 - (void)test3B
@@ -294,11 +294,11 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Delete: 2 (bear)
 	// Insert: 2 (zebra)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(0)->original == 2, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(1)->final == 2, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).finalIndex == 2, @"");
 }
 
 - (void)test3C
@@ -322,11 +322,11 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Delete: 2 (bear)
 	// Insert: 4 (zebra)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(0)->original == 2, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(1)->final == 4, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).finalIndex == 4, @"");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -355,11 +355,11 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Insert: 1 (zebra)
 	// Delete: 0 (lion)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(0)->final == 1, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).finalIndex == 1, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(1)->original == 0, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).originalIndex == 0, @"");
 }
 
 - (void)test4B
@@ -384,11 +384,11 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Insert: 1 (zebra)
 	// Delete: 1 (tiger)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(0)->final == 1, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).finalIndex == 1, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(1)->original == 1, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).originalIndex == 1, @"");
 }
 
 - (void)test4C
@@ -413,11 +413,11 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Insert: 2 (zebra)
 	// Delete: 2 (bear)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(0)->final == 2, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).finalIndex == 2, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(1)->original == 2, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).originalIndex == 2, @"");
 }
 
 - (void)test4D
@@ -442,11 +442,11 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Insert: 2 (zebra)
 	// Delete: 3 (cat)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(0)->final == 2, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).finalIndex == 2, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(1)->original == 3, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).originalIndex == 3, @"");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -477,14 +477,14 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Delete: 0 (lion)
 	// Delete: 1 (tiger)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(0)->final == 0, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).finalIndex == 0, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(1)->original == 0, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).originalIndex == 0, @"");
 	
-	STAssertTrue(Op(2)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(2)->original == 1, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(2).originalIndex == 1, @"");
 }
 
 - (void)test5B
@@ -511,14 +511,14 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Delete: 1 (tiger)
 	// Delete: 2 (bear)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(0)->final == 1, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).finalIndex == 1, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(1)->original == 1, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).originalIndex == 1, @"");
 	
-	STAssertTrue(Op(2)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(2)->original == 2, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(2).originalIndex == 2, @"");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -549,14 +549,14 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Insert: 1 (zebra)
 	// Insert: 0 (goat)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(0)->original == 2, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(1)->final == 1, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).finalIndex == 1, @"");
 	
-	STAssertTrue(Op(2)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(2)->final == 0, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(2).finalIndex == 0, @"");
 }
 
 - (void)test6B
@@ -583,14 +583,14 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Insert: 0 (zebra)
 	// Insert: 1 (goat)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(0)->original == 2, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(1)->final == 0, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).finalIndex == 0, @"");
 	
-	STAssertTrue(Op(2)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(2)->final == 1, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(2).finalIndex == 1, @"");
 }
 
 - (void)test6C
@@ -617,14 +617,14 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Insert: 2 (zebra)
 	// Insert: 0 (goat)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(0)->original == 2, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(1)->final == 2, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).finalIndex == 2, @"");
 	
-	STAssertTrue(Op(2)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(2)->final == 0, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(2).finalIndex == 0, @"");
 }
 
 - (void)test6D
@@ -651,14 +651,14 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Insert: 1 (zebra)
 	// Insert: 2 (goat)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(0)->original == 2, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(1)->final == 1, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).finalIndex == 1, @"");
 	
-	STAssertTrue(Op(2)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(2)->final == 2, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(2).finalIndex == 2, @"");
 }
 
 - (void)test6E
@@ -685,14 +685,14 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Insert: 3 (zebra)
 	// Insert: 1 (goat)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(0)->original == 2, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(1)->final == 3, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).finalIndex == 3, @"");
 	
-	STAssertTrue(Op(2)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(2)->final == 1, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(2).finalIndex == 1, @"");
 }
 
 - (void)test6F
@@ -719,14 +719,14 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Insert: 3 (zebra)
 	// Insert: 2 (goat)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(0)->original == 2, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(1)->final == 3, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).finalIndex == 3, @"");
 	
-	STAssertTrue(Op(2)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(2)->final == 2, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(2).finalIndex == 2, @"");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -761,20 +761,20 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Delete: 2 (bear)
 	// Delete: 3 (cat)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(0)->final == 0, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).finalIndex == 0, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(1)->original == 0, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).originalIndex == 0, @"");
 	
-	STAssertTrue(Op(2)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(2)->original == 1, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(2).originalIndex == 1, @"");
 	
-	STAssertTrue(Op(3)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(3)->original == 2, @"");
+	STAssertTrue(Op(3).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(3).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(4)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(4)->original == 3, @"");
+	STAssertTrue(Op(4).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(4).originalIndex == 3, @"");
 }
 
 - (void)test7B
@@ -805,20 +805,20 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Delete: 3 (cat)
 	// Delete: 2 (bear)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(0)->final == 0, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).finalIndex == 0, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(1)->original == 1, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).originalIndex == 1, @"");
 	
-	STAssertTrue(Op(2)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(2)->original == 0, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(2).originalIndex == 0, @"");
 	
-	STAssertTrue(Op(3)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(3)->original == 3, @"");
+	STAssertTrue(Op(3).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(3).originalIndex == 3, @"");
 	
-	STAssertTrue(Op(4)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(4)->original == 2, @"");
+	STAssertTrue(Op(4).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(4).originalIndex == 2, @"");
 }
 
 - (void)test7C
@@ -849,20 +849,20 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Delete: 0 (lion)
 	// Delete: 1 (tiger)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(0)->final == 0, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).finalIndex == 0, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(1)->original == 2, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(2)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(2)->original == 3, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(2).originalIndex == 3, @"");
 	
-	STAssertTrue(Op(3)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(3)->original == 0, @"");
+	STAssertTrue(Op(3).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(3).originalIndex == 0, @"");
 	
-	STAssertTrue(Op(4)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(4)->original == 1, @"");
+	STAssertTrue(Op(4).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(4).originalIndex == 1, @"");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -896,17 +896,17 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Insert: 2 (goat)
 	// Insert: 3 (fish)
 	
-	STAssertTrue(Op(0)->type == YapDatabaseViewOperationDelete, @"");
-	STAssertTrue(Op(0)->original == 2, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(1)->final == 1, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).finalIndex == 1, @"");
 	
-	STAssertTrue(Op(2)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(2)->final == 2, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(2).finalIndex == 2, @"");
 	
-	STAssertTrue(Op(3)->type == YapDatabaseViewOperationInsert, @"");
-	STAssertTrue(Op(3)->final == 3, @"");
+	STAssertTrue(Op(3).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(3).finalIndex == 3, @"");
 }
 
 @end

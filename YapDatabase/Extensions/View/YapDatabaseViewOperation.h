@@ -8,24 +8,18 @@ typedef enum {
 } YapDatabaseViewOperationType;
 
 
-@interface YapDatabaseViewOperation : NSObject {
-@public
-	
-	id key;                // consider immutable
-	NSString *group;       // consider immutable
-	
-	NSUInteger opOriginal; // consider immutable
-	NSUInteger opFinal;    // consider immutable
-	
-	YapDatabaseViewOperationType type; // mutable during consolidation
-	
-	NSUInteger original; // mutable during post-processing
-	NSUInteger final;    // mutable during post-processing
-}
+@interface YapDatabaseViewOperation : NSObject
 
 + (YapDatabaseViewOperation *)insertKey:(id)key inGroup:(NSString *)group atIndex:(NSUInteger)index;
 + (YapDatabaseViewOperation *)deleteKey:(id)key inGroup:(NSString *)group atIndex:(NSUInteger)index;
 
 + (void)postProcessAndConsolidateOperations:(NSMutableArray *)operations;
+
+@property (nonatomic, readonly) id key;
+
+@property (nonatomic, readonly) YapDatabaseViewOperationType type;
+
+@property (nonatomic, readonly) NSUInteger originalIndex;
+@property (nonatomic, readonly) NSUInteger finalIndex;
 
 @end
