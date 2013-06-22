@@ -1096,21 +1096,9 @@
 	isMutated = NO; // mutation during enumeration protection
 	__block BOOL stop = NO;
 	
-	// Cache optimization strategy:
-	//
-	// Some items are in both caches.
-	// Some items are only in object cache.
-	// Some items are only in metadata cache.
-	// Some items are in neither cache.
-	//
-	// For items only in object cache, we can use enumerateMetadataForKeys:inCollection:usingBlock:.
-	// For items only in metadata cache, we can use enumerateObjectsForKeys:inCollection:usingBlock:.
-	// For items in neither, we'll have to fetch and deserialize both fields.
+	// Check the cache first (to optimize cache)
 	
 	NSMutableArray *missingIndexes = [NSMutableArray arrayWithCapacity:[keys count]];
-	NSMutableArray *keysInObjectCacheOnly = [NSMutableArray arrayWithCapacity:[keys count]];
-	NSMutableArray *keysInMetadataCacheOnly = [NSMutableArray arrayWithCapacity:[keys count]];
-	
 	NSUInteger keyIndex = 0;
 	
 	for (NSString *key in keys)
@@ -1118,10 +1106,9 @@
 		YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
 		id object = [connection->objectCache objectForKey:cacheKey];
-		id metadata = [connection->metadataCache objectForKey:cacheKey];
-		
 		if (object)
 		{
+			id metadata = [connection->metadataCache objectForKey:cacheKey];
 			if (metadata)
 			{
 				if (metadata == [YapNull null])
@@ -1133,12 +1120,8 @@
 			}
 			else
 			{
-				[keysInObjectCacheOnly addObject:key];
+				[missingIndexes addObject:@(keyIndex)];
 			}
-		}
-		else if (metadata)
-		{
-			[keysInMetadataCacheOnly addObject:key];
 		}
 		else
 		{
@@ -1155,54 +1138,9 @@
 		@throw [self mutationDuringEnumerationException];
 		return;
 	}
-	
-	if ([keysInObjectCacheOnly count] > 0)
-	{
-		// Enumerate over the keys that are in the objectCache, but missing from the metadataCache.
-		// That way we only fetch the metadata, minimizing the amount of data read from disk.
-		
-		[self enumerateMetadataForKeys:keysInObjectCacheOnly
-		                  inCollection:collection
-		           unorderedUsingBlock:^(NSUInteger keyIndex, id metadata, BOOL *subStop){
-			
-			NSString *key = [keysInObjectCacheOnly objectAtIndex:keyIndex];
-			YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-			
-			id object = [connection->objectCache objectForKey:cacheKey];
-			
-			block(keyIndex, object, metadata, &stop);
-			
-			if (stop) *subStop = YES;
-		}];
+	if ([missingIndexes count] == 0) {
+		return;
 	}
-	
-	if (stop || isMutated) return;
-	
-	if ([keysInMetadataCacheOnly count] > 0)
-	{
-		// Enumerate over the keys that are in the metadataCache, but missing from the objectCache.
-		// That way we only fetch the object, minimizing the amount of data read from disk.
-		
-		[self enumerateObjectsForKeys:keysInMetadataCacheOnly
-		                 inCollection:collection
-		          unorderedUsingBlock:^(NSUInteger keyIndex, id object, BOOL *subStop){
-			
-			NSString *key = [keysInMetadataCacheOnly objectAtIndex:keyIndex];
-			YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-			
-			id metadata = [connection->metadataCache objectForKey:cacheKey];
-			
-			if (metadata == [YapNull null])
-				block(keyIndex, object, nil, &stop);
-			else
-				block(keyIndex, object, metadata, &stop);
-			
-			if (stop) *subStop = YES;
-		}];
-	}
-	
-	if (stop || isMutated) return;
-	if ([missingIndexes count] == 0) return;
 	
 	// Go to database for any missing keys (if needed)
 	
@@ -1278,32 +1216,40 @@
 			const unsigned char *text = sqlite3_column_text(statement, 0);
 			int textSize = sqlite3_column_bytes(statement, 0);
 			
-			const void *oBlob = sqlite3_column_blob(statement, 1);
-			int oBlobSize = sqlite3_column_bytes(statement, 1);
-			
-			const void *mBlob = sqlite3_column_blob(statement, 2);
-			int mBlobSize = sqlite3_column_bytes(statement, 2);
-			
 			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 			NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
 			
-			NSData *oData = nil;
-			NSData *mData = nil;
+			YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 			
-			if (oBlobSize > 0)
-				oData = [[NSData alloc] initWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
-			
-			if (mBlobSize > 0)
-				mData = [[NSData alloc] initWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-			
-			id object = oData ? connection.database.objectDeserializer(oData) : nil;
-			id metadata = mData ? connection.database.metadataDeserializer(mData) : nil;
-			
-			if (object)
+			id object = [connection->objectCache objectForKey:cacheKey];
+			if (object == nil)
 			{
-				YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+				const void *oBlob = sqlite3_column_blob(statement, 1);
+				int oBlobSize = sqlite3_column_bytes(statement, 1);
 				
-				[connection->objectCache setObject:object forKey:cacheKey];
+				NSData *oData = [[NSData alloc] initWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+				object = connection.database.objectDeserializer(oData);
+				
+				if (object)
+					[connection->objectCache setObject:object forKey:cacheKey];
+			}
+			
+			id metadata = [connection->metadataCache objectForKey:cacheKey];
+			if (metadata)
+			{
+				if (metadata == [YapNull null])
+					metadata = nil;
+			}
+			else
+			{
+				const void *mBlob = sqlite3_column_blob(statement, 2);
+				int mBlobSize = sqlite3_column_bytes(statement, 2);
+				
+				if (mBlobSize > 0)
+				{
+					NSData *mData = [[NSData alloc] initWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+					metadata = connection.database.metadataDeserializer(mData);
+				}
 				
 				if (metadata)
 					[connection->metadataCache setObject:metadata forKey:cacheKey];
