@@ -632,8 +632,7 @@
 			NSUInteger keyIndex = [keyIndexNumber unsignedIntegerValue];
 			block(keyIndex, nil, &stop);
 			
-			NSString *key = [[keys objectAtIndex:keyIndex] copy]; // mutable string protection
-			[connection->metadataCache setObject:[YapNull null] forKey:key];
+			// Do NOT add keys to the cache that don't exist in the database.
 			
 			if (stop || isMutated) break;
 		}
@@ -818,6 +817,8 @@
 		{
 			NSUInteger keyIndex = [keyIndexNumber unsignedIntegerValue];
 			block(keyIndex, nil, &stop);
+			
+			// Do NOT add keys to the cache that don't exist in the database.
 			
 			if (stop || isMutated) break;
 		}

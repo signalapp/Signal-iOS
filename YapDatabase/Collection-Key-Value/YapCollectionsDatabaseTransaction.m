@@ -850,6 +850,8 @@
 		{
 			block([keyIndexNumber unsignedIntegerValue], nil, &stop);
 			
+			// Do NOT add keys to the cache that don't exist in the database.
+			
 			if (stop || isMutated) break;
 		}
 		
@@ -1050,6 +1052,8 @@
 		for (NSNumber *keyIndexNumber in [keyIndexDict objectEnumerator])
 		{
 			block([keyIndexNumber unsignedIntegerValue], nil, &stop);
+			
+			// Do NOT add keys to the cache that don't exist in the database.
 			
 			if (stop || isMutated) break;
 		}
@@ -1288,6 +1292,8 @@
 		for (NSNumber *keyIndexNumber in [keyIndexDict objectEnumerator])
 		{
 			block([keyIndexNumber unsignedIntegerValue], nil, nil, &stop);
+			
+			// Do NOT add keys to the cache that don't exist in the database.
 			
 			if (stop || isMutated) break;
 		}
