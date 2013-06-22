@@ -322,7 +322,7 @@
 			
 				if (metadata)
 					[connection->metadataCache setObject:metadata forKey:key];
-				else if (object)
+				else
 					[connection->metadataCache setObject:[YapNull null] forKey:key];
 			}
 			
@@ -494,7 +494,10 @@
 		id metadata = [connection->metadataCache objectForKey:key];
 		if (metadata)
 		{
-			block(keyIndex, metadata, &stop);
+			if (metadata == [YapNull null])
+				block(keyIndex, nil, &stop);
+			else
+				block(keyIndex, metadata, &stop);
 			
 			if (stop || isMutated) break;
 		}
