@@ -263,12 +263,6 @@
 	{
 		YDBLogVerbose(@"viewConnection->group_pagesMetadata_dict: %@", viewConnection->group_pagesMetadata_dict);
 		YDBLogVerbose(@"viewConnection->pageKey_group_dict: %@", viewConnection->pageKey_group_dict);
-		
-		viewConnection->dirtyKeys = [[NSMutableDictionary alloc] init];
-		viewConnection->dirtyPages = [[NSMutableDictionary alloc] init];
-		viewConnection->dirtyMetadata = [[NSMutableDictionary alloc] init];
-		
-		viewConnection->operations = [[NSMutableArray alloc] init];
 	}
 	
 	sqlite3_finalize(statement);
@@ -1805,11 +1799,7 @@
 		}
 	}];
 	
-	[viewConnection->dirtyPages removeAllObjects];
-	[viewConnection->dirtyMetadata removeAllObjects];
-	[viewConnection->dirtyKeys removeAllObjects];
-	[viewConnection->operations removeAllObjects];
-	
+	[viewConnection postCommitCleanup];
 	[super commitTransaction];
 }
 

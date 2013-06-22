@@ -67,8 +67,20 @@
 **/
 - (id)newReadWriteTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
 {
-	return [[YapCollectionsDatabaseViewTransaction alloc] initWithExtensionConnection:self
-	                                                              databaseTransaction:databaseTransaction];
+	YapCollectionsDatabaseViewTransaction *transaction =
+	    [[YapCollectionsDatabaseViewTransaction alloc] initWithExtensionConnection:self
+	                                                           databaseTransaction:databaseTransaction];
+	
+	if (dirtyKeys == nil)
+		dirtyKeys = [[NSMutableDictionary alloc] init];
+	if (dirtyPages == nil)
+		dirtyPages = [[NSMutableDictionary alloc] init];
+	if (dirtyMetadata == nil)
+		dirtyMetadata = [[NSMutableDictionary alloc] init];
+	if (operations == nil)
+		operations = [[NSMutableArray alloc] init];
+	
+	return transaction;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -143,13 +155,37 @@
 	[dirtyPages removeAllObjects];
 	[dirtyMetadata removeAllObjects];
 	reset = NO;
+	
+	[operations removeAllObjects];
+}
+
+- (void)postCommitCleanup
+{
+	// Both dirtyKeys & dirtyPages are sent in the internalChangeset.
+	// So we need completely new versions of them.
+	
+	if ([dirtyKeys count] > 0)
+		dirtyKeys = nil;
+	
+	if ([dirtyPages count] > 0)
+		dirtyPages = nil;
+	
+	// dirtyMetadata isn't part of the changeset.
+	// So it's safe to simply reset.
+	
+	[dirtyMetadata removeAllObjects];
+	
+	// The operations log is copied into the external changeset.
+	// So it's safe to simply reset.
+	
+	[operations removeAllObjects];
+	
+	reset = NO;
 }
 
 - (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
            externalChangeset:(NSMutableDictionary **)externalChangesetPtr
 {
-	YDBLogAutoTrace();
-	
 	YDBLogAutoTrace();
 	
 	NSMutableDictionary *internalChangeset = nil;
@@ -161,11 +197,11 @@
 		
 		if ([dirtyKeys count] > 0)
 		{
-			[internalChangeset setObject:[dirtyKeys copy] forKey:@"dirtyKeys"];
+			[internalChangeset setObject:dirtyKeys forKey:@"dirtyKeys"];
 		}
 		if ([dirtyPages count] > 0)
 		{
-			[internalChangeset setObject:[self dirtyPagesDeepCopy:dirtyPages] forKey:@"dirtyPages"];
+			[internalChangeset setObject:dirtyPages forKey:@"dirtyPages"];
 		}
 		
 		if (reset)
@@ -181,6 +217,13 @@
 		
 		[internalChangeset setObject:group_pagesMetadata_dict_copy forKey:@"group_pagesMetadata_dict"];
 		[internalChangeset setObject:pageKey_group_dict_copy       forKey:@"pageKey_group_dict"];
+	}
+	
+	if ([operations count])
+	{
+		externalChangeset = [NSMutableDictionary dictionaryWithCapacity:1];
+		
+  		[externalChangeset setObject:[operations copy] forKey:@"operations"];
 	}
 	
 	*internalChangesetPtr = internalChangeset;

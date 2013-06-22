@@ -46,6 +46,8 @@
 	NSMutableArray *operations;
 }
 
+- (void)postCommitCleanup;
+
 - (sqlite3_stmt *)keyTable_getPageKeyForCollectionKeyStatement;
 - (sqlite3_stmt *)keyTable_setPageKeyForCollectionKeyStatement;
 - (sqlite3_stmt *)keyTable_enumerateForCollectionStatement;
