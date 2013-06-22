@@ -156,8 +156,6 @@
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
 	sqlite3_bind_text(statement, 1, _key.str, _key.length, SQLITE_STATIC);
 	
-	NSData *objectData = nil;
-	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
@@ -172,15 +170,14 @@
 		// Use initWithBytesNoCopy to avoid an extra allocation and memcpy.
 		// But be sure not to call sqlite3_reset until we're done with the data.
 		
-		objectData = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+		NSData *oData = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+		object = connection.database.objectDeserializer(oData);
 	}
 	else if (status == SQLITE_ERROR)
 	{
 		YDBLogError(@"Error executing 'getDataForKeyStatement': %d %s, key(%@)",
 				   status, sqlite3_errmsg(connection->db), key);
 	}
-	
-	object = objectData ? connection.database.objectDeserializer(objectData) : nil;
 	
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
@@ -288,9 +285,6 @@
 			YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
 			sqlite3_bind_text(statement, 1, _key.str, _key.length, SQLITE_STATIC);
 			
-			NSData *objectData = nil;
-			NSData *metadataData = nil;
-			
 			int status = sqlite3_step(statement);
 			if (status == SQLITE_ROW)
 			{
@@ -300,18 +294,19 @@
 				const void *oBlob = sqlite3_column_blob(statement, 0);
 				int oBlobSize = sqlite3_column_bytes(statement, 0);
 				
-				if (oBlobSize > 0)
-					objectData = [[NSData alloc] initWithBytesNoCopy:(void *)oBlob
-					                                          length:oBlobSize
-					                                    freeWhenDone:NO];
-				
 				const void *mBlob = sqlite3_column_blob(statement, 1);
 				int mBlobSize = sqlite3_column_bytes(statement, 1);
 				
+				NSData *oData, *mData;
+				
+				oData = [[NSData alloc] initWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+				object = connection.database.objectDeserializer(oData);
+				
 				if (mBlobSize > 0)
-					metadataData = [[NSData alloc] initWithBytesNoCopy:(void *)mBlob
-					                                            length:mBlobSize
-					                                      freeWhenDone:NO];
+				{
+					mData = [[NSData alloc] initWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+					metadata = connection.database.metadataDeserializer(mData);
+				}
 			}
 			else if (status == SQLITE_ERROR)
 			{
@@ -319,22 +314,18 @@
 				                                                   status, sqlite3_errmsg(connection->db));
 			}
 			
-			if (objectData)
-				object = connection.database.objectDeserializer(objectData);
-			
-			if (metadataData)
-				metadata = connection.database.metadataDeserializer(metadataData);
-			
-			key = [key copy]; // mutable string protection
-			
 			if (object)
+			{
+				key = [key copy]; // mutable string protection
+				
 				[connection->objectCache setObject:object forKey:key];
 			
-			if (metadata)
-				[connection->metadataCache setObject:metadata forKey:key];
-			else if (object)
-				[connection->metadataCache setObject:[YapNull null] forKey:key];
-				
+				if (metadata)
+					[connection->metadataCache setObject:metadata forKey:key];
+				else if (object)
+					[connection->metadataCache setObject:[YapNull null] forKey:key];
+			}
+			
 			sqlite3_clear_bindings(statement);
 			sqlite3_reset(statement);
 			FreeYapDatabaseString(&_key);
@@ -791,8 +782,7 @@
 			NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
 			
 			NSData *objectData = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-			
-			id object = objectData ? connection.database.objectDeserializer(objectData) : nil;
+			id object = connection.database.objectDeserializer(objectData);
 			
 			if (object) {
 				[connection->objectCache setObject:object forKey:key]; // key is immutable
@@ -1030,7 +1020,8 @@
 				
 				if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
 				{
-					[connection->objectCache setObject:object forKey:key];
+					if (object)
+						[connection->objectCache setObject:object forKey:key];
 				}
 			}
 			
@@ -1156,7 +1147,8 @@
 				
 				if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
 				{
-					[connection->objectCache setObject:object forKey:key];
+					if (object)
+						[connection->objectCache setObject:object forKey:key];
 				}
 			}
 			
