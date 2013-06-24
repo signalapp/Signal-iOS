@@ -839,6 +839,228 @@
 }
 
 /**
+ * Enumerates over the given list of keys (unordered), and fetches the associated rows.
+ *
+ * This method is faster than fetching items one-by-one as it optimizes cache access.
+ * That is, it will first enumerate over cached items and then fetch items from the database,
+ * thus optimizing the cache and reducing the query size.
+ *
+ * If any keys are missing from the database, the 'object' parameter will be nil.
+ * 
+ * IMPORTANT:
+ * Due to various optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
+**/
+- (void)enumerateRowsForKeys:(NSArray *)keys
+         unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id object, id metadata, BOOL *stop))block
+{
+	if (block == NULL) return;
+	if ([keys count] == 0) return;
+	
+	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
+	
+	BOOL stop = NO;
+	isMutated = NO; // mutation during enumeration protection
+	
+	// Check the cache first (to optimize cache)
+	
+	NSMutableArray *missingIndexes = [NSMutableArray arrayWithCapacity:[keys count]];
+	NSUInteger keyIndex = 0;
+	
+	for (NSString *key in keys)
+	{
+		id object = [connection->objectCache objectForKey:key];
+		if (object)
+		{
+			id metadata = [connection->metadataCache objectForKey:key];
+			if (metadata)
+			{
+				if (metadata == [YapNull null])
+					block(keyIndex, object, nil, &stop);
+				else
+					block(keyIndex, object, metadata, &stop);
+				
+				if (stop || isMutated) break;
+			}
+			else
+			{
+				[missingIndexes addObject:@(keyIndex)];
+			}
+		}
+		else
+		{
+			[missingIndexes addObject:@(keyIndex)];
+		}
+		
+		keyIndex++;
+	}
+	
+	if (stop) {
+		return;
+	}
+	if (isMutated) {
+		@throw [self mutationDuringEnumerationException];
+		return;
+	}
+	if ([missingIndexes count] == 0) {
+		return;
+	}
+	
+	// Go to database for any missing keys (if needed)
+	
+	// Sqlite has an upper bound on the number of host parameters that may be used in a single query.
+	// We need to watch out for this in case a large array of keys is passed.
+	
+	NSUInteger maxHostParams = (NSUInteger) sqlite3_limit(connection->db, SQLITE_LIMIT_VARIABLE_NUMBER, -1);
+	
+	do
+	{
+		// Determine how many parameters to use in the query
+		
+		NSUInteger numHostParams = MIN([missingIndexes count], maxHostParams);
+		
+		// Create the SQL query:
+		// SELECT "key", "data", "metadata" FROM "database" WHERE key IN (?, ?, ...);
+		
+		NSUInteger capacity = 80 + (numHostParams * 3);
+		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
+		
+		[query appendString:@"SELECT \"key\", \"data\", \"metadata\" FROM \"database\" WHERE \"key\" IN ("];
+		
+		NSUInteger i;
+		for (i = 0; i < numHostParams; i++)
+		{
+			if (i == 0)
+				[query appendFormat:@"?"];
+			else
+				[query appendFormat:@", ?"];
+		}
+		
+		[query appendString:@");"];
+		
+		sqlite3_stmt *statement;
+		
+		int status = sqlite3_prepare_v2(connection->db, [query UTF8String], -1, &statement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating 'objectsForKeys' statement: %d %s",
+						status, sqlite3_errmsg(connection->db));
+			return;
+		}
+		
+		// Bind parameters.
+		// And move objects from the missingIndexes array into keyIndexDict.
+		
+		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numHostParams];
+		
+		for (i = 0; i < numHostParams; i++)
+		{
+			NSNumber *keyIndexNumber = [missingIndexes objectAtIndex:i];
+			NSString *key = [keys objectAtIndex:[keyIndexNumber unsignedIntegerValue]];
+			
+			[keyIndexDict setObject:keyIndexNumber forKey:key];
+			
+			sqlite3_bind_text(statement, (int)(i + 1), [key UTF8String], -1, SQLITE_TRANSIENT);
+		}
+		
+		[missingIndexes removeObjectsInRange:NSMakeRange(0, numHostParams)];
+		
+		// Execute the query and step over the results
+		
+		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+		{
+			if (connection->needsMarkSqlLevelSharedReadLock)
+				[connection markSqlLevelSharedReadLockAcquired];
+			
+			const unsigned char *text = sqlite3_column_text(statement, 0);
+			int textSize = sqlite3_column_bytes(statement, 0);
+			
+			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
+			
+			id object = [connection->objectCache objectForKey:key];
+			if (object == nil)
+			{
+				const void *oBlob = sqlite3_column_blob(statement, 1);
+				int oBlobSize = sqlite3_column_bytes(statement, 1);
+				
+				NSData *oData = [[NSData alloc] initWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+				object = connection.database.objectDeserializer(oData);
+			}
+			
+			id metadata = [connection->metadataCache objectForKey:key];
+			if (metadata)
+			{
+				if (metadata == [YapNull null])
+					metadata = nil;
+			}
+			else
+			{
+				const void *mBlob = sqlite3_column_blob(statement, 2);
+				int mBlobSize = sqlite3_column_bytes(statement, 2);
+				
+				NSData *mData = [[NSData alloc] initWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+				metadata = connection.database.metadataDeserializer(mData);
+			}
+			
+			if (object)
+			{
+				[connection->objectCache setObject:object forKey:key]; // key is immutable
+				
+				if (metadata)
+					[connection->metadataCache setObject:metadata forKey:key];       // key is immutable
+				else
+					[connection->metadataCache setObject:[YapNull null] forKey:key]; // key is immutable
+			}
+			
+			block(keyIndex, object, metadata, &stop);
+			
+			[keyIndexDict removeObjectForKey:key];
+			
+			if (stop || isMutated) break;
+		}
+		
+		if ((status != SQLITE_DONE) && !stop && !isMutated)
+		{
+			YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
+		}
+		
+		sqlite3_finalize(statement);
+		statement = NULL;
+		
+		if (stop) {
+			return;
+		}
+		if (isMutated) {
+			@throw [self mutationDuringEnumerationException];
+			return;
+		}
+		
+		// If there are any remaining items in the keyIndexDict,
+		// then those items didn't exist in the database.
+		
+		for (NSNumber *keyIndexNumber in [keyIndexDict objectEnumerator])
+		{
+			NSUInteger keyIndex = [keyIndexNumber unsignedIntegerValue];
+			block(keyIndex, nil, nil, &stop);
+			
+			// Do NOT add keys to the cache that don't exist in the database.
+			
+			if (stop || isMutated) break;
+		}
+		
+		if (stop) {
+			return;
+		}
+		if (isMutated) {
+			@throw [self mutationDuringEnumerationException];
+			return;
+		}
+		
+		
+	} while ([missingIndexes count] > 0);
+}
+
+/**
  * Fast enumeration over all keys and metadata in the database.
  *
  * This uses a "SELECT key, metadata FROM database" operation, and then steps over the results,

@@ -132,6 +132,21 @@
             unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id object, BOOL *stop))block;
 
 /**
+ * Enumerates over the given list of keys (unordered), and fetches the associated rows.
+ *
+ * This method is faster than fetching items one-by-one as it optimizes cache access.
+ * That is, it will first enumerate over cached items and then fetch items from the database,
+ * thus optimizing the cache and reducing the query size.
+ *
+ * If any keys are missing from the database, the 'object' parameter will be nil.
+ * 
+ * IMPORTANT:
+ * Due to various optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
+**/
+- (void)enumerateRowsForKeys:(NSArray *)keys
+         unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id object, id metadata, BOOL *stop))block;
+
+/**
  * Fast enumeration over all keys and metadata in the database.
  * 
  * This uses a "SELECT key, metadata FROM database" operation, and then steps over the results,
