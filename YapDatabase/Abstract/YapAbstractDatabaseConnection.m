@@ -78,6 +78,8 @@
 		dispatch_queue_set_specific(connectionQueue, IsOnConnectionQueueKey, IsOnConnectionQueueKey, NULL);
 		
 		pendingChangesets = [[NSMutableArray alloc] init];
+		processedChangesets = [[NSMutableArray alloc] init];
+		
 		extensions = [[NSMutableDictionary alloc] init];
 		
 		objectCacheLimit = DEFAULT_OBJECT_CACHE_LIMIT;
@@ -393,12 +395,12 @@
 		
 		// The preReadTransaction method acquires the "sqlite-level" snapshot.
 		// In doing so, if it needs to fetch and process any changesets,
-		// then it adds them to the pendingChangesets ivar for us.
+		// then it adds them to the processedChangesets ivar for us.
 		
 		if (notifications == nil)
-			notifications = [NSMutableArray arrayWithCapacity:[pendingChangesets count]];
+			notifications = [NSMutableArray arrayWithCapacity:[processedChangesets count]];
 		
-		for (NSDictionary *changeset in pendingChangesets)
+		for (NSDictionary *changeset in processedChangesets)
 		{
 			// The changeset has already been processed.
 			
@@ -408,7 +410,7 @@
 			}
 		}
 		
-		[pendingChangesets removeAllObjects];
+		[processedChangesets removeAllObjects];
 	}};
 	
 	if (dispatch_get_specific(IsOnConnectionQueueKey))
@@ -976,15 +978,9 @@
 					[self noteCommittedChanges:changeset];
 				}
 				
-				if (longLivedReadTransaction)
-				{
-					// This method is being invoked from the beginLongLivedReadTransaction method.
-					// Add the changesets to the pendingChangesets ivar,
-					// so the calling method can extract the notifications (needed for its return variable).
-					[pendingChangesets addObjectsFromArray:changesets];
-				}
-				
-				NSAssert(snapshot == sqlSnapshot, @"Invalid connection state");
+				NSAssert(snapshot == sqlSnapshot,
+				         @"Invalid connection state in preReadTransaction: snapshot(%llu) != sqlSnapshot(%llu): %@",
+				         snapshot, sqlSnapshot, changesets);
 			}
 			
 			myState->lastKnownSnapshot = snapshot;
@@ -1018,7 +1014,9 @@
 					[self noteCommittedChanges:changeset];
 				}
 				
-				NSAssert(snapshot == globalSnapshot, @"Invalid connection state");
+				NSAssert(snapshot == globalSnapshot,
+				         @"Invalid connection state in preReadTransaction: snapshot(%llu) != globalSnapshot(%llu): %@",
+				         snapshot, globalSnapshot, changesets);
 			}
 			
 			myState->lastKnownSnapshot = snapshot;
@@ -1203,7 +1201,9 @@
 				[self noteCommittedChanges:changeset];
 			}
 			
-			NSAssert(snapshot == globalSnapshot, @"Invalid connection state");
+			NSAssert(snapshot == globalSnapshot,
+			         @"Invalid connection state in preReadWriteTransaction: snapshot(%llu) != globalSnapshot(%llu)",
+			         snapshot, globalSnapshot);
 		}
 		
 		myState->lastKnownSnapshot = snapshot;
@@ -1829,11 +1829,25 @@
 	
 	if (longLivedReadTransaction)
 	{
-		YDBLogVerbose(@"Storing pending changeset %lu for connection %@, database %@",
-		              (unsigned long)changesetSnapshot, self, self->database);
-		
-		[pendingChangesets addObject:changeset];
-		return;
+		if (dispatch_get_specific(database->IsOnSnapshotQueueKey))
+		{
+			// This method is being invoked from preReadTransaction:.
+			// We are to process the changeset for it.
+			
+			[processedChangesets addObject:changeset];
+		}
+		else
+		{
+			// This method is being invoked from [database noteCommittedChanges:].
+			// We cannot process the changeset yet.
+			// We must wait for the longLivedReadTransaction to be reset.
+			
+			YDBLogVerbose(@"Storing pending changeset %lu for connection %@, database %@",
+			              (unsigned long)changesetSnapshot, self, self->database);
+			
+			[pendingChangesets addObject:changeset];
+			return;
+		}
 	}
 	
 	// Changeset processing
