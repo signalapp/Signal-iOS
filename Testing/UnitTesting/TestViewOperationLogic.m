@@ -78,7 +78,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -106,7 +106,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Delete: (2 -> ~) (bear)
@@ -134,7 +134,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Delete: (2 -> ~) (bear)
@@ -168,7 +168,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Insert: (~ -> 3) (zebra)
@@ -198,7 +198,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Insert: (~ -> 3) (zebra)
@@ -228,7 +228,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Insert: (~ -> 2) (zebra)
@@ -260,7 +260,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -288,7 +288,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -316,7 +316,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -349,7 +349,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Insert: 1 (zebra)
@@ -378,7 +378,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Insert: 1 (zebra)
@@ -407,7 +407,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Insert: 2 (zebra)
@@ -436,7 +436,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Insert: 2 (zebra)
@@ -470,7 +470,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Insert: 0 (zebra)
@@ -504,7 +504,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Insert: 1 (zebra)
@@ -542,7 +542,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -576,7 +576,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -610,7 +610,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -644,7 +644,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -678,7 +678,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -712,7 +712,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -752,7 +752,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Insert: 0 (zebra)
@@ -796,7 +796,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Insert: 0 (zebra)
@@ -840,7 +840,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Insert: 0 (zebra)
@@ -888,7 +888,7 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	// Process
 	
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:operations];
+	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
 	
 	// Expecting:
 	// Delete: 2 (bear)

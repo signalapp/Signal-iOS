@@ -712,7 +712,7 @@
 	pageMetadata->count = [page count]; // number of keys in page
 	[viewConnection->dirtyMetadata setObject:pageMetadata forKey:pageKey];
 	
-	// Mark key for insertion
+	// Mark key for insertion (if needed - may have already been in group)
 	
 	if (![pageKey isEqualToString:existingPageKey])
 	{
@@ -793,6 +793,13 @@
 		
 		YDBLogVerbose(@"Inserting key(%@) in new group(%@) with page(%@)", key, group, pageKey);
 		
+		// Create page
+		
+		NSMutableArray *page = [[NSMutableArray alloc] initWithCapacity:1];
+		[page addObject:key];
+		
+		// Create pageMetadata
+		
 		YapDatabaseViewPageMetadata *pageMetadata = [[YapDatabaseViewPageMetadata alloc] init];
 		pageMetadata->pageKey = pageKey;
 		pageMetadata->prevPageKey = nil;
@@ -800,22 +807,32 @@
 		pageMetadata->group = group;
 		pageMetadata->count = 1;
 		
+		// Add page and pageMetadata to in-memory structures
+		
 		pagesMetadataForGroup = [[NSMutableArray alloc] initWithCapacity:1];
 		[pagesMetadataForGroup addObject:pageMetadata];
-		
-		NSMutableArray *page = [[NSMutableArray alloc] initWithCapacity:1];
-		[page addObject:key];
 		
 		[viewConnection->group_pagesMetadata_dict setObject:pagesMetadataForGroup forKey:group];
 		[viewConnection->pageKey_group_dict setObject:group forKey:pageKey];
 		
+		// Mark page as dirty
+		
 		[viewConnection->dirtyPages setObject:page forKey:pageKey];
 		[viewConnection->pageCache removeObjectForKey:pageKey];
 		
+		// Mark pageMetadata as dirty
+		
 		[viewConnection->dirtyMetadata setObject:pageMetadata forKey:pageKey];
+		
+		// Mark key for insertion
 		
 		[viewConnection->dirtyKeys setObject:pageKey forKey:key];
 		[viewConnection->keyCache removeObjectForKey:key];
+		
+		// Add operation to log
+		
+		[viewConnection->operations addObject:
+		    [YapDatabaseViewOperation insertKey:key inGroup:group atIndex:0]];
 	}
 	else
 	{
@@ -1566,10 +1583,7 @@
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
-	
 	[self maybeConsolidateOrExpandDirtyPages];
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:viewConnection->operations];
 }
 
 - (void)commitTransaction

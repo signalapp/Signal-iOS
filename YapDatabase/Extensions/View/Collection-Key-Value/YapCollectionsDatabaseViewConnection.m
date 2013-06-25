@@ -2,6 +2,7 @@
 #import "YapCollectionsDatabaseViewPrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapAbstractDatabasePrivate.h"
+#import "YapDatabaseViewOperation.h"
 #import "YapCollectionKey.h"
 #import "YapCache.h"
 #import "YapDatabaseLogging.h"
@@ -335,6 +336,29 @@
 				[pageCache setObject:[page mutableCopy] forKey:pageKey];
 		}
 	}
+}
+
+- (NSArray *)operationsForNotifications:(NSArray *)notifications withGroupToSectionMappings:(NSDictionary *)mappings
+{
+	NSString *registeredName = self.view.registeredName;
+	NSMutableArray *all_operations = [NSMutableArray array];
+	
+	for (NSNotification *notification in notifications)
+	{
+		NSDictionary *changeset =
+		    [[notification.userInfo objectForKey:YapDatabaseExtensionsKey] objectForKey:registeredName];
+		
+		NSArray *changeset_operations = [changeset objectForKey:@"operations"];
+		
+		[all_operations addObjectsFromArray:changeset_operations];
+	}
+	
+	NSMutableArray *all_operations_safe = [[NSMutableArray alloc] initWithArray:all_operations copyItems:YES];
+	
+	[YapDatabaseViewOperation processAndConsolidateOperations:all_operations_safe
+	                               withGroupToSectionMappings:mappings];
+	
+	return all_operations_safe;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

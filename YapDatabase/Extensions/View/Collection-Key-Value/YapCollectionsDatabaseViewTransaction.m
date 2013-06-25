@@ -803,7 +803,7 @@
 	pageMetadata->count = [page count]; // number of keys in page
 	[viewConnection->dirtyMetadata setObject:pageMetadata forKey:pageKey];
 	
-	// Mark key for insertion
+	// Mark key for insertion (if needed - may have already been in group)
 	
 	if (![pageKey isEqualToString:existingPageKey])
 	{
@@ -892,28 +892,45 @@
 		YDBLogVerbose(@"Inserting key(%@) collection(%@) in new group(%@) with page(%@)",
 		              collectionKey.key, collectionKey.collection, group, pageKey);
 		
+		// Create page
+		
+		NSMutableArray *page = [NSMutableArray arrayWithCapacity:1];
+		[page addObject:collectionKey];
+		
+		// Create pageMetadata
+		
 		YapDatabaseViewPageMetadata *pageMetadata = [[YapDatabaseViewPageMetadata alloc] init];
 		pageMetadata->pageKey = pageKey;
 		pageMetadata->nextPageKey = nil;
 		pageMetadata->group = group;
 		pageMetadata->count = 1;
 		
+		// Add page and pageMetadata to in-memory structures
+		
 		pagesMetadataForGroup = [[NSMutableArray alloc] initWithCapacity:1];
 		[pagesMetadataForGroup addObject:pageMetadata];
-		
-		NSMutableArray *page = [NSMutableArray arrayWithCapacity:1];
-		[page addObject:collectionKey];
 		
 		[viewConnection->group_pagesMetadata_dict setObject:pagesMetadataForGroup forKey:group];
 		[viewConnection->pageKey_group_dict setObject:group forKey:pageKey];
 		
+		// Mark page as dirty
+		
 		[viewConnection->dirtyPages setObject:page forKey:pageKey];
 		[viewConnection->pageCache removeObjectForKey:pageKey];
 		
+		// Mark pageMetadata as dirty
+		
 		[viewConnection->dirtyMetadata setObject:pageMetadata forKey:pageKey];
+		
+		// Mark key for insertion
 		
 		[viewConnection->dirtyKeys setObject:pageKey forKey:collectionKey];
 		[viewConnection->keyCache removeObjectForKey:collectionKey];
+		
+		// Add operation to log
+		
+		[viewConnection->operations addObject:
+		    [YapDatabaseViewOperation insertKey:collectionKey inGroup:group atIndex:0]];
 	}
 	else
 	{
@@ -1687,11 +1704,7 @@
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
 	[self maybeConsolidateOrExpandDirtyPages];
-	[YapDatabaseViewOperation postProcessAndConsolidateOperations:viewConnection->operations];
 }
 
 - (void)commitTransaction
@@ -2282,6 +2295,22 @@
 	if (keyPtr) *keyPtr = collectionKey.key;
 	
 	return (collectionKey != nil);
+}
+
+- (NSString *)collectionAtIndex:(NSUInteger)index inGroup:(NSString *)group
+{
+	NSString *collection = nil;
+	[self getKey:NULL collection:&collection atIndex:index inGroup:group];
+	
+	return collection;
+}
+
+- (NSString *)keyAtIndex:(NSUInteger)index inGroup:(NSString *)group
+{
+	NSString *key = nil;
+	[self getKey:&key collection:NULL atIndex:index inGroup:group];
+	
+	return key;
 }
 
 - (NSString *)groupForKey:(NSString *)key inCollection:(NSString *)collection

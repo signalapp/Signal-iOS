@@ -15,6 +15,9 @@
        atIndex:(NSUInteger)index
        inGroup:(NSString *)group;
 
+- (NSString *)collectionAtIndex:(NSUInteger)index inGroup:(NSString *)group;
+- (NSString *)keyAtIndex:(NSUInteger)index inGroup:(NSString *)group;
+
 - (NSString *)groupForKey:(NSString *)key inCollection:(NSString *)collection;
 
 - (BOOL)getGroup:(NSString **)groupPtr
