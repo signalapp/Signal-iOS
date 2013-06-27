@@ -1472,7 +1472,11 @@
 	// Post YapDatabaseModifiedNotification
 	
 	if (notification)
-		[[NSNotificationCenter defaultCenter] postNotification:notification];
+	{
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[[NSNotificationCenter defaultCenter] postNotification:notification];
+		});
+	}
 	
 	// Post-Write-Transaction: Step 10 of 10
 	//

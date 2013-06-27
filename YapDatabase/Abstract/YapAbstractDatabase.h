@@ -42,7 +42,7 @@
  *     YapDatabaseCustomKey = <Optional object associated with this change, set by you>,
  * }
  * 
- * The notification may be posted from any thread.
+ * This notification is always posted to the main thread.
 **/
 extern NSString *const YapDatabaseModifiedNotification;
 
