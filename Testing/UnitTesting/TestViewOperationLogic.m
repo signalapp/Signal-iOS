@@ -1,5 +1,6 @@
 #import "TestViewOperationLogic.h"
 #import "YapDatabaseViewOperation.h"
+#import "YapDatabaseViewOperationPrivate.h"
 
 /**
  * A database view needs to report a changeset in the YapDatabaseModifiedNotification.

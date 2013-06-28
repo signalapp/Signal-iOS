@@ -1,4 +1,5 @@
 #import "YapDatabaseViewOperation.h"
+#import "YapDatabaseViewOperationPrivate.h"
 
 
 @implementation YapDatabaseViewOperation
@@ -9,6 +10,7 @@
 	NSString *finalGroup;    // mutable during consolidation
 	
 	YapDatabaseViewOperationType type; // mutable during consolidation
+	int columns;                       // mutable during consolidation
 	
 	NSUInteger opOriginalIndex;  // consider immutable
 	NSUInteger opFinalIndex;     // consider immutable
@@ -20,8 +22,8 @@
 	NSUInteger finalSection;
 }
 
-@synthesize key = key;
 @synthesize type = type;
+@synthesize modifiedColumns = columns;
 @synthesize originalGroup = originalGroup;
 @synthesize finalGroup = finalGroup;
 @synthesize originalIndex = originalIndex;
@@ -37,7 +39,7 @@
 
 - (NSIndexPath *)newIndexPath
 {
-	if (type == YapDatabaseViewOperationDelete)
+	if (type == YapDatabaseViewOperationDelete || type == YapDatabaseViewOperationUpdate)
 		return nil; // <-- You should be using indexPath
 	else
 		return [NSIndexPath indexPathForRow:finalIndex inSection:finalSection];
@@ -50,6 +52,7 @@
 	op->originalGroup = originalGroup;
 	op->finalGroup = finalGroup;
 	op->type = type;
+	op->columns = columns;
 	op->opOriginalIndex = opOriginalIndex;
 	op->opFinalIndex = opFinalIndex;
 	op->originalIndex = originalIndex;
@@ -65,6 +68,7 @@
 	YapDatabaseViewOperation *op = [[YapDatabaseViewOperation alloc] init];
 	op->type = YapDatabaseViewOperationInsert;
 	op->key = key;
+	op->columns = YapDatabaseViewOperationColumnObject | YapDatabaseViewOperationColumnMetadata;
 	
 	op->originalGroup = nil;                                 // invalid in insert type
 	op->originalIndex = op->opOriginalIndex = NSUIntegerMax; // invalid in insert type
@@ -82,12 +86,31 @@
 	YapDatabaseViewOperation *op = [[YapDatabaseViewOperation alloc] init];
 	op->type = YapDatabaseViewOperationDelete;
 	op->key = key;
+	op->columns = YapDatabaseViewOperationColumnObject | YapDatabaseViewOperationColumnMetadata;
 	
 	op->originalGroup = group;
 	op->originalIndex = op->opOriginalIndex = index;
 	
-	op->finalGroup = nil;                    // invalid in delete type
+	op->finalGroup = nil;                              // invalid in delete type
 	op->finalIndex = op->opFinalIndex = NSUIntegerMax; // invalid in delete type
+	
+	op->originalSection = op->finalSection = NSNotFound;
+	
+	return op;
+}
+
++ (YapDatabaseViewOperation *)updateKey:(id)key columns:(int)flags inGroup:(NSString *)group atIndex:(NSUInteger)index
+{
+	YapDatabaseViewOperation *op = [[YapDatabaseViewOperation alloc] init];
+	op->type = YapDatabaseViewOperationUpdate;
+	op->key = key;
+	op->columns = flags;
+	
+	op->originalGroup = group;
+	op->originalIndex = op->opOriginalIndex = index;
+	
+	op->finalGroup = group;
+	op->finalIndex = op->opFinalIndex = index;
 	
 	op->originalSection = op->finalSection = NSNotFound;
 	
@@ -132,15 +155,18 @@
 			{
 				YapDatabaseViewOperation *laterOperation = [operations objectAtIndex:j];
 				
-				if (laterOperation->type == YapDatabaseViewOperationDelete &&
-				    laterOperation->originalIndex >= operation->opOriginalIndex &&
-				   [laterOperation->originalGroup isEqualToString:operation->originalGroup])
+				if (laterOperation->type == YapDatabaseViewOperationDelete ||
+					laterOperation->type == YapDatabaseViewOperationUpdate)
 				{
-					laterOperation->originalIndex += 1;
+					if (laterOperation->originalIndex >= operation->opOriginalIndex &&
+					   [laterOperation->originalGroup isEqualToString:operation->originalGroup])
+					{
+						laterOperation->originalIndex += 1;
+					}
 				}
 			}
 		}
-		else // if (operation->type == YapDatabaseViewOperationInsert)
+		else if (operation->type == YapDatabaseViewOperationInsert)
 		{
 			// An INSERT operation may affect the ORIGINAL index value of operations that occurred AFTER it,
 			//   IF the later operation occurs at a greater or equal index value. ( -1 )
@@ -149,11 +175,14 @@
 			{
 				YapDatabaseViewOperation *laterOperation = [operations objectAtIndex:j];
 				
-				if (laterOperation->type == YapDatabaseViewOperationDelete &&
-				    laterOperation->originalIndex >= operation->opFinalIndex &&
-				   [laterOperation->originalGroup isEqualToString:operation->finalGroup])
+				if (laterOperation->type == YapDatabaseViewOperationDelete ||
+				    laterOperation->type == YapDatabaseViewOperationUpdate)
 				{
-					laterOperation->originalIndex -= 1;
+					if (laterOperation->originalIndex >= operation->opFinalIndex &&
+					   [laterOperation->originalGroup isEqualToString:operation->finalGroup])
+					{
+						laterOperation->originalIndex -= 1;
+					}
 				}
 			}
 		}
@@ -175,15 +204,18 @@
 			{
 				YapDatabaseViewOperation *earlierOperation = [operations objectAtIndex:(j-1)];
 				
-				if (earlierOperation->type == YapDatabaseViewOperationInsert &&
-				    earlierOperation->finalIndex > operation->opOriginalIndex &&
-				   [earlierOperation->finalGroup isEqualToString:operation->originalGroup])
+				if (earlierOperation->type == YapDatabaseViewOperationInsert ||
+				    earlierOperation->type == YapDatabaseViewOperationUpdate  )
 				{
-					earlierOperation->finalIndex -= 1;
+					if (earlierOperation->finalIndex > operation->opOriginalIndex &&
+					   [earlierOperation->finalGroup isEqualToString:operation->originalGroup])
+					{
+						earlierOperation->finalIndex -= 1;
+					}
 				}
 			}
 		}
-		else // if (operation->type == YapDatabaseViewOperationInsert)
+		else if (operation->type == YapDatabaseViewOperationInsert)
 		{
 			// An INSERT operation may affect the FINAL index value of operations that occurred BEFORE it,
 			//   IF the earlier operation occurs at a greater index value ( +1 )
@@ -192,11 +224,14 @@
 			{
 				YapDatabaseViewOperation *earlierOperation = [operations objectAtIndex:(j-1)];
 				
-				if (earlierOperation->type == YapDatabaseViewOperationInsert &&
-				    earlierOperation->finalIndex >= operation->opFinalIndex &&
-				   [earlierOperation->finalGroup isEqualToString:operation->finalGroup])
+				if (earlierOperation->type == YapDatabaseViewOperationInsert ||
+				    earlierOperation->type == YapDatabaseViewOperationUpdate)
 				{
-					earlierOperation->finalIndex += 1;
+					if (earlierOperation->finalIndex >= operation->opFinalIndex &&
+					   [earlierOperation->finalGroup isEqualToString:operation->finalGroup])
+					{
+						earlierOperation->finalIndex += 1;
+					}
 				}
 			}
 		}
@@ -227,6 +262,14 @@
 		
 		if ([indexSet count] == 0)
 		{
+			// Check to see if an Update turned into a Move
+			
+			if (operation->type == YapDatabaseViewOperationUpdate &&
+				operation->originalIndex != operation->finalIndex)
+			{
+				operation->type = YapDatabaseViewOperationMove;
+			}
+			
 			i++; // continue;
 		}
 		else
@@ -240,30 +283,65 @@
 			{
 				if (lastOperationForKey->type == YapDatabaseViewOperationDelete)
 				{
-					// Delete, Insert, ... , Delete
+					// Delete + Insert + ... + Delete
 					//
 					// All operations except the first are no-ops
 					
 					[operations removeObjectsAtIndexes:indexSet];
 					i++;
 				}
-				else // if (lastOperationForKey->type == YapDatabaseViewOperationInsert)
+				else if (lastOperationForKey->type == YapDatabaseViewOperationInsert)
 				{
-					// Delete, Insert
+					// Delete + Insert
 					//
 					// This is a move operation.
-					// However, if the final index hasn't ultimately changed, then it becomes a no-op.
+					// However, if the final location hasn't ultimately changed, then it becomes a no-op.
 					
-					if (firstOperationForKey->originalIndex == lastOperationForKey->finalIndex)
+					if (firstOperationForKey->originalIndex == lastOperationForKey->finalIndex &&
+					   [firstOperationForKey->originalGroup isEqualToString:lastOperationForKey->finalGroup])
 					{
-						// No-op (& i remains the same)
+						// = Update
+						//
+						// The location didn't change, but the row may have been updated.
+						
+						firstOperationForKey->type = YapDatabaseViewOperationUpdate;
 						
 						[operations removeObjectsAtIndexes:indexSet];
-						[operations removeObjectAtIndex:i];
+						i++;
 					}
 					else
 					{
-						// Move
+						// = Move
+						
+						firstOperationForKey->type = YapDatabaseViewOperationMove;
+						firstOperationForKey->finalIndex = lastOperationForKey->finalIndex;
+						firstOperationForKey->finalGroup = lastOperationForKey->finalGroup;
+						firstOperationForKey->finalSection = lastOperationForKey->finalSection;
+						
+						[operations removeObjectsAtIndexes:indexSet];
+						i++;
+					}
+				}
+				else if (lastOperationForKey->type == YapDatabaseViewOperationUpdate)
+				{
+					// Delete + Insert + ... + Update
+					//
+					// This is either a move or just an update.
+					// It simply depends on the original and final index values.
+					
+					if (firstOperationForKey->originalIndex == lastOperationForKey->finalIndex &&
+					   [firstOperationForKey->originalGroup isEqualToString:lastOperationForKey->finalGroup])
+					{
+						// = Update
+						
+						firstOperationForKey->type = YapDatabaseViewOperationUpdate;
+						
+						[operations removeObjectsAtIndexes:indexSet];
+						i++;
+					}
+					else
+					{
+						// = Move
 						
 						firstOperationForKey->type = YapDatabaseViewOperationMove;
 						firstOperationForKey->finalIndex = lastOperationForKey->finalIndex;
@@ -275,11 +353,11 @@
 					}
 				}
 			}
-			else // if (firstOperationForKey->type == YapDatabaseViewOperationInsert)
+			else if (firstOperationForKey->type == YapDatabaseViewOperationInsert)
 			{
 				if (lastOperationForKey->type == YapDatabaseViewOperationDelete)
 				{
-					// Insert, Delete
+					// Insert + Delete
 					//
 					// All operations are no-ops (& i remains the same)
 					
@@ -287,15 +365,108 @@
 					[operations removeObjectAtIndex:i];
 					
 				}
-				else // if (lastOperationForKey->type == YapDatabaseViewOperationInsert)
+				else if (lastOperationForKey->type == YapDatabaseViewOperationInsert)
 				{
-					// Insert, Delete, ... , Insert
+					// Insert + Delete + ... + Insert
 					//
-					// All operations except the last are no-ops
+					// All operations except the last are no-ops.
+					
+					firstOperationForKey->finalIndex = lastOperationForKey->finalIndex;
+					firstOperationForKey->finalGroup = lastOperationForKey->finalGroup;
+					firstOperationForKey->finalSection = lastOperationForKey->finalSection;
 					
 					[operations removeObjectsAtIndexes:indexSet];
-					[operations replaceObjectAtIndex:i withObject:lastOperationForKey];
 					i++;
+				}
+				else // if (lastOperationForKey->type == YapDatabaseViewOperationUpdate)
+				{
+					// Insert + Update
+					//
+					// This is still an insert, but the final location may have changed.
+					
+					firstOperationForKey->finalIndex = lastOperationForKey->finalIndex;
+					firstOperationForKey->finalGroup = lastOperationForKey->finalGroup;
+					firstOperationForKey->finalSection = lastOperationForKey->finalSection;
+					
+					[operations removeObjectsAtIndexes:indexSet];
+					i++;
+				}
+			}
+			else if (firstOperationForKey->type == YapDatabaseViewOperationUpdate)
+			{
+				if (lastOperationForKey->type == YapDatabaseViewOperationDelete)
+				{
+					// Update + Delete
+					//
+					// This is ultimately a Delete.
+					// We need to be sure to use the original original index.
+					
+					firstOperationForKey->type = YapDatabaseViewOperationDelete;
+					
+					[operations removeObjectsAtIndexes:indexSet];
+					i++;
+				}
+				else if (lastOperationForKey->type == YapDatabaseViewOperationInsert)
+				{
+					// Update + Insert
+					//
+					// This is either an Update or a Move.
+					// It simply depends on the original and final index values.
+					
+					if (firstOperationForKey->originalIndex == lastOperationForKey->finalIndex &&
+					   [firstOperationForKey->originalGroup isEqualToString:lastOperationForKey->finalGroup])
+					{
+						// = Update
+						//
+						// First remains as is.
+						
+						[operations removeObjectsAtIndexes:indexSet];
+						i++;
+					}
+					else
+					{
+						// = Move
+						//
+						// The final location comes from the insert
+						
+						firstOperationForKey->type = YapDatabaseViewOperationMove;
+						firstOperationForKey->finalIndex = lastOperationForKey->finalIndex;
+						firstOperationForKey->finalGroup = lastOperationForKey->finalGroup;
+						firstOperationForKey->finalSection = lastOperationForKey->finalSection;
+						
+						[operations removeObjectsAtIndexes:indexSet];
+						i++;
+					}
+				}
+				else // if (lastOperationForKey->type == YapDatabaseViewOperationUpdate)
+				{
+					// Update + Update
+					//
+					// This is either an Update or a Move.
+					// It simply depends on the original and final index values.
+					
+					if (firstOperationForKey->originalIndex == lastOperationForKey->finalIndex &&
+					   [firstOperationForKey->originalGroup isEqualToString:lastOperationForKey->finalGroup])
+					{
+						// = Update
+						
+						[operations removeObjectsAtIndexes:indexSet];
+						i++;
+					}
+					else
+					{
+						// = Move
+						//
+						// The final location comes from the last update
+						
+						firstOperationForKey->type = YapDatabaseViewOperationMove;
+						firstOperationForKey->finalIndex = lastOperationForKey->finalIndex;
+						firstOperationForKey->finalGroup = lastOperationForKey->finalGroup;
+						firstOperationForKey->finalSection = lastOperationForKey->finalSection;
+						
+						[operations removeObjectsAtIndexes:indexSet];
+						i++;
+					}
 				}
 			}
 			
@@ -335,12 +506,21 @@
 			else
 				[operations removeObjectAtIndex:(i-1)];
 		}
-		else // if (operation->type == YapDatabaseViewOperationInsert)
+		else if (operation->type == YapDatabaseViewOperationInsert)
 		{
 			NSNumber *section = [mappings objectForKey:operation->finalGroup];
 			
 			if (section)
 				operation->finalSection = [section unsignedIntegerValue];
+			else
+				[operations removeObjectAtIndex:(i-1)];
+		}
+		else if (operation->type == YapDatabaseViewOperationUpdate)
+		{
+			NSNumber *section = [mappings objectForKey:operation->originalGroup];
+			
+			if (section)
+				operation->originalSection = operation->finalSection = [section unsignedIntegerValue];
 			else
 				[operations removeObjectAtIndex:(i-1)];
 		}
@@ -353,7 +533,24 @@
 
 - (NSString *)description
 {
-	if (type == YapDatabaseViewOperationDelete)
+	if (type == YapDatabaseViewOperationInsert)
+	{
+		if (finalSection == NSNotFound)
+		{
+			// Internal style (for debugging the processAndConsolidateOperations method)
+			return [NSString stringWithFormat:
+					@"<YapDatabaseViewOperation: Insert pre(~ -> %lu) post(~ -> %lu) group(%@) key(%@)",
+			        (unsigned long)opFinalIndex, (unsigned long)finalIndex, finalGroup, key];
+		}
+		else
+		{
+			// External style (for debugging UITableView & UICollectionView updates)
+			return [NSString stringWithFormat:
+					@"<YapDatabaseViewOperation: Insert indexPath(nil) newIndexPath(%lu, %lu) group(%@) key(%@)>",
+			        (unsigned long)finalSection, (unsigned long)finalIndex, finalGroup, key];
+		}
+	}
+	else if (type == YapDatabaseViewOperationDelete)
 	{
 		if (originalSection == NSNotFound)
 		{
@@ -370,30 +567,13 @@
 			        (unsigned long)originalSection, (unsigned long)originalIndex, originalGroup, key];
 		}
 	}
-	else if (type == YapDatabaseViewOperationInsert)
-	{
-		if (finalSection == NSNotFound)
-		{
-			// Internal style (for debugging the processAndConsolidateOperations method)
-			return [NSString stringWithFormat:
-			    @"<YapDatabaseViewOperation: Insert pre(~ -> %lu) post(~ -> %lu) group(%@) key(%@)",
-			        (unsigned long)opFinalIndex, (unsigned long)finalIndex, finalGroup, key];
-		}
-		else
-		{
-			// External style (for debugging UITableView & UICollectionView updates)
-			return [NSString stringWithFormat:
-			    @"<YapDatabaseViewOperation: Insert indexPath(nil) newIndexPath(%lu, %lu) group(%@) key(%@)>",
-			        (unsigned long)finalSection, (unsigned long)finalIndex, finalGroup, key];
-		}
-	}
-	else
+	else if (type == YapDatabaseViewOperationMove)
 	{
 		if (originalSection == NSNotFound && finalSection == NSNotFound)
 		{
 			// Internal style (for debugging the processAndConsolidateOperations method)
 			return [NSString stringWithFormat:
-				@"<YapDatabaseViewOperation: Move pre(%lu -> %lu) post(%lu -> %lu) group(%@ -> %@)key(%@)",
+				@"<YapDatabaseViewOperation: Move pre(%lu -> %lu) post(%lu -> %lu) group(%@ -> %@) key(%@)",
 					(unsigned long)opOriginalIndex, (unsigned long)opFinalIndex,
 					(unsigned long)originalIndex,   (unsigned long)finalIndex,
 					originalGroup, finalGroup, key];
@@ -405,6 +585,26 @@
 				@"<YapDatabaseViewOperation: Move indexPath(%lu, %lu) newIndexPath(%lu, %lu) group(%@ -> %@) key(%@)",
 					(unsigned long)originalSection, (unsigned long)originalIndex,
 					(unsigned long)finalSection,    (unsigned long)finalIndex,
+					originalGroup, finalGroup, key];
+		}
+	}
+	else // if (type == YapDatabaseViewOperationUpdate)
+	{
+		if (originalSection == NSNotFound && finalSection == NSNotFound)
+		{
+			// Internal style (for debugging the processAndConsolidateOperations method)
+			return [NSString stringWithFormat:
+				@"<YapDatabaseViewOperation: Update pre(%lu) post(%lu -> %lu) group(%@ -> %@) key(%@)",
+					(unsigned long)opOriginalIndex,
+					(unsigned long)originalIndex,   (unsigned long)finalIndex,
+					originalGroup, finalGroup, key];
+		}
+		else
+		{
+			// External style (for debugging UITableView & UICollectionView updates)
+			return [NSString stringWithFormat:
+				@"<YapDatabaseViewOperation: Update indexPath(%lu, %lu) group(%@ -> %@) key(%@)",
+					(unsigned long)originalSection, (unsigned long)originalIndex,
 					originalGroup, finalGroup, key];
 		}
 	}

@@ -118,6 +118,7 @@
 		DC005B9117726C6F002E57DE /* YapDatabaseViewOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseViewOperation.m; sourceTree = "<group>"; };
 		DC005BBF1774C666002E57DE /* TestViewOperationLogic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestViewOperationLogic.h; path = ../../UnitTesting/TestViewOperationLogic.h; sourceTree = "<group>"; };
 		DC005BC01774C666002E57DE /* TestViewOperationLogic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestViewOperationLogic.m; path = ../../UnitTesting/TestViewOperationLogic.m; sourceTree = "<group>"; };
+		DC0DA04B177D37550025AC51 /* YapDatabaseViewOperationPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewOperationPrivate.h; sourceTree = "<group>"; };
 		DC23CF891764021E00E103A9 /* YapCollectionKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YapCollectionKey.h; path = Utilities/YapCollectionKey.h; sourceTree = "<group>"; };
 		DC23CF8A1764021E00E103A9 /* YapCollectionKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YapCollectionKey.m; path = Utilities/YapCollectionKey.m; sourceTree = "<group>"; };
 		DC23CF8F1764027500E103A9 /* YapDatabaseView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YapDatabaseView.h; path = "Key-Value/YapDatabaseView.h"; sourceTree = "<group>"; };
@@ -259,6 +260,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DC0DA04C177D39EC0025AC51 /* Private */ = {
+			isa = PBXGroup;
+			children = (
+				DC0DA04B177D37550025AC51 /* YapDatabaseViewOperationPrivate.h */,
+			);
+			name = Private;
+			sourceTree = "<group>";
+		};
 		DC23CF881764021000E103A9 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
@@ -301,6 +310,7 @@
 		DC23CF8E1764026000E103A9 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				DC0DA04C177D39EC0025AC51 /* Private */,
 				DC84FF6C174EF4B0003BFBB2 /* YapDatabaseViewPageMetadata.h */,
 				DC84FF6D174EF4B0003BFBB2 /* YapDatabaseViewPageMetadata.m */,
 				DC005B9017726C6F002E57DE /* YapDatabaseViewOperation.h */,

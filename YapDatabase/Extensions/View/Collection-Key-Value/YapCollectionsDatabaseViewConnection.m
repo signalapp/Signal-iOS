@@ -3,6 +3,7 @@
 #import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapAbstractDatabasePrivate.h"
 #import "YapDatabaseViewOperation.h"
+#import "YapDatabaseViewOperationPrivate.h"
 #import "YapCollectionKey.h"
 #import "YapCache.h"
 #import "YapDatabaseLogging.h"

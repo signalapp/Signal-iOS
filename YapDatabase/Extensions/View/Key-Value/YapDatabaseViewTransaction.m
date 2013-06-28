@@ -2,6 +2,7 @@
 #import "YapDatabaseViewPrivate.h"
 #import "YapDatabaseViewPageMetadata.h"
 #import "YapDatabaseViewOperation.h"
+#import "YapDatabaseViewOperationPrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapAbstractDatabasePrivate.h"
 #import "YapDatabaseTransaction.h"
@@ -351,7 +352,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Utilities
+#pragma mark Serialization & Deserialization
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSData *)serializePage:(NSMutableArray *)page
@@ -379,6 +380,10 @@
 {
 	return [NSKeyedUnarchiver unarchiveObjectWithData:data];
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Utilities
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSString *)generatePageKey
 {
@@ -647,6 +652,38 @@
 	return [viewConnection->pageKey_group_dict objectForKey:pageKey];
 }
 
+- (NSUInteger)indexForKey:(NSString *)key inGroup:(NSString *)group withPageKey:(NSString *)pageKey
+{
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
+	
+	// Calculate the offset of the corresponding page within the group.
+	
+	NSUInteger pageOffset = 0;
+	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	
+	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
+	{
+		if ([pageMetadata->pageKey isEqualToString:pageKey])
+		{
+			break;
+		}
+		
+		pageOffset += pageMetadata->count;
+	}
+	
+	// Fetch the actual page (ordered array of keys)
+	
+	NSMutableArray *page = [self pageForPageKey:pageKey];
+	
+	// Find the exact index of the key within the page
+	
+	NSUInteger keyIndexWithinPage = [page indexOfObject:key];
+	
+	// Return the full index of the key within the group
+	
+	return pageOffset + keyIndexWithinPage;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Logic
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -732,12 +769,20 @@
  * This method will use the configured sorting block to find the proper index for the key.
  * It will attempt to optimize this operation as best as possible using a variety of techniques.
 **/
-- (void)insertObject:(id)object forKey:(NSString *)key withMetadata:(id)metadata inGroup:(NSString *)group
+- (void)insertObject:(id)object
+            metadata:(id)metadata
+              forKey:(NSString *)key
+             inGroup:(NSString *)group
+ withModifiedColumns:(int)flags
 {
 	YDBLogAutoTrace();
 	
 	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
+	
+	// Fetch the pages associated with the group.
+	
+	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	
 	// Is the key already in the group?
 	// If so:
@@ -745,6 +790,7 @@
 	// - we can use its existing position as an optimization during sorting.
 	
 	BOOL tryExistingIndexInGroup = NO;
+	NSUInteger existingIndexInGroup = NSNotFound;
 	
 	NSString *existingPageKey = [self pageKeyForKey:key];
 	if (existingPageKey)
@@ -757,11 +803,19 @@
 		if ([group isEqualToString:existingGroup])
 		{
 			// The key is already in the group.
+			//
+			// Find out what its current index is.
+			
+			existingIndexInGroup = [self indexForKey:key inGroup:group withPageKey:existingPageKey];
 			
 			if (view->sortingBlockType == YapDatabaseViewBlockTypeWithKey)
 			{
 				// Sorting is based entirely on the key, which hasn't changed.
 				// Thus the position within the view hasn't changed.
+				
+				[viewConnection->operations addObject:
+				    [YapDatabaseViewOperation updateKey:key columns:flags inGroup:group atIndex:existingIndexInGroup]];
+				
 				return;
 			}
 			else
@@ -781,9 +835,7 @@
 		}
 	}
 	
-	// Fetch the pages associated with the group.
-	
-	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	// Is this a new group ?
 	
 	if (pagesMetadataForGroup == nil)
 	{
@@ -833,212 +885,205 @@
 		
 		[viewConnection->operations addObject:
 		    [YapDatabaseViewOperation insertKey:key inGroup:group atIndex:0]];
+		
+		return;
 	}
-	else
+	
+	// Need to determine the location within the existing group.
+	
+	// Calculate out how many keys are in the group.
+	
+	NSUInteger count = 0;
+	
+	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 	{
-		// Calculate out how many keys are in the group.
+		count += pageMetadata->count;
+	}
+	
+	// Create a block to do a single sorting comparison between the object to be inserted,
+	// and some other object within the group at a given index.
+	//
+	// This block will be invoked repeatedly as we calculate the insertion index.
+	
+	NSComparisonResult (^compare)(NSUInteger) = ^NSComparisonResult (NSUInteger index){
 		
-		NSUInteger count = 0;
+		NSString *anotherKey = nil;
 		
+		NSUInteger pageOffset = 0;
 		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 		{
-			count += pageMetadata->count;
-		}
-		
-		// Create a block to do a single sorting comparison between the object to be inserted,
-		// and some other object within the group at a given index.
-		// 
-		// This block will be invoked repeatedly as we calculate the insertion index.
-		
-		NSComparisonResult (^compare)(NSUInteger) = ^NSComparisonResult (NSUInteger index){
-			
-			NSString *anotherKey = nil;
-			
-			NSUInteger pageOffset = 0;
-			for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
+			if (index < (pageOffset + pageMetadata->count))
 			{
-				if (index < (pageOffset + pageMetadata->count))
-				{
-					NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
-					
-					anotherKey = [page objectAtIndex:(index - pageOffset)];
-					break;
-				}
-				else
-				{
-					pageOffset += pageMetadata->count;
-				}
-			}
-			
-			if (view->sortingBlockType == YapDatabaseViewBlockTypeWithKey)
-			{
-				__unsafe_unretained YapDatabaseViewSortingWithKeyBlock sortingBlock =
-				    (YapDatabaseViewSortingWithKeyBlock)view->sortingBlock;
+				NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
 				
-				return sortingBlock(group, key, anotherKey);
-			}
-			else if (view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
-			{
-				__unsafe_unretained YapDatabaseViewSortingWithObjectBlock sortingBlock =
-				    (YapDatabaseViewSortingWithObjectBlock)view->sortingBlock;
-				
-				id anotherObject = [self objectForKey:anotherKey];
-				
-				return sortingBlock(group, key, object, anotherKey, anotherObject);
-			}
-			else if (view->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata)
-			{
-				__unsafe_unretained YapDatabaseViewSortingWithMetadataBlock sortingBlock =
-				    (YapDatabaseViewSortingWithMetadataBlock)view->sortingBlock;
-				
-				id anotherMetadata = [self metadataForKey:anotherKey];
-				
-				return sortingBlock(group, key, metadata, anotherKey, anotherMetadata);
+				anotherKey = [page objectAtIndex:(index - pageOffset)];
+				break;
 			}
 			else
 			{
-				__unsafe_unretained YapDatabaseViewSortingWithObjectAndMetadataBlock sortingBlock =
-				    (YapDatabaseViewSortingWithObjectAndMetadataBlock)view->sortingBlock;
-				
-				id anotherObject = nil;
-				id anotherMetadata = nil;
-				
-				[self getObject:&anotherObject metadata:&anotherMetadata forKey:anotherKey];
-				
-				return sortingBlock(group, key, object, metadata, anotherKey, anotherObject, anotherMetadata);
-			}
-		};
-		
-		NSComparisonResult cmp;
-		
-		// Optimization 1:
-		//
-		// If the key is already in the group, check to see if its index is the same as before.
-		// This handles the common case where an object is updated without changing its position within the view.
-		
-		if (tryExistingIndexInGroup)
-		{
-			NSMutableArray *existingPage = [self pageForPageKey:existingPageKey];
-			
-			NSUInteger existingPageOffset = 0;
-			for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
-			{
-				if ([pageMetadata->pageKey isEqualToString:existingPageKey])
-					break;
-				else
-					existingPageOffset += pageMetadata->count;
-			}
-			
-			NSUInteger existingIndex = existingPageOffset + [existingPage indexOfObject:key];
-			
-			// Edge case: existing key is the only key in the group
-			//
-			// (existingIndex == 0) && (count == 1)
-			
-			BOOL useExistingIndexInGroup = YES;
-			
-			if (existingIndex > 0)
-			{
-				cmp = compare(existingIndex - 1); // compare vs prev
-				
-				useExistingIndexInGroup = (cmp != NSOrderedAscending); // object >= prev
-			}
-			
-			if ((existingIndex + 1) < count && useExistingIndexInGroup)
-			{
-				cmp = compare(existingIndex + 1); // compare vs next
-				
-				useExistingIndexInGroup = (cmp != NSOrderedDescending); // object <= next
-			}
-			
-			if (useExistingIndexInGroup)
-			{
-				// The key doesn't change position.
-				
-				YDBLogVerbose(@"Updated key(%@) in group(%@) maintains current index", key, group);
-				return;
-			}
-			else
-			{
-				// The key has changed position.
-				// Remove it from previous position (and don't forget to decrement count).
-				
-				[self removeKey:key withPageKey:existingPageKey group:group];
-				count--;
-				
-				// Don't forget to reset the existingPageKey ivar!
-				// Or else 'insertKey:inGroup:atIndex:withExistingPageKey:' will be given an invalid existingPageKey.
-				existingPageKey = nil;
+				pageOffset += pageMetadata->count;
 			}
 		}
-		
-		// Optimization 2:
-		//
-		// A very common operation is to insert objects at the beginning or end of the array.
-		// We attempt to notice this trend and optimize around it.
-		
-		if (viewConnection->lastInsertWasAtFirstIndex && (count > 1))
-		{
-			cmp = compare(0);
 			
-			if (cmp == NSOrderedAscending) // object < first
-			{
-				YDBLogVerbose(@"Insert key(%@) in group(%@) at beginning (lastInsertWasAtFirstIndex optimization)",
-				              key, group);
-				
-				[self insertKey:key inGroup:group atIndex:0 withExistingPageKey:existingPageKey];
-				return;
-			}
+		if (view->sortingBlockType == YapDatabaseViewBlockTypeWithKey)
+		{
+			__unsafe_unretained YapDatabaseViewSortingWithKeyBlock sortingBlock =
+			    (YapDatabaseViewSortingWithKeyBlock)view->sortingBlock;
+			
+			return sortingBlock(group, key, anotherKey);
+		}
+		else if (view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
+		{
+			__unsafe_unretained YapDatabaseViewSortingWithObjectBlock sortingBlock =
+			    (YapDatabaseViewSortingWithObjectBlock)view->sortingBlock;
+			
+			id anotherObject = [self objectForKey:anotherKey];
+			
+			return sortingBlock(group, key, object, anotherKey, anotherObject);
+		}
+		else if (view->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+		{
+			__unsafe_unretained YapDatabaseViewSortingWithMetadataBlock sortingBlock =
+			    (YapDatabaseViewSortingWithMetadataBlock)view->sortingBlock;
+			
+			id anotherMetadata = [self metadataForKey:anotherKey];
+			
+			return sortingBlock(group, key, metadata, anotherKey, anotherMetadata);
+		}
+		else
+		{
+			__unsafe_unretained YapDatabaseViewSortingWithObjectAndMetadataBlock sortingBlock =
+			    (YapDatabaseViewSortingWithObjectAndMetadataBlock)view->sortingBlock;
+			
+			id anotherObject = nil;
+			id anotherMetadata = nil;
+			
+			[self getObject:&anotherObject metadata:&anotherMetadata forKey:anotherKey];
+			
+			return sortingBlock(group, key, object, metadata, anotherKey, anotherObject, anotherMetadata);
+		}
+	};
+		
+	NSComparisonResult cmp;
+	
+	// Optimization 1:
+	//
+	// If the key is already in the group, check to see if its index is the same as before.
+	// This handles the common case where an object is updated without changing its position within the view.
+	
+	if (tryExistingIndexInGroup)
+	{
+		// Edge case: existing key is the only key in the group
+		//
+		// (existingIndex == 0) && (count == 1)
+		
+		BOOL useExistingIndexInGroup = YES;
+		
+		if (existingIndexInGroup > 0)
+		{
+			cmp = compare(existingIndexInGroup - 1); // compare vs prev
+			
+			useExistingIndexInGroup = (cmp != NSOrderedAscending); // object >= prev
 		}
 		
-		if (viewConnection->lastInsertWasAtLastIndex && (count > 1))
+		if ((existingIndexInGroup + 1) < count && useExistingIndexInGroup)
 		{
-			cmp = compare(count - 1);
+			cmp = compare(existingIndexInGroup + 1); // compare vs next
 			
-			if (cmp != NSOrderedAscending) // object >= last
-			{
-				YDBLogVerbose(@"Insert key(%@) in group(%@) at end (lastInsertWasAtLastIndex optimization)",
-				              key, group);
-				
-				[self insertKey:key inGroup:group atIndex:count withExistingPageKey:existingPageKey];
-				return;
-			}
+			useExistingIndexInGroup = (cmp != NSOrderedDescending); // object <= next
 		}
 		
-		// Otherwise:
-		//
-		// Binary search operation.
-		//
-		// This particular algorithm accounts for cases where the objects are not unique.
-		// That is, if some objects are NSOrderedSame, then the algorithm returns the largest index possible
-		// (within the region where elements are "equal").
-		
-		NSUInteger loopCount = 0;
-		
-		NSUInteger min = 0;
-		NSUInteger max = count;
-		
-		while (min < max)
+		if (useExistingIndexInGroup)
 		{
-			NSUInteger mid = (min + max) / 2;
+			// The key doesn't change position.
 			
-			cmp = compare(mid);
+			YDBLogVerbose(@"Updated key(%@) in group(%@) maintains current index", key, group);
 			
-			if (cmp == NSOrderedAscending)
-				max = mid;
-			else
-				min = mid + 1;
+			[viewConnection->operations addObject:
+				[YapDatabaseViewOperation updateKey:key columns:flags inGroup:group atIndex:existingIndexInGroup]];
 			
-			loopCount++;
+			return;
 		}
-		
-		YDBLogVerbose(@"Insert key(%@) in group(%@) took %lu comparisons", key, group, (unsigned long)loopCount);
-		
-		[self insertKey:key inGroup:group atIndex:min withExistingPageKey:existingPageKey];
-		
-		viewConnection->lastInsertWasAtFirstIndex = (min == 0);
-		viewConnection->lastInsertWasAtLastIndex  = (min == count);
+		else
+		{
+			// The key has changed position.
+			// Remove it from previous position (and don't forget to decrement count).
+			
+			[self removeKey:key withPageKey:existingPageKey group:group];
+			count--;
+			
+			// Don't forget to reset the existingPageKey ivar!
+			// Or else 'insertKey:inGroup:atIndex:withExistingPageKey:' will be given an invalid existingPageKey.
+			existingPageKey = nil;
+		}
 	}
+		
+	// Optimization 2:
+	//
+	// A very common operation is to insert objects at the beginning or end of the array.
+	// We attempt to notice this trend and optimize around it.
+	
+	if (viewConnection->lastInsertWasAtFirstIndex && (count > 1))
+	{
+		cmp = compare(0);
+		
+		if (cmp == NSOrderedAscending) // object < first
+		{
+			YDBLogVerbose(@"Insert key(%@) in group(%@) at beginning (lastInsertWasAtFirstIndex optimization)",
+			              key, group);
+			
+			[self insertKey:key inGroup:group atIndex:0 withExistingPageKey:existingPageKey];
+			return;
+		}
+	}
+	
+	if (viewConnection->lastInsertWasAtLastIndex && (count > 1))
+	{
+		cmp = compare(count - 1);
+		
+		if (cmp != NSOrderedAscending) // object >= last
+		{
+			YDBLogVerbose(@"Insert key(%@) in group(%@) at end (lastInsertWasAtLastIndex optimization)",
+			              key, group);
+			
+			[self insertKey:key inGroup:group atIndex:count withExistingPageKey:existingPageKey];
+			return;
+		}
+	}
+		
+	// Otherwise:
+	//
+	// Binary search operation.
+	//
+	// This particular algorithm accounts for cases where the objects are not unique.
+	// That is, if some objects are NSOrderedSame, then the algorithm returns the largest index possible
+	// (within the region where elements are "equal").
+	
+	NSUInteger loopCount = 0;
+	
+	NSUInteger min = 0;
+	NSUInteger max = count;
+	
+	while (min < max)
+	{
+		NSUInteger mid = (min + max) / 2;
+		
+		cmp = compare(mid);
+		
+		if (cmp == NSOrderedAscending)
+			max = mid;
+		else
+			min = mid + 1;
+		
+		loopCount++;
+	}
+	
+	YDBLogVerbose(@"Insert key(%@) in group(%@) took %lu comparisons", key, group, (unsigned long)loopCount);
+	
+	[self insertKey:key inGroup:group atIndex:min withExistingPageKey:existingPageKey];
+	
+	viewConnection->lastInsertWasAtFirstIndex = (min == 0);
+	viewConnection->lastInsertWasAtLastIndex  = (min == count);
 }
 
 /**
@@ -1874,7 +1919,8 @@
 	{
 		// Add key to view (or update position)
 		
-		[self insertObject:object forKey:key withMetadata:metadata inGroup:group];
+		int flags = (YapDatabaseViewOperationColumnObject | YapDatabaseViewOperationColumnMetadata);
+		[self insertObject:object metadata:metadata forKey:key inGroup:group withModifiedColumns:flags];
 	}
 }
 
@@ -1887,11 +1933,12 @@
 	YDBLogAutoTrace();
 	
 	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	// Invoke the grouping block to find out if the object should be included in the view.
 	
 	id object = nil;
-	NSString *group;
+	NSString *group = nil;
 	
 	if (view->groupingBlockType == YapDatabaseViewBlockTypeWithKey ||
 	    view->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
@@ -1899,38 +1946,44 @@
 		// Grouping is based on the key or object.
 		// Neither have changed, and thus the group hasn't changed.
 		
+		NSString *pageKey = [self pageKeyForKey:key];
+		group = [self groupForPageKey:pageKey];
+		
+		if (group == nil)
+		{
+			// Nothing to do.
+			// The key wasn't previously in the view, and still isn't in the view.
+			return;
+		}
+		
 		if (view->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
 		    view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
 		{
-			// Nothing to do.
-			// Nothing has changed that relates to sorting either.
+			// Nothing has moved because the group hasn't changed and
+			// nothing has changed that relates to sorting.
+			
+			int flags = YapDatabaseViewOperationColumnMetadata;
+			NSUInteger existingIndex = [self indexForKey:key inGroup:group withPageKey:pageKey];
+			
+			[viewConnection->operations addObject:
+			    [YapDatabaseViewOperation updateKey:key columns:flags inGroup:group atIndex:existingIndex]];
 		}
 		else
 		{
 			// Sorting is based on the metadata, which has changed.
 			// So the sort order may possibly have changed.
-			//
-			// Fetch existing group
-			group = [self groupForPageKey:[self pageKeyForKey:key]];
 			
-			if (group == nil)
+			// From previous if statement (above) we know:
+			// sortingBlockType is metadata or objectAndMetadata
+			
+			if (view->sortingBlockType == YapDatabaseViewBlockTypeWithObjectAndMetadata)
 			{
-				// Nothing to do.
-				// The key wasn't previously in the view (and still isn't in the view).
+				// Need the object for the sorting block
+				object = [self objectForKey:key];
 			}
-			else
-			{
-				// From previous if statement (above) we know:
-				// sortingBlockType is metadata or objectAndMetadata
-				
-				if (view->sortingBlockType == YapDatabaseViewBlockTypeWithObjectAndMetadata)
-				{
-					// Need the object for the sorting block
-					object = [self objectForKey:key];
-				}
-				
-				[self insertObject:object forKey:key withMetadata:metadata inGroup:group];
-			}
+			
+			int flags = YapDatabaseViewOperationColumnMetadata;
+			[self insertObject:object metadata:metadata forKey:key inGroup:group withModifiedColumns:flags];
 		}
 	}
 	else
@@ -1969,11 +2022,20 @@
 				// Sorting is based on the key or object, neither of which has changed.
 				// So if the group hasn't changed, then the sort order hasn't changed.
 				
-				NSString *existingGroup = [self groupForPageKey:[self pageKeyForKey:key]];
+				NSString *existingPageKey = [self pageKeyForKey:key];
+				NSString *existingGroup = [self groupForPageKey:existingPageKey];
+				
 				if ([group isEqualToString:existingGroup])
 				{
 					// Nothing left to do.
 					// The group didn't change, and the sort order cannot change (because the object didn't change).
+					
+					int flags = YapDatabaseViewOperationColumnMetadata;
+					NSUInteger existingIndex = [self indexForKey:key inGroup:group withPageKey:existingPageKey];
+					
+					[viewConnection->operations addObject:
+					    [YapDatabaseViewOperation updateKey:key columns:flags inGroup:group atIndex:existingIndex]];
+					
 					return;
 				}
 			}
@@ -1985,7 +2047,8 @@
 				object = [self objectForKey:key];
 			}
 			
-			[self insertObject:object forKey:key withMetadata:metadata inGroup:group];
+			int flags = YapDatabaseViewOperationColumnMetadata;
+			[self insertObject:object metadata:metadata forKey:key inGroup:group withModifiedColumns:flags];
 		}
 	}
 }
