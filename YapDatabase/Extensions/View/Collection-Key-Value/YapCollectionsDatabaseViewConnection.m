@@ -50,6 +50,22 @@
 	return self;
 }
 
+- (void)dealloc
+{
+	sqlite_finalize_null(&keyTable_getPageKeyForCollectionKeyStatement);
+	sqlite_finalize_null(&keyTable_setPageKeyForCollectionKeyStatement);
+	sqlite_finalize_null(&keyTable_enumerateForCollectionStatement);
+	sqlite_finalize_null(&keyTable_removeForCollectionKeyStatement);
+	sqlite_finalize_null(&keyTable_removeForCollectionStatement);
+	sqlite_finalize_null(&keyTable_removeAllStatement);
+	
+	sqlite_finalize_null(&pageTable_getDataForPageKeyStatement);
+	sqlite_finalize_null(&pageTable_setAllForPageKeyStatement);
+	sqlite_finalize_null(&pageTable_setMetadataForPageKeyStatement);
+	sqlite_finalize_null(&pageTable_removeForPageKeyStatement);
+	sqlite_finalize_null(&pageTable_removeAllStatement);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Properties
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
