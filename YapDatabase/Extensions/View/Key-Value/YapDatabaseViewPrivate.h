@@ -44,7 +44,7 @@
 	BOOL lastInsertWasAtFirstIndex;
 	BOOL lastInsertWasAtLastIndex;
 	
-	NSMutableArray *operations;
+	NSMutableArray *changes;
 }
 
 - (void)postCommitCleanup;

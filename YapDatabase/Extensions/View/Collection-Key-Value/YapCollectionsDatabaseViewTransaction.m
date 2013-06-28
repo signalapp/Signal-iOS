@@ -1,8 +1,8 @@
 #import "YapCollectionsDatabaseViewTransaction.h"
 #import "YapCollectionsDatabaseViewPrivate.h"
 #import "YapDatabaseViewPageMetadata.h"
-#import "YapDatabaseViewOperation.h"
-#import "YapDatabaseViewOperationPrivate.h"
+#import "YapDatabaseViewChange.h"
+#import "YapDatabaseViewChangePrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapAbstractDatabasePrivate.h"
 #import "YapCollectionsDatabaseTransaction.h"
@@ -851,10 +851,10 @@
 		[viewConnection->keyCache removeObjectForKey:collectionKey];
 	}
 	
-	// Add operation to log
+	// Add change to log
 	
-	[viewConnection->operations addObject:
-	    [YapDatabaseViewOperation insertKey:collectionKey inGroup:group atIndex:index]];
+	[viewConnection->changes addObject:
+	    [YapDatabaseViewChange insertKey:collectionKey inGroup:group atIndex:index]];
 }
 
 /**
@@ -911,8 +911,8 @@
 				// Sorting is based entirely on the key, which hasn't changed.
 				// Thus the position within the view hasn't changed.
 				
-				[viewConnection->operations addObject:
-				    [YapDatabaseViewOperation updateKey:collectionKey
+				[viewConnection->changes addObject:
+				    [YapDatabaseViewChange updateKey:collectionKey
 				                                columns:flags
 				                                inGroup:group
 				                                atIndex:existingIndexInGroup]];
@@ -981,10 +981,10 @@
 		[viewConnection->dirtyKeys setObject:pageKey forKey:collectionKey];
 		[viewConnection->keyCache removeObjectForKey:collectionKey];
 		
-		// Add operation to log
+		// Add change to log
 		
-		[viewConnection->operations addObject:
-		    [YapDatabaseViewOperation insertKey:collectionKey inGroup:group atIndex:0]];
+		[viewConnection->changes addObject:
+		    [YapDatabaseViewChange insertKey:collectionKey inGroup:group atIndex:0]];
 		
 		return;
 	}
@@ -1119,8 +1119,8 @@
 			
 			YDBLogVerbose(@"Updated key(%@) in group(%@) maintains current index", collectionKey.key, group);
 			
-			[viewConnection->operations addObject:
-			    [YapDatabaseViewOperation updateKey:collectionKey
+			[viewConnection->changes addObject:
+			    [YapDatabaseViewChange updateKey:collectionKey
 			                                columns:flags
 			                                inGroup:group
 			                                atIndex:existingIndexInGroup]];
@@ -1264,10 +1264,10 @@
 	YDBLogVerbose(@"Removing collection(%@) key(%@) from page(%@) at index(%lu)",
 	              collectionKey.collection, collectionKey.key, page, (unsigned long)keyIndexWithinPage);
 	
-	// Add operation to log
+	// Add change to log
 	
-	[viewConnection->operations addObject:
-	    [YapDatabaseViewOperation deleteKey:collectionKey inGroup:group atIndex:(pageOffset + keyIndexWithinPage)]];
+	[viewConnection->changes addObject:
+	    [YapDatabaseViewChange deleteKey:collectionKey inGroup:group atIndex:(pageOffset + keyIndexWithinPage)]];
 	
 	// Update page (by removing key from array)
 	
@@ -1386,13 +1386,13 @@
 	
 	YDBLogVerbose(@"Removing %lu key(s) from page(%@)", (unsigned long)[keyIndexSet count], page);
 	
-	// Add operation to log
+	// Add change to log
 	// Notes:
 	// 
 	// - We have to do this before we update the page
 	//     so we can fetch the keys that are being removed.
 	//
-	// - We must add the operations in reverse order,
+	// - We must add the changes in reverse order,
 	//     just as if we were deleting them from the array one-at-a-time.
 	
 	__block NSUInteger i = [collectionKeys count] - 1;
@@ -1402,8 +1402,8 @@
 		YapCollectionKey *collectionKey = [collectionKeys objectAtIndex:i];
 		i--;
 									  
-		[viewConnection->operations addObject:
-		    [YapDatabaseViewOperation deleteKey:collectionKey inGroup:group atIndex:(pageOffset + keyIndexWithinPage)]];
+		[viewConnection->changes addObject:
+		    [YapDatabaseViewChange deleteKey:collectionKey inGroup:group atIndex:(pageOffset + keyIndexWithinPage)]];
 	}];
 	
 	// Update page (by removing keys from array)
@@ -2075,7 +2075,7 @@
 	{
 		// Add key to view (or update position)
 		
-		int flags = (YapDatabaseViewOperationColumnObject | YapDatabaseViewOperationColumnMetadata);
+		int flags = (YapDatabaseViewChangeColumnObject | YapDatabaseViewChangeColumnMetadata);
 		[self insertObject:object metadata:metadata
 		                  forCollectionKey:collectionKey
 		                           inGroup:group
@@ -2129,11 +2129,11 @@
 			// Nothing has moved because the group hasn't changed and
 			// nothing has changed that relates to sorting.
 			
-			int flags = YapDatabaseViewOperationColumnMetadata;
+			int flags = YapDatabaseViewChangeColumnMetadata;
 			NSUInteger existingIndex = [self indexForCollectionKey:collectionKey inGroup:group withPageKey:pageKey];
 			
-			[viewConnection->operations addObject:
-			    [YapDatabaseViewOperation updateKey:collectionKey columns:flags inGroup:group atIndex:existingIndex]];
+			[viewConnection->changes addObject:
+			    [YapDatabaseViewChange updateKey:collectionKey columns:flags inGroup:group atIndex:existingIndex]];
 		}
 		else
 		{
@@ -2149,7 +2149,7 @@
 				object = [self objectForKey:key inCollection:collection];
 			}
 			
-			int flags = YapDatabaseViewOperationColumnMetadata;
+			int flags = YapDatabaseViewChangeColumnMetadata;
 			[self insertObject:object metadata:metadata
 			                  forCollectionKey:collectionKey
 			                           inGroup:group
@@ -2200,13 +2200,13 @@
 					// Nothing left to do.
 					// The group didn't change, and the sort order cannot change (because the object didn't change).
 					
-					int flags = YapDatabaseViewOperationColumnMetadata;
+					int flags = YapDatabaseViewChangeColumnMetadata;
 					NSUInteger existingIndex = [self indexForCollectionKey:collectionKey
 					                                               inGroup:group
 					                                           withPageKey:existingPageKey];
 					
-					[viewConnection->operations addObject:
-					    [YapDatabaseViewOperation updateKey:collectionKey
+					[viewConnection->changes addObject:
+					    [YapDatabaseViewChange updateKey:collectionKey
 					                                columns:flags
 					                                inGroup:group
 					                                atIndex:existingIndex]];
@@ -2221,7 +2221,7 @@
 				object = [self objectForKey:key inCollection:collection];
 			}
 			
-			int flags = YapDatabaseViewOperationColumnMetadata;
+			int flags = YapDatabaseViewChangeColumnMetadata;
 			[self insertObject:object metadata:metadata
 			                  forCollectionKey:collectionKey
 			                           inGroup:group

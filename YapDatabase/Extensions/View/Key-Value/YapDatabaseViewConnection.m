@@ -2,8 +2,8 @@
 #import "YapDatabaseViewPrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapAbstractDatabasePrivate.h"
-#import "YapDatabaseViewOperation.h"
-#import "YapDatabaseViewOperationPrivate.h"
+#import "YapDatabaseViewChange.h"
+#import "YapDatabaseViewChangePrivate.h"
 #import "YapCache.h"
 #import "YapDatabaseLogging.h"
 
@@ -76,8 +76,8 @@
 		dirtyPages = [[NSMutableDictionary alloc] init];
 	if (dirtyMetadata == nil)
 		dirtyMetadata = [[NSMutableDictionary alloc] init];
-	if (operations == nil)
-		operations = [[NSMutableArray alloc] init];
+	if (changes == nil)
+		changes = [[NSMutableArray alloc] init];
 	
 	return transaction;
 }
@@ -155,7 +155,7 @@
 	[dirtyMetadata removeAllObjects];
 	reset = NO;
 	
-	[operations removeAllObjects];
+	[changes removeAllObjects];
 }
 
 - (void)postCommitCleanup
@@ -174,10 +174,10 @@
 	
 	[dirtyMetadata removeAllObjects];
 	
-	// The operations log is copied into the external changeset.
+	// The changes log is copied into the external changeset.
 	// So it's safe to simply reset.
 	
-	[operations removeAllObjects];
+	[changes removeAllObjects];
 	
 	reset = NO;
 }
@@ -218,11 +218,11 @@
 		[internalChangeset setObject:pageKey_group_dict_copy       forKey:@"pageKey_group_dict"];
 	}
 	
-	if ([operations count])
+	if ([changes count])
 	{
 		externalChangeset = [NSMutableDictionary dictionaryWithCapacity:1];
   
-  		[externalChangeset setObject:[operations copy] forKey:@"operations"];
+  		[externalChangeset setObject:[changes copy] forKey:@"changes"];
 	}
 	
 	*internalChangesetPtr = internalChangeset;
@@ -336,27 +336,27 @@
 	}
 }
 
-- (NSArray *)operationsForNotifications:(NSArray *)notifications withGroupToSectionMappings:(NSDictionary *)mappings
+- (NSArray *)changesForNotifications:(NSArray *)notifications withGroupToSectionMappings:(NSDictionary *)mappings
 {
 	NSString *registeredName = self.view.registeredName;
-	NSMutableArray *all_operations = [NSMutableArray array];
+	NSMutableArray *all_changes = [NSMutableArray array];
 	
 	for (NSNotification *notification in notifications)
 	{
 		NSDictionary *changeset =
 		    [[notification.userInfo objectForKey:YapDatabaseExtensionsKey] objectForKey:registeredName];
 		
-		NSArray *changeset_operations = [changeset objectForKey:@"operations"];
+		NSArray *changeset_changes = [changeset objectForKey:@"changes"];
 		
-		[all_operations addObjectsFromArray:changeset_operations];
+		[all_changes addObjectsFromArray:changeset_changes];
 	}
 	
-	NSMutableArray *all_operations_safe = [[NSMutableArray alloc] initWithArray:all_operations copyItems:YES];
+	NSMutableArray *all_changes_safe = [[NSMutableArray alloc] initWithArray:all_changes copyItems:YES];
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:all_operations_safe
-	                               withGroupToSectionMappings:mappings];
+	[YapDatabaseViewChange processAndConsolidateChanges:all_changes_safe
+	                         withGroupToSectionMappings:mappings];
 	
-	return all_operations_safe;
+	return all_changes_safe;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

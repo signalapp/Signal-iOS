@@ -1,6 +1,6 @@
-#import "TestViewOperationLogic.h"
-#import "YapDatabaseViewOperation.h"
-#import "YapDatabaseViewOperationPrivate.h"
+#import "TestViewChangeLogic.h"
+#import "YapDatabaseViewChange.h"
+#import "YapDatabaseViewChangePrivate.h"
 
 /**
  * A database view needs to report a changeset in the YapDatabaseModifiedNotification.
@@ -18,14 +18,14 @@
  * 
  * For the test cases below, we will use "ascii art" to diagram the order of changes that occurred.
  * 
- * The views record each operation that modifies the view as the modifications occur:
+ * The views record each change that modifies the view as the modifications occur:
  *
  * - If a item is inserted, then the insertion index is recorded at the time of the insert.
  * - If a key is deleted, then the deletion index is recorded at the time of the delete.
- * - If a key is moved, then the operation is recorded as 2 separate operations. A delete and then an insert.
+ * - If a key is moved, then the change is recorded as 2 separate operations. A delete and then an insert.
  * 
  * The the recording of the modifications is quite simple.
- * After the transaction is complete, we need to perform post-processing on the operation log in order to:
+ * After the transaction is complete, we need to perform post-processing on the changes log in order to:
  *
  * - deduce the original index value and final index value of modifications
  * - consolidate multiple changes to the same key
@@ -36,13 +36,13 @@
  * - a DELETE is written as  : (originalIndex -> ~)           because a delete has no final index
  * - an INSERT is written as : (            ~ -> finalIndex)  because an insert has no original index
 **/
-@implementation TestViewOperationLogic
+@implementation TestViewChangeLogic
 
-static NSMutableArray *operations;
+static NSMutableArray *changes;
 
-static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
+static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
-	return (YapDatabaseViewOperation *)[operations objectAtIndex:index];
+	return (YapDatabaseViewChange *)[changes objectAtIndex:index];
 };
 
 + (void)initialize
@@ -51,13 +51,13 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	if (!initialized)
 	{
 		initialized = YES;
-		operations = [NSMutableArray array];
+		changes = [NSMutableArray array];
 	}
 }
 
 - (void)tearDown
 {
-	[operations removeAllObjects];
+	[changes removeAllObjects];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,21 +74,21 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 3 | cat   | dog   | 
 	// 4 | dog   |       | 
 	
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"bear" inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"lion" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"lion" inGroup:@"" atIndex:0]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Delete: 0 (lion)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(1).originalIndex == 0, @"");
 }
 
@@ -102,21 +102,21 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 3 | cat   | dog   |
 	// 4 | dog   |       |
 	
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"bear" inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"cat"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"cat"  inGroup:@"" atIndex:2]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Delete: (2 -> ~) (bear)
 	// Delete: (3 -> ~) (cat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(1).originalIndex == 3, @"");
 }
 
@@ -130,21 +130,21 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 3 | cat   | dog   |
 	// 4 | dog   |       |
 	
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"bear" inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"dog"  inGroup:@"" atIndex:3]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"dog"  inGroup:@"" atIndex:3]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Delete: (2 -> ~) (bear)
 	// Delete: (4 -> ~) (dog)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(1).originalIndex == 4, @"");
 }
 
@@ -164,21 +164,21 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 5 |       | dog   | cat
 	// 6 |       |       | dog
 	
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"goat"  inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:0]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Insert: (~ -> 3) (zebra)
 	// Insert: (~ -> 0) (goat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(0).finalIndex == 3, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(1).finalIndex == 0, @"");
 }
 
@@ -194,21 +194,21 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 5 |       | dog   | cat
 	// 6 |       |       | dog
 	
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"goat"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:2]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Insert: (~ -> 3) (zebra)
 	// Insert: (~ -> 2) (goat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(0).finalIndex == 3, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(1).finalIndex == 2, @"");
 }
 
@@ -224,21 +224,21 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 5 |       | dog   | dog
 	// 6 |       |       | goat
 	
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"goat"  inGroup:@"" atIndex:6]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:6]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Insert: (~ -> 2) (zebra)
 	// Insert: (~ -> 6) (goat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(0).finalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(1).finalIndex == 6, @"");
 }
 
@@ -256,21 +256,21 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 3 | cat   | dog   | cat
 	// 4 | dog   |       | dog
 	
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:0]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Insert: 0 (zebra)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(1).finalIndex == 0, @"");
 }
 
@@ -284,21 +284,21 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 3 | cat   | dog   | cat
 	// 4 | dog   |       | dog
 	
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Insert: 2 (zebra)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(1).finalIndex == 2, @"");
 }
 
@@ -312,21 +312,21 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 3 | cat   | dog   | dog
 	// 4 | dog   |       | zebra
 	
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:4]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:4]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Insert: 4 (zebra)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(1).finalIndex == 4, @"");
 }
 
@@ -345,21 +345,21 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   | cat   | dog
 	// 5 |       | dog   | 
 	
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"lion"  inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"lion"  inGroup:@"" atIndex:0]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Insert: 1 (zebra)
 	// Delete: 0 (lion)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(0).finalIndex == 1, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(1).originalIndex == 0, @"");
 }
 
@@ -374,21 +374,21 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   | cat   | dog
 	// 5 |       | dog   |
 	
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"tiger" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"tiger" inGroup:@"" atIndex:1]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Insert: 1 (zebra)
 	// Delete: 1 (tiger)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(0).finalIndex == 1, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(1).originalIndex == 1, @"");
 }
 
@@ -403,21 +403,21 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   | cat   | dog
 	// 5 |       | dog   |
 	
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"bear"  inGroup:@"" atIndex:3]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:3]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Insert: 2 (zebra)
 	// Delete: 2 (bear)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(0).finalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(1).originalIndex == 2, @"");
 }
 
@@ -432,21 +432,21 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   | cat   | dog
 	// 5 |       | dog   |
 	
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"cat"   inGroup:@"" atIndex:4]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"cat"   inGroup:@"" atIndex:4]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Insert: 2 (zebra)
 	// Delete: 3 (cat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(0).finalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(1).originalIndex == 3, @"");
 }
 
@@ -465,26 +465,26 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   | cat   | dog   |
 	// 5 |       | dog   |       |
 	
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"lion"  inGroup:@"" atIndex:0]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"tiger" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"lion"  inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"tiger" inGroup:@"" atIndex:0]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Insert: 0 (zebra)
 	// Delete: 0 (lion)
 	// Delete: 1 (tiger)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(0).finalIndex == 0, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(1).originalIndex == 0, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(2).originalIndex == 1, @"");
 }
 
@@ -499,26 +499,26 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   | cat   | dog   |
 	// 5 |       | dog   |       |
 	
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"tiger" inGroup:@"" atIndex:1]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"tiger" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Insert: 1 (zebra)
 	// Delete: 1 (tiger)
 	// Delete: 2 (bear)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(0).finalIndex == 1, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(1).originalIndex == 1, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(2).originalIndex == 2, @"");
 }
 
@@ -537,26 +537,26 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   |       | dog   | cat
 	// 5 |       |       |       | dog
 	
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:0]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"goat"  inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:0]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Insert: 1 (zebra)
 	// Insert: 0 (goat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(1).finalIndex == 1, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(2).finalIndex == 0, @"");
 }
 
@@ -571,26 +571,26 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   |       | dog   | cat
 	// 5 |       |       |       | dog
 	
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:0]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"goat"  inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:1]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Insert: 0 (zebra)
 	// Insert: 1 (goat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(1).finalIndex == 0, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(2).finalIndex == 1, @"");
 }
 
@@ -605,26 +605,26 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   |       | dog   | cat
 	// 5 |       |       |       | dog
 	
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:1]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"goat"  inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:0]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Insert: 2 (zebra)
 	// Insert: 0 (goat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(1).finalIndex == 2, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(2).finalIndex == 0, @"");
 }
 
@@ -639,26 +639,26 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   |       | dog   | cat
 	// 5 |       |       |       | dog
 	
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:1]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"goat"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:2]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Insert: 1 (zebra)
 	// Insert: 2 (goat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(1).finalIndex == 1, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(2).finalIndex == 2, @"");
 }
 
@@ -673,26 +673,26 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   |       | dog   | cat
 	// 5 |       |       |       | dog
 	
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"goat"  inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:1]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Insert: 3 (zebra)
 	// Insert: 1 (goat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(1).finalIndex == 3, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(2).finalIndex == 1, @"");
 }
 
@@ -707,26 +707,26 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   |       | dog   | cat
 	// 5 |       |       |       | dog
 	
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"goat"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:2]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Insert: 3 (zebra)
 	// Insert: 2 (goat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(1).finalIndex == 3, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(2).finalIndex == 2, @"");
 }
 
@@ -745,15 +745,15 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   | cat   | dog   |       |       |       |
 	// 5 |       | dog   |       |       |       |       |
 	
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"lion"  inGroup:@"" atIndex:0]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"tiger" inGroup:@"" atIndex:0]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"bear"  inGroup:@"" atIndex:1]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"cat"   inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"lion"  inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"tiger" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"cat"   inGroup:@"" atIndex:1]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Insert: 0 (zebra)
@@ -762,19 +762,19 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Delete: 2 (bear)
 	// Delete: 3 (cat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(0).finalIndex == 0, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(1).originalIndex == 0, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(2).originalIndex == 1, @"");
 	
-	STAssertTrue(Op(3).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(3).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(3).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(4).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(4).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(4).originalIndex == 3, @"");
 }
 
@@ -789,15 +789,15 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   | cat   | dog   |       |       |       |
 	// 5 |       | dog   |       |       |       |       |
 	
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"tiger" inGroup:@"" atIndex:1]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"lion"  inGroup:@"" atIndex:0]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"cat"   inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"bear"  inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"tiger" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"lion"  inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"cat"   inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:1]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Insert: 0 (zebra)
@@ -806,19 +806,19 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Delete: 3 (cat)
 	// Delete: 2 (bear)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(0).finalIndex == 0, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(1).originalIndex == 1, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(2).originalIndex == 0, @"");
 	
-	STAssertTrue(Op(3).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(3).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(3).originalIndex == 3, @"");
 	
-	STAssertTrue(Op(4).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(4).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(4).originalIndex == 2, @"");
 }
 
@@ -833,15 +833,15 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   | cat   | dog   |       |       |       |
 	// 5 |       | dog   |       |       |       |       |
 	
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"bear"  inGroup:@"" atIndex:3]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"cat"   inGroup:@"" atIndex:3]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"lion"  inGroup:@"" atIndex:0]];
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"tiger" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:3]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"cat"   inGroup:@"" atIndex:3]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"lion"  inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"tiger" inGroup:@"" atIndex:0]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Insert: 0 (zebra)
@@ -850,19 +850,19 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Delete: 0 (lion)
 	// Delete: 1 (tiger)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(0).finalIndex == 0, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(1).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(2).originalIndex == 3, @"");
 	
-	STAssertTrue(Op(3).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(3).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(3).originalIndex == 0, @"");
 	
-	STAssertTrue(Op(4).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(4).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(4).originalIndex == 1, @"");
 }
 
@@ -882,14 +882,14 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 5 |       |       |       | dog   | cat
 	// 6 |       |       |       |       | dog
 	
-	[operations addObject:[YapDatabaseViewOperation deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"zebra" inGroup:@"" atIndex:1]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"goat"  inGroup:@"" atIndex:2]];
-	[operations addObject:[YapDatabaseViewOperation insertKey:@"fish"  inGroup:@"" atIndex:3]];
+	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewChange insertKey:@"fish"  inGroup:@"" atIndex:3]];
 	
 	// Process
 	
-	[YapDatabaseViewOperation processAndConsolidateOperations:operations];
+	[YapDatabaseViewChange processAndConsolidateChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -897,16 +897,16 @@ static YapDatabaseViewOperation* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// Insert: 2 (goat)
 	// Insert: 3 (fish)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewOperationDelete, @"");
+	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
 	STAssertTrue(Op(0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(1).finalIndex == 1, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(2).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(2).finalIndex == 2, @"");
 	
-	STAssertTrue(Op(3).type == YapDatabaseViewOperationInsert, @"");
+	STAssertTrue(Op(3).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(3).finalIndex == 3, @"");
 }
 

@@ -1,22 +1,22 @@
 #import <Foundation/Foundation.h>
 
 typedef enum {
-	YapDatabaseViewOperationInsert = 1,
-	YapDatabaseViewOperationDelete = 2,
-	YapDatabaseViewOperationMove   = 3,
-	YapDatabaseViewOperationUpdate = 4,
+	YapDatabaseViewChangeInsert = 1,
+	YapDatabaseViewChangeDelete = 2,
+	YapDatabaseViewChangeMove   = 3,
+	YapDatabaseViewChangeUpdate = 4,
 	
-} YapDatabaseViewOperationType;
+} YapDatabaseViewChangeType;
 
 typedef enum {
-	YapDatabaseViewOperationColumnObject   = 1 << 0, // 0001
-	YapDatabaseViewOperationColumnMetadata = 1 << 1, // 0010
+	YapDatabaseViewChangeColumnObject   = 1 << 0, // 0001
+	YapDatabaseViewChangeColumnMetadata = 1 << 1, // 0010
 	
-} YapDatabaseViewOperationColumn;
+} YapDatabaseViewChangeColumn;
 
 
 /**
- * YapDatabaseViewOperation is designed to help facilitate animations to tableViews and collectionsViews.
+ * YapDatabaseViewChange is designed to help facilitate animations to tableViews and collectionsViews.
  * 
  * In addition to the documentation available in the header files,
  * you may also wish to read the wiki articles online,
@@ -29,14 +29,14 @@ typedef enum {
  * https://github.com/yaptv/YapDatabase/wiki/LongLivedReadTransactions
  * https://github.com/yaptv/YapDatabase/wiki/YapDatabaseModifiedNotification
 **/
-@interface YapDatabaseViewOperation : NSObject <NSCopying>
+@interface YapDatabaseViewChange : NSObject <NSCopying>
 
 /**
  * The type will be one of: Insert, Delete, Move or Update
  * 
- * @see YapDatabaseViewOperationType
+ * @see YapDatabaseViewChangeType
 **/
-@property (nonatomic, readonly) YapDatabaseViewOperationType type;
+@property (nonatomic, readonly) YapDatabaseViewChangeType type;
 
 /**
  * The column property is a bitflag representing the column(s) that were changed for corresponding row in the database.
@@ -44,23 +44,23 @@ typedef enum {
  * This may be useful for various optimizations.
  * For example, if your view depends only on the object, then you skip updates when the metadata is changed.
  * 
- * if (operation.modifiedColumns & YapDatabaseViewOperationColumnObject) {
+ * if (change.modifiedColumns & YapDatabaseViewChangeColumnObject) {
  *     // object changed, update view
  * }
  * else {
  *     // only the metadata changed, we can skip updating the view
  * }
  * 
- * @see YapDatabaseViewOperationColumn
+ * @see YapDatabaseViewChangeColumn
 **/
 @property (nonatomic, readonly) int modifiedColumns;
 
 /**
  * The indexPath & newIndexPath are available after
- * you've invoked operationsForNotifications:withGroupToSectionMappings:.
+ * you've invoked changesForNotifications:withGroupToSectionMappings:.
  * 
- * @see YapDatabaseConnection operationsForNotifications:withGroupToSectionMappings:
- * @see YapCollectionsDatabaseConnection operationsForNotifications:withGroupToSectionMappings:
+ * @see YapDatabaseConnection changesForNotifications:withGroupToSectionMappings:
+ * @see YapCollectionsDatabaseConnection changesForNotifications:withGroupToSectionMappings:
  * 
  * These properties are designed to help facilitate animations to tableViews and collectionsViews.
  * 
@@ -84,8 +84,8 @@ typedef enum {
  * NSDictionary *mappings = @{ @"liquor":@(0), @"wine":@(1), @"beer":@(2) };
  *
  * NSArray *notifications = [databaseConnection beginLongLivedReadTransaction];
- * NSArray *changes = [databaseConnection operationsForNotifications:notification
- *                                        withGroupToSectionMappings:mappings];
+ * NSArray *changes = [databaseConnection changesForNotifications:notification
+ *                                     withGroupToSectionMappings:mappings];
  *
  * The indexPath and newIndexPath properties are modeled after:
  * NSFetchedResultsControllerDelegate controller:didChangeObject:atIndexPath:forChangeType:newIndexPath:
@@ -97,33 +97,33 @@ typedef enum {
  *
  * [self.tableView beginUpdates];
  *
- * for (YapDatabaseViewOperation *operation in changes)
+ * for (YapDatabaseViewChange *change in changes)
  * {
- *     switch (operation.type)
+ *     switch (change)
  *     {
- *         case YapDatabaseViewOperationDelete :
+ *         case YapDatabaseViewChangeDelete :
  *         {
- *             [self.tableView deleteRowsAtIndexPaths:@[ operation.indexPath ]
+ *             [self.tableView deleteRowsAtIndexPaths:@[ change.indexPath ]
  *                                   withRowAnimation:UITableViewRowAnimationAutomatic];
  *             break;
  *         }
- *         case YapDatabaseViewOperationInsert :
+ *         case YapDatabaseViewChangeInsert :
  *         {
- *             [self.tableView insertRowsAtIndexPaths:@[ operation.newIndexPath ]
+ *             [self.tableView insertRowsAtIndexPaths:@[ change.newIndexPath ]
  *                                   withRowAnimation:UITableViewRowAnimationAutomatic];
  *             break;
  *         }
- *         case YapDatabaseViewOperationMove :
+ *         case YapDatabaseViewChangeMove :
  *         {
- *             [self.tableView deleteRowsAtIndexPaths:@[ operation.indexPath ]
+ *             [self.tableView deleteRowsAtIndexPaths:@[ change.indexPath ]
  *                                   withRowAnimation:UITableViewRowAnimationAutomatic];
- *             [self.tableView insertRowsAtIndexPaths:@[ operation.newIndexPath ]
+ *             [self.tableView insertRowsAtIndexPaths:@[ change.newIndexPath ]
  *                                   withRowAnimation:UITableViewRowAnimationAutomatic];
  *             break;
  *         }
- *         case YapDatabaseViewOperationUpdate :
+ *         case YapDatabaseViewChangeUpdate :
  *         {
- *             [self.tableView reloadRowsAtIndexPaths:@[ operation.indexPath ]
+ *             [self.tableView reloadRowsAtIndexPaths:@[ change.indexPath ]
  *                                   withRowAnimation:UITableViewRowAnimationAutomatic];
  *             break;
  *         }

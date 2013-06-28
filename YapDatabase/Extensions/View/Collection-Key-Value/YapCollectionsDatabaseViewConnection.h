@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "YapAbstractDatabaseExtensionConnection.h"
-#import "YapDatabaseViewOperation.h"
+#import "YapDatabaseViewChange.h"
 
 @class YapCollectionsDatabaseView;
 
@@ -19,6 +19,6 @@
  * Here's how it works:
  *
 **/
-- (NSArray *)operationsForNotifications:(NSArray *)notifications withGroupToSectionMappings:(NSDictionary *)mappings;
+- (NSArray *)changesForNotifications:(NSArray *)notifications withGroupToSectionMappings:(NSDictionary *)mappings;
 
 @end
