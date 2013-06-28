@@ -930,6 +930,9 @@
         includingObjectChanges:(BOOL)includeObjectChanges
                metadataChanges:(BOOL)includeMetadataChanges
 {
+	if (collection == nil)
+		collection = @"";
+	
 	for (NSNotification *notification in notifications)
 	{
 		if (![notification isKindOfClass:[NSNotification class]])
