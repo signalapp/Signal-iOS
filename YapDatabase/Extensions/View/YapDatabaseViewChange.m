@@ -31,18 +31,32 @@
 
 - (NSIndexPath *)indexPath
 {
-	if (type == YapDatabaseViewChangeInsert)
+	if (type == YapDatabaseViewChangeInsert) {
 		return nil; // <-- You should be using newIndexPath
-	else
+	}
+	else {
+	#if TARGET_OS_IPHONE
 		return [NSIndexPath indexPathForRow:originalIndex inSection:originalSection];
+	#else
+		NSUInteger indexes[] = {originalSection, originalIndex};
+		return [NSIndexPath indexPathWithIndexes:indexes length:2];
+	#endif
+	}
 }
 
 - (NSIndexPath *)newIndexPath
 {
-	if (type == YapDatabaseViewChangeDelete || type == YapDatabaseViewChangeUpdate)
+	if (type == YapDatabaseViewChangeDelete || type == YapDatabaseViewChangeUpdate) {
 		return nil; // <-- You should be using indexPath
-	else
+	}
+	else {
+	#if TARGET_OS_IPHONE
 		return [NSIndexPath indexPathForRow:finalIndex inSection:finalSection];
+	#else
+		NSUInteger indexes[] = {finalSection, finalIndex};
+		return [NSIndexPath indexPathWithIndexes:indexes length:2];
+	#endif
+	}
 }
 
 - (id)copyWithZone:(NSZone *)zone
