@@ -585,6 +585,11 @@
 		sqlite_finalize_null(&beginTransactionStatement);
 		sqlite_finalize_null(&commitTransactionStatement);
 	}
+	
+	[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extConnectionObj, BOOL *stop) {
+		
+		[(YapAbstractDatabaseExtensionConnection *)extConnectionObj _flushMemoryWithLevel:level];
+	}];
 }
 
 /**

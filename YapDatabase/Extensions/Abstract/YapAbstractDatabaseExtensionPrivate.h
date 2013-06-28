@@ -84,6 +84,8 @@
 - (id)newReadTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction;
 - (id)newReadWriteTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction;
 
+- (void)_flushMemoryWithLevel:(int)level;
+
 - (void)postRollbackCleanup;
 
 - (void)getInternalChangeset:(NSMutableDictionary **)internalPtr externalChangeset:(NSMutableDictionary **)externalPtr;

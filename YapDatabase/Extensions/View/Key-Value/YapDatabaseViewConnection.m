@@ -61,6 +61,37 @@
 	sqlite_finalize_null(&pageTable_removeAllStatement);
 }
 
+/**
+ * Required override method from YapAbstractDatabaseExtensionConnection
+**/
+- (void)_flushMemoryWithLevel:(int)level
+{
+	if (level >= YapDatabaseConnectionFlushMemoryLevelMild)
+	{
+		[keyCache removeAllObjects];
+		[pageCache removeAllObjects];
+	}
+	
+	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
+	{
+		sqlite_finalize_null(&keyTable_setPageKeyForKeyStatement);
+		sqlite_finalize_null(&keyTable_removeForKeyStatement);
+		sqlite_finalize_null(&keyTable_removeAllStatement);
+		
+		sqlite_finalize_null(&pageTable_setAllForPageKeyStatement);
+		sqlite_finalize_null(&pageTable_setMetadataForPageKeyStatement);
+		sqlite_finalize_null(&pageTable_removeForPageKeyStatement);
+		sqlite_finalize_null(&pageTable_removeAllStatement);
+	}
+	
+	if (level >= YapDatabaseConnectionFlushMemoryLevelFull)
+	{
+		sqlite_finalize_null(&keyTable_getPageKeyForKeyStatement);
+		
+		sqlite_finalize_null(&pageTable_getDataForPageKeyStatement);
+	}
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Properties
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

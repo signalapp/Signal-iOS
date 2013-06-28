@@ -29,6 +29,11 @@
 	return nil;
 }
 
+- (void)_flushMemoryWithLevel:(int)level
+{
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
+}
+
 - (void)postRollbackCleanup
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
