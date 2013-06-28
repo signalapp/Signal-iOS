@@ -97,7 +97,7 @@
 }
 
 /**
- * Optional override hook from YapAbstractDatabaseConnection.
+ * Override hook from YapAbstractDatabaseConnection.
 **/
 - (void)_flushMemoryWithLevel:(int)level
 {

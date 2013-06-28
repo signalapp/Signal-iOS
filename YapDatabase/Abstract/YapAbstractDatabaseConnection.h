@@ -153,7 +153,8 @@ typedef enum  {
  * This allows you to effectively create a stable state for the connection.
  * This is most often used for connections that service the main thread for UI data.
  * 
- * Example:
+ * For a complete discussion, please see the wiki page:
+ * https://github.com/yaptv/YapDatabase/wiki/LongLivedReadTransactions
  * 
 **/
 - (NSArray *)beginLongLivedReadTransaction;

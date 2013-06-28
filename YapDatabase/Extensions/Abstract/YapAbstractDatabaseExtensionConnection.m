@@ -19,24 +19,24 @@
 
 - (id)newReadTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
 {
-	NSAssert(NO, @"Missing required override method in subclass");
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return nil;
 }
 
 - (id)newReadWriteTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
 {
-	NSAssert(NO, @"Missing required override method in subclass");
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return nil;
 }
 
 - (void)postRollbackCleanup
 {
-	NSAssert(NO, @"Missing required override method in subclass");
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
 
 - (void)getInternalChangeset:(NSMutableDictionary **)internalPtr externalChangeset:(NSMutableDictionary **)externalPtr
 {
-	NSAssert(NO, @"Missing required override method in subclass");
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	
 	*internalPtr = nil;
 	*externalPtr = nil;
@@ -44,7 +44,7 @@
 
 - (void)processChangeset:(NSDictionary *)changeset
 {
-	NSAssert(NO, @"Missing required override method in subclass");
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
 
 @end
