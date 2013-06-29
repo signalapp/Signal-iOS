@@ -912,7 +912,7 @@
 		NSUInteger pageOffset = 0;
 		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 		{
-			if (index < (pageOffset + pageMetadata->count))
+			if ((index < (pageOffset + pageMetadata->count)) && (pageMetadata->count > 0))
 			{
 				NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
 				
@@ -2156,7 +2156,7 @@
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 	{
-		if (index < (pageOffset + pageMetadata->count))
+		if ((index < (pageOffset + pageMetadata->count)) && (pageMetadata->count > 0))
 		{
 			NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
 			
