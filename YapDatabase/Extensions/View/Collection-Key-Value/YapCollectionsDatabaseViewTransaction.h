@@ -163,23 +163,23 @@
 
 /**
  * The following methods are equivalent to invoking the enumerateKeysInGroup:... methods,
- * and then fetching the object and metadata within your own block.
+ * and then fetching the object within your own block.
 **/
 
 - (void)enumerateKeysAndObjectsInGroup:(NSString *)group
                             usingBlock:
-            (void (^)(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block;
+            (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block;
 
 - (void)enumerateKeysAndObjectsInGroup:(NSString *)group
                            withOptions:(NSEnumerationOptions)options
                             usingBlock:
-            (void (^)(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block;
+            (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block;
 
 - (void)enumerateKeysAndObjectsInGroup:(NSString *)group
                            withOptions:(NSEnumerationOptions)options
                                  range:(NSRange)range
                             usingBlock:
-            (void (^)(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block;
+            (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block;
 
 @end
 

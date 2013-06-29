@@ -2734,29 +2734,25 @@
 
 /**
  * The following methods are equivalent to invoking the enumerateKeysInGroup:... methods,
- * and then fetching the object and metadata within your own block.
+ * and then fetching the object within your own block.
 **/
 
 - (void)enumerateKeysAndObjectsInGroup:(NSString *)group
                             usingBlock:
-            (void (^)(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block
+            (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block
 {
 	if (block == NULL) return;
 	
 	[self enumerateKeysInGroup:group usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 		
-		id object = nil;
-		id metadata = nil;
-		[self getObject:&object metadata:&metadata forKey:key inCollection:collection];
-		
-		block(collection, key, object, metadata, index, stop);
+		block(collection, key, [self objectForKey:key inCollection:collection], index, stop);
 	}];
 }
 
 - (void)enumerateKeysAndObjectsInGroup:(NSString *)group
                            withOptions:(NSEnumerationOptions)options
                             usingBlock:
-            (void (^)(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block
+            (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block
 {
 	if (block == NULL) return;
 	
@@ -2764,11 +2760,7 @@
 	               withOptions:options
 	                usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 		
-		id object = nil;
-		id metadata = nil;
-		[self getObject:&object metadata:&metadata forKey:key inCollection:collection];
-		
-		block(collection, key, object, metadata, index, stop);
+		block(collection, key, [self objectForKey:key inCollection:collection], index, stop);
 	}];
 }
 
@@ -2776,7 +2768,7 @@
                            withOptions:(NSEnumerationOptions)options
                                  range:(NSRange)range
                             usingBlock:
-            (void (^)(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block
+            (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block
 {
 	if (block == NULL) return;
 	
@@ -2785,11 +2777,7 @@
 	                     range:range
 	                usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 		
-		id object = nil;
-		id metadata = nil;
-		[self getObject:&object metadata:&metadata forKey:key inCollection:collection];
-		
-		block(collection, key, object, metadata, index, stop);
+		block(collection, key, [self objectForKey:key inCollection:collection], index, stop);
 	}];
 }
 
