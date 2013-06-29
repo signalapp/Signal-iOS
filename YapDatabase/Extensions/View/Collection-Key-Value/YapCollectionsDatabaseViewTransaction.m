@@ -2392,6 +2392,52 @@
 	return (collectionKey != nil);
 }
 
+- (BOOL)getFirstKey:(NSString **)keyPtr collection:(NSString **)collectionPtr inGroup:(NSString *)group
+{
+	return [self getKey:keyPtr collection:collectionPtr atIndex:0 inGroup:group];
+}
+
+- (BOOL)getLastKey:(NSString **)keyPtr collection:(NSString **)collectionPtr inGroup:(NSString *)group
+{
+	// We can actually do something a little faster than this:
+	//
+	// NSUInteger count = [self numberOfKeysInGroup:group];
+	// if (count > 0) {
+	// 	return [self getKey:keyPtr collection:collectionPtr atIndex:(count-1) inGroup:group];
+	// }
+	// else {
+	// 	if (keyPtr) *keyPtr = nil;
+	// 	if (collectionPtr) *collectionPtr = nil;
+	// 	return NO;
+	// }
+	
+	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
+	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
+	
+	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+
+	__block YapCollectionKey *lastCollectionKey = nil;
+	
+	[pagesMetadataForGroup enumerateObjectsWithOptions:NSEnumerationReverse
+	                                        usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		
+		__unsafe_unretained YapDatabaseViewPageMetadata *pageMetadata = (YapDatabaseViewPageMetadata *)obj;
+		
+		if (pageMetadata->count > 0)
+		{
+			NSMutableArray *lastPage = [self pageForPageKey:pageMetadata->pageKey];
+			
+			lastCollectionKey = [lastPage lastObject];
+			*stop = YES;
+		}
+	}];
+	
+	if (keyPtr) *keyPtr = lastCollectionKey.key;
+	if (collectionPtr) *collectionPtr = lastCollectionKey.collection;
+	
+	return (lastCollectionKey != nil);
+}
+
 - (NSString *)collectionAtIndex:(NSUInteger)index inGroup:(NSString *)group
 {
 	NSString *collection = nil;
@@ -2678,6 +2724,29 @@
 	NSString *key = nil;
 	
 	if ([self getKey:&key collection:&collection atIndex:index inGroup:group])
+		return [self objectForKey:key inCollection:collection];
+	else
+		return nil;
+}
+
+
+- (id)firstObjectInGroup:(NSString *)group
+{
+	NSString *collection = nil;
+	NSString *key = nil;
+	
+	if ([self getFirstKey:&key collection:&collection inGroup:group])
+		return [self objectForKey:key inCollection:collection];
+	else
+		return nil;
+}
+
+- (id)lastObjectInGroup:(NSString *)group
+{
+	NSString *collection = nil;
+	NSString *key = nil;
+	
+	if ([self getLastKey:&key collection:&collection inGroup:group])
 		return [self objectForKey:key inCollection:collection];
 	else
 		return nil;

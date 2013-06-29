@@ -63,6 +63,16 @@
 - (NSString *)keyAtIndex:(NSUInteger)index inGroup:(NSString *)group;
 
 /**
+ * Shortcut for: [view keyAtIndex:0 inGroup:group]
+**/
+- (NSString *)firstKeyInGroup:(NSString *)group;
+
+/**
+ * Shortcut for: [view keyAtIndex:(numberOfKeysInGroup-1) inGroup:group]
+**/
+- (NSString *)lastKeyInGroup:(NSString *)group;
+
+/**
  * If the given key is included in the view, then returns the associated group.
  * If the key isn't in the view, then returns nil.
 **/
@@ -125,6 +135,20 @@
  * [transaction objectForKey:[[transaction ext:@"myView"] keyAtIndex:index inGroup:group]];
 **/
 - (id)objectAtIndex:(NSUInteger)index inGroup:(NSString *)group;
+
+/**
+ * Equivalent to invoking:
+ * 
+ * [transaction objectForKey:[[transaction ext:@"myView"] firstKeyInGroup:group]];
+**/
+- (id)firstObjectInGroup:(NSString *)group;
+
+/**
+ * Equivalent to invoking:
+ * 
+ * [transaction objectForKey:[[transaction ext:@"myView"] lastKeyInGroup:group]];
+**/
+- (id)lastObjectInGroup:(NSString *)group;
 
 /**
  * The following methods are equivalent to invoking the enumerateKeysInGroup:... methods,

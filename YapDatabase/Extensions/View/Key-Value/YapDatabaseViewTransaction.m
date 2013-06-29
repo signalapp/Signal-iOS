@@ -2171,6 +2171,44 @@
 	return nil;
 }
 
+- (NSString *)firstKeyInGroup:(NSString *)group
+{
+	return [self keyAtIndex:0 inGroup:group];
+}
+
+- (NSString *)lastKeyInGroup:(NSString *)group
+{
+	// We can actually do something a little faster than this:
+	//
+	// NSUInteger count = [self numberOfKeysInGroup:group];
+	// if (count > 0)
+	//     return [self keyAtIndex:(count-1) inGroup:group];
+	// else
+	//     return nil;
+	
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
+	
+	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+
+	__block NSString *lastKey = nil;
+	
+	[pagesMetadataForGroup enumerateObjectsWithOptions:NSEnumerationReverse
+	                                        usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		
+		__unsafe_unretained YapDatabaseViewPageMetadata *pageMetadata = (YapDatabaseViewPageMetadata *)obj;
+		
+		if (pageMetadata->count > 0)
+		{
+			NSMutableArray *lastPage = [self pageForPageKey:pageMetadata->pageKey];
+			
+			lastKey = [lastPage lastObject];
+			*stop = YES;
+		}
+	}];
+	
+	return nil;
+}
+
 - (NSString *)groupForKey:(NSString *)key
 {
 	key = [key copy]; // mutable string protection (public method)
@@ -2423,6 +2461,16 @@
 - (id)objectAtIndex:(NSUInteger)index inGroup:(NSString *)group
 {
 	return [self objectForKey:[self keyAtIndex:index inGroup:group]];
+}
+
+- (id)firstObjectInGroup:(NSString *)group
+{
+	return [self objectForKey:[self firstKeyInGroup:group]];
+}
+
+- (id)lastObjectInGroup:(NSString *)group
+{
+	return [self objectForKey:[self lastKeyInGroup:group]];
 }
 
 - (void)enumerateKeysAndMetadataInGroup:(NSString *)group

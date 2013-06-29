@@ -66,6 +66,16 @@
        inGroup:(NSString *)group;
 
 /**
+ * Shortcut for: [view getKey:&key collection:&collection atIndex:0 inGroup:group]
+**/
+- (BOOL)getFirstKey:(NSString **)keyPtr collection:(NSString **)collectionPtr inGroup:(NSString *)group;
+
+/**
+ * Shortcut for: [view getKey:&key collection:&collection atIndex:(numberOfKeysInGroup-1) inGroup:group]
+**/
+- (BOOL)getLastKey:(NSString **)keyPtr collection:(NSString **)collectionPtr inGroup:(NSString *)group;
+
+/**
  * Shortcut for fetching just the collection at the given index.
 **/
 - (NSString *)collectionAtIndex:(NSUInteger)index inGroup:(NSString *)group;
@@ -140,6 +150,26 @@
  * [transaction objectForKey:key inCollection:collection];
 **/
 - (id)objectAtIndex:(NSUInteger)keyIndex inGroup:(NSString *)group;
+
+/**
+ * Equivalent to invoking:
+ *
+ * NSString *collection = nil;
+ * NSString *key = nil;
+ * [[transaction ext:@"myView"] getFirstKey:&key collection:&collection inGroup:group];
+ * [transaction objectForKey:key inCollection:collection];
+**/
+- (id)firstObjectInGroup:(NSString *)group;
+
+/**
+ * Equivalent to invoking:
+ *
+ * NSString *collection = nil;
+ * NSString *key = nil;
+ * [[transaction ext:@"myView"] getLastKey:&key collection:&collection inGroup:group];
+ * [transaction objectForKey:key inCollection:collection];
+**/
+- (id)lastObjectInGroup:(NSString *)group;
 
 /**
  * The following methods are equivalent to invoking the enumerateKeysInGroup:... methods,
