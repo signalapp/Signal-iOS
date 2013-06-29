@@ -11,11 +11,12 @@
  * https://github.com/yaptv/YapDatabase/wiki
  *
  * YapDatabaseView is an extension designed to work with YapDatabase.
+ * It gives you a persistent sorted "view" of a configurable subset of your data.
  *
- * What is an extension?
- * https://github.com/yaptv/YapDatabase/wiki/Extensions
+ * For more information, please see the wiki article about Views:
+ * https://github.com/yaptv/YapDatabase/wiki/Views
  * 
- * See the documentation in YapDatabaseView for information on initializing a view object.
+ * You may also wish to consult the documentation in YapDatabaseView.h for information on setting up a view.
  *
  * You access this class within a regular transaction.
  * For example:
@@ -26,7 +27,7 @@
  * }];
  * 
  * Keep in mind that the YapDatabaseViewTransaction object is linked to the YapDatabaseReadTransaction object.
- * So don't try to save it to an ivar or use it outside the transaction block.
+ * So don't try to use it outside the transaction block (cause it won't work).
 **/
 @interface YapDatabaseViewTransaction : YapAbstractDatabaseExtensionTransaction
 
@@ -83,8 +84,6 @@
 
 /**
  * Enumerates the keys in the given group.
- * 
- * You cannot modify the database mid-enumeration (from this transaction).
 **/
 - (void)enumerateKeysInGroup:(NSString *)group
                   usingBlock:(void (^)(NSString *key, NSUInteger index, BOOL *stop))block;
@@ -92,8 +91,6 @@
 /**
  * Enumerates the keys in the given group.
  * Reverse enumeration is supported by passing NSEnumerationReverse. (No other enumeration options are supported.)
- * 
- * You cannot modify the database mid-enumeration (from this transaction).
 **/
 - (void)enumerateKeysInGroup:(NSString *)group
                  withOptions:(NSEnumerationOptions)options
@@ -102,8 +99,6 @@
 /**
  * Enumerates the keys in the range of the given group.
  * Reverse enumeration is supported by passing NSEnumerationReverse. (No other enumeration options are supported.)
- * 
- * You cannot modify the database mid-enumeration (from this transaction).
 **/
 - (void)enumerateKeysInGroup:(NSString *)group
                  withOptions:(NSEnumerationOptions)options

@@ -7,16 +7,18 @@
 /**
  * Welcome to YapDatabase!
  *
- * The project page has a wealth of documentation if you have any questions.
  * https://github.com/yaptv/YapDatabase
  *
- * If you're new to the project you may want to check out the wiki
+ * The project wiki has a wealth of documentation if you have any questions.
  * https://github.com/yaptv/YapDatabase/wiki
  * 
  * YapDatabaseView is an extension designed to work with YapDatabase.
+ * It gives you a persistent sorted "view" of a configurable subset of your data.
+ *
+ * For the full documentation on Views, please see the related wiki article:
+ * https://github.com/yaptv/YapDatabase/wiki/Views
  * 
- * What is an extension?
- * https://github.com/yaptv/YapDatabase/wiki/Extensions
+ * Just in case you don't have Internet access, here's a quick overview:
  * 
  * YapDatabaseView provides the ability to create a "view" of your data.
  * That is, imagine you want to display your data in a table.
@@ -85,8 +87,6 @@
  * 
  * You should choose a block type that takes the minimum number of required parameters.
  * The view can make various optimizations based on required parameters of the block.
- * For example, if grouping is based on the object, and the metadata of a row is updated,
- * then the view can deduce that the group hasn't changed, and can skip this step.
 **/
 typedef id YapDatabaseViewGroupingBlock; // One of the YapDatabaseViewGroupingX types below.
 
@@ -106,10 +106,12 @@ typedef NSString* (^YapDatabaseViewGroupingWithObjectAndMetadataBlock)(NSString 
  * 
  * You should choose a block type that takes the minimum number of required parameters.
  * The view can make various optimizations based on required parameters of the block.
+ * 
  * For example, if sorting is based on the object, and the metadata of a row is updated,
  * then the view can deduce that the index hasn't changed (if the group hans't), and can skip this step.
  * 
- * Performance note:
+ * Performance Note:
+ * 
  * The view uses various optimizations (based on common patterns)
  * to reduce the number of times it needs to invoke the sorting block.
  *
@@ -130,10 +132,12 @@ typedef NSString* (^YapDatabaseViewGroupingWithObjectAndMetadataBlock)(NSString 
  *
  * If optimizations fail, or are skipped, then the view uses a binary search algorithm.
  * 
- * Although this may be considered "internal information", I feel it is important to explain for the following reason:
+ * Although this may be considered "internal information",
+ * I feel it is important to explain for the following reason:
+ * 
  * Another common pattern is to fetch a number of objects in a batch, and then insert them into the database.
  * Now imagine a situation in which the view is sorting posts based on timestamp,
- * and you just fetched the most recent 10 posts. You can enumerate these 10 posts in forwards or backwards
+ * and you just fetched the most recent 10 posts. You can enumerate these 10 posts in forwards or backwards order
  * while adding them to the database. One direction will hit the optimization every time. The other will cause
  * the view to perform a binary search every time. These little one-liner optimzations are easy.
 **/
