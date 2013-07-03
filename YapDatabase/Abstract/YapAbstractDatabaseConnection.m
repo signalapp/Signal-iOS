@@ -947,6 +947,8 @@
 			}
 		}
 		
+		NSAssert(myState != nil, @"Missing state in database->connectionStates");
+		
 		// Pre-Read-Transaction: Step 3 of 3
 		//
 		// Update our in-memory data (caches, etc) if needed.
@@ -1190,6 +1192,8 @@
 			}
 		}
 		
+		NSAssert(myState != nil, @"Missing state in database->connectionStates");
+		
 		// Pre-Write-Transaction: Step 3 of 4
 		//
 		// Validate our caches based on snapshot numbers
@@ -1354,6 +1358,8 @@
 					waitForReadOnlyTransactions = YES;
 				}
 			}
+			
+			NSAssert(myState != nil, @"Missing state in database->connectionStates");
 			
 			if (waitForReadOnlyTransactions)
 			{
