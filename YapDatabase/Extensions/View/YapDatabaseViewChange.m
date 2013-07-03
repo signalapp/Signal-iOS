@@ -134,14 +134,14 @@
 + (void)processAndConsolidateChanges:(NSMutableArray *)changes
 {
 	// Every modification to the view resulted in one or more operations being appended to an array.
-	// Each modification was either an insert or a delete.
-	// If a item was moved, then it is represented as a delete followed by a move.
+	// Each modification was either an insert, delete or update.
+	// If a item was moved, then it is represented as a delete followed by an insert.
 	//
 	// At the end of the transaction we have a big list of modifications that have occurred.
 	// Each represents the change state AT THE MOMENT THE CHANGE TOOK PLACE.
 	// This is very important to understand.
 	//
-	// Please see the unit tests for a bunch of examples that will shed light on the problem:
+	// Please see the unit tests for a bunch of examples that will shed light on the setup and algorithm:
 	// TestViewChangeLogic.m
 	
 	NSUInteger i;
@@ -260,7 +260,7 @@
 	i = 0;
 	while (i < [changes count])
 	{
-		YapDatabaseViewChange *change = [changes objectAtIndex:i];
+		YapDatabaseViewChange *firstChangeForKey = [changes objectAtIndex:i];
 		
 		// Find later operations with the same key
 		
@@ -268,8 +268,9 @@
 		{
 			YapDatabaseViewChange *laterChange = [changes objectAtIndex:j];
 			
-			if ([laterChange->key isEqual:change->key])
+			if ([laterChange->key isEqual:firstChangeForKey->key])
 			{
+				firstChangeForKey->columns |= laterChange->columns;
 				[indexSet addIndex:j];
 			}
 		}
@@ -278,20 +279,18 @@
 		{
 			// Check to see if an Update turned into a Move
 			
-			if (change->type == YapDatabaseViewChangeUpdate &&
-				change->originalIndex != change->finalIndex)
+			if (firstChangeForKey->type == YapDatabaseViewChangeUpdate &&
+				firstChangeForKey->originalIndex != firstChangeForKey->finalIndex)
 			{
-				change->type = YapDatabaseViewChangeMove;
+				firstChangeForKey->type = YapDatabaseViewChangeMove;
 			}
 			
 			i++; // continue;
 		}
 		else
 		{
-			NSUInteger lastIndexForKey = [indexSet lastIndex];
+			YapDatabaseViewChange *lastChangeForKey = [changes objectAtIndex:[indexSet lastIndex]];
 			
-			YapDatabaseViewChange *firstChangeForKey = change;
-			YapDatabaseViewChange *lastChangeForKey = [changes objectAtIndex:lastIndexForKey];
 			
 			if (firstChangeForKey->type == YapDatabaseViewChangeDelete)
 			{
