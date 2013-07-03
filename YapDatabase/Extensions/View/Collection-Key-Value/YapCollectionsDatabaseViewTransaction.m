@@ -836,7 +836,7 @@
 	[page insertObject:collectionKey atIndex:(index - pageOffset)];
 	
 	[viewConnection->dirtyPages setObject:page forKey:pageKey];
-	[viewConnection->pageCache removeObjectForKey:pageKey];
+	[viewConnection->pageCache setObject:page forKey:pageKey];
 	
 	// Update page metadata (by incrementing count)
 	
@@ -848,7 +848,7 @@
 	if (![pageKey isEqualToString:existingPageKey])
 	{
 		[viewConnection->dirtyKeys setObject:pageKey forKey:collectionKey];
-		[viewConnection->keyCache removeObjectForKey:collectionKey];
+		[viewConnection->keyCache setObject:pageKey forKey:collectionKey];
 	}
 	
 	// Add change to log
@@ -970,7 +970,7 @@
 		// Mark page as dirty
 		
 		[viewConnection->dirtyPages setObject:page forKey:pageKey];
-		[viewConnection->pageCache removeObjectForKey:pageKey];
+		[viewConnection->pageCache setObject:page forKey:pageKey];
 		
 		// Mark pageMetadata as dirty
 		
@@ -979,7 +979,7 @@
 		// Mark key for insertion
 		
 		[viewConnection->dirtyKeys setObject:pageKey forKey:collectionKey];
-		[viewConnection->keyCache removeObjectForKey:collectionKey];
+		[viewConnection->keyCache setObject:pageKey forKey:collectionKey];
 		
 		// Add change to log
 		
@@ -1282,7 +1282,7 @@
 	YDBLogVerbose(@"Dirty page(%@)", pageKey);
 	
 	[viewConnection->dirtyPages setObject:page forKey:pageKey];
-	[viewConnection->pageCache removeObjectForKey:pageKey];
+	[viewConnection->pageCache setObject:page forKey:pageKey];
 	
 	// Mark page metadata as dirty
 	
@@ -1419,7 +1419,7 @@
 	YDBLogVerbose(@"Dirty page(%@)", pageKey);
 	
 	[viewConnection->dirtyPages setObject:page forKey:pageKey];
-	[viewConnection->pageCache removeObjectForKey:pageKey];
+	[viewConnection->pageCache setObject:page forKey:pageKey];
 	
 	// Mark page metadata as dirty
 	
@@ -1539,7 +1539,7 @@
 			// Mark page & pageMetadata as dirty
 			
 			[viewConnection->dirtyPages setObject:prevPage forKey:prevPageMetadata->pageKey];
-			[viewConnection->pageCache removeObjectForKey:prevPageMetadata->pageKey];
+			[viewConnection->pageCache setObject:prevPage forKey:prevPageMetadata->pageKey];
 			
 			[viewConnection->dirtyMetadata setObject:prevPageMetadata forKey:prevPageMetadata->pageKey];
 			
@@ -1548,7 +1548,7 @@
 			for (NSString *key in subset)
 			{
 				[viewConnection->dirtyKeys setObject:prevPageMetadata->pageKey forKey:key];
-				[viewConnection->keyCache removeObjectForKey:key];
+				[viewConnection->keyCache setObject:prevPageMetadata->pageKey forKey:key];
 			}
 			
 			return;
@@ -1584,7 +1584,7 @@
 			// Mark page & pageMetadata as dirty
 			
 			[viewConnection->dirtyPages setObject:nextPage forKey:nextPageMetadata->pageKey];
-			[viewConnection->pageCache removeObjectForKey:nextPageMetadata->pageKey];
+			[viewConnection->pageCache setObject:nextPage forKey:nextPageMetadata->pageKey];
 			
 			[viewConnection->dirtyMetadata setObject:nextPageMetadata forKey:nextPageMetadata->pageKey];
 			
@@ -1593,7 +1593,7 @@
 			for (NSString *key in subset)
 			{
 				[viewConnection->dirtyKeys setObject:nextPageMetadata->pageKey forKey:key];
-				[viewConnection->keyCache removeObjectForKey:key];
+				[viewConnection->keyCache setObject:nextPageMetadata->pageKey forKey:key];
 			}
 			
 			return;
@@ -1656,7 +1656,7 @@
 	for (NSString *key in subset)
 	{
 		[viewConnection->dirtyKeys setObject:newPageKey forKey:key];
-		[viewConnection->keyCache removeObjectForKey:key];
+		[viewConnection->keyCache setObject:newPageKey forKey:key];
 	}
 }
 
