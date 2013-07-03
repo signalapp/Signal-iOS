@@ -809,14 +809,34 @@
 	
 	for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 	{
-		// Edge case: key is being inserted at the very end.
-		//
-		// index == numberOfKeysInTheEntireGroup
+		// Edge case: key is being inserted at the very end
 		
 		if ((index < (pageOffset + pm->count)) || (pageIndex == lastPageIndex))
 		{
 			pageMetadata = pm;
 			break;
+		}
+		else if (index == (pageOffset + pm->count))
+		{
+			// Optimization:
+			// The insertion index is in-between two pages.
+			// So it could go at the end of this page, or the beginning of the next page.
+			//
+			// We always place the key in the next page, unless the next page is already full.
+			//
+			// Related method: splitOversizedPage:
+			
+			NSUInteger maxPageSize = [self pageSize];
+			
+			if (pm->count < maxPageSize)
+			{
+				YapDatabaseViewPageMetadata *nextpm = [pagesMetadataForGroup objectAtIndex:(pageIndex+1)];
+				if (nextpm->count >= maxPageSize)
+				{
+					pageMetadata = pm;
+					break;
+				}
+			}
 		}
 		
 		pageIndex++;
