@@ -710,10 +710,10 @@
 	
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	
-	NSUInteger pagesCount = [pagesMetadataForGroup count];
-	NSUInteger lastPageIndex = (pagesCount > 0) ? (pagesCount - 1) : 0;
 	NSUInteger pageIndex = 0;
 	NSUInteger pageOffset = 0;
+	
+	NSUInteger lastPageIndex = [pagesMetadataForGroup count] - 1;
 	
 	for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 	{
@@ -730,6 +730,8 @@
 		pageIndex++;
 		pageOffset += pm->count;
 	}
+	
+	NSAssert(pageMetadata != nil, @"Missing pageMetadata in group(%@)", group);
 	
 	NSString *pageKey = pageMetadata->pageKey;
 	NSMutableArray *page = [self pageForPageKey:pageKey];
@@ -1120,6 +1122,8 @@
 		pageOffset += pm->count;
 	}
 	
+	NSAssert(pageMetadata != nil, @"Missing pageMetadata in group(%@) withPageKey(%@)", group, pageKey);
+	
 	// Find index within page
 	
 	NSUInteger keyIndexWithinPage = [page indexOfObject:key];
@@ -1200,6 +1204,8 @@
 		
 		pageOffset += pm->count;
 	}
+	
+	NSAssert(pageMetadata != nil, @"Missing pageMetadata in group(%@) withPageKey(%@)", group, pageKey);
 	
 	// Find indexes within page
 	
