@@ -1508,7 +1508,7 @@
 	
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:pageMetadata->group];
 	
-	NSUInteger pageIndex = [pagesMetadataForGroup indexOfObject:pageMetadata];
+	NSUInteger pageIndex = [pagesMetadataForGroup indexOfObjectIdenticalTo:pageMetadata];
 	
 	// Check to see if there's room in the previous page
 	
@@ -1671,7 +1671,7 @@
 	
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:pageMetadata->group];
 	
-	NSUInteger pageIndex = [pagesMetadataForGroup indexOfObject:pageMetadata];
+	NSUInteger pageIndex = [pagesMetadataForGroup indexOfObjectIdenticalTo:pageMetadata];
 	
 	// Update surrounding pages
 	
