@@ -2727,6 +2727,139 @@
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Touch
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * "Touching" a object allows you to mark an item in the view as "updated",
+ * even if the object itself wasn't directly updated.
+ *
+ * This is most often useful when a view is being used by a tableView,
+ * but the tableView cells are also dependent upon another object in the database.
+ *
+ * For example:
+ *
+ *   You have a view which includes the departments in the company, sorted by name.
+ *   But as part of the cell that's displayed for the department,
+ *   you also display the number of employees in the department.
+ *   The employee count comes from elsewhere.
+ *   That is, the employee count isn't a property of the department object itself.
+ *   Perhaps you get the count from another view,
+ *   or perhaps the count is simply the number of keys in a particular collection.
+ *   Either way, when you add or remove an employee, you want to ensure that the view marks the
+ *   affected department as updated so that the corresponding cell will properly redraw itself.
+ *
+ * So the idea is to mark certain items as updated so that the changeset
+ * for the view will properly reflect a change to the corresponding index.
+ *
+ * "Touching" an item has very minimal overhead.
+ * It doesn't cause the groupingBlock or sortingBlock to be invoked,
+ * and it doesn't cause any writes to the database.
+ *
+ * You can touch
+ * - just the object
+ * - just the metadata
+ * - or both object and metadata (the row)
+ *
+ * If you mark just the object as changed,
+ * and neither the groupingBlock nor sortingBlock depend upon the object,
+ * then the view doesn't reflect any change.
+ *
+ * If you mark just the metadata as changed,
+ * and neither the groupingBlock nor sortingBlock depend upon the metadata,
+ * then the view doesn't relect any change.
+ *
+ * In all other cases, the view will properly reflect a corresponding change in the notification that's posted.
+**/
+
+- (void)touchRowForKey:(NSString *)key inCollection:(NSString *)collection
+{
+	if (!databaseTransaction->isReadWriteTransaction) return;
+	if (key == nil) return;
+	
+	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
+	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
+	
+	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+		
+	NSString *pageKey = [self pageKeyForCollectionKey:collectionKey];
+	if (pageKey)
+	{
+		NSString *group = [self groupForPageKey:pageKey];
+		NSUInteger index = [self indexForCollectionKey:collectionKey inGroup:group withPageKey:pageKey];
+		
+		int flags = (YapDatabaseViewChangeColumnObject | YapDatabaseViewChangeColumnMetadata);
+		
+		[viewConnection->changes addObject:
+		    [YapDatabaseViewChange updateKey:collectionKey columns:flags inGroup:group atIndex:index]];
+	}
+}
+
+- (void)touchObjectForKey:(NSString *)key inCollection:(NSString *)collection
+{
+	if (!databaseTransaction->isReadWriteTransaction) return;
+	if (key == nil) return;
+	
+	__unsafe_unretained YapCollectionsDatabaseView *view =
+	    (YapCollectionsDatabaseView *)(extensionConnection->extension);
+	
+	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
+	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
+	
+	if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithObject ||
+	    view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithObjectAndMetadata ||
+	    view->sortingBlockType  == YapCollectionsDatabaseViewBlockTypeWithObject ||
+	    view->sortingBlockType  == YapCollectionsDatabaseViewBlockTypeWithObjectAndMetadata)
+	{
+		YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+		
+		NSString *pageKey = [self pageKeyForCollectionKey:collectionKey];
+		if (pageKey)
+		{
+			NSString *group = [self groupForPageKey:pageKey];
+			NSUInteger index = [self indexForCollectionKey:collectionKey inGroup:group withPageKey:pageKey];
+			
+			int flags = YapDatabaseViewChangeColumnObject;
+			
+			[viewConnection->changes addObject:
+			    [YapDatabaseViewChange updateKey:collectionKey columns:flags inGroup:group atIndex:index]];
+		}
+	}
+}
+
+- (void)touchMetadataForKey:(NSString *)key inCollection:(NSString *)collection
+{
+	if (!databaseTransaction->isReadWriteTransaction) return;
+	if (key == nil) return;
+	
+	__unsafe_unretained YapCollectionsDatabaseView *view =
+	    (YapCollectionsDatabaseView *)(extensionConnection->extension);
+	
+	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
+	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
+	
+	if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithMetadata ||
+	    view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithObjectAndMetadata ||
+	    view->sortingBlockType  == YapCollectionsDatabaseViewBlockTypeWithMetadata ||
+	    view->sortingBlockType  == YapCollectionsDatabaseViewBlockTypeWithObjectAndMetadata)
+	{
+		YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+		
+		NSString *pageKey = [self pageKeyForCollectionKey:collectionKey];
+		if (pageKey)
+		{
+			NSString *group = [self groupForPageKey:pageKey];
+			NSUInteger index = [self indexForCollectionKey:collectionKey inGroup:group withPageKey:pageKey];
+			
+			int flags = YapDatabaseViewChangeColumnMetadata;
+			
+			[viewConnection->changes addObject:
+			    [YapDatabaseViewChange updateKey:collectionKey columns:flags inGroup:group atIndex:index]];
+		}
+	}
+}
+
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
