@@ -4,19 +4,6 @@
 
 @implementation YapAbstractDatabaseExtensionConnection
 
-@synthesize abstractExtension = extension;
-
-- (id)initWithExtension:(YapAbstractDatabaseExtension *)inExtension
-     databaseConnection:(YapAbstractDatabaseConnection *)inDatabaseConnection
-{
-	if ((self = [super init]))
-	{
-		extension = inExtension;
-		databaseConnection = inDatabaseConnection;
-	}
-	return self;
-}
-
 - (id)newReadTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);

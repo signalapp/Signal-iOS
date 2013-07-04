@@ -36,11 +36,15 @@
 	sqlite3_stmt *pageTable_removeAllStatement;
 }
 
-- (id)initWithExtension:(YapAbstractDatabaseExtension *)inExtension
-     databaseConnection:(YapAbstractDatabaseConnection *)inDatabaseConnection
+@synthesize view = view;
+
+- (id)initWithView:(YapDatabaseView *)inView databaseConnection:(YapDatabaseConnection *)inDatabaseConnection
 {
-	if ((self = [super initWithExtension:inExtension databaseConnection:inDatabaseConnection]))
+	if ((self = [super init]))
 	{
+		view = inView;
+		databaseConnection = inDatabaseConnection;
+		
 		keyCache = [[YapCache alloc] initWithKeyClass:[NSString class]];
 		pageCache = [[YapCache alloc] initWithKeyClass:[NSString class]];
 	}
@@ -93,15 +97,6 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Properties
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (YapDatabaseView *)view
-{
-	return (YapDatabaseView *)extension;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Transactions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -110,8 +105,11 @@
 **/
 - (id)newReadTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
 {
-	return [[YapDatabaseViewTransaction alloc] initWithExtensionConnection:self
-	                                                   databaseTransaction:databaseTransaction];
+	YapDatabaseViewTransaction *transaction =
+	    [[YapDatabaseViewTransaction alloc] initWithViewConnection:self
+	                                           databaseTransaction:(YapDatabaseReadTransaction *)databaseTransaction];
+	
+	return transaction;
 }
 
 /**
@@ -120,8 +118,8 @@
 - (id)newReadWriteTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
 {
 	YapDatabaseViewTransaction *transaction =
-	    [[YapDatabaseViewTransaction alloc] initWithExtensionConnection:self
-	                                                databaseTransaction:databaseTransaction];
+	    [[YapDatabaseViewTransaction alloc] initWithViewConnection:self
+	                                           databaseTransaction:(YapDatabaseReadTransaction *)databaseTransaction];
 	
 	if (dirtyKeys == nil)
 		dirtyKeys = [[NSMutableDictionary alloc] init];
@@ -138,16 +136,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (NSString *)keyTableName
-{
-	return [(YapDatabaseView *)extension keyTableName];
-}
-
-- (NSString *)pageTableName
-{
-	return [(YapDatabaseView *)extension pageTableName];
-}
 
 - (NSMutableDictionary *)group_pagesMetadata_dict_deepCopy:(NSDictionary *)in_group_pagesMetadata_dict
 {
@@ -428,7 +416,7 @@
 	if (keyTable_getPageKeyForKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		    @"SELECT \"pageKey\" FROM \"%@\" WHERE \"key\" = ? ;", [self keyTableName]];
+		    @"SELECT \"pageKey\" FROM \"%@\" WHERE \"key\" = ? ;", [view keyTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
@@ -447,7 +435,7 @@
 	if (keyTable_setPageKeyForKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		    @"INSERT OR REPLACE INTO \"%@\" (\"key\", \"pageKey\") VALUES (?, ?);", [self keyTableName]];
+		    @"INSERT OR REPLACE INTO \"%@\" (\"key\", \"pageKey\") VALUES (?, ?);", [view keyTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
@@ -466,7 +454,7 @@
 	if (keyTable_removeForKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		    @"DELETE FROM \"%@\" WHERE \"key\" = ?;", [self keyTableName]];
+		    @"DELETE FROM \"%@\" WHERE \"key\" = ?;", [view keyTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
@@ -485,7 +473,7 @@
 	if (keyTable_removeAllStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		    @"DELETE FROM \"%@\";", [self keyTableName]];
+		    @"DELETE FROM \"%@\";", [view keyTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
@@ -508,7 +496,7 @@
 	if (pageTable_getDataForPageKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		    @"SELECT \"data\" FROM \"%@\" WHERE \"pageKey\" = ? ;", [self pageTableName]];
+		    @"SELECT \"data\" FROM \"%@\" WHERE \"pageKey\" = ? ;", [view pageTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
@@ -528,7 +516,7 @@
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"INSERT OR REPLACE INTO \"%@\" (\"pageKey\", \"data\", \"metadata\") VALUES (?, ?, ?);",
-		    [self pageTableName]];
+		    [view pageTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
@@ -547,7 +535,7 @@
 	if (pageTable_setMetadataForPageKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		    @"UPDATE \"%@\" SET \"metadata\" = ? WHERE \"pageKey\" = ?;", [self pageTableName]];
+		    @"UPDATE \"%@\" SET \"metadata\" = ? WHERE \"pageKey\" = ?;", [view pageTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
@@ -566,7 +554,7 @@
 	if (pageTable_removeForPageKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		    @"DELETE FROM \"%@\" WHERE \"pageKey\" = ?;", [self pageTableName]];
+		    @"DELETE FROM \"%@\" WHERE \"pageKey\" = ?;", [view pageTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
@@ -586,7 +574,7 @@
 	if (pageTable_removeAllStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		    @"DELETE FROM \"%@\";", [self pageTableName]];
+		    @"DELETE FROM \"%@\";", [view pageTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		

@@ -63,24 +63,29 @@
 **/
 @implementation YapCollectionsDatabaseViewTransaction
 
+- (id)initWithViewConnection:(YapCollectionsDatabaseViewConnection *)inViewConnection
+         databaseTransaction:(YapCollectionsDatabaseReadTransaction *)inDatabaseTransaction
+{
+	if ((self = [super init]))
+	{
+		viewConnection = inViewConnection;
+		databaseTransaction = inDatabaseTransaction;
+	}
+	return self;
+}
+
 - (BOOL)prepareIfNeeded
 {
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
 	if (viewConnection->group_pagesMetadata_dict && viewConnection->pageKey_group_dict)
 	{
 		// Already prepared
 		return YES;
 	}
 	
-	__unsafe_unretained YapCollectionsDatabaseView *view =
-	    (YapCollectionsDatabaseView *)(extensionConnection->extension);
-	
 	sqlite3 *db = databaseTransaction->abstractConnection->db;
 	
 	NSString *string = [NSString stringWithFormat:
-	    @"SELECT \"pageKey\", \"metadata\" FROM \"%@\" ;", [view pageTableName]];
+	    @"SELECT \"pageKey\", \"metadata\" FROM \"%@\" ;", [self pageTableName]];
 	
 	sqlite3_stmt *statement;
 	
@@ -167,7 +172,7 @@
 		}
 	}
 	
-	YDBLogVerbose(@"Processing %u items from %@...", stepCount, [view pageTableName]);
+	YDBLogVerbose(@"Processing %u items from %@...", stepCount, [self pageTableName]);
 	
 	YDBLogVerbose(@"groupPageDict: %@", groupPageDict);
 	YDBLogVerbose(@"groupOrderDict: %@", groupOrderDict);
@@ -310,50 +315,22 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark YapCollectionsDatabaseTransaction
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (id)objectForKey:(NSString *)key inCollection:(NSString *)collection
-{
-	__unsafe_unretained YapCollectionsDatabaseReadTransaction *transaction =
-	    (YapCollectionsDatabaseReadTransaction *)databaseTransaction;
-	
-	return [transaction objectForKey:key inCollection:collection];
-}
-
-- (id)metadataForKey:(NSString *)key inCollection:(NSString *)collection
-{
-	__unsafe_unretained YapCollectionsDatabaseReadTransaction *transaction =
-	    (YapCollectionsDatabaseReadTransaction *)databaseTransaction;
-	
-	return [transaction metadataForKey:key inCollection:collection];
-}
-
-- (BOOL)getObject:(id *)objectPtr metadata:(id *)metadataPtr forKey:(NSString *)key inCollection:(NSString *)collection
-{
-	__unsafe_unretained YapCollectionsDatabaseReadTransaction *transaction =
-	    (YapCollectionsDatabaseReadTransaction *)databaseTransaction;
-	
-	return [transaction getObject:objectPtr metadata:metadataPtr forKey:key inCollection:collection];
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark YapCollectionsDatabaseView
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSString *)registeredViewName
 {
-	return [extensionConnection->extension registeredName];
+	return [viewConnection->view registeredName];
 }
 
 - (NSString *)keyTableName
 {
-	return [(YapCollectionsDatabaseView *)(extensionConnection->extension) keyTableName];
+	return [viewConnection->view keyTableName];
 }
 
 - (NSString *)pageTableName
 {
-	return [(YapCollectionsDatabaseView *)(extensionConnection->extension) pageTableName];
+	return [viewConnection->view pageTableName];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -407,9 +384,6 @@
 - (NSString *)pageKeyForCollectionKey:(YapCollectionKey *)collectionKey
 {
 	NSParameterAssert(collectionKey != nil);
-	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
 	
 	NSString *pageKey = nil;
 	
@@ -493,9 +467,6 @@
 	
 	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[keys count]];
 	
-	__unsafe_unretained YapCollectionsDatabaseView *view =
-	    (YapCollectionsDatabaseView *)(extensionConnection->extension);
-	
 	sqlite3 *db = databaseTransaction->abstractConnection->db;
 	
 	// Sqlite has an upper bound on the number of host parameters that may be used in a single query.
@@ -519,7 +490,7 @@
 		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 		
 		[query appendFormat:
-		    @"SELECT \"key\", \"pageKey\" FROM \"%@\" WHERE \"collection\" = ? AND \"key\" IN (", [view keyTableName]];
+		    @"SELECT \"key\", \"pageKey\" FROM \"%@\" WHERE \"collection\" = ? AND \"key\" IN (", [self keyTableName]];
 		
 		NSUInteger i;
 		for (i = 0; i < numKeyParams; i++)
@@ -612,9 +583,6 @@
 {
 	NSParameterAssert(collection != nil);
 	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
 	sqlite3 *db = databaseTransaction->abstractConnection->db;
 	
 	sqlite3_stmt *statement = [viewConnection keyTable_enumerateForCollectionStatement];
@@ -679,9 +647,6 @@
 **/
 - (NSMutableArray *)pageForPageKey:(NSString *)pageKey
 {
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
 	NSMutableArray *page = nil;
 	
 	// Check dirty cache & clean cache
@@ -733,9 +698,6 @@
 
 - (NSString *)groupForPageKey:(NSString *)pageKey
 {
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
 	return [viewConnection->pageKey_group_dict objectForKey:pageKey];
 }
 
@@ -743,9 +705,6 @@
                             inGroup:(NSString *)group
                         withPageKey:(NSString *)pageKey
 {
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
 	// Calculate the offset of the corresponding page within the group.
 	
 	NSUInteger pageOffset = 0;
@@ -792,9 +751,6 @@
 	
 	NSParameterAssert(collectionKey != nil);
 	NSParameterAssert(group != nil);
-	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
 	
 	// Find pageMetadata, pageKey and page
 	
@@ -893,11 +849,7 @@
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapCollectionsDatabaseView *view =
-	    (YapCollectionsDatabaseView *)(extensionConnection->extension);
-	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
+	__unsafe_unretained YapCollectionsDatabaseView *view = viewConnection->view;
 	
 	// Fetch the pages associated with the group.
 	
@@ -1059,7 +1011,7 @@
 			__unsafe_unretained YapCollectionsDatabaseViewSortingWithObjectBlock sortingBlock =
 			    (YapCollectionsDatabaseViewSortingWithObjectBlock)view->sortingBlock;
 			
-			id anotherObject = [self objectForKey:another.key inCollection:another.collection];
+			id anotherObject = [databaseTransaction objectForKey:another.key inCollection:another.collection];
 			
 			return sortingBlock(group, collectionKey.collection, collectionKey.key,        object,
 			                                 another.collection,       another.key, anotherObject);
@@ -1069,7 +1021,7 @@
 			__unsafe_unretained YapCollectionsDatabaseViewSortingWithMetadataBlock sortingBlock =
 			    (YapCollectionsDatabaseViewSortingWithMetadataBlock)view->sortingBlock;
 			
-			id anotherMetadata = [self metadataForKey:another.key inCollection:another.collection];;
+			id anotherMetadata = [databaseTransaction metadataForKey:another.key inCollection:another.collection];
 			
 			return sortingBlock(group, collectionKey.collection, collectionKey.key,        metadata,
 			                                 another.collection,       another.key, anotherMetadata);
@@ -1082,10 +1034,10 @@
 			id anotherObject = nil;
 			id anotherMetadata = nil;
 			
-			[self getObject:&anotherObject
-			       metadata:&anotherMetadata
-			         forKey:another.key
-			   inCollection:another.collection];
+			[databaseTransaction getObject:&anotherObject
+			                      metadata:&anotherMetadata
+			                        forKey:another.key
+			                  inCollection:another.collection];
 			
 			return sortingBlock(group, collectionKey.collection, collectionKey.key,        object,        metadata,
 			                                 another.collection,       another.key, anotherObject, anotherMetadata);
@@ -1249,9 +1201,6 @@
 	NSParameterAssert(pageKey != nil);
 	NSParameterAssert(group != nil);
 	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
 	// Fetch page & pageMetadata
 	
 	NSMutableArray *page = [self pageForPageKey:pageKey];
@@ -1357,9 +1306,6 @@
 	NSParameterAssert(pageKey != nil);
 	NSParameterAssert(group != nil);
 	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
 	// Fetch page & pageMetadata
 	
 	NSMutableArray *page = [self pageForPageKey:pageKey];
@@ -1463,9 +1409,6 @@
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
 	sqlite3_stmt *keyStatement = [viewConnection keyTable_removeAllStatement];
 	sqlite3_stmt *pageStatement = [viewConnection pageTable_removeAllStatement];
 	
@@ -1521,9 +1464,6 @@
 - (void)splitOversizedPage:(YapDatabaseViewPageMetadata *)pageMetadata
 {
 	YDBLogAutoTrace();
-	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
 	
 	NSUInteger maxPageSize = [self pageSize];
 	
@@ -1689,9 +1629,6 @@
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
 	// Find page
 	
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:pageMetadata->group];
@@ -1748,9 +1685,6 @@
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
 	NSUInteger maxPageSize = [self pageSize];
 	
 	// Get all the dirty pageMetadata objects.
@@ -1800,9 +1734,6 @@
 	
 	// During the transaction we stored all changes in the "dirty" dictionaries.
 	// This allows the view to make multiple changes to a page, yet only write it once.
-	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
 	
 	YDBLogVerbose(@"viewConnection->dirtyPages: %@", viewConnection->dirtyPages);
 	YDBLogVerbose(@"viewConnection->dirtyMetadata: %@", viewConnection->dirtyMetadata);
@@ -2034,7 +1965,14 @@
 	}];
 	
 	[viewConnection postCommitCleanup];
-	[super commitTransaction];
+	
+	// An extensionTransaction is only valid within the scope of its encompassing databaseTransaction.
+	// I imagine this may occasionally be misunderstood, and developers may attempt to store the extension in an ivar,
+	// and then use it outside the context of the database transaction block.
+	// Thus, this code is here as a safety net to ensure that such accidental misuse doesn't do any damage.
+	
+	viewConnection = nil;      // Do not remove !
+	databaseTransaction = nil; // Do not remove !
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2052,8 +1990,7 @@
 	NSParameterAssert(key != nil);
 	NSParameterAssert(collection != nil);
 	
-	__unsafe_unretained YapCollectionsDatabaseView *view =
-	    (YapCollectionsDatabaseView *)(extensionConnection->extension);
+	__unsafe_unretained YapCollectionsDatabaseView *view = viewConnection->view;
 	
 	// Invoke the grouping block to find out if the object should be included in the view.
 	
@@ -2119,11 +2056,7 @@
 	NSParameterAssert(key != nil);
 	NSParameterAssert(collection != nil);
 	
-	__unsafe_unretained YapCollectionsDatabaseView *view =
-	    (YapCollectionsDatabaseView *)(extensionConnection->extension);
-	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
+	__unsafe_unretained YapCollectionsDatabaseView *view = viewConnection->view;
 	
 	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
@@ -2171,7 +2104,7 @@
 			if (view->sortingBlockType == YapCollectionsDatabaseViewBlockTypeWithObjectAndMetadata)
 			{
 				// Need the object for the sorting block
-				object = [self objectForKey:key inCollection:collection];
+				object = [databaseTransaction objectForKey:key inCollection:collection];
 			}
 			
 			int flags = YapDatabaseViewChangeColumnMetadata;
@@ -2198,7 +2131,7 @@
 			__unsafe_unretained YapCollectionsDatabaseViewGroupingWithObjectAndMetadataBlock groupingBlock =
 		        (YapCollectionsDatabaseViewGroupingWithObjectAndMetadataBlock)view->groupingBlock;
 			
-			object = [self objectForKey:key inCollection:collection];
+			object = [databaseTransaction objectForKey:key inCollection:collection];
 			group = groupingBlock(collection, key, object, metadata);
 		}
 		
@@ -2243,7 +2176,7 @@
 			                      view->sortingBlockType == YapCollectionsDatabaseViewBlockTypeWithObjectAndMetadata))
 			{
 				// Need the object for the sorting block
-				object = [self objectForKey:key inCollection:collection];
+				object = [databaseTransaction objectForKey:key inCollection:collection];
 			}
 			
 			int flags = YapDatabaseViewChangeColumnMetadata;
@@ -2336,25 +2269,16 @@
 
 - (NSUInteger)numberOfGroups
 {
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
 	return [viewConnection->group_pagesMetadata_dict count];
 }
 
 - (NSArray *)allGroups
 {
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
 	return [viewConnection->group_pagesMetadata_dict allKeys];
 }
 
 - (NSUInteger)numberOfKeysInGroup:(NSString *)group
 {
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	NSUInteger count = 0;
 	
@@ -2368,9 +2292,6 @@
 
 - (NSUInteger)numberOfKeysInAllGroups
 {
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
 	NSUInteger count = 0;
 	
 	for (NSMutableArray *pagesForSection in [viewConnection->group_pagesMetadata_dict objectEnumerator])
@@ -2391,9 +2312,6 @@
 {
 	YapCollectionKey *collectionKey = nil;
 	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	NSUInteger pageOffset = 0;
 	
@@ -2411,10 +2329,20 @@
 		}
 	}
 	
-	if (collectionPtr) *collectionPtr = collectionKey.collection;
-	if (keyPtr) *keyPtr = collectionKey.key;
-	
-	return (collectionKey != nil);
+	if (collectionKey)
+	{
+		if (collectionPtr) *collectionPtr = collectionKey.collection;
+		if (keyPtr) *keyPtr = collectionKey.key;
+		
+		return YES;
+	}
+	else
+	{
+		if (collectionPtr) *collectionPtr = nil;
+		if (keyPtr) *keyPtr = nil;
+		
+		return NO;
+	}
 }
 
 - (BOOL)getFirstKey:(NSString **)keyPtr collection:(NSString **)collectionPtr inGroup:(NSString *)group
@@ -2435,9 +2363,6 @@
 	// 	if (collectionPtr) *collectionPtr = nil;
 	// 	return NO;
 	// }
-	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
 	
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 
@@ -2527,9 +2452,6 @@
 		
 		// Calculate the offset of the corresponding page within the group.
 		
-		__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	        (YapCollectionsDatabaseViewConnection *)extensionConnection;
-		
 		NSUInteger pageOffset = 0;
 		NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 		
@@ -2568,9 +2490,6 @@
 {
 	if (block == NULL) return;
 	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
 	BOOL stop = NO;
 	
 	NSUInteger pageOffset = 0;
@@ -2597,9 +2516,6 @@
                   usingBlock:(void (^)(NSString *collection, NSString *key, NSUInteger index, BOOL *stop))block
 {
 	if (block == NULL) return;
-	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
 	
 	NSEnumerationOptions options = (inOptions & NSEnumerationReverse); // We only support NSEnumerationReverse
 	BOOL forwardEnumeration = (options != NSEnumerationReverse);
@@ -2646,9 +2562,6 @@
                   usingBlock:(void (^)(NSString *collection, NSString *key, NSUInteger index, BOOL *stop))block
 {
 	if (block == NULL) return;
-	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
 	
 	NSEnumerationOptions options = (inOptions & NSEnumerationReverse); // We only support NSEnumerationReverse
 	
@@ -2778,9 +2691,6 @@
 	if (!databaseTransaction->isReadWriteTransaction) return;
 	if (key == nil) return;
 	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
-	
 	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
 	NSString *pageKey = [self pageKeyForCollectionKey:collectionKey];
@@ -2801,11 +2711,7 @@
 	if (!databaseTransaction->isReadWriteTransaction) return;
 	if (key == nil) return;
 	
-	__unsafe_unretained YapCollectionsDatabaseView *view =
-	    (YapCollectionsDatabaseView *)(extensionConnection->extension);
-	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
+	__unsafe_unretained YapCollectionsDatabaseView *view = viewConnection->view;
 	
 	if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithObject ||
 	    view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithObjectAndMetadata ||
@@ -2833,11 +2739,7 @@
 	if (!databaseTransaction->isReadWriteTransaction) return;
 	if (key == nil) return;
 	
-	__unsafe_unretained YapCollectionsDatabaseView *view =
-	    (YapCollectionsDatabaseView *)(extensionConnection->extension);
-	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection =
-	    (YapCollectionsDatabaseViewConnection *)extensionConnection;
+	__unsafe_unretained YapCollectionsDatabaseView *view = viewConnection->view;
 	
 	if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithMetadata ||
 	    view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithObjectAndMetadata ||
@@ -2882,7 +2784,7 @@
 	NSString *key = nil;
 	
 	if ([self getKey:&key collection:&collection atIndex:index inGroup:group])
-		return [self objectForKey:key inCollection:collection];
+		return [databaseTransaction objectForKey:key inCollection:collection];
 	else
 		return nil;
 }
@@ -2894,7 +2796,7 @@
 	NSString *key = nil;
 	
 	if ([self getFirstKey:&key collection:&collection inGroup:group])
-		return [self objectForKey:key inCollection:collection];
+		return [databaseTransaction objectForKey:key inCollection:collection];
 	else
 		return nil;
 }
@@ -2905,7 +2807,7 @@
 	NSString *key = nil;
 	
 	if ([self getLastKey:&key collection:&collection inGroup:group])
-		return [self objectForKey:key inCollection:collection];
+		return [databaseTransaction objectForKey:key inCollection:collection];
 	else
 		return nil;
 }
@@ -2923,7 +2825,7 @@
 	
 	[self enumerateKeysInGroup:group usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 		
-		block(collection, key, [self metadataForKey:key inCollection:collection], index, stop);
+		block(collection, key, [databaseTransaction metadataForKey:key inCollection:collection], index, stop);
 	}];
 }
 
@@ -2938,7 +2840,7 @@
 	               withOptions:options
 	                usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 		
-		block(collection, key, [self metadataForKey:key inCollection:collection], index, stop);
+		block(collection, key, [databaseTransaction metadataForKey:key inCollection:collection], index, stop);
 	}];
 }
 
@@ -2955,7 +2857,7 @@
 	                     range:range
 	                usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 		
-		block(collection, key, [self metadataForKey:key inCollection:collection], index, stop);
+		block(collection, key, [databaseTransaction metadataForKey:key inCollection:collection], index, stop);
 	}];
 }
 
@@ -2972,7 +2874,7 @@
 	
 	[self enumerateKeysInGroup:group usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 		
-		block(collection, key, [self objectForKey:key inCollection:collection], index, stop);
+		block(collection, key, [databaseTransaction objectForKey:key inCollection:collection], index, stop);
 	}];
 }
 
@@ -2987,7 +2889,7 @@
 	               withOptions:options
 	                usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 		
-		block(collection, key, [self objectForKey:key inCollection:collection], index, stop);
+		block(collection, key, [databaseTransaction objectForKey:key inCollection:collection], index, stop);
 	}];
 }
 
@@ -3004,7 +2906,7 @@
 	                     range:range
 	                usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 		
-		block(collection, key, [self objectForKey:key inCollection:collection], index, stop);
+		block(collection, key, [databaseTransaction objectForKey:key inCollection:collection], index, stop);
 	}];
 }
 

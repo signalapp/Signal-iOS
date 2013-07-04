@@ -158,7 +158,8 @@
 
 - (YapAbstractDatabaseExtensionConnection *)newConnection:(YapAbstractDatabaseConnection *)databaseConnection
 {
-	return [[YapDatabaseViewConnection alloc] initWithExtension:self databaseConnection:databaseConnection];
+	return [[YapDatabaseViewConnection alloc] initWithView:self
+	                                    databaseConnection:(YapDatabaseConnection *)databaseConnection];
 }
 
 - (NSString *)keyTableName

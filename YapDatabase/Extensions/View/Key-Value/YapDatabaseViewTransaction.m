@@ -60,22 +60,29 @@
 **/
 @implementation YapDatabaseViewTransaction
 
+- (id)initWithViewConnection:(YapDatabaseViewConnection *)inViewConnection
+         databaseTransaction:(YapDatabaseReadTransaction *)inDatabaseTransaction
+{
+	if ((self = [super init]))
+	{
+		viewConnection = inViewConnection;
+		databaseTransaction = inDatabaseTransaction;
+	}
+	return self;
+}
+
 - (BOOL)prepareIfNeeded
 {
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
-	
 	if (viewConnection->group_pagesMetadata_dict && viewConnection->pageKey_group_dict)
 	{
 		// Already prepared
 		return YES;
 	}
 	
-	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
-	
 	sqlite3 *db = databaseTransaction->abstractConnection->db;
 	
 	NSString *string = [NSString stringWithFormat:
-	    @"SELECT \"pageKey\", \"metadata\" FROM \"%@\" ;", [view pageTableName]];
+	    @"SELECT \"pageKey\", \"metadata\" FROM \"%@\" ;", [self pageTableName]];
 	
 	sqlite3_stmt *statement;
 	
@@ -162,7 +169,7 @@
 		}
 	}
 	
-	YDBLogVerbose(@"Processing %u items from %@...", stepCount, [view pageTableName]);
+	YDBLogVerbose(@"Processing %u items from %@...", stepCount, [self pageTableName]);
 	
 	YDBLogVerbose(@"groupPageDict: %@", groupPageDict);
 	YDBLogVerbose(@"groupOrderDict: %@", groupOrderDict);
@@ -305,50 +312,22 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark YapDatabaseTransaction
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (id)objectForKey:(NSString *)key
-{
-	__unsafe_unretained YapDatabaseReadTransaction *transaction =
-	    (YapDatabaseReadTransaction *)databaseTransaction;
-	
-	return [transaction objectForKey:key];
-}
-
-- (id)metadataForKey:(NSString *)key
-{
-	__unsafe_unretained YapDatabaseReadTransaction *transaction =
-	    (YapDatabaseReadTransaction *)databaseTransaction;
-	
-	return [transaction metadataForKey:key];
-}
-
-- (BOOL)getObject:(id *)objectPtr metadata:(id *)metadataPtr forKey:(NSString *)key
-{
-	__unsafe_unretained YapDatabaseReadTransaction *transaction =
-	    (YapDatabaseReadTransaction *)databaseTransaction;
-	
-	return [transaction getObject:objectPtr metadata:metadataPtr forKey:key];
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark YapDatabaseView
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSString *)registeredViewName
 {
-	return [extensionConnection->extension registeredName];
+	return [viewConnection->view registeredName];
 }
 
 - (NSString *)keyTableName
 {
-	return [(YapDatabaseView *)(extensionConnection->extension) keyTableName];
+	return [viewConnection->view keyTableName];
 }
 
 - (NSString *)pageTableName
 {
-	return [(YapDatabaseView *)(extensionConnection->extension) pageTableName];
+	return [viewConnection->view pageTableName];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -408,8 +387,6 @@
 - (NSString *)pageKeyForKey:(NSString *)key
 {
 	if (key == nil) return nil;
-	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	NSString *pageKey = nil;
 	
@@ -486,7 +463,7 @@
 	
 	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[keys count]];
 	
-	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
+	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
 	
 	sqlite3 *db = databaseTransaction->abstractConnection->db;
 	
@@ -594,8 +571,6 @@
 **/
 - (NSMutableArray *)pageForPageKey:(NSString *)pageKey
 {
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
-	
 	NSMutableArray *page = nil;
 	
 	// Check dirty cache & clean cache
@@ -647,15 +622,11 @@
 
 - (NSString *)groupForPageKey:(NSString *)pageKey
 {
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
-	
 	return [viewConnection->pageKey_group_dict objectForKey:pageKey];
 }
 
 - (NSUInteger)indexForKey:(NSString *)key inGroup:(NSString *)group withPageKey:(NSString *)pageKey
 {
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
-	
 	// Calculate the offset of the corresponding page within the group.
 	
 	NSUInteger pageOffset = 0;
@@ -701,8 +672,6 @@
 	
 	NSParameterAssert(key != nil);
 	NSParameterAssert(group != nil);
-	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	// Find pageMetadata, pageKey and page
 	
@@ -799,8 +768,7 @@
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
+	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
 	
 	// Fetch the pages associated with the group.
 	
@@ -959,7 +927,7 @@
 			__unsafe_unretained YapDatabaseViewSortingWithObjectBlock sortingBlock =
 			    (YapDatabaseViewSortingWithObjectBlock)view->sortingBlock;
 			
-			id anotherObject = [self objectForKey:anotherKey];
+			id anotherObject = [databaseTransaction objectForKey:anotherKey];
 			
 			return sortingBlock(group, key, object, anotherKey, anotherObject);
 		}
@@ -968,7 +936,7 @@
 			__unsafe_unretained YapDatabaseViewSortingWithMetadataBlock sortingBlock =
 			    (YapDatabaseViewSortingWithMetadataBlock)view->sortingBlock;
 			
-			id anotherMetadata = [self metadataForKey:anotherKey];
+			id anotherMetadata = [databaseTransaction metadataForKey:anotherKey];
 			
 			return sortingBlock(group, key, metadata, anotherKey, anotherMetadata);
 		}
@@ -980,7 +948,7 @@
 			id anotherObject = nil;
 			id anotherMetadata = nil;
 			
-			[self getObject:&anotherObject metadata:&anotherMetadata forKey:anotherKey];
+			[databaseTransaction getObject:&anotherObject metadata:&anotherMetadata forKey:anotherKey];
 			
 			return sortingBlock(group, key, object, metadata, anotherKey, anotherObject, anotherMetadata);
 		}
@@ -1120,8 +1088,6 @@
 	NSParameterAssert(pageKey != nil);
 	NSParameterAssert(group != nil);
 	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
-	
 	// Fetch page & pageMetadata
 	
 	NSMutableArray *page = [self pageForPageKey:pageKey];
@@ -1202,8 +1168,6 @@
 	
 	NSParameterAssert(pageKey != nil);
 	NSParameterAssert(group != nil);
-	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	// Fetch page & pageMetadata
 	
@@ -1316,8 +1280,6 @@
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
-	
 	sqlite3_stmt *keyStatement = [viewConnection keyTable_removeAllStatement];
 	sqlite3_stmt *pageStatement = [viewConnection pageTable_removeAllStatement];
 	
@@ -1375,8 +1337,6 @@
 - (void)splitOversizedPage:(YapDatabaseViewPageMetadata *)pageMetadata
 {
 	YDBLogAutoTrace();
-	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	NSUInteger maxPageSize = [self pageSize];
 	
@@ -1542,8 +1502,6 @@
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
-	
 	// Find page
 	
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:pageMetadata->group];
@@ -1606,7 +1564,6 @@
 - (void)maybeConsolidateOrExpandDirtyPages
 {
 	YDBLogAutoTrace();
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	NSUInteger maxPageSize = [self pageSize];
 	
@@ -1663,8 +1620,6 @@
 	
 	// During the transaction we stored all changes in the "dirty" dictionaries.
 	// This allows the view to make multiple changes to a page, yet only write it once.
-	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	YDBLogVerbose(@"viewConnection->dirtyPages: %@", viewConnection->dirtyPages);
 	YDBLogVerbose(@"viewConnection->dirtyMetadata: %@", viewConnection->dirtyMetadata);
@@ -1885,7 +1840,14 @@
 	}];
 	
 	[viewConnection postCommitCleanup];
-	[super commitTransaction];
+	
+	// An extensionTransaction is only valid within the scope of its encompassing databaseTransaction.
+	// I imagine this may occasionally be misunderstood, and developers may attempt to store the extension in an ivar,
+	// and then use it outside the context of the database transaction block.
+	// Thus, this code is here as a safety net to ensure that such accidental misuse doesn't do any damage.
+	
+	viewConnection = nil;      // Do not remove !
+	databaseTransaction = nil; // Do not remove !
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1900,7 +1862,7 @@
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
+	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
 	
 	// Invoke the grouping block to find out if the object should be included in the view.
 	
@@ -1958,8 +1920,7 @@
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
+	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
 	
 	// Invoke the grouping block to find out if the object should be included in the view.
 	
@@ -2005,7 +1966,7 @@
 			if (view->sortingBlockType == YapDatabaseViewBlockTypeWithObjectAndMetadata)
 			{
 				// Need the object for the sorting block
-				object = [self objectForKey:key];
+				object = [databaseTransaction objectForKey:key];
 			}
 			
 			int flags = YapDatabaseViewChangeColumnMetadata;
@@ -2029,7 +1990,7 @@
 			__unsafe_unretained YapDatabaseViewGroupingWithObjectAndMetadataBlock groupingBlock =
 		        (YapDatabaseViewGroupingWithObjectAndMetadataBlock)view->groupingBlock;
 			
-			object = [self objectForKey:key];
+			object = [databaseTransaction objectForKey:key];
 			group = groupingBlock(key, object, metadata);
 		}
 		
@@ -2070,7 +2031,7 @@
 			                      view->sortingBlockType == YapDatabaseViewBlockTypeWithObjectAndMetadata))
 			{
 				// Need the object for the sorting block
-				object = [self objectForKey:key];
+				object = [databaseTransaction objectForKey:key];
 			}
 			
 			int flags = YapDatabaseViewChangeColumnMetadata;
@@ -2129,22 +2090,16 @@
 
 - (NSUInteger)numberOfGroups
 {
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
-	
 	return [viewConnection->group_pagesMetadata_dict count];
 }
 
 - (NSArray *)allGroups
 {
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
-	
 	return [viewConnection->group_pagesMetadata_dict allKeys];
 }
 
 - (NSUInteger)numberOfKeysInGroup:(NSString *)group
 {
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
-	
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	NSUInteger count = 0;
 	
@@ -2158,8 +2113,6 @@
 
 - (NSUInteger)numberOfKeysInAllGroups
 {
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
-	
 	NSUInteger count = 0;
 	
 	for (NSMutableArray *pagesForSection in [viewConnection->group_pagesMetadata_dict objectEnumerator])
@@ -2175,8 +2128,6 @@
 
 - (NSString *)keyAtIndex:(NSUInteger)index inGroup:(NSString *)group
 {
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
-	
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	NSUInteger pageOffset = 0;
 	
@@ -2211,8 +2162,6 @@
 	//     return [self keyAtIndex:(count-1) inGroup:group];
 	// else
 	//     return nil;
-	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 
@@ -2262,9 +2211,6 @@
 		group = [self groupForPageKey:pageKey];
 		
 		// Calculate the offset of the corresponding page within the group.
-		
-		__unsafe_unretained YapDatabaseViewConnection *viewConnection =
-	        (YapDatabaseViewConnection *)extensionConnection;
 		
 		NSUInteger pageOffset = 0;
 		NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
@@ -2321,8 +2267,6 @@
 {
 	if (block == NULL) return;
 	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
-	
 	BOOL stop = NO;
 	
 	NSUInteger pageOffset = 0;
@@ -2352,8 +2296,6 @@
                   usingBlock:(void (^)(NSString *key, NSUInteger index, BOOL *stop))block
 {
 	if (block == NULL) return;
-	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	NSEnumerationOptions options = (inOptions & NSEnumerationReverse); // We only support NSEnumerationReverse
 	BOOL forwardEnumeration = (options != NSEnumerationReverse);
@@ -2398,8 +2340,6 @@
                   usingBlock:(void (^)(NSString *key, NSUInteger index, BOOL *stop))block
 {
 	if (block == NULL) return;
-	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
 	
 	NSEnumerationOptions options = (inOptions & NSEnumerationReverse); // We only support NSEnumerationReverse
 	
@@ -2527,8 +2467,6 @@
 	if (!databaseTransaction->isReadWriteTransaction) return;
 	if (key == nil) return;
 	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
-	
 	key = [key copy]; // mutable string protection
 	
 	NSString *pageKey = [self pageKeyForKey:key];
@@ -2549,8 +2487,7 @@
 	if (!databaseTransaction->isReadWriteTransaction) return;
 	if (key == nil) return;
 	
-	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
+	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
 	
 	if (view->groupingBlockType == YapDatabaseViewBlockTypeWithObject ||
 	    view->groupingBlockType == YapDatabaseViewBlockTypeWithObjectAndMetadata ||
@@ -2578,8 +2515,7 @@
 	if (!databaseTransaction->isReadWriteTransaction) return;
 	if (key == nil) return;
 	
-	__unsafe_unretained YapDatabaseView *view = (YapDatabaseView *)(extensionConnection->extension);
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection = (YapDatabaseViewConnection *)extensionConnection;
+	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
 	
 	if (view->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata ||
 	    view->groupingBlockType == YapDatabaseViewBlockTypeWithObjectAndMetadata ||
@@ -2612,17 +2548,17 @@
 
 - (id)objectAtIndex:(NSUInteger)index inGroup:(NSString *)group
 {
-	return [self objectForKey:[self keyAtIndex:index inGroup:group]];
+	return [databaseTransaction objectForKey:[self keyAtIndex:index inGroup:group]];
 }
 
 - (id)firstObjectInGroup:(NSString *)group
 {
-	return [self objectForKey:[self firstKeyInGroup:group]];
+	return [databaseTransaction objectForKey:[self firstKeyInGroup:group]];
 }
 
 - (id)lastObjectInGroup:(NSString *)group
 {
-	return [self objectForKey:[self lastKeyInGroup:group]];
+	return [databaseTransaction objectForKey:[self lastKeyInGroup:group]];
 }
 
 - (void)enumerateKeysAndMetadataInGroup:(NSString *)group
@@ -2632,7 +2568,7 @@
 	
 	[self enumerateKeysInGroup:group usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
 		
-		block(key, [self metadataForKey:key], index, stop);
+		block(key, [databaseTransaction metadataForKey:key], index, stop);
 	}];
 }
 
@@ -2644,7 +2580,7 @@
 	
 	[self enumerateKeysInGroup:group withOptions:options usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
 		
-		block(key, [self metadataForKey:key], index, stop);
+		block(key, [databaseTransaction metadataForKey:key], index, stop);
 	}];
 }
 
@@ -2660,7 +2596,7 @@
 	                     range:range
 	                usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
 		
-		block(key, [self metadataForKey:key], index, stop);
+		block(key, [databaseTransaction metadataForKey:key], index, stop);
 	}];
 }
 
@@ -2672,7 +2608,7 @@
 	
 	[self enumerateKeysInGroup:group usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
 		
-		block(key, [self objectForKey:key], index, stop);
+		block(key, [databaseTransaction objectForKey:key], index, stop);
 	}];
 }
 
@@ -2685,7 +2621,7 @@
 	
 	[self enumerateKeysInGroup:group withOptions:options usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
 		
-		block(key, [self objectForKey:key], index, stop);
+		block(key, [databaseTransaction objectForKey:key], index, stop);
 	}];
 }
 
@@ -2702,7 +2638,7 @@
 	                     range:range
 	                usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
 		
-		block(key, [self objectForKey:key], index, stop);
+		block(key, [databaseTransaction objectForKey:key], index, stop);
 	}];
 }
 

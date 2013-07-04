@@ -5,17 +5,6 @@
 
 @implementation YapAbstractDatabaseExtensionTransaction
 
-- (id)initWithExtensionConnection:(YapAbstractDatabaseExtensionConnection *)inExtensionConnection
-              databaseTransaction:(YapAbstractDatabaseTransaction *)inDatabaseTransaction
-{
-	if ((self = [super init]))
-	{
-		extensionConnection = inExtensionConnection;
-		databaseTransaction = inDatabaseTransaction;
-	}
-	return self;
-}
-
 /**
  * See YapAbstractDatabaseExtensionPrivate for discussion of this method.
 **/
@@ -40,13 +29,7 @@
 **/
 - (void)commitTransaction
 {
-	// An extensionTransaction is only valid within the scope of its encompassing databaseTransaction.
-	// I imagine this may occasionally be misunderstood, and developers may attempt to store the extension in an ivar,
-	// and then use it outside the context of the database transaction block.
-	// Thus, this method is here as a safety net to ensure that such accidental misuse doesn't do any damage.
-	
-	extensionConnection = nil; // Do not remove !
-	databaseTransaction = nil; // Do not remove !
+	NSAssert(NO, @"Missing required override method in subclass");
 }
 
 @end

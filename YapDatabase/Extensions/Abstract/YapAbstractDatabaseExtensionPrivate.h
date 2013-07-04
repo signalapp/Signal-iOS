@@ -66,16 +66,20 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface YapAbstractDatabaseExtensionConnection () {
-@public
-	__strong YapAbstractDatabaseExtension *extension;
-	__unsafe_unretained YapAbstractDatabaseConnection *databaseConnection;
-}
 
-/**
- * Subclasses should invoke this init method from within their own init method(s), if they have any.
-**/
-- (id)initWithExtension:(YapAbstractDatabaseExtension *)extension
-     databaseConnection:(YapAbstractDatabaseConnection *)connection;
+// You should store a strong reference to the parent,
+// and an unretained reference to the corresponding database connection.
+// 
+// Yours should be similar to the example below, but typed according to your needs.
+
+/* Example from YapDatabaseViewConnection
+ 
+@public
+	__strong YapDatabaseView *view;
+	__unsafe_unretained YapDatabaseConnection *databaseConnection;
+
+*/
+}
 
 /**
  * Subclasses must override these methods to create and return a proper instance of the
@@ -103,8 +107,8 @@
  * 
  * [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
  * 
- *     object = [[transaction ext:@"view"] objectAtIndex:index];
- *     //         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+ *     object = [[transaction ext:@"view"] objectAtIndex:index inGroup:@"sales"];
+ *     //         ^^^^^^^^^^^^^^^^^^^^^^^
  *     //         ^ Returns a YapAbstractDatabaseExtensionTransaction subclass instance.
  * }];
  *
@@ -130,16 +134,20 @@
  * The extension transaction is only valid from within the database transaction.
 **/
 @interface YapAbstractDatabaseExtensionTransaction () {
-@protected
-	__unsafe_unretained YapAbstractDatabaseExtensionConnection *extensionConnection;
-	__unsafe_unretained YapAbstractDatabaseTransaction *databaseTransaction;
-}
 
-/**
- * Subclasses should invoke this init method from within their own init method(s), if they have any.
-**/
-- (id)initWithExtensionConnection:(YapAbstractDatabaseExtensionConnection *)extensionConnection
-              databaseTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction;
+// You should store an unretained reference to the parent,
+// and an unretained reference to the corresponding database transaction.
+//
+// Yours should be similar to the example below, but typed according to your needs.
+	
+/* Example from YapDatabaseViewTransaction
+
+@private
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection;
+	__unsafe_unretained YapDatabaseTransaction *databaseTransaction;
+
+*/
+}
 
 /**
  * Subclasses may override this method in order to do whatever setup is needed for use.

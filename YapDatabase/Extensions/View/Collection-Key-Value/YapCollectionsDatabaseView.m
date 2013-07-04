@@ -1,4 +1,5 @@
 #import "YapCollectionsDatabaseView.h"
+#import "YapCollectionsDatabaseViewPrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 
 #import "YapCollectionsDatabase.h"
@@ -158,8 +159,8 @@
 
 - (YapAbstractDatabaseExtensionConnection *)newConnection:(YapAbstractDatabaseConnection *)databaseConnection
 {
-	return [[YapCollectionsDatabaseViewConnection alloc] initWithExtension:self
-	                                                    databaseConnection:databaseConnection];
+	return [[YapCollectionsDatabaseViewConnection alloc] initWithView:self
+	           databaseConnection:(YapCollectionsDatabaseConnection *)databaseConnection];
 }
 
 - (NSString *)keyTableName
