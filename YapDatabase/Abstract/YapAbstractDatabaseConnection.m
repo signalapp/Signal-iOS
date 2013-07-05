@@ -38,8 +38,8 @@
 	sqlite3_stmt *beginTransactionStatement;
 	sqlite3_stmt *commitTransactionStatement;
 	
-	sqlite3_stmt *yapGetDataForKeyStatement; // Against "yap" database, for internal use
-	sqlite3_stmt *yapSetDataForKeyStatement; // Against "yap" database, for internal use
+	sqlite3_stmt *yapGetDataForKeyStatement; // Against "yap2" database, for internal use
+	sqlite3_stmt *yapSetDataForKeyStatement; // Against "yap2" database, for internal use
 	
 	NSDictionary *registeredExtensions;
 	NSMutableDictionary *extensions;
@@ -683,7 +683,7 @@
 {
 	if (yapGetDataForKeyStatement == NULL)
 	{
-		char *stmt = "SELECT \"data\" FROM \"yap\" WHERE \"key\" = ?;";
+		char *stmt = "SELECT \"data\" FROM \"yap2\" WHERE \"extension\" = ? AND \"key\" = ?;";
 		
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &yapGetDataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
@@ -699,7 +699,7 @@
 {
 	if (yapSetDataForKeyStatement == NULL)
 	{
-		char *stmt = "INSERT OR REPLACE INTO \"yap\" (\"key\", \"data\") VALUES (?, ?);";
+		char *stmt = "INSERT OR REPLACE INTO \"yap2\" (\"extension\", \"key\", \"data\") VALUES (?, ?, ?);";
 		
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &yapSetDataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
@@ -1510,10 +1510,13 @@
 	
 	uint64_t result = 0;
 	
-	// SELECT data FROM 'yap' WHERE key = ? ;
+	// SELECT data FROM 'yap2' WHERE extension = ? AND key = ? ;
+	
+	char *extension = "";
+	sqlite3_bind_text(statement, 1, extension, (int)strlen(extension), SQLITE_STATIC);
 	
 	char *key = "snapshot";
-	sqlite3_bind_text(statement, 1, key, (int)strlen(key), SQLITE_STATIC);
+	sqlite3_bind_text(statement, 2, key, (int)strlen(key), SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
@@ -1557,13 +1560,16 @@
 	sqlite3_stmt *statement = [self yapSetDataForKeyStatement];
 	if (statement == NULL) return newSnapshot;
 	
-	// INSERT OR REPLACE INTO "yap" ("key", "data") VALUES (?, ?);
+	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
+	
+	char *extension = "";
+	sqlite3_bind_text(statement, 1, extension, (int)strlen(extension), SQLITE_STATIC);
 	
 	char *key = "snapshot";
-	sqlite3_bind_text(statement, 1, key, (int)strlen(key), SQLITE_STATIC);
+	sqlite3_bind_text(statement, 2, key, (int)strlen(key), SQLITE_STATIC);
 	
 	uint64_t littleEndian = CFSwapInt64HostToLittle(newSnapshot);
-	sqlite3_bind_blob(statement, 2, &littleEndian, (int)sizeof(uint64_t), SQLITE_STATIC);
+	sqlite3_bind_blob(statement, 3, &littleEndian, (int)sizeof(uint64_t), SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)

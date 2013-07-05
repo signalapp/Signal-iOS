@@ -37,7 +37,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
  * the version can be consulted to allow for proper on-the-fly upgrades.
  * For more information, see the upgradeTable method.
 **/
-#define YAP_DATABASE_CURRENT_VERION 1
+#define YAP_DATABASE_CURRENT_VERION 2
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
@@ -375,15 +375,17 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 - (BOOL)createTables
 {
 	char *createYapTableStatement =
-	    "CREATE TABLE IF NOT EXISTS \"yap\""
-	    " (\"key\" CHAR PRIMARY KEY NOT NULL, "
-	    "  \"data\" BLOB"
+	    "CREATE TABLE IF NOT EXISTS \"yap2\""
+	    " (\"extension\" CHAR NOT NULL, "
+	    "  \"key\" CHAR NOT NULL, "
+	    "  \"data\" BLOB, "
+	    "  PRIMARY KEY (\"extension\", \"key\")"
 	    " );";
 	
 	int status = sqlite3_exec(db, createYapTableStatement, NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"Failed creating 'yap' table: %d %s", status, sqlite3_errmsg(db));
+		YDBLogError(@"Failed creating 'yap2' table: %d %s", status, sqlite3_errmsg(db));
 		return NO;
 	}
 	
@@ -474,19 +476,12 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	sqlite3_finalize(pragmaStatement);
 	pragmaStatement = NULL;
 	
-	// If user_version is zero, then either:
-	// - this is actually version zero
-	// - this is version 1 before we started supporting upgrades
-	//
-	// We can figure it out quite easily by checking the table schema.
+	// If user_version is zero, then this is a new database
 	
 	if (user_version == 0)
 	{
-		if ([[self tableColumnNames] containsObject:@"metadata"])
-		{
-			user_version = 1;
-			[self set_user_version:user_version];
-		}
+		user_version = YAP_DATABASE_CURRENT_VERION;
+		[self set_user_version:user_version];
 	}
 	
 	if (user_version_ptr)
@@ -512,12 +507,31 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	return YES;
 }
 
+- (BOOL)upgradeTable_1_2
+{
+	// In version 1, we used a table named "yap" which had {key, data}.
+	// In version 2, we use a table named "yap2" which has {extension, key, data}
+	
+	int status = sqlite3_exec(db, "DROP TABLE IF EXISTS \"yap\"", NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Failed dropping 'yap' table: %d %s", status, sqlite3_errmsg(db));
+	}
+	
+	return YES;
+}
+
 /**
  * Performs upgrade checks, and implements the upgrade "plumbing" by invoking the appropriate upgrade methods.
  * 
  * To add custom upgrade logic, implement a method named "upgradeTable_X_Y",
  * where X is the previous version, and Y is the new version.
- * For example, upgradeTable_1_2 would be for upgrades from version 1 to version 2 of YapDatabase.
+ * For example:
+ * 
+ * - (BOOL)upgradeTable_1_2 {
+ *     // Upgrades from version 1 to version 2 of YapDatabase.
+ *     // Return YES if successful.
+ * }
  * 
  * IMPORTANT:
  * This is for upgrades of the database schema, and low-level operations of YapDatabase.
@@ -627,7 +641,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	int status;
 	sqlite3_stmt *statement;
 	
-	char *stmt = "INSERT OR REPLACE INTO \"yap\" (\"key\", \"data\") VALUES (?, ?);";
+	char *stmt = "INSERT OR REPLACE INTO \"yap2\" (\"extension\", \"key\", \"data\") VALUES (?, ?, ?);";
 	
 	status = sqlite3_prepare_v2(aDb, stmt, (int)strlen(stmt)+1, &statement, NULL);
 	if (status != SQLITE_OK)
@@ -637,11 +651,14 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	}
 	else
 	{
+		char *extension = "";
+		sqlite3_bind_text(statement, 1, extension, (int)strlen(extension), SQLITE_STATIC);
+		
 		char *key = "snapshot";
-		sqlite3_bind_text(statement, 1, key, (int)strlen(key), SQLITE_STATIC);
+		sqlite3_bind_text(statement, 2, key, (int)strlen(key), SQLITE_STATIC);
 		
 		uint64_t littleEndian = CFSwapInt64HostToLittle(aSnapshot);
-		sqlite3_bind_blob(statement, 2, &littleEndian, (int)sizeof(uint64_t), SQLITE_STATIC);
+		sqlite3_bind_blob(statement, 3, &littleEndian, (int)sizeof(uint64_t), SQLITE_STATIC);
 		
 		status = sqlite3_step(statement);
 		if (status != SQLITE_DONE)
