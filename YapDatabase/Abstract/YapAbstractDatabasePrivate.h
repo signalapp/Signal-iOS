@@ -29,7 +29,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	
 	dispatch_queue_t checkpointQueue;
 	
-	NSMutableDictionary *extensions;
+	NSDictionary *extensions;
 	sqlite3 *extensionsDb;
 	
 @protected
