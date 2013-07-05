@@ -1741,7 +1741,7 @@
  * 
  * Subclasses must invoke [super processChangeset:changeset] in order to propogate the changeset(s) to the extension(s).
  *
- * @see changeset
+ * @see getInternalChangeset:externalChangeset:
 **/
 - (void)processChangeset:(NSDictionary *)changeset
 {

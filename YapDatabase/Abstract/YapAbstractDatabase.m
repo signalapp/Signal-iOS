@@ -519,7 +519,8 @@ NSString *const YapDatabaseCustomKey     = @"custom";
  * where X is the previous version, and Y is the new version.
  * For example, upgradeTable_1_2 would be for upgrades from version 1 to version 2 of YapDatabase.
  * 
- * Important: This is for upgrades of the database schema, and low-level operations of YapDatabase.
+ * IMPORTANT:
+ * This is for upgrades of the database schema, and low-level operations of YapDatabase.
  * This is NOT for upgrading data within the database (i.e. objects, metadata, or keys).
  * Such data upgrades should be performed client side.
  *
@@ -1113,13 +1114,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		YDBLogVerbose(@"Post-checkpoint (%llu): frames(%d) checkpointed(%d)",
 		              maxCheckpointableSnapshot, frameCount, checkpointCount);
 		
-		// Todo: Notify any long-lived transactions
-		//
-		// But how?
-		// - if we're caught up (frameCount == checkpointCount) then
-		// - dispatch_async into snapshotQueue, and enumerate connections
-		// - identify those that have active longLivedReadTransactions on the frontmost snapshot
-		// - invoke a method on them
+		// Have we checkpointed the entire WAL yet?
 		
 		if (frameCount == checkpointCount)
 		{
