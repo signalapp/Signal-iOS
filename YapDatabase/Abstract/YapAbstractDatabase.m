@@ -637,17 +637,6 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 **/
 - (void)addConnection:(YapAbstractDatabaseConnection *)connection
 {
-	dispatch_block_t block = ^{ @autoreleasepool {
-		
-		// Add the connection to the state table
-		YapDatabaseConnectionState *state = [[YapDatabaseConnectionState alloc] initWithConnection:connection];
-		[connectionStates addObject:state];
-		
-		YDBLogVerbose(@"Created new connection(%p) for <%@ %p: databaseName=%@, connectionCount=%lu>",
-		              connection,
-		              [self class], self, [databasePath lastPathComponent], (unsigned long)[connectionStates count]);
-	}};
-	
 	// We can asynchronously add the connection to the state table.
 	// This is safe as the connection itself must go through the same queue in order to do anything.
 	//
@@ -659,17 +648,25 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	// The YapDatabase init method is asynchronously preparing itself through the snapshot queue.
 	// We'd like to avoid blocking the very next line of code and allow the asynchronous prepare to continue.
 	
-	if (dispatch_get_specific(IsOnSnapshotQueueKey))
-		block();
-	else
-		dispatch_async(snapshotQueue, block);
-	
-	// Invoke the one-time prepare method, so the connection can perform any needed initialization.
-	
-	dispatch_async(connection.connectionQueue, ^{ @autoreleasepool {
+	dispatch_async(connection.connectionQueue, ^{
 		
-		[connection prepare];
-	}});
+		dispatch_sync(snapshotQueue, ^{ @autoreleasepool {
+			
+			// Add the connection to the state table
+			
+			YapDatabaseConnectionState *state = [[YapDatabaseConnectionState alloc] initWithConnection:connection];
+			[connectionStates addObject:state];
+			
+			YDBLogVerbose(@"Created new connection(%p) for <%@ %p: databaseName=%@, connectionCount=%lu>",
+						  connection,
+						  [self class], self, [databasePath lastPathComponent], (unsigned long)[connectionStates count]);
+			
+			// Invoke the one-time prepare method, so the connection can perform any needed initialization.
+			// Be sure to do this within the snapshotQueue, as the prepare method depends on this.
+			
+			[connection prepare];
+		}});
+	});
 }
 
 /**

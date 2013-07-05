@@ -137,21 +137,17 @@
 
 /**
  * This method will be invoked before any other method.
- * It is invoked on our connectionQueue.
  * It can be used to do any setup that may be needed.
- * 
- * Subclasses may override this method if needed.
- * They must invoke [super prepare] at some point within their implementation.
 **/
 - (void)prepare
 {
-	dispatch_sync(database->snapshotQueue, ^{
-		
-		snapshot = [database snapshot];
-		registeredExtensions = [database registeredExtensions];
-		
-		extensionsReady = ([registeredExtensions count] == 0);
-	});
+	// This method is invoked from our connectionQueue, within the snapshotQueue.
+	// Don't do anything expensive here that might tie up the snapshotQueue.
+	
+	snapshot = [database snapshot];
+	registeredExtensions = [database registeredExtensions];
+	
+	extensionsReady = ([registeredExtensions count] == 0);
 }
 
 - (void)dealloc
