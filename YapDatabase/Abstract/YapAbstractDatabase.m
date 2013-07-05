@@ -602,7 +602,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	
 	// Write it to disk (replacing any previous value from last app run)
 	
-	[self writeSnapshot:snapshot toDatabase:db];
+	[self writeSnapshot:snapshot using:db];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -636,7 +636,45 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	}
 }
 
-- (void)writeSnapshot:(uint64_t)aSnapshot toDatabase:(sqlite3 *)aDb
+- (void)writeValue:(NSString *)value forKey:(NSString *)key extension:(NSString *)extension using:(sqlite3 *)aDb
+{
+	int status;
+	sqlite3_stmt *statement;
+	
+	char *stmt = "INSERT OR REPLACE INTO \"yap2\" (\"extension\", \"key\", \"data\") VALUES (?, ?, ?);";
+	
+	status = sqlite3_prepare_v2(aDb, stmt, (int)strlen(stmt)+1, &statement, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@: Error creating update snapshot statement: %d %s",
+					NSStringFromSelector(_cmd), status, sqlite3_errmsg(aDb));
+	}
+	else
+	{
+		YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extension);
+		sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
+		
+		YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+		sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+		
+		YapDatabaseString _value; MakeYapDatabaseString(&_value, value);
+		sqlite3_bind_text(statement, 3, _value.str, _value.length, SQLITE_STATIC);
+		
+		status = sqlite3_step(statement);
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"%@: Error executing writeValue:forKey:extension statement: %d %s",
+						NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+		
+		sqlite3_finalize(statement);
+		FreeYapDatabaseString(&_extension);
+		FreeYapDatabaseString(&_key);
+		FreeYapDatabaseString(&_value);
+	}
+}
+
+- (void)writeSnapshot:(uint64_t)aSnapshot using:(sqlite3 *)aDb
 {
 	int status;
 	sqlite3_stmt *statement;
@@ -663,12 +701,11 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		status = sqlite3_step(statement);
 		if (status != SQLITE_DONE)
 		{
-			YDBLogError(@"%@: Error executing update snapshot statement': %d %s",
+			YDBLogError(@"%@: Error executing update snapshot statement: %d %s",
 			              NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 		
 		sqlite3_finalize(statement);
-		statement = NULL;
 	}
 }
 
@@ -812,178 +849,191 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	
 	dispatch_sync(writeQueue, ^{
 		
-		// Check to make sure the extensionName is available
-		
-		__block NSDictionary *newExtensions = nil;
-		__block NSDictionary *changeset = nil;
-		
-		dispatch_sync(snapshotQueue, ^{
-			
-			if ([extensions objectForKey:extensionName] == nil)
-			{
-				NSMutableDictionary *_extensions = [extensions mutableCopy];
-				[_extensions setObject:extension forKey:extensionName];
-				
-				newExtensions = [_extensions copy];
-				
-				changeset = @{
-				    @"snapshot": @(snapshot+1),
-				    @"registeredExtensions": newExtensions
-				};
-			}
-			else
-			{
-				result = NO;
-			}
-		});
-		
-		if (!result)
-		{
-			YDBLogError(@"Error registering extension: The extensionName is already registered.");
-			return; // from block
-		}
-		
-		// Create the sqlite3 database connection for setting up extensions.
-		
-		if (extensionsDb == NULL)
-		{
-			if ([self openExtensionsDb])
-			{
-				// There's no reason to keep the extensionsDb open.
-				// Extensions are generally setup at app launch, and then left alone.
-				// And even if they're setup on the fly, extensions are generally a long-lived.
-				//
-				// So we tear it down after a slight delay.
-				// The delay should allow multiple extension registrations to share a single db instance.
-				
-				[self closeExtensionsDbAfterDelay:5.0]; // seconds
-			}
-			else
-			{
-				result = NO;
-				return; // from block
-			}
-		}
-		
-		// Begin transaction
-		
-		[self beginTransaction:extensionsDb];
-		
-		__block YapDatabaseConnectionState *myState = nil;
-		dispatch_sync(snapshotQueue, ^{
-			
-			myState = [[YapDatabaseConnectionState alloc] initWithConnection:nil];
-			myState->yapLevelExclusiveWriteLock = YES;
-			myState->lastKnownSnapshot = snapshot;
-			
-			[connectionStates addObject:myState];
-		});
-		
-		// Setup the extension
-		
-		result = [[extension class] createTablesForRegisteredName:extensionName
-		                                                 database:self
-		                                                   sqlite:extensionsDb];
-		
-		if (!result)
-		{
-			YDBLogError(@"Error registering extension: Extension reported errors during setup process.");
-			
-			// Rollback transaction
-			
-			dispatch_sync(snapshotQueue, ^{
-				
-				[connectionStates removeObject:myState];
-			});
-			
-			[self rollbackTransaction:extensionsDb];
-			return; // from block
-		}
-		
-		// Pre-Commit transaction
-		
-		__block BOOL safeToCommit = NO;
-		do
-		{
-			__block BOOL waitForReadOnlyTransactions = NO;
-			
-			dispatch_sync(snapshotQueue, ^{ @autoreleasepool {
-				
-				for (YapDatabaseConnectionState *state in connectionStates)
-				{
-					if (state->yapLevelSharedReadLock && !state->sqlLevelSharedReadLock)
-					{
-						waitForReadOnlyTransactions = YES;
-					}
-				}
-				
-				if (waitForReadOnlyTransactions)
-				{
-					myState->waitingForWriteLock = YES;
-					[myState prepareWriteLock];
-				}
-				else
-				{
-					safeToCommit = YES;
-					[self notePendingChanges:changeset fromConnection:nil];
-				}
-				
-			}});
-			
-			if (waitForReadOnlyTransactions)
-			{
-				// Block until a read-only transaction signals us.
-				// This will occur when the last read-only transaction (that started before our read-write
-				// transaction started) either completes or acquires an "sql-level" shared read lock.
-				//
-				// Note: Since we're using a dispatch semaphore, order doesn't matter.
-				// That is, it's fine if the read-only transaction signals our write lock before we start waiting on it.
-				// In this case we simply return immediately from the wait call.
-				
-				YDBLogVerbose(@"RegisterExtensionTransaction blocked waiting for write lock...");
-				
-				[myState waitForWriteLock];
-			}
-			
-		} while (!safeToCommit);
-		
-		// Commit transaction
-		
-		[self writeSnapshot:(snapshot+1) toDatabase:extensionsDb];
-		[self commitTransaction:extensionsDb];
-		
-		// Post-Commit transaction
-		
-		__block uint64_t minSnapshot = UINT64_MAX;
-		
-		dispatch_sync(snapshotQueue, ^{ @autoreleasepool {
-			
-			extensions = newExtensions;
-			[extension setRegisteredName:extensionName];
-			
-			[connectionStates removeObject:myState];
-			
-			for (YapDatabaseConnectionState *state in connectionStates)
-			{
-				if (state->yapLevelSharedReadLock)
-				{
-					minSnapshot = MIN(state->lastKnownSnapshot, minSnapshot);
-				}
-			}
-			
-			[self noteCommittedChanges:changeset fromConnection:nil];
-		}});
-		
-		// We added frames to the WAL.
-		// We can invoke a checkpoint if there are no other active connections.
-		
-		if (minSnapshot == UINT64_MAX)
-		{
-			[self asyncCheckpoint:snapshot];
-		}
+		result = [self _registerExtension:extension withName:extensionName];
 	});
 	
 	return result;
+}
+
+/**
+ * Internal method that handles extension registration.
+ * This method must be invoked on the writeQueue.
+**/
+- (BOOL)_registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
+{
+	// Check to make sure the extensionName is available
+	
+	__block BOOL alreadyRegistered = NO;
+	__block NSDictionary *newExtensions = nil;
+	__block NSDictionary *changeset = nil;
+	
+	dispatch_sync(snapshotQueue, ^{
+		
+		if ([extensions objectForKey:extensionName] == nil)
+		{
+			NSMutableDictionary *_extensions = [extensions mutableCopy];
+			[_extensions setObject:extension forKey:extensionName];
+			
+			newExtensions = [_extensions copy];
+			
+			changeset = @{
+			    @"snapshot": @(snapshot+1),
+			    @"registeredExtensions": newExtensions
+			};
+		}
+		else
+		{
+			alreadyRegistered = YES;
+		}
+	});
+		
+	if (alreadyRegistered)
+	{
+		YDBLogError(@"Error registering extension: The extensionName is already registered.");
+		return NO;
+	}
+	
+	// Create the sqlite3 database connection for setting up extensions.
+	
+	if (extensionsDb == NULL)
+	{
+		if ([self openExtensionsDb])
+		{
+			// There's no reason to keep the extensionsDb open.
+			// Extensions are generally setup at app launch, and then left alone.
+			// And even if they're setup on the fly, extensions are generally a long-lived.
+			//
+			// So we tear it down after a slight delay.
+			// The delay should allow multiple extension registrations to share a single db instance.
+			
+			[self closeExtensionsDbAfterDelay:5.0]; // seconds
+		}
+		else
+		{
+			return NO;
+		}
+	}
+	
+	// Begin transaction
+	
+	[self beginTransaction:extensionsDb];
+	
+	__block YapDatabaseConnectionState *myState = nil;
+	dispatch_sync(snapshotQueue, ^{
+		
+		myState = [[YapDatabaseConnectionState alloc] initWithConnection:nil];
+		myState->yapLevelExclusiveWriteLock = YES;
+		myState->lastKnownSnapshot = snapshot;
+		
+		[connectionStates addObject:myState];
+	});
+	
+	// Setup the extension
+	
+	BOOL result = [[extension class] createTablesForRegisteredName:extensionName
+	                                                      database:self
+	                                                        sqlite:extensionsDb];
+	
+	if (!result)
+	{
+		YDBLogError(@"Error registering extension: Extension reported errors during setup process.");
+		
+		// Rollback transaction
+		
+		dispatch_sync(snapshotQueue, ^{
+			
+			[connectionStates removeObject:myState];
+		});
+		
+		[self rollbackTransaction:extensionsDb];
+		return NO;
+	}
+	
+	// Pre-Commit transaction
+	
+	__block BOOL safeToCommit = NO;
+	do
+	{
+		__block BOOL waitForReadOnlyTransactions = NO;
+		
+		dispatch_sync(snapshotQueue, ^{ @autoreleasepool {
+			
+			for (YapDatabaseConnectionState *state in connectionStates)
+			{
+				if (state->yapLevelSharedReadLock && !state->sqlLevelSharedReadLock)
+				{
+					waitForReadOnlyTransactions = YES;
+				}
+			}
+			
+			if (waitForReadOnlyTransactions)
+			{
+				myState->waitingForWriteLock = YES;
+				[myState prepareWriteLock];
+			}
+			else
+			{
+				safeToCommit = YES;
+				[self notePendingChanges:changeset fromConnection:nil];
+			}
+			
+		}});
+		
+		if (waitForReadOnlyTransactions)
+		{
+			// Block until a read-only transaction signals us.
+			// This will occur when the last read-only transaction (that started before our read-write
+			// transaction started) either completes or acquires an "sql-level" shared read lock.
+			//
+			// Note: Since we're using a dispatch semaphore, order doesn't matter.
+			// That is, it's fine if the read-only transaction signals our write lock before we start waiting on it.
+			// In this case we simply return immediately from the wait call.
+			
+			YDBLogVerbose(@"RegisterExtensionTransaction blocked waiting for write lock...");
+			
+			[myState waitForWriteLock];
+		}
+		
+	} while (!safeToCommit);
+	
+	// Commit transaction
+	
+	[self writeValue:NSStringFromClass([extension class]) forKey:@"class" extension:extensionName using:extensionsDb];
+	
+	[self writeSnapshot:(snapshot+1) using:extensionsDb];
+	[self commitTransaction:extensionsDb];
+	
+	// Post-Commit transaction
+	
+	__block uint64_t minSnapshot = UINT64_MAX;
+	
+	dispatch_sync(snapshotQueue, ^{ @autoreleasepool {
+		
+		extensions = newExtensions;
+		[extension setRegisteredName:extensionName];
+		
+		[connectionStates removeObject:myState];
+		
+		for (YapDatabaseConnectionState *state in connectionStates)
+		{
+			if (state->yapLevelSharedReadLock)
+			{
+				minSnapshot = MIN(state->lastKnownSnapshot, minSnapshot);
+			}
+		}
+		
+		[self noteCommittedChanges:changeset fromConnection:nil];
+	}});
+	
+	// We added frames to the WAL.
+	// We can invoke a checkpoint if there are no other active connections.
+	
+	if (minSnapshot == UINT64_MAX)
+	{
+		[self asyncCheckpoint:snapshot];
+	}
+	
+	return YES;
 }
 
 /**
