@@ -2990,4 +2990,60 @@
 	}];
 }
 
+- (void)enumerateRowsInGroup:(NSString *)group
+                  usingBlock:
+            (void (^)(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block
+{
+	if (block == NULL) return;
+	
+	[self enumerateKeysInGroup:group usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
+		
+		id object = nil;
+		id metadata = nil;
+		[databaseTransaction getObject:&object metadata:&metadata forKey:key inCollection:collection];
+		
+		block(collection, key, object, metadata, index, stop);
+	}];
+}
+
+- (void)enumerateRowsInGroup:(NSString *)group
+                 withOptions:(NSEnumerationOptions)options
+                  usingBlock:
+            (void (^)(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block
+{
+	if (block == NULL) return;
+	
+	[self enumerateKeysInGroup:group
+	               withOptions:options
+	                usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
+						
+		id object = nil;
+		id metadata = nil;
+		[databaseTransaction getObject:&object metadata:&metadata forKey:key inCollection:collection];
+						
+		block(collection, key, object, metadata, index, stop);
+	}];
+}
+
+- (void)enumerateRowsInGroup:(NSString *)group
+                 withOptions:(NSEnumerationOptions)options
+                       range:(NSRange)range
+                  usingBlock:
+            (void (^)(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block
+{
+	if (block == NULL) return;
+	
+	[self enumerateKeysInGroup:group
+	               withOptions:options
+	                     range:range
+	                usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
+		
+		id object = nil;
+		id metadata = nil;
+		[databaseTransaction getObject:&object metadata:&metadata forKey:key inCollection:collection];
+		
+		block(collection, key, object, metadata, index, stop);
+	}];
+}
+
 @end

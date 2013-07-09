@@ -241,6 +241,23 @@
                             usingBlock:
                                  (void (^)(NSString *key, id object, NSUInteger index, BOOL *stop))block;
 
+/**
+ * The following methods are equivalent to invoking the enumerateKeysInGroup:... methods,
+ * and then fetching the object and metadata within your own block.
+**/
+
+- (void)enumerateRowsInGroup:(NSString *)group
+                  usingBlock:(void (^)(NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block;
+
+- (void)enumerateRowsInGroup:(NSString *)group
+                 withOptions:(NSEnumerationOptions)options
+                  usingBlock:(void (^)(NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block;
+
+- (void)enumerateRowsInGroup:(NSString *)group
+                 withOptions:(NSEnumerationOptions)options
+                       range:(NSRange)range
+                  usingBlock:(void (^)(NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block;
+
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
