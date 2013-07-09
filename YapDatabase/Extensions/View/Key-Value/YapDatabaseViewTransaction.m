@@ -1029,8 +1029,8 @@
 		}
 		else
 		{
-			__unsafe_unretained YapDatabaseViewSortingWithObjectAndMetadataBlock sortingBlock =
-			    (YapDatabaseViewSortingWithObjectAndMetadataBlock)view->sortingBlock;
+			__unsafe_unretained YapDatabaseViewSortingWithRowBlock sortingBlock =
+			    (YapDatabaseViewSortingWithRowBlock)view->sortingBlock;
 			
 			id anotherObject = nil;
 			id anotherMetadata = nil;
@@ -1978,8 +1978,8 @@
 	}
 	else
 	{
-		__unsafe_unretained YapDatabaseViewGroupingWithObjectAndMetadataBlock groupingBlock =
-		    (YapDatabaseViewGroupingWithObjectAndMetadataBlock)view->groupingBlock;
+		__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
+		    (YapDatabaseViewGroupingWithRowBlock)view->groupingBlock;
 		
 		group = groupingBlock(key, object, metadata);
 	}
@@ -2050,7 +2050,7 @@
 			// From previous if statement (above) we know:
 			// sortingBlockType is metadata or objectAndMetadata
 			
-			if (view->sortingBlockType == YapDatabaseViewBlockTypeWithObjectAndMetadata)
+			if (view->sortingBlockType == YapDatabaseViewBlockTypeWithRow)
 			{
 				// Need the object for the sorting block
 				object = [databaseTransaction objectForKey:key];
@@ -2074,8 +2074,8 @@
 		}
 		else
 		{
-			__unsafe_unretained YapDatabaseViewGroupingWithObjectAndMetadataBlock groupingBlock =
-		        (YapDatabaseViewGroupingWithObjectAndMetadataBlock)view->groupingBlock;
+			__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
+		        (YapDatabaseViewGroupingWithRowBlock)view->groupingBlock;
 			
 			object = [databaseTransaction objectForKey:key];
 			group = groupingBlock(key, object, metadata);
@@ -2115,7 +2115,7 @@
 			}
 			
 			if (object == nil && (view->sortingBlockType == YapDatabaseViewBlockTypeWithObject ||
-			                      view->sortingBlockType == YapDatabaseViewBlockTypeWithObjectAndMetadata))
+			                      view->sortingBlockType == YapDatabaseViewBlockTypeWithRow    ))
 			{
 				// Need the object for the sorting block
 				object = [databaseTransaction objectForKey:key];
@@ -2577,9 +2577,9 @@
 	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
 	
 	if (view->groupingBlockType == YapDatabaseViewBlockTypeWithObject ||
-	    view->groupingBlockType == YapDatabaseViewBlockTypeWithObjectAndMetadata ||
+	    view->groupingBlockType == YapDatabaseViewBlockTypeWithRow    ||
 	    view->sortingBlockType  == YapDatabaseViewBlockTypeWithObject ||
-	    view->sortingBlockType  == YapDatabaseViewBlockTypeWithObjectAndMetadata)
+	    view->sortingBlockType  == YapDatabaseViewBlockTypeWithRow     )
 	{
 		key = [key copy]; // mutable string protection
 		
@@ -2605,9 +2605,9 @@
 	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
 	
 	if (view->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata ||
-	    view->groupingBlockType == YapDatabaseViewBlockTypeWithObjectAndMetadata ||
+	    view->groupingBlockType == YapDatabaseViewBlockTypeWithRow      ||
 	    view->sortingBlockType  == YapDatabaseViewBlockTypeWithMetadata ||
-	    view->sortingBlockType  == YapDatabaseViewBlockTypeWithObjectAndMetadata)
+	    view->sortingBlockType  == YapDatabaseViewBlockTypeWithRow       )
 	{
 		key = [key copy]; // mutable string protection
 		

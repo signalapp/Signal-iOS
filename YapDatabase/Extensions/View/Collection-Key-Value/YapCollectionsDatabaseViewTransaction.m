@@ -1108,8 +1108,8 @@
 		}
 		else
 		{
-			__unsafe_unretained YapCollectionsDatabaseViewSortingWithObjectAndMetadataBlock sortingBlock =
-			    (YapCollectionsDatabaseViewSortingWithObjectAndMetadataBlock)view->sortingBlock;
+			__unsafe_unretained YapCollectionsDatabaseViewSortingWithRowBlock sortingBlock =
+			    (YapCollectionsDatabaseViewSortingWithRowBlock)view->sortingBlock;
 			
 			id anotherObject = nil;
 			id anotherMetadata = nil;
@@ -2099,8 +2099,8 @@
 	}
 	else
 	{
-		__unsafe_unretained YapCollectionsDatabaseViewGroupingWithObjectAndMetadataBlock groupingBlock =
-		    (YapCollectionsDatabaseViewGroupingWithObjectAndMetadataBlock)view->groupingBlock;
+		__unsafe_unretained YapCollectionsDatabaseViewGroupingWithRowBlock groupingBlock =
+		    (YapCollectionsDatabaseViewGroupingWithRowBlock)view->groupingBlock;
 		
 		group = groupingBlock(collection, key, object, metadata);
 	}
@@ -2181,7 +2181,7 @@
 			// From previous if statement (above) we know:
 			// sortingBlockType is metadata or objectAndMetadata
 			
-			if (view->sortingBlockType == YapCollectionsDatabaseViewBlockTypeWithObjectAndMetadata)
+			if (view->sortingBlockType == YapCollectionsDatabaseViewBlockTypeWithRow)
 			{
 				// Need the object for the sorting block
 				object = [databaseTransaction objectForKey:key inCollection:collection];
@@ -2208,8 +2208,8 @@
 		}
 		else
 		{
-			__unsafe_unretained YapCollectionsDatabaseViewGroupingWithObjectAndMetadataBlock groupingBlock =
-		        (YapCollectionsDatabaseViewGroupingWithObjectAndMetadataBlock)view->groupingBlock;
+			__unsafe_unretained YapCollectionsDatabaseViewGroupingWithRowBlock groupingBlock =
+		        (YapCollectionsDatabaseViewGroupingWithRowBlock)view->groupingBlock;
 			
 			object = [databaseTransaction objectForKey:key inCollection:collection];
 			group = groupingBlock(collection, key, object, metadata);
@@ -2253,7 +2253,7 @@
 			}
 			
 			if (object == nil && (view->sortingBlockType == YapCollectionsDatabaseViewBlockTypeWithObject ||
-			                      view->sortingBlockType == YapCollectionsDatabaseViewBlockTypeWithObjectAndMetadata))
+			                      view->sortingBlockType == YapCollectionsDatabaseViewBlockTypeWithRow    ))
 			{
 				// Need the object for the sorting block
 				object = [databaseTransaction objectForKey:key inCollection:collection];
@@ -2794,9 +2794,9 @@
 	__unsafe_unretained YapCollectionsDatabaseView *view = viewConnection->view;
 	
 	if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithObject ||
-	    view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithObjectAndMetadata ||
+	    view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithRow    ||
 	    view->sortingBlockType  == YapCollectionsDatabaseViewBlockTypeWithObject ||
-	    view->sortingBlockType  == YapCollectionsDatabaseViewBlockTypeWithObjectAndMetadata)
+	    view->sortingBlockType  == YapCollectionsDatabaseViewBlockTypeWithRow     )
 	{
 		YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
@@ -2822,9 +2822,9 @@
 	__unsafe_unretained YapCollectionsDatabaseView *view = viewConnection->view;
 	
 	if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithMetadata ||
-	    view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithObjectAndMetadata ||
+	    view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithRow      ||
 	    view->sortingBlockType  == YapCollectionsDatabaseViewBlockTypeWithMetadata ||
-	    view->sortingBlockType  == YapCollectionsDatabaseViewBlockTypeWithObjectAndMetadata)
+	    view->sortingBlockType  == YapCollectionsDatabaseViewBlockTypeWithRow       )
 	{
 		YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		

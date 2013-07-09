@@ -89,13 +89,13 @@
 		NSAssert(inGroupingBlockType == YapDatabaseViewBlockTypeWithKey ||
 		         inGroupingBlockType == YapDatabaseViewBlockTypeWithObject ||
 		         inGroupingBlockType == YapDatabaseViewBlockTypeWithMetadata ||
-		         inGroupingBlockType == YapDatabaseViewBlockTypeWithObjectAndMetadata,
+		         inGroupingBlockType == YapDatabaseViewBlockTypeWithRow,
 		         @"Invalid grouping block type");
 		
 		NSAssert(inSortingBlockType == YapDatabaseViewBlockTypeWithKey ||
 		         inSortingBlockType == YapDatabaseViewBlockTypeWithObject ||
 		         inSortingBlockType == YapDatabaseViewBlockTypeWithMetadata ||
-		         inSortingBlockType == YapDatabaseViewBlockTypeWithObjectAndMetadata,
+		         inSortingBlockType == YapDatabaseViewBlockTypeWithRow,
 		         @"Invalid sorting block type");
 		
 		groupingBlock = inGroupingBlock;

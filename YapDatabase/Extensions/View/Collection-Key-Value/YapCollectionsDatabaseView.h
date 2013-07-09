@@ -43,7 +43,7 @@ typedef NSString* (^YapCollectionsDatabaseViewGroupingWithObjectBlock) \
             (NSString *collection, NSString *key, id object);
 typedef NSString* (^YapCollectionsDatabaseViewGroupingWithMetadataBlock) \
             (NSString *collection, NSString *key, id metadata);
-typedef NSString* (^YapCollectionsDatabaseViewGroupingWithObjectAndMetadataBlock) \
+typedef NSString* (^YapCollectionsDatabaseViewGroupingWithRowBlock) \
             (NSString *collection, NSString *key, id object, id metadata);
 
 /**
@@ -103,7 +103,7 @@ typedef NSComparisonResult (^YapCollectionsDatabaseViewSortingWithObjectBlock) \
 typedef NSComparisonResult (^YapCollectionsDatabaseViewSortingWithMetadataBlock) \
                  (NSString *group, NSString *collection1, NSString *key1, id metadata, \
                                    NSString *collection2, NSString *key2, id metadata2);
-typedef NSComparisonResult (^YapCollectionsDatabaseViewSortingWithObjectAndMetadataBlock) \
+typedef NSComparisonResult (^YapCollectionsDatabaseViewSortingWithRowBlock) \
                  (NSString *group, NSString *collection1, NSString *key1, id object1, id metadata1, \
                                    NSString *collection2, NSString *key2, id object2, id metadata2);
 
@@ -114,10 +114,10 @@ typedef NSComparisonResult (^YapCollectionsDatabaseViewSortingWithObjectAndMetad
  * Thus, unfortunately (for now), you will have to specify what kind of block you're passing.
 **/
 typedef enum {
-	YapCollectionsDatabaseViewBlockTypeWithKey               = 201,
-	YapCollectionsDatabaseViewBlockTypeWithObject            = 202,
-	YapCollectionsDatabaseViewBlockTypeWithMetadata          = 203,
-	YapCollectionsDatabaseViewBlockTypeWithObjectAndMetadata = 204
+	YapCollectionsDatabaseViewBlockTypeWithKey       = 201,
+	YapCollectionsDatabaseViewBlockTypeWithObject    = 202,
+	YapCollectionsDatabaseViewBlockTypeWithMetadata  = 203,
+	YapCollectionsDatabaseViewBlockTypeWithRow       = 204
 } YapCollectionsDatabaseViewBlockType;
 
 
