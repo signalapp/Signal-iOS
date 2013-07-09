@@ -295,6 +295,8 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		dispatch_release(writeQueue);
 	if (checkpointQueue)
 		dispatch_release(checkpointQueue);
+	if (extensionRegistrationQueue)
+		dispatch_release(extensionRegistrationQueue);
 #endif
 }
 
@@ -732,6 +734,17 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 #pragma mark Extensions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+- (dispatch_queue_t)extensionRegistrationQueue
+{
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		
+		extensionRegistrationQueue = dispatch_queue_create("YapDatabase-ExtReg", NULL);
+	});
+	
+	return extensionRegistrationQueue;
+}
+
 - (YapAbstractDatabaseConnection *)extensionRegistrationConnection
 {
 	if (extensionRegistrationConnection == nil)
@@ -740,7 +753,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		
 		NSTimeInterval delayInSeconds = 10.0;
 		dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-		dispatch_after(popTime, writeQueue, ^(void){
+		dispatch_after(popTime, [self extensionRegistrationQueue], ^(void){
 			
 			extensionRegistrationConnection = nil;
 		});
@@ -752,14 +765,87 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 /**
  * Registers the extension with the database using the given name.
  * After registration everything works automatically using just the extension name.
+ * 
+ * The registration process is equivalent to a readwrite transaction.
+ * It involves persisting various information about the extension to the database,
+ * as well as possibly populating the extension by enumerating existing rows in the database.
  *
  * @return
  *     YES if the extension was properly registered.
  *     NO if an error occurred, such as the extensionName is already registered.
+ * 
+ * @see asyncRegisterExtension:withName:completionBlock:
+ * @see asyncRegisterExtension:withName:completionBlock:completionQueue:
 **/
 - (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
 {
-	return [self _registerExtension:extension withName:extensionName];
+	__block BOOL ready = NO;
+	
+	dispatch_sync([self extensionRegistrationQueue], ^{ @autoreleasepool {
+		
+		ready = [self _registerExtension:extension withName:extensionName];
+	}});
+	
+	return ready;
+}
+
+/**
+ * Asynchronoulsy starts the extension registration process.
+ * After registration everything works automatically using just the extension name.
+ * 
+ * The registration process is equivalent to a readwrite transaction.
+ * It involves persisting various information about the extension to the database,
+ * as well as possibly populating the extension by enumerating existing rows in the database.
+ * 
+ * An optional completion block may be used.
+ * If the extension registration was successful then the ready parameter will be YES.
+ *
+ * The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
+**/
+- (void)asyncRegisterExtension:(YapAbstractDatabaseExtension *)extension
+                      withName:(NSString *)extensionName
+               completionBlock:(void(^)(BOOL ready))completionBlock
+{
+	[self asyncRegisterExtension:extension
+	                    withName:extensionName
+	             completionBlock:completionBlock
+	             completionQueue:NULL];
+}
+
+/**
+ * Asynchronoulsy starts the extension registration process.
+ * After registration everything works automatically using just the extension name.
+ *
+ * The registration process is equivalent to a readwrite transaction.
+ * It involves persisting various information about the extension to the database,
+ * as well as possibly populating the extension by enumerating existing rows in the database.
+ * 
+ * An optional completion block may be used.
+ * If the extension registration was successful then the ready parameter will be YES.
+ * 
+ * Additionally the dispatch_queue to invoke the completion block may also be specified.
+ * If NULL, dispatch_get_main_queue() is automatically used.
+**/
+- (void)asyncRegisterExtension:(YapAbstractDatabaseExtension *)extension
+                      withName:(NSString *)extensionName
+               completionBlock:(void(^)(BOOL ready))completionBlock
+               completionQueue:(dispatch_queue_t)completionQueue
+{
+	if (completionQueue == NULL && completionBlock != NULL)
+		completionQueue = dispatch_get_main_queue();
+	
+	dispatch_async([self extensionRegistrationQueue], ^{
+		
+		BOOL ready = [self _registerExtension:extension withName:extensionName];
+		
+		if (completionBlock)
+		{
+			dispatch_async(completionQueue, ^{ @autoreleasepool {
+				
+				completionBlock(ready);
+			}});
+		}
+	});
 }
 
 /**

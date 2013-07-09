@@ -144,11 +144,54 @@ extern NSString *const YapDatabaseCustomKey;
  * Registers the extension with the database using the given name.
  * After registration everything works automatically using just the extension name.
  * 
+ * The registration process is equivalent to a readwrite transaction.
+ * It involves persisting various information about the extension to the database,
+ * as well as possibly populating the extension by enumerating existing rows in the database.
+ *
  * @return
  *     YES if the extension was properly registered.
  *     NO if an error occurred, such as the extensionName is already registered.
+ * 
+ * @see asyncRegisterExtension:withName:completionBlock:
+ * @see asyncRegisterExtension:withName:completionBlock:completionQueue:
 **/
 - (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName;
+
+/**
+ * Asynchronoulsy starts the extension registration process.
+ * After registration everything works automatically using just the extension name.
+ * 
+ * The registration process is equivalent to a readwrite transaction.
+ * It involves persisting various information about the extension to the database,
+ * as well as possibly populating the extension by enumerating existing rows in the database.
+ * 
+ * An optional completion block may be used.
+ * If the extension registration was successful then the ready parameter will be YES.
+ *
+ * The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
+**/
+- (void)asyncRegisterExtension:(YapAbstractDatabaseExtension *)extension
+					  withName:(NSString *)extensionName
+			   completionBlock:(void(^)(BOOL ready))completionBlock;
+
+/**
+ * Asynchronoulsy starts the extension registration process.
+ * After registration everything works automatically using just the extension name.
+ *
+ * The registration process is equivalent to a readwrite transaction.
+ * It involves persisting various information about the extension to the database,
+ * as well as possibly populating the extension by enumerating existing rows in the database.
+ * 
+ * An optional completion block may be used.
+ * If the extension registration was successful then the ready parameter will be YES.
+ * 
+ * Additionally the dispatch_queue to invoke the completion block may also be specified.
+ * If NULL, dispatch_get_main_queue() is automatically used.
+**/
+- (void)asyncRegisterExtension:(YapAbstractDatabaseExtension *)extension
+                      withName:(NSString *)extensionName
+               completionBlock:(void(^)(BOOL ready))completionBlock
+               completionQueue:(dispatch_queue_t)completionQueue;
 
 /**
  * Returns the registered extension with the given name.

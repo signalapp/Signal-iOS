@@ -31,6 +31,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	
 	NSDictionary *registeredExtensions;
 	YapAbstractDatabaseConnection *extensionRegistrationConnection;
+	dispatch_queue_t extensionRegistrationQueue;
 	
 @protected
 	
