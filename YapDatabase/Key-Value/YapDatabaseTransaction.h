@@ -294,11 +294,4 @@
 **/
 - (void)removeAllObjects;
 
-#pragma mark Extensions
-
-/**
- * 
-**/
-- (void)dropExtension:(NSString *)extensionName;
-
 @end

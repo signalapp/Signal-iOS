@@ -1789,11 +1789,4 @@
 	}];
 }
 
-#pragma mark Extensions
-
-- (void)dropExtension:(NSString *)extensionName
-{
-	// Todo...
-}
-
 @end
