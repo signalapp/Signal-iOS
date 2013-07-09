@@ -259,7 +259,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		changesets = [[NSMutableArray alloc] init];
 		connectionStates = [[NSMutableArray alloc] init];
 		
-		extensions = [[NSDictionary alloc] init];
+		registeredExtensions = [[NSDictionary alloc] init];
 		
 		// Mark the snapshotQueue so we can identify it.
 		// There are several methods whose use is restricted to within the snapshotQueue.
@@ -609,71 +609,6 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 #pragma mark Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)beginTransaction:(sqlite3 *)aDb
-{
-	int status = sqlite3_exec(aDb, "BEGIN TRANSACTION;", NULL, NULL, NULL);
-	if (status != SQLITE_OK)
-	{
-		YDBLogError(@"Error executing 'BEGIN TRANSACTION': %d %s", status, sqlite3_errmsg(aDb));
-	}
-}
-
-- (void)commitTransaction:(sqlite3 *)aDb
-{
-	int status = sqlite3_exec(aDb, "COMMIT TRANSACTION;", NULL, NULL, NULL);
-	if (status != SQLITE_OK)
-	{
-		YDBLogError(@"Error executing 'COMMIT TRANSACTION': %d %s", status, sqlite3_errmsg(aDb));
-	}
-}
-
-- (void)rollbackTransaction:(sqlite3 *)aDb
-{
-	int status = sqlite3_exec(aDb, "ROLLBACK TRANSACTION;", NULL, NULL, NULL);
-	if (status != SQLITE_OK)
-	{
-		YDBLogError(@"Error executing 'ROLLBACK TRANSACTION': %d %s", status, sqlite3_errmsg(aDb));
-	}
-}
-
-- (void)writeValue:(NSString *)value forKey:(NSString *)key extension:(NSString *)extension using:(sqlite3 *)aDb
-{
-	int status;
-	sqlite3_stmt *statement;
-	
-	char *stmt = "INSERT OR REPLACE INTO \"yap2\" (\"extension\", \"key\", \"data\") VALUES (?, ?, ?);";
-	
-	status = sqlite3_prepare_v2(aDb, stmt, (int)strlen(stmt)+1, &statement, NULL);
-	if (status != SQLITE_OK)
-	{
-		YDBLogError(@"%@: Error creating update snapshot statement: %d %s",
-					NSStringFromSelector(_cmd), status, sqlite3_errmsg(aDb));
-	}
-	else
-	{
-		YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extension);
-		sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
-		
-		YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-		sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
-		
-		YapDatabaseString _value; MakeYapDatabaseString(&_value, value);
-		sqlite3_bind_text(statement, 3, _value.str, _value.length, SQLITE_STATIC);
-		
-		status = sqlite3_step(statement);
-		if (status != SQLITE_DONE)
-		{
-			YDBLogError(@"%@: Error executing writeValue:forKey:extension statement: %d %s",
-						NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
-		}
-		
-		sqlite3_finalize(statement);
-		FreeYapDatabaseString(&_extension);
-		FreeYapDatabaseString(&_key);
-		FreeYapDatabaseString(&_value);
-	}
-}
-
 - (void)writeSnapshot:(uint64_t)aSnapshot using:(sqlite3 *)aDb
 {
 	int status;
@@ -712,6 +647,12 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Connections
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (YapAbstractDatabaseConnection *)newConnection
+{
+	// This method is overriden by subclasses
+	return nil;
+}
 
 /**
  * This method is called from newConnection, either above or from a subclass.
@@ -789,39 +730,21 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 #pragma mark Extensions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (BOOL)openExtensionsDb
+- (YapAbstractDatabaseConnection *)extensionRegistrationConnection
 {
-	int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX;
-	
-	int status = sqlite3_open_v2([databasePath UTF8String], &extensionsDb, flags, NULL);
-	if (status != SQLITE_OK)
+	if (extensionRegistrationConnection == nil)
 	{
-		// Sometimes the open function returns a db to allow us to query it for the error message
-		if (extensionsDb) {
-			YDBLogWarn(@"Error opening extensionsDb: %d %s", status, sqlite3_errmsg(extensionsDb));
-		}
-		else {
-			YDBLogError(@"Error opening extensionsDb: %d", status);
-		}
+		extensionRegistrationConnection = [self newConnection];
 		
-		return NO;
+		NSTimeInterval delayInSeconds = 10.0;
+		dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+		dispatch_after(popTime, writeQueue, ^(void){
+			
+			extensionRegistrationConnection = nil;
+		});
 	}
 	
-	sqlite3_wal_autocheckpoint(extensionsDb, 0);
-	
-	return YES;
-}
-
-- (void)closeExtensionsDbAfterDelay:(NSTimeInterval)delayInSeconds
-{
-	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-	dispatch_after(popTime, writeQueue, ^(void){
-		
-		if (extensionsDb) {
-			sqlite3_close(extensionsDb);
-			extensionsDb = NULL;
-		}
-	});
+	return extensionRegistrationConnection;
 }
 
 /**
@@ -834,25 +757,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 **/
 - (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
 {
-	if (extension == nil)
-	{
-		YDBLogError(@"Error registering extension: extension parameter is nil");
-		return NO;
-	}
-	if ([extensionName length] == 0)
-	{
-		YDBLogError(@"Error registering extension: extensionName parameter is nil or empty string");
-		return NO;
-	}
-	
-	__block BOOL result = YES;
-	
-	dispatch_sync(writeQueue, ^{
-		
-		result = [self _registerExtension:extension withName:extensionName];
-	});
-	
-	return result;
+	return [self _registerExtension:extension withName:extensionName];
 }
 
 /**
@@ -861,179 +766,25 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 **/
 - (BOOL)_registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
 {
-	// Check to make sure the extensionName is available
-	
-	__block BOOL alreadyRegistered = NO;
-	__block NSDictionary *newExtensions = nil;
-	__block NSDictionary *changeset = nil;
-	
-	dispatch_sync(snapshotQueue, ^{
-		
-		if ([extensions objectForKey:extensionName] == nil)
-		{
-			NSMutableDictionary *_extensions = [extensions mutableCopy];
-			[_extensions setObject:extension forKey:extensionName];
-			
-			newExtensions = [_extensions copy];
-			
-			changeset = @{
-			    @"snapshot": @(snapshot+1),
-			    @"registeredExtensions": newExtensions
-			};
-		}
-		else
-		{
-			alreadyRegistered = YES;
-		}
-	});
-		
-	if (alreadyRegistered)
+	if (extension == nil)
 	{
-		YDBLogError(@"Error registering extension: The extensionName is already registered.");
+		YDBLogError(@"Error registering extension: extension parameter is nil");
+		return NO;
+	}
+	if (![extension supportsDatabase:self])
+	{
+		YDBLogError(@"Error registering extension: extension doesn't support this type of database");
+		return NO;
+	}
+	if ([extensionName length] == 0)
+	{
+		YDBLogError(@"Error registering extension: extensionName parameter is nil or empty string");
 		return NO;
 	}
 	
-	// Create the sqlite3 database connection for setting up extensions.
-	
-	if (extensionsDb == NULL)
-	{
-		if ([self openExtensionsDb])
-		{
-			// There's no reason to keep the extensionsDb open.
-			// Extensions are generally setup at app launch, and then left alone.
-			// And even if they're setup on the fly, extensions are generally a long-lived.
-			//
-			// So we tear it down after a slight delay.
-			// The delay should allow multiple extension registrations to share a single db instance.
-			
-			[self closeExtensionsDbAfterDelay:5.0]; // seconds
-		}
-		else
-		{
-			return NO;
-		}
-	}
-	
-	// Begin transaction
-	
-	[self beginTransaction:extensionsDb];
-	
-	__block YapDatabaseConnectionState *myState = nil;
-	dispatch_sync(snapshotQueue, ^{
-		
-		myState = [[YapDatabaseConnectionState alloc] initWithConnection:nil];
-		myState->yapLevelExclusiveWriteLock = YES;
-		myState->lastKnownSnapshot = snapshot;
-		
-		[connectionStates addObject:myState];
-	});
-	
-	// Setup the extension
-	
-	BOOL result = [[extension class] createTablesForRegisteredName:extensionName
-	                                                      database:self
-	                                                        sqlite:extensionsDb];
-	
-	if (!result)
-	{
-		YDBLogError(@"Error registering extension: Extension reported errors during setup process.");
-		
-		// Rollback transaction
-		
-		dispatch_sync(snapshotQueue, ^{
-			
-			[connectionStates removeObject:myState];
-		});
-		
-		[self rollbackTransaction:extensionsDb];
-		return NO;
-	}
-	
-	// Pre-Commit transaction
-	
-	__block BOOL safeToCommit = NO;
-	do
-	{
-		__block BOOL waitForReadOnlyTransactions = NO;
-		
-		dispatch_sync(snapshotQueue, ^{ @autoreleasepool {
-			
-			for (YapDatabaseConnectionState *state in connectionStates)
-			{
-				if (state->yapLevelSharedReadLock && !state->sqlLevelSharedReadLock)
-				{
-					waitForReadOnlyTransactions = YES;
-				}
-			}
-			
-			if (waitForReadOnlyTransactions)
-			{
-				myState->waitingForWriteLock = YES;
-				[myState prepareWriteLock];
-			}
-			else
-			{
-				safeToCommit = YES;
-				[self notePendingChanges:changeset fromConnection:nil];
-			}
-			
-		}});
-		
-		if (waitForReadOnlyTransactions)
-		{
-			// Block until a read-only transaction signals us.
-			// This will occur when the last read-only transaction (that started before our read-write
-			// transaction started) either completes or acquires an "sql-level" shared read lock.
-			//
-			// Note: Since we're using a dispatch semaphore, order doesn't matter.
-			// That is, it's fine if the read-only transaction signals our write lock before we start waiting on it.
-			// In this case we simply return immediately from the wait call.
-			
-			YDBLogVerbose(@"RegisterExtensionTransaction blocked waiting for write lock...");
-			
-			[myState waitForWriteLock];
-		}
-		
-	} while (!safeToCommit);
-	
-	// Commit transaction
-	
-	[self writeValue:NSStringFromClass([extension class]) forKey:@"class" extension:extensionName using:extensionsDb];
-	
-	[self writeSnapshot:(snapshot+1) using:extensionsDb];
-	[self commitTransaction:extensionsDb];
-	
-	// Post-Commit transaction
-	
-	__block uint64_t minSnapshot = UINT64_MAX;
-	
-	dispatch_sync(snapshotQueue, ^{ @autoreleasepool {
-		
-		extensions = newExtensions;
-		[extension setRegisteredName:extensionName];
-		
-		[connectionStates removeObject:myState];
-		
-		for (YapDatabaseConnectionState *state in connectionStates)
-		{
-			if (state->yapLevelSharedReadLock)
-			{
-				minSnapshot = MIN(state->lastKnownSnapshot, minSnapshot);
-			}
-		}
-		
-		[self noteCommittedChanges:changeset fromConnection:nil];
-	}});
-	
-	// We added frames to the WAL.
-	// We can invoke a checkpoint if there are no other active connections.
-	
-	if (minSnapshot == UINT64_MAX)
-	{
-		[self asyncCheckpoint:snapshot];
-	}
-	
-	return YES;
+	extension.registeredName = extensionName;
+
+	return [[self extensionRegistrationConnection] registerExtension:extension withName:extensionName];
 }
 
 /**
@@ -1047,7 +798,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	
 	dispatch_block_t block = ^{
 		
-		result = [extensions objectForKey:extensionName];
+		result = [registeredExtensions objectForKey:extensionName];
 	};
 	
 	if (dispatch_get_specific(IsOnSnapshotQueueKey))
@@ -1070,7 +821,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	
 	dispatch_block_t block = ^{
 		
-		extensionsCopy = [extensions copy];
+		extensionsCopy = registeredExtensions;
 	};
 	
 	if (dispatch_get_specific(IsOnSnapshotQueueKey))
@@ -1202,6 +953,14 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	// which represents the most recent snapshot of the last committed readwrite transaction.
 	
 	snapshot = [[changeset objectForKey:@"snapshot"] unsignedLongLongValue];
+	
+	// Update registeredExtensions, if changed.
+	
+	NSDictionary *newRegisteredExtensions = [changeset objectForKey:@"registeredExtensions"];
+	if (newRegisteredExtensions)
+	{
+		registeredExtensions = newRegisteredExtensions;
+	}
 	
 	// Forward the changeset to all other connections so they can perform any needed updates.
 	// Generally this means updating the in-memory components such as the cache.

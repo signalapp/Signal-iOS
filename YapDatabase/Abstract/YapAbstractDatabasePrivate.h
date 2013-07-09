@@ -29,8 +29,8 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	
 	dispatch_queue_t checkpointQueue;
 	
-	NSDictionary *extensions;
-	sqlite3 *extensionsDb;
+	NSDictionary *registeredExtensions;
+	YapAbstractDatabaseConnection *extensionRegistrationConnection;
 	
 @protected
 	
@@ -174,6 +174,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	NSDictionary *registeredExtensions;
 	NSMutableDictionary *extensions;
 	BOOL extensionsReady;
+	BOOL extensionsAdded;
 	
 @protected
 	dispatch_queue_t connectionQueue;
@@ -200,10 +201,16 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 - (void)prepare;
 
 - (NSDictionary *)extensions;
+- (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName;
+- (BOOL)canRegisterExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName;
+- (void)didRegisterExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName;
 
 - (sqlite3_stmt *)beginTransactionStatement;
 - (sqlite3_stmt *)commitTransactionStatement;
 - (sqlite3_stmt *)rollbackTransactionStatement;
+
+- (sqlite3_stmt *)yapGetDataForKeyStatement; // Against "yap" database, for internal use
+- (sqlite3_stmt *)yapSetDataForKeyStatement; // Against "yap" database, for internal use
 
 - (void)_flushMemoryWithLevel:(int)level;
 

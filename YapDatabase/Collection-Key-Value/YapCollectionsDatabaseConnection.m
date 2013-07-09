@@ -2,6 +2,7 @@
 #import "YapCollectionsDatabasePrivate.h"
 
 #import "YapAbstractDatabasePrivate.h"
+#import "YapAbstractDatabaseExtensionPrivate.h"
 
 #import "YapCollectionKey.h"
 #import "YapCache.h"
@@ -1205,6 +1206,44 @@
 	                 inNotifications:notifications
 	          includingObjectChanges:NO
 	                 metadataChanges:YES];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Extensions
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
+{
+	__block BOOL result = NO;
+	
+	[self readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
+		
+		if ([self canRegisterExtension:extension withName:extensionName])
+		{
+			YapAbstractDatabaseExtensionConnection *extensionConnection;
+			YapAbstractDatabaseExtensionTransaction *extensionTransaction;
+			
+			extensionConnection = [extension newConnection:self];
+			extensionTransaction = [extensionConnection newReadWriteTransaction:transaction];
+			
+			BOOL isFirstTimeExtensionReigstration = NO;
+			[extensionTransaction willRegister:&isFirstTimeExtensionReigstration];
+			
+			result = [extensionTransaction createFromScratch:YES];
+			
+			if (result)
+			{
+				[extensionTransaction didRegister:isFirstTimeExtensionReigstration];
+				[self didRegisterExtension:extension withName:extensionName];
+			}
+			else
+			{
+				[transaction rollback];
+			}
+		}
+	}];
+	
+	return result;
 }
 
 @end

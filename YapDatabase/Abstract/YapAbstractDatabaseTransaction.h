@@ -62,6 +62,6 @@
  * @see [YapAbstractDatabase registerExtension:withName:]
 **/
 - (id)extension:(NSString *)extensionName;
-- (id)ext:(NSString *)extensionName; // <-- Save yourself some typing
+- (id)ext:(NSString *)extensionName; // <-- Shorthand (same as extension: method)
 
 @end

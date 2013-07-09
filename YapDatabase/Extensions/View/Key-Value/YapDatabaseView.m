@@ -22,55 +22,6 @@
 
 @implementation YapDatabaseView
 
-+ (BOOL)createTablesForRegisteredName:(NSString *)registeredName
-                             database:(YapAbstractDatabase *)database
-                               sqlite:(sqlite3 *)db
-{
-	if (![database isKindOfClass:[YapDatabase class]])
-	{
-		YDBLogError(@"YapDatabaseView only supports YapDatabase, not YapCollectionsDatabase");
-		return NO;
-	}
-	
-	NSString *keyTableName = [self keyTableNameForRegisteredName:registeredName];
-	NSString *pageTableName = [self pageTableNameForRegisteredName:registeredName];
-	
-	YDBLogVerbose(@"Creating view tables for registeredName(%@): %@, %@", registeredName, keyTableName, pageTableName);
-	
-	NSString *createKeyTable = [NSString stringWithFormat:
-	    @"CREATE TABLE IF NOT EXISTS \"%@\""
-	    @" (\"key\" CHAR NOT NULL PRIMARY KEY,"
-	    @"  \"pageKey\" CHAR NOT NULL"
-	    @" );", keyTableName];
-	
-	NSString *createPageTable = [NSString stringWithFormat:
-	    @"CREATE TABLE IF NOT EXISTS \"%@\""
-	    @" (\"pageKey\" CHAR NOT NULL PRIMARY KEY,"
-	    @"  \"data\" BLOB,"
-		@"  \"metadata\" BLOB"
-	    @" );", pageTableName];
-	
-	int status;
-	
-	status = sqlite3_exec(db, [createKeyTable UTF8String], NULL, NULL, NULL);
-	if (status != SQLITE_OK)
-	{
-		YDBLogError(@"%@ - Failed creating key table (%@): %d %s",
-		            THIS_METHOD, keyTableName, status, sqlite3_errmsg(db));
-		return NO;
-	}
-	
-	status = sqlite3_exec(db, [createPageTable UTF8String], NULL, NULL, NULL);
-	if (status != SQLITE_OK)
-	{
-		YDBLogError(@"%@ - Failed creating page table (%@): %d %s",
-		            THIS_METHOD, pageTableName, status, sqlite3_errmsg(db));
-		return NO;
-	}
-	
-	return YES;
-}
-
 + (BOOL)dropTablesForRegisteredName:(NSString *)registeredName
                            database:(YapAbstractDatabase *)database
                              sqlite:(sqlite3 *)db
@@ -154,6 +105,25 @@
 		sortingBlockType = inSortingBlockType;
 	}
 	return self;
+}
+
+/**
+ * Subclasses must implement this method.
+ * This method is called during the view registration process to enusre the extension supports the database type.
+ *
+ * Return YES if the class/instance supports the particular type of database (YapDatabase vs YapCollectionsDatabase).
+**/
+- (BOOL)supportsDatabase:(YapAbstractDatabase *)database
+{
+	if ([database isKindOfClass:[YapDatabase class]])
+	{
+		return YES;
+	}
+	else
+	{
+		YDBLogError(@"YapDatabaseView only supports YapDatabase, not YapCollectionsDatabase");
+		return NO;
+	}
 }
 
 - (YapAbstractDatabaseExtensionConnection *)newConnection:(YapAbstractDatabaseConnection *)databaseConnection

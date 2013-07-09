@@ -14,33 +14,6 @@
 @interface YapAbstractDatabaseExtension ()
 
 /**
- * This method is invoked as part of the extension registration process.
- * All extensions must implement this method and attempt to create (if needed) their table(s) from within this method.
- * 
- * An extension may use zero or more tables for its operations.
- *
- * An extension MUST take steps to avoid table name collisions.
- * For example, an extension cannot choose to name its table "database", as that name is reserved for the primary table.
- *
- * The following best practices are recommended:
- * - incorporate the registeredName into the table name(s).
- * - incorporate a unique word (e.g. "ext") into the table name(s).
- *
- * For example: "ext_[registeredName]"
- *
- * An extension class may support YapDatabase, YapCollectionsDatabase, or both.
- * The implementation of this method should inspect database parameter class type to ensure proper support.
- * 
- * The db parameter is for one-time use within this method, and should not be saved in any manner.
- * 
- * If an error occurs, this method should return NO and set the error parameter.
- * Otherwise return YES after creating the tables.
-**/
-+ (BOOL)createTablesForRegisteredName:(NSString *)registeredName
-                             database:(YapAbstractDatabase *)database
-                               sqlite:(sqlite3 *)db;
-
-/**
  * 
 **/
 + (BOOL)dropTablesForRegisteredName:(NSString *)registeredName
@@ -52,6 +25,14 @@
  * the registeredName property will be set by the database.
 **/
 @property (atomic, copy, readwrite) NSString *registeredName;
+
+/**
+ * Subclasses must implement this method.
+ * This method is called during the view registration process to enusre the extension supports the database type.
+ * 
+ * Return YES if the class/instance supports the particular type of database (YapDatabase vs YapCollectionsDatabase).
+**/
+- (BOOL)supportsDatabase:(YapAbstractDatabase *)database;
 
 /**
  * Subclasses must override this method to create and return a proper instance of the
@@ -150,17 +131,41 @@
 }
 
 /**
- * Subclasses may override this method in order to do whatever setup is needed for use.
+ * The following methods are implemented by YapAbstractDatabaseExtension.
+ * Subclasses may override them if desired.
+**/
+- (void)willRegister:(BOOL *)isFirstTimeExtensionRegistration;
+- (void)didRegister:(BOOL)isFirstTimeExtensionRegistration;
+
+/**
+ * Subclasses must implement this method in order to properly create the extension.
+ * This includes creating any necessary tables,
+ * as well as populating the tables by enumerating over the existing rows in the database.
+ * 
+ * The given BOOL indicates if this is the first time the extension has been registered.
+ * That is, this value will be YES the very first time the extension is registered with this name.
+ * Subsequent registrations (on later app launches) will pass NO.
+ * 
+ * In general, a YES parameter means the extension needs to create the tables and populate itself.
+ * A NO parameter means the extension is likely ready to go.
+**/
+- (BOOL)createFromScratch:(BOOL)isFirstTimeExtensionRegistration;
+
+/**
+ * Subclasses must implement this method in order to do whatever setup is needed for use.
  * Remember, an extension transaction should store the majority of its state within the extension connection.
  * Thus an extension should generally only need to prepare itself once (with the exception of rollback operations).
  *
  * Changes that occur on other connections should get incorporated via the changeset architecture
  * from within the extension connection subclass.
+ * 
+ * Return YES if completed successfully, or if already prepared.
+ * Return NO if some kind of error occured.
 **/
 - (BOOL)prepareIfNeeded;
 
 /**
- * This method is called if within a readwrite transaction.
+ * This method is only called if within a readwrite transaction.
  * This method is optional.
  *
  * Subclasses may implement it to perform any "cleanup" before the changeset is requested.
@@ -169,10 +174,33 @@
 - (void)preCommitTransaction;
 
 /**
- * This method is called if within a readwrite transaction.
- * Subclasses should invoke [super commitTransaction] at the END of their implementation.
+ * This method is only called if within a readwrite transaction.
 **/
 - (void)commitTransaction;
+
+/**
+ * Subclasses must implement these methods.
+ * They are needed by the utility methods listed below.
+**/
+- (YapAbstractDatabaseTransaction *)databaseTransaction;
+- (NSString *)registeredName;
+
+/**
+ * The following method are convenience methods for getting and setting persistent values for the extension.
+ * The persistent values are stored in the yap2 table, which is specifically designed for this use.
+**/
+
+- (int)intValueForExtensionKey:(NSString *)key;
+- (void)setIntValue:(int)value forExtensionKey:(NSString *)key;
+
+- (double)doubleValueForExtensionKey:(NSString *)key;
+- (void)setDoubleValue:(double)value forExtensionKey:(NSString *)key;
+
+- (NSString *)stringValueForExtensionKey:(NSString *)key;
+- (void)setStringValue:(NSString *)value forExtensionKey:(NSString *)key;
+
+- (NSData *)dataValueForExtensionKey:(NSString *)key;
+- (void)setDataValue:(NSData *)value forExtensionKey:(NSString *)key;
 
 @end
 

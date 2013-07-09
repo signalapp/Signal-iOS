@@ -553,6 +553,43 @@
 	return extensions;
 }
 
+- (BOOL)canRegisterExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
+{
+	// This method is INTERNAL
+	
+	if ([registeredExtensions objectForKey:extensionName] == nil)
+		return YES;
+	else
+		return NO;
+}
+
+- (void)didRegisterExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
+{
+	// This method is INTERNAL
+	
+	NSMutableDictionary *newRegisteredExtensions = [registeredExtensions mutableCopy];
+	[newRegisteredExtensions setObject:extension forKey:extensionName];
+	
+	registeredExtensions = [newRegisteredExtensions copy];
+	
+	// Set the extensionsAdded flag.
+	// This will be consulted during the creation of the changeset,
+	// and will cause us to add the updated registeredExtensions to the list of changes.
+	// It will then get propogated to the database, and all other connections.
+	
+	extensionsAdded = YES;
+}
+
+- (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
+{
+	// Subclasses must implement this method.
+	// They are to run the process through a readwrite transaction.
+	
+	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
+	
+	return NO;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Memory
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -877,13 +914,13 @@
 
 - (YapAbstractDatabaseTransaction *)newReadTransaction
 {
-	NSAssert(NO, @"Missing required override method in subclass");
+	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return nil;
 }
 
 - (YapAbstractDatabaseTransaction *)newReadWriteTransaction
 {
-	NSAssert(NO, @"Missing required override method in subclass");
+	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return nil;
 }
 
@@ -1729,6 +1766,14 @@
 	{
 		externalChangeset = [NSMutableDictionary dictionaryWithCapacity:8];
 		[externalChangeset setObject:externalChangeset_extensions forKey:YapDatabaseExtensionsKey];
+	}
+	
+	if (extensionsAdded)
+	{
+		if (internalChangeset == nil)
+			internalChangeset = [NSMutableDictionary dictionaryWithCapacity:8];
+		
+		[internalChangeset setObject:registeredExtensions forKey:@"registeredExtensions"];
 	}
 	
 	*internalChangesetPtr = internalChangeset;

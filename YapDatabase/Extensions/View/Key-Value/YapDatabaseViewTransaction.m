@@ -71,6 +71,88 @@
 	return self;
 }
 
+- (BOOL)createTables
+{
+	sqlite3 *db = databaseTransaction->abstractConnection->db;
+	
+	NSString *keyTableName = [self keyTableName];
+	NSString *pageTableName = [self pageTableName];
+	
+	YDBLogVerbose(@"Creating view tables for registeredName(%@): %@, %@",
+	              [self registeredName], keyTableName, pageTableName);
+	
+	NSString *createKeyTable = [NSString stringWithFormat:
+	    @"CREATE TABLE IF NOT EXISTS \"%@\""
+	    @" (\"key\" CHAR NOT NULL PRIMARY KEY,"
+	    @"  \"pageKey\" CHAR NOT NULL"
+	    @" );", keyTableName];
+	
+	NSString *createPageTable = [NSString stringWithFormat:
+	    @"CREATE TABLE IF NOT EXISTS \"%@\""
+	    @" (\"pageKey\" CHAR NOT NULL PRIMARY KEY,"
+	    @"  \"data\" BLOB,"
+		@"  \"metadata\" BLOB"
+	    @" );", pageTableName];
+	
+	int status;
+	
+	status = sqlite3_exec(db, [createKeyTable UTF8String], NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@ - Failed creating key table (%@): %d %s",
+		            THIS_METHOD, keyTableName, status, sqlite3_errmsg(db));
+		return NO;
+	}
+	
+	status = sqlite3_exec(db, [createPageTable UTF8String], NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@ - Failed creating page table (%@): %d %s",
+		            THIS_METHOD, pageTableName, status, sqlite3_errmsg(db));
+		return NO;
+	}
+	
+	return YES;
+}
+
+- (BOOL)populateView
+{
+	// Todo...
+	
+	return YES;
+}
+
+/**
+ * This method is called to create any necessary tables,
+ * as well as populate the view by enumerating over the existing rows in the database.
+ * 
+ * The given BOOL (isFirstTimeExtensionRegistration) indicates if this is the first time the view has been registered.
+ * That is, this value will be YES the very first time this view is registered with this name.
+ * Subsequent registrations (on later app launches) will pass NO.
+ * 
+ * In general, a YES parameter means the view needs to populate itself by enumerating over the rows in the database.
+ * A NO parameter means the view is already up-to-date.
+**/
+- (BOOL)createFromScratch:(BOOL)isFirstTimeExtensionRegistration
+{
+	if (isFirstTimeExtensionRegistration)
+	{
+		if (![self createTables]) return NO;
+		if (![self populateView]) return NO;
+	}
+	
+	return YES;
+}
+
+/**
+ * This method is called to prepare the transaction for use.
+ * 
+ * Remember, an extension transaction is a very short lived object.
+ * Thus it stores the majority of its state within the extension connection (the parent).
+ *
+ * Return YES if completed successfully, or if already prepared.
+ * Return NO if some kind of error occured.
+**/
 - (BOOL)prepareIfNeeded
 {
 	if (viewConnection->group_pagesMetadata_dict && viewConnection->pageKey_group_dict)
@@ -90,7 +172,7 @@
 	if (status != SQLITE_OK)
 	{
 		YDBLogError(@"%@ (%@): Cannot create 'enumerate_stmt': %d %s",
-		            THIS_METHOD, [self registeredViewName], status, sqlite3_errmsg(db));
+		            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db));
 		return NO;
 	}
 	
@@ -165,7 +247,7 @@
 		else
 		{
 			YDBLogWarn(@"%@ (%@): Encountered unknown metadata class: %@",
-					   THIS_METHOD, [self registeredViewName], [metadata class]);
+					   THIS_METHOD, [self registeredName], [metadata class]);
 		}
 	}
 	
@@ -179,7 +261,7 @@
 	if (error)
 	{
 		YDBLogError(@"%@ (%@): Error enumerating page table: %d %s",
-		            THIS_METHOD, [self registeredViewName], status, sqlite3_errmsg(db));
+		            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db));
 	}
 	else
 	{
@@ -221,7 +303,7 @@
 				if (pageMetadata == nil)
 				{
 					YDBLogError(@"%@ (%@): Invalid key ordering detected in group(%@)",
-					            THIS_METHOD, [self registeredViewName], group);
+					            THIS_METHOD, [self registeredName], group);
 					
 					error = YES;
 					break;
@@ -238,7 +320,7 @@
 				if ([pagesForGroup count] > [orderDict count])
 				{
 					YDBLogError(@"%@ (%@): Circular key ordering detected in group(%@)",
-					            THIS_METHOD, [self registeredViewName], group);
+					            THIS_METHOD, [self registeredName], group);
 					
 					error = YES;
 					break;
@@ -250,7 +332,7 @@
 			if (!error && ([pagesForGroup count] != [orderDict count]))
 			{
 				YDBLogError(@"%@ (%@): Missing key page(s) in group(%@)",
-				            THIS_METHOD, [self registeredViewName], group);
+				            THIS_METHOD, [self registeredName], group);
 				
 				error = YES;
 			}
@@ -315,7 +397,12 @@
 #pragma mark YapDatabaseView
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (NSString *)registeredViewName
+- (YapAbstractDatabaseTransaction *)databaseTransaction
+{
+	return databaseTransaction;
+}
+
+- (NSString *)registeredName
 {
 	return [viewConnection->view registeredName];
 }
@@ -432,7 +519,7 @@
 	else if (status == SQLITE_ERROR)
 	{
 		YDBLogError(@"%@ (%@): Error executing statement: %d %s, key(%@)",
-		            THIS_METHOD, [self registeredViewName],
+		            THIS_METHOD, [self registeredName],
 		            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db), key);
 	}
 	
@@ -507,7 +594,7 @@
 			YDBLogError(@"%@ (%@): Error creating statement\n"
 			            @" - status(%d), errmsg: %s\n"
 			            @" - query: %@",
-			            THIS_METHOD, [self registeredViewName], status, sqlite3_errmsg(db), query);
+			            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db), query);
 			return nil;
 		}
 		
@@ -551,7 +638,7 @@
 		if (status != SQLITE_DONE)
 		{
 			YDBLogError(@"%@ (%@): Error executing statement: %d %s",
-			            THIS_METHOD, [self registeredViewName], status, sqlite3_errmsg(db));
+			            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db));
 			return nil;
 		}
 		
@@ -605,7 +692,7 @@
 	else if (status == SQLITE_ERROR)
 	{
 		YDBLogError(@"%@ (%@): Error executing statement: %d %s",
-		            THIS_METHOD, [self registeredViewName],
+		            THIS_METHOD, [self registeredName],
 		            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
 	}
 	
@@ -1116,7 +1203,7 @@
 	if (keyIndexWithinPage == NSNotFound)
 	{
 		YDBLogError(@"%@ (%@): Key(%@) expected to be in page(%@), but is missing",
-		            THIS_METHOD, [self registeredViewName], key, pageKey);
+		            THIS_METHOD, [self registeredName], key, pageKey);
 		return;
 	}
 	
@@ -1209,7 +1296,7 @@
 	if ([keyIndexSet count] != [keys count])
 	{
 		YDBLogWarn(@"%@ (%@): Keys expected to be in page(%@), but are missing",
-		           THIS_METHOD, [self registeredViewName], pageKey);
+		           THIS_METHOD, [self registeredName], pageKey);
 	}
 	
 	YDBLogVerbose(@"Removing %lu key(s) from page(%@)", (unsigned long)[keyIndexSet count], page);
@@ -1296,7 +1383,7 @@
 	if (status != SQLITE_DONE)
 	{
 		YDBLogError(@"%@ (%@): Error in keyStatement: %d %s",
-		            THIS_METHOD, [self registeredViewName],
+		            THIS_METHOD, [self registeredName],
 		            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
 	}
 	
@@ -1308,7 +1395,7 @@
 	if (status != SQLITE_DONE)
 	{
 		YDBLogError(@"%@ (%@): Error in pageStatement: %d %s",
-		            THIS_METHOD, [self registeredViewName],
+		            THIS_METHOD, [self registeredName],
 		            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
 	}
 	
@@ -1636,7 +1723,7 @@
 		if (pageMetadata == nil)
 		{
 			YDBLogError(@"%@ (%@): Missing metadata for dirty page with pageKey: %@",
-			            THIS_METHOD, [self registeredViewName], pageKey);
+			            THIS_METHOD, [self registeredName], pageKey);
 			return;//continue;
 		}
 		
@@ -1661,7 +1748,7 @@
 			if (status != SQLITE_DONE)
 			{
 				YDBLogError(@"%@ (%@): Error executing statement[1a]: %d %s",
-				            THIS_METHOD, [self registeredViewName],
+				            THIS_METHOD, [self registeredName],
 				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
 			}
 			
@@ -1698,7 +1785,7 @@
 			if (status != SQLITE_DONE)
 			{
 				YDBLogError(@"%@ (%@): Error executing statement[1b]: %d %s",
-				            THIS_METHOD, [self registeredViewName],
+				            THIS_METHOD, [self registeredName],
 				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
 			}
 			
@@ -1729,7 +1816,7 @@
 			// This shouldn't happen
 			
 			YDBLogWarn(@"%@ (%@): NULL metadata without matching dirty page with pageKey: %@",
-			           THIS_METHOD, [self registeredViewName], pageKey);
+			           THIS_METHOD, [self registeredName], pageKey);
 		}
 		else
 		{
@@ -1756,7 +1843,7 @@
 			if (status != SQLITE_DONE)
 			{
 				YDBLogError(@"%@ (%@): Error executing statement[2]: %d %s",
-				            THIS_METHOD, [self registeredViewName],
+				            THIS_METHOD, [self registeredName],
 				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
 			}
 			
@@ -1796,7 +1883,7 @@
 			if (status != SQLITE_DONE)
 			{
 				YDBLogError(@"%@ (%@): Error executing statement[3a]: %d %s",
-				            THIS_METHOD, [self registeredViewName],
+				            THIS_METHOD, [self registeredName],
 				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
 			}
 			
@@ -1829,7 +1916,7 @@
 			if (status != SQLITE_DONE)
 			{
 				YDBLogError(@"%@ (%@): Error executing statement[3b]: %d %s",
-				            THIS_METHOD, [self registeredViewName],
+				            THIS_METHOD, [self registeredName],
 				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
 			}
 			
