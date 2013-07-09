@@ -293,6 +293,8 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		dispatch_release(snapshotQueue);
 	if (writeQueue)
 		dispatch_release(writeQueue);
+	if (checkpointQueue)
+		dispatch_release(checkpointQueue);
 #endif
 }
 
