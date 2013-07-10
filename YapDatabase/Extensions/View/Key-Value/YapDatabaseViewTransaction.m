@@ -1427,162 +1427,191 @@
 	
 	NSUInteger maxPageSize = [self pageSize];
 	
-	NSUInteger overflow = pageMetadata->count - maxPageSize;
-	
-	// Find page
-	
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:pageMetadata->group];
 	
-	NSUInteger pageIndex = [pagesMetadataForGroup indexOfObjectIdenticalTo:pageMetadata];
-	
-	// Check to see if there's room in the previous page
-	
-	if (pageIndex > 0)
+	while (pageMetadata->count > maxPageSize)
 	{
-		YapDatabaseViewPageMetadata *prevPageMetadata = [pagesMetadataForGroup objectAtIndex:(pageIndex - 1)];
-		
-		if (prevPageMetadata->count + overflow <= maxPageSize)
+		NSUInteger pageIndex = [pagesMetadataForGroup indexOfObjectIdenticalTo:pageMetadata];
+	
+		// Check to see if there's room in the previous page
+	
+		if (pageIndex > 0)
 		{
-			// Move objects from beginning of page to end of previous page
+			YapDatabaseViewPageMetadata *prevPageMetadata = [pagesMetadataForGroup objectAtIndex:(pageIndex - 1)];
 			
-			NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
-			NSMutableArray *prevPage = [self pageForPageKey:prevPageMetadata->pageKey];
-			
-			NSRange pageRange = NSMakeRange(0, overflow);                    // beginning range
-			NSRange prevPageRange = NSMakeRange([prevPage count], overflow); // end range
-			
-			NSArray *subset = [page subarrayWithRange:pageRange];
-			
-			[page removeObjectsInRange:pageRange];
-			[prevPage insertObjects:subset atIndexes:[NSIndexSet indexSetWithIndexesInRange:prevPageRange]];
-			
-			// Update counts
-			
-			pageMetadata->count = [page count];
-			prevPageMetadata->count = [prevPage count];
-			
-			// Mark page & pageMetadata as dirty
-			
-			[viewConnection->dirtyPages setObject:prevPage forKey:prevPageMetadata->pageKey];
-			[viewConnection->pageCache setObject:prevPage forKey:prevPageMetadata->pageKey];
-			
-			[viewConnection->dirtyMetadata setObject:prevPageMetadata forKey:prevPageMetadata->pageKey];
-			
-			// Mark keys as dirty
-			
-			for (NSString *key in subset)
+			if (prevPageMetadata->count < maxPageSize)
 			{
-				[viewConnection->dirtyKeys setObject:prevPageMetadata->pageKey forKey:key];
-				[viewConnection->keyCache setObject:prevPageMetadata->pageKey forKey:key];
+				// Move objects from beginning of page to end of previous page
+				
+				NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
+				NSMutableArray *prevPage = [self pageForPageKey:prevPageMetadata->pageKey];
+				
+				NSUInteger excessInPage = pageMetadata->count - maxPageSize;
+				NSUInteger spaceInPrevPage = maxPageSize - prevPageMetadata->count;
+				
+				NSUInteger numToMove = MIN(excessInPage, spaceInPrevPage);
+				
+				NSRange pageRange = NSMakeRange(0, numToMove);                    // beginning range
+				NSRange prevPageRange = NSMakeRange([prevPage count], numToMove); // end range
+				
+				NSArray *subset = [page subarrayWithRange:pageRange];
+				
+				[page removeObjectsInRange:pageRange];
+				[prevPage insertObjects:subset atIndexes:[NSIndexSet indexSetWithIndexesInRange:prevPageRange]];
+				
+				// Update counts
+				
+				pageMetadata->count = [page count];
+				prevPageMetadata->count = [prevPage count];
+				
+				// Mark prevPage & prevPageMetadata as dirty
+				//(The page & pageMetadata are already marked as dirty)
+				
+				[viewConnection->dirtyPages setObject:page forKey:pageMetadata->pageKey];
+				[viewConnection->pageCache setObject:page forKey:pageMetadata->pageKey];
+				
+				[viewConnection->dirtyPages setObject:prevPage forKey:prevPageMetadata->pageKey];
+				[viewConnection->pageCache setObject:prevPage forKey:prevPageMetadata->pageKey];
+				
+				[viewConnection->dirtyMetadata setObject:prevPageMetadata forKey:prevPageMetadata->pageKey];
+				
+				// Mark keys as dirty
+				
+				for (NSString *key in subset)
+				{
+					[viewConnection->dirtyKeys setObject:prevPageMetadata->pageKey forKey:key];
+					[viewConnection->keyCache setObject:prevPageMetadata->pageKey forKey:key];
+				}
+				
+				continue;
 			}
-			
-			return;
 		}
-	}
-	
-	// Check to see if there's room in the next page
-	
-	if ((pageIndex + 1) < [pagesMetadataForGroup count])
-	{
-		YapDatabaseViewPageMetadata *nextPageMetadata = [pagesMetadataForGroup objectAtIndex:(pageIndex + 1)];
 		
-		if (nextPageMetadata->count + overflow <= maxPageSize)
+		// Check to see if there's room in the next page
+		
+		if ((pageIndex + 1) < [pagesMetadataForGroup count])
 		{
-			// Move objects from end of page to beginning of next page
+			YapDatabaseViewPageMetadata *nextPageMetadata = [pagesMetadataForGroup objectAtIndex:(pageIndex + 1)];
 			
-			NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
-			NSMutableArray *nextPage = [self pageForPageKey:nextPageMetadata->pageKey];
+			if (nextPageMetadata->count < maxPageSize)
+			{
+				// Move objects from end of page to beginning of next page
+				
+				NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
+				NSMutableArray *nextPage = [self pageForPageKey:nextPageMetadata->pageKey];
+				
+				NSUInteger excessInPage = pageMetadata->count - maxPageSize;
+				NSUInteger spaceInNextPage = maxPageSize - nextPageMetadata->count;
+				
+				NSUInteger numToMove = MIN(excessInPage, spaceInNextPage);
+				
+				NSRange pageRange = NSMakeRange([page count] - numToMove, numToMove); // end range
+				NSRange nextPageRange = NSMakeRange(0, numToMove);                    // beginning range
+				
+				NSArray *subset = [page subarrayWithRange:pageRange];
+				
+				[page removeObjectsInRange:pageRange];
+				[nextPage insertObjects:subset atIndexes:[NSIndexSet indexSetWithIndexesInRange:nextPageRange]];
+				
+				// Update counts
+				
+				pageMetadata->count = [page count];
+				nextPageMetadata->count = [nextPage count];
+				
+				// Mark nextPage & nextPageMetadata as dirty
+				//(The page & pageMetadata are already marked as dirty)
+				
+				[viewConnection->dirtyPages setObject:nextPage forKey:nextPageMetadata->pageKey];
+				[viewConnection->pageCache setObject:nextPage forKey:nextPageMetadata->pageKey];
+				
+				[viewConnection->dirtyMetadata setObject:nextPageMetadata forKey:nextPageMetadata->pageKey];
+				
+				// Mark keys as dirty
+				
+				for (NSString *key in subset)
+				{
+					[viewConnection->dirtyKeys setObject:nextPageMetadata->pageKey forKey:key];
+					[viewConnection->keyCache setObject:nextPageMetadata->pageKey forKey:key];
+				}
+				
+				continue;
+			}
+		}
+	
+		// Create new page and pageMetadata.
+		// Insert into array.
+		
+		NSUInteger excessInPage = pageMetadata->count - maxPageSize;
+		NSUInteger numToMove = MIN(excessInPage, maxPageSize);
+		
+		NSString *newPageKey = [self generatePageKey];
+		NSMutableArray *newPage = [[NSMutableArray alloc] initWithCapacity:numToMove];
+		
+		// Create new pageMetadata
+		
+		YapDatabaseViewPageMetadata *newPageMetadata = [[YapDatabaseViewPageMetadata alloc] init];
+		newPageMetadata->pageKey = newPageKey;
+		newPageMetadata->group = pageMetadata->group;
+		
+		// Insert new pageMetadata into array & update linked-list
+		
+		[pagesMetadataForGroup insertObject:newPageMetadata atIndex:(pageIndex + 1)];
+		
+		[viewConnection->pageKey_group_dict setObject:newPageMetadata->group
+		                                       forKey:newPageMetadata->pageKey];
+	
+		if ((pageIndex + 2) < [pagesMetadataForGroup count])
+		{
+			YapDatabaseViewPageMetadata *nextPageMetadata = [pagesMetadataForGroup objectAtIndex:(pageIndex + 2)];
 			
-			NSRange pageRange = NSMakeRange(maxPageSize, overflow); // end range
-			NSRange nextPageRange = NSMakeRange(0, overflow);       // beginning range
+			pageMetadata->nextPageKey = newPageKey;
 			
-			NSArray *subset = [page subarrayWithRange:pageRange];
+			newPageMetadata->prevPageKey = pageMetadata->pageKey;
+			newPageMetadata->nextPageKey = nextPageMetadata->pageKey;
 			
-			[page removeObjectsInRange:pageRange];
-			[nextPage insertObjects:subset atIndexes:[NSIndexSet indexSetWithIndexesInRange:nextPageRange]];
-			
-			// Update counts
-			
-			pageMetadata->count = [page count];
-			nextPageMetadata->count = [nextPage count];
-			
-			// Mark page & pageMetadata as dirty
-			
-			[viewConnection->dirtyPages setObject:nextPage forKey:nextPageMetadata->pageKey];
-			[viewConnection->pageCache setObject:nextPage forKey:nextPageMetadata->pageKey];
+			nextPageMetadata->prevPageKey = newPageKey; // prevPageKey property is persistent
 			
 			[viewConnection->dirtyMetadata setObject:nextPageMetadata forKey:nextPageMetadata->pageKey];
-			
-			// Mark keys as dirty
-			
-			for (NSString *key in subset)
-			{
-				[viewConnection->dirtyKeys setObject:nextPageMetadata->pageKey forKey:key];
-				[viewConnection->keyCache setObject:nextPageMetadata->pageKey forKey:key];
-			}
-			
-			return;
 		}
-	}
-	
-	// Create new page and pageMetadata.
-	// Insert into array.
-	
-	NSString *newPageKey = [self generatePageKey];
-	NSMutableArray *newPage = [[NSMutableArray alloc] initWithCapacity:overflow];
-	
-	// Create new pageMetadata
-	
-	YapDatabaseViewPageMetadata *newPageMetadata = [[YapDatabaseViewPageMetadata alloc] init];
-	newPageMetadata->pageKey = newPageKey;
-	newPageMetadata->group = pageMetadata->group;
-	
-	// Insert new pageMetadata into array & update linked-list
-	
-	[pagesMetadataForGroup insertObject:newPageMetadata atIndex:(pageIndex + 1)];
-	
-	[viewConnection->pageKey_group_dict setObject:newPageMetadata->group
-	                                       forKey:newPageMetadata->pageKey];
-	
-	newPageMetadata->prevPageKey = pageMetadata->pageKey;
-	pageMetadata->nextPageKey = newPageKey;
-	
-	if ((pageIndex + 2) < [pagesMetadataForGroup count])
-	{
-		YapDatabaseViewPageMetadata *nextPageMetadata = [pagesMetadataForGroup objectAtIndex:(pageIndex + 2)];
+		else
+		{
+			pageMetadata->nextPageKey = newPageKey;
+			
+			newPageMetadata->prevPageKey = pageMetadata->pageKey;
+			newPageMetadata->nextPageKey = nil;
+		}
 		
-		newPageMetadata->nextPageKey = nextPageMetadata->pageKey;
-		nextPageMetadata->prevPageKey = newPageKey;
-	}
+		// Move objects from end of page to beginning of new page
+		
+		NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
+		
+		NSRange pageRange = NSMakeRange([page count] - numToMove, numToMove); // end range
+		
+		NSArray *subset = [page subarrayWithRange:pageRange];
+		
+		[page removeObjectsInRange:pageRange];
+		[newPage addObjectsFromArray:subset];
+		
+		// Update counts
 	
-	// Move objects from end of page to beginning of new page
-	
-	NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
-	
-	NSRange pageRange = NSMakeRange(maxPageSize, overflow); // end range
-	
-	NSArray *subset = [page subarrayWithRange:pageRange];
-	
-	[page removeObjectsInRange:pageRange];
-	[newPage addObjectsFromArray:subset];
-	
-	// Update counts
-	
-	pageMetadata->count = [page count];
-	newPageMetadata->count = [newPage count];
-	
-	// Mark page & pageMetadata as dirty
-	
-	[viewConnection->dirtyPages setObject:newPage forKey:newPageKey];
-	[viewConnection->dirtyMetadata setObject:newPageMetadata forKey:newPageKey];
-	
-	// Mark keys as dirty
-	
-	for (NSString *key in subset)
-	{
-		[viewConnection->dirtyKeys setObject:newPageKey forKey:key];
-		[viewConnection->keyCache setObject:newPageKey forKey:key];
-	}
+		pageMetadata->count = [page count];
+		newPageMetadata->count = [newPage count];
+		
+		// Mark newPage & newPageMetadata as dirty
+		//(The page & pageMetadata are already marked as dirty)
+		
+		[viewConnection->dirtyPages setObject:newPage forKey:newPageKey];
+		[viewConnection->dirtyMetadata setObject:newPageMetadata forKey:newPageKey];
+		
+		// Mark keys as dirty
+		
+		for (NSString *key in subset)
+		{
+			[viewConnection->dirtyKeys setObject:newPageKey forKey:key];
+			[viewConnection->keyCache setObject:newPageKey forKey:key];
+		}
+			
+	} // end while (pageMetadata->count > maxPageSize)
 }
 
 - (void)dropEmptyPage:(YapDatabaseViewPageMetadata *)pageMetadata
