@@ -183,7 +183,7 @@
  * They are needed by the utility methods listed below.
 **/
 - (YapAbstractDatabaseTransaction *)databaseTransaction;
-- (NSString *)registeredName;
+- (YapAbstractDatabaseExtension *)extension;
 
 /**
  * The following method are convenience methods for getting and setting persistent values for the extension.

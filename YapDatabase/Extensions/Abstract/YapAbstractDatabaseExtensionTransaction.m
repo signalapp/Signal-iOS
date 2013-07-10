@@ -43,14 +43,14 @@
 	}
 	
 	YDBLogWarn(@"Dropping tables for previously registered extension with name(%@), class(%@) for new class(%@)",
-	           [self registeredName], prevClassName, ourClassName);
+	           [[self extension] registeredName], prevClassName, ourClassName);
 	
 	Class class = NSClassFromString(prevClassName);
 	
 	if (class == NULL)
 	{
 		YDBLogError(@"Unable to drop tables for previously registered extension with name(%@), unknown class(%@)",
-		            [self registeredName], prevClassName);
+		            [[self extension] registeredName], prevClassName);
 		
 		*isFirstTimeExtensionRegistration = YES;
 		return;
@@ -121,7 +121,7 @@
 	return nil;
 }
 
-- (NSString *)registeredName
+- (YapAbstractDatabaseExtension *)extension
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return nil;
@@ -144,11 +144,13 @@
 	sqlite3_stmt *statement = [databaseConnection yapGetDataForKeyStatement];
 	if (statement == NULL) return 0;
 	
+	NSString *registeredName = [[self extension] registeredName];
+	
 	int result = 0;
 	
 	// SELECT data FROM 'yap2' WHERE extension = ? AND key = ? ;
 	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, [self registeredName]);
+	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, registeredName);
 	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
@@ -187,9 +189,11 @@
 	sqlite3_stmt *statement = [databaseConnection yapSetDataForKeyStatement];
 	if (statement == NULL) return;
 	
+	NSString *registeredName = [[self extension] registeredName];
+	
 	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
 	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, [self registeredName]);
+	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, registeredName);
 	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
@@ -218,11 +222,13 @@
 	sqlite3_stmt *statement = [databaseConnection yapGetDataForKeyStatement];
 	if (statement == NULL) return 0.0;
 	
+	NSString *registeredName = [[self extension] registeredName];
+	
 	double result = 0.0;
 	
 	// SELECT data FROM 'yap2' WHERE extension = ? AND key = ? ;
 	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, [self registeredName]);
+	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, registeredName);
 	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
@@ -261,9 +267,11 @@
 	sqlite3_stmt *statement = [databaseConnection yapSetDataForKeyStatement];
 	if (statement == NULL) return;
 	
+	NSString *registeredName = [[self extension] registeredName];
+	
 	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
 	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, [self registeredName]);
+	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, registeredName);
 	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
@@ -292,11 +300,13 @@
 	sqlite3_stmt *statement = [databaseConnection yapGetDataForKeyStatement];
 	if (statement == NULL) return nil;
 	
+	NSString *registeredName = [[self extension] registeredName];
+	
 	NSString *string = nil;
 	
 	// SELECT data FROM 'yap2' WHERE extension = ? AND key = ? ;
 	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, [self registeredName]);
+	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, registeredName);
 	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
@@ -338,9 +348,11 @@
 	sqlite3_stmt *statement = [databaseConnection yapSetDataForKeyStatement];
 	if (statement == NULL) return;
 	
+	NSString *registeredName = [[self extension] registeredName];
+	
 	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
 	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, [self registeredName]);
+	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, registeredName);
 	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
@@ -371,11 +383,13 @@
 	sqlite3_stmt *statement = [databaseConnection yapGetDataForKeyStatement];
 	if (statement == NULL) return nil;
 	
+	NSString *registeredName = [[self extension] registeredName];
+	
 	NSData *data = nil;
 	
 	// SELECT data FROM 'yap2' WHERE extension = ? AND key = ? ;
 	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, [self registeredName]);
+	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, registeredName);
 	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
@@ -417,9 +431,11 @@
 	sqlite3_stmt *statement = [databaseConnection yapSetDataForKeyStatement];
 	if (statement == NULL) return;
 	
+	NSString *registeredName = [[self extension] registeredName];
+	
 	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
 	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, [self registeredName]);
+	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, registeredName);
 	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);

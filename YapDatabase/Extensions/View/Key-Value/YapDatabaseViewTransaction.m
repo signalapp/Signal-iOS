@@ -397,9 +397,20 @@
 #pragma mark YapDatabaseView
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Required override method from YapAbstractDatabaseExtensionTransaction.
+**/
 - (YapAbstractDatabaseTransaction *)databaseTransaction
 {
 	return databaseTransaction;
+}
+
+/**
+ * Required override method from YapAbstractDatabaseExtensionTransaction.
+**/
+- (YapAbstractDatabaseExtension *)extension
+{
+	return viewConnection->view;
 }
 
 - (NSString *)registeredName
@@ -1464,8 +1475,8 @@
 				pageMetadata->count = [page count];
 				prevPageMetadata->count = [prevPage count];
 				
-				// Mark prevPage & prevPageMetadata as dirty
-				//(The page & pageMetadata are already marked as dirty)
+				// Mark prevPage & prevPageMetadata as dirty.
+				// The page & pageMetadata are already marked as dirty.
 				
 				[viewConnection->dirtyPages setObject:page forKey:pageMetadata->pageKey];
 				[viewConnection->pageCache setObject:page forKey:pageMetadata->pageKey];
@@ -1518,8 +1529,8 @@
 				pageMetadata->count = [page count];
 				nextPageMetadata->count = [nextPage count];
 				
-				// Mark nextPage & nextPageMetadata as dirty
-				//(The page & pageMetadata are already marked as dirty)
+				// Mark nextPage & nextPageMetadata as dirty.
+				// The page & pageMetadata are already marked as dirty.
 				
 				[viewConnection->dirtyPages setObject:nextPage forKey:nextPageMetadata->pageKey];
 				[viewConnection->pageCache setObject:nextPage forKey:nextPageMetadata->pageKey];

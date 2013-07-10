@@ -393,9 +393,20 @@
 #pragma mark YapCollectionsDatabaseView
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Required override method from YapAbstractDatabaseExtensionTransaction.
+**/
 - (YapAbstractDatabaseTransaction *)databaseTransaction
 {
 	return databaseTransaction;
+}
+
+/**
+ * Required override method from YapAbstractDatabaseExtensionTransaction.
+**/
+- (YapAbstractDatabaseExtension *)extension
+{
+	return viewConnection->view;
 }
 
 - (NSString *)registeredName
