@@ -71,57 +71,6 @@
 	return self;
 }
 
-- (BOOL)createTables
-{
-	sqlite3 *db = databaseTransaction->abstractConnection->db;
-	
-	NSString *keyTableName = [self keyTableName];
-	NSString *pageTableName = [self pageTableName];
-	
-	YDBLogVerbose(@"Creating view tables for registeredName(%@): %@, %@",
-	              [self registeredName], keyTableName, pageTableName);
-	
-	NSString *createKeyTable = [NSString stringWithFormat:
-	    @"CREATE TABLE IF NOT EXISTS \"%@\""
-	    @" (\"key\" CHAR NOT NULL PRIMARY KEY,"
-	    @"  \"pageKey\" CHAR NOT NULL"
-	    @" );", keyTableName];
-	
-	NSString *createPageTable = [NSString stringWithFormat:
-	    @"CREATE TABLE IF NOT EXISTS \"%@\""
-	    @" (\"pageKey\" CHAR NOT NULL PRIMARY KEY,"
-	    @"  \"data\" BLOB,"
-		@"  \"metadata\" BLOB"
-	    @" );", pageTableName];
-	
-	int status;
-	
-	status = sqlite3_exec(db, [createKeyTable UTF8String], NULL, NULL, NULL);
-	if (status != SQLITE_OK)
-	{
-		YDBLogError(@"%@ - Failed creating key table (%@): %d %s",
-		            THIS_METHOD, keyTableName, status, sqlite3_errmsg(db));
-		return NO;
-	}
-	
-	status = sqlite3_exec(db, [createPageTable UTF8String], NULL, NULL, NULL);
-	if (status != SQLITE_OK)
-	{
-		YDBLogError(@"%@ - Failed creating page table (%@): %d %s",
-		            THIS_METHOD, pageTableName, status, sqlite3_errmsg(db));
-		return NO;
-	}
-	
-	return YES;
-}
-
-- (BOOL)populateView
-{
-	// Todo...
-	
-	return YES;
-}
-
 /**
  * This method is called to create any necessary tables,
  * as well as populate the view by enumerating over the existing rows in the database.
@@ -754,6 +703,231 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Populate
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (BOOL)createTables
+{
+	sqlite3 *db = databaseTransaction->abstractConnection->db;
+	
+	NSString *keyTableName = [self keyTableName];
+	NSString *pageTableName = [self pageTableName];
+	
+	YDBLogVerbose(@"Creating view tables for registeredName(%@): %@, %@",
+	              [self registeredName], keyTableName, pageTableName);
+	
+	NSString *createKeyTable = [NSString stringWithFormat:
+	    @"CREATE TABLE IF NOT EXISTS \"%@\""
+	    @" (\"key\" CHAR NOT NULL PRIMARY KEY,"
+	    @"  \"pageKey\" CHAR NOT NULL"
+	    @" );", keyTableName];
+	
+	NSString *createPageTable = [NSString stringWithFormat:
+	    @"CREATE TABLE IF NOT EXISTS \"%@\""
+	    @" (\"pageKey\" CHAR NOT NULL PRIMARY KEY,"
+	    @"  \"data\" BLOB,"
+		@"  \"metadata\" BLOB"
+	    @" );", pageTableName];
+	
+	int status;
+	
+	status = sqlite3_exec(db, [createKeyTable UTF8String], NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@ - Failed creating key table (%@): %d %s",
+		            THIS_METHOD, keyTableName, status, sqlite3_errmsg(db));
+		return NO;
+	}
+	
+	status = sqlite3_exec(db, [createPageTable UTF8String], NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@ - Failed creating page table (%@): %d %s",
+		            THIS_METHOD, pageTableName, status, sqlite3_errmsg(db));
+		return NO;
+	}
+	
+	return YES;
+}
+
+- (BOOL)populateView
+{
+	// Remove everything from the database (just in case)
+	
+	[self removeAllKeys];
+	
+	// Initialize ivars
+	
+	viewConnection->group_pagesMetadata_dict = [[NSMutableDictionary alloc] init];
+	viewConnection->pageKey_group_dict = [[NSMutableDictionary alloc] init];
+	
+	// Enumerate the existing rows in the database and populate the view
+	
+	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
+	
+	BOOL groupingNeedsObject = view->groupingBlockType == YapDatabaseViewBlockTypeWithObject ||
+	                           view->groupingBlockType == YapDatabaseViewBlockTypeWithRow;
+	
+	BOOL groupingNeedsMetadata = view->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata ||
+	                             view->groupingBlockType == YapDatabaseViewBlockTypeWithRow;
+	
+	BOOL sortingNeedsObject = view->sortingBlockType  == YapDatabaseViewBlockTypeWithObject ||
+	                          view->sortingBlockType  == YapDatabaseViewBlockTypeWithRow;
+	
+	BOOL sortingNeedsMetadata = view->sortingBlockType  == YapDatabaseViewBlockTypeWithMetadata ||
+	                            view->sortingBlockType  == YapDatabaseViewBlockTypeWithRow;
+	
+	BOOL needsObject = groupingNeedsObject || sortingNeedsObject;
+	BOOL needsMetadata = groupingNeedsMetadata || sortingNeedsMetadata;
+	
+	NSString *(^getGroup)(NSString *key, id object, id metadata);
+	getGroup = ^(NSString *key, id object, id metadata){
+		
+		if (view->groupingBlockType == YapDatabaseViewBlockTypeWithKey)
+		{
+			__unsafe_unretained YapDatabaseViewGroupingWithKeyBlock groupingBlock =
+		        (YapDatabaseViewGroupingWithKeyBlock)view->groupingBlock;
+			
+			return groupingBlock(key);
+		}
+		else if (view->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
+		{
+			__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
+		        (YapDatabaseViewGroupingWithObjectBlock)view->groupingBlock;
+			
+			return groupingBlock(key, object);
+		}
+		else if (view->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+		{
+			__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
+		        (YapDatabaseViewGroupingWithMetadataBlock)view->groupingBlock;
+			
+			return groupingBlock(key, metadata);
+		}
+		else
+		{
+			__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
+		        (YapDatabaseViewGroupingWithRowBlock)view->groupingBlock;
+			
+			return groupingBlock(key, object, metadata);
+		}
+	};
+	
+	int flags = (YapDatabaseViewChangeColumnObject | YapDatabaseViewChangeColumnMetadata);
+	
+	if (needsObject && needsMetadata)
+	{
+		if (groupingNeedsObject || groupingNeedsMetadata)
+		{
+			[databaseTransaction enumerateRowsUsingBlock:^(NSString *key, id object, id metadata, BOOL *stop) {
+				
+				NSString *group = getGroup(key, object, metadata);
+				if (group)
+				{
+					[self insertObject:object
+					          metadata:metadata forKey:key inGroup:group withModifiedColumns:flags isNew:YES];
+				}
+			}];
+		}
+		else
+		{
+			// Optimization: Grouping doesn't require the object or metadata.
+			// So we can skip the deserialization step for any rows not in the view.
+			
+			__block NSString *group = nil;
+			[databaseTransaction enumerateRowsUsingBlock:^(NSString *key, id object, id metadata, BOOL *stop) {
+				
+				[self insertObject:object
+				          metadata:metadata forKey:key inGroup:group  withModifiedColumns:flags isNew:YES];
+				
+			} withFilter:^BOOL(NSString *key) {
+				
+				group = getGroup(key, nil, nil);
+				return (group != nil);
+			}];
+		}
+	}
+	else if (needsObject && !needsMetadata)
+	{
+		if (groupingNeedsObject)
+		{
+			[databaseTransaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop) {
+				
+				NSString *group = getGroup(key, object, nil);
+				if (group)
+				{
+					[self insertObject:object
+					          metadata:nil forKey:key inGroup:group withModifiedColumns:flags isNew:YES];
+				}
+			}];
+		}
+		else
+		{
+			// Optimization: Grouping doesn't require the object.
+			// So we can skip the deserialization step for any rows not in the view.
+			
+			__block NSString *group = nil;
+			[databaseTransaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop) {
+				
+				[self insertObject:object
+				          metadata:nil forKey:key inGroup:group withModifiedColumns:flags isNew:YES];
+				
+			} withFilter:^BOOL(NSString *key) {
+				
+				group = getGroup(key, nil, nil);
+				return (group != nil);
+			}];
+		}
+	}
+	else if (!needsObject && needsMetadata)
+	{
+		if (groupingNeedsMetadata)
+		{
+			[databaseTransaction enumerateKeysAndMetadataUsingBlock:^(NSString *key, id metadata, BOOL *stop) {
+				
+				NSString *group = getGroup(key, nil, metadata);
+				if (group)
+				{
+					[self insertObject:nil
+					          metadata:metadata forKey:key inGroup:group withModifiedColumns:flags isNew:YES];
+				}
+			}];
+		}
+		else
+		{
+			// Optimization: Grouping doesn't require the metadata.
+			// So we can skip the deserialization step for any rows not in the view.
+			
+			__block NSString *group = nil;
+			[databaseTransaction enumerateKeysAndMetadataUsingBlock:^(NSString *key, id metadata, BOOL *stop) {
+				
+				[self insertObject:nil
+				          metadata:metadata forKey:key inGroup:group withModifiedColumns:flags isNew:YES];
+				
+			} withFilter:^BOOL(NSString *key) {
+				
+				group = getGroup(key, nil, nil);
+				return (group != nil);
+			}];
+		}
+	}
+	else // if (!needsObject && !needsMetadata)
+	{
+		[databaseTransaction enumerateKeysUsingBlock:^(NSString *key, BOOL *stop) {
+			
+			NSString *group = getGroup(key, nil, nil);
+			if (group)
+			{
+				[self insertObject:nil
+				          metadata:nil forKey:key inGroup:group withModifiedColumns:flags isNew:YES];
+			}
+		}];
+	}
+	
+	return YES;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Logic
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -863,6 +1037,7 @@
               forKey:(NSString *)key
              inGroup:(NSString *)group
  withModifiedColumns:(int)flags
+               isNew:(BOOL)isGuaranteedNew
 {
 	YDBLogAutoTrace();
 	
@@ -880,7 +1055,7 @@
 	BOOL tryExistingIndexInGroup = NO;
 	NSUInteger existingIndexInGroup = NSNotFound;
 	
-	NSString *existingPageKey = [self pageKeyForKey:key];
+	NSString *existingPageKey = isGuaranteedNew ? nil : [self pageKeyForKey:key];
 	if (existingPageKey)
 	{
 		// The key is already in the view.
@@ -2027,7 +2202,7 @@
 		// Add key to view (or update position)
 		
 		int flags = (YapDatabaseViewChangeColumnObject | YapDatabaseViewChangeColumnMetadata);
-		[self insertObject:object metadata:metadata forKey:key inGroup:group withModifiedColumns:flags];
+		[self insertObject:object metadata:metadata forKey:key inGroup:group withModifiedColumns:flags isNew:NO];
 	}
 }
 
@@ -2089,7 +2264,7 @@
 			}
 			
 			int flags = YapDatabaseViewChangeColumnMetadata;
-			[self insertObject:object metadata:metadata forKey:key inGroup:group withModifiedColumns:flags];
+			[self insertObject:object metadata:metadata forKey:key inGroup:group withModifiedColumns:flags isNew:NO];
 		}
 	}
 	else
@@ -2154,7 +2329,7 @@
 			}
 			
 			int flags = YapDatabaseViewChangeColumnMetadata;
-			[self insertObject:object metadata:metadata forKey:key inGroup:group withModifiedColumns:flags];
+			[self insertObject:object metadata:metadata forKey:key inGroup:group withModifiedColumns:flags isNew:NO];
 		}
 	}
 }
