@@ -1642,16 +1642,21 @@
 }
 
 /**
- * During the readwrite transaction we do nothing to enforce the pageSize restriction.
- * Multiple modifications during a transaction make it non worthwhile.
+ * This method is only called if within a readwrite transaction.
  * 
- * Instead we wait til the transaction has completed
- * and then we can perform all such cleanup in a single step.
+ * Extensions may implement it to perform any "cleanup" before the changeset is requested.
+ * Remember, the changeset is requested before the commitTransaction method is invoked.
 **/
-- (void)maybeConsolidateOrExpandDirtyPages
+- (void)preCommitTransaction
 {
 	YDBLogAutoTrace();
 	
+	// During the readwrite transaction we do nothing to enforce the pageSize restriction.
+	// Multiple modifications during a transaction make it non worthwhile.
+	//
+	// Instead we wait til the transaction has completed
+	// and then we can perform all such cleanup in a single step.
+		
 	NSUInteger maxPageSize = [self pageSize];
 	
 	// Get all the dirty pageMetadata objects.
@@ -1686,19 +1691,6 @@
 			[self dropEmptyPage:pageMetadata];
 		}
 	}
-}
-
-/**
- * This method is only called if within a readwrite transaction.
- * 
- * Extensions may implement it to perform any "cleanup" before the changeset is requested.
- * Remember, the changeset is requested before the commitTransaction method is invoked.
-**/
-- (void)preCommitTransaction
-{
-	YDBLogAutoTrace();
-	
-	[self maybeConsolidateOrExpandDirtyPages];
 }
 
 - (void)commitTransaction
