@@ -30,8 +30,8 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	dispatch_queue_t checkpointQueue;
 	
 	NSDictionary *registeredExtensions;
-	YapAbstractDatabaseConnection *extensionRegistrationConnection;
-	dispatch_queue_t extensionRegistrationQueue;
+	YapAbstractDatabaseConnection *registrationConnection;
+	dispatch_queue_t registrationQueue;
 	
 @protected
 	

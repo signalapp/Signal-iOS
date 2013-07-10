@@ -252,9 +252,10 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 			return nil;
 		}
 		
-		checkpointQueue = dispatch_queue_create("YapDatabase-Checkpoint", NULL);
-		snapshotQueue   = dispatch_queue_create("YapDatabase-Snapshot", NULL);
-		writeQueue      = dispatch_queue_create("YapDatabase-Write", NULL);
+		checkpointQueue   = dispatch_queue_create("YapDatabase-Checkpoint", NULL);
+		snapshotQueue     = dispatch_queue_create("YapDatabase-Snapshot", NULL);
+		writeQueue        = dispatch_queue_create("YapDatabase-Write", NULL);
+		registrationQueue = dispatch_queue_create("YapDatabase-ExtReg", NULL);
 		
 		changesets = [[NSMutableArray alloc] init];
 		connectionStates = [[NSMutableArray alloc] init];
@@ -295,8 +296,8 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		dispatch_release(writeQueue);
 	if (checkpointQueue)
 		dispatch_release(checkpointQueue);
-	if (extensionRegistrationQueue)
-		dispatch_release(extensionRegistrationQueue);
+	if (registrationQueue)
+		dispatch_release(registrationQueue);
 #endif
 }
 
@@ -734,34 +735,6 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 #pragma mark Extensions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (dispatch_queue_t)extensionRegistrationQueue
-{
-	static dispatch_once_t onceToken;
-	dispatch_once(&onceToken, ^{
-		
-		extensionRegistrationQueue = dispatch_queue_create("YapDatabase-ExtReg", NULL);
-	});
-	
-	return extensionRegistrationQueue;
-}
-
-- (YapAbstractDatabaseConnection *)extensionRegistrationConnection
-{
-	if (extensionRegistrationConnection == nil)
-	{
-		extensionRegistrationConnection = [self newConnection];
-		
-		NSTimeInterval delayInSeconds = 10.0;
-		dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-		dispatch_after(popTime, [self extensionRegistrationQueue], ^(void){
-			
-			extensionRegistrationConnection = nil;
-		});
-	}
-	
-	return extensionRegistrationConnection;
-}
-
 /**
  * Registers the extension with the database using the given name.
  * After registration everything works automatically using just the extension name.
@@ -781,7 +754,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 {
 	__block BOOL ready = NO;
 	
-	dispatch_sync([self extensionRegistrationQueue], ^{ @autoreleasepool {
+	dispatch_sync(registrationQueue, ^{ @autoreleasepool {
 		
 		ready = [self _registerExtension:extension withName:extensionName];
 	}});
@@ -834,7 +807,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	if (completionQueue == NULL && completionBlock != NULL)
 		completionQueue = dispatch_get_main_queue();
 	
-	dispatch_async([self extensionRegistrationQueue], ^{
+	dispatch_async(registrationQueue, ^{ @autoreleasepool {
 		
 		BOOL ready = [self _registerExtension:extension withName:extensionName];
 		
@@ -845,7 +818,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 				completionBlock(ready);
 			}});
 		}
-	});
+	}});
 }
 
 /**
@@ -872,7 +845,19 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	
 	extension.registeredName = extensionName;
 
-	return [[self extensionRegistrationConnection] registerExtension:extension withName:extensionName];
+	if (registrationConnection == nil)
+	{
+		registrationConnection = [self newConnection];
+		
+		NSTimeInterval delayInSeconds = 10.0;
+		dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+		dispatch_after(popTime, registrationQueue, ^(void){
+			
+			registrationConnection = nil;
+		});
+	}
+	
+	return [registrationConnection registerExtension:extension withName:extensionName];
 }
 
 /**
