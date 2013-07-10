@@ -34,7 +34,7 @@
 		return;
 	}
 	
-	NSString *ourClassName = NSStringFromClass([self class]);
+	NSString *ourClassName = NSStringFromClass([[self extension] class]);
 	
 	if ([prevClassName isEqualToString:ourClassName])
 	{
