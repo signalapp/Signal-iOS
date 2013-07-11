@@ -2651,6 +2651,7 @@
 			NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
 			
 			collectionKey = [page objectAtIndex:(index - pageOffset)];
+			break;
 		}
 		else
 		{

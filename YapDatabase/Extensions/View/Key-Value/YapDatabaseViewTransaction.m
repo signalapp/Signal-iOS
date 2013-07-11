@@ -2474,7 +2474,7 @@
 		}
 	}];
 	
-	return nil;
+	return lastKey;
 }
 
 - (NSString *)groupForKey:(NSString *)key
