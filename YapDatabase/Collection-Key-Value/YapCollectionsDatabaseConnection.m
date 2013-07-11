@@ -1229,7 +1229,7 @@
 			BOOL isFirstTimeExtensionReigstration = NO;
 			[extensionTransaction willRegister:&isFirstTimeExtensionReigstration];
 			
-			result = [extensionTransaction createFromScratch:YES];
+			result = [extensionTransaction createFromScratch:isFirstTimeExtensionReigstration];
 			
 			if (result)
 			{
