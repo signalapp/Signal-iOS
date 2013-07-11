@@ -1931,6 +1931,8 @@
 		// Mark page & pageMetadata as dirty
 		
 		[viewConnection->dirtyPages setObject:newPage forKey:newPageKey];
+		[viewConnection->pageCache setObject:newPage forKey:newPageKey];
+		
 		[viewConnection->dirtyMetadata setObject:newPageMetadata forKey:newPageKey];
 		
 		// Mark keys as dirty
