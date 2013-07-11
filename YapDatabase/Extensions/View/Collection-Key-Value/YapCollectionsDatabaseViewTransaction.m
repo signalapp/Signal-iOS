@@ -218,8 +218,8 @@
 		
 		[groupOrderDict enumerateKeysAndObjectsUsingBlock:^(id _group, id _orderDict, BOOL *stop) {
 			
-			NSString *group = (NSString *)_group;
-			NSMutableDictionary *orderDict = (NSMutableDictionary *)_orderDict;
+			__unsafe_unretained NSString *group = (NSString *)_group;
+			__unsafe_unretained NSMutableDictionary *orderDict = (NSMutableDictionary *)_orderDict;
 			
 			NSMutableDictionary *pageDict = [groupPageDict objectForKey:group];
 			
@@ -252,7 +252,7 @@
 					break;
 				}
 				
-				[pagesForGroup insertObject:pageMetadata atIndex:0];
+				[pagesForGroup addObject:pageMetadata];
 				
 				if (prevPageMetadata)
 					prevPageMetadata->nextPageKey = pageKey;
