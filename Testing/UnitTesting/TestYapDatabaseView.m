@@ -21,6 +21,11 @@
 	return [baseDir stringByAppendingPathComponent:databaseName];
 }
 
+- (void)tearDown
+{
+	[DDLog flushLog];
+}
+
 - (void)test
 {
 	[DDLog removeAllLoggers];
@@ -57,7 +62,7 @@
 		NSString *object1 = (NSString *)obj1;
 		NSString *object2 = (NSString *)obj2;
 		
-		return [object1 compare:object2];
+		return [object1 compare:object2 options:NSNumericSearch];
 	};
 	
 	YapDatabaseView *databaseView =
@@ -1084,6 +1089,503 @@
 	
 	connection1 = nil;
 	connection2 = nil;
+}
+
+- (void)testMultiPage
+{
+	//
+	// These tests include enough keys to ensure that the view has to deal with multiple pages.
+	// By default, there are 50 keys in a page.
+	
+	[DDLog removeAllLoggers];
+	[DDLog addLogger:[DDTTYLogger sharedInstance]];
+	
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	STAssertNotNil(database, @"Oops");
+	
+	YapDatabaseConnection *connection1 = [database newConnection];
+	YapDatabaseConnection *connection2 = [database newConnection];
+	
+	YapDatabaseViewBlockType groupingBlockType;
+	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
+	
+	YapDatabaseViewBlockType sortingBlockType;
+	YapDatabaseViewSortingWithObjectBlock sortingBlock;
+	
+	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
+	groupingBlock = ^NSString *(NSString *key){
+		
+		return @"";
+	};
+	
+	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
+	sortingBlock = ^(NSString *group, NSString *key1, id obj1, NSString *key2, id obj2){
+		
+		NSString *object1 = (NSString *)obj1;
+		NSString *object2 = (NSString *)obj2;
+		
+		return [object1 compare:object2 options:NSNumericSearch];
+	};
+	
+	YapDatabaseView *databaseView =
+	[[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
+								 groupingBlockType:groupingBlockType
+									  sortingBlock:sortingBlock
+								  sortingBlockType:sortingBlockType];
+	
+	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
+	
+	STAssertTrue(registerResult, @"Failure registering extension");
+	
+	//
+	// Test adding a bunch of keys
+	//
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		// Add 3 pages of keys to the view
+		//
+		// page0 = [key0   - key49]
+		// page1 = [key50  - key99]
+		// page2 = [key100 - key149]
+		
+		for (int i = 0; i < 150; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			NSString *obj = [NSString stringWithFormat:@"object%d", i];
+			
+			[transaction setObject:obj forKey:key];
+		}
+	}];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 150; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:i inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+			             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+		}
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 150; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:i inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+			             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+		}
+	}];
+	
+	[[database newConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 150; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:i inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+			             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+		}
+	}];
+	
+	//
+	// Test removing an entire page of keys from the middle
+	//
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		// Drop middle of the 3 pages
+		//
+		// page0 = [key0   - key49]
+		// page1 = [key50  - key99]  <-- Drop
+		// page2 = [key100 - key149]
+		
+		for (int i = 50; i < 100; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			
+			[transaction removeObjectForKey:key];
+		}
+	}];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 100; i++)
+		{
+			NSString *expectedKey;
+			
+			if (i < 50)
+				expectedKey = [NSString stringWithFormat:@"key%d", i];
+			else
+				expectedKey = [NSString stringWithFormat:@"key%d", (i+50)];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:i inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+			             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+		}
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 100; i++)
+		{
+			NSString *expectedKey;
+			
+			if (i < 50)
+				expectedKey = [NSString stringWithFormat:@"key%d", i];
+			else
+				expectedKey = [NSString stringWithFormat:@"key%d", (i+50)];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:i inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+			             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+		}
+	}];
+	
+	[[database newConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 100; i++)
+		{
+			NSString *expectedKey;
+			
+			if (i < 50)
+				expectedKey = [NSString stringWithFormat:@"key%d", i];
+			else
+				expectedKey = [NSString stringWithFormat:@"key%d", (i+50)];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:i inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+			             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+		}
+	}];
+	
+	//
+	// Test adding an entire page in the middle
+	//
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		// Re-add middle page
+		//
+		// page0 = [key0   - key49]
+		// page1 = [key50  - key99]  <-- Re-add
+		// page2 = [key100 - key149]
+		
+		for (int i = 50; i < 100; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			NSString *obj = [NSString stringWithFormat:@"object%d", i];
+			
+			[transaction setObject:obj forKey:key];
+		}
+	}];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 150; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:i inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+			             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+		}
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 150; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:i inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+			             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+		}
+	}];
+	
+	[[database newConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 150; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:i inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+			             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+		}
+	}];
+	
+	//
+	// Test removing keys from multiple pages
+	//
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		// Remove every 5th item
+		
+		for (int i = 5; i < 150; i += 5)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			
+			[transaction removeObjectForKey:key];
+		}
+	}];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 150; i++)
+		{
+			if ((i % 5) == 0){
+				continue;
+			}
+			else
+			{
+				NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+				
+				int index = i - (i / 5);
+				
+				NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];
+				
+				STAssertTrue([expectedKey isEqualToString:fetchedKey],
+				             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+			}
+		}
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 150; i++)
+		{
+			if ((i % 5) == 0){
+				continue;
+			}
+			else
+			{
+				NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+				
+				int index = i - (i / 5);
+				
+				NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];
+				
+				STAssertTrue([expectedKey isEqualToString:fetchedKey],
+				             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+			}
+		}
+	}];
+	
+	[[database newConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 150; i++)
+		{
+			if ((i % 5) == 0){
+				continue;
+			}
+			else
+			{
+				NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+				
+				int index = i - (i / 5);
+				
+				NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];
+				
+				STAssertTrue([expectedKey isEqualToString:fetchedKey],
+				             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+			}
+		}
+	}];
+	
+	//
+	// Test removing all keys
+	//
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction removeAllObjects];
+	}];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		NSUInteger count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		
+		STAssertTrue(count == 0, @"Wrong count. Expected zero, got %lu", (unsigned long)count);
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		NSUInteger count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		
+		STAssertTrue(count == 0, @"Wrong count. Expected zero, got %lu", (unsigned long)count);
+	}];
+	
+	[[database newConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		NSUInteger count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		
+		STAssertTrue(count == 0, @"Wrong count. Expected zero, got %lu", (unsigned long)count);
+	}];
+	
+	//
+	// Test adding a bunch of keys (again)
+	//
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		// Add 3 pages of keys to the view
+		//
+		// page0 = [key0   - key49]
+		// page1 = [key50  - key99]
+		// page2 = [key100 - key149]
+		
+		for (int i = 0; i < 150; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			NSString *obj = [NSString stringWithFormat:@"object%d", i];
+			
+			[transaction setObject:obj forKey:key];
+		}
+	}];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 150; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:i inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+			             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+		}
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 150; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:i inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+			             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+		}
+	}];
+	
+	[[database newConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 150; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:i inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+			             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+		}
+	}];
+	
+	//
+	// Test removing keys from multiple pages (this time as a single instruction)
+	//
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		// Remove every 5th item
+		
+		NSMutableArray *keysToRemove = [NSMutableArray array];
+		
+		for (int i = 5; i < 150; i += 5)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			
+			[keysToRemove addObject:key];
+		}
+		
+		[transaction removeObjectsForKeys:keysToRemove];
+	}];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 150; i++)
+		{
+			if ((i % 5) == 0){
+				continue;
+			}
+			else
+			{
+				NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+				
+				int index = i - (i / 5);
+				
+				NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];
+				
+				STAssertTrue([expectedKey isEqualToString:fetchedKey],
+				             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+			}
+		}
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 150; i++)
+		{
+			if ((i % 5) == 0){
+				continue;
+			}
+			else
+			{
+				NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+				
+				int index = i - (i / 5);
+				
+				NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];
+				
+				STAssertTrue([expectedKey isEqualToString:fetchedKey],
+				             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+			}
+		}
+	}];
+	
+	[[database newConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 150; i++)
+		{
+			if ((i % 5) == 0){
+				continue;
+			}
+			else
+			{
+				NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+				
+				int index = i - (i / 5);
+				
+				NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];
+				
+				STAssertTrue([expectedKey isEqualToString:fetchedKey],
+				             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+			}
+		}
+	}];
 }
 
 @end
