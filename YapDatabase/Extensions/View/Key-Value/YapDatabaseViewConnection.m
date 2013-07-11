@@ -318,7 +318,7 @@
 			
 			if ([changeset_dirtyKeys objectForKey:key])
 				[keysToUpdate addObject:key];
-			else
+			else if (changeset_reset)
 				[keysToRemove addObject:key];
 		}];
 		
@@ -361,7 +361,7 @@
 			
 			if ([changeset_dirtyPages objectForKey:key])
 				[keysToUpdate addObject:key];
-			else
+			else if (changeset_reset)
 				[keysToRemove addObject:key];
 		}];
 		
