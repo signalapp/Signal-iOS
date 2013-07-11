@@ -591,7 +591,7 @@
 		
 		sqlite3 *db = databaseConnection->db;
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_getDataForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_setMetadataForPageKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
