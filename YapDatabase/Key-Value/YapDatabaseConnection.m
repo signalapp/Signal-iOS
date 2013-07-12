@@ -886,6 +886,8 @@
 			{
 				[extensionTransaction didRegister:isFirstTimeExtensionReigstration];
 				[self didRegisterExtension:extension withName:extensionName];
+				[self addRegisteredExtensionConnection:extensionConnection withName:extensionName];
+				[transaction addRegisteredExtensionTransaction:extensionTransaction withName:extensionName];
 			}
 			else
 			{

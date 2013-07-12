@@ -22,6 +22,12 @@
 	return [baseDir stringByAppendingPathComponent:databaseName];
 }
 
+- (void)setUp
+{
+	[DDLog removeAllLoggers];
+	[DDLog addLogger:[DDTTYLogger sharedInstance]];
+}
+
 - (void)tearDown
 {
 	[DDLog flushLog];
@@ -29,9 +35,6 @@
 
 - (void)test
 {
-	[DDLog removeAllLoggers];
-	[DDLog addLogger:[DDTTYLogger sharedInstance]];
-	
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
 	
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
@@ -1212,9 +1215,6 @@
 	// These tests include enough keys to ensure that the view has to deal with multiple pages.
 	// By default, there are 50 keys in a page.
 	
-	[DDLog removeAllLoggers];
-	[DDLog addLogger:[DDTTYLogger sharedInstance]];
-	
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
 	
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
@@ -1700,6 +1700,95 @@
 				STAssertTrue([expectedKey isEqualToString:fetchedKey],
 				             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
 			}
+		}
+	}];
+}
+
+- (void)testViewPopulation
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapCollectionsDatabase *database = [[YapCollectionsDatabase alloc] initWithPath:databasePath];
+	
+	STAssertNotNil(database, @"Oops");
+	
+	YapCollectionsDatabaseConnection *connection1 = [database newConnection];
+	YapCollectionsDatabaseConnection *connection2 = [database newConnection];
+	
+	YapCollectionsDatabaseViewBlockType groupingBlockType;
+	YapCollectionsDatabaseViewGroupingWithKeyBlock groupingBlock;
+	
+	YapCollectionsDatabaseViewBlockType sortingBlockType;
+	YapCollectionsDatabaseViewSortingWithObjectBlock sortingBlock;
+	
+	groupingBlockType = YapCollectionsDatabaseViewBlockTypeWithKey;
+	groupingBlock = ^NSString *(NSString *collection, NSString *key){
+		
+		return @"";
+	};
+	
+	sortingBlockType = YapCollectionsDatabaseViewBlockTypeWithObject;
+	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                                  NSString *collection2, NSString *key2, id obj2){
+		
+		NSString *object1 = (NSString *)obj1;
+		NSString *object2 = (NSString *)obj2;
+		
+		return [object1 compare:object2 options:NSNumericSearch];
+	};
+	
+	YapCollectionsDatabaseView *databaseView =
+	    [[YapCollectionsDatabaseView alloc] initWithGroupingBlock:groupingBlock
+	                                            groupingBlockType:groupingBlockType
+	                                                 sortingBlock:sortingBlock
+	                                             sortingBlockType:sortingBlockType];
+	
+	// Without registering the view,
+	// add a bunch of keys to the database.
+	
+	[connection1 readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
+		
+		for (int i = 0; i < 150; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			NSString *obj = [NSString stringWithFormat:@"object%d", i];
+			
+			[transaction setObject:obj forKey:key inCollection:nil];
+		}
+	}];
+	
+	// And NOW register the view
+	
+	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
+	
+	STAssertTrue(registerResult, @"Failure registering extension");
+	
+	// Make sure both connections can see the view now
+	
+	[connection1 readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 150; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:i inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+			             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+		}
+	}];
+	
+	[connection2 readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
+		
+		for (int i = 0; i < 150; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:i inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+			             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
 		}
 	}];
 }

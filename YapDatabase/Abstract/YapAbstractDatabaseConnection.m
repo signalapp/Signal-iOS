@@ -571,6 +571,7 @@
 	[newRegisteredExtensions setObject:extension forKey:extensionName];
 	
 	registeredExtensions = [newRegisteredExtensions copy];
+	extensionsReady = NO;
 	
 	// Set the extensionsAdded flag.
 	// This will be consulted during the creation of the changeset,
@@ -578,6 +579,17 @@
 	// It will then get propogated to the database, and all other connections.
 	
 	extensionsAdded = YES;
+}
+
+- (void)addRegisteredExtensionConnection:(YapAbstractDatabaseExtensionConnection *)extConnection
+                                withName:(NSString *)extName
+{
+	// This method is INTERNAL
+	
+	if (extensions == nil)
+		extensions = [[NSMutableDictionary alloc] init];
+	
+	[extensions setObject:extConnection forKey:extName];
 }
 
 - (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName

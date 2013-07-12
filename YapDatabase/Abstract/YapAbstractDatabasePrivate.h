@@ -205,6 +205,8 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 - (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName;
 - (BOOL)canRegisterExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName;
 - (void)didRegisterExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName;
+- (void)addRegisteredExtensionConnection:(YapAbstractDatabaseExtensionConnection *)extConnection
+                                withName:(NSString *)extName;
 
 - (sqlite3_stmt *)beginTransactionStatement;
 - (sqlite3_stmt *)commitTransactionStatement;
@@ -278,6 +280,8 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 - (void)rollbackTransaction;
 
 - (NSDictionary *)extensions;
+- (void)addRegisteredExtensionTransaction:(YapAbstractDatabaseExtensionTransaction *)extTransaction
+                                 withName:(NSString *)extName;
 
 - (NSException *)mutationDuringEnumerationException;
 

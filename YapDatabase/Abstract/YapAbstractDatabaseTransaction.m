@@ -249,6 +249,15 @@
 	return extensions;
 }
 
+- (void)addRegisteredExtensionTransaction:(YapAbstractDatabaseExtensionTransaction *)extTransaction
+                                 withName:(NSString *)extName
+{
+	if (extensions == nil)
+		extensions = [[NSMutableDictionary alloc] init];
+	
+	[extensions setObject:extTransaction forKey:extName];
+}
+
 - (NSException *)mutationDuringEnumerationException
 {
 	NSString *reason = [NSString stringWithFormat:

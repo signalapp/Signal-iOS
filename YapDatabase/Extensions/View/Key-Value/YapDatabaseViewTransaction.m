@@ -1292,7 +1292,7 @@
 		
 		if (cmp == NSOrderedAscending) // object < first
 		{
-			YDBLogVerbose(@"Insert key(%@) in group(%@) at beginning (lastInsertWasAtFirstIndex optimization)",
+			YDBLogVerbose(@"Insert key(%@) in group(%@) at beginning (optimization)",
 			              key, group);
 			
 			[self insertKey:key inGroup:group atIndex:0 withExistingPageKey:existingPageKey];
@@ -1306,7 +1306,7 @@
 		
 		if (cmp != NSOrderedAscending) // object >= last
 		{
-			YDBLogVerbose(@"Insert key(%@) in group(%@) at end (lastInsertWasAtLastIndex optimization)",
+			YDBLogVerbose(@"Insert key(%@) in group(%@) at end (optimization)",
 			              key, group);
 			
 			[self insertKey:key inGroup:group atIndex:count withExistingPageKey:existingPageKey];
