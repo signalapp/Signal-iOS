@@ -167,6 +167,7 @@
 	
 	sqlite_finalize_null(&yapGetDataForKeyStatement);
 	sqlite_finalize_null(&yapSetDataForKeyStatement);
+	sqlite_finalize_null(&yapRemoveExtensionStatement);
 	sqlite_finalize_null(&rollbackTransactionStatement);
 	sqlite_finalize_null(&beginTransactionStatement);
 	sqlite_finalize_null(&commitTransactionStatement);
@@ -573,23 +574,31 @@
 	registeredExtensions = [newRegisteredExtensions copy];
 	extensionsReady = NO;
 	
-	// Set the extensionsAdded flag.
+	// Set the registeredExtensionsChanged flag.
 	// This will be consulted during the creation of the changeset,
 	// and will cause us to add the updated registeredExtensions to the list of changes.
 	// It will then get propogated to the database, and all other connections.
 	
-	extensionsAdded = YES;
+	registeredExtensionsChanged = YES;
 }
 
 - (void)addRegisteredExtensionConnection:(YapAbstractDatabaseExtensionConnection *)extConnection
-                                withName:(NSString *)extName
 {
 	// This method is INTERNAL
 	
 	if (extensions == nil)
 		extensions = [[NSMutableDictionary alloc] init];
 	
+	NSString *extName = [[extConnection extension] registeredName];
+	
 	[extensions setObject:extConnection forKey:extName];
+}
+
+- (void)removeRegisteredExtensionConnection:(NSString *)extName
+{
+	// This method is INTERNAL
+	
+	[extensions removeObjectForKey:extName];
 }
 
 - (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
@@ -600,6 +609,14 @@
 	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	
 	return NO;
+}
+
+- (void)unregisterExtension:(NSString *)extensionName
+{
+	// Subclasses must implement this method.
+	// They are to run the process through a readwrite transaction.
+	
+	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -620,6 +637,7 @@
 	
 	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
 	{
+		sqlite_finalize_null(&yapRemoveExtensionStatement);
 		sqlite_finalize_null(&rollbackTransactionStatement);
 	}
 	
@@ -689,7 +707,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &beginTransactionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'beginTransactionStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -705,7 +723,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &commitTransactionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'commitTransactionStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -721,7 +739,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &rollbackTransactionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'rollbackTransactionStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -737,7 +755,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &yapGetDataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'yapGetDataForKeyStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -753,11 +771,27 @@
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &yapSetDataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'yapSetDataForKeyStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
 	return yapSetDataForKeyStatement;
+}
+
+- (sqlite3_stmt *)yapRemoveExtensionStatement
+{
+	if (yapRemoveExtensionStatement)
+	{
+		char *stmt = "DELETE FROM \"yap2\" WHERE \"extension\" = ?;";
+		
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &yapRemoveExtensionStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return yapRemoveExtensionStatement;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1780,7 +1814,7 @@
 		[externalChangeset setObject:externalChangeset_extensions forKey:YapDatabaseExtensionsKey];
 	}
 	
-	if (extensionsAdded)
+	if (registeredExtensionsChanged)
 	{
 		if (internalChangeset == nil)
 			internalChangeset = [NSMutableDictionary dictionaryWithCapacity:8];

@@ -163,8 +163,9 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	sqlite3_stmt *commitTransactionStatement;
 	sqlite3_stmt *rollbackTransactionStatement;
 	
-	sqlite3_stmt *yapGetDataForKeyStatement; // Against "yap" database, for internal use
-	sqlite3_stmt *yapSetDataForKeyStatement; // Against "yap" database, for internal use
+	sqlite3_stmt *yapGetDataForKeyStatement;   // Against "yap" database, for internal use
+	sqlite3_stmt *yapSetDataForKeyStatement;   // Against "yap" database, for internal use
+	sqlite3_stmt *yapRemoveExtensionStatement; // Against "yap" database, for internal use
 	
 	uint64_t snapshot;
 	
@@ -173,9 +174,10 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	NSMutableArray *processedChangesets;
 	
 	NSDictionary *registeredExtensions;
+	BOOL registeredExtensionsChanged;
+	
 	NSMutableDictionary *extensions;
 	BOOL extensionsReady;
-	BOOL extensionsAdded;
 	
 @protected
 	dispatch_queue_t connectionQueue;
@@ -202,18 +204,23 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 - (void)prepare;
 
 - (NSDictionary *)extensions;
-- (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName;
+
 - (BOOL)canRegisterExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName;
 - (void)didRegisterExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName;
-- (void)addRegisteredExtensionConnection:(YapAbstractDatabaseExtensionConnection *)extConnection
-                                withName:(NSString *)extName;
+
+- (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName;
+- (void)unregisterExtension:(NSString *)extensionName;
+
+- (void)addRegisteredExtensionConnection:(YapAbstractDatabaseExtensionConnection *)extConnection;
+- (void)removeRegisteredExtensionConnection:(NSString *)extName;
 
 - (sqlite3_stmt *)beginTransactionStatement;
 - (sqlite3_stmt *)commitTransactionStatement;
 - (sqlite3_stmt *)rollbackTransactionStatement;
 
-- (sqlite3_stmt *)yapGetDataForKeyStatement; // Against "yap" database, for internal use
-- (sqlite3_stmt *)yapSetDataForKeyStatement; // Against "yap" database, for internal use
+- (sqlite3_stmt *)yapGetDataForKeyStatement;   // Against "yap" database, for internal use
+- (sqlite3_stmt *)yapSetDataForKeyStatement;   // Against "yap" database, for internal use
+- (sqlite3_stmt *)yapRemoveExtensionStatement; // Against "yap" database, for internal use
 
 - (void)_flushMemoryWithLevel:(int)level;
 
@@ -280,8 +287,23 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 - (void)rollbackTransaction;
 
 - (NSDictionary *)extensions;
-- (void)addRegisteredExtensionTransaction:(YapAbstractDatabaseExtensionTransaction *)extTransaction
-                                 withName:(NSString *)extName;
+
+- (void)addRegisteredExtensionTransaction:(YapAbstractDatabaseExtensionTransaction *)extTransaction;
+- (void)removeRegisteredExtensionTransaction:(NSString *)extName;
+
+- (int)intValueForKey:(NSString *)key extension:(NSString *)extensionName;
+- (void)setIntValue:(int)value forKey:(NSString *)key extension:(NSString *)extensionName;
+
+- (double)doubleValueForKey:(NSString *)key extension:(NSString *)extensionName;
+- (void)setDoubleValue:(double)value forKey:(NSString *)key extension:(NSString *)extensionName;
+
+- (NSString *)stringValueForKey:(NSString *)key extension:(NSString *)extensionName;
+- (void)setStringValue:(NSString *)value forKey:(NSString *)key extension:(NSString *)extensionName;
+
+- (NSData *)dataValueForKey:(NSString *)key extension:(NSString *)extensionName;
+- (void)setDataValue:(NSData *)value forKey:(NSString *)key extension:(NSString *)extensionName;
+
+- (void)removeAllValuesForExtension:(NSString *)extensionName;
 
 - (NSException *)mutationDuringEnumerationException;
 

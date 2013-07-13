@@ -863,6 +863,9 @@
 #pragma mark Extensions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Required override method from YapAbstractDatabaseConnection.
+**/
 - (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
 {
 	__block BOOL result = NO;
@@ -886,8 +889,9 @@
 			{
 				[extensionTransaction didRegister:isFirstTimeExtensionReigstration];
 				[self didRegisterExtension:extension withName:extensionName];
-				[self addRegisteredExtensionConnection:extensionConnection withName:extensionName];
-				[transaction addRegisteredExtensionTransaction:extensionTransaction withName:extensionName];
+				
+				[self addRegisteredExtensionConnection:extensionConnection];
+				[transaction addRegisteredExtensionTransaction:extensionTransaction];
 			}
 			else
 			{
@@ -897,6 +901,36 @@
 	}];
 	
 	return result;
+}
+
+/**
+ * Required override method from YapAbstractDatabaseConnection.
+**/
+- (void)unregisterExtension:(NSString *)extensionName
+{
+	[self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		NSString *className = [transaction stringValueForKey:@"class" extension:extensionName];
+		
+		Class class = NSClassFromString(className);
+		if (class == NULL)
+		{
+			YDBLogError(@"Unable to unregister extension(%@) with unknown class(%@)", extensionName, className);
+			return;
+		}
+		if (![class isSubclassOfClass:[YapAbstractDatabaseExtension class]])
+		{
+			YDBLogError(@"Unable to unregister extension(%@) with improper class(%@)", extensionName, className);
+			return;
+		}
+		
+		[class dropTablesForRegisteredName:extensionName withTransaction:transaction];
+		
+		[transaction removeAllValuesForExtension:extensionName];
+		
+		[self removeRegisteredExtensionConnection:extensionName];
+		[transaction removeRegisteredExtensionTransaction:extensionName];
+	}];
 }
 
 @end

@@ -127,6 +127,12 @@
 	return nil;
 }
 
+- (YapAbstractDatabaseExtensionConnection *)extensionConnection
+{
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
+	return nil;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Persistent Values
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -138,323 +144,58 @@
 
 - (int)intValueForExtensionKey:(NSString *)key
 {
-	YapAbstractDatabaseTransaction *databaseTransaction = [self databaseTransaction];
-	YapAbstractDatabaseConnection *databaseConnection = databaseTransaction->abstractConnection;
-	
-	sqlite3_stmt *statement = [databaseConnection yapGetDataForKeyStatement];
-	if (statement == NULL) return 0;
-	
 	NSString *registeredName = [[self extension] registeredName];
 	
-	int result = 0;
-	
-	// SELECT data FROM 'yap2' WHERE extension = ? AND key = ? ;
-	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, registeredName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
-	{
-		result = sqlite3_column_int(statement, 0);
-	}
-	else if (status == SQLITE_ERROR)
-	{
-		YDBLogError(@"Error executing 'yapGetDataForKeyStatement': %d %s",
-		                                                       status, sqlite3_errmsg(databaseConnection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_extension);
-	FreeYapDatabaseString(&_key);
-	
-	return result;
+	return [[self databaseTransaction] intValueForKey:key extension:registeredName];
 }
 
 - (void)setIntValue:(int)value forExtensionKey:(NSString *)key
 {
-	YapAbstractDatabaseTransaction *databaseTransaction = [self databaseTransaction];
-	YapAbstractDatabaseConnection *databaseConnection = databaseTransaction->abstractConnection;
-	
-	if (!databaseTransaction->isReadWriteTransaction)
-	{
-		YDBLogError(@"Cannot modify database outside readwrite transaction.");
-		return;
-	}
-	
-	sqlite3_stmt *statement = [databaseConnection yapSetDataForKeyStatement];
-	if (statement == NULL) return;
-	
 	NSString *registeredName = [[self extension] registeredName];
 	
-	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
-	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, registeredName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
-	
-	sqlite3_bind_int(statement, 3, value);
-	
-	int status = sqlite3_step(statement);
-	if (status != SQLITE_DONE)
-	{
-		YDBLogError(@"Error executing 'yapSetDataForKeyStatement': %d %s",
-		                                                       status, sqlite3_errmsg(databaseConnection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_extension);
-	FreeYapDatabaseString(&_key);
+	[[self databaseTransaction] setIntValue:value forKey:key extension:registeredName];
 }
 
 - (double)doubleValueForExtensionKey:(NSString *)key
 {
-	YapAbstractDatabaseTransaction *databaseTransaction = [self databaseTransaction];
-	YapAbstractDatabaseConnection *databaseConnection = databaseTransaction->abstractConnection;
-	
-	sqlite3_stmt *statement = [databaseConnection yapGetDataForKeyStatement];
-	if (statement == NULL) return 0.0;
-	
 	NSString *registeredName = [[self extension] registeredName];
 	
-	double result = 0.0;
-	
-	// SELECT data FROM 'yap2' WHERE extension = ? AND key = ? ;
-	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, registeredName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
-	{
-		result = sqlite3_column_double(statement, 0);
-	}
-	else if (status == SQLITE_ERROR)
-	{
-		YDBLogError(@"Error executing 'yapGetDataForKeyStatement': %d %s",
-					status, sqlite3_errmsg(databaseConnection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_extension);
-	FreeYapDatabaseString(&_key);
-	
-	return result;
+	return [[self databaseTransaction] doubleValueForKey:key extension:registeredName];
 }
 
 - (void)setDoubleValue:(double)value forExtensionKey:(NSString *)key
 {
-	YapAbstractDatabaseTransaction *databaseTransaction = [self databaseTransaction];
-	YapAbstractDatabaseConnection *databaseConnection = databaseTransaction->abstractConnection;
-	
-	if (!databaseTransaction->isReadWriteTransaction)
-	{
-		YDBLogError(@"Cannot modify database outside readwrite transaction.");
-		return;
-	}
-	
-	sqlite3_stmt *statement = [databaseConnection yapSetDataForKeyStatement];
-	if (statement == NULL) return;
-	
 	NSString *registeredName = [[self extension] registeredName];
 	
-	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
-	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, registeredName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
-	
-	sqlite3_bind_double(statement, 3, value);
-	
-	int status = sqlite3_step(statement);
-	if (status != SQLITE_DONE)
-	{
-		YDBLogError(@"Error executing 'yapSetDataForKeyStatement': %d %s",
-					status, sqlite3_errmsg(databaseConnection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_extension);
-	FreeYapDatabaseString(&_key);
+	[[self databaseTransaction] setDoubleValue:value forKey:key extension:registeredName];
 }
 
 - (NSString *)stringValueForExtensionKey:(NSString *)key
 {
-	YapAbstractDatabaseTransaction *databaseTransaction = [self databaseTransaction];
-	YapAbstractDatabaseConnection *databaseConnection = databaseTransaction->abstractConnection;
-	
-	sqlite3_stmt *statement = [databaseConnection yapGetDataForKeyStatement];
-	if (statement == NULL) return nil;
-	
 	NSString *registeredName = [[self extension] registeredName];
 	
-	NSString *string = nil;
-	
-	// SELECT data FROM 'yap2' WHERE extension = ? AND key = ? ;
-	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, registeredName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
-	{
-		const unsigned char *text = sqlite3_column_text(statement, 0);
-		int textSize = sqlite3_column_bytes(statement, 0);
-		
-		string = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-	}
-	else if (status == SQLITE_ERROR)
-	{
-		YDBLogError(@"Error executing 'yapGetDataForKeyStatement': %d %s",
-		                                                       status, sqlite3_errmsg(databaseConnection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_extension);
-	FreeYapDatabaseString(&_key);
-	
-	return string;
+	return [[self databaseTransaction] stringValueForKey:key extension:registeredName];
 }
 
 - (void)setStringValue:(NSString *)value forExtensionKey:(NSString *)key
 {
-	YapAbstractDatabaseTransaction *databaseTransaction = [self databaseTransaction];
-	YapAbstractDatabaseConnection *databaseConnection = databaseTransaction->abstractConnection;
-	
-	if (!databaseTransaction->isReadWriteTransaction)
-	{
-		YDBLogError(@"Cannot modify database outside readwrite transaction.");
-		return;
-	}
-	
-	sqlite3_stmt *statement = [databaseConnection yapSetDataForKeyStatement];
-	if (statement == NULL) return;
-	
 	NSString *registeredName = [[self extension] registeredName];
 	
-	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
-	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, registeredName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
-	
-	YapDatabaseString _value; MakeYapDatabaseString(&_value, value);
-	sqlite3_bind_text(statement, 3, _value.str, _value.length, SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status != SQLITE_DONE)
-	{
-		YDBLogError(@"Error executing 'yapSetDataForKeyStatement': %d %s",
-		                                                       status, sqlite3_errmsg(databaseConnection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_extension);
-	FreeYapDatabaseString(&_key);
-	FreeYapDatabaseString(&_value);
+	[[self databaseTransaction] setStringValue:value forKey:key extension:registeredName];
 }
 
 - (NSData *)dataValueForExtensionKey:(NSString *)key
 {
-	YapAbstractDatabaseTransaction *databaseTransaction = [self databaseTransaction];
-	YapAbstractDatabaseConnection *databaseConnection = databaseTransaction->abstractConnection;
-	
-	sqlite3_stmt *statement = [databaseConnection yapGetDataForKeyStatement];
-	if (statement == NULL) return nil;
-	
 	NSString *registeredName = [[self extension] registeredName];
 	
-	NSData *data = nil;
-	
-	// SELECT data FROM 'yap2' WHERE extension = ? AND key = ? ;
-	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, registeredName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
-	{
-		const void *blob = sqlite3_column_blob(statement, 0);
-		int blobSize = sqlite3_column_bytes(statement, 0);
-		
-		data = [[NSData alloc] initWithBytes:(void *)blob length:blobSize];
-	}
-	else if (status == SQLITE_ERROR)
-	{
-		YDBLogError(@"Error executing 'yapGetDataForKeyStatement': %d %s",
-		                                                       status, sqlite3_errmsg(databaseConnection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_extension);
-	FreeYapDatabaseString(&_key);
-	
-	return data;
+	return [[self databaseTransaction] dataValueForKey:key extension:registeredName];
 }
 
 - (void)setDataValue:(NSData *)value forExtensionKey:(NSString *)key
 {
-	YapAbstractDatabaseTransaction *databaseTransaction = [self databaseTransaction];
-	YapAbstractDatabaseConnection *databaseConnection = databaseTransaction->abstractConnection;
-	
-	if (!databaseTransaction->isReadWriteTransaction)
-	{
-		YDBLogError(@"Cannot modify database outside readwrite transaction.");
-		return;
-	}
-	
-	sqlite3_stmt *statement = [databaseConnection yapSetDataForKeyStatement];
-	if (statement == NULL) return;
-	
 	NSString *registeredName = [[self extension] registeredName];
 	
-	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
-	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, registeredName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
-	
-	__attribute__((objc_precise_lifetime)) NSData *data = value;
-	sqlite3_bind_blob(statement, 3, data.bytes, (int)data.length, SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status != SQLITE_DONE)
-	{
-		YDBLogError(@"Error executing 'yapSetDataForKeyStatement': %d %s",
-		                                                       status, sqlite3_errmsg(databaseConnection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_extension);
-	FreeYapDatabaseString(&_key);
+	[[self databaseTransaction] setDataValue:value forKey:key extension:registeredName];
 }
 
 @end

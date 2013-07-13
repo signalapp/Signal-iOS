@@ -822,8 +822,72 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 }
 
 /**
+ *
+**/
+- (void)unregisterExtension:(NSString *)extensionName
+{
+	dispatch_sync(registrationQueue, ^{ @autoreleasepool {
+		
+		[self _unregisterExtension:extensionName];
+	}});
+}
+
+- (void)asyncUnregisterExtension:(NSString *)extensionName
+                 completionBlock:(dispatch_block_t)completionBlock
+{
+	[self asyncUnregisterExtension:extensionName
+	               completionBlock:completionBlock
+	               completionQueue:NULL];
+}
+
+- (void)asyncUnregisterExtension:(NSString *)extensionName
+                 completionBlock:(dispatch_block_t)completionBlock
+                 completionQueue:(dispatch_queue_t)completionQueue
+{
+	if (completionQueue == NULL && completionBlock != NULL)
+		completionQueue = dispatch_get_main_queue();
+	
+	dispatch_async(registrationQueue, ^{ @autoreleasepool {
+		
+		[self _unregisterExtension:extensionName];
+		
+		if (completionBlock)
+		{
+			dispatch_async(completionQueue, ^{ @autoreleasepool {
+				
+				completionBlock();
+			}});
+		}
+	}});
+}
+
+/**
+ * Internal utility method.
+ * Handles lazy creation and destruction of short-lived registrationConnection instance.
+ * 
+ * @see _registerExtension:withName:
+ * @see _unregisterExtension:
+**/
+- (YapAbstractDatabaseConnection *)registrationConnection
+{
+	if (registrationConnection == nil)
+	{
+		registrationConnection = [self newConnection];
+		
+		NSTimeInterval delayInSeconds = 10.0;
+		dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+		dispatch_after(popTime, registrationQueue, ^(void){
+			
+			registrationConnection = nil;
+		});
+	}
+	
+	return registrationConnection;
+}
+
+/**
  * Internal method that handles extension registration.
- * This method must be invoked on the writeQueue.
+ * This method must be invoked on the registrationQueue.
 **/
 - (BOOL)_registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
 {
@@ -844,20 +908,27 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	}
 	
 	extension.registeredName = extensionName;
+	
+	return [[self registrationConnection] registerExtension:extension withName:extensionName];
+}
 
-	if (registrationConnection == nil)
+/**
+ * Internal method that handles extension unregistration.
+ * This method must be invoked on the registrationQueue.
+**/
+- (void)_unregisterExtension:(NSString *)extensionName
+{
+	if ([extensionName length] == 0)
 	{
-		registrationConnection = [self newConnection];
-		
-		NSTimeInterval delayInSeconds = 10.0;
-		dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-		dispatch_after(popTime, registrationQueue, ^(void){
-			
-			registrationConnection = nil;
-		});
+		YDBLogError(@"Error unregistering extension: extensionName parameter is nil or empty string");
+		return;
 	}
 	
-	return [registrationConnection registerExtension:extension withName:extensionName];
+	YapAbstractDatabaseExtension *extension = [self registeredExtension:extensionName];
+	
+	[[self registrationConnection] unregisterExtension:extensionName];
+	
+	extension.registeredName = nil;
 }
 
 /**

@@ -1,5 +1,7 @@
 #import "YapDatabaseView.h"
 #import "YapDatabaseViewPrivate.h"
+
+#import "YapAbstractDatabasePrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 
 #import "YapDatabase.h"
@@ -22,15 +24,10 @@
 
 @implementation YapDatabaseView
 
-+ (BOOL)dropTablesForRegisteredName:(NSString *)registeredName
-                           database:(YapAbstractDatabase *)database
-                             sqlite:(sqlite3 *)db
++ (void)dropTablesForRegisteredName:(NSString *)registeredName
+                    withTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
-	if (![database isKindOfClass:[YapDatabase class]])
-	{
-		YDBLogError(@"YapDatabaseView only supports YapDatabase, not YapCollectionsDatabase");
-		return NO;
-	}
+	sqlite3 *db = transaction->abstractConnection->db;
 	
 	NSString *keyTableName = [self keyTableNameForRegisteredName:registeredName];
 	NSString *pageTableName = [self pageTableNameForRegisteredName:registeredName];
@@ -45,7 +42,6 @@
 	{
 		YDBLogError(@"%@ - Failed dropping key table (%@): %d %s",
 		            THIS_METHOD, keyTableName, status, sqlite3_errmsg(db));
-		return NO;
 	}
 	
 	status = sqlite3_exec(db, [dropPageTable UTF8String], NULL, NULL, NULL);
@@ -53,10 +49,7 @@
 	{
 		YDBLogError(@"%@ - Failed dropping page table (%@): %d %s",
 		            THIS_METHOD, pageTableName, status, sqlite3_errmsg(db));
-		return NO;
 	}
-	
-	return YES;
 }
 
 + (NSString *)keyTableNameForRegisteredName:(NSString *)registeredName

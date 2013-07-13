@@ -16,9 +16,8 @@
 /**
  * 
 **/
-+ (BOOL)dropTablesForRegisteredName:(NSString *)registeredName
-                           database:(YapAbstractDatabase *)database
-                             sqlite:(sqlite3 *)db;
++ (void)dropTablesForRegisteredName:(NSString *)registeredName
+                    withTransaction:(YapAbstractDatabaseTransaction *)transaction;
 
 /**
  * After an extension has been successfully registered with a database,
@@ -61,6 +60,11 @@
 
 */
 }
+
+/**
+ * Subclasses must implement this method.
+**/
+- (YapAbstractDatabaseExtension *)extension;
 
 /**
  * Subclasses must override these methods to create and return a proper instance of the
@@ -180,10 +184,11 @@
 
 /**
  * Subclasses must implement these methods.
- * They are needed by the utility methods listed below.
+ * They are needed by various utility methods.
 **/
 - (YapAbstractDatabaseTransaction *)databaseTransaction;
 - (YapAbstractDatabaseExtension *)extension;
+- (YapAbstractDatabaseExtensionConnection *)extensionConnection;
 
 /**
  * The following method are convenience methods for getting and setting persistent values for the extension.

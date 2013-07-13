@@ -4,12 +4,10 @@
 
 @implementation YapAbstractDatabaseExtension
 
-+ (BOOL)dropTablesForRegisteredName:(NSString *)registeredName
-                           database:(YapAbstractDatabase *)database
-                             sqlite:(sqlite3 *)db
++ (void)dropTablesForRegisteredName:(NSString *)registeredName
+                    withTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
-	NSAssert(NO, @"Missing required override method in subclass of YapAbstractDatabaseExtension");
-	return NO;
+	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
 
 @synthesize registeredName;

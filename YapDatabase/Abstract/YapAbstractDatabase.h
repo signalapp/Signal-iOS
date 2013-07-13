@@ -194,6 +194,37 @@ extern NSString *const YapDatabaseCustomKey;
                completionQueue:(dispatch_queue_t)completionQueue;
 
 /**
+ * This method unregisters an extension with the given name.
+ * The associated underlying tables will be dropped from the database.
+ * 
+ * Note 1:
+ * You can unregister an extension that was hasn't been registered. For example,
+ * you've previously registered an extension (in previous app launches), but you no longer need the extension.
+ * You don't have to bother creating and registering the unneeded extension,
+ * just so you can unregister it and have the associated tables dropped.
+ * The database persists information about registered extensions, including the associated class of an extension.
+ * So you can simply pass the name of the extension, and the database system will use the associated class to
+ * drop the appropriate tables.
+ *
+ * Note:
+ * You don't have to worry about unregistering extensions that you no longer need.
+ *       
+ * @see asyncUnregisterExtension:completionBlock:
+ * @see asyncUnregisterExtension:completionBlock:completionQueue:
+**/
+- (void)unregisterExtension:(NSString *)extensionName;
+
+/**
+ * 
+**/
+- (void)asyncUnregisterExtension:(NSString *)extensionName
+                 completionBlock:(dispatch_block_t)completionBlock;
+
+- (void)asyncUnregisterExtension:(NSString *)extensionName
+                 completionBlock:(dispatch_block_t)completionBlock
+                 completionQueue:(dispatch_queue_t)completionQueue;
+
+/**
  * Returns the registered extension with the given name.
  * The returned object will be a subclass of YapAbstractDatabaseExtension.
 **/
