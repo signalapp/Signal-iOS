@@ -70,7 +70,9 @@
 {
 	if (isFirstTimeExtensionRegistration)
 	{
-		[self setStringValue:NSStringFromClass([self class]) forExtensionKey:@"class"];
+		NSString *ourClassName = NSStringFromClass([[self extension] class]);
+		
+		[self setStringValue:ourClassName forExtensionKey:@"class"];
 	}
 }
 
