@@ -178,6 +178,7 @@ typedef enum  {
  * @see [YapAbstractDatabase registerExtension:withName:]
 **/
 - (id)extension:(NSString *)extensionName;
+- (id)ext:(NSString *)extensionName; // <-- Shorthand (same as extension: method)
 
 #pragma mark Memory
 

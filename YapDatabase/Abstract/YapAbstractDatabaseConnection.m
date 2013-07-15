@@ -6,6 +6,7 @@
 #import "YapDatabaseLogging.h"
 #import "YapCache.h"
 
+#import <objc/runtime.h>
 #import <libkern/OSAtomic.h>
 
 #if ! __has_feature(objc_arc)
@@ -65,6 +66,23 @@
 	BOOL needsMarkSqlLevelSharedReadLock; // Read-only by transaction. Use as consideration of whether to invoke method.
 
 */
+}
+
++ (void)load
+{
+	static BOOL loaded = NO;
+	if (!loaded)
+	{
+		// Method swizzle:
+		// Both extension: and ext: are designed to be the same method (with ext: shorthand for extension:).
+		// So swap out the ext: method to point to extension:.
+		
+		Method extMethod = class_getInstanceMethod([self class], @selector(ext:));
+		IMP extensionIMP = class_getMethodImplementation([self class], @selector(extension:));
+		
+		method_setImplementation(extMethod, extensionIMP);
+		loaded = YES;
+	}
 }
 
 - (id)initWithDatabase:(YapAbstractDatabase *)inDatabase
@@ -528,6 +546,16 @@
 		dispatch_sync(connectionQueue, block);
 	
 	return extConnection;
+}
+
+- (id)ext:(NSString *)extensionName
+{
+	// The "+ (void)load" method swizzles the implementation of this class
+	// to point to the implementation of the extension: method.
+	//
+	// So the two methods are literally the same thing.
+	
+	return [self extension:extensionName]; // This method is swizzled !
 }
 
 - (NSDictionary *)extensions
