@@ -103,4 +103,9 @@
 **/
 - (NSArray *)changesForNotifications:(NSArray *)notifications withGroupToSectionMappings:(NSDictionary *)mappings;
 
+/**
+ * A simple YES/NO query to see if the view changed at all, inclusive of all groups.
+**/
+- (BOOL)hasChangesForNotifications:(NSArray *)notifications;
+
 @end

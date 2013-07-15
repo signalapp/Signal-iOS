@@ -400,6 +400,10 @@
 	}
 }
 
+/**
+ * Gets an exact list of changes that happend to the view, translating groups to sections as requested.
+ * See the header file for more information.
+**/
 - (NSArray *)changesForNotifications:(NSArray *)notifications withGroupToSectionMappings:(NSDictionary *)mappings
 {
 	NSString *registeredName = self.view.registeredName;
@@ -421,6 +425,29 @@
 	                         withGroupToSectionMappings:mappings];
 	
 	return all_changes_safe;
+}
+
+/**
+ * A simple YES/NO query to see if the view changed at all, inclusive of all groups.
+**/
+- (BOOL)hasChangesForNotifications:(NSArray *)notifications
+{
+	NSString *registeredName = self.view.registeredName;
+	
+	for (NSNotification *notification in notifications)
+	{
+		NSDictionary *changeset =
+		    [[notification.userInfo objectForKey:YapDatabaseExtensionsKey] objectForKey:registeredName];
+		
+		NSArray *changeset_changes = [changeset objectForKey:@"changes"];
+		
+		if ([changeset_changes count] > 0)
+		{
+			return YES;
+		}
+	}
+	
+	return NO;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
