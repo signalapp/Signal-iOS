@@ -325,7 +325,7 @@
  **/
 - (NSUInteger)pageSize
 {
-	return 50; // Todo...
+	return 50; // Todo: Implement setPageSize
 }
 
 /**
@@ -339,7 +339,7 @@
 **/
 - (void)setPageSize:(NSUInteger)pageSize
 {
-	// Todo...
+	// Todo: Implement setPageSize
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

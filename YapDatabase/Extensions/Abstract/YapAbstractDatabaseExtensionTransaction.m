@@ -45,19 +45,22 @@
 	YDBLogWarn(@"Dropping tables for previously registered extension with name(%@), class(%@) for new class(%@)",
 	           [[self extension] registeredName], prevClassName, ourClassName);
 	
-	Class class = NSClassFromString(prevClassName);
+	Class prevClass = NSClassFromString(prevClassName);
 	
-	if (class == NULL)
+	if (prevClass == NULL)
 	{
 		YDBLogError(@"Unable to drop tables for previously registered extension with name(%@), unknown class(%@)",
 		            [[self extension] registeredName], prevClassName);
-		
-		*isFirstTimeExtensionRegistration = YES;
-		return;
+	}
+	else if (![prevClass isSubclassOfClass:[YapAbstractDatabaseExtension class]])
+	{
+		YDBLogError(@"Unable to drop tables for previously registered extension with name(%@), invalid class(%@)",
+		            [[self extension] registeredName], prevClassName);
 	}
 	else
 	{
-		// Todo: Invoke drop tables method...
+		[prevClass dropTablesForRegisteredName:[[self extension] registeredName]
+		                       withTransaction:[self databaseTransaction]];
 	}
 	
 	*isFirstTimeExtensionRegistration = YES;
