@@ -20,6 +20,8 @@
 	
 	YapDatabaseViewBlockType groupingBlockType;
 	YapDatabaseViewBlockType sortingBlockType;
+	
+	int version;
 }
 
 - (NSString *)keyTableName;

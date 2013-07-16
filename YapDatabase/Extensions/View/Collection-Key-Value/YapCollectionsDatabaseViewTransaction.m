@@ -91,6 +91,22 @@
 	{
 		if (![self createTables]) return NO;
 		if (![self populateView]) return NO;
+		
+		int version = viewConnection->view->version;
+		
+		[self setIntValue:version forExtensionKey:@"version"];
+	}
+	else
+	{
+		int oldVersion = [self intValueForExtensionKey:@"version"];
+		int newVersion = viewConnection->view->version;
+		
+		if (oldVersion != newVersion)
+		{
+			if (![self populateView]) return NO;
+			
+			[self setIntValue:newVersion forExtensionKey:@"version"];
+		}
 	}
 	
 	return YES;
@@ -831,7 +847,7 @@
 
 - (BOOL)populateView
 {
-	// Remove everything from the database (just in case)
+	// Remove everything from the database
 	
 	[self removeAllKeysInAllCollections];
 	

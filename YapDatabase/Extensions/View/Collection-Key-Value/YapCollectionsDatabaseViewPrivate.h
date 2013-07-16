@@ -19,6 +19,8 @@
 	
 	YapCollectionsDatabaseViewBlockType groupingBlockType;
 	YapCollectionsDatabaseViewBlockType sortingBlockType;
+	
+	int version;
 }
 
 - (NSString *)keyTableName;

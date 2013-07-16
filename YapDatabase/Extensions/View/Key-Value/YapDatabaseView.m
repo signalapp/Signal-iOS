@@ -66,16 +66,31 @@
 #pragma mark Instance
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@synthesize groupingBlock;
-@synthesize sortingBlock;
+@synthesize groupingBlock = groupingBlock;
+@synthesize sortingBlock = sortingBlock;
 
-@synthesize groupingBlockType;
-@synthesize sortingBlockType;
+@synthesize groupingBlockType = groupingBlockType;
+@synthesize sortingBlockType = sortingBlockType;
+
+@synthesize version = version;
 
 - (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)inGroupingBlock
           groupingBlockType:(YapDatabaseViewBlockType)inGroupingBlockType
                sortingBlock:(YapDatabaseViewSortingBlock)inSortingBlock
            sortingBlockType:(YapDatabaseViewBlockType)inSortingBlockType
+{
+	return [self initWithGroupingBlock:inGroupingBlock
+	                 groupingBlockType:inGroupingBlockType
+	                      sortingBlock:inSortingBlock
+	                  sortingBlockType:inSortingBlockType
+	                           version:0];
+}
+
+- (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)inGroupingBlock
+          groupingBlockType:(YapDatabaseViewBlockType)inGroupingBlockType
+               sortingBlock:(YapDatabaseViewSortingBlock)inSortingBlock
+           sortingBlockType:(YapDatabaseViewBlockType)inSortingBlockType
+                    version:(int)inVersion
 {
 	if ((self = [super init]))
 	{
@@ -96,6 +111,8 @@
 		
 		sortingBlock = inSortingBlock;
 		sortingBlockType = inSortingBlockType;
+		
+		version = inVersion;
 	}
 	return self;
 }

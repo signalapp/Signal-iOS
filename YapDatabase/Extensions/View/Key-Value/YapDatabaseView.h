@@ -180,10 +180,25 @@ typedef enum {
                sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
            sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType;
 
+- (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
+          groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
+               sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
+           sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
+                    version:(int)version;
+
 @property (nonatomic, strong, readonly) YapDatabaseViewGroupingBlock groupingBlock;
 @property (nonatomic, strong, readonly) YapDatabaseViewSortingBlock sortingBlock;
 
 @property (nonatomic, assign, readonly) YapDatabaseViewBlockType groupingBlockType;
 @property (nonatomic, assign, readonly) YapDatabaseViewBlockType sortingBlockType;
+
+/**
+ * The version assists you in updating your blocks.
+ * 
+ * If you need to change the groupingBlock or sortingBlock,
+ * then simply pass an incremented version during the init method,
+ * and the view will automatically update itself.
+**/
+@property (nonatomic, assign, readonly) int version;
 
 @end
