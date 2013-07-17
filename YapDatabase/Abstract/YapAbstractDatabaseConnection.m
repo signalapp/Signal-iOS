@@ -1465,7 +1465,7 @@
 	// Run any pre-commit operations.
 	// This allows extensions to to perform any cleanup before the changeset is requested.
 	
-	[transaction preCommitTransaction];
+	[transaction preCommitReadWriteTransaction];
 	
 	// Post-Write-Transaction: Step 2 of 10
 	//

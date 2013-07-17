@@ -101,7 +101,7 @@
  * This method is called if within a readwrite transaction.
  * This method is optional.
 **/
-- (void)preCommitTransaction
+- (void)preCommitReadWriteTransaction
 {
 	// Subclasses may optionally override this method to perform any "cleanup" before the changesets are requested.
 	// Remember, the changesets are requested before the commitTransaction method is invoked.

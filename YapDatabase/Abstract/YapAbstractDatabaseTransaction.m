@@ -70,16 +70,14 @@
 	sqlite3_reset(statement);
 }
 
-- (void)preCommitTransaction
+- (void)preCommitReadWriteTransaction
 {
-	// This method is only called during readWriteTransactions.
-	
-	// It allows extensions to perform any "cleanup" code needed before the changesets are requested,
+	// Allow extensions to perform any "cleanup" code needed before the changesets are requested,
 	// and before the commit is executed.
 	
 	[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
 		
-		[(YapAbstractDatabaseExtensionTransaction *)extTransactionObj preCommitTransaction];
+		[(YapAbstractDatabaseExtensionTransaction *)extTransactionObj preCommitReadWriteTransaction];
 	}];
 }
 

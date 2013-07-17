@@ -2006,7 +2006,7 @@
  * Extensions may implement it to perform any "cleanup" before the changeset is requested.
  * Remember, the changeset is requested before the commitTransaction method is invoked.
 **/
-- (void)preCommitTransaction
+- (void)preCommitReadWriteTransaction
 {
 	YDBLogAutoTrace();
 	

@@ -276,7 +276,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 - (id)initWithConnection:(YapAbstractDatabaseConnection *)connection isReadWriteTransaction:(BOOL)flag;
 
 - (void)beginTransaction;
-- (void)preCommitTransaction;
+- (void)preCommitReadWriteTransaction;
 - (void)commitTransaction;
 - (void)rollbackTransaction;
 
