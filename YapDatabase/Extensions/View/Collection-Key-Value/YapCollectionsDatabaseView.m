@@ -53,12 +53,12 @@
 
 + (NSString *)keyTableNameForRegisteredName:(NSString *)registeredName
 {
-	return [NSString stringWithFormat:@"ckv_view_%@_key", registeredName];
+	return [NSString stringWithFormat:@"view_%@_key", registeredName];
 }
 
 + (NSString *)pageTableNameForRegisteredName:(NSString *)registeredName
 {
-	return [NSString stringWithFormat:@"ckv_view_%@_page", registeredName];
+	return [NSString stringWithFormat:@"view_%@_page", registeredName];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
