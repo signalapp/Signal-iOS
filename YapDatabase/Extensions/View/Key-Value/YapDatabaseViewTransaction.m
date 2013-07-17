@@ -5,7 +5,7 @@
 #import "YapDatabaseViewChangePrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapAbstractDatabasePrivate.h"
-#import "YapDatabaseTransaction.h"
+#import "YapDatabasePrivate.h"
 #import "YapCache.h"
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
@@ -135,7 +135,7 @@
 		return YES;
 	}
 	
-	sqlite3 *db = databaseTransaction->abstractConnection->db;
+	sqlite3 *db = databaseTransaction->connection->db;
 	
 	NSString *string = [NSString stringWithFormat:
 	    @"SELECT \"pageKey\", \"metadata\" FROM \"%@\" ;", [self pageTableName]];
@@ -479,7 +479,7 @@
 	{
 		YDBLogError(@"%@ (%@): Error executing statement: %d %s, key(%@)",
 		            THIS_METHOD, [self registeredName],
-		            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db), key);
+		            status, sqlite3_errmsg(databaseTransaction->connection->db), key);
 	}
 	
 	sqlite3_clear_bindings(statement);
@@ -511,7 +511,7 @@
 	
 	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
 	
-	sqlite3 *db = databaseTransaction->abstractConnection->db;
+	sqlite3 *db = databaseTransaction->connection->db;
 	
 	// Sqlite has an upper bound on the number of host parameters that may be used in a single query.
 	// We need to watch out for this in case a large array of keys is passed.
@@ -652,7 +652,7 @@
 	{
 		YDBLogError(@"%@ (%@): Error executing statement: %d %s",
 		            THIS_METHOD, [self registeredName],
-		            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
+		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
 	sqlite3_clear_bindings(statement);
@@ -707,7 +707,7 @@
 
 - (BOOL)createTables
 {
-	sqlite3 *db = databaseTransaction->abstractConnection->db;
+	sqlite3 *db = databaseTransaction->connection->db;
 	
 	NSString *keyTableName = [self keyTableName];
 	NSString *pageTableName = [self pageTableName];
@@ -1569,7 +1569,7 @@
 	{
 		YDBLogError(@"%@ (%@): Error in keyStatement: %d %s",
 		            THIS_METHOD, [self registeredName],
-		            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
+		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
 	// DELETE FROM 'pageTableName';
@@ -1581,7 +1581,7 @@
 	{
 		YDBLogError(@"%@ (%@): Error in pageStatement: %d %s",
 		            THIS_METHOD, [self registeredName],
-		            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
+		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
 	sqlite3_reset(keyStatement);
@@ -1954,7 +1954,7 @@
 			{
 				YDBLogError(@"%@ (%@): Error executing statement[1a]: %d %s",
 				            THIS_METHOD, [self registeredName],
-				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
+				            status, sqlite3_errmsg(databaseTransaction->connection->db));
 			}
 			
 			sqlite3_clear_bindings(statement);
@@ -1991,7 +1991,7 @@
 			{
 				YDBLogError(@"%@ (%@): Error executing statement[1b]: %d %s",
 				            THIS_METHOD, [self registeredName],
-				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
+				            status, sqlite3_errmsg(databaseTransaction->connection->db));
 			}
 			
 			sqlite3_clear_bindings(statement);
@@ -2049,7 +2049,7 @@
 			{
 				YDBLogError(@"%@ (%@): Error executing statement[2]: %d %s",
 				            THIS_METHOD, [self registeredName],
-				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
+				            status, sqlite3_errmsg(databaseTransaction->connection->db));
 			}
 			
 			sqlite3_clear_bindings(statement);
@@ -2089,7 +2089,7 @@
 			{
 				YDBLogError(@"%@ (%@): Error executing statement[3a]: %d %s",
 				            THIS_METHOD, [self registeredName],
-				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
+				            status, sqlite3_errmsg(databaseTransaction->connection->db));
 			}
 			
 			sqlite3_clear_bindings(statement);
@@ -2122,7 +2122,7 @@
 			{
 				YDBLogError(@"%@ (%@): Error executing statement[3b]: %d %s",
 				            THIS_METHOD, [self registeredName],
-				            status, sqlite3_errmsg(databaseTransaction->abstractConnection->db));
+				            status, sqlite3_errmsg(databaseTransaction->connection->db));
 			}
 			
 			sqlite3_clear_bindings(statement);
