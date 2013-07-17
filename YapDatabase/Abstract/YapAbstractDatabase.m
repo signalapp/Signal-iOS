@@ -154,10 +154,10 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 }
 
 @synthesize databasePath;
-@synthesize objectSerializer;
-@synthesize objectDeserializer;
-@synthesize metadataSerializer;
-@synthesize metadataDeserializer;
+@synthesize objectSerializer = objectSerializer;
+@synthesize objectDeserializer = objectDeserializer;
+@synthesize metadataSerializer = metadataSerializer;
+@synthesize metadataDeserializer = metadataDeserializer;
 
 - (id)initWithPath:(NSString *)inPath
 {

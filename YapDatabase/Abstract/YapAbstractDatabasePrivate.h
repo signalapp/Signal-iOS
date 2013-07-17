@@ -38,6 +38,12 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	
 @public
 	
+	NSData *(^objectSerializer)(id object);   // Read-only by transactions
+	id (^objectDeserializer)(NSData *data);   // Read-only by transactions
+	
+	NSData *(^metadataSerializer)(id object); // Read-only by transactions
+	id (^metadataDeserializer)(NSData *data); // Read-only by transactions
+	
 	void *IsOnSnapshotQueueKey;       // Only to be used by YapAbstractDatabaseConnection
 	void *IsOnWriteQueueKey;          // Only to be used by YapAbstractDatabaseConnection
 	
@@ -183,9 +189,9 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	dispatch_queue_t connectionQueue;
 	void *IsOnConnectionQueueKey;
 	
-	YapAbstractDatabase *database;
-	
 @public
+	__strong YapAbstractDatabase *database;
+	
 	sqlite3 *db;
 	
 	YapCache *objectCache;

@@ -205,6 +205,7 @@
 #pragma mark Properties
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+@synthesize abstractDatabase = database;
 @synthesize connectionQueue = connectionQueue;
 
 #if TARGET_OS_IPHONE
@@ -1038,7 +1039,7 @@
 		if (longLivedReadTransaction)
 		{
 			YDBLogWarn(@"Implicitly ending long-lived read transaction on connection %@, database %@",
-			           self, self->database);
+			           self, database);
 			
 			[self endLongLivedReadTransaction];
 		}
