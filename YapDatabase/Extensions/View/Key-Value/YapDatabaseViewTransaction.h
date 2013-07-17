@@ -259,38 +259,3 @@
                   usingBlock:(void (^)(NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block;
 
 @end
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * The following methods have to do with the configuration of the internal workings of the view.
-**/
-@interface YapDatabaseViewTransaction (Configuration)
-
-/**
- * The view is tasked with storing ordered arrays of keys.
- * In doing so, it splits the array into "pages" of keys,
- * and stores the pages in the database.
- * This reduces disk IO, as only the contents of a single page are written for a single change.
- * And only the contents of a single page need be read to fetch a single key.
- *
- * The default pageSize if 50.
- * That is, the view will split up arrays into groups of up to 50 keys,
- * and store each as a separate page.
- **/
-- (NSUInteger)pageSize;
-
-/**
- * Allows you to configure the pageSize.
- * 
- * Note: Changing the pageSize for an active view may cause some IO as
- *       the view may need to restructure its existing pages.
- *
- * This method only works from within a readwrite transaction.
- * Invoking this method from within a readonly transaction does nothing.
-**/
-- (void)setPageSize:(NSUInteger)pageSize;
-
-@end
