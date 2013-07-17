@@ -607,25 +607,42 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	
 	// Write it to disk (replacing any previous value from last app run)
 	
-	[self writeSnapshot:snapshot using:db];
+	[self beginTransaction];
+	[self writeSnapshot:snapshot];
+	[self fetchPreviouslyRegisteredExtensionNames];
+	[self commitTransaction];
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Utilities
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)beginTransaction
+{
+	int status = status = sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error in '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+	}
+}
 
-- (void)writeSnapshot:(uint64_t)aSnapshot using:(sqlite3 *)aDb
+- (void)commitTransaction
+{
+	int status = status = sqlite3_exec(db, "COMMIT TRANSACTION;", NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error in '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+	}
+}
+
+- (void)writeSnapshot:(uint64_t)aSnapshot
 {
 	int status;
 	sqlite3_stmt *statement;
 	
 	char *stmt = "INSERT OR REPLACE INTO \"yap2\" (\"extension\", \"key\", \"data\") VALUES (?, ?, ?);";
 	
-	status = sqlite3_prepare_v2(aDb, stmt, (int)strlen(stmt)+1, &statement, NULL);
+	status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &statement, NULL);
 	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"%@: Error creating update snapshot statement: %d %s",
-		              NSStringFromSelector(_cmd), status, sqlite3_errmsg(aDb));
+		YDBLogError(@"%@: Error creating statement: %d %s",
+		              NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 	}
 	else
 	{
@@ -641,12 +658,53 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		status = sqlite3_step(statement);
 		if (status != SQLITE_DONE)
 		{
-			YDBLogError(@"%@: Error executing update snapshot statement: %d %s",
-			              NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"%@: Error in statement: %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 		
 		sqlite3_finalize(statement);
 	}
+}
+
+- (void)fetchPreviouslyRegisteredExtensionNames
+{
+	int status;
+	sqlite3_stmt *statement;
+	
+	char *stmt = "SELECT DISTINCT \"extension\" FROM \"yap2\" ;";
+	
+	NSMutableArray *extensionNames = [NSMutableArray array];
+	
+	status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &statement, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@: Error creating statement: %d %s",
+					NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+	}
+	else
+	{
+		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+		{
+			const unsigned char *text = sqlite3_column_text(statement, 0);
+			int textSize = sqlite3_column_bytes(statement, 0);
+			
+			NSString *extensionName =
+			    [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			
+			if ([extensionName length] > 0)
+			{
+				[extensionNames addObject:extensionName];
+			}
+		}
+		
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"%@: Error in statement: %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+		
+		sqlite3_finalize(statement);
+	}
+	
+	previouslyRegisteredExtensionNames = extensionNames;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

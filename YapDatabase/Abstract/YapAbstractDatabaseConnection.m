@@ -583,64 +583,6 @@
 	return extensions;
 }
 
-- (void)didRegisterExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
-{
-	// This method is INTERNAL
-	
-	NSMutableDictionary *newRegisteredExtensions = [registeredExtensions mutableCopy];
-	[newRegisteredExtensions setObject:extension forKey:extensionName];
-	
-	registeredExtensions = [newRegisteredExtensions copy];
-	extensionsReady = NO;
-	
-	// Set the registeredExtensionsChanged flag.
-	// This will be consulted during the creation of the changeset,
-	// and will cause us to add the updated registeredExtensions to the list of changes.
-	// It will then get propogated to the database, and all other connections.
-	
-	registeredExtensionsChanged = YES;
-}
-
-- (void)didUnregisterExtension:(NSString *)extensionName
-{
-	// This method is INTERNAL
-	
-	if ([registeredExtensions objectForKey:extensionName])
-	{
-		NSMutableDictionary *newRegisteredExtensions = [registeredExtensions mutableCopy];
-		[newRegisteredExtensions removeObjectForKey:extensionName];
-		
-		registeredExtensions = [newRegisteredExtensions copy];
-		extensionsReady = NO;
-		
-		// Set the registeredExtensionsChanged flag.
-		// This will be consulted during the creation of the changeset,
-		// and will cause us to add the updated registeredExtensions to the list of changes.
-		// It will then get propogated to the database, and all other connections.
-		
-		registeredExtensionsChanged = YES;
-	}
-}
-
-- (void)addRegisteredExtensionConnection:(YapAbstractDatabaseExtensionConnection *)extConnection
-{
-	// This method is INTERNAL
-	
-	if (extensions == nil)
-		extensions = [[NSMutableDictionary alloc] init];
-	
-	NSString *extName = [[extConnection extension] registeredName];
-	
-	[extensions setObject:extConnection forKey:extName];
-}
-
-- (void)removeRegisteredExtensionConnection:(NSString *)extName
-{
-	// This method is INTERNAL
-	
-	[extensions removeObjectForKey:extName];
-}
-
 - (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
 {
 	NSAssert(dispatch_get_specific(database->IsOnWriteQueueKey), @"Must go through writeQueue.");
@@ -724,6 +666,64 @@
 		[self postReadWriteTransaction:transaction];
 		registeredExtensionsChanged = NO;
 	}});
+}
+
+- (void)didRegisterExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
+{
+	// This method is INTERNAL
+	
+	NSMutableDictionary *newRegisteredExtensions = [registeredExtensions mutableCopy];
+	[newRegisteredExtensions setObject:extension forKey:extensionName];
+	
+	registeredExtensions = [newRegisteredExtensions copy];
+	extensionsReady = NO;
+	
+	// Set the registeredExtensionsChanged flag.
+	// This will be consulted during the creation of the changeset,
+	// and will cause us to add the updated registeredExtensions to the list of changes.
+	// It will then get propogated to the database, and all other connections.
+	
+	registeredExtensionsChanged = YES;
+}
+
+- (void)didUnregisterExtension:(NSString *)extensionName
+{
+	// This method is INTERNAL
+	
+	if ([registeredExtensions objectForKey:extensionName])
+	{
+		NSMutableDictionary *newRegisteredExtensions = [registeredExtensions mutableCopy];
+		[newRegisteredExtensions removeObjectForKey:extensionName];
+		
+		registeredExtensions = [newRegisteredExtensions copy];
+		extensionsReady = NO;
+		
+		// Set the registeredExtensionsChanged flag.
+		// This will be consulted during the creation of the changeset,
+		// and will cause us to add the updated registeredExtensions to the list of changes.
+		// It will then get propogated to the database, and all other connections.
+		
+		registeredExtensionsChanged = YES;
+	}
+}
+
+- (void)addRegisteredExtensionConnection:(YapAbstractDatabaseExtensionConnection *)extConnection
+{
+	// This method is INTERNAL
+	
+	if (extensions == nil)
+		extensions = [[NSMutableDictionary alloc] init];
+	
+	NSString *extName = [[extConnection extension] registeredName];
+	
+	[extensions setObject:extConnection forKey:extName];
+}
+
+- (void)removeRegisteredExtensionConnection:(NSString *)extName
+{
+	// This method is INTERNAL
+	
+	[extensions removeObjectForKey:extName];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1461,14 +1461,14 @@
 		return;
 	}
 	
-	// Post-Write-Transaction: Step 1 of 10
+	// Post-Write-Transaction: Step 1 of 11
 	//
 	// Run any pre-commit operations.
 	// This allows extensions to to perform any cleanup before the changeset is requested.
 	
 	[transaction preCommitReadWriteTransaction];
 	
-	// Post-Write-Transaction: Step 2 of 10
+	// Post-Write-Transaction: Step 2 of 11
 	//
 	// Fetch changesets.
 	// Then update the snapshot in the 'yap' database (if any changes were made).
@@ -1504,7 +1504,57 @@
 		[changeset setObject:notification forKey:@"notification"];
 	}
 	
-	// Post-Write-Transaction: Step 3 of 10
+	// Post-Write-Transaction: Step 3 of 11
+	//
+	// Auto-drop tables from previous extensions that aren't being used anymore.
+	//
+	// Note the timing of when this happens:
+	// - Only once
+	// - At the end of a readwrite transaction that has made modifications to the database
+	// - Only if the modifications weren't dedicated to registering/unregistring an extension
+	
+	if (database->previouslyRegisteredExtensionNames && changeset && !registeredExtensionsChanged)
+	{
+		for (NSString *prevExtensionName in database->previouslyRegisteredExtensionNames)
+		{
+			if ([registeredExtensions objectForKey:prevExtensionName] == nil)
+			{
+				NSString *className = [transaction stringValueForKey:@"class" extension:prevExtensionName];
+				Class class = NSClassFromString(className);
+				
+				if (className == nil)
+				{
+					YDBLogWarn(@"Unable to auto-unregister extension(%@). Doesn't appear to be registered.",
+					           prevExtensionName);
+				}
+				else if (class == NULL)
+				{
+					YDBLogError(@"Unable to auto-unregister extension(%@) with unknown class(%@)",
+					            prevExtensionName, className);
+				}
+				if (![class isSubclassOfClass:[YapAbstractDatabaseExtension class]])
+				{
+					YDBLogError(@"Unable to auto-unregister extension(%@) with improper class(%@)",
+					            prevExtensionName, className);
+				}
+				else
+				{
+					YDBLogInfo(@"Auto-unregistering extension(%@) with class(%@)",
+					            prevExtensionName, className);
+					
+					// Drop tables
+					[class dropTablesForRegisteredName:prevExtensionName withTransaction:transaction];
+					
+					// Drop preferences (rows in yap2 table)
+					[transaction removeAllValuesForExtension:prevExtensionName];
+				}
+			}
+		}
+		
+		database->previouslyRegisteredExtensionNames = nil;
+	}
+	
+	// Post-Write-Transaction: Step 4 of 11
 	//
 	// Check to see if it's safe to commit our changes.
 	//
@@ -1557,7 +1607,7 @@
 				myState->waitingForWriteLock = NO;
 				safeToCommit = YES;
 				
-				// Post-Write-Transaction: Step 4 of 10
+				// Post-Write-Transaction: Step 5 of 11
 				//
 				// Register pending changeset with database.
 				// Our commit is actually a two step process.
@@ -1596,7 +1646,7 @@
 		
 	} while (!safeToCommit);
 	
-	// Post-Write-Transaction: Step 5 of 10
+	// Post-Write-Transaction: Step 6 of 11
 	//
 	// Execute "COMMIT TRANSACTION" on database connection.
 	// This will write the changes to the WAL, and may invoke a checkpoint.
@@ -1621,7 +1671,7 @@
 	
 	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
-		// Post-Write-Transaction: Step 6 of 10
+		// Post-Write-Transaction: Step 7 of 11
 		//
 		// Notify database of changes, and drop reference to set of changed keys.
 		
@@ -1630,7 +1680,7 @@
 			[database noteCommittedChanges:changeset fromConnection:self];
 		}
 		
-		// Post-Write-Transaction: Step 7 of 10
+		// Post-Write-Transaction: Step 8 of 11
 		//
 		// Update our connection state within the state table.
 		//
@@ -1651,7 +1701,7 @@
 		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-write transaction.", self);
 	}});
 	
-	// Post-Write-Transaction: Step 8 of 10
+	// Post-Write-Transaction: Step 9 of 11
 	
 	if (changeset)
 	{
@@ -1664,7 +1714,7 @@
 		}
 	}
 	
-	// Post-Write-Transaction: Step 9 of 10
+	// Post-Write-Transaction: Step 10 of 11
 	//
 	// Post YapDatabaseModifiedNotification
 	
@@ -1675,7 +1725,7 @@
 		});
 	}
 	
-	// Post-Write-Transaction: Step 10 of 10
+	// Post-Write-Transaction: Step 11 of 11
 	//
 	// Drop IsOnConnectionQueueKey flag from writeQueue since we're exiting writeQueue.
 	

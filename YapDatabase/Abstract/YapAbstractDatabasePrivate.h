@@ -51,6 +51,8 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	dispatch_queue_t writeQueue;      // Only to be used by YapAbstractDatabaseConnection
 	
 	NSMutableArray *connectionStates; // Only to be used by YapAbstractDatabaseConnection
+	
+	NSArray *previouslyRegisteredExtensionNames; // Only to be used by YapAbstractDatabaseConnection
 }
 
 /**
