@@ -31,7 +31,6 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	
 	NSDictionary *registeredExtensions;
 	YapAbstractDatabaseConnection *registrationConnection;
-	dispatch_queue_t registrationQueue;
 	
 @protected
 	
@@ -40,6 +39,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 @public
 	
 	void *IsOnSnapshotQueueKey;       // Only to be used by YapAbstractDatabaseConnection
+	void *IsOnWriteQueueKey;          // Only to be used by YapAbstractDatabaseConnection
 	
 	dispatch_queue_t snapshotQueue;   // Only to be used by YapAbstractDatabaseConnection
 	dispatch_queue_t writeQueue;      // Only to be used by YapAbstractDatabaseConnection
@@ -205,14 +205,8 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 
 - (NSDictionary *)extensions;
 
-- (BOOL)canRegisterExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName;
-- (void)didRegisterExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName;
-
 - (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName;
 - (void)unregisterExtension:(NSString *)extensionName;
-
-- (void)addRegisteredExtensionConnection:(YapAbstractDatabaseExtensionConnection *)extConnection;
-- (void)removeRegisteredExtensionConnection:(NSString *)extName;
 
 - (sqlite3_stmt *)beginTransactionStatement;
 - (sqlite3_stmt *)commitTransactionStatement;

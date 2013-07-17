@@ -252,21 +252,23 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 			return nil;
 		}
 		
-		checkpointQueue   = dispatch_queue_create("YapDatabase-Checkpoint", NULL);
-		snapshotQueue     = dispatch_queue_create("YapDatabase-Snapshot", NULL);
-		writeQueue        = dispatch_queue_create("YapDatabase-Write", NULL);
-		registrationQueue = dispatch_queue_create("YapDatabase-ExtReg", NULL);
+		checkpointQueue = dispatch_queue_create("YapDatabase-Checkpoint", NULL);
+		snapshotQueue   = dispatch_queue_create("YapDatabase-Snapshot", NULL);
+		writeQueue      = dispatch_queue_create("YapDatabase-Write", NULL);
 		
 		changesets = [[NSMutableArray alloc] init];
 		connectionStates = [[NSMutableArray alloc] init];
 		
 		registeredExtensions = [[NSDictionary alloc] init];
 		
-		// Mark the snapshotQueue so we can identify it.
-		// There are several methods whose use is restricted to within the snapshotQueue.
+		// Mark the queues so we can identify them.
+		// There are several methods whose use is restricted to within a certain queue.
 		
 		IsOnSnapshotQueueKey = &IsOnSnapshotQueueKey;
 		dispatch_queue_set_specific(snapshotQueue, IsOnSnapshotQueueKey, IsOnSnapshotQueueKey, NULL);
+		
+		IsOnWriteQueueKey = &IsOnWriteQueueKey;
+		dispatch_queue_set_specific(writeQueue, IsOnWriteQueueKey, IsOnWriteQueueKey, NULL);
 		
 		// Complete database setup in the background
 		dispatch_async(snapshotQueue, ^{ @autoreleasepool {
@@ -296,8 +298,6 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		dispatch_release(writeQueue);
 	if (checkpointQueue)
 		dispatch_release(checkpointQueue);
-	if (registrationQueue)
-		dispatch_release(registrationQueue);
 #endif
 }
 
@@ -754,7 +754,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 {
 	__block BOOL ready = NO;
 	
-	dispatch_sync(registrationQueue, ^{ @autoreleasepool {
+	dispatch_sync(writeQueue, ^{ @autoreleasepool {
 		
 		ready = [self _registerExtension:extension withName:extensionName];
 	}});
@@ -807,7 +807,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	if (completionQueue == NULL && completionBlock != NULL)
 		completionQueue = dispatch_get_main_queue();
 	
-	dispatch_async(registrationQueue, ^{ @autoreleasepool {
+	dispatch_async(writeQueue, ^{ @autoreleasepool {
 		
 		BOOL ready = [self _registerExtension:extension withName:extensionName];
 		
@@ -826,7 +826,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 **/
 - (void)unregisterExtension:(NSString *)extensionName
 {
-	dispatch_sync(registrationQueue, ^{ @autoreleasepool {
+	dispatch_sync(writeQueue, ^{ @autoreleasepool {
 		
 		[self _unregisterExtension:extensionName];
 	}});
@@ -847,7 +847,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	if (completionQueue == NULL && completionBlock != NULL)
 		completionQueue = dispatch_get_main_queue();
 	
-	dispatch_async(registrationQueue, ^{ @autoreleasepool {
+	dispatch_async(writeQueue, ^{ @autoreleasepool {
 		
 		[self _unregisterExtension:extensionName];
 		
@@ -876,7 +876,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		
 		NSTimeInterval delayInSeconds = 10.0;
 		dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-		dispatch_after(popTime, registrationQueue, ^(void){
+		dispatch_after(popTime, writeQueue, ^(void){
 			
 			registrationConnection = nil;
 		});
@@ -887,18 +887,15 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 
 /**
  * Internal method that handles extension registration.
- * This method must be invoked on the registrationQueue.
+ * This method must be invoked on the writeQueue.
 **/
 - (BOOL)_registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
 {
+	NSAssert(dispatch_get_specific(IsOnWriteQueueKey), @"Must go through writeQueue.");
+	
 	if (extension == nil)
 	{
 		YDBLogError(@"Error registering extension: extension parameter is nil");
-		return NO;
-	}
-	if (![extension supportsDatabase:self])
-	{
-		YDBLogError(@"Error registering extension: extension doesn't support this type of database");
 		return NO;
 	}
 	if ([extensionName length] == 0)
@@ -906,18 +903,41 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		YDBLogError(@"Error registering extension: extensionName parameter is nil or empty string");
 		return NO;
 	}
+	if (![extension supportsDatabase:self])
+	{
+		YDBLogError(@"Error registering extension: extension doesn't support this type of database");
+		return NO;
+	}
+	if (extension.registeredName != nil)
+	{
+		YDBLogError(@"Error registering extension: extension is already registered");
+		return NO;
+	}
+	if ([self registeredExtension:extensionName] != nil)
+	{
+		YDBLogError(@"Error registering extension: extensionName(%@) already registered", extensionName);
+		return NO;
+	}
 	
 	extension.registeredName = extensionName;
 	
-	return [[self registrationConnection] registerExtension:extension withName:extensionName];
+	BOOL result = [[self registrationConnection] registerExtension:extension withName:extensionName];
+	if (!result)
+	{
+		extension.registeredName = nil;
+	}
+	
+	return result;
 }
 
 /**
  * Internal method that handles extension unregistration.
- * This method must be invoked on the registrationQueue.
+ * This method must be invoked on the writeQueue.
 **/
 - (void)_unregisterExtension:(NSString *)extensionName
 {
+	NSAssert(dispatch_get_specific(IsOnWriteQueueKey), @"Must go through writeQueue.");
+	
 	if ([extensionName length] == 0)
 	{
 		YDBLogError(@"Error unregistering extension: extensionName parameter is nil or empty string");

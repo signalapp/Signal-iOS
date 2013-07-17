@@ -582,16 +582,6 @@
 	return extensions;
 }
 
-- (BOOL)canRegisterExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
-{
-	// This method is INTERNAL
-	
-	if ([registeredExtensions objectForKey:extensionName] == nil)
-		return YES;
-	else
-		return NO;
-}
-
 - (void)didRegisterExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
 {
 	// This method is INTERNAL
@@ -608,6 +598,27 @@
 	// It will then get propogated to the database, and all other connections.
 	
 	registeredExtensionsChanged = YES;
+}
+
+- (void)didUnregisterExtension:(NSString *)extensionName
+{
+	// This method is INTERNAL
+	
+	if ([registeredExtensions objectForKey:extensionName])
+	{
+		NSMutableDictionary *newRegisteredExtensions = [registeredExtensions mutableCopy];
+		[newRegisteredExtensions removeObjectForKey:extensionName];
+		
+		registeredExtensions = [newRegisteredExtensions copy];
+		extensionsReady = NO;
+		
+		// Set the registeredExtensionsChanged flag.
+		// This will be consulted during the creation of the changeset,
+		// and will cause us to add the updated registeredExtensions to the list of changes.
+		// It will then get propogated to the database, and all other connections.
+		
+		registeredExtensionsChanged = YES;
+	}
 }
 
 - (void)addRegisteredExtensionConnection:(YapAbstractDatabaseExtensionConnection *)extConnection
@@ -631,20 +642,85 @@
 
 - (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
 {
-	// Subclasses must implement this method.
-	// They are to run the process through a readwrite transaction.
+	NSAssert(dispatch_get_specific(database->IsOnWriteQueueKey), @"Must go through writeQueue.");
 	
-	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
+	__block BOOL result = NO;
 	
-	return NO;
+	dispatch_sync(connectionQueue, ^{ @autoreleasepool {
+	
+		YapAbstractDatabaseTransaction *transaction = [self newReadWriteTransaction];
+		[self preReadWriteTransaction:transaction];
+		
+		YapAbstractDatabaseExtensionConnection *extensionConnection;
+		YapAbstractDatabaseExtensionTransaction *extensionTransaction;
+		
+		extensionConnection = [extension newConnection:self];
+		extensionTransaction = [extensionConnection newReadWriteTransaction:transaction];
+		
+		BOOL isFirstTimeExtensionReigstration = NO;
+		[extensionTransaction willRegister:&isFirstTimeExtensionReigstration];
+		
+		result = [extensionTransaction createFromScratch:isFirstTimeExtensionReigstration];
+		
+		if (result)
+		{
+			[extensionTransaction didRegister:isFirstTimeExtensionReigstration];
+			[self didRegisterExtension:extension withName:extensionName];
+			
+			[self addRegisteredExtensionConnection:extensionConnection];
+			[transaction addRegisteredExtensionTransaction:extensionTransaction];
+		}
+		else
+		{
+			[transaction rollback];
+		}
+		
+		[self postReadWriteTransaction:transaction];
+	}});
+	
+	return result;
 }
 
 - (void)unregisterExtension:(NSString *)extensionName
 {
-	// Subclasses must implement this method.
-	// They are to run the process through a readwrite transaction.
+	NSAssert(dispatch_get_specific(database->IsOnWriteQueueKey), @"Must go through writeQueue.");
 	
-	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
+	dispatch_sync(connectionQueue, ^{ @autoreleasepool {
+		
+		YapAbstractDatabaseTransaction *transaction = [self newReadWriteTransaction];
+		[self preReadWriteTransaction:transaction];
+		
+		NSString *className = [transaction stringValueForKey:@"class" extension:extensionName];
+		Class class = NSClassFromString(className);
+		
+		if (className == nil)
+		{
+			YDBLogWarn(@"Unable to unregister extension(%@). Doesn't appear to be registered.", extensionName);
+		}
+		else if (class == NULL)
+		{
+			YDBLogError(@"Unable to unregister extension(%@) with unknown class(%@)", extensionName, className);
+		}
+		if (![class isSubclassOfClass:[YapAbstractDatabaseExtension class]])
+		{
+			YDBLogError(@"Unable to unregister extension(%@) with improper class(%@)", extensionName, className);
+		}
+		else
+		{
+			// Drop tables
+			[class dropTablesForRegisteredName:extensionName withTransaction:transaction];
+			
+			// Drop preferences (rows in yap2 table)
+			[transaction removeAllValuesForExtension:extensionName];
+			
+			[self didUnregisterExtension:extensionName];
+			
+			[self removeRegisteredExtensionConnection:extensionName];
+			[transaction removeRegisteredExtensionTransaction:extensionName];
+		}
+		
+		[self postReadWriteTransaction:transaction];
+	}});
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
