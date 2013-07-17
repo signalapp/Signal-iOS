@@ -22,15 +22,33 @@
 #endif
 
 
-@implementation YapCollectionsDatabaseReadTransaction
+@implementation YapCollectionsDatabaseReadTransaction {
+	
+/* From YapAbstractDatabasePrivate.h & YapCollectionsDatabasePrivate.h:
+ 
+@protected
+	BOOL isMutated; // Used for "mutation during enumeration" protection
+
+@public
+	BOOL isReadWriteTransaction;
+	__unsafe_unretained YapCollectionsDatabaseConnection *connection;
+
+*/
+}
+
+- (id)initWithConnection:(YapAbstractDatabaseConnection *)aConnection isReadWriteTransaction:(BOOL)flag
+{
+	if ((self = [super initWithConnection:aConnection isReadWriteTransaction:flag]))
+	{
+		connection = (YapCollectionsDatabaseConnection *)aConnection;
+	}
+	return self;
+}
 
 #pragma mark Count
 
 - (NSUInteger)numberOfCollections
 {
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection getCollectionCountStatement];
 	if (statement == NULL) return 0;
 	
@@ -60,9 +78,6 @@
 - (NSUInteger)numberOfKeysInCollection:(NSString *)collection
 {
 	if (collection == nil) collection = @"";
-	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
 	
 	sqlite3_stmt *statement = [connection getKeyCountForCollectionStatement];
 	if (statement == NULL) return 0;
@@ -97,9 +112,6 @@
 
 - (NSUInteger)numberOfKeysInAllCollections
 {
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection getKeyCountForAllStatement];
 	if (statement == NULL) return 0;
 	
@@ -130,9 +142,6 @@
 
 - (NSArray *)allCollections
 {
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection enumerateCollectionsStatement];
 	if (statement == NULL) return nil;
 	
@@ -162,9 +171,6 @@
 - (NSArray *)allKeysInCollection:(NSString *)collection
 {
 	if (collection == nil) collection = @"";
-	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
 	
 	sqlite3_stmt *statement = [connection enumerateKeysInCollectionStatement];
 	if (statement == NULL) return nil;
@@ -203,9 +209,6 @@
 {
 	if (key == nil) return nil;
 	if (collection == nil) collection = @"";
-	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
 	
 	sqlite3_stmt *statement = [connection getDataForKeyStatement];
 	if (statement == NULL) return nil;
@@ -251,9 +254,6 @@
 {
 	if (key == nil) return nil;
 	if (collection == nil) collection = @"";
-	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
 	
 	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
@@ -310,9 +310,6 @@
 	if (key == nil) return NO;
 	if (collection == nil) collection = @"";
 	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
-	
 	// Shortcut:
 	// We may not need to query the database if we have the key in any of our caches.
 	
@@ -368,9 +365,6 @@
 		return NO;
 	}
 	if (collection == nil) collection = @"";
-	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
 	
 	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
@@ -476,9 +470,6 @@
 	if (key == nil) return nil;
 	if (collection == nil) collection = @"";
 	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
-	
 	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	id metadata = [connection->metadataCache objectForKey:cacheKey];
@@ -562,9 +553,6 @@
 	if (block == NULL) return;
 	if (collection == nil) collection = @"";
 	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection enumerateKeysInCollectionStatement];
 	if (statement == NULL) return;
 	
@@ -616,9 +604,6 @@
 - (void)enumerateKeysInAllCollectionsUsingBlock:(void (^)(NSString *collection, NSString *key, BOOL *stop))block
 {
 	if (block == NULL) return;
-	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
 	
 	sqlite3_stmt *statement = [connection enumerateKeysInAllCollectionsStatement];
 	if (statement == NULL) return;
@@ -682,9 +667,6 @@
 	if (block == NULL) return;
 	if ([keys count] == 0) return;
 	if (collection == nil) collection = @"";
-	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
 	
 	isMutated = NO; // mutation during enumeration protection
 	BOOL stop = NO;
@@ -891,9 +873,6 @@
 	if ([keys count] == 0) return;
 	if (collection == nil) collection = @"";
 	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
-	
 	isMutated = NO; // mutation during enumeration protection
 	BOOL stop = NO;
 	
@@ -1093,9 +1072,6 @@
 	if (block == NULL) return;
 	if ([keys count] == 0) return;
 	if (collection == nil) collection = @"";
-	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
 	
 	isMutated = NO; // mutation during enumeration protection
 	__block BOOL stop = NO;
@@ -1347,9 +1323,6 @@
 	if (block == NULL) return;
 	if (collection == nil) collection = @"";
 	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection enumerateKeysAndMetadataInCollectionStatement];
 	if (statement == NULL) return;
 	
@@ -1470,9 +1443,6 @@
 {
 	if (block == NULL) return;
 	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection enumerateKeysAndMetadataInAllCollectionsStatement];
 	if (statement == NULL) return;
 	
@@ -1574,9 +1544,6 @@
 	if (block == NULL) return;
 	if (collection == nil) collection = @"";
 	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection enumerateKeysAndObjectsInCollectionStatement];
 	if (statement == NULL) return;
 	
@@ -1664,9 +1631,6 @@
                  withFilter:(BOOL (^)(NSString *collection, NSString *key))filter
 {
 	if (block == NULL) return;
-	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
 	
 	sqlite3_stmt *statement = [connection enumerateKeysAndObjectsInAllCollectionsStatement];
 	if (statement == NULL) return;
@@ -1767,9 +1731,6 @@
 {
 	if (block == NULL) return;
 	if (collection == nil) collection = @"";
-	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
 	
 	sqlite3_stmt *statement = [connection enumerateRowsInCollectionStatement];
 	if (statement == NULL) return;
@@ -1907,9 +1868,6 @@
 {
 	if (block == NULL) return;
 	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection enumerateRowsInAllCollectionsStatement];
 	if (statement == NULL) return;
 	
@@ -2035,9 +1993,6 @@
 	if (key == nil) return;
 	if (collection == nil) collection = @"";
 	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection setAllForKeyStatement];
 	if (statement == NULL) return;
 	
@@ -2116,9 +2071,6 @@
 	if (key == nil) return;
 	if (collection == nil) collection = @"";
 	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection setAllForKeyStatement];
 	if (statement == NULL) return;
 	
@@ -2190,9 +2142,6 @@
 	
 	if (![self hasObjectForKey:key inCollection:collection]) return;
 	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection setMetaForKeyStatement];
 	if (statement == NULL) return;
 	
@@ -2256,9 +2205,6 @@
 	if (key == nil) return;
 	if (collection == nil) collection  = @"";
 	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection removeForKeyStatement];
 	if (statement == NULL) return;
 	
@@ -2318,9 +2264,6 @@
 		collection = @"";
 	else
 		collection = [collection copy]; // mutable string protection
-	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
 	
 	// Sqlite has an upper bound on the number of host parameters that may be used in a single query.
 	// We need to watch out for this in case a large array of keys is passed.
@@ -2422,9 +2365,6 @@
 	else
 		collection = [collection copy]; // mutable string protection
 	
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection removeCollectionStatement];
 	if (statement == NULL) return;
 	
@@ -2477,9 +2417,6 @@
 
 - (void)removeAllObjectsInAllCollections
 {
-	__unsafe_unretained YapCollectionsDatabaseConnection *connection =
-	    (YapCollectionsDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection removeAllStatement];
 	if (statement == NULL) return;
 	

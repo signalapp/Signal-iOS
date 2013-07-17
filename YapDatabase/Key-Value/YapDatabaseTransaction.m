@@ -23,22 +23,31 @@
 
 @implementation YapDatabaseReadTransaction {
 	
-/* As defined in YapAbstractDatabasePrivate.h :
- 
+/* From YapAbstractDatabasePrivate.h & YapDatabasePrivate.h :
+
+@protected
+    BOOL isMutated; // Used for "mutation during enumeration" protection
+
 @public
-
-	__unsafe_unretained YapAbstractDatabaseConnection *abstractConnection;
-
 	BOOL isReadWriteTransaction;
+	__unsafe_unretained YapDatabaseConnection *connection;
+ 
 */
+}
+
+- (id)initWithConnection:(YapAbstractDatabaseConnection *)aConnection isReadWriteTransaction:(BOOL)flag
+{
+	if ((self = [super initWithConnection:aConnection isReadWriteTransaction:flag]))
+	{
+		connection = (YapDatabaseConnection *)aConnection;
+	}
+	return self;
 }
 
 #pragma mark Count
 
 - (NSUInteger)numberOfKeys
 {
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection getCountStatement];
 	if (statement == NULL) return 0;
 	
@@ -67,8 +76,6 @@
 
 - (NSArray *)allKeys
 {
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection enumerateKeysStatement];
 	if (statement == NULL) return nil;
 	
@@ -99,8 +106,6 @@
 - (NSData *)primitiveDataForKey:(NSString *)key
 {
 	if (key == nil) return nil;
-	
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
 	
 	sqlite3_stmt *statement = [connection getDataForKeyStatement];
 	if (statement == NULL) return nil;
@@ -141,8 +146,6 @@
 - (id)objectForKey:(NSString *)key
 {
 	if (key == nil) return nil;
-	
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
 	
 	id object = [connection->objectCache objectForKey:key];
 	if (object)
@@ -193,8 +196,6 @@
 {
 	if (key == nil) return NO;
 	
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
-	
 	// Shortcut:
 	// We may not need to query the database if we have the key in any of our caches.
 	
@@ -243,8 +244,6 @@
 		
 		return NO;
 	}
-	
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
 	
 	id object = [connection->objectCache objectForKey:key];
 	id metadata = [connection->metadataCache objectForKey:key];
@@ -344,8 +343,6 @@
 {
 	if (key == nil) return nil;
 	
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
-	
 	id metadata = [connection->metadataCache objectForKey:key];
 	if (metadata)
 	{
@@ -421,8 +418,6 @@
 {
 	if (block == NULL) return;
 	
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection enumerateKeysStatement];
 	if (statement == NULL) return;
 	
@@ -477,8 +472,6 @@
 {
 	if (block == NULL) return;
 	if ([keys count] == 0) return;
-	
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
 	
 	BOOL stop = NO;
 	isMutated = NO; // mutation during enumeration protection
@@ -670,8 +663,6 @@
 	if (block == NULL) return;
 	if ([keys count] == 0) return;
 	
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
-	
 	BOOL stop = NO;
 	isMutated = NO; // mutation during enumeration protection
 	
@@ -855,8 +846,6 @@
 {
 	if (block == NULL) return;
 	if ([keys count] == 0) return;
-	
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
 	
 	BOOL stop = NO;
 	isMutated = NO; // mutation during enumeration protection
@@ -1089,8 +1078,6 @@
 {
 	if (block == NULL) return;
 	
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection enumerateKeysAndMetadataStatement];
 	if (statement == NULL) return;
 	
@@ -1199,8 +1186,6 @@
 {
 	if (block == NULL) return;
 	
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection enumerateKeysAndObjectsStatement];
 	if (statement == NULL) return;
 	
@@ -1298,8 +1283,6 @@
                      withFilter:(BOOL (^)(NSString *key))filter
 {
 	if (block == NULL) return;
-	
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
 	
 	sqlite3_stmt *statement = [connection enumerateRowsStatement];
 	if (statement == NULL) return;
@@ -1422,8 +1405,6 @@
 	
 	if (key == nil) return;
 	
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection setAllForKeyStatement];
 	if (statement == NULL) return;
 	
@@ -1496,8 +1477,6 @@
 	
 	if (key == nil) return;
 	
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection setAllForKeyStatement];
 	if (statement == NULL) return;
 	
@@ -1560,8 +1539,6 @@
 {
 	if (![self hasObjectForKey:key]) return;
 	
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection setMetadataForKeyStatement];
 	if (statement == NULL) return;
 	
@@ -1618,8 +1595,6 @@
 {
 	if (key == nil) return;
 	
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection removeForKeyStatement];
 	if (statement == NULL) return;
 	
@@ -1671,8 +1646,6 @@
 		[self removeObjectForKey:[keys objectAtIndex:0]];
 		return;
 	}
-	
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
 	
 	// Sqlite has an upper bound on the number of host parameters that may be used in a single query.
 	// We need to watch out for this in case a large array of keys is passed.
@@ -1756,8 +1729,6 @@
 
 - (void)removeAllObjects
 {
-	__unsafe_unretained YapDatabaseConnection *connection = (YapDatabaseConnection *)abstractConnection;
-	
 	sqlite3_stmt *statement = [connection removeAllStatement];
 	if (statement == NULL) return;
 	
