@@ -53,7 +53,6 @@
  * For example, if you're downloading data from a server somewhere,
  * you might use metadata to timestamp when you originally fetched it.
  * You can later refer to the timestamp to decide if the data is stale and needs to be refreshed.
- * If you go this route, checkout the YapDatabase+Timestamp category, which has a bunch of useful helper methods.
  * 
  * Another common usage is to use a subset of the full object as metadata.
  * This is because metadata is kept in RAM for fast access without ever hitting the disk.

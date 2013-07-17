@@ -3,7 +3,6 @@
 
 #import "YapDatabase.h"
 #import "YapDatabasePrivate.h"
-#import "YapDatabaseTransaction+Timestamp.h"
 
 #import <libkern/OSAtomic.h>
 

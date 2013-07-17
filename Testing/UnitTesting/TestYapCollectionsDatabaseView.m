@@ -1,9 +1,6 @@
 #import "TestYapCollectionsDatabaseView.h"
 
 #import "YapCollectionsDatabase.h"
-#import "YapCollectionsDatabasePrivate.h"
-#import "YapCollectionsDatabaseTransaction+Timestamp.h"
-
 #import "YapCollectionsDatabaseView.h"
 
 #import "DDLog.h"
