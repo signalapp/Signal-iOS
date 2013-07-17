@@ -676,6 +676,7 @@
 		}
 		
 		[self postReadWriteTransaction:transaction];
+		registeredExtensionsChanged = NO;
 	}});
 	
 	return result;
@@ -720,6 +721,7 @@
 		}
 		
 		[self postReadWriteTransaction:transaction];
+		registeredExtensionsChanged = NO;
 	}});
 }
 
