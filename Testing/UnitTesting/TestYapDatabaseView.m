@@ -1938,6 +1938,51 @@
 		STAssertNoThrow(noExceptionBlock3B(), @"Should NOT throw exception. Proper use of stop.");
 		STAssertNoThrow(noExceptionBlock3C(), @"Should NOT throw exception. Mutating different group.");
 	}];
+	
+	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		// Test removeAll
+		
+		for (int i = 0; i < 100; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key-%d", i];
+			NSString *obj = [NSString stringWithFormat:@"obj-%d", i];
+			
+			[transaction setObject:obj forKey:key];
+		}
+		
+		dispatch_block_t exceptionBlock1 = ^{
+		
+			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
+												  usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+				
+				[transaction removeAllObjects];
+				// Missing stop; Will cause exception.
+			}];
+		};
+		
+		STAssertThrows(exceptionBlock1(), @"Should throw exception");
+		
+		for (int i = 0; i < 100; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key-%d", i];
+			NSString *obj = [NSString stringWithFormat:@"obj-%d", i];
+			
+			[transaction setObject:obj forKey:key];
+		}
+		
+		dispatch_block_t noExceptionBlock1 = ^{
+			
+			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
+			                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+				
+				[transaction removeAllObjects];
+				*stop = YES;
+			}];
+		};
+		
+		STAssertNoThrow(noExceptionBlock1(), @"Should NOT throw exception. Proper use of stop.");
+	}];
 }
 
 - (void)testDropView

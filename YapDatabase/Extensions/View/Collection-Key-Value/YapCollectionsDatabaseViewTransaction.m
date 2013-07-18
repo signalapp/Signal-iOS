@@ -1744,6 +1744,11 @@
 	sqlite3_reset(keyStatement);
 	sqlite3_reset(pageStatement);
 	
+	for (NSString *group in viewConnection->group_pagesMetadata_dict)
+	{
+		[viewConnection->mutatedGroups addObject:group];
+	}
+	
 	[viewConnection->group_pagesMetadata_dict removeAllObjects];
 	[viewConnection->pageKey_group_dict removeAllObjects];
 	
