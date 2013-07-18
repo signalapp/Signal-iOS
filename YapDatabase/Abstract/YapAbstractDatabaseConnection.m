@@ -1761,22 +1761,7 @@
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		const void *blob = sqlite3_column_blob(statement, 0);
-		int blobSize = sqlite3_column_bytes(statement, 0);
-		
-		if (blobSize >= sizeof(uint64_t))
-		{
-			uint64_t *littleEndianPtr = (uint64_t *)blob;
-			uint64_t littleEndian = *littleEndianPtr;
-			
-			result = CFSwapInt64LittleToHost(littleEndian);
-		}
-		else
-		{
-			NSData *data = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-			
-			YDBLogError(@"Error in 'yapGetDataForKeyStatement': Faulty data? %@", data);
-		}
+		result = (uint64_t)sqlite3_column_int64(statement, 0);
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -1808,8 +1793,7 @@
 	char *key = "snapshot";
 	sqlite3_bind_text(statement, 2, key, (int)strlen(key), SQLITE_STATIC);
 	
-	uint64_t littleEndian = CFSwapInt64HostToLittle(newSnapshot);
-	sqlite3_bind_blob(statement, 3, &littleEndian, (int)sizeof(uint64_t), SQLITE_STATIC);
+	sqlite3_bind_int64(statement, 3, (sqlite3_int64)newSnapshot);
 	
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)

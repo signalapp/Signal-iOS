@@ -608,7 +608,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	// Write it to disk (replacing any previous value from last app run)
 	
 	[self beginTransaction];
-	[self writeSnapshot:snapshot];
+	[self writeSnapshot];
 	[self fetchPreviouslyRegisteredExtensionNames];
 	[self commitTransaction];
 }
@@ -631,7 +631,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	}
 }
 
-- (void)writeSnapshot:(uint64_t)aSnapshot
+- (void)writeSnapshot
 {
 	int status;
 	sqlite3_stmt *statement;
@@ -652,8 +652,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		char *key = "snapshot";
 		sqlite3_bind_text(statement, 2, key, (int)strlen(key), SQLITE_STATIC);
 		
-		uint64_t littleEndian = CFSwapInt64HostToLittle(aSnapshot);
-		sqlite3_bind_blob(statement, 3, &littleEndian, (int)sizeof(uint64_t), SQLITE_STATIC);
+		sqlite3_bind_int64(statement, 3, (sqlite3_int64)snapshot);
 		
 		status = sqlite3_step(statement);
 		if (status != SQLITE_DONE)

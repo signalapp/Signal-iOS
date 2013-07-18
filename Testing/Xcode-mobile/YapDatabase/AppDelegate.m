@@ -17,7 +17,6 @@
 {
 	YapDatabase *database;
 	YapDatabaseConnection *databaseConnection;
-	YapDatabaseView *databaseView;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -30,10 +29,12 @@
 	                                         forFlag:YDB_LOG_FLAG_TRACE
 	                                         context:YDBLogContext];
 	
-	dispatch_async(dispatch_get_main_queue(), ^(void){
+	dispatch_async(dispatch_get_main_queue(), ^{
 		
 	//	[BenchmarkYapCache startTests];
 		[BenchmarkYapDatabase startTests];
+		
+	//	[self debug];
 	});
 	
 	// Normal UI stuff
@@ -48,6 +49,23 @@
 	self.window.rootViewController = self.viewController;
 	[self.window makeKeyAndVisible];
 	return YES;
+}
+
+- (NSString *)databasePath:(NSString *)suffix
+{
+	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+	NSString *baseDir = ([paths count] > 0) ? [paths objectAtIndex:0] : NSTemporaryDirectory();
+	
+	NSString *databaseName = [NSString stringWithFormat:@"database-%@.sqlite", suffix];
+	
+	return [baseDir stringByAppendingPathComponent:databaseName];
+}
+
+- (void)debug
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	database = [[YapDatabase alloc] initWithPath:databasePath];
 }
 
 @end
