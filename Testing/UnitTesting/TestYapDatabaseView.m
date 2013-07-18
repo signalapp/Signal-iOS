@@ -1866,4 +1866,80 @@
 	}];
 }
 
+- (void)testDropView
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	STAssertNotNil(database, @"Oops");
+	
+	YapDatabaseConnection *connection = [database newConnection];
+	
+	YapDatabaseViewBlockType groupingBlockType;
+	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
+	
+	YapDatabaseViewBlockType sortingBlockType;
+	YapDatabaseViewSortingWithObjectBlock sortingBlock;
+	
+	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
+	groupingBlock = ^NSString *(NSString *key){
+		
+		return @"";
+	};
+	
+	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
+	sortingBlock = ^(NSString *group, NSString *key1, id obj1, NSString *key2, id obj2){
+		
+		NSString *object1 = (NSString *)obj1;
+		NSString *object2 = (NSString *)obj2;
+		
+		return [object1 compare:object2 options:NSNumericSearch];
+	};
+	
+	YapDatabaseView *databaseView =
+	    [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
+	                                 groupingBlockType:groupingBlockType
+	                                      sortingBlock:sortingBlock
+	                                  sortingBlockType:sortingBlockType];
+	
+	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
+	
+	STAssertTrue(registerResult, @"Failure registering extension");
+	
+	// Add a bunch of keys to the database & to the view
+	
+	NSUInteger count = 100;
+	
+	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		for (int i = 0; i < count; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key-%d", i];
+			NSString *obj = [NSString stringWithFormat:@"obj-%d", i];
+			
+			[transaction setObject:obj forKey:key];
+		}
+	}];
+	
+	// Make sure the view is populated
+	
+	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		STAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == count, @"View count is wrong");
+	}];
+	
+	// Now drop the view
+	
+	[database unregisterExtension:@"order"];
+	
+	// Now make sure it's gone
+	
+	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		STAssertNil([transaction ext:@"order"], @"Expected nil extension");
+	}];
+}
+
 @end
