@@ -1840,7 +1840,7 @@
 	
 	[connection readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
 		
-		for (int i = 0; i < 50; i++)
+		for (int i = 0; i < 100; i++)
 		{
 			NSString *key = [NSString stringWithFormat:@"key-%d", i];
 			NSString *obj = [NSString stringWithFormat:@"obj-%d", i];
@@ -1853,18 +1853,31 @@
 		
 		// enumerateKeysInGroup:usingBlock:
 		
-		__block int i = 100;
+		__block int i = 200;
+		__block int j = 0;
+		__block int k = 0;
 		
-		dispatch_block_t exceptionBlock1 = ^{
+		dispatch_block_t exceptionBlock1A = ^{
 		
 			[[transaction ext:@"order"]
 			    enumerateKeysInGroup:@"default-group"
 			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
-				i++;
 				[transaction setObject:[NSString stringWithFormat:@"obj-%d", i]
 				                forKey:[NSString stringWithFormat:@"key-%d", i]
 				          inCollection:nil];
+				i++;
+				// Missing stop; Will cause exception.
+			}];
+		};
+		dispatch_block_t exceptionBlock1B = ^{
+		
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
+				
+				[transaction removeObjectForKey:[NSString stringWithFormat:@"key-%d", j] inCollection:nil];
+				j++;
 				// Missing stop; Will cause exception.
 			}];
 		};
@@ -1874,44 +1887,69 @@
 			    enumerateKeysInGroup:@"default-group"
 			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
-				i++;
 				[transaction setObject:[NSString stringWithFormat:@"obj-%d", i]
 				                forKey:[NSString stringWithFormat:@"key-%d", i]
 				          inCollection:nil];
+				i++;
 				*stop = YES;
 			}];
 		};
 		dispatch_block_t noExceptionBlock1B = ^{
+		
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
+				
+				[transaction removeObjectForKey:[NSString stringWithFormat:@"key-%d", j] inCollection:nil];
+				j++;
+				*stop = YES;
+			}];
+		};
+		dispatch_block_t noExceptionBlock1C = ^{
 			
 			[[transaction ext:@"order"]
 			    enumerateKeysInGroup:@"default-group"
 			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
-				i++;
-				[transaction setObject:[NSString stringWithFormat:@"diff-obj-%d", i]
-				                forKey:[NSString stringWithFormat:@"diff-key-%d", i]
+				[transaction setObject:[NSString stringWithFormat:@"diff-obj-%d", k]
+				                forKey:[NSString stringWithFormat:@"diff-key-%d", k]
 				          inCollection:nil];
+				k++;
 				// No stop; Shouldn't affect default-group.
 			}];
 		};
 		
-		STAssertThrows(exceptionBlock1(), @"Should throw exception");
+		STAssertThrows(exceptionBlock1A(), @"Should throw exception");
+		STAssertThrows(exceptionBlock1B(), @"Should throw exception");
 		STAssertNoThrow(noExceptionBlock1A(), @"Should NOT throw exception. Proper use of stop.");
-		STAssertNoThrow(noExceptionBlock1B(), @"Should NOT throw exception. Mutating different group.");
+		STAssertNoThrow(noExceptionBlock1B(), @"Should NOT throw exception. Proper use of stop.");
+		STAssertNoThrow(noExceptionBlock1C(), @"Should NOT throw exception. Mutating different group.");
 		
 		// enumerateKeysInGroup:withOptions:usingBlock:
 		
-		dispatch_block_t exceptionBlock2 = ^{
+		dispatch_block_t exceptionBlock2A = ^{
 			
 			[[transaction ext:@"order"]
 			    enumerateKeysInGroup:@"default-group"
 			             withOptions:NSEnumerationReverse
 			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
-				i++;
 				[transaction setObject:[NSString stringWithFormat:@"obj-%d", i]
 				                forKey:[NSString stringWithFormat:@"key-%d", i]
 				          inCollection:nil];
+				i++;
+				// Missing stop; Will cause exception.
+			}];
+		};
+		dispatch_block_t exceptionBlock2B = ^{
+			
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			             withOptions:NSEnumerationReverse
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
+				
+				[transaction removeObjectForKey:[NSString stringWithFormat:@"key-%d", j] inCollection:nil];
+				j++;
 				// Missing stop; Will cause exception.
 			}];
 		};
@@ -1922,10 +1960,10 @@
 			             withOptions:NSEnumerationReverse
 			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
-				i++;
 				[transaction setObject:[NSString stringWithFormat:@"obj-%d", i]
 				                forKey:[NSString stringWithFormat:@"key-%d", i]
 				          inCollection:nil];
+				i++;
 				*stop = YES;
 			}];
 		};
@@ -1936,21 +1974,35 @@
 			             withOptions:NSEnumerationReverse
 			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
-				i++;
-				[transaction setObject:[NSString stringWithFormat:@"diff-obj-%d", i]
-				                forKey:[NSString stringWithFormat:@"diff-key-%d", i]
+				[transaction removeObjectForKey:[NSString stringWithFormat:@"key-%d", j] inCollection:nil];
+				j++;
+				*stop = YES;
+			}];
+		};
+		dispatch_block_t noExceptionBlock2C = ^{
+			
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			             withOptions:NSEnumerationReverse
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
+				
+				[transaction setObject:[NSString stringWithFormat:@"diff-obj-%d", k]
+				                forKey:[NSString stringWithFormat:@"diff-key-%d", k]
 				          inCollection:nil];
+				k++;
 				// No stop; Shouldn't affect default-group.
 			}];
 		};
 		
-		STAssertThrows(exceptionBlock2(), @"Should throw exception");
+		STAssertThrows(exceptionBlock2A(), @"Should throw exception");
+		STAssertThrows(exceptionBlock2B(), @"Should throw exception");
 		STAssertNoThrow(noExceptionBlock2A(), @"Should NOT throw exception. Proper use of stop.");
-		STAssertNoThrow(noExceptionBlock2B(), @"Should NOT throw exception. Mutating different group.");
+		STAssertNoThrow(noExceptionBlock2B(), @"Should NOT throw exception. Proper use of stop.");
+		STAssertNoThrow(noExceptionBlock2C(), @"Should NOT throw exception. Mutating different group.");
 		
 		// enumerateKeysInGroup:withOptions:range:usingBlock:
 		
-		dispatch_block_t exceptionBlock3 = ^{
+		dispatch_block_t exceptionBlock3A = ^{
 			
 			[[transaction ext:@"order"]
 			    enumerateKeysInGroup:@"default-group"
@@ -1958,10 +2010,23 @@
 			                   range:NSMakeRange(0, 10)
 			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
-				i++;
 				[transaction setObject:[NSString stringWithFormat:@"obj-%d", i]
 				                forKey:[NSString stringWithFormat:@"key-%d", i]
 				          inCollection:nil];
+				i++;
+				// Missing stop; Will cause exception.
+			}];
+		};
+		dispatch_block_t exceptionBlock3B = ^{
+			
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			             withOptions:0
+			                   range:NSMakeRange(0, 10)
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
+				
+				[transaction removeObjectForKey:[NSString stringWithFormat:@"key-%d", j] inCollection:nil];
+				j++;
 				// Missing stop; Will cause exception.
 			}];
 		};
@@ -1973,10 +2038,10 @@
 			                   range:NSMakeRange(0, 10)
 			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
-				i++;
 				[transaction setObject:[NSString stringWithFormat:@"obj-%d", i]
 				                forKey:[NSString stringWithFormat:@"key-%d", i]
 				          inCollection:nil];
+				i++;
 				*stop = YES;
 			}];
 		};
@@ -1988,17 +2053,32 @@
 			                   range:NSMakeRange(0, 10)
 			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
-				i++;
-				[transaction setObject:[NSString stringWithFormat:@"diff-obj-%d", i]
-				                forKey:[NSString stringWithFormat:@"diff-key-%d", i]
+				[transaction removeObjectForKey:[NSString stringWithFormat:@"key-%d", j] inCollection:nil];
+				j++;
+				*stop = YES;
+			}];
+		};
+		dispatch_block_t noExceptionBlock3C = ^{
+			
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			             withOptions:0
+			                   range:NSMakeRange(0, 10)
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
+				
+				[transaction setObject:[NSString stringWithFormat:@"diff-obj-%d", k]
+				                forKey:[NSString stringWithFormat:@"diff-key-%d", k]
 				          inCollection:nil];
+				k++;
 				// No stop; Shouldn't affect default-group.
 			}];
 		};
 		
-		STAssertThrows(exceptionBlock3(), @"Should throw exception");
+		STAssertThrows(exceptionBlock3A(), @"Should throw exception");
+		STAssertThrows(exceptionBlock3B(), @"Should throw exception");
 		STAssertNoThrow(noExceptionBlock3A(), @"Should NOT throw exception. Proper use of stop.");
-		STAssertNoThrow(noExceptionBlock3B(), @"Should NOT throw exception. Mutating different group.");
+		STAssertNoThrow(noExceptionBlock3B(), @"Should NOT throw exception. Proper use of stop.");
+		STAssertNoThrow(noExceptionBlock3C(), @"Should NOT throw exception. Mutating different group.");
 	}];
 }
 
