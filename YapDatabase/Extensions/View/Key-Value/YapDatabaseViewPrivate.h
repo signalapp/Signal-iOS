@@ -54,6 +54,7 @@
 	BOOL lastInsertWasAtLastIndex;
 	
 	NSMutableArray *changes;
+	NSMutableSet *mutatedGroups;
 }
 
 - (id)initWithView:(YapDatabaseView *)view databaseConnection:(YapDatabaseConnection *)databaseConnection;
