@@ -145,6 +145,8 @@
 		dirtyMetadata = [[NSMutableDictionary alloc] init];
 	if (changes == nil)
 		changes = [[NSMutableArray alloc] init];
+	if (mutatedGroups == nil)
+		mutatedGroups = [[NSMutableSet alloc] init];
 	
 	return transaction;
 }
@@ -242,6 +244,7 @@
 	// So it's safe to simply reset.
 	
 	[changes removeAllObjects];
+	[mutatedGroups removeAllObjects];
 	
 	reset = NO;
 }

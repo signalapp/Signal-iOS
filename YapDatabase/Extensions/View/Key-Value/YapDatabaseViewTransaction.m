@@ -2584,7 +2584,7 @@
 			block(key, index, &stop);
 			
 			index++;
-			if (stop) break;
+			if (stop || [viewConnection->mutatedGroups containsObject:group]) break;
 		}
 		
 		if (stop || [viewConnection->mutatedGroups containsObject:group]) break;
@@ -2636,7 +2636,7 @@
 			else
 				keyIndex--;
 			
-			if (stop  || [viewConnection->mutatedGroups containsObject:group]) *innerStop = YES;
+			if (stop || [viewConnection->mutatedGroups containsObject:group]) *innerStop = YES;
 		}];
 		
 		if (stop || [viewConnection->mutatedGroups containsObject:group]) *outerStop = YES;
@@ -2860,7 +2860,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Internal - Exceptions
+#pragma mark Exceptions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSException *)mutationDuringEnumerationException:(NSString *)group

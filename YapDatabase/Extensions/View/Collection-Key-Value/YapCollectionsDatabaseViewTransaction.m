@@ -1123,6 +1123,8 @@
 	
 	[viewConnection->changes addObject:
 	    [YapDatabaseViewChange insertKey:collectionKey inGroup:group atIndex:index]];
+	
+	[viewConnection->mutatedGroups addObject:group];
 }
 
 /**
@@ -1250,6 +1252,8 @@
 		
 		[viewConnection->changes addObject:
 		    [YapDatabaseViewChange insertKey:collectionKey inGroup:group atIndex:0]];
+		
+		[viewConnection->mutatedGroups addObject:group];
 		
 		return;
 	}
@@ -1533,6 +1537,8 @@
 	[viewConnection->changes addObject:
 	    [YapDatabaseViewChange deleteKey:collectionKey inGroup:group atIndex:(pageOffset + keyIndexWithinPage)]];
 	
+	[viewConnection->mutatedGroups addObject:group];
+	
 	// Update page (by removing key from array)
 	
 	[page removeObjectAtIndex:keyIndexWithinPage];
@@ -1668,6 +1674,8 @@
 		[viewConnection->changes addObject:
 		    [YapDatabaseViewChange deleteKey:collectionKey inGroup:group atIndex:(pageOffset + keyIndexWithinPage)]];
 	}];
+	
+	[viewConnection->mutatedGroups addObject:group];
 	
 	// Update page (by removing keys from array)
 	
@@ -2818,6 +2826,8 @@
 {
 	if (block == NULL) return;
 	
+	[viewConnection->mutatedGroups removeObject:group]; // mutation during enumeration protection
+	
 	BOOL stop = NO;
 	
 	NSUInteger pageOffset = 0;
@@ -2827,15 +2837,23 @@
 	{
 		NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
 		
-		[page enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSUInteger index = pageOffset;
+		for (YapCollectionKey *collectionKey in page)
+		{
+			block(collectionKey.collection, collectionKey.key, index, &stop);
 			
-			__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
-			
-			block(collectionKey.collection, collectionKey.key, (pageOffset + idx), stop);
-		}];
+			index++;
+			if (stop || [viewConnection->mutatedGroups containsObject:group]) break;
+		}
 		
-		if (stop) break;
+		if (stop || [viewConnection->mutatedGroups containsObject:group]) break;
+		
 		pageOffset += pageMetadata->count;
+	}
+	
+	if (!stop && [viewConnection->mutatedGroups containsObject:group])
+	{
+		@throw [self mutationDuringEnumerationException:group];
 	}
 }
 
@@ -2847,6 +2865,8 @@
 	
 	NSEnumerationOptions options = (inOptions & NSEnumerationReverse); // We only support NSEnumerationReverse
 	BOOL forwardEnumeration = (options != NSEnumerationReverse);
+	
+	[viewConnection->mutatedGroups removeObject:group]; // mutation during enumeration protection
 	
 	__block BOOL stop = NO;
 	__block NSUInteger keyIndex;
@@ -2877,11 +2897,16 @@
 			else
 				keyIndex--;
 			
-			if (stop) *innerStop = YES;
+			if (stop || [viewConnection->mutatedGroups containsObject:group]) *innerStop = YES;
 		}];
 		
-		if (stop) *outerStop = YES;
+		if (stop || [viewConnection->mutatedGroups containsObject:group]) *outerStop = YES;
 	}];
+	
+	if (!stop && [viewConnection->mutatedGroups containsObject:group])
+	{
+		@throw [self mutationDuringEnumerationException:group];
+	}
 }
 
 - (void)enumerateKeysInGroup:(NSString *)group
@@ -2912,6 +2937,8 @@
 		
 		return pageOffset;
 	};
+	
+	[viewConnection->mutatedGroups removeObject:group]; // mutation during enumeration protection
 	
 	__block BOOL stop = NO;
 	__block BOOL startedRange = NO;
@@ -2945,12 +2972,12 @@
 				
 				block(collectionKey.collection, collectionKey.key, pageOffset+idx, &stop);
 				
-				if (stop) *innerStop = YES;
+				if (stop || [viewConnection->mutatedGroups containsObject:group]) *innerStop = YES;
 			}];
 			
 			keysLeft -= keysRange.length;
 			
-			if (stop) *outerStop = YES;
+			if (stop || [viewConnection->mutatedGroups containsObject:group]) *outerStop = YES;
 		}
 		else if (startedRange)
 		{
@@ -2959,6 +2986,11 @@
 		}
 		
 	}];
+	
+	if (!stop && [viewConnection->mutatedGroups containsObject:group])
+	{
+		@throw [self mutationDuringEnumerationException:group];
+	}
 	
 	if (!stop && keysLeft > 0)
 	{
@@ -3088,6 +3120,26 @@
 			    [YapDatabaseViewChange updateKey:collectionKey columns:flags inGroup:group atIndex:index]];
 		}
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Exceptions
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSException *)mutationDuringEnumerationException:(NSString *)group
+{
+	NSString *reason = [NSString stringWithFormat:
+	    @"View <RegisteredName=%@, Group=%@> was mutated while being enumerated.", [self registeredName], group];
+	
+	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
+	    @"If you modify the database during enumeration you must either"
+		@" (A) ensure you don't mutate the group you're enumerating OR"
+		@" (B) set the 'stop' parameter of the enumeration block to YES (*stop = YES;). "
+		@"If you're enumerating in order to remove items from the database,"
+		@" and you're enumerating in order (forwards or backwards)"
+		@" then you may also consider looping and using firstKeyInGroup / lastKeyInGroup."};
+	
+	return [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
 }
 
 @end
