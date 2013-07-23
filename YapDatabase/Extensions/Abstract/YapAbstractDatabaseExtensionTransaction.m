@@ -22,67 +22,9 @@
 @implementation YapAbstractDatabaseExtensionTransaction
 
 /**
- * This method is invoked as part of the registration process.
-**/
-- (void)willRegister:(BOOL *)isFirstTimeExtensionRegistration
-{
-	NSString *prevClassName = [self stringValueForExtensionKey:@"class"];
-	
-	if (prevClassName == nil)
-	{
-		*isFirstTimeExtensionRegistration = YES;
-		return;
-	}
-	
-	NSString *ourClassName = NSStringFromClass([[self extension] class]);
-	
-	if ([prevClassName isEqualToString:ourClassName])
-	{
-		*isFirstTimeExtensionRegistration = NO;
-		return;
-	}
-	
-	YDBLogWarn(@"Dropping tables for previously registered extension with name(%@), class(%@) for new class(%@)",
-	           [[self extension] registeredName], prevClassName, ourClassName);
-	
-	Class prevClass = NSClassFromString(prevClassName);
-	
-	if (prevClass == NULL)
-	{
-		YDBLogError(@"Unable to drop tables for previously registered extension with name(%@), unknown class(%@)",
-		            [[self extension] registeredName], prevClassName);
-	}
-	else if (![prevClass isSubclassOfClass:[YapAbstractDatabaseExtension class]])
-	{
-		YDBLogError(@"Unable to drop tables for previously registered extension with name(%@), invalid class(%@)",
-		            [[self extension] registeredName], prevClassName);
-	}
-	else
-	{
-		[prevClass dropTablesForRegisteredName:[[self extension] registeredName]
-		                       withTransaction:[self databaseTransaction]];
-	}
-	
-	*isFirstTimeExtensionRegistration = YES;
-}
-
-/**
- * This method is invoked as part of the registration process.
-**/
-- (void)didRegister:(BOOL)isFirstTimeExtensionRegistration
-{
-	if (isFirstTimeExtensionRegistration)
-	{
-		NSString *ourClassName = NSStringFromClass([[self extension] class]);
-		
-		[self setStringValue:ourClassName forExtensionKey:@"class"];
-	}
-}
-
-/**
  * See YapAbstractDatabaseExtensionPrivate for discussion of this method.
 **/
-- (BOOL)createFromScratch:(BOOL)isFirstTimeExtensionRegistration
+- (BOOL)createIfNeeded
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return NO;

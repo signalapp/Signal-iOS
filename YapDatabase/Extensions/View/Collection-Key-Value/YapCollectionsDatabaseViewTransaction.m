@@ -26,6 +26,13 @@
 #endif
 
 /**
+ * This version number is stored in the yap2 table.
+ * If there is a major re-write to this class, then the version number will be incremented,
+ * and the class can automatically rebuild the tables as needed.
+**/
+#define YAP_DATABASE_VIEW_CLASS_VERSION 1
+
+/**
  * The view is tasked with storing ordered arrays of keys.
  * In doing so, it splits the array into "pages" of keys,
  * and stores the pages in the database.
@@ -93,19 +100,28 @@
  * In general, a YES parameter means the view needs to populate itself by enumerating over the rows in the database.
  * A NO parameter means the view is already up-to-date.
 **/
-- (BOOL)createFromScratch:(BOOL)isFirstTimeExtensionRegistration
+- (BOOL)createIfNeeded
 {
-	if (isFirstTimeExtensionRegistration)
+	int oldClassVersion = [self intValueForExtensionKey:@"classVersion"];
+	int classVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
+	
+	if (oldClassVersion != classVersion)
 	{
+		// First time registration
+		
 		if (![self createTables]) return NO;
 		if (![self populateView]) return NO;
 		
-		int version = viewConnection->view->version;
+		[self setIntValue:classVersion forExtensionKey:@"classVersion"];
 		
-		[self setIntValue:version forExtensionKey:@"version"];
+		int userSuppliedConfigVersion = viewConnection->view->version;
+		[self setIntValue:userSuppliedConfigVersion forExtensionKey:@"version"];
 	}
 	else
 	{
+		// Check user-supplied config version.
+		// We may need to re-populate the database if the groupingBlock or sortingBlock changed.
+		
 		int oldVersion = [self intValueForExtensionKey:@"version"];
 		int newVersion = viewConnection->view->version;
 		

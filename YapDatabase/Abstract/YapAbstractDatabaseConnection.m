@@ -600,15 +600,18 @@
 		extensionConnection = [extension newConnection:self];
 		extensionTransaction = [extensionConnection newReadWriteTransaction:transaction];
 		
-		BOOL isFirstTimeExtensionReigstration = NO;
-		[extensionTransaction willRegister:&isFirstTimeExtensionReigstration];
+		BOOL isFirstTimeRegistration = NO;
+		[self willRegisterExtension:extension
+		            withTransaction:transaction
+		    isFirstTimeRegistration:&isFirstTimeRegistration];
 		
-		result = [extensionTransaction createFromScratch:isFirstTimeExtensionReigstration];
+		result = [extensionTransaction createIfNeeded];
 		
 		if (result)
 		{
-			[extensionTransaction didRegister:isFirstTimeExtensionReigstration];
-			[self didRegisterExtension:extension withName:extensionName];
+			[self didRegisterExtension:extension
+			           withTransaction:transaction
+			   isFirstTimeRegistration:isFirstTimeRegistration];
 			
 			[self addRegisteredExtensionConnection:extensionConnection];
 			[transaction addRegisteredExtensionTransaction:extensionTransaction];
@@ -668,9 +671,76 @@
 	}});
 }
 
-- (void)didRegisterExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
+- (void)willRegisterExtension:(YapAbstractDatabaseExtension *)extension
+              withTransaction:(YapAbstractDatabaseTransaction *)transaction
+      isFirstTimeRegistration:(BOOL *)isFirstTimeRegistrationPtr
 {
 	// This method is INTERNAL
+	//
+	// The class name of every registered extension is recorded in the yap2 table.
+	// We ensure that re-registrations under the same name use the same extension class.
+	// If we detect a change, we auto-unregister the previous extension.
+	//
+	// Note: @"class" is a reserved key for all extensions.
+	
+	NSString *extensionName = extension.registeredName;
+	
+	NSString *prevExtensionClassName = [transaction stringValueForKey:@"class" extension:extensionName];
+	if (prevExtensionClassName == nil)
+	{
+		*isFirstTimeRegistrationPtr = YES;
+		return;
+	}
+	
+	NSString *extensionClassName = NSStringFromClass([extension class]);
+	
+	if ([prevExtensionClassName isEqualToString:extensionClassName])
+	{
+		*isFirstTimeRegistrationPtr = NO;
+		return;
+	}
+	
+	YDBLogWarn(@"Dropping tables for previously registered extension with name(%@), class(%@) for new class(%@)",
+	           extensionName, prevExtensionClassName, extensionClassName);
+	
+	Class prevExtensionClass = NSClassFromString(prevExtensionClassName);
+	
+	if (prevExtensionClass == NULL)
+	{
+		YDBLogError(@"Unable to drop tables for previously registered extension with name(%@), unknown class(%@)",
+		            extensionName, prevExtensionClassName);
+	}
+	else if (![prevExtensionClass isSubclassOfClass:[YapAbstractDatabaseExtension class]])
+	{
+		YDBLogError(@"Unable to drop tables for previously registered extension with name(%@), invalid class(%@)",
+		            extensionName, prevExtensionClassName);
+	}
+	else
+	{
+		[prevExtensionClass dropTablesForRegisteredName:extensionName withTransaction:transaction];
+	}
+	
+	*isFirstTimeRegistrationPtr = YES;
+}
+
+- (void)didRegisterExtension:(YapAbstractDatabaseExtension *)extension
+             withTransaction:(YapAbstractDatabaseTransaction *)transaction
+     isFirstTimeRegistration:(BOOL)isFirstTimeRegistration
+{
+	// This method is INTERNAL
+	
+	NSString *extensionName = extension.registeredName;
+	
+	// Record the class name of the extension in the yap2 table.
+	
+	if (isFirstTimeRegistration)
+	{
+		NSString *extensionClassName = NSStringFromClass([extension class]);
+		
+		[transaction setStringValue:extensionClassName forKey:@"class" extension:extensionName];
+	}
+	
+	// Update the list of registered extensions.
 	
 	NSMutableDictionary *newRegisteredExtensions = [registeredExtensions mutableCopy];
 	[newRegisteredExtensions setObject:extension forKey:extensionName];

@@ -135,25 +135,21 @@
 }
 
 /**
- * The following methods are implemented by YapAbstractDatabaseExtension.
- * Subclasses may override them if desired.
-**/
-- (void)willRegister:(BOOL *)isFirstTimeExtensionRegistration;
-- (void)didRegister:(BOOL)isFirstTimeExtensionRegistration;
-
-/**
  * Subclasses must implement this method in order to properly create the extension.
  * This includes creating any necessary tables,
  * as well as populating the tables by enumerating over the existing rows in the database.
  * 
- * The given BOOL indicates if this is the first time the extension has been registered.
- * That is, this value will be YES the very first time the extension is registered with this name.
- * Subsequent registrations (on later app launches) will pass NO.
+ * The method should check to see if it has already been created.
+ * That is, is this a re-registration from a subsequent app launch,
+ * or is this the first time the extension has been registered under this name?
  * 
- * In general, a YES parameter means the extension needs to create the tables and populate itself.
- * A NO parameter means the extension is likely ready to go.
+ * The recommended way of accomplishing this is via the yap2 table.
+ * There are various convenience methods that allow you store various settings about your extension in this table.
+ * In fact, the table was designed for this purpose.
+ * 
+ * See YapDatabaseViewTransaction for a reference implementation.
 **/
-- (BOOL)createFromScratch:(BOOL)isFirstTimeExtensionRegistration;
+- (BOOL)createIfNeeded;
 
 /**
  * Subclasses must implement this method in order to do whatever setup is needed for use.
