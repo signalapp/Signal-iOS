@@ -400,7 +400,10 @@
  * Gets an exact list of changes that happend to the view, translating groups to sections as requested.
  * See the header file for more information.
 **/
-- (NSArray *)changesForNotifications:(NSArray *)notifications withGroupToSectionMappings:(NSDictionary *)mappings
+- (void)getSectionChanges:(NSArray **)sectionChangesPtr
+               rowChanges:(NSArray **)rowChangesPtr
+         forNotifications:(NSArray *)notifications
+             withMappings:(YapDatabaseViewMappings *)mappings
 {
 	NSString *registeredName = self.view.registeredName;
 	NSMutableArray *all_changes = [NSMutableArray array];
@@ -415,12 +418,18 @@
 		[all_changes addObjectsFromArray:changeset_changes];
 	}
 	
-	NSMutableArray *all_changes_safe = [[NSMutableArray alloc] initWithArray:all_changes copyItems:YES];
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:all_changes_safe
-	                         withGroupToSectionMappings:mappings];
+	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		[mappings updateWithTransaction:transaction];
+	}];
 	
-	return all_changes_safe;
+	[YapDatabaseViewChange getSectionChanges:sectionChangesPtr
+	                              rowChanges:rowChangesPtr
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:all_changes];
 }
 
 /**

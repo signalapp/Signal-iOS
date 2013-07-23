@@ -29,7 +29,36 @@ typedef enum {
  * https://github.com/yaptv/YapDatabase/wiki/LongLivedReadTransactions
  * https://github.com/yaptv/YapDatabase/wiki/YapDatabaseModifiedNotification
 **/
-@interface YapDatabaseViewChange : NSObject <NSCopying>
+
+@interface YapDatabaseViewSectionChange : NSObject <NSCopying>
+
+/**
+ * The type will be either Insert or Delete
+ *
+ * @see YapDatabaseViewChangeType
+**/
+@property (nonatomic, readonly) YapDatabaseViewChangeType type;
+
+/**
+ * The section index.
+ * 
+ * If the type is YapDatabaseViewChangeDelete, then this represents the originalIndex of the section (pre-animation).
+ * If the type is YapDatabaseViewChangeInsert, then this represents the finalIndex of the section (post-animation).
+**/
+@property (nonatomic, readonly) NSUInteger index;
+
+/**
+ * The corresponding group for the section.
+**/
+@property (nonatomic, readonly) NSString *group;
+
+@end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@interface YapDatabaseViewRowChange : NSObject <NSCopying>
 
 /**
  * The type will be one of: Insert, Delete, Move or Update
@@ -99,7 +128,7 @@ typedef enum {
  *
  * for (YapDatabaseViewChange *change in changes)
  * {
- *     switch (change)
+ *     switch (change.type)
  *     {
  *         case YapDatabaseViewChangeDelete :
  *         {
@@ -145,6 +174,9 @@ typedef enum {
 
 @property (nonatomic, readonly) NSUInteger originalIndex;
 @property (nonatomic, readonly) NSUInteger finalIndex;
+
+@property (nonatomic, readonly) NSUInteger originalSection;
+@property (nonatomic, readonly) NSUInteger finalSection;
 
 @property (nonatomic, readonly) NSString *originalGroup;
 @property (nonatomic, readonly) NSString *finalGroup;

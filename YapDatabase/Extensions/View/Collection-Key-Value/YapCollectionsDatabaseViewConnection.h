@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "YapAbstractDatabaseExtensionConnection.h"
 #import "YapDatabaseViewChange.h"
+#import "YapDatabaseViewMappings.h"
 
 @class YapCollectionsDatabaseView;
 
@@ -101,7 +102,10 @@
  *    [self.tableView endUpdates];
  * }
 **/
-- (NSArray *)changesForNotifications:(NSArray *)notifications withGroupToSectionMappings:(NSDictionary *)mappings;
+- (void)getSectionChanges:(NSArray **)sectionChangesPtr
+               rowChanges:(NSArray **)rowChangesPtr
+         forNotifications:(NSArray *)notifications
+             withMappings:(YapDatabaseViewMappings *)mappings;
 
 /**
  * A simple YES/NO query to see if the view changed at all, inclusive of all groups.

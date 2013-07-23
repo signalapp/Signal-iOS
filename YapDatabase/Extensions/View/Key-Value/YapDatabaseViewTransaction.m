@@ -1021,7 +1021,7 @@
 	
 	// Add change to log
 	
-	[viewConnection->changes addObject:[YapDatabaseViewChange insertKey:key inGroup:group atIndex:index]];
+	[viewConnection->changes addObject:[YapDatabaseViewRowChange insertKey:key inGroup:group atIndex:index]];
 	
 	[viewConnection->mutatedGroups addObject:group];
 }
@@ -1078,7 +1078,7 @@
 				// Thus the position within the view hasn't changed.
 				
 				[viewConnection->changes addObject:
-				    [YapDatabaseViewChange updateKey:key columns:flags inGroup:group atIndex:existingIndexInGroup]];
+				    [YapDatabaseViewRowChange updateKey:key columns:flags inGroup:group atIndex:existingIndexInGroup]];
 				
 				return;
 			}
@@ -1148,7 +1148,10 @@
 		// Add change to log
 		
 		[viewConnection->changes addObject:
-		    [YapDatabaseViewChange insertKey:key inGroup:group atIndex:0]];
+		    [YapDatabaseViewSectionChange insertGroup:group]];
+		
+		[viewConnection->changes addObject:
+		    [YapDatabaseViewRowChange insertKey:key inGroup:group atIndex:0]];
 		
 		[viewConnection->mutatedGroups addObject:group];
 		
@@ -1266,7 +1269,7 @@
 			YDBLogVerbose(@"Updated key(%@) in group(%@) maintains current index", key, group);
 			
 			[viewConnection->changes addObject:
-				[YapDatabaseViewChange updateKey:key columns:flags inGroup:group atIndex:existingIndexInGroup]];
+				[YapDatabaseViewRowChange updateKey:key columns:flags inGroup:group atIndex:existingIndexInGroup]];
 			
 			return;
 		}
@@ -1401,7 +1404,7 @@
 	// Add change to log
 	
 	[viewConnection->changes addObject:
-	    [YapDatabaseViewChange deleteKey:key inGroup:group atIndex:(pageOffset + keyIndexWithinPage)]];
+	    [YapDatabaseViewRowChange deleteKey:key inGroup:group atIndex:(pageOffset + keyIndexWithinPage)]];
 	
 	[viewConnection->mutatedGroups addObject:group];
 	
@@ -1507,7 +1510,7 @@
 		NSString *key = [page objectAtIndex:keyIndexWithinPage];
 		
 		[viewConnection->changes addObject:
-		    [YapDatabaseViewChange deleteKey:key inGroup:group atIndex:(pageOffset + keyIndexWithinPage)]];
+		    [YapDatabaseViewRowChange deleteKey:key inGroup:group atIndex:(pageOffset + keyIndexWithinPage)]];
 	}];
 	
 	[viewConnection->mutatedGroups addObject:group];
@@ -1597,6 +1600,7 @@
 	
 	for (NSString *group in viewConnection->group_pagesMetadata_dict)
 	{
+		[viewConnection->changes addObject:[YapDatabaseViewSectionChange resetGroup:group]];
 		[viewConnection->mutatedGroups addObject:group];
 	}
 	
@@ -1862,6 +1866,9 @@
 	if ([pagesMetadataForGroup count] == 0)
 	{
 		YDBLogVerbose(@"Dropping empty group(%@)", pageMetadata->group);
+		
+		[viewConnection->changes addObject:
+		    [YapDatabaseViewSectionChange deleteGroup:pageMetadata->group]];
 		
 		[viewConnection->group_pagesMetadata_dict removeObjectForKey:pageMetadata->group];
 	}
@@ -2258,7 +2265,7 @@
 			NSUInteger existingIndex = [self indexForKey:key inGroup:group withPageKey:pageKey];
 			
 			[viewConnection->changes addObject:
-			    [YapDatabaseViewChange updateKey:key columns:flags inGroup:group atIndex:existingIndex]];
+			    [YapDatabaseViewRowChange updateKey:key columns:flags inGroup:group atIndex:existingIndex]];
 		}
 		else
 		{
@@ -2326,7 +2333,7 @@
 					NSUInteger existingIndex = [self indexForKey:key inGroup:group withPageKey:existingPageKey];
 					
 					[viewConnection->changes addObject:
-					    [YapDatabaseViewChange updateKey:key columns:flags inGroup:group atIndex:existingIndex]];
+					    [YapDatabaseViewRowChange updateKey:key columns:flags inGroup:group atIndex:existingIndex]];
 					
 					return;
 				}
@@ -2804,7 +2811,7 @@
 		int flags = (YapDatabaseViewChangeColumnObject | YapDatabaseViewChangeColumnMetadata);
 		
 		[viewConnection->changes addObject:
-		    [YapDatabaseViewChange updateKey:key columns:flags inGroup:group atIndex:index]];
+		    [YapDatabaseViewRowChange updateKey:key columns:flags inGroup:group atIndex:index]];
 	}
 }
 
@@ -2831,7 +2838,7 @@
 			int flags = YapDatabaseViewChangeColumnObject;
 			
 			[viewConnection->changes addObject:
-			    [YapDatabaseViewChange updateKey:key columns:flags inGroup:group atIndex:index]];
+			    [YapDatabaseViewRowChange updateKey:key columns:flags inGroup:group atIndex:index]];
 		}
 	}
 }
@@ -2859,7 +2866,7 @@
 			int flags = YapDatabaseViewChangeColumnMetadata;
 			
 			[viewConnection->changes addObject:
-			    [YapDatabaseViewChange updateKey:key columns:flags inGroup:group atIndex:index]];
+			    [YapDatabaseViewRowChange updateKey:key columns:flags inGroup:group atIndex:index]];
 		}
 	}
 }

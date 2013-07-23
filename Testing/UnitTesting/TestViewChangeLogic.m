@@ -1,6 +1,7 @@
 #import "TestViewChangeLogic.h"
 #import "YapDatabaseViewChange.h"
 #import "YapDatabaseViewChangePrivate.h"
+#import "YapDatabaseViewMappingsPrivate.h"
 
 /**
  * A database view needs to report a changeset in the YapDatabaseModifiedNotification.
@@ -40,9 +41,19 @@
 
 static NSMutableArray *changes;
 
-static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
+static YapDatabaseViewRowChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
-	return (YapDatabaseViewChange *)[changes objectAtIndex:index];
+	return (YapDatabaseViewRowChange *)[changes objectAtIndex:index];
+};
+
+static YapDatabaseViewSectionChange* (^SectionOp)(NSArray*, NSUInteger) = ^(NSArray *sChanges, NSUInteger index){
+	
+	return (YapDatabaseViewSectionChange *)[sChanges objectAtIndex:index];
+};
+
+static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rChanges, NSUInteger index){
+	
+	return (YapDatabaseViewRowChange *)[rChanges objectAtIndex:index];
 };
 
 + (void)initialize
@@ -61,7 +72,8 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Delete, Delete
+#pragma mark -
+#pragma mark Row: Delete, Delete
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)test1A
@@ -74,12 +86,12 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 3 | cat   | dog   | 
 	// 4 | dog   |       | 
 	
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"lion" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"lion" inGroup:@"" atIndex:0]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -102,12 +114,12 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 3 | cat   | dog   |
 	// 4 | dog   |       |
 	
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"cat"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"cat"  inGroup:@"" atIndex:2]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: (2 -> ~) (bear)
@@ -130,12 +142,12 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 3 | cat   | dog   |
 	// 4 | dog   |       |
 	
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"dog"  inGroup:@"" atIndex:3]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"dog"  inGroup:@"" atIndex:3]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: (2 -> ~) (bear)
@@ -149,7 +161,7 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Insert, Insert
+#pragma mark Row: Insert, Insert
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)test2A
@@ -164,12 +176,12 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 5 |       | dog   | cat
 	// 6 |       |       | dog
 	
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"goat"  inGroup:@"" atIndex:0]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: (~ -> 3) (zebra)
@@ -194,12 +206,12 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 5 |       | dog   | cat
 	// 6 |       |       | dog
 	
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"goat"  inGroup:@"" atIndex:2]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: (~ -> 3) (zebra)
@@ -224,12 +236,12 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 5 |       | dog   | dog
 	// 6 |       |       | goat
 	
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:6]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"goat"  inGroup:@"" atIndex:6]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: (~ -> 2) (zebra)
@@ -243,7 +255,7 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Delete, Insert
+#pragma mark Row: Delete, Insert
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)test3A
@@ -256,12 +268,12 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 3 | cat   | dog   | cat
 	// 4 | dog   |       | dog
 	
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:0]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -284,12 +296,12 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 3 | cat   | dog   | cat
 	// 4 | dog   |       | dog
 	
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -312,12 +324,12 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 3 | cat   | dog   | dog
 	// 4 | dog   |       | zebra
 	
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:4]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:4]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -331,7 +343,7 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Insert, Delete
+#pragma mark Row: Insert, Delete
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)test4A
@@ -345,12 +357,12 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   | cat   | dog
 	// 5 |       | dog   | 
 	
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"lion"  inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"lion"  inGroup:@"" atIndex:0]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: 1 (zebra)
@@ -374,12 +386,12 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   | cat   | dog
 	// 5 |       | dog   |
 	
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"tiger" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"tiger" inGroup:@"" atIndex:1]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: 1 (zebra)
@@ -403,12 +415,12 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   | cat   | dog
 	// 5 |       | dog   |
 	
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:3]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear"  inGroup:@"" atIndex:3]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: 2 (zebra)
@@ -432,12 +444,12 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   | cat   | dog
 	// 5 |       | dog   |
 	
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"cat"   inGroup:@"" atIndex:4]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"cat"   inGroup:@"" atIndex:4]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: 2 (zebra)
@@ -451,7 +463,7 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Insert, Delete, Delete
+#pragma mark Row: Insert, Delete, Delete
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)test5A
@@ -465,13 +477,13 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   | cat   | dog   |
 	// 5 |       | dog   |       |
 	
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"lion"  inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"tiger" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"lion"  inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"tiger" inGroup:@"" atIndex:0]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: 0 (zebra)
@@ -499,13 +511,13 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   | cat   | dog   |
 	// 5 |       | dog   |       |
 	
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"tiger" inGroup:@"" atIndex:1]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"tiger" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: 1 (zebra)
@@ -523,7 +535,7 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Delete, Insert, Insert
+#pragma mark Row: Delete, Insert, Insert
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)test6A
@@ -537,13 +549,13 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   |       | dog   | cat
 	// 5 |       |       |       | dog
 	
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"goat"  inGroup:@"" atIndex:0]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -571,13 +583,13 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   |       | dog   | cat
 	// 5 |       |       |       | dog
 	
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"goat"  inGroup:@"" atIndex:1]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -605,13 +617,13 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   |       | dog   | cat
 	// 5 |       |       |       | dog
 	
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:1]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"goat"  inGroup:@"" atIndex:0]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -639,13 +651,13 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   |       | dog   | cat
 	// 5 |       |       |       | dog
 	
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:1]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"goat"  inGroup:@"" atIndex:2]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -673,13 +685,13 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   |       | dog   | cat
 	// 5 |       |       |       | dog
 	
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"goat"  inGroup:@"" atIndex:1]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -707,13 +719,13 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   |       | dog   | cat
 	// 5 |       |       |       | dog
 	
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"goat"  inGroup:@"" atIndex:2]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -731,7 +743,7 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Insert, Delete ...
+#pragma mark Row: Insert, Delete ...
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)test7A
@@ -745,15 +757,15 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   | cat   | dog   |       |       |       |
 	// 5 |       | dog   |       |       |       |       |
 	
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"lion"  inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"tiger" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:1]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"cat"   inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"lion"  inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"tiger" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear"  inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"cat"   inGroup:@"" atIndex:1]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: 0 (zebra)
@@ -789,15 +801,15 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   | cat   | dog   |       |       |       |
 	// 5 |       | dog   |       |       |       |       |
 	
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"tiger" inGroup:@"" atIndex:1]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"lion"  inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"cat"   inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"tiger" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"lion"  inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"cat"   inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear"  inGroup:@"" atIndex:1]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: 0 (zebra)
@@ -833,15 +845,15 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 4 | dog   | cat   | dog   |       |       |       |
 	// 5 |       | dog   |       |       |       |       |
 	
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:3]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"cat"   inGroup:@"" atIndex:3]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"lion"  inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"tiger" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear"  inGroup:@"" atIndex:3]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"cat"   inGroup:@"" atIndex:3]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"lion"  inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"tiger" inGroup:@"" atIndex:0]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: 0 (zebra)
@@ -867,7 +879,7 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Delete, Insert ...
+#pragma mark Row: Delete, Insert ...
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)test8A
@@ -882,14 +894,14 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	// 5 |       |       |       | dog   | cat
 	// 6 |       |       |       |       | dog
 	
-	[changes addObject:[YapDatabaseViewChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"zebra" inGroup:@"" atIndex:1]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"goat"  inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewChange insertKey:@"fish"  inGroup:@"" atIndex:3]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zebra" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"goat"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"fish"  inGroup:@"" atIndex:3]];
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateChanges:changes];
+	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -908,6 +920,1654 @@ static YapDatabaseViewChange* (^Op)(NSUInteger) = ^(NSUInteger index){
 	
 	STAssertTrue(Op(3).type == YapDatabaseViewChangeInsert, @"");
 	STAssertTrue(Op(3).finalIndex == 3, @"");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+#pragma mark Section: Insert
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test9A
+{
+	//           orig    insrt
+	//
+	// A[0, 0] | (nil) | lion
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"A"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"lion" inGroup:@"A" atIndex:0]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(0) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(1) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	// Section Insert: 0 (A)
+	//     Row Insert: 0 (lion)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalIndex == 0, @"");
+}
+
+- (void)test9B
+{
+	//           orig    insrt
+	//
+	// A[0, 0] | (nil) | lion
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"A"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"lion" inGroup:@"A" atIndex:0]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
+	mappings.allowsEmptySections = YES;
+	
+	[mappings updateWithCounts:@{ @"A": @(0) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(1) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	// Section Insert: none (allowsEmptySections)
+	//     Row Insert: 0 (lion)
+	
+	STAssertTrue([sChanges count] == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalIndex == 0, @"");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Section: Delete
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test10A
+{
+	//           orig    delte
+	//
+	// A[0, 0] | lion  | (nil)
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"lion" inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"A"]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(0) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	// Section Delete: 0 (A)
+	//     Row Delete: 0 (lion)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalIndex == 0, @"");
+}
+
+- (void)test10B
+{
+	//           orig    delte
+	//
+	// A[0, 0] | lion  | (nil)
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"lion" inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"A"]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
+	mappings.allowsEmptySections = YES;
+	
+	[mappings updateWithCounts:@{ @"A": @(1) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(0) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	// Section Delete: none (allowsEmptySections)
+	//     Row Insert: 0 (lion)
+	
+	STAssertTrue([sChanges count] == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalIndex == 0, @"");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Section: Insert +
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test11A
+{
+	//           orig   insrt  insrt
+	//
+	// A[0, 0] | elm  | elm  | elm  |
+	// A[0, 1] |      |      |+oak  |
+	// --------|      |------|------|
+	// B[1, 0] |      |+lion | lion |
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"B"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"lion" inGroup:@"B" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"oak" inGroup:@"A" atIndex:1]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(0) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(2), @"B" : @(1) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Insert: 1 (B)
+	//
+	// 0) Row Insert: [1, 0] (lion)
+	// 1) Row Insert: [0, 1] (oak)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 1, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalIndex == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalIndex == 1, @"");
+}
+
+- (void)test11B
+{
+	//           orig   insrt  insrt
+	//
+	// A[X, 0] |      |+lion | lion |
+	// --------|      |------|------|
+	// B[X, 0] | elm  | elm  | elm  |
+	// B[X, 1] |      |      |+oak  |
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"A"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"lion" inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"oak" inGroup:@"B" atIndex:1]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(0), @"B" : @(1) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(2) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Insert: 0 (A)
+	//
+	// 0) Row Insert: [0, 0] (lion)
+	// 1) Row Insert: [1, 1] (oak)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalIndex == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalIndex == 1, @"");
+}
+
+- (void)test11C
+{
+	//           orig   insrt  updte
+	//
+	// A[0, 0] | elm  | elm  |~elm  |
+	// --------|      |------|------|
+	// B[1, 0] |      |+lion | lion |
+	
+	int flags = YapDatabaseViewChangeColumnObject;
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"B"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"lion" inGroup:@"B" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange updateKey:@"elm" columns:flags inGroup:@"A" atIndex:0]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(0) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Insert: 1 (B)
+	//
+	// 0) Row Insert: [1, 0] (lion)
+	// 1) Row Update: [0, 0] (elm)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 1, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalIndex == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeUpdate, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalIndex == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).indexPath.section == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).indexPath.row == 0, @"");
+}
+
+- (void)test11D
+{
+	//           orig   insrt  updte
+	//
+	// A[X, 0] |      |+lion | lion |
+	// --------|      |------|------|
+	// B[X, 0] | elm  | elm  |~elm  |
+	
+	int flags = YapDatabaseViewChangeColumnObject;
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"A"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"lion" inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange updateKey:@"elm" columns:flags inGroup:@"B" atIndex:0]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(0), @"B" : @(1) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Insert: 0 (A)
+	//
+	// 0) Row Insert: [0, 0] (lion)
+	// 1) Row Move  : [0, 0] -> [1, 0] (oak)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalIndex == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalIndex == 0, @"");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Section: Delete +
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test12A
+{
+	//           orig   insrt  insrt
+	//
+	// A[0, 0] | elm  | elm  | elm  |
+	// A[0, 1] |      |      |+oak  |
+	// --------|------|      |      |
+	// B[1, 0] | lion-|      |      |
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"lion" inGroup:@"B" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"B"]];
+	
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"oak" inGroup:@"A" atIndex:1]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(2), @"B" : @(0) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Delete: 1 (B)
+	//
+	// 0) Row Delete: [1, 0] (lion)
+	// 1) Row Insert: [0, 1] (oak)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 1, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalIndex == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalIndex == 1, @"");
+}
+
+- (void)test12B
+{
+	//           orig   insrt  insrt
+	//
+	// A[X, 0] | elm- |      |      |
+	// --------|------|      |      |
+	// B[1, 0] | lion | lion | lion |
+	// B[X, 1] |      |      |+bear |
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"elm" inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"A"]];
+	
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"bear" inGroup:@"B" atIndex:1]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(0), @"B" : @(2) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Delete: 0 (A)
+	//
+	// 0) Row Delete: [0, 0] (elm)
+	// 1) Row Insert: [0, 1] (bear)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalIndex == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalIndex == 1, @"");
+}
+
+- (void)test12C
+{
+	//           orig   delte  updte
+	//
+	// A[0, 0] | elm  | elm  |~elm  |
+	// --------|------|      |      |
+	// B[1, 0] | lion-|      |      |
+	
+	int flags = YapDatabaseViewChangeColumnObject;
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"lion" inGroup:@"B" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"B"]];
+	
+	[changes addObject:[YapDatabaseViewRowChange updateKey:@"elm" columns:flags inGroup:@"A" atIndex:0]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(0) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Delete: 1 (B)
+	//
+	// 0) Row Delete: [1, 0] (lion)
+	// 1) Row Update: [0, 0] (elm)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 1, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalIndex == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeUpdate, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalIndex == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).indexPath.section == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).indexPath.row == 0, @"");
+}
+
+- (void)test12D
+{
+	//           orig   delte  updte
+	//
+	// A[X, 0] | elm -|      |      |
+	// --------|------|      |      |
+	// B[X, 0] | lion | lion |~lion |
+	
+	int flags = YapDatabaseViewChangeColumnObject;
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"elm" inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"A"]];
+	
+	[changes addObject:[YapDatabaseViewRowChange updateKey:@"lion" columns:flags inGroup:@"B" atIndex:0]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(0), @"B" : @(1) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Delete: 0 (A)
+	//
+	// 0) Row Delete: [0, 0] (elm)
+	// 1) Row Move  : [1, 0] -> [0, 0] (lion)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalIndex == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalIndex == 0, @"");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Section: Insert, Delete
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test13A
+{
+	//           orig   insrt  delte
+	//
+	// A[X, 0] | elm  | elm  |      |
+	// --------|------|------|      |
+	// B[X, 0] | lion | lion | lion |
+	// --------|      |------|------|
+	// C[X, 0] |      | john | john |
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"C"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"john" inGroup:@"C" atIndex:0]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"elm" inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"A"]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B", @"C"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1), @"C" : @(0) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(0), @"B" : @(1), @"C" : @(1) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Insert: 1 (C)
+	// 1) Section Delete: 0 (A)
+	//
+	// 0) Row Insert: [1, 0] (john)
+	// 1) Row Delete: [0, 0] (elm)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 1, @"");
+	
+	STAssertTrue(SectionOp(sChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sChanges, 1).index == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalIndex == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
+}
+
+- (void)test13B
+{
+	//           orig   insrt  delte
+	//
+	// A[X, 0] |      | elm  | elm  |
+	// --------|      |------|------|
+	// B[X, 0] | lion | lion | lion |
+	// --------|----- |------|      |
+	// C[X, 0] | john | john |      |
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"A"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"elm" inGroup:@"A" atIndex:0]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"john" inGroup:@"C" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"C"]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B", @"C"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(0), @"B" : @(1), @"C" : @(1) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1), @"C" : @(0) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Insert: 0 (A)
+	// 1) Section Delete: 1 (C)
+	//
+	// 0) Row Insert: [0, 0] (elm)
+	// 1) Row Delete: [1, 0] (john)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 0, @"");
+	
+	STAssertTrue(SectionOp(sChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sChanges, 1).index == 1, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalIndex == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
+}
+
+- (void)test13C
+{
+	//           orig   insrt  delte
+	//
+	// A[X, 0] | elm  | elm  | elm  |
+	// --------|------|------|------|
+	// B[X, 0] |      |+lion | lion |
+	// --------|      |------|      |
+	// C[X, 0] | john | john-|      |
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"B"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"lion" inGroup:@"B" atIndex:0]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"john" inGroup:@"C" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"C"]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B", @"C"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(0), @"C" : @(1) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1), @"C" : @(0) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Insert: 1 (B)
+	// 1) Section Delete: 1 (C)
+	//
+	// 0) Row Insert: [1, 0] (lion)
+	// 1) Row Delete: [1, 0] (john)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 1, @"");
+	
+	STAssertTrue(SectionOp(sChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sChanges, 1).index == 1, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalIndex == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Section: Insert, Insert
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test14A
+{
+	//           orig   insrt  delte
+	//
+	// A[X, 0] | elm  | elm  | elm  |
+	// --------|------|------|------|
+	// B[X, 0] |      |+lion | lion |
+	// --------|      |------|------|
+	// C[X, 0] |      |      |+john |
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"B"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"lion" inGroup:@"B" atIndex:0]];
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"C"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"john" inGroup:@"C" atIndex:0]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B", @"C"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(0), @"C" : @(0) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1), @"C" : @(1) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Insert: 1 (B)
+	// 1) Section Insert: 2 (C)
+	//
+	// 0) Row Insert: [1, 0] (lion)
+	// 1) Row Insert: [2, 0] (john)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 1, @"");
+	
+	STAssertTrue(SectionOp(sChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sChanges, 1).index == 2, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalIndex == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalSection == 2, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalIndex == 0, @"");
+}
+
+- (void)test14B
+{
+	//           orig   insrt  delte
+	//
+	// A[X, 0] | elm  | elm  | elm  |
+	// --------|------|------|------|
+	// B[X, 0] |      |      |+lion |
+	// --------|      |      |------|
+	// C[X, 0] |      |+john | john |
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"C"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"john" inGroup:@"C" atIndex:0]];
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"B"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"lion" inGroup:@"B" atIndex:0]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B", @"C"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(0), @"C" : @(0) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1), @"C" : @(1) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Insert: 2 (C)
+	// 1) Section Insert: 1 (B)
+	//
+	// 0) Row Insert: [2, 0] (john)
+	// 1) Row Insert: [1, 0] (lion)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 2, @"");
+	
+	STAssertTrue(SectionOp(sChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sChanges, 1).index == 1, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalSection == 2, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalIndex == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalIndex == 0, @"");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Section: Delete, Delete
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test15A
+{
+	//           orig   insrt  delte
+	//
+	// A[X, 0] | elm  | elm  | elm  |
+	// --------|------|------|------|
+	// B[X, 0] | lion-|      |      |
+	// --------|------|      |      |
+	// C[X, 0] | john | john-|      |
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"lion" inGroup:@"B" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"B"]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"john" inGroup:@"C" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"C"]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B", @"C"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1), @"C" : @(1) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(0), @"C" : @(0) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Delete: 1 (B)
+	// 1) Section Delete: 2 (C)
+	//
+	// 0) Row Delete: [1, 0] (lion)
+	// 1) Row Delete: [2, 0] (john)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 1, @"");
+	
+	STAssertTrue(SectionOp(sChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sChanges, 1).index == 2, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalIndex == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalSection == 2, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
+}
+
+- (void)test15B
+{
+	//           orig   insrt  delte
+	//
+	// A[X, 0] | elm  | elm  | elm  |
+	// --------|------|------|------|
+	// B[X, 0] | lion | lion-|      |
+	// --------|------|      |      |
+	// C[X, 0] | john-|      |      |
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"john" inGroup:@"C" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"C"]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"lion" inGroup:@"B" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"B"]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B", @"C"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1), @"C" : @(1) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(0), @"C" : @(0) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Delete: 2 (C)
+	// 1) Section Delete: 1 (B)
+	//
+	// 0) Row Delete: [2, 0] (john)
+	// 1) Row Delete: [1, 0] (lion)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 2, @"");
+	
+	STAssertTrue(SectionOp(sChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sChanges, 1).index == 1, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalSection == 2, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalIndex == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Section: Move
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test16A
+{
+	//           orig   move
+	//
+	// A[X, 0] | elm  | elm  |
+	// --------|------|------|
+	// B[X, 0] |      |+john |
+	// --------|      |      |
+	// =======================
+	// C[X, 0] | john-|      |
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"john" inGroup:@"C" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"C"]];
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"B"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"john" inGroup:@"B" atIndex:0]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(0) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Delete: 1 (B)
+	//
+	// 0) Row Insert: [1, 0] (john)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 1, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalIndex == 0, @"");
+}
+
+- (void)test16B
+{
+	//           orig   move
+	//
+	// A[0, 0] | elm  | elm  |
+	// A[0, 1] |      |+oak  |
+	// --------|------|------|
+	// B[1, 0] | oak -|      |
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"oak" inGroup:@"B" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"B"]];
+	
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"oak" inGroup:@"A" atIndex:1]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1), @"B": @(1) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(2), @"B": @(0) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Delete: 1 (B)
+	//
+	// 0) Row Move: [1, 0] -> [0, 1] (oak)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 1, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalIndex == 0, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalIndex == 1, @"");
+}
+
+- (void)test16C
+{
+	//           orig   move
+	//
+	// A[0, 0] | elm  | elm  |
+	// --------|------|------|
+	// B[X, 0] |      |+oak  |
+	// --------|------|------|
+	// C[X, 0] | oak -|      |
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"oak" inGroup:@"C" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"C"]];
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"B"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"oak" inGroup:@"B" atIndex:0]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B", @"C"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1), @"B": @(0), @"C" : @(1) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(1), @"B": @(1), @"C" : @(0) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Delete: 1 (C)
+	// 1) Section Insert: 1 (B)
+	//
+	// 0) Row Move: [1, 0] -> [1, 0] (oak)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 1, @"");
+	
+	STAssertTrue(SectionOp(sChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sChanges, 1).index == 1, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalIndex == 0, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalSection == 1, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalIndex == 0, @"");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Section: Update & Move
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test17A
+{
+	//           orig   updte  move
+	//
+	// A[0, 0] | elm  | elm  | elm  |
+	// A[0, 0] |      |      |+oak  |
+	// ==============================
+	// B[X, 0] | oak  |~oak -|      |
+	
+	int flags = YapDatabaseViewChangeColumnObject;
+	
+	[changes addObject:[YapDatabaseViewRowChange updateKey:@"oak" columns:flags inGroup:@"B" atIndex:0]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"oak" inGroup:@"B" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"oak" inGroup:@"A" atIndex:1]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(2) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	//
+	// 0) Row Insert: [null] -> [0, 1] (oak)
+	
+	STAssertTrue([sChanges count] == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalIndex == 1, @"");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Section: Drop & Add Again
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test18A
+{
+	//           orig   delte  insrt
+	//
+	// A[0, 0] | elm -|      |+oak |
+	// --------|------|------|-----|
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"elm" inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"A"]];
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"A"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"oak" inGroup:@"A" atIndex:0]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(1) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Row Delete: [0, 0] -> [null] (elm)
+	// 1) Row Insert: [null] -> [0, 0] (oak)
+	
+	STAssertTrue([sChanges count] == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalIndex == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalIndex == 0, @"");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Section: Add & Drop Again
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test19A
+{
+	//           orig   insrt  delte
+	//
+	// A[0, 0] |      |+oak -|     |
+	// --------|------|------|-----|
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"A"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"oak" inGroup:@"A" atIndex:0]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"oak" inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"A"]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(1) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(1) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// Nothing
+	
+	STAssertTrue([sChanges count] == 0, @"");
+	
+	STAssertTrue([rChanges count] == 0, @"");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Section: Reset
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test20A
+{
+	//           orig   reset
+	//
+	// A[0, 0] | elm  |      |
+	// A[0, 1] | oak  |      |
+	// --------|------|------|
+	
+	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@"A"]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(2) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(0) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Delete: 0 (A)
+	//
+	// 0) Row Delete: [0, 1] (oak)
+	// 1) Row Delete: [0, 1] (elm)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalIndex == 1, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
+}
+
+- (void)test20B
+{
+	//           orig   reset
+	//
+	// A[0, 0] | elm  |      |
+	// A[0, 1] | oak  |      |
+	// --------|------|------|
+	
+	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@"A"]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
+	mappings.allowsEmptySections = YES; // <-- NOTICE
+	
+	[mappings updateWithCounts:@{ @"A": @(2) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(0) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Row Delete: [0, 1] (oak)
+	// 1) Row Delete: [0, 1] (elm)
+	
+	STAssertTrue([sChanges count] == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalIndex == 1, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
+}
+
+- (void)test20C
+{
+	//           orig   reset  insrt
+	//
+	// A[0, 0] | elm  |      | pine |
+	// A[0, 1] | oak  |      |      |
+	// --------|------|------|------|
+	
+	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@"A"]];
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"A"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"pine" inGroup:@"A" atIndex:0]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(2) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(1) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Delete: 0 (A)
+	
+	STAssertTrue([sChanges count] == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalIndex == 1, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 2).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 2).finalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 2).finalIndex == 0, @"");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Section: Blog Bug
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Blog Bug 1:
+ * http://deusty.blogspot.com/2010/02/hideous-bug-in-nsfetchedresultscontroll.html
+**/
+- (void)testBlogBug1
+{
+	//           orig     move     move
+	//
+	// A[X, 0] |        | austin | austin |
+	// --------|--------|--------|--------|
+	// B[X, 0] | austin | ben    | ben    |
+	// B[X, 1] | ben    | robbie | quack  |
+	// B[X, 2] | robbie | zach   | robbie |
+	// B[X, 3] | zach   |        |        |
+	// --------|--------|--------|--------|
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"austin" inGroup:@"B" atIndex:0]];
+	
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"A"]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"austin" inGroup:@"A" atIndex:0]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(0), @"B": @(4) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(1), @"B": @(3) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Section Insert: 0 (A)
+	//
+	// 0) Row Move: [0, 0] -> [0, 0] (austin)
+	
+	STAssertTrue(SectionOp(sChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sChanges, 0).index == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 0).originalIndex == 0, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalIndex == 0, @"");
+}
+
+/**
+ * Blog Bug 2:
+ * http://deusty.blogspot.com/2010/02/more-bugs-in-nsfetchedresultscontroller.html
+**/
+- (void)testBlogBug2
+{
+	//           orig     move     move
+	//
+	// A[X, 0] | austin |+AAA    | AAA    |
+	// B[X, 1] | ben    | austin | austin |
+	// B[X, 2] | robbie | ben    | ben    |
+	// B[X, 3] | zach   | robbie |+quack  |
+	// B[X, 4] |        | zach  -| robbie |
+	// --------|--------|--------|--------|
+	
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"AAA" inGroup:@"A" atIndex:0]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"zach/quack" inGroup:@"A" atIndex:4]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"zach/quack" inGroup:@"A" atIndex:3]];
+	
+	// Process
+	
+	NSArray *sChanges;
+	NSArray *rChanges;
+	
+	YapDatabaseViewMappings *mappings;
+	YapDatabaseViewMappings *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
+	mappings.allowsEmptySections = NO;
+	
+	[mappings updateWithCounts:@{ @"A": @(4) }];
+	originalMappings = [mappings copy];
+	[mappings updateWithCounts:@{ @"A": @(5) }];
+	
+	[YapDatabaseViewChange getSectionChanges:&sChanges
+	                              rowChanges:&rChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Row Insert: [null] -> [0, 0] (AAA)
+	// 0) Row Move  : [0, 3] -> [0, 3] (zach/quack)
+	
+	STAssertTrue([sChanges count] == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 0).finalIndex == 0, @"");
+	
+	STAssertTrue(RowOp(rChanges, 1).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).originalIndex == 3, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalSection == 0, @"");
+	STAssertTrue(RowOp(rChanges, 1).finalIndex == 3, @"");
 }
 
 @end
