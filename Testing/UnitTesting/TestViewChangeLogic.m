@@ -1257,8 +1257,6 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	STAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
 	STAssertTrue(RowOp(rChanges, 1).finalSection == 0, @"");
 	STAssertTrue(RowOp(rChanges, 1).finalIndex == 0, @"");
-	STAssertTrue(RowOp(rChanges, 1).indexPath.section == 0, @"");
-	STAssertTrue(RowOp(rChanges, 1).indexPath.row == 0, @"");
 }
 
 - (void)test11D
@@ -1484,8 +1482,6 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	STAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
 	STAssertTrue(RowOp(rChanges, 1).finalSection == 0, @"");
 	STAssertTrue(RowOp(rChanges, 1).finalIndex == 0, @"");
-	STAssertTrue(RowOp(rChanges, 1).indexPath.section == 0, @"");
-	STAssertTrue(RowOp(rChanges, 1).indexPath.row == 0, @"");
 }
 
 - (void)test12D
