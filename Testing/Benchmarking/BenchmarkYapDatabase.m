@@ -81,7 +81,7 @@ static NSMutableArray *keys;
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		[transaction enumerateKeys:^(NSString *key, BOOL *stop) {
+		[transaction enumerateKeysUsingBlock:^(NSString *key, BOOL *stop) {
 			
 			// Nothing to do, just testing overhead
 		}];
@@ -94,7 +94,7 @@ static NSMutableArray *keys;
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, id metadata, BOOL *stop) {
+		[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop) {
 			
 			// Nothing to do, just testing overhead
 		}];
@@ -187,7 +187,7 @@ static NSMutableArray *keys;
 	}
 	
 	NSTimeInterval elapsed = [start timeIntervalSinceNow] * -1.0;
-	NSLog(@"ReadOnly transaction overhead: %.8f", (elapsed / loopCount));
+	NSLog(@"ReadOnly transaction overhead : %.8f", (elapsed / loopCount));
 }
 
 + (void)readWriteTransactionOverhead:(NSUInteger)loopCount
@@ -219,7 +219,7 @@ static NSMutableArray *keys;
 	NSLog(@"Remove all transaction: total time: %.6f", elapsed);
 }
 
-+ (void)startTests
++ (void)runTestsWithCompletion:(dispatch_block_t)completionBlock
 {
 	NSString *databasePath = [self databasePath];
 	
@@ -260,11 +260,11 @@ static NSMutableArray *keys;
 		
 		NSLog(@"FETCH DATABASE");
 		
-		[self fetchValuesInLoop:1000 withCacheHitPercentage:0.05];
-		[self fetchValuesInLoop:1000 withCacheHitPercentage:0.25];
-		[self fetchValuesInLoop:1000 withCacheHitPercentage:0.50];
-		[self fetchValuesInLoop:1000 withCacheHitPercentage:0.75];
-		[self fetchValuesInLoop:1000 withCacheHitPercentage:0.95];
+		[self fetchValuesInLoop:500 withCacheHitPercentage:0.05];
+		[self fetchValuesInLoop:500 withCacheHitPercentage:0.25];
+		[self fetchValuesInLoop:500 withCacheHitPercentage:0.50];
+		[self fetchValuesInLoop:500 withCacheHitPercentage:0.75];
+		[self fetchValuesInLoop:500 withCacheHitPercentage:0.95];
 		
 		NSLog(@"====================================================");
 	});
@@ -284,6 +284,13 @@ static NSMutableArray *keys;
 		[self removeAllValues];
 		
 		NSLog(@"====================================================");
+	});
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		database = nil;
+		connection = nil;
+		
+		completionBlock();
 	});
 }
 

@@ -3,7 +3,6 @@
 
 #import "YapDatabase.h"
 #import "YapDatabasePrivate.h"
-#import "YapDatabaseTransaction+Timestamp.h"
 
 #import <libkern/OSAtomic.h>
 
@@ -77,8 +76,16 @@
 		}];
 		
 		STAssertTrue(count == 0, @"Expceted zero keys");
+		count = 0;
 		
-		[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, id metadata, BOOL *stop){
+		[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop){
+			count++;
+		}];
+		
+		STAssertTrue(count == 0, @"Expceted zero keys");
+		count = 0;
+		
+		[transaction enumerateRowsUsingBlock:^(NSString *key, id object, id metadata, BOOL *stop){
 			count++;
 		}];
 		
@@ -120,7 +127,12 @@
 			STAssertNil(metadata, @"Expected nil metadata");
 		}];
 		
-		[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, id metadata, BOOL *stop){
+		[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop){
+			
+			STAssertNotNil(aObj, @"Expected non-nil object");
+		}];
+		
+		[transaction enumerateRowsUsingBlock:^(NSString *key, id object, id metadata, BOOL *stop){
 			
 			STAssertNotNil(aObj, @"Expected non-nil object");
 			STAssertNil(metadata, @"Expected nil metadata");
@@ -169,7 +181,12 @@
 			STAssertNotNil(metadata, @"Expected non-nil metadata");
 		}];
 		
-		[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, id metadata, BOOL *stop){
+		[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop){
+			
+			STAssertNotNil(aObj, @"Expected non-nil object");
+		}];
+		
+		[transaction enumerateRowsUsingBlock:^(NSString *key, id object, id metadata, BOOL *stop){
 			
 			STAssertNotNil(aObj, @"Expected non-nil object");
 			STAssertNotNil(metadata, @"Expected non-nil metadata");
@@ -493,6 +510,146 @@
 		
 		STAssertTrue(elapsed < 0.05, @"Read-Only transaction taking too long...");
 	}
+}
+
+- (void)testMutationDuringEnumerationProtection
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	STAssertNotNil(database, @"Oops");
+	
+	// Ensure enumeration protects against mutation
+	
+	YapDatabaseConnection *connection = [database newConnection];
+	
+	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction setObject:@"object" forKey:@"key1"];
+		[transaction setObject:@"object" forKey:@"key2"];
+		[transaction setObject:@"object" forKey:@"key3"];
+		[transaction setObject:@"object" forKey:@"key4"];
+		[transaction setObject:@"object" forKey:@"key5"];
+	}];
+	
+	NSArray *keys = @[@"key1", @"key2", @"key3"];
+	
+	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		// enumerateKeysUsingBlock:
+		
+		STAssertThrows(
+			[transaction enumerateKeysUsingBlock:^(NSString *key, BOOL *stop) {
+				
+				[transaction setObject:@"object" forKey:@"key5"];
+				// Missing stop; Will cause exception.
+				
+			}], @"Should throw exception");
+		
+		STAssertNoThrow(
+			[transaction enumerateKeysUsingBlock:^(NSString *key, BOOL *stop) {
+				
+				[transaction setObject:@"object" forKey:@"key5"];
+				*stop = YES;
+				
+			}], @"Should NOT throw exception");
+		
+		// enumerateMetadataForKeys:unorderedUsingBlock:
+		
+		STAssertThrows(
+			[transaction enumerateMetadataForKeys:keys
+			                  unorderedUsingBlock:^(NSUInteger keyIndex, id metadata, BOOL *stop) {
+				
+				[transaction setObject:@"object" forKey:@"key5"];
+				// Missing stop; Will cause exception.
+				
+			}], @"Should throw exception");
+		
+		STAssertNoThrow(
+			[transaction enumerateMetadataForKeys:keys
+			                  unorderedUsingBlock:^(NSUInteger keyIndex, id metadata, BOOL *stop) {
+			
+				[transaction setObject:@"object" forKey:@"key5"];
+				*stop = YES;
+			
+			}], @"Should NOT throw exception");
+		
+		// enumerateObjectsForKeys:unorderedUsingBlock:
+		
+		STAssertThrows(
+			[transaction enumerateObjectsForKeys:keys
+			                 unorderedUsingBlock:^(NSUInteger keyIndex, id object, BOOL *stop) {
+				
+				[transaction setObject:@"object" forKey:@"key5"];
+				// Missing stop; Will cause exception.
+				
+			}], @"Should throw exception");
+		
+		STAssertNoThrow(
+			[transaction enumerateObjectsForKeys:keys
+			                 unorderedUsingBlock:^(NSUInteger keyIndex, id object, BOOL *stop) {
+			
+				[transaction setObject:@"object" forKey:@"key5"];
+				*stop = YES;
+			
+			}], @"Should NOT throw exception");
+		
+		// enumerateKeysAndMetadataUsingBlock:
+		
+		STAssertThrows(
+			[transaction enumerateKeysAndMetadataUsingBlock:^(NSString *key, id metadata, BOOL *stop) {
+			
+				[transaction setObject:@"object" forKey:@"key5"];
+				// Missing stop; Should cause exception.
+				
+			}], @"Should throw exception");
+		
+		STAssertNoThrow(
+			[transaction enumerateKeysAndMetadataUsingBlock:^(NSString *key, id metadata, BOOL *stop) {
+				
+				[transaction setObject:@"object" forKey:@"key5"];
+				*stop = YES;
+				
+			}], @"Should NOT throw exception");
+		
+		// enumerateKeysAndObjectsUsingBlock:
+		
+		STAssertThrows(
+			[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop) {
+			
+				[transaction setObject:@"object" forKey:@"key5"];
+				// Missing stop; Should cause exception.
+				
+			}], @"Should throw exception");
+		
+		STAssertNoThrow(
+			[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop) {
+				
+				[transaction setObject:@"object" forKey:@"key5"];
+				*stop = YES;
+				
+			}], @"Should NOT throw exception");
+		
+		// enumerateRowsUsingBlock:
+		
+		STAssertThrows(
+			[transaction enumerateRowsUsingBlock:^(NSString *key, id object, id metadata, BOOL *stop) {
+			
+				[transaction setObject:@"object" forKey:@"key5"];
+				// Missing stop; Should cause exception.
+				
+			}], @"Should throw exception");
+		
+		STAssertNoThrow(
+			[transaction enumerateRowsUsingBlock:^(NSString *key, id object, id metadata, BOOL *stop) {
+				
+				[transaction setObject:@"object" forKey:@"key5"];
+				*stop = YES;
+				
+			}], @"Should NOT throw exception");
+	}];
 }
 
 @end

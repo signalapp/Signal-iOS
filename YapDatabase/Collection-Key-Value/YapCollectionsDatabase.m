@@ -1,7 +1,7 @@
 #import "YapCollectionsDatabase.h"
 #import "YapCollectionsDatabasePrivate.h"
 #import "YapAbstractDatabasePrivate.h"
-#import "YapCacheCollectionKey.h"
+#import "YapCollectionKey.h"
 #import "YapDatabaseLogging.h"
 
 #import "sqlite3.h"
@@ -15,11 +15,16 @@
  * See YapDatabaseLogging.h for more information.
 **/
 #if DEBUG
-  static const int ydbFileLogLevel = YDB_LOG_LEVEL_INFO;
+  static const int ydbLogLevel = YDB_LOG_LEVEL_INFO;
 #else
-  static const int ydbFileLogLevel = YDB_LOG_LEVEL_WARN;
+  static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
+NSString *const YapCollectionsDatabaseObjectChangesKey      = @"objectChanges";
+NSString *const YapCollectionsDatabaseMetadataChangesKey    = @"metadataChanges";
+NSString *const YapCollectionsDatabaseRemovedKeysKey        = @"removedKeys";
+NSString *const YapCollectionsDatabaseRemovedCollectionsKey = @"removedCollections";
+NSString *const YapCollectionsDatabaseAllKeysRemovedKey     = @"allKeysRemoved";
 
 /**
  * YapDatabase provides concurrent thread-safe access to a key-value database backed by sqlite.
@@ -63,7 +68,7 @@
 **/
 - (Class)cacheKeyClass
 {
-	return [YapCacheCollectionKey class];
+	return [YapCollectionKey class];
 }
 
 /**

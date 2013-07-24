@@ -1,5 +1,6 @@
 #import "YapAbstractDatabase.h"
 #import "YapAbstractDatabasePrivate.h"
+#import "YapAbstractDatabaseExtensionPrivate.h"
 
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
@@ -18,10 +19,16 @@
  * See YapDatabaseLogging.h for more information.
 **/
 #if DEBUG
-  static const int ydbFileLogLevel = YDB_LOG_LEVEL_INFO;
+  static const int ydbLogLevel = YDB_LOG_LEVEL_INFO;
 #else
-  static const int ydbFileLogLevel = YDB_LOG_LEVEL_WARN;
+  static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
+
+NSString *const YapDatabaseModifiedNotification = @"YapDatabaseModifiedNotification";
+
+NSString *const YapDatabaseConnectionKey = @"connection";
+NSString *const YapDatabaseExtensionsKey = @"extensions";
+NSString *const YapDatabaseCustomKey     = @"custom";
 
 /**
  * The database version is stored (via pragma user_version) to sqlite.
@@ -30,7 +37,7 @@
  * the version can be consulted to allow for proper on-the-fly upgrades.
  * For more information, see the upgradeTable method.
 **/
-#define YAP_DATABASE_CURRENT_VERION 1
+#define YAP_DATABASE_CURRENT_VERION 2
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
@@ -147,10 +154,10 @@
 }
 
 @synthesize databasePath;
-@synthesize objectSerializer;
-@synthesize objectDeserializer;
-@synthesize metadataSerializer;
-@synthesize metadataDeserializer;
+@synthesize objectSerializer = objectSerializer;
+@synthesize objectDeserializer = objectDeserializer;
+@synthesize metadataSerializer = metadataSerializer;
+@synthesize metadataDeserializer = metadataDeserializer;
 
 - (id)initWithPath:(NSString *)inPath
 {
@@ -245,29 +252,23 @@
 			return nil;
 		}
 		
+		checkpointQueue = dispatch_queue_create("YapDatabase-Checkpoint", NULL);
 		snapshotQueue   = dispatch_queue_create("YapDatabase-Snapshot", NULL);
 		writeQueue      = dispatch_queue_create("YapDatabase-Write", NULL);
-#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-		checkpointQueue = dispatch_queue_create("YapDatabase-Checkpoint", NULL);
-#endif
 		
-		connectionStates = [[NSMutableArray alloc] init];
 		changesets = [[NSMutableArray alloc] init];
+		connectionStates = [[NSMutableArray alloc] init];
 		
-		// Mark the snapshotQueue so we can identify it.
-		// There are several methods whose use is restricted to within the snapshotQueue.
+		registeredExtensions = [[NSDictionary alloc] init];
+		
+		// Mark the queues so we can identify them.
+		// There are several methods whose use is restricted to within a certain queue.
 		
 		IsOnSnapshotQueueKey = &IsOnSnapshotQueueKey;
-		void *nonNullUnusedPointer = (__bridge void *)self;
-		dispatch_queue_set_specific(snapshotQueue, IsOnSnapshotQueueKey, nonNullUnusedPointer, NULL);
+		dispatch_queue_set_specific(snapshotQueue, IsOnSnapshotQueueKey, IsOnSnapshotQueueKey, NULL);
 		
-#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-		
-		// And configure the priority of the checkpointQueue.
-		
-		dispatch_queue_t lowPriorityQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0);
-		dispatch_set_target_queue(checkpointQueue, lowPriorityQueue);
-#endif
+		IsOnWriteQueueKey = &IsOnWriteQueueKey;
+		dispatch_queue_set_specific(writeQueue, IsOnWriteQueueKey, IsOnWriteQueueKey, NULL);
 		
 		// Complete database setup in the background
 		dispatch_async(snapshotQueue, ^{ @autoreleasepool {
@@ -295,10 +296,8 @@
 		dispatch_release(snapshotQueue);
 	if (writeQueue)
 		dispatch_release(writeQueue);
-#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
 	if (checkpointQueue)
 		dispatch_release(checkpointQueue);
-#endif
 #endif
 }
 
@@ -362,19 +361,13 @@
 		return NO;
 	}
 	
-#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-	
 	// Disable autocheckpointing.
-	// We have a dedicated background operation that manually runs checkpoint operations when needed.
+	//
+	// YapDatabase has its own optimized checkpointing algorithm built-in.
+	// It knows the state of every active connection for the database,
+	// so it can invoke the checkpoint methods at the precise time in which a checkpoint can be most effective.
+	
 	sqlite3_wal_autocheckpoint(db, 0);
-	
-#else
-	
-	// Configure autocheckpointing.
-	// Decrease size of WAL from default 1,000 pages to something more mobile friendly.
-	sqlite3_wal_autocheckpoint(db, 100);
-	
-#endif
 	
 	return YES;
 }
@@ -387,15 +380,17 @@
 - (BOOL)createTables
 {
 	char *createYapTableStatement =
-	    "CREATE TABLE IF NOT EXISTS \"yap\""
-	    " (\"key\" CHAR PRIMARY KEY NOT NULL, "
-	    "  \"data\" BLOB"
+	    "CREATE TABLE IF NOT EXISTS \"yap2\""
+	    " (\"extension\" CHAR NOT NULL, "
+	    "  \"key\" CHAR NOT NULL, "
+	    "  \"data\" BLOB, "
+	    "  PRIMARY KEY (\"extension\", \"key\")"
 	    " );";
 	
 	int status = sqlite3_exec(db, createYapTableStatement, NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"Failed creating 'yap' table: %d %s", status, sqlite3_errmsg(db));
+		YDBLogError(@"Failed creating 'yap2' table: %d %s", status, sqlite3_errmsg(db));
 		return NO;
 	}
 	
@@ -486,19 +481,12 @@
 	sqlite3_finalize(pragmaStatement);
 	pragmaStatement = NULL;
 	
-	// If user_version is zero, then either:
-	// - this is actually version zero
-	// - this is version 1 before we started supporting upgrades
-	//
-	// We can figure it out quite easily by checking the table schema.
+	// If user_version is zero, then this is a new database
 	
 	if (user_version == 0)
 	{
-		if ([[self tableColumnNames] containsObject:@"metadata"])
-		{
-			user_version = 1;
-			[self set_user_version:user_version];
-		}
+		user_version = YAP_DATABASE_CURRENT_VERION;
+		[self set_user_version:user_version];
 	}
 	
 	if (user_version_ptr)
@@ -524,14 +512,34 @@
 	return YES;
 }
 
+- (BOOL)upgradeTable_1_2
+{
+	// In version 1, we used a table named "yap" which had {key, data}.
+	// In version 2, we use a table named "yap2" which has {extension, key, data}
+	
+	int status = sqlite3_exec(db, "DROP TABLE IF EXISTS \"yap\"", NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Failed dropping 'yap' table: %d %s", status, sqlite3_errmsg(db));
+	}
+	
+	return YES;
+}
+
 /**
  * Performs upgrade checks, and implements the upgrade "plumbing" by invoking the appropriate upgrade methods.
  * 
  * To add custom upgrade logic, implement a method named "upgradeTable_X_Y",
  * where X is the previous version, and Y is the new version.
- * For example, upgradeTable_1_2 would be for upgrades from version 1 to version 2 of YapDatabase.
+ * For example:
  * 
- * Important: This is for upgrades of the database schema, and low-level operations of YapDatabase.
+ * - (BOOL)upgradeTable_1_2 {
+ *     // Upgrades from version 1 to version 2 of YapDatabase.
+ *     // Return YES if successful.
+ * }
+ * 
+ * IMPORTANT:
+ * This is for upgrades of the database schema, and low-level operations of YapDatabase.
  * This is NOT for upgrading data within the database (i.e. objects, metadata, or keys).
  * Such data upgrades should be performed client side.
  *
@@ -593,90 +601,126 @@
 **/
 - (void)prepare
 {
-	int status;
-	sqlite3_stmt *statement;
-	
-	// Step 1 of 4: Begin transaction
-	
-	status = sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
-	if (status != SQLITE_OK)
-	{
-		YDBLogError(@"%@: Error starting transaction: %d %s",
-		              NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
-		return;
-	}
-	
-	// Step 2 of 4: Populate snapshot and write to disk
+	// Initialize snapshot
 	
 	snapshot = 0;
 	
-	char *stmt = "INSERT OR REPLACE INTO \"yap\" (\"key\", \"data\") VALUES (?, ?);";
+	// Write it to disk (replacing any previous value from last app run)
+	
+	[self beginTransaction];
+	[self writeSnapshot];
+	[self fetchPreviouslyRegisteredExtensionNames];
+	[self commitTransaction];
+}
+
+- (void)beginTransaction
+{
+	int status = status = sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error in '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+	}
+}
+
+- (void)commitTransaction
+{
+	int status = status = sqlite3_exec(db, "COMMIT TRANSACTION;", NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error in '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+	}
+}
+
+- (void)writeSnapshot
+{
+	int status;
+	sqlite3_stmt *statement;
+	
+	char *stmt = "INSERT OR REPLACE INTO \"yap2\" (\"extension\", \"key\", \"data\") VALUES (?, ?, ?);";
 	
 	status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &statement, NULL);
 	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"%@: Error creating update snapshot statement: %d %s",
+		YDBLogError(@"%@: Error creating statement: %d %s",
 		              NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 	}
 	else
 	{
-		char *key = "snapshot";
-		sqlite3_bind_text(statement, 1, key, (int)strlen(key), SQLITE_STATIC);
+		char *extension = "";
+		sqlite3_bind_text(statement, 1, extension, (int)strlen(extension), SQLITE_STATIC);
 		
-		uint64_t littleEndian = CFSwapInt64HostToLittle(snapshot);
-		sqlite3_bind_blob(statement, 2, &littleEndian, (int)sizeof(uint64_t), SQLITE_STATIC);
+		char *key = "snapshot";
+		sqlite3_bind_text(statement, 2, key, (int)strlen(key), SQLITE_STATIC);
+		
+		sqlite3_bind_int64(statement, 3, (sqlite3_int64)snapshot);
 		
 		status = sqlite3_step(statement);
 		if (status != SQLITE_DONE)
 		{
-			YDBLogError(@"%@: Error executing update snapshot statement': %d %s",
-			              NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"%@: Error in statement: %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 		
 		sqlite3_finalize(statement);
-		statement = NULL;
 	}
+}
+
+- (void)fetchPreviouslyRegisteredExtensionNames
+{
+	int status;
+	sqlite3_stmt *statement;
 	
-	// Step 3 of 4: Commit transaction
+	char *stmt = "SELECT DISTINCT \"extension\" FROM \"yap2\" ;";
 	
-	status = sqlite3_exec(db, "COMMIT TRANSACTION;", NULL, NULL, NULL);
+	NSMutableArray *extensionNames = [NSMutableArray array];
+	
+	status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &statement, NULL);
 	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"%@: Error committing transaction: %d %s",
-		              NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		YDBLogError(@"%@: Error creating statement: %d %s",
+					NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+	}
+	else
+	{
+		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+		{
+			const unsigned char *text = sqlite3_column_text(statement, 0);
+			int textSize = sqlite3_column_bytes(statement, 0);
+			
+			NSString *extensionName =
+			    [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			
+			if ([extensionName length] > 0)
+			{
+				[extensionNames addObject:extensionName];
+			}
+		}
+		
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"%@: Error in statement: %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+		
+		sqlite3_finalize(statement);
 	}
 	
-#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-	
-	// Step 4 of 4: Start background checkpoint operations
-	[self runCheckpointInBackground];
-
-#endif
+	previouslyRegisteredExtensionNames = extensionNames;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Connections
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+- (YapAbstractDatabaseConnection *)newConnection
+{
+	// This method is overriden by subclasses
+	return nil;
+}
+
 /**
  * This method is called from newConnection, either above or from a subclass.
 **/
 - (void)addConnection:(YapAbstractDatabaseConnection *)connection
 {
-	dispatch_block_t block = ^{ @autoreleasepool {
-		
-		// Initialize the connection's snapshot to the current snapshot
-		connection->cacheSnapshot = snapshot;
-		
-		// Add the connection to the state table
-		YapDatabaseConnectionState *state = [[YapDatabaseConnectionState alloc] initWithConnection:connection];
-		[connectionStates addObject:state];
-		
-		YDBLogVerbose(@"Created new connection(%p) for <%@ %p: databaseName=%@, connectionCount=%lu>",
-		              connection,
-		              [self class], self, [databasePath lastPathComponent], (unsigned long)[connectionStates count]);
-	}};
-	
 	// We can asynchronously add the connection to the state table.
 	// This is safe as the connection itself must go through the same queue in order to do anything.
 	//
@@ -688,10 +732,25 @@
 	// The YapDatabase init method is asynchronously preparing itself through the snapshot queue.
 	// We'd like to avoid blocking the very next line of code and allow the asynchronous prepare to continue.
 	
-	if (dispatch_get_specific(IsOnSnapshotQueueKey))
-		block();
-	else
-		dispatch_async(snapshotQueue, block);
+	dispatch_async(connection.connectionQueue, ^{
+		
+		dispatch_sync(snapshotQueue, ^{ @autoreleasepool {
+			
+			// Add the connection to the state table
+			
+			YapDatabaseConnectionState *state = [[YapDatabaseConnectionState alloc] initWithConnection:connection];
+			[connectionStates addObject:state];
+			
+			YDBLogVerbose(@"Created new connection(%p) for <%@ %p: databaseName=%@, connectionCount=%lu>",
+						  connection,
+						  [self class], self, [databasePath lastPathComponent], (unsigned long)[connectionStates count]);
+			
+			// Invoke the one-time prepare method, so the connection can perform any needed initialization.
+			// Be sure to do this within the snapshotQueue, as the prepare method depends on this.
+			
+			[connection prepare];
+		}});
+	});
 }
 
 /**
@@ -730,6 +789,271 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Extensions
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Registers the extension with the database using the given name.
+ * After registration everything works automatically using just the extension name.
+ * 
+ * The registration process is equivalent to a readwrite transaction.
+ * It involves persisting various information about the extension to the database,
+ * as well as possibly populating the extension by enumerating existing rows in the database.
+ *
+ * @return
+ *     YES if the extension was properly registered.
+ *     NO if an error occurred, such as the extensionName is already registered.
+ * 
+ * @see asyncRegisterExtension:withName:completionBlock:
+ * @see asyncRegisterExtension:withName:completionBlock:completionQueue:
+**/
+- (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
+{
+	__block BOOL ready = NO;
+	
+	dispatch_sync(writeQueue, ^{ @autoreleasepool {
+		
+		ready = [self _registerExtension:extension withName:extensionName];
+	}});
+	
+	return ready;
+}
+
+/**
+ * Asynchronoulsy starts the extension registration process.
+ * After registration everything works automatically using just the extension name.
+ * 
+ * The registration process is equivalent to a readwrite transaction.
+ * It involves persisting various information about the extension to the database,
+ * as well as possibly populating the extension by enumerating existing rows in the database.
+ * 
+ * An optional completion block may be used.
+ * If the extension registration was successful then the ready parameter will be YES.
+ *
+ * The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
+**/
+- (void)asyncRegisterExtension:(YapAbstractDatabaseExtension *)extension
+                      withName:(NSString *)extensionName
+               completionBlock:(void(^)(BOOL ready))completionBlock
+{
+	[self asyncRegisterExtension:extension
+	                    withName:extensionName
+	             completionBlock:completionBlock
+	             completionQueue:NULL];
+}
+
+/**
+ * Asynchronoulsy starts the extension registration process.
+ * After registration everything works automatically using just the extension name.
+ *
+ * The registration process is equivalent to a readwrite transaction.
+ * It involves persisting various information about the extension to the database,
+ * as well as possibly populating the extension by enumerating existing rows in the database.
+ * 
+ * An optional completion block may be used.
+ * If the extension registration was successful then the ready parameter will be YES.
+ * 
+ * Additionally the dispatch_queue to invoke the completion block may also be specified.
+ * If NULL, dispatch_get_main_queue() is automatically used.
+**/
+- (void)asyncRegisterExtension:(YapAbstractDatabaseExtension *)extension
+                      withName:(NSString *)extensionName
+               completionBlock:(void(^)(BOOL ready))completionBlock
+               completionQueue:(dispatch_queue_t)completionQueue
+{
+	if (completionQueue == NULL && completionBlock != NULL)
+		completionQueue = dispatch_get_main_queue();
+	
+	dispatch_async(writeQueue, ^{ @autoreleasepool {
+		
+		BOOL ready = [self _registerExtension:extension withName:extensionName];
+		
+		if (completionBlock)
+		{
+			dispatch_async(completionQueue, ^{ @autoreleasepool {
+				
+				completionBlock(ready);
+			}});
+		}
+	}});
+}
+
+/**
+ *
+**/
+- (void)unregisterExtension:(NSString *)extensionName
+{
+	dispatch_sync(writeQueue, ^{ @autoreleasepool {
+		
+		[self _unregisterExtension:extensionName];
+	}});
+}
+
+- (void)asyncUnregisterExtension:(NSString *)extensionName
+                 completionBlock:(dispatch_block_t)completionBlock
+{
+	[self asyncUnregisterExtension:extensionName
+	               completionBlock:completionBlock
+	               completionQueue:NULL];
+}
+
+- (void)asyncUnregisterExtension:(NSString *)extensionName
+                 completionBlock:(dispatch_block_t)completionBlock
+                 completionQueue:(dispatch_queue_t)completionQueue
+{
+	if (completionQueue == NULL && completionBlock != NULL)
+		completionQueue = dispatch_get_main_queue();
+	
+	dispatch_async(writeQueue, ^{ @autoreleasepool {
+		
+		[self _unregisterExtension:extensionName];
+		
+		if (completionBlock)
+		{
+			dispatch_async(completionQueue, ^{ @autoreleasepool {
+				
+				completionBlock();
+			}});
+		}
+	}});
+}
+
+/**
+ * Internal utility method.
+ * Handles lazy creation and destruction of short-lived registrationConnection instance.
+ * 
+ * @see _registerExtension:withName:
+ * @see _unregisterExtension:
+**/
+- (YapAbstractDatabaseConnection *)registrationConnection
+{
+	if (registrationConnection == nil)
+	{
+		registrationConnection = [self newConnection];
+		
+		NSTimeInterval delayInSeconds = 10.0;
+		dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+		dispatch_after(popTime, writeQueue, ^(void){
+			
+			registrationConnection = nil;
+		});
+	}
+	
+	return registrationConnection;
+}
+
+/**
+ * Internal method that handles extension registration.
+ * This method must be invoked on the writeQueue.
+**/
+- (BOOL)_registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
+{
+	NSAssert(dispatch_get_specific(IsOnWriteQueueKey), @"Must go through writeQueue.");
+	
+	if (extension == nil)
+	{
+		YDBLogError(@"Error registering extension: extension parameter is nil");
+		return NO;
+	}
+	if ([extensionName length] == 0)
+	{
+		YDBLogError(@"Error registering extension: extensionName parameter is nil or empty string");
+		return NO;
+	}
+	if (![extension supportsDatabase:self])
+	{
+		YDBLogError(@"Error registering extension: extension doesn't support this type of database");
+		return NO;
+	}
+	if (extension.registeredName != nil)
+	{
+		YDBLogError(@"Error registering extension: extension is already registered");
+		return NO;
+	}
+	if ([self registeredExtension:extensionName] != nil)
+	{
+		YDBLogError(@"Error registering extension: extensionName(%@) already registered", extensionName);
+		return NO;
+	}
+	
+	extension.registeredName = extensionName;
+	
+	BOOL result = [[self registrationConnection] registerExtension:extension withName:extensionName];
+	if (!result)
+	{
+		extension.registeredName = nil;
+	}
+	
+	return result;
+}
+
+/**
+ * Internal method that handles extension unregistration.
+ * This method must be invoked on the writeQueue.
+**/
+- (void)_unregisterExtension:(NSString *)extensionName
+{
+	NSAssert(dispatch_get_specific(IsOnWriteQueueKey), @"Must go through writeQueue.");
+	
+	if ([extensionName length] == 0)
+	{
+		YDBLogError(@"Error unregistering extension: extensionName parameter is nil or empty string");
+		return;
+	}
+	
+	YapAbstractDatabaseExtension *extension = [self registeredExtension:extensionName];
+	
+	[[self registrationConnection] unregisterExtension:extensionName];
+	
+	extension.registeredName = nil;
+}
+
+/**
+ * Returns the registered extension with the given name.
+**/
+- (id)registeredExtension:(NSString *)extensionName
+{
+	// This method is public
+	
+	__block YapAbstractDatabaseExtension *result = nil;
+	
+	dispatch_block_t block = ^{
+		
+		result = [registeredExtensions objectForKey:extensionName];
+	};
+	
+	if (dispatch_get_specific(IsOnSnapshotQueueKey))
+		block();
+	else
+		dispatch_sync(snapshotQueue, block);
+	
+	return result;
+}
+
+/**
+ * Returns all currently registered extensions as a dictionary.
+ * The key is the registed name (NSString), and the value is the extension (YapAbstractDatabaseExtension subclass).
+**/
+- (NSDictionary *)registeredExtensions
+{
+	// This method is public
+	
+	__block NSDictionary *extensionsCopy = nil;
+	
+	dispatch_block_t block = ^{
+		
+		extensionsCopy = registeredExtensions;
+	};
+	
+	if (dispatch_get_specific(IsOnSnapshotQueueKey))
+		block();
+	else
+		dispatch_sync(snapshotQueue, block);
+	
+	return extensionsCopy;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Snapshot Architecture
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -759,9 +1083,24 @@
 **/
 - (uint64_t)snapshot
 {
-	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
-	
-	return snapshot;
+	if (dispatch_get_specific(IsOnSnapshotQueueKey))
+	{
+		// Very common case.
+		// This method is called on just about every transaction.
+		return snapshot;
+	}
+	else
+	{
+		// Non-common case.
+		// Public access implementation.
+		__block uint64_t result = 0;
+		
+		dispatch_sync(snapshotQueue, ^{
+			result = snapshot;
+		});
+		
+		return result;
+	}
 }
 
 /**
@@ -836,6 +1175,14 @@
 	
 	snapshot = [[changeset objectForKey:@"snapshot"] unsignedLongLongValue];
 	
+	// Update registeredExtensions, if changed.
+	
+	NSDictionary *newRegisteredExtensions = [changeset objectForKey:@"registeredExtensions"];
+	if (newRegisteredExtensions)
+	{
+		registeredExtensions = newRegisteredExtensions;
+	}
+	
 	// Forward the changeset to all other connections so they can perform any needed updates.
 	// Generally this means updating the in-memory components such as the cache.
 	
@@ -859,15 +1206,25 @@
 	
 	// Schedule block to be executed once all connections have processed the changes.
 	
+	BOOL isInternalChangeset = (sender == nil);
+
 	dispatch_block_t block = ^{
 		
 		// All connections have now processed the changes.
 		// So we no longer need to retain the changeset in memory.
 		
-		YDBLogVerbose(@"Dropping processed changeset %@ for database: %@",
-		              [[changesets objectAtIndex:0] objectForKey:@"snapshot"], self);
-		
-		[changesets removeObjectAtIndex:0];
+		if (isInternalChangeset)
+		{
+			YDBLogVerbose(@"Completed internal changeset %@ for database: %@",
+			              [changeset objectForKey:@"snapshot"], self);
+		}
+		else
+		{
+			YDBLogVerbose(@"Dropping processed changeset %@ for database: %@",
+			              [changeset objectForKey:@"snapshot"], self);
+			
+			[changesets removeObjectAtIndex:0];
+		}
 		
 		#if !OS_OBJECT_USE_OBJC
 		if (group)
@@ -882,82 +1239,90 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Checkpoint
+#pragma mark Manual Checkpointing
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#if YAP_DATABASE_USE_CHECKPOINT_QUEUE
-
-- (void)runCheckpointInBackground:(BOOL)force
+/**
+ * This method should be called whenever the maximum checkpointable snapshot is incremented.
+ * That is, the state of every connection is known to the system.
+ * And a snaphot cannot be checkpointed until every connection is at or past that snapshot.
+ * Thus, we can know the point at which a snapshot becomes checkpointable,
+ * and we can thus optimize the checkpoint invocations such that
+ * each invocation is able to checkpoint one or more commits.
+**/
+- (void)asyncCheckpoint:(uint64_t)maxCheckpointableSnapshot
 {
-	// Since we run the checkpoint on a low-priority background thread, these scheduled operations tend to pile up.
-	// So we do a bit of consolidation here.
-	//
-	// IF force is NO:
-	//
-	// Typically run after a read-only transaction completes.
-	// Since it was a read-only transaction, it didn't add pages to the WAL,
-	// but the transaction itself may have prevented previous checkpoints from fully completing.
-	// Thus unforced checkpoints skip the operation unless they know there's work to do.
-	//
-	// IF force is YES:
-	//
-	// Typically run after a read-write transaction completes.
-	// Since it was a read-write transaction, it likely wrote pages to the WAL.
-	// Thus forced checkpoints always run the checkpoint operation.
-	//
-	// To handle consolidation of both forced and unforced checkpoint requests in a single place,
-	// we use bit flags as follows:
-	// 
-	// walCheckpointSchedule == 000 => Not scheduled
-	// walCheckpointSchedule == 001 => Scheduled, unforced
-	// walCheckpointSchedule == 010 => Scheduled, forced
-	// walCheckpointSchedule == 011 => Scheduled, both (forced wins)
+	__weak YapAbstractDatabase *weakSelf = self;
 	
-	BOOL schedule;
-	if (force)
-		schedule = OSAtomicTestAndSet(2, &walCheckpointSchedule) == 0;
-	else
-		schedule = OSAtomicTestAndSet(1, &walCheckpointSchedule) == 0;
-	
-	if (schedule)
-	{
-		dispatch_async(checkpointQueue, ^{
+	dispatch_async(checkpointQueue, ^{ @autoreleasepool {
+		
+		__strong YapAbstractDatabase *strongSelf = weakSelf;
+		if (strongSelf == nil) return;
+		
+		YDBLogVerbose(@"Checkpointing up to snapshot %llu", maxCheckpointableSnapshot);
+		
+		// We're ready to checkpoint more frames.
+		//
+		// So we're going to execute a passive checkpoint.
+		// That is, without disrupting any connections, we're going to write pages from the WAL into the database.
+		// The checkpoint can only write pages from snapshots if all connections are at or beyond the snapshot.
+		// Thus, this method is only called by a connection that moves the min snapshot forward.
+		
+		int frameCount = 0;
+		int checkpointCount = 0;
+		
+		int result = sqlite3_wal_checkpoint_v2(strongSelf->db, "main",
+		                                       SQLITE_CHECKPOINT_PASSIVE, &frameCount, &checkpointCount);
+		
+		// frameCount      = total number of frames in the log file
+		// checkpointCount = total number of checkpointed frames
+		//                  (including any that were already checkpointed before the function was called)
+		
+		if (result != SQLITE_OK)
+		{
+			if (result == SQLITE_BUSY)
+				YDBLogVerbose(@"sqlite3_wal_checkpoint_v2 returned SQLITE_BUSY");
+			else
+				YDBLogWarn(@"sqlite3_wal_checkpoint_v2 returned error code: %d", result);
 			
-			BOOL scheduledForced  =
-			OSAtomicTestAndClear(2, &walCheckpointSchedule) == 1;
-			OSAtomicTestAndClear(1, &walCheckpointSchedule);
+			return;// from_block
+		}
+		
+		YDBLogVerbose(@"Post-checkpoint (%llu): frames(%d) checkpointed(%d)",
+		              maxCheckpointableSnapshot, frameCount, checkpointCount);
+		
+		// Have we checkpointed the entire WAL yet?
+		
+		if (frameCount == checkpointCount)
+		{
+			// We've checkpointed every single frame.
+			// This means the next read-write transaction will reset the WAL (instead of appending to it).
+			//
+			// However, this will get spoiled if there are active read-only transactions that
+			// were started before our checkpoint finished, and continue to exist during the next read-write.
+			// It's not a big deal if the occasional read-only transaction happens to spoil the WAL reset.
+			// In those cases, the WAL generally gets reset shortly thereafter.
+			// Long-lived read transactions are a different case entirely.
+			// These transactions spoil it every single time, and could potentially cause the WAL to grow indefinitely.
+			// 
+			// The solution is to notify active long-lived connections, and tell them to re-begin their transaction
+			// on the same snapshot. But this time the sqlite machinery will read directly from the database,
+			// and thus unlock the WAL so it can be reset.
 			
-			if (!scheduledForced && walPendingPageCount == 0) return;
-			
-			int pageCount = 0;
-			int ckptCount = 0;
-			int status = sqlite3_wal_checkpoint_v2(db, "main", SQLITE_CHECKPOINT_PASSIVE, &pageCount, &ckptCount);
-			
-			walPendingPageCount = pageCount - ckptCount;
-			
-			if (status == SQLITE_OK)
-				YDBLogVerbose(@"Checkpoint: %d pages remaining to be checkpointed", walPendingPageCount);
-			else if (status != SQLITE_BUSY)
-				YDBLogVerbose(@"Checkpoint error: %d %s", status, sqlite3_errmsg(db));
-		});
-	}
+			dispatch_async(snapshotQueue, ^{
+				
+				for (YapDatabaseConnectionState *state in connectionStates)
+				{
+					if (state->yapLevelSharedReadLock &&
+					    state->longLivedReadTransaction &&
+					    state->lastKnownSnapshot == snapshot)
+					{
+						[state->connection maybeResetLongLivedReadTransaction];
+					}
+				}
+			});
+		}
+	}});
 }
-
-- (void)maybeRunCheckpointInBackground
-{
-	[self runCheckpointInBackground:/*force = */NO];
-}
-
-- (void)runCheckpointInBackground
-{
-	[self runCheckpointInBackground:/*force = */YES];
-}
-
-- (void)syncCheckpoint
-{
-	dispatch_sync(checkpointQueue, ^{ });
-}
-
-#endif
 
 @end

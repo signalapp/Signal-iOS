@@ -2,8 +2,12 @@
 #import "YapCollectionsDatabasePrivate.h"
 
 #import "YapAbstractDatabasePrivate.h"
-#import "YapCacheCollectionKey.h"
+#import "YapAbstractDatabaseExtensionPrivate.h"
+
+#import "YapCollectionKey.h"
+#import "YapCache.h"
 #import "YapNull.h"
+#import "YapSet.h"
 
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
@@ -17,9 +21,9 @@
  * See YapDatabaseLogging.h for more information.
 **/
 #if DEBUG
-  static const int ydbFileLogLevel = YDB_LOG_LEVEL_INFO;
+  static const int ydbLogLevel = YDB_LOG_LEVEL_INFO;
 #else
-  static const int ydbFileLogLevel = YDB_LOG_LEVEL_WARN;
+  static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
 
@@ -42,6 +46,7 @@
 	sqlite3_stmt *removeAllStatement;
 	sqlite3_stmt *enumerateCollectionsStatement;
 	sqlite3_stmt *enumerateKeysInCollectionStatement;
+    sqlite3_stmt *enumerateKeysInAllCollectionsStatement;
 	sqlite3_stmt *enumerateMetadataInCollectionStatement;
 	sqlite3_stmt *enumerateMetadataInAllCollectionsStatement;
 	sqlite3_stmt *enumerateAllInCollectionStatement;
@@ -55,8 +60,6 @@
 	void *IsOnConnectionQueueKey;
 	
 	YapAbstractDatabase *database;
-	
-	uint64_t cacheSnapshot;
 	
 @public
 	sqlite3 *db;
@@ -85,14 +88,17 @@
 	sqlite_finalize_null(&removeAllStatement);
 	sqlite_finalize_null(&enumerateCollectionsStatement);
 	sqlite_finalize_null(&enumerateKeysInCollectionStatement);
-	sqlite_finalize_null(&enumerateMetadataInCollectionStatement);
-	sqlite_finalize_null(&enumerateMetadataInAllCollectionsStatement);
-	sqlite_finalize_null(&enumerateAllInCollectionStatement);
-	sqlite_finalize_null(&enumerateAllInAllCollectionsStatement);
+	sqlite_finalize_null(&enumerateKeysInAllCollectionsStatement);
+	sqlite_finalize_null(&enumerateKeysAndMetadataInCollectionStatement);
+	sqlite_finalize_null(&enumerateKeysAndMetadataInAllCollectionsStatement);
+	sqlite_finalize_null(&enumerateKeysAndObjectsInCollectionStatement);
+	sqlite_finalize_null(&enumerateKeysAndObjectsInAllCollectionsStatement);
+	sqlite_finalize_null(&enumerateRowsInCollectionStatement);
+	sqlite_finalize_null(&enumerateRowsInAllCollectionsStatement);
 }
 
 /**
- * Optional override hook from YapAbstractDatabaseConnection.
+ * Override hook from YapAbstractDatabaseConnection.
 **/
 - (void)_flushMemoryWithLevel:(int)level
 {
@@ -109,10 +115,13 @@
 		sqlite_finalize_null(&removeAllStatement);
 		sqlite_finalize_null(&enumerateCollectionsStatement);
 		sqlite_finalize_null(&enumerateKeysInCollectionStatement);
-		sqlite_finalize_null(&enumerateMetadataInCollectionStatement);
-		sqlite_finalize_null(&enumerateMetadataInAllCollectionsStatement);
-		sqlite_finalize_null(&enumerateAllInCollectionStatement);
-		sqlite_finalize_null(&enumerateAllInAllCollectionsStatement);
+		sqlite_finalize_null(&enumerateKeysInAllCollectionsStatement);
+		sqlite_finalize_null(&enumerateKeysAndMetadataInCollectionStatement);
+		sqlite_finalize_null(&enumerateKeysAndMetadataInAllCollectionsStatement);
+		sqlite_finalize_null(&enumerateKeysAndObjectsInCollectionStatement);
+		sqlite_finalize_null(&enumerateKeysAndObjectsInAllCollectionsStatement);
+		sqlite_finalize_null(&enumerateRowsInCollectionStatement);
+		sqlite_finalize_null(&enumerateRowsInAllCollectionsStatement);
 	}
 	
 	if (level >= YapDatabaseConnectionFlushMemoryLevelFull)
@@ -140,11 +149,12 @@
 	if (getCollectionCountStatement == NULL)
 	{
 		char *stmt = "SELECT COUNT(DISTINCT collection) AS NumberOfRows FROM \"database\";";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getCollectionCountStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getCollectionCountStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'getCollectionCountStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -156,11 +166,12 @@
 	if (getKeyCountForCollectionStatement == NULL)
 	{
 		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database\" WHERE \"collection\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getKeyCountForCollectionStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getKeyCountForCollectionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'getKeyCountForCollectionStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -172,11 +183,12 @@
 	if (getKeyCountForAllStatement == NULL)
 	{
 		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database\";";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getKeyCountForAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getKeyCountForAllStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'getKeyCountForAllStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -188,11 +200,12 @@
 	if (getCountForKeyStatement == NULL)
 	{
 		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database\" WHERE \"collection\" = ? AND \"key\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getCountForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getCountForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'getCountForKeyStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -204,11 +217,12 @@
 	if (getDataForKeyStatement == NULL)
 	{
 		char *stmt = "SELECT \"data\" FROM \"database\" WHERE \"collection\" = ? AND \"key\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getDataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getDataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'getDataForKeyStatement'! %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -220,11 +234,12 @@
 	if (getMetadataForKeyStatement == NULL)
 	{
 		char *stmt = "SELECT \"metadata\" FROM \"database\" WHERE \"collection\" = ? AND \"key\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getMetadataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getMetadataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'getMetadataForKeyStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -236,11 +251,12 @@
 	if (getAllForKeyStatement == NULL)
 	{
 		char *stmt = "SELECT \"data\", \"metadata\" FROM \"database\" WHERE \"collection\" = ? AND \"key\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getAllForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getAllForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'getAllForKeyStatement': %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -252,11 +268,12 @@
 	if (setMetaForKeyStatement == NULL)
 	{
 		char *stmt = "UPDATE \"database\" SET \"metadata\" = ? WHERE \"collection\" = ? AND \"key\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &setMetaForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &setMetaForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'setMetaForKeyStatement'! %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -269,11 +286,12 @@
 	{
 		char *stmt = "INSERT OR REPLACE INTO \"database\""
 		              " (\"collection\", \"key\", \"data\", \"metadata\") VALUES (?, ?, ?, ?);";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &setAllForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &setAllForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'setAllForKeyStatement'! %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -285,11 +303,12 @@
 	if (removeForKeyStatement == NULL)
 	{
 		char *stmt = "DELETE FROM \"database\" WHERE \"collection\" = ? AND \"key\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &removeForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'removeForKeyStatement'! %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -301,11 +320,12 @@
 	if (removeCollectionStatement == NULL)
 	{
 		char *stmt = "DELETE FROM \"database\" WHERE \"collection\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeCollectionStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &removeCollectionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'removeAllStatement'! %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -317,11 +337,12 @@
 	if (removeAllStatement == NULL)
 	{
 		char *stmt = "DELETE FROM \"database\";";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &removeAllStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'removeAllStatement'! %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -333,11 +354,12 @@
 	if (enumerateCollectionsStatement == NULL)
 	{
 		char *stmt = "SELECT DISTINCT \"collection\" FROM \"database\";";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateCollectionsStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateCollectionsStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'enumerateCollectionsStatement'! %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -349,84 +371,138 @@
 	if (enumerateKeysInCollectionStatement == NULL)
 	{
 		char *stmt = "SELECT \"key\" FROM \"database\" WHERE collection = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateKeysInCollectionStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysInCollectionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'enumerateKeysInCollectionStatement'! %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
 	return enumerateKeysInCollectionStatement;
 }
 
-- (sqlite3_stmt *)enumerateMetadataInCollectionStatement
+- (sqlite3_stmt *)enumerateKeysInAllCollectionsStatement
 {
-	if (enumerateMetadataInCollectionStatement == NULL)
+	if (enumerateKeysInAllCollectionsStatement == NULL)
+	{
+		char *stmt = "SELECT \"collection\", \"key\" FROM \"database\";";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysInAllCollectionsStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return enumerateKeysInAllCollectionsStatement;
+}
+
+- (sqlite3_stmt *)enumerateKeysAndMetadataInCollectionStatement
+{
+	if (enumerateKeysAndMetadataInCollectionStatement == NULL)
 	{
 		char *stmt = "SELECT \"key\", \"metadata\" FROM \"database\" WHERE collection = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateMetadataInCollectionStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndMetadataInCollectionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'enumerateMetadataInCollectionStatement'! %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return enumerateMetadataInCollectionStatement;
+	return enumerateKeysAndMetadataInCollectionStatement;
 }
 
-- (sqlite3_stmt *)enumerateMetadataInAllCollectionsStatement
+- (sqlite3_stmt *)enumerateKeysAndMetadataInAllCollectionsStatement
 {
-	if (enumerateMetadataInAllCollectionsStatement == NULL)
+	if (enumerateKeysAndMetadataInAllCollectionsStatement == NULL)
 	{
 		char *stmt = "SELECT \"collection\", \"key\", \"metadata\" FROM \"database\" ORDER BY \"collection\" ASC;";
-		int status;
+		int stmtLen = (int)strlen(stmt);
 		
-		status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateMetadataInAllCollectionsStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndMetadataInAllCollectionsStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'enumerateMetadataInAllCollectionsStatement'! %d %s",
-			            status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return enumerateMetadataInAllCollectionsStatement;
+	return enumerateKeysAndMetadataInAllCollectionsStatement;
 }
 
-- (sqlite3_stmt *)enumerateAllInCollectionStatement
+- (sqlite3_stmt *)enumerateKeysAndObjectsInCollectionStatement
 {
-	if (enumerateAllInCollectionStatement == NULL)
+	if (enumerateKeysAndObjectsInCollectionStatement == NULL)
+	{
+		char *stmt = "SELECT \"key\", \"data\" FROM \"database\" WHERE \"collection\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndObjectsInCollectionStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return enumerateKeysAndObjectsInCollectionStatement;
+}
+
+- (sqlite3_stmt *)enumerateKeysAndObjectsInAllCollectionsStatement
+{
+	if (enumerateKeysAndObjectsInAllCollectionsStatement == NULL)
+	{
+		char *stmt = "SELECT \"collection\", \"key\", \"data\" FROM \"database\" ORDER BY \"collection\" ASC;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndObjectsInAllCollectionsStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return enumerateKeysAndObjectsInAllCollectionsStatement;
+}
+
+- (sqlite3_stmt *)enumerateRowsInCollectionStatement
+{
+	if (enumerateRowsInCollectionStatement == NULL)
 	{
 		char *stmt = "SELECT \"key\", \"data\", \"metadata\" FROM \"database\" WHERE \"collection\" = ?;";
-				
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateAllInCollectionStatement, NULL);
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateRowsInCollectionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'enumerateAllInCollectionStatement'! %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return enumerateAllInCollectionStatement;
+	return enumerateRowsInCollectionStatement;
 }
 
-- (sqlite3_stmt *)enumerateAllInAllCollectionsStatement
+- (sqlite3_stmt *)enumerateRowsInAllCollectionsStatement
 {
-	if (enumerateAllInAllCollectionsStatement == NULL)
+	if (enumerateRowsInAllCollectionsStatement == NULL)
 	{
 		char *stmt =
 		    "SELECT \"collection\", \"key\", \"data\", \"metadata\""
 		    " FROM \"database\""
 		    " ORDER BY \"collection\" ASC;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateAllInAllCollectionsStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateRowsInAllCollectionsStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating 'enumerateAllInAllCollectionsStatement'! %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return enumerateAllInAllCollectionsStatement;
+	return enumerateRowsInAllCollectionsStatement;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -565,7 +641,7 @@
 **/
 - (YapAbstractDatabaseTransaction *)newReadTransaction
 {
-	return [[YapCollectionsDatabaseReadTransaction alloc] initWithConnection:self];
+	return [[YapCollectionsDatabaseReadTransaction alloc] initWithConnection:self isReadWriteTransaction:NO];
 }
 
 /**
@@ -574,7 +650,7 @@
 **/
 - (YapAbstractDatabaseTransaction *)newReadWriteTransaction
 {
-	return [[YapCollectionsDatabaseReadWriteTransaction alloc] initWithConnection:self];
+	return [[YapCollectionsDatabaseReadWriteTransaction alloc] initWithConnection:self isReadWriteTransaction:YES];
 }
 
 /**
@@ -613,6 +689,10 @@
 		removedCollections = nil;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Changesets
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Required override method from YapAbstractDatabaseConnection.
  * 
@@ -624,36 +704,73 @@
  * 
  * @see processChangeset:
 **/
-- (NSMutableDictionary *)changeset
+- (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
+           externalChangeset:(NSMutableDictionary **)externalChangesetPtr
 {
-	if ([objectChanges count] > 0      ||
-		[metadataChanges count] > 0    ||
-		[removedKeys count] > 0        ||
+	NSMutableDictionary *internalChangeset = nil;
+	NSMutableDictionary *externalChangeset = nil;
+	
+	[super getInternalChangeset:&internalChangeset externalChangeset:&externalChangeset];
+	
+	// Reserved keys:
+	//
+	// - extensions
+	// - extensionNames
+	// - snapshot
+	
+	if ([objectChanges count]      > 0 ||
+		[metadataChanges count]    > 0 ||
+		[removedKeys count]        > 0 ||
 		[removedCollections count] > 0 || allKeysRemoved)
 	{
-		NSMutableDictionary *changeset = [NSMutableDictionary dictionaryWithCapacity:5];
+		if (internalChangeset == nil)
+			internalChangeset = [NSMutableDictionary dictionaryWithCapacity:6]; // +1 for snapshot
+		
+		if (externalChangeset == nil)
+			externalChangeset = [NSMutableDictionary dictionaryWithCapacity:6]; // +1 for snapshot
 		
 		if ([objectChanges count] > 0)
-			[changeset setObject:objectChanges forKey:@"objectChanges"];
+		{
+			[internalChangeset setObject:objectChanges forKey:YapCollectionsDatabaseObjectChangesKey];
+			
+			YapSet *immutableObjectChanges = [[YapSet alloc] initWithDictionary:objectChanges];
+			[externalChangeset setObject:immutableObjectChanges forKey:YapCollectionsDatabaseObjectChangesKey];
+		}
 		
 		if ([metadataChanges count] > 0)
-			[changeset setObject:metadataChanges forKey:@"metadataChanges"];
+		{
+			[internalChangeset setObject:metadataChanges forKey:YapCollectionsDatabaseMetadataChangesKey];
+			
+			YapSet *immutableMetadataChanges = [[YapSet alloc] initWithDictionary:metadataChanges];
+			[externalChangeset setObject:immutableMetadataChanges forKey:YapCollectionsDatabaseMetadataChangesKey];
+		}
 		
 		if ([removedKeys count] > 0)
-			[changeset setObject:removedKeys forKey:@"removedKeys"];
+		{
+			[internalChangeset setObject:removedKeys forKey:YapCollectionsDatabaseRemovedKeysKey];
+			
+			YapSet *immutableRemovedKeys = [[YapSet alloc] initWithSet:removedKeys];
+			[externalChangeset setObject:immutableRemovedKeys forKey:YapCollectionsDatabaseRemovedKeysKey];
+		}
 		
 		if ([removedCollections count] > 0)
-			[changeset setObject:removedCollections forKey:@"removedCollections"];
+		{
+			[internalChangeset setObject:removedCollections forKey:YapCollectionsDatabaseRemovedCollectionsKey];
+			
+			YapSet *immutableRemovedCollections = [[YapSet alloc] initWithSet:removedCollections];
+			[externalChangeset setObject:immutableRemovedCollections
+			                      forKey:YapCollectionsDatabaseRemovedCollectionsKey];
+		}
 		
 		if (allKeysRemoved)
-			[changeset setObject:@(YES) forKey:@"allKeysRemoved"];
-		
-		return changeset;
+		{
+			[internalChangeset setObject:@(YES) forKey:YapCollectionsDatabaseAllKeysRemovedKey];
+			[externalChangeset setObject:@(YES) forKey:YapCollectionsDatabaseAllKeysRemovedKey];
+		}
 	}
-	else
-	{
-		return nil;
-	}
+	
+	*internalChangesetPtr = internalChangeset;
+	*externalChangesetPtr = externalChangeset;
 }
 
 /**
@@ -666,16 +783,48 @@
 **/
 - (void)processChangeset:(NSDictionary *)changeset
 {
-	NSDictionary *c_objectChanges   =  [changeset objectForKey:@"objectChanges"];
-	NSDictionary *c_metadataChanges =  [changeset objectForKey:@"metadataChanges"];
-	NSSet *c_removedKeys            =  [changeset objectForKey:@"removedKeys"];
-	NSSet *c_removedCollections     =  [changeset objectForKey:@"removedCollections"];
-	BOOL c_allKeysRemoved           = [[changeset objectForKey:@"allKeysRemoved"] boolValue];
+	[super processChangeset:changeset];
 	
-	if ([c_objectChanges count] || [c_removedKeys count] || [c_removedCollections count] || c_allKeysRemoved)
+	// Extract changset information
+	
+	NSDictionary *changeset_objectChanges   =  [changeset objectForKey:YapCollectionsDatabaseObjectChangesKey];
+	NSDictionary *changeset_metadataChanges =  [changeset objectForKey:YapCollectionsDatabaseMetadataChangesKey];
+	
+	NSSet *changeset_removedKeys        =  [changeset objectForKey:YapCollectionsDatabaseRemovedKeysKey];
+	NSSet *changeset_removedCollections =  [changeset objectForKey:YapCollectionsDatabaseRemovedCollectionsKey];
+	
+	BOOL changeset_allKeysRemoved = [[changeset objectForKey:YapCollectionsDatabaseAllKeysRemovedKey] boolValue];
+	
+	BOOL hasObjectChanges      = [changeset_objectChanges count] > 0;
+	BOOL hasMetadataChanges    = [changeset_metadataChanges count] > 0;
+	BOOL hasRemovedKeys        = [changeset_removedKeys count] > 0;
+	BOOL hasRemovedCollections = [changeset_removedCollections count] > 0;
+	
+	// Update objectCache
+	
+	if (changeset_allKeysRemoved && !hasObjectChanges)
 	{
-		NSUInteger updateCapacity = MIN([objectCache count], [c_objectChanges count]);
-		NSUInteger removeCapacity = MIN([objectCache count], [c_removedKeys count]);
+		// Shortcut: Everything was removed from the database
+		
+		[objectCache removeAllObjects];
+	}
+	else if (hasObjectChanges && !hasRemovedKeys && !hasRemovedCollections && !changeset_allKeysRemoved)
+	{
+		// Shortcut: Nothing was removed from the database.
+		// So we can simply enumerate over the changes and update the cache inline as needed.
+		
+		[changeset_objectChanges enumerateKeysAndObjectsUsingBlock:^(id key, id object, BOOL *stop) {
+			
+			__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
+			
+			if ([objectCache containsKey:cacheKey])
+				[objectCache setObject:object forKey:cacheKey];
+		}];
+	}
+	else if (hasObjectChanges || hasRemovedKeys || hasRemovedCollections)
+	{
+		NSUInteger updateCapacity = MIN([objectCache count], [changeset_objectChanges count]);
+		NSUInteger removeCapacity = MIN([objectCache count], [changeset_removedKeys count]);
 		
 		NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
 		NSMutableArray *keysToRemove = [NSMutableArray arrayWithCapacity:removeCapacity];
@@ -688,38 +837,59 @@
 			// [transaction removeAllObjectsInAllCollections];
 			// [transaction setObject:obj forKey:key inCollection:collection];
 			
-			__unsafe_unretained YapCacheCollectionKey *cacheKey = (YapCacheCollectionKey *)key;
+			__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
 			
-			if ([c_objectChanges objectForKey:key])
+			if ([changeset_objectChanges objectForKey:key])
 			{
 				[keysToUpdate addObject:key];
 			}
-			else if ([c_removedKeys containsObject:key] ||
-					 [c_removedCollections containsObject:cacheKey.collection] || c_allKeysRemoved)
+			else if ([changeset_removedKeys containsObject:key] ||
+					 [changeset_removedCollections containsObject:cacheKey.collection] || changeset_allKeysRemoved)
 			{
 				[keysToRemove addObject:key];
 			}
 		}];
 		
+		[objectCache removeObjectsForKeys:keysToRemove];
+		
 		id yapnull = [YapNull null];
 		
 		for (id key in keysToUpdate)
 		{
-			id newObject = [c_objectChanges objectForKey:key];
+			id newObject = [changeset_objectChanges objectForKey:key];
 			
 			if (newObject == yapnull) // setPrimitiveDataForKey was used on key
 				[objectCache removeObjectForKey:key];
 			else
 				[objectCache setObject:newObject forKey:key];
 		}
-		
-		[objectCache removeObjectsForKeys:keysToRemove];
 	}
 	
-	if ([c_metadataChanges count] || [c_removedKeys count] || [c_removedCollections count] || c_allKeysRemoved)
+	// Update metadataCache
+	
+	if (changeset_allKeysRemoved && !hasMetadataChanges)
 	{
-		NSUInteger updateCapacity = MIN([metadataCache count], [c_metadataChanges count]);
-		NSUInteger removeCapacity = MIN([metadataCache count], [c_removedKeys count]);
+		// Shortcut: Everything was removed from the database
+		
+		[metadataCache removeAllObjects];
+	}
+	else if (hasMetadataChanges && !hasRemovedKeys && !hasRemovedCollections && !changeset_allKeysRemoved)
+	{
+		// Shortcut: Nothing was removed from the database.
+		// So we can simply enumerate over the changes and update the cache inline as needed.
+		
+		[changeset_metadataChanges enumerateKeysAndObjectsUsingBlock:^(id key, id object, BOOL *stop) {
+			
+			__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
+			
+			if ([metadataCache containsKey:cacheKey])
+				[metadataCache setObject:object forKey:cacheKey];
+		}];
+	}
+	else if (hasMetadataChanges || hasRemovedKeys || hasRemovedCollections)
+	{
+		NSUInteger updateCapacity = MIN([metadataCache count], [changeset_metadataChanges count]);
+		NSUInteger removeCapacity = MIN([metadataCache count], [changeset_removedKeys count]);
 		
 		NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
 		NSMutableArray *keysToRemove = [NSMutableArray arrayWithCapacity:removeCapacity];
@@ -732,27 +902,310 @@
 			// [transaction removeAllObjectsInAllCollections];
 			// [transaction setObject:obj forKey:key inCollection:collection];
 			
-			__unsafe_unretained YapCacheCollectionKey *cacheKey = (YapCacheCollectionKey *)key;
+			__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
 			
-			if ([c_metadataChanges objectForKey:key])
+			if ([changeset_metadataChanges objectForKey:key])
 			{
 				[keysToUpdate addObject:key];
 			}
-			else if ([c_removedKeys containsObject:key] ||
-					 [c_removedCollections containsObject:cacheKey.collection] || c_allKeysRemoved)
+			else if ([changeset_removedKeys containsObject:key] ||
+					 [changeset_removedCollections containsObject:cacheKey.collection] || changeset_allKeysRemoved)
 			{
 				[keysToRemove addObject:key];
 			}
 		}];
 		
+		[metadataCache removeObjectsForKeys:keysToRemove];
+		
 		for (id key in keysToUpdate)
 		{
-			id newObject = [c_metadataChanges objectForKey:key];
+			id newObject = [changeset_metadataChanges objectForKey:key];
+			
 			[metadataCache setObject:newObject forKey:key];
 		}
-		
-		[metadataCache removeObjectsForKeys:keysToRemove];
 	}
+}
+
+- (BOOL)hasChangeForCollection:(NSString *)collection
+               inNotifications:(NSArray *)notifications
+        includingObjectChanges:(BOOL)includeObjectChanges
+               metadataChanges:(BOOL)includeMetadataChanges
+{
+	if (collection == nil)
+		collection = @"";
+	
+	for (NSNotification *notification in notifications)
+	{
+		if (![notification isKindOfClass:[NSNotification class]])
+		{
+			YDBLogWarn(@"%@ - notifications parameter contains non-NSNotification object", THIS_METHOD);
+			continue;
+		}
+		
+		NSDictionary *changeset = notification.userInfo;
+		
+		if (includeObjectChanges)
+		{
+			YapSet *changeset_objectChanges = [changeset objectForKey:YapCollectionsDatabaseObjectChangesKey];
+			for (YapCollectionKey *collectionKey in changeset_objectChanges)
+			{
+				if ([collectionKey.collection isEqualToString:collection])
+				{
+					return YES;
+				}
+			}
+		}
+		
+		if (includeMetadataChanges)
+		{
+			YapSet *changeset_metadataChanges = [changeset objectForKey:YapCollectionsDatabaseMetadataChangesKey];
+			for (YapCollectionKey *collectionKey in changeset_metadataChanges)
+			{
+				if ([collectionKey.collection isEqualToString:collection])
+				{
+					return YES;
+				}
+			}
+		}
+		
+		YapSet *changeset_removedKeys = [changeset objectForKey:YapCollectionsDatabaseRemovedKeysKey];
+		for (YapCollectionKey *collectionKey in changeset_removedKeys)
+		{
+			if ([collectionKey.collection isEqualToString:collection])
+			{
+				return YES;
+			}
+		}
+		
+		YapSet *changeset_removedCollections = [changeset objectForKey:YapCollectionsDatabaseRemovedCollectionsKey];
+		if ([changeset_removedCollections containsObject:collection])
+			return YES;
+		
+		BOOL changeset_allKeysRemoved = [[changeset objectForKey:YapCollectionsDatabaseAllKeysRemovedKey] boolValue];
+		if (changeset_allKeysRemoved)
+			return YES;
+	}
+	
+	return NO;
+}
+
+- (BOOL)hasChangeForCollection:(NSString *)collection inNotifications:(NSArray *)notifications
+{
+	return [self hasChangeForCollection:collection
+	                    inNotifications:notifications
+	             includingObjectChanges:YES
+	                    metadataChanges:YES];
+}
+
+- (BOOL)hasObjectChangeForCollection:(NSString *)collection inNotifications:(NSArray *)notifications
+{
+	return [self hasChangeForCollection:collection
+	                    inNotifications:notifications
+	             includingObjectChanges:YES
+	                    metadataChanges:NO];
+}
+
+- (BOOL)hasMetadataChangeForCollection:(NSString *)collection inNotifications:(NSArray *)notifications
+{
+	return [self hasChangeForCollection:collection
+	                    inNotifications:notifications
+	             includingObjectChanges:NO
+	                    metadataChanges:YES];
+}
+
+// Query for a change to a particular key/collection tuple
+
+- (BOOL)hasChangeForKey:(NSString *)key
+           inCollection:(NSString *)collection
+        inNotifications:(NSArray *)notifications
+ includingObjectChanges:(BOOL)includeObjectChanges
+        metadataChanges:(BOOL)includeMetadataChanges
+{
+	if (collection == nil)
+		collection = @"";
+	
+	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	
+	for (NSNotification *notification in notifications)
+	{
+		if (![notification isKindOfClass:[NSNotification class]])
+		{
+			YDBLogWarn(@"%@ - notifications parameter contains non-NSNotification object", THIS_METHOD);
+			continue;
+		}
+		
+		NSDictionary *changeset = notification.userInfo;
+		
+		if (includeObjectChanges)
+		{
+			YapSet *changeset_objectChanges = [changeset objectForKey:YapCollectionsDatabaseObjectChangesKey];
+			if ([changeset_objectChanges containsObject:collectionKey])
+				return YES;
+		}
+		
+		if (includeMetadataChanges)
+		{
+			YapSet *changeset_metadataChanges = [changeset objectForKey:YapCollectionsDatabaseMetadataChangesKey];
+			if ([changeset_metadataChanges containsObject:collectionKey])
+				return YES;
+		}
+		
+		YapSet *changeset_removedKeys = [changeset objectForKey:YapCollectionsDatabaseRemovedKeysKey];
+		if ([changeset_removedKeys containsObject:collectionKey])
+			return YES;
+		
+		YapSet *changeset_removedCollections = [changeset objectForKey:YapCollectionsDatabaseRemovedCollectionsKey];
+		if ([changeset_removedCollections containsObject:collection])
+			return YES;
+		
+		BOOL changeset_allKeysRemoved = [[changeset objectForKey:YapCollectionsDatabaseAllKeysRemovedKey] boolValue];
+		if (changeset_allKeysRemoved)
+			return YES;
+	}
+	
+	return NO;
+}
+
+- (BOOL)hasChangeForKey:(NSString *)key
+           inCollection:(NSString *)collection
+        inNotifications:(NSArray *)notifications
+{
+	return [self hasChangeForKey:key
+	                inCollection:collection
+	             inNotifications:notifications
+	      includingObjectChanges:YES
+	             metadataChanges:YES];
+}
+
+- (BOOL)hasObjectChangeForKey:(NSString *)key
+                 inCollection:(NSString *)collection
+               inNotification:(NSArray *)notifications
+{
+	return [self hasChangeForKey:key
+	                inCollection:collection
+	             inNotifications:notifications
+	      includingObjectChanges:YES
+	             metadataChanges:NO];
+}
+
+- (BOOL)hasMetadataChangeForKey:(NSString *)key
+                   inCollection:(NSString *)collection
+                 inNotification:(NSArray *)notifications
+{
+	return [self hasChangeForKey:key
+	                inCollection:collection
+	             inNotifications:notifications
+	      includingObjectChanges:NO
+	             metadataChanges:YES];
+}
+
+// Query for a change to a particular set of keys in a collection
+
+- (BOOL)hasChangeForAnyKeys:(NSSet *)keys
+               inCollection:(NSString *)collection
+            inNotifications:(NSArray *)notifications
+     includingObjectChanges:(BOOL)includeObjectChanges
+            metadataChanges:(BOOL)includeMetadataChanges
+{
+	if ([keys count] == 0) return NO;
+	if (collection == nil)
+		collection = @"";
+	
+	for (NSNotification *notification in notifications)
+	{
+		if (![notification isKindOfClass:[NSNotification class]])
+		{
+			YDBLogWarn(@"%@ - notifications parameter contains non-NSNotification object", THIS_METHOD);
+			continue;
+		}
+		
+		NSDictionary *changeset = notification.userInfo;
+		
+		if (includeObjectChanges)
+		{
+			YapSet *changeset_objectChanges = [changeset objectForKey:YapCollectionsDatabaseObjectChangesKey];
+			for (YapCollectionKey *collectionKey in changeset_objectChanges)
+			{
+				if ([collectionKey.collection isEqualToString:collection])
+				{
+					if ([keys containsObject:collectionKey.key])
+					{
+						return YES;
+					}
+				}
+			}
+		}
+		
+		if (includeMetadataChanges)
+		{
+			YapSet *changeset_metadataChanges = [changeset objectForKey:YapCollectionsDatabaseMetadataChangesKey];
+			for (YapCollectionKey *collectionKey in changeset_metadataChanges)
+			{
+				if ([collectionKey.collection isEqualToString:collection])
+				{
+					if ([keys containsObject:collectionKey.key])
+					{
+						return YES;
+					}
+				}
+			}
+		}
+		
+		YapSet *changeset_removedKeys = [changeset objectForKey:YapCollectionsDatabaseRemovedKeysKey];
+		for (YapCollectionKey *collectionKey in changeset_removedKeys)
+		{
+			if ([collectionKey.collection isEqualToString:collection])
+			{
+				if ([keys containsObject:collectionKey.key])
+				{
+					return YES;
+				}
+			}
+		}
+		
+		YapSet *changeset_removedCollections = [changeset objectForKey:YapCollectionsDatabaseRemovedCollectionsKey];
+		if ([changeset_removedCollections containsObject:collection])
+			return YES;
+		
+		BOOL changeset_allKeysRemoved = [[changeset objectForKey:YapCollectionsDatabaseAllKeysRemovedKey] boolValue];
+		if (changeset_allKeysRemoved)
+			return YES;
+	}
+	
+	return NO;
+}
+
+- (BOOL)hasChangeForAnyKeys:(NSSet *)keys
+               inCollection:(NSString *)collection
+            inNotifications:(NSArray *)notifications
+{
+	return [self hasChangeForAnyKeys:keys
+	                    inCollection:collection
+	                 inNotifications:notifications
+	          includingObjectChanges:YES
+	                 metadataChanges:YES];
+}
+
+- (BOOL)hasObjectChangeForAnyKeys:(NSSet *)keys
+                     inCollection:(NSString *)collection
+                   inNotification:(NSArray *)notifications
+{
+	return [self hasChangeForAnyKeys:keys
+	                    inCollection:collection
+	                 inNotifications:notifications
+	          includingObjectChanges:YES
+	                 metadataChanges:NO];
+}
+
+- (BOOL)hasMetadataChangeForAnyKeys:(NSSet *)keys
+                       inCollection:(NSString *)collection
+                     inNotification:(NSArray *)notifications
+{
+	return [self hasChangeForAnyKeys:keys
+	                    inCollection:collection
+	                 inNotifications:notifications
+	          includingObjectChanges:NO
+	                 metadataChanges:YES];
 }
 
 @end

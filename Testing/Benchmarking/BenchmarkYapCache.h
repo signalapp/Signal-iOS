@@ -3,6 +3,6 @@
 
 @interface BenchmarkYapCache : NSObject
 
-+ (void)startTests;
++ (void)runTestsWithCompletion:(dispatch_block_t)completionBlock;
 
 @end

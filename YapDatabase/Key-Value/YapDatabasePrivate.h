@@ -21,11 +21,11 @@
 	sqlite3_stmt *removeForKeyStatement;
 	sqlite3_stmt *removeAllStatement;
 	sqlite3_stmt *enumerateKeysStatement;
-	sqlite3_stmt *enumerateMetadataStatement;
-	sqlite3_stmt *enumerateAllStatement;
-
-@public
+	sqlite3_stmt *enumerateKeysAndMetadataStatement;
+	sqlite3_stmt *enumerateKeysAndObjectsStatement;
+	sqlite3_stmt *enumerateRowsStatement;
 	
+@public
 	NSMutableDictionary *objectChanges;
 	NSMutableDictionary *metadataChanges;
 	NSMutableSet *removedKeys;
@@ -38,8 +38,6 @@
 	void *IsOnConnectionQueueKey;
 	
 	YapAbstractDatabase *database;
-	
-	uint64_t cacheSnapshot;
 	
 @public
 	sqlite3 *db;
@@ -65,7 +63,20 @@
 - (sqlite3_stmt *)removeForKeyStatement;
 - (sqlite3_stmt *)removeAllStatement;
 - (sqlite3_stmt *)enumerateKeysStatement;
-- (sqlite3_stmt *)enumerateMetadataStatement;
-- (sqlite3_stmt *)enumerateAllStatement;
+- (sqlite3_stmt *)enumerateKeysAndMetadataStatement;
+- (sqlite3_stmt *)enumerateKeysAndObjectsStatement;
+- (sqlite3_stmt *)enumerateRowsStatement;
 
 @end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@interface YapDatabaseReadTransaction () {
+@public
+	__unsafe_unretained YapDatabaseConnection *connection;
+}
+
+@end
+
