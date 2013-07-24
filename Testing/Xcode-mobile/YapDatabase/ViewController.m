@@ -7,23 +7,46 @@
 //
 
 #import "ViewController.h"
-
-@interface ViewController ()
-
-@end
+#import "BenchmarkYapCache.h"
+#import "BenchmarkYapDatabase.h"
 
 @implementation ViewController
 
-- (void)viewDidLoad
+@synthesize databaseBenchmarksButton;
+@synthesize cacheBenchmarksButton;
+
+- (IBAction)runDatabaseBenchmarks
 {
-    [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+	databaseBenchmarksButton.enabled = NO;
+	cacheBenchmarksButton.enabled = NO;
+	
+	double delayInSeconds = 0.1;
+	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+		
+		[BenchmarkYapDatabase runTestsWithCompletion:^{
+			
+			databaseBenchmarksButton.enabled = YES;
+			cacheBenchmarksButton.enabled = YES;
+		}];
+	});
 }
 
-- (void)didReceiveMemoryWarning
+- (IBAction)runCacheBenchmarks
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+	databaseBenchmarksButton.enabled = NO;
+	cacheBenchmarksButton.enabled = NO;
+	
+	double delayInSeconds = 0.1;
+	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+		
+		[BenchmarkYapCache runTestsWithCompletion:^{
+			
+			databaseBenchmarksButton.enabled = YES;
+			cacheBenchmarksButton.enabled = YES;
+		}];
+	});
 }
 
 @end

@@ -10,4 +10,10 @@
 
 @interface ViewController : UIViewController
 
+@property (nonatomic, strong, readwrite) IBOutlet UIButton *databaseBenchmarksButton;
+@property (nonatomic, strong, readwrite) IBOutlet UIButton *cacheBenchmarksButton;
+
+- (IBAction)runDatabaseBenchmarks;
+- (IBAction)runCacheBenchmarks;
+
 @end

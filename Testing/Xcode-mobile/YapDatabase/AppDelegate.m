@@ -29,14 +29,6 @@
 	                                         forFlag:YDB_LOG_FLAG_TRACE
 	                                         context:YDBLogContext];
 	
-	dispatch_async(dispatch_get_main_queue(), ^{
-		
-	//	[BenchmarkYapCache startTests];
-		[BenchmarkYapDatabase startTests];
-		
-	//	[self debug];
-	});
-	
 	// Normal UI stuff
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];

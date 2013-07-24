@@ -8,21 +8,48 @@
 @implementation AppDelegate
 {
 	YapDatabase *database;
-	YapDatabaseConnection *primaryConnection;
-	YapDatabaseConnection *secondaryConnection;
-	YapDatabaseConnection *writerConnection;
-	
-	NSUInteger count;
+	YapDatabaseConnection *connection;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-	dispatch_async(dispatch_get_main_queue(), ^(void){
+	
+}
+
+@synthesize databaseBenchmarksButton = databaseBenchmarksButton;
+@synthesize cacheBenchmarksButton = cacheBenchmarksButton;
+
+- (IBAction)runDatabaseBenchmarks:(id)sender
+{
+	databaseBenchmarksButton.enabled = NO;
+	cacheBenchmarksButton.enabled = NO;
+	
+	double delayInSeconds = 0.1;
+	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 		
-	//	[BenchmarkYapCache startTests];
-		[BenchmarkYapDatabase startTests];
+		[BenchmarkYapDatabase runTestsWithCompletion:^{
+			
+			databaseBenchmarksButton.enabled = YES;
+			cacheBenchmarksButton.enabled = YES;
+		}];
+	});
+}
+
+- (IBAction)runCacheBenchmarks:(id)sender
+{
+	databaseBenchmarksButton.enabled = NO;
+	cacheBenchmarksButton.enabled = NO;
+	
+	double delayInSeconds = 0.1;
+	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 		
-	//	[self testWalSize];
+		[BenchmarkYapCache runTestsWithCompletion:^{
+			
+			databaseBenchmarksButton.enabled = YES;
+			cacheBenchmarksButton.enabled = YES;
+		}];
 	});
 }
 
@@ -53,7 +80,7 @@
 	return [appSupportDir stringByAppendingPathComponent:fileName];
 }
 
-- (void)testWalSize
+- (void)debug
 {
 	NSString *databaseFilePath = [self databaseFilePath];
 	NSLog(@"databaseFilePath: %@", databaseFilePath);
@@ -61,58 +88,6 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databaseFilePath error:NULL];
 	
 	database = [[YapDatabase alloc] initWithPath:databaseFilePath];
-	
-	primaryConnection = [database newConnection];
-	secondaryConnection = [database newConnection];
-	writerConnection = [database newConnection];
-	
-	[primaryConnection beginLongLivedReadTransaction];
-	[secondaryConnection beginLongLivedReadTransaction];
-	
-	[NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(readwrite:) userInfo:nil repeats:YES];
-	
-	[[NSNotificationCenter defaultCenter] addObserver:self
-	                                         selector:@selector(yapDatabaseModified:)
-	                                             name:YapDatabaseModifiedNotification
-	                                           object:database];
-}
-
-- (void)yapDatabaseModified:(NSNotification *)notification
-{
-	double delayInSeconds;
-	dispatch_time_t popTime;
-	
-	delayInSeconds = 1.0;
-	popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-		
-		NSLog(@"Syncing primary connection...");
-		[primaryConnection beginLongLivedReadTransaction];
-	});
-	
-	delayInSeconds = 6.0;
-	popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-		
-		NSLog(@"Syncing secondary connection...");
-		[secondaryConnection beginLongLivedReadTransaction];
-	});
-}
-
-- (void)readwrite:(NSTimer *)timer
-{
-	[writerConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-		
-		for (NSUInteger i = 0; i < 100; i++)
-		{
-			NSString *key = [NSString stringWithFormat:@"%lu", (unsigned long)count];
-			[transaction setObject:@"a string object that's kinda big" forKey:key];
-			
-			count++;
-		}
-		
-		NSLog(@"Writing more objects to the database. Count = %lu", (unsigned long)count);
-	}];
 }
 
 @end

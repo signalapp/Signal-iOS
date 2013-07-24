@@ -134,9 +134,12 @@ static NSMutableArray *keys;
 	return elapsed;
 }
 
-+ (void)test
++ (void)testWithCompletion:(dispatch_block_t)completionBlock;
 {
-	if ([cacheSizes count] == 0) {
+	if ([cacheSizes count] == 0)
+	{
+		// Done!
+		completionBlock();
 		return;
 	}
 	
@@ -274,21 +277,16 @@ static NSMutableArray *keys;
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		// Run the next test (with a different cacheSize)
-		[self test];
+		[self testWithCompletion:completionBlock];
 	});
 }
 
-+ (void)startTests
++ (void)runTestsWithCompletion:(dispatch_block_t)completionBlock
 {
-	double delayInSeconds = 0.1;
-	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-		
-		// Run test for each of the cache sizes listed below
-		
-		cacheSizes = [@[ @(40), @(100), @(500), @(1000), @(5000) ] mutableCopy];
-		[self test];
-	});
+	// Run test for each of the cache sizes listed below
+	
+	cacheSizes = [@[ @(40), @(100), @(500), @(1000), @(5000) ] mutableCopy];
+	[self testWithCompletion:completionBlock];
 }
 
 @end
