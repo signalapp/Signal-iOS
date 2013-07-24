@@ -57,7 +57,6 @@
 
 /**
  * Returns whether or not the given key/collection exists in the database.
- * This information is kept in memory, and thus doesn't hit the disk.
 **/
 - (BOOL)hasObjectForKey:(NSString *)key inCollection:(NSString *)collection;
 
@@ -344,7 +343,6 @@
  * Objects are automatically serialized using the database's configured serializer.
  * 
  * You may optionally pass metadata about the object.
- * The metadata is kept in memory, within a mutable dictionary, and can be accessed very quickly.
  * The metadata is also written to the database for persistent storage, and thus persists between sessions.
  * Metadata is serialized/deserialized to/from disk just like the object.
 **/
