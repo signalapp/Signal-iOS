@@ -412,6 +412,16 @@
          forNotifications:(NSArray *)notifications
              withMappings:(YapDatabaseViewMappings *)mappings
 {
+	if (mappings == nil)
+	{
+		YDBLogWarn(@"%@ - mappings parameter is nil", THIS_METHOD);
+		
+		if (sectionChangesPtr) *sectionChangesPtr = nil;
+		if (rowChangesPtr) *rowChangesPtr = nil;
+		
+		return;
+	}
+	
 	NSString *registeredName = self.view.registeredName;
 	NSMutableArray *all_changes = [NSMutableArray array];
 	
