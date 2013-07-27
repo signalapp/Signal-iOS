@@ -1557,10 +1557,11 @@
 	{
 		snapshot = [self incrementSnapshotInDatabase];
 		
-		[changeset setObject:@(snapshot) forKey:@"snapshot"];
-		
 		if (userInfo == nil)
 			userInfo = [NSMutableDictionary dictionaryWithCapacity:2];
+		
+		[changeset setObject:@(snapshot) forKey:YapDatabaseSnapshotKey];
+		[userInfo setObject:@(snapshot) forKey:YapDatabaseSnapshotKey];
 		
 		[userInfo setObject:self forKey:YapDatabaseConnectionKey];
 		
@@ -2121,7 +2122,7 @@
 	// Grab the new snapshot.
 	// This tells us the minimum snapshot we could get if we started a transaction right now.
 	
-	uint64_t changesetSnapshot = [[changeset objectForKey:@"snapshot"] unsignedLongLongValue];
+	uint64_t changesetSnapshot = [[changeset objectForKey:YapDatabaseSnapshotKey] unsignedLongLongValue];
 	
 	if (changesetSnapshot <= snapshot)
 	{

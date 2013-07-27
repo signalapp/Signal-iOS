@@ -26,6 +26,7 @@
 
 NSString *const YapDatabaseModifiedNotification = @"YapDatabaseModifiedNotification";
 
+NSString *const YapDatabaseSnapshotKey   = @"snapshot";
 NSString *const YapDatabaseConnectionKey = @"connection";
 NSString *const YapDatabaseExtensionsKey = @"extensions";
 NSString *const YapDatabaseCustomKey     = @"custom";
@@ -1116,7 +1117,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 - (void)notePendingChanges:(NSDictionary *)pendingChangeset fromConnection:(YapAbstractDatabaseConnection *)sender
 {
 	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
-	NSAssert([pendingChangeset objectForKey:@"snapshot"], @"Missing required change key: snapshot");
+	NSAssert([pendingChangeset objectForKey:YapDatabaseSnapshotKey], @"Missing required change key: snapshot");
 	
 	// The sender is preparing to start the sqlite commit.
 	// We save the changeset in advance to handle possible edge cases.
@@ -1124,7 +1125,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	[changesets addObject:pendingChangeset];
 	
 	YDBLogVerbose(@"Adding pending changeset %@ for database: %@",
-	              [[changesets lastObject] objectForKey:@"snapshot"], self);
+	              [[changesets lastObject] objectForKey:YapDatabaseSnapshotKey], self);
 }
 
 /**
@@ -1142,7 +1143,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	
 	for (NSDictionary *changeset in changesets)
 	{
-		uint64_t changesetSnapshot = [[changeset objectForKey:@"snapshot"] unsignedLongLongValue];
+		uint64_t changesetSnapshot = [[changeset objectForKey:YapDatabaseSnapshotKey] unsignedLongLongValue];
 		
 		if ((changesetSnapshot > connectionSnapshot) && (changesetSnapshot <= maxSnapshot))
 		{
@@ -1166,14 +1167,14 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 - (void)noteCommittedChanges:(NSDictionary *)changeset fromConnection:(YapAbstractDatabaseConnection *)sender
 {
 	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
-	NSAssert([changeset objectForKey:@"snapshot"], @"Missing required change key: snapshot");
+	NSAssert([changeset objectForKey:YapDatabaseSnapshotKey], @"Missing required change key: snapshot");
 	
 	// The sender has finished the sqlite commit, and all data is now written to disk.
 	
 	// Update the in-memory snapshot,
 	// which represents the most recent snapshot of the last committed readwrite transaction.
 	
-	snapshot = [[changeset objectForKey:@"snapshot"] unsignedLongLongValue];
+	snapshot = [[changeset objectForKey:YapDatabaseSnapshotKey] unsignedLongLongValue];
 	
 	// Update registeredExtensions, if changed.
 	
@@ -1216,12 +1217,12 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		if (isInternalChangeset)
 		{
 			YDBLogVerbose(@"Completed internal changeset %@ for database: %@",
-			              [changeset objectForKey:@"snapshot"], self);
+			              [changeset objectForKey:YapDatabaseSnapshotKey], self);
 		}
 		else
 		{
 			YDBLogVerbose(@"Dropping processed changeset %@ for database: %@",
-			              [changeset objectForKey:@"snapshot"], self);
+			              [changeset objectForKey:YapDatabaseSnapshotKey], self);
 			
 			[changesets removeObjectAtIndex:0];
 		}

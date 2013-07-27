@@ -37,8 +37,9 @@
  * 
  * The userInfo dictionary will look something like this:
  * @{
+ *     YapDatabaseSnapshotKey = <NSNumber of snapshot, incremented per read-write transaction w/modification>,
  *     YapDatabaseConnectionKey = <YapDatabaseConnection instance that made the modification(s)>,
- *     YapDatabaseExtensionsKey = <NSDictionary>,
+ *     YapDatabaseExtensionsKey = <NSDictionary with individual changeset info per extension>,
  *     YapDatabaseCustomKey = <Optional object associated with this change, set by you>,
  * }
  * 
@@ -46,6 +47,7 @@
 **/
 extern NSString *const YapDatabaseModifiedNotification;
 
+extern NSString *const YapDatabaseSnapshotKey;
 extern NSString *const YapDatabaseConnectionKey;
 extern NSString *const YapDatabaseExtensionsKey;
 extern NSString *const YapDatabaseCustomKey;
