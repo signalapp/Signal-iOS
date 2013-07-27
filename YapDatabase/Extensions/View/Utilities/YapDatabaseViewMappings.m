@@ -1,4 +1,6 @@
-#import "YapDatabaseViewMappings.h"
+#import "YapDatabaseViewMappingsPrivate.h"
+
+#import "YapAbstractDatabaseConnection.h"
 #import "YapAbstractDatabaseTransaction.h"
 
 #import "YapDatabaseView.h"
@@ -7,6 +9,8 @@
 
 @implementation YapDatabaseViewMappings
 {
+	uint64_t snapshotOfLastUpdate;
+	
 	NSArray *allGroups;
 	NSString *registeredViewName;
 	
@@ -16,6 +20,8 @@
 
 @synthesize allGroups = allGroups;
 @synthesize view = registeredViewName;
+
+@synthesize snapshotOfLastUpdate = snapshotOfLastUpdate;
 
 @synthesize allowsEmptySections = allowsEmptySections;
 
@@ -32,6 +38,7 @@
 		id sharedKeySet = [NSDictionary sharedKeySetForKeys:allGroups];
 		counts = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
 		
+		snapshotOfLastUpdate = UINT64_MAX;
 		allowsEmptySections = NO;
 	}
 	return self;
@@ -45,6 +52,9 @@
 	
 	copy->visibleGroups = [visibleGroups mutableCopy];
 	copy->counts = [counts mutableCopy];
+	
+	copy->snapshotOfLastUpdate = snapshotOfLastUpdate;
+	copy->allowsEmptySections = allowsEmptySections;
 	
 	return copy;
 }
@@ -62,6 +72,8 @@
 		
 		[counts setObject:@(count) forKey:group];
 	}
+	
+	snapshotOfLastUpdate = transaction.abstractConnection.snapshot;
 }
 
 /**

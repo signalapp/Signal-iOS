@@ -6,6 +6,9 @@
 
 @interface YapDatabaseViewMappings ()
 
+/**
+ * For UNIT TESTING only.
+**/
 - (void)updateWithCounts:(NSDictionary *)counts;
 
 @end

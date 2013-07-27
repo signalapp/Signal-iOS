@@ -245,6 +245,21 @@
 **/
 - (void)updateWithTransaction:(YapAbstractDatabaseTransaction *)transaction;
 
+/**
+ * Returns the snapshot of the last time the mappings were initialized/updated.
+ * 
+ * This method is primarily for internal use.
+ * When the changesets are being calculated from the notifications & mappings,
+ * this property is consulted to ensure the mappings match the notifications.
+ *
+ * Everytime the updateWithTransaction method is invoked,
+ * this property will be set to transaction.abstractConnection.snapshot.
+ *
+ * If never initialized/updated, the snapshot will be UINT64_MAX.
+ * 
+ * @see YapAbstractDatabaseConnection snapshot
+**/
+@property (nonatomic, readonly) uint64_t snapshotOfLastUpdate;
 
 #pragma mark Getters
 
