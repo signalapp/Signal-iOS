@@ -31,14 +31,134 @@
  * 
  * From this starting point, the class helps you map from section to group, and vice versa.
  * Plus it can properly take into account empty sections. For example, if there are no items
- * for sale in the liquor department then it can automatically move beer to section 1.
+ * for sale in the liquor department then it can automatically move beer to section 1 (optional).
  * 
  * But the primary purpose of this class has to do with assisting in animating changes to your view.
  * In order to provide the proper animation instructions to your tableView or collectionView,
  * the database layer needs to know a little about how you're setting things up.
  * 
- * @see YapDatabaseViewConnection changesForNotifications:withGroupToSectionMappings:
- * @see YapCollectionsDatabaseViewConnection changesForNotifications:withGroupToSectionMappings:
+ * Using the example above, we might have code that looks something like this:
+ * 
+ * - (void)viewDidLoad
+ * {
+ *     // Freeze our connection for use on the main-thread.
+ *     // This gives us a stable data-source that won't change until we tell it to.
+ *
+ *     [databaseConnection beginLongLivedReadTransaction];
+ *
+ *     // The view may have a whole bunch of groups.
+ *     // In our example, the view contains a group for every department in the grocery store.
+ *     // We only want to display the alcohol related sections in our tableView.
+ *     
+ *     NSArray *groups = @[@"wine", @"liquor", @"beer"];
+ *     mappings = [[YapDatabaseViewMappings alloc] initWithGroups:groups view:@"order"];
+ * 
+ *     // There are several ways in which we can further configure the mappings.
+ *     // You would configure it however you want.
+ *     
+ *     mappings.allowsEmptySections = YES;
+ *     
+ *     // Now initialize the mappings.
+ *     // This will allow the mappings object to get the counts per group.
+ *     
+ *     [databaseConnection readWithBlock:(YapDatabaseReadTransaction *transaction){
+ *         // One-time initialization
+ *         [mappings updateWithTransaction:transaction];
+ *     }];
+ *     
+ *     // And register for notifications when the database changes.
+ *     // Our method will be invoked on the main-thread,
+ *     // and will allow us to move our stable data-source from our existing state to an updated state.
+ *
+ *     [[NSNotificationCenter defaultCenter] addObserver:self
+ *                                              selector:@selector(yapDatabaseModified:)
+ *                                                  name:YapDatabaseModifiedNotification
+ *                                                object:databaseConnection.database];
+ * }
+ *
+ * - (void)yapDatabaseModified:(NSNotification *)notification
+ * {
+ *     // End & Re-Begin the long-lived transaction atomically.
+ *     // Also grab all the notifications for all the commits that I jump.
+ *     
+ *     NSArray *notifications = [databaseConnection beginLongLivedReadTransaction];
+ * 
+ *     // Process the notification(s),
+ *     // and get the changeset as it applies to me, based on my view and my mappings setup.
+ * 
+ *     NSArray *sectionChanges = nil;
+ *     NSArray *rowChanges = nil;
+ *     
+ *     [[databaseConnection ext:@"order"] getSectionChanges:&sectionChanges
+ *                                               rowChanges:&rowChanges
+ *                                         forNotifications:notifications
+ *                                             withMappings:mappings];
+ *     
+ *     // No need to update mappings.
+ *     // The above method did it automatically.
+ *     
+ *     if ([sectionChanges count] == 0 & [rowChanges count] == 0)
+ *     {
+ *         // Nothing has changed that affects our tableView
+ *         return;
+ *     }
+ *
+ *     // Now it's time to process the changes.
+ *     // 
+ *     // Note: Because we explicitly told the mappings to allowEmptySections,
+ *     // there won't be any section changes. If we had instead set allowEmptySections to NO,
+ *     // then there might be section deletions & insertions as sections become empty & non-empty.
+ *
+ *     [self.tableView beginUpdates];
+ *     
+ *     for (YapDatabaseViewSectionChange *sectionChange in sectionChanges)
+ *     {
+ *         // ... (see https://github.com/yaptv/YapDatabase/wiki/Views )
+ *     }
+ *     
+ *     for (YapDatabaseViewRowChange *rowChange in rowChanges)
+ *     {
+ *         // ... (see https://github.com/yaptv/YapDatabase/wiki/Views )
+ *     }
+ *
+ *     [self.tableView endUpdates];
+ * }
+ * 
+ * - (NSInteger)numberOfSectionsInTableView:(UITableView *)sender
+ * {
+ *     // I can use the cached information in the mappings object.
+ *     // 
+ *     // This comes in handy if my sections are dynamic,
+ *     // and automatically come and go as individual sections become empty & non-empty.
+ *
+ *     return [mappings numberOfSections];
+ * }
+ * 
+ * - (NSInteger)tableView:(UITableView *)sender numberOfRowsInSection:(NSInteger)section
+ * {
+ *     // I can use the cached information in the mappings object.
+ *
+ *     return [mappings numberOfItemsInSection:section];
+ * }
+ * 
+ * - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+ * {
+ *     // If my sections are dynamic (they automatically come and go as individual sections become empty & non-empty),
+ *     // then I can easily use the mappings object to find the appropriate group.
+ *     
+ *     NSString *group = [mappings groupForSection:indexPath.section];
+ *
+ *     __block id object = nil;
+ *     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
+ *         
+ *         object = [[transaction ext:@"view"] objectAtIndex:indexPath.row inGroup:group];
+ *     }];
+ * 
+ *     // configure and return cell...
+ * }
+ *
+ * @see YapDatabaseConnection getSectionChanges:rowChanges:forNotifications:withMappings:
+ * @see YapCollectionsDatabaseConnection getSectionChanges:rowChanges:forNotifications:withMappings:
 **/
 @interface YapDatabaseViewMappings : NSObject <NSCopying>
 
@@ -108,18 +228,20 @@
 //- (void)setHardRange:(NSRange)range forGroup:(NSString *)group;
 
 
-#pragma mark Update
+#pragma mark Initialization & Updates
 
 /**
  * You have to call this method to initialize the mappings.
- * This method uses the transaction fetch and cache the counts for the groups.
+ * This method uses the given transaction to fetch and cache the counts for each group.
  * 
- * This class is most often used with the method changesForNotifications:withMappings:,
- * and that method automatically invokes this method after it has used the mappings to
- * calculate the proper sections & indexes for the animations.
+ * This class is designed to be used with the method getSectionChanges:rowChanges:forNotifications:withMappings:.
+ * That method needs the 'before' & 'after' snapshot of the mappings in order to calculate the proper changeset.
+ * In order to get this, it automatically invokes this method.
+ *
+ * Thus you only have to manually invoke this method once.
+ * Aftewards, it should be invoked for you.
  * 
- * You generally only have to invoke this method again (after the initialization),
- * if you make changes to the configuration using the various properties.
+ * Please see the example code above.
 **/
 - (void)updateWithTransaction:(YapAbstractDatabaseTransaction *)transaction;
 

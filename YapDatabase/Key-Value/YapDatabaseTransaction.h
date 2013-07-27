@@ -3,15 +3,21 @@
 #import "YapAbstractDatabaseTransaction.h"
 #import "YapAbstractDatabaseExtensionTransaction.h"
 
+@class YapDatabaseConnection;
+
 /**
+ * Welcome to YapDatabase!
+ *
+ * The project page has a wealth of documentation if you have any questions.
+ * https://github.com/yaptv/YapDatabase
+ *
+ * If you're new to the project you may want to visit the wiki.
+ * https://github.com/yaptv/YapDatabase/wiki
+ * 
  * Transactions represent atomic access to a database.
  * There are two types of transactions:
  * - Read-Only transactions
  * - Read-Write transactions
- *
- * Multiple read-only transactions may occur in parallel,
- * and may also occur simulataneously with a single read-write transaction.
- * However, there may be only a single read-write transaction per database.
  * 
  * Once a transaction is started, all data access within the transaction from that point forward until completion
  * represents an atomic "snapshot" of the current state of the database. For example, if a read-write operation
@@ -24,13 +30,26 @@
  * Each connection allows you to execute transactions in a serial fashion.
  * For concurrent access, you can create multiple connections,
  * and execute transactions on each connection simulataneously.
+ * 
+ * Concurrency is straight-forward. Here are the rules:
+ * 
+ * - You can have multiple connections.
+ * - Every connection is thread-safe.
+ * - You can have multiple read-only transactions simultaneously without blocking.
+ *   (Each simultaneous transaction would be going through a separate connection.)
+ * - You can have multiple read-only transactions and a single read-write transaction simultaneously without blocking.
+ *   (Each simultaneous transaction would be going through a separate connection.)
+ * - There can only be a single transaction per connection at a time.
+ *   (Transactions go through a per-connection serial queue.)
+ * - There can only be a single read-write transaction at a time.
+ *   (Read-write transactions go through a per-database serial queue.)
 **/
 
 /**
  * A YapDatabaseReadTransaction encompasses a single read-only database transaction.
  * You can execute multiple operations within a single transaction.
  * 
- * A transaction allows you to safely access the database as needed in a thread-safe manner.
+ * A transaction allows you to safely access the database as needed in a thread-safe and optimized manner.
 **/
 @interface YapDatabaseReadTransaction : YapAbstractDatabaseTransaction
 
