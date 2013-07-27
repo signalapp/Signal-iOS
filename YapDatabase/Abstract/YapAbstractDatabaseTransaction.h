@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
 
+@class YapAbstractDatabaseConnection;
+
 
 /**
  * Welcome to YapDatabase!
@@ -18,6 +20,18 @@
  * YapAbstractDatabaseTransaction provides the generic implementation of a transaction.
 **/
 @interface YapAbstractDatabaseTransaction : NSObject
+
+/**
+ * Transactions are light-weight objects created by connections.
+ *
+ * Connections are the parent objects of transactions.
+ * Connections own the transaction objects.
+ * 
+ * Transactions store nearly all their state in the parent connection object.
+ * This reduces the memory requirements for transactions objects,
+ * and reduces the overhead associated in creating them.
+**/
+@property (nonatomic, unsafe_unretained, readonly) YapAbstractDatabaseConnection *abstractConnection;
 
 /**
  * Under normal circumstances, when a read-write transaction block completes,

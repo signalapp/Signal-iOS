@@ -45,6 +45,8 @@
 	return self;
 }
 
+@synthesize connection = connection;
+
 #pragma mark Count
 
 - (NSUInteger)numberOfCollections

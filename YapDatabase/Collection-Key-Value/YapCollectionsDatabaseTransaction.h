@@ -1,8 +1,21 @@
 #import <Foundation/Foundation.h>
 #import "YapAbstractDatabaseTransaction.h"
 
+@class YapCollectionsDatabaseConnection;
 
 @interface YapCollectionsDatabaseReadTransaction : YapAbstractDatabaseTransaction
+
+/**
+ * Transactions are light-weight objects created by connections.
+ *
+ * Connections are the parent objects of transactions.
+ * Connections own the transaction objects.
+ *
+ * Transactions store nearly all their state in the parent connection object.
+ * This reduces the memory requirements for transactions objects,
+ * and reduces the overhead associated in creating them.
+**/
+@property (nonatomic, unsafe_unretained, readonly) YapCollectionsDatabaseConnection *connection;
 
 #pragma mark Count
 
