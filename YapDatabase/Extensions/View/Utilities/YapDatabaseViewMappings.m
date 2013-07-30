@@ -9,21 +9,21 @@
 
 @implementation YapDatabaseViewMappings
 {
-	uint64_t snapshotOfLastUpdate;
-	
 	NSArray *allGroups;
 	NSString *registeredViewName;
 	
 	NSMutableArray *visibleGroups;
 	NSMutableDictionary *counts;
+	
+	NSMutableDictionary *allowsEmptySection;
+	
+	uint64_t snapshotOfLastUpdate;
 }
 
 @synthesize allGroups = allGroups;
 @synthesize view = registeredViewName;
 
 @synthesize snapshotOfLastUpdate = snapshotOfLastUpdate;
-
-@synthesize allowsEmptySections = allowsEmptySections;
 
 - (id)initWithGroups:(NSArray *)inGroups
                 view:(NSString *)inRegisteredViewName
@@ -36,10 +36,11 @@
 		visibleGroups = [[NSMutableArray alloc] initWithCapacity:[allGroups count]];
 		
 		id sharedKeySet = [NSDictionary sharedKeySetForKeys:allGroups];
+		
 		counts = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+		allowsEmptySection = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
 		
 		snapshotOfLastUpdate = UINT64_MAX;
-		allowsEmptySections = NO;
 	}
 	return self;
 }
@@ -53,11 +54,53 @@
 	copy->visibleGroups = [visibleGroups mutableCopy];
 	copy->counts = [counts mutableCopy];
 	
+	copy->allowsEmptySection = [allowsEmptySection mutableCopy];
+	
 	copy->snapshotOfLastUpdate = snapshotOfLastUpdate;
-	copy->allowsEmptySections = allowsEmptySections;
 	
 	return copy;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Configuration
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (BOOL)allowsEmptySectionForAllGroups
+{
+	return ([allowsEmptySection count] == [allGroups count]);
+}
+
+- (void)setAllowsEmptySectionForAllGroups:(BOOL)globalAllowsEmptySections
+{
+	if (globalAllowsEmptySections)
+	{
+		for (NSString *group in allGroups)
+		{
+			[allowsEmptySection setObject:@(YES) forKey:group];
+		}
+	}
+	else
+	{
+		[allowsEmptySection removeAllObjects];
+	}
+}
+
+- (BOOL)allowsEmptySectionForGroup:(NSString *)group
+{
+	return [[allowsEmptySection objectForKey:group] boolValue];
+}
+
+- (void)setAllowsEmptySection:(BOOL)flag forGroup:(NSString *)group
+{
+	if (flag)
+		[allowsEmptySection setObject:@(YES) forKey:group];
+	else
+		[allowsEmptySection removeObjectForKey:group];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Initialization & Updates
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)updateWithTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
@@ -67,8 +110,9 @@
 	{
 		NSUInteger count = [[transaction ext:registeredViewName] numberOfKeysInGroup:group];
 		
-		if (count > 0 || allowsEmptySections)
+		if (count > 0 || [[allowsEmptySection objectForKey:group] boolValue]) {
 			[visibleGroups addObject:group];
+		}
 		
 		[counts setObject:@(count) forKey:group];
 	}
@@ -88,12 +132,16 @@
 	{
 		NSUInteger count = [[newCounts objectForKey:group] unsignedIntegerValue];
 		
-		if (count > 0 || allowsEmptySections)
+		if (count > 0 || [[allowsEmptySection objectForKey:group] boolValue])
 			[visibleGroups addObject:group];
 		
 		[counts setObject:@(count) forKey:group];
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Getters
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSUInteger)numberOfSections
 {

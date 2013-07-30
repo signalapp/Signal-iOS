@@ -126,7 +126,7 @@
  * 
  * - (NSInteger)numberOfSectionsInTableView:(UITableView *)sender
  * {
- *     // I can use the cached information in the mappings object.
+ *     // We can use the cached information in the mappings object.
  *     // 
  *     // This comes in handy if my sections are dynamic,
  *     // and automatically come and go as individual sections become empty & non-empty.
@@ -136,7 +136,7 @@
  * 
  * - (NSInteger)tableView:(UITableView *)sender numberOfRowsInSection:(NSInteger)section
  * {
- *     // I can use the cached information in the mappings object.
+ *     // We can use the cached information in the mappings object.
  *
  *     return [mappings numberOfItemsInSection:section];
  * }
@@ -197,13 +197,20 @@
 /**
  * What happens if a group/section has zero items?
  * Do you want the section to disappear from the view?
- * Or do you want the section to remain visible?
+ * Or do you want the section to remain visible as an empty section?
  * 
- * If allowsEmptySections is NO, then sections that have zero items automatically get removed.
+ * If allowsEmptySections is set to NO, then sections that have zero items automatically get removed.
+ * If allowsEmptySections is set to YES, then sections that have zero items remain visible.
  *
- * The default value is NO.
+ * The default value (for all groups) is NO.
+ * You can configure this per group, or all-at-once.
 **/
-@property (nonatomic, assign, readwrite) BOOL allowsEmptySections;
+
+- (BOOL)allowsEmptySectionForAllGroups;
+- (void)setAllowsEmptySectionForAllGroups:(BOOL)globalAllowsEmptySections;
+
+- (BOOL)allowsEmptySectionForGroup:(NSString *)group;
+- (void)setAllowsEmptySection:(BOOL)allowsEmptySection forGroup:(NSString *)group;
 
 /**
  * TODO
@@ -223,6 +230,7 @@
  * 
  * We also need translation methods, to go from tableView.indexPath to view.index ...
 **/
+
 //- (void)setMinKey:(id)key forGroup:(NSString *)group;
 //- (void)setMaxKey:(id)key forGroup:(NSString *)group;
 //- (void)setHardRange:(NSRange)range forGroup:(NSString *)group;

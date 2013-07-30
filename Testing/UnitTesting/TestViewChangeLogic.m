@@ -945,7 +945,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(0) }];
 	originalMappings = [mappings copy];
@@ -986,7 +986,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
-	mappings.allowsEmptySections = YES;
+	mappings.allowsEmptySectionForAllGroups = YES;
 	
 	[mappings updateWithCounts:@{ @"A": @(0) }];
 	originalMappings = [mappings copy];
@@ -1030,7 +1030,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1) }];
 	originalMappings = [mappings copy];
@@ -1071,7 +1071,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
-	mappings.allowsEmptySections = YES;
+	mappings.allowsEmptySectionForAllGroups = YES;
 	
 	[mappings updateWithCounts:@{ @"A": @(1) }];
 	originalMappings = [mappings copy];
@@ -1119,7 +1119,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(0) }];
 	originalMappings = [mappings copy];
@@ -1172,7 +1172,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(0), @"B" : @(1) }];
 	originalMappings = [mappings copy];
@@ -1226,7 +1226,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(0) }];
 	originalMappings = [mappings copy];
@@ -1282,7 +1282,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(0), @"B" : @(1) }];
 	originalMappings = [mappings copy];
@@ -1342,7 +1342,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1) }];
 	originalMappings = [mappings copy];
@@ -1396,7 +1396,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1) }];
 	originalMappings = [mappings copy];
@@ -1451,7 +1451,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1) }];
 	originalMappings = [mappings copy];
@@ -1508,7 +1508,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1) }];
 	originalMappings = [mappings copy];
@@ -1570,7 +1570,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B", @"C"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1), @"C" : @(0) }];
 	originalMappings = [mappings copy];
@@ -1630,7 +1630,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B", @"C"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(0), @"B" : @(1), @"C" : @(1) }];
 	originalMappings = [mappings copy];
@@ -1690,7 +1690,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B", @"C"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(0), @"C" : @(1) }];
 	originalMappings = [mappings copy];
@@ -1754,7 +1754,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B", @"C"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(0), @"C" : @(0) }];
 	originalMappings = [mappings copy];
@@ -1814,7 +1814,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B", @"C"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(0), @"C" : @(0) }];
 	originalMappings = [mappings copy];
@@ -1878,7 +1878,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B", @"C"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1), @"C" : @(1) }];
 	originalMappings = [mappings copy];
@@ -1938,7 +1938,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B", @"C"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(1), @"C" : @(1) }];
 	originalMappings = [mappings copy];
@@ -2003,7 +2003,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1), @"B" : @(0) }];
 	originalMappings = [mappings copy];
@@ -2052,7 +2052,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1), @"B": @(1) }];
 	originalMappings = [mappings copy];
@@ -2105,7 +2105,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B", @"C"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1), @"B": @(0), @"C" : @(1) }];
 	originalMappings = [mappings copy];
@@ -2166,7 +2166,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1) }];
 	originalMappings = [mappings copy];
@@ -2216,7 +2216,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1) }];
 	originalMappings = [mappings copy];
@@ -2270,7 +2270,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(1) }];
 	originalMappings = [mappings copy];
@@ -2314,7 +2314,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(2) }];
 	originalMappings = [mappings copy];
@@ -2364,7 +2364,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
-	mappings.allowsEmptySections = YES; // <-- NOTICE
+	mappings.allowsEmptySectionForAllGroups = YES; // <-- NOTICE
 	
 	[mappings updateWithCounts:@{ @"A": @(2) }];
 	originalMappings = [mappings copy];
@@ -2414,7 +2414,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(2) }];
 	originalMappings = [mappings copy];
@@ -2479,7 +2479,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A", @"B"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(0), @"B": @(4) }];
 	originalMappings = [mappings copy];
@@ -2536,7 +2536,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	YapDatabaseViewMappings *originalMappings;
 	
 	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
-	mappings.allowsEmptySections = NO;
+	mappings.allowsEmptySectionForAllGroups = NO;
 	
 	[mappings updateWithCounts:@{ @"A": @(4) }];
 	originalMappings = [mappings copy];
