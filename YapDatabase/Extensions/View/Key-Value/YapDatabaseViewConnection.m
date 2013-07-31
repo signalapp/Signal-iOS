@@ -481,7 +481,7 @@
 				@" Now, when you ask the viewConnection for a changeset, "
 				@" you need to pass matching mappings & notifications. That is, the mappings need to represent the"
 				@" database at snapshot X, and the notifications need to represent the database at snapshots"
-				@" @[ X+1, X+2, ...]. This does not appear to be the case. The most often happens when the"
+				@" @[ X+1, X+2, ...]. This does not appear to be the case. This most often happens when the"
 				@" databaseConnection isn't using a longLivedReadTransaction. And this happens by accident"
 				@" most often when you use a databaseConnection, which is in a longLivedReadTransaction, to perform"
 				@" a read-write transaction. Doing so implicitly forces the connection out of the"
@@ -496,10 +496,10 @@
 			// then you'll just get an exception later from the tableView or collectionView.
 			// It will look something like this:
 			//
-			// "Invalid update: invalid number of rows in section X. The number of rows contained in an
-			//  existing section after the update (Y) must be equal to the number of rows contained in that section
-			//  before the update (Z), plus or minus the number of rows inserted or deleted from that
-			//  section (# inserted, # deleted).
+			// > Invalid update: invalid number of rows in section X. The number of rows contained in an
+			// > existing section after the update (Y) must be equal to the number of rows contained in that section
+			// > before the update (Z), plus or minus the number of rows inserted or deleted from that
+			// > section (# inserted, # deleted).
 			//
 			// In order to guarantee you DON'T get an exception (either from YapDatabase or from Apple),
 			// then you need to follow the instructions for setting up your connection, mappings, & notifications.
