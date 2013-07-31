@@ -776,14 +776,17 @@
 	{
 		if ([change isKindOfClass:[YapDatabaseViewSectionChange class]])
 		{
-			__unsafe_unretained YapDatabaseViewSectionChange *sectionChange = (YapDatabaseViewSectionChange *)change;
+			__unsafe_unretained YapDatabaseViewSectionChange *immutableSectionChange =
+			    (YapDatabaseViewSectionChange *)change;
 			
-			if (sectionChange->type == YapDatabaseViewChangeDelete)
+			if (immutableSectionChange->type == YapDatabaseViewChangeDelete)
 			{
-				NSUInteger originalSection = [originalMappings sectionForGroup:sectionChange->group];
+				NSUInteger originalSection = [originalMappings sectionForGroup:immutableSectionChange->group];
 				
 				if (originalSection != NSNotFound)
 				{
+					YapDatabaseViewSectionChange *sectionChange = [immutableSectionChange copy];
+					
 					sectionChange->originalSection = originalSection;
 					[sectionChanges addObject:sectionChange];
 					
@@ -844,12 +847,14 @@
 					}
 				}
 			}
-			else if (sectionChange->type == YapDatabaseViewChangeInsert)
+			else if (immutableSectionChange->type == YapDatabaseViewChangeInsert)
 			{
-				NSUInteger finalSection = [finalMappings sectionForGroup:sectionChange->group];
+				NSUInteger finalSection = [finalMappings sectionForGroup:immutableSectionChange->group];
 				
 				if (finalSection != NSNotFound)
 				{
+					YapDatabaseViewSectionChange *sectionChange = [immutableSectionChange copy];
+					
 					sectionChange->finalSection = finalSection;
 					[sectionChanges addObject:sectionChange];
 				}
@@ -857,35 +862,41 @@
 		}
 		else
 		{
-			__unsafe_unretained YapDatabaseViewRowChange *rowChange = (YapDatabaseViewRowChange *)change;
+			__unsafe_unretained YapDatabaseViewRowChange *immutableRowChange = (YapDatabaseViewRowChange *)change;
 			
-			if (rowChange->type == YapDatabaseViewChangeDelete)
+			if (immutableRowChange->type == YapDatabaseViewChangeDelete)
 			{
-				NSUInteger originalSection = [originalMappings sectionForGroup:rowChange->originalGroup];
+				NSUInteger originalSection = [originalMappings sectionForGroup:immutableRowChange->originalGroup];
 				
 				if (originalSection != NSNotFound)
 				{
+					YapDatabaseViewRowChange *rowChange = [immutableRowChange copy];
+					
 					rowChange->originalSection = originalSection;
 					[rowChanges addObject:rowChange];
 				}
 			}
-			else if (rowChange->type == YapDatabaseViewChangeInsert)
+			else if (immutableRowChange->type == YapDatabaseViewChangeInsert)
 			{
-				NSUInteger finalSection = [finalMappings sectionForGroup:rowChange->finalGroup];
+				NSUInteger finalSection = [finalMappings sectionForGroup:immutableRowChange->finalGroup];
 				
 				if (finalSection != NSNotFound)
 				{
+					YapDatabaseViewRowChange *rowChange = [immutableRowChange copy];
+					
 					rowChange->finalSection = finalSection;
 					[rowChanges addObject:rowChange];
 				}
 			}
-			else if (rowChange->type == YapDatabaseViewChangeUpdate)
+			else if (immutableRowChange->type == YapDatabaseViewChangeUpdate)
 			{
-				NSUInteger originalSection = [originalMappings sectionForGroup:rowChange->originalGroup];
-				NSUInteger finalSection = [finalMappings sectionForGroup:rowChange->finalGroup];
+				NSUInteger originalSection = [originalMappings sectionForGroup:immutableRowChange->originalGroup];
+				NSUInteger finalSection = [finalMappings sectionForGroup:immutableRowChange->finalGroup];
 				
 				if ((originalSection != NSNotFound) || (finalSection != NSNotFound))
 				{
+					YapDatabaseViewRowChange *rowChange = [immutableRowChange copy];
+					
 					rowChange->originalSection = originalSection;
 					rowChange->finalSection = finalSection;
 					[rowChanges addObject:rowChange];
