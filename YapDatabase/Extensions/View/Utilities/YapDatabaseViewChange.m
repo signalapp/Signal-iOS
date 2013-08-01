@@ -1,5 +1,7 @@
 #import "YapDatabaseViewChange.h"
 #import "YapDatabaseViewChangePrivate.h"
+#import "YapDatabaseViewMappingsPrivate.h"
+
 
 @implementation YapDatabaseViewSectionChange {
 
@@ -338,17 +340,49 @@
 
 @implementation YapDatabaseViewChange
 
+/**
+ * During a read-write transaction, every modification to the view results in one or more
+ * YapDatabaseViewSectionChange or YapDatabaseViewRowChange objects being appended to an internal array.
+ * 
+ * At the end of the read-write transaction we have a big list of changes that have occurred.
+ * 
+ * This method takes a list of YapDatabaseViewRowChange objects and processes them:
+ *
+ * - properly calculates the original & final index of each change
+ * - properly consolidates multiple changes to the same item into a single change
+**/
 + (void)processAndConsolidateRowChanges:(NSMutableArray *)changes
 {
-	// Every modification to the view resulted in one or more operations being appended to an array.
-	// Each modification was either an insert, delete or update.
-	// If a item was moved, then it is represented as a delete followed by an insert.
+	// Each YapDatabaseViewRowChange object is one of:
+	// 
+	// - Row insert
+	// - Row delete
+	// - Row update
 	//
-	// At the end of the transaction we have a big list of modifications that have occurred.
-	// Each represents the change state AT THE MOMENT THE CHANGE TOOK PLACE.
-	// This is very important to understand.
+	// If a row is moved, then it is represented in the given array as a delete followed by an insert.
 	//
-	// Please see the unit tests for a bunch of examples that will shed light on the setup and algorithm:
+	// Each YapDatabaseViewRowChange represents the change state AT THE MOMENT THE CHANGE TOOK PLACE.
+	// This is critically important to understand.
+	//
+	// For example, imagine the following array:
+	//
+	// [0] = <RowInsert group=fruit index=0 key=apple>
+	// [0] = <RowDelete group=fruit index=7 key=carrot>
+	// [1] = <RowInsert group=fruit index=2 key=blueberry>
+	// [2] = <RowInsert group=fruit index=2 key=banana>
+	//
+	// What was the original index of 'carrot'?
+	// What is the final index of 'blueberry'?
+	//
+	// The original index of 'carrot' was 6, because the earlier insert of 'apple' pushed its index upward.
+	// The final index of 'blueberry' is 3, because a later insert of 'banana' pushed its index upward.
+	//
+	// As you might guess, there are a number of edge cases to watch out for.
+	// Ultimately, the algorithm is fairly straight-forward, but the code gets a little verbose.
+	//
+	// There are are crap ton of unit tests for this code...
+	// 
+	// Please see the unit tests for a bunch of examples that will shed additional light on the setup and algorithm:
 	// TestViewChangeLogic.m
 	
 	NSUInteger i;
@@ -682,6 +716,14 @@
 	} // while (i < [changes count])
 }
 
+/**
+ * During a read-write transaction, every modification to the view results in one or more
+ * YapDatabaseViewSectionChange or YapDatabaseViewRowChange objects being appended to an internal array.
+ *
+ * At the end of the read-write transaction we have a big list of changes that have occurred.
+ *
+ * This method takes a list of YapDatabaseViewSectionChange objects and processes them.
+**/
 + (void)processAndConsolidateSectionChanges:(NSMutableArray *)changes
 {
 	NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSet];
@@ -752,6 +794,472 @@
 					[changes removeObjectsAtIndexes:indexSet];
 					i++;
 				}
+			}
+		}
+	}
+}
+
+/**
+ * This method applies the given mappings to the processed list of row changes.
+ * Based upon the configuration of the mappings, it will
+ * 
+ * - filter items that are excluded based on per-group range configurations
+ * - alter indexes based on per-group range configurations
+ * - reverse indexes based on per-group reversal settings
+**/
++ (void)postProcessAndFilterRowChanges:(NSMutableArray *)rowChanges
+                  withOriginalMappings:(YapDatabaseViewMappings *)originalMappings
+                         finalMappings:(YapDatabaseViewMappings *)finalMappings
+{
+	
+	// The user may have various range options set for each section/group.
+	// For example:
+	//
+	// The user has a hard range on group "fiction" in the "bookSalesRank" view in order to display the top 20.
+	// So any items outside of that range must be filtered.
+	
+	NSDictionary *rangeOptions = [finalMappings rangeOptions];
+	
+	// Note: The rangeOptions are the same between originalMappings & finalMappings.
+	
+	for (NSString *group in rangeOptions)
+	{
+		YapDatabaseViewMappingsRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+		
+		NSUInteger originalGroupCount = [originalMappings numberOfItemsInGroup:group];
+		NSUInteger finalGroupCount = [finalMappings numberOfItemsInGroup:group];
+		
+		BOOL isHardRange = rangeOpts.isHardRange;
+		YapDatabaseViewPin pin = rangeOpts.pin;
+		
+		//
+		// STEP 1 : Calculate the originalRange & finalRange
+		//
+		
+		NSRange originalRange = rangeOpts.range;
+		NSRange finalRange;
+		
+		if (isHardRange)
+		{
+			// A "hard" range is a fixed range.
+			// - The length doesn't change (unless we run out of keys)
+			// - The offset doesn't change (unless we fall off the edge)
+			
+			if (pin == YapDatabaseViewBeginning)
+			{
+				// The range is pinned to the beginning.
+				// So the offset from the beginning stays the same.
+				// That is, the offset from index zero to the beginning of the range.
+				//
+				// Group : <---------------------------------------->
+				// Range :                  <--------->
+				// Offset: <---------------->
+				
+				NSUInteger offsetFromBeginning = originalRange.location;
+				
+				if (offsetFromBeginning < finalGroupCount)
+				{
+					finalRange.location = offsetFromBeginning;
+					finalRange.length = MIN(originalRange.length, finalGroupCount - offsetFromBeginning);
+				}
+				else
+				{
+					finalRange = NSMakeRange(finalGroupCount, 0); // fell off the end; becomes empty.
+				}
+			}
+			else // if (pin == YapDatabaseViewEnd)
+			{
+				// The range is pinned to the end.
+				// So the offset from the end stays the same.
+				// That is, the offset from index last to the end of the range.
+				//
+				// Group : <---------------------------------------->
+				// Range :                  <--------->
+				// Offset:                            <------------->
+				
+				NSUInteger offsetFromEnd = originalGroupCount - (originalRange.location + originalRange.length);
+				
+				if (offsetFromEnd < finalGroupCount)
+				{
+					finalRange.length = MIN(originalRange.length, finalGroupCount - offsetFromEnd);
+					finalRange.location = finalGroupCount - offsetFromEnd - finalRange.length;
+				}
+				else
+				{
+					finalRange = NSMakeRange(0, 0); // fell off the beginning; becomes empty.
+				}
+			}
+		}
+		else // if (isSoftRange)
+		{
+			// A "soft" range is a flexible range.
+			// The length changes as items are inserted and deleted with the range boundary.
+			// The offset changes as items are inserted and deleted between the range and its pinned end.
+			
+			NSRange originalRange = rangeOpts.range;
+			
+			NSUInteger originalRangeMin = originalRange.location;
+			NSUInteger originalRangeMax = originalRange.location + originalRange.length;
+			
+			NSUInteger finalRangeMin = originalRangeMin;
+			NSUInteger finalRangeMax = originalRangeMax;
+			
+			for (YapDatabaseViewRowChange *rowChange in rowChanges)
+			{
+				if (rowChange->type == YapDatabaseViewChangeDelete || rowChange->type == YapDatabaseViewChangeMove)
+				{
+					if ([rowChange->originalGroup isEqualToString:group])
+					{
+						// A DELETE operation can:
+						// - decrement the location of the final range OR
+						// - decrease the length of the final range
+					
+						if (finalRangeMin > rowChange->opOriginalIndex)
+						{
+							finalRangeMin -= 1;
+						}
+						if (finalRangeMax > rowChange->opOriginalIndex)
+						{
+							finalRangeMax -= 1;
+						}
+					}
+				}
+				
+				if (rowChange->type == YapDatabaseViewChangeInsert || rowChange->type == YapDatabaseViewChangeMove)
+				{
+					if ([rowChange->finalGroup isEqualToString:group])
+					{
+						// An INSERT operation can:
+						// - increment the location of the final range OR
+						// - increase the length of the final range
+						
+						if (finalRangeMin > rowChange->opFinalIndex)
+						{
+							finalRangeMin += 1;
+						}
+						if (finalRangeMax > rowChange->opFinalIndex)
+						{
+							finalRangeMax += 1;
+						}
+					}
+				}
+			}
+			
+			// Adjust for ranges pinned to the absolute beginning or end
+			
+			if (pin == YapDatabaseViewBeginning)
+			{
+				if (originalRangeMin == 0)
+				{
+					finalRangeMin = 0;
+				}
+			}
+			else if (pin == YapDatabaseViewEnd)
+			{
+				if (originalRangeMax == originalGroupCount-1)
+				{
+					finalRangeMax = (finalGroupCount > 0) ? (finalGroupCount-1) : 0;
+				}
+			}
+		}
+		
+		//
+		// STEP 2 : Filter items that are outside the range, and "map" items that are inside the range.
+		//
+		// By "map" we mean update the index to match the range, not the entire view.
+		// For example, if there is a hard range to display only the last 20 items in the view,
+		// then the index of the last item should be 20 (range.length), not 436 (group.length).
+		
+		NSUInteger originalRangeMin = originalRange.location;
+		NSUInteger originalRangeMax = originalRange.location + originalRange.length;
+		
+		NSUInteger finalRangeMin = finalRange.location;
+		NSUInteger finalRangeMax = finalRange.location + finalRange.length;
+		
+		NSUInteger deleteCount = 0;
+		NSUInteger insertCount = 0;
+		
+		NSUInteger i = 0;
+		while (i < [rowChanges count])
+		{
+			YapDatabaseViewRowChange *rowChange = [rowChanges objectAtIndex:i];
+			
+			if (rowChange->type == YapDatabaseViewChangeDelete)
+			{
+				if ([rowChange->originalGroup isEqualToString:group])
+				{
+					if (rowChange->originalIndex >= originalRangeMin &&
+					    rowChange->originalIndex <  originalRangeMax)
+					{
+						// Include in changeset
+						i++;
+						deleteCount++;
+						
+						// Update index to match range
+						rowChange->originalIndex -= originalRangeMin;
+					}
+					else
+					{
+						// Exclude from changeset
+						[rowChanges removeObjectAtIndex:i];
+					}
+				}
+			}
+			else if (rowChange->type == YapDatabaseViewChangeInsert)
+			{
+				if ([rowChange->finalGroup isEqualToString:group])
+				{
+					if (rowChange->finalIndex >= finalRangeMin &&
+					    rowChange->finalIndex <  finalRangeMax)
+					{
+						// Include in changeset
+						i++;
+						insertCount++;
+						
+						// Update index to match range
+						rowChange->finalIndex -= finalRangeMin;
+					}
+					else
+					{
+						// Exclude from changeset
+						[rowChanges removeObjectAtIndex:i];
+					}
+				}
+			}
+			else if (rowChange->type == YapDatabaseViewChangeUpdate)
+			{
+				if ([rowChange->originalGroup isEqualToString:group])
+				{
+					if (rowChange->originalIndex <= originalRangeMin &&
+					    rowChange->originalIndex >  originalRangeMax)
+					{
+						// Include in changeset
+						i++;
+						
+						// Update index to match range
+						rowChange->originalIndex -= originalRangeMin;
+						rowChange->finalIndex    -= finalRangeMin;
+					}
+					else
+					{
+						// Exclude from changeset
+						[rowChanges removeObjectAtIndex:i];
+					}
+				}
+			}
+			else if (rowChange->type == YapDatabaseViewChangeMove)
+			{
+				// A move is both a delete and an insert.
+				// Sometimes both operations apply to this group.
+				// Sometimes only one.
+				// Sometimes neither.
+				
+				BOOL filterDelete = NO;
+				BOOL filterInsert = NO;
+				
+				if ([rowChange->originalGroup isEqualToString:group])
+				{
+					if (rowChange->originalIndex <= originalRangeMin &&
+					    rowChange->originalIndex >  originalRangeMax)
+					{
+						// Include (delete operation) in changeset
+						
+						// Update index to match range
+						rowChange->originalIndex -= originalRangeMin;
+					}
+					else
+					{
+						// Exclude (delete operation) from changeset
+						filterDelete = YES;
+					}
+				}
+				
+				if ([rowChange->finalGroup isEqualToString:group])
+				{
+					if (rowChange->finalIndex <= finalRangeMin &&
+					    rowChange->finalIndex >  finalRangeMax)
+					{
+						// Include (insert operation) in changeset
+						
+						// Update index to match range
+						rowChange->finalIndex -= finalRangeMin;
+					}
+					else
+					{
+						// Exclude (insert operation) from changeset
+						filterInsert = YES;
+					}
+				}
+				
+				if (filterDelete && filterInsert)
+				{
+					// Exclude from changeset
+					[rowChanges removeObjectAtIndex:i];
+				}
+				else if (filterDelete && !filterInsert)
+				{
+					// Move -> Insert
+					rowChange->type = YapDatabaseViewChangeInsert;
+					i++;
+					insertCount++;
+				}
+				else if (!filterDelete && filterInsert)
+				{
+					// Move -> Delete
+					rowChange->type = YapDatabaseViewChangeDelete;
+					i++;
+					deleteCount++;
+				}
+				else
+				{
+					// Move
+					i++;
+					insertCount++;
+					deleteCount++;
+				}
+			}
+		}
+		
+		// For hand ranges, we need to ensure the changeset reflects the proper count.
+		// For example:
+		//
+		// The hard range has a lenth of 20.
+		// The only changes were 2 insertions.
+		// Thus, we need to add 2 delete changes to balance the length.
+		
+		if (isHardRange)
+		{
+			NSUInteger length = originalRange.length;
+			length += insertCount;
+			length -= deleteCount;
+			
+			if (length > finalRange.length)
+			{
+				// Need to add DELETE operations.
+				// These operations represent the objects that got pushed out of the hard range
+				// due to insertions within the original range.
+				// 
+				// These go at the end opposite the pin.
+				
+				NSUInteger numberOfOperationsToAdd = length - finalRange.length;
+				
+				if (pin == YapDatabaseViewBeginning)
+				{
+					for (NSUInteger i = 0; i < numberOfOperationsToAdd; i++)
+					{
+						NSUInteger index = originalRange.length - 1 - i;
+						
+						YapDatabaseViewRowChange *rowChange =
+						    [YapDatabaseViewRowChange deleteKey:nil inGroup:group atIndex:index];
+						
+						rowChange->originalSection = [originalMappings sectionForGroup:group];
+						[rowChanges addObject:rowChange];
+					}
+				}
+				else // if (pin == YapDatabaseViewEnd)
+				{
+					for (NSUInteger i = 0; i < numberOfOperationsToAdd; i++)
+					{
+						YapDatabaseViewRowChange *rowChange =
+						    [YapDatabaseViewRowChange deleteKey:nil inGroup:group atIndex:i];
+						
+						rowChange->originalSection = [originalMappings sectionForGroup:group];
+						[rowChanges addObject:rowChange];
+					}
+				}
+			}
+			else if (length < finalRange.length)
+			{
+				// Need to add INSERT operations.
+				// These operations represent the objects that got pulled into the hard range
+				// due to deletions within the original range.
+				//
+				// These go at the end opposite the pin.
+				
+				NSUInteger numberOfOperationsToAdd = finalRange.length - length;
+				
+				if (pin == YapDatabaseViewBeginning)
+				{
+					for (NSUInteger i = 0; i < numberOfOperationsToAdd; i++)
+					{
+						NSUInteger index = finalRange.length - 1 - i;
+						
+						YapDatabaseViewRowChange *rowChange =
+						    [YapDatabaseViewRowChange insertKey:nil inGroup:group atIndex:index];
+						
+						rowChange->finalSection = [finalMappings sectionForGroup:group];
+						[rowChanges addObject:rowChange];
+					}
+				}
+				else // if (pin == YapDatabaseViewEnd)
+				{
+					for (NSUInteger i = 0; i < numberOfOperationsToAdd; i++)
+					{
+						YapDatabaseViewRowChange *rowChange =
+						    [YapDatabaseViewRowChange insertKey:nil inGroup:group atIndex:i];
+						
+						rowChange->finalSection = [finalMappings sectionForGroup:group];
+						[rowChanges addObject:rowChange];
+					}
+				}
+			}
+		}
+		
+		// And finally, update the range within the final mappings (if changed)
+		
+		if ((originalRange.location != finalRange.location) || (originalRange.length != finalRange.length))
+		{
+			YapDatabaseViewMappingsRangeOptions *newRangeOpts =
+			    [[YapDatabaseViewMappingsRangeOptions alloc] initWithRange:finalRange hard:isHardRange pin:pin];
+			
+			[finalMappings setRangeOptions:newRangeOpts forGroup:group];
+		}
+	}
+}
+
+/**
+ * This method applies the given mappings to the processed list of section changes.
+ * It will filter the sectionChanges array to properly represent the configuration of the mappings.
+**/
++ (void)postProcessAndFilterSectionChanges:(NSMutableArray *)sectionChanges
+                      withOriginalMappings:(YapDatabaseViewMappings *)originalMappings
+                             finalMappings:(YapDatabaseViewMappings *)finalMappings
+{
+	NSUInteger i = 0;
+	while (i < [sectionChanges count])
+	{
+		YapDatabaseViewSectionChange *sectionChange = [sectionChanges objectAtIndex:i];
+		
+		if (sectionChange->type == YapDatabaseViewChangeDelete)
+		{
+			// Although a group was deleted, the user may be allowing empty sections.
+			// If so, we shouldn't emit a removeSection change.
+			
+			if ([finalMappings sectionForGroup:sectionChange->group] == NSNotFound)
+			{
+				// Emit
+				i++;
+			}
+			else
+			{
+				// Don't emit
+				[sectionChanges removeObjectAtIndex:i];
+			}
+		}
+		else // if (sectionChange->type == YapDatabaseViewChangeInsert)
+		{
+			// Although a group was inserted, the user may have been allowing empty sections.
+			// If so, we shouldn't emit an insertSection change.
+			
+			if ([originalMappings sectionForGroup:sectionChange->group] == NSNotFound)
+			{
+				// Emit
+				i++;
+			}
+			else
+			{
+				// Don't emit
+				[sectionChanges removeObjectAtIndex:i];
 			}
 		}
 	}
@@ -917,50 +1425,15 @@
 	//
 	// POST-PROCESSING
 	//
-	// Here we take into account any special rules from the mappings.
-	// This includes:
-	//
-	// - allowEmptySections
-	// - section offsets & ranges
+	// This is where we apply the mappings to filter & alter the changeset.
+
+	[self postProcessAndFilterRowChanges:rowChanges
+	                withOriginalMappings:originalMappings
+	                       finalMappings:finalMappings];
 	
-	NSUInteger i = 0;
-	while (i < [sectionChanges count])
-	{
-		YapDatabaseViewSectionChange *sectionChange = [sectionChanges objectAtIndex:i];
-		
-		if (sectionChange->type == YapDatabaseViewChangeDelete)
-		{
-			// Although a group was deleted, the user may be allowing empty sections.
-			// If so, we shouldn't emit a removeSection change.
-			
-			if ([finalMappings sectionForGroup:sectionChange->group] == NSNotFound)
-			{
-				// Emit
-				i++;
-			}
-			else
-			{
-				// Don't emit
-				[sectionChanges removeObjectAtIndex:i];
-			}
-		}
-		else // if (sectionChange->type == YapDatabaseViewChangeInsert)
-		{
-			// Although a group was inserted, the user may have been allowing empty sections.
-			// If so, we shouldn't emit an insertSection change.
-			
-			if ([originalMappings sectionForGroup:sectionChange->group] == NSNotFound)
-			{
-				// Emit
-				i++;
-			}
-			else
-			{
-				// Don't emit
-				[sectionChanges removeObjectAtIndex:i];
-			}
-		}
-	}
+	[self postProcessAndFilterSectionChanges:sectionChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:finalMappings];
 	
 	if (sectionChangesPtr) *sectionChangesPtr = sectionChanges;
 	if (rowChangesPtr) *rowChangesPtr = rowChanges;

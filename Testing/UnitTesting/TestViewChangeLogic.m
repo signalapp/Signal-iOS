@@ -1,5 +1,4 @@
 #import "TestViewChangeLogic.h"
-#import "YapDatabaseViewChange.h"
 #import "YapDatabaseViewChangePrivate.h"
 #import "YapDatabaseViewMappingsPrivate.h"
 
@@ -25,7 +24,7 @@
  * - If a key is deleted, then the deletion index is recorded at the time of the delete.
  * - If a key is moved, then the change is recorded as 2 separate operations. A delete and then an insert.
  * 
- * The the recording of the modifications is quite simple.
+ * The recording of the modifications is quite simple.
  * After the transaction is complete, we need to perform post-processing on the changes log in order to:
  *
  * - deduce the original index value and final index value of modifications
@@ -2446,7 +2445,8 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Section: Blog Bug
+#pragma mark -
+#pragma mark Blogged Bugs
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**

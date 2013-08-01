@@ -160,6 +160,14 @@
  * @see YapDatabaseConnection getSectionChanges:rowChanges:forNotifications:withMappings:
  * @see YapCollectionsDatabaseConnection getSectionChanges:rowChanges:forNotifications:withMappings:
 **/
+
+typedef enum {
+	YapDatabaseViewBeginning = 0, // index == 0
+	YapDatabaseViewEnd       = 1, // index == last
+	
+} YapDatabaseViewPin;
+
+
 @interface YapDatabaseViewMappings : NSObject <NSCopying>
 
 /**
@@ -231,10 +239,24 @@
  * We also need translation methods, to go from tableView.indexPath to view.index ...
 **/
 
-//- (void)setMinKey:(id)key forGroup:(NSString *)group;
-//- (void)setMaxKey:(id)key forGroup:(NSString *)group;
-//- (void)setHardRange:(NSRange)range forGroup:(NSString *)group;
+- (void)setRange:(NSRange)range
+            hard:(BOOL)isHardRange
+        pinnedTo:(YapDatabaseViewPin)pinnedToBeginningOrEnd
+        forGroup:(NSString *)group;
 
+- (void)removeRangeOptionsForGroup:(NSString *)group;
+
+- (BOOL)getRange:(NSRange *)rangePtr
+            hard:(BOOL *)isHardRangePtr
+        pinnedTo:(YapDatabaseViewPin *)pinnedToPtr
+        forGroup:(NSString *)group;
+
+/**
+ * TODO
+**/
+
+//- (BOOL)isReversedForGroup:(NSString *)group;
+//- (void)setIsReversed:(BOOL)isReversed forGroup:(NSString *)group;
 
 #pragma mark Initialization & Updates
 

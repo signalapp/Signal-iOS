@@ -6,17 +6,39 @@
 #import "YapDatabaseView.h"
 #import "YapCollectionsDatabaseViewTransaction.h"
 
+#import "YapDatabaseLogging.h"
+
+#if ! __has_feature(objc_arc)
+#warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
+#endif
+
+/**
+ * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
+ * See YapDatabaseLogging.h for more information.
+**/
+#if DEBUG
+  static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
+#else
+  static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
+#endif
+
 
 @implementation YapDatabaseViewMappings
 {
+	// Immutable init parameters
 	NSArray *allGroups;
 	NSString *registeredViewName;
 	
+	// Mappings and cached counts
 	NSMutableArray *visibleGroups;
 	NSMutableDictionary *counts;
 	
+	// Configuration
 	NSMutableDictionary *allowsEmptySection;
+	NSMutableDictionary *rangeOptions;
+	NSMutableDictionary *reverse;
 	
+	// Snapshot (used for error detection)
 	uint64_t snapshotOfLastUpdate;
 }
 
@@ -39,6 +61,7 @@
 		
 		counts = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
 		allowsEmptySection = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+		rangeOptions = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
 		
 		snapshotOfLastUpdate = UINT64_MAX;
 	}
@@ -55,6 +78,8 @@
 	copy->counts = [counts mutableCopy];
 	
 	copy->allowsEmptySection = [allowsEmptySection mutableCopy];
+	copy->rangeOptions = [rangeOptions mutableCopy];
+	copy->reverse = [reverse mutableCopy];
 	
 	copy->snapshotOfLastUpdate = snapshotOfLastUpdate;
 	
@@ -92,10 +117,75 @@
 
 - (void)setAllowsEmptySection:(BOOL)flag forGroup:(NSString *)group
 {
+	if (![allGroups containsObject:group]) {
+		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
+		return;
+	}
+	
 	if (flag)
 		[allowsEmptySection setObject:@(YES) forKey:group];
 	else
 		[allowsEmptySection removeObjectForKey:group];
+}
+
+- (void)setRange:(NSRange)range hard:(BOOL)isHardRange pinnedTo:(YapDatabaseViewPin)pin forGroup:(NSString *)group
+{
+	if (![allGroups containsObject:group]) {
+		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
+		return;
+	}
+	
+	// Validate range
+	
+	NSUInteger count = [[counts objectForKey:group] unsignedIntegerValue];
+	
+	if ((range.length == 0) || (range.location + range.length >= count))
+	{
+		YDBLogWarn(@"%@ - invalid range(%@) for group(%@)", THIS_METHOD, NSStringFromRange(range), group);
+		return;
+	}
+	
+	// Add to dictionary
+	
+	YapDatabaseViewMappingsRangeOptions *rangeOpts =
+	    [[YapDatabaseViewMappingsRangeOptions alloc] initWithRange:range hard:isHardRange pin:pin];
+	
+	[rangeOptions setObject:rangeOpts forKey:group];
+}
+
+- (void)setRangeOptions:(YapDatabaseViewMappingsRangeOptions *)rangeOpts forGroup:(NSString *)group
+{
+	[rangeOptions setObject:rangeOpts forKey:group];
+}
+
+- (void)removeRangeOptionsForGroup:(NSString *)group
+{
+	[rangeOptions removeObjectForKey:group];
+}
+
+- (BOOL)getRange:(NSRange *)rangePtr
+            hard:(BOOL *)isHardRangePtr
+        pinnedTo:(YapDatabaseViewPin *)pinPtr
+        forGroup:(NSString *)group
+{
+	YapDatabaseViewMappingsRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+	
+	if (rangeOpts)
+	{
+		if (rangePtr) *rangePtr = rangeOpts.range;
+		if (isHardRangePtr) *isHardRangePtr = rangeOpts.isHardRange;
+		if (pinPtr) *pinPtr = rangeOpts.pin;
+		
+		return YES;
+	}
+	else
+	{
+		if (rangePtr) *rangePtr = NSMakeRange(0, 0);
+		if (isHardRangePtr) *isHardRangePtr = NO;
+		if (pinPtr) *pinPtr = YapDatabaseViewBeginning;
+		
+		return NO;
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -186,6 +276,14 @@
 	return [visibleGroups copy];
 }
 
+/**
+ * This method is for internal use only.
+**/
+- (NSDictionary *)rangeOptions
+{
+	return [rangeOptions copy];
+}
+
 - (NSString *)description
 {
 	NSMutableString *description = [NSMutableString string];
@@ -214,6 +312,34 @@
 	[description appendString:@">"];
 	
 	return description;
+}
+
+@end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@implementation YapDatabaseViewMappingsRangeOptions
+
+@synthesize range = range;
+@synthesize isHardRange = isHardRange;
+@synthesize pin = pin;
+
+- (id)initWithRange:(NSRange)inRange hard:(BOOL)inIsHardRange pin:(YapDatabaseViewPin)inPin
+{
+	if ((self = [super init]))
+	{
+		range = inRange;
+		isHardRange = inIsHardRange;
+		
+		// Enforce proper pin value
+		if (inPin == YapDatabaseViewBeginning)
+			pin = YapDatabaseViewBeginning;
+		else
+			pin = YapDatabaseViewEnd;
+	}
+	return self;
 }
 
 @end
