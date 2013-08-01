@@ -60,6 +60,7 @@
 	YapDatabaseViewSectionChange *op = [[YapDatabaseViewSectionChange alloc] init];
 	op->type = type;
 	op->group = group;
+	op->isReset = isReset;
 	op->originalSection = originalSection;
 	op->finalSection = finalSection;
 	
