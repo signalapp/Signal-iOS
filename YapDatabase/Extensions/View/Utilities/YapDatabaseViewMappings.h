@@ -203,22 +203,52 @@ typedef enum {
 #pragma mark Configuration
 
 /**
- * What happens if a group/section has zero items?
- * Do you want the section to disappear from the view?
- * Or do you want the section to remain visible as an empty section?
+ * A group/section can either be "static" or "dynamic".
  * 
- * If allowsEmptySections is set to NO, then sections that have zero items automatically get removed.
- * If allowsEmptySections is set to YES, then sections that have zero items remain visible.
+ * A dynamic section automatically disappears if it becomes empty.
+ * A static section is always visible, regardless of its item count.
+ * 
+ * By default all groups/sections are static.
+ * You can enable dynamic sections on a per-group basis (just for certain sections) or for all groups (all sections).
+ * 
+ * If you enable dynamic sections, be sure to use the helper methods available in this class.
+ * This will drastically simplify things for you.
+ * For example:
+ * 
+ * Let's say you have 3 groups: @[ @"wine", @"liquor", @"beer" ]
+ * You've enabled dynamic sections for all groups.
+ * Section 0 refers to what group?
+ * 
+ * The answer depends entirely on the item count per section.
+ * If "wine" is empty, but "liquor" isn't, then section zero is "liquor".
+ * If "wine" and "liquor" are empty, but "beer" isn't, then section zero is "beer".
+ * 
+ * But you can simply do this to get the answer:
  *
- * The default value (for all groups) is NO.
+ * NSString *group = [mappings groupForSection:indexPath.section];
+ *
+ * @see numberOfSections
+ * @see groupForSection:
+ * @see visibleGroups
+ * 
+ * The mappings object is used with:
+ *
+ * - YapDatabaseViewConnection getSectionChanges:rowChanges:forNotifications:withMappings:
+ * - YapCollectionsDatabaseViewConnection getSectionChanges:rowChanges:forNotifications:withMappings:
+ * 
+ * If all your sections are static, then you won't ever get any section changes.
+ * But if you have one or more dynamic sections, then be sure to process the section changes.
+ * As the dynamic sections disappear & re-appear, the proper section changes will be emitted.
+ *
+ * By DEFAULT, all groups/sections are STATIC.
  * You can configure this per group, or all-at-once.
 **/
 
-- (BOOL)allowsEmptySectionForAllGroups;
-- (void)setAllowsEmptySectionForAllGroups:(BOOL)globalAllowsEmptySections;
+- (BOOL)isDynamicSectionForAllGroups;
+- (void)setIsDynamicSectionForAllGroups:(BOOL)isDynamic;
 
-- (BOOL)allowsEmptySectionForGroup:(NSString *)group;
-- (void)setAllowsEmptySection:(BOOL)allowsEmptySection forGroup:(NSString *)group;
+- (BOOL)isDynamicSectionForGroup:(NSString *)group;
+- (void)setIsDynamicSection:(BOOL)isDynamic forGroup:(NSString *)group;
 
 /**
  * TODO
@@ -316,28 +346,29 @@ typedef enum {
 
 /**
  * Returns the group for the given section.
- * This method properly takes into account empty groups.
+ * This method properly takes into account dynamic groups.
  *
  * If the section is out-of-bounds, returns nil.
- * 
- * @see allowsEmptySections
 **/
 - (NSString *)groupForSection:(NSUInteger)section;
 
 /**
- * If the group is empty, and allowsEmptySections is true, returns NSNotFound.
- * 
- * @see allowsEmptySections
+ * Returns the visible section number for the visible group.
+ * If the group is NOT visible, returns NSNotFound.
+ *
+ * If a group is empty (numberOfItemsInGroup == 0), AND the group is dynamic, then it becomes invisible.
+ * Only in this case would this method return NSNotFound.
 **/
 - (NSUInteger)sectionForGroup:(NSString *)group;
 
 /**
  * The visibleGroups property returns the current sections setup.
- * That is, it only contains the groups that are being represented as sections in the view.
+ * That is, it only contains the visible groups that are being represented as sections in the view.
  *
- * This may be a subset of allGroups, representing those groups that have 1 or more items.
- *
- * @see allGroups
+ * If all sections are static, then visibleGroups will always be the same all allGroups.
+ * However, if one or more sections are dynamic, then the visible groups may be a subset of allGroups.
+ * 
+ * Dynamic groups/sections automatically "disappear" if/when they become empty.
 **/
 - (NSArray *)visibleGroups;
 

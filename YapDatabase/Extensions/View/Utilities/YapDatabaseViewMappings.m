@@ -34,7 +34,7 @@
 	NSMutableDictionary *counts;
 	
 	// Configuration
-	NSMutableDictionary *allowsEmptySection;
+	NSMutableSet *dynamicSections;
 	NSMutableDictionary *rangeOptions;
 	NSMutableDictionary *reverse;
 	
@@ -55,12 +55,12 @@
 		allGroups = [[NSArray alloc] initWithArray:inGroups copyItems:YES];
 		registeredViewName = [inRegisteredViewName copy];
 		
-		visibleGroups = [[NSMutableArray alloc] initWithCapacity:[allGroups count]];
-		
 		id sharedKeySet = [NSDictionary sharedKeySetForKeys:allGroups];
 		
+		visibleGroups = [[NSMutableArray alloc] initWithCapacity:[allGroups count]];
 		counts = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
-		allowsEmptySection = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+		
+		dynamicSections = [[NSMutableSet alloc] initWithCapacity:[allGroups count]];
 		rangeOptions = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
 		
 		snapshotOfLastUpdate = UINT64_MAX;
@@ -77,7 +77,7 @@
 	copy->visibleGroups = [visibleGroups mutableCopy];
 	copy->counts = [counts mutableCopy];
 	
-	copy->allowsEmptySection = [allowsEmptySection mutableCopy];
+	copy->dynamicSections = [dynamicSections mutableCopy];
 	copy->rangeOptions = [rangeOptions mutableCopy];
 	copy->reverse = [reverse mutableCopy];
 	
@@ -90,42 +90,32 @@
 #pragma mark Configuration
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (BOOL)allowsEmptySectionForAllGroups
+- (BOOL)isDynamicSectionForAllGroups
 {
-	return ([allowsEmptySection count] == [allGroups count]);
+	return ([dynamicSections count] == [allGroups count]);
 }
 
-- (void)setAllowsEmptySectionForAllGroups:(BOOL)globalAllowsEmptySections
+- (void)setIsDynamicSectionForAllGroups:(BOOL)isDynamic
 {
-	if (globalAllowsEmptySections)
-	{
-		for (NSString *group in allGroups)
-		{
-			[allowsEmptySection setObject:@(YES) forKey:group];
-		}
-	}
+	if (isDynamic)
+		[dynamicSections addObjectsFromArray:allGroups];
 	else
-	{
-		[allowsEmptySection removeAllObjects];
-	}
+		[dynamicSections removeAllObjects];
 }
 
-- (BOOL)allowsEmptySectionForGroup:(NSString *)group
+- (BOOL)isDynamicSectionForGroup:(NSString *)group
 {
-	return [[allowsEmptySection objectForKey:group] boolValue];
+	return [dynamicSections containsObject:group];
 }
 
-- (void)setAllowsEmptySection:(BOOL)flag forGroup:(NSString *)group
+- (void)setIsDynamicSection:(BOOL)isDynamic forGroup:(NSString *)group
 {
 	if (![allGroups containsObject:group]) {
 		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
 		return;
 	}
 	
-	if (flag)
-		[allowsEmptySection setObject:@(YES) forKey:group];
-	else
-		[allowsEmptySection removeObjectForKey:group];
+	[dynamicSections addObject:group];
 }
 
 - (void)setRange:(NSRange)range hard:(BOOL)isHardRange pinnedTo:(YapDatabaseViewPin)pin forGroup:(NSString *)group
@@ -200,7 +190,7 @@
 	{
 		NSUInteger count = [[transaction ext:registeredViewName] numberOfKeysInGroup:group];
 		
-		if (count > 0 || [[allowsEmptySection objectForKey:group] boolValue]) {
+		if (count > 0 || ![dynamicSections containsObject:group]) {
 			[visibleGroups addObject:group];
 		}
 		
@@ -222,7 +212,7 @@
 	{
 		NSUInteger count = [[newCounts objectForKey:group] unsignedIntegerValue];
 		
-		if (count > 0 || [[allowsEmptySection objectForKey:group] boolValue])
+		if (count > 0 || ![dynamicSections containsObject:group])
 			[visibleGroups addObject:group];
 		
 		[counts setObject:@(count) forKey:group];
