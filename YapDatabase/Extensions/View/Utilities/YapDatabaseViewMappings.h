@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import "YapDatabaseViewRangeOptions.h"
 
 @class YapAbstractDatabaseTransaction;
 
@@ -160,14 +161,6 @@
  * @see YapDatabaseConnection getSectionChanges:rowChanges:forNotifications:withMappings:
  * @see YapCollectionsDatabaseConnection getSectionChanges:rowChanges:forNotifications:withMappings:
 **/
-
-typedef enum {
-	YapDatabaseViewBeginning = 0, // index == 0
-	YapDatabaseViewEnd       = 1, // index == last
-	
-} YapDatabaseViewPin;
-
-
 @interface YapDatabaseViewMappings : NSObject <NSCopying>
 
 /**
@@ -269,17 +262,10 @@ typedef enum {
  * We also need translation methods, to go from tableView.indexPath to view.index ...
 **/
 
-- (void)setRange:(NSRange)range
-            hard:(BOOL)isHardRange
-        pinnedTo:(YapDatabaseViewPin)pinnedToBeginningOrEnd
-        forGroup:(NSString *)group;
+- (void)setRangeOptions:(YapDatabaseViewRangeOptions *)rangeOpts forGroup:(NSString *)group;
+- (YapDatabaseViewRangeOptions *)rangeOptionsForGroup:(NSString *)group;
 
 - (void)removeRangeOptionsForGroup:(NSString *)group;
-
-- (BOOL)getRange:(NSRange *)rangePtr
-            hard:(BOOL *)isHardRangePtr
-        pinnedTo:(YapDatabaseViewPin *)pinnedToPtr
-        forGroup:(NSString *)group;
 
 /**
  * TODO

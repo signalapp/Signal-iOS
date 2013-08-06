@@ -118,34 +118,41 @@
 	[dynamicSections addObject:group];
 }
 
-- (void)setRange:(NSRange)range hard:(BOOL)isHardRange pinnedTo:(YapDatabaseViewPin)pin forGroup:(NSString *)group
+- (void)setRangeOptions:(YapDatabaseViewRangeOptions *)rangeOpts forGroup:(NSString *)group
 {
+	if (rangeOpts == nil) {
+		[self removeRangeOptionsForGroup:group];
+		return;
+	}
+	
 	if (![allGroups containsObject:group]) {
 		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
 		return;
 	}
-	
-	// Validate range
-	
-	NSUInteger count = [[counts objectForKey:group] unsignedIntegerValue];
-	
-	if ((range.length == 0) || (range.location + range.length >= count))
-	{
-		YDBLogWarn(@"%@ - invalid range(%@) for group(%@)", THIS_METHOD, NSStringFromRange(range), group);
+	if (snapshotOfLastUpdate == UINT64_MAX) {
+		YDBLogWarn(@"%@ - mappings must be initialized before setting range options (see updateWithTransaction:)",
+		           THIS_METHOD);
 		return;
 	}
 	
-	// Add to dictionary
+	NSUInteger count = [[counts objectForKey:group] unsignedIntegerValue];
 	
-	YapDatabaseViewMappingsRangeOptions *rangeOpts =
-	    [[YapDatabaseViewMappingsRangeOptions alloc] initWithRange:range hard:isHardRange pin:pin];
+	NSUInteger desiredLength = rangeOpts.length;
+	NSUInteger offset = rangeOpts.offset;
+	
+	NSUInteger maxLength = (offset >= count) ? 0 : count - offset;
+	NSUInteger length = MIN(desiredLength, maxLength);
+	
+	// Make immutable copy
+	rangeOpts = [rangeOpts copyWithNewLength:length];
 	
 	[rangeOptions setObject:rangeOpts forKey:group];
 }
 
-- (void)setRangeOptions:(YapDatabaseViewMappingsRangeOptions *)rangeOpts forGroup:(NSString *)group
+- (YapDatabaseViewRangeOptions *)rangeOptionsForGroup:(NSString *)group
 {
-	[rangeOptions setObject:rangeOpts forKey:group];
+	// Return copy. Our internal version must remain immutable.
+	return [[rangeOptions objectForKey:group] copy];
 }
 
 - (void)removeRangeOptionsForGroup:(NSString *)group
@@ -153,29 +160,12 @@
 	[rangeOptions removeObjectForKey:group];
 }
 
-- (BOOL)getRange:(NSRange *)rangePtr
-            hard:(BOOL *)isHardRangePtr
-        pinnedTo:(YapDatabaseViewPin *)pinPtr
-        forGroup:(NSString *)group
+/**
+ * This method is for internal use only.
+**/
+- (NSDictionary *)rangeOptions
 {
-	YapDatabaseViewMappingsRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
-	
-	if (rangeOpts)
-	{
-		if (rangePtr) *rangePtr = rangeOpts.range;
-		if (isHardRangePtr) *isHardRangePtr = rangeOpts.isHardRange;
-		if (pinPtr) *pinPtr = rangeOpts.pin;
-		
-		return YES;
-	}
-	else
-	{
-		if (rangePtr) *rangePtr = NSMakeRange(0, 0);
-		if (isHardRangePtr) *isHardRangePtr = NO;
-		if (pinPtr) *pinPtr = YapDatabaseViewBeginning;
-		
-		return NO;
-	}
+	return [rangeOptions copy];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -217,6 +207,8 @@
 		
 		[counts setObject:@(count) forKey:group];
 	}
+	
+	snapshotOfLastUpdate = 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -266,14 +258,6 @@
 	return [visibleGroups copy];
 }
 
-/**
- * This method is for internal use only.
-**/
-- (NSDictionary *)rangeOptions
-{
-	return [rangeOptions copy];
-}
-
 - (NSString *)description
 {
 	NSMutableString *description = [NSMutableString string];
@@ -302,34 +286,6 @@
 	[description appendString:@">"];
 	
 	return description;
-}
-
-@end
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-@implementation YapDatabaseViewMappingsRangeOptions
-
-@synthesize range = range;
-@synthesize isHardRange = isHardRange;
-@synthesize pin = pin;
-
-- (id)initWithRange:(NSRange)inRange hard:(BOOL)inIsHardRange pin:(YapDatabaseViewPin)inPin
-{
-	if ((self = [super init]))
-	{
-		range = inRange;
-		isHardRange = inIsHardRange;
-		
-		// Enforce proper pin value
-		if (inPin == YapDatabaseViewBeginning)
-			pin = YapDatabaseViewBeginning;
-		else
-			pin = YapDatabaseViewEnd;
-	}
-	return self;
 }
 
 @end

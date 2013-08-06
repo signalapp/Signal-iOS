@@ -1,0 +1,134 @@
+#import "YapDatabaseViewRangeOptions.h"
+
+
+@implementation YapDatabaseViewRangeOptions
+
+@synthesize length = length;
+@synthesize offset = offset;
+@synthesize pin = pin;
+
+@synthesize isFixedRange = isFixedRange;
+@dynamic isFlexibleRange;
+
+@synthesize maxLength = maxLength;
+@synthesize minLength = minLength;
+
+@synthesize growOptions = growOptions;
+
++ (YapDatabaseViewRangeOptions *)fixedRangeWithLength:(NSUInteger)length
+                                               offset:(NSUInteger)offset
+                                                 from:(YapDatabaseViewPin)pin
+{
+	if (length == 0)
+		return nil;
+	
+	// Validate pin
+	if (pin > YapDatabaseViewEnd)
+		pin = YapDatabaseViewEnd;
+	
+	YapDatabaseViewRangeOptions *rangeOpts = [[YapDatabaseViewRangeOptions alloc] init];
+	rangeOpts->length = length;
+	rangeOpts->offset = offset;
+	rangeOpts->pin = pin;
+	rangeOpts->isFixedRange = YES;
+	rangeOpts->maxLength = length;
+	rangeOpts->minLength = 0;
+	rangeOpts->growOptions = YapDatabaseViewGrowPinSide;
+	
+	return rangeOpts;
+}
+
++ (YapDatabaseViewRangeOptions *)flexibleRangeWithLength:(NSUInteger)length
+                                                  offset:(NSUInteger)offset
+                                                    from:(YapDatabaseViewPin)pin
+{
+	if (length == 0)
+		return nil;
+	
+	// Validate pin
+	if (pin > YapDatabaseViewEnd)
+		pin = YapDatabaseViewEnd;
+	
+	YapDatabaseViewRangeOptions *rangeOpts = [[YapDatabaseViewRangeOptions alloc] init];
+	rangeOpts->length = length;
+	rangeOpts->offset = offset;
+	rangeOpts->pin =
+	rangeOpts->isFixedRange = NO;
+	rangeOpts->maxLength = NSUIntegerMax;
+	rangeOpts->minLength = 0;
+	rangeOpts->growOptions = YapDatabaseViewGrowPinSide;
+	
+	return rangeOpts;
+}
+
+- (BOOL)isFlexibleRange
+{
+	return !isFixedRange;
+}
+
+- (void)setMaxLength:(NSUInteger)newMaxLength
+{
+	maxLength = MIN(newMaxLength, length);
+}
+
+- (void)setMinLength:(NSUInteger)newMinLength
+{
+	minLength = MAX(newMinLength, length);
+}
+
+- (void)setGrowOptions:(YapDatabaseViewGrowOptions)newGrowOptions
+{
+	// validate growOptions
+	
+	if (growOptions > YapDatabaseViewGrowOnBothSides)
+		growOptions = YapDatabaseViewGrowPinSide; // Default
+	else
+		growOptions = newGrowOptions;
+}
+
+#pragma mark Copy
+
+- (id)copyWithZone:(NSZone *)zone
+{
+	YapDatabaseViewRangeOptions *copy = [[YapDatabaseViewRangeOptions alloc] init];
+	copy->length = length;
+	copy->offset = offset;
+	copy->pin = pin;
+	copy->isFixedRange = isFixedRange;
+	copy->maxLength = maxLength;
+	copy->minLength = minLength;
+	copy->growOptions = growOptions;
+	
+	return copy;
+}
+
+- (id)copyWithNewLength:(NSUInteger)newLength
+{
+	YapDatabaseViewRangeOptions *copy = [self copy];
+	copy->length = newLength;
+	copy->maxLength = MAX(maxLength, newLength);
+	copy->minLength = MIN(minLength, newLength);
+	
+	return copy;
+}
+
+- (id)copyWithNewOffset:(NSUInteger)newOffset
+{
+	YapDatabaseViewRangeOptions *copy = [self copy];
+	copy->offset = newOffset;
+	
+	return copy;
+}
+
+- (id)copyWithNewLength:(NSUInteger)newLength newOffset:(NSUInteger)newOffset
+{
+	YapDatabaseViewRangeOptions *copy = [self copy];
+	copy->length = newLength;
+	copy->offset = newOffset;
+	copy->maxLength = MAX(maxLength, newLength);
+	copy->minLength = MIN(minLength, newLength);
+	
+	return copy;
+}
+
+@end
