@@ -461,8 +461,8 @@
 	
 	if ([notifications count] > 0)
 	{
-		NSDictionary *firstChangeset = [notifications objectAtIndex:0];
-		NSDictionary *lastChangeset = [notifications lastObject];
+		NSDictionary *firstChangeset = [[notifications objectAtIndex:0] userInfo];
+		NSDictionary *lastChangeset = [[notifications lastObject] userInfo];
 		
 		uint64_t firstSnapshot = [[firstChangeset objectForKey:YapDatabaseSnapshotKey] unsignedLongLongValue];
 		uint64_t lastSnapshot  = [[lastChangeset  objectForKey:YapDatabaseSnapshotKey] unsignedLongLongValue];
