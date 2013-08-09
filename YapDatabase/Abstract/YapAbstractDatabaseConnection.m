@@ -957,7 +957,7 @@
 
 - (sqlite3_stmt *)yapRemoveExtensionStatement
 {
-	if (yapRemoveExtensionStatement)
+	if (yapRemoveExtensionStatement == NULL)
 	{
 		char *stmt = "DELETE FROM \"yap2\" WHERE \"extension\" = ?;";
 		
