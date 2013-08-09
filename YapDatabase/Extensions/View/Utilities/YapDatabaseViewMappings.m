@@ -212,7 +212,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Getters
+#pragma mark Mappings
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSUInteger)numberOfSections
@@ -257,6 +257,78 @@
 {
 	return [visibleGroups copy];
 }
+
+- (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forIndexPath:(NSIndexPath *)indexPath
+{
+  #if TARGET_OS_IPHONE
+	NSUInteger section = indexPath.section;
+	NSUInteger row = indexPath.row;
+  #else
+	NSUInteger section = [indexPath indexAtPosition:0];
+	NSUInteger row = [indexPath indexAtPosition:1];
+  #endif
+	
+	NSString *group = [self groupForSection:section];
+	if (group == nil)
+	{
+		if (groupPtr) *groupPtr = nil;
+		if (indexPtr) *indexPtr = NSNotFound;
+		
+		return NO;
+	}
+	
+	NSUInteger index = [self groupIndexForRow:row inGroup:group];
+	
+	if (groupPtr) *groupPtr = group;
+	if (indexPtr) *indexPtr = index;
+	
+	return (index != NSNotFound);
+}
+
+- (NSUInteger)groupIndexForRow:(NSUInteger)row inSection:(NSUInteger)section
+{
+	return [self groupIndexForRow:row inGroup:[self groupForSection:section]];
+}
+
+- (NSUInteger)groupIndexForRow:(NSUInteger)row inGroup:(NSString *)group
+{
+	if (group == nil) return NSNotFound;
+	
+	YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+	if (rangeOpts)
+	{
+		if (rangeOpts.pin == YapDatabaseViewBeginning)
+		{
+			// Offset is from beginning (index zero)
+			
+			return (rangeOpts.offset + row);
+		}
+		else // if (rangeOpts.pin == YapDatabaseViewEnd)
+		{
+			// Offset is from end (index last)
+			
+			NSUInteger count = [self numberOfItemsInGroup:group];
+			NSUInteger reverseOffset = rangeOpts.offset + rangeOpts.length;
+			
+			if (reverseOffset <= count)
+			{
+				return ((count - reverseOffset) + row);
+			}
+			else
+			{
+				return NSNotFound;
+			}
+		}
+	}
+	else
+	{
+		return row;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Logging
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSString *)description
 {

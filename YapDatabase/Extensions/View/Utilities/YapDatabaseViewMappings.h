@@ -270,6 +270,10 @@
  * Note that if you're using range options, then the indexPaths in your UI might not match up directly
  * with the indexes in the view's group. You can use the various mapping methods in this class
  * to automatically handle all that.
+ *
+ * @see getGroup:viewIndex:forIndexPath:
+ * @see viewIndexForRow:inSection:
+ * @see viewIndexForRow:inGroup:
 **/
 
 - (void)setRangeOptions:(YapDatabaseViewRangeOptions *)rangeOpts forGroup:(NSString *)group;
@@ -367,5 +371,43 @@
  * Dynamic groups/sections automatically "disappear" if/when they become empty.
 **/
 - (NSArray *)visibleGroups;
+
+/**
+ * When using rangeOptions, the rows in your tableView/collectionView may not
+ * directly match the index in the corresponding view & group.
+ * 
+ * For example, say a view has a group named "elders" and contains 100 items.
+ * A fixed range is used to display only the last 20 items in the "elders" group.
+ * Thus row zero in the tableView is actually index 80 in the "elders" group.
+ * 
+ * These methods "map" from indexPaths in the UI to the corresponding indexes and groups in the view.
+ * 
+ * You pass in an indexPath or row&section from the UI perspective,
+ * and it spits out the corresponding index within the view's group.
+ * 
+ * For example:
+ * 
+ * - (UITableViewCell *)tableView:(UITableView *)sender cellForRowAtIndexPath:(NSIndexPath *)indexPath
+ * {
+ *     NSString *group = nil;
+ *     NSUInteger groupIndex = 0;
+ *
+ *     [mappings getGroup:&group index:&groupIndex forIndexPath:indexPath];
+ *
+ *     __block Book *book = nil;
+ *     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+ *
+ *         book = [[transaction extension:@"myView"] objectAtIndex:groupIndex inGroup:group];
+ *     }];
+ *     
+ *     // configure and return cell...
+ * }
+**/
+
+- (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forIndexPath:(NSIndexPath *)indexPath;
+
+- (NSUInteger)groupIndexForRow:(NSUInteger)row inSection:(NSUInteger)section;
+
+- (NSUInteger)groupIndexForRow:(NSUInteger)row inGroup:(NSString *)group;
 
 @end
