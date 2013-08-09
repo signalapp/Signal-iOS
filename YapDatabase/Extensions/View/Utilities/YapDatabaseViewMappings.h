@@ -244,22 +244,32 @@
 - (void)setIsDynamicSection:(BOOL)isDynamic forGroup:(NSString *)group;
 
 /**
- * TODO
+ * You can use the YapDatabaseViewRangeOptions class to configure a "range" that you would
+ * like to restrict your tableView / collectionView to.
  * 
- * Add ability to specify "ranges" for particular groups.
- * Examples:
+ * Two types of ranges are supported:
  * 
- * - Specify a range to see only top 20 in "sales" group.
- *   If new entries rise to the top, the mappings ensure that those that have fallen below the threshold
- *   have proper delete changes emitted.
- *
- * - Specify a min key to see only that item and items after it in the view.
- *   Similar to Apple's SMS messaging app, you start with the most recent 50 items,
- *   but allow new items to be added to the view.
+ * 1. Fixed ranges.
+ *    This is similar to using a LIMIT & OFFSET in a typical sql query.
  * 
- * - Max key works the same as min key, but is for when your view is sorted in the other direction.
+ * 2. Flexible ranges.
+ *    These allow you to specify an initial range, and allow it to grow and shrink.
  * 
- * We also need translation methods, to go from tableView.indexPath to view.index ...
+ * The YapDatabaseViewRangeOptions header file has a lot of documentation on
+ * setting up and configuring range options.
+ * 
+ * One of the best parts of using rangeOptions is that you get animations for free.
+ * For example:
+ * 
+ * Say you have view that sorts items by sales rank.
+ * You want to display a tableView that displays the top 20 best-sellers. Simple enough so far.
+ * But you want the tableView to automatically update throughout the day as sales are getting processed.
+ * And you want the tableView to automatically animate any changes. (No wimping out with reloadData!)
+ * You can get this with only a few lines of code using range options.
+ * 
+ * Note that if you're using range options, then the indexPaths in your UI might not match up directly
+ * with the indexes in the view's group. You can use the various mapping methods in this class
+ * to automatically handle all that.
 **/
 
 - (void)setRangeOptions:(YapDatabaseViewRangeOptions *)rangeOpts forGroup:(NSString *)group;

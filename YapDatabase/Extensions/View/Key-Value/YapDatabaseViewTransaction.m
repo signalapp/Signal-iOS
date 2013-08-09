@@ -1631,8 +1631,6 @@
 	[viewConnection->dirtyMetadata removeAllObjects];
 	
 	viewConnection->reset = YES;
-	
-	// Todo: Need remove group mechanism
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2576,8 +2574,6 @@
 - (NSArray *)keysInRange:(NSRange)range group:(NSString *)group
 {
 	NSMutableArray *result = [NSMutableArray arrayWithCapacity:range.length];
-
-	// Todo: Optimize cache access.
 
 	[self enumerateKeysInGroup:group
 	               withOptions:0
