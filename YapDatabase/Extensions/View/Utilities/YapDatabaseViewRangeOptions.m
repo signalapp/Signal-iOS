@@ -106,8 +106,6 @@
 {
 	YapDatabaseViewRangeOptions *copy = [self copy];
 	copy->length = newLength;
-	copy->maxLength = MAX(maxLength, newLength);
-	copy->minLength = MIN(minLength, newLength);
 	
 	return copy;
 }
@@ -125,8 +123,6 @@
 	YapDatabaseViewRangeOptions *copy = [self copy];
 	copy->length = newLength;
 	copy->offset = newOffset;
-	copy->maxLength = MAX(maxLength, newLength);
-	copy->minLength = MIN(minLength, newLength);
 	
 	return copy;
 }

@@ -129,24 +129,31 @@
 		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
 		return;
 	}
-	if (snapshotOfLastUpdate == UINT64_MAX) {
-		YDBLogWarn(@"%@ - mappings must be initialized before setting range options (see updateWithTransaction:)",
-		           THIS_METHOD);
-		return;
+	
+	if (snapshotOfLastUpdate == UINT64_MAX)
+	{
+		// We don't have the counts yet, so we can't set rangeOpts.length yet.
+		
+		// Store private immutable copy
+		rangeOpts = [rangeOpts copy];
+		[rangeOptions setObject:rangeOpts forKey:group];
 	}
-	
-	NSUInteger count = [[counts objectForKey:group] unsignedIntegerValue];
-	
-	NSUInteger desiredLength = rangeOpts.length;
-	NSUInteger offset = rangeOpts.offset;
-	
-	NSUInteger maxLength = (offset >= count) ? 0 : count - offset;
-	NSUInteger length = MIN(desiredLength, maxLength);
-	
-	// Make immutable copy
-	rangeOpts = [rangeOpts copyWithNewLength:length];
-	
-	[rangeOptions setObject:rangeOpts forKey:group];
+	else
+	{
+		// Set a valid rangeOpts.length using the known group count
+		
+		NSUInteger count = [[counts objectForKey:group] unsignedIntegerValue];
+		
+		NSUInteger desiredLength = rangeOpts.length;
+		NSUInteger offset = rangeOpts.offset;
+		
+		NSUInteger maxLength = (offset >= count) ? 0 : count - offset;
+		NSUInteger length = MIN(desiredLength, maxLength);
+		
+		// Store private immutable copy
+		rangeOpts = [rangeOpts copyWithNewLength:length];
+		[rangeOptions setObject:rangeOpts forKey:group];
+	}
 }
 
 - (YapDatabaseViewRangeOptions *)rangeOptionsForGroup:(NSString *)group
@@ -174,6 +181,8 @@
 
 - (void)updateWithTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
+	BOOL needsUpdateRangeOptions = (snapshotOfLastUpdate == UINT64_MAX);
+	
 	[visibleGroups removeAllObjects];
 	
 	for (NSString *group in allGroups)
@@ -188,6 +197,8 @@
 	}
 	
 	snapshotOfLastUpdate = transaction.abstractConnection.snapshot;
+	if (needsUpdateRangeOptions)
+		[self updateRangeOptions];
 }
 
 /**
@@ -196,6 +207,8 @@
 **/
 - (void)updateWithCounts:(NSDictionary *)newCounts
 {
+	BOOL needsUpdateRangeOptions = (snapshotOfLastUpdate == UINT64_MAX);
+	
 	[visibleGroups removeAllObjects];
 	
 	for (NSString *group in allGroups)
@@ -209,6 +222,20 @@
 	}
 	
 	snapshotOfLastUpdate = 0;
+	if (needsUpdateRangeOptions)
+		[self updateRangeOptions];
+}
+
+- (void)updateRangeOptions
+{
+	for (NSString *group in [rangeOptions allKeys])
+	{
+		YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+		
+		// Go through the setter again so all the logic is in the same place.
+		
+		[self setRangeOptions:rangeOpts forGroup:group];
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

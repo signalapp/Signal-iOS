@@ -274,6 +274,9 @@
  * @see getGroup:viewIndex:forIndexPath:
  * @see viewIndexForRow:inSection:
  * @see viewIndexForRow:inGroup:
+ * 
+ * The rangeOptions you pass in are copied, and YapDatabaseViewMappings keeps a private immutable version of them.
+ * So if you make changes to the rangeOptions, you need to invoke this method again to set the changes.
 **/
 
 - (void)setRangeOptions:(YapDatabaseViewRangeOptions *)rangeOpts forGroup:(NSString *)group;

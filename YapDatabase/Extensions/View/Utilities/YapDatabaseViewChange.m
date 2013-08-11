@@ -865,7 +865,9 @@
 		NSUInteger finalRangeMin;
 		NSUInteger finalRangeMax;
 		
-		NSInteger flexibleRangeForcedDiff = 0;
+		NSUInteger flexibleRangeNonPinSideDeleteDiff = 0;
+		NSUInteger flexibleRangePinSideInsertDiff = 0;
+		NSUInteger flexibleRangeNonPinSideInsertDiff = 0;
 		
 		if (rangeOpts.isFixedRange)
 		{
@@ -1014,7 +1016,7 @@
 						}
 						
 						// If the range ever becomes empty,
-						// then we need to effectively set th growOptions to YapDatabaseViewGrowOnBothSides.
+						// then we need to effectively set the growOptions to YapDatabaseViewGrowOnBothSides.
 						//
 						// With an empty range, there is no different between PinSide and NonPinSide.
 						//
@@ -1032,7 +1034,7 @@
 			if (finalRangeLength > rangeOpts.maxLength)
 			{
 				NSUInteger diff = finalRangeLength - rangeOpts.maxLength;
-				flexibleRangeForcedDiff = -1 * diff;
+				flexibleRangeNonPinSideDeleteDiff = diff;
 				
 				if (pin == YapDatabaseViewBeginning)
 				{
@@ -1044,11 +1046,11 @@
 					// Prune from non-pin-side (beginning)
 					finalRangeMin += diff;
 				}
+				
 			}
 			else if ((finalRangeLength < rangeOpts.minLength) && (finalRangeLength < finalGroupCount))
 			{
 				NSUInteger diff = rangeOpts.minLength - finalRangeLength;
-				flexibleRangeForcedDiff = diff;
 				
 				if (pin == YapDatabaseViewBeginning)
 				{
@@ -1056,6 +1058,7 @@
 					if (finalRangeMin > 0)
 					{
 						NSUInteger pinSideDiff = MAX(diff, finalRangeMin);
+						flexibleRangePinSideInsertDiff = pinSideDiff;
 						
 						finalRangeMin -= pinSideDiff;
 						diff -= pinSideDiff;
@@ -1065,6 +1068,7 @@
 					if ((finalRangeMax < finalGroupCount) && (diff > 0))
 					{
 						NSUInteger nonPinSideDiff = MAX(diff, (finalGroupCount - finalRangeMax));
+						flexibleRangeNonPinSideInsertDiff = nonPinSideDiff;
 						
 						finalRangeMax += nonPinSideDiff;
 						//diff -= nonPinSideDiff;
@@ -1076,6 +1080,7 @@
 					if (finalRangeMax < finalGroupCount)
 					{
 						NSUInteger pinSideDiff = MAX(diff, (finalGroupCount - finalRangeMax));
+						flexibleRangePinSideInsertDiff = pinSideDiff;
 						
 						finalRangeMax += pinSideDiff;
 						diff -= pinSideDiff;
@@ -1085,6 +1090,7 @@
 					if ((finalRangeMin > 0) && (diff > 0))
 					{
 						NSUInteger nonPinSideDiff = MAX(diff, finalRangeMin);
+						flexibleRangeNonPinSideInsertDiff = nonPinSideDiff;
 						
 						finalRangeMin -= nonPinSideDiff;
 						//diff -= nonPinSideDiff;
@@ -1100,7 +1106,8 @@
 				finalRangeOffset = finalRangeMin;
 			else
 				finalRangeOffset = finalGroupCount - finalRangeMax;
-		}
+		
+		} // END if (rangeOpts.isFlexibleRange)
 		
 		//
 		// STEP 2 : Filter items that are outside the range, and "map" items that are inside the range.
@@ -1253,7 +1260,12 @@
 			}
 		}
 		
-		// Fix the final counts by manually adding any needed insertions or deletions
+		//
+		// STEP 3: Fix the final counts by manually adding any needed insertions or deletions
+		//
+		
+		NSUInteger numberOfInsertOperationsToManuallyAdd = 0;
+		NSUInteger numberOfDeleteOperationsToManuallyAdd = 0;
 		
 		if (rangeOpts.isFixedRange)
 		{
@@ -1265,6 +1277,8 @@
 			// The fixed range has a lenth of 20.
 			// The only changes were 2 insertions.
 			// Thus, we need to add 2 delete changes to balance the length.
+			//
+			// These represent the items that got pushed out of the range.
 			
 			NSUInteger length = originalRangeLength;
 			length += insertCount;
@@ -1273,148 +1287,304 @@
 			if (length > finalRangeLength)
 			{
 				// Need to add DELETE operations.
-				// These operations represent the objects that got pushed out of the hard range
-				// due to insertions within the original range.
-				// 
-				// These go at the end opposite the pin.
 				
-				NSUInteger numberOfOperationsToAdd = length - finalRangeLength;
-				NSUInteger numberOfOperationsAdded = 0;
-				
-				NSUInteger index;
-				if (pin == YapDatabaseViewBeginning)
-					index = originalRangeLength - 1;
-				else
-					index = 0;
-				
-				while (numberOfOperationsAdded < numberOfOperationsToAdd)
-				{
-					// We need to be careful not to step on existing rowChanges.
-					// If there is an existing delete for this index, we need to continue onto the next index.
-					// If there is an existing move from this index, we need to continue onto the next index.
-					// If there is an existing update for this index, we need to change it to a delete.
-					
-					BOOL found = NO;
-					
-					for (YapDatabaseViewRowChange *rowChange in rowChanges)
-					{
-						if (rowChange->type == YapDatabaseViewChangeDelete ||
-						    rowChange->type == YapDatabaseViewChangeMove)
-						{
-							if (rowChange->originalIndex == index && [rowChange->originalGroup isEqualToString:group])
-							{
-								found = YES;
-								break;
-							}
-						}
-						else if (rowChange->type == YapDatabaseViewChangeUpdate)
-						{
-							if (rowChange->originalIndex == index && [rowChange->originalGroup isEqualToString:group])
-							{
-								rowChange->type = YapDatabaseViewChangeDelete;
-								
-								numberOfOperationsAdded++;
-								found = YES;
-								break;
-							}
-						}
-					}
-					
-					if (!found)
-					{
-						YapDatabaseViewRowChange *rowChange =
-						    [YapDatabaseViewRowChange deleteKey:nil inGroup:group atIndex:index];
-						
-						rowChange->originalSection = [originalMappings sectionForGroup:group];
-						[rowChanges addObject:rowChange];
-						
-						numberOfOperationsAdded++;
-					}
-					
-					if (pin == YapDatabaseViewBeginning)
-						index--;
-					else
-						index++;
-				}
+				numberOfDeleteOperationsToManuallyAdd = length - finalRangeLength;
 			}
 			else if (length < finalRangeLength)
 			{
 				// Need to add INSERT operations.
-				// These operations represent the objects that got pulled into the hard range
-				// due to deletions within the original range.
-				//
-				// These go at the end opposite the pin.
 				
-				NSUInteger numberOfOperationsToAdd = finalRangeLength - length;
-				NSUInteger numberOfOperationsAdded = 0;
-				
-				NSUInteger index;
-				if (pin == YapDatabaseViewBeginning)
-					index = finalRangeLength - 1;
-				else
-					index = 0;
-				
-				while (numberOfOperationsAdded < numberOfOperationsToAdd)
-				{
-					// We need to be careful not to step on existing rowChanges.
-					// If there is an existing insert for this index, we need to continue onto the next index.
-					// If there is an existing move to this index, we need to continue onto the next index.
-					// If there is an existing update for this index, we need to change it to an insert.
-					//
-					// Note: I don't think the update scenario is actually possible.
-					
-					BOOL found = NO;
-					
-					for (YapDatabaseViewRowChange *rowChange in rowChanges)
-					{
-						if (rowChange->type == YapDatabaseViewChangeInsert ||
-						    rowChange->type == YapDatabaseViewChangeMove)
-						{
-							if (rowChange->finalIndex == index && [rowChange->finalGroup isEqualToString:group])
-							{
-								found = YES;
-								break;
-							}
-						}
-						else if (rowChange->type == YapDatabaseViewChangeUpdate)
-						{
-							if (rowChange->finalIndex == index && [rowChange->finalGroup isEqualToString:group])
-							{
-								rowChange->type = YapDatabaseViewChangeInsert;
-								
-								numberOfOperationsAdded++;
-								found = YES;
-								break;
-							}
-						}
-					}
-					
-					if (!found)
-					{
-						YapDatabaseViewRowChange *rowChange =
-						    [YapDatabaseViewRowChange insertKey:nil inGroup:group atIndex:index];
-						
-						rowChange->finalSection = [finalMappings sectionForGroup:group];
-						[rowChanges addObject:rowChange];
-						
-						numberOfOperationsAdded++;
-					}
-					
-					if (pin == YapDatabaseViewBeginning)
-						index--;
-					else
-						index++;
-				}
+				numberOfInsertOperationsToManuallyAdd = finalRangeLength - length;
 			}
 		}
-		else if (flexibleRangeForcedDiff != 0)
+		else if (flexibleRangeNonPinSideDeleteDiff != 0)
 		{
 			// FLEXIBLE Range:
+			//
+			// The range naturally expanded to the point where it exceeded the max length.
+			// We may need to manually add DELETE operations.
 			
-			// Todo...
+			NSInteger expectedDiff = finalRangeLength - originalRangeLength;
+			NSInteger actualDiff = insertCount - deleteCount;
+			
+			// Example 1: typical length going above max
+			//
+			// originalRangeLength = 5, finalRangeLength = 10, max = 10, insertCount = 10, deleteCount = 0
+			// expectedDiff = 5
+			// actualDiff = 10
+			
+			// Example 2: user changed max value on us without changing length
+			//            (not technically supporeted, but not overly difficult to handle)
+			//
+			// originalRangeLength = 10, finalRangeLength = 5, max = 5, insertCount = 1, deleteCount = 0
+			// expectedDiff = -5
+			// actualDiff = 1
+			
+			if (actualDiff > expectedDiff)
+			{
+				numberOfDeleteOperationsToManuallyAdd = actualDiff - expectedDiff;
+			}
+		}
+		else if ((flexibleRangePinSideInsertDiff > 0) || (flexibleRangeNonPinSideInsertDiff > 0))
+		{
+			// FLEXIBLE Range:
+			//
+			// The range naturally shrunk to the point where it was smaller than the min length.
+			// We may need to manually add INSERT operations.
+			//
+			// Note: The originalRangeLength may actually be smaller than the finalRangeLength.
+			
+			NSInteger expectedDiff = finalRangeLength - originalRangeLength;
+			NSInteger actualDiff = insertCount - deleteCount;
+			
+			// Example 1: database near empty to begin with
+			//
+			// originalRangeLength = 1, finalRangeLength = 5, min = 5, insertCount = 5, deleteCount = 1
+			// expectedDiff = 4
+			// actualDiff = 4
+			
+			// Example 2: typical length dropping below min
+			//
+			// originalRangeLength = 5, finalRangeLength = 5, min = 5, insertCount = 0, deleteCount = 2
+			// expectedDiff = 0
+			// actualDiff = -2
+			
+			// Example 3:  typical length dropping below min
+			//
+			// originalRangeLength = 10, finalRangeLength = 5, min = 5, insertCount = 0, deleteCount = 8
+			// expectedDiff = -5
+			// actualDiff = -8
+			
+			// Example 4: user changed min value on us without changing length
+			//            (not technically supported, but not overly difficult to handle)
+			//
+			// originalRangeLength = 2, finalRangeLength = 5, min = 5, insertCount = 2, deleteCount = 0
+			// expectedDiff = 3
+			// actualDiff = 2
+			
+			if (actualDiff < expectedDiff)
+			{
+				numberOfInsertOperationsToManuallyAdd = expectedDiff - actualDiff;
+			}
 		}
 		
-		// And finally, update the range within the final mappings (if changed)
+		if (numberOfDeleteOperationsToManuallyAdd > 0)
+		{
+			// Manually add DELETE operations.
+			// 
+			// These operations represent the objects that got pushed out of the final range,
+			// even though the items themselves didn't change.
+			//
+			// They are to go at the end opposite the pin.
+			
+			NSUInteger count = 0;
+			
+			NSUInteger index;
+			if (pin == YapDatabaseViewBeginning)
+				index = originalRangeLength - 1;
+			else
+				index = 0;
+			
+			while (count < numberOfDeleteOperationsToManuallyAdd)
+			{
+				// We need to be careful not to step on existing rowChanges.
+				// If there is an existing delete for this index, we need to continue onto the next index.
+				// If there is an existing move from this index, we need to continue onto the next index.
+				// If there is an existing update for this index, we need to change it to a delete.
+				
+				BOOL found = NO;
+				
+				for (YapDatabaseViewRowChange *rowChange in rowChanges)
+				{
+					if (rowChange->type == YapDatabaseViewChangeDelete ||
+						rowChange->type == YapDatabaseViewChangeMove)
+					{
+						if (rowChange->originalIndex == index && [rowChange->originalGroup isEqualToString:group])
+						{
+							found = YES;
+							break;
+						}
+					}
+					else if (rowChange->type == YapDatabaseViewChangeUpdate)
+					{
+						if (rowChange->originalIndex == index && [rowChange->originalGroup isEqualToString:group])
+						{
+							rowChange->type = YapDatabaseViewChangeDelete;
+							
+							count++;
+							found = YES;
+							break;
+						}
+					}
+				}
+				
+				if (!found)
+				{
+					YapDatabaseViewRowChange *rowChange =
+					    [YapDatabaseViewRowChange deleteKey:nil inGroup:group atIndex:index];
+					
+					rowChange->originalSection = [originalMappings sectionForGroup:group];
+					[rowChanges addObject:rowChange];
+					
+					count++;
+				}
+				
+				if (pin == YapDatabaseViewBeginning)
+					index--;
+				else
+					index++;
+			}
+		}
+		
+		if ((numberOfInsertOperationsToManuallyAdd > 0) && (flexibleRangePinSideInsertDiff > 0))
+		{
+			// Manually add INSERT operations.
+			//
+			// These operations represent the objects that got pulled into the final range,
+			// even though the items themselves didn't change.
+			//
+			// They are to go pin side.
+			//
+			// Note: This code path is only taken if using a flexibleRange
+			
+			NSUInteger i = 0;
+			NSUInteger count = 0;
+			
+			NSUInteger index;
+			if (pin == YapDatabaseViewBeginning)
+				index = finalRangeMin;
+			else
+				index = finalRangeLength - 1;
+			
+			while ((count < numberOfInsertOperationsToManuallyAdd) && (i < flexibleRangePinSideInsertDiff))
+			{
+				// We need to be careful not to step on existing rowChanges.
+				// If there is an existing insert for this index, we need to continue onto the next index.
+				// If there is an existing move to this index, we need to continue onto the next index.
+				// If there is an existing update for this index, we need to change it to an insert.
+				//
+				// Note: I don't think the update scenario is actually possible.
+				
+				BOOL found = NO;
+				
+				for (YapDatabaseViewRowChange *rowChange in rowChanges)
+				{
+					if (rowChange->type == YapDatabaseViewChangeInsert ||
+						rowChange->type == YapDatabaseViewChangeMove)
+					{
+						if (rowChange->finalIndex == index && [rowChange->finalGroup isEqualToString:group])
+						{
+							found = YES;
+							break;
+						}
+					}
+					else if (rowChange->type == YapDatabaseViewChangeUpdate)
+					{
+						if (rowChange->finalIndex == index && [rowChange->finalGroup isEqualToString:group])
+						{
+							rowChange->type = YapDatabaseViewChangeInsert;
+							
+							count++;
+							found = YES;
+							break;
+						}
+					}
+				}
+				
+				if (!found)
+				{
+					YapDatabaseViewRowChange *rowChange =
+					[YapDatabaseViewRowChange insertKey:nil inGroup:group atIndex:index];
+					
+					rowChange->finalSection = [finalMappings sectionForGroup:group];
+					[rowChanges addObject:rowChange];
+					
+					count++;
+				}
+				
+				if (pin == YapDatabaseViewBeginning)
+					index++;
+				else
+					index--;
+				
+				i++;
+			}
+			
+			numberOfInsertOperationsToManuallyAdd -= count;
+		}
+		
+		if (numberOfInsertOperationsToManuallyAdd > 0)
+		{
+			// Manually add INSERT operations.
+			// 
+			// These operations represent the objects that got pulled into the final range,
+			// even though the items themselves didn't change.
+			//
+			// They are to go at the end opposite the pin.
+			
+			NSUInteger count = 0;
+			
+			NSUInteger index;
+			if (pin == YapDatabaseViewBeginning)
+				index = finalRangeLength - 1;
+			else
+				index = 0;
+			
+			while (count < numberOfInsertOperationsToManuallyAdd)
+			{
+				// We need to be careful not to step on existing rowChanges.
+				// If there is an existing insert for this index, we need to continue onto the next index.
+				// If there is an existing move to this index, we need to continue onto the next index.
+				// If there is an existing update for this index, we need to change it to an insert.
+				//
+				// Note: I don't think the update scenario is actually possible.
+				
+				BOOL found = NO;
+				
+				for (YapDatabaseViewRowChange *rowChange in rowChanges)
+				{
+					if (rowChange->type == YapDatabaseViewChangeInsert ||
+						rowChange->type == YapDatabaseViewChangeMove)
+					{
+						if (rowChange->finalIndex == index && [rowChange->finalGroup isEqualToString:group])
+						{
+							found = YES;
+							break;
+						}
+					}
+					else if (rowChange->type == YapDatabaseViewChangeUpdate)
+					{
+						if (rowChange->finalIndex == index && [rowChange->finalGroup isEqualToString:group])
+						{
+							rowChange->type = YapDatabaseViewChangeInsert;
+							
+							count++;
+							found = YES;
+							break;
+						}
+					}
+				}
+				
+				if (!found)
+				{
+					YapDatabaseViewRowChange *rowChange =
+					    [YapDatabaseViewRowChange insertKey:nil inGroup:group atIndex:index];
+					
+					rowChange->finalSection = [finalMappings sectionForGroup:group];
+					[rowChanges addObject:rowChange];
+					
+					count++;
+				}
+				
+				if (pin == YapDatabaseViewBeginning)
+					index--;
+				else
+					index++;
+			}
+		}
+		
+		//
+		// STEP 4 : Update rangeOpts.length & rangeOpts.offset withhin the final mappings (if changed)
 		
 		if (rangeOpts.isFlexibleRange)
 		{
