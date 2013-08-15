@@ -52,7 +52,7 @@
 	YapDatabaseViewRangeOptions *rangeOpts = [[YapDatabaseViewRangeOptions alloc] init];
 	rangeOpts->length = length;
 	rangeOpts->offset = offset;
-	rangeOpts->pin =
+	rangeOpts->pin = pin;
 	rangeOpts->isFixedRange = NO;
 	rangeOpts->maxLength = NSUIntegerMax;
 	rangeOpts->minLength = 0;
