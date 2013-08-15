@@ -1301,7 +1301,7 @@
 					// Append from pin-side first (beginning) (if possible)
 					if (finalRangeMin > 0)
 					{
-						NSUInteger pinSideDiff = MAX(diff, finalRangeMin);
+						NSUInteger pinSideDiff = MIN(diff, finalRangeMin);
 						flexibleRangePinSideInsertDiff = pinSideDiff;
 						
 						finalRangeMin -= pinSideDiff;
@@ -1311,7 +1311,7 @@
 					// Append from non-pin-side second (end) (if possible) (if still needed)
 					if ((finalRangeMax < finalGroupCount) && (diff > 0))
 					{
-						NSUInteger nonPinSideDiff = MAX(diff, (finalGroupCount - finalRangeMax));
+						NSUInteger nonPinSideDiff = MIN(diff, (finalGroupCount - finalRangeMax));
 						flexibleRangeNonPinSideInsertDiff = nonPinSideDiff;
 						
 						finalRangeMax += nonPinSideDiff;
@@ -1323,7 +1323,7 @@
 					// Append from pin-side first (end) (if possible)
 					if (finalRangeMax < finalGroupCount)
 					{
-						NSUInteger pinSideDiff = MAX(diff, (finalGroupCount - finalRangeMax));
+						NSUInteger pinSideDiff = MIN(diff, (finalGroupCount - finalRangeMax));
 						flexibleRangePinSideInsertDiff = pinSideDiff;
 						
 						finalRangeMax += pinSideDiff;
@@ -1333,7 +1333,7 @@
 					// Append from non-pin-side second (beginning) (if possible) (if still needed)
 					if ((finalRangeMin > 0) && (diff > 0))
 					{
-						NSUInteger nonPinSideDiff = MAX(diff, finalRangeMin);
+						NSUInteger nonPinSideDiff = MIN(diff, finalRangeMin);
 						flexibleRangeNonPinSideInsertDiff = nonPinSideDiff;
 						
 						finalRangeMin -= nonPinSideDiff;
