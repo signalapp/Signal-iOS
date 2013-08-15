@@ -36,6 +36,7 @@
 	// Configuration
 	NSMutableSet *dynamicSections;
 	NSMutableDictionary *rangeOptions;
+	NSMutableDictionary *dependencies;
 	NSMutableDictionary *reverse;
 	
 	// Snapshot (used for error detection)
@@ -62,6 +63,7 @@
 		
 		dynamicSections = [[NSMutableSet alloc] initWithCapacity:[allGroups count]];
 		rangeOptions = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+		dependencies = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
 		
 		snapshotOfLastUpdate = UINT64_MAX;
 	}
@@ -79,6 +81,7 @@
 	
 	copy->dynamicSections = [dynamicSections mutableCopy];
 	copy->rangeOptions = [rangeOptions mutableCopy];
+	copy->dependencies = [dependencies mutableCopy];
 	copy->reverse = [reverse mutableCopy];
 	
 	copy->snapshotOfLastUpdate = snapshotOfLastUpdate;
@@ -140,20 +143,28 @@
 	}
 	else
 	{
-		// Set a valid rangeOpts.length using the known group count
+		// Normal setter logic
 		
-		NSUInteger count = [[counts objectForKey:group] unsignedIntegerValue];
-		
-		NSUInteger desiredLength = rangeOpts.length;
-		NSUInteger offset = rangeOpts.offset;
-		
-		NSUInteger maxLength = (offset >= count) ? 0 : count - offset;
-		NSUInteger length = MIN(desiredLength, maxLength);
-		
-		// Store private immutable copy
-		rangeOpts = [rangeOpts copyWithNewLength:length];
-		[rangeOptions setObject:rangeOpts forKey:group];
+		[self _setRangeOptions:rangeOpts forGroup:group];
+		[self updateVisibilityForGroup:group];
 	}
+}
+
+- (void)_setRangeOptions:(YapDatabaseViewRangeOptions *)rangeOpts forGroup:(NSString *)group
+{
+	// Set a valid rangeOpts.length using the known group count
+	
+	NSUInteger count = [[counts objectForKey:group] unsignedIntegerValue];
+	
+	NSUInteger desiredLength = rangeOpts.length;
+	NSUInteger offset = rangeOpts.offset;
+	
+	NSUInteger maxLength = (offset >= count) ? 0 : count - offset;
+	NSUInteger length = MIN(desiredLength, maxLength);
+	
+	// Store private immutable copy
+	rangeOpts = [rangeOpts copyWithNewLength:length];
+	[rangeOptions setObject:rangeOpts forKey:group];
 }
 
 - (YapDatabaseViewRangeOptions *)rangeOptionsForGroup:(NSString *)group
@@ -167,12 +178,37 @@
 	[rangeOptions removeObjectForKey:group];
 }
 
-/**
- * This method is for internal use only.
-**/
-- (NSDictionary *)rangeOptions
+- (void)setCellDrawingDependencyForNeighboringCellWithOffset:(NSInteger)offset forGroup:(NSString *)group
 {
-	return [rangeOptions copy];
+	[self setCellDrawingDependencyOffsets:[NSSet setWithObject:@(offset)] forGroup:group];
+}
+
+- (void)setCellDrawingDependencyOffsets:(NSSet *)offsets forGroup:(NSString *)group
+{
+	if (![allGroups containsObject:group]) {
+		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
+		return;
+	}
+
+	NSMutableSet *validOffsets = [NSMutableSet setWithCapacity:[offsets count]];
+
+	for (id obj in offsets)
+	{
+		if ([obj isKindOfClass:[NSNumber class]])
+		{
+			if ([obj integerValue] != 0)
+			{
+				[validOffsets addObject:obj];
+			}
+		}
+	}
+
+	[dependencies setObject:[validOffsets copy] forKey:group];
+}
+
+- (NSSet *)cellDrawingDependencyOffsetsForGroup:(NSString *)group
+{
+	return [dependencies objectForKey:group];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -181,24 +217,20 @@
 
 - (void)updateWithTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
-	BOOL needsUpdateRangeOptions = (snapshotOfLastUpdate == UINT64_MAX);
-	
-	[visibleGroups removeAllObjects];
-	
 	for (NSString *group in allGroups)
 	{
 		NSUInteger count = [[transaction ext:registeredViewName] numberOfKeysInGroup:group];
 		
-		if (count > 0 || ![dynamicSections containsObject:group]) {
-			[visibleGroups addObject:group];
-		}
-		
 		[counts setObject:@(count) forKey:group];
 	}
 	
+	BOOL firstUpdate = (snapshotOfLastUpdate == UINT64_MAX);
 	snapshotOfLastUpdate = transaction.abstractConnection.snapshot;
-	if (needsUpdateRangeOptions)
-		[self updateRangeOptions];
+	
+	if (firstUpdate)
+		[self initializeRangeOptsLength];
+	
+	[self updateVisibility];
 }
 
 /**
@@ -207,35 +239,97 @@
 **/
 - (void)updateWithCounts:(NSDictionary *)newCounts
 {
-	BOOL needsUpdateRangeOptions = (snapshotOfLastUpdate == UINT64_MAX);
-	
-	[visibleGroups removeAllObjects];
-	
 	for (NSString *group in allGroups)
 	{
 		NSUInteger count = [[newCounts objectForKey:group] unsignedIntegerValue];
 		
-		if (count > 0 || ![dynamicSections containsObject:group])
-			[visibleGroups addObject:group];
-		
 		[counts setObject:@(count) forKey:group];
 	}
 	
+	BOOL firstUpdate = (snapshotOfLastUpdate == UINT64_MAX);
 	snapshotOfLastUpdate = 0;
-	if (needsUpdateRangeOptions)
-		[self updateRangeOptions];
+	
+	if (firstUpdate)
+		[self initializeRangeOptsLength];
+	
+	[self updateVisibility];
 }
 
-- (void)updateRangeOptions
+- (void)initializeRangeOptsLength
 {
+	NSAssert(snapshotOfLastUpdate != UINT64_MAX, @"The counts are needed to set rangeOpts.length");
+	
 	for (NSString *group in [rangeOptions allKeys])
 	{
 		YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
 		
-		// Go through the setter again so all the logic is in the same place.
-		
-		[self setRangeOptions:rangeOpts forGroup:group];
+		// Go through the internal setter again so all the logic is in the same place.
+		[self _setRangeOptions:rangeOpts forGroup:group];
 	}
+}
+
+- (void)updateVisibility
+{
+	[visibleGroups removeAllObjects];
+	
+	for (NSString *group in allGroups)
+	{
+		NSUInteger count;
+		
+		YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+		if (rangeOpts)
+			count = rangeOpts.length;
+		else
+			count = [[counts objectForKey:group] unsignedIntegerValue];
+		
+		if (count > 0 || ![dynamicSections containsObject:group])
+			[visibleGroups addObject:group];
+	}
+}
+
+- (void)updateVisibilityForGroup:(NSString *)group
+{
+	NSUInteger count;
+	
+	YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+	if (rangeOpts)
+		count = rangeOpts.length;
+	else
+		count = [[counts objectForKey:group] unsignedIntegerValue];
+	
+	if (count > 0 || ![dynamicSections containsObject:group])
+		[visibleGroups addObject:group];
+	else
+		[visibleGroups removeObject:group];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Internal
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSMutableDictionary *)counts
+{
+	return [counts mutableCopy];
+}
+
+- (NSUInteger)fullCountForGroup:(NSString *)group
+{
+	return [[counts objectForKey:group] unsignedIntegerValue];
+}
+
+- (NSUInteger)visibleCountForGroup:(NSString *)group
+{
+	return [self numberOfItemsInGroup:group];
+}
+
+- (NSDictionary *)rangeOptions
+{
+	return [rangeOptions copy];
+}
+
+- (NSDictionary *)dependencies
+{
+	return [dependencies copy];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -249,12 +343,23 @@
 
 - (NSUInteger)numberOfItemsInSection:(NSUInteger)section
 {
-	return [[counts objectForKey:[self groupForSection:section]] unsignedIntegerValue];
+	return [self numberOfItemsInGroup:[self groupForSection:section]];
 }
 
 - (NSUInteger)numberOfItemsInGroup:(NSString *)group
 {
-	return [[counts objectForKey:group] unsignedIntegerValue];
+	if (group == nil) return 0;
+	if (snapshotOfLastUpdate == UINT64_MAX) return 0;
+	
+	YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+	if (rangeOpts)
+	{
+		return rangeOpts.length;
+	}
+	else
+	{
+		return [[counts objectForKey:group] unsignedIntegerValue];
+	}
 }
 
 - (NSString *)groupForSection:(NSUInteger)section

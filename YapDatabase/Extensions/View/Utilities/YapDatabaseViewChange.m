@@ -344,6 +344,210 @@
 /**
  * During a read-write transaction, every modification to the view results in one or more
  * YapDatabaseViewSectionChange or YapDatabaseViewRowChange objects being appended to an internal array.
+ *
+ * At the end of the read-write transaction we have a big list of changes that have occurred.
+ *
+ * This method takes the original list pre-processes them:
+ *
+ * - splits the array in sectionChanges and rowChanges
+ * - removes any items from the changes array that don't concern us
+ * - injects extra changes if there are cell dependencies configured in the mappings
+**/
++ (void)preProcessChanges:(NSArray *)changes
+     withOriginalMappings:(YapDatabaseViewMappings *)originalMappings
+            finalMappings:(YapDatabaseViewMappings *)finalMappings
+     andGetSectionChanges:(NSMutableArray **)sectionChangesPtr
+               rowChanges:(NSMutableArray **)rowChangesPtr
+{
+	
+	// We remove any items from the changes array that don't concern us.
+	// For example, if mappings only contain groupA & groupB,
+	// then we can ignore changes in groupC.
+	//
+	// We also may need to inject extra changes.
+	// The user may specify, as a configuration option within mappings,
+	// the the drawing of cells has an dependency upon neighboring cells.
+	
+	NSMutableArray *sectionChanges = [NSMutableArray arrayWithCapacity:1];
+	NSMutableArray *rowChanges = [NSMutableArray arrayWithCapacity:[changes count]];
+	
+	NSSet *groups = [NSSet setWithArray:[originalMappings allGroups]];
+	
+	NSMutableDictionary *counts = [originalMappings counts];
+	NSDictionary *dependencies = [originalMappings dependencies];
+	
+	for (id change in changes)
+	{
+		if ([change isKindOfClass:[YapDatabaseViewSectionChange class]])
+		{
+			__unsafe_unretained YapDatabaseViewSectionChange *immutableSectionChange =
+			    (YapDatabaseViewSectionChange *)change;
+			
+			if (immutableSectionChange->type == YapDatabaseViewChangeDelete)
+			{
+				if ([groups containsObject:immutableSectionChange->group])
+				{
+					YapDatabaseViewSectionChange *sectionChange = [immutableSectionChange copy];
+					[sectionChanges addObject:sectionChange];
+					
+					if (sectionChange->isReset)
+					{
+						// Special case processing.
+						//
+						// Most of the time, groups are deleted because the last key within the group was removed.
+						// Thus a regular section delete is accompanied by all the corresponding row deletes.
+						// But if the user invokes:
+						//
+						// - removeAllObjects                 (YapDatabase)
+						// - removeAllObjectsInAllCollections (YapCollectionsDatabase)
+						//
+						// then we get a section delete that isn't accompanies by the corresponding row deletes.
+						// This operation is flagged via isReset.
+						//
+						// So here's what we do in this situation:
+						// - remove any previous row changes within the group
+						// - manually inject all the proper row deletes
+						
+						__unsafe_unretained YapDatabaseViewRowChange *rowChange;
+						
+						for (NSUInteger i = [rowChanges count]; i > 0; i--)
+						{
+							rowChange = [rowChanges objectAtIndex:(i-1)];
+							
+							if (rowChange->type == YapDatabaseViewChangeDelete)
+							{
+								if ([rowChange->originalGroup isEqualToString:sectionChange->group])
+								{
+									[rowChanges removeObjectAtIndex:(i-1)];
+								}
+							}
+							else // YapDatabaseViewChangeInsert || YapDatabaseViewChangeUpdate
+							{
+								if ([rowChange->finalGroup isEqualToString:sectionChange->group])
+								{
+									[rowChanges removeObjectAtIndex:(i-1)];
+								}
+							}
+						}
+						
+						NSUInteger prevRowCount = [originalMappings visibleCountForGroup:sectionChange->group];
+						while (prevRowCount > 0)
+						{
+							YapDatabaseViewRowChange *rowChange =
+							    [YapDatabaseViewRowChange deleteKey:nil
+							                                inGroup:sectionChange->group
+							                                atIndex:(prevRowCount-1)];
+							
+							[rowChanges addObject:rowChange];
+							prevRowCount--;
+						}
+						
+						[counts setObject:@(0) forKey:sectionChange->group];
+					}
+				}
+			}
+			else if (immutableSectionChange->type == YapDatabaseViewChangeInsert)
+			{
+				if ([groups containsObject:immutableSectionChange->group])
+				{
+					YapDatabaseViewSectionChange *sectionChange = [immutableSectionChange copy];
+					[sectionChanges addObject:sectionChange];
+				}
+			}
+		}
+		else
+		{
+			__unsafe_unretained YapDatabaseViewRowChange *immutableRowChange = (YapDatabaseViewRowChange *)change;
+			
+			__unsafe_unretained NSString *group = nil;
+			NSUInteger groupCount = 0;
+			NSUInteger groupIndex = 0;
+			BOOL wasDelete = 0;
+			
+			if (immutableRowChange->type == YapDatabaseViewChangeDelete)
+			{
+				if ([groups containsObject:immutableRowChange->originalGroup])
+				{
+					YapDatabaseViewRowChange *rowChange = [immutableRowChange copy];
+					[rowChanges addObject:rowChange];
+					
+					group = rowChange->originalGroup;
+					groupIndex = rowChange->originalIndex;
+					
+					groupCount = [[counts objectForKey:group] unsignedIntegerValue];
+					groupCount--;
+					[counts setObject:@(groupCount) forKey:group];
+					
+					wasDelete = YES;
+				}
+			}
+			else if (immutableRowChange->type == YapDatabaseViewChangeInsert)
+			{
+				if ([groups containsObject:immutableRowChange->finalGroup])
+				{
+					YapDatabaseViewRowChange *rowChange = [immutableRowChange copy];
+					[rowChanges addObject:rowChange];
+					
+					group = rowChange->finalGroup;
+					groupIndex = rowChange->finalIndex;
+					
+					groupCount = [[counts objectForKey:group] unsignedIntegerValue];
+					groupCount++;
+					[counts setObject:@(groupCount) forKey:group];
+				}
+			}
+			else if (immutableRowChange->type == YapDatabaseViewChangeUpdate)
+			{
+				if ([groups containsObject:immutableRowChange->originalGroup])
+				{
+					YapDatabaseViewRowChange *rowChange = [immutableRowChange copy];
+					[rowChanges addObject:rowChange];
+					
+					group = rowChange->originalGroup;
+					groupIndex = rowChange->originalIndex;
+					
+					groupCount = [[counts objectForKey:group] unsignedIntegerValue];
+				}
+			}
+			
+			// Handle cell drawing dependencies.
+			
+			NSSet *dependenciesForGroup = [dependencies objectForKey:group];
+			for (NSNumber *offsetNum in dependenciesForGroup)
+			{
+				NSInteger offset = [offsetNum integerValue] * -1;
+				NSUInteger dependencyIndex = groupCount;
+				
+				if (offset > 0)
+				{
+					NSUInteger dependencyIndex = groupIndex + offset;
+					if (wasDelete)
+						dependencyIndex--;
+				}
+				else if ((offset < 0) && (-1*offset >= groupIndex))
+				{
+					dependencyIndex = groupIndex + offset;
+				}
+				
+				if (dependencyIndex < groupCount)
+				{
+					YapDatabaseViewRowChange *rowChange =
+					    [YapDatabaseViewRowChange updateKey:nil columns:0 inGroup:group atIndex:dependencyIndex];
+					
+					[rowChanges addObject:rowChange];
+				}
+			}
+			
+		}
+	}
+	
+	if (sectionChangesPtr) *sectionChangesPtr = sectionChanges;
+	if (rowChangesPtr) *rowChangesPtr = rowChanges;
+}
+
+/**
+ * During a read-write transaction, every modification to the view results in one or more
+ * YapDatabaseViewSectionChange or YapDatabaseViewRowChange objects being appended to an internal array.
  * 
  * At the end of the read-write transaction we have a big list of changes that have occurred.
  * 
@@ -366,11 +570,12 @@
 	// This is critically important to understand.
 	//
 	// For example, imagine the following array:
-	//
-	// [0] = <RowInsert group=fruit index=0 key=apple>
-	// [0] = <RowDelete group=fruit index=7 key=carrot>
-	// [1] = <RowInsert group=fruit index=2 key=blueberry>
-	// [2] = <RowInsert group=fruit index=2 key=banana>
+	// @[
+	//   <RowInsert group=fruit index=0 key=apple>
+	//   <RowDelete group=fruit index=7 key=carrot>
+	//   <RowInsert group=fruit index=2 key=blueberry>
+	//   <RowInsert group=fruit index=2 key=banana>
+	// ]
 	//
 	// What was the original index of 'carrot'?
 	// What is the final index of 'blueberry'?
@@ -503,33 +708,72 @@
 	while (i < [changes count])
 	{
 		YapDatabaseViewRowChange *firstChangeForKey = [changes objectAtIndex:i];
+		YapDatabaseViewRowChange *mostRecentChangeForKey = firstChangeForKey;
 		
 		// Find later operations with the same key
 		
 		for (j = i+1; j < [changes count]; j++)
 		{
 			YapDatabaseViewRowChange *laterChange = [changes objectAtIndex:j];
+			BOOL changesAreForSameKey = NO;
 			
-			if ([laterChange->key isEqual:firstChangeForKey->key])
+			if (firstChangeForKey->key && laterChange->key)
+			{
+				// Compare keys
+				
+				if ([laterChange->key isEqual:firstChangeForKey->key])
+					changesAreForSameKey = YES;
+			}
+			else
+			{
+				// Compare indexes & groups
+				//
+				// This technique is used if one of the keys is nil,
+				// and applies to situations where one of the changes is an Update with a nil key,
+				// which was injected during pre-processing due to cell drawing dependencies.
+				
+				if (mostRecentChangeForKey->type == YapDatabaseViewChangeUpdate)
+				{
+					if (laterChange->type == YapDatabaseViewChangeUpdate ||
+					    laterChange->type == YapDatabaseViewChangeDelete)
+					{
+						if (mostRecentChangeForKey->originalIndex == laterChange->originalIndex &&
+						   [mostRecentChangeForKey->originalGroup isEqualToString:laterChange->originalGroup]) {
+							changesAreForSameKey = YES;
+						}
+					}
+				}
+				else if (mostRecentChangeForKey->type == YapDatabaseViewChangeInsert)
+				{
+					if (laterChange->type == YapDatabaseViewChangeUpdate)
+					{
+						if (mostRecentChangeForKey->originalIndex == laterChange->originalIndex &&
+						   [mostRecentChangeForKey->originalGroup isEqualToString:laterChange->originalGroup]) {
+							changesAreForSameKey = YES;
+						}
+					}
+				}
+				
+				if (changesAreForSameKey)
+				{
+					if (mostRecentChangeForKey->key == nil)
+						mostRecentChangeForKey->key = laterChange->key;
+					else
+						laterChange->key = mostRecentChangeForKey->key;
+				}
+			}
+			
+			if (changesAreForSameKey)
 			{
 				firstChangeForKey->columns |= laterChange->columns;
 				[indexSet addIndex:j];
+				
+				mostRecentChangeForKey = laterChange;
 			}
 		}
 		
 		if ([indexSet count] == 0)
 		{
-			// Check to see if an Update turned into a Move
-			
-			if (firstChangeForKey->type == YapDatabaseViewChangeUpdate)
-			{
-				if (firstChangeForKey->originalIndex != firstChangeForKey->finalIndex ||
-				    firstChangeForKey->originalSection != firstChangeForKey->finalSection)
-				{
-					firstChangeForKey->type = YapDatabaseViewChangeMove;
-				}
-			}
-			
 			i++; // continue;
 		}
 		else
@@ -563,7 +807,6 @@
 					firstChangeForKey->type = YapDatabaseViewChangeMove;
 					firstChangeForKey->finalIndex = lastChangeForKey->finalIndex;
 					firstChangeForKey->finalGroup = lastChangeForKey->finalGroup;
-					firstChangeForKey->finalSection = lastChangeForKey->finalSection;
 					
 					[changes removeObjectsAtIndexes:indexSet];
 					i++;
@@ -584,7 +827,6 @@
 					firstChangeForKey->type = YapDatabaseViewChangeMove;
 					firstChangeForKey->finalIndex = lastChangeForKey->finalIndex;
 					firstChangeForKey->finalGroup = lastChangeForKey->finalGroup;
-					firstChangeForKey->finalSection = lastChangeForKey->finalSection;
 					
 					[changes removeObjectsAtIndexes:indexSet];
 					i++;
@@ -610,7 +852,6 @@
 					
 					firstChangeForKey->finalIndex = lastChangeForKey->finalIndex;
 					firstChangeForKey->finalGroup = lastChangeForKey->finalGroup;
-					firstChangeForKey->finalSection = lastChangeForKey->finalSection;
 					
 					[changes removeObjectsAtIndexes:indexSet];
 					i++;
@@ -623,7 +864,6 @@
 					
 					firstChangeForKey->finalIndex = lastChangeForKey->finalIndex;
 					firstChangeForKey->finalGroup = lastChangeForKey->finalGroup;
-					firstChangeForKey->finalSection = lastChangeForKey->finalSection;
 					
 					[changes removeObjectsAtIndexes:indexSet];
 					i++;
@@ -659,7 +899,6 @@
 					firstChangeForKey->type = YapDatabaseViewChangeMove;
 					firstChangeForKey->finalIndex = lastChangeForKey->finalIndex;
 					firstChangeForKey->finalGroup = lastChangeForKey->finalGroup;
-					firstChangeForKey->finalSection = lastChangeForKey->finalSection;
 					
 					[changes removeObjectsAtIndexes:indexSet];
 					i++;
@@ -702,7 +941,6 @@
 						firstChangeForKey->type = YapDatabaseViewChangeMove;
 						firstChangeForKey->finalIndex = lastChangeForKey->finalIndex;
 						firstChangeForKey->finalGroup = lastChangeForKey->finalGroup;
-						firstChangeForKey->finalSection = lastChangeForKey->finalSection;
 						
 						[changes removeObjectsAtIndexes:indexSet];
 						i++;
@@ -827,8 +1065,8 @@
 	{
 		YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
 		
-		NSUInteger originalGroupCount = [originalMappings numberOfItemsInGroup:group];
-		NSUInteger finalGroupCount = [finalMappings numberOfItemsInGroup:group];
+		NSUInteger originalGroupCount = [originalMappings fullCountForGroup:group];
+		NSUInteger finalGroupCount    = [finalMappings fullCountForGroup:group];
 		
 		YapDatabaseViewPin pin = rangeOpts.pin;
 		
@@ -924,8 +1162,8 @@
 			// The length changes as items are inserted and deleted with the range boundary.
 			// The offset changes as items are inserted and deleted between the range and its pinned end.
 			
-			NSUInteger finalRangeMin = originalRangeMin;
-			NSUInteger finalRangeMax = originalRangeMax;
+			finalRangeMin = originalRangeMin;
+			finalRangeMax = originalRangeMax;
 			
 			BOOL finalRangeWasEmpty = ((finalRangeMax - finalRangeMin) == 0);
 			
@@ -1423,9 +1661,7 @@
 					YapDatabaseViewRowChange *rowChange =
 					    [YapDatabaseViewRowChange deleteKey:nil inGroup:group atIndex:index];
 					
-					rowChange->originalSection = [originalMappings sectionForGroup:group];
 					[rowChanges addObject:rowChange];
-					
 					count++;
 				}
 				
@@ -1494,11 +1730,9 @@
 				if (!found)
 				{
 					YapDatabaseViewRowChange *rowChange =
-					[YapDatabaseViewRowChange insertKey:nil inGroup:group atIndex:index];
+					    [YapDatabaseViewRowChange insertKey:nil inGroup:group atIndex:index];
 					
-					rowChange->finalSection = [finalMappings sectionForGroup:group];
 					[rowChanges addObject:rowChange];
-					
 					count++;
 				}
 				
@@ -1570,9 +1804,7 @@
 					YapDatabaseViewRowChange *rowChange =
 					    [YapDatabaseViewRowChange insertKey:nil inGroup:group atIndex:index];
 					
-					rowChange->finalSection = [finalMappings sectionForGroup:group];
 					[rowChanges addObject:rowChange];
-					
 					count++;
 				}
 				
@@ -1586,18 +1818,50 @@
 		//
 		// STEP 4 : Update rangeOpts.length & rangeOpts.offset withhin the final mappings (if changed)
 		
-		if (rangeOpts.isFlexibleRange)
+		if ((originalRangeLength != finalRangeLength) || (originalRangeOffset != finalRangeOffset))
 		{
-			if ((originalRangeLength != finalRangeLength) || (originalRangeOffset != finalRangeOffset))
+			YapDatabaseViewRangeOptions *newRangeOpts =
+			    [rangeOpts copyWithNewLength:finalRangeLength newOffset:finalRangeOffset];
+			
+			[finalMappings setRangeOptions:newRangeOpts forGroup:group];
+		}
+		
+	} // for (NSString *group in rangeOptions)
+
+
+	//
+	// STEP 5 : Set the originalSection & finalSection
+	//
+
+	for (YapDatabaseViewRowChange *rowChange in rowChanges)
+	{
+		if (rowChange->type == YapDatabaseViewChangeDelete)
+		{
+			rowChange->originalSection = [originalMappings sectionForGroup:rowChange->originalGroup];
+		}
+		else if (rowChange->type == YapDatabaseViewChangeInsert)
+		{
+			rowChange->finalSection = [finalMappings sectionForGroup:rowChange->finalGroup];
+		}
+		else if (rowChange->type == YapDatabaseViewChangeUpdate)
+		{
+			rowChange->originalSection = [originalMappings sectionForGroup:rowChange->originalGroup];
+			rowChange->finalSection    = [finalMappings sectionForGroup:rowChange->finalGroup];
+			
+			if (rowChange->originalSection != rowChange->finalSection)
 			{
-				YapDatabaseViewRangeOptions *newRangeOpts =
-				    [rangeOpts copyWithNewLength:finalRangeLength newOffset:finalRangeOffset];
+				// Turn the update into a move.
+				// If we don't do so, UITableView seems to do the wrong thing.
 				
-				[finalMappings setRangeOptions:newRangeOpts forGroup:group];
+				rowChange->type = YapDatabaseViewChangeMove;
 			}
 		}
-	
-	} // for (NSString *group in rangeOptions)
+		else // if (rowChange->type == YapDatabaseViewChangeMove)
+		{
+			rowChange->originalSection = [originalMappings sectionForGroup:rowChange->originalGroup];
+			rowChange->finalSection    = [finalMappings sectionForGroup:rowChange->finalGroup];
+		}
+	}
 }
 
 /**
@@ -1618,9 +1882,13 @@
 			// Although a group was deleted, the user may be allowing empty sections.
 			// If so, we shouldn't emit a removeSection change.
 			
-			if ([finalMappings sectionForGroup:sectionChange->group] == NSNotFound)
+			NSUInteger originalSection = [originalMappings sectionForGroup:sectionChange->group];
+			NSUInteger finalSection    = [finalMappings sectionForGroup:sectionChange->group];
+			
+			if ((originalSection != NSNotFound) && (finalSection == NSNotFound))
 			{
 				// Emit
+				sectionChange->originalSection = originalSection;
 				i++;
 			}
 			else
@@ -1634,9 +1902,13 @@
 			// Although a group was inserted, the user may have been allowing empty sections.
 			// If so, we shouldn't emit an insertSection change.
 			
-			if ([originalMappings sectionForGroup:sectionChange->group] == NSNotFound)
+			NSUInteger originalSection = [originalMappings sectionForGroup:sectionChange->group];
+			NSUInteger finalSection    = [finalMappings sectionForGroup:sectionChange->group];
+			
+			if ((originalSection == NSNotFound) && (finalSection != NSNotFound))
 			{
 				// Emit
+				sectionChange->finalSection = finalSection;
 				i++;
 			}
 			else
@@ -1657,144 +1929,15 @@
 	// PRE-PROCESSING
 	//
 	// Remove any items from the changes array that don't concern us.
-	// For example, if mappings only contain groupA & groupB,
-	// then we can ignore changes in groupC.
 	
-	NSMutableArray *sectionChanges = [NSMutableArray arrayWithCapacity:[finalMappings numberOfSections]];
-	NSMutableArray *rowChanges = [NSMutableArray arrayWithCapacity:[changes count]];
+	NSMutableArray *sectionChanges = nil;
+	NSMutableArray *rowChanges = nil;
 	
-	for (id change in changes)
-	{
-		if ([change isKindOfClass:[YapDatabaseViewSectionChange class]])
-		{
-			__unsafe_unretained YapDatabaseViewSectionChange *immutableSectionChange =
-			    (YapDatabaseViewSectionChange *)change;
-			
-			if (immutableSectionChange->type == YapDatabaseViewChangeDelete)
-			{
-				NSUInteger originalSection = [originalMappings sectionForGroup:immutableSectionChange->group];
-				
-				if (originalSection != NSNotFound)
-				{
-					YapDatabaseViewSectionChange *sectionChange = [immutableSectionChange copy];
-					
-					sectionChange->originalSection = originalSection;
-					[sectionChanges addObject:sectionChange];
-					
-					if (sectionChange->isReset)
-					{
-						// Special case processing.
-						//
-						// Most of the time, groups are deleted because the last key within the group was removed.
-						// Thus a regular section delete is accompanied by all the corresponding row deletes.
-						// But if the user invokes:
-						//
-						// - removeAllObjects                 (YapDatabase)
-						// - removeAllObjectsInAllCollections (YapCollectionsDatabase)
-						//
-						// then we get a section delete that isn't accompanies by the corresponding row deletes.
-						// This operation is flagged via isReset.
-						//
-						// So here's what we do in this situation:
-						// - remove any previous row changes within the group
-						// - manually inject all the proper row deletes
-						
-						__unsafe_unretained YapDatabaseViewRowChange *rowChange;
-						
-						for (NSUInteger i = [rowChanges count]; i > 0; i--)
-						{
-							rowChange = [rowChanges objectAtIndex:(i-1)];
-							
-							if (rowChange->type == YapDatabaseViewChangeDelete)
-							{
-								if ([rowChange->originalGroup isEqualToString:sectionChange->group])
-								{
-									[rowChanges removeObjectAtIndex:(i-1)];
-								}
-							}
-							else // YapDatabaseViewChangeInsert || YapDatabaseViewChangeUpdate
-							{
-								if ([rowChange->finalGroup isEqualToString:sectionChange->group])
-								{
-									[rowChanges removeObjectAtIndex:(i-1)];
-								}
-							}
-						}
-						
-						NSUInteger prevRowCount = [originalMappings numberOfItemsInGroup:sectionChange->group];
-						
-						while (prevRowCount > 0)
-						{
-							YapDatabaseViewRowChange *rowChange =
-							    [YapDatabaseViewRowChange deleteKey:nil
-							                                inGroup:sectionChange->group
-							                                atIndex:(prevRowCount-1)];
-							
-							rowChange->originalSection = originalSection;
-							
-							[rowChanges addObject:rowChange];
-							prevRowCount--;
-						}
-					}
-				}
-			}
-			else if (immutableSectionChange->type == YapDatabaseViewChangeInsert)
-			{
-				NSUInteger finalSection = [finalMappings sectionForGroup:immutableSectionChange->group];
-				
-				if (finalSection != NSNotFound)
-				{
-					YapDatabaseViewSectionChange *sectionChange = [immutableSectionChange copy];
-					
-					sectionChange->finalSection = finalSection;
-					[sectionChanges addObject:sectionChange];
-				}
-			}
-		}
-		else
-		{
-			__unsafe_unretained YapDatabaseViewRowChange *immutableRowChange = (YapDatabaseViewRowChange *)change;
-			
-			if (immutableRowChange->type == YapDatabaseViewChangeDelete)
-			{
-				NSUInteger originalSection = [originalMappings sectionForGroup:immutableRowChange->originalGroup];
-				
-				if (originalSection != NSNotFound)
-				{
-					YapDatabaseViewRowChange *rowChange = [immutableRowChange copy];
-					
-					rowChange->originalSection = originalSection;
-					[rowChanges addObject:rowChange];
-				}
-			}
-			else if (immutableRowChange->type == YapDatabaseViewChangeInsert)
-			{
-				NSUInteger finalSection = [finalMappings sectionForGroup:immutableRowChange->finalGroup];
-				
-				if (finalSection != NSNotFound)
-				{
-					YapDatabaseViewRowChange *rowChange = [immutableRowChange copy];
-					
-					rowChange->finalSection = finalSection;
-					[rowChanges addObject:rowChange];
-				}
-			}
-			else if (immutableRowChange->type == YapDatabaseViewChangeUpdate)
-			{
-				NSUInteger originalSection = [originalMappings sectionForGroup:immutableRowChange->originalGroup];
-				NSUInteger finalSection = [finalMappings sectionForGroup:immutableRowChange->finalGroup];
-				
-				if ((originalSection != NSNotFound) || (finalSection != NSNotFound))
-				{
-					YapDatabaseViewRowChange *rowChange = [immutableRowChange copy];
-					
-					rowChange->originalSection = originalSection;
-					rowChange->finalSection = finalSection;
-					[rowChanges addObject:rowChange];
-				}
-			}
-		}
-	}
+	[self preProcessChanges:changes
+	   withOriginalMappings:originalMappings
+	          finalMappings:finalMappings
+	   andGetSectionChanges:&sectionChanges
+	             rowChanges:&rowChanges];
 	
 	//
 	// PROCESSING & CONSOLIDATION

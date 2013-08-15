@@ -285,6 +285,49 @@
 - (void)removeRangeOptionsForGroup:(NSString *)group;
 
 /**
+ * There are some times when the drawing of one cell depends somehow on a neighboring cell.
+ * For example:
+ * 
+ * Apple's SMS messaging app draws a timestamp if more than a certain amount of time has elapsed
+ * between a message and the previous message. The timestamp is actually drawn at the top of a cell.
+ * So cell-B would draw a timestamp at the top of its cell if cell-A represented a message
+ * that was sent/received say 3 hours ago.
+ * 
+ * We refer to this as a "cell drawing dependency". For the example above, the timestamp drawing is dependent
+ * upon the cell at offset -1. That is, the drawing of cell at index 5 is dependent upon the cell at index (5-1).
+ * 
+ * This method allows you to specify if there are cell drawing dependecies.
+ * For the example above you could the following:
+ * 
+ * [mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@""]
+ * 
+ * This will inject extra YapDatabaseViewChangeUpdate's for cells that may have been affected (and thus
+ * need to be redrawn) by other Insert,Delete,Update,Move operations.
+ * 
+ * Continuing the example above, if the item at index 7 is deleted, then changeset processing will automatically emit
+ * and update change for the item that was previously at index 8. This is because, as specified by the "cell drawing
+ * offset" configuration, the drawing of index 8 was dependent upon the item before it (offset=-1). The item
+ * before it has changed, so it gets an update emitted for it.
+ *
+ * Using this configuration makes it exteremely simple to handle various "cell drawing dependencies".
+ * You can just ask for changesets as you would if there weren't any dependencies,
+ * perform the boiler-plate updates, and everything just works.
+ * 
+ * Note that if a YapDatabaseViewChangeUpdate is emitted due to a cell drawing dependeny,
+ * AND there were no actual updates for the corresponding item,
+ * and you'd like to detect these changes for whatever reason (optimizing, etc),
+ * then you can do so by checking to see if the rowChange.modifiedColumns is zero.
+ * 
+ * If you have multiple cell drawing dependencies (e.g. +1 & -1),
+ * then you can pass in an NSSet of NSNumbers.
+**/
+
+- (void)setCellDrawingDependencyForNeighboringCellWithOffset:(NSInteger)offset forGroup:(NSString *)group;
+
+- (void)setCellDrawingDependencyOffsets:(NSSet *)offsets forGroup:(NSString *)group;
+- (NSSet *)cellDrawingDependencyOffsetsForGroup:(NSString *)group;
+
+/**
  * TODO
 **/
 
