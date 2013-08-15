@@ -68,12 +68,12 @@
 
 - (void)setMaxLength:(NSUInteger)newMaxLength
 {
-	maxLength = MIN(newMaxLength, length);
+	maxLength = MAX(newMaxLength, minLength);
 }
 
 - (void)setMinLength:(NSUInteger)newMinLength
 {
-	minLength = MAX(newMinLength, length);
+	minLength = MIN(newMinLength, maxLength);
 }
 
 - (void)setGrowOptions:(YapDatabaseViewGrowOptions)newGrowOptions
