@@ -1190,7 +1190,8 @@
 							finalRangeMax -= 1;
 						}
 					}
-				}
+					
+				}// fi (rowChange->type == YapDatabaseViewChangeDelete || rowChange->type == YapDatabaseViewChangeMove)
 				
 				if (rowChange->type == YapDatabaseViewChangeInsert || rowChange->type == YapDatabaseViewChangeMove)
 				{
@@ -1254,18 +1255,21 @@
 									finalRangeMax++;
 							}
 						}
-						
-						// If the range ever becomes empty,
-						// then we need to effectively set the growOptions to YapDatabaseViewGrowOnBothSides.
-						//
-						// With an empty range, there is no different between PinSide and NonPinSide.
-						//
-						// Notice that this flag, once set, remains set.
-						
-						finalRangeWasEmpty = finalRangeWasEmpty || ((finalRangeMax - finalRangeMin) == 0);
 					}
-				}
-			}
+					
+				}// fi (rowChange->type == YapDatabaseViewChangeInsert || rowChange->type == YapDatabaseViewChangeMove)
+				
+				// If the range ever becomes empty,
+				// then we need to effectively set the growOptions to YapDatabaseViewGrowOnBothSides.
+				//
+				// With an empty range, there is no different between PinSide and NonPinSide.
+				//
+				// Notice that this flag, once set, remains set.
+				
+				finalRangeWasEmpty = finalRangeWasEmpty || ((finalRangeMax - finalRangeMin) == 0);
+				
+			} // end for (YapDatabaseViewRowChange *rowChange in rowChanges)
+			
 			
 			// Adjust if we exceed max length, or drop below min length
 			
