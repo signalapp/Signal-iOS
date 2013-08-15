@@ -316,7 +316,7 @@
  * Note that if a YapDatabaseViewChangeUpdate is emitted due to a cell drawing dependeny,
  * AND there were no actual updates for the corresponding item,
  * and you'd like to detect these changes for whatever reason (optimizing, etc),
- * then you can do so by checking to see if the rowChange.modifiedColumns is zero.
+ * then you can do so by checking to see if the rowChange.changes == YapDatabaseViewChangedDependency.
  * 
  * If you have multiple cell drawing dependencies (e.g. +1 & -1),
  * then you can pass in an NSSet of NSNumbers.
