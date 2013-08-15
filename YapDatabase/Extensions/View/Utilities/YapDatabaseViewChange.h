@@ -9,10 +9,11 @@ typedef enum {
 } YapDatabaseViewChangeType;
 
 typedef enum {
-	YapDatabaseViewChangeColumnObject   = 1 << 0, // 0001
-	YapDatabaseViewChangeColumnMetadata = 1 << 1, // 0010
+	YapDatabaseViewChangedObject     = 1 << 0, // 0001
+	YapDatabaseViewChangedMetadata   = 1 << 1, // 0010
+	YapDatabaseViewChangedDependency = 1 << 2, // 0100
 	
-} YapDatabaseViewChangeColumn;
+} YapDatabaseViewChangesBitMask;
 
 
 /**
@@ -68,21 +69,30 @@ typedef enum {
 @property (nonatomic, readonly) YapDatabaseViewChangeType type;
 
 /**
- * The column property is a bitflag representing the column(s) that were changed for corresponding row in the database.
+ * The changes property is a bitmask representing what changed for corresponding row in the database.
  *
  * This may be useful for various optimizations.
- * For example, if your view depends only on the object, then you skip updates when the metadata is changed.
+ * For example, if the drawing of your cell depends only on the object,
+ * but you're using the metadata in your grouping or sorting block for some reason,
+ * then you skip updates when only the metadata is changed.
  * 
- * if (change.modifiedColumns & YapDatabaseViewChangeColumnObject) {
- *     // object changed, update view
+ * if (change.type == YapDatabaseViewChangeUpdate)
+ * {
+ *     if (change.modifiedColumns & YapDatabaseViewChangedObject) {
+ *         // object changed, update cell
+ *     }
+ *     else {
+ *         // only the metadata changed, we can skip updating the cell
+ *     }
  * }
- * else {
- *     // only the metadata changed, we can skip updating the view
- * }
- * 
- * @see YapDatabaseViewChangeColumn
+ *
+ * There are 3 types represented in the bit mask:
+ * - YapDatabaseViewChangedObject - means the object changed
+ * - YapDatabaseViewChangedMetadata - means the metadata changed
+ * - YapDatabaseViewChangedDependency - means you 
+ * @see YapDatabaseViewChangesBitMask
 **/
-@property (nonatomic, readonly) int modifiedColumns;
+@property (nonatomic, readonly) int changes;
 
 /**
  * The indexPath & newIndexPath are available after

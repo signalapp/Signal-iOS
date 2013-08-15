@@ -1210,11 +1210,11 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	// --------|      |------|------|
 	// B[1, 0] |      |+lion | lion |
 	
-	int flags = YapDatabaseViewChangeColumnObject;
+	int flags = YapDatabaseViewChangedObject;
 	
 	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"B"]];
 	[changes addObject:[YapDatabaseViewRowChange insertKey:@"lion" inGroup:@"B" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange updateKey:@"elm" columns:flags inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange updateKey:@"elm" changes:flags inGroup:@"A" atIndex:0]];
 	
 	// Process
 	
@@ -1266,11 +1266,11 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	// --------|      |------|------|
 	// B[X, 0] | elm  | elm  |~elm  |
 	
-	int flags = YapDatabaseViewChangeColumnObject;
+	int flags = YapDatabaseViewChangedObject;
 	
 	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"A"]];
 	[changes addObject:[YapDatabaseViewRowChange insertKey:@"lion" inGroup:@"A" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange updateKey:@"elm" columns:flags inGroup:@"B" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange updateKey:@"elm" changes:flags inGroup:@"B" atIndex:0]];
 	
 	// Process
 	
@@ -1434,12 +1434,12 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	// --------|------|      |      |
 	// B[1, 0] | lion-|      |      |
 	
-	int flags = YapDatabaseViewChangeColumnObject;
+	int flags = YapDatabaseViewChangedObject;
 	
 	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"lion" inGroup:@"B" atIndex:0]];
 	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"B"]];
 	
-	[changes addObject:[YapDatabaseViewRowChange updateKey:@"elm" columns:flags inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange updateKey:@"elm" changes:flags inGroup:@"A" atIndex:0]];
 	
 	// Process
 	
@@ -1491,12 +1491,12 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	// --------|------|      |      |
 	// B[X, 0] | lion | lion |~lion |
 	
-	int flags = YapDatabaseViewChangeColumnObject;
+	int flags = YapDatabaseViewChangedObject;
 	
 	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"elm" inGroup:@"A" atIndex:0]];
 	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"A"]];
 	
-	[changes addObject:[YapDatabaseViewRowChange updateKey:@"lion" columns:flags inGroup:@"B" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange updateKey:@"lion" changes:flags inGroup:@"B" atIndex:0]];
 	
 	// Process
 	
@@ -2149,9 +2149,9 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	// ==============================
 	// B[X, 0] | oak  |~oak -|      |
 	
-	int flags = YapDatabaseViewChangeColumnObject;
+	int flags = YapDatabaseViewChangedObject;
 	
-	[changes addObject:[YapDatabaseViewRowChange updateKey:@"oak" columns:flags inGroup:@"B" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange updateKey:@"oak" changes:flags inGroup:@"B" atIndex:0]];
 	
 	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"oak" inGroup:@"B" atIndex:0]];
 	[changes addObject:[YapDatabaseViewRowChange insertKey:@"oak" inGroup:@"A" atIndex:1]];

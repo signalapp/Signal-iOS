@@ -41,7 +41,7 @@
 	NSString *finalGroup;    // mutable during consolidation
 	
 	YapDatabaseViewChangeType type; // mutable during consolidation
-	int columns;                    // mutable during consolidation
+	int changes;                    // mutable during consolidation
 	
 	NSUInteger opOriginalIndex;  // immutable
 	NSUInteger opFinalIndex;     // immutable
@@ -63,7 +63,7 @@
 + (YapDatabaseViewRowChange *)insertKey:(id)key inGroup:(NSString *)group atIndex:(NSUInteger)index;
 + (YapDatabaseViewRowChange *)deleteKey:(id)key inGroup:(NSString *)group atIndex:(NSUInteger)index;
 
-+ (YapDatabaseViewRowChange *)updateKey:(id)key columns:(int)flags inGroup:(NSString *)group atIndex:(NSUInteger)index;
++ (YapDatabaseViewRowChange *)updateKey:(id)key changes:(int)flags inGroup:(NSString *)group atIndex:(NSUInteger)index;
 
 @end
 

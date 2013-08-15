@@ -143,7 +143,7 @@
 }
 
 @synthesize type = type;
-@synthesize modifiedColumns = columns;
+@synthesize changes = changes;
 @synthesize originalGroup = originalGroup;
 @synthesize finalGroup = finalGroup;
 @synthesize originalIndex = originalIndex;
@@ -189,7 +189,7 @@
 	op->originalGroup = originalGroup;
 	op->finalGroup = finalGroup;
 	op->type = type;
-	op->columns = columns;
+	op->changes = changes;
 	op->opOriginalIndex = opOriginalIndex;
 	op->opFinalIndex = opFinalIndex;
 	op->originalIndex = originalIndex;
@@ -205,7 +205,7 @@
 	YapDatabaseViewRowChange *op = [[YapDatabaseViewRowChange alloc] init];
 	op->type = YapDatabaseViewChangeInsert;
 	op->key = key;
-	op->columns = YapDatabaseViewChangeColumnObject | YapDatabaseViewChangeColumnMetadata;
+	op->changes = YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata;
 	
 	op->originalGroup = nil;                                 // invalid in insert type
 	op->originalIndex = op->opOriginalIndex = NSUIntegerMax; // invalid in insert type
@@ -223,7 +223,7 @@
 	YapDatabaseViewRowChange *op = [[YapDatabaseViewRowChange alloc] init];
 	op->type = YapDatabaseViewChangeDelete;
 	op->key = key;
-	op->columns = YapDatabaseViewChangeColumnObject | YapDatabaseViewChangeColumnMetadata;
+	op->changes = YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata;
 	
 	op->originalGroup = group;
 	op->originalIndex = op->opOriginalIndex = index;
@@ -236,12 +236,12 @@
 	return op;
 }
 
-+ (YapDatabaseViewRowChange *)updateKey:(id)key columns:(int)flags inGroup:(NSString *)group atIndex:(NSUInteger)index
++ (YapDatabaseViewRowChange *)updateKey:(id)key changes:(int)flags inGroup:(NSString *)group atIndex:(NSUInteger)index
 {
 	YapDatabaseViewRowChange *op = [[YapDatabaseViewRowChange alloc] init];
 	op->type = YapDatabaseViewChangeUpdate;
 	op->key = key;
-	op->columns = flags;
+	op->changes = flags;
 	
 	op->originalGroup = group;
 	op->originalIndex = op->opOriginalIndex = index;
@@ -531,8 +531,10 @@
 				
 				if (dependencyIndex < groupCount)
 				{
+					int changes = YapDatabaseViewChangedDependency;
+					
 					YapDatabaseViewRowChange *rowChange =
-					    [YapDatabaseViewRowChange updateKey:nil columns:0 inGroup:group atIndex:dependencyIndex];
+					    [YapDatabaseViewRowChange updateKey:nil changes:changes inGroup:group atIndex:dependencyIndex];
 					
 					[rowChanges addObject:rowChange];
 				}
@@ -765,7 +767,7 @@
 			
 			if (changesAreForSameKey)
 			{
-				firstChangeForKey->columns |= laterChange->columns;
+				firstChangeForKey->changes |= laterChange->changes;
 				[indexSet addIndex:j];
 				
 				mostRecentChangeForKey = laterChange;

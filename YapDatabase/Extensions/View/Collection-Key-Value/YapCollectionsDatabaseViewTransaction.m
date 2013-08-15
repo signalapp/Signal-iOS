@@ -898,7 +898,7 @@
 		}
 	};
 	
-	int flags = (YapDatabaseViewChangeColumnObject | YapDatabaseViewChangeColumnMetadata);
+	int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 	
 	if (needsObject && needsMetadata)
 	{
@@ -1196,7 +1196,7 @@
 				
 				[viewConnection->changes addObject:
 				    [YapDatabaseViewRowChange updateKey:collectionKey
-				                                columns:flags
+				                                changes:flags
 				                                inGroup:group
 				                                atIndex:existingIndexInGroup]];
 				return;
@@ -1409,7 +1409,7 @@
 			
 			[viewConnection->changes addObject:
 			    [YapDatabaseViewRowChange updateKey:collectionKey
-			                                columns:flags
+			                                changes:flags
 			                                inGroup:group
 			                                atIndex:existingIndexInGroup]];
 			return;
@@ -2397,7 +2397,7 @@
 	{
 		// Add key to view (or update position)
 		
-		int flags = (YapDatabaseViewChangeColumnObject | YapDatabaseViewChangeColumnMetadata);
+		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		[self insertObject:object metadata:metadata
 		                  forCollectionKey:collectionKey
 		                           inGroup:group
@@ -2448,11 +2448,11 @@
 			// Nothing has moved because the group hasn't changed and
 			// nothing has changed that relates to sorting.
 			
-			int flags = YapDatabaseViewChangeColumnMetadata;
+			int flags = YapDatabaseViewChangedMetadata;
 			NSUInteger existingIndex = [self indexForCollectionKey:collectionKey inGroup:group withPageKey:pageKey];
 			
 			[viewConnection->changes addObject:
-			    [YapDatabaseViewRowChange updateKey:collectionKey columns:flags inGroup:group atIndex:existingIndex]];
+			    [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:existingIndex]];
 		}
 		else
 		{
@@ -2468,7 +2468,7 @@
 				object = [databaseTransaction objectForKey:key inCollection:collection];
 			}
 			
-			int flags = YapDatabaseViewChangeColumnMetadata;
+			int flags = YapDatabaseViewChangedMetadata;
 			[self insertObject:object metadata:metadata
 			                  forCollectionKey:collectionKey
 			                           inGroup:group
@@ -2520,14 +2520,14 @@
 					// Nothing left to do.
 					// The group didn't change, and the sort order cannot change (because the object didn't change).
 					
-					int flags = YapDatabaseViewChangeColumnMetadata;
+					int flags = YapDatabaseViewChangedMetadata;
 					NSUInteger existingIndex = [self indexForCollectionKey:collectionKey
 					                                               inGroup:group
 					                                           withPageKey:existingPageKey];
 					
 					[viewConnection->changes addObject:
 					    [YapDatabaseViewRowChange updateKey:collectionKey
-					                                columns:flags
+					                                changes:flags
 					                                inGroup:group
 					                                atIndex:existingIndex]];
 					return;
@@ -2541,7 +2541,7 @@
 				object = [databaseTransaction objectForKey:key inCollection:collection];
 			}
 			
-			int flags = YapDatabaseViewChangeColumnMetadata;
+			int flags = YapDatabaseViewChangedMetadata;
 			[self insertObject:object metadata:metadata
 			                  forCollectionKey:collectionKey
 			                           inGroup:group
@@ -3087,10 +3087,10 @@
 		NSString *group = [self groupForPageKey:pageKey];
 		NSUInteger index = [self indexForCollectionKey:collectionKey inGroup:group withPageKey:pageKey];
 		
-		int flags = (YapDatabaseViewChangeColumnObject | YapDatabaseViewChangeColumnMetadata);
+		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
 		[viewConnection->changes addObject:
-		    [YapDatabaseViewRowChange updateKey:collectionKey columns:flags inGroup:group atIndex:index]];
+		    [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:index]];
 	}
 }
 
@@ -3114,10 +3114,10 @@
 			NSString *group = [self groupForPageKey:pageKey];
 			NSUInteger index = [self indexForCollectionKey:collectionKey inGroup:group withPageKey:pageKey];
 			
-			int flags = YapDatabaseViewChangeColumnObject;
+			int flags = YapDatabaseViewChangedObject;
 			
 			[viewConnection->changes addObject:
-			    [YapDatabaseViewRowChange updateKey:collectionKey columns:flags inGroup:group atIndex:index]];
+			    [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:index]];
 		}
 	}
 }
@@ -3142,10 +3142,10 @@
 			NSString *group = [self groupForPageKey:pageKey];
 			NSUInteger index = [self indexForCollectionKey:collectionKey inGroup:group withPageKey:pageKey];
 			
-			int flags = YapDatabaseViewChangeColumnMetadata;
+			int flags = YapDatabaseViewChangedMetadata;
 			
 			[viewConnection->changes addObject:
-			    [YapDatabaseViewRowChange updateKey:collectionKey columns:flags inGroup:group atIndex:index]];
+			    [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:index]];
 		}
 	}
 }
