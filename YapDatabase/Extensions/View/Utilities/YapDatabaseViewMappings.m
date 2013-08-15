@@ -439,7 +439,7 @@
 		{
 			// Offset is from end (index last)
 			
-			NSUInteger count = [self numberOfItemsInGroup:group];
+			NSUInteger count = [self fullCountForGroup:group];
 			NSUInteger reverseOffset = rangeOpts.offset + rangeOpts.length;
 			
 			if (reverseOffset <= count)
