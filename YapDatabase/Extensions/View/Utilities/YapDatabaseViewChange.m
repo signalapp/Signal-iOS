@@ -317,18 +317,16 @@
 		{
 			// Internal style (for debugging the processAndConsolidateOperations method)
 			return [NSString stringWithFormat:
-				@"<YapDatabaseViewRowChange: Update pre(%lu) post(%lu -> %lu) group(%@ -> %@) key(%@)",
+				@"<YapDatabaseViewRowChange: Update pre(%lu) post(%lu -> %lu) group(%@) key(%@)",
 					(unsigned long)opOriginalIndex,
-					(unsigned long)originalIndex,   (unsigned long)finalIndex,
-					originalGroup, finalGroup, key];
+					(unsigned long)originalIndex,   (unsigned long)finalIndex, originalGroup, key];
 		}
 		else
 		{
 			// External style (for debugging UITableView & UICollectionView updates)
 			return [NSString stringWithFormat:
-				@"<YapDatabaseViewRowChange: Update indexPath(%lu, %lu) group(%@ -> %@) key(%@)",
-					(unsigned long)originalSection, (unsigned long)originalIndex,
-					originalGroup, finalGroup, key];
+				@"<YapDatabaseViewRowChange: Update indexPath(%lu, %lu) group(%@) key(%@)",
+					(unsigned long)originalSection, (unsigned long)originalIndex, originalGroup, key];
 		}
 	}
 }
