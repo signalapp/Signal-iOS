@@ -98,6 +98,9 @@
 		pendingChangesets = [[NSMutableArray alloc] init];
 		processedChangesets = [[NSMutableArray alloc] init];
 		
+		sharedKeySetForInternalChangeset = [NSDictionary sharedKeySetForKeys:[self internalChangesetKeys]];
+		sharedKeySetForExternalChangeset = [NSDictionary sharedKeySetForKeys:[self externalChangesetKeys]];
+		
 		extensions = [[NSMutableDictionary alloc] init];
 		
 		objectCacheLimit = DEFAULT_OBJECT_CACHE_LIMIT;
@@ -1558,7 +1561,7 @@
 		snapshot = [self incrementSnapshotInDatabase];
 		
 		if (userInfo == nil)
-			userInfo = [NSMutableDictionary dictionaryWithCapacity:2];
+			userInfo = [NSMutableDictionary dictionaryWithCapacity:3];
 		
 		[changeset setObject:@(snapshot) forKey:YapDatabaseSnapshotKey];
 		[userInfo setObject:@(snapshot) forKey:YapDatabaseSnapshotKey];
@@ -1965,6 +1968,32 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * The creation of changeset dictionaries happens constantly.
+ * So, to optimize a bit, we use sharedKeySet's (part of NSDictionary).
+ * 
+ * Subclasses of YapAbstractDatabase should override this method and add any keys they might use to this set.
+ * 
+ * See ivar 'sharedKeySetForInternalChangeset'
+**/
+- (NSArray *)internalChangesetKeys
+{
+	return @[ YapDatabaseSnapshotKey,  YapDatabaseExtensionsKey, @"registeredExtensions", @"notification" ];
+}
+
+/**
+ * The creation of changeset dictionaries happens constantly.
+ * So, to optimize a bit, we use sharedKeySet's (part of NSDictionary).
+ *
+ * Subclasses of YapAbstractDatabase should override this method and add any keys they might use to this set.
+ *
+ * See ivar 'sharedKeySetForExternalChangeset'
+**/
+- (NSArray *)externalChangesetKeys
+{
+	return @[ YapDatabaseSnapshotKey, YapDatabaseConnectionKey, YapDatabaseExtensionsKey, YapDatabaseCustomKey ];
+}
+
+/**
  * REQUIRED OVERRIDE HOOK.
  *
  * This method is invoked from within the postReadWriteTransaction operation.
@@ -2016,20 +2045,20 @@
 	
 	if (internalChangeset_extensions)
 	{
-		internalChangeset = [NSMutableDictionary dictionaryWithCapacity:8];
-		[internalChangeset setObject:internalChangeset_extensions forKey:@"extensions"];
+		internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
+		[internalChangeset setObject:internalChangeset_extensions forKey:YapDatabaseExtensionsKey];
 	}
 	
 	if (externalChangeset_extensions)
 	{
-		externalChangeset = [NSMutableDictionary dictionaryWithCapacity:8];
+		externalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
 		[externalChangeset setObject:externalChangeset_extensions forKey:YapDatabaseExtensionsKey];
 	}
 	
 	if (registeredExtensionsChanged)
 	{
 		if (internalChangeset == nil)
-			internalChangeset = [NSMutableDictionary dictionaryWithCapacity:8];
+			internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
 		
 		[internalChangeset setObject:registeredExtensions forKey:@"registeredExtensions"];
 	}
@@ -2075,7 +2104,7 @@
 		extensionsReady = ([registeredExtensions count] == [extensions count]);
 	}
 	
-	NSDictionary *changeset_extensions = [changeset objectForKey:@"extensions"];
+	NSDictionary *changeset_extensions = [changeset objectForKey:YapDatabaseExtensionsKey];
 	if (changeset_extensions)
 	{
 		// Use existing extensions (extensions ivar, not [self extensions]).

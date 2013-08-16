@@ -543,6 +543,42 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * The creation of changeset dictionaries happens constantly.
+ * So, to optimize a bit, we use sharedKeySet's (part of NSDictionary).
+ *
+ * Subclasses of YapAbstractDatabase should override this method and add any keys they might use to this set.
+ *
+ * See ivar 'sharedKeySetForInternalChangeset'
+ **/
+- (NSArray *)internalChangesetKeys
+{
+	NSArray *subclassKeys = @[ YapDatabaseObjectChangesKey,
+	                           YapDatabaseMetadataChangesKey,
+	                           YapDatabaseRemovedKeysKey,
+	                           YapDatabaseAllKeysRemovedKey ];
+	
+	return [[super internalChangesetKeys] arrayByAddingObjectsFromArray:subclassKeys];
+}
+
+/**
+ * The creation of changeset dictionaries happens constantly.
+ * So, to optimize a bit, we use sharedKeySet's (part of NSDictionary).
+ *
+ * Subclasses of YapAbstractDatabase should override this method and add any keys they might use to this set.
+ *
+ * See ivar 'sharedKeySetForExternalChangeset'
+**/
+- (NSArray *)externalChangesetKeys
+{
+	NSArray *subclassKeys = @[ YapDatabaseObjectChangesKey,
+	                           YapDatabaseMetadataChangesKey,
+	                           YapDatabaseRemovedKeysKey,
+	                           YapDatabaseAllKeysRemovedKey ];
+	
+	return [[super externalChangesetKeys] arrayByAddingObjectsFromArray:subclassKeys];
+}
+
+/**
  * Required override method from YapAbstractDatabaseConnection.
  *
  * This method is invoked from within the postReadWriteTransaction operation.
@@ -570,10 +606,10 @@
 	if ([objectChanges count] > 0 || [metadataChanges count] > 0 || [removedKeys count] > 0 || allKeysRemoved)
 	{
 		if (internalChangeset == nil)
-			internalChangeset = [NSMutableDictionary dictionaryWithCapacity:5]; // +1 for snapshot
+			internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
 		
 		if (externalChangeset == nil)
-			externalChangeset = [NSMutableDictionary dictionaryWithCapacity:5]; // +1 for snapshot
+			externalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
 		
 		if ([objectChanges count] > 0)
 		{

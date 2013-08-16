@@ -191,6 +191,9 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	dispatch_queue_t connectionQueue;
 	void *IsOnConnectionQueueKey;
 	
+	id sharedKeySetForInternalChangeset;
+	id sharedKeySetForExternalChangeset;
+	
 @public
 	__strong YapAbstractDatabase *database;
 	
@@ -250,6 +253,8 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 
 - (void)postRollbackCleanup;
 
+- (NSArray *)internalChangesetKeys;
+- (NSArray *)externalChangesetKeys;
 - (void)getInternalChangeset:(NSMutableDictionary **)internalPtr externalChangeset:(NSMutableDictionary **)externalPtr;
 - (void)processChangeset:(NSDictionary *)changeset;
 
