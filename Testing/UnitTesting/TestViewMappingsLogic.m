@@ -4384,4 +4384,365 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	STAssertTrue(RowOp(rowChanges, 4).finalIndex == 0, @"");
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test_dependencies_1
+{
+	YapDatabaseViewMappings *mappings, *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(20) }];
+	originalMappings = [mappings copy];
+	
+	// Delete an item.
+	// Make sure there is a dependency change.
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key0" inGroup:@"" atIndex:17]];
+	
+	[mappings updateWithCounts:@{ @"":@(19) }];
+	
+	// Fetch changeset
+	
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:NULL
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([rowChanges count] == 2, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalIndex == 17, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeUpdate, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalIndex == 18, @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalIndex == 17, @"");
+}
+
+- (void)test_dependencies_2
+{
+	YapDatabaseViewMappings *mappings, *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(20) }];
+	originalMappings = [mappings copy];
+	
+	// Delete multiple items right next to each other.
+	// Make sure there is only one dependency change.
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key0" inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:18]];
+	
+	[mappings updateWithCounts:@{ @"":@(18) }];
+	
+	// Fetch changeset
+	
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:NULL
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([rowChanges count] == 2, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalIndex == 18, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalIndex == 19, @"");
+}
+
+- (void)test_dependencies_3
+{
+	YapDatabaseViewMappings *mappings, *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(20) }];
+	originalMappings = [mappings copy];
+	
+	// Delete an item.
+	// Update the dependency change, and check for proper changes flags.
+	
+	int flags = YapDatabaseViewChangedObject;
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key0" inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange updateKey:@"key1" changes:flags inGroup:@"" atIndex:10]];
+	
+	[mappings updateWithCounts:@{ @"":@(19) }];
+	
+	// Fetch changeset
+	
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:NULL
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([rowChanges count] == 3, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalIndex == 10, @"");
+	
+	flags = YapDatabaseViewChangedObject | YapDatabaseViewChangedDependency;
+	
+	STAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeUpdate, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalIndex == 11, @"");
+	STAssertTrue(RowOp(rowChanges, 1).changes == flags, @"");
+	
+	flags = YapDatabaseViewChangedDependency;
+	
+	STAssertTrue(RowOp(rowChanges, 2).type == YapDatabaseViewChangeUpdate, @"");
+	STAssertTrue(RowOp(rowChanges, 2).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 2).originalIndex == 12, @"");
+	STAssertTrue(RowOp(rowChanges, 2).changes == flags, @"");
+}
+
+- (void)test_dependencies_4
+{
+	YapDatabaseViewMappings *mappings, *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(20) }];
+	originalMappings = [mappings copy];
+	
+	// Insert an item in the middle.
+	// Check for proper dependency change.
+	
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key0" inGroup:@"" atIndex:10]];
+	
+	[mappings updateWithCounts:@{ @"":@(21) }];
+	
+	// Fetch changeset
+	
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:NULL
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([rowChanges count] == 2, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalIndex == 10, @"");
+	
+	int flags = YapDatabaseViewChangedDependency;
+	
+	STAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeUpdate, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalIndex == 10, @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalIndex == 11, @"");
+	STAssertTrue(RowOp(rowChanges, 1).changes == flags, @"");
+}
+
+- (void)test_dependencies_5
+{
+	YapDatabaseViewMappings *mappings, *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(20) }];
+	originalMappings = [mappings copy];
+	
+	// Insert item at the very end.
+	// There shouldn't be any dependency related changes.
+	
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key0" inGroup:@"" atIndex:20]];
+	
+	[mappings updateWithCounts:@{ @"":@(21) }];
+	
+	// Fetch changeset
+	
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:NULL
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([rowChanges count] == 1, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalIndex == 20, @"");
+}
+
+- (void)test_dependencies_6
+{
+	YapDatabaseViewMappings *mappings, *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setCellDrawingDependencyForNeighboringCellWithOffset:1 forGroup:@""]; // +1 dependency
+	
+	[mappings updateWithCounts:@{ @"":@(20) }];
+	originalMappings = [mappings copy];
+	
+	// Insert item at the very end.
+	// Make sure there is a dependency change.
+	
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key0" inGroup:@"" atIndex:20]];
+	
+	[mappings updateWithCounts:@{ @"":@(21) }];
+	
+	// Fetch changeset
+	
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:NULL
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([rowChanges count] == 2, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalIndex == 20, @"");
+	
+	int flags = YapDatabaseViewChangedDependency;
+	
+	STAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeUpdate, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalIndex == 19, @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalIndex == 19, @"");
+	STAssertTrue(RowOp(rowChanges, 1).changes == flags, @"");
+}
+
+- (void)test_dependencies_7
+{
+	YapDatabaseViewMappings *mappings, *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setCellDrawingDependencyForNeighboringCellWithOffset:1 forGroup:@""]; // +1 dependency
+	
+	[mappings updateWithCounts:@{ @"":@(20) }];
+	originalMappings = [mappings copy];
+	
+	// Insert item at the very beginning.
+	// There shouldn't be a dependency change.
+	
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key0" inGroup:@"" atIndex:0]];
+	
+	[mappings updateWithCounts:@{ @"":@(21) }];
+	
+	// Fetch changeset
+	
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:NULL
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([rowChanges count] == 1, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalIndex == 0, @"");
+}
+
+- (void)test_dependencies_8
+{
+	YapDatabaseViewMappings *mappings, *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(20) }];
+	originalMappings = [mappings copy];
+	
+	// Try hard to mess up the algorithm...
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key0" inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:14]];
+	
+	[mappings updateWithCounts:@{ @"":@(19) }];
+	
+	// Fetch changeset
+	
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:NULL
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([rowChanges count] == 4, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalIndex == 10, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalIndex == 11, @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalIndex == 14, @"");
+	
+	int flags = YapDatabaseViewChangedDependency;
+	
+	STAssertTrue(RowOp(rowChanges, 2).type == YapDatabaseViewChangeUpdate, @"");
+	STAssertTrue(RowOp(rowChanges, 2).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 2).originalIndex == 12, @"");
+	STAssertTrue(RowOp(rowChanges, 2).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 2).finalIndex == 10, @"");
+	STAssertTrue(RowOp(rowChanges, 2).changes == flags, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 3).type == YapDatabaseViewChangeUpdate, @"");
+	STAssertTrue(RowOp(rowChanges, 3).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 3).originalIndex == 16, @"");
+	STAssertTrue(RowOp(rowChanges, 3).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 3).finalIndex == 15, @"");
+	STAssertTrue(RowOp(rowChanges, 3).changes == flags, @"");
+}
+
 @end
