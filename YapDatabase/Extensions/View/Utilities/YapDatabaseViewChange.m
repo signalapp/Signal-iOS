@@ -520,11 +520,11 @@
 				
 				if (offset > 0)
 				{
-					NSUInteger dependencyIndex = groupIndex + offset;
+					dependencyIndex = groupIndex + offset;
 					if (wasDelete)
 						dependencyIndex--;
 				}
-				else if ((offset < 0) && (-1*offset >= groupIndex))
+				else if ((offset < 0) && (-1*offset <= groupIndex))
 				{
 					dependencyIndex = groupIndex + offset;
 				}
