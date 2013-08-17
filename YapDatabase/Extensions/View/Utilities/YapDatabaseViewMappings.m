@@ -118,7 +118,10 @@
 		return;
 	}
 	
-	[dynamicSections addObject:group];
+	if (isDynamic)
+		[dynamicSections addObject:group];
+	else
+		[dynamicSections removeObject:group];
 }
 
 - (void)setRangeOptions:(YapDatabaseViewRangeOptions *)rangeOpts forGroup:(NSString *)group
