@@ -328,11 +328,61 @@
 - (NSSet *)cellDrawingDependencyOffsetsForGroup:(NSString *)group;
 
 /**
- * TODO
+ * You can tell mappings to reverse a group/section if you'd like to display it in your tableView/collectionView
+ * in the opposite direction in which the items actually exist within the database.
+ * 
+ * For example:
+ * 
+ * You have a database view which sorts items by sales rank. The best-selling item is at index 0.
+ * Sometimes you use the view to display the top 20 best-selling items.
+ * But other times you use the view to display the worst-selling items (perhaps to dump these items in order
+ * to make room for new inventory). You want to display the worst-selling item at index 0.
+ * And the second worst-selling item at index 1. Etc.
+ * This happens to be the opposite sorting order from how the items are in stored in the database.
+ * So you simply use the reverse option in mappings to handle the math for you.
+ *
+ * It's important to understand the relationship between reversing a group and the other mapping options
+ * (such as ranges and cell-drawing-dependencies):
+ * 
+ * Once you reverse a group (setIsReversed:YES forGroup:group) you can visualize the view as reversed in your head,
+ * and set all other mappings options as if it was actually reversed.
+ * 
+ * To be more precise:
+ * 
+ * After reversing a group, you can pass in rangeOptions as if the group were actually reversed in the database.
+ * This makes it easier to configure, as your mental model can match how you configure it.
+ * 
+ * In terms of rangeOptions, if the group is reversed, then the mappings object will simply switch the
+ * rangeOptions.pin value of any rangeOptions you pass in for the reversed group(s).
+ * 
+ * rangeOptions = [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewEnd]; // <--
+ * [mappings setRangeOptions:rangeOptions forGroup:@"books"];
+ * [mappings setIsReversed:YES forGroup:@"books"];
+ * 
+ * is EQUIVALENT to:
+ * 
+ * [mappings setIsReversed:YES forGroup:@"books"];
+ * rangeOptions = [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning]; // <--
+ * [mappings setRangeOptions:rangeOptions forGroup:@"books"];
+ * 
+ * In terms of cell-drawing-dependencies, its a similar effect.
+ * 
+ * [mappings setCellDrawingDependencyForNeighboringCellWithOffset:+1 forGroup:@"books"]; // <-- Positive one
+ * [mappings setIsReversed:YES forGroup:@"books"];
+ *
+ * is EQUIVALENT to:
+ * 
+ * [mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@"books"]; // <-- Negative one
+ * [mappings setIsReversed:YES forGroup:@"books"];
+ *
+ *
+ * ORDER MATTERS.
+ * In general, if you wish to visualize other configuration options in terms of how they're going to be displayed
+ * in your user interface, you should reverse the group BEFORE you make other configuration changes.
 **/
 
-//- (BOOL)isReversedForGroup:(NSString *)group;
-//- (void)setIsReversed:(BOOL)isReversed forGroup:(NSString *)group;
+- (BOOL)isReversedForGroup:(NSString *)group;
+- (void)setIsReversed:(BOOL)isReversed forGroup:(NSString *)group;
 
 #pragma mark Initialization & Updates
 

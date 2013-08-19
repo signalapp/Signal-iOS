@@ -1,4 +1,5 @@
 #import "YapDatabaseViewMappingsPrivate.h"
+#import "YapDatabaseViewRangeOptionsPrivate.h"
 
 #import "YapAbstractDatabaseConnection.h"
 #import "YapAbstractDatabaseTransaction.h"
@@ -35,9 +36,9 @@
 	
 	// Configuration
 	NSMutableSet *dynamicSections;
+	NSMutableSet *reverse;
 	NSMutableDictionary *rangeOptions;
 	NSMutableDictionary *dependencies;
-	NSMutableDictionary *reverse;
 	
 	// Snapshot (used for error detection)
 	uint64_t snapshotOfLastUpdate;
@@ -62,6 +63,7 @@
 		counts = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
 		
 		dynamicSections = [[NSMutableSet alloc] initWithCapacity:[allGroups count]];
+		reverse         = [[NSMutableSet alloc] initWithCapacity:[allGroups count]];
 		rangeOptions = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
 		dependencies = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
 		
@@ -80,9 +82,9 @@
 	copy->counts = [counts mutableCopy];
 	
 	copy->dynamicSections = [dynamicSections mutableCopy];
+	copy->reverse = [reverse mutableCopy];
 	copy->rangeOptions = [rangeOptions mutableCopy];
 	copy->dependencies = [dependencies mutableCopy];
-	copy->reverse = [reverse mutableCopy];
 	
 	copy->snapshotOfLastUpdate = snapshotOfLastUpdate;
 	
@@ -136,12 +138,16 @@
 		return;
 	}
 	
+	// Store private immutable copy
+	if ([reverse containsObject:group])
+		rangeOpts = [rangeOpts copyAndReverse];
+	else
+		rangeOpts = [rangeOpts copy];
+	
 	if (snapshotOfLastUpdate == UINT64_MAX)
 	{
 		// We don't have the counts yet, so we can't set rangeOpts.length yet.
 		
-		// Store private immutable copy
-		rangeOpts = [rangeOpts copy];
 		[rangeOptions setObject:rangeOpts forKey:group];
 	}
 	else
@@ -155,8 +161,14 @@
 
 - (YapDatabaseViewRangeOptions *)rangeOptionsForGroup:(NSString *)group
 {
+	YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+	
 	// Return copy. Our internal version must remain immutable.
-	return [[rangeOptions objectForKey:group] copy];
+	
+	if ([reverse containsObject:group])
+		return [rangeOpts copyAndReverse];
+	else
+		return [rangeOpts copy];
 }
 
 - (void)removeRangeOptionsForGroup:(NSString *)group
@@ -177,15 +189,24 @@
 	}
 
 	NSMutableSet *validOffsets = [NSMutableSet setWithCapacity:[offsets count]];
-
+	BOOL needsReverse = [reverse containsObject:group];
+	
 	for (id obj in offsets)
 	{
 		if ([obj isKindOfClass:[NSNumber class]])
 		{
-			if ([obj integerValue] != 0)
+			NSInteger offset = [obj integerValue];
+			if (offset != 0)
 			{
-				[validOffsets addObject:obj];
+				if (needsReverse)
+					[validOffsets addObject:@(offset * -1)];
+				else
+					[validOffsets addObject:obj];
 			}
+		}
+		else
+		{
+			YDBLogWarn(@"%@ - Non-NSNumber passed in offsets: %@", THIS_METHOD, obj);
 		}
 	}
 
@@ -194,7 +215,41 @@
 
 - (NSSet *)cellDrawingDependencyOffsetsForGroup:(NSString *)group
 {
-	return [dependencies objectForKey:group];
+	NSSet *offsets = [dependencies objectForKey:group];
+	
+	if ([reverse containsObject:group])
+	{
+		NSMutableSet *reverseOffsets = [NSMutableSet setWithCapacity:[offsets count]];
+		for (NSNumber *obj in offsets)
+		{
+			NSUInteger offset = [obj integerValue];
+			[reverseOffsets addObject:@(offset * -1)];
+		}
+		
+		return [reverseOffsets copy];
+	}
+	else
+	{
+		return offsets;
+	}
+}
+
+- (BOOL)isReversedForGroup:(NSString *)group
+{
+	return [reverse containsObject:group];
+}
+
+- (void)setIsReversed:(BOOL)isReversed forGroup:(NSString *)group
+{
+	if (![allGroups containsObject:group]) {
+		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
+		return;
+	}
+	
+	if (isReversed)
+		[reverse addObject:group];
+	else
+		[reverse removeObject:group];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -348,6 +403,11 @@
 - (NSDictionary *)dependencies
 {
 	return [dependencies copy];
+}
+
+- (NSSet *)reverse
+{
+	return [reverse copy];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

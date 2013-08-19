@@ -4386,6 +4386,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
+#pragma mark Dependencies
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)test_dependencies_1
@@ -4743,6 +4744,81 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	STAssertTrue(RowOp(rowChanges, 3).finalSection == 0, @"");
 	STAssertTrue(RowOp(rowChanges, 3).finalIndex == 15, @"");
 	STAssertTrue(RowOp(rowChanges, 3).changes == flags, @"");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+#pragma mark Reverse
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test_reverse_1
+{
+	YapDatabaseViewMappings *mappings, *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setIsReversed:YES forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(6) }];
+	originalMappings = [mappings copy];
+	
+	// Delete an item.
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key5" inGroup:@"" atIndex:5]];
+	
+	[mappings updateWithCounts:@{ @"":@(5) }];
+	
+	// Fetch changeset
+	
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:NULL
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([rowChanges count] == 1, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalIndex == 0, @"");
+}
+
+- (void)test_reverse_2
+{
+	YapDatabaseViewMappings *mappings, *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setIsReversed:YES forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(5) }];
+	originalMappings = [mappings copy];
+	
+	// Delete an item.
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key5" inGroup:@"" atIndex:0]];
+	
+	[mappings updateWithCounts:@{ @"":@(4) }];
+	
+	// Fetch changeset
+	
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:NULL
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([rowChanges count] == 1, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalIndex == 4, @"");
 }
 
 @end

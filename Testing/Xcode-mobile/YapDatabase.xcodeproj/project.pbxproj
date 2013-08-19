@@ -207,6 +207,7 @@
 		DCAE52111673FE2600395076 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		DCAE52191673FE2600395076 /* YapDatabaseTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "YapDatabaseTests-Info.plist"; path = "YapDatabaseTests/YapDatabaseTests-Info.plist"; sourceTree = SOURCE_ROOT; };
 		DCAE521B1673FE2600395076 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DCC41F6F17BF020D00B3CAA0 /* YapDatabaseViewRangeOptionsPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = YapDatabaseViewRangeOptionsPrivate.h; path = Internal/YapDatabaseViewRangeOptionsPrivate.h; sourceTree = "<group>"; };
 		DCD5A5761799EB1900B69E75 /* YapDatabaseViewMappings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YapDatabaseViewMappings.h; path = Utilities/YapDatabaseViewMappings.h; sourceTree = "<group>"; };
 		DCD5A5771799EB1900B69E75 /* YapDatabaseViewMappings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YapDatabaseViewMappings.m; path = Utilities/YapDatabaseViewMappings.m; sourceTree = "<group>"; };
 		DCD5A57A1799EB4100B69E75 /* YapDatabaseViewChange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YapDatabaseViewChange.h; path = Utilities/YapDatabaseViewChange.h; sourceTree = "<group>"; };
@@ -252,6 +253,7 @@
 			children = (
 				DC0DA073177E17860025AC51 /* YapDatabaseViewChangePrivate.h */,
 				DCD5A57D179D059D00B69E75 /* YapDatabaseViewMappingsPrivate.h */,
+				DCC41F6F17BF020D00B3CAA0 /* YapDatabaseViewRangeOptionsPrivate.h */,
 				DC0DA074177E17860025AC51 /* YapDatabaseViewPageMetadata.h */,
 				DC0DA075177E17860025AC51 /* YapDatabaseViewPageMetadata.m */,
 			);

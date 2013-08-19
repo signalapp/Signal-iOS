@@ -50,4 +50,9 @@
 **/
 - (NSDictionary *)dependencies;
 
+/**
+ * Returns a copy of the reverse set, which contains groups that are to be reversed.
+**/
+- (NSSet *)reverse;
+
 @end

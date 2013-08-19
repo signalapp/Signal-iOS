@@ -127,4 +127,15 @@
 	return copy;
 }
 
+- (id)copyAndReverse
+{
+	YapDatabaseViewRangeOptions *copy = [self copy];
+	if (copy->pin == YapDatabaseViewBeginning)
+		copy->pin = YapDatabaseViewEnd;
+	else
+		copy->pin = YapDatabaseViewBeginning;
+	
+	return copy;
+}
+
 @end

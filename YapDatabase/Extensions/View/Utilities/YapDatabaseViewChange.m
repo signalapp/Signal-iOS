@@ -1832,10 +1832,15 @@
 
 	//
 	// STEP 5 : Set the originalSection & finalSection
+	// STEP 6 : Reverse indexes for reversed groups
 	//
 
+	NSSet *reverse = [originalMappings reverse];
+	
 	for (YapDatabaseViewRowChange *rowChange in rowChanges)
 	{
+		// Set the originalSection & finalSection
+		
 		if (rowChange->type == YapDatabaseViewChangeDelete)
 		{
 			rowChange->originalSection = [originalMappings sectionForGroup:rowChange->originalGroup];
@@ -1861,6 +1866,33 @@
 		{
 			rowChange->originalSection = [originalMappings sectionForGroup:rowChange->originalGroup];
 			rowChange->finalSection    = [finalMappings sectionForGroup:rowChange->finalGroup];
+		}
+		
+		// Reverse indexes for reversed groups.
+		//
+		// For example, if the group contains 4 items, the indexes get reversed like so:
+		// 0 -> 3
+		// 1 -> 2
+		// 2 -> 1
+		// 3 -> 0
+		//
+		// Basically, we find the midpoint, and then move each index to the other side of the midpoint,
+		// but we keep its distance from the midpoint the same.
+			
+		if ([reverse containsObject:rowChange->originalGroup])
+		{
+			NSUInteger count = [originalMappings visibleCountForGroup:rowChange->originalGroup];
+			double mid = (count - 1) / 2.0;
+			
+			rowChange->originalIndex = (NSUInteger)(mid - (rowChange->originalIndex - mid));
+		}
+		
+		if ([reverse containsObject:rowChange->finalGroup])
+		{
+			NSUInteger count = [finalMappings visibleCountForGroup:rowChange->finalGroup];
+			double mid = (count - 1) / 2.0;
+			
+			rowChange->finalIndex = (NSUInteger)(mid - (rowChange->finalIndex - mid));
 		}
 	}
 }
