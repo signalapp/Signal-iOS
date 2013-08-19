@@ -21,9 +21,18 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
+static NSString *const key_dirtyKeys                = @"dirtyKeys";
+static NSString *const key_dirtyPages               = @"dirtyPages";
+static NSString *const key_reset                    = @"reset";
+static NSString *const key_group_pagesMetadata_dict = @"group_pagesMetadata_dict";
+static NSString *const key_pageKey_group_dict       = @"pageKey_group_dict";
+static NSString *const key_changes                  = @"changes";
 
 @implementation YapDatabaseViewConnection
 {
+	id sharedKeySetForInternalChangeset;
+	id sharedKeySetForExternalChangeset;
+	
 	sqlite3_stmt *keyTable_getPageKeyForKeyStatement;
 	sqlite3_stmt *keyTable_setPageKeyForKeyStatement;
 	sqlite3_stmt *keyTable_removeForKeyStatement;
@@ -47,6 +56,9 @@
 		
 		keyCache = [[YapCache alloc] initWithKeyClass:[NSString class]];
 		pageCache = [[YapCache alloc] initWithKeyClass:[NSString class]];
+		
+		sharedKeySetForInternalChangeset = [NSDictionary sharedKeySetForKeys:[self internalChangesetKeys]];
+		sharedKeySetForExternalChangeset = [NSDictionary sharedKeySetForKeys:[self externalChangesetKeys]];
 	}
 	return self;
 }
@@ -242,6 +254,20 @@
 	reset = NO;
 }
 
+- (NSArray *)internalChangesetKeys
+{
+	return @[ key_dirtyKeys,
+	          key_dirtyPages,
+	          key_reset,
+	          key_group_pagesMetadata_dict,
+	          key_pageKey_group_dict ];
+}
+
+- (NSArray *)externalChangesetKeys
+{
+	return @[ key_changes ];
+}
+
 - (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
            externalChangeset:(NSMutableDictionary **)externalChangesetPtr
 {
@@ -252,20 +278,20 @@
 	
 	if ([dirtyKeys count] || [dirtyPages count] || [dirtyMetadata count] || reset)
 	{
-		internalChangeset = [NSMutableDictionary dictionaryWithCapacity:5];
+		internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
 		
 		if ([dirtyKeys count] > 0)
 		{
-			[internalChangeset setObject:dirtyKeys forKey:@"dirtyKeys"];
+			[internalChangeset setObject:dirtyKeys forKey:key_dirtyKeys];
 		}
 		if ([dirtyPages count] > 0)
 		{
-			[internalChangeset setObject:dirtyPages forKey:@"dirtyPages"];
+			[internalChangeset setObject:dirtyPages forKey:key_dirtyPages];
 		}
 		
 		if (reset)
 		{
-			[internalChangeset setObject:@(reset) forKey:@"reset"];
+			[internalChangeset setObject:@(reset) forKey:key_reset];
 		}
 		
 		NSMutableDictionary *group_pagesMetadata_dict_copy;
@@ -274,15 +300,15 @@
 		group_pagesMetadata_dict_copy = [self group_pagesMetadata_dict_deepCopy:group_pagesMetadata_dict];
 		pageKey_group_dict_copy = [pageKey_group_dict mutableCopy];
 		
-		[internalChangeset setObject:group_pagesMetadata_dict_copy forKey:@"group_pagesMetadata_dict"];
-		[internalChangeset setObject:pageKey_group_dict_copy       forKey:@"pageKey_group_dict"];
+		[internalChangeset setObject:group_pagesMetadata_dict_copy forKey:key_group_pagesMetadata_dict];
+		[internalChangeset setObject:pageKey_group_dict_copy       forKey:key_pageKey_group_dict];
 	}
 	
 	if ([changes count])
 	{
-		externalChangeset = [NSMutableDictionary dictionaryWithCapacity:1];
+		externalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
   
-  		[externalChangeset setObject:[changes copy] forKey:@"changes"];
+  		[externalChangeset setObject:[changes copy] forKey:key_changes];
 	}
 	
 	*internalChangesetPtr = internalChangeset;
@@ -293,13 +319,13 @@
 {
 	YDBLogAutoTrace();
 	
-	NSMutableDictionary *changeset_group_pagesMetadata_dict = [changeset objectForKey:@"group_pagesMetadata_dict"];
-	NSMutableDictionary *changeset_pageKey_group_dict = [changeset objectForKey:@"pageKey_group_dict"];
+	NSMutableDictionary *changeset_group_pagesMetadata_dict = [changeset objectForKey:key_group_pagesMetadata_dict];
+	NSMutableDictionary *changeset_pageKey_group_dict       = [changeset objectForKey:key_pageKey_group_dict];
 	
-	NSDictionary *changeset_dirtyKeys = [changeset objectForKey:@"dirtyKeys"];
-	NSDictionary *changeset_dirtyPages = [changeset objectForKey:@"dirtyPages"];
+	NSDictionary *changeset_dirtyKeys = [changeset objectForKey:key_dirtyKeys];
+	NSDictionary *changeset_dirtyPages = [changeset objectForKey:key_dirtyPages];
 	
-	BOOL changeset_reset = [[changeset objectForKey:@"reset"] boolValue];
+	BOOL changeset_reset = [[changeset objectForKey:key_reset] boolValue];
 	
 	// Process new top level objects
 	
@@ -438,7 +464,7 @@
 		NSDictionary *changeset =
 		    [[notification.userInfo objectForKey:YapDatabaseExtensionsKey] objectForKey:registeredName];
 		
-		NSArray *changeset_changes = [changeset objectForKey:@"changes"];
+		NSArray *changeset_changes = [changeset objectForKey:key_changes];
 		
 		[all_changes addObjectsFromArray:changeset_changes];
 	}
@@ -550,7 +576,7 @@
 		NSDictionary *changeset =
 		    [[notification.userInfo objectForKey:YapDatabaseExtensionsKey] objectForKey:registeredName];
 		
-		NSArray *changeset_changes = [changeset objectForKey:@"changes"];
+		NSArray *changeset_changes = [changeset objectForKey:key_changes];
 		
 		if ([changeset_changes count] > 0)
 		{
