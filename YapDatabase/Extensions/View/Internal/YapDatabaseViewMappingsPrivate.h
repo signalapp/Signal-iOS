@@ -33,6 +33,17 @@
 - (NSDictionary *)rangeOptions;
 
 /**
+ * This method is used by YapDatabaseViewChange.
+ * 
+ * After processing changeset(s), the length and/or offset may change.
+ * The new length and/or offsets are properly calculated,
+ * and then this method is used to avoid duplicating the calculations.
+**/
+- (void)updateRangeOptionsForGroup:(NSString *)group
+                     withNewLength:(NSUInteger)newLength
+                         newOffset:(NSUInteger)newOffset;
+
+/**
  * Returns a copy of the dependencies dictionary, where:
  * key = group
  * value = NSSet of cellDrawingDependency offsets

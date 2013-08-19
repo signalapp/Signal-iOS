@@ -148,26 +148,9 @@
 	{
 		// Normal setter logic
 		
-		[self _setRangeOptions:rangeOpts forGroup:group];
+		[self updateRangeOptions:rangeOpts forGroup:group];
 		[self updateVisibilityForGroup:group];
 	}
-}
-
-- (void)_setRangeOptions:(YapDatabaseViewRangeOptions *)rangeOpts forGroup:(NSString *)group
-{
-	// Set a valid rangeOpts.length using the known group count
-	
-	NSUInteger count = [[counts objectForKey:group] unsignedIntegerValue];
-	
-	NSUInteger desiredLength = rangeOpts.length;
-	NSUInteger offset = rangeOpts.offset;
-	
-	NSUInteger maxLength = (offset >= count) ? 0 : count - offset;
-	NSUInteger length = MIN(desiredLength, maxLength);
-	
-	// Store private immutable copy
-	rangeOpts = [rangeOpts copyWithNewLength:length];
-	[rangeOptions setObject:rangeOpts forKey:group];
 }
 
 - (YapDatabaseViewRangeOptions *)rangeOptionsForGroup:(NSString *)group
@@ -267,8 +250,40 @@
 		YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
 		
 		// Go through the internal setter again so all the logic is in the same place.
-		[self _setRangeOptions:rangeOpts forGroup:group];
+		[self updateRangeOptions:rangeOpts forGroup:group];
 	}
+}
+
+- (void)updateRangeOptions:(YapDatabaseViewRangeOptions *)rangeOpts forGroup:(NSString *)group
+{
+	// Set a valid rangeOpts.length using the known group count
+	
+	NSUInteger count = [[counts objectForKey:group] unsignedIntegerValue];
+	
+	NSUInteger desiredLength = rangeOpts.length;
+	NSUInteger offset = rangeOpts.offset;
+	
+	NSUInteger maxLength = (offset >= count) ? 0 : count - offset;
+	NSUInteger length = MIN(desiredLength, maxLength);
+	
+	// Store private immutable copy
+	rangeOpts = [rangeOpts copyWithNewLength:length];
+	[rangeOptions setObject:rangeOpts forKey:group];
+}
+
+/**
+ * This method is used by YapDatabaseViewChange.
+ *
+ * After processing changeset(s), the length and/or offset may change.
+ * The new length and/or offsets are properly calculated,
+ * and then this method is used to avoid duplicating the calculations.
+**/
+- (void)updateRangeOptionsForGroup:(NSString *)group withNewLength:(NSUInteger)newLength newOffset:(NSUInteger)newOffset
+{
+	YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+	rangeOpts = [rangeOpts copyWithNewLength:newLength newOffset:newOffset];
+	
+	[rangeOptions setObject:rangeOpts forKey:group];
 }
 
 - (void)updateVisibility

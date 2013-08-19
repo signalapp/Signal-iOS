@@ -1824,10 +1824,7 @@
 		
 		if ((originalRangeLength != finalRangeLength) || (originalRangeOffset != finalRangeOffset))
 		{
-			YapDatabaseViewRangeOptions *newRangeOpts =
-			    [rangeOpts copyWithNewLength:finalRangeLength newOffset:finalRangeOffset];
-			
-			[finalMappings setRangeOptions:newRangeOpts forGroup:group];
+			[finalMappings updateRangeOptionsForGroup:group withNewLength:finalRangeLength newOffset:finalRangeOffset];
 		}
 		
 	} // for (NSString *group in rangeOptions)
