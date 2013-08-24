@@ -487,7 +487,7 @@
 		return NO;
 	}
 	
-	NSUInteger index = [self groupIndexForRow:row inGroup:group];
+	NSUInteger index = [self indexForRow:row inGroup:group];
 	
 	if (groupPtr) *groupPtr = group;
 	if (indexPtr) *indexPtr = index;
@@ -495,12 +495,12 @@
 	return (index != NSNotFound);
 }
 
-- (NSUInteger)groupIndexForRow:(NSUInteger)row inSection:(NSUInteger)section
+- (NSUInteger)indexForRow:(NSUInteger)row inSection:(NSUInteger)section
 {
-	return [self groupIndexForRow:row inGroup:[self groupForSection:section]];
+	return [self indexForRow:row inGroup:[self groupForSection:section]];
 }
 
-- (NSUInteger)groupIndexForRow:(NSUInteger)row inGroup:(NSString *)group
+- (NSUInteger)indexForRow:(NSUInteger)row inGroup:(NSString *)group
 {
 	if (group == nil) return NSNotFound;
 	
@@ -534,6 +534,101 @@
 	{
 		return row;
 	}
+}
+
+- (YapDatabaseViewRangePosition)rangePositionForGroup:(NSString *)group;
+{
+	if (group == nil)
+	{
+		return (YapDatabaseViewRangePosition){
+			.offsetFromBeginning = 0,
+			.offsetFromEnd = 0,
+			.length = 0
+		};
+	}
+	
+	NSUInteger groupCount = [[counts objectForKey:group] unsignedIntegerValue];
+	
+	YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+	YapDatabaseViewRangePosition rangePosition;
+	
+	if (rangeOpts)
+	{
+		NSUInteger rangeOffset = rangeOpts.offset;
+		NSUInteger rangeLength = rangeOpts.length;
+		
+		if (rangeOpts.pin == YapDatabaseViewBeginning)
+		{
+			// Offset is from beginning (index zero)
+			
+			NSUInteger reverseOffset = rangeOffset + rangeLength;
+			
+			if (reverseOffset <= groupCount)
+			{
+				// Valid range
+				
+				rangePosition = (YapDatabaseViewRangePosition){
+					.offsetFromBeginning = rangeOffset,
+					.offsetFromEnd = groupCount - reverseOffset,
+					.length = rangeLength
+				};
+			}
+			else
+			{
+				// Range fell off the backside
+				
+				rangePosition = (YapDatabaseViewRangePosition){
+					.offsetFromBeginning = rangeOffset,
+					.offsetFromEnd = 0,
+					.length = 0
+				};
+			}
+		}
+		else
+		{
+			// Offset is from end (index last)
+			
+			NSUInteger reverseOffset = rangeOffset + rangeLength;
+			
+			if (reverseOffset <= groupCount)
+			{
+				// Valid range
+				
+				rangePosition = (YapDatabaseViewRangePosition){
+					.offsetFromBeginning = groupCount - reverseOffset,
+					.offsetFromEnd = rangeOffset,
+					.length = rangeLength
+				};
+			}
+			else
+			{
+				// Range fell off the backside
+				
+				rangePosition = (YapDatabaseViewRangePosition){
+					.offsetFromBeginning = 0,
+					.offsetFromEnd = rangeOffset,
+					.length = 0,
+				};
+			}
+		}
+	}
+	else
+	{
+		rangePosition = (YapDatabaseViewRangePosition){
+			.offsetFromBeginning = 0,
+			.offsetFromEnd = 0,
+			.length = groupCount
+		};
+	}
+	
+	if ([reverse containsObject:group])
+	{
+		NSUInteger swap = rangePosition.offsetFromEnd;
+		rangePosition.offsetFromEnd = rangePosition.offsetFromBeginning;
+		rangePosition.offsetFromBeginning = swap;
+	}
+	
+	return rangePosition;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

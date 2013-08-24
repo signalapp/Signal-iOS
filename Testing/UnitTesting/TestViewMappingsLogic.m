@@ -4162,7 +4162,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	STAssertTrue([mappings numberOfItemsInGroup:@""] == 6, @"");
 	
-	STAssertTrue([mappings groupIndexForRow:0 inGroup:@""] == 1, @"");
+	STAssertTrue([mappings indexForRow:0 inGroup:@""] == 1, @"");
 	
 	// Delete enough items to drop below min length
 	
@@ -4334,7 +4334,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	STAssertTrue([mappings numberOfItemsInGroup:@""] == 6, @"");
 	
-	STAssertTrue([mappings groupIndexForRow:0 inGroup:@""] == 13, @"");
+	STAssertTrue([mappings indexForRow:0 inGroup:@""] == 13, @"");
 	
 	// Delete enough items to drop below min length
 	

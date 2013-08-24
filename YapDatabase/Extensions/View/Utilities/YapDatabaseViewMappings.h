@@ -161,6 +161,20 @@
  * @see YapDatabaseConnection getSectionChanges:rowChanges:forNotifications:withMappings:
  * @see YapCollectionsDatabaseConnection getSectionChanges:rowChanges:forNotifications:withMappings:
 **/
+
+/**
+ * The YapDatabaseViewRangePosition struct represents the range window within the full group.
+ * @see rangePositionForGroup:
+**/
+struct YapDatabaseViewRangePosition {
+	NSUInteger offsetFromBeginning;
+	NSUInteger offsetFromEnd;
+	NSUInteger length;
+	
+};
+typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
+
+
 @interface YapDatabaseViewMappings : NSObject <NSCopying>
 
 /**
@@ -374,7 +388,7 @@
  * 
  * [mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@"books"]; // <-- Negative one
  * [mappings setIsReversed:YES forGroup:@"books"];
- *
+ * 
  *
  * ORDER MATTERS.
  * In general, if you wish to visualize other configuration options in terms of how they're going to be displayed
@@ -502,8 +516,27 @@
 
 - (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forIndexPath:(NSIndexPath *)indexPath;
 
-- (NSUInteger)groupIndexForRow:(NSUInteger)row inSection:(NSUInteger)section;
+- (NSUInteger)indexForRow:(NSUInteger)row inSection:(NSUInteger)section;
 
-- (NSUInteger)groupIndexForRow:(NSUInteger)row inGroup:(NSString *)group;
+- (NSUInteger)indexForRow:(NSUInteger)row inGroup:(NSString *)group;
+
+/**
+ * The YapDatabaseViewRangePosition struct represents the range window within the full group.
+ * For example:
+ *
+ * You have a section in your tableView which represents a group that contains 100 items.
+ * However, you've setup rangeOptions to only display the first 20 items:
+ * 
+ * YapDatabaseViewRangeOptions *rangeOptions =
+ *     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
+ * [mappings setRangeOptions:rangeOptions forGroup:@"sales"];
+ *
+ * The corresponding rangePosition would be: (YapDatabaseViewRangePosition){
+ *     .offsetFromBeginning = 0,
+ *     .offsetFromEnd = 80,
+ *     .length = 20
+ * }
+**/
+- (YapDatabaseViewRangePosition)rangePositionForGroup:(NSString *)group;
 
 @end
