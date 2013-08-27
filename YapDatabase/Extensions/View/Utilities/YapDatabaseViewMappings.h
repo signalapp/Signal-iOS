@@ -57,7 +57,7 @@
  *     // There are several ways in which we can further configure the mappings.
  *     // You would configure it however you want.
  *     
- *     mappings.allowsEmptySections = YES;
+ *     // ...
  *     
  *     // Now initialize the mappings.
  *     // This will allow the mappings object to get the counts per group.
@@ -393,6 +393,7 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
  * ORDER MATTERS.
  * In general, if you wish to visualize other configuration options in terms of how they're going to be displayed
  * in your user interface, you should reverse the group BEFORE you make other configuration changes.
+ * It's just a matter of how you visualize it. Either order is fine, but one likely makes more sense in your head.
 **/
 
 - (BOOL)isReversedForGroup:(NSString *)group;
