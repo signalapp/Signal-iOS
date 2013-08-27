@@ -41,17 +41,30 @@ NSString *const YapDatabaseAllKeysRemovedKey  = @"allKeysRemoved";
 **/
 - (BOOL)createTables
 {
+	int status;
+	
 	char *createDatabaseTableStatement =
 	    "CREATE TABLE IF NOT EXISTS \"database\""
-	    " (\"key\" CHAR PRIMARY KEY NOT NULL, "
-	    "  \"data\" BLOB, "
+	    " (\"rowid\" INTEGER PRIMARY KEY,"
+	    "  \"key\" CHAR NOT NULL,"
+	    "  \"data\" BLOB,"
 	    "  \"metadata\" BLOB"
 	    " );";
 	
-	int status = sqlite3_exec(db, createDatabaseTableStatement, NULL, NULL, NULL);
+	status = sqlite3_exec(db, createDatabaseTableStatement, NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
 		YDBLogError(@"Failed creating 'database' table: %d %s", status, sqlite3_errmsg(db));
+		return NO;
+	}
+	
+	char *createIndexStatement =
+	    "CREATE UNIQUE INDEX IF NOT EXISTS \"true_primary_key\" ON \"database\" ( \"key\" );";
+	
+	status = sqlite3_exec(db, createIndexStatement, NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		NSLog(@"Failed creating index on 'database' table: %d %s", status, sqlite3_errmsg(db));
 		return NO;
 	}
 	

@@ -88,8 +88,10 @@
  * that shouldn't go through configured serializer/deserializer.
  *
  * @see objectForKey
- **/
+ * @see metadataForKey
+**/
 - (NSData *)primitiveDataForKey:(NSString *)key;
+- (NSData *)primitiveMetadataForKey:(NSString *)key;
 
 #pragma mark Object
 
@@ -277,7 +279,7 @@
  * @see setObject:forKey:
 **/
 - (void)setPrimitiveData:(NSData *)data forKey:(NSString *)key;
-- (void)setPrimitiveData:(NSData *)data forKey:(NSString *)key withMetadata:(id)metadata;
+- (void)setPrimitiveData:(NSData *)data forKey:(NSString *)key withPrimitiveMetadata:(NSData *)pMetadata;
 
 #pragma mark Object
 

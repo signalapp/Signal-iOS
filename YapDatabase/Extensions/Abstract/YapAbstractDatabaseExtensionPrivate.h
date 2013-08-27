@@ -216,10 +216,11 @@
 @protocol YapAbstractDatabaseExtensionTransaction_KeyValue
 @required
 
-- (void)handleSetObject:(id)object forKey:(NSString *)key withMetadata:(id)metadata;
-- (void)handleSetMetadata:(id)metadata forKey:(NSString *)key;
-- (void)handleRemoveObjectForKey:(NSString *)key;
-- (void)handleRemoveObjectsForKeys:(NSArray *)keys;
+- (void)handleInsertObject:(id)object forKey:(NSString *)key withMetadata:(id)metadata rowid:(int64_t)rowid;
+- (void)handleUpdateObject:(id)object forKey:(NSString *)key withMetadata:(id)metadata rowid:(int64_t)rowid;
+- (void)handleUpdateMetadata:(id)metadata forKey:(NSString *)key withRowid:(int64_t)rowid;
+- (void)handleRemoveObjectForKey:(NSString *)key withRowid:(int64_t)rowid;
+- (void)handleRemoveObjectsForKeys:(NSArray *)keys withRowids:(NSArray *)rowids;
 - (void)handleRemoveAllObjects;
 
 @end

@@ -49,6 +49,12 @@
 @private
 	sqlite3_stmt *getCountStatement;
 	sqlite3_stmt *getCountForKeyStatement;
+    sqlite3_stmt *getCountForRowidStatement;
+    sqlite3_stmt *getRowidForKeyStatement;
+    sqlite3_stmt *getKeyForRowidStatement;
+    sqlite3_stmt *getDataForRowidStatement;
+    sqlite3_stmt *getMetadataForRowidStatement;
+    sqlite3_stmt *getAllForRowidStatement;
 	sqlite3_stmt *getDataForKeyStatement;
 	sqlite3_stmt *getMetadataForKeyStatement;
 	sqlite3_stmt *getAllForKeyStatement;
@@ -94,12 +100,19 @@
 {
 	sqlite_finalize_null(&getCountStatement);
 	sqlite_finalize_null(&getCountForKeyStatement);
+	sqlite_finalize_null(&getCountForRowidStatement);
+	sqlite_finalize_null(&getRowidForKeyStatement);
+	sqlite_finalize_null(&getKeyForRowidStatement);
+	sqlite_finalize_null(&getDataForRowidStatement);
+	sqlite_finalize_null(&getMetadataForRowidStatement);
+	sqlite_finalize_null(&getAllForRowidStatement);
 	sqlite_finalize_null(&getDataForKeyStatement);
 	sqlite_finalize_null(&getMetadataForKeyStatement);
 	sqlite_finalize_null(&getAllForKeyStatement);
-	sqlite_finalize_null(&setMetadataForKeyStatement);
-	sqlite_finalize_null(&setAllForKeyStatement);
-	sqlite_finalize_null(&removeForKeyStatement);
+	sqlite_finalize_null(&insertForRowidStatement);
+	sqlite_finalize_null(&updateAllForRowidStatement);
+	sqlite_finalize_null(&updateMetadataForRowidStatement);
+	sqlite_finalize_null(&removeForRowidStatement);
 	sqlite_finalize_null(&removeAllStatement);
 	sqlite_finalize_null(&enumerateKeysStatement);
 	sqlite_finalize_null(&enumerateKeysAndMetadataStatement);
@@ -118,10 +131,14 @@
 	{
 		sqlite_finalize_null(&getCountStatement);
 		sqlite_finalize_null(&getCountForKeyStatement);
+		sqlite_finalize_null(&getCountForRowidStatement);
+		sqlite_finalize_null(&getDataForRowidStatement);
+		sqlite_finalize_null(&getMetadataForRowidStatement);
+		sqlite_finalize_null(&getAllForRowidStatement);
 		sqlite_finalize_null(&getMetadataForKeyStatement);
 		sqlite_finalize_null(&getAllForKeyStatement);
-		sqlite_finalize_null(&setMetadataForKeyStatement);
-		sqlite_finalize_null(&removeForKeyStatement);
+		sqlite_finalize_null(&updateMetadataForRowidStatement);
+		sqlite_finalize_null(&removeForRowidStatement);
 		sqlite_finalize_null(&removeAllStatement);
 		sqlite_finalize_null(&enumerateKeysStatement);
 		sqlite_finalize_null(&enumerateKeysAndMetadataStatement);
@@ -131,8 +148,11 @@
 	
 	if (level >= YapDatabaseConnectionFlushMemoryLevelFull)
 	{
+		sqlite_finalize_null(&getRowidForKeyStatement);
+		sqlite_finalize_null(&getKeyForRowidStatement);
 		sqlite_finalize_null(&getDataForKeyStatement);
-		sqlite_finalize_null(&setAllForKeyStatement);
+		sqlite_finalize_null(&insertForRowidStatement);
+		sqlite_finalize_null(&updateAllForRowidStatement);
 	}
 }
 
@@ -179,6 +199,102 @@
 	}
 	
 	return getCountForKeyStatement;
+}
+
+- (sqlite3_stmt *)getCountForRowidStatement
+{
+	if (getCountForRowidStatement == NULL)
+	{
+		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database\" WHERE \"rowid\" = ?;";
+		
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getCountForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getCountForRowidStatement;
+}
+
+- (sqlite3_stmt *)getRowidForKeyStatement
+{
+	if (getRowidForKeyStatement == NULL)
+	{
+		char *stmt = "SELECT \"rowid\" FROM \"database\" WHERE \"key\" = ?;";
+		
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getRowidForKeyStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getRowidForKeyStatement;
+}
+
+- (sqlite3_stmt *)getKeyForRowidStatement
+{
+	if (getKeyForRowidStatement == NULL)
+	{
+		char *stmt = "SELECT \"key\" FROM \"database\" WHERE \"rowid\" = ?;";
+		
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getKeyForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getKeyForRowidStatement;
+}
+
+- (sqlite3_stmt *)getDataForRowidStatement
+{
+	if (getDataForRowidStatement == NULL)
+	{
+		char *stmt = "SELECT \"key\", \"data\" FROM \"database\" WHERE \"rowid\" = ?;";
+		
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getDataForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getDataForRowidStatement;
+}
+
+- (sqlite3_stmt *)getMetadataForRowidStatement
+{
+	if (getMetadataForRowidStatement == NULL)
+	{
+		char *stmt = "SELECT \"key\", \"metadata\" FROM \"database\" WHERE \"rowid\" = ?;";
+		
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getMetadataForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getMetadataForRowidStatement;
+}
+
+- (sqlite3_stmt *)getAllForRowidStatement
+{
+	if (getAllForRowidStatement == NULL)
+	{
+		char *stmt = "SELECT \"key\", \"data\", \"metadata\" FROM \"database\" WHERE \"rowid\" = ?;";
+		
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getAllForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getAllForRowidStatement;
 }
 
 - (sqlite3_stmt *)getDataForKeyStatement
@@ -229,52 +345,68 @@
 	return getAllForKeyStatement;
 }
 
-- (sqlite3_stmt *)setMetadataForKeyStatement
+- (sqlite3_stmt *)insertForRowidStatement
 {
-	if (setMetadataForKeyStatement == NULL)
+	if (insertForRowidStatement == NULL)
 	{
-		char *stmt = "UPDATE \"database\" SET \"metadata\" = ? WHERE \"key\" = ?;";
+		char *stmt = "INSERT INTO \"database\" (\"key\", \"data\", \"metadata\") VALUES (?, ?, ?);";
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &setMetadataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &insertForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return setMetadataForKeyStatement;
+	return insertForRowidStatement;
 }
 
-- (sqlite3_stmt *)setAllForKeyStatement
+- (sqlite3_stmt *)updateAllForRowidStatement
 {
-	if (setAllForKeyStatement == NULL)
+	if (updateAllForRowidStatement == NULL)
 	{
-		char *stmt = "INSERT OR REPLACE INTO \"database\" (\"key\", \"data\", \"metadata\") VALUES (?, ?, ?);";
+		char *stmt = "UPDATE \"database\" SET \"data\" = ?, \"metadata\" = ? WHERE \"rowid\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &setAllForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &updateAllForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return setAllForKeyStatement;
+	return updateAllForRowidStatement;
 }
 
-- (sqlite3_stmt *)removeForKeyStatement
+- (sqlite3_stmt *)updateMetadataForRowidStatement
 {
-	if (removeForKeyStatement == NULL)
+	if (updateMetadataForRowidStatement == NULL)
 	{
-		char *stmt = "DELETE FROM \"database\" WHERE \"key\" = ?;";
+		char *stmt = "UPDATE \"database\" SET \"metadata\" = ? WHERE \"rowid\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &updateMetadataForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return removeForKeyStatement;
+	return updateMetadataForRowidStatement;
+}
+
+- (sqlite3_stmt *)removeForRowidStatement
+{
+	if (removeForRowidStatement == NULL)
+	{
+		char *stmt = "DELETE FROM \"database\" WHERE \"rowid\" = ?;";
+		
+		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return removeForRowidStatement;
 }
 
 - (sqlite3_stmt *)removeAllStatement

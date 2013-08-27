@@ -13,12 +13,19 @@
 @private
 	sqlite3_stmt *getCountStatement;
 	sqlite3_stmt *getCountForKeyStatement;
+	sqlite3_stmt *getCountForRowidStatement;
+	sqlite3_stmt *getRowidForKeyStatement;
+	sqlite3_stmt *getKeyForRowidStatement;
+	sqlite3_stmt *getDataForRowidStatement;
+	sqlite3_stmt *getMetadataForRowidStatement;
+	sqlite3_stmt *getAllForRowidStatement;
 	sqlite3_stmt *getDataForKeyStatement;
 	sqlite3_stmt *getMetadataForKeyStatement;
 	sqlite3_stmt *getAllForKeyStatement;
-	sqlite3_stmt *setMetadataForKeyStatement;
-	sqlite3_stmt *setAllForKeyStatement;
-	sqlite3_stmt *removeForKeyStatement;
+	sqlite3_stmt *insertForRowidStatement;
+	sqlite3_stmt *updateAllForRowidStatement;
+	sqlite3_stmt *updateMetadataForRowidStatement;
+	sqlite3_stmt *removeForRowidStatement;
 	sqlite3_stmt *removeAllStatement;
 	sqlite3_stmt *enumerateKeysStatement;
 	sqlite3_stmt *enumerateKeysAndMetadataStatement;
@@ -55,12 +62,19 @@
 
 - (sqlite3_stmt *)getCountStatement;
 - (sqlite3_stmt *)getCountForKeyStatement;
+- (sqlite3_stmt *)getCountForRowidStatement;
+- (sqlite3_stmt *)getRowidForKeyStatement;
+- (sqlite3_stmt *)getKeyForRowidStatement;
+- (sqlite3_stmt *)getDataForRowidStatement;
+- (sqlite3_stmt *)getMetadataForRowidStatement;
+- (sqlite3_stmt *)getAllForRowidStatement;
 - (sqlite3_stmt *)getDataForKeyStatement;
 - (sqlite3_stmt *)getMetadataForKeyStatement;
 - (sqlite3_stmt *)getAllForKeyStatement;
-- (sqlite3_stmt *)setMetadataForKeyStatement;
-- (sqlite3_stmt *)setAllForKeyStatement;
-- (sqlite3_stmt *)removeForKeyStatement;
+- (sqlite3_stmt *)insertForRowidStatement;
+- (sqlite3_stmt *)updateAllForRowidStatement;
+- (sqlite3_stmt *)updateMetadataForRowidStatement;
+- (sqlite3_stmt *)removeForRowidStatement;
 - (sqlite3_stmt *)removeAllStatement;
 - (sqlite3_stmt *)enumerateKeysStatement;
 - (sqlite3_stmt *)enumerateKeysAndMetadataStatement;
@@ -77,6 +91,15 @@
 @public
 	__unsafe_unretained YapDatabaseConnection *connection;
 }
+
+- (BOOL)getRowid:(int64_t *)rowidPtr forKey:(NSString *)key;
+
+- (BOOL)getKey:(NSString **)keyPtr forRowid:(int64_t)rowid;
+- (BOOL)getKey:(NSString **)keyPtr object:(id *)objectPtr forRowid:(int64_t)rowid;
+- (BOOL)getKey:(NSString **)keyPtr metadata:(id *)metadataPtr forRowid:(int64_t)rowid;
+- (BOOL)getKey:(NSString **)keyPtr object:(id *)objectPtr metadata:(id *)metadataPtr forRowid:(int64_t)rowid;
+
+- (BOOL)hasRowForRowid:(int64_t)rowid;
 
 @end
 
