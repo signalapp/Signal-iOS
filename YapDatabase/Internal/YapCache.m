@@ -1,7 +1,6 @@
 #import "YapCache.h"
 #import "YapDatabaseLogging.h"
 
-#import <libkern/OSAtomic.h>
 
 /**
  * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
