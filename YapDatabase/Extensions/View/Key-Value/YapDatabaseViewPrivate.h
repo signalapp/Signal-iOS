@@ -24,7 +24,7 @@
 	int version;
 }
 
-- (NSString *)keyTableName;
+- (NSString *)mapTableName;
 - (NSString *)pageTableName;
 
 @end
@@ -42,10 +42,10 @@
 	NSMutableDictionary *group_pagesMetadata_dict; // group -> @[ YapDatabaseViewPageMetadata, ... ]
 	NSMutableDictionary *pageKey_group_dict;       // pageKey -> group
 	
-	YapCache *keyCache;
+	YapCache *mapCache;
 	YapCache *pageCache;
 	
-	NSMutableDictionary *dirtyKeys;
+	NSMutableDictionary *dirtyMaps;
 	NSMutableDictionary *dirtyPages;
 	NSMutableDictionary *dirtyMetadata;
 	BOOL reset;
@@ -61,10 +61,10 @@
 
 - (void)postCommitCleanup;
 
-- (sqlite3_stmt *)keyTable_getPageKeyForKeyStatement;
-- (sqlite3_stmt *)keyTable_setPageKeyForKeyStatement;
-- (sqlite3_stmt *)keyTable_removeForKeyStatement;
-- (sqlite3_stmt *)keyTable_removeAllStatement;
+- (sqlite3_stmt *)mapTable_getPageKeyForRowidStatement;
+- (sqlite3_stmt *)mapTable_setPageKeyForRowidStatement;
+- (sqlite3_stmt *)mapTable_removeForRowidStatement;
+- (sqlite3_stmt *)mapTable_removeAllStatement;
 
 - (sqlite3_stmt *)pageTable_getDataForPageKeyStatement;
 - (sqlite3_stmt *)pageTable_setAllForPageKeyStatement;

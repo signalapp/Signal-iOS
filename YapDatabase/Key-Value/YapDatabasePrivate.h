@@ -101,5 +101,19 @@
 
 - (BOOL)hasRowForRowid:(int64_t)rowid;
 
+- (void)_enumerateKeysUsingBlock:(void (^)(int64_t rowid, NSString *key, BOOL *stop))block;
+
+- (void)_enumerateKeysAndMetadataUsingBlock:(void (^)(int64_t rowid, NSString *key, id metadata, BOOL *stop))block;
+- (void)_enumerateKeysAndMetadataUsingBlock:(void (^)(int64_t rowid, NSString *key, id metadata, BOOL *stop))block
+                                 withFilter:(BOOL (^)(int64_t rowid, NSString *key))filter;
+
+- (void)_enumerateKeysAndObjectsUsingBlock:(void (^)(int64_t rowid, NSString *key, id object, BOOL *stop))block;
+- (void)_enumerateKeysAndObjectsUsingBlock:(void (^)(int64_t rowid, NSString *key, id object, BOOL *stop))block
+                                withFilter:(BOOL (^)(int64_t rowid, NSString *key))filter;
+
+- (void)_enumerateRowsUsingBlock:(void (^)(int64_t rowid, NSString *key, id object, id metadata, BOOL *stop))block;
+- (void)_enumerateRowsUsingBlock:(void (^)(int64_t rowid, NSString *key, id object, id metadata, BOOL *stop))block
+                      withFilter:(BOOL (^)(int64_t rowid, NSString *key))filter;
+
 @end
 

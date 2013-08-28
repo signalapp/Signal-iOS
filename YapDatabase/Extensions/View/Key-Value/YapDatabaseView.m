@@ -29,19 +29,19 @@
 {
 	sqlite3 *db = transaction->abstractConnection->db;
 	
-	NSString *keyTableName = [self keyTableNameForRegisteredName:registeredName];
+	NSString *mapTableName = [self mapTableNameForRegisteredName:registeredName];
 	NSString *pageTableName = [self pageTableNameForRegisteredName:registeredName];
 	
-	NSString *dropKeyTable = [NSString stringWithFormat:@"DROP TABLE IF EXISTS \"%@\";", keyTableName];
+	NSString *dropMapTable = [NSString stringWithFormat:@"DROP TABLE IF EXISTS \"%@\";", mapTableName];
 	NSString *dropPageTable = [NSString stringWithFormat:@"DROP TABLE IF EXISTS \"%@\";", pageTableName];
 	
 	int status;
 	
-	status = sqlite3_exec(db, [dropKeyTable UTF8String], NULL, NULL, NULL);
+	status = sqlite3_exec(db, [dropMapTable UTF8String], NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"%@ - Failed dropping key table (%@): %d %s",
-		            THIS_METHOD, keyTableName, status, sqlite3_errmsg(db));
+		YDBLogError(@"%@ - Failed dropping map table (%@): %d %s",
+		            THIS_METHOD, mapTableName, status, sqlite3_errmsg(db));
 	}
 	
 	status = sqlite3_exec(db, [dropPageTable UTF8String], NULL, NULL, NULL);
@@ -52,9 +52,9 @@
 	}
 }
 
-+ (NSString *)keyTableNameForRegisteredName:(NSString *)registeredName
++ (NSString *)mapTableNameForRegisteredName:(NSString *)registeredName
 {
-	return [NSString stringWithFormat:@"view_%@_key", registeredName];
+	return [NSString stringWithFormat:@"view_%@_map", registeredName];
 }
 
 + (NSString *)pageTableNameForRegisteredName:(NSString *)registeredName
@@ -142,9 +142,9 @@
 	                                    databaseConnection:(YapDatabaseConnection *)databaseConnection];
 }
 
-- (NSString *)keyTableName
+- (NSString *)mapTableName
 {
-	return [[self class] keyTableNameForRegisteredName:self.registeredName];
+	return [[self class] mapTableNameForRegisteredName:self.registeredName];
 }
 
 - (NSString *)pageTableName

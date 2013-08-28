@@ -429,7 +429,7 @@
 {
 	if (enumerateKeysStatement == NULL)
 	{
-		char *stmt = "SELECT \"key\" FROM \"database\";";
+		char *stmt = "SELECT \"rowid\", \"key\" FROM \"database\";";
 		
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateKeysStatement, NULL);
 		if (status != SQLITE_OK)
@@ -446,7 +446,7 @@
 {
 	if (enumerateKeysAndMetadataStatement == NULL)
 	{
-		char *stmt = "SELECT \"key\", \"metadata\" FROM \"database\";";
+		char *stmt = "SELECT \"rowid\", \"key\", \"metadata\" FROM \"database\";";
 		
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateKeysAndMetadataStatement, NULL);
 		if (status != SQLITE_OK)
@@ -462,7 +462,7 @@
 {
 	if (enumerateKeysAndObjectsStatement == NULL)
 	{
-		char *stmt = "SELECT \"key\", \"data\" FROM \"database\";";
+		char *stmt = "SELECT \"rowid\", \"key\", \"data\" FROM \"database\";";
 		
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateKeysAndObjectsStatement, NULL);
 		if (status != SQLITE_OK)
@@ -478,7 +478,7 @@
 {
 	if (enumerateRowsStatement == NULL)
 	{
-		char *stmt = "SELECT \"key\", \"data\", \"metadata\" FROM \"database\";";
+		char *stmt = "SELECT \"rowid\", \"key\", \"data\", \"metadata\" FROM \"database\";";
 		
 		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateRowsStatement, NULL);
 		if (status != SQLITE_OK)

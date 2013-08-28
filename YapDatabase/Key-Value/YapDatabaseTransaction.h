@@ -76,6 +76,11 @@
 
 /**
  * Returns a list of all keys in the database.
+ * 
+ * Note: This method pulls all keys into memory !
+ * 
+ * This is a convenience method designed only for SMALL databases.
+ * If your database has the potential to grow to a large size, then this method should never be used.
 **/
 - (NSArray *)allKeys;
 
@@ -93,11 +98,11 @@
 - (NSData *)primitiveDataForKey:(NSString *)key;
 - (NSData *)primitiveMetadataForKey:(NSString *)key;
 
-#pragma mark Object
+#pragma mark Object & Metadata
 
 /**
  * Object access.
- * Objects are automatically deserialized using database's configured deserializer.
+ * Objects are automatically deserialized using database's configured objectDeserializer.
 **/
 - (id)objectForKey:(NSString *)key;
 
@@ -109,15 +114,14 @@
 /**
  * Provides access to both object and metadata in a single call.
  * 
- * @return YES if the key exists in the database. NO otherwise, in which case both object and metadata will be nil.
+ * @return YES if the key exists in the database.
+ *         NO otherwise, in which case both object and metadata will be nil.
 **/
 - (BOOL)getObject:(id *)objectPtr metadata:(id *)metadataPtr forKey:(NSString *)key;
 
-#pragma mark Metadata
-
 /**
  * Provides access to the metadata.
- * This fetches directly from the metadata dictionary stored in memory, and thus never hits the disk.
+ * Metadata is automatically deserialized using database's configured metadataDeserializer.
 **/
 - (id)metadataForKey:(NSString *)key;
 
@@ -130,51 +134,6 @@
  * and invoking the given block handler.
 **/
 - (void)enumerateKeysUsingBlock:(void (^)(NSString *key, BOOL *stop))block;
-
-/**
- * Enumerates over the given list of keys (unordered), and fetches the associated metadata.
- * 
- * This method is faster than metadataForKey when fetching multiple items, as it optimizes cache access.
- * That is, it will first enumerate over cached items and then fetch items from the database,
- * thus optimizing the cache and reducing the query size.
- *
- * If any keys are missing from the database, the 'metadata' parameter will be nil.
- *
- * IMPORTANT:
- * Due to various optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
-**/
-- (void)enumerateMetadataForKeys:(NSArray *)keys
-             unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id metadata, BOOL *stop))block;
-
-/**
- * Enumerates over the given list of keys (unordered), and fetches the associated objects.
- *
- * This method is faster than objectForKey when fetching multiple items, as it optimizes cache access.
- * That is, it will first enumerate over cached items and then fetch items from the database,
- * thus optimizing the cache and reducing the query size.
- *
- * If any keys are missing from the database, the 'object' parameter will be nil.
- * 
- * IMPORTANT:
- * Due to various optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
-**/
-- (void)enumerateObjectsForKeys:(NSArray *)keys
-            unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id object, BOOL *stop))block;
-
-/**
- * Enumerates over the given list of keys (unordered), and fetches the associated rows.
- *
- * This method is faster than fetching items one-by-one as it optimizes cache access.
- * That is, it will first enumerate over cached items and then fetch items from the database,
- * thus optimizing the cache and reducing the query size.
- *
- * If any keys are missing from the database, the 'object' parameter will be nil.
- * 
- * IMPORTANT:
- * Due to various optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
-**/
-- (void)enumerateRowsForKeys:(NSArray *)keys
-         unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id object, id metadata, BOOL *stop))block;
 
 /**
  * Fast enumeration over all keys and metadata in the database.
@@ -248,6 +207,51 @@
 - (void)enumerateRowsUsingBlock:(void (^)(NSString *key, id object, id metadata, BOOL *stop))block
                      withFilter:(BOOL (^)(NSString *key))filter;
 
+/**
+ * Enumerates over the given list of keys (unordered), and fetches the associated metadata.
+ * 
+ * This method is faster than metadataForKey when fetching multiple items, as it optimizes cache access.
+ * That is, it will first enumerate over cached items and then fetch items from the database,
+ * thus optimizing the cache and reducing the query size.
+ *
+ * If any keys are missing from the database, the 'metadata' parameter will be nil.
+ *
+ * IMPORTANT:
+ * Due to various optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
+**/
+- (void)enumerateMetadataForKeys:(NSArray *)keys
+             unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id metadata, BOOL *stop))block;
+
+/**
+ * Enumerates over the given list of keys (unordered), and fetches the associated objects.
+ *
+ * This method is faster than objectForKey when fetching multiple items, as it optimizes cache access.
+ * That is, it will first enumerate over cached items and then fetch items from the database,
+ * thus optimizing the cache and reducing the query size.
+ *
+ * If any keys are missing from the database, the 'object' parameter will be nil.
+ * 
+ * IMPORTANT:
+ * Due to various optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
+**/
+- (void)enumerateObjectsForKeys:(NSArray *)keys
+            unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id object, BOOL *stop))block;
+
+/**
+ * Enumerates over the given list of keys (unordered), and fetches the associated rows.
+ *
+ * This method is faster than fetching items one-by-one as it optimizes cache access.
+ * That is, it will first enumerate over cached items and then fetch items from the database,
+ * thus optimizing the cache and reducing the query size.
+ *
+ * If any keys are missing from the database, the 'object' parameter will be nil.
+ * 
+ * IMPORTANT:
+ * Due to various optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
+**/
+- (void)enumerateRowsForKeys:(NSArray *)keys
+         unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id object, id metadata, BOOL *stop))block;
+
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -281,7 +285,7 @@
 - (void)setPrimitiveData:(NSData *)data forKey:(NSString *)key;
 - (void)setPrimitiveData:(NSData *)data forKey:(NSString *)key withPrimitiveMetadata:(NSData *)pMetadata;
 
-#pragma mark Object
+#pragma mark Object & Metadata
 
 /**
  * Sets the object for the given key.
@@ -293,8 +297,6 @@
 **/
 - (void)setObject:(id)object forKey:(NSString *)key;
 - (void)setObject:(id)object forKey:(NSString *)key withMetadata:(id)metadata;
-
-#pragma mark Metadata
 
 /**
  * Updates the metadata, and only the metadata, for the given key.
