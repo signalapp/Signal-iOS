@@ -47,7 +47,7 @@
 @synthesize connection = connection;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Count & List
+#pragma mark Count
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSUInteger)numberOfKeys
@@ -75,6 +75,10 @@
 	
 	return result;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark List
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSArray *)allKeys
 {
@@ -203,18 +207,25 @@
 		const unsigned char *text = sqlite3_column_text(statement, 0);
 		int textSize = sqlite3_column_bytes(statement, 0);
 		
-		const void *blob = sqlite3_column_blob(statement, 1);
-		int blobSize = sqlite3_column_bytes(statement, 1);
-		
-		// Performance tuning:
-		//
-		// Use initWithBytesNoCopy to avoid an extra allocation and memcpy.
-		// But be sure not to call sqlite3_reset until we're done with the data.
-		
 		key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 		
-		NSData *oData = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-		object = connection->database->objectDeserializer(oData);
+		object = [connection->objectCache objectForKey:key];
+		if (object == nil)
+		{
+			const void *blob = sqlite3_column_blob(statement, 1);
+			int blobSize = sqlite3_column_bytes(statement, 1);
+			
+			// Performance tuning:
+			//
+			// Use initWithBytesNoCopy to avoid an extra allocation and memcpy.
+			// But be sure not to call sqlite3_reset until we're done with the data.
+			
+			NSData *oData = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+			object = connection->database->objectDeserializer(oData);
+			
+			if (object)
+				[connection->objectCache setObject:object forKey:key];
+		}
 		
 		result = YES;
 	}
@@ -258,18 +269,35 @@
 		const unsigned char *text = sqlite3_column_text(statement, 0);
 		int textSize = sqlite3_column_bytes(statement, 0);
 		
-		const void *blob = sqlite3_column_blob(statement, 1);
-		int blobSize = sqlite3_column_bytes(statement, 1);
-		
-		// Performance tuning:
-		//
-		// Use initWithBytesNoCopy to avoid an extra allocation and memcpy.
-		// But be sure not to call sqlite3_reset until we're done with the data.
-		
 		key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 		
-		NSData *mData = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-		metadata = connection->database->metadataDeserializer(mData);
+		metadata = [connection->metadataCache objectForKey:key];
+		if (metadata)
+		{
+			if (metadata == [YapNull null])
+				metadata = nil;
+		}
+		else
+		{
+			const void *blob = sqlite3_column_blob(statement, 1);
+			int blobSize = sqlite3_column_bytes(statement, 1);
+			
+			if (blobSize > 0)
+			{
+				// Performance tuning:
+				//
+				// Use initWithBytesNoCopy to avoid an extra allocation and memcpy.
+				// But be sure not to call sqlite3_reset until we're done with the data.
+				
+				NSData *mData = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+				metadata = connection->database->metadataDeserializer(mData);
+			}
+			
+			if (metadata)
+				[connection->metadataCache setObject:metadata forKey:key];
+			else
+				[connection->metadataCache setObject:[YapNull null] forKey:key];
+		}
 		
 		result = YES;
 	}
@@ -315,26 +343,46 @@
 		const unsigned char *text = sqlite3_column_text(statement, 0);
 		int textSize = sqlite3_column_bytes(statement, 0);
 		
-		const void *oBlob = sqlite3_column_blob(statement, 1);
-		int oBlobSize = sqlite3_column_bytes(statement, 1);
-		
-		const void *mBlob = sqlite3_column_blob(statement, 2);
-		int mBlobSize = sqlite3_column_bytes(statement, 2);
-		
-		// Performance tuning:
-		//
-		// Use initWithBytesNoCopy to avoid an extra allocation and memcpy.
-		// But be sure not to call sqlite3_reset until we're done with the data.
-		
 		key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 		
-		NSData *oData = [[NSData alloc] initWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
-		object = connection->database->objectDeserializer(oData);
-		
-		if (mBlobSize > 0)
+		object = [connection->objectCache objectForKey:key];
+		if (object == nil)
 		{
-			NSData *mData = [[NSData alloc] initWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-			metadata = connection->database->metadataDeserializer(mData);
+			const void *oBlob = sqlite3_column_blob(statement, 1);
+			int oBlobSize = sqlite3_column_bytes(statement, 1);
+			
+			// Performance tuning:
+			//
+			// Use initWithBytesNoCopy to avoid an extra allocation and memcpy.
+			
+			NSData *oData = [[NSData alloc] initWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+			object = connection->database->objectDeserializer(oData);
+			
+			if (object)
+				[connection->objectCache setObject:object forKey:key];
+		}
+		
+		metadata = [connection->metadataCache objectForKey:key];
+		if (metadata)
+		{
+			if (metadata == [YapNull null])
+				metadata = nil;
+		}
+		else
+		{
+			const void *mBlob = sqlite3_column_blob(statement, 2);
+			int mBlobSize = sqlite3_column_bytes(statement, 2);
+			
+			if (mBlobSize > 0)
+			{
+				NSData *mData = [[NSData alloc] initWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+				metadata = connection->database->metadataDeserializer(mData);
+			}
+			
+			if (metadata)
+				[connection->metadataCache setObject:metadata forKey:key];
+			else
+				[connection->metadataCache setObject:[YapNull null] forKey:key];
 		}
 		
 		result = YES;
