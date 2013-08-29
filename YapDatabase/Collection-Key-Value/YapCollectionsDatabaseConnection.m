@@ -80,6 +80,12 @@
 	sqlite_finalize_null(&getKeyCountForCollectionStatement);
 	sqlite_finalize_null(&getKeyCountForAllStatement);
 	sqlite_finalize_null(&getCountForKeyStatement);
+	sqlite_finalize_null(&getCountForRowidStatement);
+	sqlite_finalize_null(&getRowidForKeyStatement);
+	sqlite_finalize_null(&getKeyForRowidStatement);
+	sqlite_finalize_null(&getDataForRowidStatement);
+	sqlite_finalize_null(&getMetadataForRowidStatement);
+	sqlite_finalize_null(&getAllForRowidStatement);
 	sqlite_finalize_null(&getDataForKeyStatement);
 	sqlite_finalize_null(&setMetaForKeyStatement);
 	sqlite_finalize_null(&setAllForKeyStatement);
@@ -107,8 +113,14 @@
 	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
 	{
 		sqlite_finalize_null(&getCollectionCountStatement);
+		sqlite_finalize_null(&getKeyCountForCollectionStatement);
 		sqlite_finalize_null(&getKeyCountForAllStatement);
 		sqlite_finalize_null(&getCountForKeyStatement);
+		sqlite_finalize_null(&getCountForRowidStatement);
+		sqlite_finalize_null(&getKeyForRowidStatement);
+		sqlite_finalize_null(&getDataForRowidStatement);
+		sqlite_finalize_null(&getMetadataForRowidStatement);
+		sqlite_finalize_null(&getAllForRowidStatement);
 		sqlite_finalize_null(&setMetaForKeyStatement);
 		sqlite_finalize_null(&removeForKeyStatement);
 		sqlite_finalize_null(&removeCollectionStatement);
@@ -126,6 +138,7 @@
 	
 	if (level >= YapDatabaseConnectionFlushMemoryLevelFull)
 	{
+		sqlite_finalize_null(&getRowidForKeyStatement);
 		sqlite_finalize_null(&getDataForKeyStatement);
 		sqlite_finalize_null(&setAllForKeyStatement);
 	}
@@ -210,6 +223,108 @@
 	}
 	
 	return getCountForKeyStatement;
+}
+
+- (sqlite3_stmt *)getCountForRowidStatement
+{
+	if (getCountForRowidStatement == NULL)
+	{
+		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getCountForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getCountForRowidStatement;
+}
+
+- (sqlite3_stmt *)getRowidForKeyStatement
+{
+	if (getRowidForKeyStatement == NULL)
+	{
+		char *stmt = "SELECT \"rowid\" FROM \"database\" WHERE \"collection\" = ? AND \"key\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getRowidForKeyStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getRowidForKeyStatement;
+}
+
+- (sqlite3_stmt *)getKeyForRowidStatement
+{
+	if (getKeyForRowidStatement == NULL)
+	{
+		char *stmt = "SELECT \"collection\", \"key\" FROM \"database\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getKeyForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getKeyForRowidStatement;
+}
+
+- (sqlite3_stmt *)getDataForRowidStatement
+{
+	if (getDataForRowidStatement == NULL)
+	{
+		char *stmt = "SELECT \"collection\", \"key\", \"data\" FROM \"database\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getDataForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getDataForRowidStatement;
+}
+
+- (sqlite3_stmt *)getMetadataForRowidStatement
+{
+	if (getMetadataForRowidStatement == NULL)
+	{
+		char *stmt = "SELECT \"collection\", \"key\", \"metadata\" FROM \"database\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getMetadataForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getMetadataForRowidStatement;
+}
+
+- (sqlite3_stmt *)getAllForRowidStatement
+{
+	if (getAllForRowidStatement == NULL)
+	{
+		char *stmt = "SELECT \"collection\", \"key\", \"data\", \"metadata\" FROM \"database\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getAllForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getAllForRowidStatement;
 }
 
 - (sqlite3_stmt *)getDataForKeyStatement
@@ -370,7 +485,7 @@
 {
 	if (enumerateKeysInCollectionStatement == NULL)
 	{
-		char *stmt = "SELECT \"key\" FROM \"database\" WHERE collection = ?;";
+		char *stmt = "SELECT \"rowid\", \"key\" FROM \"database\" WHERE collection = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysInCollectionStatement, NULL);
@@ -387,7 +502,7 @@
 {
 	if (enumerateKeysInAllCollectionsStatement == NULL)
 	{
-		char *stmt = "SELECT \"collection\", \"key\" FROM \"database\";";
+		char *stmt = "SELECT \"rowid\", \"collection\", \"key\" FROM \"database\";";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysInAllCollectionsStatement, NULL);
@@ -404,7 +519,7 @@
 {
 	if (enumerateKeysAndMetadataInCollectionStatement == NULL)
 	{
-		char *stmt = "SELECT \"key\", \"metadata\" FROM \"database\" WHERE collection = ?;";
+		char *stmt = "SELECT \"rowid\", \"key\", \"metadata\" FROM \"database\" WHERE collection = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndMetadataInCollectionStatement, NULL);
@@ -421,7 +536,8 @@
 {
 	if (enumerateKeysAndMetadataInAllCollectionsStatement == NULL)
 	{
-		char *stmt = "SELECT \"collection\", \"key\", \"metadata\" FROM \"database\" ORDER BY \"collection\" ASC;";
+		char *stmt = "SELECT \"rowid\", \"collection\", \"key\", \"metadata\""
+		             " FROM \"database\" ORDER BY \"collection\" ASC;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndMetadataInAllCollectionsStatement, NULL);
@@ -438,7 +554,7 @@
 {
 	if (enumerateKeysAndObjectsInCollectionStatement == NULL)
 	{
-		char *stmt = "SELECT \"key\", \"data\" FROM \"database\" WHERE \"collection\" = ?;";
+		char *stmt = "SELECT \"rowid\", \"key\", \"data\" FROM \"database\" WHERE \"collection\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndObjectsInCollectionStatement, NULL);
@@ -455,7 +571,8 @@
 {
 	if (enumerateKeysAndObjectsInAllCollectionsStatement == NULL)
 	{
-		char *stmt = "SELECT \"collection\", \"key\", \"data\" FROM \"database\" ORDER BY \"collection\" ASC;";
+		char *stmt = "SELECT \"rowid\", \"collection\", \"key\", \"data\""
+		             " FROM \"database\" ORDER BY \"collection\" ASC;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndObjectsInAllCollectionsStatement, NULL);
@@ -472,7 +589,7 @@
 {
 	if (enumerateRowsInCollectionStatement == NULL)
 	{
-		char *stmt = "SELECT \"key\", \"data\", \"metadata\" FROM \"database\" WHERE \"collection\" = ?;";
+		char *stmt = "SELECT \"rowid\", \"key\", \"data\", \"metadata\" FROM \"database\" WHERE \"collection\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateRowsInCollectionStatement, NULL);
@@ -490,9 +607,8 @@
 	if (enumerateRowsInAllCollectionsStatement == NULL)
 	{
 		char *stmt =
-		    "SELECT \"collection\", \"key\", \"data\", \"metadata\""
-		    " FROM \"database\""
-		    " ORDER BY \"collection\" ASC;";
+		    "SELECT \"rowid\", \"collection\", \"key\", \"data\", \"metadata\""
+		    " FROM \"database\" ORDER BY \"collection\" ASC;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateRowsInAllCollectionsStatement, NULL);

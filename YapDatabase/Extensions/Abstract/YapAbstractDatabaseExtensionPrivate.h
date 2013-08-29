@@ -232,11 +232,28 @@
 @protocol YapAbstractDatabaseExtensionTransaction_CollectionKeyValue
 @required
 
-- (void)handleSetObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection withMetadata:(id)metadata;
-- (void)handleSetMetadata:(id)metadata forKey:(NSString *)key inCollection:(NSString *)collection;
-- (void)handleRemoveObjectForKey:(NSString *)key inCollection:(NSString *)collection;
-- (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection;
-- (void)handleRemoveAllObjectsInCollection:(NSString *)collection;
+- (void)handleInsertObject:(id)object
+                    forKey:(NSString *)key
+              inCollection:(NSString *)collection
+              withMetadata:(id)metadata
+                     rowid:(int64_t)rowid;
+
+- (void)handleUpdateObject:(id)object
+                    forKey:(NSString *)key
+              inCollection:(NSString *)collection
+              withMetadata:(id)metadata
+                     rowid:(int64_t)rowid;
+
+- (void)handleUpdateMetadata:(id)metadata
+                      forKey:(NSString *)key
+                inCollection:(NSString *)collection
+                   withRowid:(int64_t)rowid;
+
+- (void)handleRemoveObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
+- (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids;
+
+- (void)handleRemoveAllObjectsInCollection:(NSString *)collection; // Todo...
+
 - (void)handleRemoveAllObjectsInAllCollections;
 
 @end
