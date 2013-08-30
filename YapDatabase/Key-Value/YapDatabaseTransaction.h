@@ -87,16 +87,19 @@
 #pragma mark Primitive
 
 /**
- * Primitive access.
+ * Primitive access (for edge cases).
+ * Most of the time you should be using objectForKey, etc.
  *
- * These are available in-case you store irregular data
- * that shouldn't go through configured serializer/deserializer.
+ * These methods are available in-case you need to store irregular data
+ * that shouldn't go through the configured serializer/deserializer.
  *
- * @see objectForKey
- * @see metadataForKey
+ * @see objectForKey:
+ * @see metadataForKey:
+ * @see getObject:metadata:forKey:
 **/
 - (NSData *)primitiveDataForKey:(NSString *)key;
 - (NSData *)primitiveMetadataForKey:(NSString *)key;
+- (BOOL)getPrimitiveData:(NSData **)dataPtr primitiveMetadata:(NSData **)metadataPtr forKey:(NSString *)key;
 
 #pragma mark Object & Metadata
 

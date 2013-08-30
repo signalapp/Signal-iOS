@@ -513,11 +513,64 @@
 	return result;
 }
 
-- (BOOL)getPrimitiveData:(NSData *)dataPtr primitiveMetadata:(NSData *)pMetadataPtr forKey:(NSString *)key
+- (BOOL)getPrimitiveData:(NSData **)dataPtr primitiveMetadata:(NSData **)metadataPtr forKey:(NSString *)key
 {
-	// Todo...
+	if (key == nil) {
+		if (dataPtr) *dataPtr = nil;
+		if (metadataPtr) *metadataPtr = nil;
+		return NO;
+	}
 	
-	return NO;
+	sqlite3_stmt *statement = [connection getAllForKeyStatement];
+	if (statement == NULL) {
+		if (dataPtr) *dataPtr = nil;
+		if (metadataPtr) *metadataPtr = nil;
+		return NO;
+	}
+	
+	// SELECT "data", "metadata" FROM "database" WHERE "key" = ? ;
+	
+	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+	sqlite3_bind_text(statement, 1, _key.str, _key.length, SQLITE_STATIC);
+	
+	NSData *data = nil;
+	NSData *metadata = nil;
+	BOOL result = NO;
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		if (connection->needsMarkSqlLevelSharedReadLock)
+			[connection markSqlLevelSharedReadLockAcquired];
+		
+		const void *oBlob = sqlite3_column_blob(statement, 0);
+		int oBlobSize = sqlite3_column_bytes(statement, 0);
+		
+		const void *mBlob = sqlite3_column_blob(statement, 1);
+		int mBlobSize = sqlite3_column_bytes(statement, 1);
+		
+		data = [[NSData alloc] initWithBytes:(void *)oBlob length:oBlobSize];
+			
+		if (mBlobSize > 0)
+		{
+			metadata = [[NSData alloc] initWithBytes:(void *)mBlob length:mBlobSize];
+		}
+		
+		result = YES;
+	}
+	else if (status == SQLITE_ERROR)
+	{
+		YDBLogError(@"Error executing 'getAllForKeyStatement': %d %s",
+					status, sqlite3_errmsg(connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_key);
+	
+	if (dataPtr) *dataPtr = data;
+	if (metadataPtr) *metadataPtr = metadata;
+	return result;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
