@@ -24,9 +24,10 @@
 	sqlite3_stmt *getDataForKeyStatement;
 	sqlite3_stmt *getMetadataForKeyStatement;
 	sqlite3_stmt *getAllForKeyStatement;
-	sqlite3_stmt *setAllForKeyStatement;
-	sqlite3_stmt *setMetaForKeyStatement;
-	sqlite3_stmt *removeForKeyStatement;
+	sqlite3_stmt *insertForRowidStatement;
+	sqlite3_stmt *updateAllForRowidStatement;
+	sqlite3_stmt *updateMetadataForRowidStatement;
+	sqlite3_stmt *removeForRowidStatement;
 	sqlite3_stmt *removeCollectionStatement;
 	sqlite3_stmt *removeAllStatement;
 	sqlite3_stmt *enumerateCollectionsStatement;
@@ -82,9 +83,10 @@
 - (sqlite3_stmt *)getDataForKeyStatement;
 - (sqlite3_stmt *)getMetadataForKeyStatement;
 - (sqlite3_stmt *)getAllForKeyStatement;
-- (sqlite3_stmt *)setAllForKeyStatement;
-- (sqlite3_stmt *)setMetaForKeyStatement;
-- (sqlite3_stmt *)removeForKeyStatement;
+- (sqlite3_stmt *)insertForRowidStatement;
+- (sqlite3_stmt *)updateAllForRowidStatement;
+- (sqlite3_stmt *)updateMetadataForRowidStatement;
+- (sqlite3_stmt *)removeForRowidStatement;
 - (sqlite3_stmt *)removeCollectionStatement;
 - (sqlite3_stmt *)removeAllStatement;
 - (sqlite3_stmt *)enumerateCollectionsStatement;

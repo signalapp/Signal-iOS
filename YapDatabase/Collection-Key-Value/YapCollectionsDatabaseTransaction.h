@@ -102,9 +102,11 @@
  * These are available for in-case you store irregular data
  * that shouldn't go through configured serializer/deserializer.
  *
- * @see objectForKey:collection:
+ * @see objectForKey:inCollection:
+ * @see metadataForKey:inCollection:
 **/
 - (NSData *)primitiveDataForKey:(NSString *)key inCollection:(NSString *)collection;
+- (NSData *)primitiveMetadataForKey:(NSString *)key inCollection:(NSString *)collection;
 
 #pragma mark Object
 
@@ -393,7 +395,7 @@
 - (void)setPrimitiveData:(NSData *)data
                   forKey:(NSString *)key
             inCollection:(NSString *)collection
-            withMetadata:(id)metadata;
+   withPrimitiveMetadata:(id)metadataData;
 
 #pragma mark Object
 

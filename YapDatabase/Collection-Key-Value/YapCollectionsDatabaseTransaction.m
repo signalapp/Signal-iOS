@@ -600,6 +600,49 @@
 	return result;
 }
 
+- (NSData *)primitiveMetadataForKey:(NSString *)key inCollection:(NSString *)collection
+{
+	if (key == nil) return nil;
+	if (collection == nil) collection = @"";
+	
+	sqlite3_stmt *statement = [connection getMetadataForKeyStatement];
+	if (statement == NULL) return nil;
+	
+	// SELECT "metadata" FROM "database" WHERE "collection" = ? AND "key" = ? ;
+	
+	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
+	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+	
+	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	
+	NSData *result = nil;
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		if (connection->needsMarkSqlLevelSharedReadLock)
+			[connection markSqlLevelSharedReadLockAcquired];
+		
+		const void *blob = sqlite3_column_blob(statement, 0);
+		int blobSize = sqlite3_column_bytes(statement, 0);
+		
+		result = [[NSData alloc] initWithBytes:blob length:blobSize];
+	}
+	else if (status == SQLITE_ERROR)
+	{
+		YDBLogError(@"Error executing 'getDataForKeyStatement': %d %s, key(%@)",
+					status, sqlite3_errmsg(connection->db), key);
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_collection);
+	FreeYapDatabaseString(&_key);
+	
+	return result;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Object & Metadata
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2752,13 +2795,13 @@
 
 - (void)setPrimitiveData:(NSData *)data forKey:(NSString *)key inCollection:(NSString *)collection
 {
-	[self setPrimitiveData:data forKey:key inCollection:collection withMetadata:nil];
+	[self setPrimitiveData:data forKey:key inCollection:collection withPrimitiveMetadata:nil];
 }
 
 - (void)setPrimitiveData:(NSData *)data
                   forKey:(NSString *)key
             inCollection:(NSString *)collection
-            withMetadata:(id)metadata
+   withPrimitiveMetadata:(NSData *)metadataData
 {
 	if (data == nil)
 	{
@@ -2769,64 +2812,128 @@
 	if (key == nil) return;
 	if (collection == nil) collection = @"";
 	
-	sqlite3_stmt *statement = [connection setAllForKeyStatement];
-	if (statement == NULL) return;
-	
-	// INSERT OR REPLACE INTO "database" ("collection", "key", "data", "metadata") VALUES (?, ?, ?, ?);
-	//
-	// To use SQLITE_STATIC on our data blob, we use the objc_precise_lifetime attribute.
-	// This ensures the data isn't released until it goes out of scope.
+	BOOL found = NO;
+	int64_t rowid = 0;
 	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
-	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
 	
-	sqlite3_bind_blob(statement, 3, data.bytes, (int)data.length, SQLITE_STATIC);
-	
-	__attribute__((objc_precise_lifetime)) NSData *rawMeta = connection->database->metadataSerializer(metadata);
-	sqlite3_bind_blob(statement, 4, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
+	if (YES) // fetch rowid for key
+	{
+		sqlite3_stmt *statement = [connection getRowidForKeyStatement];
+		if (statement == NULL) {
+			FreeYapDatabaseString(&_collection);
+			FreeYapDatabaseString(&_key);
+			return;
+		}
+		
+		// SELECT "rowid" FROM "database" WHERE "collection" = ? AND "key" = ?;
+		
+		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+		sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
+		{
+			rowid = sqlite3_column_int64(statement, 0);
+			found = YES;
+		}
+		else if (status == SQLITE_ERROR)
+		{
+			YDBLogError(@"Error executing 'getRowidForKeyStatement': %d %s, key(%@)",
+			            status, sqlite3_errmsg(connection->db), key);
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+	}
 	
 	BOOL set = YES;
 	
-	int status = sqlite3_step(statement);
-	if (status != SQLITE_DONE)
+	if (found) // update data for key
 	{
-		YDBLogError(@"Error executing 'setAllForKeyStatement': %d %s, key(%@)",
-		                                                   status, sqlite3_errmsg(connection->db), key);
-		set = NO;
+		sqlite3_stmt *statement = [connection updateAllForRowidStatement];
+		if (statement == NULL) {
+			FreeYapDatabaseString(&_collection);
+			FreeYapDatabaseString(&_key);
+			return;
+		}
+		
+		// UPDATE "database" SET "data" = ?, "metadata" = ? WHERE "rowid" = ?;
+		
+		sqlite3_bind_blob(statement, 1, data.bytes, (int)data.length, SQLITE_STATIC);
+		sqlite3_bind_blob(statement, 2, metadataData.bytes, (int)metadataData.length, SQLITE_STATIC);
+		
+		sqlite3_bind_int64(statement, 3, rowid);
+		
+		int status = sqlite3_step(statement);
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"Error executing 'updateAllForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
+			set = NO;
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+	}
+	else // insert data for key
+	{
+		sqlite3_stmt *statement = [connection insertForRowidStatement];
+		if (statement == NULL) {
+			FreeYapDatabaseString(&_collection);
+			FreeYapDatabaseString(&_key);
+			return;
+		}
+		
+		// INSERT INTO "database" ("collection", "key", "data", "metadata") VALUES (?, ?, ?, ?);
+		
+		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+		sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+		
+		sqlite3_bind_blob(statement, 3, data.bytes, (int)data.length, SQLITE_STATIC);
+		sqlite3_bind_blob(statement, 4, metadataData.bytes, (int)metadataData.length, SQLITE_STATIC);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_DONE)
+		{
+			rowid = sqlite3_last_insert_rowid(connection->db);
+		}
+		else
+		{
+			YDBLogError(@"Error executing 'insertForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
+			set = NO;
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
 	}
 	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
 	FreeYapDatabaseString(&_collection);
 	FreeYapDatabaseString(&_key);
 	
 	if (!set) return;
 	
 	isMutated = YES;  // mutation during enumeration protection
-	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
-	[connection->objectCache removeObjectForKey:cacheKey];
-	[connection->objectChanges setObject:[YapNull null] forKey:cacheKey];
-	
-	if (metadata) {
-		[connection->metadataCache setObject:metadata forKey:cacheKey];
-		[connection->metadataChanges setObject:metadata forKey:cacheKey];
-	}
-	else {
-		[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
+	if (found)
+	{
+		YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+		
+		[connection->objectCache removeObjectForKey:cacheKey];
+		[connection->objectChanges setObject:[YapNull null] forKey:cacheKey];
+		
+		[connection->metadataCache removeObjectForKey:cacheKey];
 		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
+		
+		[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
+			
+			__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
+			
+			[extTransaction handleRemoveObjectForKey:cacheKey.key        // mutable string protection
+										inCollection:cacheKey.collection // mutable string protection
+										   withRowid:rowid];
+		}];
 	}
-	
-	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
-		
-		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
-		
-		[extTransaction handleRemoveObjectForKey:cacheKey.key          // mutable string protection
-		                            inCollection:cacheKey.collection]; // mutable string protection
-	}];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2849,38 +2956,116 @@
 	if (key == nil) return;
 	if (collection == nil) collection = @"";
 	
-	sqlite3_stmt *statement = [connection setAllForKeyStatement];
-	if (statement == NULL) return;
-	
-	// INSERT OR REPLACE INTO "database" ("collection", "key", "data", "metadata") VALUES (?, ?, ?, ?);
-	// 
-	// To use SQLITE_STATIC on our data blob, we use the objc_precise_lifetime attribute.
-	// This ensures the data isn't released until it goes out of scope.
+	BOOL found = NO;
+	int64_t rowid = 0;
 	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
-	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
 	
-	__attribute__((objc_precise_lifetime)) NSData *rawData = connection->database->objectSerializer(object);
-	sqlite3_bind_blob(statement, 3, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
-	
-	__attribute__((objc_precise_lifetime)) NSData *rawMeta = connection->database->metadataSerializer(metadata);
-	sqlite3_bind_blob(statement, 4, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
+	if (YES) // fetch rowid for key
+	{
+		sqlite3_stmt *statement = [connection getRowidForKeyStatement];
+		if (statement == NULL) {
+			FreeYapDatabaseString(&_collection);
+			FreeYapDatabaseString(&_key);
+			return;
+		}
+		
+		// SELECT "rowid" FROM "database" WHERE "collection" = ? AND "key" = ?;
+		
+		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+		sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
+		{
+			rowid = sqlite3_column_int64(statement, 0);
+			found = YES;
+		}
+		else if (status == SQLITE_ERROR)
+		{
+			YDBLogError(@"Error executing 'getRowidForKeyStatement': %d %s, key(%@)",
+			            status, sqlite3_errmsg(connection->db), key);
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+	}
 	
 	BOOL set = YES;
 	
-	int status = sqlite3_step(statement);
-	if (status != SQLITE_DONE)
+	if (found) // update data for key
 	{
-		YDBLogError(@"Error executing 'setAllForKeyStatement': %d %s, key(%@)",
-		                                                   status, sqlite3_errmsg(connection->db), key);
-		set = NO;
+		sqlite3_stmt *statement = [connection updateAllForRowidStatement];
+		if (statement == NULL) {
+			FreeYapDatabaseString(&_collection);
+			FreeYapDatabaseString(&_key);
+			return;
+		}
+		
+		// UPDATE "database" SET "data" = ?, "metadata" = ? WHERE "rowid" = ?;
+		// 
+		// To use SQLITE_STATIC on our data blob, we use the objc_precise_lifetime attribute.
+		// This ensures the data isn't released until it goes out of scope.
+		
+		__attribute__((objc_precise_lifetime)) NSData *rawData = connection->database->objectSerializer(object);
+		sqlite3_bind_blob(statement, 1, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
+		
+		__attribute__((objc_precise_lifetime)) NSData *rawMeta =
+		    metadata ? connection->database->metadataSerializer(metadata) : nil;
+		sqlite3_bind_blob(statement, 2, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
+		
+		sqlite3_bind_int64(statement, 3, rowid);
+		
+		int status = sqlite3_step(statement);
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"Error executing 'updateAllForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
+			set = NO;
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+	}
+	else // insert data for key
+	{
+		sqlite3_stmt *statement = [connection insertForRowidStatement];
+		if (statement == NULL) {
+			FreeYapDatabaseString(&_collection);
+			FreeYapDatabaseString(&_key);
+			return;
+		}
+		
+		// INSERT INTO "database" ("collection", "key", "data", "metadata") VALUES (?, ?, ?, ?);
+		//
+		// To use SQLITE_STATIC on our data blob, we use the objc_precise_lifetime attribute.
+		// This ensures the data isn't released until it goes out of scope.
+		
+		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+		sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+		
+		__attribute__((objc_precise_lifetime)) NSData *rawData = connection->database->objectSerializer(object);
+		sqlite3_bind_blob(statement, 3, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
+		
+		__attribute__((objc_precise_lifetime)) NSData *rawMeta =
+		    metadata ? connection->database->metadataSerializer(metadata) : nil;
+		sqlite3_bind_blob(statement, 4, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_DONE)
+		{
+			rowid = sqlite3_last_insert_rowid(connection->db);
+		}
+		else
+		{
+			YDBLogError(@"Error executing 'insertForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
+			set = NO;
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
 	}
 	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
 	FreeYapDatabaseString(&_collection);
 	FreeYapDatabaseString(&_key);
 	
@@ -2904,11 +3089,19 @@
 	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
 		
 		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
-		
-		[extTransaction handleSetObject:object
-		                         forKey:cacheKey.key        // mutable string protection
-		                   inCollection:cacheKey.collection // mutable string protection
-		                   withMetadata:metadata];
+
+		if (found)
+			[extTransaction handleUpdateObject:object
+			                            forKey:cacheKey.key        // mutable string protection
+			                      inCollection:cacheKey.collection // mutable string protection
+			                      withMetadata:metadata
+			                             rowid:rowid];
+		else
+			[extTransaction handleInsertObject:object
+			                            forKey:cacheKey.key        // mutable string protection
+			                      inCollection:cacheKey.collection // mutable string protection
+			                      withMetadata:metadata
+			                             rowid:rowid];
 	}];
 }
 
@@ -2916,39 +3109,35 @@
 {
 	if (collection == nil) collection = @"";
 	
-	if (![self hasObjectForKey:key inCollection:collection]) return;
+	int64_t rowid = 0;
+	if (![self getRowid:&rowid forKey:key inCollection:collection]) return;
 	
-	sqlite3_stmt *statement = [connection setMetaForKeyStatement];
+	sqlite3_stmt *statement = [connection updateMetadataForRowidStatement];
 	if (statement == NULL) return;
 	
-	// UPDATE "database" SET "metadata" = ? WHERE "collection" = ? AND "key" = ?;
+	// UPDATE "database" SET "metadata" = ? WHERE "rowid" = ?;
 	//
 	// To use SQLITE_STATIC on our data blob, we use the objc_precise_lifetime attribute.
 	// This ensures the data isn't released until it goes out of scope.
 	
-	__attribute__((objc_precise_lifetime)) NSData *rawMeta = connection->database->metadataSerializer(metadata);
+	__attribute__((objc_precise_lifetime)) NSData *rawMeta =
+	    metadata ? connection->database->metadataSerializer(metadata) : nil;
 	sqlite3_bind_blob(statement, 1, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
 	
-	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, 2, _collection.str, _collection.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 3, _key.str, _key.length, SQLITE_STATIC);
+	sqlite3_bind_int64(statement, 2, rowid);
 	
 	BOOL updated = YES;
 	
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
 	{
-		YDBLogError(@"Error executing 'setMetaForKeyStatement': %d %s, key(%@)",
-		                                                    status, sqlite3_errmsg(connection->db), key);
+		YDBLogError(@"Error executing 'updateMetadataForRowidStatement': %d %s",
+		                                                    status, sqlite3_errmsg(connection->db));
 		updated = NO;
 	}
 	
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_collection);
-	FreeYapDatabaseString(&_key);
 	
 	if (!updated) return;
 	
@@ -2967,10 +3156,11 @@
 	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
 		
 		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
-		
-		[extTransaction handleSetMetadata:metadata
-		                           forKey:cacheKey.key          // mutable string protection
-		                     inCollection:cacheKey.collection]; // mutable string protection
+
+		[extTransaction handleUpdateMetadata:metadata
+		                              forKey:cacheKey.key        // mutable string protection
+		                        inCollection:cacheKey.collection // mutable string protection
+		                           withRowid:rowid];
 	}];
 }
 
@@ -2980,34 +3170,30 @@
 
 - (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection
 {
-	if (key == nil) return;
-	if (collection == nil) collection  = @"";
+	if (collection == nil) collection = @"";
 	
-	sqlite3_stmt *statement = [connection removeForKeyStatement];
+	int64_t rowid = 0;
+	if (![self getRowid:&rowid forKey:key inCollection:collection]) return;
+	
+	sqlite3_stmt *statement = [connection removeForRowidStatement];
 	if (statement == NULL) return;
 	
-	// DELETE FROM 'database' WHERE 'collection' = ? AND 'key' = ?;
+	// DELETE FROM 'database' WHERE 'rowid' = ?;
 	
-	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	sqlite3_bind_int64(statement, 1, rowid);
 	
 	BOOL removed = YES;
 	
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
 	{
-		YDBLogError(@"Error executing 'removeForKeyStatement': %d %s, key(%@)",
+		YDBLogError(@"Error executing 'removeForRowidStatement': %d %s, key(%@)",
 		                                                   status, sqlite3_errmsg(connection->db), key);
 		removed = NO;
 	}
 	
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_collection);
-	FreeYapDatabaseString(&_key);
 	
 	if (!removed) return;
 	
@@ -3024,9 +3210,10 @@
 	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
 		
 		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
-		
-		[extTransaction handleRemoveObjectForKey:cacheKey.key          // mutable string protection
-		                            inCollection:cacheKey.collection]; // mutable string protection
+
+		[extTransaction handleRemoveObjectForKey:cacheKey.key        // mutable string protection
+		                            inCollection:cacheKey.collection // mutable string protection
+		                               withRowid:rowid];
 	}];
 }
 
@@ -3130,9 +3317,9 @@
 	
 	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
 		
-		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
-		
-		[extTransaction handleRemoveObjectsForKeys:safeKeys inCollection:collection];
+//		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
+//
+//		[extTransaction handleRemoveObjectsForKeys:safeKeys inCollection:collection];
 	}];
 }
 
