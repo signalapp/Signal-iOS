@@ -2007,7 +2007,7 @@
 	[self setPrimitiveData:data forKey:key withPrimitiveMetadata:nil];
 }
 
-- (void)setPrimitiveData:(NSData *)data forKey:(NSString *)key withPrimitiveMetadata:(NSData *)pMetadata
+- (void)setPrimitiveData:(NSData *)data forKey:(NSString *)key withPrimitiveMetadata:(NSData *)metadataData
 {
 	if (data == nil)
 	{
@@ -2025,7 +2025,10 @@
 	if (YES) // fetch rowid for key
 	{
 		sqlite3_stmt *statement = [connection getRowidForKeyStatement];
-		if (statement == NULL) return;
+		if (statement == NULL) {
+			FreeYapDatabaseString(&_key);
+			return;
+		}
 		
 		// SELECT "rowid" FROM "database" WHERE "key" = ? ;
 		
@@ -2060,14 +2063,13 @@
 		// UPDATE "database" SET "data" = ?, "metadata" = ? WHERE "rowid" = ?;
 		
 		sqlite3_bind_blob(statement, 1, data.bytes, (int)data.length, SQLITE_STATIC);
-		sqlite3_bind_blob(statement, 2, pMetadata.bytes, (int)pMetadata.length, SQLITE_STATIC);
+		sqlite3_bind_blob(statement, 2, metadataData.bytes, (int)metadataData.length, SQLITE_STATIC);
 		sqlite3_bind_int64(statement, 3, rowid);
 		
 		int status = sqlite3_step(statement);
 		if (status != SQLITE_DONE)
 		{
-			YDBLogError(@"Error executing 'updateAllForRowidStatement': %d %s",
-			            status, sqlite3_errmsg(connection->db));
+			YDBLogError(@"Error executing 'updateAllForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
 			set = NO;
 		}
 		
@@ -2086,7 +2088,7 @@
 		
 		sqlite3_bind_text(statement, 1, _key.str, _key.length, SQLITE_STATIC);
 		sqlite3_bind_blob(statement, 2, data.bytes, (int)data.length, SQLITE_STATIC);
-		sqlite3_bind_blob(statement, 3, pMetadata.bytes, (int)pMetadata.length, SQLITE_STATIC);
+		sqlite3_bind_blob(statement, 3, metadataData.bytes, (int)metadataData.length, SQLITE_STATIC);
 		
 		int status = sqlite3_step(statement);
 		if (status == SQLITE_DONE)
@@ -2095,8 +2097,7 @@
 		}
 		else
 		{
-			YDBLogError(@"Error executing 'insertForRowidStatement': %d %s",
-			            status, sqlite3_errmsg(connection->db));
+			YDBLogError(@"Error executing 'insertForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
 			set = NO;
 		}
 		
@@ -2109,20 +2110,24 @@
 	if (!set) return;
 	
 	isMutated = YES;  // mutation during enumeration protection
-	key = [key copy]; // mutable string protection
 	
-	[connection->objectCache removeObjectForKey:key];
-	[connection->objectChanges setObject:[YapNull null] forKey:key];
-	
-	[connection->metadataCache removeObjectForKey:key];
-	[connection->metadataChanges setObject:[YapNull null] forKey:key];
-	
-	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
+	if (found)
+	{
+		key = [key copy]; // mutable string protection
 		
-		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_KeyValue> extTransaction = extTransactionObj;
+		[connection->objectCache removeObjectForKey:key];
+		[connection->objectChanges setObject:[YapNull null] forKey:key];
 		
-		[extTransaction handleRemoveObjectForKey:key withRowid:rowid];
-	}];
+		[connection->metadataCache removeObjectForKey:key];
+		[connection->metadataChanges setObject:[YapNull null] forKey:key];
+		
+		[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransObj, BOOL *stop) {
+			
+			__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_KeyValue> extTransaction = extTransObj;
+			
+			[extTransaction handleRemoveObjectForKey:key withRowid:rowid];
+		}];
+	}
 }
 
 - (void)setPrimitiveMetadata:(NSData *)pMetadata forKey:(NSString *)key
