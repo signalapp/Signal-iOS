@@ -325,9 +325,9 @@
 			int blobSize = sqlite3_column_bytes(statement, 2);
 			
 			// Performance tuning:
-			// Use initWithBytesNoCopy to avoid an extra allocation and memcpy.
+			// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
 			
-			NSData *data = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+			NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
 			object = connection->database->objectDeserializer(data);
 			
 			if (object)
@@ -400,9 +400,9 @@
 			if (blobSize > 0)
 			{
 				// Performance tuning:
-				// Use initWithBytesNoCopy to avoid an extra allocation and memcpy.
+				// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
 				
-				NSData *mData = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+				NSData *mData = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
 				metadata = connection->database->metadataDeserializer(mData);
 			}
 			
@@ -474,9 +474,9 @@
 			int blobSize = sqlite3_column_bytes(statement, 2);
 			
 			// Performance tuning:
-			// Use initWithBytesNoCopy to avoid an extra allocation and memcpy.
+			// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
 			
-			NSData *data = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+			NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
 			object = connection->database->objectDeserializer(data);
 			
 			if (object)
@@ -497,9 +497,9 @@
 			if (blobSize > 0)
 			{
 				// Performance tuning:
-				// Use initWithBytesNoCopy to avoid an extra allocation and memcpy.
+				// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
 				
-				NSData *mData = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+				NSData *mData = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
 				metadata = connection->database->metadataDeserializer(mData);
 			}
 			
@@ -679,10 +679,10 @@
 		int blobSize = sqlite3_column_bytes(statement, 0);
 		
 		// Performance tuning:
-		// Use initWithBytesNoCopy to avoid an extra allocation and memcpy.
+		// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
 		// Be sure not to call sqlite3_reset until we're done with the data.
 		
-		NSData *data = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+		NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
 		object = connection->database->objectDeserializer(data);
 	}
 	else if (status == SQLITE_ERROR)
@@ -821,12 +821,12 @@
 				
 				NSData *oData, *mData;
 				
-				oData = [[NSData alloc] initWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+				oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
 				object = connection->database->objectDeserializer(oData);
 				
 				if (mBlobSize > 0)
 				{
-					mData = [[NSData alloc] initWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+					mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
 					metadata = connection->database->metadataDeserializer(mData);
 				}
 			}
@@ -903,11 +903,11 @@
 		
 		// Performance tuning:
 		//
-		// Use initWithBytesNoCopy to avoid an extra allocation and memcpy.
+		// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
 		// But be sure not to call sqlite3_reset until we're done with the data.
 		
 		if (blobSize > 0)
-			metadataData = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+			metadataData = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -1442,7 +1442,7 @@
 			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 			NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
 			
-			NSData *data = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+			NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
 			
 			id metadata = data ? connection->database->metadataDeserializer(data) : nil;
 			
@@ -1644,7 +1644,7 @@
 			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 			NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
 			
-			NSData *objectData = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+			NSData *objectData = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
 			id object = connection->database->objectDeserializer(objectData);
 			
 			if (object)
@@ -1860,7 +1860,7 @@
 				const void *oBlob = sqlite3_column_blob(statement, 1);
 				int oBlobSize = sqlite3_column_bytes(statement, 1);
 				
-				NSData *oData = [[NSData alloc] initWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+				NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
 				object = connection->database->objectDeserializer(oData);
 				
 				if (object)
@@ -1880,7 +1880,7 @@
 				
 				if (mBlobSize > 0)
 				{
-					NSData *mData = [[NSData alloc] initWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
 					metadata = connection->database->metadataDeserializer(mData);
 				}
 				
@@ -2101,7 +2101,7 @@
 	// SELECT "rowid", "key", "metadata" FROM "database" WHERE "collection" = ?;
 	//
 	// Performance tuning:
-	// Use initWithBytesNoCopy to avoid an extra allocation and memcpy.
+	// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
 	//
 	// Cache considerations:
 	// Do we want to add the objects/metadata to the cache here?
@@ -2146,7 +2146,7 @@
 				
 				if (mBlobSize > 0)
 				{
-					NSData *mData = [[NSData alloc] initWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
 					metadata = connection->database->metadataDeserializer(mData);
 				}
 				
@@ -2223,7 +2223,7 @@
 	// SELECT "rowid", "collection", "key", "metadata" FROM "database" ORDER BY "collection" ASC;
 	//
 	// Performance tuning:
-	// Use initWithBytesNoCopy to avoid an extra allocation and memcpy.
+	// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
 	//
 	// Cache considerations:
 	// Do we want to add the objects/metadata to the cache here?
@@ -2271,7 +2271,7 @@
 				
 				if (mBlobSize > 0)
 				{
-					NSData *mData = [[NSData alloc] initWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
 					metadata = connection->database->metadataDeserializer(mData);
 				}
 				
@@ -2343,7 +2343,7 @@
 	// SELECT "rowid", "key", "data", FROM "database" WHERE "collection" = ?;
 	//
 	// Performance tuning:
-	// Use initWithBytesNoCopy to avoid an extra allocation and memcpy.
+	// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
 	//
 	// Cache considerations:
 	// Do we want to add the objects/metadata to the cache here?
@@ -2381,7 +2381,7 @@
 				const void *oBlob = sqlite3_column_blob(statement, 2);
 				int oBlobSize = sqlite3_column_bytes(statement, 2);
 				
-				NSData *oData = [[NSData alloc] initWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+				NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
 				object = connection->database->objectDeserializer(oData);
 				
 				if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
@@ -2486,7 +2486,7 @@
 				const void *oBlob = sqlite3_column_blob(statement, 3);
 				int oBlobSize = sqlite3_column_bytes(statement, 3);
 				
-				NSData *oData = [[NSData alloc] initWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+				NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
 				object = connection->database->objectDeserializer(oData);
 				
 				if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
@@ -2556,7 +2556,7 @@
 	// SELECT "rowid", "key", "data", "metadata" FROM "database" WHERE "collection" = ?;
 	//
 	// Performance tuning:
-	// Use initWithBytesNoCopy to avoid an extra allocation and memcpy.
+	// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
 	//
 	// Cache considerations:
 	// Do we want to add the objects/metadata to the cache here?
@@ -2595,7 +2595,7 @@
 				const void *oBlob = sqlite3_column_blob(statement, 2);
 				int oBlobSize = sqlite3_column_bytes(statement, 2);
 				
-				NSData *oData = [[NSData alloc] initWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+				NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
 				object = connection->database->objectDeserializer(oData);
 				
 				if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
@@ -2618,7 +2618,7 @@
 				
 				if (mBlobSize > 0)
 				{
-					NSData *mData = [[NSData alloc] initWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
 					metadata = connection->database->metadataDeserializer(mData);
 				}
 				
@@ -2727,7 +2727,7 @@
 				const void *oBlob = sqlite3_column_blob(statement, 3);
 				int oBlobSize = sqlite3_column_bytes(statement, 3);
 				
-				NSData *oData = [[NSData alloc] initWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+				NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
 				object = connection->database->objectDeserializer(oData);
 				
 				if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
@@ -2750,7 +2750,7 @@
 				
 				if (mBlobSize > 0)
 				{
-					NSData *mData = [[NSData alloc] initWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
 					metadata = connection->database->metadataDeserializer(mData);
 				}
 				
