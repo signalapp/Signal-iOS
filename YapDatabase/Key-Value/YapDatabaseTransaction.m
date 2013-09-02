@@ -2400,156 +2400,169 @@
 		return;
 	}
 	
-	NSMutableArray *foundKeys = [NSMutableArray arrayWithCapacity:keysCount];
-	NSMutableArray *foundRowids = [NSMutableArray arrayWithCapacity:keysCount];
+	NSMutableArray *foundKeys = nil;
+	NSMutableArray *foundRowids = nil;
 	
 	// Sqlite has an upper bound on the number of host parameters that may be used in a single query.
 	// We need to watch out for this in case a large array of keys is passed.
 	
 	NSUInteger maxHostParams = (NSUInteger) sqlite3_limit(connection->db, SQLITE_LIMIT_VARIABLE_NUMBER, -1);
 	
-	// Find the rowids for the given list of keys
+	// Loop over the keys, and remove them in big batches.
 	
 	NSUInteger keysIndex = 0;
 	do
 	{
 		NSUInteger left = keysCount - keysIndex;
-		NSUInteger numHostParams = MIN(left, maxHostParams);
+		NSUInteger numKeyParams = MIN(left, maxHostParams);
 		
-		// SELECT "key", "rowid" FROM "database" WHERE "key" in (?, ?, ...);
-		
-		NSUInteger capacity = 60 + (numHostParams * 3);
-		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
-		
-		[query appendString:@"SELECT \"key\", \"rowid\" FROM \"database\" WHERE \"key\" IN ("];
-		
-		NSUInteger i;
-		for (i = 0; i < numHostParams; i++)
+		if (foundKeys == nil)
 		{
-			if (i == 0)
-				[query appendFormat:@"?"];
-			else
-				[query appendFormat:@", ?"];
+			foundKeys   = [NSMutableArray arrayWithCapacity:numKeyParams];
+			foundRowids = [NSMutableArray arrayWithCapacity:numKeyParams];
 		}
-	
-		[query appendString:@");"];
-	
-		sqlite3_stmt *statement;
-		
-		int status = sqlite3_prepare_v2(connection->db, [query UTF8String], -1, &statement, NULL);
-		if (status != SQLITE_OK)
+		else
 		{
-			YDBLogError(@"Error creating 'removeObjectForKeys' statement (A): %d %s",
-			                                                          status, sqlite3_errmsg(connection->db));
-			return;
+			[foundKeys removeAllObjects];
+			[foundRowids removeAllObjects];
 		}
 		
-		for (i = 0; i < numHostParams; i++)
+		// Find rowids for keys
+		
+		if (YES)
 		{
-			NSString *key = [keys objectAtIndex:(keysIndex + i)];
+			// SELECT "key", "rowid" FROM "database" WHERE "key" in (?, ?, ...);
 			
-			sqlite3_bind_text(statement, (int)(i + 1), [key UTF8String], -1, SQLITE_TRANSIENT);
+			NSUInteger capacity = 60 + (numKeyParams * 3);
+			NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
+			
+			[query appendString:@"SELECT \"key\", \"rowid\" FROM \"database\" WHERE \"key\" IN ("];
+			
+			NSUInteger i;
+			for (i = 0; i < numKeyParams; i++)
+			{
+				if (i == 0)
+					[query appendFormat:@"?"];
+				else
+					[query appendFormat:@", ?"];
+			}
+		
+			[query appendString:@");"];
+		
+			sqlite3_stmt *statement;
+		
+			int status = sqlite3_prepare_v2(connection->db, [query UTF8String], -1, &statement, NULL);
+			if (status != SQLITE_OK)
+			{
+				YDBLogError(@"Error creating 'removeObjectForKeys' statement (A): %d %s",
+				                                                          status, sqlite3_errmsg(connection->db));
+				return;
+			}
+			
+			for (i = 0; i < numKeyParams; i++)
+			{
+				NSString *key = [keys objectAtIndex:(keysIndex + i)];
+				
+				sqlite3_bind_text(statement, (int)(i + 1), [key UTF8String], -1, SQLITE_TRANSIENT);
+			}
+			
+			while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+			{
+				const unsigned char *text = sqlite3_column_text(statement, 0);
+				int textSize = sqlite3_column_bytes(statement, 0);
+				
+				int64_t rowid = sqlite3_column_int64(statement, 1);
+				
+				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+				
+				[foundKeys addObject:key];
+				[foundRowids addObject:@(rowid)];
+			}
+			
+			if (status != SQLITE_DONE)
+			{
+				YDBLogError(@"Error executing 'removeObjectForKeys' statement (A): %d %s",
+				                                                           status, sqlite3_errmsg(connection->db));
+			}
+			
+			sqlite3_finalize(statement);
+			statement = NULL;
 		}
 		
-		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+		// Now remove all the matching rows
+		
+		NSUInteger foundCount = [foundRowids count];
+		
+		if (foundCount > 0)
 		{
-			const unsigned char *text = sqlite3_column_text(statement, 0);
-			int textSize = sqlite3_column_bytes(statement, 0);
+			// DELETE FROM "database" WHERE "rowid" in (?, ?, ...);
 			
-			int64_t rowid = sqlite3_column_int64(statement, 1);
+			NSUInteger capacity = 50 + (foundCount * 3);
+			NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 			
-			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			[query appendString:@"DELETE FROM \"database\" WHERE \"rowid\" IN ("];
 			
-			[foundKeys addObject:key];
-			[foundRowids addObject:@(rowid)];
+			NSUInteger i;
+			for (i = 0; i < foundCount; i++)
+			{
+				if (i == 0)
+					[query appendFormat:@"?"];
+				else
+					[query appendFormat:@", ?"];
+			}
+			
+			[query appendString:@");"];
+			
+			sqlite3_stmt *statement;
+			
+			int status = sqlite3_prepare_v2(connection->db, [query UTF8String], -1, &statement, NULL);
+			if (status != SQLITE_OK)
+			{
+				YDBLogError(@"Error creating 'removeObjectForKeys' statement (B): %d %s",
+							status, sqlite3_errmsg(connection->db));
+				return;
+			}
+			
+			for (i = 0; i < foundCount; i++)
+			{
+				int64_t rowid = [[foundRowids objectAtIndex:i] longLongValue];
+				
+				sqlite3_bind_int64(statement, (int)(i + 1), rowid);
+			}
+			
+			status = sqlite3_step(statement);
+			if (status != SQLITE_DONE)
+			{
+				YDBLogError(@"Error executing 'removeObjectForKeys' statement (B): %d %s",
+							status, sqlite3_errmsg(connection->db));
+			}
+			
+			sqlite3_finalize(statement);
+			statement = NULL;
+			
+			isMutated = YES; // mutation during enumeration protection
+			
+			[connection->objectCache removeObjectsForKeys:foundKeys];
+			[connection->metadataCache removeObjectsForKeys:foundKeys];
+			
+			[connection->objectChanges removeObjectsForKeys:foundKeys];
+			[connection->metadataChanges removeObjectsForKeys:foundKeys];
+			[connection->removedKeys addObjectsFromArray:foundKeys];
+			
+			[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
+				
+				__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_KeyValue> extTransaction = extObj;
+				
+				[extTransaction handleRemoveObjectsForKeys:foundKeys withRowids:foundRowids];
+			}];
 		}
 		
-		if (status != SQLITE_DONE)
-		{
-			YDBLogError(@"Error executing 'removeObjectForKeys' statement (A): %d %s",
-			                                                           status, sqlite3_errmsg(connection->db));
-		}
+		// Move on to the next batch (if there's more)
 		
-		sqlite3_finalize(statement);
-		statement = NULL;
-		
-		keysIndex += numHostParams;
+		keysIndex += numKeyParams;
 		
 	} while (keysIndex < keysCount);
 	
-	// Now remove all the matching rows
-	
-	NSUInteger foundIndex = 0;
-	NSUInteger foundCount = [foundRowids count];
-	
-	while (foundIndex < foundCount)
-	{
-		NSUInteger left = foundCount - foundIndex;
-		NSUInteger numHostParams = MIN(left, maxHostParams);
-		
-		// DELETE FROM "database" WHERE "rowid" in (?, ?, ...);
-		
-		NSUInteger capacity = 50 + (numHostParams * 3);
-		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
-		
-		[query appendString:@"DELETE FROM \"database\" WHERE \"rowid\" IN ("];
-		
-		NSUInteger i;
-		for (i = 0; i < numHostParams; i++)
-		{
-			if (i == 0)
-				[query appendFormat:@"?"];
-			else
-				[query appendFormat:@", ?"];
-		}
-		
-		[query appendString:@");"];
-		
-		sqlite3_stmt *statement;
-		
-		int status = sqlite3_prepare_v2(connection->db, [query UTF8String], -1, &statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"Error creating 'removeObjectForKeys' statement (B): %d %s",
-						status, sqlite3_errmsg(connection->db));
-			return;
-		}
-		
-		for (i = 0; i < numHostParams; i++)
-		{
-			int64_t rowid = [[foundRowids objectAtIndex:(foundIndex + i)] longLongValue];
-			
-			sqlite3_bind_int64(statement, (int)(i + 1), rowid);
-		}
-		
-		status = sqlite3_step(statement);
-		if (status != SQLITE_DONE)
-		{
-			YDBLogError(@"Error executing 'removeObjectForKeys' statement (B): %d %s",
-						status, sqlite3_errmsg(connection->db));
-		}
-		
-		sqlite3_finalize(statement);
-		statement = NULL;
-		
-		foundIndex += numHostParams;
-	}
-	
-	isMutated = YES; // mutation during enumeration protection
-	
-	[connection->objectCache removeObjectsForKeys:foundKeys];
-	[connection->metadataCache removeObjectsForKeys:foundKeys];
-	
-	[connection->objectChanges removeObjectsForKeys:foundKeys];
-	[connection->metadataChanges removeObjectsForKeys:foundKeys];
-	[connection->removedKeys addObjectsFromArray:foundKeys];
-	
-	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
-		
-		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_KeyValue> extTransaction = extTransactionObj;
-		
-		[extTransaction handleRemoveObjectsForKeys:foundKeys withRowids:foundRowids];
-	}];
 }
 
 - (void)removeAllObjects
