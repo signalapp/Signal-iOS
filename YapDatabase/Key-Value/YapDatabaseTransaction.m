@@ -1127,34 +1127,39 @@
 		
 		// Execute the query and step over the results
 		
-		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+		status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
 		{
 			if (connection->needsMarkSqlLevelSharedReadLock)
 				[connection markSqlLevelSharedReadLockAcquired];
 			
-			const unsigned char *text = sqlite3_column_text(statement, 0);
-			int textSize = sqlite3_column_bytes(statement, 0);
-			
-			const void *blob = sqlite3_column_blob(statement, 1);
-			int blobSize = sqlite3_column_bytes(statement, 1);
-			
-			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-			NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
-			
-			NSData *metadataData = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-			
-			id metadata = metadataData ? connection->database->metadataDeserializer(metadataData) : nil;
-			
-			if (metadata)
-				[connection->metadataCache setObject:metadata forKey:key];       // key is immutable
-			else
-				[connection->metadataCache setObject:[YapNull null] forKey:key]; // key is immutable
-			
-			block(keyIndex, metadata, &stop);
-			
-			[keyIndexDict removeObjectForKey:key];
-			
-			if (stop || isMutated) break;
+			do
+			{
+				const unsigned char *text = sqlite3_column_text(statement, 0);
+				int textSize = sqlite3_column_bytes(statement, 0);
+				
+				const void *blob = sqlite3_column_blob(statement, 1);
+				int blobSize = sqlite3_column_bytes(statement, 1);
+				
+				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+				NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
+				
+				NSData *metadataData = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+				
+				id metadata = metadataData ? connection->database->metadataDeserializer(metadataData) : nil;
+				
+				if (metadata)
+					[connection->metadataCache setObject:metadata forKey:key];       // key is immutable
+				else
+					[connection->metadataCache setObject:[YapNull null] forKey:key]; // key is immutable
+				
+				block(keyIndex, metadata, &stop);
+				
+				[keyIndexDict removeObjectForKey:key];
+				
+				if (stop || isMutated) break;
+				
+			} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 		}
 		
 		if ((status != SQLITE_DONE) && !stop && !isMutated)
@@ -1313,32 +1318,37 @@
 		
 		// Execute the query and step over the results
 		
-		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+		status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
 		{
 			if (connection->needsMarkSqlLevelSharedReadLock)
 				[connection markSqlLevelSharedReadLockAcquired];
 			
-			const unsigned char *text = sqlite3_column_text(statement, 0);
-			int textSize = sqlite3_column_bytes(statement, 0);
-			
-			const void *blob = sqlite3_column_blob(statement, 1);
-			int blobSize = sqlite3_column_bytes(statement, 1);
-			
-			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-			NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
-			
-			NSData *objectData = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-			id object = connection->database->objectDeserializer(objectData);
-			
-			if (object) {
-				[connection->objectCache setObject:object forKey:key]; // key is immutable
-			}
-			
-			block(keyIndex, object, &stop);
-			
-			[keyIndexDict removeObjectForKey:key];
-			
-			if (stop || isMutated) break;
+			do
+			{
+				const unsigned char *text = sqlite3_column_text(statement, 0);
+				int textSize = sqlite3_column_bytes(statement, 0);
+				
+				const void *blob = sqlite3_column_blob(statement, 1);
+				int blobSize = sqlite3_column_bytes(statement, 1);
+				
+				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+				NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
+				
+				NSData *objectData = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+				id object = connection->database->objectDeserializer(objectData);
+				
+				if (object) {
+					[connection->objectCache setObject:object forKey:key]; // key is immutable
+				}
+				
+				block(keyIndex, object, &stop);
+				
+				[keyIndexDict removeObjectForKey:key];
+				
+				if (stop || isMutated) break;
+				
+			} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 		}
 		
 		if ((status != SQLITE_DONE) && !stop && !isMutated)
@@ -1508,57 +1518,62 @@
 		
 		// Execute the query and step over the results
 		
-		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+		status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
 		{
 			if (connection->needsMarkSqlLevelSharedReadLock)
 				[connection markSqlLevelSharedReadLockAcquired];
 			
-			const unsigned char *text = sqlite3_column_text(statement, 0);
-			int textSize = sqlite3_column_bytes(statement, 0);
-			
-			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-			NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
-			
-			id object = [connection->objectCache objectForKey:key];
-			if (object == nil)
+			do
 			{
-				const void *oBlob = sqlite3_column_blob(statement, 1);
-				int oBlobSize = sqlite3_column_bytes(statement, 1);
+				const unsigned char *text = sqlite3_column_text(statement, 0);
+				int textSize = sqlite3_column_bytes(statement, 0);
 				
-				NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
-				object = connection->database->objectDeserializer(oData);
-			}
-			
-			id metadata = [connection->metadataCache objectForKey:key];
-			if (metadata)
-			{
-				if (metadata == [YapNull null])
-					metadata = nil;
-			}
-			else
-			{
-				const void *mBlob = sqlite3_column_blob(statement, 2);
-				int mBlobSize = sqlite3_column_bytes(statement, 2);
+				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+				NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
 				
-				NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-				metadata = connection->database->metadataDeserializer(mData);
-			}
-			
-			if (object)
-			{
-				[connection->objectCache setObject:object forKey:key]; // key is immutable
+				id object = [connection->objectCache objectForKey:key];
+				if (object == nil)
+				{
+					const void *oBlob = sqlite3_column_blob(statement, 1);
+					int oBlobSize = sqlite3_column_bytes(statement, 1);
+					
+					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+					object = connection->database->objectDeserializer(oData);
+				}
 				
+				id metadata = [connection->metadataCache objectForKey:key];
 				if (metadata)
-					[connection->metadataCache setObject:metadata forKey:key];       // key is immutable
+				{
+					if (metadata == [YapNull null])
+						metadata = nil;
+				}
 				else
-					[connection->metadataCache setObject:[YapNull null] forKey:key]; // key is immutable
-			}
-			
-			block(keyIndex, object, metadata, &stop);
-			
-			[keyIndexDict removeObjectForKey:key];
-			
-			if (stop || isMutated) break;
+				{
+					const void *mBlob = sqlite3_column_blob(statement, 2);
+					int mBlobSize = sqlite3_column_bytes(statement, 2);
+					
+					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+					metadata = connection->database->metadataDeserializer(mData);
+				}
+				
+				if (object)
+				{
+					[connection->objectCache setObject:object forKey:key]; // key is immutable
+					
+					if (metadata)
+						[connection->metadataCache setObject:metadata forKey:key];       // key is immutable
+					else
+						[connection->metadataCache setObject:[YapNull null] forKey:key]; // key is immutable
+				}
+				
+				block(keyIndex, object, metadata, &stop);
+				
+				[keyIndexDict removeObjectForKey:key];
+				
+				if (stop || isMutated) break;
+				
+			} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 		}
 		
 		if ((status != SQLITE_DONE) && !stop && !isMutated)
@@ -1624,22 +1639,26 @@
 	
 	// SELECT "key" FROM "database";
 	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
 	{
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		int64_t rowid = sqlite3_column_int64(statement, 0);
-		
-		const unsigned char *text = sqlite3_column_text(statement, 1);
-		int textSize = sqlite3_column_bytes(statement, 1);
-		
-		NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-		
-		block(rowid, key, &stop);
-		
-		if (stop || isMutated) break;
+		do
+		{
+			int64_t rowid = sqlite3_column_int64(statement, 0);
+			
+			const unsigned char *text = sqlite3_column_text(statement, 1);
+			int textSize = sqlite3_column_bytes(statement, 1);
+			
+			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			
+			block(rowid, key, &stop);
+			
+			if (stop || isMutated) break;
+			
+		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
 	if ((status != SQLITE_DONE) && !stop && !isMutated)
@@ -1704,52 +1723,57 @@
 	BOOL stop = NO;
 	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
 	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
 	{
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		int64_t rowid = sqlite3_column_int64(statement, 0);
-		
-		const unsigned char *text = sqlite3_column_text(statement, 1);
-		int textSize = sqlite3_column_bytes(statement, 1);
-		
-		NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-		
-		BOOL invokeBlock = filter == NULL ? YES : filter(rowid, key);
-		if (invokeBlock)
+		do
 		{
-			id metadata = [connection->metadataCache objectForKey:key];
-			if (metadata)
+			int64_t rowid = sqlite3_column_int64(statement, 0);
+			
+			const unsigned char *text = sqlite3_column_text(statement, 1);
+			int textSize = sqlite3_column_bytes(statement, 1);
+			
+			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			
+			BOOL invokeBlock = filter == NULL ? YES : filter(rowid, key);
+			if (invokeBlock)
 			{
-				if (metadata == [YapNull null])
-					metadata = nil;
-			}
-			else
-			{
-				const void *mBlob = sqlite3_column_blob(statement, 2);
-				int mBlobSize = sqlite3_column_bytes(statement, 2);
-				
-				if (mBlobSize > 0)
+				id metadata = [connection->metadataCache objectForKey:key];
+				if (metadata)
 				{
-					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-					metadata = connection->database->metadataDeserializer(mData);
+					if (metadata == [YapNull null])
+						metadata = nil;
+				}
+				else
+				{
+					const void *mBlob = sqlite3_column_blob(statement, 2);
+					int mBlobSize = sqlite3_column_bytes(statement, 2);
+					
+					if (mBlobSize > 0)
+					{
+						NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+						metadata = connection->database->metadataDeserializer(mData);
+					}
+					
+					if (unlimitedMetadataCacheLimit ||
+					    [connection->metadataCache count] < connection->metadataCacheLimit)
+					{
+						if (metadata)
+							[connection->metadataCache setObject:metadata forKey:key];
+						else
+							[connection->metadataCache setObject:[YapNull null] forKey:key];
+					}
 				}
 				
-				if (unlimitedMetadataCacheLimit || [connection->metadataCache count] < connection->metadataCacheLimit)
-				{
-					if (metadata)
-						[connection->metadataCache setObject:metadata forKey:key];
-					else
-						[connection->metadataCache setObject:[YapNull null] forKey:key];
-				}
+				block(rowid, key, metadata, &stop);
+				
+				if (stop || isMutated) break;
 			}
 			
-			block(rowid, key, metadata, &stop);
-			
-			if (stop || isMutated) break;
-		}
+		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
 	if ((status != SQLITE_DONE) && !stop && !isMutated)
@@ -1814,42 +1838,46 @@
 	BOOL stop = NO;
 	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
 
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
 	{
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		int64_t rowid = sqlite3_column_int64(statement, 0);
-		
-		const unsigned char *text = sqlite3_column_text(statement, 1);
-		int textSize = sqlite3_column_bytes(statement, 1);
-		
-		NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-		
-		BOOL invokeBlock = filter == NULL ? YES : filter(rowid, key);
-		if (invokeBlock)
+		do
 		{
-			id object = [connection->objectCache objectForKey:key];
-			if (object == nil)
+			int64_t rowid = sqlite3_column_int64(statement, 0);
+			
+			const unsigned char *text = sqlite3_column_text(statement, 1);
+			int textSize = sqlite3_column_bytes(statement, 1);
+			
+			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			
+			BOOL invokeBlock = filter == NULL ? YES : filter(rowid, key);
+			if (invokeBlock)
 			{
-				const void *oBlob = sqlite3_column_blob(statement, 2);
-				int oBlobSize = sqlite3_column_bytes(statement, 2);
-
-				NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
-				object = connection->database->objectDeserializer(oData);
-				
-				if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
+				id object = [connection->objectCache objectForKey:key];
+				if (object == nil)
 				{
-					if (object)
-						[connection->objectCache setObject:object forKey:key];
+					const void *oBlob = sqlite3_column_blob(statement, 2);
+					int oBlobSize = sqlite3_column_bytes(statement, 2);
+
+					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+					object = connection->database->objectDeserializer(oData);
+					
+					if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
+					{
+						if (object)
+							[connection->objectCache setObject:object forKey:key];
+					}
 				}
+				
+				block(rowid, key, object, &stop);
+				
+				if (stop || isMutated) break;
 			}
 			
-			block(rowid, key, object, &stop);
-			
-			if (stop || isMutated) break;
-		}
+		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
 	if ((status != SQLITE_DONE) && !stop && !isMutated)
@@ -1915,68 +1943,72 @@
 	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
 	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
 
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
 	{
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		int64_t rowid = sqlite3_column_int64(statement, 0);
-		
-		const unsigned char *text = sqlite3_column_text(statement, 1);
-		int textSize = sqlite3_column_bytes(statement, 1);
-		
-		NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-		
-		BOOL invokeBlock = filter == NULL ? YES : filter(rowid, key);
-		if (invokeBlock)
+		do
 		{
-			id object = [connection->objectCache objectForKey:key];
-			if (object == nil)
-			{
-				const void *oBlob = sqlite3_column_blob(statement, 2);
-				int oBlobSize = sqlite3_column_bytes(statement, 2);
-				
-				NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
-				object = connection->database->objectDeserializer(oData);
-				
-				if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
-				{
-					if (object)
-						[connection->objectCache setObject:object forKey:key];
-				}
-			}
+			int64_t rowid = sqlite3_column_int64(statement, 0);
 			
-			id metadata = [connection->metadataCache objectForKey:key];
-			if (metadata)
+			const unsigned char *text = sqlite3_column_text(statement, 1);
+			int textSize = sqlite3_column_bytes(statement, 1);
+			
+			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			
+			BOOL invokeBlock = filter == NULL ? YES : filter(rowid, key);
+			if (invokeBlock)
 			{
-				if (metadata == [YapNull null])
-					metadata = nil;
-			}
-			else
-			{
-				const void *mBlob = sqlite3_column_blob(statement, 3);
-				int mBlobSize = sqlite3_column_bytes(statement, 3);
-				
-				if (mBlobSize > 0)
+				id object = [connection->objectCache objectForKey:key];
+				if (object == nil)
 				{
-					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-					metadata = connection->database->metadataDeserializer(mData);
+					const void *oBlob = sqlite3_column_blob(statement, 2);
+					int oBlobSize = sqlite3_column_bytes(statement, 2);
+					
+					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+					object = connection->database->objectDeserializer(oData);
+					
+					if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
+					{
+						if (object)
+							[connection->objectCache setObject:object forKey:key];
+					}
 				}
 				
-				if (unlimitedMetadataCacheLimit || [connection->metadataCache count] < connection->metadataCacheLimit)
+				id metadata = [connection->metadataCache objectForKey:key];
+				if (metadata)
 				{
-					if (metadata)
-						[connection->metadataCache setObject:metadata forKey:key];
-					else
-						[connection->metadataCache setObject:[YapNull null] forKey:key];
+					if (metadata == [YapNull null])
+						metadata = nil;
 				}
+				else
+				{
+					const void *mBlob = sqlite3_column_blob(statement, 3);
+					int mBlobSize = sqlite3_column_bytes(statement, 3);
+					
+					if (mBlobSize > 0)
+					{
+						NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+						metadata = connection->database->metadataDeserializer(mData);
+					}
+					
+					if (unlimitedMetadataCacheLimit || [connection->metadataCache count] < connection->metadataCacheLimit)
+					{
+						if (metadata)
+							[connection->metadataCache setObject:metadata forKey:key];
+						else
+							[connection->metadataCache setObject:[YapNull null] forKey:key];
+					}
+				}
+				
+				block(rowid, key, object, metadata, &stop);
+				
+				if (stop || isMutated) break;
 			}
 			
-			block(rowid, key, object, metadata, &stop);
-			
-			if (stop || isMutated) break;
-		}
+		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
 	if ((status != SQLITE_DONE) && !stop && !isMutated)
@@ -2454,7 +2486,7 @@
 			int status = sqlite3_prepare_v2(connection->db, [query UTF8String], -1, &statement, NULL);
 			if (status != SQLITE_OK)
 			{
-				YDBLogError(@"Error creating 'removeObjectForKeys' statement (A): %d %s",
+				YDBLogError(@"Error creating 'removeObjectsForKeys' statement (A): %d %s",
 				                                                          status, sqlite3_errmsg(connection->db));
 				return;
 			}
@@ -2481,7 +2513,7 @@
 			
 			if (status != SQLITE_DONE)
 			{
-				YDBLogError(@"Error executing 'removeObjectForKeys' statement (A): %d %s",
+				YDBLogError(@"Error executing 'removeObjectsForKeys' statement (A): %d %s",
 				                                                           status, sqlite3_errmsg(connection->db));
 			}
 			
@@ -2518,7 +2550,7 @@
 			int status = sqlite3_prepare_v2(connection->db, [query UTF8String], -1, &statement, NULL);
 			if (status != SQLITE_OK)
 			{
-				YDBLogError(@"Error creating 'removeObjectForKeys' statement (B): %d %s",
+				YDBLogError(@"Error creating 'removeObjectsForKeys' statement (B): %d %s",
 							status, sqlite3_errmsg(connection->db));
 				return;
 			}
@@ -2533,7 +2565,7 @@
 			status = sqlite3_step(statement);
 			if (status != SQLITE_DONE)
 			{
-				YDBLogError(@"Error executing 'removeObjectForKeys' statement (B): %d %s",
+				YDBLogError(@"Error executing 'removeObjectsForKeys' statement (B): %d %s",
 							status, sqlite3_errmsg(connection->db));
 			}
 			
