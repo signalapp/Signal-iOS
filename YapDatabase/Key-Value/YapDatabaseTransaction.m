@@ -638,35 +638,7 @@
 	
 	// The normal SQL way
 	
-	sqlite3_stmt *statement = [connection getCountForKeyStatement];
-	if (statement == NULL) return NO;
-	
-	// SELECT COUNT(*) AS NumberOfRows FROM "database" WHERE "key" = ?;
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 1, _key.str, _key.length, SQLITE_STATIC);
-	
-	BOOL result = NO;
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
-	{
-		if (connection->needsMarkSqlLevelSharedReadLock)
-			[connection markSqlLevelSharedReadLockAcquired];
-		
-		result = (sqlite3_column_int64(statement, 0) > 0);
-	}
-	else if (status == SQLITE_ERROR)
-	{
-		YDBLogError(@"Error executing 'getCountForKeyStatement': %d %s, key(%@)",
-		                                                     status, sqlite3_errmsg(connection->db), key);
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_key);
-	
-	return result;
+	return [self getRowid:NULL forKey:key];
 }
 
 - (BOOL)getObject:(id *)objectPtr metadata:(id *)metadataPtr forKey:(NSString *)key

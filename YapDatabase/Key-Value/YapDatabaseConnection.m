@@ -48,7 +48,6 @@
 
 @private
 	sqlite3_stmt *getCountStatement;
-	sqlite3_stmt *getCountForKeyStatement;
     sqlite3_stmt *getCountForRowidStatement;
     sqlite3_stmt *getRowidForKeyStatement;
     sqlite3_stmt *getKeyForRowidStatement;
@@ -99,7 +98,6 @@
 - (void)dealloc
 {
 	sqlite_finalize_null(&getCountStatement);
-	sqlite_finalize_null(&getCountForKeyStatement);
 	sqlite_finalize_null(&getCountForRowidStatement);
 	sqlite_finalize_null(&getRowidForKeyStatement);
 	sqlite_finalize_null(&getKeyForRowidStatement);
@@ -130,7 +128,6 @@
 	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
 	{
 		sqlite_finalize_null(&getCountStatement);
-		sqlite_finalize_null(&getCountForKeyStatement);
 		sqlite_finalize_null(&getCountForRowidStatement);
 		sqlite_finalize_null(&getDataForRowidStatement);
 		sqlite_finalize_null(&getMetadataForRowidStatement);
@@ -183,22 +180,6 @@
 	}
 	
 	return getCountStatement;
-}
-
-- (sqlite3_stmt *)getCountForKeyStatement
-{
-	if (getCountForKeyStatement == NULL)
-	{
-		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database\" WHERE \"key\" = ?;";
-		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getCountForKeyStatement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
-		}
-	}
-	
-	return getCountForKeyStatement;
 }
 
 - (sqlite3_stmt *)getCountForRowidStatement

@@ -12,7 +12,6 @@
 @interface YapDatabaseConnection () {
 @private
 	sqlite3_stmt *getCountStatement;
-	sqlite3_stmt *getCountForKeyStatement;
 	sqlite3_stmt *getCountForRowidStatement;
 	sqlite3_stmt *getRowidForKeyStatement;
 	sqlite3_stmt *getKeyForRowidStatement;
@@ -61,7 +60,6 @@
 }
 
 - (sqlite3_stmt *)getCountStatement;
-- (sqlite3_stmt *)getCountForKeyStatement;
 - (sqlite3_stmt *)getCountForRowidStatement;
 - (sqlite3_stmt *)getRowidForKeyStatement;
 - (sqlite3_stmt *)getKeyForRowidStatement;
