@@ -1428,36 +1428,41 @@
 		
 		// Execute the query and step over the results
 		
-		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+		status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
 		{
 			if (connection->needsMarkSqlLevelSharedReadLock)
 				[connection markSqlLevelSharedReadLockAcquired];
 			
-			const unsigned char *text = sqlite3_column_text(statement, 0);
-			int textSize = sqlite3_column_bytes(statement, 0);
-			
-			const void *blob = sqlite3_column_blob(statement, 1);
-			int blobSize = sqlite3_column_bytes(statement, 1);
-			
-			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-			NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
-			
-			NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-			
-			id metadata = data ? connection->database->metadataDeserializer(data) : nil;
-			
-			if (metadata)
+			do
 			{
-				YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+				const unsigned char *text = sqlite3_column_text(statement, 0);
+				int textSize = sqlite3_column_bytes(statement, 0);
 				
-				[connection->metadataCache setObject:metadata forKey:cacheKey];
-			}
-			
-			block(keyIndex, metadata, &stop);
-			
-			[keyIndexDict removeObjectForKey:key];
-			
-			if (stop || isMutated) break;
+				const void *blob = sqlite3_column_blob(statement, 1);
+				int blobSize = sqlite3_column_bytes(statement, 1);
+				
+				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+				NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
+				
+				NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+				
+				id metadata = data ? connection->database->metadataDeserializer(data) : nil;
+				
+				if (metadata)
+				{
+					YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+					
+					[connection->metadataCache setObject:metadata forKey:cacheKey];
+				}
+				
+				block(keyIndex, metadata, &stop);
+				
+				[keyIndexDict removeObjectForKey:key];
+				
+				if (stop || isMutated) break;
+				
+			} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 		}
 		
 		if ((status != SQLITE_DONE) && !stop && !isMutated)
@@ -1630,34 +1635,39 @@
 		
 		// Execute the query and step over the results
 		
-		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+		status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
 		{
 			if (connection->needsMarkSqlLevelSharedReadLock)
 				[connection markSqlLevelSharedReadLockAcquired];
 			
-			const unsigned char *text = sqlite3_column_text(statement, 0);
-			int textSize = sqlite3_column_bytes(statement, 0);
-			
-			const void *blob = sqlite3_column_blob(statement, 1);
-			int blobSize = sqlite3_column_bytes(statement, 1);
-			
-			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-			NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
-			
-			NSData *objectData = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-			id object = connection->database->objectDeserializer(objectData);
-			
-			if (object)
+			do
 			{
-				YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-				[connection->objectCache setObject:object forKey:cacheKey];
-			}
-			
-			block(keyIndex, object, &stop);
-			
-			[keyIndexDict removeObjectForKey:key];
-			
-			if (stop || isMutated) break;
+				const unsigned char *text = sqlite3_column_text(statement, 0);
+				int textSize = sqlite3_column_bytes(statement, 0);
+				
+				const void *blob = sqlite3_column_blob(statement, 1);
+				int blobSize = sqlite3_column_bytes(statement, 1);
+				
+				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+				NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
+				
+				NSData *objectData = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+				id object = connection->database->objectDeserializer(objectData);
+				
+				if (object)
+				{
+					YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+					[connection->objectCache setObject:object forKey:cacheKey];
+				}
+				
+				block(keyIndex, object, &stop);
+				
+				[keyIndexDict removeObjectForKey:key];
+				
+				if (stop || isMutated) break;
+				
+			} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 		}
 		
 		if ((status != SQLITE_DONE) && !stop && !isMutated)
@@ -1841,60 +1851,65 @@
 		
 		// Execute the query and step over the results
 		
-		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+		status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
 		{
 			if (connection->needsMarkSqlLevelSharedReadLock)
 				[connection markSqlLevelSharedReadLockAcquired];
 			
-			const unsigned char *text = sqlite3_column_text(statement, 0);
-			int textSize = sqlite3_column_bytes(statement, 0);
-			
-			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-			NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
-			
-			YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-			
-			id object = [connection->objectCache objectForKey:cacheKey];
-			if (object == nil)
+			do
 			{
-				const void *oBlob = sqlite3_column_blob(statement, 1);
-				int oBlobSize = sqlite3_column_bytes(statement, 1);
+				const unsigned char *text = sqlite3_column_text(statement, 0);
+				int textSize = sqlite3_column_bytes(statement, 0);
 				
-				NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
-				object = connection->database->objectDeserializer(oData);
+				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+				NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
 				
-				if (object)
-					[connection->objectCache setObject:object forKey:cacheKey];
-			}
-			
-			id metadata = [connection->metadataCache objectForKey:cacheKey];
-			if (metadata)
-			{
-				if (metadata == [YapNull null])
-					metadata = nil;
-			}
-			else
-			{
-				const void *mBlob = sqlite3_column_blob(statement, 2);
-				int mBlobSize = sqlite3_column_bytes(statement, 2);
+				YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 				
-				if (mBlobSize > 0)
+				id object = [connection->objectCache objectForKey:cacheKey];
+				if (object == nil)
 				{
-					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-					metadata = connection->database->metadataDeserializer(mData);
+					const void *oBlob = sqlite3_column_blob(statement, 1);
+					int oBlobSize = sqlite3_column_bytes(statement, 1);
+					
+					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+					object = connection->database->objectDeserializer(oData);
+					
+					if (object)
+						[connection->objectCache setObject:object forKey:cacheKey];
 				}
 				
+				id metadata = [connection->metadataCache objectForKey:cacheKey];
 				if (metadata)
-					[connection->metadataCache setObject:metadata forKey:cacheKey];
+				{
+					if (metadata == [YapNull null])
+						metadata = nil;
+				}
 				else
-					[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
-			}
-			
-			block(keyIndex, object, metadata, &stop);
-			
-			[keyIndexDict removeObjectForKey:key];
-			
-			if (stop || isMutated) break;
+				{
+					const void *mBlob = sqlite3_column_blob(statement, 2);
+					int mBlobSize = sqlite3_column_bytes(statement, 2);
+					
+					if (mBlobSize > 0)
+					{
+						NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+						metadata = connection->database->metadataDeserializer(mData);
+					}
+					
+					if (metadata)
+						[connection->metadataCache setObject:metadata forKey:cacheKey];
+					else
+						[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
+				}
+				
+				block(keyIndex, object, metadata, &stop);
+				
+				[keyIndexDict removeObjectForKey:key];
+				
+				if (stop || isMutated) break;
+				
+			} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 		}
 		
 		if ((status != SQLITE_DONE) && !stop && !isMutated)
@@ -1970,22 +1985,26 @@
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
 	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
 	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
 	{
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		int64_t rowid = sqlite3_column_int64(statement, 0);
-		
-		const unsigned char *_key = sqlite3_column_text(statement, 1);
-		int _keySize = sqlite3_column_bytes(statement, 1);
-		
-		NSString *key = [[NSString alloc] initWithBytes:_key length:_keySize encoding:NSUTF8StringEncoding];
-		
-		block(rowid, key, &stop);
-		
-		if (stop || isMutated) break;
+		do
+		{
+			int64_t rowid = sqlite3_column_int64(statement, 0);
+			
+			const unsigned char *text = sqlite3_column_text(statement, 1);
+			int textSize = sqlite3_column_bytes(statement, 1);
+			
+			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			
+			block(rowid, key, &stop);
+			
+			if (stop || isMutated) break;
+			
+		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
 	if ((status != SQLITE_DONE) && !stop && !isMutated)
@@ -2022,28 +2041,32 @@
 	
 	// SELECT "rowid", "collection", "key" FROM "database";
 	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
 	{
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		int64_t rowid = sqlite3_column_int64(statement, 0);
-		
-		const unsigned char *text1 = sqlite3_column_text(statement, 1);
-		int textSize1 = sqlite3_column_bytes(statement, 1);
-		
-		const unsigned char *text2 = sqlite3_column_text(statement, 2);
-		int textSize2 = sqlite3_column_bytes(statement, 2);
-		
-		NSString *collection, *key;
-		
-		collection = [[NSString alloc] initWithBytes:text1 length:textSize1 encoding:NSUTF8StringEncoding];
-		key        = [[NSString alloc] initWithBytes:text2 length:textSize2 encoding:NSUTF8StringEncoding];
-		
-		block(rowid, collection, key, &stop);
-		
-		if (stop || isMutated) break;
+		do
+		{
+			int64_t rowid = sqlite3_column_int64(statement, 0);
+			
+			const unsigned char *text1 = sqlite3_column_text(statement, 1);
+			int textSize1 = sqlite3_column_bytes(statement, 1);
+			
+			const unsigned char *text2 = sqlite3_column_text(statement, 2);
+			int textSize2 = sqlite3_column_bytes(statement, 2);
+			
+			NSString *collection, *key;
+			
+			collection = [[NSString alloc] initWithBytes:text1 length:textSize1 encoding:NSUTF8StringEncoding];
+			key        = [[NSString alloc] initWithBytes:text2 length:textSize2 encoding:NSUTF8StringEncoding];
+			
+			block(rowid, collection, key, &stop);
+			
+			if (stop || isMutated) break;
+			
+		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
 	if ((status != SQLITE_DONE) && !stop && !isMutated)
@@ -2115,54 +2138,59 @@
 	
 	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
 	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
 	{
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		int64_t rowid = sqlite3_column_int64(statement, 0);
-		
-		const unsigned char *text = sqlite3_column_text(statement, 1);
-		int textSize = sqlite3_column_bytes(statement, 1);
-		
-		NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-		
-		BOOL invokeBlock = (filter == NULL) ? YES : filter(rowid, key);
-		if (invokeBlock)
+		do
 		{
-			YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-		
-			id metadata = [connection->metadataCache objectForKey:cacheKey];
-			if (metadata)
+			int64_t rowid = sqlite3_column_int64(statement, 0);
+			
+			const unsigned char *text = sqlite3_column_text(statement, 1);
+			int textSize = sqlite3_column_bytes(statement, 1);
+			
+			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			
+			BOOL invokeBlock = (filter == NULL) ? YES : filter(rowid, key);
+			if (invokeBlock)
 			{
-				if (metadata == [YapNull null])
-					metadata = nil;
-			}
-			else
-			{
-				const void *mBlob = sqlite3_column_blob(statement, 2);
-				int mBlobSize = sqlite3_column_bytes(statement, 2);
-				
-				if (mBlobSize > 0)
+				YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+			
+				id metadata = [connection->metadataCache objectForKey:cacheKey];
+				if (metadata)
 				{
-					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-					metadata = connection->database->metadataDeserializer(mData);
+					if (metadata == [YapNull null])
+						metadata = nil;
+				}
+				else
+				{
+					const void *mBlob = sqlite3_column_blob(statement, 2);
+					int mBlobSize = sqlite3_column_bytes(statement, 2);
+					
+					if (mBlobSize > 0)
+					{
+						NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+						metadata = connection->database->metadataDeserializer(mData);
+					}
+					
+					if (unlimitedMetadataCacheLimit ||
+					    [connection->metadataCache count] < connection->metadataCacheLimit)
+					{
+						if (metadata)
+							[connection->metadataCache setObject:metadata forKey:cacheKey];
+						else
+							[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
+					}
 				}
 				
-				if (unlimitedMetadataCacheLimit || [connection->metadataCache count] < connection->metadataCacheLimit)
-				{
-					if (metadata)
-						[connection->metadataCache setObject:metadata forKey:cacheKey];
-					else
-						[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
-				}
+				block(rowid, key, metadata, &stop);
+				
+				if (stop || isMutated) break;
 			}
 			
-			block(rowid, key, metadata, &stop);
-			
-			if (stop || isMutated) break;
-		}
+		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
 	if ((status != SQLITE_DONE) && !stop && !isMutated)
@@ -2234,60 +2262,65 @@
 	
 	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
 	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
 	{
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		int64_t rowid = sqlite3_column_int64(statement, 0);
-		
-		const unsigned char *text1 = sqlite3_column_text(statement, 1);
-		int textSize1 = sqlite3_column_bytes(statement, 1);
-		
-		const unsigned char *text2 = sqlite3_column_text(statement, 2);
-		int textSize2 = sqlite3_column_bytes(statement, 2);
-		
-		NSString *collection, *key;
-		
-		collection = [[NSString alloc] initWithBytes:text1 length:textSize1 encoding:NSUTF8StringEncoding];
-		key        = [[NSString alloc] initWithBytes:text2 length:textSize2 encoding:NSUTF8StringEncoding];
-		
-		BOOL invokeBlock = (filter == NULL) ? YES : filter(rowid, collection, key);
-		if (invokeBlock)
+		do
 		{
-			YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+			int64_t rowid = sqlite3_column_int64(statement, 0);
 			
-			id metadata = [connection->metadataCache objectForKey:cacheKey];
-			if (metadata)
+			const unsigned char *text1 = sqlite3_column_text(statement, 1);
+			int textSize1 = sqlite3_column_bytes(statement, 1);
+			
+			const unsigned char *text2 = sqlite3_column_text(statement, 2);
+			int textSize2 = sqlite3_column_bytes(statement, 2);
+			
+			NSString *collection, *key;
+			
+			collection = [[NSString alloc] initWithBytes:text1 length:textSize1 encoding:NSUTF8StringEncoding];
+			key        = [[NSString alloc] initWithBytes:text2 length:textSize2 encoding:NSUTF8StringEncoding];
+			
+			BOOL invokeBlock = (filter == NULL) ? YES : filter(rowid, collection, key);
+			if (invokeBlock)
 			{
-				if (metadata == [YapNull null])
-					metadata = nil;
-			}
-			else
-			{
-				const void *mBlob = sqlite3_column_blob(statement, 3);
-				int mBlobSize = sqlite3_column_bytes(statement, 3);
+				YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 				
-				if (mBlobSize > 0)
+				id metadata = [connection->metadataCache objectForKey:cacheKey];
+				if (metadata)
 				{
-					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-					metadata = connection->database->metadataDeserializer(mData);
+					if (metadata == [YapNull null])
+						metadata = nil;
+				}
+				else
+				{
+					const void *mBlob = sqlite3_column_blob(statement, 3);
+					int mBlobSize = sqlite3_column_bytes(statement, 3);
+					
+					if (mBlobSize > 0)
+					{
+						NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+						metadata = connection->database->metadataDeserializer(mData);
+					}
+					
+					if (unlimitedMetadataCacheLimit ||
+					    [connection->metadataCache count] < connection->metadataCacheLimit)
+					{
+						if (metadata)
+							[connection->metadataCache setObject:metadata forKey:cacheKey];
+						else
+							[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
+					}
 				}
 				
-				if (unlimitedMetadataCacheLimit || [connection->metadataCache count] < connection->metadataCacheLimit)
-				{
-					if (metadata)
-						[connection->metadataCache setObject:metadata forKey:cacheKey];
-					else
-						[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
-				}
+				block(rowid, collection, key, metadata, &stop);
+				
+				if (stop || isMutated) break;
 			}
 			
-			block(rowid, collection, key, metadata, &stop);
-			
-			if (stop || isMutated) break;
-		}
+		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
 	if ((status != SQLITE_DONE) && !stop && !isMutated)
@@ -2357,44 +2390,48 @@
 	
 	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
 	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
 	{
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		int64_t rowid = sqlite3_column_int64(statement, 0);
-		
-		const unsigned char *text = sqlite3_column_text(statement, 1);
-		int textSize = sqlite3_column_bytes(statement, 1);
-		
-		NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-		
-		BOOL invokeBlock = (filter == NULL) ? YES : filter(rowid, key);
-		if (invokeBlock)
+		do
 		{
-			YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+			int64_t rowid = sqlite3_column_int64(statement, 0);
 			
-			id object = [connection->objectCache objectForKey:cacheKey];
-			if (object == nil)
+			const unsigned char *text = sqlite3_column_text(statement, 1);
+			int textSize = sqlite3_column_bytes(statement, 1);
+			
+			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			
+			BOOL invokeBlock = (filter == NULL) ? YES : filter(rowid, key);
+			if (invokeBlock)
 			{
-				const void *oBlob = sqlite3_column_blob(statement, 2);
-				int oBlobSize = sqlite3_column_bytes(statement, 2);
+				YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 				
-				NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
-				object = connection->database->objectDeserializer(oData);
-				
-				if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
+				id object = [connection->objectCache objectForKey:cacheKey];
+				if (object == nil)
 				{
-					if (object)
-						[connection->objectCache setObject:object forKey:cacheKey];
+					const void *oBlob = sqlite3_column_blob(statement, 2);
+					int oBlobSize = sqlite3_column_bytes(statement, 2);
+					
+					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+					object = connection->database->objectDeserializer(oData);
+					
+					if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
+					{
+						if (object)
+							[connection->objectCache setObject:object forKey:cacheKey];
+					}
 				}
+				
+				block(rowid, key, object, &stop);
+				
+				if (stop || isMutated) break;
 			}
 			
-			block(rowid, key, object, &stop);
-			
-			if (stop || isMutated) break;
-		}
+		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
 	if ((status != SQLITE_DONE) && !stop && !isMutated)
@@ -2456,50 +2493,54 @@
 	
 	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
 	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
 	{
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		int64_t rowid = sqlite3_column_int64(statement, 0);
-		
-		const unsigned char *text1 = sqlite3_column_text(statement, 1);
-		int textSize1 = sqlite3_column_bytes(statement, 1);
-		
-		const unsigned char *text2 = sqlite3_column_text(statement, 2);
-		int textSize2 = sqlite3_column_bytes(statement, 2);
-		
-		NSString *collection, *key;
-		
-		collection = [[NSString alloc] initWithBytes:text1 length:textSize1 encoding:NSUTF8StringEncoding];
-		key        = [[NSString alloc] initWithBytes:text2 length:textSize2 encoding:NSUTF8StringEncoding];
-		
-		BOOL invokeBlock = (filter == NULL) ? YES : filter(rowid, collection, key);
-		if (invokeBlock)
+		do
 		{
-			YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+			int64_t rowid = sqlite3_column_int64(statement, 0);
 			
-			id object = [connection->objectCache objectForKey:cacheKey];
-			if (object == nil)
+			const unsigned char *text1 = sqlite3_column_text(statement, 1);
+			int textSize1 = sqlite3_column_bytes(statement, 1);
+			
+			const unsigned char *text2 = sqlite3_column_text(statement, 2);
+			int textSize2 = sqlite3_column_bytes(statement, 2);
+			
+			NSString *collection, *key;
+			
+			collection = [[NSString alloc] initWithBytes:text1 length:textSize1 encoding:NSUTF8StringEncoding];
+			key        = [[NSString alloc] initWithBytes:text2 length:textSize2 encoding:NSUTF8StringEncoding];
+			
+			BOOL invokeBlock = (filter == NULL) ? YES : filter(rowid, collection, key);
+			if (invokeBlock)
 			{
-				const void *oBlob = sqlite3_column_blob(statement, 3);
-				int oBlobSize = sqlite3_column_bytes(statement, 3);
+				YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 				
-				NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
-				object = connection->database->objectDeserializer(oData);
-				
-				if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
+				id object = [connection->objectCache objectForKey:cacheKey];
+				if (object == nil)
 				{
-					if (object)
-						[connection->objectCache setObject:object forKey:cacheKey];
+					const void *oBlob = sqlite3_column_blob(statement, 3);
+					int oBlobSize = sqlite3_column_bytes(statement, 3);
+					
+					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+					object = connection->database->objectDeserializer(oData);
+					
+					if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
+					{
+						if (object)
+							[connection->objectCache setObject:object forKey:cacheKey];
+					}
 				}
+				
+				block(rowid, collection, key, object, &stop);
+				
+				if (stop || isMutated) break;
 			}
 			
-			block(rowid, collection, key, object, &stop);
-			
-			if (stop || isMutated) break;
-		}
+		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
 	if ((status != SQLITE_DONE) && !stop && !isMutated)
@@ -2571,70 +2612,75 @@
 	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
 	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
 	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
 	{
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		int64_t rowid = sqlite3_column_int64(statement, 0);
-		
-		const unsigned char *text = sqlite3_column_text(statement, 1);
-		int textSize = sqlite3_column_bytes(statement, 1);
-		
-		NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-		
-		BOOL invokeBlock = (filter == NULL) ? YES : filter(rowid, key);
-		if (invokeBlock)
+		do
 		{
-			YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+			int64_t rowid = sqlite3_column_int64(statement, 0);
 			
-			id object = [connection->objectCache objectForKey:cacheKey];
-			if (object == nil)
-			{
-				const void *oBlob = sqlite3_column_blob(statement, 2);
-				int oBlobSize = sqlite3_column_bytes(statement, 2);
-				
-				NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
-				object = connection->database->objectDeserializer(oData);
-				
-				if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
-				{
-					if (object)
-						[connection->objectCache setObject:object forKey:cacheKey];
-				}
-			}
+			const unsigned char *text = sqlite3_column_text(statement, 1);
+			int textSize = sqlite3_column_bytes(statement, 1);
 			
-			id metadata = [connection->metadataCache objectForKey:cacheKey];
-			if (metadata)
+			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			
+			BOOL invokeBlock = (filter == NULL) ? YES : filter(rowid, key);
+			if (invokeBlock)
 			{
-				if (metadata == [YapNull null])
-					metadata = nil;
-			}
-			else
-			{
-				const void *mBlob = sqlite3_column_blob(statement, 3);
-				int mBlobSize = sqlite3_column_bytes(statement, 3);
+				YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 				
-				if (mBlobSize > 0)
+				id object = [connection->objectCache objectForKey:cacheKey];
+				if (object == nil)
 				{
-					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-					metadata = connection->database->metadataDeserializer(mData);
+					const void *oBlob = sqlite3_column_blob(statement, 2);
+					int oBlobSize = sqlite3_column_bytes(statement, 2);
+					
+					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+					object = connection->database->objectDeserializer(oData);
+					
+					if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
+					{
+						if (object)
+							[connection->objectCache setObject:object forKey:cacheKey];
+					}
 				}
 				
-				if (unlimitedMetadataCacheLimit || [connection->metadataCache count] < connection->metadataCacheLimit)
+				id metadata = [connection->metadataCache objectForKey:cacheKey];
+				if (metadata)
 				{
-					if (metadata)
-						[connection->metadataCache setObject:metadata forKey:cacheKey];
-					else
-						[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
+					if (metadata == [YapNull null])
+						metadata = nil;
 				}
+				else
+				{
+					const void *mBlob = sqlite3_column_blob(statement, 3);
+					int mBlobSize = sqlite3_column_bytes(statement, 3);
+					
+					if (mBlobSize > 0)
+					{
+						NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+						metadata = connection->database->metadataDeserializer(mData);
+					}
+					
+					if (unlimitedMetadataCacheLimit ||
+					    [connection->metadataCache count] < connection->metadataCacheLimit)
+					{
+						if (metadata)
+							[connection->metadataCache setObject:metadata forKey:cacheKey];
+						else
+							[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
+					}
+				}
+				
+				block(rowid, key, object, metadata, &stop);
+				
+				if (stop || isMutated) break;
 			}
 			
-			block(rowid, key, object, metadata, &stop);
-			
-			if (stop || isMutated) break;
-		}
+		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
 	if ((status != SQLITE_DONE) && !stop && !isMutated)
@@ -2697,76 +2743,81 @@
 	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
 	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
 	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
 	{
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		int64_t rowid = sqlite3_column_int64(statement, 0);
-		
-		const unsigned char *text1 = sqlite3_column_text(statement, 1);
-		int textSize1 = sqlite3_column_bytes(statement, 1);
-		
-		const unsigned char *text2 = sqlite3_column_text(statement, 2);
-		int textSize2 = sqlite3_column_bytes(statement, 2);
-		
-		NSString *collection, *key;
-		
-		collection = [[NSString alloc] initWithBytes:text1 length:textSize1 encoding:NSUTF8StringEncoding];
-		key        = [[NSString alloc] initWithBytes:text2 length:textSize2 encoding:NSUTF8StringEncoding];
-		
-		BOOL invokeBlock = (filter == NULL) ? YES : filter(rowid, collection, key);
-		if (invokeBlock)
+		do
 		{
-			YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+			int64_t rowid = sqlite3_column_int64(statement, 0);
 			
-			id object = [connection->objectCache objectForKey:cacheKey];
-			if (object == nil)
+			const unsigned char *text1 = sqlite3_column_text(statement, 1);
+			int textSize1 = sqlite3_column_bytes(statement, 1);
+			
+			const unsigned char *text2 = sqlite3_column_text(statement, 2);
+			int textSize2 = sqlite3_column_bytes(statement, 2);
+			
+			NSString *collection, *key;
+			
+			collection = [[NSString alloc] initWithBytes:text1 length:textSize1 encoding:NSUTF8StringEncoding];
+			key        = [[NSString alloc] initWithBytes:text2 length:textSize2 encoding:NSUTF8StringEncoding];
+			
+			BOOL invokeBlock = (filter == NULL) ? YES : filter(rowid, collection, key);
+			if (invokeBlock)
 			{
-				const void *oBlob = sqlite3_column_blob(statement, 3);
-				int oBlobSize = sqlite3_column_bytes(statement, 3);
+				YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 				
-				NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
-				object = connection->database->objectDeserializer(oData);
-				
-				if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
+				id object = [connection->objectCache objectForKey:cacheKey];
+				if (object == nil)
 				{
-					if (object)
-						[connection->objectCache setObject:object forKey:cacheKey];
+					const void *oBlob = sqlite3_column_blob(statement, 3);
+					int oBlobSize = sqlite3_column_bytes(statement, 3);
+					
+					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+					object = connection->database->objectDeserializer(oData);
+					
+					if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
+					{
+						if (object)
+							[connection->objectCache setObject:object forKey:cacheKey];
+					}
 				}
+				
+				id metadata = [connection->metadataCache objectForKey:cacheKey];
+				if (metadata)
+				{
+					if (metadata == [YapNull null])
+						metadata = nil;
+				}
+				else
+				{
+					const void *mBlob = sqlite3_column_blob(statement, 4);
+					int mBlobSize = sqlite3_column_bytes(statement, 4);
+					
+					if (mBlobSize > 0)
+					{
+						NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+						metadata = connection->database->metadataDeserializer(mData);
+					}
+					
+					if (unlimitedMetadataCacheLimit ||
+					    [connection->metadataCache count] < connection->metadataCacheLimit)
+					{
+						if (metadata)
+							[connection->metadataCache setObject:metadata forKey:cacheKey];
+						else
+							[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
+					}
+				}
+				
+				block(rowid, collection, key, object, metadata, &stop);
+				
+				if (stop || isMutated) break;
 			}
 			
-			id metadata = [connection->metadataCache objectForKey:cacheKey];
-			if (metadata)
-			{
-				if (metadata == [YapNull null])
-					metadata = nil;
-			}
-			else
-			{
-				const void *mBlob = sqlite3_column_blob(statement, 4);
-				int mBlobSize = sqlite3_column_bytes(statement, 4);
-				
-				if (mBlobSize > 0)
-				{
-					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-					metadata = connection->database->metadataDeserializer(mData);
-				}
-				
-				if (unlimitedMetadataCacheLimit || [connection->metadataCache count] < connection->metadataCacheLimit)
-				{
-					if (metadata)
-						[connection->metadataCache setObject:metadata forKey:cacheKey];
-					else
-						[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
-				}
-			}
-			
-			block(rowid, collection, key, object, metadata, &stop);
-			
-			if (stop || isMutated) break;
-		}
+		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
 	if ((status != SQLITE_DONE) && !stop && !isMutated)

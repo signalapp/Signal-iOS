@@ -1994,7 +1994,8 @@
 						metadata = connection->database->metadataDeserializer(mData);
 					}
 					
-					if (unlimitedMetadataCacheLimit || [connection->metadataCache count] < connection->metadataCacheLimit)
+					if (unlimitedMetadataCacheLimit ||
+					    [connection->metadataCache count] < connection->metadataCacheLimit)
 					{
 						if (metadata)
 							[connection->metadataCache setObject:metadata forKey:key];
