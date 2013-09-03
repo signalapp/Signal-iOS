@@ -2976,9 +2976,10 @@
 		[connection->metadataCache removeObjectForKey:cacheKey];
 		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 		
-		[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
+		[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
 			
-			__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
+			__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue>
+			    extTransaction = extTransactionObj;
 			
 			[extTransaction handleRemoveObjectForKey:cacheKey.key        // mutable string protection
 										inCollection:cacheKey.collection // mutable string protection
@@ -3137,9 +3138,10 @@
 		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 	}
 	
-	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
 		
-		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue>
+		    extTransaction = extTransactionObj;
 
 		if (found)
 			[extTransaction handleUpdateObject:object
@@ -3204,9 +3206,10 @@
 		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 	}
 	
-	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
 		
-		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue>
+		    extTransaction = extTransactionObj;
 
 		[extTransaction handleUpdateMetadata:metadata
 		                              forKey:cacheKey.key        // mutable string protection
@@ -3258,9 +3261,10 @@
 	[connection->metadataChanges removeObjectForKey:cacheKey];
 	[connection->removedKeys addObject:cacheKey];
 	
-	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
 		
-		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue>
+		    extTransaction = extTransactionObj;
 
 		[extTransaction handleRemoveObjectForKey:cacheKey.key        // mutable string protection
 		                            inCollection:cacheKey.collection // mutable string protection
@@ -3270,8 +3274,10 @@
 
 - (void)removeObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection
 {
-	if ([keys count] == 0) return;
-	if ([keys count] == 1) {
+	NSUInteger keysCount = [keys count];
+	
+	if (keysCount == 0) return;
+	if (keysCount == 1) {
 		[self removeObjectForKey:[keys objectAtIndex:0] inCollection:collection];
 		return;
 	}
@@ -3281,66 +3287,176 @@
 	else
 		collection = [collection copy]; // mutable string protection
 	
+	NSMutableArray *foundKeys = nil;
+	NSMutableArray *foundRowids = nil;
+	
 	// Sqlite has an upper bound on the number of host parameters that may be used in a single query.
 	// We need to watch out for this in case a large array of keys is passed.
 	
 	NSUInteger maxHostParams = (NSUInteger) sqlite3_limit(connection->db, SQLITE_LIMIT_VARIABLE_NUMBER, -1);
 	
-	NSUInteger keysIndex = 0;
-	NSUInteger keysCount = [keys count];
+	// Loop over the keys, and remove them in big batches.
 	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
 	
+	NSUInteger keysIndex = 0;
 	do
 	{
-		NSUInteger keysLeft = keysCount - keysIndex;
-		NSUInteger numKeyParams = MIN(keysLeft, (maxHostParams-1)); // minus 1 for collectionParam
+		NSUInteger left = keysCount - keysIndex;
+		NSUInteger numKeyParams = MIN(left, (maxHostParams-1)); // minus 1 for collectionParam
 		
-		// DELETE FROM "database" WHERE "collection" = ? AND "key" IN (?, ?, ...);
-	
-		NSUInteger capacity = 100 + (numKeyParams * 3);
-		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
-		
-		[query appendString:@"DELETE FROM \"database\" WHERE \"collection\" = ? AND \"key\" IN ("];
-		
-		NSUInteger i;
-		for (i = 0; i < numKeyParams; i++)
+		if (foundKeys == nil)
 		{
-			if (i == 0)
-				[query appendFormat:@"?"];
-			else
-				[query appendFormat:@", ?"];
+			foundKeys   = [NSMutableArray arrayWithCapacity:numKeyParams];
+			foundRowids = [NSMutableArray arrayWithCapacity:numKeyParams];
+		}
+		else
+		{
+			[foundKeys removeAllObjects];
+			[foundRowids removeAllObjects];
 		}
 		
-		[query appendString:@");"];
+		// Find rowids for keys
 		
-		sqlite3_stmt *statement;
-		
-		int status = sqlite3_prepare_v2(connection->db, [query UTF8String], -1, &statement, NULL);
-		if (status != SQLITE_OK)
+		if (YES)
 		{
-			YDBLogError(@"Error creating 'removeKeysInCollection' statement: %d %s",
-			                                                             status, sqlite3_errmsg(connection->db));
-			break; // Break from do/while. Still need to free _collection.
+			// SELECT "key", "rowid" FROM "database" WHERE "collection" = ? AND "key" IN (?, ?, ...);
+		
+			NSUInteger capacity = 100 + (numKeyParams * 3);
+			NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
+			
+			[query appendString:
+			    @"SELECT \"key\", \"rowid\" FROM \"database\" WHERE \"collection\" = ? AND \"key\" IN ("];
+			
+			NSUInteger i;
+			for (i = 0; i < numKeyParams; i++)
+			{
+				if (i == 0)
+					[query appendFormat:@"?"];
+				else
+					[query appendFormat:@", ?"];
+			}
+			
+			[query appendString:@");"];
+			
+			sqlite3_stmt *statement;
+			
+			int status = sqlite3_prepare_v2(connection->db, [query UTF8String], -1, &statement, NULL);
+			if (status != SQLITE_OK)
+			{
+				YDBLogError(@"Error creating 'removeKeys:inCollection:' statement (A): %d %s",
+				                                                              status, sqlite3_errmsg(connection->db));
+				FreeYapDatabaseString(&_collection);
+				return;
+			}
+			
+			sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+			
+			for (i = 0; i < numKeyParams; i++)
+			{
+				NSString *key = [keys objectAtIndex:(keysIndex + i)];
+				sqlite3_bind_text(statement, (int)(i + 2), [key UTF8String], -1, SQLITE_TRANSIENT);
+			}
+			
+			while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+			{
+				const unsigned char *text = sqlite3_column_text(statement, 0);
+				int textSize = sqlite3_column_bytes(statement, 0);
+				
+				int64_t rowid = sqlite3_column_int64(statement, 1);
+				
+				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+				
+				[foundKeys addObject:key];
+				[foundRowids addObject:@(rowid)];
+			}
+			
+			if (status != SQLITE_DONE)
+			{
+				YDBLogError(@"Error executing 'removeKeys:inCollection:' statement (A): %d %s",
+				                                                               status, sqlite3_errmsg(connection->db));
+			}
+			
+			sqlite3_finalize(statement);
+			statement = NULL;
 		}
 		
-		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+		// Now remove all the matching rows
 		
-		for (i = 0; i < numKeyParams; i++)
+		NSUInteger foundCount = [foundRowids count];
+		
+		if (foundCount > 0)
 		{
-			NSString *key = [keys objectAtIndex:(keysIndex + i)];
-			sqlite3_bind_text(statement, (int)(i + 2), [key UTF8String], -1, SQLITE_TRANSIENT);
+			// DELETE FROM "database" WHERE "rowid" in (?, ?, ...);
+			
+			NSUInteger capacity = 50 + (foundCount * 3);
+			NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
+			
+			[query appendString:@"DELETE FROM \"database\" WHERE \"rowid\" IN ("];
+			
+			NSUInteger i;
+			for (i = 0; i < foundCount; i++)
+			{
+				if (i == 0)
+					[query appendFormat:@"?"];
+				else
+					[query appendFormat:@", ?"];
+			}
+			
+			[query appendString:@");"];
+			
+			sqlite3_stmt *statement;
+			
+			int status = sqlite3_prepare_v2(connection->db, [query UTF8String], -1, &statement, NULL);
+			if (status != SQLITE_OK)
+			{
+				YDBLogError(@"Error creating 'removeKeys:inCollection:' statement (B): %d %s",
+							status, sqlite3_errmsg(connection->db));
+				return;
+			}
+			
+			for (i = 0; i < foundCount; i++)
+			{
+				int64_t rowid = [[foundRowids objectAtIndex:i] longLongValue];
+				
+				sqlite3_bind_int64(statement, (int)(i + 1), rowid);
+			}
+			
+			status = sqlite3_step(statement);
+			if (status != SQLITE_DONE)
+			{
+				YDBLogError(@"Error executing 'removeKeys:inCollection:' statement (B): %d %s",
+							status, sqlite3_errmsg(connection->db));
+			}
+			
+			sqlite3_finalize(statement);
+			statement = NULL;
+			
+			isMutated = YES;  // mutation during enumeration protection
+			
+			for (NSString *key in foundKeys)
+			{
+				YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+				
+				[connection->objectCache removeObjectForKey:cacheKey];
+				[connection->metadataCache removeObjectForKey:cacheKey];
+				
+				[connection->objectChanges removeObjectForKey:cacheKey];
+				[connection->metadataChanges removeObjectForKey:cacheKey];
+				[connection->removedKeys addObject:cacheKey];
+			}
+			
+			[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
+				
+				__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction;
+				    extTransaction = extTransactionObj;
+				
+				[extTransaction handleRemoveObjectsForKeys:foundKeys inCollection:collection withRowids:foundRowids];
+			}];
+			
 		}
 		
-		status = sqlite3_step(statement);
-		if (status != SQLITE_DONE)
-		{
-			YDBLogError(@"Error executing 'removeKeysInCollection' statement: %d %s",
-			                                                              status, sqlite3_errmsg(connection->db));
-		}
-		
-		sqlite3_reset(statement);
-		sqlite3_finalize(statement);
+		// Move on to the next batch (if there's more)
 		
 		keysIndex += numKeyParams;
 		
@@ -3348,30 +3464,6 @@
 	
 	
 	FreeYapDatabaseString(&_collection);
-	
-	isMutated = YES;  // mutation during enumeration protection
-	NSMutableArray *safeKeys = [NSMutableArray arrayWithCapacity:[keys count]]; // mutable string protection
-	
-	for (NSString *key in keys)
-	{
-		YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-		
-		[connection->objectCache removeObjectForKey:cacheKey];
-		[connection->metadataCache removeObjectForKey:cacheKey];
-		
-		[connection->objectChanges removeObjectForKey:cacheKey];
-		[connection->metadataChanges removeObjectForKey:cacheKey];
-		[connection->removedKeys addObject:cacheKey];
-		
-		[safeKeys addObject:cacheKey.key];
-	}
-	
-	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
-		
-//		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
-//
-//		[extTransaction handleRemoveObjectsForKeys:safeKeys inCollection:collection];
-	}];
 }
 
 - (void)removeAllObjectsInCollection:(NSString *)collection
@@ -3381,26 +3473,7 @@
 	else
 		collection = [collection copy]; // mutable string protection
 	
-	sqlite3_stmt *statement = [connection removeCollectionStatement];
-	if (statement == NULL) return;
-	
-	// DELETE FROM "database" WHERE "collection" = ?;
-	
-	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status != SQLITE_DONE)
-	{
-		YDBLogError(@"Error executing 'removeCollectionStatement': %d %s, collection(%@)",
-		                                                       status, sqlite3_errmsg(connection->db), collection);
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_collection);
-	
-	isMutated = YES;  // mutation during enumeration protection
+	// Purge the cache
 	
 	NSMutableArray *keysToRemove = [NSMutableArray array];
 	
@@ -3423,12 +3496,178 @@
 	
 	[connection->removedCollections addObject:collection];
 	
-	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
+	// If there are no active extensions we can take a shortcut
+	
+	if ([[self extensions] count] == 0)
+	{
+		sqlite3_stmt *statement = [connection removeCollectionStatement];
+		if (statement == NULL) return;
+	
+		// DELETE FROM "database" WHERE "collection" = ?;
 		
-		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
+		YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
+		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
 		
-		[extTransaction handleRemoveAllObjectsInCollection:collection];
-	}];
+		int status = sqlite3_step(statement);
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"Error executing 'removeCollectionStatement': %d %s, collection(%@)",
+			                                                       status, sqlite3_errmsg(connection->db), collection);
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+		FreeYapDatabaseString(&_collection);
+		
+		isMutated = YES;  // mutation during enumeration protection
+		
+		return;
+	} // end shortcut
+	
+	
+	NSUInteger left = [self numberOfKeysInCollection:collection];
+	
+	NSMutableArray *foundKeys = nil;
+	NSMutableArray *foundRowids = nil;
+	
+	// Sqlite has an upper bound on the number of host parameters that may be used in a single query.
+	// We need to watch out for this in case a large array of keys is passed.
+	
+	NSUInteger maxHostParams = (NSUInteger) sqlite3_limit(connection->db, SQLITE_LIMIT_VARIABLE_NUMBER, -1);
+	
+	// Loop over the keys, and remove them in big batches.
+	
+	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
+	
+	do
+	{
+		NSUInteger numKeyParams = MIN(left, maxHostParams-1); // minus 1 for collectionParam
+		
+		if (foundKeys == nil)
+		{
+			foundKeys   = [NSMutableArray arrayWithCapacity:numKeyParams];
+			foundRowids = [NSMutableArray arrayWithCapacity:numKeyParams];
+		}
+		else
+		{
+			[foundKeys removeAllObjects];
+			[foundRowids removeAllObjects];
+		}
+		
+		NSUInteger foundCount = 0;
+		
+		// Find rowids for keys
+		
+		if (YES)
+		{
+			sqlite3_stmt *statement = [connection enumerateKeysInCollectionStatement];
+			if (statement == NULL) {
+				FreeYapDatabaseString(&_collection);
+				return;
+			}
+			
+			// SELECT "rowid", "key" FROM "database" WHERE collection = ?;
+			
+			sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+			
+			int status;
+			while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+			{
+				int64_t rowid = sqlite3_column_int64(statement, 0);
+				
+				const unsigned char *text = sqlite3_column_text(statement, 1);
+				int textSize = sqlite3_column_bytes(statement, 1);
+				
+				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+				
+				[foundKeys addObject:key];
+				[foundRowids addObject:@(rowid)];
+				
+				if (++foundCount >= numKeyParams)
+				{
+					break;
+				}
+			}
+			
+			if ((foundCount < numKeyParams) && (status != SQLITE_DONE))
+			{
+				YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
+			}
+			
+			sqlite3_clear_bindings(statement);
+			sqlite3_reset(statement);
+		}
+		
+		// Now remove all the matching rows
+		
+		if (foundCount > 0)
+		{
+			// DELETE FROM "database" WHERE "rowid" in (?, ?, ...);
+			
+			NSUInteger capacity = 50 + (foundCount * 3);
+			NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
+			
+			[query appendString:@"DELETE FROM \"database\" WHERE \"rowid\" IN ("];
+			
+			NSUInteger i;
+			for (i = 0; i < foundCount; i++)
+			{
+				if (i == 0)
+					[query appendFormat:@"?"];
+				else
+					[query appendFormat:@", ?"];
+			}
+			
+			[query appendString:@");"];
+			
+			sqlite3_stmt *statement;
+			
+			int status = sqlite3_prepare_v2(connection->db, [query UTF8String], -1, &statement, NULL);
+			if (status != SQLITE_OK)
+			{
+				YDBLogError(@"Error creating 'removeAllObjectsInCollection:' statement: %d %s",
+				            status, sqlite3_errmsg(connection->db));
+				
+				FreeYapDatabaseString(&_collection);
+				return;
+			}
+			
+			for (i = 0; i < foundCount; i++)
+			{
+				int64_t rowid = [[foundRowids objectAtIndex:i] longLongValue];
+				
+				sqlite3_bind_int64(statement, (int)(i + 1), rowid);
+			}
+			
+			status = sqlite3_step(statement);
+			if (status != SQLITE_DONE)
+			{
+				YDBLogError(@"Error executing 'removeAllObjectsInCollection:' statement: %d %s",
+				            status, sqlite3_errmsg(connection->db));
+			}
+			
+			sqlite3_finalize(statement);
+			statement = NULL;
+			
+			isMutated = YES;  // mutation during enumeration protection
+			
+			[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
+				
+				__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction;
+				    extTransaction = extTransactionObj;
+				
+				[extTransaction handleRemoveObjectsForKeys:foundKeys inCollection:collection withRowids:foundRowids];
+			}];
+		}
+		
+		// Move on to the next batch (if there's more)
+		
+		left -= foundCount;
+		
+	} while((left > 0) && ([foundKeys count] > 0));
+	
+	
+	FreeYapDatabaseString(&_collection);
 }
 
 - (void)removeAllObjectsInAllCollections
@@ -3455,9 +3694,10 @@
 	[connection->removedCollections removeAllObjects];
 	connection->allKeysRemoved = YES;
 	
-	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extObj, BOOL *stop) {
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
 		
-		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction = extObj;
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue>
+		    extTransaction = extTransactionObj;
 		
 		[extTransaction handleRemoveAllObjectsInAllCollections];
 	}];

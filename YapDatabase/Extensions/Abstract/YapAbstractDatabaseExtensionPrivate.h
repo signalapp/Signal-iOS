@@ -252,8 +252,6 @@
 - (void)handleRemoveObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
 - (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids;
 
-- (void)handleRemoveAllObjectsInCollection:(NSString *)collection; // Todo...
-
 - (void)handleRemoveAllObjectsInAllCollections;
 
 @end
