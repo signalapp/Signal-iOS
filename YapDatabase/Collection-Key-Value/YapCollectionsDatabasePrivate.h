@@ -14,7 +14,6 @@
 	sqlite3_stmt *getCollectionCountStatement;
 	sqlite3_stmt *getKeyCountForCollectionStatement;
 	sqlite3_stmt *getKeyCountForAllStatement;
-	sqlite3_stmt *getCountForKeyStatement;
 	sqlite3_stmt *getCountForRowidStatement;
 	sqlite3_stmt *getRowidForKeyStatement;
 	sqlite3_stmt *getKeyForRowidStatement;
@@ -73,7 +72,6 @@
 - (sqlite3_stmt *)getCollectionCountStatement;
 - (sqlite3_stmt *)getKeyCountForCollectionStatement;
 - (sqlite3_stmt *)getKeyCountForAllStatement;
-- (sqlite3_stmt *)getCountForKeyStatement;
 - (sqlite3_stmt *)getCountForRowidStatement;
 - (sqlite3_stmt *)getRowidForKeyStatement;
 - (sqlite3_stmt *)getKeyForRowidStatement;

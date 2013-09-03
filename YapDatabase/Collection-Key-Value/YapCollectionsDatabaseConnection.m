@@ -35,7 +35,6 @@
 	sqlite3_stmt *getCollectionCountStatement;
 	sqlite3_stmt *getKeyCountForCollectionStatement;
 	sqlite3_stmt *getKeyCountForAllStatement;
-	sqlite3_stmt *getCountForKeyStatement;
 	sqlite3_stmt *getDataForKeyStatement;
 	sqlite3_stmt *getMetadataForKeyStatement;
 	sqlite3_stmt *getAllForKeyStatement;
@@ -79,7 +78,6 @@
 	sqlite_finalize_null(&getCollectionCountStatement);
 	sqlite_finalize_null(&getKeyCountForCollectionStatement);
 	sqlite_finalize_null(&getKeyCountForAllStatement);
-	sqlite_finalize_null(&getCountForKeyStatement);
 	sqlite_finalize_null(&getCountForRowidStatement);
 	sqlite_finalize_null(&getRowidForKeyStatement);
 	sqlite_finalize_null(&getKeyForRowidStatement);
@@ -116,7 +114,6 @@
 		sqlite_finalize_null(&getCollectionCountStatement);
 		sqlite_finalize_null(&getKeyCountForCollectionStatement);
 		sqlite_finalize_null(&getKeyCountForAllStatement);
-		sqlite_finalize_null(&getCountForKeyStatement);
 		sqlite_finalize_null(&getCountForRowidStatement);
 		sqlite_finalize_null(&getKeyForRowidStatement);
 		sqlite_finalize_null(&getDataForRowidStatement);
@@ -208,23 +205,6 @@
 	}
 	
 	return getKeyCountForAllStatement;
-}
-
-- (sqlite3_stmt *)getCountForKeyStatement
-{
-	if (getCountForKeyStatement == NULL)
-	{
-		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database\" WHERE \"collection\" = ? AND \"key\" = ?;";
-		int stmtLen = (int)strlen(stmt);
-		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getCountForKeyStatement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
-		}
-	}
-	
-	return getCountForKeyStatement;
 }
 
 - (sqlite3_stmt *)getCountForRowidStatement
