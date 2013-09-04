@@ -2639,9 +2639,7 @@
 			
 			int64_t rowid = [[lastPage lastObject] longLongValue];
 			
-			NSString *lastKey = nil;
 			[databaseTransaction getKey:&lastKey forRowid:rowid];
-			
 			*stop = YES;
 		}
 	}];
