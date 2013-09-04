@@ -22,7 +22,7 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
-static NSString *const key_dirtyKeys                = @"dirtyKeys";
+static NSString *const key_dirtyMaps                = @"dirtyMaps";
 static NSString *const key_dirtyPages               = @"dirtyPages";
 static NSString *const key_reset                    = @"reset";
 static NSString *const key_group_pagesMetadata_dict = @"group_pagesMetadata_dict";
@@ -34,12 +34,10 @@ static NSString *const key_changes                  = @"changes";
 	id sharedKeySetForInternalChangeset;
 	id sharedKeySetForExternalChangeset;
 	
-	sqlite3_stmt *keyTable_getPageKeyForCollectionKeyStatement;
-	sqlite3_stmt *keyTable_setPageKeyForCollectionKeyStatement;
-	sqlite3_stmt *keyTable_enumerateForCollectionStatement;
-	sqlite3_stmt *keyTable_removeForCollectionKeyStatement;
-	sqlite3_stmt *keyTable_removeForCollectionStatement;
-	sqlite3_stmt *keyTable_removeAllStatement;
+	sqlite3_stmt *mapTable_getPageKeyForRowidStatement;
+	sqlite3_stmt *mapTable_setPageKeyForRowidStatement;
+	sqlite3_stmt *mapTable_removeForRowidStatement;
+	sqlite3_stmt *mapTable_removeAllStatement;
 	
 	sqlite3_stmt *pageTable_getDataForPageKeyStatement;
 	sqlite3_stmt *pageTable_setAllForPageKeyStatement;
@@ -57,7 +55,7 @@ static NSString *const key_changes                  = @"changes";
 		view = inView;
 		databaseConnection = inDbC;
 		
-		keyCache = [[YapCache alloc] initWithKeyClass:[YapCollectionKey class]];
+		mapCache = [[YapCache alloc] initWithKeyClass:[NSNumber class]];
 		pageCache = [[YapCache alloc] initWithKeyClass:[NSString class]];
 		
 		sharedKeySetForInternalChangeset = [NSDictionary sharedKeySetForKeys:[self internalChangesetKeys]];
@@ -68,12 +66,10 @@ static NSString *const key_changes                  = @"changes";
 
 - (void)dealloc
 {
-	sqlite_finalize_null(&keyTable_getPageKeyForCollectionKeyStatement);
-	sqlite_finalize_null(&keyTable_setPageKeyForCollectionKeyStatement);
-	sqlite_finalize_null(&keyTable_enumerateForCollectionStatement);
-	sqlite_finalize_null(&keyTable_removeForCollectionKeyStatement);
-	sqlite_finalize_null(&keyTable_removeForCollectionStatement);
-	sqlite_finalize_null(&keyTable_removeAllStatement);
+	sqlite_finalize_null(&mapTable_getPageKeyForRowidStatement);
+	sqlite_finalize_null(&mapTable_setPageKeyForRowidStatement);
+	sqlite_finalize_null(&mapTable_removeForRowidStatement);
+	sqlite_finalize_null(&mapTable_removeAllStatement);
 	
 	sqlite_finalize_null(&pageTable_getDataForPageKeyStatement);
 	sqlite_finalize_null(&pageTable_setAllForPageKeyStatement);
@@ -89,17 +85,15 @@ static NSString *const key_changes                  = @"changes";
 {
 	if (level >= YapDatabaseConnectionFlushMemoryLevelMild)
 	{
-		[keyCache removeAllObjects];
+		[mapCache removeAllObjects];
 		[pageCache removeAllObjects];
 	}
 	
 	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
 	{
-		sqlite_finalize_null(&keyTable_setPageKeyForCollectionKeyStatement);
-		sqlite_finalize_null(&keyTable_enumerateForCollectionStatement);
-		sqlite_finalize_null(&keyTable_removeForCollectionKeyStatement);
-		sqlite_finalize_null(&keyTable_removeForCollectionStatement);
-		sqlite_finalize_null(&keyTable_removeAllStatement);
+		sqlite_finalize_null(&mapTable_setPageKeyForRowidStatement);
+		sqlite_finalize_null(&mapTable_removeForRowidStatement);
+		sqlite_finalize_null(&mapTable_removeAllStatement);
 		
 		sqlite_finalize_null(&pageTable_setAllForPageKeyStatement);
 		sqlite_finalize_null(&pageTable_setMetadataForPageKeyStatement);
@@ -109,7 +103,7 @@ static NSString *const key_changes                  = @"changes";
 	
 	if (level >= YapDatabaseConnectionFlushMemoryLevelFull)
 	{
-		sqlite_finalize_null(&keyTable_getPageKeyForCollectionKeyStatement);
+		sqlite_finalize_null(&mapTable_getPageKeyForRowidStatement);
 		
 		sqlite_finalize_null(&pageTable_getDataForPageKeyStatement);
 	}
@@ -149,8 +143,8 @@ static NSString *const key_changes                  = @"changes";
 	    [[YapCollectionsDatabaseViewTransaction alloc] initWithViewConnection:self
 	             databaseTransaction:(YapCollectionsDatabaseReadTransaction *)databaseTransaction];
 	
-	if (dirtyKeys == nil)
-		dirtyKeys = [[NSMutableDictionary alloc] init];
+	if (dirtyMaps == nil)
+		dirtyMaps = [[NSMutableDictionary alloc] init];
 	if (dirtyPages == nil)
 		dirtyPages = [[NSMutableDictionary alloc] init];
 	if (dirtyMetadata == nil)
@@ -221,10 +215,10 @@ static NSString *const key_changes                  = @"changes";
 	group_pagesMetadata_dict = nil;
 	pageKey_group_dict = nil;
 	
-	[keyCache removeAllObjects];
+	[mapCache removeAllObjects];
 	[pageCache removeAllObjects];
 	
-	[dirtyKeys removeAllObjects];
+	[dirtyMaps removeAllObjects];
 	[dirtyPages removeAllObjects];
 	[dirtyMetadata removeAllObjects];
 	reset = NO;
@@ -241,8 +235,8 @@ static NSString *const key_changes                  = @"changes";
 	// Both dirtyKeys & dirtyPages are sent in the internalChangeset.
 	// So we need completely new versions of them.
 	
-	if ([dirtyKeys count] > 0)
-		dirtyKeys = nil;
+	if ([dirtyMaps count] > 0)
+		dirtyMaps = nil;
 	
 	if ([dirtyPages count] > 0)
 		dirtyPages = nil;
@@ -263,7 +257,7 @@ static NSString *const key_changes                  = @"changes";
 
 - (NSArray *)internalChangesetKeys
 {
-	return @[ key_dirtyKeys,
+	return @[ key_dirtyMaps,
 	          key_dirtyPages,
 	          key_reset,
 	          key_group_pagesMetadata_dict,
@@ -283,13 +277,13 @@ static NSString *const key_changes                  = @"changes";
 	NSMutableDictionary *internalChangeset = nil;
 	NSMutableDictionary *externalChangeset = nil;
 	
-	if ([dirtyKeys count] || [dirtyPages count] || [dirtyMetadata count] || reset)
+	if ([dirtyMaps count] || [dirtyPages count] || [dirtyMetadata count] || reset)
 	{
 		internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
 		
-		if ([dirtyKeys count] > 0)
+		if ([dirtyMaps count] > 0)
 		{
-			[internalChangeset setObject:dirtyKeys forKey:key_dirtyKeys];
+			[internalChangeset setObject:dirtyMaps forKey:key_dirtyMaps];
 		}
 		if ([dirtyPages count] > 0)
 		{
@@ -329,7 +323,7 @@ static NSString *const key_changes                  = @"changes";
 	NSMutableDictionary *changeset_group_pagesMetadata_dict = [changeset objectForKey:key_group_pagesMetadata_dict];
 	NSMutableDictionary *changeset_pageKey_group_dict       = [changeset objectForKey:key_pageKey_group_dict];
 	
-	NSDictionary *changeset_dirtyKeys = [changeset objectForKey:key_dirtyKeys];
+	NSDictionary *changeset_dirtyMaps = [changeset objectForKey:key_dirtyMaps];
 	NSDictionary *changeset_dirtyPages = [changeset objectForKey:key_dirtyPages];
 	
 	BOOL changeset_reset = [[changeset objectForKey:key_reset] boolValue];
@@ -341,19 +335,19 @@ static NSString *const key_changes                  = @"changes";
 	
 	// Update keyCache
 	
-	if (changeset_reset && ([changeset_dirtyKeys count] == 0))
+	if (changeset_reset && ([changeset_dirtyMaps count] == 0))
 	{
-		[keyCache removeAllObjects];
+		[mapCache removeAllObjects];
 	}
-	else if ([changeset_dirtyKeys count])
+	else if ([changeset_dirtyMaps count] > 0)
 	{
-		NSUInteger removeCapacity = [keyCache count];
-		NSUInteger updateCapacity = MIN([keyCache count], [changeset_dirtyKeys count]);
+		NSUInteger removeCapacity = [mapCache count];
+		NSUInteger updateCapacity = MIN([mapCache count], [changeset_dirtyMaps count]);
 		
 		NSMutableArray *keysToRemove = [NSMutableArray arrayWithCapacity:removeCapacity];
 		NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
 		
-		[keyCache enumerateKeysWithBlock:^(id key, BOOL *stop) {
+		[mapCache enumerateKeysWithBlock:^(id key, BOOL *stop) {
 			
 			// Order matters.
 			// Consider the following database change:
@@ -361,24 +355,24 @@ static NSString *const key_changes                  = @"changes";
 			// [transaction removeAllObjects];
 			// [transaction setObject:obj forKey:key];
 			
-			if ([changeset_dirtyKeys objectForKey:key])
+			if ([changeset_dirtyMaps objectForKey:key])
 				[keysToUpdate addObject:key];
 			else if (changeset_reset)
 				[keysToRemove addObject:key];
 		}];
 		
-		[keyCache removeObjectsForKeys:keysToRemove];
+		[mapCache removeObjectsForKeys:keysToRemove];
 		
 		NSNull *nsnull = [NSNull null];
 		
 		for (NSString *key in keysToUpdate)
 		{
-			id pageKey = [changeset_dirtyKeys objectForKey:key];
+			id pageKey = [changeset_dirtyMaps objectForKey:key];
 			
 			if (pageKey == nsnull)
-				[keyCache removeObjectForKey:key];
+				[mapCache removeObjectForKey:key];
 			else
-				[keyCache setObject:pageKey forKey:key];
+				[mapCache setObject:pageKey forKey:key];
 		}
 	}
 	
@@ -598,125 +592,84 @@ static NSString *const key_changes                  = @"changes";
 #pragma mark Statements - KeyTable
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (sqlite3_stmt *)keyTable_getPageKeyForCollectionKeyStatement
+- (sqlite3_stmt *)mapTable_getPageKeyForRowidStatement
 {
-	if (keyTable_getPageKeyForCollectionKeyStatement == NULL)
+	if (mapTable_getPageKeyForRowidStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		    @"SELECT \"pageKey\" FROM \"%@\" WHERE \"collection\" = ? AND \"key\" = ? ;", [view keyTableName]];
+		    @"SELECT \"pageKey\" FROM \"%@\" WHERE \"rowid\" = ?;", [view mapTableName]];
 		
 		int status;
 		sqlite3 *db = databaseConnection->db;
 		
-		status = sqlite3_prepare_v2(db, [string UTF8String], -1, &keyTable_getPageKeyForCollectionKeyStatement, NULL);
+		status = sqlite3_prepare_v2(db, [string UTF8String], -1, &mapTable_getPageKeyForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return keyTable_getPageKeyForCollectionKeyStatement;
+	return mapTable_getPageKeyForRowidStatement;
 }
 
-- (sqlite3_stmt *)keyTable_setPageKeyForCollectionKeyStatement
+- (sqlite3_stmt *)mapTable_setPageKeyForRowidStatement
 {
-	if (keyTable_setPageKeyForCollectionKeyStatement == NULL)
+	if (mapTable_setPageKeyForRowidStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		    @"INSERT OR REPLACE INTO \"%@\" (\"collection\", \"key\", \"pageKey\") VALUES (?, ?, ?);", 
-		    [view keyTableName]];
+		    @"INSERT OR REPLACE INTO \"%@\" (\"rowid\", \"pageKey\") VALUES (?, ?);", [view mapTableName]];
 		
 		int status;
 		sqlite3 *db = databaseConnection->db;
 		
-		status = sqlite3_prepare_v2(db, [string UTF8String], -1, &keyTable_setPageKeyForCollectionKeyStatement, NULL);
+		status = sqlite3_prepare_v2(db, [string UTF8String], -1, &mapTable_setPageKeyForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return keyTable_setPageKeyForCollectionKeyStatement;
+	return mapTable_setPageKeyForRowidStatement;
 }
 
-- (sqlite3_stmt *)keyTable_enumerateForCollectionStatement
+- (sqlite3_stmt *)mapTable_removeForRowidStatement
 {
-	if (keyTable_enumerateForCollectionStatement == NULL)
+	if (mapTable_removeForRowidStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		    @"SELECT \"key\", \"pageKey\" FROM \"%@\" WHERE \"collection\" = ?;", [view keyTableName]];
+		    @"DELETE FROM \"%@\" WHERE \"rowid\" = ?;", [view mapTableName]];
 		
 		int status;
 		sqlite3 *db = databaseConnection->db;
 		
-		status = sqlite3_prepare_v2(db, [string UTF8String], -1, &keyTable_enumerateForCollectionStatement, NULL);
+		status = sqlite3_prepare_v2(db, [string UTF8String], -1, &mapTable_removeForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return keyTable_enumerateForCollectionStatement;
+	return mapTable_removeForRowidStatement;
 }
 
-- (sqlite3_stmt *)keyTable_removeForCollectionKeyStatement
+- (sqlite3_stmt *)mapTable_removeAllStatement
 {
-	if (keyTable_removeForCollectionKeyStatement == NULL)
+	if (mapTable_removeAllStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		    @"DELETE FROM \"%@\" WHERE \"collection\" = ? AND \"key\" = ?;", [view keyTableName]];
+		    @"DELETE FROM \"%@\";", [view mapTableName]];
 		
 		int status;
 		sqlite3 *db = databaseConnection->db;
 		
-		status = sqlite3_prepare_v2(db, [string UTF8String], -1, &keyTable_removeForCollectionKeyStatement, NULL);
+		status = sqlite3_prepare_v2(db, [string UTF8String], -1, &mapTable_removeAllStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return keyTable_removeForCollectionKeyStatement;
-}
-
-- (sqlite3_stmt *)keyTable_removeForCollectionStatement
-{
-	if (keyTable_removeForCollectionStatement == NULL)
-	{
-		NSString *string = [NSString stringWithFormat:
-		    @"DELETE FROM \"%@\" WHERE \"collection\" = ?;", [view keyTableName]];
-		
-		int status;
-		sqlite3 *db = databaseConnection->db;
-		
-		status = sqlite3_prepare_v2(db, [string UTF8String], -1, &keyTable_removeForCollectionStatement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-	}
-	
-	return keyTable_removeForCollectionStatement;
-}
-
-- (sqlite3_stmt *)keyTable_removeAllStatement
-{
-	if (keyTable_removeAllStatement == NULL)
-	{
-		NSString *string = [NSString stringWithFormat:
-		    @"DELETE FROM \"%@\";", [view keyTableName]];
-		
-		int status;
-		sqlite3 *db = databaseConnection->db;
-		
-		status = sqlite3_prepare_v2(db, [string UTF8String], -1, &keyTable_removeAllStatement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-	}
-	
-	return keyTable_removeAllStatement;
+	return mapTable_removeAllStatement;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
