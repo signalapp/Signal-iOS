@@ -274,6 +274,9 @@
 		YDBLogError(@"Error executing 'getKeyForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
 	}
 	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	
 	if (keyPtr) *keyPtr = key;
 	if (collectionPtr) *collectionPtr = collection;
 	return result;
@@ -340,6 +343,9 @@
 	{
 		YDBLogError(@"Error executing 'getDataForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
 	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
 	
 	if (keyPtr) *keyPtr = key;
 	if (collectionPtr) *collectionPtr = collection;
@@ -418,6 +424,9 @@
 	{
 		YDBLogError(@"Error executing 'getMetadataForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
 	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
 	
 	if (keyPtr) *keyPtr = key;
 	if (collectionPtr) *collectionPtr = collection;
@@ -515,6 +524,9 @@
 	{
 		YDBLogError(@"Error executing 'getKeyForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
 	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
 	
 	if (keyPtr) *keyPtr = key;
 	if (collectionPtr) *collectionPtr = collection;
