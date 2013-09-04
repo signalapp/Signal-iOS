@@ -446,7 +446,7 @@
  * If the given key is in the view, returns the associated pageKey.
  *
  * This method will use the cache(s) if possible.
- * Otherwise it will lookup the value in the key table.
+ * Otherwise it will lookup the value in the map table.
 **/
 - (NSString *)pageKeyForRowid:(int64_t)rowid
 {
@@ -531,8 +531,6 @@
 	
 	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:count];
 	
-	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
-	
 	sqlite3 *db = databaseTransaction->connection->db;
 	
 	// Sqlite has an upper bound on the number of host parameters that may be used in a single query.
@@ -546,12 +544,12 @@
 		NSUInteger left = count - offset;
 		NSUInteger numHostParams = MIN(left, maxHostParams);
 		
-		// SELECT "rowid", "pageKey" FROM "mapTableName" WHERE "key" IN (?, ?, ...);
+		// SELECT "rowid", "pageKey" FROM "mapTableName" WHERE "rowid" IN (?, ?, ...);
 		
 		NSUInteger capacity = 50 + (numHostParams * 3);
 		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 		
-		[query appendFormat:@"SELECT \"rowid\", \"pageKey\" FROM \"%@\" WHERE \"rowid\" IN (", [view mapTableName]];
+		[query appendFormat:@"SELECT \"rowid\", \"pageKey\" FROM \"%@\" WHERE \"rowid\" IN (", [self mapTableName]];
 		
 		for (NSUInteger i = 0; i < numHostParams; i++)
 		{
@@ -801,7 +799,7 @@
 {
 	// Remove everything from the database
 	
-	[self removeAllKeys];
+	[self removeAllRowids];
 	
 	// Initialize ivars
 	
@@ -1076,7 +1074,8 @@
 	
 	// Add change to log
 	
-	[viewConnection->changes addObject:[YapDatabaseViewRowChange insertKey:key inGroup:group atIndex:index]];
+	[viewConnection->changes addObject:
+	    [YapDatabaseViewRowChange insertKey:key inGroup:group atIndex:index]];
 	
 	[viewConnection->mutatedGroups addObject:group];
 }
@@ -1147,7 +1146,7 @@
 		}
 		else
 		{
-			[self removeRowid:rowid key:key withPageKey:existingPageKey group:existingGroup];
+			[self removeRowid:rowid key:key withPageKey:existingPageKey inGroup:existingGroup];
 			
 			// Don't forget to reset the existingPageKey ivar!
 			// Or else 'insertKey:inGroup:atIndex:withExistingPageKey:' will be given an invalid existingPageKey.
@@ -1216,7 +1215,7 @@
 	
 	// Need to determine the location within the existing group.
 	
-	// Calculate out how many keys are in the group.
+	// Calculate how many keys are in the group.
 	
 	NSUInteger count = 0;
 	
@@ -1343,7 +1342,7 @@
 			// The key has changed position.
 			// Remove it from previous position (and don't forget to decrement count).
 			
-			[self removeRowid:rowid key:key withPageKey:existingPageKey group:group];
+			[self removeRowid:rowid key:key withPageKey:existingPageKey inGroup:group];
 			count--;
 			
 			// Don't forget to reset the existingPageKey ivar!
@@ -1423,7 +1422,7 @@
 /**
  * Use this method (instead of removeKey:) when the pageKey and group are already known.
 **/
-- (void)removeRowid:(int64_t)rowid key:(NSString *)key withPageKey:(NSString *)pageKey group:(NSString *)group
+- (void)removeRowid:(int64_t)rowid key:(NSString *)key withPageKey:(NSString *)pageKey inGroup:(NSString *)group
 {
 	YDBLogAutoTrace();
 	
@@ -1511,6 +1510,22 @@
 }
 
 /**
+ * Use this method when you don't know if the key exists in the view.
+**/
+- (void)removeRowid:(int64_t)rowid key:(NSString *)key
+{
+	YDBLogAutoTrace();
+	
+	// Find out if key is in view
+	
+	NSString *pageKey = [self pageKeyForRowid:rowid];
+	if (pageKey)
+	{
+		[self removeRowid:rowid key:key withPageKey:pageKey inGroup:[self groupForPageKey:pageKey]];
+	}
+}
+
+/**
  * Use this method to remove 1 or more keys from a given pageKey & group.
  * 
  * The dictionary is to be of the form:
@@ -1518,21 +1533,21 @@
  *     @(rowid) = key,
  * }
 **/
-- (void)removeRowids:(NSDictionary *)dict withPageKey:(NSString *)pageKey group:(NSString *)group
+- (void)removeRowidsWithKeyMappings:(NSDictionary *)keyMappings pageKey:(NSString *)pageKey inGroup:(NSString *)group
 {
 	YDBLogAutoTrace();
 	
-	NSUInteger dictCount = [dict count];
+	NSUInteger count = [keyMappings count];
 	
-	if (dictCount == 0) return;
-	if (dictCount == 1)
+	if (count == 0) return;
+	if (count == 1)
 	{
-		for (NSNumber *number in dict)
+		for (NSNumber *number in keyMappings)
 		{
 			int64_t rowid = [number longLongValue];
-			NSString *key = [dict objectForKey:number];
+			NSString *key = [keyMappings objectForKey:number];
 			
-			[self removeRowid:rowid key:key withPageKey:pageKey group:group];
+			[self removeRowid:rowid key:key withPageKey:pageKey inGroup:group];
 		}
 		return;
 	}
@@ -1569,36 +1584,33 @@
 	// - We must add the changes in reverse order,
 	//     just as if we were deleting them from the array one-at-a-time.
 	
-	NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSet];
+	NSUInteger numRemoved = 0;
 	
 	for (NSUInteger iPlusOne = [page count]; iPlusOne > 0; iPlusOne--)
 	{
-		NSUInteger indexWithinPage = iPlusOne - 1;
-		NSNumber *number = [page objectAtIndex:indexWithinPage];
+		NSUInteger i = iPlusOne - 1;
+		NSNumber *number = [page objectAtIndex:i];
 		
-		NSString *key = [dict objectForKey:number];
+		NSString *key = [keyMappings objectForKey:number];
 		if (key)
 		{
-			[indexSet addIndex:indexWithinPage];
+			[page removeObjectAtIndex:i];
+			numRemoved++;
 			
 			[viewConnection->changes addObject:
-			    [YapDatabaseViewRowChange deleteKey:key inGroup:group atIndex:(pageOffset + indexWithinPage)]];
+			    [YapDatabaseViewRowChange deleteKey:key inGroup:group atIndex:(pageOffset + i)]];
 		}
 	}
 	
-	if ([indexSet count] != dictCount)
-	{
-		YDBLogWarn(@"%@ (%@): Keys expected to be in page(%@), but are missing",
-		           THIS_METHOD, [self registeredName], pageKey);
-	}
-	
-	YDBLogVerbose(@"Removing %lu key(s) from page(%@)", (unsigned long)[indexSet count], page);
-	
 	[viewConnection->mutatedGroups addObject:group];
 	
-	// Update page (by removing keys from array)
+	YDBLogVerbose(@"Removed %lu key(s) from page(%@)", (unsigned long)numRemoved, page);
 	
-	[page removeObjectsAtIndexes:indexSet];
+	if (numRemoved != count)
+	{
+		YDBLogWarn(@"%@ (%@): Expected to remove %lu, but only found %lu in page(%@)",
+		           THIS_METHOD, [self registeredName], (unsigned long)count, (unsigned long)numRemoved, pageKey);
+	}
 	
 	// Update page metadata (by decrementing count)
 	
@@ -1615,32 +1627,16 @@
 	
 	[viewConnection->dirtyMetadata setObject:pageMetadata forKey:pageKey];
 	
-	// Mark keys for deletion
+	// Mark rowid mappings for deletion
 	
-	for (NSNumber *number in dict)
+	for (NSNumber *number in keyMappings)
 	{
 		[viewConnection->dirtyMaps setObject:[NSNull null] forKey:number];
 		[viewConnection->mapCache removeObjectForKey:number];
 	}
 }
 
-/**
- * Use this method when you don't know if the key exists in the view.
-**/
-- (void)removeRowid:(int64_t)rowid key:(NSString *)key
-{
-	YDBLogAutoTrace();
-	
-	// Find out if key is in view
-	
-	NSString *pageKey = [self pageKeyForRowid:rowid];
-	if (pageKey)
-	{
-		[self removeRowid:rowid key:key withPageKey:pageKey group:[self groupForPageKey:pageKey]];
-	}
-}
-
-- (void)removeAllKeys
+- (void)removeAllRowids
 {
 	YDBLogAutoTrace();
 	
@@ -2100,7 +2096,7 @@
 	}];
 	
 	// Write dirty page metadata to table (those not associated with dirty pages).
-	// This happens when the nextPageKey pointer is changed.
+	// This happens when only the nextPageKey pointer is changed.
 	
 	[viewConnection->dirtyMetadata enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 		
@@ -2157,14 +2153,12 @@
 		}
 	}];
 	
-	// Update the dirty key -> pageKey mappings.
-	// We do this at the end because keys may get moved around from
-	// page to page during processing, and page consolidation/expansion.
+	// Update the dirty rowid -> pageKey mappings.
 	
 	[viewConnection->dirtyMaps enumerateKeysAndObjectsUsingBlock:^(id rowidObj, id obj, BOOL *stop) {
 		
 		int64_t rowid = [(NSNumber *)rowidObj longLongValue];
-		NSString *pageKey = (NSString *)obj;
+		__unsafe_unretained NSString *pageKey = (NSString *)obj;
 		
 		if ((id)pageKey == (id)[NSNull null])
 		{
@@ -2295,6 +2289,7 @@
 		// This was an insert operation, so we know the key wasn't already in the view.
 		
 		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		
 		[self insertRowid:rowid key:key object:object metadata:metadata inGroup:group withChanges:flags isNew:YES];
 	}
 }
@@ -2355,6 +2350,7 @@
 		// This was an update operation, so the key may have previously been in the view.
 		
 		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		
 		[self insertRowid:rowid key:key object:object metadata:metadata inGroup:group withChanges:flags isNew:NO];
 	}
 }
@@ -2417,6 +2413,7 @@
 			}
 			
 			int flags = YapDatabaseViewChangedMetadata;
+			
 			[self insertRowid:rowid key:key object:object metadata:metadata inGroup:group withChanges:flags isNew:NO];
 		}
 	}
@@ -2482,6 +2479,7 @@
 			}
 			
 			int flags = YapDatabaseViewChangedMetadata;
+			
 			[self insertRowid:rowid key:key object:object metadata:metadata inGroup:group withChanges:flags isNew:NO];
 		}
 	}
@@ -2519,15 +2517,15 @@
 	
 	NSDictionary *output = [self pageKeysForRowids:rowids withKeyMappings:keyMappings];
 	
-	// dict.key = pageKey
-	// dict.value = NSSet of keys within the page that are to be removed
+	// output.key = pageKey
+	// output.value = NSDictionary with keyMappings for page
 	
 	[output enumerateKeysAndObjectsUsingBlock:^(id pageKeyObj, id dictObj, BOOL *stop) {
 		
 		__unsafe_unretained NSString *pageKey = (NSString *)pageKeyObj;
-		__unsafe_unretained NSDictionary *dict = (NSDictionary *)dictObj;
+		__unsafe_unretained NSDictionary *keyMappingsForPage = (NSDictionary *)dictObj;
 		
-		[self removeRowids:dict withPageKey:pageKey group:[self groupForPageKey:pageKey]];
+		[self removeRowidsWithKeyMappings:keyMappingsForPage pageKey:pageKey inGroup:[self groupForPageKey:pageKey]];
 	}];
 }
 
@@ -2539,7 +2537,7 @@
 {
 	YDBLogAutoTrace();
 	
-	[self removeAllKeys];
+	[self removeAllRowids];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2845,33 +2843,33 @@
 	[viewConnection->mutatedGroups removeObject:group]; // mutation during enumeration protection
 	
 	__block BOOL stop = NO;
-	__block NSUInteger keyIndex;
+	__block NSUInteger index;
 	
 	if (forwardEnumeration)
-		keyIndex = 0;
+		index = 0;
 	else
-		keyIndex = [self numberOfKeysInGroup:group] - 1;
+		index = [self numberOfKeysInGroup:group] - 1;
 	
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	
 	[pagesMetadataForGroup enumerateObjectsWithOptions:options
-	                                        usingBlock:^(id pageMetadataObj, NSUInteger pageIdx, BOOL *outerStop){
+	                                        usingBlock:^(id pageMetadataObj, NSUInteger outerIdx, BOOL *outerStop){
 		
 		__unsafe_unretained YapDatabaseViewPageMetadata *pageMetadata =
 		    (YapDatabaseViewPageMetadata *)pageMetadataObj;
 		
 		NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
 		
-		[page enumerateObjectsWithOptions:options usingBlock:^(id rowidObj, NSUInteger idx, BOOL *innerStop){
+		[page enumerateObjectsWithOptions:options usingBlock:^(id rowidObj, NSUInteger innerIdx, BOOL *innerStop){
 			
 			int64_t rowid = [rowidObj longLongValue];
 			
-			block(rowid, keyIndex, &stop);
+			block(rowid, index, &stop);
 			
 			if (forwardEnumeration)
-				keyIndex++;
+				index++;
 			else
-				keyIndex--;
+				index--;
 			
 			if (stop || [viewConnection->mutatedGroups containsObject:group]) *innerStop = YES;
 		}];
@@ -3025,9 +3023,6 @@
 - (void)touchRowForKey:(NSString *)key
 {
 	if (!databaseTransaction->isReadWriteTransaction) return;
-	if (key == nil) return;
-	
-	key = [key copy]; // mutable string protection
 	
 	int64_t rowid = 0;
 	if ([databaseTransaction getRowid:&rowid forKey:key])
@@ -3038,6 +3033,7 @@
 			NSString *group = [self groupForPageKey:pageKey];
 			NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 			
+			key = [key copy]; // mutable string protection
 			int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 			
 			[viewConnection->changes addObject:
@@ -3049,7 +3045,6 @@
 - (void)touchObjectForKey:(NSString *)key
 {
 	if (!databaseTransaction->isReadWriteTransaction) return;
-	if (key == nil) return;
 	
 	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
 	
@@ -3058,8 +3053,6 @@
 	    view->sortingBlockType  == YapDatabaseViewBlockTypeWithObject ||
 	    view->sortingBlockType  == YapDatabaseViewBlockTypeWithRow     )
 	{
-		key = [key copy]; // mutable string protection
-		
 		int64_t rowid = 0;
 		if ([databaseTransaction getRowid:&rowid forKey:key])
 		{
@@ -3069,6 +3062,7 @@
 				NSString *group = [self groupForPageKey:pageKey];
 				NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 				
+				key = [key copy]; // mutable string protection
 				int flags = YapDatabaseViewChangedObject;
 				
 				[viewConnection->changes addObject:
@@ -3081,7 +3075,6 @@
 - (void)touchMetadataForKey:(NSString *)key
 {
 	if (!databaseTransaction->isReadWriteTransaction) return;
-	if (key == nil) return;
 	
 	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
 	
@@ -3090,8 +3083,6 @@
 	    view->sortingBlockType  == YapDatabaseViewBlockTypeWithMetadata ||
 	    view->sortingBlockType  == YapDatabaseViewBlockTypeWithRow       )
 	{
-		key = [key copy]; // mutable string protection
-		
 		int64_t rowid = 0;
 		if ([databaseTransaction getRowid:&rowid forKey:key])
 		{
@@ -3101,6 +3092,7 @@
 				NSString *group = [self groupForPageKey:pageKey];
 				NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 				
+				key = [key copy]; // mutable string protection
 				int flags = YapDatabaseViewChangedMetadata;
 				
 				[viewConnection->changes addObject:
@@ -3140,6 +3132,13 @@
 
 - (id)objectAtIndex:(NSUInteger)index inGroup:(NSString *)group
 {
+	// We could use either:
+	// - keyAtIndex:inGroup: + objectForKey: OR
+	// - rowidAtIndex: + getKey:object:forRowid:
+	//
+	// The first option is likely faster most of the time,
+	// as objectForKey: allows us to hit our internal cache without querying sqlite.
+	
 	return [databaseTransaction objectForKey:[self keyAtIndex:index inGroup:group]];
 }
 
