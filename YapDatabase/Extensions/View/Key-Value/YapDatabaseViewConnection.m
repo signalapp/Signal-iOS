@@ -332,7 +332,7 @@ static NSString *const key_changes                  = @"changes";
 	group_pagesMetadata_dict = [self group_pagesMetadata_dict_deepCopy:changeset_group_pagesMetadata_dict];
 	pageKey_group_dict = [changeset_pageKey_group_dict mutableCopy];
 	
-	// Update keyCache
+	// Update mapCache
 	
 	if (changeset_reset && ([changeset_dirtyMaps count] == 0))
 	{
@@ -417,7 +417,7 @@ static NSString *const key_changes                  = @"changes";
 			if (page == nsnull)
 				[pageCache removeObjectForKey:pageKey];
 			else
-				[pageCache setObject:[page mutableCopy] forKey:pageKey];
+				[pageCache setObject:[page copy] forKey:pageKey];
 		}
 	}
 }
