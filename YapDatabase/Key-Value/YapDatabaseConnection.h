@@ -172,11 +172,11 @@
 **/
 
 - (BOOL)hasChangeForKey:(NSString *)key inNotifications:(NSArray *)notifications;
-- (BOOL)hasObjectChangeForKey:(NSString *)key inNotification:(NSArray *)notifications;
-- (BOOL)hasMetadataChangeForKey:(NSString *)key inNotification:(NSArray *)notifications;
+- (BOOL)hasObjectChangeForKey:(NSString *)key inNotifications:(NSArray *)notifications;
+- (BOOL)hasMetadataChangeForKey:(NSString *)key inNotifications:(NSArray *)notifications;
 
 - (BOOL)hasChangeForAnyKeys:(NSSet *)key inNotifications:(NSArray *)notifications;
-- (BOOL)hasObjectChangeForAnyKeys:(NSSet *)keys inNotification:(NSArray *)notifications;
-- (BOOL)hasMetadataChangeForAnyKeys:(NSSet *)keys inNotification:(NSArray *)notifications;
+- (BOOL)hasObjectChangeForAnyKeys:(NSSet *)keys inNotifications:(NSArray *)notifications;
+- (BOOL)hasMetadataChangeForAnyKeys:(NSSet *)keys inNotifications:(NSArray *)notifications;
 
 @end

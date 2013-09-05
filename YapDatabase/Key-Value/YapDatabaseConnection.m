@@ -942,12 +942,12 @@
 	return [self hasChangeForKey:key inNotifications:notifications includingObjectChanges:YES metadataChanges:YES];
 }
 
-- (BOOL)hasObjectChangeForKey:(NSString *)key inNotification:(NSArray *)notifications
+- (BOOL)hasObjectChangeForKey:(NSString *)key inNotifications:(NSArray *)notifications
 {
 	return [self hasChangeForKey:key inNotifications:notifications includingObjectChanges:YES metadataChanges:NO];
 }
 
-- (BOOL)hasMetadataChangeForKey:(NSString *)key inNotification:(NSArray *)notifications
+- (BOOL)hasMetadataChangeForKey:(NSString *)key inNotifications:(NSArray *)notifications
 {
 	return [self hasChangeForKey:key inNotifications:notifications includingObjectChanges:NO metadataChanges:YES];
 }
@@ -998,12 +998,12 @@
 	return [self hasChangeForAnyKeys:keys inNotifications:notifications includingObjectChanges:YES metadataChanges:YES];
 }
 
-- (BOOL)hasObjectChangeForAnyKeys:(NSSet *)keys inNotification:(NSArray *)notifications
+- (BOOL)hasObjectChangeForAnyKeys:(NSSet *)keys inNotifications:(NSArray *)notifications
 {
 	return [self hasChangeForAnyKeys:keys inNotifications:notifications includingObjectChanges:YES metadataChanges:NO];
 }
 
-- (BOOL)hasMetadataChangeForAnyKeys:(NSSet *)keys inNotification:(NSArray *)notifications
+- (BOOL)hasMetadataChangeForAnyKeys:(NSSet *)keys inNotifications:(NSArray *)notifications
 {
 	return [self hasChangeForAnyKeys:keys inNotifications:notifications includingObjectChanges:NO metadataChanges:YES];
 }

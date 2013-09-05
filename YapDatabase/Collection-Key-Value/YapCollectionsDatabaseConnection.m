@@ -1232,7 +1232,7 @@
 
 - (BOOL)hasObjectChangeForKey:(NSString *)key
                  inCollection:(NSString *)collection
-               inNotification:(NSArray *)notifications
+              inNotifications:(NSArray *)notifications
 {
 	return [self hasChangeForKey:key
 	                inCollection:collection
@@ -1243,7 +1243,7 @@
 
 - (BOOL)hasMetadataChangeForKey:(NSString *)key
                    inCollection:(NSString *)collection
-                 inNotification:(NSArray *)notifications
+                inNotifications:(NSArray *)notifications
 {
 	return [self hasChangeForKey:key
 	                inCollection:collection
@@ -1341,7 +1341,7 @@
 
 - (BOOL)hasObjectChangeForAnyKeys:(NSSet *)keys
                      inCollection:(NSString *)collection
-                   inNotification:(NSArray *)notifications
+                  inNotifications:(NSArray *)notifications
 {
 	return [self hasChangeForAnyKeys:keys
 	                    inCollection:collection
@@ -1352,7 +1352,7 @@
 
 - (BOOL)hasMetadataChangeForAnyKeys:(NSSet *)keys
                        inCollection:(NSString *)collection
-                     inNotification:(NSArray *)notifications
+                    inNotifications:(NSArray *)notifications
 {
 	return [self hasChangeForAnyKeys:keys
 	                    inCollection:collection
