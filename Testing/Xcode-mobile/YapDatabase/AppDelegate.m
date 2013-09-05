@@ -16,7 +16,8 @@
 @implementation AppDelegate
 {
 	YapDatabase *database;
-	YapDatabaseConnection *databaseConnection;
+	YapDatabaseConnection *databaseConnection1;
+	YapDatabaseConnection *databaseConnection2;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -29,12 +30,13 @@
 	                                         forFlag:YDB_LOG_FLAG_TRACE
 	                                         context:YDBLogContext];
 	
-//	double delayInSeconds = 2.0;
-//	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-//	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-//		
-//		[self debug];
-//	});
+	double delayInSeconds = 2.0;
+	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+		
+		[self debug];
+	//	[self debugOnTheFlyViews];
+	});
 	
 	// Normal UI stuff
 	
@@ -51,7 +53,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark On-The-Fly Debugging
+#pragma mark Debugging Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSString *)databasePath:(NSString *)suffix
@@ -64,21 +66,46 @@
 	return [baseDir stringByAppendingPathComponent:databaseName];
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark General Debugging
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 - (void)debug
+{
+//	NSLog(@"Starting debug...");
+//	
+//	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+//	
+//	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+//	
+//	database = [[YapDatabase alloc] initWithPath:databasePath];
+//	databaseConnection1 = [database newConnection];
+//	databaseConnection2 = [database newConnection];
+//	
+//
+//	
+//	NSLog(@"Debug complete");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark On-The-Fly Debugging
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)debugOnTheFlyViews
 {
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
 	
 //	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	
 	database = [[YapDatabase alloc] initWithPath:databasePath];
-	databaseConnection = [database newConnection];
+	databaseConnection1 = [database newConnection];
 	
 	[self printDatabaseCount];
 	
 	[self registerMainView];
 	[self printMainViewCount];
 	
-	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+	[databaseConnection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
 		NSUInteger count = 5;
 		NSLog(@"Adding %lu items...", (unsigned long)count);
@@ -170,7 +197,7 @@
 
 - (void)printDatabaseCount
 {
-	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	[databaseConnection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		NSUInteger count = [transaction numberOfKeys];
 		
@@ -180,7 +207,7 @@
 
 - (void)printMainViewCount
 {
-	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	[databaseConnection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		NSUInteger count = [[transaction ext:@"main"] numberOfKeysInGroup:@""];
 		
@@ -190,7 +217,7 @@
 
 - (void)printOnTheFlyViewCount
 {
-	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	[databaseConnection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		NSUInteger count = [[transaction ext:@"on-the-fly"] numberOfKeysInGroup:@""];
 		
