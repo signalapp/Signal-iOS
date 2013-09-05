@@ -2,6 +2,7 @@
 #import "YapDatabaseViewPrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapAbstractDatabasePrivate.h"
+#import "YapDatabaseViewPage.h"
 #import "YapDatabaseViewChange.h"
 #import "YapDatabaseViewChangePrivate.h"
 #import "YapCache.h"
@@ -180,24 +181,14 @@ static NSString *const key_changes                  = @"changes";
 	return deepCopy;
 }
 
-- (NSMutableDictionary *)dirtyPagesDeepCopy:(NSDictionary *)inDirtyPages
+- (void)sanitizeDirtyPages
 {
-	NSMutableDictionary *deepCopy = [NSMutableDictionary dictionaryWithCapacity:[inDirtyPages count]];
-	
-	[inDirtyPages enumerateKeysAndObjectsUsingBlock:^(id pageKeyObj, id pageObj, BOOL *stop) {
+	for (NSString *pageKey in [dirtyPages allKeys])
+	{
+		YapDatabaseViewPage *page = [dirtyPages objectForKey:pageKey];
 		
-		__unsafe_unretained NSString *pageKey = (NSString *)pageKeyObj;
-		__unsafe_unretained NSMutableArray *page = (NSMutableArray *)pageObj;
-		
-		// We need a mutable copy of the page array,
-		// but we don't have to copy all the immutable keys within the page.
-		
-		NSMutableArray *pageDeepCopy = [[NSMutableArray alloc] initWithArray:page copyItems:NO];
-		
-		[deepCopy setObject:pageDeepCopy forKey:pageKey];
-	}];
-	
-	return deepCopy;
+		[dirtyPages setObject:[page copy] forKey:pageKey];
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -286,6 +277,7 @@ static NSString *const key_changes                  = @"changes";
 		}
 		if ([dirtyPages count] > 0)
 		{
+			[self sanitizeDirtyPages];
 			[internalChangeset setObject:dirtyPages forKey:key_dirtyPages];
 		}
 		
@@ -327,10 +319,18 @@ static NSString *const key_changes                  = @"changes";
 	
 	BOOL changeset_reset = [[changeset objectForKey:key_reset] boolValue];
 	
+	// Perform proper deep copies
+	//
+	// Note: we make copies from changeset_dirtyPages on demand below via:
+	// - [pageCache setObject:[page copy] forKey:pageKey];
+	
+	changeset_group_pagesMetadata_dict = [self group_pagesMetadata_dict_deepCopy:changeset_group_pagesMetadata_dict];
+	changeset_pageKey_group_dict = [changeset_pageKey_group_dict mutableCopy];
+	
 	// Process new top level objects
 	
-	group_pagesMetadata_dict = [self group_pagesMetadata_dict_deepCopy:changeset_group_pagesMetadata_dict];
-	pageKey_group_dict = [changeset_pageKey_group_dict mutableCopy];
+	group_pagesMetadata_dict = changeset_group_pagesMetadata_dict;
+	pageKey_group_dict = changeset_pageKey_group_dict;
 	
 	// Update mapCache
 	
