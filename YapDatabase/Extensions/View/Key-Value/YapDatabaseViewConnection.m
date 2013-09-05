@@ -183,11 +183,16 @@ static NSString *const key_changes                  = @"changes";
 
 - (void)sanitizeDirtyPages
 {
+	NSNull *nsnull = [NSNull null];
+	
 	for (NSString *pageKey in [dirtyPages allKeys])
 	{
 		YapDatabaseViewPage *page = [dirtyPages objectForKey:pageKey];
 		
-		[dirtyPages setObject:[page copy] forKey:pageKey];
+		if ((id)page != nsnull)
+		{
+			[dirtyPages setObject:[page copy] forKey:pageKey];
+		}
 	}
 }
 
