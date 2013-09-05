@@ -332,7 +332,7 @@ static NSString *const key_changes                  = @"changes";
 	changeset_group_pagesMetadata_dict = [self group_pagesMetadata_dict_deepCopy:changeset_group_pagesMetadata_dict];
 	changeset_pageKey_group_dict = [changeset_pageKey_group_dict mutableCopy];
 	
-	// Process new top level objects
+	// Store new top level objects
 	
 	group_pagesMetadata_dict = changeset_group_pagesMetadata_dict;
 	pageKey_group_dict = changeset_pageKey_group_dict;
