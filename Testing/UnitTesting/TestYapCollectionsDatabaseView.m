@@ -1699,6 +1699,204 @@
 			}
 		}
 	}];
+	
+	//
+	// Clear the database, and add a bunch of keys (again)
+	//
+	
+	[connection1 readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction removeAllObjectsInAllCollections];
+		
+		// Add 2 pages of keys to the view
+		//
+		// page0 = [key0   - key49]
+		// page1 = [key100 - key149]
+		
+		for (int i = 0; i < 50; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			NSString *obj = [NSString stringWithFormat:@"object%d", i];
+			
+			[transaction setObject:obj forKey:key inCollection:nil];
+		}
+		
+		for (int i = 100; i < 150; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			NSString *obj = [NSString stringWithFormat:@"object%d", i];
+			
+			[transaction setObject:obj forKey:key inCollection:nil];
+		}
+	}];
+	
+	[connection1 readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
+		
+		// Add [key50 - key59]
+		//
+		// Should originally add to page1, and then get moved to page0
+		
+		for (int i = 50; i < 60; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			NSString *obj = [NSString stringWithFormat:@"object%d", i];
+			
+			[transaction setObject:obj forKey:key inCollection:nil];
+		}
+		
+		// Remove [key40 - key49]
+		//
+		// This should make room for [key50 - key59] to move from page1 to page0
+		
+		for (int i = 40; i < 50; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			
+			[transaction removeObjectForKey:key inCollection:nil];
+		}
+		
+		// This test is designed to hit the codePath:
+		//
+		// YapDatabaseViewTransaction:
+		// - splitOversizedPage
+		// - "Move objects from beginning of page to end of previous page"
+	}];
+	
+	[connection1 readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
+		
+		NSUInteger index = 0;
+		
+		for (int i = 0; i < 40; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+						 @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+			
+			index++;
+		}
+		
+		for (int i = 50; i < 60; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+						 @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+			
+			index++;
+		}
+		
+		for (int i = 100; i < 150; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+						 @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+			
+			index++;
+		}
+	}];
+	
+	//
+	// Clear the database, and add a bunch of keys (again)
+	//
+	
+	[connection1 readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction removeAllObjectsInAllCollections];
+		
+		// Add 2 pages of keys to the view
+		//
+		// page0 = [key50  - key99]
+		// page1 = [key100 - key149]
+		
+		for (int i = 50; i < 150; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			NSString *obj = [NSString stringWithFormat:@"object%d", i];
+			
+			[transaction setObject:obj forKey:key inCollection:nil];
+		}
+	}];
+	
+	[connection1 readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
+		
+		// Add [key0 - key9]
+		//
+		// Should add to page0
+		
+		for (int i = 0; i < 10; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			NSString *obj = [NSString stringWithFormat:@"object%d", i];
+			
+			[transaction setObject:obj forKey:key inCollection:nil];
+		}
+		
+		// Remove [key100 - key109]
+		//
+		// This should make room for [key90 - key99] to move from page0 to page1
+		
+		for (int i = 100; i < 110; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			
+			[transaction removeObjectForKey:key inCollection:nil];
+		}
+		
+		// This test is designed to hit the codePath:
+		//
+		// YapDatabaseViewTransaction:
+		// - splitOversizedPage
+		// - "Move objects from end of page to beginning of next page"
+	}];
+	
+	[connection1 readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
+		
+		NSUInteger index = 0;
+		
+		for (int i = 0; i < 10; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+						 @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+			
+			index++;
+		}
+		
+		for (int i = 50; i < 100; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+						 @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+			
+			index++;
+		}
+		
+		for (int i = 110; i < 150; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+						 @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+			
+			index++;
+		}
+	}];
 }
 
 - (void)testViewPopulation
