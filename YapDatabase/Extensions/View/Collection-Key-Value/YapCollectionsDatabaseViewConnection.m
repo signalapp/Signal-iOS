@@ -2,6 +2,7 @@
 #import "YapCollectionsDatabaseViewPrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapAbstractDatabasePrivate.h"
+#import "YapDatabaseViewPage.h"
 #import "YapDatabaseViewChange.h"
 #import "YapDatabaseViewChangePrivate.h"
 #import "YapCollectionKey.h"
@@ -333,7 +334,7 @@ static NSString *const key_changes                  = @"changes";
 	group_pagesMetadata_dict = [self group_pagesMetadata_dict_deepCopy:changeset_group_pagesMetadata_dict];
 	pageKey_group_dict = [changeset_pageKey_group_dict mutableCopy];
 	
-	// Update keyCache
+	// Update mapCache
 	
 	if (changeset_reset && ([changeset_dirtyMaps count] == 0))
 	{
@@ -367,9 +368,9 @@ static NSString *const key_changes                  = @"changes";
 		
 		for (NSString *key in keysToUpdate)
 		{
-			id pageKey = [changeset_dirtyMaps objectForKey:key];
+			NSString *pageKey = [changeset_dirtyMaps objectForKey:key];
 			
-			if (pageKey == nsnull)
+			if ((id)pageKey == nsnull)
 				[mapCache removeObjectForKey:key];
 			else
 				[mapCache setObject:pageKey forKey:key];
@@ -410,15 +411,15 @@ static NSString *const key_changes                  = @"changes";
 		
 		for (NSString *pageKey in keysToUpdate)
 		{
-			id page = [changeset_dirtyPages objectForKey:pageKey];
+			YapDatabaseViewPage *page = [changeset_dirtyPages objectForKey:pageKey];
 			
 			// Each viewConnection needs its own independent mutable copy of the page.
 			// Mutable pages cannot be shared between multiple view connections.
 			
-			if (page == nsnull)
+			if ((id)page == nsnull)
 				[pageCache removeObjectForKey:pageKey];
 			else
-				[pageCache setObject:[page mutableCopy] forKey:pageKey];
+				[pageCache setObject:[page copy] forKey:pageKey];
 		}
 	}
 }

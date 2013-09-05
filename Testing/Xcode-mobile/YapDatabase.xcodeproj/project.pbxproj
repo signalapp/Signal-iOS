@@ -689,6 +689,11 @@
 			attributes = {
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "Robbie Hanson";
+				TargetAttributes = {
+					DCAE51E61673FE2600395076 = {
+						DevelopmentTeam = 939WR99F3W;
+					};
+				};
 			};
 			buildConfigurationList = DCAE51E21673FE2600395076 /* Build configuration list for PBXProject "YapDatabase" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -934,10 +939,13 @@
 		DCAE52231673FE2600395076 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "YapDatabase/YapDatabase-Prefix.pch";
 				INFOPLIST_FILE = "YapDatabase/YapDatabase-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -945,10 +953,13 @@
 		DCAE52241673FE2600395076 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "YapDatabase/YapDatabase-Prefix.pch";
 				INFOPLIST_FILE = "YapDatabase/YapDatabase-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

@@ -1,5 +1,6 @@
 #import "YapCollectionsDatabaseViewTransaction.h"
 #import "YapCollectionsDatabaseViewPrivate.h"
+#import "YapDatabaseViewPage.h"
 #import "YapDatabaseViewPageMetadata.h"
 #import "YapDatabaseViewChange.h"
 #import "YapDatabaseViewChangePrivate.h"
@@ -400,20 +401,17 @@
 #pragma mark Serialization & Deserialization
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (NSData *)serializePage:(NSMutableArray *)page
+- (NSData *)serializePage:(YapDatabaseViewPage *)page
 {
-	return [NSPropertyListSerialization dataWithPropertyList:page
-	                                                  format:NSPropertyListBinaryFormat_v1_0
-	                                                 options:NSPropertyListMutableContainers
-	                                                   error:NULL];
+	return [page serialize];
 }
 
-- (NSMutableArray *)deserializePage:(NSData *)data
+- (YapDatabaseViewPage *)deserializePage:(NSData *)data
 {
-	return [NSPropertyListSerialization propertyListWithData:data
-	                                                 options:NSPropertyListMutableContainers
-	                                                  format:nil
-	                                                   error:nil];
+	YapDatabaseViewPage *page = [[YapDatabaseViewPage alloc] init];
+	[page deserialize:data];
+	
+	return page;
 }
 
 - (NSData *)serializeMetadata:(YapDatabaseViewPageMetadata *)metadata
@@ -629,9 +627,9 @@
  * This method will use the cache(s) if possible.
  * Otherwise it will load the data from the page table and deserialize it.
 **/
-- (NSMutableArray *)pageForPageKey:(NSString *)pageKey
+- (YapDatabaseViewPage *)pageForPageKey:(NSString *)pageKey
 {
-	NSMutableArray *page = nil;
+	YapDatabaseViewPage *page = nil;
 	
 	// Check dirty cache & clean cache
 	
@@ -704,23 +702,12 @@
 	
 	// Fetch the actual page (ordered array of keys)
 	
-	NSMutableArray *page = [self pageForPageKey:pageKey];
+	YapDatabaseViewPage *page = [self pageForPageKey:pageKey];
 	
 	// Find the exact index of the key within the page
 	
-	BOOL found = NO;
 	NSUInteger indexWithinPage = 0;
-	
-	for (NSNumber *number in page)
-	{
-		if (rowid == [number longLongValue])
-		{
-			found = YES;
-			break;
-		}
-		
-		indexWithinPage++;
-	}
+	BOOL found = [page getIndex:&indexWithinPage ofRowid:rowid];
 	
 	NSAssert(found, @"Missing rowid in page");
 	
@@ -1060,7 +1047,9 @@
 			// The insertion index is in-between two pages.
 			// So it could go at the end of this page, or the beginning of the next page.
 			//
-			// We always place the key in the next page, unless the next page is already full.
+			// We always place the key in the next page, unless:
+			// - this page has room AND
+			// - the next page is already full
 			//
 			// Related method: splitOversizedPage:
 			
@@ -1084,7 +1073,7 @@
 	NSAssert(pageMetadata != nil, @"Missing pageMetadata in group(%@)", group);
 	
 	NSString *pageKey = pageMetadata->pageKey;
-	NSMutableArray *page = [self pageForPageKey:pageKey];
+	YapDatabaseViewPage *page = [self pageForPageKey:pageKey];
 	
 	YDBLogVerbose(@"Inserting key(%@) collection(%@) in group(%@) at index(%lu) with page(%@) pageOffset(%lu)",
 	              collectionKey.key, collectionKey.collection, group,
@@ -1092,7 +1081,7 @@
 	
 	// Update page
 	
-	[page insertObject:@(rowid) atIndex:(index - pageOffset)];
+	[page insertRowid:rowid atIndex:(index - pageOffset)];
 	
 	[viewConnection->dirtyPages setObject:page forKey:pageKey];
 	[viewConnection->pageCache setObject:page forKey:pageKey];
@@ -1207,8 +1196,8 @@
 		
 		// Create page
 		
-		NSMutableArray *page = [NSMutableArray arrayWithCapacity:1];
-		[page addObject:@(rowid)];
+		YapDatabaseViewPage *page = [[YapDatabaseViewPage alloc] initWithCapacity:YAP_DATABASE_VIEW_MAX_PAGE_SIZE];
+		[page addRowid:rowid];
 		
 		// Create pageMetadata
 		
@@ -1278,9 +1267,9 @@
 		{
 			if ((index < (pageOffset + pageMetadata->count)) && (pageMetadata->count > 0))
 			{
-				NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
+				YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
 				
-				anotherRowid = [[page objectAtIndex:(index - pageOffset)] longLongValue];
+				anotherRowid = [page rowidAtIndex:(index - pageOffset)];
 				break;
 			}
 			else
@@ -1500,7 +1489,7 @@
 	
 	// Fetch page & pageMetadata
 	
-	NSMutableArray *page = [self pageForPageKey:pageKey];
+	YapDatabaseViewPage *page = [self pageForPageKey:pageKey];
 	
 	YapDatabaseViewPageMetadata *pageMetadata = nil;
 	NSUInteger pageOffset = 0;
@@ -1522,19 +1511,8 @@
 	
 	// Find index within page
 	
-	BOOL found = NO;
 	NSUInteger indexWithinPage = 0;
-	
-	for (NSNumber *number in page)
-	{
-		if (rowid == [number longLongValue])
-		{
-			found = YES;
-			break;
-		}
-		
-		indexWithinPage++;
-	}
+	BOOL found = [page getIndex:&indexWithinPage ofRowid:rowid];
 	
 	if (!found)
 	{
@@ -1555,7 +1533,7 @@
 	
 	// Update page (by removing key from array)
 	
-	[page removeObjectAtIndex:indexWithinPage];
+	[page removeRowidAtIndex:indexWithinPage];
 	
 	// Update page metadata (by decrementing count)
 	
@@ -1626,7 +1604,7 @@
 	
 	// Fetch page & pageMetadata
 	
-	NSMutableArray *page = [self pageForPageKey:pageKey];
+	YapDatabaseViewPage *page = [self pageForPageKey:pageKey];
 	
 	YapDatabaseViewPageMetadata *pageMetadata = nil;
 	NSUInteger pageOffset = 0;
@@ -1658,12 +1636,12 @@
 	for (NSUInteger iPlusOne = [page count]; iPlusOne > 0; iPlusOne--)
 	{
 		NSUInteger i = iPlusOne - 1;
-		NSNumber *number = [page objectAtIndex:i];
+		int64_t rowid = [page rowidAtIndex:i];
 		
-		YapCollectionKey *collectionKey = [keyMappings objectForKey:number];
+		YapCollectionKey *collectionKey = [keyMappings objectForKey:@(rowid)];
 		if (collectionKey)
 		{
-			[page removeObjectAtIndex:i];
+			[page removeRowidAtIndex:i];
 			numRemoved++;
 			
 			[viewConnection->changes addObject:
@@ -1789,8 +1767,8 @@
 			{
 				// Move objects from beginning of page to end of previous page
 				
-				NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
-				NSMutableArray *prevPage = [self pageForPageKey:prevPageMetadata->pageKey];
+				YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
+				YapDatabaseViewPage *prevPage = [self pageForPageKey:prevPageMetadata->pageKey];
 				
 				NSUInteger excessInPage = pageMetadata->count - maxPageSize;
 				NSUInteger spaceInPrevPage = maxPageSize - prevPageMetadata->count;
@@ -1800,10 +1778,8 @@
 				NSRange pageRange = NSMakeRange(0, numToMove);                    // beginning range
 				NSRange prevPageRange = NSMakeRange([prevPage count], numToMove); // end range
 				
-				NSArray *subset = [page subarrayWithRange:pageRange];
-				
-				[page removeObjectsInRange:pageRange];
-				[prevPage insertObjects:subset atIndexes:[NSIndexSet indexSetWithIndexesInRange:prevPageRange]];
+				[prevPage appendRange:pageRange ofPage:page];
+				[page removeRange:pageRange];
 				
 				// Update counts
 				
@@ -1820,11 +1796,15 @@
 				
 				// Mark rowid mappings as dirty
 				
-				for (NSNumber *number in subset)
-				{
+				[prevPage enumerateRowidsWithOptions:0
+				                               range:prevPageRange
+				                          usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop) {
+					
+					NSNumber *number = @(rowid);
+					
 					[viewConnection->dirtyMaps setObject:prevPageMetadata->pageKey forKey:number];
 					[viewConnection->mapCache setObject:prevPageMetadata->pageKey forKey:number];
-				}
+				}];
 				
 				continue;
 			}
@@ -1840,8 +1820,8 @@
 			{
 				// Move objects from end of page to beginning of next page
 				
-				NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
-				NSMutableArray *nextPage = [self pageForPageKey:nextPageMetadata->pageKey];
+				YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
+				YapDatabaseViewPage *nextPage = [self pageForPageKey:nextPageMetadata->pageKey];
 				
 				NSUInteger excessInPage = pageMetadata->count - maxPageSize;
 				NSUInteger spaceInNextPage = maxPageSize - nextPageMetadata->count;
@@ -1851,10 +1831,8 @@
 				NSRange pageRange = NSMakeRange([page count] - numToMove, numToMove); // end range
 				NSRange nextPageRange = NSMakeRange(0, numToMove);                    // beginning range
 				
-				NSArray *subset = [page subarrayWithRange:pageRange];
-				
-				[page removeObjectsInRange:pageRange];
-				[nextPage insertObjects:subset atIndexes:[NSIndexSet indexSetWithIndexesInRange:nextPageRange]];
+				[nextPage prependRange:pageRange ofPage:page];
+				[page removeRange:pageRange];
 				
 				// Update counts
 				
@@ -1871,11 +1849,15 @@
 				
 				// Mark rowid mappings as dirty
 				
-				for (NSNumber *number in subset)
-				{
+				[nextPage enumerateRowidsWithOptions:0
+				                               range:nextPageRange
+				                          usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop) {
+					
+					NSNumber *number = @(rowid);
+					
 					[viewConnection->dirtyMaps setObject:nextPageMetadata->pageKey forKey:number];
 					[viewConnection->mapCache setObject:nextPageMetadata->pageKey forKey:number];
-				}
+				}];
 				
 				continue;
 			}
@@ -1888,7 +1870,7 @@
 		NSUInteger numToMove = MIN(excessInPage, maxPageSize);
 		
 		NSString *newPageKey = [self generatePageKey];
-		NSMutableArray *newPage = [[NSMutableArray alloc] initWithCapacity:numToMove];
+		YapDatabaseViewPage *newPage = [[YapDatabaseViewPage alloc] initWithCapacity:numToMove];
 		
 		// Create new pageMetadata
 		
@@ -1926,14 +1908,12 @@
 		
 		// Move objects from end of page to beginning of new page
 		
-		NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
+		YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
 		
 		NSRange pageRange = NSMakeRange([page count] - numToMove, numToMove); // end range
 		
-		NSArray *subset = [page subarrayWithRange:pageRange];
-		
-		[page removeObjectsInRange:pageRange];
-		[newPage addObjectsFromArray:subset];
+		[newPage appendRange:pageRange ofPage:page];
+		[page removeRange:pageRange];
 		
 		// Update counts
 		
@@ -1950,11 +1930,13 @@
 		
 		// Mark rowid mappings as dirty
 		
-		for (NSNumber *number in subset)
-		{
+		[newPage enumerateRowidsUsingBlock:^(int64_t rowid, NSUInteger idx, BOOL *stop) {
+			
+			NSNumber *number = @(rowid);
+			
 			[viewConnection->dirtyMaps setObject:newPageKey forKey:number];
 			[viewConnection->mapCache setObject:newPageKey forKey:number];
-		}
+		}];
 		
 	} // end while (pageMetadata->count > maxPageSize)
 }
@@ -2085,8 +2067,8 @@
 	
 	[viewConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 		
-		NSString *pageKey = (NSString *)key;
-		NSMutableArray *page = (NSMutableArray *)obj;
+		__unsafe_unretained NSString *pageKey = (NSString *)key;
+		__unsafe_unretained YapDatabaseViewPage *page = (YapDatabaseViewPage *)obj;
 		
 		YapDatabaseViewPageMetadata *pageMetadata = [viewConnection->dirtyMetadata objectForKey:pageKey];
 		if (pageMetadata == nil)
@@ -2693,9 +2675,9 @@
 {
 	NSUInteger count = 0;
 	
-	for (NSMutableArray *pagesForSection in [viewConnection->group_pagesMetadata_dict objectEnumerator])
+	for (NSMutableArray *pagesMetadataForGroup in [viewConnection->group_pagesMetadata_dict objectEnumerator])
 	{
-		for (YapDatabaseViewPageMetadata *pageMetadata in pagesForSection)
+		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 		{
 			count += pageMetadata->count;
 		}
@@ -2716,9 +2698,9 @@
 	{
 		if ((index < (pageOffset + pageMetadata->count)) && (pageMetadata->count > 0))
 		{
-			NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
+			YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
 			
-			int64_t rowid = [[page objectAtIndex:(index - pageOffset)] longLongValue];
+			int64_t rowid = [page rowidAtIndex:(index - pageOffset)];
 			
 			NSString *collection = nil;
 			NSString *key = nil;
@@ -2771,9 +2753,9 @@
 		
 		if (pageMetadata->count > 0)
 		{
-			NSMutableArray *lastPage = [self pageForPageKey:pageMetadata->pageKey];
+			YapDatabaseViewPage *lastPage = [self pageForPageKey:pageMetadata->pageKey];
 			
-			int64_t rowid = [[lastPage lastObject] longLongValue];
+			int64_t rowid = [lastPage rowidAtIndex:(pageMetadata->count - 1)];
 			
 			found = [databaseTransaction getKey:&key collection:&collection forRowid:rowid];
 			*stop = YES;
@@ -2870,21 +2852,15 @@
 			
 			// Fetch the actual page (ordered array of keys)
 			
-			NSMutableArray *page = [self pageForPageKey:pageKey];
+			YapDatabaseViewPage *page = [self pageForPageKey:pageKey];
 			
 			// And find the exact index of the key within the page
 			
 			NSUInteger indexWithinPage = 0;
-			for (NSNumber *number in page)
+			if ([page getIndex:&indexWithinPage ofRowid:rowid])
 			{
-				if (rowid == [number longLongValue])
-				{
-					index = pageOffset + indexWithinPage;
-					found = YES;
-					break;
-				}
-				
-				indexWithinPage++;
+				index = pageOffset + indexWithinPage;
+				found = YES;
 			}
 		}
 	}
@@ -2957,25 +2933,23 @@
 	
 	[viewConnection->mutatedGroups removeObject:group]; // mutation during enumeration protection
 	
-	BOOL stop = NO;
+	__block BOOL stop = NO;
 	
 	NSUInteger pageOffset = 0;
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 	{
-		NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
+		YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
 		
-		NSUInteger index = pageOffset;
-		for (NSNumber *number in page)
-		{
-			int64_t rowid = [number longLongValue];
+		__block NSUInteger index = pageOffset;
+		[page enumerateRowidsUsingBlock:^(int64_t rowid, NSUInteger idx, BOOL *innerStop) {
 			
 			block(rowid, index, &stop);
 			
 			index++;
-			if (stop || [viewConnection->mutatedGroups containsObject:group]) break;
-		}
+			if (stop || [viewConnection->mutatedGroups containsObject:group]) *innerStop = YES;
+		}];
 		
 		if (stop || [viewConnection->mutatedGroups containsObject:group]) break;
 		
@@ -3015,11 +2989,9 @@
 		__unsafe_unretained YapDatabaseViewPageMetadata *pageMetadata =
 		    (YapDatabaseViewPageMetadata *)pageMetadataObj;
 		
-		NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
+		YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
 		
-		[page enumerateObjectsWithOptions:options usingBlock:^(id rowidObj, NSUInteger innerIdx, BOOL *innerStop) {
-			
-			int64_t rowid = [rowidObj longLongValue];
+		[page enumerateRowidsWithOptions:options usingBlock:^(int64_t rowid, NSUInteger innerIdx, BOOL *innerStop) {
 			
 			block(rowid, index, &stop);
 			
@@ -3088,18 +3060,15 @@
 		if (keysRange.length > 0)
 		{
 			startedRange = YES;
-			NSMutableArray *page = [self pageForPageKey:pageMetadata->pageKey];
+			YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
 			
 			// Enumerate the subset
 			
 			NSRange subsetRange = NSMakeRange(keysRange.location-pageOffset, keysRange.length);
-			NSIndexSet *subset = [NSIndexSet indexSetWithIndexesInRange:subsetRange];
 			
-			[page enumerateObjectsAtIndexes:subset
-			                        options:options
-			                     usingBlock:^(id rowidObj, NSUInteger idx, BOOL *innerStop) {
-				
-				int64_t rowid = [rowidObj longLongValue];
+			[page enumerateRowidsWithOptions:options
+			                           range:subsetRange
+			                      usingBlock:^(int64_t rowid, NSUInteger idx, BOOL *innerStop) {
 				
 				block(rowid, pageOffset+idx, &stop);
 				

@@ -371,9 +371,9 @@ static NSString *const key_changes                  = @"changes";
 		
 		for (NSString *key in keysToUpdate)
 		{
-			id pageKey = [changeset_dirtyMaps objectForKey:key];
+			NSString *pageKey = [changeset_dirtyMaps objectForKey:key];
 			
-			if (pageKey == nsnull)
+			if ((id)pageKey == nsnull)
 				[mapCache removeObjectForKey:key];
 			else
 				[mapCache setObject:pageKey forKey:key];
@@ -414,12 +414,12 @@ static NSString *const key_changes                  = @"changes";
 		
 		for (NSString *pageKey in keysToUpdate)
 		{
-			id page = [changeset_dirtyPages objectForKey:pageKey];
+			YapDatabaseViewPage *page = [changeset_dirtyPages objectForKey:pageKey];
 			
 			// Each viewConnection needs its own independent mutable copy of the page.
 			// Mutable pages cannot be shared between multiple view connections.
 			
-			if (page == nsnull)
+			if ((id)page == nsnull)
 				[pageCache removeObjectForKey:pageKey];
 			else
 				[pageCache setObject:[page copy] forKey:pageKey];
