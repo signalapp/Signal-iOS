@@ -1105,6 +1105,22 @@
 	    [YapDatabaseViewRowChange insertKey:collectionKey inGroup:group atIndex:index]];
 	
 	[viewConnection->mutatedGroups addObject:group];
+	
+	// During a transaction we allow pages to grow in size beyond the max page size.
+	// This increases efficiency, as we can allow multiple changes to be written,
+	// and then only perform the "cleanup" task of splitting the oversized page into multiple pages only once.
+	//
+	// However, we do want to avoid allowing a single page to grow infinitely large.
+	// So we use triggers to ensure pages don't get too big.
+	
+	NSUInteger trigger = YAP_DATABASE_VIEW_MAX_PAGE_SIZE * 32;
+	NSUInteger target = YAP_DATABASE_VIEW_MAX_PAGE_SIZE * 16;
+	
+	if ([page count] > trigger)
+	{
+		[self splitOversizedPage:pageMetadata toSize:target];
+	}
+
 }
 
 /**
@@ -1745,11 +1761,9 @@
 #pragma mark Cleanup & Commit
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)splitOversizedPage:(YapDatabaseViewPageMetadata *)pageMetadata
+- (void)splitOversizedPage:(YapDatabaseViewPageMetadata *)pageMetadata toSize:(NSUInteger)maxPageSize
 {
 	YDBLogAutoTrace();
-	
-	NSUInteger maxPageSize = YAP_DATABASE_VIEW_MAX_PAGE_SIZE;
 	
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:pageMetadata->group];
 	
@@ -2032,7 +2046,7 @@
 	{
 		if (pageMetadata->count > maxPageSize)
 		{
-			[self splitOversizedPage:pageMetadata];
+			[self splitOversizedPage:pageMetadata toSize:maxPageSize];
 		}
 	}
 	
