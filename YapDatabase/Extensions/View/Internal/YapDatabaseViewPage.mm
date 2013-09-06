@@ -41,12 +41,21 @@
 
 - (NSData *)serialize
 {
-	NSUInteger length = vector->size() * sizeof(int64_t);
-	const void *bytes = vector->data();
+	NSUInteger count = vector->size();
+	NSUInteger numBytes = count * sizeof(int64_t);
 	
-	return [NSData dataWithBytes:bytes length:length];
+	int64_t *buffer = (int64_t *)malloc(numBytes);
+	memcpy(buffer, vector->data(), numBytes);
 	
-	// Todo: CFSwapInt64HostToLittle if needed
+	if (CFByteOrderGetCurrent() == CFByteOrderBigEndian)
+	{
+		for (NSUInteger i = 0; i < count; i++)
+		{
+			buffer[i] = CFSwapInt32HostToLittle(buffer[i]);
+		}
+	}
+	
+	return [NSData dataWithBytesNoCopy:buffer length:numBytes freeWhenDone:YES];
 }
 
 - (void)deserialize:(NSData *)data
@@ -61,10 +70,13 @@
 	
 	for (NSUInteger i = 0; i < count; i++)
 	{
-		vector->push_back(bytes[i]);
+		int64_t rowid = bytes[i];
+		
+		if (CFByteOrderGetCurrent() == CFByteOrderBigEndian)
+			vector->push_back(CFSwapInt64LittleToHost(rowid));
+		else
+			vector->push_back(rowid);
 	}
-	
-	// Todo: CFSwapInt64LittleToHost if needed
 }
 
 - (NSUInteger)count
