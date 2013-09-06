@@ -534,7 +534,7 @@
 **/
 - (NSMutableDictionary *)changeset
 {
-	if ([objectChanges count] > 0 || [metadataChanges count] > 0 || allKeysRemoved)
+	if ([objectChanges count] > 0 || [metadataChanges count] > 0 || [removedKeys count] > 0 || allKeysRemoved)
 	{
 		NSMutableDictionary *changeset = [NSMutableDictionary dictionaryWithCapacity:5];
 		
