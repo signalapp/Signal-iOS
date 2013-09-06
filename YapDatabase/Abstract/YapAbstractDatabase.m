@@ -410,31 +410,73 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Upgrade
+#pragma mark Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Returns whether or not the given table exists.
+**/
+- (BOOL)tableExists:(NSString *)tableName using:(sqlite3 *)aDb
+{
+	if (tableName == nil) return NO;
+	
+	sqlite3_stmt *statement;
+	char *stmt = "SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = ?";
+	
+	int status = sqlite3_prepare_v2(aDb, stmt, (int)strlen(stmt)+1, &statement, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@: Error creating statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(aDb));
+		return NO;
+	}
+	
+	BOOL result = NO;
+	
+	sqlite3_bind_text(statement, 1, [tableName UTF8String], -1, SQLITE_TRANSIENT);
+	
+	status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		int count = sqlite3_column_int(statement, 1);
+		
+		result = (count > 0);
+	}
+	else if (status == SQLITE_ERROR)
+	{
+		YDBLogError(@"%@: Error executing statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(aDb));
+	}
+	
+	sqlite3_finalize(statement);
+	statement = NULL;
+	
+	return result;
+}
 
 /**
  * Extracts and returns column names of our database.
 **/
-- (NSArray *)tableColumnNames
+- (NSArray *)columnNamesForTable:(NSString *)tableName using:(sqlite3 *)aDb
 {
-	sqlite3_stmt *pragmaStatement;
+	if (tableName == nil) return nil;
 	
-	char *stmt = "PRAGMA table_info(database);";
+	sqlite3_stmt *statement;
+	char *stmt = "PRAGMA table_info(?);";
 	
-	int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &pragmaStatement, NULL);
+	int status = sqlite3_prepare_v2(aDb, stmt, (int)strlen(stmt)+1, &statement, NULL);
 	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"Error creating pragma table_info statement! %d %s", status, sqlite3_errmsg(db));
+		YDBLogError(@"%@: Error creating statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(aDb));
 		return nil;
 	}
 	
 	NSMutableArray *tableColumnNames = [NSMutableArray array];
 	
-	while (sqlite3_step(pragmaStatement) == SQLITE_ROW)
+	sqlite3_bind_text(statement, 1, [tableName UTF8String], -1, SQLITE_TRANSIENT);
+	
+	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
-		const unsigned char *text = sqlite3_column_text(pragmaStatement, 1);
-		int textSize = sqlite3_column_bytes(pragmaStatement, 1);
+		const unsigned char *text = sqlite3_column_text(statement, 1);
+		int textSize = sqlite3_column_bytes(statement, 1);
 		
 		NSString *columnName = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 		if (columnName)
@@ -443,11 +485,20 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		}
 	}
 	
-	sqlite3_finalize(pragmaStatement);
-	pragmaStatement = NULL;
+	if (status != SQLITE_DONE)
+	{
+		YDBLogError(@"%@: Error executing statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(aDb));
+	}
+	
+	sqlite3_finalize(statement);
+	statement = NULL;
 	
 	return tableColumnNames;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Upgrade
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Gets the version of the table.

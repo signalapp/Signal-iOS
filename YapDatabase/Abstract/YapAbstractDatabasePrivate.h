@@ -62,9 +62,16 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 - (BOOL)createTables;
 
 /**
- * Upgrade mechanism.
+ * Required override hook.
+ * Subclasses must implement this method and return the proper class to use for the cache.
 **/
-- (BOOL)get_user_version:(int *)user_version_ptr;
+- (Class)cacheKeyClass;
+
+/**
+ * General utility methods.
+**/
+- (BOOL)tableExists:(NSString *)tableName using:(sqlite3 *)aDb;
+- (NSArray *)columnNamesForTable:(NSString *)tableName using:(sqlite3 *)aDb;
 
 /**
  * Optional override hook.
@@ -73,12 +80,6 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
  * This method is run asynchronously on the snapshotQueue.
 **/
 - (void)prepare;
-
-/**
- * Required override hook.
- * Subclasses must implement this method and return the proper class to use for the cache.
-**/
-- (Class)cacheKeyClass;
 
 /**
  * Use the addConnection method from within newConnection.
