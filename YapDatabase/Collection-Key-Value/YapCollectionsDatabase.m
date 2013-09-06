@@ -45,7 +45,7 @@ NSString *const YapCollectionsDatabaseAllKeysRemovedKey     = @"allKeysRemoved";
 	int status;
 	
 	char *createDatabaseStatement =
-	    "CREATE TABLE IF NOT EXISTS \"database\""
+	    "CREATE TABLE IF NOT EXISTS \"database2\""
 	    " (\"rowid\" INTEGER PRIMARY KEY,"
 	    "  \"collection\" CHAR NOT NULL,"
 	    "  \"key\" CHAR NOT NULL,"
@@ -61,7 +61,7 @@ NSString *const YapCollectionsDatabaseAllKeysRemovedKey     = @"allKeysRemoved";
 	}
 	
 	char *createIndexStatement =
-	    "CREATE UNIQUE INDEX IF NOT EXISTS \"true_primary_key\" ON \"database\" ( \"collection\", \"key\" );";
+	    "CREATE UNIQUE INDEX IF NOT EXISTS \"true_primary_key\" ON \"database2\" ( \"collection\", \"key\" );";
 	
 	status = sqlite3_exec(db, createIndexStatement, NULL, NULL, NULL);
 	if (status != SQLITE_OK)
@@ -81,6 +81,36 @@ NSString *const YapCollectionsDatabaseAllKeysRemovedKey     = @"allKeysRemoved";
 - (Class)cacheKeyClass
 {
 	return [YapCollectionKey class];
+}
+
+/**
+ * In version 3 (more commonly known as version 2.1),
+ * we altered the tables to use INTEGER PRIMARY KEY's so we could pass rowid's to extensions.
+ * 
+ * This method migrates 'database' to 'database2'.
+**/
+- (BOOL)upgradeTable_2_3
+{
+	int status;
+	
+	char *stmt = "INSERT INTO \"database2\" (\"collection\", \"key\", \"data\", \"metadata\")"
+	             " SELECT \"collection\", \"key\", \"data\", \"metadata\" FROM \"database\";";
+	
+	status = sqlite3_exec(db, stmt, NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error migrating 'database' to 'database2': %d %s", status, sqlite3_errmsg(db));
+		return NO;
+	}
+	
+	status = sqlite3_exec(db, "DROP TABLE IF EXISTS \"database\"", NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Failed dropping 'database' table: %d %s", status, sqlite3_errmsg(db));
+		return NO;
+	}
+	
+	return YES;
 }
 
 /**

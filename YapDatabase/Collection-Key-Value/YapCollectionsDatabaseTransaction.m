@@ -54,7 +54,7 @@
 	sqlite3_stmt *statement = [connection getCollectionCountStatement];
 	if (statement == NULL) return 0;
 	
-	// SELECT COUNT(DISTINCT collection) AS NumberOfRows FROM "database";
+	// SELECT COUNT(DISTINCT collection) AS NumberOfRows FROM "database2";
 	
 	NSUInteger result = 0;
 	
@@ -84,7 +84,7 @@
 	sqlite3_stmt *statement = [connection getKeyCountForCollectionStatement];
 	if (statement == NULL) return 0;
 	
-	// SELECT COUNT(*) AS NumberOfRows FROM "database" WHERE "collection" = ?;
+	// SELECT COUNT(*) AS NumberOfRows FROM "database2" WHERE "collection" = ?;
 	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
 	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
@@ -117,7 +117,7 @@
 	sqlite3_stmt *statement = [connection getKeyCountForAllStatement];
 	if (statement == NULL) return 0;
 	
-	// SELECT COUNT(*) AS NumberOfRows FROM "database";
+	// SELECT COUNT(*) AS NumberOfRows FROM "database2";
 	
 	NSUInteger result = 0;
 	
@@ -147,7 +147,7 @@
 	sqlite3_stmt *statement = [connection enumerateCollectionsStatement];
 	if (statement == NULL) return nil;
 	
-	// SELECT DISTINCT "collection" FROM "database";";
+	// SELECT DISTINCT "collection" FROM "database2";";
 	
 	NSMutableArray *result = [NSMutableArray array];
 	
@@ -201,7 +201,7 @@
 		return NO;
 	}
 	
-	// SELECT "rowid" FROM "database" WHERE "collection" = ? AND "key" = ?;
+	// SELECT "rowid" FROM "database2" WHERE "collection" = ? AND "key" = ?;
 	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
 	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
@@ -244,7 +244,7 @@
 		return NO;
 	}
 	
-	// SELECT "collection", "key" FROM "database" WHERE "rowid" = ?;
+	// SELECT "collection", "key" FROM "database2" WHERE "rowid" = ?;
 	
 	sqlite3_bind_int64(statement, 1, rowid);
 	
@@ -295,7 +295,7 @@
 		return NO;
 	}
 	
-	// SELECT "collection", "key", "data" FROM "database" WHERE "rowid" = ?;
+	// SELECT "collection", "key", "data" FROM "database2" WHERE "rowid" = ?;
 	
 	sqlite3_bind_int64(statement, 1, rowid);
 	
@@ -366,7 +366,7 @@
 		return NO;
 	}
 	
-	// SELECT "collection", "key", "metadata" FROM "database" WHERE "rowid" = ?;
+	// SELECT "collection", "key", "metadata" FROM "database2" WHERE "rowid" = ?;
 	
 	sqlite3_bind_int64(statement, 1, rowid);
 	
@@ -449,7 +449,7 @@
 		return NO;
 	}
 	
-	// SELECT "collection", "key", "data", "metadata" FROM "database" WHERE "rowid" = ?;
+	// SELECT "collection", "key", "data", "metadata" FROM "database2" WHERE "rowid" = ?;
 	
 	sqlite3_bind_int64(statement, 1, rowid);
 	
@@ -540,7 +540,7 @@
 	sqlite3_stmt *statement = [connection getCountForRowidStatement];
 	if (statement == NULL) return NO;
 	
-	// SELECT COUNT(*) AS NumberOfRows FROM "database" WHERE "rowid" = ?;
+	// SELECT COUNT(*) AS NumberOfRows FROM "database2" WHERE "rowid" = ?;
 	
 	sqlite3_bind_int64(statement, 1, rowid);
 	
@@ -579,7 +579,7 @@
 	
 	NSData *result = nil;
 	
-	// SELECT "data" FROM "database" WHERE "collection" = ? AND "key" = ?;
+	// SELECT "data" FROM "database2" WHERE "collection" = ? AND "key" = ?;
 	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
 	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
@@ -620,7 +620,7 @@
 	sqlite3_stmt *statement = [connection getMetadataForKeyStatement];
 	if (statement == NULL) return nil;
 	
-	// SELECT "metadata" FROM "database" WHERE "collection" = ? AND "key" = ? ;
+	// SELECT "metadata" FROM "database2" WHERE "collection" = ? AND "key" = ? ;
 	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
 	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
@@ -673,7 +673,7 @@
 	sqlite3_stmt *statement = [connection getDataForKeyStatement];
 	if (statement == NULL) return nil;
 	
-	// SELECT "data" FROM "database" WHERE "collection" = ? AND "key" = ?;
+	// SELECT "data" FROM "database2" WHERE "collection" = ? AND "key" = ?;
 	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
 	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
@@ -779,7 +779,7 @@
 		sqlite3_stmt *statement = [connection getAllForKeyStatement];
 		if (statement)
 		{
-			// SELECT "data", "metadata" FROM "database" WHERE "collection" = ? AND "key" = ? ;
+			// SELECT "data", "metadata" FROM "database2" WHERE "collection" = ? AND "key" = ? ;
 			
 			YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
 			sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
@@ -859,7 +859,7 @@
 	sqlite3_stmt *statement = [connection getMetadataForKeyStatement];
 	if (statement == NULL) return nil;
 	
-	// SELECT "metadata" FROM "database" WHERE "collection" = ? AND "key" = ? ;
+	// SELECT "metadata" FROM "database2" WHERE "collection" = ? AND "key" = ? ;
 	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
 	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
@@ -1358,12 +1358,12 @@
 		NSUInteger numKeyParams = MIN([missingIndexes count], (maxHostParams-1)); // minus 1 for collection param
 		
 		// Create the SQL query:
-		// SELECT "key", "metadata" FROM "database" WHERE "collection" = ? AND key IN (?, ?, ...);
+		// SELECT "key", "metadata" FROM "database2" WHERE "collection" = ? AND key IN (?, ?, ...);
 		
 		NSUInteger capacity = 80 + (numKeyParams * 3);
 		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 		
-		[query appendString:@"SELECT \"key\", \"metadata\" FROM \"database\""];
+		[query appendString:@"SELECT \"key\", \"metadata\" FROM \"database2\""];
 		[query appendString:@" WHERE \"collection\" = ? AND \"key\" IN ("];
 		
 		NSUInteger i;
@@ -1565,12 +1565,12 @@
 		NSUInteger numKeyParams = MIN([missingIndexes count], (maxHostParams-1)); // minus 1 for collection param
 		
 		// Create the SQL query:
-		// SELECT "key", "data" FROM "database" WHERE "collection" = ? AND key IN (?, ?, ...);
+		// SELECT "key", "data" FROM "database2" WHERE "collection" = ? AND key IN (?, ?, ...);
 		
 		NSUInteger capacity = 80 + (numKeyParams * 3);
 		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 		
-		[query appendString:@"SELECT \"key\", \"data\" FROM \"database\""];
+		[query appendString:@"SELECT \"key\", \"data\" FROM \"database2\""];
 		[query appendString:@" WHERE \"collection\" = ? AND \"key\" IN ("];
 		
 		NSUInteger i;
@@ -1781,12 +1781,12 @@
 		NSUInteger numKeyParams = MIN([missingIndexes count], (maxHostParams-1)); // minus 1 for collection param
 		
 		// Create the SQL query:
-		// SELECT "key", "data", "metadata" FROM "database" WHERE "collection" = ? AND key IN (?, ?, ...);
+		// SELECT "key", "data", "metadata" FROM "database2" WHERE "collection" = ? AND key IN (?, ?, ...);
 		
 		NSUInteger capacity = 80 + (numKeyParams * 3);
 		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 		
-		[query appendString:@"SELECT \"key\", \"data\", \"metadata\" FROM \"database\""];
+		[query appendString:@"SELECT \"key\", \"data\", \"metadata\" FROM \"database2\""];
 		[query appendString:@" WHERE \"collection\" = ? AND \"key\" IN ("];
 		
 		NSUInteger i;
@@ -1960,7 +1960,7 @@
 	isMutated = NO; // mutation during enumeration protection
 	BOOL stop = NO;
 	
-	// SELECT "rowid", "key" FROM "database" WHERE collection = ?;
+	// SELECT "rowid", "key" FROM "database2" WHERE collection = ?;
 	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
 	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
@@ -2019,7 +2019,7 @@
 	isMutated = NO; // mutation during enumeration protection
 	BOOL stop = NO;
 	
-	// SELECT "rowid", "collection", "key" FROM "database";
+	// SELECT "rowid", "collection", "key" FROM "database2";
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
@@ -2101,7 +2101,7 @@
 	isMutated = NO; // mutation during enumeration protection
 	BOOL stop = NO;
 	
-	// SELECT "rowid", "key", "metadata" FROM "database" WHERE "collection" = ?;
+	// SELECT "rowid", "key", "metadata" FROM "database2" WHERE "collection" = ?;
 	//
 	// Performance tuning:
 	// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
@@ -2228,7 +2228,7 @@
 	isMutated = NO; // mutation during enumeration protection
 	BOOL stop = NO;
 	
-	// SELECT "rowid", "collection", "key", "metadata" FROM "database" ORDER BY "collection" ASC;
+	// SELECT "rowid", "collection", "key", "metadata" FROM "database2" ORDER BY "collection" ASC;
 	//
 	// Performance tuning:
 	// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
@@ -2353,7 +2353,7 @@
 	isMutated = NO; // mutation during enumeration protection
 	BOOL stop = NO;
 	
-	// SELECT "rowid", "key", "data", FROM "database" WHERE "collection" = ?;
+	// SELECT "rowid", "key", "data", FROM "database2" WHERE "collection" = ?;
 	//
 	// Performance tuning:
 	// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
@@ -2468,7 +2468,7 @@
 	isMutated = NO; // mutation during enumeration protection
 	BOOL stop = NO;
 	
-	// SELECT "rowid", "collection", "key", "data" FROM "database" ORDER BY \"collection\" ASC;";
+	// SELECT "rowid", "collection", "key", "data" FROM "database2" ORDER BY \"collection\" ASC;";
 	//           0           1         2       3
 	
 	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
@@ -2574,7 +2574,7 @@
 	isMutated = NO; // mutation during enumeration protection
 	BOOL stop = NO;
 	
-	// SELECT "rowid", "key", "data", "metadata" FROM "database" WHERE "collection" = ?;
+	// SELECT "rowid", "key", "data", "metadata" FROM "database2" WHERE "collection" = ?;
 	//
 	// Performance tuning:
 	// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
@@ -2717,7 +2717,7 @@
 	isMutated = NO; // mutation during enumeration protection
 	BOOL stop = NO;
 	
-	// SELECT "rowid", "collection", "key", "data", "metadata" FROM "database" ORDER BY \"collection\" ASC;";
+	// SELECT "rowid", "collection", "key", "data", "metadata" FROM "database2" ORDER BY \"collection\" ASC;";
 	//           0           1         2       3         4
 	
 	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
@@ -2858,7 +2858,7 @@
 			return;
 		}
 		
-		// SELECT "rowid" FROM "database" WHERE "collection" = ? AND "key" = ?;
+		// SELECT "rowid" FROM "database2" WHERE "collection" = ? AND "key" = ?;
 		
 		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
 		sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
@@ -2890,7 +2890,7 @@
 			return;
 		}
 		
-		// UPDATE "database" SET "data" = ?, "metadata" = ? WHERE "rowid" = ?;
+		// UPDATE "database2" SET "data" = ?, "metadata" = ? WHERE "rowid" = ?;
 		
 		sqlite3_bind_blob(statement, 1, data.bytes, (int)data.length, SQLITE_STATIC);
 		sqlite3_bind_blob(statement, 2, metadataData.bytes, (int)metadataData.length, SQLITE_STATIC);
@@ -2916,7 +2916,7 @@
 			return;
 		}
 		
-		// INSERT INTO "database" ("collection", "key", "data", "metadata") VALUES (?, ?, ?, ?);
+		// INSERT INTO "database2" ("collection", "key", "data", "metadata") VALUES (?, ?, ?, ?);
 		
 		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
 		sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
@@ -3003,7 +3003,7 @@
 			return;
 		}
 		
-		// SELECT "rowid" FROM "database" WHERE "collection" = ? AND "key" = ?;
+		// SELECT "rowid" FROM "database2" WHERE "collection" = ? AND "key" = ?;
 		
 		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
 		sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
@@ -3035,7 +3035,7 @@
 			return;
 		}
 		
-		// UPDATE "database" SET "data" = ?, "metadata" = ? WHERE "rowid" = ?;
+		// UPDATE "database2" SET "data" = ?, "metadata" = ? WHERE "rowid" = ?;
 		// 
 		// To use SQLITE_STATIC on our data blob, we use the objc_precise_lifetime attribute.
 		// This ensures the data isn't released until it goes out of scope.
@@ -3068,7 +3068,7 @@
 			return;
 		}
 		
-		// INSERT INTO "database" ("collection", "key", "data", "metadata") VALUES (?, ?, ?, ?);
+		// INSERT INTO "database2" ("collection", "key", "data", "metadata") VALUES (?, ?, ?, ?);
 		//
 		// To use SQLITE_STATIC on our data blob, we use the objc_precise_lifetime attribute.
 		// This ensures the data isn't released until it goes out of scope.
@@ -3148,7 +3148,7 @@
 	sqlite3_stmt *statement = [connection updateMetadataForRowidStatement];
 	if (statement == NULL) return;
 	
-	// UPDATE "database" SET "metadata" = ? WHERE "rowid" = ?;
+	// UPDATE "database2" SET "metadata" = ? WHERE "rowid" = ?;
 	//
 	// To use SQLITE_STATIC on our data blob, we use the objc_precise_lifetime attribute.
 	// This ensures the data isn't released until it goes out of scope.
@@ -3300,13 +3300,13 @@
 		
 		if (YES)
 		{
-			// SELECT "key", "rowid" FROM "database" WHERE "collection" = ? AND "key" IN (?, ?, ...);
+			// SELECT "key", "rowid" FROM "database2" WHERE "collection" = ? AND "key" IN (?, ?, ...);
 		
 			NSUInteger capacity = 100 + (numKeyParams * 3);
 			NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 			
 			[query appendString:
-			    @"SELECT \"key\", \"rowid\" FROM \"database\" WHERE \"collection\" = ? AND \"key\" IN ("];
+			    @"SELECT \"key\", \"rowid\" FROM \"database2\" WHERE \"collection\" = ? AND \"key\" IN ("];
 			
 			NSUInteger i;
 			for (i = 0; i < numKeyParams; i++)
@@ -3367,12 +3367,12 @@
 		
 		if (foundCount > 0)
 		{
-			// DELETE FROM "database" WHERE "rowid" in (?, ?, ...);
+			// DELETE FROM "database2" WHERE "rowid" in (?, ?, ...);
 			
 			NSUInteger capacity = 50 + (foundCount * 3);
 			NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 			
-			[query appendString:@"DELETE FROM \"database\" WHERE \"rowid\" IN ("];
+			[query appendString:@"DELETE FROM \"database2\" WHERE \"rowid\" IN ("];
 			
 			NSUInteger i;
 			for (i = 0; i < foundCount; i++)
@@ -3483,7 +3483,7 @@
 		sqlite3_stmt *statement = [connection removeCollectionStatement];
 		if (statement == NULL) return;
 	
-		// DELETE FROM "database" WHERE "collection" = ?;
+		// DELETE FROM "database2" WHERE "collection" = ?;
 		
 		YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
 		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
@@ -3546,7 +3546,7 @@
 				return;
 			}
 			
-			// SELECT "rowid", "key" FROM "database" WHERE collection = ?;
+			// SELECT "rowid", "key" FROM "database2" WHERE collection = ?;
 			
 			sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
 			
@@ -3582,12 +3582,12 @@
 		
 		if (foundCount > 0)
 		{
-			// DELETE FROM "database" WHERE "rowid" in (?, ?, ...);
+			// DELETE FROM "database2" WHERE "rowid" in (?, ?, ...);
 			
 			NSUInteger capacity = 50 + (foundCount * 3);
 			NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 			
-			[query appendString:@"DELETE FROM \"database\" WHERE \"rowid\" IN ("];
+			[query appendString:@"DELETE FROM \"database2\" WHERE \"rowid\" IN ("];
 			
 			NSUInteger i;
 			for (i = 0; i < foundCount; i++)

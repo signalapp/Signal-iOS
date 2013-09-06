@@ -38,7 +38,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
  * the version can be consulted to allow for proper on-the-fly upgrades.
  * For more information, see the upgradeTable method.
 **/
-#define YAP_DATABASE_CURRENT_VERION 2
+#define YAP_DATABASE_CURRENT_VERION 3
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
@@ -560,6 +560,16 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		YDBLogError(@"Error setting user_version: %d %s", status, sqlite3_errmsg(db));
 		return NO;
 	}
+	
+	return YES;
+}
+
+- (BOOL)upgradeTable_2_3
+{
+	// In version 3, we altered the tables to use INTEGER PRIMARY KEY's so we could pass rowid's to extensions.
+	//
+	// This method is implemented in YapDatabase & YapCollectionsDatabase.
+	// It migrates 'database' to 'database2'.
 	
 	return YES;
 }

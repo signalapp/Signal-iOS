@@ -160,7 +160,7 @@
 {
 	if (getCollectionCountStatement == NULL)
 	{
-		char *stmt = "SELECT COUNT(DISTINCT collection) AS NumberOfRows FROM \"database\";";
+		char *stmt = "SELECT COUNT(DISTINCT collection) AS NumberOfRows FROM \"database2\";";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getCollectionCountStatement, NULL);
@@ -177,7 +177,7 @@
 {
 	if (getKeyCountForCollectionStatement == NULL)
 	{
-		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database\" WHERE \"collection\" = ?;";
+		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database2\" WHERE \"collection\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getKeyCountForCollectionStatement, NULL);
@@ -194,7 +194,7 @@
 {
 	if (getKeyCountForAllStatement == NULL)
 	{
-		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database\";";
+		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database2\";";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getKeyCountForAllStatement, NULL);
@@ -211,7 +211,7 @@
 {
 	if (getCountForRowidStatement == NULL)
 	{
-		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database\" WHERE \"rowid\" = ?;";
+		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database2\" WHERE \"rowid\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getCountForRowidStatement, NULL);
@@ -228,7 +228,7 @@
 {
 	if (getRowidForKeyStatement == NULL)
 	{
-		char *stmt = "SELECT \"rowid\" FROM \"database\" WHERE \"collection\" = ? AND \"key\" = ?;";
+		char *stmt = "SELECT \"rowid\" FROM \"database2\" WHERE \"collection\" = ? AND \"key\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getRowidForKeyStatement, NULL);
@@ -245,7 +245,7 @@
 {
 	if (getKeyForRowidStatement == NULL)
 	{
-		char *stmt = "SELECT \"collection\", \"key\" FROM \"database\" WHERE \"rowid\" = ?;";
+		char *stmt = "SELECT \"collection\", \"key\" FROM \"database2\" WHERE \"rowid\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getKeyForRowidStatement, NULL);
@@ -262,7 +262,7 @@
 {
 	if (getDataForRowidStatement == NULL)
 	{
-		char *stmt = "SELECT \"collection\", \"key\", \"data\" FROM \"database\" WHERE \"rowid\" = ?;";
+		char *stmt = "SELECT \"collection\", \"key\", \"data\" FROM \"database2\" WHERE \"rowid\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getDataForRowidStatement, NULL);
@@ -279,7 +279,7 @@
 {
 	if (getMetadataForRowidStatement == NULL)
 	{
-		char *stmt = "SELECT \"collection\", \"key\", \"metadata\" FROM \"database\" WHERE \"rowid\" = ?;";
+		char *stmt = "SELECT \"collection\", \"key\", \"metadata\" FROM \"database2\" WHERE \"rowid\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getMetadataForRowidStatement, NULL);
@@ -296,7 +296,7 @@
 {
 	if (getAllForRowidStatement == NULL)
 	{
-		char *stmt = "SELECT \"collection\", \"key\", \"data\", \"metadata\" FROM \"database\" WHERE \"rowid\" = ?;";
+		char *stmt = "SELECT \"collection\", \"key\", \"data\", \"metadata\" FROM \"database2\" WHERE \"rowid\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getAllForRowidStatement, NULL);
@@ -313,7 +313,7 @@
 {
 	if (getDataForKeyStatement == NULL)
 	{
-		char *stmt = "SELECT \"data\" FROM \"database\" WHERE \"collection\" = ? AND \"key\" = ?;";
+		char *stmt = "SELECT \"data\" FROM \"database2\" WHERE \"collection\" = ? AND \"key\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getDataForKeyStatement, NULL);
@@ -330,7 +330,7 @@
 {
 	if (getMetadataForKeyStatement == NULL)
 	{
-		char *stmt = "SELECT \"metadata\" FROM \"database\" WHERE \"collection\" = ? AND \"key\" = ?;";
+		char *stmt = "SELECT \"metadata\" FROM \"database2\" WHERE \"collection\" = ? AND \"key\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getMetadataForKeyStatement, NULL);
@@ -347,7 +347,7 @@
 {
 	if (getAllForKeyStatement == NULL)
 	{
-		char *stmt = "SELECT \"data\", \"metadata\" FROM \"database\" WHERE \"collection\" = ? AND \"key\" = ?;";
+		char *stmt = "SELECT \"data\", \"metadata\" FROM \"database2\" WHERE \"collection\" = ? AND \"key\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getAllForKeyStatement, NULL);
@@ -364,7 +364,7 @@
 {
 	if (insertForRowidStatement == NULL)
 	{
-		char *stmt = "INSERT INTO \"database\""
+		char *stmt = "INSERT INTO \"database2\""
 		             " (\"collection\", \"key\", \"data\", \"metadata\") VALUES (?, ?, ?, ?);";
 		int stmtLen = (int)strlen(stmt);
 		
@@ -382,7 +382,7 @@
 {
 	if (updateAllForRowidStatement == NULL)
 	{
-		char *stmt = "UPDATE \"database\" SET \"data\" = ?, \"metadata\" = ? WHERE \"rowid\" = ?;";
+		char *stmt = "UPDATE \"database2\" SET \"data\" = ?, \"metadata\" = ? WHERE \"rowid\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &updateAllForRowidStatement, NULL);
@@ -399,7 +399,7 @@
 {
 	if (updateMetadataForRowidStatement == NULL)
 	{
-		char *stmt = "UPDATE \"database\" SET \"metadata\" = ? WHERE \"rowid\" = ?;";
+		char *stmt = "UPDATE \"database2\" SET \"metadata\" = ? WHERE \"rowid\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &updateMetadataForRowidStatement, NULL);
@@ -416,7 +416,7 @@
 {
 	if (removeForRowidStatement == NULL)
 	{
-		char *stmt = "DELETE FROM \"database\" WHERE \"rowid\" = ?;";
+		char *stmt = "DELETE FROM \"database2\" WHERE \"rowid\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &removeForRowidStatement, NULL);
@@ -433,7 +433,7 @@
 {
 	if (removeCollectionStatement == NULL)
 	{
-		char *stmt = "DELETE FROM \"database\" WHERE \"collection\" = ?;";
+		char *stmt = "DELETE FROM \"database2\" WHERE \"collection\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &removeCollectionStatement, NULL);
@@ -450,7 +450,7 @@
 {
 	if (removeAllStatement == NULL)
 	{
-		char *stmt = "DELETE FROM \"database\";";
+		char *stmt = "DELETE FROM \"database2\";";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &removeAllStatement, NULL);
@@ -467,7 +467,7 @@
 {
 	if (enumerateCollectionsStatement == NULL)
 	{
-		char *stmt = "SELECT DISTINCT \"collection\" FROM \"database\";";
+		char *stmt = "SELECT DISTINCT \"collection\" FROM \"database2\";";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateCollectionsStatement, NULL);
@@ -484,7 +484,7 @@
 {
 	if (enumerateKeysInCollectionStatement == NULL)
 	{
-		char *stmt = "SELECT \"rowid\", \"key\" FROM \"database\" WHERE collection = ?;";
+		char *stmt = "SELECT \"rowid\", \"key\" FROM \"database2\" WHERE collection = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysInCollectionStatement, NULL);
@@ -501,7 +501,7 @@
 {
 	if (enumerateKeysInAllCollectionsStatement == NULL)
 	{
-		char *stmt = "SELECT \"rowid\", \"collection\", \"key\" FROM \"database\";";
+		char *stmt = "SELECT \"rowid\", \"collection\", \"key\" FROM \"database2\";";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysInAllCollectionsStatement, NULL);
@@ -518,7 +518,7 @@
 {
 	if (enumerateKeysAndMetadataInCollectionStatement == NULL)
 	{
-		char *stmt = "SELECT \"rowid\", \"key\", \"metadata\" FROM \"database\" WHERE collection = ?;";
+		char *stmt = "SELECT \"rowid\", \"key\", \"metadata\" FROM \"database2\" WHERE collection = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndMetadataInCollectionStatement, NULL);
@@ -536,7 +536,7 @@
 	if (enumerateKeysAndMetadataInAllCollectionsStatement == NULL)
 	{
 		char *stmt = "SELECT \"rowid\", \"collection\", \"key\", \"metadata\""
-		             " FROM \"database\" ORDER BY \"collection\" ASC;";
+		             " FROM \"database2\" ORDER BY \"collection\" ASC;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndMetadataInAllCollectionsStatement, NULL);
@@ -553,7 +553,7 @@
 {
 	if (enumerateKeysAndObjectsInCollectionStatement == NULL)
 	{
-		char *stmt = "SELECT \"rowid\", \"key\", \"data\" FROM \"database\" WHERE \"collection\" = ?;";
+		char *stmt = "SELECT \"rowid\", \"key\", \"data\" FROM \"database2\" WHERE \"collection\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndObjectsInCollectionStatement, NULL);
@@ -571,7 +571,7 @@
 	if (enumerateKeysAndObjectsInAllCollectionsStatement == NULL)
 	{
 		char *stmt = "SELECT \"rowid\", \"collection\", \"key\", \"data\""
-		             " FROM \"database\" ORDER BY \"collection\" ASC;";
+		             " FROM \"database2\" ORDER BY \"collection\" ASC;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndObjectsInAllCollectionsStatement, NULL);
@@ -588,7 +588,7 @@
 {
 	if (enumerateRowsInCollectionStatement == NULL)
 	{
-		char *stmt = "SELECT \"rowid\", \"key\", \"data\", \"metadata\" FROM \"database\" WHERE \"collection\" = ?;";
+		char *stmt = "SELECT \"rowid\", \"key\", \"data\", \"metadata\" FROM \"database2\" WHERE \"collection\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateRowsInCollectionStatement, NULL);
@@ -607,7 +607,7 @@
 	{
 		char *stmt =
 		    "SELECT \"rowid\", \"collection\", \"key\", \"data\", \"metadata\""
-		    " FROM \"database\" ORDER BY \"collection\" ASC;";
+		    " FROM \"database2\" ORDER BY \"collection\" ASC;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateRowsInAllCollectionsStatement, NULL);
