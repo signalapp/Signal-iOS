@@ -395,7 +395,7 @@
 - (void)setPrimitiveData:(NSData *)data
                   forKey:(NSString *)key
             inCollection:(NSString *)collection
-   withPrimitiveMetadata:(id)metadataData;
+   withPrimitiveMetadata:(NSData *)metadataData;
 
 #pragma mark Object
 
