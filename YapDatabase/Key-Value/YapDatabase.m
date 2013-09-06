@@ -167,7 +167,7 @@
 			
 			[timestamps enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
 				
-				if ([obj isKindOfClass:[NSDate date]])
+				if ([obj isKindOfClass:[NSDate class]])
 				{
 					YapDatabaseString _key; MakeYapDatabaseString(&_key, (NSString *)key);
 					
