@@ -7,7 +7,7 @@
 	dispatch_semaphore_t writeSemaphore;
 
 @public
-	__unsafe_unretained YapAbstractDatabaseConnection *connection;
+	__weak YapAbstractDatabaseConnection *connection;
 	
 	BOOL yapLevelSharedReadLock;
 	BOOL sqlLevelSharedReadLock;

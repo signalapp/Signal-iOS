@@ -1254,15 +1254,19 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	{
 		if (state->connection != sender)
 		{
-			YapAbstractDatabaseConnection *connection = state->connection;
+			// Create strong reference (state->connection is weak)
+			__strong YapAbstractDatabaseConnection *connection = state->connection;
 			
-			if (group == NULL)
-				group = dispatch_group_create();
-			
-			dispatch_group_async(group, connection.connectionQueue, ^{ @autoreleasepool {
+			if (connection)
+			{
+				if (group == NULL)
+					group = dispatch_group_create();
 				
-				[connection noteCommittedChanges:changeset];
-			}});
+				dispatch_group_async(group, connection.connectionQueue, ^{ @autoreleasepool {
+					
+					[connection noteCommittedChanges:changeset];
+				}});
+			}
 		}
 	}
 	
