@@ -31,7 +31,7 @@
  * If there is a major re-write to this class, then the version number will be incremented,
  * and the class can automatically rebuild the tables as needed.
 **/
-#define YAP_DATABASE_VIEW_CLASS_VERSION 1
+#define YAP_DATABASE_VIEW_CLASS_VERSION 2
 
 /**
  * The view is tasked with storing ordered arrays of keys.
