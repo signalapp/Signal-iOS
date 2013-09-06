@@ -826,13 +826,13 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		for (YapDatabaseConnectionState *state in connectionStates)
 		{
 			if (state->connection == connection)
+			{
+				[connectionStates removeObjectAtIndex:index];
 				break;
-			else
-				index++;
+			}
+			
+			index++;
 		}
-		
-		if (index < [connectionStates count])
-			[connectionStates removeObjectAtIndex:index];
 		
 		YDBLogVerbose(@"Removed connection(%p) from <%@ %p: databaseName=%@, connectionCount=%lu>",
 		              connection,
