@@ -654,28 +654,38 @@
 	id object = [connection->objectCache objectForKey:key];
 	id metadata = [connection->metadataCache objectForKey:key];
 	
+	BOOL found = NO;
+	
 	if (object && metadata)
 	{
 		// Both object and metadata were in cache.
-		// Just need to check for empty metadata placeholder from cache.
+		found = YES;
+		
+		// Need to check for empty metadata placeholder from cache.
 		if (metadata == [YapNull null])
 			metadata = nil;
 	}
 	else if (!object && metadata)
 	{
 		// Metadata was in cache.
-		// Missing object. Fetch individually.
-		object = [self objectForKey:key];
+		found = YES;
 		
-		// And check for empty metadata placeholder from cache.
+		// Need to check for empty metadata placeholder from cache.
 		if (metadata == [YapNull null])
 			metadata = nil;
+		
+		// Missing object. Fetch individually if requested.
+		if (objectPtr)
+			object = [self objectForKey:key];
 	}
 	else if (object && !metadata)
 	{
 		// Object was in cache.
-		// Missing metadata. Fetch individually.
-		metadata = [self metadataForKey:key];
+		found = YES;
+		
+		// Missing metadata. Fetch individually if requested
+		if (metadataPtr)
+			metadata = [self metadataForKey:key];
 	}
 	else // (!object && !metadata)
 	{
@@ -702,14 +712,17 @@
 				const void *mBlob = sqlite3_column_blob(statement, 1);
 				int mBlobSize = sqlite3_column_bytes(statement, 1);
 				
-				NSData *oData, *mData;
+				found = YES;
 				
-				oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
-				object = connection->database->objectDeserializer(oData);
-				
-				if (mBlobSize > 0)
+				if (objectPtr)
 				{
-					mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+					object = connection->database->objectDeserializer(oData);
+				}
+				
+				if (metadataPtr && mBlobSize > 0)
+				{
+					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
 					metadata = connection->database->metadataDeserializer(mData);
 				}
 			}
