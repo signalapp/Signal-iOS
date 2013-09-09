@@ -95,6 +95,12 @@
 		IsOnConnectionQueueKey = &IsOnConnectionQueueKey;
 		dispatch_queue_set_specific(connectionQueue, IsOnConnectionQueueKey, IsOnConnectionQueueKey, NULL);
 		
+	#if DEBUG
+		throwExceptionsForImplicitlyEndingLongLivedReadTransaction = YES;
+	#else
+		throwExceptionsForImplicitlyEndingLongLivedReadTransaction = NO;
+	#endif
+		
 		pendingChangesets = [[NSMutableArray alloc] init];
 		processedChangesets = [[NSMutableArray alloc] init];
 		
@@ -495,6 +501,32 @@
 		dispatch_sync(connectionQueue, block);
 	
 	return result;
+}
+
+- (void)enableExceptionsForImplicitlyEndingLongLivedReadTransaction
+{
+	dispatch_block_t block = ^{
+		
+		throwExceptionsForImplicitlyEndingLongLivedReadTransaction = YES;
+	};
+	
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+		block();
+	else
+		dispatch_async(connectionQueue, block);
+}
+
+- (void)disableExceptionsForImplicitlyEndingLongLivedReadTransaction
+{
+	dispatch_block_t block = ^{
+		
+		throwExceptionsForImplicitlyEndingLongLivedReadTransaction = NO;
+	};
+	
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+		block();
+	else
+		dispatch_async(connectionQueue, block);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1029,10 +1061,17 @@
 		
 		if (longLivedReadTransaction)
 		{
-			YDBLogWarn(@"Implicitly ending long-lived read transaction on connection %@, database %@",
-			           self, self->database);
-			
-			[self endLongLivedReadTransaction];
+			if (throwExceptionsForImplicitlyEndingLongLivedReadTransaction)
+			{
+				@throw [self implicitlyEndingLongLivedReadTransactionException];
+			}
+			else
+			{
+				YDBLogWarn(@"Implicitly ending long-lived read transaction on connection %@, database %@",
+				           self, self->database);
+				
+				[self endLongLivedReadTransaction];
+			}
 		}
 		
 		__preWriteQueue(self);
@@ -1111,10 +1150,17 @@
 		
 		if (longLivedReadTransaction)
 		{
-			YDBLogWarn(@"Implicitly ending long-lived read transaction on connection %@, database %@",
-			           self, database);
-			
-			[self endLongLivedReadTransaction];
+			if (throwExceptionsForImplicitlyEndingLongLivedReadTransaction)
+			{
+				@throw [self implicitlyEndingLongLivedReadTransactionException];
+			}
+			else
+			{
+				YDBLogWarn(@"Implicitly ending long-lived read transaction on connection %@, database %@",
+				           self, database);
+				
+				[self endLongLivedReadTransaction];
+			}
 		}
 		
 		__preWriteQueue(self);
@@ -2298,6 +2344,28 @@ NS_INLINE void __postWriteQueue(YapAbstractDatabaseConnection *connection)
 		connection->activeReadWriteTransaction = NO;
 	}
 	OSSpinLockUnlock(&connection->lock);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Exceptions
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSException *)implicitlyEndingLongLivedReadTransactionException
+{
+	NSString *reason = [NSString stringWithFormat:
+		@"Database <%@: %p> had long-lived read transaction implicitly ended by executing a read-write transaction.",
+		NSStringFromClass([self class]), self];
+	
+	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
+		@"Connections with long-lived read transactions are generally designed to be read-only connections."
+		@" As such, you'll want to use a separate connection for the read-write transaction."
+		@" If this is not the case (very, very, very rare) you can disable this exception using"
+		@" disableExceptionsForImplicitlyEndingLongLivedReadTransaction."
+		@" Keep in mind that if you disable these exceptions without understanding why they're enabled by default"
+		@" then you're inevitably creating a hard-to-reproduce bug and likely a few crashes too."
+		@" Don't be lazy. You've been warned."};
+	
+	return [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
 }
 
 @end
