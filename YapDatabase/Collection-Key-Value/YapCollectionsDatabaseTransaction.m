@@ -677,6 +677,8 @@
 	NSData *data = nil;
 	NSData *metadata = nil;
 	
+	BOOL found = NO;
+	
 	// SELECT "data", "metadata" FROM "database2" WHERE "collection" = ? AND "key" = ? ;
 		
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
@@ -697,8 +699,17 @@
 		const void *mBlob = sqlite3_column_blob(statement, 1);
 		int mBlobSize = sqlite3_column_bytes(statement, 1);
 		
-		data = [NSData dataWithBytes:(void *)oBlob length:oBlobSize];
-		metadata = [NSData dataWithBytes:(void *)mBlob length:mBlobSize];
+		if (dataPtr)
+		{
+			data = [NSData dataWithBytes:(void *)oBlob length:oBlobSize];
+		}
+		
+		if (metadataPtr)
+		{
+			metadata = [NSData dataWithBytes:(void *)mBlob length:mBlobSize];
+		}
+		
+		found = YES;
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -714,7 +725,7 @@
 	if (dataPtr) *dataPtr = data;
 	if (metadataPtr) *metadataPtr = metadata;
 	
-	return (data != nil || metadata != nil);
+	return found;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -871,8 +882,6 @@
 				const void *mBlob = sqlite3_column_blob(statement, 1);
 				int mBlobSize = sqlite3_column_bytes(statement, 1);
 				
-				found = YES;
-				
 				if (objectPtr)
 				{
 					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
@@ -884,6 +893,8 @@
 					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
 					metadata = connection->database->metadataDeserializer(mData);
 				}
+				
+				found = YES;
 			}
 			else if (status == SQLITE_ERROR)
 			{

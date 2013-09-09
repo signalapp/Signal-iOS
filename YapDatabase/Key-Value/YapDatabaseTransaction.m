@@ -535,7 +535,8 @@
 	
 	NSData *data = nil;
 	NSData *metadata = nil;
-	BOOL result = NO;
+	
+	BOOL found = NO;
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
@@ -549,14 +550,17 @@
 		const void *mBlob = sqlite3_column_blob(statement, 1);
 		int mBlobSize = sqlite3_column_bytes(statement, 1);
 		
-		data = [[NSData alloc] initWithBytes:(void *)oBlob length:oBlobSize];
+		if (dataPtr)
+		{
+			data = [[NSData alloc] initWithBytes:(void *)oBlob length:oBlobSize];
+		}
 			
-		if (mBlobSize > 0)
+		if (metadataPtr)
 		{
 			metadata = [[NSData alloc] initWithBytes:(void *)mBlob length:mBlobSize];
 		}
 		
-		result = YES;
+		found = YES;
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -570,7 +574,8 @@
 	
 	if (dataPtr) *dataPtr = data;
 	if (metadataPtr) *metadataPtr = metadata;
-	return result;
+	
+	return found;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -712,8 +717,6 @@
 				const void *mBlob = sqlite3_column_blob(statement, 1);
 				int mBlobSize = sqlite3_column_bytes(statement, 1);
 				
-				found = YES;
-				
 				if (objectPtr)
 				{
 					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
@@ -725,6 +728,8 @@
 					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
 					metadata = connection->database->metadataDeserializer(mData);
 				}
+				
+				found = YES;
 			}
 			else if (status == SQLITE_ERROR)
 			{
@@ -753,7 +758,7 @@
 	if (objectPtr) *objectPtr = object;
 	if (metadataPtr) *metadataPtr = metadata;
 	
-	return (object != nil || metadata != nil);
+	return found;
 }
 
 - (id)metadataForKey:(NSString *)key
