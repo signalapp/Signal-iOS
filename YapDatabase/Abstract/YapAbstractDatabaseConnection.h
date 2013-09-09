@@ -162,6 +162,24 @@ typedef enum  {
 
 - (BOOL)isInLongLivedReadTransaction;
 
+/**
+ * A long-lived read-only transaction is most often setup on a connection that is designed to be read-only.
+ * But sometimes we forget, and a read-write transaction gets added that uses the read-only connection.
+ * This will implicitly end the long-lived read-only transaction. Oops.
+ *
+ * This is a bug waiting to happen.
+ * And when it does happen, it will be one of those bugs that's nearly impossible to reproduce.
+ * So its better to have an early warning system to help you fix the bug before it occurs.
+ *
+ * For a complete discussion, please see the wiki page:
+ * https://github.com/yaptv/YapDatabase/wiki/LongLivedReadTransactions
+ *
+ * In debug mode (#if DEBUG), these exceptions are turned ON by default.
+ * In non-debug mode (#if !DEBUG), these exceptions are turned OFF by default.
+**/
+- (void)enableExceptionsForImplicitlyEndingLongLivedReadTransaction;
+- (void)disableExceptionsForImplicitlyEndingLongLivedReadTransaction;
+
 #pragma mark Extensions
 
 /**

@@ -179,6 +179,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	uint64_t snapshot;
 	
 	YapAbstractDatabaseTransaction *longLivedReadTransaction;
+	BOOL throwExceptionsForImplicitlyEndingLongLivedReadTransaction;
 	NSMutableArray *pendingChangesets;
 	NSMutableArray *processedChangesets;
 	
