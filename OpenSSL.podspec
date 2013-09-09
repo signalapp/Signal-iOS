@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.author       = 'Justin Plouffe'
   s.source       = { :git => "https://github.com/justinplouffe/OpenSSL.git", :tag => "1.0.1e" }
 
-  s.platform     = :ios, '6.0'
+  s.platform     = :ios, '5.1'
   s.source_files = 'include/openssl/**/*.h'
   s.public_header_files = 'include/openssl/**/.h'
   s.preserve_paths = 'libcrypto.a', 'libssl.a'
