@@ -655,6 +655,68 @@
 	return result;
 }
 
+- (BOOL)getPrimitiveData:(NSData **)dataPtr
+       primitiveMetadata:(NSData **)metadataPtr
+                  forKey:(NSString *)key
+            inCollection:(NSString *)collection
+{
+	if (key == nil) {
+		if (dataPtr) *dataPtr = nil;
+		if (metadataPtr) *metadataPtr = nil;
+		return NO;
+	}
+	if (collection == nil) collection = @"";
+		
+	sqlite3_stmt *statement = [connection getAllForKeyStatement];
+	if (statement == NULL) {
+		if (dataPtr) *dataPtr = nil;
+		if (metadataPtr) *metadataPtr = nil;
+		return NO;
+	}
+	
+	NSData *data = nil;
+	NSData *metadata = nil;
+	
+	// SELECT "data", "metadata" FROM "database2" WHERE "collection" = ? AND "key" = ? ;
+		
+	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
+	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+		
+	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+		
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		if (connection->needsMarkSqlLevelSharedReadLock)
+			[connection markSqlLevelSharedReadLockAcquired];
+		
+		const void *oBlob = sqlite3_column_blob(statement, 0);
+		int oBlobSize = sqlite3_column_bytes(statement, 0);
+		
+		const void *mBlob = sqlite3_column_blob(statement, 1);
+		int mBlobSize = sqlite3_column_bytes(statement, 1);
+		
+		data = [NSData dataWithBytes:(void *)oBlob length:oBlobSize];
+		metadata = [NSData dataWithBytes:(void *)mBlob length:mBlobSize];
+	}
+	else if (status == SQLITE_ERROR)
+	{
+		YDBLogError(@"Error executing 'getAllForKeyStatement': %d %s",
+		                                                   status, sqlite3_errmsg(connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_collection);
+	FreeYapDatabaseString(&_key);
+	
+	if (dataPtr) *dataPtr = data;
+	if (metadataPtr) *metadataPtr = metadata;
+	
+	return (data != nil || metadata != nil);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Object & Metadata
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2824,17 +2886,17 @@
 
 #pragma mark Primitive
 
-- (void)setPrimitiveData:(NSData *)data forKey:(NSString *)key inCollection:(NSString *)collection
+- (void)setPrimitiveData:(NSData *)primitiveData forKey:(NSString *)key inCollection:(NSString *)collection
 {
-	[self setPrimitiveData:data forKey:key inCollection:collection withPrimitiveMetadata:nil];
+	[self setPrimitiveData:primitiveData forKey:key inCollection:collection withPrimitiveMetadata:nil];
 }
 
-- (void)setPrimitiveData:(NSData *)data
+- (void)setPrimitiveData:(NSData *)primitiveData
                   forKey:(NSString *)key
             inCollection:(NSString *)collection
-   withPrimitiveMetadata:(NSData *)metadataData
+   withPrimitiveMetadata:(NSData *)primitiveMetadata
 {
-	if (data == nil)
+	if (primitiveData == nil)
 	{
 		[self removeObjectForKey:key inCollection:collection];
 		return;
@@ -2892,8 +2954,8 @@
 		
 		// UPDATE "database2" SET "data" = ?, "metadata" = ? WHERE "rowid" = ?;
 		
-		sqlite3_bind_blob(statement, 1, data.bytes, (int)data.length, SQLITE_STATIC);
-		sqlite3_bind_blob(statement, 2, metadataData.bytes, (int)metadataData.length, SQLITE_STATIC);
+		sqlite3_bind_blob(statement, 1, primitiveData.bytes, (int)primitiveData.length, SQLITE_STATIC);
+		sqlite3_bind_blob(statement, 2, primitiveMetadata.bytes, (int)primitiveMetadata.length, SQLITE_STATIC);
 		
 		sqlite3_bind_int64(statement, 3, rowid);
 		
@@ -2921,8 +2983,8 @@
 		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
 		sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
 		
-		sqlite3_bind_blob(statement, 3, data.bytes, (int)data.length, SQLITE_STATIC);
-		sqlite3_bind_blob(statement, 4, metadataData.bytes, (int)metadataData.length, SQLITE_STATIC);
+		sqlite3_bind_blob(statement, 3, primitiveData.bytes, (int)primitiveData.length, SQLITE_STATIC);
+		sqlite3_bind_blob(statement, 4, primitiveMetadata.bytes, (int)primitiveMetadata.length, SQLITE_STATIC);
 		
 		int status = sqlite3_step(statement);
 		if (status == SQLITE_DONE)
@@ -2966,6 +3028,57 @@
 										   withRowid:rowid];
 		}];
 	}
+}
+
+- (void)setPrimitiveMetadata:(NSData *)primitiveMetadata forKey:(NSString *)key inCollection:(NSString *)collection
+{
+	if (collection == nil) collection = @"";
+	
+	int64_t rowid = 0;
+	if (![self getRowid:&rowid forKey:key inCollection:collection]) return;
+	
+	sqlite3_stmt *statement = [connection updateMetadataForRowidStatement];
+	if (statement == NULL) return;
+	
+	// UPDATE "database2" SET "metadata" = ? WHERE "rowid" = ?;
+	//
+	// To use SQLITE_STATIC on our data blob, we use the objc_precise_lifetime attribute.
+	// This ensures the data isn't released until it goes out of scope.
+	
+	sqlite3_bind_blob(statement, 1, primitiveMetadata.bytes, (int)primitiveMetadata.length, SQLITE_STATIC);
+	sqlite3_bind_int64(statement, 2, rowid);
+	
+	BOOL updated = YES;
+	
+	int status = sqlite3_step(statement);
+	if (status != SQLITE_DONE)
+	{
+		YDBLogError(@"Error executing 'updateMetadataForRowidStatement': %d %s",
+					status, sqlite3_errmsg(connection->db));
+		updated = NO;
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	
+	if (!updated) return;
+	
+	isMutated = YES;  // mutation during enumeration protection
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	
+	[connection->metadataCache removeObjectForKey:cacheKey];
+	[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
+	
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
+		
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue>
+		extTransaction = extTransactionObj;
+		
+		[extTransaction handleUpdateMetadata:nil
+		                              forKey:cacheKey.key        // mutable string protection
+		                        inCollection:cacheKey.collection // mutable string protection
+		                           withRowid:rowid];
+	}];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

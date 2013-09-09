@@ -107,6 +107,10 @@
 **/
 - (NSData *)primitiveDataForKey:(NSString *)key inCollection:(NSString *)collection;
 - (NSData *)primitiveMetadataForKey:(NSString *)key inCollection:(NSString *)collection;
+- (BOOL)getPrimitiveData:(NSData **)dataPtr
+       primitiveMetadata:(NSData **)primitiveMetadataPtr
+                  forKey:(NSString *)key
+            inCollection:(NSString *)collection;
 
 #pragma mark Object
 
@@ -395,7 +399,8 @@
 - (void)setPrimitiveData:(NSData *)data
                   forKey:(NSString *)key
             inCollection:(NSString *)collection
-   withPrimitiveMetadata:(NSData *)metadataData;
+   withPrimitiveMetadata:(NSData *)primitiveMetadata;
+- (void)setPrimitiveMetadata:(NSData *)primitiveMetadata forKey:(NSString *)key inCollection:(NSString *)collection;
 
 #pragma mark Object
 

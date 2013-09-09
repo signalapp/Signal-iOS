@@ -2007,14 +2007,14 @@
 
 #pragma mark Primitive
 
-- (void)setPrimitiveData:(NSData *)data forKey:(NSString *)key
+- (void)setPrimitiveData:(NSData *)pData forKey:(NSString *)key
 {
-	[self setPrimitiveData:data forKey:key withPrimitiveMetadata:nil];
+	[self setPrimitiveData:pData forKey:key withPrimitiveMetadata:nil];
 }
 
-- (void)setPrimitiveData:(NSData *)data forKey:(NSString *)key withPrimitiveMetadata:(NSData *)metadataData
+- (void)setPrimitiveData:(NSData *)pData forKey:(NSString *)key withPrimitiveMetadata:(NSData *)pMetadata
 {
-	if (data == nil)
+	if (pData == nil)
 	{
 		[self removeObjectForKey:key];
 		return;
@@ -2067,8 +2067,8 @@
 		
 		// UPDATE "database2" SET "data" = ?, "metadata" = ? WHERE "rowid" = ?;
 		
-		sqlite3_bind_blob(statement, 1, data.bytes, (int)data.length, SQLITE_STATIC);
-		sqlite3_bind_blob(statement, 2, metadataData.bytes, (int)metadataData.length, SQLITE_STATIC);
+		sqlite3_bind_blob(statement, 1, pData.bytes, (int)pData.length, SQLITE_STATIC);
+		sqlite3_bind_blob(statement, 2, pMetadata.bytes, (int)pMetadata.length, SQLITE_STATIC);
 		sqlite3_bind_int64(statement, 3, rowid);
 		
 		int status = sqlite3_step(statement);
@@ -2092,8 +2092,8 @@
 		// INSERT INTO "database2" ("key", "data", "metadata") VALUES (?, ?, ?);
 		
 		sqlite3_bind_text(statement, 1, _key.str, _key.length, SQLITE_STATIC);
-		sqlite3_bind_blob(statement, 2, data.bytes, (int)data.length, SQLITE_STATIC);
-		sqlite3_bind_blob(statement, 3, metadataData.bytes, (int)metadataData.length, SQLITE_STATIC);
+		sqlite3_bind_blob(statement, 2, pData.bytes, (int)pData.length, SQLITE_STATIC);
+		sqlite3_bind_blob(statement, 3, pMetadata.bytes, (int)pMetadata.length, SQLITE_STATIC);
 		
 		int status = sqlite3_step(statement);
 		if (status == SQLITE_DONE)
@@ -2137,7 +2137,44 @@
 
 - (void)setPrimitiveMetadata:(NSData *)pMetadata forKey:(NSString *)key
 {
-	// Todo ...
+	int64_t rowid = 0;
+	if (![self getRowid:&rowid forKey:key]) return;
+	
+	sqlite3_stmt *statement = [connection updateMetadataForRowidStatement];
+	if (statement == NULL) return;
+	
+	// UPDATE "database2" SET "metadata" = ? WHERE "rowid" = ?;
+	
+	sqlite3_bind_blob(statement, 1, pMetadata.bytes, (int)pMetadata.length, SQLITE_STATIC);
+	sqlite3_bind_int64(statement, 2, rowid);
+	
+	BOOL updated = YES;
+	
+	int status = sqlite3_step(statement);
+	if (status != SQLITE_DONE)
+	{
+		YDBLogError(@"Error executing 'setMetaForKeyStatement': %d %s, key(%@)",
+					status, sqlite3_errmsg(connection->db), key);
+		updated = NO;
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	
+	if (!updated) return;
+	
+	isMutated = YES;  // mutation during enumeration protection
+	key = [key copy]; // mutable string protection
+	
+	[connection->metadataCache removeObjectForKey:key];
+	[connection->metadataChanges setObject:[YapNull null] forKey:key];
+	
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
+		
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_KeyValue> extTransaction = extTransactionObj;
+		
+		[extTransaction handleUpdateMetadata:nil forKey:key withRowid:rowid];
+	}];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

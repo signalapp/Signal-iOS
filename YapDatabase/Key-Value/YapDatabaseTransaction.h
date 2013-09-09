@@ -99,7 +99,7 @@
 **/
 - (NSData *)primitiveDataForKey:(NSString *)key;
 - (NSData *)primitiveMetadataForKey:(NSString *)key;
-- (BOOL)getPrimitiveData:(NSData **)dataPtr primitiveMetadata:(NSData **)metadataPtr forKey:(NSString *)key;
+- (BOOL)getPrimitiveData:(NSData **)dataPtr primitiveMetadata:(NSData **)primitiveMetadataPtr forKey:(NSString *)key;
 
 #pragma mark Object & Metadata
 
@@ -286,7 +286,8 @@
  * @see setObject:forKey:
 **/
 - (void)setPrimitiveData:(NSData *)data forKey:(NSString *)key;
-- (void)setPrimitiveData:(NSData *)data forKey:(NSString *)key withPrimitiveMetadata:(NSData *)pMetadata;
+- (void)setPrimitiveData:(NSData *)data forKey:(NSString *)key withPrimitiveMetadata:(NSData *)primitiveMetadata;
+- (void)setPrimitiveMetadata:(NSData *)primitiveMetadata forKey:(NSString *)key;
 
 #pragma mark Object & Metadata
 
