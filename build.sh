@@ -7,11 +7,11 @@ set -x
 
 # Setup paths to stuff we need
 
-OPENSSL_VERSION="1.0.1c"
+OPENSSL_VERSION="1.0.1e"
 
 DEVELOPER="/Applications/Xcode.app/Contents/Developer"
 
-SDK_VERSION="6.0"
+SDK_VERSION="6.1"
 
 IPHONEOS_PLATFORM="${DEVELOPER}/Platforms/iPhoneOS.platform"
 IPHONEOS_SDK="${IPHONEOS_PLATFORM}/Developer/SDKs/iPhoneOS${SDK_VERSION}.sdk"
