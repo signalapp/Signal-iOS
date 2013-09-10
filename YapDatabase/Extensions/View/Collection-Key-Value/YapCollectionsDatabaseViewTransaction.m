@@ -209,7 +209,7 @@
 		NSString *pageKey = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 		NSData *data = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
 		
-		id metadata = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+		id metadata = [self deserializeMetadata:data];
 		
 		if ([metadata isKindOfClass:[YapDatabaseViewPageMetadata class]])
 		{
@@ -479,7 +479,7 @@
 	if (statement == NULL)
 		return nil;
 	
-	// SELECT "pageKey" FROM "mapTableName" WHERE rowid = ?;
+	// SELECT "pageKey" FROM "mapTableName" WHERE "rowid" = ? ;
 	
 	sqlite3_bind_int64(statement, 1, rowid);
 	
@@ -700,11 +700,11 @@
 		pageOffset += pageMetadata->count;
 	}
 	
-	// Fetch the actual page (ordered array of keys)
+	// Fetch the actual page (ordered array of rowid's)
 	
 	YapDatabaseViewPage *page = [self pageForPageKey:pageKey];
 	
-	// Find the exact index of the key within the page
+	// Find the exact index of the rowid within the page
 	
 	NSUInteger indexWithinPage = 0;
 	BOOL found = [page getIndex:&indexWithinPage ofRowid:rowid];
@@ -749,7 +749,7 @@
 	YDBLogVerbose(@"Creating view tables for registeredName(%@): %@, %@",
 	              [self registeredName], mapTableName, pageTableName);
 	
-	NSString *createKeyTable = [NSString stringWithFormat:
+	NSString *createMapTable = [NSString stringWithFormat:
 	    @"CREATE TABLE IF NOT EXISTS \"%@\""
 	    @" (\"rowid\" INTEGER PRIMARY KEY,"
 	    @"  \"pageKey\" CHAR NOT NULL"
@@ -764,7 +764,7 @@
 	
 	int status;
 	
-	status = sqlite3_exec(db, [createKeyTable UTF8String], NULL, NULL, NULL);
+	status = sqlite3_exec(db, [createMapTable UTF8String], NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
 		YDBLogError(@"%@ - Failed creating map table (%@): %d %s",
@@ -1120,7 +1120,6 @@
 	{
 		[self splitOversizedPage:pageMetadata toSize:target];
 	}
-
 }
 
 /**
@@ -1219,6 +1218,7 @@
 		
 		YapDatabaseViewPageMetadata *pageMetadata = [[YapDatabaseViewPageMetadata alloc] init];
 		pageMetadata->pageKey = pageKey;
+		pageMetadata->prevPageKey = nil;
 		pageMetadata->nextPageKey = nil;
 		pageMetadata->group = group;
 		pageMetadata->count = 1;
