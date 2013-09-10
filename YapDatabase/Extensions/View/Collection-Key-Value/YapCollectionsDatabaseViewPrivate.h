@@ -46,7 +46,7 @@
 	
 	NSMutableDictionary *dirtyMaps;
 	NSMutableDictionary *dirtyPages;
-	NSMutableDictionary *dirtyMetadata;
+	NSMutableDictionary *dirtyLinks;
 	BOOL reset;
 	
 	BOOL lastInsertWasAtFirstIndex;
@@ -66,8 +66,10 @@
 - (sqlite3_stmt *)mapTable_removeAllStatement;
 
 - (sqlite3_stmt *)pageTable_getDataForPageKeyStatement;
-- (sqlite3_stmt *)pageTable_setAllForPageKeyStatement;
-- (sqlite3_stmt *)pageTable_setMetadataForPageKeyStatement;
+- (sqlite3_stmt *)pageTable_insertForPageKeyStatement;
+- (sqlite3_stmt *)pageTable_updateAllForPageKeyStatement;
+- (sqlite3_stmt *)pageTable_updatePageForPageKeyStatement;
+- (sqlite3_stmt *)pageTable_updateLinkForPageKeyStatement;
 - (sqlite3_stmt *)pageTable_removeForPageKeyStatement;
 - (sqlite3_stmt *)pageTable_removeAllStatement;
 

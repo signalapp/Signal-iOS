@@ -40,8 +40,10 @@ static NSString *const key_changes                  = @"changes";
 	sqlite3_stmt *mapTable_removeAllStatement;
 	
 	sqlite3_stmt *pageTable_getDataForPageKeyStatement;
-	sqlite3_stmt *pageTable_setAllForPageKeyStatement;
-	sqlite3_stmt *pageTable_setMetadataForPageKeyStatement;
+	sqlite3_stmt *pageTable_insertForPageKeyStatement;
+	sqlite3_stmt *pageTable_updateAllForPageKeyStatement;
+	sqlite3_stmt *pageTable_updatePageForPageKeyStatement;
+	sqlite3_stmt *pageTable_updateLinkForPageKeyStatement;
 	sqlite3_stmt *pageTable_removeForPageKeyStatement;
 	sqlite3_stmt *pageTable_removeAllStatement;
 }
@@ -72,8 +74,10 @@ static NSString *const key_changes                  = @"changes";
 	sqlite_finalize_null(&mapTable_removeAllStatement);
 	
 	sqlite_finalize_null(&pageTable_getDataForPageKeyStatement);
-	sqlite_finalize_null(&pageTable_setAllForPageKeyStatement);
-	sqlite_finalize_null(&pageTable_setMetadataForPageKeyStatement);
+	sqlite_finalize_null(&pageTable_insertForPageKeyStatement);
+	sqlite_finalize_null(&pageTable_updateAllForPageKeyStatement);
+	sqlite_finalize_null(&pageTable_updatePageForPageKeyStatement);
+	sqlite_finalize_null(&pageTable_updateLinkForPageKeyStatement);
 	sqlite_finalize_null(&pageTable_removeForPageKeyStatement);
 	sqlite_finalize_null(&pageTable_removeAllStatement);
 }
@@ -95,8 +99,10 @@ static NSString *const key_changes                  = @"changes";
 		sqlite_finalize_null(&mapTable_removeForRowidStatement);
 		sqlite_finalize_null(&mapTable_removeAllStatement);
 		
-		sqlite_finalize_null(&pageTable_setAllForPageKeyStatement);
-		sqlite_finalize_null(&pageTable_setMetadataForPageKeyStatement);
+		sqlite_finalize_null(&pageTable_insertForPageKeyStatement);
+		sqlite_finalize_null(&pageTable_updateAllForPageKeyStatement);
+		sqlite_finalize_null(&pageTable_updatePageForPageKeyStatement);
+		sqlite_finalize_null(&pageTable_updateLinkForPageKeyStatement);
 		sqlite_finalize_null(&pageTable_removeForPageKeyStatement);
 		sqlite_finalize_null(&pageTable_removeAllStatement);
 	}
@@ -147,8 +153,8 @@ static NSString *const key_changes                  = @"changes";
 		dirtyMaps = [[NSMutableDictionary alloc] init];
 	if (dirtyPages == nil)
 		dirtyPages = [[NSMutableDictionary alloc] init];
-	if (dirtyMetadata == nil)
-		dirtyMetadata = [[NSMutableDictionary alloc] init];
+	if (dirtyLinks == nil)
+		dirtyLinks = [[NSMutableDictionary alloc] init];
 	if (changes == nil)
 		changes = [[NSMutableArray alloc] init];
 	if (mutatedGroups == nil)
@@ -215,7 +221,7 @@ static NSString *const key_changes                  = @"changes";
 	
 	[dirtyMaps removeAllObjects];
 	[dirtyPages removeAllObjects];
-	[dirtyMetadata removeAllObjects];
+	[dirtyLinks removeAllObjects];
 	reset = NO;
 	
 	[changes removeAllObjects];
@@ -236,10 +242,10 @@ static NSString *const key_changes                  = @"changes";
 	if ([dirtyPages count] > 0)
 		dirtyPages = nil;
 	
-	// dirtyMetadata isn't part of the changeset.
+	// dirtyLinkds isn't part of the changeset.
 	// So it's safe to simply reset.
 	
-	[dirtyMetadata removeAllObjects];
+	[dirtyLinks removeAllObjects];
 	
 	// The changes log is copied into the external changeset.
 	// So it's safe to simply reset.
@@ -272,7 +278,7 @@ static NSString *const key_changes                  = @"changes";
 	NSMutableDictionary *internalChangeset = nil;
 	NSMutableDictionary *externalChangeset = nil;
 	
-	if ([dirtyMaps count] || [dirtyPages count] || [dirtyMetadata count] || reset)
+	if ([dirtyMaps count] || [dirtyPages count] || [dirtyLinks count] || reset)
 	{
 		internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
 		
@@ -695,43 +701,83 @@ static NSString *const key_changes                  = @"changes";
 	return pageTable_getDataForPageKeyStatement;
 }
 
-- (sqlite3_stmt *)pageTable_setAllForPageKeyStatement
+- (sqlite3_stmt *)pageTable_insertForPageKeyStatement
 {
-	if (pageTable_setAllForPageKeyStatement == NULL)
+	if (pageTable_insertForPageKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		    @"INSERT OR REPLACE INTO \"%@\" (\"pageKey\", \"data\", \"metadata\") VALUES (?, ?, ?);",
-		    [view pageTableName]];
+			@"INSERT INTO \"%@\""
+			@" (\"pageKey\", \"group\", \"prevPageKey\", \"count\", \"data\") VALUES (?, ?, ?, ?, ?);",
+			[view pageTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_setAllForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_insertForPageKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return pageTable_setAllForPageKeyStatement;
+	return pageTable_insertForPageKeyStatement;
 }
 
-- (sqlite3_stmt *)pageTable_setMetadataForPageKeyStatement
+- (sqlite3_stmt *)pageTable_updateAllForPageKeyStatement
 {
-	if (pageTable_setMetadataForPageKeyStatement == NULL)
+	if (pageTable_updateAllForPageKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		    @"UPDATE \"%@\" SET \"metadata\" = ? WHERE \"pageKey\" = ?;", [view pageTableName]];
+			@"UPDATE \"%@\" SET \"prevPageKey\" = ?, \"count\" = ?, \"data\" = ? WHERE \"pageKey\" = ?;",
+			[view pageTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_setMetadataForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_updateAllForPageKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return pageTable_setMetadataForPageKeyStatement;
+	return pageTable_updateAllForPageKeyStatement;
+}
+
+- (sqlite3_stmt *)pageTable_updatePageForPageKeyStatement
+{
+	if (pageTable_updatePageForPageKeyStatement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+			@"UPDATE \"%@\" SET \"count\" = ?, \"data\" = ? WHERE \"pageKey\" = ?;", [view pageTableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_updatePageForPageKeyStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return pageTable_updatePageForPageKeyStatement;
+}
+
+- (sqlite3_stmt *)pageTable_updateLinkForPageKeyStatement
+{
+	if (pageTable_updateLinkForPageKeyStatement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+			@"UPDATE \"%@\" SET \"prevPageKey\" = ? WHERE \"pageKey\" = ?;", [view pageTableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_updateLinkForPageKeyStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return pageTable_updateLinkForPageKeyStatement;
 }
 
 - (sqlite3_stmt *)pageTable_removeForPageKeyStatement
