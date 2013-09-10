@@ -106,6 +106,7 @@
 		
 		sharedKeySetForInternalChangeset = [NSDictionary sharedKeySetForKeys:[self internalChangesetKeys]];
 		sharedKeySetForExternalChangeset = [NSDictionary sharedKeySetForKeys:[self externalChangesetKeys]];
+		sharedKeySetForExtensions        = [NSDictionary sharedKeySetForKeys:@[]];
 		
 		extensions = [[NSMutableDictionary alloc] init];
 		
@@ -783,6 +784,8 @@
 	registeredExtensions = [newRegisteredExtensions copy];
 	extensionsReady = NO;
 	
+	sharedKeySetForExtensions = [NSDictionary sharedKeySetForKeys:[registeredExtensions allKeys]];
+	
 	// Set the registeredExtensionsChanged flag.
 	// This will be consulted during the creation of the changeset,
 	// and will cause us to add the updated registeredExtensions to the list of changes.
@@ -802,6 +805,8 @@
 		
 		registeredExtensions = [newRegisteredExtensions copy];
 		extensionsReady = NO;
+		
+		sharedKeySetForExtensions = [NSDictionary sharedKeySetForKeys:[registeredExtensions allKeys]];
 		
 		// Set the registeredExtensionsChanged flag.
 		// This will be consulted during the creation of the changeset,
@@ -2073,14 +2078,16 @@
 		if (internal)
 		{
 			if (internalChangeset_extensions == nil)
-				internalChangeset_extensions = [NSMutableDictionary dictionaryWithCapacity:[extensions count]];
+				internalChangeset_extensions =
+				    [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExtensions];
 			
 			[internalChangeset_extensions setObject:internal forKey:extName];
 		}
 		if (external)
 		{
 			if (externalChangeset_extensions == nil)
-				externalChangeset_extensions = [NSMutableDictionary dictionaryWithCapacity:[extensions count]];
+				externalChangeset_extensions =
+				    [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExtensions];
 			
 			[externalChangeset_extensions setObject:external forKey:extName];
 		}

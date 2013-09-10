@@ -188,6 +188,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	
 	NSMutableDictionary *extensions;
 	BOOL extensionsReady;
+	id sharedKeySetForExtensions;
 	
 @protected
 	dispatch_queue_t connectionQueue;
