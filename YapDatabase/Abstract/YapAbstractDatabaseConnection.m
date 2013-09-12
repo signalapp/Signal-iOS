@@ -217,6 +217,7 @@
 
 @synthesize abstractDatabase = database;
 @synthesize connectionQueue = connectionQueue;
+@synthesize name = _name;
 
 #if TARGET_OS_IPHONE
 @synthesize autoFlushMemoryLevel;

@@ -51,6 +51,12 @@ typedef enum  {
 **/
 @property (nonatomic, strong, readonly) YapAbstractDatabase *abstractDatabase;
 
+/**
+ * The optional name property assists in debugging.
+ * It is only used internally for log statements.
+**/
+@property (atomic, copy, readwrite) NSString *name;
+
 #pragma mark Cache
 
 /**
