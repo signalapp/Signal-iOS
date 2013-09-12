@@ -20,6 +20,8 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	}
 }
 
+extern NSString *const YapDatabaseRegisteredExtensionsKey;
+extern NSString *const YapDatabaseNotificationKey;
 
 @interface YapAbstractDatabase () {
 @private

@@ -31,6 +31,9 @@ NSString *const YapDatabaseConnectionKey = @"connection";
 NSString *const YapDatabaseExtensionsKey = @"extensions";
 NSString *const YapDatabaseCustomKey     = @"custom";
 
+NSString *const YapDatabaseRegisteredExtensionsKey = @"registeredExtensions";
+NSString *const YapDatabaseNotificationKey         = @"notification";
+
 /**
  * The database version is stored (via pragma user_version) to sqlite.
  * It is used to represent the version of the userlying architecture of YapDatabase.
@@ -1239,7 +1242,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	
 	// Update registeredExtensions, if changed.
 	
-	NSDictionary *newRegisteredExtensions = [changeset objectForKey:@"registeredExtensions"];
+	NSDictionary *newRegisteredExtensions = [changeset objectForKey:YapDatabaseRegisteredExtensionsKey];
 	if (newRegisteredExtensions)
 	{
 		registeredExtensions = newRegisteredExtensions;

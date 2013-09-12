@@ -430,7 +430,7 @@
 		{
 			// The changeset has already been processed.
 			
-			NSNotification *notification = [changeset objectForKey:@"notification"];
+			NSNotification *notification = [changeset objectForKey:YapDatabaseNotificationKey];
 			if (notification) {
 				[notifications addObject:notification];
 			}
@@ -469,7 +469,7 @@
 			{
 				[self noteCommittedChanges:changeset];
 				
-				NSNotification *notification = [changeset objectForKey:@"notification"];
+				NSNotification *notification = [changeset objectForKey:YapDatabaseNotificationKey];
 				if (notification) {
 					[notifications addObject:notification];
 				}
@@ -1626,7 +1626,7 @@
 		                                             object:database
 		                                           userInfo:userInfo];
 		
-		[changeset setObject:notification forKey:@"notification"];
+		[changeset setObject:notification forKey:YapDatabaseNotificationKey];
 	}
 	
 	// Post-Write-Transaction: Step 3 of 11
@@ -2028,7 +2028,10 @@
 **/
 - (NSArray *)internalChangesetKeys
 {
-	return @[ YapDatabaseSnapshotKey,  YapDatabaseExtensionsKey, @"registeredExtensions", @"notification" ];
+	return @[ YapDatabaseSnapshotKey,
+	          YapDatabaseExtensionsKey,
+	          YapDatabaseRegisteredExtensionsKey,
+	          YapDatabaseNotificationKey ];
 }
 
 /**
@@ -2113,7 +2116,7 @@
 		if (internalChangeset == nil)
 			internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
 		
-		[internalChangeset setObject:registeredExtensions forKey:@"registeredExtensions"];
+		[internalChangeset setObject:registeredExtensions forKey:YapDatabaseRegisteredExtensionsKey];
 	}
 	
 	*internalChangesetPtr = internalChangeset;
@@ -2132,7 +2135,7 @@
 **/
 - (void)processChangeset:(NSDictionary *)changeset
 {
-	NSDictionary *changeset_registeredExtensions = [changeset objectForKey:@"registeredExtensions"];
+	NSDictionary *changeset_registeredExtensions = [changeset objectForKey:YapDatabaseRegisteredExtensionsKey];
 	if (changeset_registeredExtensions)
 	{
 		// Retain new list
