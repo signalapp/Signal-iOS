@@ -51,7 +51,7 @@
 	{
 		for (NSUInteger i = 0; i < count; i++)
 		{
-			buffer[i] = CFSwapInt32HostToLittle(buffer[i]);
+			buffer[i] = CFSwapInt64HostToLittle(buffer[i]);
 		}
 	}
 	
