@@ -43,28 +43,29 @@
  * But for conncurrent access between multiple threads you must use multiple connections.
 **/
 @implementation YapDatabaseConnection {
-
-/* Defined in YapDatabasePrivate.h:
-
 @private
+	
 	sqlite3_stmt *getCountStatement;
-    sqlite3_stmt *getCountForRowidStatement;
-    sqlite3_stmt *getRowidForKeyStatement;
-    sqlite3_stmt *getKeyForRowidStatement;
-    sqlite3_stmt *getDataForRowidStatement;
-    sqlite3_stmt *getMetadataForRowidStatement;
-    sqlite3_stmt *getAllForRowidStatement;
+	sqlite3_stmt *getCountForRowidStatement;
+	sqlite3_stmt *getRowidForKeyStatement;
+	sqlite3_stmt *getKeyForRowidStatement;
+	sqlite3_stmt *getDataForRowidStatement;
+	sqlite3_stmt *getMetadataForRowidStatement;
+	sqlite3_stmt *getAllForRowidStatement;
 	sqlite3_stmt *getDataForKeyStatement;
 	sqlite3_stmt *getMetadataForKeyStatement;
 	sqlite3_stmt *getAllForKeyStatement;
-	sqlite3_stmt *setMetadataForKeyStatement;
-	sqlite3_stmt *setAllForKeyStatement;
-	sqlite3_stmt *removeForKeyStatement;
+	sqlite3_stmt *insertForRowidStatement;
+	sqlite3_stmt *updateAllForRowidStatement;
+	sqlite3_stmt *updateMetadataForRowidStatement;
+	sqlite3_stmt *removeForRowidStatement;
 	sqlite3_stmt *removeAllStatement;
 	sqlite3_stmt *enumerateKeysStatement;
 	sqlite3_stmt *enumerateKeysAndMetadataStatement;
-    sqlite3_stmt *enumerateKeysAndObjectsStatement;
+	sqlite3_stmt *enumerateKeysAndObjectsStatement;
 	sqlite3_stmt *enumerateRowsStatement;
+	
+/* Defined in YapDatabasePrivate.h:
 
 @public
 	NSMutableDictionary *objectChanges;
@@ -93,6 +94,17 @@
 	BOOL needsMarkSqlLevelSharedReadLock; // Read-only by transaction. Use as consideration of whether to invoke method.
  
 */
+}
+
+@synthesize database = database;
+
+- (id)initWithDatabase:(YapAbstractDatabase *)inDatabase
+{
+	if ((self = [super initWithDatabase:inDatabase]))
+	{
+		database = (YapDatabase *)abstractDatabase;
+	}
+	return self;
 }
 
 - (void)dealloc
@@ -151,15 +163,6 @@
 		sqlite_finalize_null(&insertForRowidStatement);
 		sqlite_finalize_null(&updateAllForRowidStatement);
 	}
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Properties
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (YapDatabase *)database
-{
-	return (YapDatabase *)database;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

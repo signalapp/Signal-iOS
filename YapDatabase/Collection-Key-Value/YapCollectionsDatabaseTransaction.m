@@ -331,7 +331,7 @@
 			// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
 			
 			NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-			object = connection->database->objectDeserializer(data);
+			object = connection->database->objectDeserializer(collection, key, data);
 			
 			if (object)
 				[connection->objectCache setObject:object forKey:cacheKey];
@@ -409,7 +409,7 @@
 				// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
 				
 				NSData *mData = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-				metadata = connection->database->metadataDeserializer(mData);
+				metadata = connection->database->metadataDeserializer(collection, key, mData);
 			}
 			
 			if (metadata)
@@ -486,7 +486,7 @@
 			// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
 			
 			NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-			object = connection->database->objectDeserializer(data);
+			object = connection->database->objectDeserializer(collection, key, data);
 			
 			if (object)
 				[connection->objectCache setObject:object forKey:cacheKey];
@@ -509,7 +509,7 @@
 				// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
 				
 				NSData *mData = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-				metadata = connection->database->metadataDeserializer(mData);
+				metadata = connection->database->metadataDeserializer(collection, key, mData);
 			}
 			
 			if (metadata)
@@ -768,7 +768,7 @@
 		// Be sure not to call sqlite3_reset until we're done with the data.
 		
 		NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-		object = connection->database->objectDeserializer(data);
+		object = connection->database->objectDeserializer(collection, key, data);
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -885,13 +885,13 @@
 				if (objectPtr)
 				{
 					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
-					object = connection->database->objectDeserializer(oData);
+					object = connection->database->objectDeserializer(collection, key, oData);
 				}
 				
 				if (metadataPtr && mBlobSize > 0)
 				{
 					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-					metadata = connection->database->metadataDeserializer(mData);
+					metadata = connection->database->metadataDeserializer(collection, key, mData);
 				}
 				
 				found = YES;
@@ -983,7 +983,7 @@
 	if (found)
 	{
 		if (metadataData)
-			metadata = connection->database->metadataDeserializer(metadataData);
+			metadata = connection->database->metadataDeserializer(collection, key, metadataData);
 		
 		if (metadata)
 			[connection->metadataCache setObject:metadata forKey:cacheKey];
@@ -1512,7 +1512,7 @@
 				
 				NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
 				
-				id metadata = data ? connection->database->metadataDeserializer(data) : nil;
+				id metadata = data ? connection->database->metadataDeserializer(collection, key, data) : nil;
 				
 				if (metadata)
 				{
@@ -1718,7 +1718,7 @@
 				NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
 				
 				NSData *objectData = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-				id object = connection->database->objectDeserializer(objectData);
+				id object = connection->database->objectDeserializer(collection, key, objectData);
 				
 				if (object)
 				{
@@ -1939,7 +1939,7 @@
 					int oBlobSize = sqlite3_column_bytes(statement, 1);
 					
 					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
-					object = connection->database->objectDeserializer(oData);
+					object = connection->database->objectDeserializer(collection, key, oData);
 					
 					if (object)
 						[connection->objectCache setObject:object forKey:cacheKey];
@@ -1959,7 +1959,7 @@
 					if (mBlobSize > 0)
 					{
 						NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-						metadata = connection->database->metadataDeserializer(mData);
+						metadata = connection->database->metadataDeserializer(collection, key, mData);
 					}
 					
 					if (metadata)
@@ -2237,7 +2237,7 @@
 					if (mBlobSize > 0)
 					{
 						NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-						metadata = connection->database->metadataDeserializer(mData);
+						metadata = connection->database->metadataDeserializer(collection, key, mData);
 					}
 					
 					if (unlimitedMetadataCacheLimit ||
@@ -2367,7 +2367,7 @@
 					if (mBlobSize > 0)
 					{
 						NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-						metadata = connection->database->metadataDeserializer(mData);
+						metadata = connection->database->metadataDeserializer(collection, key, mData);
 					}
 					
 					if (unlimitedMetadataCacheLimit ||
@@ -2482,7 +2482,7 @@
 					int oBlobSize = sqlite3_column_bytes(statement, 2);
 					
 					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
-					object = connection->database->objectDeserializer(oData);
+					object = connection->database->objectDeserializer(collection, key, oData);
 					
 					if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
 					{
@@ -2591,7 +2591,7 @@
 					int oBlobSize = sqlite3_column_bytes(statement, 3);
 					
 					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
-					object = connection->database->objectDeserializer(oData);
+					object = connection->database->objectDeserializer(collection, key, oData);
 					
 					if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
 					{
@@ -2704,7 +2704,7 @@
 					int oBlobSize = sqlite3_column_bytes(statement, 2);
 					
 					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
-					object = connection->database->objectDeserializer(oData);
+					object = connection->database->objectDeserializer(collection, key, oData);
 					
 					if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
 					{
@@ -2727,7 +2727,7 @@
 					if (mBlobSize > 0)
 					{
 						NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-						metadata = connection->database->metadataDeserializer(mData);
+						metadata = connection->database->metadataDeserializer(collection, key, mData);
 					}
 					
 					if (unlimitedMetadataCacheLimit ||
@@ -2841,7 +2841,7 @@
 					int oBlobSize = sqlite3_column_bytes(statement, 3);
 					
 					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
-					object = connection->database->objectDeserializer(oData);
+					object = connection->database->objectDeserializer(collection, key, oData);
 					
 					if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
 					{
@@ -2864,7 +2864,7 @@
 					if (mBlobSize > 0)
 					{
 						NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-						metadata = connection->database->metadataDeserializer(mData);
+						metadata = connection->database->metadataDeserializer(collection, key, mData);
 					}
 					
 					if (unlimitedMetadataCacheLimit ||
@@ -3176,11 +3176,12 @@
 		// To use SQLITE_STATIC on our data blob, we use the objc_precise_lifetime attribute.
 		// This ensures the data isn't released until it goes out of scope.
 		
-		__attribute__((objc_precise_lifetime)) NSData *rawData = connection->database->objectSerializer(object);
+		__attribute__((objc_precise_lifetime)) NSData *rawData =
+		    connection->database->objectSerializer(collection, key, object);
 		sqlite3_bind_blob(statement, 1, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
 		
 		__attribute__((objc_precise_lifetime)) NSData *rawMeta =
-		    metadata ? connection->database->metadataSerializer(metadata) : nil;
+		    metadata ? connection->database->metadataSerializer(collection, key, metadata) : nil;
 		sqlite3_bind_blob(statement, 2, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
 		
 		sqlite3_bind_int64(statement, 3, rowid);
@@ -3212,11 +3213,12 @@
 		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
 		sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
 		
-		__attribute__((objc_precise_lifetime)) NSData *rawData = connection->database->objectSerializer(object);
+		__attribute__((objc_precise_lifetime)) NSData *rawData =
+		    connection->database->objectSerializer(collection, key, object);
 		sqlite3_bind_blob(statement, 3, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
 		
 		__attribute__((objc_precise_lifetime)) NSData *rawMeta =
-		    metadata ? connection->database->metadataSerializer(metadata) : nil;
+		    metadata ? connection->database->metadataSerializer(collection, key, metadata) : nil;
 		sqlite3_bind_blob(statement, 4, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
 		
 		int status = sqlite3_step(statement);
@@ -3290,7 +3292,7 @@
 	// This ensures the data isn't released until it goes out of scope.
 	
 	__attribute__((objc_precise_lifetime)) NSData *rawMeta =
-	    metadata ? connection->database->metadataSerializer(metadata) : nil;
+	    metadata ? connection->database->metadataSerializer(collection, key, metadata) : nil;
 	sqlite3_bind_blob(statement, 1, rawMeta.bytes, (int)rawMeta.length, SQLITE_STATIC);
 	
 	sqlite3_bind_int64(statement, 2, rowid);

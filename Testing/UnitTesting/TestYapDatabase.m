@@ -315,28 +315,28 @@
 
 - (void)testPropertyListSerializerDeserializer
 {
-	NSData *(^propertyListSerializer)(id) = [YapDatabase propertyListSerializer];
-	id (^propertyListDeserializer)(NSData *) = [YapDatabase propertyListDeserializer];
+	YapDatabaseSerializer propertyListSerializer = [YapDatabase propertyListSerializer];
+	YapDatabaseDeserializer propertyListDeserializer = [YapDatabase propertyListDeserializer];
 	
 	NSDictionary *originalDict = @{ @"date":[NSDate date], @"string":@"string" };
 	
-	NSData *data = propertyListSerializer(originalDict);
+	NSData *data = propertyListSerializer(@"key", originalDict);
 	
-	NSDictionary *deserializedDictionary = propertyListDeserializer(data);
+	NSDictionary *deserializedDictionary = propertyListDeserializer(@"key", data);
 	
 	STAssertTrue([originalDict isEqualToDictionary:deserializedDictionary], @"PropertyList serialization broken");
 }
 
 - (void)testTimestampSerializerDeserializer
 {
-	NSData *(^timestampSerializer)(id) = [YapDatabase timestampSerializer];
-	id (^timestampDeserializer)(NSData *) = [YapDatabase timestampDeserializer];
+	YapDatabaseSerializer timestampSerializer = [YapDatabase timestampSerializer];
+	YapDatabaseDeserializer timestampDeserializer = [YapDatabase timestampDeserializer];
 	
 	NSDate *originalDate = [NSDate date];
 	
-	NSData *data = timestampSerializer(originalDate);
+	NSData *data = timestampSerializer(@"key", originalDate);
 	
-	NSDate *deserializedDate = timestampDeserializer(data);
+	NSDate *deserializedDate = timestampDeserializer(@"key", data);
 	
 	STAssertTrue([originalDate isEqual:deserializedDate], @"Timestamp serialization broken");
 }

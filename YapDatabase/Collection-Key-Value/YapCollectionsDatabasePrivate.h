@@ -9,64 +9,32 @@
 #import "sqlite3.h"
 
 
-@interface YapCollectionsDatabaseConnection () {
-@private
-	sqlite3_stmt *getCollectionCountStatement;
-	sqlite3_stmt *getKeyCountForCollectionStatement;
-	sqlite3_stmt *getKeyCountForAllStatement;
-	sqlite3_stmt *getCountForRowidStatement;
-	sqlite3_stmt *getRowidForKeyStatement;
-	sqlite3_stmt *getKeyForRowidStatement;
-	sqlite3_stmt *getDataForRowidStatement;
-	sqlite3_stmt *getMetadataForRowidStatement;
-	sqlite3_stmt *getAllForRowidStatement;
-	sqlite3_stmt *getDataForKeyStatement;
-	sqlite3_stmt *getMetadataForKeyStatement;
-	sqlite3_stmt *getAllForKeyStatement;
-	sqlite3_stmt *insertForRowidStatement;
-	sqlite3_stmt *updateAllForRowidStatement;
-	sqlite3_stmt *updateMetadataForRowidStatement;
-	sqlite3_stmt *removeForRowidStatement;
-	sqlite3_stmt *removeCollectionStatement;
-	sqlite3_stmt *removeAllStatement;
-	sqlite3_stmt *enumerateCollectionsStatement;
-	sqlite3_stmt *enumerateKeysInCollectionStatement;
-	sqlite3_stmt *enumerateKeysInAllCollectionsStatement;
-	sqlite3_stmt *enumerateKeysAndMetadataInCollectionStatement;
-	sqlite3_stmt *enumerateKeysAndMetadataInAllCollectionsStatement;
-	sqlite3_stmt *enumerateKeysAndObjectsInCollectionStatement;
-	sqlite3_stmt *enumerateKeysAndObjectsInAllCollectionsStatement;
-	sqlite3_stmt *enumerateRowsInCollectionStatement;
-	sqlite3_stmt *enumerateRowsInAllCollectionsStatement;
-	
+@interface YapCollectionsDatabase () {
 @public
+	
+	YapCollectionsDatabaseSerializer objectSerializer;       // Read-only by transactions
+	YapCollectionsDatabaseDeserializer objectDeserializer;   // Read-only by transactions
+	
+	YapCollectionsDatabaseSerializer metadataSerializer;     // Read-only by transactions
+	YapCollectionsDatabaseDeserializer metadataDeserializer; // Read-only by transactions
+}
+
+@end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@interface YapCollectionsDatabaseConnection () {
+@public
+	
+	__strong YapCollectionsDatabase *database;
 	
 	NSMutableDictionary *objectChanges;
 	NSMutableDictionary *metadataChanges;
 	NSMutableSet *removedKeys;
 	NSMutableSet *removedCollections;
 	BOOL allKeysRemoved;
-
-/* Inherited from YapAbstractDatabaseConnection (see YapAbstractDatabasePrivate.h):
-	
-@protected
-	dispatch_queue_t connectionQueue;
-	void *IsOnConnectionQueueKey;
-	
-	YapAbstractDatabase *database;
-	
-@public
-	sqlite3 *db;
-	
-	YapCache *objectCache;
-	YapCache *metadataCache;
-	
-	NSUInteger objectCacheLimit;          // Read-only by transaction. Use as consideration of whether to add to cache.
-	NSUInteger metadataCacheLimit;        // Read-only by transaction. Use as consideration of whether to add to cache.
-	
-	BOOL needsMarkSqlLevelSharedReadLock; // Read-only by transaction. Use as consideration of whether to invoke method.
-	
-*/
 }
 
 - (sqlite3_stmt *)getCollectionCountStatement;

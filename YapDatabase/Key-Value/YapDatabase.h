@@ -6,30 +6,59 @@
 #import "YapDatabaseTransaction.h"
 
 /**
- * YapDatabase provides concurrent thread-safe access to a key-value database backed by sqlite.
- * 
- * The keys are just plain strings.
- * The values are just plain objects.
+ * Welcome to YapDatabase!
  *
- * In order to support adding objects to the database, serializers and deserializers are used.
- * The default serializer/deserializer use NSCoding, so they are as simple and fast:
+ * The project page has a wealth of documentation if you have any questions.
+ * https://github.com/yaptv/YapDatabase
+ *
+ * If you're new to the project you may want to visit the wiki.
+ * https://github.com/yaptv/YapDatabase/wiki
  * 
- * defaultSerializer = ^(id object){
+ * The YapDatabase class is the top level class used to initialize the database.
+ * It largely represents the immutable aspects of the database such as:
+ *
+ * - the filepath of the sqlite file
+ * - the serializer and deserializer (for turning objects into data blobs, and back into objects again)
+ *
+ * To access or modify the database you create one or more connections to it.
+ * Connections are thread-safe, and you can spawn multiple connections in order to achieve
+ * concurrent access to the database from multiple threads.
+ * You can even read from the database while writing to it from another connection on another thread.
+**/
+
+/**
+ * How does YapDatabase store my objects to disk?
+ *
+ * That question is answered extensively in the wiki article "Storing Objects":
+ * https://github.com/yaptv/YapDatabase/wiki/Storing-Objects
+ *
+ * Here's the intro from the wiki article:
+ *
+ * > In order to store an object to disk (via YapDatabase or any other protocol) you need some way of
+ * > serializing the object. That is, convert the object into a big blob of bytes. And then, to get your
+ * > object back from the disk you deserialize it (convert big blob of bytes back into object form).
+ * >
+ * > With YapDatabase, you can choose the default serialization/deserialization process,
+ * > or you can customize it and use your own routines.
+ * 
+ * In order to support adding objects to the database, serializers and deserializers are used.
+ * The serializer and deserializer are just simple blocks that you can optionally configure.
+ * The default serializer/deserializer uses NSCoding, so they are as simple and fast:
+ *
+ * defaultSerializer = ^(NSString *key, id object){
  *     return [NSKeyedArchiver archivedDataWithRootObject:object];
  * };
- * defaultDeserializer = ^(NSData *data) {
+ * defaultDeserializer = ^(NSString *key, NSData *data) {
  *     return [NSKeyedUnarchiver unarchiveObjectWithData:data];
  * };
  * 
  * If you use the initWithPath initializer, the default serializer/deserializer (above) are used.
  * Thus to store objects in the database, the objects need only support the NSCoding protocol.
  * You may optionally use a custom serializer/deserializer for the objects and/or metadata.
- * 
- * To access or modify the database you create one or more connections to it.
- * Connections are thread-safe, and you can spawn multiple connections in order to achieve
- * concurrent access to the database from multiple threads.
- * You can even read from the database while writing to it from another connection on another thread.
 **/
+typedef NSData* (^YapDatabaseSerializer)(NSString *key, id object);
+typedef id (^YapDatabaseDeserializer)(NSString *key, NSData *data);
+
 
 extern NSString *const YapDatabaseObjectChangesKey;
 extern NSString *const YapDatabaseMetadataChangesKey;
@@ -39,34 +68,70 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 
 @interface YapDatabase : YapAbstractDatabase
 
-/* Inherited from YapAbstractDatabase
+/**
+ * The default serializer & deserializer use NSCoding (NSKeyedArchiver & NSKeyedUnarchiver).
+ * Thus any objects that support the NSCoding protocol may be used.
+ *
+ * Many of Apple's primary data types support NSCoding out of the box.
+ * It's easy to add NSCoding support to your own custom objects.
+**/
++ (YapDatabaseSerializer)defaultSerializer;
++ (YapDatabaseDeserializer)defaultDeserializer;
 
-+ (NSData *(^)(id object))defaultSerializer;
-+ (id (^)(NSData *))defaultDeserializer;
+/**
+ * Property lists ONLY support the following: NSData, NSString, NSArray, NSDictionary, NSDate, and NSNumber.
+ * Property lists are highly optimized and are used extensively Apple.
+ *
+ * Property lists make a good fit when your existing code already uses them,
+ * such as replacing NSUserDefaults with a database.
+ **/
++ (YapDatabaseSerializer)propertyListSerializer;
++ (YapDatabaseDeserializer)propertyListDeserializer;
 
-+ (NSData *(^)(id object))timestampSerializer;
-+ (id (^)(NSData *))timestampDeserializer;
- 
+/**
+ * A FASTER serializer & deserializer than the default, if serializing ONLY a NSDate object.
+ * You may want to use timestampSerializer & timestampDeserializer if your metadata is simply an NSDate.
+ **/
++ (YapDatabaseSerializer)timestampSerializer;
++ (YapDatabaseDeserializer)timestampDeserializer;
+
+#pragma mark Init
+
+/**
+ * Opens or creates a sqlite database with the given path.
+ * The default serializer and deserializer are used.
+ * 
+ * @see defaultSerializer
+ * @see defaultDeserializer
+**/
 - (id)initWithPath:(NSString *)path;
 
+/**
+ * Opens or creates a sqlite database with the given path.
+ * The given serializer and deserializer are used for both objects and metadata.
+**/
 - (id)initWithPath:(NSString *)path
-        serializer:(NSData *(^)(id object))serializer
-      deserializer:(id (^)(NSData *))deserializer;
+        serializer:(YapDatabaseSerializer)serializer
+      deserializer:(YapDatabaseDeserializer)deserializer;
 
-- (id)initWithPath:(NSString *)path objectSerializer:(NSData *(^)(id object))objectSerializer
-                                  objectDeserializer:(id (^)(NSData *))objectDeserializer
-                                  metadataSerializer:(NSData *(^)(id object))metadataSerializer
-                                metadataDeserializer:(id (^)(NSData *))metadataDeserializer;
+/**
+ * Opens or creates a sqlite database with the given path.
+ * The given serializers and deserializers are used.
+**/
+- (id)initWithPath:(NSString *)path objectSerializer:(YapDatabaseSerializer)objectSerializer
+                                  objectDeserializer:(YapDatabaseDeserializer)objectDeserializer
+                                  metadataSerializer:(YapDatabaseSerializer)metadataSerializer
+                                metadataDeserializer:(YapDatabaseDeserializer)metadataDeserializer;
 
-@property (nonatomic, strong, readonly) NSString *databasePath;
+#pragma mark Properties
 
-@property (nonatomic, strong, readonly) NSData *(^objectSerializer)(id object);
-@property (nonatomic, strong, readonly) id (^objectDeserializer)(NSData *data);
+@property (nonatomic, strong, readonly) YapDatabaseSerializer objectSerializer;
+@property (nonatomic, strong, readonly) YapDatabaseDeserializer objectDeserializer;
 
-@property (nonatomic, strong, readonly) NSData *(^metadataSerializer)(id object);
-@property (nonatomic, strong, readonly) id (^metadataDeserializer)(NSData *data);
+@property (nonatomic, strong, readonly) YapDatabaseSerializer metadataSerializer;
+@property (nonatomic, strong, readonly) YapDatabaseDeserializer metadataDeserializer;
 
-*/
+#pragma mark Connections
 
 /**
  * Creates and returns a new connection to the database.

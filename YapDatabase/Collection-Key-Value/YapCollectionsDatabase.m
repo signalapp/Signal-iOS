@@ -35,6 +35,152 @@ NSString *const YapCollectionsDatabaseAllKeysRemovedKey     = @"allKeysRemoved";
 @implementation YapCollectionsDatabase
 
 /**
+ * The default serializer & deserializer use NSCoding (NSKeyedArchiver & NSKeyedUnarchiver).
+ * Thus the objects need only support the NSCoding protocol.
+**/
++ (YapCollectionsDatabaseSerializer)defaultSerializer
+{
+	return ^ NSData* (NSString *collection, NSString *key, id object){
+		return [NSKeyedArchiver archivedDataWithRootObject:object];
+	};
+}
+
+/**
+ * The default serializer & deserializer use NSCoding (NSKeyedArchiver & NSKeyedUnarchiver).
+ * Thus the objects need only support the NSCoding protocol.
+**/
++ (YapCollectionsDatabaseDeserializer)defaultDeserializer
+{
+	return ^ id (NSString *collection, NSString *key, NSData *data){
+		return [NSKeyedUnarchiver unarchiveObjectWithData:data];
+	};
+}
+
+/**
+ * Property lists ONLY support the following: NSData, NSString, NSArray, NSDictionary, NSDate, and NSNumber.
+ * Property lists are highly optimized and are used extensively Apple.
+ *
+ * Property lists make a good fit when your existing code already uses them,
+ * such as replacing NSUserDefaults with a database.
+**/
++ (YapCollectionsDatabaseSerializer)propertyListSerializer
+{
+	return ^ NSData* (NSString *collection, NSString *key, id object){
+		return [NSPropertyListSerialization dataWithPropertyList:object
+		                                                  format:NSPropertyListBinaryFormat_v1_0
+		                                                 options:NSPropertyListImmutable
+		                                                   error:NULL];
+	};
+}
+
+/**
+ * Property lists ONLY support the following: NSData, NSString, NSArray, NSDictionary, NSDate, and NSNumber.
+ * Property lists are highly optimized and are used extensively Apple.
+ *
+ * Property lists make a good fit when your existing code already uses them,
+ * such as replacing NSUserDefaults with a database.
+**/
++ (YapCollectionsDatabaseDeserializer)propertyListDeserializer
+{
+	return ^ id (NSString *collection, NSString *key, NSData *data){
+		return [NSPropertyListSerialization propertyListWithData:data options:0 format:NULL error:NULL];
+	};
+}
+
+/**
+ * A FASTER serializer than the default, if serializing ONLY a NSDate object.
+ * You may want to use timestampSerializer & timestampDeserializer if your metadata is simply an NSDate.
+**/
++ (YapCollectionsDatabaseSerializer)timestampSerializer
+{
+	return ^ NSData* (NSString *collection, NSString *key, id object) {
+		
+		if ([object isKindOfClass:[NSDate class]])
+		{
+			NSTimeInterval timestamp = [(NSDate *)object timeIntervalSinceReferenceDate];
+			
+			return [[NSData alloc] initWithBytes:(void *)&timestamp length:sizeof(NSTimeInterval)];
+		}
+		else
+		{
+			return [NSKeyedArchiver archivedDataWithRootObject:object];
+		}
+	};
+}
+
+/**
+ * A FASTER deserializer than the default, if deserializing data from timestampSerializer.
+ * You may want to use timestampSerializer & timestampDeserializer if your metadata is simply an NSDate.
+**/
++ (YapCollectionsDatabaseDeserializer)timestampDeserializer
+{
+	return ^ id (NSString *collection, NSString *key, NSData *data) {
+		
+		if ([data length] == sizeof(NSTimeInterval))
+		{
+			NSTimeInterval timestamp;
+			memcpy((void *)&timestamp, [data bytes], sizeof(NSTimeInterval));
+			
+			return [[NSDate alloc] initWithTimeIntervalSinceReferenceDate:timestamp];
+		}
+		else
+		{
+			return [NSKeyedUnarchiver unarchiveObjectWithData:data];
+		}
+	};
+}
+
+#pragma mark Properties
+
+@synthesize objectSerializer = objectSerializer;
+@synthesize objectDeserializer = objectDeserializer;
+@synthesize metadataSerializer = metadataSerializer;
+@synthesize metadataDeserializer = metadataDeserializer;
+
+#pragma mark Init
+
+- (id)initWithPath:(NSString *)inPath
+{
+	return [self initWithPath:inPath
+	         objectSerializer:NULL
+	       objectDeserializer:NULL
+	       metadataSerializer:NULL
+	     metadataDeserializer:NULL];
+}
+
+- (id)initWithPath:(NSString *)inPath
+        serializer:(YapCollectionsDatabaseSerializer)aSerializer
+      deserializer:(YapCollectionsDatabaseDeserializer)aDeserializer
+{
+	return [self initWithPath:inPath
+	         objectSerializer:aSerializer
+	       objectDeserializer:aDeserializer
+	       metadataSerializer:aSerializer
+	     metadataDeserializer:aDeserializer];
+}
+
+- (id)initWithPath:(NSString *)inPath objectSerializer:(YapCollectionsDatabaseSerializer)aObjectSerializer
+                                    objectDeserializer:(YapCollectionsDatabaseDeserializer)aObjectDeserializer
+                                    metadataSerializer:(YapCollectionsDatabaseSerializer)aMetadataSerializer
+                                  metadataDeserializer:(YapCollectionsDatabaseDeserializer)aMetadataDeserializer
+{
+	if ((self = [super initWithPath:inPath]))
+	{
+		YapCollectionsDatabaseSerializer defaultSerializer     = [[self class] defaultSerializer];
+		YapCollectionsDatabaseDeserializer defaultDeserializer = [[self class] defaultDeserializer];
+		
+		objectSerializer = aObjectSerializer ? aObjectSerializer : defaultSerializer;
+		objectDeserializer = aObjectDeserializer ? aObjectDeserializer : defaultDeserializer;
+		
+		metadataSerializer = aMetadataSerializer ? aMetadataSerializer : defaultSerializer;
+		metadataDeserializer = aMetadataDeserializer ? aMetadataDeserializer : defaultDeserializer;
+	}
+	return self;
+}
+
+#pragma mark Setup
+
+/**
  * Required override method from YapAbstractDatabase.
  *
  * The abstract version creates the 'yap' table, which is used internally.
@@ -112,6 +258,8 @@ NSString *const YapCollectionsDatabaseAllKeysRemovedKey     = @"allKeysRemoved";
 	
 	return YES;
 }
+
+#pragma mark Connections
 
 /**
  * This is a public method called to create a new connection.

@@ -49,144 +49,9 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 
 @implementation YapAbstractDatabase
 
-/**
- * The default serializer & deserializer use NSCoding (NSKeyedArchiver & NSKeyedUnarchiver).
- * Thus the objects need only support the NSCoding protocol.
-**/
-+ (NSData *(^)(id object))defaultSerializer
-{
-	NSData *(^serializer)(id) = ^(id object){
-		return [NSKeyedArchiver archivedDataWithRootObject:object];
-	};
-	
-	return serializer;
-}
-
-/**
- * The default serializer & deserializer use NSCoding (NSKeyedArchiver & NSKeyedUnarchiver).
- * Thus the objects need only support the NSCoding protocol.
-**/
-+ (id (^)(NSData *))defaultDeserializer
-{
-	id (^deserializer)(NSData *) = ^(NSData *data){
-		return [NSKeyedUnarchiver unarchiveObjectWithData:data];
-	};
-	
-	return deserializer;
-}
-
-/**
- * Property lists ONLY support the following: NSData, NSString, NSArray, NSDictionary, NSDate, and NSNumber.
- * Property lists are highly optimized and are used extensively Apple.
- *
- * Property lists make a good fit when your existing code already uses them,
- * such as replacing NSUserDefaults with a database.
-**/
-+ (NSData *(^)(id object))propertyListSerializer
-{
-	NSData *(^serializer)(id) = ^(id object){
-		return [NSPropertyListSerialization dataWithPropertyList:object
-		                                                  format:NSPropertyListBinaryFormat_v1_0
-		                                                 options:NSPropertyListImmutable
-		                                                   error:NULL];
-	};
-	
-	return serializer;
-}
-
-/**
- * Property lists ONLY support the following: NSData, NSString, NSArray, NSDictionary, NSDate, and NSNumber.
- * Property lists are highly optimized and are used extensively Apple.
- *
- * Property lists make a good fit when your existing code already uses them,
- * such as replacing NSUserDefaults with a database.
-**/
-+ (id (^)(NSData *))propertyListDeserializer
-{
-	id (^deserializer)(NSData *) = ^(NSData *data){
-		return [NSPropertyListSerialization propertyListWithData:data options:0 format:NULL error:NULL];
-	};
-	
-	return deserializer;
-}
-
-/**
- * A FASTER serializer than the default, if serializing ONLY a NSDate object.
- * You may want to use timestampSerializer & timestampDeserializer if your metadata is simply an NSDate.
-**/
-+ (NSData *(^)(id object))timestampSerializer
-{
-	NSData *(^serializer)(id) = ^NSData *(id object) {
-		
-		if ([object isKindOfClass:[NSDate class]])
-		{
-			NSTimeInterval timestamp = [(NSDate *)object timeIntervalSinceReferenceDate];
-			
-			return [[NSData alloc] initWithBytes:(void *)&timestamp length:sizeof(NSTimeInterval)];
-		}
-		else
-		{
-			return [NSKeyedArchiver archivedDataWithRootObject:object];
-		}
-	};
-	
-	return serializer;
-}
-
-/**
- * A FASTER deserializer than the default, if deserializing data from timestampSerializer.
- * You may want to use timestampSerializer & timestampDeserializer if your metadata is simply an NSDate.
-**/
-+ (id (^)(NSData *))timestampDeserializer
-{
-	id (^deserializer)(NSData *) = ^id (NSData *data) {
-		
-		if ([data length] == sizeof(NSTimeInterval))
-		{
-			NSTimeInterval timestamp;
-			memcpy((void *)&timestamp, [data bytes], sizeof(NSTimeInterval));
-			
-			return [[NSDate alloc] initWithTimeIntervalSinceReferenceDate:timestamp];
-		}
-		else
-		{
-			return [NSKeyedUnarchiver unarchiveObjectWithData:data];
-		}
-	};
-	
-	return deserializer;
-}
-
 @synthesize databasePath;
-@synthesize objectSerializer = objectSerializer;
-@synthesize objectDeserializer = objectDeserializer;
-@synthesize metadataSerializer = metadataSerializer;
-@synthesize metadataDeserializer = metadataDeserializer;
 
 - (id)initWithPath:(NSString *)inPath
-{
-	return [self initWithPath:inPath
-	         objectSerializer:NULL
-	       objectDeserializer:NULL
-	       metadataSerializer:NULL
-	     metadataDeserializer:NULL];
-}
-
-- (id)initWithPath:(NSString *)inPath
-        serializer:(NSData *(^)(id object))aSerializer
-      deserializer:(id (^)(NSData *))aDeserializer
-{
-	return [self initWithPath:inPath
-	         objectSerializer:aSerializer
-	       objectDeserializer:aDeserializer
-	       metadataSerializer:aSerializer
-	     metadataDeserializer:aDeserializer];
-}
-
-- (id)initWithPath:(NSString *)inPath objectSerializer:(NSData *(^)(id object))aObjectSerializer
-                                    objectDeserializer:(id (^)(NSData *))aObjectDeserializer
-                                    metadataSerializer:(NSData *(^)(id object))aMetadataSerializer
-                                  metadataDeserializer:(id (^)(NSData *))aMetadataDeserializer
 {
 	// First, standardize path.
 	// This allows clients to be lazy when passing paths.
@@ -201,18 +66,9 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 		return nil;
 	}
 	
-	NSData *(^defaultSerializer)(id)    = [[self class] defaultSerializer];
-	id (^defaultDeserializer)(NSData *) = [[self class] defaultDeserializer];
-	
 	if ((self = [super init]))
 	{
 		databasePath = path;
-		
-		objectSerializer = aObjectSerializer ? aObjectSerializer : defaultSerializer;
-		objectDeserializer = aObjectDeserializer ? aObjectDeserializer : defaultDeserializer;
-		
-		metadataSerializer = aMetadataSerializer ? aMetadataSerializer : defaultSerializer;
-		metadataDeserializer = aMetadataDeserializer ? aMetadataDeserializer : defaultDeserializer;
 		
 		BOOL(^openConfigCreate)(void) = ^BOOL (void) { @autoreleasepool {
 		

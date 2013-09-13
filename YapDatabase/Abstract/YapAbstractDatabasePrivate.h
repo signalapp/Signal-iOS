@@ -40,12 +40,6 @@ extern NSString *const YapDatabaseNotificationKey;
 	
 @public
 	
-	NSData *(^objectSerializer)(id object);   // Read-only by transactions
-	id (^objectDeserializer)(NSData *data);   // Read-only by transactions
-	
-	NSData *(^metadataSerializer)(id object); // Read-only by transactions
-	id (^metadataDeserializer)(NSData *data); // Read-only by transactions
-	
 	void *IsOnSnapshotQueueKey;       // Only to be used by YapAbstractDatabaseConnection
 	void *IsOnWriteQueueKey;          // Only to be used by YapAbstractDatabaseConnection
 	
@@ -200,7 +194,7 @@ extern NSString *const YapDatabaseNotificationKey;
 	id sharedKeySetForExternalChangeset;
 	
 @public
-	__strong YapAbstractDatabase *database;
+	__strong YapAbstractDatabase *abstractDatabase;
 	
 	sqlite3 *db;
 	

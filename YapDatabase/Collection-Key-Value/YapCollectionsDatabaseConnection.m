@@ -28,30 +28,36 @@
 
 
 @implementation YapCollectionsDatabaseConnection {
-
-/* As defined in YapCollectionsDatabasePrivate.h :
-
 @private
+	
 	sqlite3_stmt *getCollectionCountStatement;
 	sqlite3_stmt *getKeyCountForCollectionStatement;
 	sqlite3_stmt *getKeyCountForAllStatement;
+	sqlite3_stmt *getCountForRowidStatement;
+	sqlite3_stmt *getRowidForKeyStatement;
+	sqlite3_stmt *getKeyForRowidStatement;
+	sqlite3_stmt *getDataForRowidStatement;
+	sqlite3_stmt *getMetadataForRowidStatement;
+	sqlite3_stmt *getAllForRowidStatement;
 	sqlite3_stmt *getDataForKeyStatement;
 	sqlite3_stmt *getMetadataForKeyStatement;
 	sqlite3_stmt *getAllForKeyStatement;
-	sqlite3_stmt *setAllForKeyStatement;
-	sqlite3_stmt *setMetaForKeyStatement;
-	sqlite3_stmt *removeForKeyStatement;
+	sqlite3_stmt *insertForRowidStatement;
+	sqlite3_stmt *updateAllForRowidStatement;
+	sqlite3_stmt *updateMetadataForRowidStatement;
+	sqlite3_stmt *removeForRowidStatement;
 	sqlite3_stmt *removeCollectionStatement;
 	sqlite3_stmt *removeAllStatement;
 	sqlite3_stmt *enumerateCollectionsStatement;
 	sqlite3_stmt *enumerateKeysInCollectionStatement;
-    sqlite3_stmt *enumerateKeysInAllCollectionsStatement;
-	sqlite3_stmt *enumerateMetadataInCollectionStatement;
-	sqlite3_stmt *enumerateMetadataInAllCollectionsStatement;
-	sqlite3_stmt *enumerateAllInCollectionStatement;
-	sqlite3_stmt *enumerateAllInAllCollectionsStatement;
+	sqlite3_stmt *enumerateKeysInAllCollectionsStatement;
+	sqlite3_stmt *enumerateKeysAndMetadataInCollectionStatement;
+	sqlite3_stmt *enumerateKeysAndMetadataInAllCollectionsStatement;
+	sqlite3_stmt *enumerateKeysAndObjectsInCollectionStatement;
+	sqlite3_stmt *enumerateKeysAndObjectsInAllCollectionsStatement;
+	sqlite3_stmt *enumerateRowsInCollectionStatement;
+	sqlite3_stmt *enumerateRowsInAllCollectionsStatement;
 
-*/
 /* Defined in YapAbstractDatabasePrivate.h:
 
 @protected
@@ -71,6 +77,17 @@
 	
 	BOOL needsMarkSqlLevelSharedReadLock; // Read-only by transaction. Use as consideration of whether to invoke method.
 */
+}
+
+@synthesize database = database;
+
+- (id)initWithDatabase:(YapAbstractDatabase *)inDatabase
+{
+	if ((self = [super initWithDatabase:inDatabase]))
+	{
+		database = (YapCollectionsDatabase *)abstractDatabase;
+	}
+	return self;
 }
 
 - (void)dealloc
@@ -141,15 +158,6 @@
 		sqlite_finalize_null(&insertForRowidStatement);
 		sqlite_finalize_null(&updateAllForRowidStatement);
 	}
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Properties
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (YapCollectionsDatabase *)database
-{
-	return (YapCollectionsDatabase *)database;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
