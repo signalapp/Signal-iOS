@@ -2214,6 +2214,27 @@
 	
 	if (key == nil) return;
 	
+	if (connection->database->objectSanitizer)
+	{
+		object = connection->database->objectSanitizer(key, object);
+		if (object == nil)
+		{
+			YDBLogWarn(@"Object sanitizer returned nil for key(%@) object: %@", key, object);
+			
+			[self removeObjectForKey:key];
+			return;
+		}
+	}
+	if (metadata && connection->database->metadataSanitizer)
+	{
+		metadata = connection->database->metadataSanitizer(key, metadata);
+		if (metadata == nil)
+		{
+			YDBLogWarn(@"Metadata sanitizer returned nil for key(%@) metadata: %@", key, metadata);
+		}
+	}
+	
+	
 	BOOL found = NO;
 	int64_t rowid = 0;
 	
@@ -2351,6 +2372,15 @@
 {
 	int64_t rowid = 0;
 	if (![self getRowid:&rowid forKey:key]) return;
+	
+	if (metadata && connection->database->metadataSanitizer)
+	{
+		metadata = connection->database->metadataSanitizer(key, metadata);
+		if (metadata == nil)
+		{
+			YDBLogWarn(@"Metadata sanitizer returned nil for key: %@", key);
+		}
+	}
 	
 	sqlite3_stmt *statement = [connection updateMetadataForRowidStatement];
 	if (statement == NULL) return;

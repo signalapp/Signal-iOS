@@ -17,6 +17,9 @@
 	
 	YapCollectionsDatabaseSerializer metadataSerializer;     // Read-only by transactions
 	YapCollectionsDatabaseDeserializer metadataDeserializer; // Read-only by transactions
+	
+	YapCollectionsDatabaseSanitizer objectSanitizer;         // Read-only by transactions
+	YapCollectionsDatabaseSanitizer metadataSanitizer;       // Read-only by transactions
 }
 
 @end

@@ -59,6 +59,14 @@
 typedef NSData* (^YapDatabaseSerializer)(NSString *key, id object);
 typedef id (^YapDatabaseDeserializer)(NSString *key, NSData *data);
 
+/**
+ * Is it safe to store immutable objects in the database?
+ * 
+ * That question is answered extensively in the wiki article "Sanitizers":
+ * Todo...
+**/
+typedef id (^YapDatabaseSanitizer)(NSString *key, id object);
+
 
 extern NSString *const YapDatabaseObjectChangesKey;
 extern NSString *const YapDatabaseMetadataChangesKey;
@@ -100,6 +108,7 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 /**
  * Opens or creates a sqlite database with the given path.
  * The default serializer and deserializer are used.
+ * No sanitizer is used.
  * 
  * @see defaultSerializer
  * @see defaultDeserializer
@@ -109,6 +118,7 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 /**
  * Opens or creates a sqlite database with the given path.
  * The given serializer and deserializer are used for both objects and metadata.
+ * No sanitizer is used.
 **/
 - (id)initWithPath:(NSString *)path
         serializer:(YapDatabaseSerializer)serializer
@@ -116,12 +126,35 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 
 /**
  * Opens or creates a sqlite database with the given path.
+ * The given serializer and deserializer are used for both objects and metadata.
+ * The given sanitizer is used for both objects and metadata.
+**/
+- (id)initWithPath:(NSString *)path
+        serializer:(YapDatabaseSerializer)serializer
+      deserializer:(YapDatabaseDeserializer)deserializer
+         sanitizer:(YapDatabaseSanitizer)sanitizer;
+
+/**
+ * Opens or creates a sqlite database with the given path.
  * The given serializers and deserializers are used.
+ * No sanitizer is used.
 **/
 - (id)initWithPath:(NSString *)path objectSerializer:(YapDatabaseSerializer)objectSerializer
                                   objectDeserializer:(YapDatabaseDeserializer)objectDeserializer
                                   metadataSerializer:(YapDatabaseSerializer)metadataSerializer
                                 metadataDeserializer:(YapDatabaseDeserializer)metadataDeserializer;
+
+/**
+ * Opens or creates a sqlite database with the given path.
+ * The given serializers and deserializers are used.
+ * The given sanitizers are used.
+**/
+- (id)initWithPath:(NSString *)path objectSerializer:(YapDatabaseSerializer)objectSerializer
+                                  objectDeserializer:(YapDatabaseDeserializer)objectDeserializer
+                                  metadataSerializer:(YapDatabaseSerializer)metadataSerializer
+                                metadataDeserializer:(YapDatabaseDeserializer)metadataDeserializer
+                                     objectSanitizer:(YapDatabaseSanitizer)objectSanitizer
+                                   metadataSanitizer:(YapDatabaseSanitizer)metadataSanitizer;
 
 #pragma mark Properties
 
@@ -130,6 +163,9 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 
 @property (nonatomic, strong, readonly) YapDatabaseSerializer metadataSerializer;
 @property (nonatomic, strong, readonly) YapDatabaseDeserializer metadataDeserializer;
+
+@property (nonatomic, strong, readonly) YapDatabaseSanitizer objectSanitizer;
+@property (nonatomic, strong, readonly) YapDatabaseSanitizer metadataSanitizer;
 
 #pragma mark Connections
 

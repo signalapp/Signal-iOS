@@ -80,31 +80,32 @@
 	{
 		NSString *databasePath = [self databasePath:@"kv"];
 		
-		YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+		YapDatabaseSanitizer sanitizer = ^(NSString *key, id object){
+			return [object copy];
+		};
+		
+		YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath
+		                                               serializer:nil
+		                                             deserializer:nil
+		                                                sanitizer:sanitizer];
+		
+		NSMutableString *danger = [NSMutableString stringWithCapacity:25];
+		[danger appendString:@"Danger"];
 		
 		[[database newConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 			
-			if ([transaction numberOfKeys] == 0)
-			{
-				NSUInteger count = 5;
-				NSLog(@"Adding %lu items...", (unsigned long)count);
-				
-				for (NSUInteger i = 0; i < count; i++)
-				{
-					NSString *key = [[NSUUID UUID] UUIDString];
-					NSString *obj = [[NSUUID UUID] UUIDString];
-					
-					[transaction setObject:obj forKey:key];
-				}
-			}
-			
-			NSLog(@"database.count = %lu", (unsigned long)[transaction numberOfKeys]);
-			
-			[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop) {
-				
-				NSLog(@"key(%@) = object(%@)", key, object);
-			}];
+			[transaction setObject:danger forKey:@"danger"];
 		}];
+		
+		[danger appendString:@", Will Robinson!"];
+		
+		__block NSString *string = nil;
+		[[database newConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+			
+			string = [transaction objectForKey:@"danger"];
+		}];
+		
+		NSAssert([string isEqualToString:@"Danger"], @"Broken sanitizer");
 	}
 	
 	if (YES) // Test YapCollectionsDatabase
@@ -113,29 +114,23 @@
 		
 		YapCollectionsDatabase *database = [[YapCollectionsDatabase alloc] initWithPath:databasePath];
 		
+		NSMutableString *danger = [NSMutableString stringWithCapacity:25];
+		[danger appendString:@"Danger"];
+		
 		[[database newConnection] readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
 			
-			if ([transaction numberOfKeysInAllCollections] == 0)
-			{
-				NSUInteger count = 5;
-				NSLog(@"Adding %lu items...", (unsigned long)count);
-				
-				for (NSUInteger i = 0; i < count; i++)
-				{
-					NSString *key = [[NSUUID UUID] UUIDString];
-					NSString *obj = [[NSUUID UUID] UUIDString];
-					
-					[transaction setObject:obj forKey:key inCollection:nil];
-				}
-			}
-			
-			NSLog(@"database.count = %lu", (unsigned long)[transaction numberOfKeysInAllCollections]);
-			
-			[transaction enumerateKeysAndObjectsInCollection:nil usingBlock:^(NSString *key, id object, BOOL *stop) {
-				
-				NSLog(@"key(%@) = object(%@)", key, object);
-			}];
+			[transaction setObject:danger forKey:@"danger" inCollection:nil];
 		}];
+		
+		[danger appendString:@", Will Robinson!"];
+		
+		__block NSString *string = nil;
+		[[database newConnection] readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
+			
+			string = [transaction objectForKey:@"danger" inCollection:nil];
+		}];
+		
+		NSAssert([string isEqualToString:@"Danger"], @"Broken sanitizer");
 	}
 	
 	NSLog(@"Debug complete");

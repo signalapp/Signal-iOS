@@ -136,6 +136,8 @@ NSString *const YapCollectionsDatabaseAllKeysRemovedKey     = @"allKeysRemoved";
 @synthesize objectDeserializer = objectDeserializer;
 @synthesize metadataSerializer = metadataSerializer;
 @synthesize metadataDeserializer = metadataDeserializer;
+@synthesize objectSanitizer = objectSanitizer;
+@synthesize metadataSanitizer = metadataSanitizer;
 
 #pragma mark Init
 
@@ -145,7 +147,23 @@ NSString *const YapCollectionsDatabaseAllKeysRemovedKey     = @"allKeysRemoved";
 	         objectSerializer:NULL
 	       objectDeserializer:NULL
 	       metadataSerializer:NULL
-	     metadataDeserializer:NULL];
+	     metadataDeserializer:NULL
+	          objectSanitizer:NULL
+	        metadataSanitizer:NULL];
+}
+
+- (id)initWithPath:(NSString *)inPath
+        serializer:(YapCollectionsDatabaseSerializer)serializer
+      deserializer:(YapCollectionsDatabaseDeserializer)deserializer
+         sanitizer:(YapCollectionsDatabaseSanitizer)sanitizer
+{
+	return [self initWithPath:inPath
+	         objectSerializer:NULL
+	       objectDeserializer:NULL
+	       metadataSerializer:NULL
+	     metadataDeserializer:NULL
+	          objectSanitizer:NULL
+	        metadataSanitizer:NULL];
 }
 
 - (id)initWithPath:(NSString *)inPath
@@ -156,13 +174,31 @@ NSString *const YapCollectionsDatabaseAllKeysRemovedKey     = @"allKeysRemoved";
 	         objectSerializer:aSerializer
 	       objectDeserializer:aDeserializer
 	       metadataSerializer:aSerializer
-	     metadataDeserializer:aDeserializer];
+	     metadataDeserializer:aDeserializer
+	          objectSanitizer:NULL
+	        metadataSanitizer:NULL];
 }
 
 - (id)initWithPath:(NSString *)inPath objectSerializer:(YapCollectionsDatabaseSerializer)aObjectSerializer
                                     objectDeserializer:(YapCollectionsDatabaseDeserializer)aObjectDeserializer
                                     metadataSerializer:(YapCollectionsDatabaseSerializer)aMetadataSerializer
                                   metadataDeserializer:(YapCollectionsDatabaseDeserializer)aMetadataDeserializer
+{
+	return [self initWithPath:inPath
+	         objectSerializer:aObjectSerializer
+	       objectDeserializer:aObjectDeserializer
+	       metadataSerializer:aMetadataSerializer
+	     metadataDeserializer:aMetadataDeserializer
+	          objectSanitizer:NULL
+	        metadataSanitizer:NULL];
+}
+
+- (id)initWithPath:(NSString *)inPath objectSerializer:(YapCollectionsDatabaseSerializer)aObjectSerializer
+                                    objectDeserializer:(YapCollectionsDatabaseDeserializer)aObjectDeserializer
+                                    metadataSerializer:(YapCollectionsDatabaseSerializer)aMetadataSerializer
+                                  metadataDeserializer:(YapCollectionsDatabaseDeserializer)aMetadataDeserializer
+                                       objectSanitizer:(YapCollectionsDatabaseSanitizer)aObjectSanitizer
+                                     metadataSanitizer:(YapCollectionsDatabaseSanitizer)aMetadataSanitizer;
 {
 	if ((self = [super initWithPath:inPath]))
 	{
@@ -174,6 +210,9 @@ NSString *const YapCollectionsDatabaseAllKeysRemovedKey     = @"allKeysRemoved";
 		
 		metadataSerializer = aMetadataSerializer ? aMetadataSerializer : defaultSerializer;
 		metadataDeserializer = aMetadataDeserializer ? aMetadataDeserializer : defaultDeserializer;
+		
+		objectSanitizer = aObjectSanitizer;
+		metadataSanitizer = aMetadataSanitizer;
 	}
 	return self;
 }
