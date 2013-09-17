@@ -153,10 +153,7 @@ typedef NSComparisonResult (^YapDatabaseViewSortingWithRowBlock) \
                  (NSString *group, NSString *key1, id object1, id metadata1, NSString *key2, id object2, id metadata2);
 
 /**
- * I wish there was a way to inspect a given block and see what kind of parameters it takes.
- * Sadly this does not appear to be possible (at least not in any kind of standard legal way).
- * 
- * Thus, unfortunately (for now), you will have to specify what kind of block you're passing.
+ * Use this enum to specify what kind of block you're passing.
 **/
 typedef enum {
 	YapDatabaseViewBlockTypeWithKey       = 101,

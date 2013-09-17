@@ -92,20 +92,23 @@
            sortingBlockType:(YapDatabaseViewBlockType)inSortingBlockType
                     version:(int)inVersion
 {
+	NSAssert(inGroupingBlock != NULL, @"Invalid groupingBlock");
+	NSAssert(inSortingBlock != NULL, @"Invalid sortingBlock");
+	
+	NSAssert(inGroupingBlockType == YapDatabaseViewBlockTypeWithKey ||
+	         inGroupingBlockType == YapDatabaseViewBlockTypeWithObject ||
+	         inGroupingBlockType == YapDatabaseViewBlockTypeWithMetadata ||
+	         inGroupingBlockType == YapDatabaseViewBlockTypeWithRow,
+	         @"Invalid groupingBlockType");
+	
+	NSAssert(inSortingBlockType == YapDatabaseViewBlockTypeWithKey ||
+	         inSortingBlockType == YapDatabaseViewBlockTypeWithObject ||
+	         inSortingBlockType == YapDatabaseViewBlockTypeWithMetadata ||
+	         inSortingBlockType == YapDatabaseViewBlockTypeWithRow,
+	         @"Invalid sortingBlockType");
+	
 	if ((self = [super init]))
 	{
-		NSAssert(inGroupingBlockType == YapDatabaseViewBlockTypeWithKey ||
-		         inGroupingBlockType == YapDatabaseViewBlockTypeWithObject ||
-		         inGroupingBlockType == YapDatabaseViewBlockTypeWithMetadata ||
-		         inGroupingBlockType == YapDatabaseViewBlockTypeWithRow,
-		         @"Invalid grouping block type");
-		
-		NSAssert(inSortingBlockType == YapDatabaseViewBlockTypeWithKey ||
-		         inSortingBlockType == YapDatabaseViewBlockTypeWithObject ||
-		         inSortingBlockType == YapDatabaseViewBlockTypeWithMetadata ||
-		         inSortingBlockType == YapDatabaseViewBlockTypeWithRow,
-		         @"Invalid sorting block type");
-		
 		groupingBlock = inGroupingBlock;
 		groupingBlockType = inGroupingBlockType;
 		

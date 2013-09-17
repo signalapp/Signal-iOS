@@ -1,5 +1,3 @@
-#import <Foundation/Foundation.h>
-
 #import "YapDatabase.h"
 #import "YapDatabaseConnection.h"
 #import "YapDatabaseTransaction.h"

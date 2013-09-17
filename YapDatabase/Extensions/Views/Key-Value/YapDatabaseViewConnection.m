@@ -119,6 +119,9 @@ static NSString *const key_changes                  = @"changes";
 #pragma mark Accessors
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Required override method from YapAbstractDatabaseExtensionConnection.
+**/
 - (YapAbstractDatabaseExtension *)extension
 {
 	return view;
