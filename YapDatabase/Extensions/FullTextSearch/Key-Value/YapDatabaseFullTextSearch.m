@@ -1,10 +1,7 @@
 #import "YapDatabaseFullTextSearch.h"
 #import "YapDatabaseFullTextSearchPrivate.h"
-
 #import "YapAbstractDatabasePrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
-
-#import "YapDatabase.h"
 #import "YapDatabaseLogging.h"
 
 #if ! __has_feature(objc_arc)
@@ -82,9 +79,9 @@
 		return nil;
 	}
 	
-	for (id columnName in columnNames)
+	for (id columnName in inColumnNames)
 	{
-		if (![columnNames isKindOfClass:[NSString class]])
+		if (![columnName isKindOfClass:[NSString class]])
 		{
 			NSAssert(NO, @"Invalid column name. Not a string: %@", columnName);
 			return nil;

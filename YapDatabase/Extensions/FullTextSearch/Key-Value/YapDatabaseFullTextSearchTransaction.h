@@ -13,17 +13,18 @@
  * https://github.com/yaptv/YapDatabase/wiki
  *
  * YapDatabaseFullTextSearch is an extension for performing text based search.
+ * Internally, it uses sqlite's FTS module which was contributed by Google.
  *
- * You access this class within a regular transaction.
+ * After registering the extension, you can access this class within a regular transaction.
  * For example:
  *
  * [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
  *
- *     topUsaSale = [[transaction ext:@"myView"] objectAtIndex:0 inGroup:@"usa"]
+ *     [[transaction ext:@"mySearch"] enumerateKeysMatching:@"birthday party"
+ *                                               usingBlock:^(NSString *key, BOOL *stop){
+ *         // matching row...
+ *     }]
  * }];
- *
- * Keep in mind that the YapDatabaseFullTextSearchTransaction object is linked to the YapDatabaseReadTransaction object.
- * So don't try to use it outside the transaction block (cause it won't work).
 **/
 @interface YapDatabaseFullTextSearchTransaction : YapAbstractDatabaseExtensionTransaction
 
@@ -46,17 +47,17 @@
 - (void)enumerateKeysMatching:(NSString *)query
            withSnippetOptions:(YapDatabaseFullTextSearchSnippetOptions *)options
                    usingBlock:(void (^)(NSString *snippet, NSString *key, BOOL *stop))block;
-/*
+
 - (void)enumerateKeysAndMetadataMatching:(NSString *)query
                       withSnippetOptions:(YapDatabaseFullTextSearchSnippetOptions *)options
-                              usingBlock:(void (^)(NSString *key, id metadata, BOOL *stop))block;
+                              usingBlock:(void (^)(NSString *snippet, NSString *key, id metadata, BOOL *stop))block;
 
 - (void)enumerateKeysAndObjectsMatching:(NSString *)query
                      withSnippetOptions:(YapDatabaseFullTextSearchSnippetOptions *)options
-                             usingBlock:(void (^)(NSString *key, id object, BOOL *stop))block;
+                             usingBlock:(void (^)(NSString *snippet, NSString *key, id object, BOOL *stop))block;
 
 - (void)enumerateRowsMatching:(NSString *)query
            withSnippetOptions:(YapDatabaseFullTextSearchSnippetOptions *)options
-                   usingBlock:(void (^)(NSString *key, id object, id metadata, BOOL *stop))block;
-*/
+                   usingBlock:(void (^)(NSString *snippet, NSString *key, id object, id metadata, BOOL *stop))block;
+
 @end

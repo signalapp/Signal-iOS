@@ -13,8 +13,8 @@
  * https://github.com/yaptv/YapDatabase/wiki
  *
  * YapDatabaseFullTextSearch is an extension for performing text based search.
+ * Internally, it uses sqlite's FTS module which was contributed by Google.
 **/
-
 
 /**
  * The block handles extracting the column values for indexing by the FTS module.
@@ -74,8 +74,6 @@ typedef enum {
                     block:(YapDatabaseFullTextSearchBlock)block
                 blockType:(YapDatabaseFullTextSearchBlockType)blockType
                   version:(int)version;
-
-
 
 @property (nonatomic, strong, readonly) YapDatabaseFullTextSearchBlock block;
 @property (nonatomic, assign, readonly) YapDatabaseFullTextSearchBlockType blockType;

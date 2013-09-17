@@ -12,11 +12,12 @@
  * https://github.com/yaptv/YapDatabase/wiki
  *
  * YapDatabaseFullTextSearch is an extension for performing text based search.
- *
- * As a extension, YapDatabaseFullTextSearchConnection is automatically created by YapDatabaseConnnection.
+ * Internally, it uses sqlite's FTS module which was contributed by Google.
+ * 
+ * As an extension, YapDatabaseFullTextSearchConnection is automatically created by YapDatabaseConnnection.
  * You can access this object via:
  *
- * [databaseConnection extension:@"myRegisteredViewName"]
+ * [databaseConnection extension:@"myRegisteredExtensionName"]
  *
  * @see YapDatabaseFullTextSearch
  * @see YapDatabaseFullTextSearchTransaction

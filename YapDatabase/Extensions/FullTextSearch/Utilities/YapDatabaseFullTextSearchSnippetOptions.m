@@ -3,6 +3,22 @@
 
 @implementation YapDatabaseFullTextSearchSnippetOptions
 
++ (NSString *)defaultStartMatchText {
+	return @"<b>";
+}
+
++ (NSString *)defaultEndMatchText {
+	return @"</b>";
+}
+
++ (NSString *)defaultEllipsesText {
+	return @"...";
+}
+
++ (int)defaultNumberOfTokens {
+	return 15;
+}
+
 @synthesize startMatchText = startMatchText;
 @synthesize endMatchText = endMatchText;
 @synthesize ellipsesText = ellipsesText;
@@ -13,11 +29,11 @@
 {
 	if ((self = [super init]))
 	{
-		startMatchText = @"<b>";
-		endMatchText = @"</b>";
-		ellipsesText = @"…";
+		startMatchText = [[self class] defaultStartMatchText];
+		endMatchText = [[self class] defaultEndMatchText];
+		ellipsesText = [[self class] defaultEllipsesText];
 		
-		numberOfTokens = 15;
+		numberOfTokens = [[self class] defaultNumberOfTokens];
 	}
 	return self;
 }
@@ -33,7 +49,7 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-	YapDatabaseFullTextSearchSnippetOptions *copy = [[YapDatabaseFullTextSearchSnippetOptions alloc] init];
+	YapDatabaseFullTextSearchSnippetOptions *copy = [[YapDatabaseFullTextSearchSnippetOptions alloc] initForCopy];
 	
 	copy->startMatchText = startMatchText;
 	copy->endMatchText = endMatchText;
@@ -42,6 +58,38 @@
 	copy->numberOfTokens = numberOfTokens;
 	
 	return copy;
+}
+
+- (void)setStartMatchText:(NSString *)text
+{
+	if (text)
+		startMatchText = [text copy];
+	else
+		startMatchText = [[self class] defaultStartMatchText];
+}
+
+- (void)setEndMatchText:(NSString *)text
+{
+	if (text)
+		endMatchText = [text copy];
+	else
+		endMatchText = [[self class] defaultEndMatchText];
+}
+
+- (void)setEllipsesText:(NSString *)text
+{
+	if (text)
+		ellipsesText = [text copy];
+	else
+		ellipsesText = [[self class] defaultEllipsesText];
+}
+
+- (void)setNumberOfTokens:(int)count
+{
+	if (count != 0)
+		numberOfTokens = count;
+	else
+		numberOfTokens = [[self class] defaultNumberOfTokens];
 }
 
 @end
