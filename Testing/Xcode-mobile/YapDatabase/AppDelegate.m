@@ -17,9 +17,8 @@
 
 @implementation AppDelegate
 {
-//	YapDatabase *database;
-//	YapDatabaseConnection *databaseConnection1;
-//	YapDatabaseConnection *databaseConnection2;
+	YapDatabase *otfDatabase;
+	YapDatabaseConnection *otfDatabaseConnection;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -139,22 +138,22 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark On-The-Fly Debugging
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
+
 - (void)debugOnTheFlyViews
 {
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
 	
 //	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	
-	database = [[YapDatabase alloc] initWithPath:databasePath];
-	databaseConnection1 = [database newConnection];
+	otfDatabase = [[YapDatabase alloc] initWithPath:databasePath];
+	otfDatabaseConnection = [otfDatabase newConnection];
 	
 	[self printDatabaseCount];
 	
 	[self registerMainView];
 	[self printMainViewCount];
 	
-	[databaseConnection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+	[otfDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
 		NSUInteger count = 5;
 		NSLog(@"Adding %lu items...", (unsigned long)count);
@@ -204,7 +203,7 @@
 	                                      sortingBlock:sortingBlock
 	                                  sortingBlockType:sortingBlockType];
 	
-	if ([database registerExtension:databaseView withName:@"main"])
+	if ([otfDatabase registerExtension:databaseView withName:@"main"])
 		NSLog(@"Registered mainView");
 	else
 		NSLog(@"ERROR registering mainView !");
@@ -238,7 +237,7 @@
 	                                      sortingBlock:sortingBlock
 	                                  sortingBlockType:sortingBlockType];
 	
-	if ([database registerExtension:databaseView withName:@"on-the-fly"])
+	if ([otfDatabase registerExtension:databaseView withName:@"on-the-fly"])
 		NSLog(@"Registered onTheFlyView");
 	else
 		NSLog(@"ERROR registering onTheFlyView !");
@@ -246,7 +245,7 @@
 
 - (void)printDatabaseCount
 {
-	[databaseConnection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	[otfDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		NSUInteger count = [transaction numberOfKeys];
 		
@@ -256,7 +255,7 @@
 
 - (void)printMainViewCount
 {
-	[databaseConnection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	[otfDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		NSUInteger count = [[transaction ext:@"main"] numberOfKeysInGroup:@""];
 		
@@ -266,12 +265,12 @@
 
 - (void)printOnTheFlyViewCount
 {
-	[databaseConnection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	[otfDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		NSUInteger count = [[transaction ext:@"on-the-fly"] numberOfKeysInGroup:@""];
 		
 		NSLog(@"onTheFlyView.count = %lu", (unsigned long)count);
 	}];
 }
-*/
+
 @end
