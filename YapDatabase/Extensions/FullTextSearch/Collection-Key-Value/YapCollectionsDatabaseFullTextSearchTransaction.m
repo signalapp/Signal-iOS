@@ -352,7 +352,7 @@
 	
 	sqlite3_bind_int64(statement, 1, rowid);
 	
-	NSUInteger i = 2;
+	int i = 2;
 	for (NSString *columnName in ftsConnection->fts->columnNames)
 	{
 		NSString *columnValue = [ftsConnection->blockDict objectForKey:columnName];
