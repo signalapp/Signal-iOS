@@ -1985,6 +1985,8 @@
 		pageIndex++;
 	}
 	
+	NSAssert(pageMetadata != nil, @"Missing pageMetadata in group(%@)", group);
+	
 	// Update linked list (if needed)
 	
 	if ((pageIndex + 1) < [pagesMetadataForGroup count])
@@ -2176,10 +2178,8 @@
 			YapDatabaseString _group; MakeYapDatabaseString(&_group, pageMetadata->group);
 			sqlite3_bind_text(statement, 2, _group.str, _group.length, SQLITE_STATIC);
 			
-			YapDatabaseString _prevPageKey;
-			if (pageMetadata->prevPageKey)
-			{
-				MakeYapDatabaseString(&_prevPageKey, pageMetadata->prevPageKey);
+			YapDatabaseString _prevPageKey; MakeYapDatabaseString(&_prevPageKey, pageMetadata->prevPageKey);
+			if (pageMetadata->prevPageKey) {
 				sqlite3_bind_text(statement, 3, _prevPageKey.str, _prevPageKey.length, SQLITE_STATIC);
 			}
 			
@@ -2198,12 +2198,9 @@
 			
 			sqlite3_clear_bindings(statement);
 			sqlite3_reset(statement);
-			FreeYapDatabaseString(&_pageKey);
+			FreeYapDatabaseString(&_prevPageKey);
 			FreeYapDatabaseString(&_group);
-			
-			if (pageMetadata->prevPageKey) {
-				FreeYapDatabaseString(&_pageKey);
-			}
+			FreeYapDatabaseString(&_pageKey);
 		}
 		else if (hasDirtyLink)
 		{
@@ -2221,10 +2218,8 @@
 			              @" - count      : %d", [self pageTableName], pageKey,
 			              pageMetadata->prevPageKey, (int)pageMetadata->count);
 			
-			YapDatabaseString _prevPageKey;
-			if (pageMetadata->prevPageKey)
-			{
-				MakeYapDatabaseString(&_prevPageKey, pageMetadata->prevPageKey);
+			YapDatabaseString _prevPageKey; MakeYapDatabaseString(&_prevPageKey, pageMetadata->prevPageKey);
+			if (pageMetadata->prevPageKey) {
 				sqlite3_bind_text(statement, 1, _prevPageKey.str, _prevPageKey.length, SQLITE_STATIC);
 			}
 			
@@ -2246,11 +2241,8 @@
 			
 			sqlite3_clear_bindings(statement);
 			sqlite3_reset(statement);
+			FreeYapDatabaseString(&_prevPageKey);
 			FreeYapDatabaseString(&_pageKey);
-			
-			if (pageMetadata->prevPageKey) {
-				FreeYapDatabaseString(&_pageKey);
-			}
 		}
 		else
 		{
@@ -2266,7 +2258,7 @@
 			              @" - pageKey: %@\n"
 			              @" - count  : %d", [self pageTableName], pageKey, (int)(pageMetadata->count));
 			
-			sqlite3_bind_int(statement, 1, (int)(pageMetadata->count));
+			sqlite3_bind_int(statement, 1, (int)[page count]);
 			
 			__attribute__((objc_precise_lifetime)) NSData *rawData = [self serializePage:page];
 			sqlite3_bind_blob(statement, 2, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
@@ -2316,10 +2308,8 @@
 		              @" - pageKey    : %@\n"
 		              @" - prevPageKey: %@", [self pageTableName], pageKey, pageMetadata->prevPageKey);
 		
-		YapDatabaseString _prevPageKey;
-		if (pageMetadata->prevPageKey)
-		{
-			MakeYapDatabaseString(&_prevPageKey, pageMetadata->prevPageKey);
+		YapDatabaseString _prevPageKey; MakeYapDatabaseString(&_prevPageKey, pageMetadata->prevPageKey);
+		if (pageMetadata->prevPageKey) {
 			sqlite3_bind_text(statement, 1, _prevPageKey.str, _prevPageKey.length, SQLITE_STATIC);
 		}
 		
@@ -2336,11 +2326,8 @@
 		
 		sqlite3_clear_bindings(statement);
 		sqlite3_reset(statement);
+		FreeYapDatabaseString(&_prevPageKey);
 		FreeYapDatabaseString(&_pageKey);
-		
-		if (pageMetadata->prevPageKey) {
-			FreeYapDatabaseString(&_pageKey);
-		}
 	}];
 	
 	// Update the dirty rowid -> pageKey mappings.

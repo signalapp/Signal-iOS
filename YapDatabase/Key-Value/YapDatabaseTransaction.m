@@ -2243,7 +2243,10 @@
 	if (YES) // fetch rowid for key
 	{
 		sqlite3_stmt *statement = [connection getRowidForKeyStatement];
-		if (statement == NULL) return;
+		if (statement == NULL) {
+			FreeYapDatabaseString(&_key);
+			return;
+		}
 		
 		// SELECT "rowid" FROM "database2" WHERE "key" = ? ;
 		
