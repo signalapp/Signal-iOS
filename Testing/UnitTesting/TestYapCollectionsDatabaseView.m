@@ -21,6 +21,7 @@
 
 - (void)setUp
 {
+	[super setUp];
 	[DDLog removeAllLoggers];
 	[DDLog addLogger:[DDTTYLogger sharedInstance]];
 }
@@ -28,6 +29,7 @@
 - (void)tearDown
 {
 	[DDLog flushLog];
+	[super tearDown];
 }
 
 - (void)test

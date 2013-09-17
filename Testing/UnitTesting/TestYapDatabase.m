@@ -4,6 +4,9 @@
 #import "YapDatabase.h"
 #import "YapDatabasePrivate.h"
 
+#import "DDLog.h"
+#import "DDTTYLogger.h"
+
 #import <libkern/OSAtomic.h>
 
 
@@ -17,6 +20,19 @@
 	NSString *databaseName = [NSString stringWithFormat:@"TestYapDatabase-%@.sqlite", suffix];
 	
 	return [baseDir stringByAppendingPathComponent:databaseName];
+}
+
+- (void)setUp
+{
+	[super setUp];
+	[DDLog removeAllLoggers];
+	[DDLog addLogger:[DDTTYLogger sharedInstance]];
+}
+
+- (void)tearDown
+{
+	[DDLog flushLog];
+	[super tearDown];
 }
 
 - (void)test1
