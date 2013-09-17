@@ -20,7 +20,7 @@
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
 	NSString *baseDir = ([paths count] > 0) ? [paths objectAtIndex:0] : NSTemporaryDirectory();
 	
-	NSString *databaseName = [NSString stringWithFormat:@"TestYapDatabaseView-%@.sqlite", suffix];
+	NSString *databaseName = [NSString stringWithFormat:@"%@-%@.sqlite", THIS_FILE, suffix];
 	
 	return [baseDir stringByAppendingPathComponent:databaseName];
 }
@@ -50,7 +50,8 @@
 	YapDatabaseConnection *connection = [database newConnection];
 	
 	YapDatabaseFullTextSearchBlockType blockType = YapDatabaseFullTextSearchBlockTypeWithObject;
-	YapDatabaseFullTextSearchWithObjectBlock block = ^(NSMutableDictionary *dict, NSString *key, id object){
+	YapDatabaseFullTextSearchWithObjectBlock block =
+	^(NSMutableDictionary *dict, NSString *key, id object){
 		
 		[dict setObject:object forKey:@"content"];
 	};
@@ -64,10 +65,10 @@
 	
 	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[transaction setObject:@"hello world" forKey:@"key1"];
+		[transaction setObject:@"hello world"       forKey:@"key1"];
 		[transaction setObject:@"hello coffee shop" forKey:@"key2"];
-		[transaction setObject:@"hello laptop" forKey:@"key3"];
-		[transaction setObject:@"hello work" forKey:@"key4"];
+		[transaction setObject:@"hello laptop"      forKey:@"key3"];
+		[transaction setObject:@"hello work"        forKey:@"key4"];
 	}];
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -162,7 +163,8 @@
 	YapDatabaseConnection *connection = [database newConnection];
 	
 	YapDatabaseFullTextSearchBlockType blockType = YapDatabaseFullTextSearchBlockTypeWithObject;
-	YapDatabaseFullTextSearchWithObjectBlock block = ^(NSMutableDictionary *dict, NSString *key, id object){
+	YapDatabaseFullTextSearchWithObjectBlock block =
+	^(NSMutableDictionary *dict, NSString *key, id object){
 		
 		[dict setObject:object forKey:@"content"];
 	};
@@ -176,17 +178,15 @@
 	
 	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[transaction setObject:@"hello world" forKey:@"key1"];
+		[transaction setObject:@"hello world"       forKey:@"key1"];
 		[transaction setObject:@"hello coffee shop" forKey:@"key2"];
-		[transaction setObject:@"hello laptop" forKey:@"key3"];
-		[transaction setObject:@"hello work" forKey:@"key4"];
+		[transaction setObject:@"hello laptop"      forKey:@"key3"];
+		[transaction setObject:@"hello work"        forKey:@"key4"];
 	}];
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		__block NSUInteger count;
-		
-	//	YapDatabaseFullTextSearchSnippetOptions *options = [YapDatabaseFullTextSearchSnippetOptions new];
 		
 		// Find matches for: hello
 		
@@ -195,10 +195,29 @@
 		                             withSnippetOptions:nil
 		                                     usingBlock:^(NSString *snippet, NSString *key, BOOL *stop) {
 			
-			NSLog(@"snippet: %@", snippet);
+		//	NSLog(@"snippet: %@", snippet);
 			count++;
 		}];
 		STAssertTrue(count == 4, @"Missing search results");
+		
+		// Find matches for: coffee
+		
+		YapDatabaseFullTextSearchSnippetOptions *options = [YapDatabaseFullTextSearchSnippetOptions new];
+		options.startMatchText = @"[[";
+		options.endMatchText   = @"]]";
+		options.ellipsesText   = @"…";
+		options.columnName     = @"content";
+		options.numberOfTokens = 2;
+		
+		count = 0;
+		[[transaction ext:@"fts"] enumerateKeysMatching:@"coffee"
+		                             withSnippetOptions:options
+		                                     usingBlock:^(NSString *snippet, NSString *key, BOOL *stop) {
+			
+			NSLog(@"snippet: %@", snippet);
+			count++;
+		}];
+		STAssertTrue(count == 1, @"Missing search results");
 	}];
 }
 
