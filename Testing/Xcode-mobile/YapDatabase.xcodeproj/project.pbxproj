@@ -17,15 +17,9 @@
 		DC23CFA41764028700E103A9 /* YapCollectionsDatabaseViewConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CF9D1764028700E103A9 /* YapCollectionsDatabaseViewConnection.m */; };
 		DC23CFA61764028700E103A9 /* YapCollectionsDatabaseViewTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CFA21764028700E103A9 /* YapCollectionsDatabaseViewTransaction.m */; };
 		DC23CFAB1766A17100E103A9 /* TestYapCollectionsDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CFAA1766A17100E103A9 /* TestYapCollectionsDatabaseView.m */; };
-		DC23CFAF1766A4E000E103A9 /* YapCollectionsDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CF9B1764028700E103A9 /* YapCollectionsDatabaseView.m */; };
-		DC23CFB01766A4E300E103A9 /* YapCollectionsDatabaseViewConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CF9D1764028700E103A9 /* YapCollectionsDatabaseViewConnection.m */; };
-		DC23CFB11766A4E600E103A9 /* YapCollectionsDatabaseViewTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CFA21764028700E103A9 /* YapCollectionsDatabaseViewTransaction.m */; };
 		DC24FBE61687EB9000E855DC /* YapCollectionsDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBDE1687EB9000E855DC /* YapCollectionsDatabase.m */; };
-		DC24FBE71687EB9000E855DC /* YapCollectionsDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBDE1687EB9000E855DC /* YapCollectionsDatabase.m */; };
 		DC24FBE81687EB9000E855DC /* YapCollectionsDatabaseConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBE01687EB9000E855DC /* YapCollectionsDatabaseConnection.m */; };
-		DC24FBE91687EB9000E855DC /* YapCollectionsDatabaseConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBE01687EB9000E855DC /* YapCollectionsDatabaseConnection.m */; };
 		DC24FBEA1687EB9000E855DC /* YapCollectionsDatabaseTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBE31687EB9000E855DC /* YapCollectionsDatabaseTransaction.m */; };
-		DC24FBEB1687EB9000E855DC /* YapCollectionsDatabaseTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBE31687EB9000E855DC /* YapCollectionsDatabaseTransaction.m */; };
 		DC24FBEF1688047700E855DC /* TestYapCollectionsDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBEE1688047700E855DC /* TestYapCollectionsDatabase.m */; };
 		DC24FBF2168806E400E855DC /* YapCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBF1168806E400E855DC /* YapCache.m */; };
 		DC3D2EBB1673FF6800DFAFAA /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2EAB1673FF6800DFAFAA /* DDAbstractDatabaseLogger.m */; };
@@ -38,11 +32,8 @@
 		DC3D2F091673FF9500DFAFAA /* YapDatabaseConnectionState.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2EDD1673FF9500DFAFAA /* YapDatabaseConnectionState.m */; };
 		DC3D2F0B1673FF9500DFAFAA /* YapDatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2EE01673FF9500DFAFAA /* YapDatabaseManager.m */; };
 		DC3D2F0F1673FF9500DFAFAA /* YapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2EE61673FF9500DFAFAA /* YapDatabase.m */; };
-		DC3D2F101673FF9500DFAFAA /* YapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2EE61673FF9500DFAFAA /* YapDatabase.m */; };
 		DC3D2F111673FF9500DFAFAA /* YapDatabaseConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2EE81673FF9500DFAFAA /* YapDatabaseConnection.m */; };
-		DC3D2F121673FF9500DFAFAA /* YapDatabaseConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2EE81673FF9500DFAFAA /* YapDatabaseConnection.m */; };
 		DC3D2F151673FF9500DFAFAA /* YapDatabaseTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2EED1673FF9500DFAFAA /* YapDatabaseTransaction.m */; };
-		DC3D2F161673FF9500DFAFAA /* YapDatabaseTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2EED1673FF9500DFAFAA /* YapDatabaseTransaction.m */; };
 		DC3D2F2B1673FFEC00DFAFAA /* TestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2F261673FFEC00DFAFAA /* TestObject.m */; };
 		DC3D2F2C1673FFEC00DFAFAA /* TestYapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2F281673FFEC00DFAFAA /* TestYapDatabase.m */; };
 		DC3D2F301674001600DFAFAA /* BenchmarkYapCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2F2F1674001600DFAFAA /* BenchmarkYapCache.m */; };
@@ -51,18 +42,12 @@
 		DC3D2F4016756E9C00DFAFAA /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCAE51EE1673FE2600395076 /* CoreGraphics.framework */; };
 		DC5BAD82174D4EB500DF9465 /* TestYapDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC5BAD81174D4EB500DF9465 /* TestYapDatabaseView.m */; };
 		DC81B6C916921F66006FA74B /* YapAbstractDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC81B6C316921F66006FA74B /* YapAbstractDatabase.m */; };
-		DC81B6CA16921F66006FA74B /* YapAbstractDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC81B6C316921F66006FA74B /* YapAbstractDatabase.m */; };
 		DC81B6CB16921F66006FA74B /* YapAbstractDatabaseConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC81B6C516921F66006FA74B /* YapAbstractDatabaseConnection.m */; };
-		DC81B6CC16921F66006FA74B /* YapAbstractDatabaseConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC81B6C516921F66006FA74B /* YapAbstractDatabaseConnection.m */; };
 		DC81B6CD16921F66006FA74B /* YapAbstractDatabaseTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC81B6C816921F66006FA74B /* YapAbstractDatabaseTransaction.m */; };
-		DC81B6CE16921F66006FA74B /* YapAbstractDatabaseTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC81B6C816921F66006FA74B /* YapAbstractDatabaseTransaction.m */; };
 		DC84210D17B00ED300250998 /* YapDatabaseViewRangeOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84210C17B00ED300250998 /* YapDatabaseViewRangeOptions.m */; };
 		DC84FF71174EF4B0003BFBB2 /* YapAbstractDatabaseExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84FF61174EF4B0003BFBB2 /* YapAbstractDatabaseExtension.m */; };
 		DC84FF73174EF4B0003BFBB2 /* YapAbstractDatabaseExtensionConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84FF63174EF4B0003BFBB2 /* YapAbstractDatabaseExtensionConnection.m */; };
 		DC84FF75174EF4B0003BFBB2 /* YapAbstractDatabaseExtensionTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84FF66174EF4B0003BFBB2 /* YapAbstractDatabaseExtensionTransaction.m */; };
-		DCA528CE17985D0600B4503B /* YapDatabaseViewConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CF921764027500E103A9 /* YapDatabaseViewConnection.m */; };
-		DCA528CF17985D0800B4503B /* YapDatabaseViewTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CF951764027500E103A9 /* YapDatabaseViewTransaction.m */; };
-		DCA528D717985EF500B4503B /* YapDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CF901764027500E103A9 /* YapDatabaseView.m */; };
 		DCAC1F12176B9A52005CD448 /* YapSet.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAC1F11176B9A52005CD448 /* YapSet.m */; };
 		DCAE51EB1673FE2600395076 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCAE51EA1673FE2600395076 /* UIKit.framework */; };
 		DCAE51ED1673FE2600395076 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCAE51EC1673FE2600395076 /* Foundation.framework */; };
@@ -795,27 +780,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC3D2F101673FF9500DFAFAA /* YapDatabase.m in Sources */,
-				DC3D2F121673FF9500DFAFAA /* YapDatabaseConnection.m in Sources */,
-				DC3D2F161673FF9500DFAFAA /* YapDatabaseTransaction.m in Sources */,
 				DC3D2F2B1673FFEC00DFAFAA /* TestObject.m in Sources */,
 				DC3D2F2C1673FFEC00DFAFAA /* TestYapDatabase.m in Sources */,
-				DC24FBE71687EB9000E855DC /* YapCollectionsDatabase.m in Sources */,
-				DC24FBE91687EB9000E855DC /* YapCollectionsDatabaseConnection.m in Sources */,
-				DC24FBEB1687EB9000E855DC /* YapCollectionsDatabaseTransaction.m in Sources */,
 				DC24FBEF1688047700E855DC /* TestYapCollectionsDatabase.m in Sources */,
-				DC81B6CA16921F66006FA74B /* YapAbstractDatabase.m in Sources */,
-				DC81B6CC16921F66006FA74B /* YapAbstractDatabaseConnection.m in Sources */,
-				DC81B6CE16921F66006FA74B /* YapAbstractDatabaseTransaction.m in Sources */,
 				DC5BAD82174D4EB500DF9465 /* TestYapDatabaseView.m in Sources */,
 				DC23CFAB1766A17100E103A9 /* TestYapCollectionsDatabaseView.m in Sources */,
-				DC23CFAF1766A4E000E103A9 /* YapCollectionsDatabaseView.m in Sources */,
-				DC23CFB01766A4E300E103A9 /* YapCollectionsDatabaseViewConnection.m in Sources */,
-				DC23CFB11766A4E600E103A9 /* YapCollectionsDatabaseViewTransaction.m in Sources */,
 				DC005BC11774C666002E57DE /* TestViewChangeLogic.m in Sources */,
-				DCA528CE17985D0600B4503B /* YapDatabaseViewConnection.m in Sources */,
-				DCA528CF17985D0800B4503B /* YapDatabaseViewTransaction.m in Sources */,
-				DCA528D717985EF500B4503B /* YapDatabaseView.m in Sources */,
 				DCEE835017AAC7F3009BF81D /* TestViewMappingsLogic.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
