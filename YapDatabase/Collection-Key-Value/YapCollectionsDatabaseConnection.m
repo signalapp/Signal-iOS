@@ -762,10 +762,19 @@
 		[removedCollections count] > 0 || allKeysRemoved)
 	{
 		if (internalChangeset == nil)
-			internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
-		
+		{
+			if (sharedKeySetForInternalChangeset)
+				internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
+			else
+				internalChangeset = [NSMutableDictionary dictionaryWithCapacity:internalChangesetKeysCount];
+		}
 		if (externalChangeset == nil)
-			externalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
+		{
+			if (sharedKeySetForExternalChangeset)
+				externalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
+			else
+				externalChangeset = [NSMutableDictionary dictionaryWithCapacity:externalChangesetKeysCount];
+		}
 		
 		if ([objectChanges count] > 0)
 		{

@@ -195,6 +195,9 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	id sharedKeySetForInternalChangeset;
 	id sharedKeySetForExternalChangeset;
 	
+	NSUInteger internalChangesetKeysCount; // For iOS 5 compatibility (NSDictionary sharedKeySet not supported)
+	NSUInteger externalChangesetKeysCount; // For iOS 5 compatibility (NSDictionary sharedKeySet not supported)
+	
 @public
 	__strong YapAbstractDatabase *database;
 	

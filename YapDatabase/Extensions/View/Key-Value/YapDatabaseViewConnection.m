@@ -33,6 +33,9 @@ static NSString *const key_changes                  = @"changes";
 	id sharedKeySetForInternalChangeset;
 	id sharedKeySetForExternalChangeset;
 	
+	NSUInteger internalChangesetKeysCount; // For iOS 5 compatibility (NSDictionary sharedKeySet not supported)
+	NSUInteger externalChangesetKeysCount; // For iOS 5 compatibility (NSDictionary sharedKeySet not supported)
+	
 	sqlite3_stmt *keyTable_getPageKeyForKeyStatement;
 	sqlite3_stmt *keyTable_setPageKeyForKeyStatement;
 	sqlite3_stmt *keyTable_removeForKeyStatement;
@@ -57,8 +60,16 @@ static NSString *const key_changes                  = @"changes";
 		keyCache = [[YapCache alloc] initWithKeyClass:[NSString class]];
 		pageCache = [[YapCache alloc] initWithKeyClass:[NSString class]];
 		
-		sharedKeySetForInternalChangeset = [NSDictionary sharedKeySetForKeys:[self internalChangesetKeys]];
-		sharedKeySetForExternalChangeset = [NSDictionary sharedKeySetForKeys:[self externalChangesetKeys]];
+		if ([[NSDictionary class] respondsToSelector:@selector(sharedKeySetForKeys:)])
+		{
+			sharedKeySetForInternalChangeset = [NSDictionary sharedKeySetForKeys:[self internalChangesetKeys]];
+			sharedKeySetForExternalChangeset = [NSDictionary sharedKeySetForKeys:[self externalChangesetKeys]];
+		}
+		else
+		{
+			internalChangesetKeysCount = [[self internalChangesetKeys] count];
+			externalChangesetKeysCount = [[self externalChangesetKeys] count];
+		}
 	}
 	return self;
 }
@@ -278,7 +289,10 @@ static NSString *const key_changes                  = @"changes";
 	
 	if ([dirtyKeys count] || [dirtyPages count] || [dirtyMetadata count] || reset)
 	{
-		internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
+		if (sharedKeySetForInternalChangeset)
+			internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
+		else
+			internalChangeset = [NSMutableDictionary dictionaryWithCapacity:internalChangesetKeysCount];
 		
 		if ([dirtyKeys count] > 0)
 		{
@@ -307,7 +321,10 @@ static NSString *const key_changes                  = @"changes";
 	
 	if ([changes count])
 	{
-		externalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
+		if (sharedKeySetForExternalChangeset)
+			externalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
+		else
+			externalChangeset = [NSMutableDictionary dictionaryWithCapacity:externalChangesetKeysCount];
   
   		[externalChangeset setObject:[changes copy] forKey:key_changes];
 	}

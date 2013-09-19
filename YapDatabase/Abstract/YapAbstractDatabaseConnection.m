@@ -104,8 +104,16 @@
 		pendingChangesets = [[NSMutableArray alloc] init];
 		processedChangesets = [[NSMutableArray alloc] init];
 		
-		sharedKeySetForInternalChangeset = [NSDictionary sharedKeySetForKeys:[self internalChangesetKeys]];
-		sharedKeySetForExternalChangeset = [NSDictionary sharedKeySetForKeys:[self externalChangesetKeys]];
+		if ([[NSDictionary class] respondsToSelector:@selector(sharedKeySetForKeys:)])
+		{
+			sharedKeySetForInternalChangeset = [NSDictionary sharedKeySetForKeys:[self internalChangesetKeys]];
+			sharedKeySetForExternalChangeset = [NSDictionary sharedKeySetForKeys:[self externalChangesetKeys]];
+		}
+		else
+		{
+			internalChangesetKeysCount = [[self internalChangesetKeys] count];
+			externalChangesetKeysCount = [[self externalChangesetKeys] count];
+		}
 		
 		extensions = [[NSMutableDictionary alloc] init];
 		
@@ -2091,20 +2099,33 @@
 	
 	if (internalChangeset_extensions)
 	{
-		internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
+		if (sharedKeySetForInternalChangeset)
+			internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
+		else
+			internalChangeset = [NSMutableDictionary dictionaryWithCapacity:internalChangesetKeysCount];
+		
 		[internalChangeset setObject:internalChangeset_extensions forKey:YapDatabaseExtensionsKey];
 	}
 	
 	if (externalChangeset_extensions)
 	{
-		externalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
+		if (sharedKeySetForExternalChangeset)
+			externalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
+		else
+			externalChangeset = [NSMutableDictionary dictionaryWithCapacity:externalChangesetKeysCount];
+		
 		[externalChangeset setObject:externalChangeset_extensions forKey:YapDatabaseExtensionsKey];
 	}
 	
 	if (registeredExtensionsChanged)
 	{
 		if (internalChangeset == nil)
-			internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
+		{
+			if (sharedKeySetForInternalChangeset)
+				internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
+			else
+				internalChangeset = [NSMutableDictionary dictionaryWithCapacity:internalChangesetKeysCount];
+		}
 		
 		[internalChangeset setObject:registeredExtensions forKey:@"registeredExtensions"];
 	}
