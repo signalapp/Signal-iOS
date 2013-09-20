@@ -67,6 +67,11 @@
 	return [baseDir stringByAppendingPathComponent:databaseName];
 }
 
+- (void)yapDatabaseModified:(NSNotification *)notification
+{
+	NSLog(@"YapDatabaseModified: %@", notification);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark General Debugging
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,68 +80,73 @@
 {
 	NSLog(@"Starting debug...");
 	
-	if (YES) // Test YapDatabase
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+	                                         selector:@selector(yapDatabaseModified:)
+	                                             name:YapDatabaseModifiedNotification
+	                                           object:database];
+	
+	YapDatabaseConnection *databaseConnection = [database newConnection];
+	
+	YapDatabaseViewBlockType groupingBlockType;
+	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
+	
+	YapDatabaseViewBlockType sortingBlockType;
+	YapDatabaseViewSortingWithObjectBlock sortingBlock;
+	
+	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
+	groupingBlock = ^NSString *(NSString *key){
+		
+		return @"";
+	};
+	
+	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
+	sortingBlock = ^(NSString *group, NSString *key1, id obj1, NSString *key2, id obj2){
+		
+		NSString *object1 = (NSString *)obj1;
+		NSString *object2 = (NSString *)obj2;
+		
+		return [object1 compare:object2];
+	};
+	
+	YapDatabaseView *databaseView =
+	    [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
+	                                 groupingBlockType:groupingBlockType
+	                                      sortingBlock:sortingBlock
+	                                  sortingBlockType:sortingBlockType];
+	
+	if (![database registerExtension:databaseView withName:@"order"])
 	{
-		NSString *databasePath = [self databasePath:@"kv"];
-		
-		YapDatabaseSanitizer sanitizer = ^(NSString *key, id object){
-			return [object copy];
-		};
-		
-		YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath
-		                                               serializer:nil
-		                                             deserializer:nil
-		                                                sanitizer:sanitizer];
-		
-		NSMutableString *danger = [NSMutableString stringWithCapacity:25];
-		[danger appendString:@"Danger"];
-		
-		[[database newConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-			
-			[transaction setObject:danger forKey:@"danger"];
-		}];
-		
-		[danger appendString:@", Will Robinson!"];
-		
-		__block NSString *string = nil;
-		[[database newConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-			
-			string = [transaction objectForKey:@"danger"];
-		}];
-		
-		NSAssert([string isEqualToString:@"Danger"], @"Broken sanitizer");
+		NSLog(@"Failure registering extension");
 	}
 	
-	if (YES) // Test YapCollectionsDatabase
-	{
-		NSString *databasePath = [self databasePath:@"ckv"];
+	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		YapCollectionsDatabase *database = [[YapCollectionsDatabase alloc] initWithPath:databasePath];
+		[transaction setObject:@"value" forKey:@"key"];
+	}];
+	
+	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		NSMutableString *danger = [NSMutableString stringWithCapacity:25];
-		[danger appendString:@"Danger"];
+		[[transaction ext:@"order"] touchObjectForKey:@"key"];
+	}];
+	
+	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[[database newConnection] readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
+		[[transaction ext:@"order"] enumerateKeysInGroup:@""
+		                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
 			
-			[transaction setObject:danger forKey:@"danger" inCollection:nil];
+			NSLog(@"%lu: %@", (unsigned long)index, key);
 		}];
-		
-		[danger appendString:@", Will Robinson!"];
-		
-		__block NSString *string = nil;
-		[[database newConnection] readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
-			
-			string = [transaction objectForKey:@"danger" inCollection:nil];
-		}];
-		
-		NSAssert([string isEqualToString:@"Danger"], @"Broken sanitizer");
-	}
+	}];
 	
 	NSLog(@"Debug complete");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark On-The-Fly Debugging
+#pragma mark On-The-Fly Extensions Debugging
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)debugOnTheFlyViews

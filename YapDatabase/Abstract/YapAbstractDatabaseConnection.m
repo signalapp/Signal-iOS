@@ -1609,9 +1609,21 @@
 	NSMutableDictionary *userInfo = nil;
 	
 	[self getInternalChangeset:&changeset externalChangeset:&userInfo];
-	if (changeset)
+	if (changeset || userInfo)
 	{
-		snapshot = [self incrementSnapshotInDatabase];
+		// If a changeset exists, then the database file was modified.
+		// In this case, we're sure to write the incremented snapshot number to the database.
+		//
+		// If the changeset is nil, but the userInfo exists, then the database file was not modified.
+		// However, something was "touched" that is being broadcast to the UI.
+		
+		if (changeset)
+			snapshot = [self incrementSnapshotInDatabase];
+		else
+			snapshot++;
+		
+		if (changeset == nil)
+			changeset = [NSMutableDictionary dictionaryWithCapacity:2];
 		
 		if (userInfo == nil)
 			userInfo = [NSMutableDictionary dictionaryWithCapacity:3];
