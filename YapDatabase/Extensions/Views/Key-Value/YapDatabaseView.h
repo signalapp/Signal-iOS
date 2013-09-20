@@ -143,14 +143,17 @@ typedef NSString* (^YapDatabaseViewGroupingWithRowBlock)(NSString *key, id objec
 **/
 typedef id YapDatabaseViewSortingBlock; // One of the YapDatabaseViewSortingX types below.
 
-typedef NSComparisonResult (^YapDatabaseViewSortingWithKeyBlock) \
+typedef NSComparisonResult (^YapDatabaseViewSortingWithKeyBlock)      \
                  (NSString *group, NSString *key1, NSString *key2);
-typedef NSComparisonResult (^YapDatabaseViewSortingWithObjectBlock) \
+typedef NSComparisonResult (^YapDatabaseViewSortingWithObjectBlock)   \
                  (NSString *group, NSString *key1, id object1, NSString *key2, id object2);
 typedef NSComparisonResult (^YapDatabaseViewSortingWithMetadataBlock) \
                  (NSString *group, NSString *key1, id metadata, NSString *key2, id metadata2);
-typedef NSComparisonResult (^YapDatabaseViewSortingWithRowBlock) \
+typedef NSComparisonResult (^YapDatabaseViewSortingWithRowBlock)      \
                  (NSString *group, NSString *key1, id object1, id metadata1, NSString *key2, id object2, id metadata2);
+
+#ifndef YapDatabaseViewBlockTypeDefined
+#define YapDatabaseViewBlockTypeDefined 1
 
 /**
  * Use this enum to specify what kind of block you're passing.
@@ -162,6 +165,7 @@ typedef enum {
 	YapDatabaseViewBlockTypeWithRow       = 104
 } YapDatabaseViewBlockType;
 
+#endif
 
 
 @interface YapDatabaseView : YapAbstractDatabaseExtension

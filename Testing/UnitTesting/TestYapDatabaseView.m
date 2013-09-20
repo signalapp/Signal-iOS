@@ -2261,4 +2261,179 @@
 	}];
 }
 
+- (void)testFind
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	STAssertNotNil(database, @"Oops");
+	
+	YapDatabaseConnection *connection = [database newConnection];
+	
+	YapDatabaseViewBlockType groupingBlockType;
+	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
+	
+	YapDatabaseViewBlockType sortingBlockType;
+	YapDatabaseViewSortingWithObjectBlock sortingBlock;
+	
+	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
+	groupingBlock = ^NSString *(NSString *key){
+		
+		return @"";
+	};
+	
+	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
+	sortingBlock = ^(NSString *group, NSString *key1, id obj1, NSString *key2, id obj2){
+		
+		NSNumber *number1 = (NSNumber *)obj1;
+		NSNumber *number2 = (NSNumber *)obj2;
+		
+		return [number1 compare:number2];
+	};
+	
+	YapDatabaseView *databaseView =
+	    [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
+	                                 groupingBlockType:groupingBlockType
+	                                      sortingBlock:sortingBlock
+	                                  sortingBlockType:sortingBlockType];
+	
+	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
+	
+	STAssertTrue(registerResult, @"Failure registering extension");
+	
+	// Add a bunch of values to the database & to the view
+	
+	NSUInteger count = 100;
+	
+	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		for (int i = 0; i < count; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key-%d", i];
+			NSNumber *num = [NSNumber numberWithInt:i];
+			
+			[transaction setObject:num forKey:key];
+		}
+	}];
+	
+	// Make sure the view is populated
+	
+	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		STAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == count, @"View count is wrong");
+	}];
+	
+	// Now test finding different ranges
+	
+	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		int min = 0;
+		int max = 5;
+		
+		YapDatabaseViewBlockType blockType = YapDatabaseViewBlockTypeWithObject;
+		YapDatabaseViewFindWithObjectBlock block = ^(NSString *key, id object){
+			
+			int value = [(NSNumber *)object intValue];
+			
+			if (value < min)
+				return NSOrderedAscending;
+			if (value >= max)
+				return NSOrderedDescending;
+			
+			return NSOrderedSame;
+		};
+		
+		NSRange range = [[transaction ext:@"order"] findRangeInGroup:@"" usingBlock:block blockType:blockType];
+		
+		NSUInteger location = (max > min) ? min : NSNotFound;
+		NSUInteger length = (max > min) ? (max - min) : 0;
+		
+		STAssertTrue(range.location == location, @"Bad range location: %d", (int)range.location);
+		STAssertTrue(range.length == length, @"Bad range length: %d", (int)range.length);
+	}];
+	
+	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		int min = 11;
+		int max = 54;
+		
+		YapDatabaseViewBlockType blockType = YapDatabaseViewBlockTypeWithObject;
+		YapDatabaseViewFindWithObjectBlock block = ^(NSString *key, id object){
+			
+			int value = [(NSNumber *)object intValue];
+			
+			if (value < min)
+				return NSOrderedAscending;
+			if (value >= max)
+				return NSOrderedDescending;
+			
+			return NSOrderedSame;
+		};
+		
+		NSRange range = [[transaction ext:@"order"] findRangeInGroup:@"" usingBlock:block blockType:blockType];
+		
+		NSUInteger location = (max > min) ? min : NSNotFound;
+		NSUInteger length = (max > min) ? (max - min) : 0;
+		
+		STAssertTrue(range.location == location, @"Bad range location: %d", (int)range.location);
+		STAssertTrue(range.length == length, @"Bad range length: %d", (int)range.length);
+	}];
+	
+	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		int min = 50;
+		int max = 100;
+		
+		YapDatabaseViewBlockType blockType = YapDatabaseViewBlockTypeWithObject;
+		YapDatabaseViewFindWithObjectBlock block = ^(NSString *key, id object){
+			
+			int value = [(NSNumber *)object intValue];
+			
+			if (value < min)
+				return NSOrderedAscending;
+			if (value >= max)
+				return NSOrderedDescending;
+			
+			return NSOrderedSame;
+		};
+		
+		NSRange range = [[transaction ext:@"order"] findRangeInGroup:@"" usingBlock:block blockType:blockType];
+		
+		NSUInteger location = (max > min) ? min : NSNotFound;
+		NSUInteger length = (max > min) ? (max - min) : 0;
+		
+		STAssertTrue(range.location == location, @"Bad range location: %d", (int)range.location);
+		STAssertTrue(range.length == length, @"Bad range length: %d", (int)range.length);
+	}];
+	
+	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		int min = 40;
+		int max = 40;
+		
+		YapDatabaseViewBlockType blockType = YapDatabaseViewBlockTypeWithObject;
+		YapDatabaseViewFindWithObjectBlock block = ^(NSString *key, id object){
+			
+			int value = [(NSNumber *)object intValue];
+			
+			if (value < min)
+				return NSOrderedAscending;
+			if (value >= max)
+				return NSOrderedDescending;
+			
+			return NSOrderedSame;
+		};
+		
+		NSRange range = [[transaction ext:@"order"] findRangeInGroup:@"" usingBlock:block blockType:blockType];
+		
+		NSUInteger location = (max > min) ? min : NSNotFound;
+		NSUInteger length = (max > min) ? (max - min) : 0;
+		
+		STAssertTrue(range.location == location, @"Bad range location: %d", (int)range.location);
+		STAssertTrue(range.length == length, @"Bad range length: %d", (int)range.length);
+	}];
+}
+
 @end

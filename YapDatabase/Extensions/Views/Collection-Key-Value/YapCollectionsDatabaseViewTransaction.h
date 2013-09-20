@@ -31,6 +31,8 @@
 **/
 @interface YapCollectionsDatabaseViewTransaction : YapAbstractDatabaseExtensionTransaction
 
+#pragma mark Groups
+
 /**
  * Returns the number of groups the view manages.
  * Each group has one or more keys in it.
@@ -55,6 +57,8 @@
  * Returns the total number of keys in every single group.
 **/
 - (NSUInteger)numberOfKeysInAllGroups;
+
+#pragma mark Fetching
 
 /**
  * Returns the key & collection at the given index within the given group.
@@ -103,6 +107,126 @@
           forKey:(NSString *)key
     inCollection:(NSString *)collection;
 
+#pragma mark Finding
+
+typedef id YapCollectionsDatabaseViewFindBlock; // One of the YapDatabaseViewFindX types below.
+
+typedef NSComparisonResult (^YapCollectionsDatabaseViewFindWithKeyBlock)      \
+                                                        (NSString *collection, NSString *key);
+typedef NSComparisonResult (^YapCollectionsDatabaseViewFindWithObjectBlock)   \
+                                                        (NSString *collection, NSString *key, id object);
+typedef NSComparisonResult (^YapCollectionsDatabaseViewFindWithMetadataBlock) \
+                                                        (NSString *collection, NSString *key, id metadata);
+typedef NSComparisonResult (^YapCollectionsDatabaseViewFindWithRowBlock)      \
+                                                        (NSString *collection, NSString *key, id object, id metadata);
+
+#ifndef YapCollectionsDatabaseViewBlockTypeDefined
+#define YapCollectionsDatabaseViewBlockTypeDefined 1
+
+typedef enum {
+	YapCollectionsDatabaseViewBlockTypeWithKey       = 201,
+	YapCollectionsDatabaseViewBlockTypeWithObject    = 202,
+	YapCollectionsDatabaseViewBlockTypeWithMetadata  = 203,
+	YapCollectionsDatabaseViewBlockTypeWithRow       = 204
+} YapCollectionsDatabaseViewBlockType;
+
+#endif
+
+/**
+ * This method uses a binary search algorithm to find a range of items within the view that match the given criteria.
+ * For example:
+ * 
+ * You have a view which sorts items by timestamp (oldest to newest)
+ * You could then use this method to quickly find all items whose timestamp falls on a certain day.
+ * Or, more generally, within a certain timespan.
+ * 
+ * NSDate *beginningOfMonday = ...   // Monday at 12:00 AM
+ * NSDate *beginningOfTuesday =  ... // Tuesday at 12:00 AM
+ *
+ * YapDatabaseViewBlockType blockType = YapDatabaseViewBlockTypeWithObject;
+ * YapDatabaseViewFindWithObjectBlock block = ^(NSString *key, id object){
+ *
+ *     Purchase *purchase = (Purchase *)object;
+ *
+ *     if ([purchase.timestamp compare:beginningOfMonday] == NSOrderedAscending) // earlier than start range
+ *         return NSOrderedAscending;
+ * 
+ *     if ([purchase.timestamp compare:beginningOfTuesday] == NSOrderedAscending) // earlier than end range
+ *         return NSOrderedSame;
+ * 
+ *     return NSOrderedDescending; // greater than end range (or exactly midnight on tuesday)
+ * };
+ * 
+ * The return values from the YapDatabaseViewFindBlock have the following meaning:
+ * 
+ * - NSOrderedAscending : The given row (block parameters) is less than the range I'm looking for.
+ *                        That is, the row would have a smaller index within the view than would the range I seek.
+ * 
+ * - NSOrderedDecending : The given row (block parameters) is greater than the range I'm looking for.
+ *                        That is, the row would have a greater index within the view than would the range I seek.
+ * 
+ * - NSOrderedSame : The given row (block parameters) is within the range I'm looking for.
+ * 
+ * Keep in mind 2 things:
+ * 
+ * #1 : This method can only be used if you need to find items according to their sort order.
+ *      That is, according to how the items are sorted via the view's sortingBlock.
+ *      Attempting to use this method in any other manner makes no sense.
+ *
+ * #2 : The findBlock that you pass needs to be setup in the same manner as the view's sortingBlock.
+ *      That is, the following rules must be followed, or the results will be incorrect:
+ *      
+ *      For example, say you have a view like this, looking for the following range of 3 items:
+ *      myView = @[ A, B, C, D, E, F, G ]
+ *                     ^^^^^^^
+ *      sortingBlock(A, B) => NSOrderedAscending
+ *      findBlock(A)       => NSOrderedAscending
+ *      
+ *      sortingBlock(E, D) => NSOrderedDescending
+ *      findBlock(E)       => NSOrderedDescending
+ * 
+ *      findBlock(B) => NSOrderedSame
+ *      findBlock(C) => NSOrderedSame
+ *      findBlock(D) => NSOrderedSame
+ * 
+ * In other words, you can't sort one way in the sortingBlock, and "sort" another way in the findBlock.
+ * Another way to think about it is in terms of how the Apple docs define the NSOrdered enums:
+ * 
+ * NSOrderedAscending  : The left operand is smaller than the right operand.
+ * NSOrderedDescending : The left operand is greater than the right operand.
+ * 
+ * For the findBlock, the "left operand" is the row that is passed,
+ * and the "right operand" is the desired range.
+ * 
+ * And NSOrderedSame means: "the passed row is within the range I'm looking for".
+ * 
+ * Implementation Note:
+ * This method uses a binary search to find an item for which the block returns NSOrderedSame.
+ * It then uses information from the first binary search (known min/max) to perform two subsequent binary searches.
+ * One to find the start of the range, and another to find the end of the range.
+ * Thus:
+ * - the implementation is efficient
+ * - the block won't be invoked for every item within the range
+ *
+ * @param group
+ *     The group within the view to search.
+ * 
+ * @param block
+ *     One of the YapDatabaseViewFindWithXBlock types.
+ * 
+ * @param blockType
+ *     The proper YapDatabaseViewBlockTypeWithX type that matches the given block.
+ * 
+ * @return
+ *     If found, the range that matches the items within the desired range.
+ *     That is, is these items were passed to the given block, the block would return NSOrderedSame.
+ *     If not found, returns NSMakeRange(NSNotFound, 0).
+**/
+- (NSRange)findRangeInGroup:(NSString *)group
+                 usingBlock:(YapCollectionsDatabaseViewFindBlock)block
+                  blockType:(YapCollectionsDatabaseViewBlockType)blockType;
+
+#pragma mark Enumerating
 
 /**
  * Enumerates the keys in the given group.

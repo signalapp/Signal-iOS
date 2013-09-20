@@ -2771,7 +2771,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Public API
+#pragma mark Public API - Groups
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSUInteger)numberOfGroups
@@ -2811,6 +2811,10 @@
 	
 	return count;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Public API - Fetching
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (BOOL)getKey:(NSString **)keyPtr
     collection:(NSString **)collectionPtr
@@ -2996,6 +3000,190 @@
 	
 	return found;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Public API - Finding
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * See header file for extensive documentation for this method.
+**/
+- (NSRange)findRangeInGroup:(NSString *)group
+                 usingBlock:(YapCollectionsDatabaseViewFindBlock)block
+                  blockType:(YapCollectionsDatabaseViewBlockType)blockType
+{
+	BOOL invalidBlockType = blockType != YapCollectionsDatabaseViewBlockTypeWithKey      &&
+	                        blockType != YapCollectionsDatabaseViewBlockTypeWithObject   &&
+	                        blockType != YapCollectionsDatabaseViewBlockTypeWithMetadata &&
+	                        blockType != YapCollectionsDatabaseViewBlockTypeWithRow;
+	
+	if (group == nil || block == NULL || invalidBlockType)
+	{
+		return NSMakeRange(NSNotFound, 0);
+	}
+	
+	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSUInteger count = 0;
+	
+	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
+	{
+		count += pageMetadata->count;
+	}
+	
+	if (count == 0)
+	{
+		return NSMakeRange(NSNotFound, 0);
+	}
+	
+	NSComparisonResult (^compare)(NSUInteger) = ^NSComparisonResult (NSUInteger index){
+		
+		int64_t rowid = 0;
+		
+		NSUInteger pageOffset = 0;
+		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
+		{
+			if ((index < (pageOffset + pageMetadata->count)) && (pageMetadata->count > 0))
+			{
+				YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
+				
+				rowid = [page rowidAtIndex:(index - pageOffset)];
+				break;
+			}
+			else
+			{
+				pageOffset += pageMetadata->count;
+			}
+		}
+		
+		if (blockType == YapCollectionsDatabaseViewBlockTypeWithKey)
+		{
+			__unsafe_unretained YapCollectionsDatabaseViewFindWithKeyBlock findBlock =
+			    (YapCollectionsDatabaseViewFindWithKeyBlock)block;
+			
+			NSString *key = nil;
+			NSString *collection = nil;
+			[databaseTransaction getKey:&key collection:&collection forRowid:rowid];
+			
+			return findBlock(collection, key);
+		}
+		else if (blockType == YapCollectionsDatabaseViewBlockTypeWithObject)
+		{
+			__unsafe_unretained YapCollectionsDatabaseViewFindWithObjectBlock findBlock =
+			    (YapCollectionsDatabaseViewFindWithObjectBlock)block;
+			
+			NSString *key = nil;
+			NSString *collection = nil;
+			id object = nil;
+			[databaseTransaction getKey:&key collection:&collection object:&object forRowid:rowid];
+			
+			return findBlock(collection, key, object);
+		}
+		else if (blockType == YapCollectionsDatabaseViewBlockTypeWithMetadata)
+		{
+			__unsafe_unretained YapCollectionsDatabaseViewFindWithMetadataBlock findBlock =
+			    (YapCollectionsDatabaseViewFindWithMetadataBlock)block;
+			
+			NSString *key = nil;
+			NSString *collection = nil;
+			id metadata = nil;
+			[databaseTransaction getKey:&key collection:&collection metadata:&metadata forRowid:rowid];
+			
+			return findBlock(collection, key, metadata);
+		}
+		else
+		{
+			__unsafe_unretained YapCollectionsDatabaseViewFindWithRowBlock findBlock =
+			    (YapCollectionsDatabaseViewFindWithRowBlock)block;
+			
+			NSString *key = nil;
+			NSString *collection = nil;
+			id object = nil;
+			id metadata = nil;
+			[databaseTransaction getKey:&key collection:&collection object:&object metadata:&metadata forRowid:rowid];
+			
+			return findBlock(collection, key, object, metadata);
+		}
+	};
+	
+	NSUInteger loopCount = 0;
+	
+	// Find first match (first to return NSOrderedSame)
+	
+	NSUInteger mMin = 0;
+	NSUInteger mMax = count;
+	NSUInteger mMid;
+	
+	BOOL found = NO;
+	
+	while (mMin < mMax && !found)
+	{
+		mMid = (mMin + mMax) / 2;
+		
+		NSComparisonResult cmp = compare(mMid);
+		
+		if (cmp == NSOrderedDescending)      // Descending => value is greater than desired range
+			mMax = mMid;
+		else if (cmp == NSOrderedAscending)  // Ascending => value is less than desired range
+			mMin = mMid + 1;
+		else
+			found = YES;
+		
+		loopCount++;
+	}
+	
+	if (!found)
+	{
+		return NSMakeRange(NSNotFound, 0);
+	}
+	
+	// Find start of range
+	
+	NSUInteger sMin = mMin;
+	NSUInteger sMax = mMid;
+	NSUInteger sMid;
+	
+	while (sMin < sMax)
+	{
+		sMid = (sMin + sMax) / 2;
+		
+		NSComparisonResult cmp = compare(sMid);
+		
+		if (cmp == NSOrderedAscending) // Ascending => value is less than desired range
+			sMin = sMid + 1;
+		else
+			sMax = sMid;
+		
+		loopCount++;
+	}
+	
+	// Find end of range
+	
+	NSUInteger eMin = mMid;
+	NSUInteger eMax = mMax;
+	NSUInteger eMid;
+	
+	while (eMin < eMax)
+	{
+		eMid = (eMin + eMax) / 2;
+		
+		NSComparisonResult cmp = compare(eMid);
+		
+		if (cmp == NSOrderedDescending) // Descending => value is greater than desired range
+			eMax = eMid;
+		else
+			eMin = eMid + 1;
+		
+		loopCount++;
+	}
+	
+	YDBLogVerbose(@"Find range in group(%@) took %lu comparisons", group, (unsigned long)loopCount);
+	
+	return NSMakeRange(sMin, (eMax - sMin));
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Public API - Enumerating
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)enumerateKeysInGroup:(NSString *)group
                   usingBlock:(void (^)(NSString *collection, NSString *key, NSUInteger index, BOOL *stop))block
