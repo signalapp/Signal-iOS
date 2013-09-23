@@ -20,6 +20,5 @@ It has the following features:
 
 <br/>
 
-**[Learn more about the features listed above](https://github.com/yaptv/YapDatabase/wiki/What-is-YapDatabase)**<br/>
 **[See what the API looks like in "hello world" for YapDatabase](https://github.com/yaptv/YapDatabase/wiki/Hello-World)**<br/>
-**[Deep dive by visiting the wiki](https://github.com/yaptv/YapDatabase/wiki)**<br/>
+**[Learn more by visiting the wiki](https://github.com/yaptv/YapDatabase/wiki)**<br/>
