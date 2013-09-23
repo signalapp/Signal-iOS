@@ -800,10 +800,17 @@
 		// Shortcut: Nothing was removed from the database.
 		// So we can simply enumerate over the changes and update the cache inline as needed.
 		
-		[changeset_objectChanges enumerateKeysAndObjectsUsingBlock:^(id key, id object, BOOL *stop) {
+		id yapNull = [YapNull null]; // value == yapNull : setPrimitiveData:forKey: was used
+		
+		[changeset_objectChanges enumerateKeysAndObjectsUsingBlock:^(id key, id newObject, BOOL *stop) {
 			
 			if ([objectCache containsKey:key])
-				[objectCache setObject:object forKey:key];
+			{
+				if (newObject == yapNull)
+					[objectCache removeObjectForKey:key];
+				else
+					[objectCache setObject:newObject forKey:key];
+			}
 		}];
 	}
 	else if (hasObjectChanges || hasRemovedKeys)
@@ -832,13 +839,13 @@
 	
 		[objectCache removeObjectsForKeys:keysToRemove];
 		
-		id yapnull = [YapNull null];
+		id yapNull = [YapNull null]; // value == yapNull : setPrimitiveData:forKey: was used
 		
 		for (id key in keysToUpdate)
 		{
 			id newObject = [changeset_objectChanges objectForKey:key];
 			
-			if (newObject == yapnull) // setPrimitiveDataForKey was used on key
+			if (newObject == yapNull)
 				[objectCache removeObjectForKey:key];
 			else
 				[objectCache setObject:newObject forKey:key];
@@ -858,10 +865,17 @@
 		// Shortcut: Nothing was removed from the database.
 		// So we can simply enumerate over the changes and update the cache inline as needed.
 		
-		[changeset_metadataChanges enumerateKeysAndObjectsUsingBlock:^(id key, id object, BOOL *stop) {
+		id yapNull = [YapNull null]; // value == yapNull : setPrimitiveMetadata:forKey: was used
+		
+		[changeset_metadataChanges enumerateKeysAndObjectsUsingBlock:^(id key, id newMetadata, BOOL *stop) {
 			
 			if ([metadataCache containsKey:key])
-				[metadataCache setObject:object forKey:key];
+			{
+				if (newMetadata == yapNull)
+					[metadataCache removeObjectForKey:key];
+				else
+					[metadataCache setObject:newMetadata forKey:key];
+			}
 		}];
 	}
 	else if (hasMetadataChanges || hasRemovedKeys)
@@ -890,11 +904,16 @@
 		
 		[metadataCache removeObjectsForKeys:keysToRemove];
 		
+		id yapNull = [YapNull null]; // value == yapNull : setPrimitiveMetadata:forKey: was used
+		
 		for (id key in keysToUpdate)
 		{
-			id newObject = [changeset_metadataChanges objectForKey:key];
+			id newMetadata = [changeset_metadataChanges objectForKey:key];
 			
-			[metadataCache setObject:newObject forKey:key];
+			if (newMetadata == yapNull)
+				[metadataCache removeObjectForKey:key];
+			else
+				[metadataCache setObject:newMetadata forKey:key];
 		}
 	}
 }

@@ -974,12 +974,19 @@
 		// Shortcut: Nothing was removed from the database.
 		// So we can simply enumerate over the changes and update the cache inline as needed.
 		
-		[changeset_objectChanges enumerateKeysAndObjectsUsingBlock:^(id key, id object, BOOL *stop) {
+		id yapNull = [YapNull null]; // value == yapNull : setPrimitiveData:forKey: was used
+		
+		[changeset_objectChanges enumerateKeysAndObjectsUsingBlock:^(id key, id newObject, BOOL *stop) {
 			
 			__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
 			
 			if ([objectCache containsKey:cacheKey])
-				[objectCache setObject:object forKey:cacheKey];
+			{
+				if (newObject == yapNull)
+					[objectCache removeObjectForKey:cacheKey];
+				else
+					[objectCache setObject:newObject forKey:cacheKey];
+			}
 		}];
 	}
 	else if (hasObjectChanges || hasRemovedKeys || hasRemovedCollections)
@@ -1000,11 +1007,11 @@
 			
 			__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
 			
-			if ([changeset_objectChanges objectForKey:key])
+			if ([changeset_objectChanges objectForKey:cacheKey])
 			{
 				[keysToUpdate addObject:key];
 			}
-			else if ([changeset_removedKeys containsObject:key] ||
+			else if ([changeset_removedKeys containsObject:cacheKey] ||
 					 [changeset_removedCollections containsObject:cacheKey.collection] || changeset_allKeysRemoved)
 			{
 				[keysToRemove addObject:key];
@@ -1013,16 +1020,16 @@
 		
 		[objectCache removeObjectsForKeys:keysToRemove];
 		
-		id yapnull = [YapNull null];
+		id yapNull = [YapNull null]; // value == yapNull : setPrimitiveData:forKey: was used
 		
-		for (id key in keysToUpdate)
+		for (YapCollectionKey *cacheKey in keysToUpdate)
 		{
-			id newObject = [changeset_objectChanges objectForKey:key];
+			id newObject = [changeset_objectChanges objectForKey:cacheKey];
 			
-			if (newObject == yapnull) // setPrimitiveDataForKey was used on key
-				[objectCache removeObjectForKey:key];
+			if (newObject == yapNull)
+				[objectCache removeObjectForKey:cacheKey];
 			else
-				[objectCache setObject:newObject forKey:key];
+				[objectCache setObject:newObject forKey:cacheKey];
 		}
 	}
 	
@@ -1039,12 +1046,19 @@
 		// Shortcut: Nothing was removed from the database.
 		// So we can simply enumerate over the changes and update the cache inline as needed.
 		
-		[changeset_metadataChanges enumerateKeysAndObjectsUsingBlock:^(id key, id object, BOOL *stop) {
+		id yapNull = [YapNull null]; // value == yapNull : setPrimitiveMetadata:forKey: was used
+		
+		[changeset_metadataChanges enumerateKeysAndObjectsUsingBlock:^(id key, id newMetadata, BOOL *stop) {
 			
 			__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
 			
 			if ([metadataCache containsKey:cacheKey])
-				[metadataCache setObject:object forKey:cacheKey];
+			{
+				if (newMetadata == yapNull)
+					[metadataCache removeObjectForKey:cacheKey];
+				else
+					[metadataCache setObject:newMetadata forKey:cacheKey];
+			}
 		}];
 	}
 	else if (hasMetadataChanges || hasRemovedKeys || hasRemovedCollections)
@@ -1065,11 +1079,11 @@
 			
 			__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
 			
-			if ([changeset_metadataChanges objectForKey:key])
+			if ([changeset_metadataChanges objectForKey:cacheKey])
 			{
 				[keysToUpdate addObject:key];
 			}
-			else if ([changeset_removedKeys containsObject:key] ||
+			else if ([changeset_removedKeys containsObject:cacheKey] ||
 					 [changeset_removedCollections containsObject:cacheKey.collection] || changeset_allKeysRemoved)
 			{
 				[keysToRemove addObject:key];
@@ -1078,11 +1092,16 @@
 		
 		[metadataCache removeObjectsForKeys:keysToRemove];
 		
-		for (id key in keysToUpdate)
+		id yapNull = [YapNull null]; // value == yapNull : setPrimitiveMetadata:forKey: was used
+		
+		for (YapCollectionKey *cacheKey in keysToUpdate)
 		{
-			id newObject = [changeset_metadataChanges objectForKey:key];
+			id newMetadata = [changeset_metadataChanges objectForKey:cacheKey];
 			
-			[metadataCache setObject:newObject forKey:key];
+			if (newMetadata == yapNull)
+				[metadataCache removeObjectForKey:cacheKey];
+			else
+				[metadataCache setObject:newMetadata forKey:cacheKey];
 		}
 	}
 }
