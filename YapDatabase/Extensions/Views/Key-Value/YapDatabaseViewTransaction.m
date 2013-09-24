@@ -2607,6 +2607,60 @@
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
+- (void)handleTouchObjectForKey:(NSString *)key withRowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	// Almost the same as touchRowForKey:
+	
+	NSString *pageKey = [self pageKeyForRowid:rowid];
+	if (pageKey)
+	{
+		NSString *group = [self groupForPageKey:pageKey];
+		NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
+		
+		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		
+		[viewConnection->changes addObject:
+		    [YapDatabaseViewRowChange updateKey:key changes:flags inGroup:group atIndex:index]];
+	}
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)handleTouchMetadataForKey:(NSString *)key withRowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	// Almost the same as touchMetadataForKey:
+	
+	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
+	
+	if (view->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata ||
+	    view->groupingBlockType == YapDatabaseViewBlockTypeWithRow      ||
+	    view->sortingBlockType  == YapDatabaseViewBlockTypeWithMetadata ||
+	    view->sortingBlockType  == YapDatabaseViewBlockTypeWithRow       )
+	{
+		NSString *pageKey = [self pageKeyForRowid:rowid];
+		if (pageKey)
+		{
+			NSString *group = [self groupForPageKey:pageKey];
+			NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
+			
+			int flags = YapDatabaseViewChangedMetadata;
+			
+			[viewConnection->changes addObject:
+			    [YapDatabaseViewRowChange updateKey:key changes:flags inGroup:group atIndex:index]];
+		}
+	}
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
 - (void)handleRemoveObjectForKey:(NSString *)key withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();

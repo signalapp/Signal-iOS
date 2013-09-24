@@ -254,7 +254,9 @@ extern NSString *const YapDatabaseNotificationKey;
 
 - (NSArray *)internalChangesetKeys;
 - (NSArray *)externalChangesetKeys;
-- (void)getInternalChangeset:(NSMutableDictionary **)internalPtr externalChangeset:(NSMutableDictionary **)externalPtr;
+- (void)getInternalChangeset:(NSMutableDictionary **)internalPtr
+           externalChangeset:(NSMutableDictionary **)externalPtr
+              hasDiskChanges:(BOOL *)hasDiskChangesPtr;
 - (void)processChangeset:(NSDictionary *)changeset;
 
 - (void)noteCommittedChanges:(NSDictionary *)changeset;

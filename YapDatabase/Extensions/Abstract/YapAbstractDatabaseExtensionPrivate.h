@@ -165,25 +165,25 @@
  * 
  * If needed, "return" an external changeset to be embedded within YapDatabaseModifiedNotification.
  *
- * Important Edge Case Concerning Special Functionality:
+ * If any changes to the database file were made made during this transaction,
+ * the hasDiskChangesPtr should be set to YES.
  *
  * For the most part, extensions update themselves in relation to changes within the main database table.
  * However, sometimes extensions may update the database file independently. For example, the FullTextSearch extension
  * has a method that optimizes the search tables by merging a bunch of different internal b-trees.
  * If an extension makes changes to the database file outside the context of the normal changes to the main database
- * table (such as the optimize command), then it MUST return a non-nil internal changeset dictionary anytime
- * it does make such changes that affect the database file.
- * Even if this means just returning an empty internal changeset dictionary.
- * This is because the internal changesets (from the core and from extensions) are consulted to see if any changes
- * were made to the database file. And the architecture executes differently if they are all nil vs if any are non-nil.
+ * table (such as the optimize command), then it MUST be sure to set the hasDiskChangesPtr to YES.
+ * This is because the internal architecture has optimizations if no disk changes occurred.
 **/
-- (void)getInternalChangeset:(NSMutableDictionary **)internalPtr externalChangeset:(NSMutableDictionary **)externalPtr;
+- (void)getInternalChangeset:(NSMutableDictionary **)internalPtr
+           externalChangeset:(NSMutableDictionary **)externalPtr
+              hasDiskChanges:(BOOL *)hasDiskChangesPtr;
 
 /**
  * Subclasses MUST implement this method.
  *
  * This method processes an internal changeset from another connection.
- * The internal changeset was generated from getInternalChangeset:externalChangeset: on a sibling connection.
+ * The internal changeset was generated from getInternalChangeset:externalChangeset:: on a sibling connection.
  * 
  * This is one of the primary methods within the architecture to keep multiple connections up-to-date
  * as they move from one snapshot to the next. It is the responsibility of this method to process
@@ -379,6 +379,8 @@
 - (void)handleInsertObject:(id)object forKey:(NSString *)key withMetadata:(id)metadata rowid:(int64_t)rowid;
 - (void)handleUpdateObject:(id)object forKey:(NSString *)key withMetadata:(id)metadata rowid:(int64_t)rowid;
 - (void)handleUpdateMetadata:(id)metadata forKey:(NSString *)key withRowid:(int64_t)rowid;
+- (void)handleTouchObjectForKey:(NSString *)key withRowid:(int64_t)rowid;
+- (void)handleTouchMetadataForKey:(NSString *)key withRowid:(int64_t)rowid;
 - (void)handleRemoveObjectForKey:(NSString *)key withRowid:(int64_t)rowid;
 - (void)handleRemoveObjectsForKeys:(NSArray *)keys withRowids:(NSArray *)rowids;
 - (void)handleRemoveAllObjects;
@@ -408,6 +410,9 @@
                       forKey:(NSString *)key
                 inCollection:(NSString *)collection
                    withRowid:(int64_t)rowid;
+
+- (void)handleTouchObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
+- (void)handleTouchMetadataForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
 
 - (void)handleRemoveObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
 - (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids;

@@ -704,6 +704,24 @@
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
+- (void)handleTouchObjectForKey:(NSString *)key withRowid:(int64_t)rowid
+{
+	// Nothing to do for this extension
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)handleTouchMetadataForKey:(NSString *)key withRowid:(int64_t)rowid
+{
+	// Nothing to do for this extension
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
 - (void)handleRemoveObjectsForKeys:(NSArray *)keys withRowids:(NSArray *)rowids;
 {
 	YDBLogAutoTrace();

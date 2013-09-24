@@ -4,6 +4,7 @@
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
 #import "YapCache.h"
+#import "YapTouch.h"
 #import "YapNull.h"
 
 #if ! __has_feature(objc_arc)
@@ -2132,6 +2133,7 @@
 	
 	if (!set) return;
 	
+	connection->hasDiskChanges = YES;
 	isMutated = YES;  // mutation during enumeration protection
 	
 	if (found)
@@ -2181,6 +2183,7 @@
 	
 	if (!updated) return;
 	
+	connection->hasDiskChanges = YES;
 	isMutated = YES;  // mutation during enumeration protection
 	key = [key copy]; // mutable string protection
 	
@@ -2345,6 +2348,7 @@
 	
 	if (!set) return;
 	
+	connection->hasDiskChanges = YES;
 	isMutated = YES;  // mutation during enumeration protection
 	key = [key copy]; // mutable string protection
 	
@@ -2414,6 +2418,7 @@
 	
 	if (!updated) return;
 	
+	connection->hasDiskChanges = YES;
 	isMutated = YES;  // mutation during enumeration protection
 	key = [key copy]; // mutable string protection
 	
@@ -2431,6 +2436,49 @@
 		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_KeyValue> extTransaction = extTransactionObj;
 		
 		[extTransaction handleUpdateMetadata:metadata forKey:key withRowid:rowid];
+	}];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Touch
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)touchObjectForKey:(NSString *)key
+{
+	int64_t rowid = 0;
+	if (![self getRowid:&rowid forKey:key]) return;
+	
+	key = [key copy]; // mutable string protection
+	
+	if ([connection->objectChanges objectForKey:key] == nil)
+		[connection->objectChanges setObject:[YapTouch touch] forKey:key];
+	
+	if ([connection->metadataChanges objectForKey:key] == nil)
+		[connection->metadataChanges setObject:[YapTouch touch] forKey:key];
+	
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
+		
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_KeyValue> extTransaction = extTransactionObj;
+		
+		[extTransaction handleTouchObjectForKey:key withRowid:rowid];
+	}];
+}
+
+- (void)touchMetadataForKey:(NSString *)key
+{
+	int64_t rowid = 0;
+	if (![self getRowid:&rowid forKey:key]) return;
+	
+	key = [key copy]; // mutable string protection
+	
+	if ([connection->metadataChanges objectForKey:key] == nil)
+		[connection->metadataChanges setObject:[YapTouch touch] forKey:key];
+	
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
+		
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_KeyValue> extTransaction = extTransactionObj;
+		
+		[extTransaction handleTouchMetadataForKey:key withRowid:rowid];
 	}];
 }
 
@@ -2464,6 +2512,7 @@
 	
 	if (!removed) return;
 	
+	connection->hasDiskChanges = YES;
 	isMutated = YES;  // mutation during enumeration protection
 	key = [key copy]; // mutable string protection
 	
@@ -2634,6 +2683,7 @@
 			sqlite3_finalize(statement);
 			statement = NULL;
 			
+			connection->hasDiskChanges = YES;
 			isMutated = YES; // mutation during enumeration protection
 			
 			[connection->objectCache removeObjectsForKeys:foundKeys];
@@ -2674,6 +2724,7 @@
 	
 	sqlite3_reset(statement);
 	
+	connection->hasDiskChanges = YES;
 	isMutated = YES; // mutation during enumeration protection
 	
 	[connection->objectCache removeAllObjects];

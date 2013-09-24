@@ -5,6 +5,7 @@
 #import "YapAbstractDatabaseExtensionPrivate.h"
 
 #import "YapCache.h"
+#import "YapTouch.h"
 #import "YapNull.h"
 #import "YapSet.h"
 
@@ -637,6 +638,7 @@
 		removedKeys = [[NSMutableSet alloc] init];
 	
 	allKeysRemoved = NO;
+	hasDiskChanges = NO;
 }
 
 /**
@@ -707,11 +709,15 @@
 **/
 - (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
            externalChangeset:(NSMutableDictionary **)externalChangesetPtr
+              hasDiskChanges:(BOOL *)hasDiskChangesPtr
 {
 	NSMutableDictionary *internalChangeset = nil;
 	NSMutableDictionary *externalChangeset = nil;
+	BOOL extHasDiskChanges = NO;
 	
-	[super getInternalChangeset:&internalChangeset externalChangeset:&externalChangeset];
+	[super getInternalChangeset:&internalChangeset
+	          externalChangeset:&externalChangeset
+	             hasDiskChanges:&extHasDiskChanges];
 	
 	// Reserved keys:
 	//
@@ -760,6 +766,7 @@
 	
 	*internalChangesetPtr = internalChangeset;
 	*externalChangesetPtr = externalChangeset;
+	*hasDiskChangesPtr = extHasDiskChanges || hasDiskChanges;
 }
 
 /**
@@ -800,7 +807,8 @@
 		// Shortcut: Nothing was removed from the database.
 		// So we can simply enumerate over the changes and update the cache inline as needed.
 		
-		id yapNull = [YapNull null]; // value == yapNull : setPrimitiveData:forKey: was used
+		id yapNull = [YapNull null];    // value == yapNull  : setPrimitiveData:forKey: was used
+		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
 		[changeset_objectChanges enumerateKeysAndObjectsUsingBlock:^(id key, id newObject, BOOL *stop) {
 			
@@ -808,7 +816,7 @@
 			{
 				if (newObject == yapNull)
 					[objectCache removeObjectForKey:key];
-				else
+				else if (newObject != yapTouch)
 					[objectCache setObject:newObject forKey:key];
 			}
 		}];
@@ -839,15 +847,16 @@
 	
 		[objectCache removeObjectsForKeys:keysToRemove];
 		
-		id yapNull = [YapNull null]; // value == yapNull : setPrimitiveData:forKey: was used
+		id yapNull = [YapNull null];    // value == yapNull  : setPrimitiveData:forKey: was used
+		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
-		for (id key in keysToUpdate)
+		for (NSString *key in keysToUpdate)
 		{
 			id newObject = [changeset_objectChanges objectForKey:key];
 			
 			if (newObject == yapNull)
 				[objectCache removeObjectForKey:key];
-			else
+			else if (newObject != yapTouch)
 				[objectCache setObject:newObject forKey:key];
 		}
 	}
@@ -865,7 +874,8 @@
 		// Shortcut: Nothing was removed from the database.
 		// So we can simply enumerate over the changes and update the cache inline as needed.
 		
-		id yapNull = [YapNull null]; // value == yapNull : setPrimitiveMetadata:forKey: was used
+		id yapNull = [YapNull null];    // value == yapNull  : setPrimitiveMetadata:forKey: was used
+		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
 		[changeset_metadataChanges enumerateKeysAndObjectsUsingBlock:^(id key, id newMetadata, BOOL *stop) {
 			
@@ -873,7 +883,7 @@
 			{
 				if (newMetadata == yapNull)
 					[metadataCache removeObjectForKey:key];
-				else
+				else if (newMetadata != yapTouch)
 					[metadataCache setObject:newMetadata forKey:key];
 			}
 		}];
@@ -904,15 +914,16 @@
 		
 		[metadataCache removeObjectsForKeys:keysToRemove];
 		
-		id yapNull = [YapNull null]; // value == yapNull : setPrimitiveMetadata:forKey: was used
+		id yapNull = [YapNull null];    // value == yapNull  : setPrimitiveMetadata:forKey: was used
+		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
-		for (id key in keysToUpdate)
+		for (NSString *key in keysToUpdate)
 		{
 			id newMetadata = [changeset_metadataChanges objectForKey:key];
 			
 			if (newMetadata == yapNull)
 				[metadataCache removeObjectForKey:key];
-			else
+			else if (newMetadata != yapTouch)
 				[metadataCache setObject:newMetadata forKey:key];
 		}
 	}

@@ -2710,6 +2710,62 @@
  * YapCollectionsDatabase extension hook.
  * This method is invoked by a YapCollectionsDatabaseReadWriteTransaction as a post-operation-hook.
 **/
+- (void)handleTouchObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	// Almost the same as touchRowForKey:inCollection:
+	
+	NSString *pageKey = [self pageKeyForRowid:rowid];
+	if (pageKey)
+	{
+		NSString *group = [self groupForPageKey:pageKey];
+		NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
+		
+		YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		
+		[viewConnection->changes addObject:
+		    [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:index]];
+	}
+}
+
+/**
+ * YapCollectionsDatabase extension hook.
+ * This method is invoked by a YapCollectionsDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)handleTouchMetadataForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	// Almost the same as touchMetadatForKey:inCollection:
+	
+	__unsafe_unretained YapCollectionsDatabaseView *view = viewConnection->view;
+	
+	if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithMetadata ||
+	    view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithRow      ||
+	    view->sortingBlockType  == YapCollectionsDatabaseViewBlockTypeWithMetadata ||
+	    view->sortingBlockType  == YapCollectionsDatabaseViewBlockTypeWithRow       )
+	{
+		NSString *pageKey = [self pageKeyForRowid:rowid];
+		if (pageKey)
+		{
+			NSString *group = [self groupForPageKey:pageKey];
+			NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
+			
+			YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+			int flags = YapDatabaseViewChangedMetadata;
+			
+			[viewConnection->changes addObject:
+			    [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:index]];
+		}
+	}
+}
+
+/**
+ * YapCollectionsDatabase extension hook.
+ * This method is invoked by a YapCollectionsDatabaseReadWriteTransaction as a post-operation-hook.
+**/
 - (void)handleRemoveObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();

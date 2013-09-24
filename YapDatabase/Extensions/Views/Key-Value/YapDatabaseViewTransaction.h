@@ -263,10 +263,12 @@ typedef enum {
  *   Either way, when you add or remove an employee, you want to ensure that the view marks the
  *   affected department as updated so that the corresponding cell will properly redraw itself.
  *
- * So the idea is to mark certain items as updated so that the changeset
- * for the view will properly reflect a change to the corresponding index.
+ * So the idea is to mark certain items as "updated" (in terms of this view) so that
+ * the changeset for the view will properly reflect a change to the corresponding index.
+ * But you don't actually need to update the item on disk.
+ * This is exactly what "touch" does.
  *
- * "Touching" an item has very minimal overhead.
+ * Touching an item has very minimal overhead.
  * It doesn't cause the groupingBlock or sortingBlock to be invoked,
  * and it doesn't cause any writes to the database.
  *

@@ -275,14 +275,17 @@ static NSString *const key_changes                  = @"changes";
 
 - (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
            externalChangeset:(NSMutableDictionary **)externalChangesetPtr
+              hasDiskChanges:(BOOL *)hasDiskChangesPtr
 {
 	YDBLogAutoTrace();
 	
 	NSMutableDictionary *internalChangeset = nil;
 	NSMutableDictionary *externalChangeset = nil;
+	BOOL hasDiskChanges = NO;
 	
 	if ([dirtyMaps count] || [dirtyPages count] || [dirtyLinks count] || reset)
 	{
+		hasDiskChanges = YES;
 		internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
 		
 		if ([dirtyMaps count] > 0)
@@ -319,6 +322,7 @@ static NSString *const key_changes                  = @"changes";
 	
 	*internalChangesetPtr = internalChangeset;
 	*externalChangesetPtr = externalChangeset;
+	*hasDiskChangesPtr = hasDiskChanges;
 }
 
 - (void)processChangeset:(NSDictionary *)changeset

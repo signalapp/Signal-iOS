@@ -311,6 +311,41 @@
 **/
 - (void)setMetadata:(id)metadata forKey:(NSString *)key;
 
+#pragma mark Touch
+
+/**
+ * You can touch an object if you want to mark it as updated without actually writing any changes to disk.
+ * 
+ * For example:
+ * 
+ *   You have a BNBook object in your database.
+ *   One of the properties of the book object is a URL pointing to an image for the front cover of the book.
+ *   This image gets changed. Thus the UI representation of the book needs to be updated to reflect the updated image.
+ *   You realize that all your views are already listening for YapDatabaseModified notifications,
+ *   so if you update the object in the database, all your views are already wired to update the UI appropriately.
+ *   However, the actual object itself didn't change. So while there technically isn't any reason to
+ *   update the object on disk, doing so would be the most efficient way to keep the UI up-to-date.
+ *
+ * And this is exactly what the touch methods were designed for.
+ * It won't actually cause the object to get rewritten to disk.
+ * However, it will mark the object as "updated" within the YapDatabaseModified notification,
+ * so any UI components listening for changes will see this object as updated, and can update as appropriate.
+ * 
+ * The touchObjectForKey: method is similar to calling setObject:forKey:withMetadata:,
+ * and passing the object & metadata that already exists for the key. But without the overhead of fetching the items,
+ * or re-writing the items to disk.
+ *
+ * The touchMetadataForKey: method is similar to calling setMetadata:forKey:,
+ * and passing the metadata that already exists for the key. But without the overhead of fetching the metadata,
+ * or re-writing the metadata to disk.
+ * 
+ * Note: It is safe to touch objects during enumeration.
+ * Normally, altering the database while enumerating it will result in an exception (just like altering an array
+ * while enumerating it). However, it's safe to touch objects during enumeration.
+**/
+- (void)touchObjectForKey:(NSString *)key;
+- (void)touchMetadataForKey:(NSString *)key;
+
 #pragma mark Remove
 
 /**

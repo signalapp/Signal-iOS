@@ -5,6 +5,7 @@
 #import "YapDatabaseLogging.h"
 #import "YapCache.h"
 #import "YapCollectionKey.h"
+#import "YapTouch.h"
 #import "YapNull.h"
 
 #if ! __has_feature(objc_arc)
@@ -3029,6 +3030,7 @@
 	
 	if (!set) return;
 	
+	connection->hasDiskChanges = YES;
 	isMutated = YES;  // mutation during enumeration protection
 	
 	if (found)
@@ -3086,6 +3088,7 @@
 	
 	if (!updated) return;
 	
+	connection->hasDiskChanges = YES;
 	isMutated = YES;  // mutation during enumeration protection
 	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
@@ -3261,6 +3264,7 @@
 	
 	if (!set) return;
 	
+	connection->hasDiskChanges = YES;
 	isMutated = YES;  // mutation during enumeration protection
 	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
@@ -3341,6 +3345,7 @@
 	
 	if (!updated) return;
 	
+	connection->hasDiskChanges = YES;
 	isMutated = YES;  // mutation during enumeration protection
 	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
@@ -3362,6 +3367,59 @@
 		                              forKey:cacheKey.key        // mutable string protection
 		                        inCollection:cacheKey.collection // mutable string protection
 		                           withRowid:rowid];
+	}];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Touch
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)touchObjectForKey:(NSString *)key inCollection:(NSString *)collection
+{
+	if (collection == nil) collection = @"";
+	
+	int64_t rowid = 0;
+	if (![self getRowid:&rowid forKey:key inCollection:collection]) return;
+	
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	
+	if ([connection->objectCache objectForKey:cacheKey] == nil)
+		[connection->objectCache setObject:[YapTouch touch] forKey:cacheKey];
+	
+	if ([connection->metadataCache objectForKey:cacheKey] == nil)
+		[connection->metadataCache setObject:[YapTouch touch] forKey:cacheKey];
+	
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
+		
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue>
+		    extTransaction = extTransactionObj;
+
+		[extTransaction handleTouchObjectForKey:cacheKey.key        // mutable string protection
+			                       inCollection:cacheKey.collection // mutable string protection
+			                       withRowid:rowid];
+	}];
+}
+
+- (void)touchMetadataForKey:(NSString *)key inCollection:(NSString *)collection
+{
+	if (collection == nil) collection = @"";
+	
+	int64_t rowid = 0;
+	if (![self getRowid:&rowid forKey:key inCollection:collection]) return;
+	
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	
+	if ([connection->metadataCache objectForKey:cacheKey] == nil)
+		[connection->metadataCache setObject:[YapTouch touch] forKey:cacheKey];
+	
+	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
+		
+		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue>
+		    extTransaction = extTransactionObj;
+
+		[extTransaction handleTouchMetadataForKey:cacheKey.key        // mutable string protection
+			                         inCollection:cacheKey.collection // mutable string protection
+			                            withRowid:rowid];
 	}];
 }
 
@@ -3398,6 +3456,7 @@
 	
 	if (!removed) return;
 	
+	connection->hasDiskChanges = YES;
 	isMutated = YES;  // mutation during enumeration protection
 	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
@@ -3579,6 +3638,7 @@
 			sqlite3_finalize(statement);
 			statement = NULL;
 			
+			connection->hasDiskChanges = YES;
 			isMutated = YES;  // mutation during enumeration protection
 			
 			for (NSString *key in foundKeys)
@@ -3666,6 +3726,7 @@
 		sqlite3_reset(statement);
 		FreeYapDatabaseString(&_collection);
 		
+		connection->hasDiskChanges = YES;
 		isMutated = YES;  // mutation during enumeration protection
 		
 		return;
@@ -3796,6 +3857,7 @@
 			sqlite3_finalize(statement);
 			statement = NULL;
 			
+			connection->hasDiskChanges = YES;
 			isMutated = YES;  // mutation during enumeration protection
 			
 			[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
@@ -3830,6 +3892,7 @@
 	
 	sqlite3_reset(statement);
 	
+	connection->hasDiskChanges = YES;
 	isMutated = YES;  // mutation during enumeration protection
 	
 	[connection->objectCache removeAllObjects];

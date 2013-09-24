@@ -1607,26 +1607,27 @@
 	
 	NSMutableDictionary *changeset = nil;
 	NSMutableDictionary *userInfo = nil;
+	BOOL hasDiskChanges = NO;
 	
-	[self getInternalChangeset:&changeset externalChangeset:&userInfo];
-	if (changeset || userInfo)
+	[self getInternalChangeset:&changeset externalChangeset:&userInfo hasDiskChanges:&hasDiskChanges];
+	if (changeset || userInfo || hasDiskChanges)
 	{
-		// If a changeset exists, then the database file was modified.
+		// If hasDiskChanges is YES, then the database file was modified.
 		// In this case, we're sure to write the incremented snapshot number to the database.
 		//
-		// If the changeset is nil, but the userInfo exists, then the database file was not modified.
-		// However, something was "touched" that is being broadcast to the UI.
+		// If hasDiskChanges is NO, then the database file was not modified.
+		// However, something was "touched" or an in-memory extension was changed.
 		
-		if (changeset)
+		if (hasDiskChanges)
 			snapshot = [self incrementSnapshotInDatabase];
 		else
 			snapshot++;
 		
 		if (changeset == nil)
-			changeset = [NSMutableDictionary dictionaryWithCapacity:2];
+			changeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
 		
 		if (userInfo == nil)
-			userInfo = [NSMutableDictionary dictionaryWithCapacity:3];
+			userInfo = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
 		
 		[changeset setObject:@(snapshot) forKey:YapDatabaseSnapshotKey];
 		[userInfo setObject:@(snapshot) forKey:YapDatabaseSnapshotKey];
@@ -2058,7 +2059,10 @@
 **/
 - (NSArray *)externalChangesetKeys
 {
-	return @[ YapDatabaseSnapshotKey, YapDatabaseConnectionKey, YapDatabaseExtensionsKey, YapDatabaseCustomKey ];
+	return @[ YapDatabaseSnapshotKey,
+	          YapDatabaseConnectionKey,
+	          YapDatabaseExtensionsKey,
+	          YapDatabaseCustomKey ];
 }
 
 /**
@@ -2076,12 +2080,14 @@
 **/
 - (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
            externalChangeset:(NSMutableDictionary **)externalChangesetPtr
+              hasDiskChanges:(BOOL *)hasDiskChangesPtr
 {
 	// Use existing extensions (extensions ivar, not [self extensions]).
 	// There's no need to create any new extConnections at this point.
 	
 	__block NSMutableDictionary *internalChangeset_extensions = nil;
 	__block NSMutableDictionary *externalChangeset_extensions = nil;
+	__block BOOL hasDiskChanges = NO;
 	
 	[extensions enumerateKeysAndObjectsUsingBlock:^(id extName, id extConnectionObj, BOOL *stop) {
 		
@@ -2089,8 +2095,11 @@
 		
 		NSMutableDictionary *internal = nil;
 		NSMutableDictionary *external = nil;
+		BOOL extHasDiskChanges = NO;
 		
-		[extConnection getInternalChangeset:&internal externalChangeset:&external];
+		[extConnection getInternalChangeset:&internal
+		                  externalChangeset:&external
+		                     hasDiskChanges:&extHasDiskChanges];
 		
 		if (internal)
 		{
@@ -2107,6 +2116,10 @@
 				    [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExtensions];
 			
 			[externalChangeset_extensions setObject:external forKey:extName];
+		}
+		if (extHasDiskChanges)
+		{
+			hasDiskChanges = YES;
 		}
 	}];
 	
@@ -2135,6 +2148,7 @@
 	
 	*internalChangesetPtr = internalChangeset;
 	*externalChangesetPtr = externalChangeset;
+	*hasDiskChangesPtr = hasDiskChanges;
 }
 
 /**
@@ -2145,7 +2159,7 @@
  * 
  * Subclasses must invoke [super processChangeset:changeset] in order to propogate the changeset(s) to the extension(s).
  *
- * @see getInternalChangeset:externalChangeset:
+ * @see getInternalChangeset:externalChangeset:hasDiskChanges:
 **/
 - (void)processChangeset:(NSDictionary *)changeset
 {
