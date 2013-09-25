@@ -82,64 +82,25 @@
 	
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
 	
-	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:nil];
+	YapCollectionsDatabase *database = [[YapCollectionsDatabase alloc] initWithPath:databasePath];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self
 	                                         selector:@selector(yapDatabaseModified:)
 	                                             name:YapDatabaseModifiedNotification
 	                                           object:database];
 	
-	YapDatabaseConnection *databaseConnection = [database newConnection];
-	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
-	
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-	
-	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *key){
+	[[database newConnection] readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
 		
-		return @"";
-	};
-	
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *key1, id obj1, NSString *key2, id obj2){
-		
-		NSString *object1 = (NSString *)obj1;
-		NSString *object2 = (NSString *)obj2;
-		
-		return [object1 compare:object2];
-	};
-	
-	YapDatabaseView *databaseView =
-	    [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                                 groupingBlockType:groupingBlockType
-	                                      sortingBlock:sortingBlock
-	                                  sortingBlockType:sortingBlockType];
-	
-	if (![database registerExtension:databaseView withName:@"order"])
-	{
-		NSLog(@"Failure registering extension");
-	}
-	
-	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-		
-		[transaction setObject:@"value" forKey:@"key"];
+		[transaction setObject:@"value" forKey:@"key" inCollection:nil];
 	}];
 	
-	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+	[[database newConnection] readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
 		
-		[[transaction ext:@"order"] touchObjectForKey:@"key"];
-	}];
-	
-	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		[transaction touchObjectForKey:@"key" inCollection:nil];
 		
-		[[transaction ext:@"order"] enumerateKeysInGroup:@""
-		                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
-			
-			NSLog(@"%lu: %@", (unsigned long)index, key);
-		}];
+		NSDictionary *wtf = @{ @"wtf" : @(YES) };
+		[transaction setCustomObjectForYapDatabaseModifiedNotification:wtf];
 	}];
 	
 	NSLog(@"Debug complete");

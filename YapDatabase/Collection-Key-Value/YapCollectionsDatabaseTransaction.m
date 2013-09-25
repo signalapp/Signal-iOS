@@ -3383,11 +3383,11 @@
 	
 	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
-	if ([connection->objectCache objectForKey:cacheKey] == nil)
-		[connection->objectCache setObject:[YapTouch touch] forKey:cacheKey];
+	if ([connection->objectChanges objectForKey:cacheKey] == nil)
+		[connection->objectChanges setObject:[YapTouch touch] forKey:cacheKey];
 	
-	if ([connection->metadataCache objectForKey:cacheKey] == nil)
-		[connection->metadataCache setObject:[YapTouch touch] forKey:cacheKey];
+	if ([connection->metadataChanges objectForKey:cacheKey] == nil)
+		[connection->metadataChanges setObject:[YapTouch touch] forKey:cacheKey];
 	
 	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
 		
@@ -3409,8 +3409,8 @@
 	
 	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
-	if ([connection->metadataCache objectForKey:cacheKey] == nil)
-		[connection->metadataCache setObject:[YapTouch touch] forKey:cacheKey];
+	if ([connection->metadataChanges objectForKey:cacheKey] == nil)
+		[connection->metadataChanges setObject:[YapTouch touch] forKey:cacheKey];
 	
 	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
 		
