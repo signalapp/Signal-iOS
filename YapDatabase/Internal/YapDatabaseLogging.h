@@ -70,6 +70,24 @@
 #define YapDatabaseLoggingTechnique YapDatabaseLoggingTechnique_Lumberjack
 #endif
 
+/**
+ * CocoaLumberjack has several useful macros and functions.
+ * If not using Lumberjack, we re-define these macros for our own use.
+**/
+
+#if YapDatabaseLoggingTechnique != YapDatabaseLoggingTechnique_Lumberjack
+
+#ifndef THIS_METHOD
+#define THIS_METHOD NSStringFromSelector(_cmd)
+#endif
+
+#ifndef THIS_FILE
+NSString *YDBExtractFileNameWithoutExtension(const char *filePath);
+#define THIS_FILE (YDBExtractFileNameWithoutExtension(__FILE__))
+#endif
+
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #if (YapDatabaseLoggingTechnique == YapDatabaseLoggingTechnique_Lumberjack)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,17 +120,16 @@
 // Logging Enabled.
 // Logging uses plain old NSLog. (slower)
 
-#define YDBLogMaybe(flg, frmt, ...) do{ if(ydbLogLevel & flg) NSLog((frmt), ##__VA_ARGS__); } while(0)
+#define YDBLogMaybe(flg, frmt, ...) \
+    do{ if(ydbLogLevel & flg) NSLog((@"%@: " frmt), THIS_FILE, ##__VA_ARGS__); } while(0)
 
 #define YDBLogError(frmt, ...)    YDBLogMaybe(YDB_LOG_FLAG_ERROR,   frmt, ##__VA_ARGS__)
 #define YDBLogWarn(frmt, ...)     YDBLogMaybe(YDB_LOG_FLAG_WARN,    frmt, ##__VA_ARGS__)
 #define YDBLogInfo(frmt, ...)     YDBLogMaybe(YDB_LOG_FLAG_INFO,    frmt, ##__VA_ARGS__)
 #define YDBLogVerbose(frmt, ...)  YDBLogMaybe(YDB_LOG_FLAG_VERBOSE, frmt, ##__VA_ARGS__)
 
-// Todo: Need to define THIS_FILE and THIS_METHOD
-
-#define YDBLogTrace(frmt, ...) {}
-#define YDBLogAutoTrace()      {}
+#define YDBLogTrace(frmt, ...) YDBLogMaybe(YDB_LOG_FLAG_TRACE, (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
+#define YDBLogAutoTrace()      YDBLogMaybe(YDB_LOG_FLAG_TRACE,  @"%@: %@",     THIS_FILE, THIS_METHOD)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #else

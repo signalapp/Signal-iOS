@@ -102,10 +102,12 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 			
 			result = openConfigCreate();
 			
-			if (result)
+			if (result) {
 				YDBLogInfo(@"Database corruption resolved (name=%@)", [path lastPathComponent]);
-			else
+			}
+			else {
 				YDBLogError(@"Database corruption unresolved (name=%@)", [path lastPathComponent]);
+			}
 		}
 		if (!result)
 		{
@@ -1205,10 +1207,12 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 		
 		if (result != SQLITE_OK)
 		{
-			if (result == SQLITE_BUSY)
+			if (result == SQLITE_BUSY) {
 				YDBLogVerbose(@"sqlite3_wal_checkpoint_v2 returned SQLITE_BUSY");
-			else
+			}
+			else {
 				YDBLogWarn(@"sqlite3_wal_checkpoint_v2 returned error code: %d", result);
+			}
 			
 			return;// from_block
 		}

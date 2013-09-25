@@ -27,6 +27,7 @@
 		DC2C98B017E3C82900F1E04F /* YapDatabaseViewChange.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2C98A317E3C82900F1E04F /* YapDatabaseViewChange.m */; };
 		DC2C98B117E3C82900F1E04F /* YapDatabaseViewMappings.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2C98A517E3C82900F1E04F /* YapDatabaseViewMappings.m */; };
 		DC2C98B217E3C82900F1E04F /* YapDatabaseViewRangeOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2C98A717E3C82900F1E04F /* YapDatabaseViewRangeOptions.m */; };
+		DC3CD8A217F38A67006DECD3 /* YapDatabaseLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3CD8A117F38A67006DECD3 /* YapDatabaseLogging.m */; };
 		DC3D2EBB1673FF6800DFAFAA /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2EAB1673FF6800DFAFAA /* DDAbstractDatabaseLogger.m */; };
 		DC3D2EBD1673FF6800DFAFAA /* DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2EAD1673FF6800DFAFAA /* DDASLLogger.m */; };
 		DC3D2EBF1673FF6800DFAFAA /* DDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2EAF1673FF6800DFAFAA /* DDFileLogger.m */; };
@@ -140,6 +141,7 @@
 		DC2C98A517E3C82900F1E04F /* YapDatabaseViewMappings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseViewMappings.m; sourceTree = "<group>"; };
 		DC2C98A617E3C82900F1E04F /* YapDatabaseViewRangeOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewRangeOptions.h; sourceTree = "<group>"; };
 		DC2C98A717E3C82900F1E04F /* YapDatabaseViewRangeOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseViewRangeOptions.m; sourceTree = "<group>"; };
+		DC3CD8A117F38A67006DECD3 /* YapDatabaseLogging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseLogging.m; sourceTree = "<group>"; };
 		DC3D2EAA1673FF6800DFAFAA /* DDAbstractDatabaseLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDAbstractDatabaseLogger.h; sourceTree = "<group>"; };
 		DC3D2EAB1673FF6800DFAFAA /* DDAbstractDatabaseLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDAbstractDatabaseLogger.m; sourceTree = "<group>"; };
 		DC3D2EAC1673FF6800DFAFAA /* DDASLLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDASLLogger.h; sourceTree = "<group>"; };
@@ -440,6 +442,7 @@
 			children = (
 				DC3D2EE31673FF9500DFAFAA /* YapDatabaseString.h */,
 				DC3D2EDE1673FF9500DFAFAA /* YapDatabaseLogging.h */,
+				DC3CD8A117F38A67006DECD3 /* YapDatabaseLogging.m */,
 				DC3D2EDF1673FF9500DFAFAA /* YapDatabaseManager.h */,
 				DC3D2EE01673FF9500DFAFAA /* YapDatabaseManager.m */,
 				DC3D2EDC1673FF9500DFAFAA /* YapDatabaseConnectionState.h */,
@@ -869,6 +872,7 @@
 				DC3D2F0B1673FF9500DFAFAA /* YapDatabaseManager.m in Sources */,
 				DC3D2F0F1673FF9500DFAFAA /* YapDatabase.m in Sources */,
 				DC3D2F111673FF9500DFAFAA /* YapDatabaseConnection.m in Sources */,
+				DC3CD8A217F38A67006DECD3 /* YapDatabaseLogging.m in Sources */,
 				DC2C98AA17E3C82900F1E04F /* YapCollectionsDatabaseViewTransaction.m in Sources */,
 				DC2C98AF17E3C82900F1E04F /* YapDatabaseViewTransaction.m in Sources */,
 				DC3D2F151673FF9500DFAFAA /* YapDatabaseTransaction.m in Sources */,

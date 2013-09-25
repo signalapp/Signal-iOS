@@ -26,10 +26,13 @@
 	[DDLog addLogger:[DDTTYLogger sharedInstance]];
 	
 	[[DDTTYLogger sharedInstance] setColorsEnabled:YES];
+	
+#if YapDatabaseLoggingTechnique == YapDatabaseLoggingTechnique_Lumberjack
 	[[DDTTYLogger sharedInstance] setForegroundColor:[UIColor grayColor]
 	                                 backgroundColor:nil
 	                                         forFlag:YDB_LOG_FLAG_TRACE
 	                                         context:YDBLogContext];
+#endif
 	
 	double delayInSeconds = 2.0;
 	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
