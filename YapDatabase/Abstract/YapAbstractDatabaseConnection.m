@@ -183,13 +183,18 @@
 	YDBLogVerbose(@"Dealloc <YapDatabaseConnection %p: databaseName=%@>",
 				  self, [abstractDatabase.databasePath lastPathComponent]);
 	
-	dispatch_sync(connectionQueue, ^{ @autoreleasepool {
+	dispatch_block_t block = ^{ @autoreleasepool {
 		
 		if (longLivedReadTransaction) {
 			[self postReadTransaction:longLivedReadTransaction];
 			longLivedReadTransaction = nil;
 		}
-	}});
+	}};
+	
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+		block();
+	else
+		dispatch_sync(connectionQueue, block);
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
