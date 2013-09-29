@@ -316,7 +316,7 @@
 	// We use SQLITE_OPEN_NOMUTEX to use the multi-thread threading mode,
 	// as we will be serializing access to the connection externally.
 	
-	int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX;
+	int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE;
 	
 	int status = sqlite3_open_v2([databasePath UTF8String], &db, flags, NULL);
 	if (status != SQLITE_OK)
