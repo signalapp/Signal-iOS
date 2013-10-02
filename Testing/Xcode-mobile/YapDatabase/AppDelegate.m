@@ -17,8 +17,8 @@
 
 @implementation AppDelegate
 {
-	YapDatabase *otfDatabase;
-	YapDatabaseConnection *otfDatabaseConnection;
+	YapDatabase *database;
+	YapDatabaseConnection *databaseConnection;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -86,27 +86,26 @@
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
 	
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:nil];
-	YapCollectionsDatabase *database = [[YapCollectionsDatabase alloc] initWithPath:databasePath];
 	
-	[[NSNotificationCenter defaultCenter] addObserver:self
-	                                         selector:@selector(yapDatabaseModified:)
-	                                             name:YapDatabaseModifiedNotification
-	                                           object:database];
+	database = [[YapDatabase alloc] initWithPath:databasePath];
+//	database.connectionPoolLifetime = 15;
 	
-	[[database newConnection] readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
+	databaseConnection = [database newConnection];
+	
+	[[database newConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[transaction setObject:@"value" forKey:@"key" inCollection:nil];
+		[transaction setObject:@"value" forKey:@"key"];
 	}];
 	
-	[[database newConnection] readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
+	[NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(debugTimer:) userInfo:nil repeats:YES];
+}
+
+- (void)debugTimer:(NSTimer *)timer
+{
+	[[database newConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[transaction touchObjectForKey:@"key" inCollection:nil];
-		
-		NSDictionary *wtf = @{ @"wtf" : @(YES) };
-		[transaction setCustomObjectForYapDatabaseModifiedNotification:wtf];
+		[transaction setObject:@"value" forKey:@"key"];
 	}];
-	
-	NSLog(@"Debug complete");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,15 +118,15 @@
 	
 //	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	
-	otfDatabase = [[YapDatabase alloc] initWithPath:databasePath];
-	otfDatabaseConnection = [otfDatabase newConnection];
+	database = [[YapDatabase alloc] initWithPath:databasePath];
+	databaseConnection = [database newConnection];
 	
 	[self printDatabaseCount];
 	
 	[self registerMainView];
 	[self printMainViewCount];
 	
-	[otfDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
 		NSUInteger count = 5;
 		NSLog(@"Adding %lu items...", (unsigned long)count);
@@ -177,7 +176,7 @@
 	                                      sortingBlock:sortingBlock
 	                                  sortingBlockType:sortingBlockType];
 	
-	if ([otfDatabase registerExtension:databaseView withName:@"main"])
+	if ([database registerExtension:databaseView withName:@"main"])
 		NSLog(@"Registered mainView");
 	else
 		NSLog(@"ERROR registering mainView !");
@@ -211,7 +210,7 @@
 	                                      sortingBlock:sortingBlock
 	                                  sortingBlockType:sortingBlockType];
 	
-	if ([otfDatabase registerExtension:databaseView withName:@"on-the-fly"])
+	if ([database registerExtension:databaseView withName:@"on-the-fly"])
 		NSLog(@"Registered onTheFlyView");
 	else
 		NSLog(@"ERROR registering onTheFlyView !");
@@ -219,7 +218,7 @@
 
 - (void)printDatabaseCount
 {
-	[otfDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		NSUInteger count = [transaction numberOfKeys];
 		
@@ -229,7 +228,7 @@
 
 - (void)printMainViewCount
 {
-	[otfDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		NSUInteger count = [[transaction ext:@"main"] numberOfKeysInGroup:@""];
 		
@@ -239,7 +238,7 @@
 
 - (void)printOnTheFlyViewCount
 {
-	[otfDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		NSUInteger count = [[transaction ext:@"on-the-fly"] numberOfKeysInGroup:@""];
 		

@@ -696,7 +696,7 @@ static NSString *const key_changes                  = @"changes";
 	if (pageTable_getDataForPageKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		    @"SELECT \"data\" FROM \"%@\" WHERE \"pageKey\" = ? ;", [view pageTableName]];
+		    @"SELECT \"data\" FROM \"%@\" WHERE \"pageKey\" = ?;", [view pageTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		

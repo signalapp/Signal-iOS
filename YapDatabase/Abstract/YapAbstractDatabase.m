@@ -43,6 +43,13 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 **/
 #define YAP_DATABASE_CURRENT_VERION 3
 
+/**
+ * Default values
+**/
+#define DEFAULT_MAX_CONNECTION_POOL_COUNT 5    // connections
+#define DEFAULT_CONNECTION_POOL_LIFETIME  90.0 // seconds
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,14 +121,18 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 			return nil;
 		}
 		
-		checkpointQueue = dispatch_queue_create("YapDatabase-Checkpoint", NULL);
-		snapshotQueue   = dispatch_queue_create("YapDatabase-Snapshot", NULL);
-		writeQueue      = dispatch_queue_create("YapDatabase-Write", NULL);
+		connectionPoolQueue = dispatch_queue_create("YapDatabase-ConnectionPool", NULL);
+		checkpointQueue     = dispatch_queue_create("YapDatabase-Checkpoint", NULL);
+		snapshotQueue       = dispatch_queue_create("YapDatabase-Snapshot", NULL);
+		writeQueue          = dispatch_queue_create("YapDatabase-Write", NULL);
 		
 		changesets = [[NSMutableArray alloc] init];
 		connectionStates = [[NSMutableArray alloc] init];
 		
 		registeredExtensions = [[NSDictionary alloc] init];
+		
+		maxConnectionPoolCount = DEFAULT_MAX_CONNECTION_POOL_COUNT;
+		connectionPoolLifetime = DEFAULT_CONNECTION_POOL_LIFETIME;
 		
 		// Mark the queues so we can identify them.
 		// There are several methods whose use is restricted to within a certain queue.
@@ -146,6 +157,23 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 {
 	YDBLogVerbose(@"Dealloc <%@ %p: databaseName=%@>", [self class], self, [databasePath lastPathComponent]);
 	
+	while ([connectionPoolValues count] > 0)
+	{
+		sqlite3 *aDb = (sqlite3 *)[[connectionPoolValues objectAtIndex:0] pointerValue];
+		
+		int status = sqlite3_close(aDb);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error in sqlite_close: %d %s", status, sqlite3_errmsg(aDb));
+		}
+		
+		[connectionPoolValues removeObjectAtIndex:0];
+		[connectionPoolDates removeObjectAtIndex:0];
+	}
+	
+	if (connectionPoolTimer)
+		dispatch_source_cancel(connectionPoolTimer);
+	
 	if (db) {
 		sqlite3_close(db);
 		db = NULL;
@@ -160,6 +188,8 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 		dispatch_release(writeQueue);
 	if (checkpointQueue)
 		dispatch_release(checkpointQueue);
+	if (connectionPoolQueue)
+		dispatch_release(connectionPoolQueue);
 #endif
 }
 
@@ -592,7 +622,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	int status;
 	sqlite3_stmt *statement;
 	
-	char *stmt = "SELECT DISTINCT \"extension\" FROM \"yap2\" ;";
+	char *stmt = "SELECT DISTINCT \"extension\" FROM \"yap2\";";
 	
 	NSMutableArray *extensionNames = [NSMutableArray array];
 	
@@ -709,6 +739,235 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 		block();
 	else
 		dispatch_sync(snapshotQueue, block);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Pooling
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSUInteger)maxConnectionPoolCount
+{
+	__block NSUInteger count = 0;
+	
+	dispatch_sync(connectionPoolQueue, ^{
+		
+		count = maxConnectionPoolCount;
+	});
+	
+	return count;
+}
+
+- (void)setMaxConnectionPoolCount:(NSUInteger)count
+{
+	dispatch_sync(connectionPoolQueue, ^{
+		
+		// Update ivar
+		maxConnectionPoolCount = count;
+		
+		// Immediately drop any excess connections
+		if ([connectionPoolValues count] > maxConnectionPoolCount)
+		{
+			do
+			{
+				sqlite3 *aDb = (sqlite3 *)[[connectionPoolValues objectAtIndex:0] pointerValue];
+				
+				int status = sqlite3_close(aDb);
+				if (status != SQLITE_OK)
+				{
+					YDBLogError(@"Error in sqlite_close: %d %s", status, sqlite3_errmsg(aDb));
+				}
+				
+				[connectionPoolValues removeObjectAtIndex:0];
+				[connectionPoolDates removeObjectAtIndex:0];
+				
+			} while ([connectionPoolValues count] > maxConnectionPoolCount);
+			
+			[self resetConnectionPoolTimer];
+		}
+	});
+}
+
+- (NSTimeInterval)connectionPoolLifetime
+{
+	__block NSTimeInterval lifetime = 0;
+	
+	dispatch_sync(connectionPoolQueue, ^{
+		
+		lifetime = connectionPoolLifetime;
+	});
+	
+	return lifetime;
+}
+
+- (void)setConnectionPoolLifetime:(NSTimeInterval)lifetime
+{
+	dispatch_sync(connectionPoolQueue, ^{
+		
+		// Update ivar
+		connectionPoolLifetime = lifetime;
+		
+		// Update timer (if needed)
+		[self resetConnectionPoolTimer];
+	});
+}
+
+/**
+ * Adds the given connection to the connection pool if possible.
+ * 
+ * Returns YES if the instance was added to the pool.
+ * If so, the YapAbstractDatabase must not close the instance.
+ * 
+ * Returns NO if the instance was not added to the pool.
+ * If so, the YapAbstractDatabaseConnection must close the instance.
+**/
+- (BOOL)connectionPoolEnqueue:(sqlite3 *)aDb
+{
+	__block BOOL result = NO;
+	
+	dispatch_sync(connectionPoolQueue, ^{
+		
+		if ([connectionPoolValues count] < maxConnectionPoolCount)
+		{
+			if (connectionPoolValues == nil)
+			{
+				connectionPoolValues = [[NSMutableArray alloc] init];
+				connectionPoolDates = [[NSMutableArray alloc] init];
+			}
+			
+			YDBLogVerbose(@"Enqueuing connection to pool: %p", aDb);
+			
+			[connectionPoolValues addObject:[NSValue valueWithPointer:(const void *)aDb]];
+			[connectionPoolDates addObject:[NSDate date]];
+			
+			result = YES;
+			
+			if ([connectionPoolValues count] == 1)
+			{
+				[self resetConnectionPoolTimer];
+			}
+		}
+	});
+	
+	return result;
+}
+
+/**
+ * Retrieves a connection from the connection pool if available.
+ * Returns NULL if no connections are available.
+**/
+- (sqlite3 *)connectionPoolDequeue
+{
+	__block sqlite3 *aDb = NULL;
+	
+	dispatch_sync(connectionPoolQueue, ^{
+		
+		if ([connectionPoolValues count] > 0)
+		{
+			aDb = (sqlite3 *)[[connectionPoolValues objectAtIndex:0] pointerValue];
+			
+			YDBLogVerbose(@"Dequeuing connection from pool: %p", aDb);
+			
+			[connectionPoolValues removeObjectAtIndex:0];
+			[connectionPoolDates removeObjectAtIndex:0];
+			
+			[self resetConnectionPoolTimer];
+		}
+	});
+	
+	return aDb;
+}
+
+/**
+ * Internal utility method to handle setting/resetting the timer.
+**/
+- (void)resetConnectionPoolTimer
+{
+	YDBLogAutoTrace();
+	
+	if (connectionPoolLifetime <= 0.0 || [connectionPoolValues count] == 0)
+	{
+		if (connectionPoolTimer)
+		{
+			dispatch_source_cancel(connectionPoolTimer);
+			connectionPoolTimer = NULL;
+		}
+		
+		return;
+	}
+	
+	BOOL isNewTimer = NO;
+	
+	if (connectionPoolTimer == NULL)
+	{
+		connectionPoolTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, connectionPoolQueue);
+		
+		__weak YapAbstractDatabase *weakSelf = self;
+		dispatch_source_set_event_handler(connectionPoolTimer, ^{ @autoreleasepool {
+			
+			__strong YapAbstractDatabase *strongSelf = weakSelf;
+			if (strongSelf)
+			{
+				[strongSelf handleConnectionPoolTimerFire];
+			}
+		}});
+		
+		#if !OS_OBJECT_USE_OBJC
+		dispatch_source_t timer = connectionPoolTimer;
+		dispatch_source_set_cancel_handler(connectionPoolTimer, ^{
+			dispatch_release(timer);
+		});
+		#endif
+		
+		isNewTimer = YES;
+	}
+	
+	NSDate *date = [connectionPoolDates objectAtIndex:0];
+	NSTimeInterval interval = [date timeIntervalSinceNow] + connectionPoolLifetime;
+	
+	dispatch_time_t tt = dispatch_time(DISPATCH_TIME_NOW, (interval * NSEC_PER_SEC));
+	dispatch_source_set_timer(connectionPoolTimer, tt, DISPATCH_TIME_FOREVER, 0);
+	
+	if (isNewTimer) {
+		dispatch_resume(connectionPoolTimer);
+	}
+}
+
+/**
+ * Internal method to handle removing stale connections from the connection pool.
+**/
+- (void)handleConnectionPoolTimerFire
+{
+	YDBLogAutoTrace();
+	
+	NSDate *now = [NSDate date];
+	
+	BOOL done = NO;
+	while ([connectionPoolValues count] > 0 && !done)
+	{
+		NSTimeInterval interval = [[connectionPoolDates objectAtIndex:0] timeIntervalSinceDate:now] * -1.0;
+		
+		if ((interval >= connectionPoolLifetime) || (interval < 0))
+		{
+			sqlite3 *aDb = (sqlite3 *)[[connectionPoolValues objectAtIndex:0] pointerValue];
+			
+			YDBLogVerbose(@"Closing connection from pool: %p", aDb);
+			
+			int status = sqlite3_close(aDb);
+			if (status != SQLITE_OK)
+			{
+				YDBLogError(@"Error in sqlite_close: %d %s", status, sqlite3_errmsg(aDb));
+			}
+			
+			[connectionPoolValues removeObjectAtIndex:0];
+			[connectionPoolDates removeObjectAtIndex:0];
+		}
+		else
+		{
+			done = YES;
+		}
+	}
+	
+	[self resetConnectionPoolTimer];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -853,6 +1112,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	if (registrationConnection == nil)
 	{
 		registrationConnection = [self newConnection];
+		registrationConnection.name = @"YapAbstractDatabase_extensionRegistrationConnection";
 		
 		NSTimeInterval delayInSeconds = 10.0;
 		dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));

@@ -614,7 +614,7 @@ static NSString *const key_changes                  = @"changes";
 	if (mapTable_getPageKeyForRowidStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		    @"SELECT \"pageKey\" FROM \"%@\" WHERE \"rowid\" = ? ;", [view mapTableName]];
+		    @"SELECT \"pageKey\" FROM \"%@\" WHERE \"rowid\" = ?;", [view mapTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
@@ -694,7 +694,7 @@ static NSString *const key_changes                  = @"changes";
 	if (pageTable_getDataForPageKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		    @"SELECT \"data\" FROM \"%@\" WHERE \"pageKey\" = ? ;", [view pageTableName]];
+		    @"SELECT \"data\" FROM \"%@\" WHERE \"pageKey\" = ?;", [view pageTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		

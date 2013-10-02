@@ -246,4 +246,52 @@ extern NSString *const YapDatabaseCustomKey;
 **/
 - (NSDictionary *)registeredExtensions;
 
+#pragma mark Connection Pooling
+
+/**
+ * As recommended in the "Performance Primer" ( https://github.com/yaptv/YapDatabase/wiki/Performance-Primer )
+ * 
+ * > You should consider connections to be relatively heavy weight objects.
+ * >
+ * > OK, truth be told they're not really that heavy weight. I'm just trying to scare you.
+ * > Because in terms of performance, you get a lot of bang for your buck if you recycle your connections.
+ *
+ * However, experience has shown how easy it is to neglect this information.
+ * Perhaps because it's just so darn easy to create a connection that it becomes easy to forgot
+ * that connections aren't free.
+ * 
+ * Whatever the reason, the connection pool was designed to alleviate some of the overhead.
+ * The most expensive component of a connection is the internal sqlite database connection.
+ * The connection pool keeps these internal sqlite database connections around in a pool to help recycle them.
+ *
+ * So when a connection gets deallocated, it returns the sqlite database connection to the pool.
+ * And when a new connection gets created, it can recycle a sqlite database connection from the pool.
+ * 
+ * This property sets a maximum limit on the number of items that will get stored in the pool at any one time.
+ * 
+ * The default value is 5.
+ * 
+ * See also connectionPoolLifetime,
+ * which allows you to set a maximum lifetime of connections sitting around in the pool.
+**/
+@property (atomic, assign, readwrite) NSUInteger maxConnectionPoolCount;
+
+/**
+ * The connection pool can automatically drop "stale" connections.
+ * That is, if an item stays in the pool for too long (without another connection coming along and
+ * removing it from the pool to be recycled) then the connection can optionally be removed and dropped.
+ *
+ * This is called the connection "lifetime".
+ * 
+ * That is, after an item is added to the connection pool to be recycled, a timer will be started.
+ * If the connection is still in the pool when the timer goes off,
+ * then the connection will automatically be removed and dropped.
+ *
+ * The default value is 90 seconds.
+ * 
+ * To disable the timer, set the lifetime to zero (or any non-positive value).
+ * When disabled, open connections will remain in the pool indefinitely.
+**/
+@property (atomic, assign, readwrite) NSTimeInterval connectionPoolLifetime;
+
 @end

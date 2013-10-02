@@ -158,9 +158,9 @@
 	sqlite3 *db = databaseTransaction->connection->db;
 	
 	NSString *string = [NSString stringWithFormat:
-	    @"SELECT \"pageKey\", \"group\", \"prevPageKey\", \"count\" FROM \"%@\" ;", [self pageTableName]];
+	    @"SELECT \"pageKey\", \"group\", \"prevPageKey\", \"count\" FROM \"%@\";", [self pageTableName]];
 	
-	sqlite3_stmt *statement;
+	sqlite3_stmt *statement = NULL;
 	
 	int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &statement, NULL);
 	if (status != SQLITE_OK)

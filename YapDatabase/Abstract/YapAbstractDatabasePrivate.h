@@ -29,10 +29,17 @@ extern NSString *const YapDatabaseNotificationKey;
 	NSMutableArray *changesets;
 	uint64_t snapshot;
 	
+	dispatch_queue_t connectionPoolQueue;
 	dispatch_queue_t checkpointQueue;
 	
 	NSDictionary *registeredExtensions;
 	YapAbstractDatabaseConnection *registrationConnection;
+	
+	NSUInteger maxConnectionPoolCount;
+	NSTimeInterval connectionPoolLifetime;
+	dispatch_source_t connectionPoolTimer;
+	NSMutableArray *connectionPoolValues;
+	NSMutableArray *connectionPoolDates;
 	
 @protected
 	
@@ -85,6 +92,12 @@ extern NSString *const YapDatabaseNotificationKey;
 **/
 - (void)addConnection:(YapAbstractDatabaseConnection *)connection;
 - (void)removeConnection:(YapAbstractDatabaseConnection *)connection;
+
+/**
+ * YapAbstractDatabaseConnection uses these methods to recycle sqlite3 instances using the connection pool.
+**/
+- (BOOL)connectionPoolEnqueue:(sqlite3 *)aDb;
+- (sqlite3 *)connectionPoolDequeue;
 
 /**
  * This method is only accessible from within the snapshotQueue.

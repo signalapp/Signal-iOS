@@ -124,33 +124,52 @@
 		
 		lock = OS_SPINLOCK_INIT;
 		
-		// Open the database connection.
-		//
-		// We use SQLITE_OPEN_NOMUTEX to use the multi-thread threading mode,
-		// as we will be serializing access to the connection externally.
-		
-		int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE;
-		
-		int status = sqlite3_open_v2([abstractDatabase.databasePath UTF8String], &db, flags, NULL);
-		if (status != SQLITE_OK)
+		db = [abstractDatabase connectionPoolDequeue];
+		if (db == NULL)
 		{
-			// Sometimes the open function returns a db to allow us to query it for the error message
-			if (db) {
-				YDBLogWarn(@"Error opening database: %d %s", status, sqlite3_errmsg(db));
-			}
-			else {
-				YDBLogError(@"Error opening database: %d", status);
-			}
-		}
-		else
-		{
-			// Disable autocheckpointing.
+			// Open the database connection.
 			//
-			// YapDatabase has its own optimized checkpointing algorithm built-in.
-			// It knows the state of every active connection for the database,
-			// so it can invoke the checkpoint methods at the precise time in which a checkpoint can be most effective.
+			// We use SQLITE_OPEN_NOMUTEX to use the multi-thread threading mode,
+			// as we will be serializing access to the connection externally.
 			
-			sqlite3_wal_autocheckpoint(db, 0);
+			int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE;
+			
+			int status = sqlite3_open_v2([abstractDatabase.databasePath UTF8String], &db, flags, NULL);
+			if (status != SQLITE_OK)
+			{
+				// Sometimes the open function returns a db to allow us to query it for the error message
+				if (db) {
+					YDBLogWarn(@"Error opening database: %d %s", status, sqlite3_errmsg(db));
+				}
+				else {
+					YDBLogError(@"Error opening database: %d", status);
+				}
+			}
+			else
+			{
+				// Disable autocheckpointing.
+				//
+				// YapDatabase has its own optimized checkpointing algorithm built-in.
+				// It knows the state of every active connection for the database,
+				// so it can invoke the checkpoint methods at the precise time in which a checkpoint can be most effective.
+				
+				sqlite3_wal_autocheckpoint(db, 0);
+				
+				// Edge case workaround.
+				//
+				// If there's an active checkpoint operation,
+				// then the very first time we call sqlite3_prepare_v2 on this db,
+				// we sometimes get a SQLITE_BUSY error.
+				//
+				// This only seems to happen once, and only during the very first use of the db instance.
+				// I'm still tyring to figure out exactly why this is.
+				// For now I'm setting a busy timeout as a temporary workaround.
+				//
+				// Note: I've also tested setting a busy_handler which logs the number of times its called.
+				// And in all my testing, I've only seen the busy_handler called once per db.
+				
+				sqlite3_busy_timeout(db, 50); // milliseconds
+			}
 		}
 		
 		#if TARGET_OS_IPHONE
@@ -198,6 +217,8 @@
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
+	[extensions removeAllObjects];
+	
 	sqlite_finalize_null(&yapGetDataForKeyStatement);
 	sqlite_finalize_null(&yapSetDataForKeyStatement);
 	sqlite_finalize_null(&yapRemoveExtensionStatement);
@@ -206,7 +227,18 @@
 	sqlite_finalize_null(&commitTransactionStatement);
 	
 	if (db)
-		sqlite3_close(db);
+	{
+		if ([abstractDatabase connectionPoolEnqueue:db] == NO)
+		{
+			int status = sqlite3_close(db);
+			if (status != SQLITE_OK)
+			{
+				YDBLogError(@"Error in sqlite_close: %d %s", status, sqlite3_errmsg(db));
+			}
+		}
+		
+		db = NULL;
+	}
 	
 	[abstractDatabase removeConnection:self];
 	
@@ -1891,7 +1923,7 @@
 - (uint64_t)readSnapshotFromDatabase
 {
 	sqlite3_stmt *statement = [self yapGetDataForKeyStatement];
-	if (statement == NULL) return 0.0;
+	if (statement == NULL) return 0;
 	
 	uint64_t result = 0;
 	
