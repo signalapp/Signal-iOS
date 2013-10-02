@@ -62,8 +62,70 @@ extern NSString *const YapDatabaseCustomKey;
 
 #pragma mark Properties
 
+/**
+ * The read-only databasePath given in the init method.
+**/
 @property (nonatomic, strong, readonly) NSString *databasePath;
 
+/**
+ * The snapshot number is the internal synchronization state primitive for the database.
+ * It's generally only useful for database internals,
+ * but it can sometimes come in handy for general debugging of your app.
+ *
+ * The snapshot is a simple 64-bit number that gets incremented upon every readwrite transaction
+ * that makes modifications to the database. Due to the concurrent architecture of YapDatabase,
+ * there may be multiple concurrent connections that are inspecting the database at similar times,
+ * yet they are looking at slightly different "snapshots" of the database.
+ *
+ * The snapshot number may thus be inspected to determine (in a general fashion) what state the connection
+ * is in compared with other connections.
+ *
+ * YapAbstractDatabase.snapshot = most up-to-date snapshot among all connections
+ * YapAbstractDatabaseConnection.snapshot = snapshot of individual connection
+ *
+ * Example:
+ *
+ * YapDatabase *database = [[YapDatabase alloc] init...];
+ * database.snapshot; // returns zero
+ *
+ * YapDatabaseConnection *connection1 = [database newConnection];
+ * YapDatabaseConnection *connection2 = [database newConnection];
+ *
+ * connection1.snapshot; // returns zero
+ * connection2.snapshot; // returns zero
+ *
+ * [connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ *     [transaction setObject:objectA forKey:keyA];
+ * }];
+ *
+ * database.snapshot;    // returns 1
+ * connection1.snapshot; // returns 1
+ * connection2.snapshot; // returns 1
+ *
+ * [connection1 asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ *     [transaction setObject:objectB forKey:keyB];
+ *     [NSThread sleepForTimeInterval:1.0]; // sleep for 1 second
+ *
+ *     connection1.snapshot; // returns 1 (we know it will turn into 2 once the transaction completes)
+ * } completion:^{
+ *
+ *     connection1.snapshot; // returns 2
+ * }];
+ *
+ * [connection2 asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction){
+ *     [NSThread sleepForTimeInterval:5.0]; // sleep for 5 seconds
+ *
+ *     connection2.snapshot; // returns 1. See why?
+ * }];
+ *
+ * It's because connection2 started its transaction when the database was in snapshot 1.
+ * Thus, for the duration of its transaction, the database remains in that state.
+ *
+ * However, once connection2 completes its transaction, it will automatically update itself to snapshot 2.
+ *
+ * In general, the snapshot is primarily for internal use.
+ * However, it may come in handy for some tricky edge-case bugs (why doesn't my connection see that other commit?)
+**/
 @property (atomic, assign, readonly) uint64_t snapshot;
 
 #pragma mark Extensions
@@ -143,11 +205,31 @@ extern NSString *const YapDatabaseCustomKey;
 - (void)unregisterExtension:(NSString *)extensionName;
 
 /**
+ * Asynchronoulsy starts the extension unregistration process.
+ *
+ * The unregistration process is equivalent to a readwrite transaction.
+ * It involves deleting various information about the extension from the database,
+ * as well as possibly dropping related tables the extension may have been using.
+ *
+ * An optional completion block may be used.
  * 
+ * The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
 **/
 - (void)asyncUnregisterExtension:(NSString *)extensionName
                  completionBlock:(dispatch_block_t)completionBlock;
 
+/**
+ * Asynchronoulsy starts the extension unregistration process.
+ *
+ * The unregistration process is equivalent to a readwrite transaction.
+ * It involves deleting various information about the extension from the database,
+ * as well as possibly dropping related tables the extension may have been using.
+ *
+ * An optional completion block may be used.
+ *
+ * Additionally the dispatch_queue to invoke the completion block may also be specified.
+ * If NULL, dispatch_get_main_queue() is automatically used.
+**/
 - (void)asyncUnregisterExtension:(NSString *)extensionName
                  completionBlock:(dispatch_block_t)completionBlock
                  completionQueue:(dispatch_queue_t)completionQueue;

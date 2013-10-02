@@ -95,7 +95,8 @@ typedef enum  {
 
 /**
  * The snapshot number is the internal synchronization state primitive for the connection.
- * Although it sometimes comes in handy (in a pinch), or for general debugging of your app.
+ * It's generally only useful for database internals,
+ * but it can sometimes come in handy for general debugging of your app.
  *
  * The snapshot is a simple 64-bit number that gets incremented upon every readwrite transaction
  * that makes modifications to the database. Due to the concurrent architecture of YapDatabase,
@@ -148,7 +149,7 @@ typedef enum  {
  * However, once connection2 completes its transaction, it will automatically update itself to snapshot 2.
  *
  * In general, the snapshot is primarily for internal use.
- * However, it may come in handy for some tricky edge-case bugs, or for general debugging.
+ * However, it may come in handy for some tricky edge-case bugs (why doesn't my connection see that other commit?)
 **/
 @property (atomic, assign, readonly) uint64_t snapshot;
 
