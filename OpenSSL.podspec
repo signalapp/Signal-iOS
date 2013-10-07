@@ -7,7 +7,7 @@ Pod::Spec.new do |s|
   s.license	     = 'OpenSSL (OpenSSL/SSLeay)'
 
   s.author       = 'Justin Plouffe'
-  s.source       = { :git => "https://github.com/justinplouffe/OpenSSL.git", :tag => "1.0.1e" }
+  s.source       = { :git => "https://github.com/aufflick/OpenSSL.git", :tag => "1.0.1e" }
 
   s.platform     = :ios, '5.1'
   s.source_files = 'include/openssl/**/*.h'
