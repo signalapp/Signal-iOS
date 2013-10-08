@@ -3268,12 +3268,18 @@
 	isMutated = YES;  // mutation during enumeration protection
 	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
+	__unsafe_unretained id _object =
+	    (connection->objectPolicy == YapDatabasePolicyContainment) ? [YapNull null] : object;
+	
 	[connection->objectCache setObject:object forKey:cacheKey];
-	[connection->objectChanges setObject:object forKey:cacheKey];
+	[connection->objectChanges setObject:_object forKey:cacheKey];
 	
 	if (metadata) {
+		__unsafe_unretained id _metadata =
+		    (connection->metadataPolicy == YapDatabasePolicyContainment) ? [YapNull null] : metadata;
+		
 		[connection->metadataCache setObject:metadata forKey:cacheKey];
-		[connection->metadataChanges setObject:metadata forKey:cacheKey];
+		[connection->metadataChanges setObject:_metadata forKey:cacheKey];
 	}
 	else {
 		[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
@@ -3350,8 +3356,11 @@
 	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	if (metadata) {
+		__unsafe_unretained id _metadata =
+		    (connection->metadataPolicy == YapDatabasePolicyContainment) ? [YapNull null] : metadata;
+		
 		[connection->metadataCache setObject:metadata forKey:cacheKey];
-		[connection->metadataChanges setObject:metadata forKey:cacheKey];
+		[connection->metadataChanges setObject:_metadata forKey:cacheKey];
 	}
 	else {
 		[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];

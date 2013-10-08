@@ -807,7 +807,7 @@
 		// Shortcut: Nothing was removed from the database.
 		// So we can simply enumerate over the changes and update the cache inline as needed.
 		
-		id yapNull = [YapNull null];    // value == yapNull  : setPrimitiveData:forKey: was used
+		id yapNull = [YapNull null];    // value == yapNull  : setPrimitiveData:: or containment policy
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
 		[changeset_objectChanges enumerateKeysAndObjectsUsingBlock:^(id key, id newObject, BOOL *stop) {
@@ -847,7 +847,7 @@
 	
 		[objectCache removeObjectsForKeys:keysToRemove];
 		
-		id yapNull = [YapNull null];    // value == yapNull  : setPrimitiveData:forKey: was used
+		id yapNull = [YapNull null];    // value == yapNull  : setPrimitive or containment policy
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
 		for (NSString *key in keysToUpdate)
@@ -874,7 +874,7 @@
 		// Shortcut: Nothing was removed from the database.
 		// So we can simply enumerate over the changes and update the cache inline as needed.
 		
-		id yapNull = [YapNull null];    // value == yapNull  : setPrimitiveMetadata:forKey: was used
+		id yapNull = [YapNull null];    // value == yapNull  : setPrimitive or containment policy
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
 		[changeset_metadataChanges enumerateKeysAndObjectsUsingBlock:^(id key, id newMetadata, BOOL *stop) {
@@ -914,7 +914,7 @@
 		
 		[metadataCache removeObjectsForKeys:keysToRemove];
 		
-		id yapNull = [YapNull null];    // value == yapNull  : setPrimitiveMetadata:forKey: was used
+		id yapNull = [YapNull null];    // value == yapNull  : setPrimitive or containment policy
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
 		for (NSString *key in keysToUpdate)

@@ -2352,12 +2352,18 @@
 	isMutated = YES;  // mutation during enumeration protection
 	key = [key copy]; // mutable string protection
 	
+	__unsafe_unretained id _object =
+	    (connection->objectPolicy == YapDatabasePolicyContainment) ? [YapNull null] : object;
+	
 	[connection->objectCache setObject:object forKey:key];
-	[connection->objectChanges setObject:object forKey:key];
+	[connection->objectChanges setObject:_object forKey:key];
 	
 	if (metadata) {
+		__unsafe_unretained id _metadata =
+		    (connection->metadataPolicy == YapDatabasePolicyContainment) ? [YapNull null] : metadata;
+		
 		[connection->metadataCache setObject:metadata forKey:key];
-		[connection->metadataChanges setObject:metadata forKey:key];
+		[connection->metadataChanges setObject:_metadata forKey:key];
 	}
 	else {
 		[connection->metadataCache setObject:[YapNull null] forKey:key];
@@ -2423,8 +2429,11 @@
 	key = [key copy]; // mutable string protection
 	
 	if (metadata) {
+		__unsafe_unretained id _metadata =
+		    (connection->metadataPolicy == YapDatabasePolicyContainment) ? [YapNull null] : metadata;
+		
 		[connection->metadataCache setObject:metadata forKey:key];
-		[connection->metadataChanges setObject:metadata forKey:key];
+		[connection->metadataChanges setObject:_metadata forKey:key];
 	}
 	else {
 		[connection->metadataCache setObject:[YapNull null] forKey:key];

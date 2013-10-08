@@ -37,6 +37,11 @@ typedef enum  {
 	YapDatabaseConnectionFlushMemoryLevelFull     = 3,
 } YapDatabaseConnectionFlushMemoryLevel;
 
+typedef enum {
+	YapDatabasePolicyShare       = 0,
+	YapDatabasePolicyContainment = 1,
+} YapDatabasePolicy;
+
 
 @interface YapAbstractDatabaseConnection : NSObject
 
@@ -90,6 +95,14 @@ typedef enum  {
 **/
 @property (atomic, assign, readwrite) BOOL metadataCacheEnabled;
 @property (atomic, assign, readwrite) NSUInteger metadataCacheLimit;
+
+#pragma mark Policy
+
+/**
+ * 
+**/
+@property (atomic, assign, readwrite) YapDatabasePolicy objectPolicy;
+@property (atomic, assign, readwrite) YapDatabasePolicy metadataPolicy;
 
 #pragma mark State
 

@@ -422,6 +422,64 @@
 		dispatch_async(connectionQueue, block);
 }
 
+- (YapDatabasePolicy)objectPolicy
+{
+	__block YapDatabasePolicy policy = YapDatabasePolicyShare;
+	
+	dispatch_block_t block = ^{
+		policy = objectPolicy;
+	};
+	
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+		block();
+	else
+		dispatch_sync(connectionQueue, block);
+	
+	return policy;
+}
+
+- (void)setObjectPolicy:(YapDatabasePolicy)newObjectPolicy
+{
+	dispatch_block_t block = ^{
+		
+		objectPolicy = newObjectPolicy;
+	};
+	
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+		block();
+	else
+		dispatch_async(connectionQueue, block);
+}
+
+- (YapDatabasePolicy)metadataPolicy
+{
+	__block YapDatabasePolicy policy = YapDatabasePolicyShare;
+	
+	dispatch_block_t block = ^{
+		policy = metadataPolicy;
+	};
+	
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+		block();
+	else
+		dispatch_sync(connectionQueue, block);
+	
+	return policy;
+}
+
+- (void)setMetadataPolicy:(YapDatabasePolicy)newMetadataPolicy
+{
+	dispatch_block_t block = ^{
+		
+		metadataPolicy = newMetadataPolicy;
+	};
+	
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+		block();
+	else
+		dispatch_async(connectionQueue, block);
+}
+
 - (uint64_t)snapshot
 {
 	__block uint64_t result = 0;
