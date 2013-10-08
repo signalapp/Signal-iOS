@@ -3680,7 +3680,7 @@
 	else
 		collection = [collection copy]; // mutable string protection
 	
-	// Purge the cache
+	// Purge the caches and changesets
 	
 	NSMutableArray *keysToRemove = [NSMutableArray array];
 	
@@ -3698,8 +3698,22 @@
 	
 	[keysToRemove removeAllObjects];
 	
+	for (id key in [connection->objectChanges keyEnumerator]) {
+		block(key, NULL);
+	}
+	[connection->objectChanges removeObjectsForKeys:keysToRemove];
+	
+	[keysToRemove removeAllObjects];
+	
 	[connection->metadataCache enumerateKeysWithBlock:block];
 	[connection->metadataCache removeObjectsForKeys:keysToRemove];
+	
+	[keysToRemove removeAllObjects];
+	
+	for (id key in [connection->metadataChanges keyEnumerator]) {
+		block(key, NULL);
+	}
+	[connection->metadataChanges removeObjectsForKeys:keysToRemove];
 	
 	[connection->removedCollections addObject:collection];
 	
