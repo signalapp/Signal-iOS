@@ -152,66 +152,72 @@ NSString *const YapDatabaseAllKeysRemovedKey  = @"allKeysRemoved";
 }
 
 - (id)initWithPath:(NSString *)inPath
-        serializer:(YapDatabaseSerializer)aSerializer
-      deserializer:(YapDatabaseDeserializer)aDeserializer
-         sanitizer:(YapDatabaseSanitizer)aSanitizer
+        serializer:(YapDatabaseSerializer)inSerializer
+      deserializer:(YapDatabaseDeserializer)inDeserializer
 {
 	return [self initWithPath:inPath
-	         objectSerializer:aSerializer
-	       objectDeserializer:aDeserializer
-	       metadataSerializer:aSerializer
-	     metadataDeserializer:aDeserializer
-	          objectSanitizer:aSanitizer
-	        metadataSanitizer:aSanitizer];
+	         objectSerializer:inSerializer
+	       objectDeserializer:inDeserializer
+	       metadataSerializer:inSerializer
+	     metadataDeserializer:inDeserializer
+	          objectSanitizer:NULL
+	        metadataSanitizer:NULL];
 }
 
 - (id)initWithPath:(NSString *)inPath
-        serializer:(YapDatabaseSerializer)aSerializer
-      deserializer:(YapDatabaseDeserializer)aDeserializer
+        serializer:(YapDatabaseSerializer)inSerializer
+      deserializer:(YapDatabaseDeserializer)inDeserializer
+         sanitizer:(YapDatabaseSanitizer)inSanitizer
 {
 	return [self initWithPath:inPath
-	         objectSerializer:aSerializer
-	       objectDeserializer:aDeserializer
-	       metadataSerializer:aSerializer
-	     metadataDeserializer:aDeserializer
+	         objectSerializer:inSerializer
+	       objectDeserializer:inDeserializer
+	       metadataSerializer:inSerializer
+	     metadataDeserializer:inDeserializer
+	          objectSanitizer:inSanitizer
+	        metadataSanitizer:inSanitizer];
+}
+
+- (id)initWithPath:(NSString *)inPath objectSerializer:(YapDatabaseSerializer)inObjectSerializer
+                                    objectDeserializer:(YapDatabaseDeserializer)inObjectDeserializer
+                                    metadataSerializer:(YapDatabaseSerializer)inMetadataSerializer
+                                  metadataDeserializer:(YapDatabaseDeserializer)inMetadataDeserializer
+{
+	return [self initWithPath:inPath
+	         objectSerializer:inObjectSerializer
+	       objectDeserializer:inObjectDeserializer
+	       metadataSerializer:inMetadataSerializer
+	     metadataDeserializer:inMetadataDeserializer
 	          objectSanitizer:NULL
 	        metadataSanitizer:NULL];
 }
 
-- (id)initWithPath:(NSString *)inPath objectSerializer:(YapDatabaseSerializer)aObjectSerializer
-                                    objectDeserializer:(YapDatabaseDeserializer)aObjectDeserializer
-                                    metadataSerializer:(YapDatabaseSerializer)aMetadataSerializer
-                                  metadataDeserializer:(YapDatabaseDeserializer)aMetadataDeserializer
-{
-	return [self initWithPath:inPath
-	         objectSerializer:aObjectSerializer
-	       objectDeserializer:aObjectDeserializer
-	       metadataSerializer:aMetadataSerializer
-	     metadataDeserializer:aMetadataDeserializer
-	          objectSanitizer:NULL
-	        metadataSanitizer:NULL];
-}
-
-- (id)initWithPath:(NSString *)inPath objectSerializer:(YapDatabaseSerializer)aObjectSerializer
-                                    objectDeserializer:(YapDatabaseDeserializer)aObjectDeserializer
-                                    metadataSerializer:(YapDatabaseSerializer)aMetadataSerializer
-                                  metadataDeserializer:(YapDatabaseDeserializer)aMetadataDeserializer
-                                       objectSanitizer:(YapDatabaseSanitizer)aObjectSanitizer
-                                     metadataSanitizer:(YapDatabaseSanitizer)aMetadataSanitizer
+- (id)initWithPath:(NSString *)inPath objectSerializer:(YapDatabaseSerializer)inObjectSerializer
+                                    objectDeserializer:(YapDatabaseDeserializer)inObjectDeserializer
+                                    metadataSerializer:(YapDatabaseSerializer)inMetadataSerializer
+                                  metadataDeserializer:(YapDatabaseDeserializer)inMetadataDeserializer
+                                       objectSanitizer:(YapDatabaseSanitizer)inObjectSanitizer
+                                     metadataSanitizer:(YapDatabaseSanitizer)inMetadataSanitizer
 {
 	if ((self = [super initWithPath:inPath]))
 	{
-		YapDatabaseSerializer defaultSerializer     = [[self class] defaultSerializer];
-		YapDatabaseDeserializer defaultDeserializer = [[self class] defaultDeserializer];
+		YapDatabaseSerializer defaultSerializer     = nil;
+		YapDatabaseDeserializer defaultDeserializer = nil;
 		
-		objectSerializer = aObjectSerializer ? aObjectSerializer : defaultSerializer;
-		objectDeserializer = aObjectDeserializer ? aObjectDeserializer : defaultDeserializer;
+		if (!inObjectSerializer || !inMetadataSerializer)
+			defaultSerializer = [[self class] defaultSerializer];
 		
-		metadataSerializer = aMetadataSerializer ? aMetadataSerializer : defaultSerializer;
-		metadataDeserializer = aMetadataDeserializer ? aMetadataDeserializer : defaultDeserializer;
+		if (!inObjectDeserializer || inMetadataDeserializer)
+			defaultDeserializer = [[self class] defaultDeserializer];
 		
-		objectSanitizer = aObjectSanitizer;
-		metadataSanitizer = aMetadataSanitizer;
+		objectSerializer = inObjectSerializer ? inObjectSerializer : defaultSerializer;
+		objectDeserializer = inObjectDeserializer ? inObjectDeserializer : defaultDeserializer;
+		
+		metadataSerializer = inMetadataSerializer ? inMetadataSerializer : defaultSerializer;
+		metadataDeserializer = inMetadataDeserializer ? inMetadataDeserializer : defaultDeserializer;
+		
+		objectSanitizer = inObjectSanitizer;
+		metadataSanitizer = inMetadataSanitizer;
 	}
 	return self;
 }
