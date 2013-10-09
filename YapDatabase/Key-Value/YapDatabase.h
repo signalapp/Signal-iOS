@@ -60,10 +60,13 @@ typedef NSData* (^YapDatabaseSerializer)(NSString *key, id object);
 typedef id (^YapDatabaseDeserializer)(NSString *key, NSData *data);
 
 /**
- * Is it safe to store immutable objects in the database?
+ * Is it safe to store mutable objects in the database?
  * 
- * That question is answered extensively in the wiki article "Sanitizers":
- * Todo...
+ * That question is answered extensively in the wiki article "Thread Safety":
+ * https://github.com/yaptv/YapDatabase/wiki/Thread-Safety
+ * 
+ * The sanitizer block can be run on all objects as they are being input into the database.
+ * That is, it will be run on all objects passed to setObject:forKey: before being handed to the database internals.
 **/
 typedef id (^YapDatabaseSanitizer)(NSString *key, id object);
 

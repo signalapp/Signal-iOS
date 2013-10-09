@@ -99,7 +99,14 @@ typedef enum {
 #pragma mark Policy
 
 /**
+ * YapDatabase uses various optimizations to reduce overhead and memory footprint.
  * 
+ * These optimizations are discussed extensively in the wiki article "Thread Safety":
+ * https://github.com/yaptv/YapDatabase/wiki/Thread-Safety
+ * 
+ * The policy properties allow you to opt out of these optimizations if needed.
+ * 
+ * The default value is YapDatabasePolicyShare.
 **/
 @property (atomic, assign, readwrite) YapDatabasePolicy objectPolicy;
 @property (atomic, assign, readwrite) YapDatabasePolicy metadataPolicy;
