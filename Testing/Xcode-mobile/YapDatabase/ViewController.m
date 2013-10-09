@@ -1,23 +1,19 @@
-//
-//  ViewController.m
-//  YapDatabase
-//
-//  Created by Robbie Hanson on 12/8/12.
-//  Copyright (c) 2012 Robbie Hanson. All rights reserved.
-//
-
 #import "ViewController.h"
 #import "BenchmarkYapCache.h"
 #import "BenchmarkYapDatabase.h"
+#import "BenchmarkYapCollectionsDatabase.h"
+
 
 @implementation ViewController
 
-@synthesize databaseBenchmarksButton;
+@synthesize yapDatabaseBenchmarksButton;
+@synthesize yapCollectionsDatabaseBenchmarksButton;
 @synthesize cacheBenchmarksButton;
 
-- (IBAction)runDatabaseBenchmarks
+- (IBAction)runYapDatabaseBenchmarks
 {
-	databaseBenchmarksButton.enabled = NO;
+	yapDatabaseBenchmarksButton.enabled = NO;
+	yapCollectionsDatabaseBenchmarksButton.enabled = NO;
 	cacheBenchmarksButton.enabled = NO;
 	
 	double delayInSeconds = 0.1;
@@ -26,7 +22,27 @@
 		
 		[BenchmarkYapDatabase runTestsWithCompletion:^{
 			
-			databaseBenchmarksButton.enabled = YES;
+			yapDatabaseBenchmarksButton.enabled = YES;
+			yapCollectionsDatabaseBenchmarksButton.enabled = YES;
+			cacheBenchmarksButton.enabled = YES;
+		}];
+	});
+}
+
+- (IBAction)runYapCollectionsDatabaseBenchmarks
+{
+	yapDatabaseBenchmarksButton.enabled = NO;
+	yapCollectionsDatabaseBenchmarksButton.enabled = NO;
+	cacheBenchmarksButton.enabled = NO;
+	
+	double delayInSeconds = 0.1;
+	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+		
+		[BenchmarkYapCollectionsDatabase runTestsWithCompletion:^{
+			
+			yapDatabaseBenchmarksButton.enabled = YES;
+			yapCollectionsDatabaseBenchmarksButton.enabled = YES;
 			cacheBenchmarksButton.enabled = YES;
 		}];
 	});
@@ -34,7 +50,8 @@
 
 - (IBAction)runCacheBenchmarks
 {
-	databaseBenchmarksButton.enabled = NO;
+	yapDatabaseBenchmarksButton.enabled = NO;
+	yapCollectionsDatabaseBenchmarksButton.enabled = NO;
 	cacheBenchmarksButton.enabled = NO;
 	
 	double delayInSeconds = 0.1;
@@ -43,7 +60,8 @@
 		
 		[BenchmarkYapCache runTestsWithCompletion:^{
 			
-			databaseBenchmarksButton.enabled = YES;
+			yapDatabaseBenchmarksButton.enabled = YES;
+			yapCollectionsDatabaseBenchmarksButton.enabled = YES;
 			cacheBenchmarksButton.enabled = YES;
 		}];
 	});

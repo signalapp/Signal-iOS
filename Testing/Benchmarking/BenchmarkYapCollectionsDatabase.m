@@ -1,19 +1,20 @@
-#import "BenchmarkYapDatabase.h"
-#import "YapDatabase.h"
-#import "YapDatabaseConnection.h"
+#import "BenchmarkYapCollectionsDatabase.h"
+#import "YapCollectionsDatabase.h"
+#import "YapCollectionsDatabaseConnection.h"
 
 #import <stdlib.h>
 
-@implementation BenchmarkYapDatabase
 
-static YapDatabase *database;
-static YapDatabaseConnection *connection;
+@implementation BenchmarkYapCollectionsDatabase
+
+static YapCollectionsDatabase *database;
+static YapCollectionsDatabaseConnection *connection;
 
 static NSMutableArray *keys;
 
 + (NSString *)databaseName
 {
-	return @"BenchmarkYapDatabase.sqlite";
+	return @"BenchmarkYapCollectionsDatabase.sqlite";
 }
 
 + (NSString *)databasePath
@@ -60,14 +61,14 @@ static NSMutableArray *keys;
 {
 	NSDate *start = [NSDate date];
 	
-	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+	[connection readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
 		
 		for (NSString *key in keys)
 		{
 			// For now, use key for object.
 			// Later we need to test with bigger objects with more serialization overhead.
 			
-			[transaction setObject:key forKey:key];
+			[transaction setObject:key forKey:key inCollection:nil];
 		}
 	}];
 	
@@ -79,9 +80,9 @@ static NSMutableArray *keys;
 {
 	NSDate *start = [NSDate date];
 	
-	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	[connection readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
 		
-		[transaction enumerateKeysUsingBlock:^(NSString *key, BOOL *stop) {
+		[transaction enumerateKeysInAllCollectionsUsingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			
 			// Nothing to do, just testing overhead
 		}];
@@ -92,9 +93,10 @@ static NSMutableArray *keys;
 	
 	start = [NSDate date];
 	
-	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	[connection readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
 		
-		[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop) {
+		[transaction enumerateKeysAndObjectsInAllCollectionsUsingBlock:
+		    ^(NSString *collection, NSString *key, id object, BOOL *stop) {
 			
 			// Nothing to do, just testing overhead
 		}];
@@ -160,11 +162,11 @@ static NSMutableArray *keys;
 	
 	NSDate *start = [NSDate date];
 	
-	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	[connection readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
 		
 		for (NSString *key in keysToFetch)
 		{
-			(void)[transaction objectForKey:key];
+			(void)[transaction objectForKey:key inCollection:nil];
 		}
 	}];
 	
@@ -180,7 +182,7 @@ static NSMutableArray *keys;
 	
 	for (NSUInteger i = 0; i < loopCount; i++)
 	{
-		[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		[connection readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
 			
 			// Nothing to do, just testing overhead
 		}];
@@ -196,7 +198,7 @@ static NSMutableArray *keys;
 	
 	for (NSUInteger i = 0; i < loopCount; i++)
 	{
-		[connection readWriteWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		[connection readWriteWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
 			
 			// Nothing to do, just testing overhead
 		}];
@@ -210,9 +212,9 @@ static NSMutableArray *keys;
 {
 	NSDate *start = [NSDate date];
 	
-	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+	[connection readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
 		
-		[transaction removeAllObjects];
+		[transaction removeAllObjectsInAllCollections];
 	}];
 	
 	NSTimeInterval elapsed = [start timeIntervalSinceNow] * -1.0;
@@ -227,7 +229,7 @@ static NSMutableArray *keys;
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	
 	// Create database
-	database = [[YapDatabase alloc] initWithPath:databasePath];
+	database = [[YapCollectionsDatabase alloc] initWithPath:databasePath];
 	
 	// Create database connection (can have multiple for concurrency)
 	connection = [database newConnection];
@@ -241,7 +243,7 @@ static NSMutableArray *keys;
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		NSLog(@" \n\n\n ");
-		NSLog(@"YapDatabase Benchmarks:");
+		NSLog(@"YapCollectionsDatabase Benchmarks:");
 		NSLog(@"====================================================");
 		NSLog(@"POPULATE DATABASE");
 		
