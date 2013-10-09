@@ -175,8 +175,9 @@
 	if (getCountStatement == NULL)
 	{
 		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database2\";";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getCountStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getCountStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -191,8 +192,9 @@
 	if (getCountForRowidStatement == NULL)
 	{
 		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database2\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getCountForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getCountForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -207,8 +209,9 @@
 	if (getRowidForKeyStatement == NULL)
 	{
 		char *stmt = "SELECT \"rowid\" FROM \"database2\" WHERE \"key\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getRowidForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getRowidForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -223,8 +226,9 @@
 	if (getKeyForRowidStatement == NULL)
 	{
 		char *stmt = "SELECT \"key\" FROM \"database2\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getKeyForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getKeyForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -239,8 +243,9 @@
 	if (getDataForRowidStatement == NULL)
 	{
 		char *stmt = "SELECT \"key\", \"data\" FROM \"database2\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getDataForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getDataForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -255,8 +260,9 @@
 	if (getMetadataForRowidStatement == NULL)
 	{
 		char *stmt = "SELECT \"key\", \"metadata\" FROM \"database2\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getMetadataForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getMetadataForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -271,8 +277,9 @@
 	if (getAllForRowidStatement == NULL)
 	{
 		char *stmt = "SELECT \"key\", \"data\", \"metadata\" FROM \"database2\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getAllForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getAllForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -287,8 +294,9 @@
 	if (getDataForKeyStatement == NULL)
 	{
 		char *stmt = "SELECT \"data\" FROM \"database2\" WHERE \"key\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getDataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getDataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -303,8 +311,9 @@
 	if (getMetadataForKeyStatement == NULL)
 	{
 		char *stmt = "SELECT \"metadata\" FROM \"database2\" WHERE \"key\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getMetadataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getMetadataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -319,8 +328,9 @@
 	if (getAllForKeyStatement == NULL)
 	{
 		char *stmt = "SELECT \"data\", \"metadata\" FROM \"database2\" WHERE \"key\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getAllForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getAllForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -335,8 +345,9 @@
 	if (insertForRowidStatement == NULL)
 	{
 		char *stmt = "INSERT INTO \"database2\" (\"key\", \"data\", \"metadata\") VALUES (?, ?, ?);";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &insertForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &insertForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -351,8 +362,9 @@
 	if (updateAllForRowidStatement == NULL)
 	{
 		char *stmt = "UPDATE \"database2\" SET \"data\" = ?, \"metadata\" = ? WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &updateAllForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &updateAllForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -367,8 +379,9 @@
 	if (updateMetadataForRowidStatement == NULL)
 	{
 		char *stmt = "UPDATE \"database2\" SET \"metadata\" = ? WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &updateMetadataForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &updateMetadataForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -383,8 +396,9 @@
 	if (removeForRowidStatement == NULL)
 	{
 		char *stmt = "DELETE FROM \"database2\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &removeForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -399,8 +413,9 @@
 	if (removeAllStatement == NULL)
 	{
 		char *stmt = "DELETE FROM \"database2\"";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &removeAllStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -415,13 +430,13 @@
 	if (enumerateKeysStatement == NULL)
 	{
 		char *stmt = "SELECT \"rowid\", \"key\" FROM \"database2\";";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateKeysStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
-
 	}
 	
 	return enumerateKeysStatement;
@@ -432,8 +447,9 @@
 	if (enumerateKeysAndMetadataStatement == NULL)
 	{
 		char *stmt = "SELECT \"rowid\", \"key\", \"metadata\" FROM \"database2\";";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateKeysAndMetadataStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndMetadataStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -448,8 +464,9 @@
 	if (enumerateKeysAndObjectsStatement == NULL)
 	{
 		char *stmt = "SELECT \"rowid\", \"key\", \"data\" FROM \"database2\";";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateKeysAndObjectsStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndObjectsStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -464,8 +481,9 @@
 	if (enumerateRowsStatement == NULL)
 	{
 		char *stmt = "SELECT \"rowid\", \"key\", \"data\", \"metadata\" FROM \"database2\";";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateRowsStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateRowsStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));

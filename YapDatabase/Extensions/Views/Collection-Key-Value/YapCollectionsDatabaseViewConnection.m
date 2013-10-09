@@ -7,6 +7,7 @@
 #import "YapDatabaseViewChangePrivate.h"
 #import "YapCollectionKey.h"
 #import "YapCache.h"
+#import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
 
 #if ! __has_feature(objc_arc)
@@ -614,14 +615,16 @@ static NSString *const key_changes                  = @"changes";
 		NSString *string = [NSString stringWithFormat:
 		    @"SELECT \"pageKey\" FROM \"%@\" WHERE \"rowid\" = ?;", [view mapTableName]];
 		
-		int status;
 		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		status = sqlite3_prepare_v2(db, [string UTF8String], -1, &mapTable_getPageKeyForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &mapTable_getPageKeyForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
+		
+		FreeYapDatabaseString(&stmt);
 	}
 	
 	return mapTable_getPageKeyForRowidStatement;
@@ -634,14 +637,16 @@ static NSString *const key_changes                  = @"changes";
 		NSString *string = [NSString stringWithFormat:
 		    @"INSERT OR REPLACE INTO \"%@\" (\"rowid\", \"pageKey\") VALUES (?, ?);", [view mapTableName]];
 		
-		int status;
 		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		status = sqlite3_prepare_v2(db, [string UTF8String], -1, &mapTable_setPageKeyForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &mapTable_setPageKeyForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
+		
+		FreeYapDatabaseString(&stmt);
 	}
 	
 	return mapTable_setPageKeyForRowidStatement;
@@ -654,14 +659,16 @@ static NSString *const key_changes                  = @"changes";
 		NSString *string = [NSString stringWithFormat:
 		    @"DELETE FROM \"%@\" WHERE \"rowid\" = ?;", [view mapTableName]];
 		
-		int status;
 		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		status = sqlite3_prepare_v2(db, [string UTF8String], -1, &mapTable_removeForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &mapTable_removeForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
+		
+		FreeYapDatabaseString(&stmt);
 	}
 	
 	return mapTable_removeForRowidStatement;
@@ -674,14 +681,16 @@ static NSString *const key_changes                  = @"changes";
 		NSString *string = [NSString stringWithFormat:
 		    @"DELETE FROM \"%@\";", [view mapTableName]];
 		
-		int status;
 		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		status = sqlite3_prepare_v2(db, [string UTF8String], -1, &mapTable_removeAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &mapTable_removeAllStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
+		
+		FreeYapDatabaseString(&stmt);
 	}
 	
 	return mapTable_removeAllStatement;
@@ -699,12 +708,15 @@ static NSString *const key_changes                  = @"changes";
 		    @"SELECT \"data\" FROM \"%@\" WHERE \"pageKey\" = ?;", [view pageTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_getDataForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_getDataForPageKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
+		
+		FreeYapDatabaseString(&stmt);
 	}
 	
 	return pageTable_getDataForPageKeyStatement;
@@ -720,12 +732,15 @@ static NSString *const key_changes                  = @"changes";
 			[view pageTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_insertForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_insertForPageKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
+		
+		FreeYapDatabaseString(&stmt);
 	}
 	
 	return pageTable_insertForPageKeyStatement;
@@ -740,12 +755,15 @@ static NSString *const key_changes                  = @"changes";
 			[view pageTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_updateAllForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_updateAllForPageKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
+		
+		FreeYapDatabaseString(&stmt);
 	}
 	
 	return pageTable_updateAllForPageKeyStatement;
@@ -759,12 +777,15 @@ static NSString *const key_changes                  = @"changes";
 			@"UPDATE \"%@\" SET \"count\" = ?, \"data\" = ? WHERE \"pageKey\" = ?;", [view pageTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_updatePageForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_updatePageForPageKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
+		
+		FreeYapDatabaseString(&stmt);
 	}
 	
 	return pageTable_updatePageForPageKeyStatement;
@@ -778,12 +799,15 @@ static NSString *const key_changes                  = @"changes";
 			@"UPDATE \"%@\" SET \"prevPageKey\" = ? WHERE \"pageKey\" = ?;", [view pageTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_updateLinkForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_updateLinkForPageKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
+		
+		FreeYapDatabaseString(&stmt);
 	}
 	
 	return pageTable_updateLinkForPageKeyStatement;
@@ -797,13 +821,15 @@ static NSString *const key_changes                  = @"changes";
 		    @"DELETE FROM \"%@\" WHERE \"pageKey\" = ?;", [view pageTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_removeForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_removeForPageKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
-
+		
+		FreeYapDatabaseString(&stmt);
 	}
 	
 	return pageTable_removeForPageKeyStatement;
@@ -817,12 +843,15 @@ static NSString *const key_changes                  = @"changes";
 		    @"DELETE FROM \"%@\";", [view pageTableName]];
 		
 		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &pageTable_removeAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_removeAllStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
+		
+		FreeYapDatabaseString(&stmt);
 	}
 	
 	return pageTable_removeAllStatement;
