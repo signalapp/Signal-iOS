@@ -511,6 +511,20 @@
 	databaseTransaction = nil; // Do not remove !
 }
 
+/**
+ * Required override method from YapAbstractDatabaseExtension
+**/
+- (void)rollbackTransaction
+{
+	// An extensionTransaction is only valid within the scope of its encompassing databaseTransaction.
+	// I imagine this may occasionally be misunderstood, and developers may attempt to store the extension in an ivar,
+	// and then use it outside the context of the database transaction block.
+	// Thus, this code is here as a safety net to ensure that such accidental misuse doesn't do any damage.
+	
+	ftsConnection = nil;       // Do not remove !
+	databaseTransaction = nil; // Do not remove !
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark YapAbstractDatabaseExtensionTransaction_KeyValue
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

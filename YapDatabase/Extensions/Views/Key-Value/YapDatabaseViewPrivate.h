@@ -3,8 +3,11 @@
 #import "YapDatabaseTransaction.h"
 
 #import "YapDatabaseView.h"
+#import "YapDatabaseViewOptions.h"
 #import "YapDatabaseViewConnection.h"
 #import "YapDatabaseViewTransaction.h"
+
+#import "YapMemoryTable.h"
 
 #import "sqlite3.h"
 
@@ -20,10 +23,12 @@
 	YapDatabaseViewBlockType sortingBlockType;
 	
 	int version;
+	YapDatabaseViewOptions *options;
 }
 
 - (NSString *)mapTableName;
 - (NSString *)pageTableName;
+- (NSString *)pageMetadataTableName;
 
 @end
 
@@ -57,6 +62,7 @@
 
 - (id)initWithView:(YapDatabaseView *)view databaseConnection:(YapDatabaseConnection *)databaseConnection;
 
+- (void)postRollbackCleanup;
 - (void)postCommitCleanup;
 
 - (sqlite3_stmt *)mapTable_getPageKeyForRowidStatement;
@@ -83,6 +89,10 @@
 	
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection;
 	__unsafe_unretained YapDatabaseReadTransaction *databaseTransaction;
+	
+	YapMemoryTableTransaction *mapTableTransaction;
+	YapMemoryTableTransaction *pageTableTransaction;
+	YapMemoryTableTransaction *pageMetadataTableTransaction;
 }
 
 - (id)initWithViewConnection:(YapDatabaseViewConnection *)viewConnection

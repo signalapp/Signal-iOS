@@ -109,8 +109,10 @@
 
 - (void)rollbackTransaction
 {
-	// @see YapAbstractDatabaseConnection postRollbackCleanup
-	// @see YapAbstractDatabaseExtensionConnection postRollbackCleanup
+	[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
+		
+		[(YapAbstractDatabaseExtensionTransaction *)extTransactionObj rollbackTransaction];
+	}];
 	
 	sqlite3_stmt *statement = [abstractConnection rollbackTransactionStatement];
 	if (statement == NULL) return;
@@ -127,7 +129,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Public API
+#pragma mark Transaction Control
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -167,6 +169,10 @@
 		customObjectForNotification = object;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Extensions
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Returns an extension transaction corresponding to the extension type registered under the given name.
  * If the extension has not yet been prepared, it is done so automatically.
@@ -182,6 +188,8 @@
 **/
 - (id)extension:(NSString *)extensionName
 {
+	// This method is PUBLIC
+	
 	if (extensionsReady)
 		return [extensions objectForKey:extensionName];
 	
@@ -215,6 +223,8 @@
 
 - (id)ext:(NSString *)extensionName
 {
+	// This method is PUBLIC
+	
 	// The "+ (void)load" method swizzles the implementation of this class
 	// to point to the implementation of the extension: method.
 	//
@@ -223,12 +233,10 @@
 	return [self extension:extensionName]; // This method is swizzled !
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Internal - Extensions
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 - (NSDictionary *)extensions
 {
+	// This method is INTERNAL
+	
 	if (extensionsReady)
 		return extensions;
 	
@@ -263,6 +271,8 @@
 
 - (void)addRegisteredExtensionTransaction:(YapAbstractDatabaseExtensionTransaction *)extTransaction
 {
+	// This method is INTERNAL
+	
 	if (extensions == nil)
 		extensions = [[NSMutableDictionary alloc] init];
 	
@@ -273,8 +283,34 @@
 
 - (void)removeRegisteredExtensionTransaction:(NSString *)extName
 {
+	// This method is INTERNAL
+	
 	[extensions removeObjectForKey:extName];
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Memory Tables
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (YapMemoryTableTransaction *)memoryTableTransaction:(NSString *)tableName
+{
+	YapMemoryTable *table = [[abstractConnection registeredTables] objectForKey:tableName];
+	if (table)
+	{
+		uint64_t snapshot = [abstractConnection snapshot];
+		
+		if (isReadWriteTransaction)
+			return [table newReadWriteTransactionWithSnapshot:(snapshot + 1)];
+		else
+			return [table newReadTransactionWithSnapshot:snapshot];
+	}
+	
+	return nil;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Yap2 Table
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (int)intValueForKey:(NSString *)key extension:(NSString *)extensionName
 {
@@ -612,7 +648,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Internal - Exceptions
+#pragma mark Exceptions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSException *)mutationDuringEnumerationException

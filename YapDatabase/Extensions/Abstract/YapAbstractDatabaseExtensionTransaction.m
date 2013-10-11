@@ -50,9 +50,22 @@
 }
 
 /**
- * This method is called if within a readwrite transaction.
+ * This method is only called if within a readwrite transaction.
 **/
 - (void)commitTransaction
+{
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
+	
+	// Subclasses should include the code similar to the following at the end of their implementation:
+	//
+	// viewConnection = nil;
+	// databaseTransaction = nil;
+}
+
+/**
+ * This method is only called if within a readwrite transaction.
+**/
+- (void)rollbackTransaction
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	

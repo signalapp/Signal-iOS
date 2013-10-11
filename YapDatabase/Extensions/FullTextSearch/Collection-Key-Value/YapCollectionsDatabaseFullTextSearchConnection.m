@@ -126,17 +126,6 @@
 /**
  * Required override method from YapAbstractDatabaseExtension
 **/
-- (void)postRollbackCleanup
-{
-	// Nothing to do for this particular extension.
-	//
-	// YapAbstractDatabaseExtension rows a "not implemented" exception
-	// to ensure extensions have implementations of all required methods.
-}
-
-/**
- * Required override method from YapAbstractDatabaseExtension
-**/
 - (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
            externalChangeset:(NSMutableDictionary **)externalChangesetPtr
               hasDiskChanges:(BOOL *)hasDiskChangesPtr

@@ -6,6 +6,8 @@
 #import "DDLog.h"
 #import "DDTTYLogger.h"
 
+#define TEST_NON_PERSISTENT_VIEW 1
+
 @implementation TestYapDatabaseView
 
 - (NSString *)databasePath:(NSString *)suffix
@@ -67,11 +69,18 @@
 		return [object1 compare:object2 options:NSNumericSearch];
 	};
 	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+#if TEST_NON_PERSISTENT_VIEW
+	options.isPersistent = NO;
+#endif
+	
 	YapDatabaseView *databaseView =
 	    [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
 	                                 groupingBlockType:groupingBlockType
 	                                      sortingBlock:sortingBlock
-	                                  sortingBlockType:sortingBlockType];
+	                                  sortingBlockType:sortingBlockType
+	                                           version:0
+	                                           options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -1130,11 +1139,18 @@
 		return [object1 compare:object2 options:NSNumericSearch];
 	};
 	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+#if TEST_NON_PERSISTENT_VIEW
+	options.isPersistent = NO;
+#endif
+	
 	YapDatabaseView *databaseView =
-	[[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-								 groupingBlockType:groupingBlockType
-									  sortingBlock:sortingBlock
-								  sortingBlockType:sortingBlockType];
+		[[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
+		                             groupingBlockType:groupingBlockType
+		                                  sortingBlock:sortingBlock
+		                              sortingBlockType:sortingBlockType
+		                                       version:0
+		                                       options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -1818,11 +1834,18 @@
 		return [object1 compare:object2 options:NSNumericSearch];
 	};
 	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+#if TEST_NON_PERSISTENT_VIEW
+	options.isPersistent = NO;
+#endif
+	
 	YapDatabaseView *databaseView =
-	    [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                                 groupingBlockType:groupingBlockType
-	                                      sortingBlock:sortingBlock
-	                                  sortingBlockType:sortingBlockType];
+		[[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
+		                             groupingBlockType:groupingBlockType
+		                                  sortingBlock:sortingBlock
+		                              sortingBlockType:sortingBlockType
+		                                       version:0
+		                                       options:options];
 	
 	// Without registering the view,
 	// add a bunch of keys to the database.
@@ -1908,11 +1931,18 @@
 		return [object1 compare:object2 options:NSNumericSearch];
 	};
 	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+#if TEST_NON_PERSISTENT_VIEW
+	options.isPersistent = NO;
+#endif
+	
 	YapDatabaseView *databaseView =
-	    [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                                 groupingBlockType:groupingBlockType
-	                                      sortingBlock:sortingBlock
-	                                  sortingBlockType:sortingBlockType];
+		[[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
+		                             groupingBlockType:groupingBlockType
+		                                  sortingBlock:sortingBlock
+		                              sortingBlockType:sortingBlockType
+		                                       version:0
+		                                       options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -2217,11 +2247,18 @@
 		return [object1 compare:object2 options:NSNumericSearch];
 	};
 	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+#if TEST_NON_PERSISTENT_VIEW
+	options.isPersistent = NO;
+#endif
+	
 	YapDatabaseView *databaseView =
-	    [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                                 groupingBlockType:groupingBlockType
-	                                      sortingBlock:sortingBlock
-	                                  sortingBlockType:sortingBlockType];
+		[[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
+		                             groupingBlockType:groupingBlockType
+		                                  sortingBlock:sortingBlock
+		                              sortingBlockType:sortingBlockType
+		                                       version:0
+		                                       options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -2293,11 +2330,18 @@
 		return [number1 compare:number2];
 	};
 	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+#if TEST_NON_PERSISTENT_VIEW
+	options.isPersistent = NO;
+#endif
+	
 	YapDatabaseView *databaseView =
-	    [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                                 groupingBlockType:groupingBlockType
-	                                      sortingBlock:sortingBlock
-	                                  sortingBlockType:sortingBlockType];
+		[[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
+		                             groupingBlockType:groupingBlockType
+		                                  sortingBlock:sortingBlock
+		                              sortingBlockType:sortingBlockType
+		                                       version:0
+		                                       options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	

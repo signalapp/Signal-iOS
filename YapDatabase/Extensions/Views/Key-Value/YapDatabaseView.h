@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 
 #import "YapAbstractDatabaseExtension.h"
+#import "YapDatabaseViewOptions.h"
 #import "YapDatabaseViewConnection.h"
 #import "YapDatabaseViewTransaction.h"
 
@@ -18,7 +19,7 @@
  * For the full documentation on Views, please see the related wiki article:
  * https://github.com/yaptv/YapDatabase/wiki/Views
  * 
- * Just in case you don't have Internet access, here's a quick overview:
+ * Just in case you don't have Internet access, here's a QUICK OVERVIEW:
  * 
  * YapDatabaseView provides the ability to create a "view" of your data.
  * That is, imagine you want to display your data in a table.
@@ -176,6 +177,21 @@ typedef enum {
 
 */
 
+/**
+ * See the wiki for an example of how to initialize a view:
+ * https://github.com/yaptv/YapDatabase/wiki/Views#wiki-initializing_a_view
+ *
+ * @param version
+ *
+ *   If, after creating a view, you need to change either the groupingBlock or sortingBlock,
+ *   then simply use the version parameter. If you pass a version that is different from the last
+ *   initialization of the view, then the view will automatically flush its tables, and re-populate itself.
+ * 
+ * @param options
+ * 
+ *   The options allow you to specify things like creating an in-memory-only view (non persistent).
+**/
+
 - (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
           groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
                sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
@@ -186,6 +202,13 @@ typedef enum {
                sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
            sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
                     version:(int)version;
+
+- (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
+          groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
+               sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
+           sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
+                    version:(int)version
+                    options:(YapDatabaseViewOptions *)options;
 
 @property (nonatomic, strong, readonly) YapDatabaseViewGroupingBlock groupingBlock;
 @property (nonatomic, strong, readonly) YapDatabaseViewSortingBlock sortingBlock;

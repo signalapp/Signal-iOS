@@ -193,6 +193,7 @@
 	
 	snapshot = [abstractDatabase snapshot];
 	registeredExtensions = [abstractDatabase registeredExtensions];
+	registeredTables = [abstractDatabase registeredTables];
 	
 	extensionsReady = ([registeredExtensions count] == 0);
 }
@@ -933,6 +934,47 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Tables
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSDictionary *)registeredTables
+{
+	// This method is INTERNAL
+	
+	return registeredTables;
+}
+
+- (BOOL)registerTable:(YapMemoryTable *)table withName:(NSString *)name
+{
+	// This method is INTERNAL
+	
+	if ([registeredTables objectForKey:name])
+		return NO;
+	
+	NSMutableDictionary *newRegisteredTables = [registeredTables mutableCopy];
+	[newRegisteredTables setObject:table forKey:name];
+	
+	registeredTables = [newRegisteredTables copy];
+	registeredTablesChanged = YES;
+	
+	return YES;
+}
+
+- (void)unregisterTableWithName:(NSString *)name
+{
+	// This method is INTERNAL
+	
+	if ([registeredTables objectForKey:name])
+	{
+		NSMutableDictionary *newRegisteredTables = [registeredTables mutableCopy];
+		[newRegisteredTables removeObjectForKey:name];
+		
+		registeredTables = [newRegisteredTables copy];
+		registeredTablesChanged = YES;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Memory
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1536,6 +1578,11 @@
 		// Thus we can now continue the checkpoint operation.
 		
 		[abstractDatabase asyncCheckpoint:minSnapshot];
+		
+		[registeredTables enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+			
+			[(YapMemoryTable *)obj asyncCheckpoint:minSnapshot];
+		}];
 	}
 	
 	// Post-Read-Transaction: Step 4 of 4
@@ -1946,6 +1993,11 @@
 		if (minSnapshot == UINT64_MAX)
 		{
 			[abstractDatabase asyncCheckpoint:snapshot];
+			
+			[registeredTables enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+				
+				[(YapMemoryTable *)obj asyncCheckpoint:snapshot];
+			}];
 		}
 	}
 	
@@ -2114,14 +2166,6 @@
 {
 	[objectCache removeAllObjects];
 	[metadataCache removeAllObjects];
-	
-	// Use existing extensions (extensions ivar, not [self extensions]).
-	// There's no need to create any new extConnections at this point.
-	
-	[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extConnectionObj, BOOL *stop) {
-		
-		[(YapAbstractDatabaseExtensionConnection *)extConnectionObj postRollbackCleanup];
-	}];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2141,6 +2185,7 @@
 	return @[ YapDatabaseSnapshotKey,
 	          YapDatabaseExtensionsKey,
 	          YapDatabaseRegisteredExtensionsKey,
+	          YapDatabaseRegisteredTablesKey,
 	          YapDatabaseNotificationKey ];
 }
 
@@ -2241,6 +2286,14 @@
 		[internalChangeset setObject:registeredExtensions forKey:YapDatabaseRegisteredExtensionsKey];
 	}
 	
+	if (registeredTablesChanged)
+	{
+		if (internalChangeset == nil)
+			internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
+		
+		[internalChangeset setObject:registeredTables forKey:YapDatabaseRegisteredTablesKey];
+	}
+	
 	*internalChangesetPtr = internalChangeset;
 	*externalChangesetPtr = externalChangeset;
 	*hasDiskChangesPtr = hasDiskChanges;
@@ -2281,6 +2334,14 @@
 		// We lazily load these later, if needed.
 		
 		extensionsReady = ([registeredExtensions count] == [extensions count]);
+	}
+	
+	NSDictionary *changeset_registeredTables = [changeset objectForKey:YapDatabaseRegisteredTablesKey];
+	if (changeset_registeredTables)
+	{
+		// Retain new list
+		
+		registeredTables = changeset_registeredTables;
 	}
 	
 	NSDictionary *changeset_extensions = [changeset objectForKey:YapDatabaseExtensionsKey];

@@ -5,6 +5,7 @@
 #import "YapAbstractDatabaseTransaction.h"
 
 #import "YapDatabaseConnectionState.h"
+#import "YapMemoryTable.h"
 #import "YapCache.h"
 
 #import "sqlite3.h"
@@ -21,6 +22,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 }
 
 extern NSString *const YapDatabaseRegisteredExtensionsKey;
+extern NSString *const YapDatabaseRegisteredTablesKey;
 extern NSString *const YapDatabaseNotificationKey;
 
 @interface YapAbstractDatabase () {
@@ -33,6 +35,8 @@ extern NSString *const YapDatabaseNotificationKey;
 	dispatch_queue_t checkpointQueue;
 	
 	NSDictionary *registeredExtensions;
+	NSDictionary *registeredTables;
+	
 	YapAbstractDatabaseConnection *registrationConnection;
 	
 	NSUInteger maxConnectionPoolCount;
@@ -101,29 +105,9 @@ extern NSString *const YapDatabaseNotificationKey;
 
 /**
  * This method is only accessible from within the snapshotQueue.
- * 
- * The snapshot represents when the database was last modified by a read-write transaction.
- * This information isn persisted to the 'yap' database, and is separately held in memory.
- * It serves multiple purposes.
- * 
- * First is assists in validation of a connection's cache.
- * When a connection begins a new transaction, it may have items sitting in the cache.
- * However the connection doesn't know if the items are still valid because another connection may have made changes.
- * 
- * The snapshot also assists in correcting for a race condition.
- * It order to minimize blocking we allow read-write transactions to commit outside the context
- * of the snapshotQueue. This is because the commit may be a time consuming operation, and we
- * don't want to block read-only transactions during this period. The race condition occurs if a read-only
- * transactions starts in the midst of a read-write commit, and the read-only transaction gets
- * a "yap-level" snapshot that's out of sync with the "sql-level" snapshot. This is easily correctable if caught.
- * Thus we maintain the snapshot in memory, and fetchable via a select query.
- * One represents the "yap-level" snapshot, and the other represents the "sql-level" snapshot.
- *
- * The snapshot is simply a 64-bit integer.
- * It is reset when the YapDatabase instance is initialized,
- * and incremented by each read-write transaction (if changes are actually made).
+ * Used by [YapAbstractDatabaseConnection prepare].
 **/
-- (uint64_t)snapshot;
+- (NSDictionary *)registeredTables;
 
 /**
  * This method is only accessible from within the snapshotQueue.
@@ -195,6 +179,9 @@ extern NSString *const YapDatabaseNotificationKey;
 	NSDictionary *registeredExtensions;
 	BOOL registeredExtensionsChanged;
 	
+	NSDictionary *registeredTables;
+	BOOL registeredTablesChanged;
+	
 	NSMutableDictionary *extensions;
 	BOOL extensionsReady;
 	id sharedKeySetForExtensions;
@@ -233,6 +220,11 @@ extern NSString *const YapDatabaseNotificationKey;
 
 - (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName;
 - (void)unregisterExtension:(NSString *)extensionName;
+
+- (NSDictionary *)registeredTables;
+
+- (BOOL)registerTable:(YapMemoryTable *)table withName:(NSString *)name;
+- (void)unregisterTableWithName:(NSString *)name;
 
 - (sqlite3_stmt *)beginTransactionStatement;
 - (sqlite3_stmt *)commitTransactionStatement;
@@ -311,6 +303,8 @@ extern NSString *const YapDatabaseNotificationKey;
 - (void)rollbackTransaction;
 
 - (NSDictionary *)extensions;
+
+- (YapMemoryTableTransaction *)memoryTableTransaction:(NSString *)tableName;
 
 - (void)addRegisteredExtensionTransaction:(YapAbstractDatabaseExtensionTransaction *)extTransaction;
 - (void)removeRegisteredExtensionTransaction:(NSString *)extName;

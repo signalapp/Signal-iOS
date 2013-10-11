@@ -32,6 +32,7 @@ NSString *const YapDatabaseExtensionsKey = @"extensions";
 NSString *const YapDatabaseCustomKey     = @"custom";
 
 NSString *const YapDatabaseRegisteredExtensionsKey = @"registeredExtensions";
+NSString *const YapDatabaseRegisteredTablesKey     = @"registeredTables";
 NSString *const YapDatabaseNotificationKey         = @"notification";
 
 /**
@@ -130,6 +131,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 		connectionStates = [[NSMutableArray alloc] init];
 		
 		registeredExtensions = [[NSDictionary alloc] init];
+		registeredTables = [[NSDictionary alloc] init];
 		
 		maxConnectionPoolCount = DEFAULT_MAX_CONNECTION_POOL_COUNT;
 		connectionPoolLifetime = DEFAULT_CONNECTION_POOL_LIFETIME;
@@ -1237,12 +1239,25 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Snapshot Architecture
+#pragma mark Tables
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * This method is only accessible from within the snapshotQueue.
- *
+ * Used by [YapAbstractDatabaseConnection prepare].
+**/
+- (NSDictionary *)registeredTables
+{
+	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
+	
+	return registeredTables;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Snapshot Architecture
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
  * The snapshot represents when the database was last modified by a read-write transaction.
  * This information isn persisted to the 'yap' database, and is separately held in memory.
  * It serves multiple purposes.
@@ -1364,6 +1379,14 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	if (newRegisteredExtensions)
 	{
 		registeredExtensions = newRegisteredExtensions;
+	}
+	
+	// Update registeredTables, if changed.
+	
+	NSDictionary *newRegisteredTables = [changeset objectForKey:YapDatabaseRegisteredTablesKey];
+	if (newRegisteredTables)
+	{
+		registeredTables = newRegisteredTables;
 	}
 	
 	// Forward the changeset to all other connections so they can perform any needed updates.

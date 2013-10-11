@@ -211,7 +211,7 @@ static NSString *const key_changes                  = @"changes";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Required override method from YapAbstractDatabaseExtension
+ * Invoked by our YapDatabaseViewTransaction at the completion of the rollbackTransaction method.
 **/
 - (void)postRollbackCleanup
 {
@@ -233,10 +233,11 @@ static NSString *const key_changes                  = @"changes";
 
 /**
  * Invoked by our YapDatabaseViewTransaction at the completion of the commitTransaction method.
- * This code is best understood alongside the getExternalChangeset:internalChangeset: method (below).
 **/
 - (void)postCommitCleanup
 {
+	// This code is best understood alongside the getExternalChangeset:internalChangeset: method (below).
+	
 	// Both dirtyMaps & dirtyPages are sent in the internalChangeset.
 	// So we need completely new versions of them.
 	
@@ -286,7 +287,7 @@ static NSString *const key_changes                  = @"changes";
 	
 	if ([dirtyMaps count] || [dirtyPages count] || [dirtyLinks count] || reset)
 	{
-		hasDiskChanges = YES;
+		hasDiskChanges = view->options.isPersistent;
 		internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
 		
 		if ([dirtyMaps count] > 0)
@@ -612,6 +613,8 @@ static NSString *const key_changes                  = @"changes";
 
 - (sqlite3_stmt *)mapTable_getPageKeyForRowidStatement
 {
+	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	
 	if (mapTable_getPageKeyForRowidStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
@@ -634,6 +637,8 @@ static NSString *const key_changes                  = @"changes";
 
 - (sqlite3_stmt *)mapTable_setPageKeyForRowidStatement
 {
+	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	
 	if (mapTable_setPageKeyForRowidStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
@@ -656,6 +661,8 @@ static NSString *const key_changes                  = @"changes";
 
 - (sqlite3_stmt *)mapTable_removeForRowidStatement
 {
+	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	
 	if (mapTable_removeForRowidStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
@@ -678,6 +685,8 @@ static NSString *const key_changes                  = @"changes";
 
 - (sqlite3_stmt *)mapTable_removeAllStatement
 {
+	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	
 	if (mapTable_removeAllStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
@@ -704,6 +713,8 @@ static NSString *const key_changes                  = @"changes";
 
 - (sqlite3_stmt *)pageTable_getDataForPageKeyStatement
 {
+	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	
 	if (pageTable_getDataForPageKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
@@ -726,6 +737,8 @@ static NSString *const key_changes                  = @"changes";
 
 - (sqlite3_stmt *)pageTable_insertForPageKeyStatement
 {
+	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	
 	if (pageTable_insertForPageKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
@@ -750,6 +763,8 @@ static NSString *const key_changes                  = @"changes";
 
 - (sqlite3_stmt *)pageTable_updateAllForPageKeyStatement
 {
+	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	
 	if (pageTable_updateAllForPageKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
@@ -773,6 +788,8 @@ static NSString *const key_changes                  = @"changes";
 
 - (sqlite3_stmt *)pageTable_updatePageForPageKeyStatement
 {
+	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	
 	if (pageTable_updatePageForPageKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
@@ -795,6 +812,8 @@ static NSString *const key_changes                  = @"changes";
 
 - (sqlite3_stmt *)pageTable_updateLinkForPageKeyStatement
 {
+	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	
 	if (pageTable_updateLinkForPageKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
@@ -817,6 +836,8 @@ static NSString *const key_changes                  = @"changes";
 
 - (sqlite3_stmt *)pageTable_removeForPageKeyStatement
 {
+	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	
 	if (pageTable_removeForPageKeyStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
@@ -839,6 +860,8 @@ static NSString *const key_changes                  = @"changes";
 
 - (sqlite3_stmt *)pageTable_removeAllStatement
 {
+	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	
 	if (pageTable_removeAllStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:

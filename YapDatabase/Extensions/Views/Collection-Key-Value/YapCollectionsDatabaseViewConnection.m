@@ -209,7 +209,7 @@ static NSString *const key_changes                  = @"changes";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Required override method from YapAbstractDatabaseConnection
+ * Invoked by our YapDatabaseViewTransaction at the completion of the rollbackTransaction method.
 **/
 - (void)postRollbackCleanup
 {
@@ -231,10 +231,11 @@ static NSString *const key_changes                  = @"changes";
 
 /**
  * Invoked by our YapDatabaseViewTransaction at the completion of the commitTransaction method.
- * This code is best understood alongside the getExternalChangeset:internalChangeset: method (below).
 **/
 - (void)postCommitCleanup
 {
+	// This code is best understood alongside the getExternalChangeset:internalChangeset: method (below).
+	
 	// Both dirtyKeys & dirtyPages are sent in the internalChangeset.
 	// So we need completely new versions of them.
 	

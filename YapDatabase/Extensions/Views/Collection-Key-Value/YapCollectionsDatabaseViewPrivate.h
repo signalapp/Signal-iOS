@@ -58,6 +58,7 @@
 
 - (id)initWithView:(YapCollectionsDatabaseView *)view databaseConnection:(YapCollectionsDatabaseConnection *)dbc;
 
+- (void)postRollbackCleanup;
 - (void)postCommitCleanup;
 
 - (sqlite3_stmt *)mapTable_getPageKeyForRowidStatement;

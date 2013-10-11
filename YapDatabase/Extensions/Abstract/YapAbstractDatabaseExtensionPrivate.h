@@ -130,17 +130,6 @@
 
 /**
  * Subclasses MUST implement this method.
- *
- * If a read-write transaction is aborted (called a rollback in SQL),
- * then this method will be invoked. Subclasses must cleanup accordingly.
- *
- * This may mean simply dumping items that were set to be broadcast in the YapDatabaseModifiedNotification.
- * Or it may mean dumping all state, and relying on prepareIfNeeded to reset the connection.
-**/
-- (void)postRollbackCleanup;
-
-/**
- * Subclasses MUST implement this method.
  * This method is only called if within a readwrite transaction.
  * 
  * This method is invoked in order to get the internal and external changesets.
@@ -313,6 +302,12 @@
  * This method is only called if within a readwrite transaction.
 **/
 - (void)commitTransaction;
+
+/**
+ * Subclasses MUST implement this method.
+ * This method is only called if within a readwrite transaction.
+**/
+- (void)rollbackTransaction;
 
 /**
  * Subclasses MUST implement these methods.
