@@ -87,6 +87,7 @@
 @synthesize sortingBlockType = sortingBlockType;
 
 @synthesize version = version;
+@dynamic options;
 
 - (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)inGroupingBlock
           groupingBlockType:(YapDatabaseViewBlockType)inGroupingBlockType
@@ -150,6 +151,11 @@
 		options = inOptions ? [inOptions copy] : [[YapDatabaseViewOptions alloc] init];
 	}
 	return self;
+}
+
+- (YapDatabaseViewOptions *)options
+{
+	return [options copy];
 }
 
 /**

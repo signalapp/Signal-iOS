@@ -86,9 +86,21 @@
 	{
 		viewConnection = inViewConnection;
 		databaseTransaction = inDatabaseTransaction;
+		
+		if (viewConnection->view->options.isPersistent == NO)
+		{
+			mapTableTransaction = [databaseTransaction memoryTableTransaction:[self mapTableName]];
+			pageTableTransaction = [databaseTransaction memoryTableTransaction:[self pageTableName]];
+			pageMetadataTableTransaction = [databaseTransaction memoryTableTransaction:[self pageMetadataTableName]];
+		}
+
 	}
 	return self;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Extension Lifecycle
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * This method is called to create any necessary tables,
@@ -156,24 +168,8 @@
 		return YES;
 	}
 	
-	sqlite3 *db = databaseTransaction->connection->db;
-	
-	NSString *string = [NSString stringWithFormat:
-	    @"SELECT \"pageKey\", \"group\", \"prevPageKey\", \"count\" FROM \"%@\";", [self pageTableName]];
-
-	
-	sqlite3_stmt *statement = NULL;
-	
-	int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &statement, NULL);
-	if (status != SQLITE_OK)
-	{
-		YDBLogError(@"%@ (%@): Cannot create 'enumerate_stmt': %d %s",
-		            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db));
-		return NO;
-	}
-	
 	// Enumerate over the page rows in the database, and populate our data structure.
-	// Each row gives us the following fields:
+	// Each row has the following information:
 	//
 	// - group
 	// - pageKey
@@ -195,78 +191,132 @@
 	NSMutableDictionary *groupPageDict = [[NSMutableDictionary alloc] init];
 	NSMutableDictionary *groupOrderDict = [[NSMutableDictionary alloc] init];
 	
-	unsigned int stepCount = 0;
-	
-	while (sqlite3_step(statement) == SQLITE_ROW)
+	__block BOOL error = NO;
+
+	if ([self isPersistentView])
 	{
-		stepCount++;
+		sqlite3 *db = databaseTransaction->connection->db;
 		
-		const unsigned char *text0 = sqlite3_column_text(statement, 0);
-		int textSize0 = sqlite3_column_bytes(statement, 0);
+		NSString *string = [NSString stringWithFormat:
+			@"SELECT \"pageKey\", \"group\", \"prevPageKey\", \"count\" FROM \"%@\";", [self pageTableName]];
 		
-		const unsigned char *text1 = sqlite3_column_text(statement, 1);
-		int textSize1 = sqlite3_column_bytes(statement, 1);
 		
-		const unsigned char *text2 = sqlite3_column_text(statement, 2);
-		int textSize2 = sqlite3_column_bytes(statement, 2);
+		sqlite3_stmt *statement = NULL;
 		
-		int count = sqlite3_column_int(statement, 3);
-		
-		NSString *pageKey = [[NSString alloc] initWithBytes:text0 length:textSize0 encoding:NSUTF8StringEncoding];
-		NSString *group   = [[NSString alloc] initWithBytes:text1 length:textSize1 encoding:NSUTF8StringEncoding];
-		
-		NSString *prevPageKey = nil;
-		if (textSize2 > 0)
-			prevPageKey = [[NSString alloc] initWithBytes:text2 length:textSize2 encoding:NSUTF8StringEncoding];
-		
-		if (count >= 0)
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &statement, NULL);
+		if (status != SQLITE_OK)
 		{
-			YapDatabaseViewPageMetadata *pageMetadata = [[YapDatabaseViewPageMetadata alloc] init];
-			pageMetadata->pageKey = pageKey;
-			pageMetadata->group = group;
-			pageMetadata->prevPageKey = prevPageKey;
-			pageMetadata->count = (NSUInteger)count;
+			YDBLogError(@"%@ (%@): Cannot create 'enumerate_stmt': %d %s",
+						THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db));
+			return NO;
+		}
+		
+		unsigned int stepCount = 0;
+		
+		while (sqlite3_step(statement) == SQLITE_ROW)
+		{
+			stepCount++;
 			
-			NSMutableDictionary *pageDict = [groupPageDict objectForKey:group];
+			const unsigned char *text0 = sqlite3_column_text(statement, 0);
+			int textSize0 = sqlite3_column_bytes(statement, 0);
+			
+			const unsigned char *text1 = sqlite3_column_text(statement, 1);
+			int textSize1 = sqlite3_column_bytes(statement, 1);
+			
+			const unsigned char *text2 = sqlite3_column_text(statement, 2);
+			int textSize2 = sqlite3_column_bytes(statement, 2);
+			
+			int count = sqlite3_column_int(statement, 3);
+			
+			NSString *pageKey = [[NSString alloc] initWithBytes:text0 length:textSize0 encoding:NSUTF8StringEncoding];
+			NSString *group   = [[NSString alloc] initWithBytes:text1 length:textSize1 encoding:NSUTF8StringEncoding];
+			
+			NSString *prevPageKey = nil;
+			if (textSize2 > 0)
+				prevPageKey = [[NSString alloc] initWithBytes:text2 length:textSize2 encoding:NSUTF8StringEncoding];
+			
+			if (count >= 0)
+			{
+				YapDatabaseViewPageMetadata *pageMetadata = [[YapDatabaseViewPageMetadata alloc] init];
+				pageMetadata->pageKey = pageKey;
+				pageMetadata->group = group;
+				pageMetadata->prevPageKey = prevPageKey;
+				pageMetadata->count = (NSUInteger)count;
+				
+				NSMutableDictionary *pageDict = [groupPageDict objectForKey:group];
+				if (pageDict == nil)
+				{
+					pageDict = [[NSMutableDictionary alloc] init];
+					[groupPageDict setObject:pageDict forKey:group];
+				}
+				
+				NSMutableDictionary *orderDict = [groupOrderDict objectForKey:group];
+				if (orderDict == nil)
+				{
+					orderDict = [[NSMutableDictionary alloc] init];
+					[groupOrderDict setObject:orderDict forKey:group];
+				}
+			
+				[pageDict setObject:pageMetadata forKey:pageKey];
+				
+				if (prevPageKey)
+					[orderDict setObject:pageKey forKey:prevPageKey];
+				else
+					[orderDict setObject:pageKey forKey:[NSNull null]];
+			}
+			else
+			{
+				YDBLogWarn(@"%@ (%@): Encountered invalid count: %d", THIS_METHOD, [self registeredName], count);
+			}
+		}
+	
+		YDBLogVerbose(@"Processing %u items from %@...", stepCount, [self pageTableName]);
+		
+		YDBLogVerbose(@"groupPageDict: %@", groupPageDict);
+		YDBLogVerbose(@"groupOrderDict: %@", groupOrderDict);
+		
+		if ((status != SQLITE_OK) && (status != SQLITE_DONE))
+		{
+			error = YES;
+			YDBLogError(@"%@ (%@): Error enumerating page table: %d %s",
+			            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db));
+		}
+		
+		sqlite3_finalize(statement);
+	}
+	else // if (isNonPersistentView)
+	{
+		[pageMetadataTableTransaction enumerateKeysAndObjectsWithBlock:^(id key, id obj, BOOL *stop) {
+			
+			YapDatabaseViewPageMetadata *pageMetadata = [(YapDatabaseViewPageMetadata *)obj copy];
+			
+			NSMutableDictionary *pageDict = [groupPageDict objectForKey:pageMetadata->group];
 			if (pageDict == nil)
 			{
 				pageDict = [[NSMutableDictionary alloc] init];
-				[groupPageDict setObject:pageDict forKey:group];
+				[groupPageDict setObject:pageDict forKey:pageMetadata->group];
 			}
 			
-			NSMutableDictionary *orderDict = [groupOrderDict objectForKey:group];
+			NSMutableDictionary *orderDict = [groupOrderDict objectForKey:pageMetadata->group];
 			if (orderDict == nil)
 			{
 				orderDict = [[NSMutableDictionary alloc] init];
-				[groupOrderDict setObject:orderDict forKey:group];
+				[groupOrderDict setObject:orderDict forKey:pageMetadata->group];
 			}
 			
-			[pageDict setObject:pageMetadata forKey:pageKey];
+			[pageDict setObject:pageMetadata forKey:pageMetadata->pageKey];
 			
-			if (prevPageKey)
-				[orderDict setObject:pageKey forKey:prevPageKey];
+			if (pageMetadata->prevPageKey)
+				[orderDict setObject:pageMetadata->pageKey forKey:pageMetadata->prevPageKey];
 			else
-				[orderDict setObject:pageKey forKey:[NSNull null]];
-		}
-		else
-		{
-			YDBLogWarn(@"%@ (%@): Encountered invalid count: %d", THIS_METHOD, [self registeredName], count);
-		}
+				[orderDict setObject:pageMetadata->pageKey forKey:[NSNull null]];
+		}];
 	}
 	
-	YDBLogVerbose(@"Processing %u items from %@...", stepCount, [self pageTableName]);
-	
-	YDBLogVerbose(@"groupPageDict: %@", groupPageDict);
-	YDBLogVerbose(@"groupOrderDict: %@", groupOrderDict);
-	
-	__block BOOL error = ((status != SQLITE_OK) && (status != SQLITE_DONE));
-	
-	if (error)
-	{
-		YDBLogError(@"%@ (%@): Error enumerating page table: %d %s",
-		            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db));
-	}
-	else
+	// Now that we have all the metadata about each page,
+	// it's time to piece them together in the proper order.
+
+	if (!error)
 	{
 		// Initialize ivars in viewConnection.
 		// We try not to do this before we know the table exists.
@@ -351,365 +401,8 @@
 		YDBLogVerbose(@"viewConnection->pageKey_group_dict: %@", viewConnection->pageKey_group_dict);
 	}
 	
-	sqlite3_finalize(statement);
 	return !error;
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Accessors
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * Required override method from YapAbstractDatabaseExtensionTransaction.
-**/
-- (YapAbstractDatabaseTransaction *)databaseTransaction
-{
-	return databaseTransaction;
-}
-
-/**
- * Required override method from YapAbstractDatabaseExtensionTransaction.
-**/
-- (YapAbstractDatabaseExtension *)extension
-{
-	return viewConnection->view;
-}
-
-/**
- * Required override method from YapAbstractDatabaseExtensionTransaction.
-**/
-- (YapAbstractDatabaseExtensionConnection *)extensionConnection
-{
-	return viewConnection;
-}
-
-- (NSString *)registeredName
-{
-	return [viewConnection->view registeredName];
-}
-
-- (NSString *)mapTableName
-{
-	return [viewConnection->view mapTableName];
-}
-
-- (NSString *)pageTableName
-{
-	return [viewConnection->view pageTableName];
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Serialization & Deserialization
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (NSData *)serializePage:(YapDatabaseViewPage *)page
-{
-	return [page serialize];
-}
-
-- (YapDatabaseViewPage *)deserializePage:(NSData *)data
-{
-	YapDatabaseViewPage *page = [[YapDatabaseViewPage alloc] init];
-	[page deserialize:data];
-	
-	return page;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Utilities
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (NSString *)generatePageKey
-{
-	NSString *key = nil;
-	
-	CFUUIDRef uuid = CFUUIDCreate(NULL);
-	if (uuid)
-	{
-		key = (__bridge_transfer NSString *)CFUUIDCreateString(NULL, uuid);
-		CFRelease(uuid);
-	}
-	
-	return key;
-}
-
-/**
- * If the given rowid is in the view, returns the associated pageKey.
- *
- * This method will use the cache(s) if possible.
- * Otherwise it will lookup the value in the map table.
-**/
-- (NSString *)pageKeyForRowid:(int64_t)rowid
-{
-	NSString *pageKey = nil;
-	NSNumber *rowidNumber = @(rowid);
-	
-	// Check dirty cache & clean cache
-	
-	pageKey = [viewConnection->dirtyMaps objectForKey:rowidNumber];
-	if (pageKey)
-	{
-		if ((__bridge void *)pageKey == (__bridge void *)[NSNull null])
-			return nil;
-		else
-			return pageKey;
-	}
-	
-	pageKey = [viewConnection->mapCache objectForKey:rowidNumber];
-	if (pageKey)
-	{
-		if ((__bridge void *)pageKey == (__bridge void *)[NSNull null])
-			return nil;
-		else
-			return pageKey;
-	}
-	
-	// Otherwise pull from the database
-	
-	sqlite3_stmt *statement = [viewConnection mapTable_getPageKeyForRowidStatement];
-	if (statement == NULL)
-		return nil;
-	
-	// SELECT "pageKey" FROM "mapTableName" WHERE "rowid" = ? ;
-	
-	sqlite3_bind_int64(statement, 1, rowid);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
-	{
-		const unsigned char *text = sqlite3_column_text(statement, 0);
-		int textSize = sqlite3_column_bytes(statement, 0);
-		
-		pageKey = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-	}
-	else if (status == SQLITE_ERROR)
-	{
-		YDBLogError(@"%@ (%@): Error executing statement: %d %s",
-		            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(databaseTransaction->connection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	
-	if (pageKey)
-		[viewConnection->mapCache setObject:pageKey forKey:rowidNumber];
-	else
-		[viewConnection->mapCache setObject:[NSNull null] forKey:rowidNumber];
-	
-	return pageKey;
-}
-
-/**
- * This method looks up a whole bunch of pageKeys using only a few queries.
- *
- * @param input
- *     A dictionary of the form: @{
- *         @(rowid) = collectionKey, ...
- *     }
- * 
- * @return A dictionary of the form: @{
- *         pageKey = @{ @(rowid) = collectionKey, ... }
- *     }
-**/
-- (NSDictionary *)pageKeysForRowids:(NSArray *)rowids withKeyMappings:(NSDictionary *)keyMappings
-{
-	NSUInteger count = [rowids count];
-	if (count == 0)
-	{
-		return [NSDictionary dictionary];
-	}
-	
-	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:count];
-	
-	sqlite3 *db = databaseTransaction->connection->db;
-	
-	// Sqlite has an upper bound on the number of host parameters that may be used in a single query.
-	// We need to watch out for this in case a large array of keys is passed.
-	
-	NSUInteger maxHostParams = (NSUInteger) sqlite3_limit(db, SQLITE_LIMIT_VARIABLE_NUMBER, -1);
-	
-	NSUInteger offset = 0;
-	do
-	{
-		NSUInteger left = count - offset;
-		NSUInteger numHostParams = MIN(left, maxHostParams);
-		
-		// SELECT "rowid", "pageKey" FROM "mapTableName" WHERE "rowid" IN (?, ?, ...);
-		
-		NSUInteger capacity = 50 + (numHostParams * 3);
-		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
-		
-		[query appendFormat:@"SELECT \"rowid\", \"pageKey\" FROM \"%@\" WHERE \"rowid\" IN (", [self mapTableName]];
-		
-		for (NSUInteger i = 0; i < numHostParams; i++)
-		{
-			if (i == 0)
-				[query appendFormat:@"?"];
-			else
-				[query appendFormat:@", ?"];
-		}
-		
-		[query appendString:@");"];
-		
-		sqlite3_stmt *statement;
-		int status;
-		
-		status = sqlite3_prepare_v2(db, [query UTF8String], -1, &statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@ (%@): Error creating statement\n"
-			            @" - status(%d), errmsg: %s\n"
-			            @" - query: %@",
-			            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db), query);
-			return nil;
-		}
-		
-		for (NSUInteger i = 0; i < numHostParams; i++)
-		{
-			int64_t rowid = [[rowids objectAtIndex:(offset + i)] longLongValue];
-			
-			sqlite3_bind_int64(statement, (int)(i + 1), rowid);
-		}
-		
-		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
-		{
-			// Extract rowid & pageKey from row
-			
-			int64_t rowid = sqlite3_column_int64(statement, 0);
-			
-			const unsigned char *text = sqlite3_column_text(statement, 1);
-			int textSize = sqlite3_column_bytes(statement, 1);
-			
-			NSString *pageKey = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-			
-			// Add to result dictionary
-			
-			NSMutableDictionary *subKeyMappings = [result objectForKey:pageKey];
-			if (subKeyMappings == nil)
-			{
-				subKeyMappings = [NSMutableDictionary dictionaryWithCapacity:1];
-				[result setObject:subKeyMappings forKey:pageKey];
-			}
-			
-			NSNumber *number = @(rowid);
-			YapCollectionKey *collectionKey = [keyMappings objectForKey:number];
-			
-			[subKeyMappings setObject:collectionKey forKey:number];
-		}
-		
-		if (status != SQLITE_DONE)
-		{
-			YDBLogError(@"%@ (%@): Error executing statement: %d %s",
-			            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db));
-			return nil;
-		}
-		
-		
-		offset += numHostParams;
-		
-	} while (offset < count);
-	
-	return result;
-}
-
-/**
- * Fetches the page for the given pageKey.
- * 
- * This method will use the cache(s) if possible.
- * Otherwise it will load the data from the page table and deserialize it.
-**/
-- (YapDatabaseViewPage *)pageForPageKey:(NSString *)pageKey
-{
-	YapDatabaseViewPage *page = nil;
-	
-	// Check dirty cache & clean cache
-	
-	page = [viewConnection->dirtyPages objectForKey:pageKey];
-	if (page) return page;
-	
-	page = [viewConnection->pageCache objectForKey:pageKey];
-	if (page) return page;
-	
-	// Otherwise pull from the database
-	
-	sqlite3_stmt *statement = [viewConnection pageTable_getDataForPageKeyStatement];
-	if (statement == NULL)
-		return nil;
-	
-	// SELECT data FROM 'pageTableName' WHERE pageKey = ? ;
-	
-	YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
-	sqlite3_bind_text(statement, 1, _pageKey.str, _pageKey.length, SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
-	{
-		const void *blob = sqlite3_column_blob(statement, 0);
-		int blobSize = sqlite3_column_bytes(statement, 0);
-		
-		NSData *data = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-		
-		page = [self deserializePage:data];
-	}
-	else if (status == SQLITE_ERROR)
-	{
-		YDBLogError(@"%@ (%@): Error executing statement: %d %s",
-		            THIS_METHOD, [self registeredName],
-		            status, sqlite3_errmsg(databaseTransaction->connection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_pageKey);
-	
-	// Store in cache if found
-	if (page)
-		[viewConnection->pageCache setObject:page forKey:pageKey];
-	
-	return page;
-}
-
-- (NSString *)groupForPageKey:(NSString *)pageKey
-{
-	return [viewConnection->pageKey_group_dict objectForKey:pageKey];
-}
-
-- (NSUInteger)indexForRowid:(int64_t)rowid inGroup:(NSString *)group withPageKey:(NSString *)pageKey
-{
-	// Calculate the offset of the corresponding page within the group.
-	
-	NSUInteger pageOffset = 0;
-	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
-	
-	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
-	{
-		if ([pageMetadata->pageKey isEqualToString:pageKey])
-		{
-			break;
-		}
-		
-		pageOffset += pageMetadata->count;
-	}
-	
-	// Fetch the actual page (ordered array of rowid's)
-	
-	YapDatabaseViewPage *page = [self pageForPageKey:pageKey];
-	
-	// Find the exact index of the rowid within the page
-	
-	NSUInteger indexWithinPage = 0;
-	BOOL found = [page getIndex:&indexWithinPage ofRowid:rowid];
-	
-	NSAssert(found, @"Missing rowid in page");
-	
-	// Return the full index of the rowid within the group
-	
-	return pageOffset + indexWithinPage;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Populate
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)dropTablesForOldClassVersion:(int)oldClassVersion
 {
@@ -735,7 +428,7 @@
 		}
 	}
 	
-	if (oldClassVersion <= 2)
+	if (oldClassVersion == 1 || oldClassVersion == 2)
 	{
 		// In version 3, we changed the columns of the 'view_name_page' table.
 		// The old table stored all metadata in a blob.
@@ -758,48 +451,85 @@
 
 - (BOOL)createTables
 {
-	sqlite3 *db = databaseTransaction->connection->db;
-	
-	NSString *mapTableName = [self mapTableName];
-	NSString *pageTableName = [self pageTableName];
-	
-	YDBLogVerbose(@"Creating view tables for registeredName(%@): %@, %@",
-	              [self registeredName], mapTableName, pageTableName);
-	
-	NSString *createMapTable = [NSString stringWithFormat:
-	    @"CREATE TABLE IF NOT EXISTS \"%@\""
-	    @" (\"rowid\" INTEGER PRIMARY KEY,"
-	    @"  \"pageKey\" CHAR NOT NULL"
-	    @" );", mapTableName];
-	
-	NSString *createPageTable = [NSString stringWithFormat:
-	    @"CREATE TABLE IF NOT EXISTS \"%@\""
-	    @" (\"pageKey\" CHAR NOT NULL PRIMARY KEY,"
-	    @"  \"group\" CHAR NOT NULL,"
-	    @"  \"prevPageKey\" CHAR,"
-	    @"  \"count\" INTEGER,"
-	    @"  \"data\" BLOB"
-	    @" );", pageTableName];
-	
-	int status;
-	
-	status = sqlite3_exec(db, [createMapTable UTF8String], NULL, NULL, NULL);
-	if (status != SQLITE_OK)
+	if ([self isPersistentView])
 	{
-		YDBLogError(@"%@ - Failed creating map table (%@): %d %s",
-		            THIS_METHOD, mapTableName, status, sqlite3_errmsg(db));
-		return NO;
+		sqlite3 *db = databaseTransaction->connection->db;
+		
+		NSString *mapTableName = [self mapTableName];
+		NSString *pageTableName = [self pageTableName];
+		
+		YDBLogVerbose(@"Creating view tables for registeredName(%@): %@, %@",
+		              [self registeredName], mapTableName, pageTableName);
+		
+		NSString *createMapTable = [NSString stringWithFormat:
+		    @"CREATE TABLE IF NOT EXISTS \"%@\""
+		    @" (\"rowid\" INTEGER PRIMARY KEY,"
+		    @"  \"pageKey\" CHAR NOT NULL"
+		    @" );", mapTableName];
+		
+		NSString *createPageTable = [NSString stringWithFormat:
+		    @"CREATE TABLE IF NOT EXISTS \"%@\""
+		    @" (\"pageKey\" CHAR NOT NULL PRIMARY KEY,"
+		    @"  \"group\" CHAR NOT NULL,"
+		    @"  \"prevPageKey\" CHAR,"
+		    @"  \"count\" INTEGER,"
+		    @"  \"data\" BLOB"
+		    @" );", pageTableName];
+		
+		int status;
+		
+		status = sqlite3_exec(db, [createMapTable UTF8String], NULL, NULL, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@ - Failed creating map table (%@): %d %s",
+			            THIS_METHOD, mapTableName, status, sqlite3_errmsg(db));
+			return NO;
+		}
+		
+		status = sqlite3_exec(db, [createPageTable UTF8String], NULL, NULL, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@ - Failed creating page table (%@): %d %s",
+			            THIS_METHOD, pageTableName, status, sqlite3_errmsg(db));
+			return NO;
+		}
+		
+		return YES;
 	}
-	
-	status = sqlite3_exec(db, [createPageTable UTF8String], NULL, NULL, NULL);
-	if (status != SQLITE_OK)
+	else // if (isNonPersistentView)
 	{
-		YDBLogError(@"%@ - Failed creating page table (%@): %d %s",
-		            THIS_METHOD, pageTableName, status, sqlite3_errmsg(db));
-		return NO;
+		NSString *mapTableName = [self mapTableName];
+		NSString *pageTableName = [self pageTableName];
+		NSString *pageMetadataTableName = [self pageMetadataTableName];
+		
+		YapMemoryTable *mapTable = [[YapMemoryTable alloc] initWithKeyClass:[NSNumber class]];
+		YapMemoryTable *pageTable = [[YapMemoryTable alloc] initWithKeyClass:[NSString class]];
+		YapMemoryTable *pageMetadataTable = [[YapMemoryTable alloc] initWithKeyClass:[NSString class]];
+		
+		if (![databaseTransaction->connection registerTable:mapTable withName:mapTableName])
+		{
+			YDBLogError(@"%@ - Failed registering map table", THIS_METHOD);
+			return NO;
+		}
+		
+		if (![databaseTransaction->connection registerTable:pageTable withName:pageTableName])
+		{
+			YDBLogError(@"%@ - Failed registering page table", THIS_METHOD);
+			return NO;
+		}
+		
+		if (![databaseTransaction->connection registerTable:pageMetadataTable withName:pageMetadataTableName])
+		{
+			YDBLogError(@"%@ - Failed registering pageMetadata table", THIS_METHOD);
+			return NO;
+		}
+		
+		mapTableTransaction = [databaseTransaction memoryTableTransaction:mapTableName];
+		pageTableTransaction = [databaseTransaction memoryTableTransaction:pageTableName];
+		pageMetadataTableTransaction = [databaseTransaction memoryTableTransaction:pageMetadataTableName];
+		
+		return YES;
 	}
-	
-	return YES;
 }
 
 - (BOOL)populateView
@@ -1019,6 +749,410 @@
 	}
 	
 	return YES;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Accessors
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Required override method from YapAbstractDatabaseExtensionTransaction.
+**/
+- (YapAbstractDatabaseTransaction *)databaseTransaction
+{
+	return databaseTransaction;
+}
+
+/**
+ * Required override method from YapAbstractDatabaseExtensionTransaction.
+**/
+- (YapAbstractDatabaseExtension *)extension
+{
+	return viewConnection->view;
+}
+
+/**
+ * Required override method from YapAbstractDatabaseExtensionTransaction.
+**/
+- (YapAbstractDatabaseExtensionConnection *)extensionConnection
+{
+	return viewConnection;
+}
+
+- (NSString *)registeredName
+{
+	return [viewConnection->view registeredName];
+}
+
+- (NSString *)mapTableName
+{
+	return [viewConnection->view mapTableName];
+}
+
+- (NSString *)pageTableName
+{
+	return [viewConnection->view pageTableName];
+}
+
+- (NSString *)pageMetadataTableName
+{
+	return [viewConnection->view pageMetadataTableName];
+}
+
+- (BOOL)isPersistentView
+{
+	return viewConnection->view->options.isPersistent;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Serialization & Deserialization
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSData *)serializePage:(YapDatabaseViewPage *)page
+{
+	return [page serialize];
+}
+
+- (YapDatabaseViewPage *)deserializePage:(NSData *)data
+{
+	YapDatabaseViewPage *page = [[YapDatabaseViewPage alloc] init];
+	[page deserialize:data];
+	
+	return page;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Utilities
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSString *)generatePageKey
+{
+	NSString *key = nil;
+	
+	CFUUIDRef uuid = CFUUIDCreate(NULL);
+	if (uuid)
+	{
+		key = (__bridge_transfer NSString *)CFUUIDCreateString(NULL, uuid);
+		CFRelease(uuid);
+	}
+	
+	return key;
+}
+
+/**
+ * If the given rowid is in the view, returns the associated pageKey.
+ *
+ * This method will use the cache(s) if possible.
+ * Otherwise it will lookup the value in the map table.
+**/
+- (NSString *)pageKeyForRowid:(int64_t)rowid
+{
+	NSString *pageKey = nil;
+	NSNumber *rowidNumber = @(rowid);
+	
+	// Check dirty cache & clean cache
+	
+	pageKey = [viewConnection->dirtyMaps objectForKey:rowidNumber];
+	if (pageKey)
+	{
+		if ((__bridge void *)pageKey == (__bridge void *)[NSNull null])
+			return nil;
+		else
+			return pageKey;
+	}
+	
+	pageKey = [viewConnection->mapCache objectForKey:rowidNumber];
+	if (pageKey)
+	{
+		if ((__bridge void *)pageKey == (__bridge void *)[NSNull null])
+			return nil;
+		else
+			return pageKey;
+	}
+	
+	// Otherwise pull from the database
+	
+	if ([self isPersistentView])
+	{
+		sqlite3_stmt *statement = [viewConnection mapTable_getPageKeyForRowidStatement];
+		if (statement == NULL)
+			return nil;
+		
+		// SELECT "pageKey" FROM "mapTableName" WHERE "rowid" = ? ;
+		
+		sqlite3_bind_int64(statement, 1, rowid);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
+		{
+			const unsigned char *text = sqlite3_column_text(statement, 0);
+			int textSize = sqlite3_column_bytes(statement, 0);
+			
+			pageKey = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+		}
+		else if (status == SQLITE_ERROR)
+		{
+			YDBLogError(@"%@ (%@): Error executing statement: %d %s",
+			            THIS_METHOD, [self registeredName],
+			            status, sqlite3_errmsg(databaseTransaction->connection->db));
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+	}
+	else // if (isNonPersistentView)
+	{
+		pageKey = [mapTableTransaction objectForKey:rowidNumber];
+	}
+	
+	if (pageKey)
+		[viewConnection->mapCache setObject:pageKey forKey:rowidNumber];
+	else
+		[viewConnection->mapCache setObject:[NSNull null] forKey:rowidNumber];
+	
+	return pageKey;
+}
+
+/**
+ * This method looks up a whole bunch of pageKeys using only a few queries.
+ *
+ * @param input
+ *     A dictionary of the form: @{
+ *         @(rowid) = collectionKey, ...
+ *     }
+ * 
+ * @return A dictionary of the form: @{
+ *         pageKey = @{ @(rowid) = collectionKey, ... }
+ *     }
+**/
+- (NSDictionary *)pageKeysForRowids:(NSArray *)rowids withKeyMappings:(NSDictionary *)keyMappings
+{
+	NSUInteger count = [rowids count];
+	if (count == 0)
+	{
+		return [NSDictionary dictionary];
+	}
+	
+	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:count];
+	
+	if ([self isPersistentView])
+	{
+		sqlite3 *db = databaseTransaction->connection->db;
+		
+		// Sqlite has an upper bound on the number of host parameters that may be used in a single query.
+		// We need to watch out for this in case a large array of keys is passed.
+		
+		NSUInteger maxHostParams = (NSUInteger) sqlite3_limit(db, SQLITE_LIMIT_VARIABLE_NUMBER, -1);
+		
+		NSUInteger offset = 0;
+		do
+		{
+			NSUInteger left = count - offset;
+			NSUInteger numHostParams = MIN(left, maxHostParams);
+			
+			// SELECT "rowid", "pageKey" FROM "mapTableName" WHERE "rowid" IN (?, ?, ...);
+			
+			NSUInteger capacity = 50 + (numHostParams * 3);
+			NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
+			
+			[query appendFormat:@"SELECT \"rowid\", \"pageKey\" FROM \"%@\" WHERE \"rowid\" IN (", [self mapTableName]];
+			
+			for (NSUInteger i = 0; i < numHostParams; i++)
+			{
+				if (i == 0)
+					[query appendFormat:@"?"];
+				else
+					[query appendFormat:@", ?"];
+			}
+			
+			[query appendString:@");"];
+			
+			sqlite3_stmt *statement;
+			int status;
+			
+			status = sqlite3_prepare_v2(db, [query UTF8String], -1, &statement, NULL);
+			if (status != SQLITE_OK)
+			{
+				YDBLogError(@"%@ (%@): Error creating statement\n"
+				            @" - status(%d), errmsg: %s\n"
+				            @" - query: %@",
+				            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db), query);
+				return nil;
+			}
+			
+			for (NSUInteger i = 0; i < numHostParams; i++)
+			{
+				int64_t rowid = [[rowids objectAtIndex:(offset + i)] longLongValue];
+				
+				sqlite3_bind_int64(statement, (int)(i + 1), rowid);
+			}
+			
+			while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+			{
+				// Extract rowid & pageKey from row
+				
+				int64_t rowid = sqlite3_column_int64(statement, 0);
+				
+				const unsigned char *text = sqlite3_column_text(statement, 1);
+				int textSize = sqlite3_column_bytes(statement, 1);
+				
+				NSString *pageKey = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+				
+				// Add to result dictionary
+				
+				NSMutableDictionary *subKeyMappings = [result objectForKey:pageKey];
+				if (subKeyMappings == nil)
+				{
+					subKeyMappings = [NSMutableDictionary dictionaryWithCapacity:1];
+					[result setObject:subKeyMappings forKey:pageKey];
+				}
+				
+				NSNumber *number = @(rowid);
+				YapCollectionKey *collectionKey = [keyMappings objectForKey:number];
+				
+				[subKeyMappings setObject:collectionKey forKey:number];
+			}
+			
+			if (status != SQLITE_DONE)
+			{
+				YDBLogError(@"%@ (%@): Error executing statement: %d %s",
+				            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db));
+				return nil;
+			}
+			
+			
+			offset += numHostParams;
+			
+		} while (offset < count);
+	
+	}
+	else // if (isNonPersistentView)
+	{
+		[mapTableTransaction accessWithBlock:^{ @autoreleasepool {
+			
+			for (NSNumber *rowidNumber in rowids)
+			{
+				NSString *pageKey = [mapTableTransaction objectForKey:rowidNumber];
+				if (pageKey)
+				{
+					NSMutableDictionary *subKeyMappings = [result objectForKey:pageKey];
+					if (subKeyMappings == nil)
+					{
+						subKeyMappings = [NSMutableDictionary dictionaryWithCapacity:1];
+						[result setObject:subKeyMappings forKey:pageKey];
+					}
+					
+					NSString *key = [keyMappings objectForKey:rowidNumber];
+					
+					[subKeyMappings setObject:key forKey:rowidNumber];
+				}
+			}
+		}}];
+	}
+	
+	return result;
+}
+
+/**
+ * Fetches the page for the given pageKey.
+ * 
+ * This method will use the cache(s) if possible.
+ * Otherwise it will load the data from the page table and deserialize it.
+**/
+- (YapDatabaseViewPage *)pageForPageKey:(NSString *)pageKey
+{
+	YapDatabaseViewPage *page = nil;
+	
+	// Check dirty cache & clean cache
+	
+	page = [viewConnection->dirtyPages objectForKey:pageKey];
+	if (page) return page;
+	
+	page = [viewConnection->pageCache objectForKey:pageKey];
+	if (page) return page;
+	
+	// Otherwise pull from the database
+	
+	if ([self isPersistentView])
+	{
+		sqlite3_stmt *statement = [viewConnection pageTable_getDataForPageKeyStatement];
+		if (statement == NULL)
+			return nil;
+		
+		// SELECT data FROM 'pageTableName' WHERE pageKey = ? ;
+		
+		YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
+		sqlite3_bind_text(statement, 1, _pageKey.str, _pageKey.length, SQLITE_STATIC);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
+		{
+			const void *blob = sqlite3_column_blob(statement, 0);
+			int blobSize = sqlite3_column_bytes(statement, 0);
+			
+			NSData *data = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+			
+			page = [self deserializePage:data];
+		}
+		else if (status == SQLITE_ERROR)
+		{
+			YDBLogError(@"%@ (%@): Error executing statement: %d %s",
+			            THIS_METHOD, [self registeredName],
+			            status, sqlite3_errmsg(databaseTransaction->connection->db));
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+		FreeYapDatabaseString(&_pageKey);
+	}
+	else // if (isNonPersistentView)
+	{
+		page = [[pageTableTransaction objectForKey:pageKey] copy];
+	}
+	
+	// Store in cache if found
+	if (page)
+		[viewConnection->pageCache setObject:page forKey:pageKey];
+	
+	return page;
+}
+
+- (NSString *)groupForPageKey:(NSString *)pageKey
+{
+	return [viewConnection->pageKey_group_dict objectForKey:pageKey];
+}
+
+- (NSUInteger)indexForRowid:(int64_t)rowid inGroup:(NSString *)group withPageKey:(NSString *)pageKey
+{
+	// Calculate the offset of the corresponding page within the group.
+	
+	NSUInteger pageOffset = 0;
+	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	
+	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
+	{
+		if ([pageMetadata->pageKey isEqualToString:pageKey])
+		{
+			break;
+		}
+		
+		pageOffset += pageMetadata->count;
+	}
+	
+	// Fetch the actual page (ordered array of rowid's)
+	
+	YapDatabaseViewPage *page = [self pageForPageKey:pageKey];
+	
+	// Find the exact index of the rowid within the page
+	
+	NSUInteger indexWithinPage = 0;
+	BOOL found = [page getIndex:&indexWithinPage ofRowid:rowid];
+	
+	NSAssert(found, @"Missing rowid in page");
+	
+	// Return the full index of the rowid within the group
+	
+	return pageOffset + indexWithinPage;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1711,41 +1845,50 @@
 {
 	YDBLogAutoTrace();
 	
-	sqlite3_stmt *mapStatement = [viewConnection mapTable_removeAllStatement];
-	sqlite3_stmt *pageStatement = [viewConnection pageTable_removeAllStatement];
-	
-	if (mapStatement == NULL || pageStatement == NULL)
-		return;
-	
-	int status;
-	
-	// DELETE FROM "mapTableName";
-	
-	YDBLogVerbose(@"DELETE FROM '%@';", [self mapTableName]);
-	
-	status = sqlite3_step(mapStatement);
-	if (status != SQLITE_DONE)
+	if ([self isPersistentView])
 	{
-		YDBLogError(@"%@ (%@): Error in mapStatement: %d %s",
-		            THIS_METHOD, [self registeredName],
-		            status, sqlite3_errmsg(databaseTransaction->connection->db));
+		sqlite3_stmt *mapStatement = [viewConnection mapTable_removeAllStatement];
+		sqlite3_stmt *pageStatement = [viewConnection pageTable_removeAllStatement];
+		
+		if (mapStatement == NULL || pageStatement == NULL)
+			return;
+		
+		int status;
+		
+		// DELETE FROM "mapTableName";
+		
+		YDBLogVerbose(@"DELETE FROM '%@';", [self mapTableName]);
+		
+		status = sqlite3_step(mapStatement);
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"%@ (%@): Error in mapStatement: %d %s",
+			            THIS_METHOD, [self registeredName],
+			            status, sqlite3_errmsg(databaseTransaction->connection->db));
+		}
+		
+		// DELETE FROM 'pageTableName';
+		
+		YDBLogVerbose(@"DELETE FROM '%@';", [self pageTableName]);
+		
+		status = sqlite3_step(pageStatement);
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"%@ (%@): Error in pageStatement: %d %s",
+			            THIS_METHOD, [self registeredName],
+			            status, sqlite3_errmsg(databaseTransaction->connection->db));
+		}
+		
+		sqlite3_reset(mapStatement);
+		sqlite3_reset(pageStatement);
 	}
-	
-	// DELETE FROM 'pageTableName';
-	
-	YDBLogVerbose(@"DELETE FROM '%@';", [self pageTableName]);
-	
-	status = sqlite3_step(pageStatement);
-	if (status != SQLITE_DONE)
+	else // if (isNonPersistentView)
 	{
-		YDBLogError(@"%@ (%@): Error in pageStatement: %d %s",
-		            THIS_METHOD, [self registeredName],
-		            status, sqlite3_errmsg(databaseTransaction->connection->db));
+		[mapTableTransaction removeAllObjects];
+		[pageTableTransaction removeAllObjects];
+		[pageMetadataTableTransaction removeAllObjects];
 	}
-	
-	sqlite3_reset(mapStatement);
-	sqlite3_reset(pageStatement);
-	
+		
 	for (NSString *group in viewConnection->group_pagesMetadata_dict)
 	{
 		[viewConnection->changes addObject:[YapDatabaseViewSectionChange resetGroup:group]];
@@ -2089,297 +2232,237 @@
 	YDBLogVerbose(@"viewConnection->dirtyLinks: %@", viewConnection->dirtyLinks);
 	YDBLogVerbose(@"viewConnection->dirtyMaps: %@", viewConnection->dirtyMaps);
 	
-	// Write dirty pages to table (along with associated dirty metadata)
+	if ([self isPersistentView])
+	{
+		// Persistent View: Step 1 of 3
+		//
+		// Write dirty pages to table (along with associated dirty metadata)
 	
-	[viewConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-		
-		__unsafe_unretained NSString *pageKey = (NSString *)key;
-		__unsafe_unretained YapDatabaseViewPage *page = (YapDatabaseViewPage *)obj;
-		
-		BOOL needsInsert = NO;
-		BOOL hasDirtyLink = NO;
-		
-		YapDatabaseViewPageMetadata *pageMetadata = nil;
-		
-		pageMetadata = [viewConnection->dirtyLinks objectForKey:pageKey];
-		if (pageMetadata)
-		{
-			hasDirtyLink = YES;
-		}
-		else
-		{
-			NSString *group = [self groupForPageKey:pageKey];
-			NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+		[viewConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 			
-			for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
+			__unsafe_unretained NSString *pageKey = (NSString *)key;
+			__unsafe_unretained YapDatabaseViewPage *page = (YapDatabaseViewPage *)obj;
+			
+			BOOL needsInsert = NO;
+			BOOL hasDirtyLink = NO;
+			
+			YapDatabaseViewPageMetadata *pageMetadata = nil;
+			
+			pageMetadata = [viewConnection->dirtyLinks objectForKey:pageKey];
+			if (pageMetadata)
 			{
-				if ([pm->pageKey isEqualToString:pageKey])
+				hasDirtyLink = YES;
+			}
+			else
+			{
+				NSString *group = [self groupForPageKey:pageKey];
+				NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+				
+				for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 				{
-					pageMetadata = pm;
-					break;
+					if ([pm->pageKey isEqualToString:pageKey])
+					{
+						pageMetadata = pm;
+						break;
+					}
 				}
 			}
-		}
 		
-		if (pageMetadata && pageMetadata->isNew)
-		{
-			needsInsert = YES;
-			pageMetadata->isNew = NO; // Clear flag
-		}
+			if (pageMetadata && pageMetadata->isNew)
+			{
+				needsInsert = YES;
+				pageMetadata->isNew = NO; // Clear flag
+			}
+			
+			if ((id)page == (id)[NSNull null])
+			{
+				sqlite3_stmt *statement = [viewConnection pageTable_removeForPageKeyStatement];
+				if (statement == NULL) {
+					*stop = YES;
+					return;//from block
+				}
+				
+				// DELETE FROM "pageTableName" WHERE "pageKey" = ?;
+				
+				YDBLogVerbose(@"DELETE FROM '%@' WHERE 'pageKey' = ?;\n"
+				              @" - pageKey: %@", [self pageTableName], pageKey);
+				
+				YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
+				sqlite3_bind_text(statement, 1, _pageKey.str, _pageKey.length, SQLITE_STATIC);
+				
+				int status = sqlite3_step(statement);
+				if (status != SQLITE_DONE)
+				{
+					YDBLogError(@"%@ (%@): Error executing statement[1a]: %d %s",
+					            THIS_METHOD, [self registeredName],
+					            status, sqlite3_errmsg(databaseTransaction->connection->db));
+				}
+				
+				sqlite3_clear_bindings(statement);
+				sqlite3_reset(statement);
+				FreeYapDatabaseString(&_pageKey);
+			}
+			else if (needsInsert)
+			{
+				sqlite3_stmt *statement = [viewConnection pageTable_insertForPageKeyStatement];
+				if (statement == NULL) {
+					*stop = YES;
+					return;//from block
+				}
+				
+				// INSERT INTO "pageTableName"
+				//   ("pageKey", "group", "prevPageKey", "count", "data") VALUES (?, ?, ?, ?, ?);
+				
+				YDBLogVerbose(@"INSERT INTO '%@'"
+				              @" ('pageKey', 'group', 'prevPageKey', 'count', 'data') VALUES (?,?,?,?,?);\n"
+				              @" - pageKey   : %@\n"
+				              @" - group     : %@\n"
+				              @" - prePageKey: %@\n"
+				              @" - count     : %d", [self pageTableName], pageKey,
+				              pageMetadata->group, pageMetadata->prevPageKey, (int)pageMetadata->count);
+				
+				YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
+				sqlite3_bind_text(statement, 1, _pageKey.str, _pageKey.length, SQLITE_STATIC);
+				
+				YapDatabaseString _group; MakeYapDatabaseString(&_group, pageMetadata->group);
+				sqlite3_bind_text(statement, 2, _group.str, _group.length, SQLITE_STATIC);
+				
+				YapDatabaseString _prevPageKey; MakeYapDatabaseString(&_prevPageKey, pageMetadata->prevPageKey);
+				if (pageMetadata->prevPageKey) {
+					sqlite3_bind_text(statement, 3, _prevPageKey.str, _prevPageKey.length, SQLITE_STATIC);
+				}
+				
+				sqlite3_bind_int(statement, 4, (int)(pageMetadata->count));
+				
+				__attribute__((objc_precise_lifetime)) NSData *rawData = [self serializePage:page];
+				sqlite3_bind_blob(statement, 5, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
+				
+				int status = sqlite3_step(statement);
+				if (status != SQLITE_DONE)
+				{
+					YDBLogError(@"%@ (%@): Error executing statement[1b]: %d %s",
+					            THIS_METHOD, [self registeredName],
+					            status, sqlite3_errmsg(databaseTransaction->connection->db));
+				}
+				
+				sqlite3_clear_bindings(statement);
+				sqlite3_reset(statement);
+				FreeYapDatabaseString(&_prevPageKey);
+				FreeYapDatabaseString(&_group);
+				FreeYapDatabaseString(&_pageKey);
+			}
+			else if (hasDirtyLink)
+			{
+				sqlite3_stmt *statement = [viewConnection pageTable_updateAllForPageKeyStatement];
+				if (statement == NULL) {
+					*stop = YES;
+					return;//from block
+				}
+				
+				// UPDATE "pageTableName" SET "prevPageKey" = ?, "count" = ?, "data" = ? WHERE "pageKey" = ?;
+				
+				YDBLogVerbose(@"UPDATE '%@' SET 'prevPageKey' = ?, 'count' = ?, 'data' = ? WHERE 'pageKey' = ?;\n"
+				              @" - pageKey    : %@\n"
+				              @" - prevPageKey: %@\n"
+				              @" - count      : %d", [self pageTableName], pageKey,
+				              pageMetadata->prevPageKey, (int)pageMetadata->count);
+				
+				YapDatabaseString _prevPageKey; MakeYapDatabaseString(&_prevPageKey, pageMetadata->prevPageKey);
+				if (pageMetadata->prevPageKey) {
+					sqlite3_bind_text(statement, 1, _prevPageKey.str, _prevPageKey.length, SQLITE_STATIC);
+				}
+				
+				sqlite3_bind_int(statement, 2, (int)(pageMetadata->count));
+				
+				__attribute__((objc_precise_lifetime)) NSData *rawData = [self serializePage:page];
+				sqlite3_bind_blob(statement, 3, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
+				
+				YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
+				sqlite3_bind_text(statement, 4, _pageKey.str, _pageKey.length, SQLITE_STATIC);
+				
+				int status = sqlite3_step(statement);
+				if (status != SQLITE_DONE)
+				{
+					YDBLogError(@"%@ (%@): Error executing statement[1c]: %d %s",
+					            THIS_METHOD, [self registeredName],
+					            status, sqlite3_errmsg(databaseTransaction->connection->db));
+				}
+				
+				sqlite3_clear_bindings(statement);
+				sqlite3_reset(statement);
+				FreeYapDatabaseString(&_prevPageKey);
+				FreeYapDatabaseString(&_pageKey);
+			}
+			else
+			{
+				sqlite3_stmt *statement = [viewConnection pageTable_updatePageForPageKeyStatement];
+				if (statement == NULL) {
+					*stop = YES;
+					return;//from block
+				}
+			
+				// UPDATE "pageTableName" SET "count" = ?, "data" = ? WHERE "pageKey" = ?;
+				
+				YDBLogVerbose(@"UPDATE '%@' SET 'count' = ?, 'data' = ? WHERE 'pageKey' = ?;\n"
+				              @" - pageKey: %@\n"
+				              @" - count  : %d", [self pageTableName], pageKey, (int)(pageMetadata->count));
+				
+				sqlite3_bind_int(statement, 1, (int)[page count]);
+				
+				__attribute__((objc_precise_lifetime)) NSData *rawData = [self serializePage:page];
+				sqlite3_bind_blob(statement, 2, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
+				
+				YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
+				sqlite3_bind_text(statement, 3, _pageKey.str, _pageKey.length, SQLITE_STATIC);
+				
+				int status = sqlite3_step(statement);
+				if (status != SQLITE_DONE)
+				{
+					YDBLogError(@"%@ (%@): Error executing statement[1d]: %d %s",
+					            THIS_METHOD, [self registeredName],
+					            status, sqlite3_errmsg(databaseTransaction->connection->db));
+				}
+				
+				sqlite3_clear_bindings(statement);
+				sqlite3_reset(statement);
+				FreeYapDatabaseString(&_pageKey);
+			}
+		}];
 		
-		if ((id)page == (id)[NSNull null])
-		{
-			sqlite3_stmt *statement = [viewConnection pageTable_removeForPageKeyStatement];
-			if (statement == NULL) {
-				*stop = YES;
-				return;//from block
-			}
+		// Persistent View: Step 2 of 3
+		//
+		// Write dirty prevPageKey values to table (those not also associated with dirty pages).
+		// This happens when only the prevPageKey pointer is changed.
+		
+		[viewConnection->dirtyLinks enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 			
-			// DELETE FROM "pageTableName" WHERE "pageKey" = ?;
+			NSString *pageKey = (NSString *)key;
+			YapDatabaseViewPageMetadata *pageMetadata = (YapDatabaseViewPageMetadata *)obj;
 			
-			YDBLogVerbose(@"DELETE FROM '%@' WHERE 'pageKey' = ?;\n"
-			              @" - pageKey: %@", [self pageTableName], pageKey);
-			
-			YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
-			sqlite3_bind_text(statement, 1, _pageKey.str, _pageKey.length, SQLITE_STATIC);
-			
-			int status = sqlite3_step(statement);
-			if (status != SQLITE_DONE)
+			if ([viewConnection->dirtyPages objectForKey:pageKey])
 			{
-				YDBLogError(@"%@ (%@): Error executing statement[1a]: %d %s",
-				            THIS_METHOD, [self registeredName],
-				            status, sqlite3_errmsg(databaseTransaction->connection->db));
+				// Both the page and metadata were dirty, so we wrote them both to disk at the same time.
+				// No need to write the metadata again.
+				
+				return;//continue;
 			}
 			
-			sqlite3_clear_bindings(statement);
-			sqlite3_reset(statement);
-			FreeYapDatabaseString(&_pageKey);
-		}
-		else if (needsInsert)
-		{
-			sqlite3_stmt *statement = [viewConnection pageTable_insertForPageKeyStatement];
+			sqlite3_stmt *statement = [viewConnection pageTable_updateLinkForPageKeyStatement];
 			if (statement == NULL) {
 				*stop = YES;
 				return;//from block
 			}
+				
+			// UPDATE "pageTableName" SET "prevPageKey" = ? WHERE "pageKey" = ?;
 			
-			// INSERT INTO "pageTableName" ("pageKey", "group", "prevPageKey", "count", "data") VALUES (?, ?, ?, ?, ?);
-			
-			YDBLogVerbose(@"INSERT INTO '%@' ('pageKey', 'group', 'prevPageKey', 'count', 'data') VALUES (?,?,?,?,?);\n"
-			              @" - pageKey   : %@\n"
-			              @" - group     : %@\n"
-			              @" - prePageKey: %@\n"
-			              @" - count     : %d", [self pageTableName], pageKey,
-			              pageMetadata->group, pageMetadata->prevPageKey, (int)pageMetadata->count);
-			
-			YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
-			sqlite3_bind_text(statement, 1, _pageKey.str, _pageKey.length, SQLITE_STATIC);
-			
-			YapDatabaseString _group; MakeYapDatabaseString(&_group, pageMetadata->group);
-			sqlite3_bind_text(statement, 2, _group.str, _group.length, SQLITE_STATIC);
-			
-			YapDatabaseString _prevPageKey; MakeYapDatabaseString(&_prevPageKey, pageMetadata->prevPageKey);
-			if (pageMetadata->prevPageKey) {
-				sqlite3_bind_text(statement, 3, _prevPageKey.str, _prevPageKey.length, SQLITE_STATIC);
-			}
-			
-			sqlite3_bind_int(statement, 4, (int)(pageMetadata->count));
-			
-			__attribute__((objc_precise_lifetime)) NSData *rawData = [self serializePage:page];
-			sqlite3_bind_blob(statement, 5, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
-			
-			int status = sqlite3_step(statement);
-			if (status != SQLITE_DONE)
-			{
-				YDBLogError(@"%@ (%@): Error executing statement[1b]: %d %s",
-				            THIS_METHOD, [self registeredName],
-				            status, sqlite3_errmsg(databaseTransaction->connection->db));
-			}
-			
-			sqlite3_clear_bindings(statement);
-			sqlite3_reset(statement);
-			FreeYapDatabaseString(&_prevPageKey);
-			FreeYapDatabaseString(&_group);
-			FreeYapDatabaseString(&_pageKey);
-		}
-		else if (hasDirtyLink)
-		{
-			sqlite3_stmt *statement = [viewConnection pageTable_updateAllForPageKeyStatement];
-			if (statement == NULL) {
-				*stop = YES;
-				return;//from block
-			}
-			
-			// UPDATE "pageTableName" SET "prevPageKey" = ?, "count" = ?, "data" = ? WHERE "pageKey" = ?;
-			
-			YDBLogVerbose(@"UPDATE '%@' SET 'prevPageKey' = ?, 'count' = ?, 'data' = ? WHERE 'pageKey' = ?;\n"
+			YDBLogVerbose(@"UPDATE '%@' SET 'prevPageKey' = ? WHERE 'pageKey' = ?;\n"
 			              @" - pageKey    : %@\n"
-			              @" - prevPageKey: %@\n"
-			              @" - count      : %d", [self pageTableName], pageKey,
-			              pageMetadata->prevPageKey, (int)pageMetadata->count);
+			              @" - prevPageKey: %@", [self pageTableName], pageKey, pageMetadata->prevPageKey);
 			
 			YapDatabaseString _prevPageKey; MakeYapDatabaseString(&_prevPageKey, pageMetadata->prevPageKey);
 			if (pageMetadata->prevPageKey) {
 				sqlite3_bind_text(statement, 1, _prevPageKey.str, _prevPageKey.length, SQLITE_STATIC);
 			}
-			
-			sqlite3_bind_int(statement, 2, (int)(pageMetadata->count));
-			
-			__attribute__((objc_precise_lifetime)) NSData *rawData = [self serializePage:page];
-			sqlite3_bind_blob(statement, 3, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
-			
-			YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
-			sqlite3_bind_text(statement, 4, _pageKey.str, _pageKey.length, SQLITE_STATIC);
-			
-			int status = sqlite3_step(statement);
-			if (status != SQLITE_DONE)
-			{
-				YDBLogError(@"%@ (%@): Error executing statement[1c]: %d %s",
-				            THIS_METHOD, [self registeredName],
-				            status, sqlite3_errmsg(databaseTransaction->connection->db));
-			}
-			
-			sqlite3_clear_bindings(statement);
-			sqlite3_reset(statement);
-			FreeYapDatabaseString(&_prevPageKey);
-			FreeYapDatabaseString(&_pageKey);
-		}
-		else
-		{
-			sqlite3_stmt *statement = [viewConnection pageTable_updatePageForPageKeyStatement];
-			if (statement == NULL) {
-				*stop = YES;
-				return;//from block
-			}
-			
-			// UPDATE "pageTableName" SET "count" = ?, "data" = ? WHERE "pageKey" = ?;
-			
-			YDBLogVerbose(@"UPDATE '%@' SET 'count' = ?, 'data' = ? WHERE 'pageKey' = ?;\n"
-			              @" - pageKey: %@\n"
-			              @" - count  : %d", [self pageTableName], pageKey, (int)(pageMetadata->count));
-			
-			sqlite3_bind_int(statement, 1, (int)[page count]);
-			
-			__attribute__((objc_precise_lifetime)) NSData *rawData = [self serializePage:page];
-			sqlite3_bind_blob(statement, 2, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
-			
-			YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
-			sqlite3_bind_text(statement, 3, _pageKey.str, _pageKey.length, SQLITE_STATIC);
-			
-			int status = sqlite3_step(statement);
-			if (status != SQLITE_DONE)
-			{
-				YDBLogError(@"%@ (%@): Error executing statement[1d]: %d %s",
-				            THIS_METHOD, [self registeredName],
-				            status, sqlite3_errmsg(databaseTransaction->connection->db));
-			}
-			
-			sqlite3_clear_bindings(statement);
-			sqlite3_reset(statement);
-			FreeYapDatabaseString(&_pageKey);
-		}
-	}];
-	
-	// Write dirty prevPageKey values to table (those not also associated with dirty pages).
-	// This happens when only the prevPageKey pointer is changed.
-	
-	[viewConnection->dirtyLinks enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-		
-		NSString *pageKey = (NSString *)key;
-		YapDatabaseViewPageMetadata *pageMetadata = (YapDatabaseViewPageMetadata *)obj;
-		
-		if ([viewConnection->dirtyPages objectForKey:pageKey])
-		{
-			// Both the page and metadata were dirty, so we wrote them both to disk at the same time.
-			// No need to write the metadata again.
-			
-			return;//continue;
-		}
-		
-		sqlite3_stmt *statement = [viewConnection pageTable_updateLinkForPageKeyStatement];
-		if (statement == NULL) {
-			*stop = YES;
-			return;//from block
-		}
-			
-		// UPDATE "pageTableName" SET "prevPageKey" = ? WHERE "pageKey" = ?;
-		
-		YDBLogVerbose(@"UPDATE '%@' SET 'prevPageKey' = ? WHERE 'pageKey' = ?;\n"
-		              @" - pageKey    : %@\n"
-		              @" - prevPageKey: %@", [self pageTableName], pageKey, pageMetadata->prevPageKey);
-		
-		YapDatabaseString _prevPageKey; MakeYapDatabaseString(&_prevPageKey, pageMetadata->prevPageKey);
-		if (pageMetadata->prevPageKey) {
-			sqlite3_bind_text(statement, 1, _prevPageKey.str, _prevPageKey.length, SQLITE_STATIC);
-		}
-		
-		YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
-		sqlite3_bind_text(statement, 2, _pageKey.str, _pageKey.length, SQLITE_STATIC);
-		
-		int status = sqlite3_step(statement);
-		if (status != SQLITE_DONE)
-		{
-			YDBLogError(@"%@ (%@): Error executing statement[2]: %d %s",
-			            THIS_METHOD, [self registeredName],
-			            status, sqlite3_errmsg(databaseTransaction->connection->db));
-		}
-		
-		sqlite3_clear_bindings(statement);
-		sqlite3_reset(statement);
-		FreeYapDatabaseString(&_prevPageKey);
-		FreeYapDatabaseString(&_pageKey);
-	}];
-	
-	// Update the dirty rowid -> pageKey mappings.
-	
-	[viewConnection->dirtyMaps enumerateKeysAndObjectsUsingBlock:^(id rowIdObj, id pageKeyObj, BOOL *stop) {
-		
-		int64_t rowid = [(NSNumber *)rowIdObj longLongValue];
-		__unsafe_unretained NSString *pageKey = (NSString *)pageKeyObj;
-		
-		if ((id)pageKey == (id)[NSNull null])
-		{
-			sqlite3_stmt *statement = [viewConnection mapTable_removeForRowidStatement];
-			if (statement == NULL)
-			{
-				*stop = YES;
-				return;//continue;
-			}
-			
-			// DELETE FROM "mapTableName" WHERE "rowid" = ?;
-			
-			YDBLogVerbose(@"DELETE FROM '%@' WHERE 'rowid' = ?;\n"
-			              @" - rowid : %lld\n", [self mapTableName], rowid);
-			
-			sqlite3_bind_int64(statement, 1, rowid);
-			
-			int status = sqlite3_step(statement);
-			if (status != SQLITE_DONE)
-			{
-				YDBLogError(@"%@ (%@): Error executing statement[3a]: %d %s",
-				            THIS_METHOD, [self registeredName],
-				            status, sqlite3_errmsg(databaseTransaction->connection->db));
-			}
-			
-			sqlite3_clear_bindings(statement);
-			sqlite3_reset(statement);
-		}
-		else
-		{
-			sqlite3_stmt *statement = [viewConnection mapTable_setPageKeyForRowidStatement];
-			if (statement == NULL)
-			{
-				*stop = YES;
-				return;//continue;
-			}
-			
-			// INSERT OR REPLACE INTO "mapTableName" ("rowid", "pageKey") VALUES (?, ?);
-			
-			YDBLogVerbose(@"INSERT OR REPLACE INTO '%@' ('rowid', 'pageKey') VALUES (?, ?);\n"
-			              @" - rowid  : %lld\n"
-			              @" - pageKey: %@", [self mapTableName], rowid, pageKey);
-			
-			sqlite3_bind_int64(statement, 1, rowid);
 			
 			YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
 			sqlite3_bind_text(statement, 2, _pageKey.str, _pageKey.length, SQLITE_STATIC);
@@ -2387,16 +2470,225 @@
 			int status = sqlite3_step(statement);
 			if (status != SQLITE_DONE)
 			{
-				YDBLogError(@"%@ (%@): Error executing statement[3b]: %d %s",
+				YDBLogError(@"%@ (%@): Error executing statement[2]: %d %s",
 				            THIS_METHOD, [self registeredName],
 				            status, sqlite3_errmsg(databaseTransaction->connection->db));
 			}
 			
 			sqlite3_clear_bindings(statement);
 			sqlite3_reset(statement);
+			FreeYapDatabaseString(&_prevPageKey);
 			FreeYapDatabaseString(&_pageKey);
+		}];
+		
+		// Persistent View: Step 3 of 3
+		//
+		// Update the dirty rowid -> pageKey mappings.
+		
+		[viewConnection->dirtyMaps enumerateKeysAndObjectsUsingBlock:^(id rowIdObj, id pageKeyObj, BOOL *stop) {
+			
+			int64_t rowid = [(NSNumber *)rowIdObj longLongValue];
+			__unsafe_unretained NSString *pageKey = (NSString *)pageKeyObj;
+			
+			if ((id)pageKey == (id)[NSNull null])
+			{
+				sqlite3_stmt *statement = [viewConnection mapTable_removeForRowidStatement];
+				if (statement == NULL)
+				{
+					*stop = YES;
+					return;//continue;
+				}
+				
+				// DELETE FROM "mapTableName" WHERE "rowid" = ?;
+				
+				YDBLogVerbose(@"DELETE FROM '%@' WHERE 'rowid' = ?;\n"
+				              @" - rowid : %lld\n", [self mapTableName], rowid);
+				
+				sqlite3_bind_int64(statement, 1, rowid);
+				
+				int status = sqlite3_step(statement);
+				if (status != SQLITE_DONE)
+				{
+						YDBLogError(@"%@ (%@): Error executing statement[3a]: %d %s",
+					            THIS_METHOD, [self registeredName],
+					            status, sqlite3_errmsg(databaseTransaction->connection->db));
+				}
+				
+				sqlite3_clear_bindings(statement);
+				sqlite3_reset(statement);
+			}
+			else
+			{
+				sqlite3_stmt *statement = [viewConnection mapTable_setPageKeyForRowidStatement];
+				if (statement == NULL)
+				{
+					*stop = YES;
+					return;//continue;
+				}
+				
+				// INSERT OR REPLACE INTO "mapTableName" ("rowid", "pageKey") VALUES (?, ?);
+				
+				YDBLogVerbose(@"INSERT OR REPLACE INTO '%@' ('rowid', 'pageKey') VALUES (?, ?);\n"
+				              @" - rowid  : %lld\n"
+				              @" - pageKey: %@", [self mapTableName], rowid, pageKey);
+				
+				sqlite3_bind_int64(statement, 1, rowid);
+				
+				YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
+				sqlite3_bind_text(statement, 2, _pageKey.str, _pageKey.length, SQLITE_STATIC);
+				
+				int status = sqlite3_step(statement);
+				if (status != SQLITE_DONE)
+				{
+					YDBLogError(@"%@ (%@): Error executing statement[3b]: %d %s",
+					            THIS_METHOD, [self registeredName],
+					            status, sqlite3_errmsg(databaseTransaction->connection->db));
+				}
+				
+				sqlite3_clear_bindings(statement);
+				sqlite3_reset(statement);
+				FreeYapDatabaseString(&_pageKey);
+			}
+		}];
+	}
+	else // if (isNonPersistentView)
+	{
+		// Memory View: Step 1 of 3
+		//
+		// Write dirty pages to table
+		
+		BOOL hasDirtyPages = ([viewConnection->dirtyPages count] > 0);
+		BOOL hasDirtyLinks = ([viewConnection->dirtyLinks count] > 0);
+		BOOL hasDirtyMaps  = ([viewConnection->dirtyMaps  count] > 0);
+		
+		if (hasDirtyPages)
+		{
+			[pageTableTransaction modifyWithBlock:^{ @autoreleasepool {
+				
+				[viewConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+					
+					__unsafe_unretained NSString *pageKey = (NSString *)key;
+					__unsafe_unretained YapDatabaseViewPage *page = (YapDatabaseViewPage *)obj;
+					
+					if ((id)page == (id)[NSNull null])
+					{
+						[pageTableTransaction removeObjectForKey:pageKey];
+					}
+					else
+					{
+						[pageTableTransaction setObject:[page copy] forKey:pageKey];
+					}
+				}];
+			}}];
 		}
-	}];
+		// Memory View: Step 2 of 3
+		//
+		// Write dirty pageMetadata to table.
+		// This includes anything referenced by dirtyPages or dirtyLinks.
+		
+		if (hasDirtyPages || hasDirtyLinks)
+		{
+			[pageMetadataTableTransaction modifyWithBlock:^{ @autoreleasepool {
+				
+				[viewConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+					
+					__unsafe_unretained NSString *pageKey = (NSString *)key;
+					__unsafe_unretained YapDatabaseViewPage *page = (YapDatabaseViewPage *)obj;
+					
+					if ((id)page == (id)[NSNull null])
+					{
+						[pageMetadataTableTransaction removeObjectForKey:pageKey];
+					}
+					else
+					{
+						YapDatabaseViewPageMetadata *pageMetadata = nil;
+						
+						pageMetadata = [viewConnection->dirtyLinks objectForKey:pageKey];
+						if (pageMetadata == nil)
+						{
+							NSString *group = [self groupForPageKey:pageKey];
+							NSMutableArray *pagesMetadataForGroup =
+							[viewConnection->group_pagesMetadata_dict objectForKey:group];
+							
+							for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
+							{
+								if ([pm->pageKey isEqualToString:pageKey])
+								{
+									pageMetadata = pm;
+									break;
+								}
+							}
+						}
+						
+						if (pageMetadata)
+						{
+							if (pageMetadata->isNew)
+								pageMetadata->isNew = NO; // Clear flag
+							
+							[pageMetadataTableTransaction setObject:[pageMetadata copy] forKey:pageKey];
+						}
+					}
+				}];
+				
+				[viewConnection->dirtyLinks enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+					
+					__unsafe_unretained NSString *pageKey = (NSString *)key;
+					__unsafe_unretained YapDatabaseViewPageMetadata *pageMetadata = (YapDatabaseViewPageMetadata *)obj;
+					
+					if ([viewConnection->dirtyPages objectForKey:pageKey])
+					{
+						// Both the page and metadata were dirty, so we wrote them both to disk at the same time.
+						// No need to write the metadata again.
+						
+						return;//continue;
+					}
+					
+					[pageMetadataTableTransaction setObject:[pageMetadata copy] forKey:pageKey];
+				}];
+			}}];
+		}
+		
+		// Memory View: Step 3 of 3
+		//
+		// Update the dirty rowid -> pageKey mappings.
+		
+		if (hasDirtyMaps)
+		{
+			[mapTableTransaction modifyWithBlock:^{ @autoreleasepool {
+				
+				[viewConnection->dirtyMaps enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+					
+					__unsafe_unretained NSNumber *rowidNumber = (NSNumber *)key;
+					__unsafe_unretained NSString *pageKey = (NSString *)obj;
+					
+					if ((id)pageKey == (id)[NSNull null])
+					{
+						[mapTableTransaction removeObjectForKey:rowidNumber];
+					}
+					else
+					{
+						[mapTableTransaction setObject:pageKey forKey:rowidNumber];
+					}
+				}];
+			}}];
+		}
+		
+		if (hasDirtyPages || viewConnection->reset)
+		{
+			[pageTableTransaction commit];
+		}
+		if (hasDirtyPages || hasDirtyLinks || viewConnection->reset)
+		{
+			[pageMetadataTableTransaction commit];
+		}
+		if (hasDirtyMaps || viewConnection->reset)
+		{
+			[mapTableTransaction commit];
+		}
+	}
+	
+	// Commit is complete.
+	// Cleanup time.
 	
 	[viewConnection postCommitCleanup];
 	

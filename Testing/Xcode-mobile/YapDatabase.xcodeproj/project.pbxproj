@@ -85,6 +85,7 @@
 		DCEE835017AAC7F3009BF81D /* TestViewMappingsLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = DCEE834F17AAC7F3009BF81D /* TestViewMappingsLogic.m */; };
 		DCF7E10D16F57CDA000C2184 /* BenchmarkYapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF7E10C16F57CDA000C2184 /* BenchmarkYapDatabase.m */; };
 		DCF7E11016F5BC6A000C2184 /* YapNull.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF7E10F16F5BC6A000C2184 /* YapNull.m */; };
+		DCFC112F1808C51F00A0A349 /* YapCollectionsDatabaseViewOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = DCFC112E1808C51F00A0A349 /* YapCollectionsDatabaseViewOptions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -248,6 +249,8 @@
 		DCF7E10C16F57CDA000C2184 /* BenchmarkYapDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BenchmarkYapDatabase.m; path = ../Benchmarking/BenchmarkYapDatabase.m; sourceTree = "<group>"; };
 		DCF7E10E16F5BC6A000C2184 /* YapNull.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapNull.h; sourceTree = "<group>"; };
 		DCF7E10F16F5BC6A000C2184 /* YapNull.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapNull.m; sourceTree = "<group>"; };
+		DCFC112D1808C51F00A0A349 /* YapCollectionsDatabaseViewOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCollectionsDatabaseViewOptions.h; sourceTree = "<group>"; };
+		DCFC112E1808C51F00A0A349 /* YapCollectionsDatabaseViewOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapCollectionsDatabaseViewOptions.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -327,6 +330,8 @@
 				DC2C98B417E3C87F00F1E04F /* Private */,
 				DC2C988A17E3C82900F1E04F /* YapCollectionsDatabaseView.h */,
 				DC2C988B17E3C82900F1E04F /* YapCollectionsDatabaseView.m */,
+				DCFC112D1808C51F00A0A349 /* YapCollectionsDatabaseViewOptions.h */,
+				DCFC112E1808C51F00A0A349 /* YapCollectionsDatabaseViewOptions.m */,
 				DC2C988C17E3C82900F1E04F /* YapCollectionsDatabaseViewConnection.h */,
 				DC2C988D17E3C82900F1E04F /* YapCollectionsDatabaseViewConnection.m */,
 				DC2C988F17E3C82900F1E04F /* YapCollectionsDatabaseViewTransaction.h */,
@@ -867,6 +872,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DCFC112F1808C51F00A0A349 /* YapCollectionsDatabaseViewOptions.m in Sources */,
 				DCAE51F71673FE2600395076 /* main.m in Sources */,
 				DC49734017E7E34700489267 /* YapDatabaseFullTextSearchSnippetOptions.m in Sources */,
 				DCAE51FB1673FE2600395076 /* AppDelegate.m in Sources */,

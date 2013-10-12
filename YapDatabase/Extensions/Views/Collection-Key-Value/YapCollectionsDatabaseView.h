@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 
 #import "YapAbstractDatabaseExtension.h"
+#import "YapCollectionsDatabaseViewOptions.h"
 #import "YapCollectionsDatabaseViewConnection.h"
 #import "YapCollectionsDatabaseViewTransaction.h"
 
@@ -12,7 +13,7 @@
  * The project wiki has a wealth of documentation if you have any questions.
  * https://github.com/yaptv/YapDatabase/wiki
  *
- * YapDatabaseView is an extension designed to work with YapDatabase.
+ * YapCollectionsDatabaseView is an extension designed to work with YapCollectionsDatabase.
  * It gives you a persistent sorted "view" of a configurable subset of your data.
  *
  * For the full documentation on Views, please see the related wiki article:
@@ -133,6 +134,21 @@ typedef enum {
 
 */
 
+/**
+ * See the wiki for an example of how to initialize a view:
+ * https://github.com/yaptv/YapDatabase/wiki/Views#wiki-initializing_a_view
+ *
+ * @param version
+ *
+ *   If, after creating a view, you need to change either the groupingBlock or sortingBlock,
+ *   then simply use the version parameter. If you pass a version that is different from the last
+ *   initialization of the view, then the view will automatically flush its tables, and re-populate itself.
+ *
+ * @param options
+ *
+ *   The options allow you to specify things like creating an in-memory-only view (non persistent).
+**/
+
 - (id)initWithGroupingBlock:(YapCollectionsDatabaseViewGroupingBlock)groupingBlock
           groupingBlockType:(YapCollectionsDatabaseViewBlockType)groupingBlockType
                sortingBlock:(YapCollectionsDatabaseViewSortingBlock)sortingBlock
@@ -143,6 +159,13 @@ typedef enum {
                sortingBlock:(YapCollectionsDatabaseViewSortingBlock)sortingBlock
            sortingBlockType:(YapCollectionsDatabaseViewBlockType)sortingBlockType
                     version:(int)version;
+
+- (id)initWithGroupingBlock:(YapCollectionsDatabaseViewGroupingBlock)groupingBlock
+          groupingBlockType:(YapCollectionsDatabaseViewBlockType)groupingBlockType
+               sortingBlock:(YapCollectionsDatabaseViewSortingBlock)sortingBlock
+           sortingBlockType:(YapCollectionsDatabaseViewBlockType)sortingBlockType
+                    version:(int)version
+                    options:(YapCollectionsDatabaseViewOptions *)options;
 
 @property (nonatomic, strong, readonly) YapCollectionsDatabaseViewGroupingBlock groupingBlock;
 @property (nonatomic, strong, readonly) YapCollectionsDatabaseViewSortingBlock sortingBlock;
@@ -158,5 +181,10 @@ typedef enum {
  * and the view will automatically update itself.
 **/
 @property (nonatomic, assign, readonly) int version;
+
+/**
+ * The options allow you to specify things like creating an in-memory-only view (non persistent).
+**/
+@property (nonatomic, copy, readonly) YapCollectionsDatabaseViewOptions *options;
 
 @end

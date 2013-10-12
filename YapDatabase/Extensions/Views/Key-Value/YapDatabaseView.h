@@ -225,4 +225,9 @@ typedef enum {
 **/
 @property (nonatomic, assign, readonly) int version;
 
+/**
+ * The options allow you to specify things like creating an in-memory-only view (non persistent).
+**/
+@property (nonatomic, copy, readonly) YapDatabaseViewOptions *options;
+
 @end

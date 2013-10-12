@@ -6,6 +6,7 @@
 #import "DDLog.h"
 #import "DDTTYLogger.h"
 
+#define TEST_NON_PERSISTENT_VIEW 1
 
 @implementation TestYapCollectionsDatabaseView
 
@@ -69,11 +70,18 @@
 		return [object1 compare:object2 options:NSNumericSearch];
 	};
 	
+	YapCollectionsDatabaseViewOptions *options = [[YapCollectionsDatabaseViewOptions alloc] init];
+#if TEST_NON_PERSISTENT_VIEW
+	options.isPersistent = NO;
+#endif
+	
 	YapCollectionsDatabaseView *databaseView =
-	    [[YapCollectionsDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                                            groupingBlockType:groupingBlockType
-	                                                 sortingBlock:sortingBlock
-	                                             sortingBlockType:sortingBlockType];
+		[[YapCollectionsDatabaseView alloc] initWithGroupingBlock:groupingBlock
+		                                        groupingBlockType:groupingBlockType
+		                                             sortingBlock:sortingBlock
+		                                         sortingBlockType:sortingBlockType
+		                                                  version:0
+		                                                  options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -1246,11 +1254,18 @@
 		return [object1 compare:object2 options:NSNumericSearch];
 	};
 	
+	YapCollectionsDatabaseViewOptions *options = [[YapCollectionsDatabaseViewOptions alloc] init];
+#if TEST_NON_PERSISTENT_VIEW
+	options.isPersistent = NO;
+#endif
+	
 	YapCollectionsDatabaseView *databaseView =
-	    [[YapCollectionsDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                                            groupingBlockType:groupingBlockType
-	                                                 sortingBlock:sortingBlock
-	                                             sortingBlockType:sortingBlockType];
+		[[YapCollectionsDatabaseView alloc] initWithGroupingBlock:groupingBlock
+		                                        groupingBlockType:groupingBlockType
+		                                             sortingBlock:sortingBlock
+		                                         sortingBlockType:sortingBlockType
+		                                                  version:0
+		                                                  options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -1935,11 +1950,18 @@
 		return [object1 compare:object2 options:NSNumericSearch];
 	};
 	
+	YapCollectionsDatabaseViewOptions *options = [[YapCollectionsDatabaseViewOptions alloc] init];
+#if TEST_NON_PERSISTENT_VIEW
+	options.isPersistent = NO;
+#endif
+	
 	YapCollectionsDatabaseView *databaseView =
-	    [[YapCollectionsDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                                            groupingBlockType:groupingBlockType
-	                                                 sortingBlock:sortingBlock
-	                                             sortingBlockType:sortingBlockType];
+		[[YapCollectionsDatabaseView alloc] initWithGroupingBlock:groupingBlock
+		                                        groupingBlockType:groupingBlockType
+		                                             sortingBlock:sortingBlock
+		                                         sortingBlockType:sortingBlockType
+		                                                  version:0
+		                                                  options:options];
 	
 	// Without registering the view,
 	// add a bunch of keys to the database.
@@ -2026,11 +2048,18 @@
 		return [object1 compare:object2 options:NSNumericSearch];
 	};
 	
+	YapCollectionsDatabaseViewOptions *options = [[YapCollectionsDatabaseViewOptions alloc] init];
+#if TEST_NON_PERSISTENT_VIEW
+	options.isPersistent = NO;
+#endif
+	
 	YapCollectionsDatabaseView *databaseView =
-	    [[YapCollectionsDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                                            groupingBlockType:groupingBlockType
-	                                                 sortingBlock:sortingBlock
-	                                             sortingBlockType:sortingBlockType];
+		[[YapCollectionsDatabaseView alloc] initWithGroupingBlock:groupingBlock
+		                                        groupingBlockType:groupingBlockType
+		                                             sortingBlock:sortingBlock
+		                                         sortingBlockType:sortingBlockType
+		                                                  version:0
+		                                                  options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -2362,11 +2391,18 @@
 		return [object1 compare:object2 options:NSNumericSearch];
 	};
 	
+	YapCollectionsDatabaseViewOptions *options = [[YapCollectionsDatabaseViewOptions alloc] init];
+#if TEST_NON_PERSISTENT_VIEW
+	options.isPersistent = NO;
+#endif
+	
 	YapCollectionsDatabaseView *databaseView =
-	    [[YapCollectionsDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                                            groupingBlockType:groupingBlockType
-	                                                 sortingBlock:sortingBlock
-	                                             sortingBlockType:sortingBlockType];
+		[[YapCollectionsDatabaseView alloc] initWithGroupingBlock:groupingBlock
+		                                        groupingBlockType:groupingBlockType
+		                                             sortingBlock:sortingBlock
+		                                         sortingBlockType:sortingBlockType
+		                                                  version:0
+		                                                  options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -2439,11 +2475,16 @@
 		return [number1 compare:number2];
 	};
 	
+	YapCollectionsDatabaseViewOptions *options = [[YapCollectionsDatabaseViewOptions alloc] init];
+	options.isPersistent = NO;
+	
 	YapCollectionsDatabaseView *databaseView =
-	    [[YapCollectionsDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                                            groupingBlockType:groupingBlockType
-	                                                 sortingBlock:sortingBlock
-	                                             sortingBlockType:sortingBlockType];
+		[[YapCollectionsDatabaseView alloc] initWithGroupingBlock:groupingBlock
+		                                        groupingBlockType:groupingBlockType
+		                                             sortingBlock:sortingBlock
+		                                         sortingBlockType:sortingBlockType
+		                                                  version:0
+		                                                  options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	

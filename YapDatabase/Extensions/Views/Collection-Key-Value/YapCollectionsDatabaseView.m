@@ -26,10 +26,13 @@
 + (void)dropTablesForRegisteredName:(NSString *)registeredName
                     withTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
-	sqlite3 *db = transaction->abstractConnection->db;
-	
 	NSString *mapTableName = [self mapTableNameForRegisteredName:registeredName];
 	NSString *pageTableName = [self pageTableNameForRegisteredName:registeredName];
+	NSString *pageMetadataTableName = [self pageMetadataTableNameForRegisteredName:registeredName];
+	
+	// Handle persistent view
+	
+	sqlite3 *db = transaction->abstractConnection->db;
 	
 	NSString *dropKeyTable = [NSString stringWithFormat:@"DROP TABLE IF EXISTS \"%@\";", mapTableName];
 	NSString *dropPageTable = [NSString stringWithFormat:@"DROP TABLE IF EXISTS \"%@\";", pageTableName];
@@ -49,6 +52,12 @@
 		YDBLogError(@"%@ - Failed dropping page table (%@): %d %s",
 		            THIS_METHOD, pageTableName, status, sqlite3_errmsg(db));
 	}
+	
+	// Handle memory view
+	
+	[transaction->abstractConnection unregisterTableWithName:mapTableName];
+	[transaction->abstractConnection unregisterTableWithName:pageTableName];
+	[transaction->abstractConnection unregisterTableWithName:pageMetadataTableName];
 }
 
 + (NSString *)mapTableNameForRegisteredName:(NSString *)registeredName
@@ -59,6 +68,11 @@
 + (NSString *)pageTableNameForRegisteredName:(NSString *)registeredName
 {
 	return [NSString stringWithFormat:@"view_%@_page", registeredName];
+}
+
++ (NSString *)pageMetadataTableNameForRegisteredName:(NSString *)registeredName
+{
+	return [NSString stringWithFormat:@"view_%@_pageMetadata", registeredName];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -72,6 +86,7 @@
 @synthesize sortingBlockType = sortingBlockType;
 
 @synthesize version = version;
+@dynamic options;
 
 - (id)initWithGroupingBlock:(YapCollectionsDatabaseViewGroupingBlock)inGroupingBlock
           groupingBlockType:(YapCollectionsDatabaseViewBlockType)inGroupingBlockType
@@ -82,7 +97,8 @@
 	                 groupingBlockType:inGroupingBlockType
 	                      sortingBlock:inSortingBlock
 	                  sortingBlockType:inSortingBlockType
-	                           version:0];
+	                           version:0
+	                           options:nil];
 }
 
 - (id)initWithGroupingBlock:(YapCollectionsDatabaseViewGroupingBlock)inGroupingBlock
@@ -90,6 +106,21 @@
                sortingBlock:(YapCollectionsDatabaseViewSortingBlock)inSortingBlock
            sortingBlockType:(YapCollectionsDatabaseViewBlockType)inSortingBlockType
                     version:(int)inVersion
+{
+	return [self initWithGroupingBlock:inGroupingBlock
+	                 groupingBlockType:inGroupingBlockType
+	                      sortingBlock:inSortingBlock
+	                  sortingBlockType:inSortingBlockType
+	                           version:inVersion
+	                           options:nil];
+}
+
+- (id)initWithGroupingBlock:(YapCollectionsDatabaseViewGroupingBlock)inGroupingBlock
+          groupingBlockType:(YapCollectionsDatabaseViewBlockType)inGroupingBlockType
+               sortingBlock:(YapCollectionsDatabaseViewSortingBlock)inSortingBlock
+           sortingBlockType:(YapCollectionsDatabaseViewBlockType)inSortingBlockType
+                    version:(int)inVersion
+                    options:(YapCollectionsDatabaseViewOptions *)inOptions;
 {
 	if ((self = [super init]))
 	{
@@ -112,8 +143,15 @@
 		sortingBlockType = inSortingBlockType;
 		
 		version = inVersion;
+		
+		options = inOptions ? [inOptions copy] : [[YapCollectionsDatabaseViewOptions alloc] init];
 	}
 	return self;
+}
+
+- (YapCollectionsDatabaseViewOptions *)options
+{
+	return [options copy];
 }
 
 /**
@@ -149,6 +187,11 @@
 - (NSString *)pageTableName
 {
 	return [[self class] pageTableNameForRegisteredName:self.registeredName];
+}
+
+- (NSString *)pageMetadataTableName
+{
+	return [[self class] pageMetadataTableNameForRegisteredName:self.registeredName];
 }
 
 @end
