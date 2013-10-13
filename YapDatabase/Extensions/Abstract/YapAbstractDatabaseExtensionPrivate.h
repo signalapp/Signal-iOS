@@ -346,9 +346,15 @@
  * then the database system automatically deletes all values from the yap2 table where extension == registeredName.
 **/
 
+- (BOOL)getBoolValue:(BOOL *)valuePtr forExtensionKey:(NSString *)key;
+- (BOOL)boolValueForExtensionKey:(NSString *)key;
+- (void)setBoolValue:(BOOL)value forExtensionKey:(NSString *)key;
+
+- (BOOL)getIntValue:(int *)valuePtr forExtensionKey:(NSString *)key;
 - (int)intValueForExtensionKey:(NSString *)key;
 - (void)setIntValue:(int)value forExtensionKey:(NSString *)key;
 
+- (BOOL)getDoubleValue:(double *)valuePtr forExtensionKey:(NSString *)key;
 - (double)doubleValueForExtensionKey:(NSString *)key;
 - (void)setDoubleValue:(double)value forExtensionKey:(NSString *)key;
 

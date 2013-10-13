@@ -115,10 +115,35 @@
 **/
 - (BOOL)createIfNeeded
 {
+	BOOL needsCreateTables = NO;
+	
+	// Check classVersion (the internal version number of YapCollectionsDatabaseView implementation)
+	
 	int oldClassVersion = [self intValueForExtensionKey:@"classVersion"];
 	int classVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
 	
 	if (oldClassVersion != classVersion)
+		needsCreateTables = YES;
+	
+	// Check persistence.
+	// Need to properly transition from persistent to non-persistent, and vice-versa.
+	
+	BOOL oldIsPersistent = NO;
+	BOOL hasOldIsPersistent = [self getBoolValue:&oldIsPersistent forExtensionKey:@"persistent"];
+	
+	BOOL isPersistent = [self isPersistentView];
+	
+	if (hasOldIsPersistent && (oldIsPersistent != isPersistent))
+	{
+		[[viewConnection->view class] dropTablesForRegisteredName:[self registeredName]
+		                                          withTransaction:databaseTransaction];
+		
+		needsCreateTables = YES;
+	}
+	
+	// Create or re-populate if needed
+	
+	if (needsCreateTables)
 	{
 		// First time registration
 		
@@ -128,6 +153,8 @@
 		if (![self populateView]) return NO;
 		
 		[self setIntValue:classVersion forExtensionKey:@"classVersion"];
+		
+		[self setBoolValue:isPersistent forExtensionKey:@"persistent"];
 		
 		int userSuppliedConfigVersion = viewConnection->view->version;
 		[self setIntValue:userSuppliedConfigVersion forExtensionKey:@"version"];
@@ -145,6 +172,11 @@
 			if (![self populateView]) return NO;
 			
 			[self setIntValue:newVersion forExtensionKey:@"version"];
+		}
+		
+		if (!hasOldIsPersistent)
+		{
+			[self setBoolValue:isPersistent forExtensionKey:@"persistent"];
 		}
 	}
 	

@@ -38,7 +38,6 @@
 	NSMutableSet *removedKeys;
 	NSMutableSet *removedCollections;
 	BOOL allKeysRemoved;
-	BOOL hasDiskChanges;
 }
 
 - (sqlite3_stmt *)getCollectionCountStatement;

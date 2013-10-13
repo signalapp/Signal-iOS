@@ -312,15 +312,33 @@
 #pragma mark Yap2 Table
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (int)intValueForKey:(NSString *)key extension:(NSString *)extensionName
+- (BOOL)getBoolValue:(BOOL *)valuePtr forKey:(NSString *)key extension:(NSString *)extensionName
+{
+	int intValue = 0;
+	BOOL result = [self getIntValue:&intValue forKey:key extension:extensionName];
+	
+	if (valuePtr) *valuePtr = (intValue == 0) ? NO : YES;
+	return result;
+}
+
+- (void)setBoolValue:(BOOL)value forKey:(NSString *)key extension:(NSString *)extensionName
+{
+	[self setIntValue:(value ? 1 : 0) forKey:key extension:extensionName];
+}
+
+- (BOOL)getIntValue:(int *)valuePtr forKey:(NSString *)key extension:(NSString *)extensionName
 {
 	if (extensionName == nil)
 		extensionName = @"";
 	
 	sqlite3_stmt *statement = [abstractConnection yapGetDataForKeyStatement];
-	if (statement == NULL) return 0;
+	if (statement == NULL) {
+		if (valuePtr) *valuePtr = 0;
+		return NO;
+	}
 	
-	int result = 0;
+	BOOL result = NO;
+	int value = 0;
 	
 	// SELECT data FROM 'yap2' WHERE extension = ? AND key = ? ;
 	
@@ -333,7 +351,8 @@
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		result = sqlite3_column_int(statement, 0);
+		result = YES;
+		value = sqlite3_column_int(statement, 0);
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -346,6 +365,7 @@
 	FreeYapDatabaseString(&_extension);
 	FreeYapDatabaseString(&_key);
 	
+	if (valuePtr) *valuePtr = value;
 	return result;
 }
 
@@ -374,7 +394,11 @@
 	sqlite3_bind_int(statement, 3, value);
 	
 	int status = sqlite3_step(statement);
-	if (status != SQLITE_DONE)
+	if (status == SQLITE_DONE)
+	{
+		abstractConnection->hasDiskChanges = YES;
+	}
+	else
 	{
 		YDBLogError(@"Error executing 'yapSetDataForKeyStatement': %d %s",
 		                                                       status, sqlite3_errmsg(abstractConnection->db));
@@ -386,15 +410,19 @@
 	FreeYapDatabaseString(&_key);
 }
 
-- (double)doubleValueForKey:(NSString *)key extension:(NSString *)extensionName
+- (BOOL)getDoubleValue:(double *)valuePtr forKey:(NSString *)key extension:(NSString *)extensionName
 {
 	if (extensionName == nil)
 		extensionName = @"";
 	
 	sqlite3_stmt *statement = [abstractConnection yapGetDataForKeyStatement];
-	if (statement == NULL) return 0.0;
+	if (statement == NULL) {
+		if (valuePtr) *valuePtr = 0.0;
+		return NO;
+	}
 	
-	double result = 0.0;
+	BOOL result = NO;
+	double value = 0.0;
 	
 	// SELECT data FROM 'yap2' WHERE extension = ? AND key = ? ;
 	
@@ -407,7 +435,8 @@
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		result = sqlite3_column_double(statement, 0);
+		result = YES;
+		value = sqlite3_column_double(statement, 0);
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -420,6 +449,7 @@
 	FreeYapDatabaseString(&_extension);
 	FreeYapDatabaseString(&_key);
 	
+	if (valuePtr) *valuePtr = value;
 	return result;
 }
 
@@ -448,7 +478,11 @@
 	sqlite3_bind_double(statement, 3, value);
 	
 	int status = sqlite3_step(statement);
-	if (status != SQLITE_DONE)
+	if (status == SQLITE_DONE)
+	{
+		abstractConnection->hasDiskChanges = YES;
+	}
+	else
 	{
 		YDBLogError(@"Error executing 'yapSetDataForKeyStatement': %d %s",
 		                                                       status, sqlite3_errmsg(abstractConnection->db));
@@ -468,7 +502,7 @@
 	sqlite3_stmt *statement = [abstractConnection yapGetDataForKeyStatement];
 	if (statement == NULL) return nil;
 	
-	NSString *string = nil;
+	NSString *value = nil;
 	
 	// SELECT data FROM 'yap2' WHERE extension = ? AND key = ? ;
 	
@@ -484,7 +518,7 @@
 		const unsigned char *text = sqlite3_column_text(statement, 0);
 		int textSize = sqlite3_column_bytes(statement, 0);
 		
-		string = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+		value = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -497,7 +531,7 @@
 	FreeYapDatabaseString(&_extension);
 	FreeYapDatabaseString(&_key);
 	
-	return string;
+	return value;
 }
 
 - (void)setStringValue:(NSString *)value forKey:(NSString *)key extension:(NSString *)extensionName
@@ -526,7 +560,11 @@
 	sqlite3_bind_text(statement, 3, _value.str, _value.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
-	if (status != SQLITE_DONE)
+	if (status == SQLITE_DONE)
+	{
+		abstractConnection->hasDiskChanges = YES;
+	}
+	else
 	{
 		YDBLogError(@"Error executing 'yapSetDataForKeyStatement': %d %s",
 		                                                       status, sqlite3_errmsg(abstractConnection->db));
@@ -547,7 +585,7 @@
 	sqlite3_stmt *statement = [abstractConnection yapGetDataForKeyStatement];
 	if (statement == NULL) return nil;
 	
-	NSData *data = nil;
+	NSData *value = nil;
 	
 	// SELECT data FROM 'yap2' WHERE extension = ? AND key = ? ;
 	
@@ -563,7 +601,7 @@
 		const void *blob = sqlite3_column_blob(statement, 0);
 		int blobSize = sqlite3_column_bytes(statement, 0);
 		
-		data = [[NSData alloc] initWithBytes:(void *)blob length:blobSize];
+		value = [[NSData alloc] initWithBytes:(void *)blob length:blobSize];
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -576,7 +614,7 @@
 	FreeYapDatabaseString(&_extension);
 	FreeYapDatabaseString(&_key);
 	
-	return data;
+	return value;
 }
 
 - (void)setDataValue:(NSData *)value forKey:(NSString *)key extension:(NSString *)extensionName
@@ -605,7 +643,11 @@
 	sqlite3_bind_blob(statement, 3, data.bytes, (int)data.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
-	if (status != SQLITE_DONE)
+	if (status == SQLITE_DONE)
+	{
+		abstractConnection->hasDiskChanges = YES;
+	}
+	else
 	{
 		YDBLogError(@"Error executing 'yapSetDataForKeyStatement': %d %s",
 		                                                       status, sqlite3_errmsg(abstractConnection->db));
@@ -636,7 +678,11 @@
 	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
-	if (status != SQLITE_DONE)
+	if (status == SQLITE_DONE)
+	{
+		abstractConnection->hasDiskChanges = YES;
+	}
+	else
 	{
 		YDBLogError(@"Error executing 'yapRemoveExtensionStatement': %d %s, extension(%@)",
 					status, sqlite3_errmsg(abstractConnection->db), extensionName);

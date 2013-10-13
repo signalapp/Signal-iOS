@@ -1609,7 +1609,7 @@
 **/
 - (void)preReadWriteTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
-	// Pre-Write-Transaction: Step 1 of 4
+	// Pre-Write-Transaction: Step 1 of 5
 	//
 	// Execute "BEGIN TRANSACTION" on database connection.
 	// This is actually a deferred transaction, meaning the sqlite connection won't actually
@@ -1628,7 +1628,7 @@
 	
 	dispatch_sync(abstractDatabase->snapshotQueue, ^{ @autoreleasepool {
 		
-		// Pre-Write-Transaction: Step 2 of 4
+		// Pre-Write-Transaction: Step 2 of 5
 		//
 		// Update our connection state within the state table.
 		//
@@ -1648,7 +1648,7 @@
 		
 		NSAssert(myState != nil, @"Missing state in database->connectionStates");
 		
-		// Pre-Write-Transaction: Step 3 of 4
+		// Pre-Write-Transaction: Step 3 of 5
 		//
 		// Validate our caches based on snapshot numbers
 		
@@ -1675,7 +1675,13 @@
 		YDBLogVerbose(@"YapDatabaseConnection(%p) starting read-write transaction.", self);
 	}});
 	
-	// Pre-Write-Transaction: Step 4 of 4
+	// Pre-Write-Transaction: Step 4 of 5
+	//
+	// Clear write state variables
+	
+	hasDiskChanges = NO;
+	
+	// Pre-Write-Transaction: Step 5 of 5
 	//
 	// Add IsOnConnectionQueueKey flag to writeQueue.
 	// This allows various methods that depend on the flag to operate correctly.
@@ -1749,9 +1755,8 @@
 	
 	NSMutableDictionary *changeset = nil;
 	NSMutableDictionary *userInfo = nil;
-	BOOL hasDiskChanges = NO;
 	
-	[self getInternalChangeset:&changeset externalChangeset:&userInfo hasDiskChanges:&hasDiskChanges];
+	[self getInternalChangeset:&changeset externalChangeset:&userInfo];
 	if (changeset || userInfo || hasDiskChanges)
 	{
 		// If hasDiskChanges is YES, then the database file was modified.
@@ -2220,14 +2225,12 @@
 **/
 - (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
            externalChangeset:(NSMutableDictionary **)externalChangesetPtr
-              hasDiskChanges:(BOOL *)hasDiskChangesPtr
 {
 	// Use existing extensions (extensions ivar, not [self extensions]).
 	// There's no need to create any new extConnections at this point.
 	
 	__block NSMutableDictionary *internalChangeset_extensions = nil;
 	__block NSMutableDictionary *externalChangeset_extensions = nil;
-	__block BOOL hasDiskChanges = NO;
 	
 	[extensions enumerateKeysAndObjectsUsingBlock:^(id extName, id extConnectionObj, BOOL *stop) {
 		
@@ -2257,7 +2260,7 @@
 			
 			[externalChangeset_extensions setObject:external forKey:extName];
 		}
-		if (extHasDiskChanges)
+		if (extHasDiskChanges && !hasDiskChanges)
 		{
 			hasDiskChanges = YES;
 		}
@@ -2296,7 +2299,6 @@
 	
 	*internalChangesetPtr = internalChangeset;
 	*externalChangesetPtr = externalChangeset;
-	*hasDiskChangesPtr = hasDiskChanges;
 }
 
 /**
@@ -2307,7 +2309,7 @@
  * 
  * Subclasses must invoke [super processChangeset:changeset] in order to propogate the changeset(s) to the extension(s).
  *
- * @see getInternalChangeset:externalChangeset:hasDiskChanges:
+ * @see getInternalChangeset:externalChangeset:
 **/
 - (void)processChangeset:(NSDictionary *)changeset
 {

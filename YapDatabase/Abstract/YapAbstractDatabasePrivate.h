@@ -198,6 +198,8 @@ extern NSString *const YapDatabaseNotificationKey;
 	
 	sqlite3 *db;
 	
+	BOOL hasDiskChanges;
+	
 	YapCache *objectCache;
 	YapCache *metadataCache;
 	
@@ -262,9 +264,7 @@ extern NSString *const YapDatabaseNotificationKey;
 
 - (NSArray *)internalChangesetKeys;
 - (NSArray *)externalChangesetKeys;
-- (void)getInternalChangeset:(NSMutableDictionary **)internalPtr
-           externalChangeset:(NSMutableDictionary **)externalPtr
-              hasDiskChanges:(BOOL *)hasDiskChangesPtr;
+- (void)getInternalChangeset:(NSMutableDictionary **)internalPtr externalChangeset:(NSMutableDictionary **)externalPtr;
 - (void)processChangeset:(NSDictionary *)changeset;
 
 - (void)noteCommittedChanges:(NSDictionary *)changeset;
@@ -309,10 +309,14 @@ extern NSString *const YapDatabaseNotificationKey;
 - (void)addRegisteredExtensionTransaction:(YapAbstractDatabaseExtensionTransaction *)extTransaction;
 - (void)removeRegisteredExtensionTransaction:(NSString *)extName;
 
-- (int)intValueForKey:(NSString *)key extension:(NSString *)extensionName;
+
+- (BOOL)getBoolValue:(BOOL *)valuePtr forKey:(NSString *)key extension:(NSString *)extensionName;
+- (void)setBoolValue:(BOOL)value forKey:(NSString *)key extension:(NSString *)extensionName;
+
+- (BOOL)getIntValue:(int *)valuePtr forKey:(NSString *)key extension:(NSString *)extensionName;
 - (void)setIntValue:(int)value forKey:(NSString *)key extension:(NSString *)extensionName;
 
-- (double)doubleValueForKey:(NSString *)key extension:(NSString *)extensionName;
+- (BOOL)getDoubleValue:(double *)valuePtr forKey:(NSString *)key extension:(NSString *)extensionName;
 - (void)setDoubleValue:(double)value forKey:(NSString *)key extension:(NSString *)extensionName;
 
 - (NSString *)stringValueForKey:(NSString *)key extension:(NSString *)extensionName;

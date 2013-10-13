@@ -37,7 +37,6 @@
 	NSMutableDictionary *metadataChanges;
 	NSMutableSet *removedKeys;
 	BOOL allKeysRemoved;
-	BOOL hasDiskChanges;
 }
 
 - (sqlite3_stmt *)getCountStatement;

@@ -656,7 +656,6 @@
 		removedKeys = [[NSMutableSet alloc] init];
 	
 	allKeysRemoved = NO;
-	hasDiskChanges = NO;
 }
 
 /**
@@ -727,15 +726,12 @@
 **/
 - (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
            externalChangeset:(NSMutableDictionary **)externalChangesetPtr
-              hasDiskChanges:(BOOL *)hasDiskChangesPtr
 {
 	NSMutableDictionary *internalChangeset = nil;
 	NSMutableDictionary *externalChangeset = nil;
-	BOOL extHasDiskChanges = NO;
 	
 	[super getInternalChangeset:&internalChangeset
-	          externalChangeset:&externalChangeset
-	             hasDiskChanges:&extHasDiskChanges];
+	          externalChangeset:&externalChangeset];
 	
 	// Reserved keys:
 	//
@@ -784,7 +780,6 @@
 	
 	*internalChangesetPtr = internalChangeset;
 	*externalChangesetPtr = externalChangeset;
-	*hasDiskChangesPtr = extHasDiskChanges || hasDiskChanges;
 }
 
 /**

@@ -102,59 +102,84 @@
  * The persistent values are stored in the yap2 table, which is specifically designed for this use.
 **/
 
-- (int)intValueForExtensionKey:(NSString *)key
+- (BOOL)getBoolValue:(BOOL *)valuePtr forExtensionKey:(NSString *)key
 {
 	NSString *registeredName = [[self extension] registeredName];
-	
-	return [[self databaseTransaction] intValueForKey:key extension:registeredName];
+	return [[self databaseTransaction] getBoolValue:valuePtr forKey:key extension:registeredName];
+}
+
+- (BOOL)boolValueForExtensionKey:(NSString *)key
+{
+	BOOL value = NO;
+	[self getBoolValue:&value forExtensionKey:key];
+	return value;
+}
+
+- (void)setBoolValue:(BOOL)value forExtensionKey:(NSString *)key
+{
+	NSString *registeredName = [[self extension] registeredName];
+	[[self databaseTransaction] setBoolValue:value forKey:key extension:registeredName];
+}
+
+- (BOOL)getIntValue:(int *)valuePtr forExtensionKey:(NSString *)key
+{
+	NSString *registeredName = [[self extension] registeredName];
+	return [[self databaseTransaction] getIntValue:valuePtr forKey:key extension:registeredName];
+}
+
+- (int)intValueForExtensionKey:(NSString *)key
+{
+	int value = 0;
+	[self getIntValue:&value forExtensionKey:key];
+	return value;
 }
 
 - (void)setIntValue:(int)value forExtensionKey:(NSString *)key
 {
 	NSString *registeredName = [[self extension] registeredName];
-	
 	[[self databaseTransaction] setIntValue:value forKey:key extension:registeredName];
+}
+
+- (BOOL)getDoubleValue:(double *)valuePtr forExtensionKey:(NSString *)key
+{
+	NSString *registeredName = [[self extension] registeredName];
+	return [[self databaseTransaction] getDoubleValue:valuePtr forKey:key extension:registeredName];
 }
 
 - (double)doubleValueForExtensionKey:(NSString *)key
 {
-	NSString *registeredName = [[self extension] registeredName];
-	
-	return [[self databaseTransaction] doubleValueForKey:key extension:registeredName];
+	double value = 0.0;
+	[self getDoubleValue:&value forExtensionKey:key];
+	return value;
 }
 
 - (void)setDoubleValue:(double)value forExtensionKey:(NSString *)key
 {
 	NSString *registeredName = [[self extension] registeredName];
-	
 	[[self databaseTransaction] setDoubleValue:value forKey:key extension:registeredName];
 }
 
 - (NSString *)stringValueForExtensionKey:(NSString *)key
 {
 	NSString *registeredName = [[self extension] registeredName];
-	
 	return [[self databaseTransaction] stringValueForKey:key extension:registeredName];
 }
 
 - (void)setStringValue:(NSString *)value forExtensionKey:(NSString *)key
 {
 	NSString *registeredName = [[self extension] registeredName];
-	
 	[[self databaseTransaction] setStringValue:value forKey:key extension:registeredName];
 }
 
 - (NSData *)dataValueForExtensionKey:(NSString *)key
 {
 	NSString *registeredName = [[self extension] registeredName];
-	
 	return [[self databaseTransaction] dataValueForKey:key extension:registeredName];
 }
 
 - (void)setDataValue:(NSData *)value forExtensionKey:(NSString *)key
 {
 	NSString *registeredName = [[self extension] registeredName];
-	
 	[[self databaseTransaction] setDataValue:value forKey:key extension:registeredName];
 }
 
