@@ -467,7 +467,7 @@ static NSString *const key_changes                  = @"changes";
 		NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
 		    @"The given mappings have not been properly initialized."
 			@" You need to invoke [mappings updateWithTransaction:transaction] once in order to initialize"
-			@" the mappings object. It is recommended you do this after invoking"
+			@" the mappings object. You should do this after invoking"
 			@" [databaseConnection beginLongLivedReadTransaction]. For example code, please see"
 			@" YapDatabaseViewMappings.h, or see the wiki: https://github.com/yaptv/YapDatabase/wiki/Views"};
 	

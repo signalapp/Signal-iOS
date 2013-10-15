@@ -71,11 +71,20 @@ typedef enum {
  *
  * The cache is properly kept in sync with the atomic snapshot architecture of the database system.
  *
- * By default the objectCache is enabled and has a limit of 250.
- *
  * You can configure the objectCache at any time, including within readBlocks or readWriteBlocks.
  * To disable the object cache entirely, set objectCacheEnabled to NO.
  * To use an inifinite cache size, set the objectCacheLimit to zero.
+ * 
+ * By default the objectCache is enabled and has a limit of 250.
+ *
+ * New connections will inherit the default values set by the parent database object.
+ * Thus the default values for new connection instances are configurable.
+ * 
+ * @see YapAbstractDatabase defaultObjectCacheEnabled
+ * @see YapAbstractDatabase defaultObjectCacheLimit
+ * 
+ * Also see the wiki for a bit more info:
+ * https://github.com/yaptv/YapDatabase/wiki/Cache
 **/
 @property (atomic, assign, readwrite) BOOL objectCacheEnabled;
 @property (atomic, assign, readwrite) NSUInteger objectCacheLimit;
@@ -87,11 +96,20 @@ typedef enum {
  *
  * The cache is properly kept in sync with the atomic snapshot architecture of the database system.
  *
- * By default the metadataCache is enabled and has a limit of 500.
- *
  * You can configure the metadataCache at any time, including within readBlocks or readWriteBlocks.
  * To disable the metadata cache entirely, set metadataCacheEnabled to NO.
  * To use an inifinite cache size, set the metadataCacheLimit to zero.
+ * 
+ * By default the metadataCache is enabled and has a limit of 500.
+ * 
+ * New connections will inherit the default values set by the parent database object.
+ * Thus the default values for new connection instances are configurable.
+ *
+ * @see YapAbstractDatabase defaultMetadataCacheEnabled
+ * @see YapAbstractDatabase defaultMetadataCacheLimit
+ *
+ * Also see the wiki for a bit more info:
+ * https://github.com/yaptv/YapDatabase/wiki/Cache
 **/
 @property (atomic, assign, readwrite) BOOL metadataCacheEnabled;
 @property (atomic, assign, readwrite) NSUInteger metadataCacheLimit;

@@ -258,6 +258,49 @@
 
 - (void)updateWithTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
+	if (transaction.abstractConnection.isInLongLivedReadTransaction == NO)
+	{
+		NSString *reason = @"YapDatabaseViewMappings requires the connection to be in a longLivedReadTransaction.";
+		
+		NSString *failureReason =
+		    @"The architecture surrounding mappings is designed to move from one longLivedReadTransaction to another."
+			@" This allows you to freeze the data-source (databaseConnection) of your UI on a particular commit."
+			@" And then atomically move the data-source from an older commit to a newer commit in response to"
+			@" YapDatabaseModifiedNotifications. This ensures that the data-source for your UI remains in a steady"
+			@" state at all times, and that updates are properly handled using the appropriate update mechanisms"
+			@" (and properly animated if desired)."
+			@" For example code, please see the wiki: https://github.com/yaptv/YapDatabase/wiki/Views";
+			
+		NSString *suggestion =
+		    @"You must invoke [databaseConnection beginLongLivedReadTransaction] before you initialize the mappings";
+		
+		NSDictionary *userInfo = @{
+			NSLocalizedFailureReasonErrorKey: failureReason,
+			NSLocalizedRecoverySuggestionErrorKey: suggestion };
+		
+		// If we don't throw the exception here,
+		// then you'll just get an exception later from the tableView or collectionView.
+		// It will look something like this:
+		//
+		// > Invalid update: invalid number of rows in section X. The number of rows contained in an
+		// > existing section after the update (Y) must be equal to the number of rows contained in that section
+		// > before the update (Z), plus or minus the number of rows inserted or deleted from that
+		// > section (# inserted, # deleted).
+		//
+		// In order to guarantee you DON'T get an exception (either from YapDatabase or from Apple),
+		// then you need to follow the instructions for setting up your connection, mappings, & notifications.
+		//
+		// For complete code samples, check out the wiki:
+		// https://github.com/yaptv/YapDatabase/wiki/Views
+		//
+		// You may be tempted to simply comment out the exception below.
+		// If you do, you're not fixing the root cause of your problem.
+		// Furthermore, you're simply trading this exception, which comes with documented steps on how
+		// to fix the problem, for an exception from Apple which will be even harder to diagnose.
+		
+		@throw [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
+	}
+	
 	for (NSString *group in allGroups)
 	{
 		NSUInteger count = [[transaction ext:registeredViewName] numberOfKeysInGroup:group];
