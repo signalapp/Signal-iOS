@@ -121,13 +121,15 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 			return nil;
 		}
 		
-		connectionPoolQueue = dispatch_queue_create("YapDatabase-ConnectionPool", NULL);
-		checkpointQueue     = dispatch_queue_create("YapDatabase-Checkpoint", NULL);
-		snapshotQueue       = dispatch_queue_create("YapDatabase-Snapshot", NULL);
-		writeQueue          = dispatch_queue_create("YapDatabase-Write", NULL);
+		internalQueue   = dispatch_queue_create("YapDatabase-Internal", NULL);
+		checkpointQueue = dispatch_queue_create("YapDatabase-Checkpoint", NULL);
+		snapshotQueue   = dispatch_queue_create("YapDatabase-Snapshot", NULL);
+		writeQueue      = dispatch_queue_create("YapDatabase-Write", NULL);
 		
 		changesets = [[NSMutableArray alloc] init];
 		connectionStates = [[NSMutableArray alloc] init];
+		
+		defaults = [[YapAbstractDatabaseDefaults alloc] init];
 		
 		registeredExtensions = [[NSDictionary alloc] init];
 		
@@ -182,14 +184,14 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	[YapDatabaseManager deregisterDatabaseForPath:databasePath];
 	
 #if !OS_OBJECT_USE_OBJC
+	if (internalQueue)
+		dispatch_release(internalQueue);
 	if (snapshotQueue)
 		dispatch_release(snapshotQueue);
 	if (writeQueue)
 		dispatch_release(writeQueue);
 	if (checkpointQueue)
 		dispatch_release(checkpointQueue);
-	if (connectionPoolQueue)
-		dispatch_release(connectionPoolQueue);
 #endif
 }
 
@@ -660,6 +662,166 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Defaults
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (YapAbstractDatabaseDefaults *)defaults
+{
+	__block YapAbstractDatabaseDefaults *result = nil;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		result = [defaults copy];
+	});
+	
+	return result;
+}
+
+- (BOOL)defaultObjectCacheEnabled
+{
+	__block BOOL result = NO;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		result = defaults.objectCacheEnabled;
+	});
+	
+	return result;
+}
+
+- (void)setDefaultObjectCacheEnabled:(BOOL)defaultObjectCacheEnabled
+{
+	dispatch_sync(internalQueue, ^{
+		
+		defaults.objectCacheEnabled = defaultObjectCacheEnabled;
+	});
+}
+
+- (NSUInteger)defaultObjectCacheLimit
+{
+	__block NSUInteger result = NO;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		result = defaults.objectCacheLimit;
+	});
+	
+	return result;
+}
+
+- (void)setDefaultObjectCacheLimit:(NSUInteger)defaultObjectCacheLimit
+{
+	dispatch_sync(internalQueue, ^{
+		
+		defaults.objectCacheLimit = defaultObjectCacheLimit;
+	});
+}
+
+- (BOOL)defaultMetadataCacheEnabled
+{
+	__block BOOL result = NO;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		result = defaults.metadataCacheEnabled;
+	});
+	
+	return result;
+}
+
+- (void)setDefaultMetadataCacheEnabled:(BOOL)defaultMetadataCacheEnabled
+{
+	dispatch_sync(internalQueue, ^{
+		
+		defaults.metadataCacheEnabled = defaultMetadataCacheEnabled;
+	});
+}
+
+- (NSUInteger)defaultMetadataCacheLimit
+{
+	__block NSUInteger result = 0;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		result = defaults.metadataCacheLimit;
+	});
+	
+	return result;
+}
+
+- (void)setDefaultMetadataCacheLimit:(NSUInteger)defaultMetadataCacheLimit
+{
+	dispatch_sync(internalQueue, ^{
+		
+		defaults.metadataCacheLimit = defaultMetadataCacheLimit;
+	});
+}
+
+- (YapDatabasePolicy)defaultObjectPolicy
+{
+	__block YapDatabasePolicy result = YapDatabasePolicyShare;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		result = defaults.objectPolicy;
+	});
+	
+	return result;
+}
+
+- (void)setDefaultObjectPolicy:(YapDatabasePolicy)defaultObjectPolicy
+{
+	dispatch_sync(internalQueue, ^{
+		
+		defaults.objectPolicy = defaultObjectPolicy;
+	});
+}
+
+- (YapDatabasePolicy)defaultMetadataPolicy
+{
+	__block YapDatabasePolicy result = YapDatabasePolicyShare;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		result = defaults.metadataPolicy;
+	});
+	
+	return result;
+}
+
+- (void)setDefaultMetadataPolicy:(YapDatabasePolicy)defaultMetadataPolicy
+{
+	dispatch_sync(internalQueue, ^{
+		
+		defaults.metadataPolicy = defaultMetadataPolicy;
+	});
+}
+
+#if TARGET_OS_IPHONE
+
+- (int)defaultAutoFlushMemoryLevel
+{
+	__block int result = YapDatabaseConnectionFlushMemoryLevelNone;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		result = defaults.autoFlushMemoryLevel;
+	});
+	
+	return result;
+}
+
+- (void)setDefaultAutoFlushMemoryLevel:(int)defaultAutoFlushMemoryLevel
+{
+	dispatch_sync(internalQueue, ^{
+		
+		defaults.autoFlushMemoryLevel = defaultAutoFlushMemoryLevel;
+	});
+}
+
+#endif
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Connections
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -749,7 +911,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 {
 	__block NSUInteger count = 0;
 	
-	dispatch_sync(connectionPoolQueue, ^{
+	dispatch_sync(internalQueue, ^{
 		
 		count = maxConnectionPoolCount;
 	});
@@ -759,7 +921,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 
 - (void)setMaxConnectionPoolCount:(NSUInteger)count
 {
-	dispatch_sync(connectionPoolQueue, ^{
+	dispatch_sync(internalQueue, ^{
 		
 		// Update ivar
 		maxConnectionPoolCount = count;
@@ -791,7 +953,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 {
 	__block NSTimeInterval lifetime = 0;
 	
-	dispatch_sync(connectionPoolQueue, ^{
+	dispatch_sync(internalQueue, ^{
 		
 		lifetime = connectionPoolLifetime;
 	});
@@ -801,7 +963,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 
 - (void)setConnectionPoolLifetime:(NSTimeInterval)lifetime
 {
-	dispatch_sync(connectionPoolQueue, ^{
+	dispatch_sync(internalQueue, ^{
 		
 		// Update ivar
 		connectionPoolLifetime = lifetime;
@@ -824,7 +986,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 {
 	__block BOOL result = NO;
 	
-	dispatch_sync(connectionPoolQueue, ^{
+	dispatch_sync(internalQueue, ^{
 		
 		if ([connectionPoolValues count] < maxConnectionPoolCount)
 		{
@@ -859,7 +1021,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 {
 	__block sqlite3 *aDb = NULL;
 	
-	dispatch_sync(connectionPoolQueue, ^{
+	dispatch_sync(internalQueue, ^{
 		
 		if ([connectionPoolValues count] > 0)
 		{
@@ -899,7 +1061,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	
 	if (connectionPoolTimer == NULL)
 	{
-		connectionPoolTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, connectionPoolQueue);
+		connectionPoolTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, internalQueue);
 		
 		__weak YapAbstractDatabase *weakSelf = self;
 		dispatch_source_set_event_handler(connectionPoolTimer, ^{ @autoreleasepool {

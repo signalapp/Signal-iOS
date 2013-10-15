@@ -1,4 +1,7 @@
 #import <Foundation/Foundation.h>
+
+#import "YapAbstractDatabaseConnection.h"
+#import "YapAbstractDatabaseTransaction.h"
 #import "YapAbstractDatabaseExtension.h"
 
 /**
@@ -127,6 +130,86 @@ extern NSString *const YapDatabaseCustomKey;
  * However, it may come in handy for some tricky edge-case bugs (why doesn't my connection see that other commit?)
 **/
 @property (atomic, assign, readonly) uint64_t snapshot;
+
+#pragma mark Defaults
+
+/**
+ * Allows you to set the default objectCacheEnabled and objectCacheLimit for all new connections.
+ *
+ * When you create a connection via [database newConnection], that new connection will inherit
+ * its initial configuration via the default values configured for the parent database.
+ * Of course, the connection may then override these default configuration values, and configure itself as needed.
+ *
+ * Changing the default values only affects future connections that will be created.
+ * It does not affect connections that have already been created.
+ *
+ * The default defaultObjectCacheEnabled is YES.
+ * The default defaultObjectCacheLimit is 250.
+ *
+ * For more detailed documentation on these properties, see the YapAbstractDatabaseConnection header file.
+ * @see YapAbstractDatabaseConnection objectCacheEnabled
+ * @see YapAbstractDatabaseConnection objectCacheLimit
+**/
+@property (atomic, assign, readwrite) BOOL defaultObjectCacheEnabled;
+@property (atomic, assign, readwrite) NSUInteger defaultObjectCacheLimit;
+
+/**
+ * Allows you to set the default metadataCacheEnabled and metadataCacheLimit for all new connections.
+ *
+ * When you create a connection via [database newConnection], that new connection will inherit
+ * its initial configuration via the default values configured for the parent database.
+ * Of course, the connection may then override these default configuration values, and configure itself as needed.
+ *
+ * Changing the default values only affects future connections that will be created.
+ * It does not affect connections that have already been created.
+ *
+ * The default defaultMetadataCacheEnabled is YES.
+ * The default defaultMetadataCacheLimit is 500.
+ *
+ * For more detailed documentation on these properties, see the YapAbstractDatabaseConnection header file.
+ * @see YapAbstractDatabaseConnection metadataCacheEnabled
+ * @see YapAbstractDatabaseConnection metadataCacheLimit
+**/
+@property (atomic, assign, readwrite) BOOL defaultMetadataCacheEnabled;
+@property (atomic, assign, readwrite) NSUInteger defaultMetadataCacheLimit;
+
+/**
+ * Allows you to set the default objectPolicy and metadataPolicy for all new connections.
+ * 
+ * When you create a connection via [database newConnection], that new connection will inherit
+ * its initial configuration via the default values configured for the parent database.
+ * Of course, the connection may then override these default configuration values, and configure itself as needed.
+ *
+ * Changing the default values only affects future connections that will be created.
+ * It does not affect connections that have already been created.
+ * 
+ * The default defaultObjectPolicy is YapDatabasePolicyShare.
+ * 
+ * For more detailed documentation on these properties, see the YapAbstractDatabaseConnection header file.
+ * @see YapAbstractDatabaseConnection objectPolicy
+ * @see YapAbstractDatabaseConnection metadataPolicy
+**/
+@property (atomic, assign, readwrite) YapDatabasePolicy defaultObjectPolicy;
+@property (atomic, assign, readwrite) YapDatabasePolicy defaultMetadataPolicy;
+
+#if TARGET_OS_IPHONE
+/**
+ * Allows you to set the default autoFlushMemoryLevel for all new connections.
+ *
+ * When you create a connection via [database newConnection], that new connection will inherit
+ * its initial configuration via the default values configured for the parent database.
+ * Of course, the connection may then override these default configuration values, and configure itself as needed.
+ *
+ * Changing the default values only affects future connections that will be created.
+ * It does not affect connections that have already been created.
+ * 
+ * The default defaultAutoFlushMemoryLevel is YapDatabaseConnectionFlushMemoryLevelMild.
+ *
+ * For more detailed documentation on these properties, see the YapAbstractDatabaseConnection header file.
+ * @see YapAbstractDatabaseConnection autoFlushMemoryLevel
+**/
+@property (atomic, assign, readwrite) int defaultAutoFlushMemoryLevel;
+#endif
 
 #pragma mark Extensions
 

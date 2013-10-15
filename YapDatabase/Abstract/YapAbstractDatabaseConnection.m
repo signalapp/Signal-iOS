@@ -110,16 +110,23 @@
 		
 		extensions = [[NSMutableDictionary alloc] init];
 		
-		objectCacheLimit = DEFAULT_OBJECT_CACHE_LIMIT;
-		objectCache = [[YapCache alloc] initWithKeyClass:[abstractDatabase cacheKeyClass]];
-		objectCache.countLimit = objectCacheLimit;
+		YapAbstractDatabaseDefaults *defaults = [abstractDatabase defaults];
 		
-		metadataCacheLimit = DEFAULT_METADATA_CACHE_LIMIT;
-		metadataCache = [[YapCache alloc] initWithKeyClass:[abstractDatabase cacheKeyClass]];
-		metadataCache.countLimit = metadataCacheLimit;
+		if (defaults.objectCacheEnabled)
+		{
+			objectCacheLimit = defaults.objectCacheLimit;
+			objectCache = [[YapCache alloc] initWithKeyClass:[abstractDatabase cacheKeyClass]];
+			objectCache.countLimit = objectCacheLimit;
+		}
+		if (defaults.metadataCacheEnabled)
+		{
+			metadataCacheLimit = defaults.metadataCacheLimit;
+			metadataCache = [[YapCache alloc] initWithKeyClass:[abstractDatabase cacheKeyClass]];
+			metadataCache.countLimit = metadataCacheLimit;
+		}
 		
 		#if TARGET_OS_IPHONE
-		self.autoFlushMemoryLevel = YapDatabaseConnectionFlushMemoryLevelMild;
+		self.autoFlushMemoryLevel = defaults.autoFlushMemoryLevel;
 		#endif
 		
 		lock = OS_SPINLOCK_INIT;

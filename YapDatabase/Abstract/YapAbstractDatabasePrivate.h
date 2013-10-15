@@ -3,7 +3,7 @@
 #import "YapAbstractDatabase.h"
 #import "YapAbstractDatabaseConnection.h"
 #import "YapAbstractDatabaseTransaction.h"
-
+#import "YapAbstractDatabaseDefaults.h"
 #import "YapDatabaseConnectionState.h"
 #import "YapCache.h"
 
@@ -29,8 +29,10 @@ extern NSString *const YapDatabaseNotificationKey;
 	NSMutableArray *changesets;
 	uint64_t snapshot;
 	
-	dispatch_queue_t connectionPoolQueue;
+	dispatch_queue_t internalQueue;
 	dispatch_queue_t checkpointQueue;
+	
+	YapAbstractDatabaseDefaults *defaults;
 	
 	NSDictionary *registeredExtensions;
 	YapAbstractDatabaseConnection *registrationConnection;
@@ -83,6 +85,11 @@ extern NSString *const YapDatabaseNotificationKey;
  * This method is run asynchronously on the snapshotQueue.
 **/
 - (void)prepare;
+
+/**
+ * New connections inherit their default values from this structure.
+**/
+- (YapAbstractDatabaseDefaults *)defaults;
 
 /**
  * Use the addConnection method from within newConnection.
