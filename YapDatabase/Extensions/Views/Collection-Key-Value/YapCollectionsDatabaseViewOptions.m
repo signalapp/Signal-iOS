@@ -4,6 +4,7 @@
 @implementation YapCollectionsDatabaseViewOptions
 
 @synthesize isPersistent = isPersistent;
+@synthesize allowedCollections = allowedCollections;
 
 - (id)init
 {
@@ -18,6 +19,7 @@
 {
 	YapCollectionsDatabaseViewOptions *copy = [[YapCollectionsDatabaseViewOptions alloc] init];
 	copy->isPersistent = isPersistent;
+	copy->allowedCollections = allowedCollections;
 	
 	return copy;
 }

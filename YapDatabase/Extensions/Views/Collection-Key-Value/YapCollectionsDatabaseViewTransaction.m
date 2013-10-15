@@ -633,8 +633,8 @@
 	{
 		if (groupingNeedsObject || groupingNeedsMetadata)
 		{
-			[databaseTransaction _enumerateRowsInAllCollectionsUsingBlock:
-			    ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop) {
+			void (^block)(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop);
+			block = ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop){
 				
 				NSString *group = getGroup(collection, key, object, metadata);
 				if (group)
@@ -647,7 +647,17 @@
 					         metadata:metadata
 					          inGroup:group withChanges:flags isNew:YES];
 				}
-			}];
+			};
+			
+			NSSet *allowedCollections = viewConnection->view->options.allowedCollections;
+			if (allowedCollections)
+			{
+				[databaseTransaction _enumerateRowsInCollections:[allowedCollections allObjects] usingBlock:block];
+			}
+			else
+			{
+				[databaseTransaction _enumerateRowsInAllCollectionsUsingBlock:block];
+			}
 		}
 		else
 		{
@@ -655,8 +665,16 @@
 			// So we can skip the deserialization step for any rows not in the view.
 			
 			__block NSString *group = nil;
-			[databaseTransaction _enumerateRowsInAllCollectionsUsingBlock:
-			    ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop) {
+			
+			BOOL (^filter)(int64_t rowid, NSString *collection, NSString *key);
+			filter = ^BOOL(int64_t rowid, NSString *collection, NSString *key) {
+				
+				group = getGroup(collection, key, nil, nil);
+				return (group != nil);
+			};
+			
+			void (^block)(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop);
+			block = ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop){
 				
 				YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 					
@@ -665,20 +683,27 @@
 				           object:object
 				         metadata:metadata
 				          inGroup:group withChanges:flags isNew:YES];
-				
-			} withFilter:^BOOL(int64_t rowid, NSString *collection, NSString *key) {
-				
-				group = getGroup(collection, key, nil, nil);
-				return (group != nil);
-			}];
+			};
+			
+			NSSet *allowedCollections = viewConnection->view->options.allowedCollections;
+			if (allowedCollections)
+			{
+				[databaseTransaction _enumerateRowsInCollections:[allowedCollections allObjects]
+				                                      usingBlock:block
+				                                      withFilter:filter];
+			}
+			else
+			{
+				[databaseTransaction _enumerateRowsInAllCollectionsUsingBlock:block withFilter:filter];
+			}
 		}
 	}
 	else if (needsObject && !needsMetadata)
 	{
 		if (groupingNeedsObject)
 		{
-			[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:
-			    ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop) {
+			void (^block)(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop);
+			block = ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop){
 				
 				NSString *group = getGroup(collection, key, object, nil);
 				if (group)
@@ -691,7 +716,18 @@
 					          metadata:nil
 					           inGroup:group withChanges:flags isNew:YES];
 				}
-			}];
+			};
+			
+			NSSet *allowedCollections = viewConnection->view->options.allowedCollections;
+			if (allowedCollections)
+			{
+				[databaseTransaction _enumerateKeysAndObjectsInCollections:[allowedCollections allObjects]
+				                                                usingBlock:block];
+			}
+			else
+			{
+				[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:block];
+			}
 		}
 		else
 		{
@@ -699,8 +735,16 @@
 			// So we can skip the deserialization step for any rows not in the view.
 			
 			__block NSString *group = nil;
-			[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:
-			    ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop) {
+			
+			BOOL (^filter)(int64_t rowid, NSString *collection, NSString *key);
+			filter = ^BOOL(int64_t rowid, NSString *collection, NSString *key) {
+				
+				group = getGroup(collection, key, nil, nil);
+				return (group != nil);
+			};
+			
+			void (^block)(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop);
+			block = ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop){
 				
 				YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 				
@@ -709,20 +753,27 @@
 				           object:object
 				          metadata:nil
 				        inGroup:group withChanges:flags isNew:YES];
-				
-			} withFilter:^BOOL(int64_t rowid, NSString *collection, NSString *key) {
-				
-				group = getGroup(collection, key, nil, nil);
-				return (group != nil);
-			}];
+			};
+			
+			NSSet *allowedCollections = viewConnection->view->options.allowedCollections;
+			if (allowedCollections)
+			{
+				[databaseTransaction _enumerateKeysAndObjectsInCollections:[allowedCollections allObjects]
+				                                                usingBlock:block
+				                                                withFilter:filter];
+			}
+			else
+			{
+				[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:block withFilter:filter];
+			}
 		}
 	}
 	else if (!needsObject && needsMetadata)
 	{
 		if (groupingNeedsMetadata)
 		{
-			[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:
-			    ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop) {
+			void (^block)(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop);
+			block = ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop){
 				
 				NSString *group = getGroup(collection, key, nil, metadata);
 				if (group)
@@ -735,7 +786,19 @@
 					         metadata:metadata
 					          inGroup:group withChanges:flags isNew:YES];
 				}
-			}];
+			};
+			
+			
+			NSSet *allowedCollections = viewConnection->view->options.allowedCollections;
+			if (allowedCollections)
+			{
+				[databaseTransaction _enumerateKeysAndMetadataInCollections:[allowedCollections allObjects]
+				                                                 usingBlock:block];
+			}
+			else
+			{
+				[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:block];
+			}
 		}
 		else
 		{
@@ -743,8 +806,16 @@
 			// So we can skip the deserialization step for any rows not in the view.
 			
 			__block NSString *group = nil;
-			[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:
-			    ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop) {
+			
+			BOOL (^filter)(int64_t rowid, NSString *collection, NSString *key);
+			filter = ^BOOL(int64_t rowid, NSString *collection, NSString *key){
+				
+				group = getGroup(collection, key, nil, nil);
+				return (group != nil);
+			};
+			
+			void (^block)(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop);
+			block = ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop){
 				
 				YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 				
@@ -753,18 +824,25 @@
 				           object:nil
 				         metadata:metadata
 				          inGroup:group withChanges:flags isNew:YES];
-				
-			} withFilter:^BOOL(int64_t rowid, NSString *collection, NSString *key) {
-				
-				group = getGroup(collection, key, nil, nil);
-				return (group != nil);
-			}];
+			};
+			
+			NSSet *allowedCollections = viewConnection->view->options.allowedCollections;
+			if (allowedCollections)
+			{
+				[databaseTransaction _enumerateKeysAndMetadataInCollections:[allowedCollections allObjects]
+				                                                 usingBlock:block
+				                                                 withFilter:filter];
+			}
+			else
+			{
+				[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:block withFilter:filter];
+			}
 		}
 	}
 	else // if (!needsObject && !needsMetadata)
 	{
-		[databaseTransaction _enumerateKeysInAllCollectionsUsingBlock:
-		    ^(int64_t rowid, NSString *collection, NSString *key, BOOL *stop) {
+		void (^block)(int64_t rowid, NSString *collection, NSString *key, BOOL *stop);
+		block = ^(int64_t rowid, NSString *collection, NSString *key, BOOL *stop){
 			
 			NSString *group = getGroup(collection, key, nil, nil);
 			if (group)
@@ -777,7 +855,17 @@
 				         metadata:nil
 				          inGroup:group withChanges:flags isNew:YES];
 			}
-		}];
+		};
+		
+		NSSet *allowedCollections = viewConnection->view->options.allowedCollections;
+		if (allowedCollections)
+		{
+			[databaseTransaction _enumerateKeysInCollections:[allowedCollections allObjects] usingBlock:block];
+		}
+		else
+		{
+			[databaseTransaction _enumerateKeysInAllCollectionsUsingBlock:block];
+		}
 	}
 	
 	return YES;
@@ -2769,38 +2857,40 @@
 	
 	// Invoke the grouping block to find out if the object should be included in the view.
 	
-	NSString *group;
+	NSString *group = nil;
+	NSSet *allowedCollections = view->options.allowedCollections;
 	
-	if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithKey)
+	if (!allowedCollections || [allowedCollections containsObject:collection])
 	{
-		__unsafe_unretained YapCollectionsDatabaseViewGroupingWithKeyBlock groupingBlock =
-		    (YapCollectionsDatabaseViewGroupingWithKeyBlock)view->groupingBlock;
-		
-		group = groupingBlock(collection, key);
+		if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithKey)
+		{
+			__unsafe_unretained YapCollectionsDatabaseViewGroupingWithKeyBlock groupingBlock =
+			    (YapCollectionsDatabaseViewGroupingWithKeyBlock)view->groupingBlock;
+			
+			group = groupingBlock(collection, key);
+		}
+		else if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithObject)
+		{
+			__unsafe_unretained YapCollectionsDatabaseViewGroupingWithObjectBlock groupingBlock =
+			    (YapCollectionsDatabaseViewGroupingWithObjectBlock)view->groupingBlock;
+			
+			group = groupingBlock(collection, key, object);
+		}
+		else if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithMetadata)
+		{
+			__unsafe_unretained YapCollectionsDatabaseViewGroupingWithMetadataBlock groupingBlock =
+			    (YapCollectionsDatabaseViewGroupingWithMetadataBlock)view->groupingBlock;
+			
+			group = groupingBlock(collection, key, metadata);
+		}
+		else
+		{
+			__unsafe_unretained YapCollectionsDatabaseViewGroupingWithRowBlock groupingBlock =
+			    (YapCollectionsDatabaseViewGroupingWithRowBlock)view->groupingBlock;
+			
+			group = groupingBlock(collection, key, object, metadata);
+		}
 	}
-	else if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithObject)
-	{
-		__unsafe_unretained YapCollectionsDatabaseViewGroupingWithObjectBlock groupingBlock =
-		    (YapCollectionsDatabaseViewGroupingWithObjectBlock)view->groupingBlock;
-		
-		group = groupingBlock(collection, key, object);
-	}
-	else if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithMetadata)
-	{
-		__unsafe_unretained YapCollectionsDatabaseViewGroupingWithMetadataBlock groupingBlock =
-		    (YapCollectionsDatabaseViewGroupingWithMetadataBlock)view->groupingBlock;
-		
-		group = groupingBlock(collection, key, metadata);
-	}
-	else
-	{
-		__unsafe_unretained YapCollectionsDatabaseViewGroupingWithRowBlock groupingBlock =
-		    (YapCollectionsDatabaseViewGroupingWithRowBlock)view->groupingBlock;
-		
-		group = groupingBlock(collection, key, object, metadata);
-	}
-	
-	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	if (group == nil)
 	{
@@ -2810,6 +2900,8 @@
 	{
 		// Add key to view.
 		// This was an insert operation, so we know the key wasn't already in the view.
+		
+		YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
 		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
@@ -2840,37 +2932,41 @@
 	
 	// Invoke the grouping block to find out if the object should be included in the view.
 	
-	NSString *group;
+	NSString *group = nil;
+	NSSet *allowedCollections = view->options.allowedCollections;
 	
-	if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithKey)
+	if (!allowedCollections || [allowedCollections containsObject:collection])
 	{
-		__unsafe_unretained YapCollectionsDatabaseViewGroupingWithKeyBlock groupingBlock =
-		    (YapCollectionsDatabaseViewGroupingWithKeyBlock)view->groupingBlock;
-		
-		group = groupingBlock(collection, key);
+		if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithKey)
+		{
+			__unsafe_unretained YapCollectionsDatabaseViewGroupingWithKeyBlock groupingBlock =
+			    (YapCollectionsDatabaseViewGroupingWithKeyBlock)view->groupingBlock;
+			
+			group = groupingBlock(collection, key);
+		}
+		else if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithObject)
+		{
+			__unsafe_unretained YapCollectionsDatabaseViewGroupingWithObjectBlock groupingBlock =
+			    (YapCollectionsDatabaseViewGroupingWithObjectBlock)view->groupingBlock;
+			
+			group = groupingBlock(collection, key, object);
+		}
+		else if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithMetadata)
+		{
+			__unsafe_unretained YapCollectionsDatabaseViewGroupingWithMetadataBlock groupingBlock =
+			    (YapCollectionsDatabaseViewGroupingWithMetadataBlock)view->groupingBlock;
+			
+			group = groupingBlock(collection, key, metadata);
+		}
+		else
+		{
+			__unsafe_unretained YapCollectionsDatabaseViewGroupingWithRowBlock groupingBlock =
+			    (YapCollectionsDatabaseViewGroupingWithRowBlock)view->groupingBlock;
+			
+			group = groupingBlock(collection, key, object, metadata);
+		}
 	}
-	else if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithObject)
-	{
-		__unsafe_unretained YapCollectionsDatabaseViewGroupingWithObjectBlock groupingBlock =
-		    (YapCollectionsDatabaseViewGroupingWithObjectBlock)view->groupingBlock;
-		
-		group = groupingBlock(collection, key, object);
-	}
-	else if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithMetadata)
-	{
-		__unsafe_unretained YapCollectionsDatabaseViewGroupingWithMetadataBlock groupingBlock =
-		    (YapCollectionsDatabaseViewGroupingWithMetadataBlock)view->groupingBlock;
-		
-		group = groupingBlock(collection, key, metadata);
-	}
-	else
-	{
-		__unsafe_unretained YapCollectionsDatabaseViewGroupingWithRowBlock groupingBlock =
-		    (YapCollectionsDatabaseViewGroupingWithRowBlock)view->groupingBlock;
-		
-		group = groupingBlock(collection, key, object, metadata);
-	}
-	
+
 	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	if (group == nil)
@@ -2974,20 +3070,25 @@
 		// Grouping is based on metadata or objectAndMetadata.
 		// Invoke groupingBlock to see what the new group is.
 		
-		if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithMetadata)
+		NSSet *allowedCollections = view->options.allowedCollections;
+		
+		if (!allowedCollections || [allowedCollections containsObject:collection])
 		{
-			__unsafe_unretained YapCollectionsDatabaseViewGroupingWithMetadataBlock groupingBlock =
-		        (YapCollectionsDatabaseViewGroupingWithMetadataBlock)view->groupingBlock;
-			
-			group = groupingBlock(collection, key, metadata);
-		}
-		else
-		{
-			__unsafe_unretained YapCollectionsDatabaseViewGroupingWithRowBlock groupingBlock =
-		        (YapCollectionsDatabaseViewGroupingWithRowBlock)view->groupingBlock;
-			
-			object = [databaseTransaction objectForKey:key inCollection:collection];
-			group = groupingBlock(collection, key, object, metadata);
+			if (view->groupingBlockType == YapCollectionsDatabaseViewBlockTypeWithMetadata)
+			{
+				__unsafe_unretained YapCollectionsDatabaseViewGroupingWithMetadataBlock groupingBlock =
+			        (YapCollectionsDatabaseViewGroupingWithMetadataBlock)view->groupingBlock;
+				
+				group = groupingBlock(collection, key, metadata);
+			}
+			else
+			{
+				__unsafe_unretained YapCollectionsDatabaseViewGroupingWithRowBlock groupingBlock =
+			        (YapCollectionsDatabaseViewGroupingWithRowBlock)view->groupingBlock;
+				
+				object = [databaseTransaction objectForKey:key inCollection:collection];
+				group = groupingBlock(collection, key, object, metadata);
+			}
 		}
 		
 		if (group == nil)

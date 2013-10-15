@@ -38,7 +38,19 @@
 **/
 @property (nonatomic, assign, readwrite) BOOL isPersistent;
 
-
-// This class is a placeholder for future additional options.
+/**
+ * You can configure the view to pre-filter all but a subset of collections.
+ * 
+ * The primary motivation for this is to reduce the overhead when first populating the view.
+ * For example, if you're creating a view which only includes objects from a single collection,
+ * then you could specify that collection here. And when the view first populates itself,
+ * it will enumerate over just the allowedCollections, as opposed to enumerating over all collections.
+ * 
+ * The groupingBlock will still be invoked, but only if the collection is contained in allowedCollections.
+ * If not, the view will not invoke the groupingBlock, and act as if the groupingBlock had returned nil.
+ *
+ * The default value is nil.
+**/
+@property (nonatomic, copy, readwrite) NSSet *allowedCollections;
 
 @end
