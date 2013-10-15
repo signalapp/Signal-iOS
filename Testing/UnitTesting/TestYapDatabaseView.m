@@ -6,7 +6,6 @@
 #import "DDLog.h"
 #import "DDTTYLogger.h"
 
-#define TEST_NON_PERSISTENT_VIEW 1
 
 @implementation TestYapDatabaseView
 
@@ -33,10 +32,30 @@
 	[super tearDown];
 }
 
-- (void)test
+#pragma mark -
+
+- (void)test_persistent
 {
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
 	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = YES;
+	
+	[self _test_withPath:databasePath options:options];
+}
+
+- (void)test_nonPersistent
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = NO;
+	
+	[self _test_withPath:databasePath options:options];
+}
+
+- (void)_test_withPath:(NSString *)databasePath options:(YapDatabaseViewOptions *)options
+{
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
@@ -68,11 +87,6 @@
 		
 		return [object1 compare:object2 options:NSNumericSearch];
 	};
-	
-	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
-#if TEST_NON_PERSISTENT_VIEW
-	options.isPersistent = NO;
-#endif
 	
 	YapDatabaseView *databaseView =
 	    [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
@@ -1102,13 +1116,33 @@
 	connection2 = nil;
 }
 
-- (void)testMultiPage
+#pragma mark -
+
+- (void)testMultiPage_persistent
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = YES;
+	
+	[self _testMultiPage_withPath:databasePath options:options];
+}
+
+- (void)testMultiPage_nonPersistent
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = NO;
+	
+	[self _testMultiPage_withPath:databasePath options:options];
+}
+
+- (void)_testMultiPage_withPath:(NSString *)databasePath options:(YapDatabaseViewOptions *)options
 {
 	//
 	// These tests include enough keys to ensure that the view has to deal with multiple pages.
 	// By default, there are 50 keys in a page.
-	
-	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
 	
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
@@ -1138,11 +1172,6 @@
 		
 		return [object1 compare:object2 options:NSNumericSearch];
 	};
-	
-	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
-#if TEST_NON_PERSISTENT_VIEW
-	options.isPersistent = NO;
-#endif
 	
 	YapDatabaseView *databaseView =
 		[[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
@@ -1801,10 +1830,30 @@
 	}];
 }
 
-- (void)testViewPopulation
+#pragma mark -
+
+- (void)testViewPopulation_persistent
 {
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
 	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = YES;
+	
+	[self _testViewPopulation_withPath:databasePath options:options];
+}
+
+- (void)testViewPopulation_nonPersistent
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = NO;
+	
+	[self _testViewPopulation_withPath:databasePath options:options];
+}
+
+- (void)_testViewPopulation_withPath:(NSString *)databasePath options:(YapDatabaseViewOptions *)options
+{
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
@@ -1833,11 +1882,6 @@
 		
 		return [object1 compare:object2 options:NSNumericSearch];
 	};
-	
-	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
-#if TEST_NON_PERSISTENT_VIEW
-	options.isPersistent = NO;
-#endif
 	
 	YapDatabaseView *databaseView =
 		[[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
@@ -1896,10 +1940,31 @@
 	}];
 }
 
-- (void)testMutationDuringEnumerationProtection
+#pragma mark -
+
+- (void)testMutationDuringEnumerationProtection_persistent
 {
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
 	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = YES;
+	
+	[self _testMutationDuringEnumerationProtection_withPath:databasePath options:options];
+}
+
+- (void)testMutationDuringEnumerationProtection_nonPersistent
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = NO;
+	
+	[self _testMutationDuringEnumerationProtection_withPath:databasePath options:options];
+}
+
+- (void)_testMutationDuringEnumerationProtection_withPath:(NSString *)databasePath
+                                                  options:(YapDatabaseViewOptions *)options
+{
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
@@ -1930,11 +1995,6 @@
 		
 		return [object1 compare:object2 options:NSNumericSearch];
 	};
-	
-	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
-#if TEST_NON_PERSISTENT_VIEW
-	options.isPersistent = NO;
-#endif
 	
 	YapDatabaseView *databaseView =
 		[[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
@@ -2215,10 +2275,30 @@
 	}];
 }
 
-- (void)testDropView
+#pragma mark -
+
+- (void)testDropView_persistent
 {
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
 	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = YES;
+	
+	[self _testDropView_withPath:databasePath options:options];
+}
+
+- (void)testDropView_nonPersistent
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = NO;
+	
+	[self _testDropView_withPath:databasePath options:options];
+}
+
+- (void)_testDropView_withPath:(NSString *)databasePath options:(YapDatabaseViewOptions *)options
+{
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
@@ -2246,11 +2326,6 @@
 		
 		return [object1 compare:object2 options:NSNumericSearch];
 	};
-	
-	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
-#if TEST_NON_PERSISTENT_VIEW
-	options.isPersistent = NO;
-#endif
 	
 	YapDatabaseView *databaseView =
 		[[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
@@ -2298,10 +2373,30 @@
 	}];
 }
 
-- (void)testFind
+#pragma mark -
+
+- (void)testFind_persistent
 {
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
 	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = YES;
+	
+	[self _testFind_withPath:databasePath options:options];
+}
+
+- (void)testFind_nonPersistent
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = NO;
+	
+	[self _testFind_withPath:databasePath options:options];
+}
+
+- (void)_testFind_withPath:(NSString *)databasePath options:(YapDatabaseViewOptions *)options
+{
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
@@ -2329,11 +2424,6 @@
 		
 		return [number1 compare:number2];
 	};
-	
-	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
-#if TEST_NON_PERSISTENT_VIEW
-	options.isPersistent = NO;
-#endif
 	
 	YapDatabaseView *databaseView =
 		[[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
