@@ -19,6 +19,6 @@ pod 'OpenSSL', :podspec => 'https://raw.github.com/krzak/OpenSSL/master/OpenSSL.
 
 **Authors**
 
-Marcin Krzyżanowski <marcin.krzyzanowski@hakore.com>
+[Marcin Krzyżanowski](https://twitter.com/krzyzanowskim)
 
 Based on fork by @justinplouffe
