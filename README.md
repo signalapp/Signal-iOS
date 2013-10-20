@@ -14,7 +14,7 @@ Current version contains binaries build with SDK iOS 7.0, and SDK OSX 10.8 for a
 **Installation**
 
 ````
-pod 'OpenSSL' :podspec => https://raw.github.com/krzak/OpenSSL/master/OpenSSL.podspec
+pod 'OpenSSL', :podspec => 'https://raw.github.com/krzak/OpenSSL/master/OpenSSL.podspec'
 ````
 
 **Authors**
