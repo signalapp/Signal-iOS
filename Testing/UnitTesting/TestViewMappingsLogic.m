@@ -1,7 +1,10 @@
-#import "TestViewMappingsLogic.h"
+#import <SenTestingKit/SenTestingKit.h>
+
 #import "YapDatabaseViewChangePrivate.h"
 #import "YapDatabaseViewMappingsPrivate.h"
 
+@interface TestViewMappingsLogic : SenTestCase
+@end
 
 @implementation TestViewMappingsLogic
 

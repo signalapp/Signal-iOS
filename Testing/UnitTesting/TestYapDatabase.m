@@ -1,14 +1,15 @@
-#import "TestYapDatabase.h"
-#import "TestObject.h"
+#import <SenTestingKit/SenTestingKit.h>
 
 #import "YapDatabase.h"
-#import "YapDatabasePrivate.h"
+#import "TestObject.h"
 
 #import "DDLog.h"
 #import "DDTTYLogger.h"
 
 #import <libkern/OSAtomic.h>
 
+@interface TestYapDatabase : SenTestCase
+@end
 
 @implementation TestYapDatabase
 

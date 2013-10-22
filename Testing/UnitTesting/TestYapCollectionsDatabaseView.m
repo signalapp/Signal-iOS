@@ -1,4 +1,4 @@
-#import "TestYapCollectionsDatabaseView.h"
+#import <SenTestingKit/SenTestingKit.h>
 
 #import "YapCollectionsDatabase.h"
 #import "YapCollectionsDatabaseView.h"
@@ -6,6 +6,8 @@
 #import "DDLog.h"
 #import "DDTTYLogger.h"
 
+@interface TestYapCollectionsDatabaseView : SenTestCase
+@end
 
 @implementation TestYapCollectionsDatabaseView
 

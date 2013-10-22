@@ -1,6 +1,10 @@
-#import "TestViewChangeLogic.h"
+#import <SenTestingKit/SenTestingKit.h>
+
 #import "YapDatabaseViewChangePrivate.h"
 #import "YapDatabaseViewMappingsPrivate.h"
+
+@interface TestViewChangeLogic : SenTestCase
+@end
 
 /**
  * A database view needs to report a changeset in the YapDatabaseModifiedNotification.
