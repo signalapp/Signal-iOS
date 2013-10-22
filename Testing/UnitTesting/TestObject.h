@@ -22,20 +22,20 @@
 @interface TestObject : NSObject <NSCoding>
 
 + (TestObject *)generateTestObject;
++ (TestObject *)generateTestObjectWithSomeDate:(NSDate *)someDate someInt:(int)someInt;
 
 /**
  * These are all dummy values.
  * We're not trying to do anything special here.
- * Just trying to make the object big enough to represent something that may be used in a real application.
+ * Just trying to make the object somewhat represent something that may be used in a real application.
 **/
 
-@property (nonatomic, strong, readonly) NSString * string1;
-@property (nonatomic, strong, readonly) NSString * string2;
-@property (nonatomic, strong, readonly) NSString * string3;
-@property (nonatomic, strong, readonly) NSString * string4;
-@property (nonatomic, strong, readonly) NSNumber * number;
-@property (nonatomic, strong, readonly) NSArray  * array;
-@property (nonatomic, assign, readonly) double     pDouble; // primitives work too
+@property (nonatomic, strong, readonly) NSString * someString;
+@property (nonatomic, strong, readonly) NSNumber * someNumber;
+@property (nonatomic, strong, readonly) NSDate   * someDate;
+@property (nonatomic, strong, readonly) NSArray  * someArray;
+@property (nonatomic, assign, readonly) int        someInt;
+@property (nonatomic, assign, readonly) double     someDouble;
 
 - (TestObjectMetadata *)extractMetadata;
 
@@ -54,18 +54,17 @@
  * you might use metadata to timestamp when you originally fetched it.
  * You can later refer to the timestamp to decide if the data is stale and needs to be refreshed.
  * 
- * Another common usage is to use a subset of the full object as metadata.
- * This is because metadata is kept in RAM for fast access without ever hitting the disk.
- * So if you have a large object, but often need access to certain fields (perhaps for summary display or sorting),
- * you can choose to keep just those fields in RAM for instant access,
- * and allow the rest of the object graph to be paged out to disk.
+ * Another common usage is to use a small subset of a large object as metadata.
+ * This can reduce overhead if the metadata fields are needed often, but the full object is rarely needed.
  * 
- * As you can see, metadata can be very flexible.
- * This example uses a small metadata subset object.
+ * Thus metadata can be very flexible.
+ * 
+ * This example is rather silly because the object itself isn't big.
+ * This example is just here to demonstrate that you can use a custom metadata object too.
 **/
 @interface TestObjectMetadata : NSObject <NSCoding>
 
-@property (nonatomic, strong, readonly) NSString * string1;
-@property (nonatomic, assign, readonly) double     pDouble;
+@property (nonatomic, strong, readonly) NSDate * someDate;
+@property (nonatomic, assign, readonly) int      someInt;
 
 @end

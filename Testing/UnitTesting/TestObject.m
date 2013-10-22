@@ -1,24 +1,29 @@
 #import "TestObject.h"
 
 @interface TestObjectMetadata ()
-- (id)initWithString1:(NSString *)inString1 pDouble:(double)inPDouble;
+- (id)initWithSomeDate:(NSDate *)inDate someInt:(int)inInt;
 @end
 
 #pragma mark -
 
 @implementation TestObject
 
-+ (TestObject *)generateTestObject {
++ (TestObject *)generateTestObject
+{
 	return [[TestObject alloc] init];
 }
 
-@synthesize string1;
-@synthesize string2;
-@synthesize string3;
-@synthesize string4;
-@synthesize number;
-@synthesize array;
-@synthesize pDouble;
++ (TestObject *)generateTestObjectWithSomeDate:(NSDate *)someDate someInt:(int)someInt
+{
+	return [[TestObject alloc] initWithSomeDate:someDate someInt:someInt];
+}
+
+@synthesize someString;
+@synthesize someNumber;
+@synthesize someDate;
+@synthesize someArray;
+@synthesize someInt;
+@synthesize someDouble;
 
 - (NSString *)randomString:(NSUInteger)length
 {
@@ -39,6 +44,11 @@
 	return result;
 }
 
+- (uint32_t)randomInt
+{
+	return (int)arc4random_uniform(100);
+}
+
 - (double)randomDouble
 {
 	return (double)arc4random_uniform(100);
@@ -46,18 +56,25 @@
 
 - (id)init
 {
+	return [self initWithSomeDate:nil someInt:[self randomInt]];
+}
+
+- (id)initWithSomeDate:(NSDate *)inSomeDate someInt:(int)inSomeInt
+{
 	if ((self = [super init]))
 	{
-		string1 = [self randomString:32];
-		string2 = [self randomString:32];
-		string3 = [self randomString:32];
-		string4 = [self randomString:32];
+		if (inSomeDate)
+			someDate = inSomeDate;
+		else
+			someDate = [NSDate date];
 		
-		number  = [NSNumber numberWithDouble:[self randomDouble]];
+		someString = [self randomString:32];
+		someNumber = [NSNumber numberWithInt:[self randomInt]];
 		
-		array   = @[ [self randomString:8], [self randomString:8], [self randomString:8] ];
+		someArray  = @[ [self randomString:8], [self randomString:8], [self randomString:8] ];
 		
-		pDouble = [self randomDouble];
+		someInt    = inSomeInt;
+		someDouble = [self randomDouble];
 	}
 	return self;
 }
@@ -66,31 +83,29 @@
 {
 	if ((self = [super init]))
 	{
-		string1 = [decoder decodeObjectForKey:@"string1"];
-		string2 = [decoder decodeObjectForKey:@"string2"];
-		string3 = [decoder decodeObjectForKey:@"string3"];
-		string4 = [decoder decodeObjectForKey:@"string4"];
-		number  = [decoder decodeObjectForKey:@"number"];
-		array   = [decoder decodeObjectForKey:@"array"];
-		pDouble = [decoder decodeDoubleForKey:@"pDouble"];
+		someString = [decoder decodeObjectForKey:@"someString"];
+		someNumber = [decoder decodeObjectForKey:@"someNumber"];
+		someDate   = [decoder decodeObjectForKey:@"someDate"];
+		someArray  = [decoder decodeObjectForKey:@"someArray"];
+		someInt    = [decoder decodeDoubleForKey:@"someInt"];
+		someDouble = [decoder decodeDoubleForKey:@"someDouble"];
 	}
 	return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder
 {
-	[coder encodeObject:string1 forKey:@"string1"];
-	[coder encodeObject:string2 forKey:@"string2"];
-	[coder encodeObject:string3 forKey:@"string3"];
-	[coder encodeObject:string4 forKey:@"string4"];
-	[coder encodeObject:number  forKey:@"number"];
-	[coder encodeObject:array   forKey:@"array"];
-	[coder encodeDouble:pDouble forKey:@"pDouble"];
+	[coder encodeObject:someString forKey:@"someString"];
+	[coder encodeObject:someNumber forKey:@"someNumber"];
+	[coder encodeObject:someDate   forKey:@"someDate"];
+	[coder encodeObject:someArray  forKey:@"someArray"];
+	[coder encodeDouble:someInt    forKey:@"someInt"];
+	[coder encodeDouble:someDouble forKey:@"someDouble"];
 }
 
 - (TestObjectMetadata *)extractMetadata
 {
-	return [[TestObjectMetadata alloc] initWithString1:string1 pDouble:pDouble];
+	return [[TestObjectMetadata alloc] initWithSomeDate:someDate someInt:someInt];
 }
 
 @end
@@ -101,15 +116,15 @@
 
 @implementation TestObjectMetadata
 
-@synthesize string1;
-@synthesize pDouble;
+@synthesize someDate;
+@synthesize someInt;
 
-- (id)initWithString1:(NSString *)inString1 pDouble:(double)inPDouble
+- (id)initWithSomeDate:(NSDate *)inDate someInt:(int)inInt
 {
 	if ((self = [super init]))
 	{
-		string1 = inString1;
-		pDouble = inPDouble;
+		someDate = inDate;
+		someInt = inInt;
 	}
 	return self;
 }
@@ -118,16 +133,16 @@
 {
 	if ((self = [super init]))
 	{
-		string1 = [decoder decodeObjectForKey:@"string1"];
-		pDouble = [decoder decodeDoubleForKey:@"pDouble"];
+		someDate = [decoder decodeObjectForKey:@"someDate"];
+		someInt = [decoder decodeIntForKey:@"someInt"];
 	}
 	return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder
 {
-	[coder encodeObject:string1 forKey:@"string1"];
-	[coder encodeDouble:pDouble forKey:@"pDouble"];
+	[coder encodeObject:someDate forKey:@"someDate"];
+	[coder encodeInt:someInt forKey:@"someInt"];
 }
 
 @end

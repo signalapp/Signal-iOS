@@ -194,8 +194,6 @@ extern NSString *const YapDatabaseNotificationKey;
 	id sharedKeySetForExtensions;
 	
 @protected
-	dispatch_queue_t connectionQueue;
-	void *IsOnConnectionQueueKey;
 	
 	id sharedKeySetForInternalChangeset;
 	id sharedKeySetForExternalChangeset;
@@ -204,6 +202,9 @@ extern NSString *const YapDatabaseNotificationKey;
 	__strong YapAbstractDatabase *abstractDatabase;
 	
 	sqlite3 *db;
+	
+	dispatch_queue_t connectionQueue;     // Only for YapAbstractDatabaseExtensionConnection subclasses
+	void *IsOnConnectionQueueKey;         // Only for YapAbstractDatabaseExtensionConnection subclasses
 	
 	BOOL hasDiskChanges;
 	
