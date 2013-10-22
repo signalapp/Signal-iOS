@@ -278,25 +278,22 @@
 			NSLocalizedFailureReasonErrorKey: failureReason,
 			NSLocalizedRecoverySuggestionErrorKey: suggestion };
 		
-		// If we don't throw the exception here,
-		// then you'll just get an exception later from the tableView or collectionView.
-		// It will look something like this:
+		// Here's what you SHOULD be doing: (correct)
 		//
-		// > Invalid update: invalid number of rows in section X. The number of rows contained in an
-		// > existing section after the update (Y) must be equal to the number of rows contained in that section
-		// > before the update (Z), plus or minus the number of rows inserted or deleted from that
-		// > section (# inserted, # deleted).
+		// [databaseConnection beginLongLivedReadConnection];
+		// [databaseConnection readWithBlock:^(YapDatabaseConnectionReadTransaction *transaction){
+		//     [mappings updateWithTransaction:transaction];
+		// }];
 		//
-		// In order to guarantee you DON'T get an exception (either from YapDatabase or from Apple),
-		// then you need to follow the instructions for setting up your connection, mappings, & notifications.
+		// Here's what you ARE doing: (wrong)
 		//
-		// For complete code samples, check out the wiki:
-		// https://github.com/yaptv/YapDatabase/wiki/Views
+		// [databaseConnection readWithBlock:^(YapDatabaseConnectionReadTransaction *transaction){
+		//     [mappings updateWithTransaction:transaction];
+		// }];
+		// [databaseConnection beginLongLivedReadConnection];
 		//
-		// You may be tempted to simply comment out the exception below.
-		// If you do, you're not fixing the root cause of your problem.
-		// Furthermore, you're simply trading this exception, which comes with documented steps on how
-		// to fix the problem, for an exception from Apple which will be even harder to diagnose.
+		//
+		// Warning: Do NOT, under any circumstance, comment out this exception.
 		
 		@throw [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
 	}
