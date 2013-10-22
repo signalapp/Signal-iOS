@@ -1,10 +1,25 @@
 #import <Foundation/Foundation.h>
 
 #import "YapAbstractDatabaseExtension.h"
-#import "YapDatabaseSecondaryIndexSetup.h"
+
 #import "YapDatabaseSecondaryIndexConnection.h"
 #import "YapDatabaseSecondaryIndexTransaction.h"
 
+#import "YapDatabaseSecondaryIndexSetup.h"
+
+/**
+ * Welcome to YapDatabase!
+ *
+ * https://github.com/yaptv/YapDatabase
+ *
+ * The project wiki has a wealth of documentation if you have any questions.
+ * https://github.com/yaptv/YapDatabase/wiki
+ *
+ * YapDatabaseSecondaryIndex is an extension which allows you to add additional indexes.
+ * That is, it allows you to create index(es) within sqlite for particular properties of your objects.
+ * You can then issue queries to find or enumerate objects using the indexes. (e.g. age >= 62)
+ * This allows for increased flexibility above the traditional key-value model.
+**/
 
 /**
  * The block handles extracting the column values for the secondary indexes.
@@ -51,6 +66,31 @@ typedef enum {
 
 */
 
+/**
+ * Creates a new secondary index extension.
+ * After creation, you'll need to register the extension with the database system.
+ *
+ * @param setup
+ * 
+ *   A YapDatabaseSecondaryIndexSetup instance allows you to specify the column names and type.
+ *   The column names can be whatever you want, with a few exceptions for reserved names such as "rowid".
+ *   The types can reflect numbers or text.
+ * 
+ * @param block
+ * 
+ *   Pass a block that is one of the following types:
+ *    - YapDatabaseSecondaryIndexWithKeyBlock
+ *    - YapDatabaseSecondaryIndexWithObjectBlock
+ *    - YapDatabaseSecondaryIndexWithMetadataBlock
+ *    - YapDatabaseSecondaryIndexWithRowBlock
+ * 
+ * @param blockType
+ * 
+ *   Pass the blockType enum that matches the passed block.
+ *
+ * @see YapDatabaseSecondaryIndexSetup
+ * @see YapAbstractDatabase registerExtension:withName:
+**/
 - (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)setup
               block:(YapDatabaseSecondaryIndexBlock)block
           blockType:(YapDatabaseSecondaryIndexBlockType)blockType;

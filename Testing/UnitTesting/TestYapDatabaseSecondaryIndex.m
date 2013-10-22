@@ -194,7 +194,6 @@
 		
 		count = 0;
 		query = [YapDatabaseQuery queryWithFormat:@"WHERE someInt < ?", @(105)];
-		
 		[[transaction ext:@"idx"] enumerateKeysMatchingQuery:query usingBlock:^(NSString *key, BOOL *stop) {
 			
 			count++;

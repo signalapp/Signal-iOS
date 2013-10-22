@@ -1,7 +1,9 @@
 #import "YapDatabaseSecondaryIndexConnection.h"
 #import "YapDatabaseSecondaryIndexPrivate.h"
+
 #import "YapAbstractDatabasePrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
+
 #import "YapDatabaseLogging.h"
 
 #if ! __has_feature(objc_arc)

@@ -3,10 +3,10 @@
 #import "YapDatabaseTransaction.h"
 
 #import "YapDatabaseSecondaryIndex.h"
-#import "YapDatabaseSecondaryIndexSetup.h"
 #import "YapDatabaseSecondaryIndexConnection.h"
 #import "YapDatabaseSecondaryIndexTransaction.h"
 
+#import "YapDatabaseSecondaryIndexSetup.h"
 #import "YapCache.h"
 
 #import "sqlite3.h"

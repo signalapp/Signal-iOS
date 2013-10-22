@@ -4,7 +4,6 @@
 #import "YapAbstractDatabasePrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 
-#import "YapDatabase.h"
 #import "YapDatabaseLogging.h"
 
 #if ! __has_feature(objc_arc)
@@ -27,15 +26,12 @@
 + (void)dropTablesForRegisteredName:(NSString *)registeredName
                     withTransaction:(YapAbstractDatabaseTransaction *)transaction
 {
-	NSString *tableName = [self tableNameForRegisteredName:registeredName];
-	
 	sqlite3 *db = transaction->abstractConnection->db;
+	NSString *tableName = [self tableNameForRegisteredName:registeredName];
 	
 	NSString *dropTable = [NSString stringWithFormat:@"DROP TABLE IF EXISTS \"%@\";", tableName];
 	
-	int status;
-	
-	status = sqlite3_exec(db, [dropTable UTF8String], NULL, NULL, NULL);
+	int status = sqlite3_exec(db, [dropTable UTF8String], NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
 		YDBLogError(@"%@ - Failed dropping table (%@): %d %s",

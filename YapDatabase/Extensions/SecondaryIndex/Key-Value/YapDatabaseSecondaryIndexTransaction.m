@@ -1,9 +1,11 @@
 #import "YapDatabaseSecondaryIndexTransaction.h"
 #import "YapDatabaseSecondaryIndexPrivate.h"
 #import "YapDatabaseStatement.h"
+
 #import "YapAbstractDatabasePrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapDatabasePrivate.h"
+
 #import "YapDatabaseLogging.h"
 
 #if ! __has_feature(objc_arc)
@@ -814,7 +816,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Public API
+#pragma mark Enumerate
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (BOOL)_enumerateRowidsMatchingQuery:(YapDatabaseQuery *)query
@@ -933,6 +935,11 @@
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
 	
+	if (isMutated && !stop)
+	{
+		@throw [self mutationDuringEnumerationException];
+	}
+	
 	return (status == SQLITE_DONE);
 }
 
@@ -940,7 +947,7 @@
                         usingBlock:(void (^)(NSString *key, BOOL *stop))block
 {
 	if (query == nil) return NO;
-	if (block == NULL) return NO;
+	if (block == nil) return NO;
 	
 	BOOL result = [self _enumerateRowidsMatchingQuery:query usingBlock:^(int64_t rowid, BOOL *stop) {
 		
@@ -957,7 +964,7 @@
                                    usingBlock:(void (^)(NSString *key, id metadata, BOOL *stop))block
 {
 	if (query == nil) return NO;
-	if (block == NULL) return NO;
+	if (block == nil) return NO;
 	
 	BOOL result = [self _enumerateRowidsMatchingQuery:query usingBlock:^(int64_t rowid, BOOL *stop) {
 		
@@ -975,7 +982,7 @@
                                   usingBlock:(void (^)(NSString *key, id object, BOOL *stop))block
 {
 	if (query == nil) return NO;
-	if (block == NULL) return NO;
+	if (block == nil) return NO;
 	
 	BOOL result = [self _enumerateRowidsMatchingQuery:query usingBlock:^(int64_t rowid, BOOL *stop) {
 		
@@ -993,7 +1000,7 @@
                         usingBlock:(void (^)(NSString *key, id object, id metadata, BOOL *stop))block
 {
 	if (query == nil) return NO;
-	if (block == NULL) return NO;
+	if (block == nil) return NO;
 	
 	BOOL result = [self _enumerateRowidsMatchingQuery:query usingBlock:^(int64_t rowid, BOOL *stop) {
 		
@@ -1012,7 +1019,7 @@
 #pragma mark Exceptions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (NSException *)mutationDuringEnumerationException:(NSString *)group
+- (NSException *)mutationDuringEnumerationException
 {
 	NSString *reason = [NSString stringWithFormat:
 	    @"SecondaryIndex <RegisteredName=%@> was mutated while being enumerated.", [self registeredName]];

@@ -1,5 +1,4 @@
 #import <Foundation/Foundation.h>
-
 #import "YapAbstractDatabaseExtensionConnection.h"
 
 @class YapDatabaseSecondaryIndex;
@@ -24,6 +23,9 @@
  * and simply bind the different parameters each time.
  *
  * By default the queryCache is enabled and has a limit of 10.
+ * 
+ * To disable the cache entirely, set queryCacheEnabled to NO.
+ * To use an inifinite cache size, set the queryCacheLimit to ZERO.
 **/
 @property (atomic, assign, readwrite) BOOL queryCacheEnabled;
 @property (atomic, assign, readwrite) NSUInteger queryCacheLimit;
