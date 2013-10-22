@@ -314,7 +314,6 @@
  * They are needed by various utility methods.
 **/
 - (YapAbstractDatabaseTransaction *)databaseTransaction;
-- (YapAbstractDatabaseExtension *)extension;
 - (YapAbstractDatabaseExtensionConnection *)extensionConnection;
 
 /**

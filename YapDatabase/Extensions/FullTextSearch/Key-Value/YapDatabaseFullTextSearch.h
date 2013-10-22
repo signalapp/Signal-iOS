@@ -30,7 +30,7 @@
  * You should choose a block type that takes the minimum number of required parameters.
  * The view can make various optimizations based on required parameters of the block.
 **/
-typedef id YapDatabaseFullTextSearchBlock; // One of the YapDatabaseViewGroupingX types below.
+typedef id YapDatabaseFullTextSearchBlock; // One of the YapDatabaseFullTextSearchX types below.
 
 typedef void (^YapDatabaseFullTextSearchWithKeyBlock)      \
                                     (NSMutableDictionary *dict, NSString *key);

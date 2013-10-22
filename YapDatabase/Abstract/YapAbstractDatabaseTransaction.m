@@ -276,7 +276,7 @@
 	if (extensions == nil)
 		extensions = [[NSMutableDictionary alloc] init];
 	
-	NSString *extName = [[extTransaction extension] registeredName];
+	NSString *extName = [[[extTransaction extensionConnection] extension] registeredName];
 	
 	[extensions setObject:extTransaction forKey:extName];
 }

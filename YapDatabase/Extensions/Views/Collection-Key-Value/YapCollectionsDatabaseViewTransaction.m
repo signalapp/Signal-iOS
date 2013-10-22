@@ -886,14 +886,6 @@
 /**
  * Required override method from YapAbstractDatabaseExtensionTransaction.
 **/
-- (YapAbstractDatabaseExtension *)extension
-{
-	return viewConnection->view;
-}
-
-/**
- * Required override method from YapAbstractDatabaseExtensionTransaction.
-**/
 - (YapAbstractDatabaseExtensionConnection *)extensionConnection
 {
 	return viewConnection;

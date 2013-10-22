@@ -129,7 +129,7 @@
 {
 	// Nothing to do for this particular extension.
 	//
-	// YapAbstractDatabaseExtension rows a "not implemented" exception
+	// YapAbstractDatabaseExtension throws a "not implemented" exception
 	// to ensure extensions have implementations of all required methods.
 }
 
@@ -140,7 +140,7 @@
 {
 	// Nothing to do for this particular extension.
 	//
-	// YapAbstractDatabaseExtension rows a "not implemented" exception
+	// YapAbstractDatabaseExtension throws a "not implemented" exception
 	// to ensure extensions have implementations of all required methods.
 }
 

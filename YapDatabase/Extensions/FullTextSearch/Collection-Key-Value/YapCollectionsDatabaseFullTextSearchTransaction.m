@@ -307,14 +307,6 @@
 /**
  * Required override method from YapAbstractDatabaseExtensionTransaction.
 **/
-- (YapAbstractDatabaseExtension *)extension
-{
-	return ftsConnection->fts;
-}
-
-/**
- * Required override method from YapAbstractDatabaseExtensionTransaction.
-**/
 - (YapAbstractDatabaseExtensionConnection *)extensionConnection
 {
 	return ftsConnection;

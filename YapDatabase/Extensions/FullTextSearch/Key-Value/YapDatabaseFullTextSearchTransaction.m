@@ -25,7 +25,7 @@
  * If there is a major re-write to this class, then the version number will be incremented,
  * and the class can automatically rebuild the tables as needed.
 **/
-#define YAP_DATABASE_VIEW_CLASS_VERSION 1
+#define YAP_DATABASE_FTS_CLASS_VERSION 1
 
 
 @implementation YapDatabaseFullTextSearchTransaction
@@ -54,7 +54,7 @@
 - (BOOL)createIfNeeded
 {
 	int oldClassVersion = [self intValueForExtensionKey:@"classVersion"];
-	int classVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
+	int classVersion = YAP_DATABASE_FTS_CLASS_VERSION;
 	
 	if (oldClassVersion != classVersion)
 	{
@@ -306,14 +306,6 @@
 /**
  * Required override method from YapAbstractDatabaseExtensionTransaction.
 **/
-- (YapAbstractDatabaseExtension *)extension
-{
-	return ftsConnection->fts;
-}
-
-/**
- * Required override method from YapAbstractDatabaseExtensionTransaction.
-**/
 - (YapAbstractDatabaseExtensionConnection *)extensionConnection
 {
 	return ftsConnection;
@@ -333,6 +325,10 @@
 #pragma mark Logic
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Adds the given rowid to the virtual table.
+ * Note: The column values are in the 'blockDict' ivar.
+**/
 - (void)addRowid:(int64_t)rowid isNew:(BOOL)isNew
 {
 	YDBLogAutoTrace();
@@ -707,17 +703,6 @@
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleRemoveObjectForKey:(NSString *)key withRowid:(int64_t)rowid
-{
-	YDBLogAutoTrace();
-	
-	[self removeRowid:rowid];
-}
-
-/**
- * YapDatabase extension hook.
- * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
-**/
 - (void)handleTouchObjectForKey:(NSString *)key withRowid:(int64_t)rowid
 {
 	// Nothing to do for this extension
@@ -730,6 +715,17 @@
 - (void)handleTouchMetadataForKey:(NSString *)key withRowid:(int64_t)rowid
 {
 	// Nothing to do for this extension
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)handleRemoveObjectForKey:(NSString *)key withRowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	[self removeRowid:rowid];
 }
 
 /**

@@ -81,12 +81,6 @@
 	return nil;
 }
 
-- (YapAbstractDatabaseExtension *)extension
-{
-	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
-	return nil;
-}
-
 - (YapAbstractDatabaseExtensionConnection *)extensionConnection
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
@@ -104,7 +98,7 @@
 
 - (BOOL)getBoolValue:(BOOL *)valuePtr forExtensionKey:(NSString *)key
 {
-	NSString *registeredName = [[self extension] registeredName];
+	NSString *registeredName = [[[self extensionConnection] extension] registeredName];
 	return [[self databaseTransaction] getBoolValue:valuePtr forKey:key extension:registeredName];
 }
 
@@ -117,13 +111,13 @@
 
 - (void)setBoolValue:(BOOL)value forExtensionKey:(NSString *)key
 {
-	NSString *registeredName = [[self extension] registeredName];
+	NSString *registeredName = [[[self extensionConnection] extension] registeredName];
 	[[self databaseTransaction] setBoolValue:value forKey:key extension:registeredName];
 }
 
 - (BOOL)getIntValue:(int *)valuePtr forExtensionKey:(NSString *)key
 {
-	NSString *registeredName = [[self extension] registeredName];
+	NSString *registeredName = [[[self extensionConnection] extension] registeredName];
 	return [[self databaseTransaction] getIntValue:valuePtr forKey:key extension:registeredName];
 }
 
@@ -136,13 +130,13 @@
 
 - (void)setIntValue:(int)value forExtensionKey:(NSString *)key
 {
-	NSString *registeredName = [[self extension] registeredName];
+	NSString *registeredName = [[[self extensionConnection] extension] registeredName];
 	[[self databaseTransaction] setIntValue:value forKey:key extension:registeredName];
 }
 
 - (BOOL)getDoubleValue:(double *)valuePtr forExtensionKey:(NSString *)key
 {
-	NSString *registeredName = [[self extension] registeredName];
+	NSString *registeredName = [[[self extensionConnection] extension] registeredName];
 	return [[self databaseTransaction] getDoubleValue:valuePtr forKey:key extension:registeredName];
 }
 
@@ -155,31 +149,31 @@
 
 - (void)setDoubleValue:(double)value forExtensionKey:(NSString *)key
 {
-	NSString *registeredName = [[self extension] registeredName];
+	NSString *registeredName = [[[self extensionConnection] extension] registeredName];
 	[[self databaseTransaction] setDoubleValue:value forKey:key extension:registeredName];
 }
 
 - (NSString *)stringValueForExtensionKey:(NSString *)key
 {
-	NSString *registeredName = [[self extension] registeredName];
+	NSString *registeredName = [[[self extensionConnection] extension] registeredName];
 	return [[self databaseTransaction] stringValueForKey:key extension:registeredName];
 }
 
 - (void)setStringValue:(NSString *)value forExtensionKey:(NSString *)key
 {
-	NSString *registeredName = [[self extension] registeredName];
+	NSString *registeredName = [[[self extensionConnection] extension] registeredName];
 	[[self databaseTransaction] setStringValue:value forKey:key extension:registeredName];
 }
 
 - (NSData *)dataValueForExtensionKey:(NSString *)key
 {
-	NSString *registeredName = [[self extension] registeredName];
+	NSString *registeredName = [[[self extensionConnection] extension] registeredName];
 	return [[self databaseTransaction] dataValueForKey:key extension:registeredName];
 }
 
 - (void)setDataValue:(NSData *)value forExtensionKey:(NSString *)key
 {
-	NSString *registeredName = [[self extension] registeredName];
+	NSString *registeredName = [[[self extensionConnection] extension] registeredName];
 	[[self databaseTransaction] setDataValue:value forKey:key extension:registeredName];
 }
 

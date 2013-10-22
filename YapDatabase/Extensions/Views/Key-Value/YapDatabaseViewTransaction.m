@@ -771,14 +771,6 @@
 /**
  * Required override method from YapAbstractDatabaseExtensionTransaction.
 **/
-- (YapAbstractDatabaseExtension *)extension
-{
-	return viewConnection->view;
-}
-
-/**
- * Required override method from YapAbstractDatabaseExtensionTransaction.
-**/
 - (YapAbstractDatabaseExtensionConnection *)extensionConnection
 {
 	return viewConnection;
@@ -3032,7 +3024,7 @@
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleRemoveObjectsForKeys:(NSArray *)keys withRowids:(NSArray *)rowids;
+- (void)handleRemoveObjectsForKeys:(NSArray *)keys withRowids:(NSArray *)rowids
 {
 	YDBLogAutoTrace();
 	
