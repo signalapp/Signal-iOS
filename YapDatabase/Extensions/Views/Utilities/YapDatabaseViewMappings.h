@@ -435,25 +435,15 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
 #pragma mark Getters
 
 /**
- * Returns the actual number of sections.
- * This number may be less than the full list of groups (unless allowsEmptySections == YES).
+ * The visibleGroups property returns the current sections setup.
+ * That is, it only contains the visible groups that are being represented as sections in the view.
+ *
+ * If all sections are static, then visibleGroups will always be the same as allGroups.
+ * However, if one or more sections are dynamic, then the visible groups may be a subset of allGroups.
+ *
+ * Dynamic groups/sections automatically "disappear" if/when they become empty.
 **/
-- (NSUInteger)numberOfSections;
-
-/**
- * Returns the number of items in the given section.
- * @see groupForSection
-**/
-- (NSUInteger)numberOfItemsInSection:(NSUInteger)section;
-
-/**
- * Returns the number of items in the given group.
- * 
- * This is the cached value from the last time one of the following methods was invoked:
- * - updateWithTransaction:
- * - changesForNotifications:withMappings:
-**/
-- (NSUInteger)numberOfItemsInGroup:(NSString *)group;
+- (NSArray *)visibleGroups;
 
 /**
  * Returns the group for the given section.
@@ -472,28 +462,81 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
 **/
 - (NSUInteger)sectionForGroup:(NSString *)group;
 
+#pragma mark Getters + DataSource
+
 /**
- * The visibleGroups property returns the current sections setup.
- * That is, it only contains the visible groups that are being represented as sections in the view.
+ * Returns the actual number of visible sections.
  *
- * If all sections are static, then visibleGroups will always be the same all allGroups.
- * However, if one or more sections are dynamic, then the visible groups may be a subset of allGroups.
- * 
- * Dynamic groups/sections automatically "disappear" if/when they become empty.
+ * This number may be less than the original count of groups passed in the init method.
+ * That is, if dynamic sections are enabled for one or more groups, and some of these groups have zero items,
+ * then those groups will be removed from the visible list of groups. And thus the section count may be less.
 **/
-- (NSArray *)visibleGroups;
+- (NSUInteger)numberOfSections;
+
+/**
+ * Returns the number of items in the given section.
+ * @see groupForSection
+**/
+- (NSUInteger)numberOfItemsInSection:(NSUInteger)section;
+
+/**
+ * Returns the number of items in the given group.
+ * 
+ * This is the cached value from the last time one of the following methods was invoked:
+ * - updateWithTransaction:
+ * - changesForNotifications:withMappings:
+**/
+- (NSUInteger)numberOfItemsInGroup:(NSString *)group;
+
+#pragma mark Getters + Total
+
+/**
+ * Returns the total number of items by summing up the totals across all groups.
+**/
+- (NSUInteger)numberOfItemsInAllGroups;
+
+/**
+ * This method is useful if you ever want to display multiple groups in a tableView,
+ * but you want to display the groups without using sections.
+ * 
+ * For example, say you have a view that sorts users in an address book.
+ * The view uses groups based on the first letter of the user's name.
+ * But you want to display the address book in a tableView without using sections.
+ * 
+ * view = @{
+ *   @"A" = @[ @"Alice" ]
+ *   @"B" = @[ @"Barney", @"Bob" ]
+ *   @"C" = @[ @"Chris" ]
+ * }
+ * 
+ * NSString *group = nil;
+ * NSUInteger index = 0;
+ *
+ * [mappings getGroup:&group index:&index forUnSectionedRow:2];
+ * 
+ * // group = @"B"
+ * // index = 1    (Bob)
+ *
+ * [mappings getGroup:&group index:&index forUnSectionedRow:3];
+ *
+ * // group = @"C"
+ * // index = 0    (Chris)
+**/
+- (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forUnSectionedRow:(NSUInteger)row;
+
+#pragma mark Getters + RangeOptions
 
 /**
  * When using rangeOptions, the rows in your tableView/collectionView may not
  * directly match the index in the corresponding view & group.
  * 
  * For example, say a view has a group named "elders" and contains 100 items.
- * A fixed range is used to display only the last 20 items in the "elders" group.
+ * A fixed range is used to display only the last 20 items in the "elders" group (the 20 oldest elders).
  * Thus row zero in the tableView is actually index 80 in the "elders" group.
  * 
- * These methods "map" from indexPaths in the UI to the corresponding indexes and groups in the view.
+ * This method maps from an indexPath in the UI to the corresponding indexes and groups in the view.
  * 
- * You pass in an indexPath or row&section from the UI perspective,
+ * That is, you pass in an indexPath or row & section from the UI perspective,
  * and it spits out the corresponding index within the view's group.
  * 
  * For example:
@@ -505,20 +548,53 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
  *
  *     [mappings getGroup:&group index:&groupIndex forIndexPath:indexPath];
  *
- *     __block Book *book = nil;
+ *     __block Elder *elder = nil;
  *     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
  *
- *         book = [[transaction extension:@"myView"] objectAtIndex:groupIndex inGroup:group];
+ *         elder = [[transaction extension:@"elders"] objectAtIndex:groupIndex inGroup:group];
  *     }];
  *     
  *     // configure and return cell...
  * }
 **/
-
 - (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forIndexPath:(NSIndexPath *)indexPath;
 
+/**
+ * When using rangeOptions, the rows in your tableView/collectionView may not
+ * directly match the index in the corresponding view & group.
+ * 
+ * For example, say a view has a group named "elders" and contains 100 items.
+ * A fixed range is used to display only the last 20 items in the "elders" group (the 20 oldest elders).
+ * Thus row zero in the tableView is actually index 80 in the "elders" group.
+ * 
+ * This method maps from a row in the UI to the corresponding index within the view.
+ *
+ * That is, you pass in a row from the UI perspective,
+ * and it spits out the corresponding index within the view's group.
+ * 
+ * So from the example above, you might pass in 0, and it would return 80.
+ * 
+ * @see getGroup:index:forIndexPath:
+**/
 - (NSUInteger)indexForRow:(NSUInteger)row inSection:(NSUInteger)section;
 
+/**
+ * When using rangeOptions, the rows in your tableView/collectionView may not
+ * directly match the index in the corresponding view & group.
+ *
+ * For example, say a view has a group named "elders" and contains 100 items.
+ * A fixed range is used to display only the last 20 items in the "elders" group (the 20 oldest elders).
+ * Thus row zero in the tableView is actually index 80 in the "elders" group.
+ *
+ * This method maps from a row in the UI to the corresponding index within the view.
+ *
+ * That is, you pass in a row from the UI perspective,
+ * and it spits out the corresponding index within the view's group.
+ *
+ * So from the example above, you might pass in 0, and it would return 80.
+ *
+ * @see getGroup:index:forIndexPath:
+**/
 - (NSUInteger)indexForRow:(NSUInteger)row inGroup:(NSString *)group;
 
 /**

@@ -451,19 +451,91 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Mappings
+#pragma mark Getters
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * The visibleGroups property returns the current sections setup.
+ * That is, it only contains the visible groups that are being represented as sections in the view.
+ *
+ * If all sections are static, then visibleGroups will always be the same as allGroups.
+ * However, if one or more sections are dynamic, then the visible groups may be a subset of allGroups.
+ *
+ * Dynamic groups/sections automatically "disappear" if/when they become empty.
+**/
+- (NSArray *)visibleGroups
+{
+	return [visibleGroups copy];
+}
+
+/**
+ * Returns the group for the given section.
+ * This method properly takes into account dynamic groups.
+ *
+ * If the section is out-of-bounds, returns nil.
+**/
+- (NSString *)groupForSection:(NSUInteger)section
+{
+	if (section < [visibleGroups count])
+		return [visibleGroups objectAtIndex:section];
+	else
+		return nil;
+}
+
+/**
+ * Returns the visible section number for the visible group.
+ * If the group is NOT visible, returns NSNotFound.
+ *
+ * If a group is empty (numberOfItemsInGroup == 0), AND the group is dynamic, then it becomes invisible.
+ * Only in this case would this method return NSNotFound.
+**/
+- (NSUInteger)sectionForGroup:(NSString *)group
+{
+	NSUInteger section = 0;
+	for (NSString *visibleGroup in visibleGroups)
+	{
+		if ([visibleGroup isEqualToString:group])
+		{
+			return section;
+		}
+		section++;
+	}
+	
+	return NSNotFound;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Getters + DataSource
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Returns the actual number of visible sections.
+ * 
+ * This number may be less than the original count of groups passed in the init method.
+ * That is, if dynamic sections are enabled for one or more groups, and some of these groups have zero items,
+ * then those groups will be removed from the visible list of groups. And thus the section count may be less.
+**/
 - (NSUInteger)numberOfSections
 {
 	return [visibleGroups count];
 }
 
+/**
+ * Returns the number of items in the given section.
+ * @see groupForSection
+**/
 - (NSUInteger)numberOfItemsInSection:(NSUInteger)section
 {
 	return [self numberOfItemsInGroup:[self groupForSection:section]];
 }
 
+/**
+ * Returns the number of items in the given group.
+ *
+ * This is the cached value from the last time one of the following methods was invoked:
+ * - updateWithTransaction:
+ * - changesForNotifications:withMappings:
+**/
 - (NSUInteger)numberOfItemsInGroup:(NSString *)group
 {
 	if (group == nil) return 0;
@@ -480,34 +552,136 @@
 	}
 }
 
-- (NSString *)groupForSection:(NSUInteger)section
-{
-	if (section < [visibleGroups count])
-		return [visibleGroups objectAtIndex:section];
-	else
-		return nil;
-}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Getters + Total
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (NSUInteger)sectionForGroup:(NSString *)group
+/**
+ * Returns the total number of items by summing up the totals across all groups.
+**/
+- (NSUInteger)numberOfItemsInAllGroups
 {
-	NSUInteger section = 0;
-	for (NSString *visibleGroup in visibleGroups)
+	if (snapshotOfLastUpdate == UINT64_MAX) return 0;
+	
+	NSUInteger total = 0;
+	
+	for (NSString *group in visibleGroups)
 	{
-		if ([visibleGroup isEqualToString:group])
+		YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+		if (rangeOpts)
 		{
-			return section;
+			total += rangeOpts.length;
 		}
-		section++;
+		else
+		{
+			total += [[counts objectForKey:group] unsignedIntegerValue];
+		}
 	}
 	
-	return NSNotFound;
+	return total;
 }
 
-- (NSArray *)visibleGroups
+/**
+ * This method is useful if you ever want to display multiple groups in a tableView,
+ * but you want to display the groups without using sections.
+ * 
+ * For example, say you have a view that sorts users in an address book.
+ * The view uses groups based on the first letter of the user's name.
+ * But you want to display the address book in a tableView without using sections.
+ * 
+ * view = @{
+ *   @"A" = @[ @"Alice" ]
+ *   @"B" = @[ @"Barney", @"Bob" ]
+ *   @"C" = @[ @"Chris" ]
+ * }
+ * 
+ * NSString *group = nil;
+ * NSUInteger index = 0;
+ *
+ * [mappings getGroup:&group index:&index forUnSectionedRow:2];
+ * 
+ * // group = @"B"
+ * // index = 1    (Bob)
+ *
+ * [mappings getGroup:&group index:&index forUnSectionedRow:3];
+ *
+ * // group = @"C"
+ * // index = 0    (Chris)
+**/
+- (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forUnSectionedRow:(NSUInteger)row
 {
-	return [visibleGroups copy];
+	if (snapshotOfLastUpdate == UINT64_MAX)
+	{
+		if (groupPtr) *groupPtr = nil;
+		if (indexPtr) *indexPtr = 0;
+		return NO;
+	}
+	
+	NSUInteger offset = 0;
+	
+	for (NSString *group in visibleGroups)
+	{
+		NSUInteger count;
+		
+		YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+		if (rangeOpts)
+			count = rangeOpts.length;
+		else
+			count = [[counts objectForKey:group] unsignedIntegerValue];
+		
+		if ((row < (offset + count)) && (count > 0))
+		{
+			NSUInteger index = [self indexForRow:(row - offset) inGroup:group];
+			
+			if (groupPtr) *groupPtr = group;
+			if (indexPtr) *indexPtr = index;
+			
+			return YES;
+		}
+		
+		offset += count;
+	}
+	
+	if (groupPtr) *groupPtr = nil;
+	if (indexPtr) *indexPtr = 0;
+	return NO;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Getters + RangeOptions
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * When using rangeOptions, the rows in your tableView/collectionView may not
+ * directly match the index in the corresponding view & group.
+ * 
+ * For example, say a view has a group named "elders" and contains 100 items.
+ * A fixed range is used to display only the last 20 items in the "elders" group (the 20 oldest elders).
+ * Thus row zero in the tableView is actually index 80 in the "elders" group.
+ * 
+ * This method maps from an indexPath in the UI to the corresponding indexes and groups in the view.
+ * 
+ * That is, you pass in an indexPath or row & section from the UI perspective,
+ * and it spits out the corresponding index within the view's group.
+ * 
+ * For example:
+ * 
+ * - (UITableViewCell *)tableView:(UITableView *)sender cellForRowAtIndexPath:(NSIndexPath *)indexPath
+ * {
+ *     NSString *group = nil;
+ *     NSUInteger groupIndex = 0;
+ *
+ *     [mappings getGroup:&group index:&groupIndex forIndexPath:indexPath];
+ *
+ *     __block Elder *elder = nil;
+ *     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+ *
+ *         elder = [[transaction extension:@"elders"] objectAtIndex:groupIndex inGroup:group];
+ *     }];
+ *     
+ *     // configure and return cell...
+ * }
+**/
 - (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forIndexPath:(NSIndexPath *)indexPath
 {
   #if TARGET_OS_IPHONE
@@ -535,11 +709,45 @@
 	return (index != NSNotFound);
 }
 
+/**
+ * When using rangeOptions, the rows in your tableView/collectionView may not
+ * directly match the index in the corresponding view & group.
+ *
+ * For example, say a view has a group named "elders" and contains 100 items.
+ * A fixed range is used to display only the last 20 items in the "elders" group (the 20 oldest elders).
+ * Thus row zero in the tableView is actually index 80 in the "elders" group.
+ *
+ * This method maps from a row in the UI to the corresponding index within the view.
+ *
+ * That is, you pass in a row from the UI perspective,
+ * and it spits out the corresponding index within the view's group.
+ *
+ * So from the example above, you might pass in 0, and it would return 80.
+ *
+ * @see getGroup:index:forIndexPath:
+**/
 - (NSUInteger)indexForRow:(NSUInteger)row inSection:(NSUInteger)section
 {
 	return [self indexForRow:row inGroup:[self groupForSection:section]];
 }
 
+/**
+ * When using rangeOptions, the rows in your tableView/collectionView may not
+ * directly match the index in the corresponding view & group.
+ *
+ * For example, say a view has a group named "elders" and contains 100 items.
+ * A fixed range is used to display only the last 20 items in the "elders" group (the 20 oldest elders).
+ * Thus row zero in the tableView is actually index 80 in the "elders" group.
+ *
+ * This method maps from a row in the UI to the corresponding index within the view.
+ *
+ * That is, you pass in a row from the UI perspective,
+ * and it spits out the corresponding index within the view's group.
+ *
+ * So from the example above, you might pass in 0, and it would return 80.
+ *
+ * @see getGroup:index:forIndexPath:
+**/
 - (NSUInteger)indexForRow:(NSUInteger)row inGroup:(NSString *)group
 {
 	if (group == nil) return NSNotFound;
@@ -576,6 +784,23 @@
 	}
 }
 
+/**
+ * The YapDatabaseViewRangePosition struct represents the range window within the full group.
+ * For example:
+ *
+ * You have a section in your tableView which represents a group that contains 100 items.
+ * However, you've setup rangeOptions to only display the first 20 items:
+ * 
+ * YapDatabaseViewRangeOptions *rangeOptions =
+ *     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
+ * [mappings setRangeOptions:rangeOptions forGroup:@"sales"];
+ *
+ * The corresponding rangePosition would be: (YapDatabaseViewRangePosition){
+ *     .offsetFromBeginning = 0,
+ *     .offsetFromEnd = 80,
+ *     .length = 20
+ * }
+**/
 - (YapDatabaseViewRangePosition)rangePositionForGroup:(NSString *)group;
 {
 	if (group == nil)
