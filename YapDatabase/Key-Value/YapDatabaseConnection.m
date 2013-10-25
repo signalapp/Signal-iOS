@@ -828,14 +828,23 @@
 		id yapNull = [YapNull null];    // value == yapNull  : setPrimitiveData:: or containment policy
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
+		BOOL isPolicyContainment = (objectPolicy == YapDatabasePolicyContainment);
+		
 		[changeset_objectChanges enumerateKeysAndObjectsUsingBlock:^(id key, id newObject, BOOL *stop) {
 			
 			if ([objectCache containsKey:key])
 			{
 				if (newObject == yapNull)
+				{
 					[objectCache removeObjectForKey:key];
+				}
 				else if (newObject != yapTouch)
-					[objectCache setObject:newObject forKey:key];
+				{
+					if (isPolicyContainment)
+						[objectCache removeObjectForKey:key];
+					else
+						[objectCache setObject:newObject forKey:key];
+				}
 			}
 		}];
 	}
@@ -868,14 +877,23 @@
 		id yapNull = [YapNull null];    // value == yapNull  : setPrimitive or containment policy
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
+		BOOL isPolicyContainment = (objectPolicy == YapDatabasePolicyContainment);
+		
 		for (NSString *key in keysToUpdate)
 		{
 			id newObject = [changeset_objectChanges objectForKey:key];
 			
 			if (newObject == yapNull)
+			{
 				[objectCache removeObjectForKey:key];
+			}
 			else if (newObject != yapTouch)
-				[objectCache setObject:newObject forKey:key];
+			{
+				if (isPolicyContainment)
+					[objectCache removeObjectForKey:key];
+				else
+					[objectCache setObject:newObject forKey:key];
+			}
 		}
 	}
 	
@@ -895,14 +913,23 @@
 		id yapNull = [YapNull null];    // value == yapNull  : setPrimitive or containment policy
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
+		BOOL isPolicyContainment = (metadataPolicy == YapDatabasePolicyContainment);
+		
 		[changeset_metadataChanges enumerateKeysAndObjectsUsingBlock:^(id key, id newMetadata, BOOL *stop) {
 			
 			if ([metadataCache containsKey:key])
 			{
 				if (newMetadata == yapNull)
+				{
 					[metadataCache removeObjectForKey:key];
+				}
 				else if (newMetadata != yapTouch)
-					[metadataCache setObject:newMetadata forKey:key];
+				{
+					if (isPolicyContainment)
+						[metadataCache removeObjectForKey:key];
+					else
+						[metadataCache setObject:newMetadata forKey:key];
+				}
 			}
 		}];
 	}
@@ -935,14 +962,23 @@
 		id yapNull = [YapNull null];    // value == yapNull  : setPrimitive or containment policy
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
+		BOOL isPolicyContainment = (metadataPolicy == YapDatabasePolicyContainment);
+		
 		for (NSString *key in keysToUpdate)
 		{
 			id newMetadata = [changeset_metadataChanges objectForKey:key];
 			
 			if (newMetadata == yapNull)
+			{
 				[metadataCache removeObjectForKey:key];
+			}
 			else if (newMetadata != yapTouch)
-				[metadataCache setObject:newMetadata forKey:key];
+			{
+				if (isPolicyContainment)
+					[metadataCache removeObjectForKey:key];
+				else
+					[metadataCache setObject:newMetadata forKey:key];
+			}
 		}
 	}
 }

@@ -984,6 +984,8 @@
 		id yapNull = [YapNull null];    // value == yapNull  : setPrimitive or containment policy
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
+		BOOL isPolicyContainment = (objectPolicy == YapDatabasePolicyContainment);
+		
 		[changeset_objectChanges enumerateKeysAndObjectsUsingBlock:^(id key, id newObject, BOOL *stop) {
 			
 			__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
@@ -991,9 +993,16 @@
 			if ([objectCache containsKey:cacheKey])
 			{
 				if (newObject == yapNull)
+				{
 					[objectCache removeObjectForKey:cacheKey];
+				}
 				else if (newObject != yapTouch)
-					[objectCache setObject:newObject forKey:cacheKey];
+				{
+					if (isPolicyContainment)
+						[objectCache removeObjectForKey:cacheKey];
+					else
+						[objectCache setObject:newObject forKey:cacheKey];
+				}
 			}
 		}];
 	}
@@ -1031,14 +1040,23 @@
 		id yapNull = [YapNull null];    // value == yapNull  : setPrimitive or containment policy
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
+		BOOL isPolicyContainment = (objectPolicy == YapDatabasePolicyContainment);
+		
 		for (YapCollectionKey *cacheKey in keysToUpdate)
 		{
 			id newObject = [changeset_objectChanges objectForKey:cacheKey];
 			
 			if (newObject == yapNull)
+			{
 				[objectCache removeObjectForKey:cacheKey];
+			}
 			else if (newObject != yapTouch)
-				[objectCache setObject:newObject forKey:cacheKey];
+			{
+				if (isPolicyContainment)
+					[objectCache removeObjectForKey:cacheKey];
+				else
+					[objectCache setObject:newObject forKey:cacheKey];
+			}
 		}
 	}
 	
@@ -1058,6 +1076,8 @@
 		id yapNull = [YapNull null];    // value == yapNull  : setPrimitive or containment policy
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
+		BOOL isPolicyContainment = (metadataPolicy == YapDatabasePolicyContainment);
+		
 		[changeset_metadataChanges enumerateKeysAndObjectsUsingBlock:^(id key, id newMetadata, BOOL *stop) {
 			
 			__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
@@ -1065,9 +1085,16 @@
 			if ([metadataCache containsKey:cacheKey])
 			{
 				if (newMetadata == yapNull)
+				{
 					[metadataCache removeObjectForKey:cacheKey];
+				}
 				else if (newMetadata != yapTouch)
-					[metadataCache setObject:newMetadata forKey:cacheKey];
+				{
+					if (isPolicyContainment)
+						[metadataCache removeObjectForKey:cacheKey];
+					else
+						[metadataCache setObject:newMetadata forKey:cacheKey];
+				}
 			}
 		}];
 	}
@@ -1105,14 +1132,23 @@
 		id yapNull = [YapNull null];    // value == yapNull  : setPrimitive or containment policy
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
+		BOOL isPolicyContainment = (metadataPolicy == YapDatabasePolicyContainment);
+		
 		for (YapCollectionKey *cacheKey in keysToUpdate)
 		{
 			id newMetadata = [changeset_metadataChanges objectForKey:cacheKey];
 			
 			if (newMetadata == yapNull)
+			{
 				[metadataCache removeObjectForKey:cacheKey];
+			}
 			else if (newMetadata != yapTouch)
-				[metadataCache setObject:newMetadata forKey:cacheKey];
+			{
+				if (isPolicyContainment)
+					[metadataCache removeObjectForKey:cacheKey];
+				else
+					[metadataCache setObject:newMetadata forKey:cacheKey];
+			}
 		}
 	}
 }
