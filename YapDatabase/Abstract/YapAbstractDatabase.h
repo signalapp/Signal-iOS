@@ -183,7 +183,8 @@ extern NSString *const YapDatabaseCustomKey;
  * Changing the default values only affects future connections that will be created.
  * It does not affect connections that have already been created.
  * 
- * The default defaultObjectPolicy is YapDatabasePolicyShare.
+ * The default defaultObjectPolicy is YapDatabasePolicyContainment.
+ * The default defaultMetadataPolicy is YapDatabasePolicyContainment.
  * 
  * For more detailed documentation on these properties, see the YapAbstractDatabaseConnection header file.
  * @see YapAbstractDatabaseConnection objectPolicy

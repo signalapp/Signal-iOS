@@ -26,8 +26,8 @@
 		metadataCacheEnabled = YES;
 		metadataCacheLimit = 500;
 		
-		objectPolicy = YapDatabasePolicyShare;
-		metadataPolicy = YapDatabasePolicyShare;
+		objectPolicy = YapDatabasePolicyContainment;
+		metadataPolicy = YapDatabasePolicyContainment;
 		
 		#if TARGET_OS_IPHONE
 		autoFlushMemoryLevel = YapDatabaseConnectionFlushMemoryLevelMild;

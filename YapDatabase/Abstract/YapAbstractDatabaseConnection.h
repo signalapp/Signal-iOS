@@ -38,8 +38,8 @@ typedef enum  {
 } YapDatabaseConnectionFlushMemoryLevel;
 
 typedef enum {
-	YapDatabasePolicyShare       = 0,
-	YapDatabasePolicyContainment = 1,
+	YapDatabasePolicyContainment = 0,
+	YapDatabasePolicyShare       = 1,
 } YapDatabasePolicy;
 
 
@@ -122,9 +122,9 @@ typedef enum {
  * These optimizations are discussed extensively in the wiki article "Thread Safety":
  * https://github.com/yaptv/YapDatabase/wiki/Thread-Safety
  * 
- * The policy properties allow you to opt out of these optimizations if needed.
+ * The policy properties allow you to opt in to these optimizations when ready.
  * 
- * The default value is YapDatabasePolicyShare.
+ * The default value is YapDatabasePolicyContainment.
 **/
 @property (atomic, assign, readwrite) YapDatabasePolicy objectPolicy;
 @property (atomic, assign, readwrite) YapDatabasePolicy metadataPolicy;
