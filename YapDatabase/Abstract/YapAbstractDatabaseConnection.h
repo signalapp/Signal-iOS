@@ -37,6 +37,12 @@ typedef enum  {
 	YapDatabaseConnectionFlushMemoryLevelFull     = 3,
 } YapDatabaseConnectionFlushMemoryLevel;
 
+typedef enum {
+	YapDatabasePolicyContainment = 0,
+	YapDatabasePolicyShare       = 1,
+	YapDatabasePolicyCopy        = 2,
+} YapDatabasePolicy;
+
 
 @interface YapAbstractDatabaseConnection : NSObject
 
@@ -51,6 +57,12 @@ typedef enum  {
 **/
 @property (nonatomic, strong, readonly) YapAbstractDatabase *abstractDatabase;
 
+/**
+ * The optional name property assists in debugging.
+ * It is only used internally for log statements.
+**/
+@property (atomic, copy, readwrite) NSString *name;
+
 #pragma mark Cache
 
 /**
@@ -60,11 +72,20 @@ typedef enum  {
  *
  * The cache is properly kept in sync with the atomic snapshot architecture of the database system.
  *
- * By default the objectCache is enabled and has a limit of 250.
- *
  * You can configure the objectCache at any time, including within readBlocks or readWriteBlocks.
  * To disable the object cache entirely, set objectCacheEnabled to NO.
  * To use an inifinite cache size, set the objectCacheLimit to zero.
+ * 
+ * By default the objectCache is enabled and has a limit of 250.
+ *
+ * New connections will inherit the default values set by the parent database object.
+ * Thus the default values for new connection instances are configurable.
+ * 
+ * @see YapAbstractDatabase defaultObjectCacheEnabled
+ * @see YapAbstractDatabase defaultObjectCacheLimit
+ * 
+ * Also see the wiki for a bit more info:
+ * https://github.com/yaptv/YapDatabase/wiki/Cache
 **/
 @property (atomic, assign, readwrite) BOOL objectCacheEnabled;
 @property (atomic, assign, readwrite) NSUInteger objectCacheLimit;
@@ -76,20 +97,45 @@ typedef enum  {
  *
  * The cache is properly kept in sync with the atomic snapshot architecture of the database system.
  *
- * By default the metadataCache is enabled and has a limit of 500.
- *
  * You can configure the metadataCache at any time, including within readBlocks or readWriteBlocks.
  * To disable the metadata cache entirely, set metadataCacheEnabled to NO.
  * To use an inifinite cache size, set the metadataCacheLimit to zero.
+ * 
+ * By default the metadataCache is enabled and has a limit of 500.
+ * 
+ * New connections will inherit the default values set by the parent database object.
+ * Thus the default values for new connection instances are configurable.
+ *
+ * @see YapAbstractDatabase defaultMetadataCacheEnabled
+ * @see YapAbstractDatabase defaultMetadataCacheLimit
+ *
+ * Also see the wiki for a bit more info:
+ * https://github.com/yaptv/YapDatabase/wiki/Cache
 **/
 @property (atomic, assign, readwrite) BOOL metadataCacheEnabled;
 @property (atomic, assign, readwrite) NSUInteger metadataCacheLimit;
+
+#pragma mark Policy
+
+/**
+ * YapDatabase uses various optimizations to reduce overhead and memory footprint.
+ * 
+ * These optimizations are discussed extensively in the wiki article "Thread Safety":
+ * https://github.com/yaptv/YapDatabase/wiki/Thread-Safety
+ * 
+ * The policy properties allow you to opt in to these optimizations when ready.
+ * 
+ * The default value is YapDatabasePolicyContainment.
+**/
+@property (atomic, assign, readwrite) YapDatabasePolicy objectPolicy;
+@property (atomic, assign, readwrite) YapDatabasePolicy metadataPolicy;
 
 #pragma mark State
 
 /**
  * The snapshot number is the internal synchronization state primitive for the connection.
- * Although it sometimes comes in handy (in a pinch), or for general debugging of your app.
+ * It's generally only useful for database internals,
+ * but it can sometimes come in handy for general debugging of your app.
  *
  * The snapshot is a simple 64-bit number that gets incremented upon every readwrite transaction
  * that makes modifications to the database. Due to the concurrent architecture of YapDatabase,
@@ -142,7 +188,7 @@ typedef enum  {
  * However, once connection2 completes its transaction, it will automatically update itself to snapshot 2.
  *
  * In general, the snapshot is primarily for internal use.
- * However, it may come in handy for some tricky edge-case bugs, or for general debugging.
+ * However, it may come in handy for some tricky edge-case bugs (why doesn't my connection see that other commit?)
 **/
 @property (atomic, assign, readonly) uint64_t snapshot;
 

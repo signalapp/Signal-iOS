@@ -5,6 +5,7 @@
 #import "YapAbstractDatabaseExtensionPrivate.h"
 
 #import "YapCache.h"
+#import "YapTouch.h"
 #import "YapNull.h"
 #import "YapSet.h"
 
@@ -43,23 +44,29 @@
  * But for conncurrent access between multiple threads you must use multiple connections.
 **/
 @implementation YapDatabaseConnection {
-
-/* Defined in YapDatabasePrivate.h:
-
 @private
+	
 	sqlite3_stmt *getCountStatement;
-	sqlite3_stmt *getCountForKeyStatement;
+	sqlite3_stmt *getCountForRowidStatement;
+	sqlite3_stmt *getRowidForKeyStatement;
+	sqlite3_stmt *getKeyForRowidStatement;
+	sqlite3_stmt *getDataForRowidStatement;
+	sqlite3_stmt *getMetadataForRowidStatement;
+	sqlite3_stmt *getAllForRowidStatement;
 	sqlite3_stmt *getDataForKeyStatement;
 	sqlite3_stmt *getMetadataForKeyStatement;
 	sqlite3_stmt *getAllForKeyStatement;
-	sqlite3_stmt *setMetadataForKeyStatement;
-	sqlite3_stmt *setAllForKeyStatement;
-	sqlite3_stmt *removeForKeyStatement;
+	sqlite3_stmt *insertForRowidStatement;
+	sqlite3_stmt *updateAllForRowidStatement;
+	sqlite3_stmt *updateMetadataForRowidStatement;
+	sqlite3_stmt *removeForRowidStatement;
 	sqlite3_stmt *removeAllStatement;
 	sqlite3_stmt *enumerateKeysStatement;
 	sqlite3_stmt *enumerateKeysAndMetadataStatement;
-    sqlite3_stmt *enumerateKeysAndObjectsStatement;
+	sqlite3_stmt *enumerateKeysAndObjectsStatement;
 	sqlite3_stmt *enumerateRowsStatement;
+	
+/* Defined in YapDatabasePrivate.h:
 
 @public
 	NSMutableDictionary *objectChanges;
@@ -90,16 +97,33 @@
 */
 }
 
+@synthesize database = database;
+
+- (id)initWithDatabase:(YapAbstractDatabase *)inDatabase
+{
+	if ((self = [super initWithDatabase:inDatabase]))
+	{
+		database = (YapDatabase *)abstractDatabase;
+	}
+	return self;
+}
+
 - (void)dealloc
 {
 	sqlite_finalize_null(&getCountStatement);
-	sqlite_finalize_null(&getCountForKeyStatement);
+	sqlite_finalize_null(&getCountForRowidStatement);
+	sqlite_finalize_null(&getRowidForKeyStatement);
+	sqlite_finalize_null(&getKeyForRowidStatement);
+	sqlite_finalize_null(&getDataForRowidStatement);
+	sqlite_finalize_null(&getMetadataForRowidStatement);
+	sqlite_finalize_null(&getAllForRowidStatement);
 	sqlite_finalize_null(&getDataForKeyStatement);
 	sqlite_finalize_null(&getMetadataForKeyStatement);
 	sqlite_finalize_null(&getAllForKeyStatement);
-	sqlite_finalize_null(&setMetadataForKeyStatement);
-	sqlite_finalize_null(&setAllForKeyStatement);
-	sqlite_finalize_null(&removeForKeyStatement);
+	sqlite_finalize_null(&insertForRowidStatement);
+	sqlite_finalize_null(&updateAllForRowidStatement);
+	sqlite_finalize_null(&updateMetadataForRowidStatement);
+	sqlite_finalize_null(&removeForRowidStatement);
 	sqlite_finalize_null(&removeAllStatement);
 	sqlite_finalize_null(&enumerateKeysStatement);
 	sqlite_finalize_null(&enumerateKeysAndMetadataStatement);
@@ -117,11 +141,14 @@
 	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
 	{
 		sqlite_finalize_null(&getCountStatement);
-		sqlite_finalize_null(&getCountForKeyStatement);
+		sqlite_finalize_null(&getCountForRowidStatement);
+		sqlite_finalize_null(&getDataForRowidStatement);
+		sqlite_finalize_null(&getMetadataForRowidStatement);
+		sqlite_finalize_null(&getAllForRowidStatement);
 		sqlite_finalize_null(&getMetadataForKeyStatement);
 		sqlite_finalize_null(&getAllForKeyStatement);
-		sqlite_finalize_null(&setMetadataForKeyStatement);
-		sqlite_finalize_null(&removeForKeyStatement);
+		sqlite_finalize_null(&updateMetadataForRowidStatement);
+		sqlite_finalize_null(&removeForRowidStatement);
 		sqlite_finalize_null(&removeAllStatement);
 		sqlite_finalize_null(&enumerateKeysStatement);
 		sqlite_finalize_null(&enumerateKeysAndMetadataStatement);
@@ -131,18 +158,12 @@
 	
 	if (level >= YapDatabaseConnectionFlushMemoryLevelFull)
 	{
+		sqlite_finalize_null(&getRowidForKeyStatement);
+		sqlite_finalize_null(&getKeyForRowidStatement);
 		sqlite_finalize_null(&getDataForKeyStatement);
-		sqlite_finalize_null(&setAllForKeyStatement);
+		sqlite_finalize_null(&insertForRowidStatement);
+		sqlite_finalize_null(&updateAllForRowidStatement);
 	}
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Properties
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (YapDatabase *)database
-{
-	return (YapDatabase *)database;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -153,9 +174,10 @@
 {
 	if (getCountStatement == NULL)
 	{
-		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database\";";
+		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database2\";";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getCountStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getCountStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -165,29 +187,116 @@
 	return getCountStatement;
 }
 
-- (sqlite3_stmt *)getCountForKeyStatement
+- (sqlite3_stmt *)getCountForRowidStatement
 {
-	if (getCountForKeyStatement == NULL)
+	if (getCountForRowidStatement == NULL)
 	{
-		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database\" WHERE \"key\" = ?;";
+		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database2\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getCountForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getCountForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return getCountForKeyStatement;
+	return getCountForRowidStatement;
+}
+
+- (sqlite3_stmt *)getRowidForKeyStatement
+{
+	if (getRowidForKeyStatement == NULL)
+	{
+		char *stmt = "SELECT \"rowid\" FROM \"database2\" WHERE \"key\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getRowidForKeyStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getRowidForKeyStatement;
+}
+
+- (sqlite3_stmt *)getKeyForRowidStatement
+{
+	if (getKeyForRowidStatement == NULL)
+	{
+		char *stmt = "SELECT \"key\" FROM \"database2\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getKeyForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getKeyForRowidStatement;
+}
+
+- (sqlite3_stmt *)getDataForRowidStatement
+{
+	if (getDataForRowidStatement == NULL)
+	{
+		char *stmt = "SELECT \"key\", \"data\" FROM \"database2\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getDataForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getDataForRowidStatement;
+}
+
+- (sqlite3_stmt *)getMetadataForRowidStatement
+{
+	if (getMetadataForRowidStatement == NULL)
+	{
+		char *stmt = "SELECT \"key\", \"metadata\" FROM \"database2\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getMetadataForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getMetadataForRowidStatement;
+}
+
+- (sqlite3_stmt *)getAllForRowidStatement
+{
+	if (getAllForRowidStatement == NULL)
+	{
+		char *stmt = "SELECT \"key\", \"data\", \"metadata\" FROM \"database2\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getAllForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getAllForRowidStatement;
 }
 
 - (sqlite3_stmt *)getDataForKeyStatement
 {
 	if (getDataForKeyStatement == NULL)
 	{
-		char *stmt = "SELECT \"data\" FROM \"database\" WHERE \"key\" = ?;";
+		char *stmt = "SELECT \"data\" FROM \"database2\" WHERE \"key\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getDataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getDataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -201,9 +310,10 @@
 {
 	if (getMetadataForKeyStatement == NULL)
 	{
-		char *stmt = "SELECT \"metadata\" FROM \"database\" WHERE \"key\" = ?;";
+		char *stmt = "SELECT \"metadata\" FROM \"database2\" WHERE \"key\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getMetadataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getMetadataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -217,9 +327,10 @@
 {
 	if (getAllForKeyStatement == NULL)
 	{
-		char *stmt = "SELECT \"data\", \"metadata\" FROM \"database\" WHERE \"key\" = ?;";
+		char *stmt = "SELECT \"data\", \"metadata\" FROM \"database2\" WHERE \"key\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &getAllForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getAllForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -229,61 +340,82 @@
 	return getAllForKeyStatement;
 }
 
-- (sqlite3_stmt *)setMetadataForKeyStatement
+- (sqlite3_stmt *)insertForRowidStatement
 {
-	if (setMetadataForKeyStatement == NULL)
+	if (insertForRowidStatement == NULL)
 	{
-		char *stmt = "UPDATE \"database\" SET \"metadata\" = ? WHERE \"key\" = ?;";
+		char *stmt = "INSERT INTO \"database2\" (\"key\", \"data\", \"metadata\") VALUES (?, ?, ?);";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &setMetadataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &insertForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return setMetadataForKeyStatement;
+	return insertForRowidStatement;
 }
 
-- (sqlite3_stmt *)setAllForKeyStatement
+- (sqlite3_stmt *)updateAllForRowidStatement
 {
-	if (setAllForKeyStatement == NULL)
+	if (updateAllForRowidStatement == NULL)
 	{
-		char *stmt = "INSERT OR REPLACE INTO \"database\" (\"key\", \"data\", \"metadata\") VALUES (?, ?, ?);";
+		char *stmt = "UPDATE \"database2\" SET \"data\" = ?, \"metadata\" = ? WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &setAllForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &updateAllForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return setAllForKeyStatement;
+	return updateAllForRowidStatement;
 }
 
-- (sqlite3_stmt *)removeForKeyStatement
+- (sqlite3_stmt *)updateMetadataForRowidStatement
 {
-	if (removeForKeyStatement == NULL)
+	if (updateMetadataForRowidStatement == NULL)
 	{
-		char *stmt = "DELETE FROM \"database\" WHERE \"key\" = ?;";
+		char *stmt = "UPDATE \"database2\" SET \"metadata\" = ? WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &updateMetadataForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return removeForKeyStatement;
+	return updateMetadataForRowidStatement;
+}
+
+- (sqlite3_stmt *)removeForRowidStatement
+{
+	if (removeForRowidStatement == NULL)
+	{
+		char *stmt = "DELETE FROM \"database2\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &removeForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return removeForRowidStatement;
 }
 
 - (sqlite3_stmt *)removeAllStatement
 {
 	if (removeAllStatement == NULL)
 	{
-		char *stmt = "DELETE FROM \"database\"";
+		char *stmt = "DELETE FROM \"database2\"";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &removeAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &removeAllStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -297,14 +429,14 @@
 {
 	if (enumerateKeysStatement == NULL)
 	{
-		char *stmt = "SELECT \"key\" FROM \"database\";";
+		char *stmt = "SELECT \"rowid\", \"key\" FROM \"database2\";";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateKeysStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
 		}
-
 	}
 	
 	return enumerateKeysStatement;
@@ -314,9 +446,10 @@
 {
 	if (enumerateKeysAndMetadataStatement == NULL)
 	{
-		char *stmt = "SELECT \"key\", \"metadata\" FROM \"database\";";
+		char *stmt = "SELECT \"rowid\", \"key\", \"metadata\" FROM \"database2\";";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateKeysAndMetadataStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndMetadataStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -330,9 +463,10 @@
 {
 	if (enumerateKeysAndObjectsStatement == NULL)
 	{
-		char *stmt = "SELECT \"key\", \"data\" FROM \"database\";";
+		char *stmt = "SELECT \"rowid\", \"key\", \"data\" FROM \"database2\";";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateKeysAndObjectsStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndObjectsStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -346,9 +480,10 @@
 {
 	if (enumerateRowsStatement == NULL)
 	{
-		char *stmt = "SELECT \"key\", \"data\", \"metadata\" FROM \"database\";";
+		char *stmt = "SELECT \"rowid\", \"key\", \"data\", \"metadata\" FROM \"database2\";";
+		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &enumerateRowsStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateRowsStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
@@ -521,6 +656,7 @@
 		removedKeys = [[NSMutableSet alloc] init];
 	
 	allKeysRemoved = NO;
+	hasDiskChanges = NO;
 }
 
 /**
@@ -591,11 +727,15 @@
 **/
 - (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
            externalChangeset:(NSMutableDictionary **)externalChangesetPtr
+              hasDiskChanges:(BOOL *)hasDiskChangesPtr
 {
 	NSMutableDictionary *internalChangeset = nil;
 	NSMutableDictionary *externalChangeset = nil;
+	BOOL extHasDiskChanges = NO;
 	
-	[super getInternalChangeset:&internalChangeset externalChangeset:&externalChangeset];
+	[super getInternalChangeset:&internalChangeset
+	          externalChangeset:&externalChangeset
+	             hasDiskChanges:&extHasDiskChanges];
 	
 	// Reserved keys:
 	//
@@ -653,6 +793,7 @@
 	
 	*internalChangesetPtr = internalChangeset;
 	*externalChangesetPtr = externalChangeset;
+	*hasDiskChangesPtr = extHasDiskChanges || hasDiskChanges;
 }
 
 /**
@@ -693,10 +834,37 @@
 		// Shortcut: Nothing was removed from the database.
 		// So we can simply enumerate over the changes and update the cache inline as needed.
 		
-		[changeset_objectChanges enumerateKeysAndObjectsUsingBlock:^(id key, id object, BOOL *stop) {
+		id yapNull = [YapNull null];    // value == yapNull  : setPrimitiveData:: or containment policy
+		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
+		
+		BOOL isPolicyContainment = (objectPolicy == YapDatabasePolicyContainment);
+		BOOL isPolicyShare       = (objectPolicy == YapDatabasePolicyShare);
+		
+		[changeset_objectChanges enumerateKeysAndObjectsUsingBlock:^(id key, id newObject, BOOL *stop) {
 			
 			if ([objectCache containsKey:key])
-				[objectCache setObject:object forKey:key];
+			{
+				if (newObject == yapNull)
+				{
+					[objectCache removeObjectForKey:key];
+				}
+				else if (newObject != yapTouch)
+				{
+					if (isPolicyContainment) {
+						[objectCache removeObjectForKey:key];
+					}
+					else if (isPolicyShare) {
+						[objectCache setObject:newObject forKey:key];
+					}
+					else // if (isPolicyCopy)
+					{
+						if ([newObject conformsToProtocol:@protocol(NSCopying)])
+							[objectCache setObject:[newObject copy] forKey:key];
+						else
+							[objectCache removeObjectForKey:key];
+					}
+				}
+			}
 		}];
 	}
 	else if (hasObjectChanges || hasRemovedKeys)
@@ -725,16 +893,36 @@
 	
 		[objectCache removeObjectsForKeys:keysToRemove];
 		
-		id yapnull = [YapNull null];
+		id yapNull = [YapNull null];    // value == yapNull  : setPrimitive or containment policy
+		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
-		for (id key in keysToUpdate)
+		BOOL isPolicyContainment = (objectPolicy == YapDatabasePolicyContainment);
+		BOOL isPolicyShare       = (objectPolicy == YapDatabasePolicyShare);
+		
+		for (NSString *key in keysToUpdate)
 		{
 			id newObject = [changeset_objectChanges objectForKey:key];
 			
-			if (newObject == yapnull) // setPrimitiveDataForKey was used on key
+			if (newObject == yapNull)
+			{
 				[objectCache removeObjectForKey:key];
-			else
-				[objectCache setObject:newObject forKey:key];
+			}
+			else if (newObject != yapTouch)
+			{
+				if (isPolicyContainment) {
+					[objectCache removeObjectForKey:key];
+				}
+				else if (isPolicyShare) {
+					[objectCache setObject:newObject forKey:key];
+				}
+				else // if (isPolicyCopy)
+				{
+					if ([newObject conformsToProtocol:@protocol(NSCopying)])
+						[objectCache setObject:[newObject copy] forKey:key];
+					else
+						[objectCache removeObjectForKey:key];
+				}
+			}
 		}
 	}
 	
@@ -751,10 +939,37 @@
 		// Shortcut: Nothing was removed from the database.
 		// So we can simply enumerate over the changes and update the cache inline as needed.
 		
-		[changeset_metadataChanges enumerateKeysAndObjectsUsingBlock:^(id key, id object, BOOL *stop) {
+		id yapNull = [YapNull null];    // value == yapNull  : setPrimitive or containment policy
+		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
+		
+		BOOL isPolicyContainment = (metadataPolicy == YapDatabasePolicyContainment);
+		BOOL isPolicyShare       = (metadataPolicy == YapDatabasePolicyShare);
+		
+		[changeset_metadataChanges enumerateKeysAndObjectsUsingBlock:^(id key, id newMetadata, BOOL *stop) {
 			
 			if ([metadataCache containsKey:key])
-				[metadataCache setObject:object forKey:key];
+			{
+				if (newMetadata == yapNull)
+				{
+					[metadataCache removeObjectForKey:key];
+				}
+				else if (newMetadata != yapTouch)
+				{
+					if (isPolicyContainment) {
+						[metadataCache removeObjectForKey:key];
+					}
+					else if (isPolicyShare) {
+						[metadataCache setObject:newMetadata forKey:key];
+					}
+					else // if (isPolicyCopy)
+					{
+						if ([newMetadata conformsToProtocol:@protocol(NSCopying)])
+							[metadataCache setObject:[newMetadata copy] forKey:key];
+						else
+							[metadataCache removeObjectForKey:key];
+					}
+				}
+			}
 		}];
 	}
 	else if (hasMetadataChanges || hasRemovedKeys)
@@ -783,11 +998,36 @@
 		
 		[metadataCache removeObjectsForKeys:keysToRemove];
 		
-		for (id key in keysToUpdate)
+		id yapNull = [YapNull null];    // value == yapNull  : setPrimitive or containment policy
+		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
+		
+		BOOL isPolicyContainment = (metadataPolicy == YapDatabasePolicyContainment);
+		BOOL isPolicyShare       = (metadataPolicy == YapDatabasePolicyShare);
+		
+		for (NSString *key in keysToUpdate)
 		{
-			id newObject = [changeset_metadataChanges objectForKey:key];
+			id newMetadata = [changeset_metadataChanges objectForKey:key];
 			
-			[metadataCache setObject:newObject forKey:key];
+			if (newMetadata == yapNull)
+			{
+				[metadataCache removeObjectForKey:key];
+			}
+			else if (newMetadata != yapTouch)
+			{
+				if (isPolicyContainment) {
+					[metadataCache removeObjectForKey:key];
+				}
+				else if (isPolicyShare) {
+					[metadataCache setObject:newMetadata forKey:key];
+				}
+				else // if (isPolicyCopy)
+				{
+					if ([newMetadata conformsToProtocol:@protocol(NSCopying)])
+						[metadataCache setObject:[newMetadata copy] forKey:key];
+					else
+						[metadataCache removeObjectForKey:key];
+				}
+			}
 		}
 	}
 }
@@ -838,12 +1078,12 @@
 	return [self hasChangeForKey:key inNotifications:notifications includingObjectChanges:YES metadataChanges:YES];
 }
 
-- (BOOL)hasObjectChangeForKey:(NSString *)key inNotification:(NSArray *)notifications
+- (BOOL)hasObjectChangeForKey:(NSString *)key inNotifications:(NSArray *)notifications
 {
 	return [self hasChangeForKey:key inNotifications:notifications includingObjectChanges:YES metadataChanges:NO];
 }
 
-- (BOOL)hasMetadataChangeForKey:(NSString *)key inNotification:(NSArray *)notifications
+- (BOOL)hasMetadataChangeForKey:(NSString *)key inNotifications:(NSArray *)notifications
 {
 	return [self hasChangeForKey:key inNotifications:notifications includingObjectChanges:NO metadataChanges:YES];
 }
@@ -894,12 +1134,12 @@
 	return [self hasChangeForAnyKeys:keys inNotifications:notifications includingObjectChanges:YES metadataChanges:YES];
 }
 
-- (BOOL)hasObjectChangeForAnyKeys:(NSSet *)keys inNotification:(NSArray *)notifications
+- (BOOL)hasObjectChangeForAnyKeys:(NSSet *)keys inNotifications:(NSArray *)notifications
 {
 	return [self hasChangeForAnyKeys:keys inNotifications:notifications includingObjectChanges:YES metadataChanges:NO];
 }
 
-- (BOOL)hasMetadataChangeForAnyKeys:(NSSet *)keys inNotification:(NSArray *)notifications
+- (BOOL)hasMetadataChangeForAnyKeys:(NSSet *)keys inNotifications:(NSArray *)notifications
 {
 	return [self hasChangeForAnyKeys:keys inNotifications:notifications includingObjectChanges:NO metadataChanges:YES];
 }

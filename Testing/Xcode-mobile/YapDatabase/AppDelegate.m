@@ -17,8 +17,8 @@
 
 @implementation AppDelegate
 {
-//	YapDatabase *database;
-//	YapDatabaseConnection *databaseConnection;
+	YapDatabase *database;
+	YapDatabaseConnection *databaseConnection;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -26,16 +26,20 @@
 	[DDLog addLogger:[DDTTYLogger sharedInstance]];
 	
 	[[DDTTYLogger sharedInstance] setColorsEnabled:YES];
+	
+#if YapDatabaseLoggingTechnique == YapDatabaseLoggingTechnique_Lumberjack
 	[[DDTTYLogger sharedInstance] setForegroundColor:[UIColor grayColor]
 	                                 backgroundColor:nil
 	                                         forFlag:YDB_LOG_FLAG_TRACE
 	                                         context:YDBLogContext];
+#endif
 	
 	double delayInSeconds = 2.0;
 	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
 	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 		
-		[self debug];
+	//	[self debug];
+	//	[self debugOnTheFlyViews];
 	});
 	
 	// Normal UI stuff
@@ -53,7 +57,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark General Debugging
+#pragma mark Debugging Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSString *)databasePath:(NSString *)suffix
@@ -66,75 +70,48 @@
 	return [baseDir stringByAppendingPathComponent:databaseName];
 }
 
-- (void)debug
+- (void)yapDatabaseModified:(NSNotification *)notification
 {
-	if (YES) // Test YapDatabase
-	{
-		NSString *databasePath = [self databasePath:@"kv"];
-		
-		YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
-		
-		[[database newConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-			
-			if ([transaction numberOfKeys] == 0)
-			{
-				NSUInteger count = 5;
-				NSLog(@"Adding %lu items...", (unsigned long)count);
-				
-				for (NSUInteger i = 0; i < count; i++)
-				{
-					NSString *key = [[NSUUID UUID] UUIDString];
-					NSString *obj = [[NSUUID UUID] UUIDString];
-					
-					[transaction setObject:obj forKey:key];
-				}
-			}
-			
-			NSLog(@"database.count = %lu", (unsigned long)[transaction numberOfKeys]);
-			
-			[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop) {
-				
-				NSLog(@"key(%@) = object(%@)", key, object);
-			}];
-		}];
-	}
-	
-	if (YES) // Test YapCollectionsDatabase
-	{
-		NSString *databasePath = [self databasePath:@"ckv"];
-		
-		YapCollectionsDatabase *database = [[YapCollectionsDatabase alloc] initWithPath:databasePath];
-		
-		[[database newConnection] readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
-			
-			if ([transaction numberOfKeysInAllCollections] == 0)
-			{
-				NSUInteger count = 5;
-				NSLog(@"Adding %lu items...", (unsigned long)count);
-				
-				for (NSUInteger i = 0; i < count; i++)
-				{
-					NSString *key = [[NSUUID UUID] UUIDString];
-					NSString *obj = [[NSUUID UUID] UUIDString];
-					
-					[transaction setObject:obj forKey:key inCollection:nil];
-				}
-			}
-			
-			NSLog(@"database.count = %lu", (unsigned long)[transaction numberOfKeysInAllCollections]);
-			
-			[transaction enumerateKeysAndObjectsInCollection:nil usingBlock:^(NSString *key, id object, BOOL *stop) {
-				
-				NSLog(@"key(%@) = object(%@)", key, object);
-			}];
-		}];
-	}
+	NSLog(@"YapDatabaseModified: %@", notification);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark On-The-Fly Debugging
+#pragma mark General Debugging
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
+
+- (void)debug
+{
+	NSLog(@"Starting debug...");
+	
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:nil];
+	
+	database = [[YapDatabase alloc] initWithPath:databasePath];
+//	database.connectionPoolLifetime = 15;
+	
+	databaseConnection = [database newConnection];
+	
+	[[database newConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction setObject:@"value" forKey:@"key"];
+	}];
+	
+	[NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(debugTimer:) userInfo:nil repeats:YES];
+}
+
+- (void)debugTimer:(NSTimer *)timer
+{
+	[[database newConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction setObject:@"value" forKey:@"key"];
+	}];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark On-The-Fly Extensions Debugging
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 - (void)debugOnTheFlyViews
 {
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
@@ -268,5 +245,5 @@
 		NSLog(@"onTheFlyView.count = %lu", (unsigned long)count);
 	}];
 }
-*/
+
 @end

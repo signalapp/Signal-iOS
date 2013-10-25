@@ -1,4 +1,7 @@
 #import <Foundation/Foundation.h>
+
+#import "YapAbstractDatabaseConnection.h"
+#import "YapAbstractDatabaseTransaction.h"
 #import "YapAbstractDatabaseExtension.h"
 
 /**
@@ -55,90 +58,159 @@ extern NSString *const YapDatabaseCustomKey;
 
 @interface YapAbstractDatabase : NSObject
 
-#pragma mark Shared class methods
-
-/**
- * How does YapDatabase store my objects to disk?
- *
- * That question is answered extensively in the wiki article "Storing Objects":
- * https://github.com/yaptv/YapDatabase/wiki/Storing-Objects
- * 
- * Here's the intro from the wiki article:
- * 
- * > In order to store an object to disk (via YapDatabase or any other protocol) you need some way of
- * > serializing the object. That is, convert the object into a big blob of bytes. And then, to get your
- * > object back from the disk you deserialize it (convert big blob of bytes back into object form).
- * >
- * > With YapDatabase, you can choose the default serialization/deserialization process,
- * > or you can customize it and use your own routines.
-**/
-
-/**
- * The default serializer & deserializer use NSCoding (NSKeyedArchiver & NSKeyedUnarchiver).
- * Thus any objects that support the NSCoding protocol may be used.
- *
- * Many of Apple's primary data types support NSCoding out of the box.
- * It's easy to add NSCoding support to your own custom objects.
-**/
-+ (NSData *(^)(id object))defaultSerializer;
-+ (id (^)(NSData *))defaultDeserializer;
-
-/**
- * Property lists ONLY support the following: NSData, NSString, NSArray, NSDictionary, NSDate, and NSNumber.
- * Property lists are highly optimized and are used extensively Apple.
- * 
- * Property lists make a good fit when your existing code already uses them,
- * such as replacing NSUserDefaults with a database.
-**/
-+ (NSData *(^)(id object))propertyListSerializer;
-+ (id (^)(NSData *))propertyListDeserializer;
-
-/**
- * A FASTER serializer & deserializer than the default, if serializing ONLY a NSDate object.
- * You may want to use timestampSerializer & timestampDeserializer if your metadata is simply an NSDate.
-**/
-+ (NSData *(^)(id object))timestampSerializer;
-+ (id (^)(NSData *))timestampDeserializer;
-
-#pragma mark Init
-
 /**
  * Opens or creates a sqlite database with the given path.
- * The default serializer and deserializer are used.
- * 
- * @see defaultSerializer
- * @see defaultDeserializer
 **/
 - (id)initWithPath:(NSString *)path;
 
-/**
- * Opens or creates a sqlite database with the given path.
- * The given serializer and deserializer are used for both objects and metadata.
-**/
-- (id)initWithPath:(NSString *)path
-        serializer:(NSData *(^)(id object))serializer
-      deserializer:(id (^)(NSData *))deserializer;
-
-/**
- * Opens or creates a sqlite database with the given path.
- * The given serializers and deserializers are used.
-**/
-- (id)initWithPath:(NSString *)path objectSerializer:(NSData *(^)(id object))objectSerializer
-                                  objectDeserializer:(id (^)(NSData *))objectDeserializer
-                                  metadataSerializer:(NSData *(^)(id object))metadataSerializer
-                                metadataDeserializer:(id (^)(NSData *))metadataDeserializer;
-
 #pragma mark Properties
 
+/**
+ * The read-only databasePath given in the init method.
+**/
 @property (nonatomic, strong, readonly) NSString *databasePath;
 
-@property (nonatomic, strong, readonly) NSData *(^objectSerializer)(id object);
-@property (nonatomic, strong, readonly) id (^objectDeserializer)(NSData *data);
-
-@property (nonatomic, strong, readonly) NSData *(^metadataSerializer)(id object);
-@property (nonatomic, strong, readonly) id (^metadataDeserializer)(NSData *data);
-
+/**
+ * The snapshot number is the internal synchronization state primitive for the database.
+ * It's generally only useful for database internals,
+ * but it can sometimes come in handy for general debugging of your app.
+ *
+ * The snapshot is a simple 64-bit number that gets incremented upon every readwrite transaction
+ * that makes modifications to the database. Due to the concurrent architecture of YapDatabase,
+ * there may be multiple concurrent connections that are inspecting the database at similar times,
+ * yet they are looking at slightly different "snapshots" of the database.
+ *
+ * The snapshot number may thus be inspected to determine (in a general fashion) what state the connection
+ * is in compared with other connections.
+ *
+ * YapAbstractDatabase.snapshot = most up-to-date snapshot among all connections
+ * YapAbstractDatabaseConnection.snapshot = snapshot of individual connection
+ *
+ * Example:
+ *
+ * YapDatabase *database = [[YapDatabase alloc] init...];
+ * database.snapshot; // returns zero
+ *
+ * YapDatabaseConnection *connection1 = [database newConnection];
+ * YapDatabaseConnection *connection2 = [database newConnection];
+ *
+ * connection1.snapshot; // returns zero
+ * connection2.snapshot; // returns zero
+ *
+ * [connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ *     [transaction setObject:objectA forKey:keyA];
+ * }];
+ *
+ * database.snapshot;    // returns 1
+ * connection1.snapshot; // returns 1
+ * connection2.snapshot; // returns 1
+ *
+ * [connection1 asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ *     [transaction setObject:objectB forKey:keyB];
+ *     [NSThread sleepForTimeInterval:1.0]; // sleep for 1 second
+ *
+ *     connection1.snapshot; // returns 1 (we know it will turn into 2 once the transaction completes)
+ * } completion:^{
+ *
+ *     connection1.snapshot; // returns 2
+ * }];
+ *
+ * [connection2 asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction){
+ *     [NSThread sleepForTimeInterval:5.0]; // sleep for 5 seconds
+ *
+ *     connection2.snapshot; // returns 1. See why?
+ * }];
+ *
+ * It's because connection2 started its transaction when the database was in snapshot 1.
+ * Thus, for the duration of its transaction, the database remains in that state.
+ *
+ * However, once connection2 completes its transaction, it will automatically update itself to snapshot 2.
+ *
+ * In general, the snapshot is primarily for internal use.
+ * However, it may come in handy for some tricky edge-case bugs (why doesn't my connection see that other commit?)
+**/
 @property (atomic, assign, readonly) uint64_t snapshot;
+
+#pragma mark Defaults
+
+/**
+ * Allows you to set the default objectCacheEnabled and objectCacheLimit for all new connections.
+ *
+ * When you create a connection via [database newConnection], that new connection will inherit
+ * its initial configuration via the default values configured for the parent database.
+ * Of course, the connection may then override these default configuration values, and configure itself as needed.
+ *
+ * Changing the default values only affects future connections that will be created.
+ * It does not affect connections that have already been created.
+ *
+ * The default defaultObjectCacheEnabled is YES.
+ * The default defaultObjectCacheLimit is 250.
+ *
+ * For more detailed documentation on these properties, see the YapAbstractDatabaseConnection header file.
+ * @see YapAbstractDatabaseConnection objectCacheEnabled
+ * @see YapAbstractDatabaseConnection objectCacheLimit
+**/
+@property (atomic, assign, readwrite) BOOL defaultObjectCacheEnabled;
+@property (atomic, assign, readwrite) NSUInteger defaultObjectCacheLimit;
+
+/**
+ * Allows you to set the default metadataCacheEnabled and metadataCacheLimit for all new connections.
+ *
+ * When you create a connection via [database newConnection], that new connection will inherit
+ * its initial configuration via the default values configured for the parent database.
+ * Of course, the connection may then override these default configuration values, and configure itself as needed.
+ *
+ * Changing the default values only affects future connections that will be created.
+ * It does not affect connections that have already been created.
+ *
+ * The default defaultMetadataCacheEnabled is YES.
+ * The default defaultMetadataCacheLimit is 500.
+ *
+ * For more detailed documentation on these properties, see the YapAbstractDatabaseConnection header file.
+ * @see YapAbstractDatabaseConnection metadataCacheEnabled
+ * @see YapAbstractDatabaseConnection metadataCacheLimit
+**/
+@property (atomic, assign, readwrite) BOOL defaultMetadataCacheEnabled;
+@property (atomic, assign, readwrite) NSUInteger defaultMetadataCacheLimit;
+
+/**
+ * Allows you to set the default objectPolicy and metadataPolicy for all new connections.
+ * 
+ * When you create a connection via [database newConnection], that new connection will inherit
+ * its initial configuration via the default values configured for the parent database.
+ * Of course, the connection may then override these default configuration values, and configure itself as needed.
+ *
+ * Changing the default values only affects future connections that will be created.
+ * It does not affect connections that have already been created.
+ * 
+ * The default defaultObjectPolicy is YapDatabasePolicyContainment.
+ * The default defaultMetadataPolicy is YapDatabasePolicyContainment.
+ * 
+ * For more detailed documentation on these properties, see the YapAbstractDatabaseConnection header file.
+ * @see YapAbstractDatabaseConnection objectPolicy
+ * @see YapAbstractDatabaseConnection metadataPolicy
+**/
+@property (atomic, assign, readwrite) YapDatabasePolicy defaultObjectPolicy;
+@property (atomic, assign, readwrite) YapDatabasePolicy defaultMetadataPolicy;
+
+#if TARGET_OS_IPHONE
+/**
+ * Allows you to set the default autoFlushMemoryLevel for all new connections.
+ *
+ * When you create a connection via [database newConnection], that new connection will inherit
+ * its initial configuration via the default values configured for the parent database.
+ * Of course, the connection may then override these default configuration values, and configure itself as needed.
+ *
+ * Changing the default values only affects future connections that will be created.
+ * It does not affect connections that have already been created.
+ * 
+ * The default defaultAutoFlushMemoryLevel is YapDatabaseConnectionFlushMemoryLevelMild.
+ *
+ * For more detailed documentation on these properties, see the YapAbstractDatabaseConnection header file.
+ * @see YapAbstractDatabaseConnection autoFlushMemoryLevel
+**/
+@property (atomic, assign, readwrite) int defaultAutoFlushMemoryLevel;
+#endif
 
 #pragma mark Extensions
 
@@ -217,11 +289,31 @@ extern NSString *const YapDatabaseCustomKey;
 - (void)unregisterExtension:(NSString *)extensionName;
 
 /**
+ * Asynchronoulsy starts the extension unregistration process.
+ *
+ * The unregistration process is equivalent to a readwrite transaction.
+ * It involves deleting various information about the extension from the database,
+ * as well as possibly dropping related tables the extension may have been using.
+ *
+ * An optional completion block may be used.
  * 
+ * The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
 **/
 - (void)asyncUnregisterExtension:(NSString *)extensionName
                  completionBlock:(dispatch_block_t)completionBlock;
 
+/**
+ * Asynchronoulsy starts the extension unregistration process.
+ *
+ * The unregistration process is equivalent to a readwrite transaction.
+ * It involves deleting various information about the extension from the database,
+ * as well as possibly dropping related tables the extension may have been using.
+ *
+ * An optional completion block may be used.
+ *
+ * Additionally the dispatch_queue to invoke the completion block may also be specified.
+ * If NULL, dispatch_get_main_queue() is automatically used.
+**/
 - (void)asyncUnregisterExtension:(NSString *)extensionName
                  completionBlock:(dispatch_block_t)completionBlock
                  completionQueue:(dispatch_queue_t)completionQueue;
@@ -237,5 +329,53 @@ extern NSString *const YapDatabaseCustomKey;
  * The key is the registed name (NSString), and the value is the extension (YapAbstractDatabaseExtension subclass).
 **/
 - (NSDictionary *)registeredExtensions;
+
+#pragma mark Connection Pooling
+
+/**
+ * As recommended in the "Performance Primer" ( https://github.com/yaptv/YapDatabase/wiki/Performance-Primer )
+ * 
+ * > You should consider connections to be relatively heavy weight objects.
+ * >
+ * > OK, truth be told they're not really that heavy weight. I'm just trying to scare you.
+ * > Because in terms of performance, you get a lot of bang for your buck if you recycle your connections.
+ *
+ * However, experience has shown how easy it is to neglect this information.
+ * Perhaps because it's just so darn easy to create a connection that it becomes easy to forgot
+ * that connections aren't free.
+ * 
+ * Whatever the reason, the connection pool was designed to alleviate some of the overhead.
+ * The most expensive component of a connection is the internal sqlite database connection.
+ * The connection pool keeps these internal sqlite database connections around in a pool to help recycle them.
+ *
+ * So when a connection gets deallocated, it returns the sqlite database connection to the pool.
+ * And when a new connection gets created, it can recycle a sqlite database connection from the pool.
+ * 
+ * This property sets a maximum limit on the number of items that will get stored in the pool at any one time.
+ * 
+ * The default value is 5.
+ * 
+ * See also connectionPoolLifetime,
+ * which allows you to set a maximum lifetime of connections sitting around in the pool.
+**/
+@property (atomic, assign, readwrite) NSUInteger maxConnectionPoolCount;
+
+/**
+ * The connection pool can automatically drop "stale" connections.
+ * That is, if an item stays in the pool for too long (without another connection coming along and
+ * removing it from the pool to be recycled) then the connection can optionally be removed and dropped.
+ *
+ * This is called the connection "lifetime".
+ * 
+ * That is, after an item is added to the connection pool to be recycled, a timer will be started.
+ * If the connection is still in the pool when the timer goes off,
+ * then the connection will automatically be removed and dropped.
+ *
+ * The default value is 90 seconds.
+ * 
+ * To disable the timer, set the lifetime to zero (or any non-positive value).
+ * When disabled, open connections will remain in the pool indefinitely.
+**/
+@property (atomic, assign, readwrite) NSTimeInterval connectionPoolLifetime;
 
 @end

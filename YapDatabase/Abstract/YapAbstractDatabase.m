@@ -31,6 +31,9 @@ NSString *const YapDatabaseConnectionKey = @"connection";
 NSString *const YapDatabaseExtensionsKey = @"extensions";
 NSString *const YapDatabaseCustomKey     = @"custom";
 
+NSString *const YapDatabaseRegisteredExtensionsKey = @"registeredExtensions";
+NSString *const YapDatabaseNotificationKey         = @"notification";
+
 /**
  * The database version is stored (via pragma user_version) to sqlite.
  * It is used to represent the version of the userlying architecture of YapDatabase.
@@ -38,7 +41,14 @@ NSString *const YapDatabaseCustomKey     = @"custom";
  * the version can be consulted to allow for proper on-the-fly upgrades.
  * For more information, see the upgradeTable method.
 **/
-#define YAP_DATABASE_CURRENT_VERION 2
+#define YAP_DATABASE_CURRENT_VERION 3
+
+/**
+ * Default values
+**/
+#define DEFAULT_MAX_CONNECTION_POOL_COUNT 5    // connections
+#define DEFAULT_CONNECTION_POOL_LIFETIME  90.0 // seconds
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
@@ -46,144 +56,9 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 
 @implementation YapAbstractDatabase
 
-/**
- * The default serializer & deserializer use NSCoding (NSKeyedArchiver & NSKeyedUnarchiver).
- * Thus the objects need only support the NSCoding protocol.
-**/
-+ (NSData *(^)(id object))defaultSerializer
-{
-	NSData *(^serializer)(id) = ^(id object){
-		return [NSKeyedArchiver archivedDataWithRootObject:object];
-	};
-	
-	return serializer;
-}
-
-/**
- * The default serializer & deserializer use NSCoding (NSKeyedArchiver & NSKeyedUnarchiver).
- * Thus the objects need only support the NSCoding protocol.
-**/
-+ (id (^)(NSData *))defaultDeserializer
-{
-	id (^deserializer)(NSData *) = ^(NSData *data){
-		return [NSKeyedUnarchiver unarchiveObjectWithData:data];
-	};
-	
-	return deserializer;
-}
-
-/**
- * Property lists ONLY support the following: NSData, NSString, NSArray, NSDictionary, NSDate, and NSNumber.
- * Property lists are highly optimized and are used extensively Apple.
- *
- * Property lists make a good fit when your existing code already uses them,
- * such as replacing NSUserDefaults with a database.
-**/
-+ (NSData *(^)(id object))propertyListSerializer
-{
-	NSData *(^serializer)(id) = ^(id object){
-		return [NSPropertyListSerialization dataWithPropertyList:object
-		                                                  format:NSPropertyListBinaryFormat_v1_0
-		                                                 options:NSPropertyListImmutable
-		                                                   error:NULL];
-	};
-	
-	return serializer;
-}
-
-/**
- * Property lists ONLY support the following: NSData, NSString, NSArray, NSDictionary, NSDate, and NSNumber.
- * Property lists are highly optimized and are used extensively Apple.
- *
- * Property lists make a good fit when your existing code already uses them,
- * such as replacing NSUserDefaults with a database.
-**/
-+ (id (^)(NSData *))propertyListDeserializer
-{
-	id (^deserializer)(NSData *) = ^(NSData *data){
-		return [NSPropertyListSerialization propertyListWithData:data options:0 format:NULL error:NULL];
-	};
-	
-	return deserializer;
-}
-
-/**
- * A FASTER serializer than the default, if serializing ONLY a NSDate object.
- * You may want to use timestampSerializer & timestampDeserializer if your metadata is simply an NSDate.
-**/
-+ (NSData *(^)(id object))timestampSerializer
-{
-	NSData *(^serializer)(id) = ^NSData *(id object) {
-		
-		if ([object isKindOfClass:[NSDate class]])
-		{
-			NSTimeInterval timestamp = [(NSDate *)object timeIntervalSinceReferenceDate];
-			
-			return [[NSData alloc] initWithBytes:(void *)&timestamp length:sizeof(NSTimeInterval)];
-		}
-		else
-		{
-			return [NSKeyedArchiver archivedDataWithRootObject:object];
-		}
-	};
-	
-	return serializer;
-}
-
-/**
- * A FASTER deserializer than the default, if deserializing data from timestampSerializer.
- * You may want to use timestampSerializer & timestampDeserializer if your metadata is simply an NSDate.
-**/
-+ (id (^)(NSData *))timestampDeserializer
-{
-	id (^deserializer)(NSData *) = ^id (NSData *data) {
-		
-		if ([data length] == sizeof(NSTimeInterval))
-		{
-			NSTimeInterval timestamp;
-			memcpy((void *)&timestamp, [data bytes], sizeof(NSTimeInterval));
-			
-			return [[NSDate alloc] initWithTimeIntervalSinceReferenceDate:timestamp];
-		}
-		else
-		{
-			return [NSKeyedUnarchiver unarchiveObjectWithData:data];
-		}
-	};
-	
-	return deserializer;
-}
-
 @synthesize databasePath;
-@synthesize objectSerializer = objectSerializer;
-@synthesize objectDeserializer = objectDeserializer;
-@synthesize metadataSerializer = metadataSerializer;
-@synthesize metadataDeserializer = metadataDeserializer;
 
 - (id)initWithPath:(NSString *)inPath
-{
-	return [self initWithPath:inPath
-	         objectSerializer:NULL
-	       objectDeserializer:NULL
-	       metadataSerializer:NULL
-	     metadataDeserializer:NULL];
-}
-
-- (id)initWithPath:(NSString *)inPath
-        serializer:(NSData *(^)(id object))aSerializer
-      deserializer:(id (^)(NSData *))aDeserializer
-{
-	return [self initWithPath:inPath
-	         objectSerializer:aSerializer
-	       objectDeserializer:aDeserializer
-	       metadataSerializer:aSerializer
-	     metadataDeserializer:aDeserializer];
-}
-
-- (id)initWithPath:(NSString *)inPath objectSerializer:(NSData *(^)(id object))aObjectSerializer
-                                    objectDeserializer:(id (^)(NSData *))aObjectDeserializer
-                                    metadataSerializer:(NSData *(^)(id object))aMetadataSerializer
-                                  metadataDeserializer:(id (^)(NSData *))aMetadataDeserializer
 {
 	// First, standardize path.
 	// This allows clients to be lazy when passing paths.
@@ -198,18 +73,9 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		return nil;
 	}
 	
-	NSData *(^defaultSerializer)(id)    = [[self class] defaultSerializer];
-	id (^defaultDeserializer)(NSData *) = [[self class] defaultDeserializer];
-	
 	if ((self = [super init]))
 	{
 		databasePath = path;
-		
-		objectSerializer = aObjectSerializer ? aObjectSerializer : defaultSerializer;
-		objectDeserializer = aObjectDeserializer ? aObjectDeserializer : defaultDeserializer;
-		
-		metadataSerializer = aMetadataSerializer ? aMetadataSerializer : defaultSerializer;
-		metadataDeserializer = aMetadataDeserializer ? aMetadataDeserializer : defaultDeserializer;
 		
 		BOOL(^openConfigCreate)(void) = ^BOOL (void) { @autoreleasepool {
 		
@@ -243,16 +109,19 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 			
 			result = openConfigCreate();
 			
-			if (result)
+			if (result) {
 				YDBLogInfo(@"Database corruption resolved (name=%@)", [path lastPathComponent]);
-			else
+			}
+			else {
 				YDBLogError(@"Database corruption unresolved (name=%@)", [path lastPathComponent]);
+			}
 		}
 		if (!result)
 		{
 			return nil;
 		}
 		
+		internalQueue   = dispatch_queue_create("YapDatabase-Internal", NULL);
 		checkpointQueue = dispatch_queue_create("YapDatabase-Checkpoint", NULL);
 		snapshotQueue   = dispatch_queue_create("YapDatabase-Snapshot", NULL);
 		writeQueue      = dispatch_queue_create("YapDatabase-Write", NULL);
@@ -260,7 +129,12 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		changesets = [[NSMutableArray alloc] init];
 		connectionStates = [[NSMutableArray alloc] init];
 		
+		defaults = [[YapAbstractDatabaseDefaults alloc] init];
+		
 		registeredExtensions = [[NSDictionary alloc] init];
+		
+		maxConnectionPoolCount = DEFAULT_MAX_CONNECTION_POOL_COUNT;
+		connectionPoolLifetime = DEFAULT_CONNECTION_POOL_LIFETIME;
 		
 		// Mark the queues so we can identify them.
 		// There are several methods whose use is restricted to within a certain queue.
@@ -285,6 +159,23 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 {
 	YDBLogVerbose(@"Dealloc <%@ %p: databaseName=%@>", [self class], self, [databasePath lastPathComponent]);
 	
+	while ([connectionPoolValues count] > 0)
+	{
+		sqlite3 *aDb = (sqlite3 *)[[connectionPoolValues objectAtIndex:0] pointerValue];
+		
+		int status = sqlite3_close(aDb);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error in sqlite_close: %d %s", status, sqlite3_errmsg(aDb));
+		}
+		
+		[connectionPoolValues removeObjectAtIndex:0];
+		[connectionPoolDates removeObjectAtIndex:0];
+	}
+	
+	if (connectionPoolTimer)
+		dispatch_source_cancel(connectionPoolTimer);
+	
 	if (db) {
 		sqlite3_close(db);
 		db = NULL;
@@ -293,6 +184,8 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	[YapDatabaseManager deregisterDatabaseForPath:databasePath];
 	
 #if !OS_OBJECT_USE_OBJC
+	if (internalQueue)
+		dispatch_release(internalQueue);
 	if (snapshotQueue)
 		dispatch_release(snapshotQueue);
 	if (writeQueue)
@@ -410,31 +303,73 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Upgrade
+#pragma mark Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Returns whether or not the given table exists.
+**/
+- (BOOL)tableExists:(NSString *)tableName using:(sqlite3 *)aDb
+{
+	if (tableName == nil) return NO;
+	
+	sqlite3_stmt *statement;
+	char *stmt = "SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = ?";
+	
+	int status = sqlite3_prepare_v2(aDb, stmt, (int)strlen(stmt)+1, &statement, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@: Error creating statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(aDb));
+		return NO;
+	}
+	
+	BOOL result = NO;
+	
+	sqlite3_bind_text(statement, 1, [tableName UTF8String], -1, SQLITE_TRANSIENT);
+	
+	status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		int count = sqlite3_column_int(statement, 1);
+		
+		result = (count > 0);
+	}
+	else if (status == SQLITE_ERROR)
+	{
+		YDBLogError(@"%@: Error executing statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(aDb));
+	}
+	
+	sqlite3_finalize(statement);
+	statement = NULL;
+	
+	return result;
+}
 
 /**
  * Extracts and returns column names of our database.
 **/
-- (NSArray *)tableColumnNames
+- (NSArray *)columnNamesForTable:(NSString *)tableName using:(sqlite3 *)aDb
 {
-	sqlite3_stmt *pragmaStatement;
+	if (tableName == nil) return nil;
 	
-	char *stmt = "PRAGMA table_info(database);";
+	sqlite3_stmt *statement;
+	char *stmt = "PRAGMA table_info(?);";
 	
-	int status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &pragmaStatement, NULL);
+	int status = sqlite3_prepare_v2(aDb, stmt, (int)strlen(stmt)+1, &statement, NULL);
 	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"Error creating pragma table_info statement! %d %s", status, sqlite3_errmsg(db));
+		YDBLogError(@"%@: Error creating statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(aDb));
 		return nil;
 	}
 	
 	NSMutableArray *tableColumnNames = [NSMutableArray array];
 	
-	while (sqlite3_step(pragmaStatement) == SQLITE_ROW)
+	sqlite3_bind_text(statement, 1, [tableName UTF8String], -1, SQLITE_TRANSIENT);
+	
+	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
-		const unsigned char *text = sqlite3_column_text(pragmaStatement, 1);
-		int textSize = sqlite3_column_bytes(pragmaStatement, 1);
+		const unsigned char *text = sqlite3_column_text(statement, 1);
+		int textSize = sqlite3_column_bytes(statement, 1);
 		
 		NSString *columnName = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 		if (columnName)
@@ -443,11 +378,20 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		}
 	}
 	
-	sqlite3_finalize(pragmaStatement);
-	pragmaStatement = NULL;
+	if (status != SQLITE_DONE)
+	{
+		YDBLogError(@"%@: Error executing statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(aDb));
+	}
+	
+	sqlite3_finalize(statement);
+	statement = NULL;
 	
 	return tableColumnNames;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Upgrade
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Gets the version of the table.
@@ -509,6 +453,16 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		YDBLogError(@"Error setting user_version: %d %s", status, sqlite3_errmsg(db));
 		return NO;
 	}
+	
+	return YES;
+}
+
+- (BOOL)upgradeTable_2_3
+{
+	// In version 3, we altered the tables to use INTEGER PRIMARY KEY's so we could pass rowid's to extensions.
+	//
+	// This method is implemented in YapDatabase & YapCollectionsDatabase.
+	// It migrates 'database' to 'database2'.
 	
 	return YES;
 }
@@ -670,7 +624,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	int status;
 	sqlite3_stmt *statement;
 	
-	char *stmt = "SELECT DISTINCT \"extension\" FROM \"yap2\" ;";
+	char *stmt = "SELECT DISTINCT \"extension\" FROM \"yap2\";";
 	
 	NSMutableArray *extensionNames = [NSMutableArray array];
 	
@@ -706,6 +660,166 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	
 	previouslyRegisteredExtensionNames = extensionNames;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Defaults
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (YapAbstractDatabaseDefaults *)defaults
+{
+	__block YapAbstractDatabaseDefaults *result = nil;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		result = [defaults copy];
+	});
+	
+	return result;
+}
+
+- (BOOL)defaultObjectCacheEnabled
+{
+	__block BOOL result = NO;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		result = defaults.objectCacheEnabled;
+	});
+	
+	return result;
+}
+
+- (void)setDefaultObjectCacheEnabled:(BOOL)defaultObjectCacheEnabled
+{
+	dispatch_sync(internalQueue, ^{
+		
+		defaults.objectCacheEnabled = defaultObjectCacheEnabled;
+	});
+}
+
+- (NSUInteger)defaultObjectCacheLimit
+{
+	__block NSUInteger result = NO;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		result = defaults.objectCacheLimit;
+	});
+	
+	return result;
+}
+
+- (void)setDefaultObjectCacheLimit:(NSUInteger)defaultObjectCacheLimit
+{
+	dispatch_sync(internalQueue, ^{
+		
+		defaults.objectCacheLimit = defaultObjectCacheLimit;
+	});
+}
+
+- (BOOL)defaultMetadataCacheEnabled
+{
+	__block BOOL result = NO;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		result = defaults.metadataCacheEnabled;
+	});
+	
+	return result;
+}
+
+- (void)setDefaultMetadataCacheEnabled:(BOOL)defaultMetadataCacheEnabled
+{
+	dispatch_sync(internalQueue, ^{
+		
+		defaults.metadataCacheEnabled = defaultMetadataCacheEnabled;
+	});
+}
+
+- (NSUInteger)defaultMetadataCacheLimit
+{
+	__block NSUInteger result = 0;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		result = defaults.metadataCacheLimit;
+	});
+	
+	return result;
+}
+
+- (void)setDefaultMetadataCacheLimit:(NSUInteger)defaultMetadataCacheLimit
+{
+	dispatch_sync(internalQueue, ^{
+		
+		defaults.metadataCacheLimit = defaultMetadataCacheLimit;
+	});
+}
+
+- (YapDatabasePolicy)defaultObjectPolicy
+{
+	__block YapDatabasePolicy result = YapDatabasePolicyShare;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		result = defaults.objectPolicy;
+	});
+	
+	return result;
+}
+
+- (void)setDefaultObjectPolicy:(YapDatabasePolicy)defaultObjectPolicy
+{
+	dispatch_sync(internalQueue, ^{
+		
+		defaults.objectPolicy = defaultObjectPolicy;
+	});
+}
+
+- (YapDatabasePolicy)defaultMetadataPolicy
+{
+	__block YapDatabasePolicy result = YapDatabasePolicyShare;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		result = defaults.metadataPolicy;
+	});
+	
+	return result;
+}
+
+- (void)setDefaultMetadataPolicy:(YapDatabasePolicy)defaultMetadataPolicy
+{
+	dispatch_sync(internalQueue, ^{
+		
+		defaults.metadataPolicy = defaultMetadataPolicy;
+	});
+}
+
+#if TARGET_OS_IPHONE
+
+- (int)defaultAutoFlushMemoryLevel
+{
+	__block int result = YapDatabaseConnectionFlushMemoryLevelNone;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		result = defaults.autoFlushMemoryLevel;
+	});
+	
+	return result;
+}
+
+- (void)setDefaultAutoFlushMemoryLevel:(int)defaultAutoFlushMemoryLevel
+{
+	dispatch_sync(internalQueue, ^{
+		
+		defaults.autoFlushMemoryLevel = defaultAutoFlushMemoryLevel;
+	});
+}
+
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Connections
@@ -765,13 +879,13 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		for (YapDatabaseConnectionState *state in connectionStates)
 		{
 			if (state->connection == connection)
+			{
+				[connectionStates removeObjectAtIndex:index];
 				break;
-			else
-				index++;
+			}
+			
+			index++;
 		}
-		
-		if (index < [connectionStates count])
-			[connectionStates removeObjectAtIndex:index];
 		
 		YDBLogVerbose(@"Removed connection(%p) from <%@ %p: databaseName=%@, connectionCount=%lu>",
 		              connection,
@@ -787,6 +901,235 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		block();
 	else
 		dispatch_sync(snapshotQueue, block);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Pooling
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSUInteger)maxConnectionPoolCount
+{
+	__block NSUInteger count = 0;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		count = maxConnectionPoolCount;
+	});
+	
+	return count;
+}
+
+- (void)setMaxConnectionPoolCount:(NSUInteger)count
+{
+	dispatch_sync(internalQueue, ^{
+		
+		// Update ivar
+		maxConnectionPoolCount = count;
+		
+		// Immediately drop any excess connections
+		if ([connectionPoolValues count] > maxConnectionPoolCount)
+		{
+			do
+			{
+				sqlite3 *aDb = (sqlite3 *)[[connectionPoolValues objectAtIndex:0] pointerValue];
+				
+				int status = sqlite3_close(aDb);
+				if (status != SQLITE_OK)
+				{
+					YDBLogError(@"Error in sqlite_close: %d %s", status, sqlite3_errmsg(aDb));
+				}
+				
+				[connectionPoolValues removeObjectAtIndex:0];
+				[connectionPoolDates removeObjectAtIndex:0];
+				
+			} while ([connectionPoolValues count] > maxConnectionPoolCount);
+			
+			[self resetConnectionPoolTimer];
+		}
+	});
+}
+
+- (NSTimeInterval)connectionPoolLifetime
+{
+	__block NSTimeInterval lifetime = 0;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		lifetime = connectionPoolLifetime;
+	});
+	
+	return lifetime;
+}
+
+- (void)setConnectionPoolLifetime:(NSTimeInterval)lifetime
+{
+	dispatch_sync(internalQueue, ^{
+		
+		// Update ivar
+		connectionPoolLifetime = lifetime;
+		
+		// Update timer (if needed)
+		[self resetConnectionPoolTimer];
+	});
+}
+
+/**
+ * Adds the given connection to the connection pool if possible.
+ * 
+ * Returns YES if the instance was added to the pool.
+ * If so, the YapAbstractDatabase must not close the instance.
+ * 
+ * Returns NO if the instance was not added to the pool.
+ * If so, the YapAbstractDatabaseConnection must close the instance.
+**/
+- (BOOL)connectionPoolEnqueue:(sqlite3 *)aDb
+{
+	__block BOOL result = NO;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		if ([connectionPoolValues count] < maxConnectionPoolCount)
+		{
+			if (connectionPoolValues == nil)
+			{
+				connectionPoolValues = [[NSMutableArray alloc] init];
+				connectionPoolDates = [[NSMutableArray alloc] init];
+			}
+			
+			YDBLogVerbose(@"Enqueuing connection to pool: %p", aDb);
+			
+			[connectionPoolValues addObject:[NSValue valueWithPointer:(const void *)aDb]];
+			[connectionPoolDates addObject:[NSDate date]];
+			
+			result = YES;
+			
+			if ([connectionPoolValues count] == 1)
+			{
+				[self resetConnectionPoolTimer];
+			}
+		}
+	});
+	
+	return result;
+}
+
+/**
+ * Retrieves a connection from the connection pool if available.
+ * Returns NULL if no connections are available.
+**/
+- (sqlite3 *)connectionPoolDequeue
+{
+	__block sqlite3 *aDb = NULL;
+	
+	dispatch_sync(internalQueue, ^{
+		
+		if ([connectionPoolValues count] > 0)
+		{
+			aDb = (sqlite3 *)[[connectionPoolValues objectAtIndex:0] pointerValue];
+			
+			YDBLogVerbose(@"Dequeuing connection from pool: %p", aDb);
+			
+			[connectionPoolValues removeObjectAtIndex:0];
+			[connectionPoolDates removeObjectAtIndex:0];
+			
+			[self resetConnectionPoolTimer];
+		}
+	});
+	
+	return aDb;
+}
+
+/**
+ * Internal utility method to handle setting/resetting the timer.
+**/
+- (void)resetConnectionPoolTimer
+{
+	YDBLogAutoTrace();
+	
+	if (connectionPoolLifetime <= 0.0 || [connectionPoolValues count] == 0)
+	{
+		if (connectionPoolTimer)
+		{
+			dispatch_source_cancel(connectionPoolTimer);
+			connectionPoolTimer = NULL;
+		}
+		
+		return;
+	}
+	
+	BOOL isNewTimer = NO;
+	
+	if (connectionPoolTimer == NULL)
+	{
+		connectionPoolTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, internalQueue);
+		
+		__weak YapAbstractDatabase *weakSelf = self;
+		dispatch_source_set_event_handler(connectionPoolTimer, ^{ @autoreleasepool {
+			
+			__strong YapAbstractDatabase *strongSelf = weakSelf;
+			if (strongSelf)
+			{
+				[strongSelf handleConnectionPoolTimerFire];
+			}
+		}});
+		
+		#if !OS_OBJECT_USE_OBJC
+		dispatch_source_t timer = connectionPoolTimer;
+		dispatch_source_set_cancel_handler(connectionPoolTimer, ^{
+			dispatch_release(timer);
+		});
+		#endif
+		
+		isNewTimer = YES;
+	}
+	
+	NSDate *date = [connectionPoolDates objectAtIndex:0];
+	NSTimeInterval interval = [date timeIntervalSinceNow] + connectionPoolLifetime;
+	
+	dispatch_time_t tt = dispatch_time(DISPATCH_TIME_NOW, (interval * NSEC_PER_SEC));
+	dispatch_source_set_timer(connectionPoolTimer, tt, DISPATCH_TIME_FOREVER, 0);
+	
+	if (isNewTimer) {
+		dispatch_resume(connectionPoolTimer);
+	}
+}
+
+/**
+ * Internal method to handle removing stale connections from the connection pool.
+**/
+- (void)handleConnectionPoolTimerFire
+{
+	YDBLogAutoTrace();
+	
+	NSDate *now = [NSDate date];
+	
+	BOOL done = NO;
+	while ([connectionPoolValues count] > 0 && !done)
+	{
+		NSTimeInterval interval = [[connectionPoolDates objectAtIndex:0] timeIntervalSinceDate:now] * -1.0;
+		
+		if ((interval >= connectionPoolLifetime) || (interval < 0))
+		{
+			sqlite3 *aDb = (sqlite3 *)[[connectionPoolValues objectAtIndex:0] pointerValue];
+			
+			YDBLogVerbose(@"Closing connection from pool: %p", aDb);
+			
+			int status = sqlite3_close(aDb);
+			if (status != SQLITE_OK)
+			{
+				YDBLogError(@"Error in sqlite_close: %d %s", status, sqlite3_errmsg(aDb));
+			}
+			
+			[connectionPoolValues removeObjectAtIndex:0];
+			[connectionPoolDates removeObjectAtIndex:0];
+		}
+		else
+		{
+			done = YES;
+		}
+	}
+	
+	[self resetConnectionPoolTimer];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -931,6 +1274,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	if (registrationConnection == nil)
 	{
 		registrationConnection = [self newConnection];
+		registrationConnection.name = @"YapAbstractDatabase_extensionRegistrationConnection";
 		
 		NSTimeInterval delayInSeconds = 10.0;
 		dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
@@ -1178,7 +1522,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	
 	// Update registeredExtensions, if changed.
 	
-	NSDictionary *newRegisteredExtensions = [changeset objectForKey:@"registeredExtensions"];
+	NSDictionary *newRegisteredExtensions = [changeset objectForKey:YapDatabaseRegisteredExtensionsKey];
 	if (newRegisteredExtensions)
 	{
 		registeredExtensions = newRegisteredExtensions;
@@ -1193,15 +1537,19 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 	{
 		if (state->connection != sender)
 		{
-			YapAbstractDatabaseConnection *connection = state->connection;
+			// Create strong reference (state->connection is weak)
+			__strong YapAbstractDatabaseConnection *connection = state->connection;
 			
-			if (group == NULL)
-				group = dispatch_group_create();
-			
-			dispatch_group_async(group, connection.connectionQueue, ^{ @autoreleasepool {
+			if (connection)
+			{
+				if (group == NULL)
+					group = dispatch_group_create();
 				
-				[connection noteCommittedChanges:changeset];
-			}});
+				dispatch_group_async(group, connection.connectionQueue, ^{ @autoreleasepool {
+					
+					[connection noteCommittedChanges:changeset];
+				}});
+			}
 		}
 	}
 	
@@ -1281,10 +1629,12 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 		
 		if (result != SQLITE_OK)
 		{
-			if (result == SQLITE_BUSY)
+			if (result == SQLITE_BUSY) {
 				YDBLogVerbose(@"sqlite3_wal_checkpoint_v2 returned SQLITE_BUSY");
-			else
+			}
+			else {
 				YDBLogWarn(@"sqlite3_wal_checkpoint_v2 returned error code: %d", result);
+			}
 			
 			return;// from_block
 		}

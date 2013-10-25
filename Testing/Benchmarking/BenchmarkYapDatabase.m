@@ -241,6 +241,7 @@ static NSMutableArray *keys;
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		NSLog(@" \n\n\n ");
+		NSLog(@"YapDatabase Benchmarks:");
 		NSLog(@"====================================================");
 		NSLog(@"POPULATE DATABASE");
 		

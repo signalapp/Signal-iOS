@@ -177,11 +177,11 @@
 
 - (BOOL)hasObjectChangeForKey:(NSString *)key
                  inCollection:(NSString *)collection
-               inNotification:(NSArray *)notifications;
+              inNotifications:(NSArray *)notifications;
 
 - (BOOL)hasMetadataChangeForKey:(NSString *)key
                    inCollection:(NSString *)collection
-                 inNotification:(NSArray *)notifications;
+                inNotifications:(NSArray *)notifications;
 
 // Query for a change to a particular set of keys in a collection
 
@@ -191,10 +191,10 @@
 
 - (BOOL)hasObjectChangeForAnyKeys:(NSSet *)keys
                      inCollection:(NSString *)collection
-                   inNotification:(NSArray *)notifications;
+                  inNotifications:(NSArray *)notifications;
 
 - (BOOL)hasMetadataChangeForAnyKeys:(NSSet *)keys
                        inCollection:(NSString *)collection
-                     inNotification:(NSArray *)notifications;
+                    inNotifications:(NSArray *)notifications;
 
 @end

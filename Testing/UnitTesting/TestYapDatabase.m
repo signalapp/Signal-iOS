@@ -4,6 +4,9 @@
 #import "YapDatabase.h"
 #import "YapDatabasePrivate.h"
 
+#import "DDLog.h"
+#import "DDTTYLogger.h"
+
 #import <libkern/OSAtomic.h>
 
 
@@ -14,9 +17,22 @@
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
 	NSString *baseDir = ([paths count] > 0) ? [paths objectAtIndex:0] : NSTemporaryDirectory();
 	
-	NSString *databaseName = [NSString stringWithFormat:@"TestYapDatabase-%@.sqlite", suffix];
+	NSString *databaseName = [NSString stringWithFormat:@"%@-%@.sqlite", THIS_FILE, suffix];
 	
 	return [baseDir stringByAppendingPathComponent:databaseName];
+}
+
+- (void)setUp
+{
+	[super setUp];
+	[DDLog removeAllLoggers];
+	[DDLog addLogger:[DDTTYLogger sharedInstance]];
+}
+
+- (void)tearDown
+{
+	[DDLog flushLog];
+	[super tearDown];
 }
 
 - (void)test1
@@ -315,28 +331,28 @@
 
 - (void)testPropertyListSerializerDeserializer
 {
-	NSData *(^propertyListSerializer)(id) = [YapDatabase propertyListSerializer];
-	id (^propertyListDeserializer)(NSData *) = [YapDatabase propertyListDeserializer];
+	YapDatabaseSerializer propertyListSerializer = [YapDatabase propertyListSerializer];
+	YapDatabaseDeserializer propertyListDeserializer = [YapDatabase propertyListDeserializer];
 	
 	NSDictionary *originalDict = @{ @"date":[NSDate date], @"string":@"string" };
 	
-	NSData *data = propertyListSerializer(originalDict);
+	NSData *data = propertyListSerializer(@"key", originalDict);
 	
-	NSDictionary *deserializedDictionary = propertyListDeserializer(data);
+	NSDictionary *deserializedDictionary = propertyListDeserializer(@"key", data);
 	
 	STAssertTrue([originalDict isEqualToDictionary:deserializedDictionary], @"PropertyList serialization broken");
 }
 
 - (void)testTimestampSerializerDeserializer
 {
-	NSData *(^timestampSerializer)(id) = [YapDatabase timestampSerializer];
-	id (^timestampDeserializer)(NSData *) = [YapDatabase timestampDeserializer];
+	YapDatabaseSerializer timestampSerializer = [YapDatabase timestampSerializer];
+	YapDatabaseDeserializer timestampDeserializer = [YapDatabase timestampDeserializer];
 	
 	NSDate *originalDate = [NSDate date];
 	
-	NSData *data = timestampSerializer(originalDate);
+	NSData *data = timestampSerializer(@"key", originalDate);
 	
-	NSDate *deserializedDate = timestampDeserializer(data);
+	NSDate *deserializedDate = timestampDeserializer(@"key", data);
 	
 	STAssertTrue([originalDate isEqual:deserializedDate], @"Timestamp serialization broken");
 }

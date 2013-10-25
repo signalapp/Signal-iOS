@@ -1,7 +1,10 @@
 #import "TestYapCollectionsDatabase.h"
+
 #import "YapCollectionsDatabase.h"
 #import "TestObject.h"
 
+#import "DDLog.h"
+#import "DDTTYLogger.h"
 
 @implementation TestYapCollectionsDatabase
 
@@ -10,9 +13,22 @@
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
 	NSString *baseDir = ([paths count] > 0) ? [paths objectAtIndex:0] : NSTemporaryDirectory();
 	
-	NSString *databaseName = [NSString stringWithFormat:@"TestYapCollectionsDatabase-%@.sqlite", suffix];
+	NSString *databaseName = [NSString stringWithFormat:@"%@-%@.sqlite", THIS_FILE, suffix];
 	
 	return [baseDir stringByAppendingPathComponent:databaseName];
+}
+
+- (void)setUp
+{
+	[super setUp];
+	[DDLog removeAllLoggers];
+	[DDLog addLogger:[DDTTYLogger sharedInstance]];
+}
+
+- (void)tearDown
+{
+	[DDLog flushLog];
+	[super tearDown];
 }
 
 - (void)test

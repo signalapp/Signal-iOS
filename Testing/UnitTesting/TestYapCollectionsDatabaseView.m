@@ -14,13 +14,14 @@
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
 	NSString *baseDir = ([paths count] > 0) ? [paths objectAtIndex:0] : NSTemporaryDirectory();
 	
-	NSString *databaseName = [NSString stringWithFormat:@"TestYapCollectionsDatabaseView-%@.sqlite", suffix];
+	NSString *databaseName = [NSString stringWithFormat:@"%@-%@.sqlite", THIS_FILE, suffix];
 	
 	return [baseDir stringByAppendingPathComponent:databaseName];
 }
 
 - (void)setUp
 {
+	[super setUp];
 	[DDLog removeAllLoggers];
 	[DDLog addLogger:[DDTTYLogger sharedInstance]];
 }
@@ -28,6 +29,7 @@
 - (void)tearDown
 {
 	[DDLog flushLog];
+	[super tearDown];
 }
 
 - (void)test
@@ -1699,6 +1701,204 @@
 			}
 		}
 	}];
+	
+	//
+	// Clear the database, and add a bunch of keys (again)
+	//
+	
+	[connection1 readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction removeAllObjectsInAllCollections];
+		
+		// Add 2 pages of keys to the view
+		//
+		// page0 = [key0   - key49]
+		// page1 = [key100 - key149]
+		
+		for (int i = 0; i < 50; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			NSString *obj = [NSString stringWithFormat:@"object%d", i];
+			
+			[transaction setObject:obj forKey:key inCollection:nil];
+		}
+		
+		for (int i = 100; i < 150; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			NSString *obj = [NSString stringWithFormat:@"object%d", i];
+			
+			[transaction setObject:obj forKey:key inCollection:nil];
+		}
+	}];
+	
+	[connection1 readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
+		
+		// Add [key50 - key59]
+		//
+		// Should originally add to page1, and then get moved to page0
+		
+		for (int i = 50; i < 60; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			NSString *obj = [NSString stringWithFormat:@"object%d", i];
+			
+			[transaction setObject:obj forKey:key inCollection:nil];
+		}
+		
+		// Remove [key40 - key49]
+		//
+		// This should make room for [key50 - key59] to move from page1 to page0
+		
+		for (int i = 40; i < 50; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			
+			[transaction removeObjectForKey:key inCollection:nil];
+		}
+		
+		// This test is designed to hit the codePath:
+		//
+		// YapDatabaseViewTransaction:
+		// - splitOversizedPage
+		// - "Move objects from beginning of page to end of previous page"
+	}];
+	
+	[connection1 readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
+		
+		NSUInteger index = 0;
+		
+		for (int i = 0; i < 40; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+						 @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+			
+			index++;
+		}
+		
+		for (int i = 50; i < 60; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+						 @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+			
+			index++;
+		}
+		
+		for (int i = 100; i < 150; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+						 @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+			
+			index++;
+		}
+	}];
+	
+	//
+	// Clear the database, and add a bunch of keys (again)
+	//
+	
+	[connection1 readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction removeAllObjectsInAllCollections];
+		
+		// Add 2 pages of keys to the view
+		//
+		// page0 = [key50  - key99]
+		// page1 = [key100 - key149]
+		
+		for (int i = 50; i < 150; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			NSString *obj = [NSString stringWithFormat:@"object%d", i];
+			
+			[transaction setObject:obj forKey:key inCollection:nil];
+		}
+	}];
+	
+	[connection1 readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
+		
+		// Add [key0 - key9]
+		//
+		// Should add to page0
+		
+		for (int i = 0; i < 10; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			NSString *obj = [NSString stringWithFormat:@"object%d", i];
+			
+			[transaction setObject:obj forKey:key inCollection:nil];
+		}
+		
+		// Remove [key100 - key109]
+		//
+		// This should make room for [key90 - key99] to move from page0 to page1
+		
+		for (int i = 100; i < 110; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			
+			[transaction removeObjectForKey:key inCollection:nil];
+		}
+		
+		// This test is designed to hit the codePath:
+		//
+		// YapDatabaseViewTransaction:
+		// - splitOversizedPage
+		// - "Move objects from end of page to beginning of next page"
+	}];
+	
+	[connection1 readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
+		
+		NSUInteger index = 0;
+		
+		for (int i = 0; i < 10; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+						 @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+			
+			index++;
+		}
+		
+		for (int i = 50; i < 100; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+						 @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+			
+			index++;
+		}
+		
+		for (int i = 110; i < 150; i++)
+		{
+			NSString *expectedKey = [NSString stringWithFormat:@"key%d", i];
+			
+			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];
+			
+			STAssertTrue([expectedKey isEqualToString:fetchedKey],
+						 @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
+			
+			index++;
+		}
+	}];
 }
 
 - (void)testViewPopulation
@@ -2203,6 +2403,182 @@
 	[connection readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
 		
 		STAssertNil([transaction ext:@"order"], @"Expected nil extension");
+	}];
+}
+
+- (void)testFind
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapCollectionsDatabase *database = [[YapCollectionsDatabase alloc] initWithPath:databasePath];
+	
+	STAssertNotNil(database, @"Oops");
+	
+	YapCollectionsDatabaseConnection *connection = [database newConnection];
+	
+	YapCollectionsDatabaseViewBlockType groupingBlockType;
+	YapCollectionsDatabaseViewGroupingWithKeyBlock groupingBlock;
+	
+	YapCollectionsDatabaseViewBlockType sortingBlockType;
+	YapCollectionsDatabaseViewSortingWithObjectBlock sortingBlock;
+	
+	groupingBlockType = YapCollectionsDatabaseViewBlockTypeWithKey;
+	groupingBlock = ^NSString *(NSString *collection, NSString *key){
+		
+		return @"";
+	};
+	
+	sortingBlockType = YapCollectionsDatabaseViewBlockTypeWithObject;
+	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                                  NSString *collection2, NSString *key2, id obj2){
+		
+		NSNumber *number1 = (NSNumber *)obj1;
+		NSNumber *number2 = (NSNumber *)obj2;
+		
+		return [number1 compare:number2];
+	};
+	
+	YapCollectionsDatabaseView *databaseView =
+	    [[YapCollectionsDatabaseView alloc] initWithGroupingBlock:groupingBlock
+	                                            groupingBlockType:groupingBlockType
+	                                                 sortingBlock:sortingBlock
+	                                             sortingBlockType:sortingBlockType];
+	
+	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
+	
+	STAssertTrue(registerResult, @"Failure registering extension");
+	
+	// Add a bunch of values to the database & to the view
+	
+	NSUInteger count = 100;
+	
+	[connection readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
+		
+		for (int i = 0; i < count; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key-%d", i];
+			NSNumber *num = [NSNumber numberWithInt:i];
+			
+			[transaction setObject:num forKey:key inCollection:nil];
+		}
+	}];
+	
+	// Make sure the view is populated
+	
+	[connection readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
+		
+		STAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == count, @"View count is wrong");
+	}];
+	
+	// Now test finding different ranges
+	
+	[connection readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
+		
+		int min = 0;
+		int max = 5;
+		
+		YapCollectionsDatabaseViewBlockType blockType = YapCollectionsDatabaseViewBlockTypeWithObject;
+		YapCollectionsDatabaseViewFindWithObjectBlock block = ^(NSString *collection, NSString *key, id object){
+			
+			int value = [(NSNumber *)object intValue];
+			
+			if (value < min)
+				return NSOrderedAscending;
+			if (value >= max)
+				return NSOrderedDescending;
+			
+			return NSOrderedSame;
+		};
+		
+		NSRange range = [[transaction ext:@"order"] findRangeInGroup:@"" usingBlock:block blockType:blockType];
+		
+		NSUInteger location = (max > min) ? min : NSNotFound;
+		NSUInteger length = (max > min) ? (max - min) : 0;
+		
+		STAssertTrue(range.location == location, @"Bad range location: %d", (int)range.location);
+		STAssertTrue(range.length == length, @"Bad range length: %d", (int)range.length);
+	}];
+	
+	[connection readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
+		
+		int min = 11;
+		int max = 54;
+		
+		YapCollectionsDatabaseViewBlockType blockType = YapCollectionsDatabaseViewBlockTypeWithObject;
+		YapCollectionsDatabaseViewFindWithObjectBlock block = ^(NSString *collection, NSString *key, id object){
+			
+			int value = [(NSNumber *)object intValue];
+			
+			if (value < min)
+				return NSOrderedAscending;
+			if (value >= max)
+				return NSOrderedDescending;
+			
+			return NSOrderedSame;
+		};
+		
+		NSRange range = [[transaction ext:@"order"] findRangeInGroup:@"" usingBlock:block blockType:blockType];
+		
+		NSUInteger location = (max > min) ? min : NSNotFound;
+		NSUInteger length = (max > min) ? (max - min) : 0;
+		
+		STAssertTrue(range.location == location, @"Bad range location: %d", (int)range.location);
+		STAssertTrue(range.length == length, @"Bad range length: %d", (int)range.length);
+	}];
+	
+	[connection readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
+		
+		int min = 50;
+		int max = 100;
+		
+		YapCollectionsDatabaseViewBlockType blockType = YapCollectionsDatabaseViewBlockTypeWithObject;
+		YapCollectionsDatabaseViewFindWithObjectBlock block = ^(NSString *collection, NSString *key, id object){
+			
+			int value = [(NSNumber *)object intValue];
+			
+			if (value < min)
+				return NSOrderedAscending;
+			if (value >= max)
+				return NSOrderedDescending;
+			
+			return NSOrderedSame;
+		};
+		
+		NSRange range = [[transaction ext:@"order"] findRangeInGroup:@"" usingBlock:block blockType:blockType];
+		
+		NSUInteger location = (max > min) ? min : NSNotFound;
+		NSUInteger length = (max > min) ? (max - min) : 0;
+		
+		STAssertTrue(range.location == location, @"Bad range location: %d", (int)range.location);
+		STAssertTrue(range.length == length, @"Bad range length: %d", (int)range.length);
+	}];
+	
+	[connection readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
+		
+		int min = 40;
+		int max = 40;
+		
+		YapCollectionsDatabaseViewBlockType blockType = YapCollectionsDatabaseViewBlockTypeWithObject;
+		YapCollectionsDatabaseViewFindWithObjectBlock block = ^(NSString *collection, NSString *key, id object){
+			
+			int value = [(NSNumber *)object intValue];
+			
+			if (value < min)
+				return NSOrderedAscending;
+			if (value >= max)
+				return NSOrderedDescending;
+			
+			return NSOrderedSame;
+		};
+		
+		NSRange range = [[transaction ext:@"order"] findRangeInGroup:@"" usingBlock:block blockType:blockType];
+		
+		NSUInteger location = (max > min) ? min : NSNotFound;
+		NSUInteger length = (max > min) ? (max - min) : 0;
+		
+		STAssertTrue(range.location == location, @"Bad range location: %d", (int)range.location);
+		STAssertTrue(range.length == length, @"Bad range length: %d", (int)range.length);
 	}];
 }
 

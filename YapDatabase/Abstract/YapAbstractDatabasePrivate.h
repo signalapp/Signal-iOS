@@ -3,7 +3,7 @@
 #import "YapAbstractDatabase.h"
 #import "YapAbstractDatabaseConnection.h"
 #import "YapAbstractDatabaseTransaction.h"
-
+#import "YapAbstractDatabaseDefaults.h"
 #import "YapDatabaseConnectionState.h"
 #import "YapCache.h"
 
@@ -20,6 +20,8 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	}
 }
 
+extern NSString *const YapDatabaseRegisteredExtensionsKey;
+extern NSString *const YapDatabaseNotificationKey;
 
 @interface YapAbstractDatabase () {
 @private
@@ -27,22 +29,25 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	NSMutableArray *changesets;
 	uint64_t snapshot;
 	
+	dispatch_queue_t internalQueue;
 	dispatch_queue_t checkpointQueue;
+	
+	YapAbstractDatabaseDefaults *defaults;
 	
 	NSDictionary *registeredExtensions;
 	YapAbstractDatabaseConnection *registrationConnection;
+	
+	NSUInteger maxConnectionPoolCount;
+	NSTimeInterval connectionPoolLifetime;
+	dispatch_source_t connectionPoolTimer;
+	NSMutableArray *connectionPoolValues;
+	NSMutableArray *connectionPoolDates;
 	
 @protected
 	
 	sqlite3 *db; // Used for setup & checkpoints
 	
 @public
-	
-	NSData *(^objectSerializer)(id object);   // Read-only by transactions
-	id (^objectDeserializer)(NSData *data);   // Read-only by transactions
-	
-	NSData *(^metadataSerializer)(id object); // Read-only by transactions
-	id (^metadataDeserializer)(NSData *data); // Read-only by transactions
 	
 	void *IsOnSnapshotQueueKey;       // Only to be used by YapAbstractDatabaseConnection
 	void *IsOnWriteQueueKey;          // Only to be used by YapAbstractDatabaseConnection
@@ -62,9 +67,16 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 - (BOOL)createTables;
 
 /**
- * Upgrade mechanism.
+ * Required override hook.
+ * Subclasses must implement this method and return the proper class to use for the cache.
 **/
-- (BOOL)get_user_version:(int *)user_version_ptr;
+- (Class)cacheKeyClass;
+
+/**
+ * General utility methods.
+**/
+- (BOOL)tableExists:(NSString *)tableName using:(sqlite3 *)aDb;
+- (NSArray *)columnNamesForTable:(NSString *)tableName using:(sqlite3 *)aDb;
 
 /**
  * Optional override hook.
@@ -75,10 +87,9 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 - (void)prepare;
 
 /**
- * Required override hook.
- * Subclasses must implement this method and return the proper class to use for the cache.
+ * New connections inherit their default values from this structure.
 **/
-- (Class)cacheKeyClass;
+- (YapAbstractDatabaseDefaults *)defaults;
 
 /**
  * Use the addConnection method from within newConnection.
@@ -88,6 +99,12 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 **/
 - (void)addConnection:(YapAbstractDatabaseConnection *)connection;
 - (void)removeConnection:(YapAbstractDatabaseConnection *)connection;
+
+/**
+ * YapAbstractDatabaseConnection uses these methods to recycle sqlite3 instances using the connection pool.
+**/
+- (BOOL)connectionPoolEnqueue:(sqlite3 *)aDb;
+- (sqlite3 *)connectionPoolDequeue;
 
 /**
  * This method is only accessible from within the snapshotQueue.
@@ -187,6 +204,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	
 	NSMutableDictionary *extensions;
 	BOOL extensionsReady;
+	id sharedKeySetForExtensions;
 	
 @protected
 	dispatch_queue_t connectionQueue;
@@ -199,7 +217,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	NSUInteger externalChangesetKeysCount; // For iOS 5 compatibility (NSDictionary sharedKeySet not supported)
 	
 @public
-	__strong YapAbstractDatabase *database;
+	__strong YapAbstractDatabase *abstractDatabase;
 	
 	sqlite3 *db;
 	
@@ -208,6 +226,9 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	
 	NSUInteger objectCacheLimit;          // Read-only by transaction. Use as consideration of whether to add to cache.
 	NSUInteger metadataCacheLimit;        // Read-only by transaction. Use as consideration of whether to add to cache.
+	
+	YapDatabasePolicy objectPolicy;       // Read-only by transaction. Use to determine what goes in objectChanges.
+	YapDatabasePolicy metadataPolicy;     // Read-only by transaction. Use to determine what goes in metadataChanges.
 	
 	BOOL needsMarkSqlLevelSharedReadLock; // Read-only by transaction. Use as consideration of whether to invoke method.
 }
@@ -259,7 +280,9 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 
 - (NSArray *)internalChangesetKeys;
 - (NSArray *)externalChangesetKeys;
-- (void)getInternalChangeset:(NSMutableDictionary **)internalPtr externalChangeset:(NSMutableDictionary **)externalPtr;
+- (void)getInternalChangeset:(NSMutableDictionary **)internalPtr
+           externalChangeset:(NSMutableDictionary **)externalPtr
+              hasDiskChanges:(BOOL *)hasDiskChangesPtr;
 - (void)processChangeset:(NSDictionary *)changeset;
 
 - (void)noteCommittedChanges:(NSDictionary *)changeset;
