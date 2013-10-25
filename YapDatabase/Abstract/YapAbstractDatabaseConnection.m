@@ -449,7 +449,14 @@
 {
 	dispatch_block_t block = ^{
 		
-		objectPolicy = newObjectPolicy;
+		// sanity check
+		switch (newObjectPolicy)
+		{
+			case YapDatabasePolicyContainment :
+			case YapDatabasePolicyShare       :
+			case YapDatabasePolicyCopy        : objectPolicy = newObjectPolicy; break;
+			default                           : objectPolicy = YapDatabasePolicyContainment;
+		}
 	};
 	
 	if (dispatch_get_specific(IsOnConnectionQueueKey))
@@ -478,7 +485,14 @@
 {
 	dispatch_block_t block = ^{
 		
-		metadataPolicy = newMetadataPolicy;
+		// sanity check
+		switch (newMetadataPolicy)
+		{
+			case YapDatabasePolicyContainment :
+			case YapDatabasePolicyShare       :
+			case YapDatabasePolicyCopy        : metadataPolicy = newMetadataPolicy; break;
+			default                           : metadataPolicy = YapDatabasePolicyContainment;
+		}
 	};
 	
 	if (dispatch_get_specific(IsOnConnectionQueueKey))

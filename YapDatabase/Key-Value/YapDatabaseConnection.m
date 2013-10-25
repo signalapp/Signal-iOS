@@ -829,6 +829,7 @@
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
 		BOOL isPolicyContainment = (objectPolicy == YapDatabasePolicyContainment);
+		BOOL isPolicyShare       = (objectPolicy == YapDatabasePolicyShare);
 		
 		[changeset_objectChanges enumerateKeysAndObjectsUsingBlock:^(id key, id newObject, BOOL *stop) {
 			
@@ -840,10 +841,19 @@
 				}
 				else if (newObject != yapTouch)
 				{
-					if (isPolicyContainment)
+					if (isPolicyContainment) {
 						[objectCache removeObjectForKey:key];
-					else
+					}
+					else if (isPolicyShare) {
 						[objectCache setObject:newObject forKey:key];
+					}
+					else // if (isPolicyCopy)
+					{
+						if ([newObject conformsToProtocol:@protocol(NSCopying)])
+							[objectCache setObject:[newObject copy] forKey:key];
+						else
+							[objectCache removeObjectForKey:key];
+					}
 				}
 			}
 		}];
@@ -878,6 +888,7 @@
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
 		BOOL isPolicyContainment = (objectPolicy == YapDatabasePolicyContainment);
+		BOOL isPolicyShare       = (objectPolicy == YapDatabasePolicyShare);
 		
 		for (NSString *key in keysToUpdate)
 		{
@@ -889,10 +900,19 @@
 			}
 			else if (newObject != yapTouch)
 			{
-				if (isPolicyContainment)
+				if (isPolicyContainment) {
 					[objectCache removeObjectForKey:key];
-				else
+				}
+				else if (isPolicyShare) {
 					[objectCache setObject:newObject forKey:key];
+				}
+				else // if (isPolicyCopy)
+				{
+					if ([newObject conformsToProtocol:@protocol(NSCopying)])
+						[objectCache setObject:[newObject copy] forKey:key];
+					else
+						[objectCache removeObjectForKey:key];
+				}
 			}
 		}
 	}
@@ -914,6 +934,7 @@
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
 		BOOL isPolicyContainment = (metadataPolicy == YapDatabasePolicyContainment);
+		BOOL isPolicyShare       = (metadataPolicy == YapDatabasePolicyShare);
 		
 		[changeset_metadataChanges enumerateKeysAndObjectsUsingBlock:^(id key, id newMetadata, BOOL *stop) {
 			
@@ -925,10 +946,19 @@
 				}
 				else if (newMetadata != yapTouch)
 				{
-					if (isPolicyContainment)
+					if (isPolicyContainment) {
 						[metadataCache removeObjectForKey:key];
-					else
+					}
+					else if (isPolicyShare) {
 						[metadataCache setObject:newMetadata forKey:key];
+					}
+					else // if (isPolicyCopy)
+					{
+						if ([newMetadata conformsToProtocol:@protocol(NSCopying)])
+							[metadataCache setObject:[newMetadata copy] forKey:key];
+						else
+							[metadataCache removeObjectForKey:key];
+					}
 				}
 			}
 		}];
@@ -963,6 +993,7 @@
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
 		BOOL isPolicyContainment = (metadataPolicy == YapDatabasePolicyContainment);
+		BOOL isPolicyShare       = (metadataPolicy == YapDatabasePolicyShare);
 		
 		for (NSString *key in keysToUpdate)
 		{
@@ -974,10 +1005,19 @@
 			}
 			else if (newMetadata != yapTouch)
 			{
-				if (isPolicyContainment)
+				if (isPolicyContainment) {
 					[metadataCache removeObjectForKey:key];
-				else
+				}
+				else if (isPolicyShare) {
 					[metadataCache setObject:newMetadata forKey:key];
+				}
+				else // if (isPolicyCopy)
+				{
+					if ([newMetadata conformsToProtocol:@protocol(NSCopying)])
+						[metadataCache setObject:[newMetadata copy] forKey:key];
+					else
+						[metadataCache removeObjectForKey:key];
+				}
 			}
 		}
 	}

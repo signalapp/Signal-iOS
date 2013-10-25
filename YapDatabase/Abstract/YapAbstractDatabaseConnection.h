@@ -40,6 +40,7 @@ typedef enum  {
 typedef enum {
 	YapDatabasePolicyContainment = 0,
 	YapDatabasePolicyShare       = 1,
+	YapDatabasePolicyCopy        = 2,
 } YapDatabasePolicy;
 
 
