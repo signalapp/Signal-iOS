@@ -12,7 +12,9 @@ OPENSSL_VERSION="1.0.1e"
 DEVELOPER="/Applications/Xcode.app/Contents/Developer"
 
 IOS_SDK_VERSION="7.0"
-OSX_SDK_VERSION="10.8"
+IOS_DEPLOYMENT_VERSION="5.1.1"
+OSX_SDK_VERSION="10.9"
+OSX_DEPLOYMENT_VERSION="10.8"
 
 IPHONEOS_PLATFORM="${DEVELOPER}/Platforms/iPhoneOS.platform"
 IPHONEOS_SDK="${IPHONEOS_PLATFORM}/Developer/SDKs/iPhoneOS${IOS_SDK_VERSION}.sdk"
@@ -55,23 +57,23 @@ build()
          export CROSS_TOP="${IPHONESIMULATOR_PLATFORM}/Developer"
          export CROSS_SDK="iPhoneSimulator${IOS_SDK_VERSION}.sdk"
          ./Configure iphoneos-cross --openssldir="/tmp/openssl-${OPENSSL_VERSION}-${ARCH}" &> "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}.log"
-         sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -miphoneos-version-min=7.0 !" "Makefile"
+         sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -miphoneos-version-min=${IOS_DEPLOYMENT_VERSION} !" "Makefile"
       else
          # iOS
          export CROSS_TOP="${IPHONEOS_PLATFORM}/Developer"
          export CROSS_SDK="iPhoneOS${IOS_SDK_VERSION}.sdk"
          ./Configure iphoneos-cross --openssldir="/tmp/openssl-${OPENSSL_VERSION}-${ARCH}" &> "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}.log"
          perl -i -pe 's|static volatile sig_atomic_t intr_signal|static volatile int intr_signal|' crypto/ui/ui_openssl.c
-         sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -miphoneos-version-min=7.0 !" "Makefile"
+         sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -miphoneos-version-min=${IOS_DEPLOYMENT_VERSION} !" "Makefile"
       fi
    else
       #OSX
       if [ "$ARCH" == "x86_64" ]; then
          ./Configure darwin64-x86_64-cc --openssldir="/tmp/openssl-${OPENSSL_VERSION}-${ARCH}" &> "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}.log"
-         perl -i -pe "s|^CFLAG= (.*)|CFLAG= -isysroot ${SDK} \$1|g" Makefile
+         sed -ie "s!^CFLAG=!CFLAG=-isysroot ${SDK} -mmacosx-version-min=${OSX_DEPLOYMENT_VERSION} !" "Makefile"
       elif [ "$ARCH" == "i386" ]; then
          ./Configure darwin-i386-cc --openssldir="/tmp/openssl-${OPENSSL_VERSION}-${ARCH}" &> "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}.log"
-         perl -i -pe "s|^CFLAG= (.*)|CFLAG= -isysroot ${SDK} \$1|g" Makefile
+         sed -ie "s!^CFLAG=!CFLAG=-isysroot ${SDK} -mmacosx-version-min=${OSX_DEPLOYMENT_VERSION} !" "Makefile"
       fi
    fi
 
