@@ -118,14 +118,16 @@ typedef enum {
 #pragma mark Policy
 
 /**
- * YapDatabase uses various optimizations to reduce overhead and memory footprint.
- * 
- * These optimizations are discussed extensively in the wiki article "Thread Safety":
- * https://github.com/yaptv/YapDatabase/wiki/Thread-Safety
- * 
+ * YapDatabase can use various optimizations to reduce overhead and memory footprint.
  * The policy properties allow you to opt in to these optimizations when ready.
- * 
+ *
  * The default value is YapDatabasePolicyContainment.
+ * 
+ * It is the slowest, but also the safest policy.
+ * The other policies require a little more work, and little deeper understanding.
+ * 
+ * These optimizations are discussed extensively in the wiki article "Performance Pro":
+ * https://github.com/yaptv/YapDatabase/wiki/Performance-Pro
 **/
 @property (atomic, assign, readwrite) YapDatabasePolicy objectPolicy;
 @property (atomic, assign, readwrite) YapDatabasePolicy metadataPolicy;
