@@ -9,21 +9,21 @@ set -x
 
 OPENSSL_VERSION="1.0.1e"
 
-DEVELOPER="/Applications/Xcode.app/Contents/Developer"
+DEVELOPER=$(xcode-select --print-path)
 
-IOS_SDK_VERSION="7.0"
+IOS_SDK_VERSION=$(xcrun --sdk iphoneos --show-sdk-version)
 IOS_DEPLOYMENT_VERSION="5.1.1"
-OSX_SDK_VERSION="10.9"
+OSX_SDK_VERSION=$(xcrun --sdk macosx --show-sdk-version)
 OSX_DEPLOYMENT_VERSION="10.8"
 
-IPHONEOS_PLATFORM="${DEVELOPER}/Platforms/iPhoneOS.platform"
-IPHONEOS_SDK="${IPHONEOS_PLATFORM}/Developer/SDKs/iPhoneOS${IOS_SDK_VERSION}.sdk"
+IPHONEOS_PLATFORM=$(xcrun --sdk iphoneos --show-sdk-platform-path)
+IPHONEOS_SDK=$(xcrun --sdk iphoneos --show-sdk-path)
 
-IPHONESIMULATOR_PLATFORM="${DEVELOPER}/Platforms/iPhoneSimulator.platform"
-IPHONESIMULATOR_SDK="${IPHONESIMULATOR_PLATFORM}/Developer/SDKs/iPhoneSimulator${IOS_SDK_VERSION}.sdk"
+IPHONESIMULATOR_PLATFORM=$(xcrun --sdk iphonesimulator --show-sdk-platform-path)
+IPHONESIMULATOR_SDK=$(xcrun --sdk iphonesimulator --show-sdk-path)
 
-OSX_PLATFORM="${DEVELOPER}/Platforms/MacOSX.platform"
-OSX_SDK="${OSX_PLATFORM}/Developer/SDKs/MacOSX${OSX_SDK_VERSION}.sdk"
+OSX_PLATFORM=$(xcrun --sdk macosx --show-sdk-platform-path)
+OSX_SDK=$(xcrun --sdk macosx --show-sdk-path)
 
 # Clean up whatever was left from our previous build
 
@@ -84,8 +84,8 @@ build()
 
    # Add arch to library
    if [ -f "lib-${TYPE}/libcrypto.a" ]; then
-      lipo "lib-${TYPE}/libcrypto.a" "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}/lib/libcrypto.a" -create -output "lib-${TYPE}/libcrypto.a"
-      lipo "lib-${TYPE}/libssl.a" "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}/lib/libssl.a" -create -output "lib-${TYPE}/libssl.a"
+      xcrun lipo "lib-${TYPE}/libcrypto.a" "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}/lib/libcrypto.a" -create -output "lib-${TYPE}/libcrypto.a"
+      xcrun lipo "lib-${TYPE}/libssl.a" "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}/lib/libssl.a" -create -output "lib-${TYPE}/libssl.a"
    else
       cp "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}/lib/libcrypto.a" "lib-${TYPE}/libcrypto.a"
       cp "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}/lib/libssl.a" "lib-${TYPE}/libssl.a"
