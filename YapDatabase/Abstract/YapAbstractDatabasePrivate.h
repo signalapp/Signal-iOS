@@ -198,6 +198,9 @@ extern NSString *const YapDatabaseNotificationKey;
 	id sharedKeySetForInternalChangeset;
 	id sharedKeySetForExternalChangeset;
 	
+	NSUInteger internalChangesetKeysCount; // For iOS 5 compatibility (NSDictionary sharedKeySet not supported)
+	NSUInteger externalChangesetKeysCount; // For iOS 5 compatibility (NSDictionary sharedKeySet not supported)
+	
 @public
 	__strong YapAbstractDatabase *abstractDatabase;
 	

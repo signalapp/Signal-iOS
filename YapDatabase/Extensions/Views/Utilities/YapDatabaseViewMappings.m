@@ -57,15 +57,27 @@
 		allGroups = [[NSArray alloc] initWithArray:inGroups copyItems:YES];
 		registeredViewName = [inRegisteredViewName copy];
 		
-		id sharedKeySet = [NSDictionary sharedKeySetForKeys:allGroups];
+		NSUInteger allGroupsCount = [allGroups count];
 		
-		visibleGroups = [[NSMutableArray alloc] initWithCapacity:[allGroups count]];
-		counts = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+		visibleGroups = [[NSMutableArray alloc] initWithCapacity:allGroupsCount];
 		
-		dynamicSections = [[NSMutableSet alloc] initWithCapacity:[allGroups count]];
-		reverse         = [[NSMutableSet alloc] initWithCapacity:[allGroups count]];
-		rangeOptions = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
-		dependencies = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+		dynamicSections = [[NSMutableSet alloc] initWithCapacity:allGroupsCount];
+		reverse         = [[NSMutableSet alloc] initWithCapacity:allGroupsCount];
+		
+		if ([[NSDictionary class] respondsToSelector:@selector(sharedKeySetForKeys:)])
+		{
+			id sharedKeySet = [NSDictionary sharedKeySetForKeys:allGroups];
+			
+			counts       = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+			rangeOptions = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+			dependencies = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+		}
+		else
+		{
+			counts       = [NSMutableDictionary dictionaryWithCapacity:allGroupsCount];
+			rangeOptions = [NSMutableDictionary dictionaryWithCapacity:allGroupsCount];
+			dependencies = [NSMutableDictionary dictionaryWithCapacity:allGroupsCount];
+		}
 		
 		snapshotOfLastUpdate = UINT64_MAX;
 	}

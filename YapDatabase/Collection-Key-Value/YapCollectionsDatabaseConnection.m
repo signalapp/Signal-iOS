@@ -887,10 +887,19 @@
 		[removedCollections count] > 0 || allKeysRemoved)
 	{
 		if (internalChangeset == nil)
-			internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
-		
+		{
+			if (sharedKeySetForInternalChangeset)
+				internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
+			else
+				internalChangeset = [NSMutableDictionary dictionaryWithCapacity:internalChangesetKeysCount];
+		}
 		if (externalChangeset == nil)
-			externalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
+		{
+			if (sharedKeySetForExternalChangeset)
+				externalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
+			else
+				externalChangeset = [NSMutableDictionary dictionaryWithCapacity:externalChangesetKeysCount];
+		}
 		
 		if ([objectChanges count] > 0)
 		{
@@ -979,6 +988,9 @@
 		id yapNull = [YapNull null];    // value == yapNull  : setPrimitive or containment policy
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
+		BOOL isPolicyContainment = (objectPolicy == YapDatabasePolicyContainment);
+		BOOL isPolicyShare       = (objectPolicy == YapDatabasePolicyShare);
+		
 		[changeset_objectChanges enumerateKeysAndObjectsUsingBlock:^(id key, id newObject, BOOL *stop) {
 			
 			__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
@@ -986,9 +998,25 @@
 			if ([objectCache containsKey:cacheKey])
 			{
 				if (newObject == yapNull)
+				{
 					[objectCache removeObjectForKey:cacheKey];
+				}
 				else if (newObject != yapTouch)
-					[objectCache setObject:newObject forKey:cacheKey];
+				{
+					if (isPolicyContainment) {
+						[objectCache removeObjectForKey:cacheKey];
+					}
+					else if (isPolicyShare) {
+						[objectCache setObject:newObject forKey:cacheKey];
+					}
+					else // if (isPolicyCopy)
+					{
+						if ([newObject conformsToProtocol:@protocol(NSCopying)])
+							[objectCache setObject:[newObject copy] forKey:cacheKey];
+						else
+							[objectCache removeObjectForKey:cacheKey];
+					}
+				}
 			}
 		}];
 	}
@@ -1026,14 +1054,33 @@
 		id yapNull = [YapNull null];    // value == yapNull  : setPrimitive or containment policy
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
+		BOOL isPolicyContainment = (objectPolicy == YapDatabasePolicyContainment);
+		BOOL isPolicyShare       = (objectPolicy == YapDatabasePolicyShare);
+		
 		for (YapCollectionKey *cacheKey in keysToUpdate)
 		{
 			id newObject = [changeset_objectChanges objectForKey:cacheKey];
 			
 			if (newObject == yapNull)
+			{
 				[objectCache removeObjectForKey:cacheKey];
+			}
 			else if (newObject != yapTouch)
-				[objectCache setObject:newObject forKey:cacheKey];
+			{
+				if (isPolicyContainment) {
+					[objectCache removeObjectForKey:cacheKey];
+				}
+				else if (isPolicyShare) {
+					[objectCache setObject:newObject forKey:cacheKey];
+				}
+				else // if (isPolicyCopy)
+				{
+					if ([newObject conformsToProtocol:@protocol(NSCopying)])
+						[objectCache setObject:[newObject copy] forKey:cacheKey];
+					else
+						[objectCache removeObjectForKey:cacheKey];
+				}
+			}
 		}
 	}
 	
@@ -1053,6 +1100,9 @@
 		id yapNull = [YapNull null];    // value == yapNull  : setPrimitive or containment policy
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
+		BOOL isPolicyContainment = (metadataPolicy == YapDatabasePolicyContainment);
+		BOOL isPolicyShare       = (metadataPolicy == YapDatabasePolicyShare);
+		
 		[changeset_metadataChanges enumerateKeysAndObjectsUsingBlock:^(id key, id newMetadata, BOOL *stop) {
 			
 			__unsafe_unretained YapCollectionKey *cacheKey = (YapCollectionKey *)key;
@@ -1060,9 +1110,25 @@
 			if ([metadataCache containsKey:cacheKey])
 			{
 				if (newMetadata == yapNull)
+				{
 					[metadataCache removeObjectForKey:cacheKey];
+				}
 				else if (newMetadata != yapTouch)
-					[metadataCache setObject:newMetadata forKey:cacheKey];
+				{
+					if (isPolicyContainment) {
+						[metadataCache removeObjectForKey:cacheKey];
+					}
+					else if (isPolicyShare) {
+						[metadataCache setObject:newMetadata forKey:cacheKey];
+					}
+					else // if (isPolicyCopy)
+					{
+						if ([newMetadata conformsToProtocol:@protocol(NSCopying)])
+							[metadataCache setObject:[newMetadata copy] forKey:cacheKey];
+						else
+							[metadataCache removeObjectForKey:cacheKey];
+					}
+				}
 			}
 		}];
 	}
@@ -1100,14 +1166,33 @@
 		id yapNull = [YapNull null];    // value == yapNull  : setPrimitive or containment policy
 		id yapTouch = [YapTouch touch]; // value == yapTouch : touchObjectForKey: was used
 		
+		BOOL isPolicyContainment = (metadataPolicy == YapDatabasePolicyContainment);
+		BOOL isPolicyShare       = (metadataPolicy == YapDatabasePolicyShare);
+		
 		for (YapCollectionKey *cacheKey in keysToUpdate)
 		{
 			id newMetadata = [changeset_metadataChanges objectForKey:cacheKey];
 			
 			if (newMetadata == yapNull)
+			{
 				[metadataCache removeObjectForKey:cacheKey];
+			}
 			else if (newMetadata != yapTouch)
-				[metadataCache setObject:newMetadata forKey:cacheKey];
+			{
+				if (isPolicyContainment) {
+					[metadataCache removeObjectForKey:cacheKey];
+				}
+				else if (isPolicyShare) {
+					[metadataCache setObject:newMetadata forKey:cacheKey];
+				}
+				else // if (isPolicyCopy)
+				{
+					if ([newMetadata conformsToProtocol:@protocol(NSCopying)])
+						[metadataCache setObject:[newMetadata copy] forKey:cacheKey];
+					else
+						[metadataCache removeObjectForKey:cacheKey];
+				}
+			}
 		}
 	}
 }

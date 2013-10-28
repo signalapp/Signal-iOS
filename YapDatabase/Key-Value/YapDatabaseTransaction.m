@@ -2352,20 +2352,46 @@
 	isMutated = YES;  // mutation during enumeration protection
 	key = [key copy]; // mutable string protection
 	
-	__unsafe_unretained id _object =
-	    (connection->objectPolicy == YapDatabasePolicyContainment) ? [YapNull null] : object;
+	id _object = nil;
+	if (connection->objectPolicy == YapDatabasePolicyContainment) {
+		_object = [YapNull null];
+	}
+	else if (connection->objectPolicy == YapDatabasePolicyShare) {
+		_object = object;
+	}
+	else // if (connection->objectPolicy == YapDatabasePolicyCopy)
+	{
+		if ([object conformsToProtocol:@protocol(NSCopying)])
+			_object = [object copy];
+		else
+			_object = [YapNull null];
+	}
 	
 	[connection->objectCache setObject:object forKey:key];
 	[connection->objectChanges setObject:_object forKey:key];
 	
-	if (metadata) {
-		__unsafe_unretained id _metadata =
-		    (connection->metadataPolicy == YapDatabasePolicyContainment) ? [YapNull null] : metadata;
+	if (metadata)
+	{
+		id _metadata = nil;
+		if (connection->metadataPolicy == YapDatabasePolicyContainment) {
+			_metadata = [YapNull null];
+		}
+		else if (connection->metadataPolicy == YapDatabasePolicyShare) {
+			_metadata = metadata;
+		}
+		else // if (connection->metadataPolicy = YapDatabasePolicyCopy)
+		{
+			if ([metadata conformsToProtocol:@protocol(NSCopying)])
+				_metadata = [metadata copy];
+			else
+				_metadata = [YapNull null];
+		}
 		
 		[connection->metadataCache setObject:metadata forKey:key];
 		[connection->metadataChanges setObject:_metadata forKey:key];
 	}
-	else {
+	else
+	{
 		[connection->metadataCache setObject:[YapNull null] forKey:key];
 		[connection->metadataChanges setObject:[YapNull null] forKey:key];
 	}
@@ -2428,14 +2454,28 @@
 	isMutated = YES;  // mutation during enumeration protection
 	key = [key copy]; // mutable string protection
 	
-	if (metadata) {
-		__unsafe_unretained id _metadata =
-		    (connection->metadataPolicy == YapDatabasePolicyContainment) ? [YapNull null] : metadata;
+	if (metadata)
+	{
+		id _metadata = nil;
+		if (connection->metadataPolicy == YapDatabasePolicyContainment) {
+			_metadata = [YapNull null];
+		}
+		else if (connection->metadataPolicy == YapDatabasePolicyShare) {
+			_metadata = metadata;
+		}
+		else // if (connection->metadataPolicy = YapDatabasePolicyCopy)
+		{
+			if ([metadata conformsToProtocol:@protocol(NSCopying)])
+				_metadata = [metadata copy];
+			else
+				_metadata = [YapNull null];
+		}
 		
 		[connection->metadataCache setObject:metadata forKey:key];
 		[connection->metadataChanges setObject:_metadata forKey:key];
 	}
-	else {
+	else
+	{
 		[connection->metadataCache setObject:[YapNull null] forKey:key];
 		[connection->metadataChanges setObject:[YapNull null] forKey:key];
 	}

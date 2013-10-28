@@ -26,8 +26,8 @@
 		metadataCacheEnabled = YES;
 		metadataCacheLimit = 500;
 		
-		objectPolicy = YapDatabasePolicyShare;
-		metadataPolicy = YapDatabasePolicyShare;
+		objectPolicy = YapDatabasePolicyContainment;
+		metadataPolicy = YapDatabasePolicyContainment;
 		
 		#if TARGET_OS_IPHONE
 		autoFlushMemoryLevel = YapDatabaseConnectionFlushMemoryLevelMild;
@@ -54,6 +54,30 @@
 	#endif
 	
 	return copy;
+}
+
+- (void)setObjectPolicy:(YapDatabasePolicy)newObjectPolicy
+{
+	// sanity check
+	switch (newObjectPolicy)
+	{
+		case YapDatabasePolicyContainment :
+		case YapDatabasePolicyShare       :
+		case YapDatabasePolicyCopy        : objectPolicy = newObjectPolicy; break;
+		default                           : objectPolicy = YapDatabasePolicyContainment; // revert to default
+	}
+}
+
+- (void)setMetadataPolicy:(YapDatabasePolicy)newMetadataPolicy
+{
+	// sanity check
+	switch (newMetadataPolicy)
+	{
+		case YapDatabasePolicyContainment :
+		case YapDatabasePolicyShare       :
+		case YapDatabasePolicyCopy        : metadataPolicy = newMetadataPolicy; break;
+		default                           : metadataPolicy = YapDatabasePolicyContainment; // revert to default
+	}
 }
 
 @end
