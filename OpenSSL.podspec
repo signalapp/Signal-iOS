@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
   
   s.ios.platform          = :ios, '5.1.1'
   s.ios.deployment_target = '5.1.1'
-  s.ios.public_header_files = 'include-ios/openssl/**/.h'
+  s.ios.public_header_files = 'include-ios/openssl/**/*.h'
   s.ios.preserve_paths      = 'lib-ios/libcrypto.a', 'lib-ios/libssl.a'
   s.ios.vendored_libraries  = 'lib-ios/libcrypto.a', 'lib-ios/libssl.a'
 
