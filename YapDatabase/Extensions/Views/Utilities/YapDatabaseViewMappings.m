@@ -64,20 +64,11 @@
 		dynamicSections = [[NSMutableSet alloc] initWithCapacity:allGroupsCount];
 		reverse         = [[NSMutableSet alloc] initWithCapacity:allGroupsCount];
 		
-		if ([[NSDictionary class] respondsToSelector:@selector(sharedKeySetForKeys:)])
-		{
-			id sharedKeySet = [NSDictionary sharedKeySetForKeys:allGroups];
-			
-			counts       = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
-			rangeOptions = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
-			dependencies = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
-		}
-		else
-		{
-			counts       = [NSMutableDictionary dictionaryWithCapacity:allGroupsCount];
-			rangeOptions = [NSMutableDictionary dictionaryWithCapacity:allGroupsCount];
-			dependencies = [NSMutableDictionary dictionaryWithCapacity:allGroupsCount];
-		}
+		id sharedKeySet = [NSDictionary sharedKeySetForKeys:allGroups];
+		
+		counts       = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+		rangeOptions = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+		dependencies = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
 		
 		snapshotOfLastUpdate = UINT64_MAX;
 	}
