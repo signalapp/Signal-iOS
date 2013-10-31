@@ -1072,7 +1072,7 @@
 	if (key == nil) return;
 	if (block == NULL) return;
 	
-	sqlite3_stmt *statement = [connection enumerateCollectionsStatement];
+	sqlite3_stmt *statement = [connection enumerateCollectionsForKeyStatement];
 	if (statement == NULL) return;
 	
 	isMutated = NO; // mutation during enumeration protection
