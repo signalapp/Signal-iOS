@@ -1060,13 +1060,7 @@
 	
 	for (NSString *group in visibleGroups)
 	{
-		NSUInteger count;
-		
-		YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
-		if (rangeOpts)
-			count = rangeOpts.length;
-		else
-			count = [[counts objectForKey:group] unsignedIntegerValue];
+		NSUInteger count = [self visibleCountForGroup:group];
 		
 		if ((row < (offset + count)) && (count > 0))
 		{
@@ -1083,6 +1077,41 @@
 	
 	if (groupPtr) *groupPtr = nil;
 	if (indexPtr) *indexPtr = 0;
+	return NO;
+}
+
+/**
+ * This method is useful if you ever want to display multiple groups in a tableView,
+ * but you want to display the groups without using sections.
+**/
+- (BOOL)getUnSectionedRow:(NSUInteger *)rowPtr forIndex:(NSUInteger)index inGroup:(NSString *)group
+{
+	NSUInteger groupOffset = 0;
+	
+	for (NSString *visibleGroup in visibleGroups)
+	{
+		if ([visibleGroup isEqualToString:group])
+		{
+			NSUInteger row = [self rowForIndex:index inGroup:group];
+			
+			if (row == NSNotFound)
+			{
+				if (rowPtr) *rowPtr = 0;
+				return NO;
+			}
+			else
+			{
+				if (rowPtr) *rowPtr = (groupOffset + row);
+				return NO;
+			}
+		}
+		else
+		{
+			groupOffset += [self visibleCountForGroup:visibleGroup];
+		}
+	}
+	
+	if (rowPtr) *rowPtr = 0;
 	return NO;
 }
 

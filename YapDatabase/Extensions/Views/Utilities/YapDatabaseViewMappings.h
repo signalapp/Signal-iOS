@@ -667,4 +667,10 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
 **/
 - (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forUnSectionedRow:(NSUInteger)row;
 
+/**
+ * This method is useful if you ever want to display multiple groups in a tableView,
+ * but you want to display the groups without using sections.
+**/
+- (BOOL)getUnSectionedRow:(NSUInteger *)rowPtr forIndex:(NSUInteger)index inGroup:(NSString *)group;
+
 @end
