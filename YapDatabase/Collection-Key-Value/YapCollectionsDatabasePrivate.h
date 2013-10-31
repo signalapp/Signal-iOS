@@ -59,6 +59,7 @@
 - (sqlite3_stmt *)removeCollectionStatement;
 - (sqlite3_stmt *)removeAllStatement;
 - (sqlite3_stmt *)enumerateCollectionsStatement;
+- (sqlite3_stmt *)enumerateCollectionsForKeyStatement;
 - (sqlite3_stmt *)enumerateKeysInCollectionStatement;
 - (sqlite3_stmt *)enumerateKeysInAllCollectionsStatement;
 - (sqlite3_stmt *)enumerateKeysAndMetadataInCollectionStatement;

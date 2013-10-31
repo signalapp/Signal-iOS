@@ -50,6 +50,7 @@
 	sqlite3_stmt *removeCollectionStatement;
 	sqlite3_stmt *removeAllStatement;
 	sqlite3_stmt *enumerateCollectionsStatement;
+	sqlite3_stmt *enumerateCollectionsForKeyStatement;
 	sqlite3_stmt *enumerateKeysInCollectionStatement;
 	sqlite3_stmt *enumerateKeysInAllCollectionsStatement;
 	sqlite3_stmt *enumerateKeysAndMetadataInCollectionStatement;
@@ -110,6 +111,7 @@
 	sqlite_finalize_null(&removeCollectionStatement);
 	sqlite_finalize_null(&removeAllStatement);
 	sqlite_finalize_null(&enumerateCollectionsStatement);
+	sqlite_finalize_null(&enumerateCollectionsForKeyStatement);
 	sqlite_finalize_null(&enumerateKeysInCollectionStatement);
 	sqlite_finalize_null(&enumerateKeysInAllCollectionsStatement);
 	sqlite_finalize_null(&enumerateKeysAndMetadataInCollectionStatement);
@@ -142,6 +144,7 @@
 		sqlite_finalize_null(&removeCollectionStatement);
 		sqlite_finalize_null(&removeAllStatement);
 		sqlite_finalize_null(&enumerateCollectionsStatement);
+		sqlite_finalize_null(&enumerateCollectionsForKeyStatement);
 		sqlite_finalize_null(&enumerateKeysInCollectionStatement);
 		sqlite_finalize_null(&enumerateKeysInAllCollectionsStatement);
 		sqlite_finalize_null(&enumerateKeysAndMetadataInCollectionStatement);
@@ -487,6 +490,23 @@
 	}
 	
 	return enumerateCollectionsStatement;
+}
+
+- (sqlite3_stmt *)enumerateCollectionsForKeyStatement
+{
+	if (enumerateCollectionsForKeyStatement == NULL)
+	{
+		char *stmt = "SELECT \"collection\" FROM \"database2\" WHERE \"key\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateCollectionsForKeyStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return enumerateCollectionsForKeyStatement;
 }
 
 - (sqlite3_stmt *)enumerateKeysInCollectionStatement

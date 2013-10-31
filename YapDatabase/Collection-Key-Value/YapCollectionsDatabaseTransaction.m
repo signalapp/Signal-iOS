@@ -152,18 +152,22 @@
 	
 	NSMutableArray *result = [NSMutableArray array];
 	
-	while (sqlite3_step(statement) == SQLITE_ROW)
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
 	{
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		const unsigned char *_collection = sqlite3_column_text(statement, 0);
-		int _collectionSize = sqlite3_column_bytes(statement, 0);
-		
-		NSString *collection =
-		    [[NSString alloc] initWithBytes:_collection length:_collectionSize encoding:NSUTF8StringEncoding];
-		
-		[result addObject:collection];
+		do
+		{
+			const unsigned char *text = sqlite3_column_text(statement, 0);
+			int textSize = sqlite3_column_bytes(statement, 0);
+			
+			NSString *collection = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			
+			[result addObject:collection];
+			
+		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
 	sqlite3_reset(statement);
@@ -1003,6 +1007,116 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Enumerate
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Fast enumeration over all the collections in the database.
+ * 
+ * This uses a "SELECT collection FROM database" operation,
+ * and then steps over the results invoking the given block handler.
+**/
+- (void)enumerateCollectionsUsingBlock:(void (^)(NSString *collection, BOOL *stop))block
+{
+	if (block == NULL) return;
+	
+	sqlite3_stmt *statement = [connection enumerateCollectionsStatement];
+	if (statement == NULL) return;
+	
+	isMutated = NO; // mutation during enumeration protection
+	BOOL stop = NO;
+	
+	// SELECT DISTINCT "collection" FROM "database2";
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		if (connection->needsMarkSqlLevelSharedReadLock)
+			[connection markSqlLevelSharedReadLockAcquired];
+		
+		do
+		{
+			const unsigned char *text = sqlite3_column_text(statement, 0);
+			int textSize = sqlite3_column_bytes(statement, 0);
+			
+			NSString *collection = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			
+			block(collection, &stop);
+			
+			if (stop || isMutated) break;
+			
+		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
+	}
+	
+	if ((status != SQLITE_DONE) && !stop && !isMutated)
+	{
+		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
+	}
+	
+	sqlite3_reset(statement);
+	
+	if (isMutated && !stop)
+	{
+		@throw [self mutationDuringEnumerationException];
+	}
+}
+
+/**
+ * This method is rarely needed, but may be helpful in certain situations.
+ * 
+ * This method may be used if you have the key, but not the collection for a particular item.
+ * Please note that this is not the ideal situation.
+ * 
+ * Since there may be numerous collections for a given key, this method enumerates all possible collections.
+**/
+- (void)enumerateCollectionsForKey:(NSString *)key usingBlock:(void (^)(NSString *collection, BOOL *stop))block
+{
+	if (key == nil) return;
+	if (block == NULL) return;
+	
+	sqlite3_stmt *statement = [connection enumerateCollectionsStatement];
+	if (statement == NULL) return;
+	
+	isMutated = NO; // mutation during enumeration protection
+	BOOL stop = NO;
+	
+	// SELECT "collection" FROM "database2" WHERE "key" = ?;
+	
+	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+	sqlite3_bind_text(statement, 1, _key.str, _key.length, SQLITE_STATIC);
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		if (connection->needsMarkSqlLevelSharedReadLock)
+			[connection markSqlLevelSharedReadLockAcquired];
+		
+		do
+		{
+			const unsigned char *text = sqlite3_column_text(statement, 0);
+			int textSize = sqlite3_column_bytes(statement, 0);
+			
+			NSString *collection = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			
+			block(collection, &stop);
+			
+			if (stop || isMutated) break;
+			
+		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
+	}
+	
+	if ((status != SQLITE_DONE) && !stop && !isMutated)
+	{
+		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_key);
+	
+	if (isMutated && !stop)
+	{
+		@throw [self mutationDuringEnumerationException];
+	}
+}
 
 /**
  * Fast enumeration over all keys in the given collection.
