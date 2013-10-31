@@ -458,60 +458,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * The visibleGroups property returns the current sections setup.
- * That is, it only contains the visible groups that are being represented as sections in the view.
- *
- * If all sections are static, then visibleGroups will always be the same as allGroups.
- * However, if one or more sections are dynamic, then the visible groups may be a subset of allGroups.
- *
- * Dynamic groups/sections automatically "disappear" if/when they become empty.
-**/
-- (NSArray *)visibleGroups
-{
-	return [visibleGroups copy];
-}
-
-/**
- * Returns the group for the given section.
- * This method properly takes into account dynamic groups.
- *
- * If the section is out-of-bounds, returns nil.
-**/
-- (NSString *)groupForSection:(NSUInteger)section
-{
-	if (section < [visibleGroups count])
-		return [visibleGroups objectAtIndex:section];
-	else
-		return nil;
-}
-
-/**
- * Returns the visible section number for the visible group.
- * If the group is NOT visible, returns NSNotFound.
- *
- * If a group is empty (numberOfItemsInGroup == 0), AND the group is dynamic, then it becomes invisible.
- * Only in this case would this method return NSNotFound.
-**/
-- (NSUInteger)sectionForGroup:(NSString *)group
-{
-	NSUInteger section = 0;
-	for (NSString *visibleGroup in visibleGroups)
-	{
-		if ([visibleGroup isEqualToString:group])
-		{
-			return section;
-		}
-		section++;
-	}
-	
-	return NSNotFound;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Getters + DataSource
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
  * Returns the actual number of visible sections.
  * 
  * This number may be less than the original count of groups passed in the init method.
@@ -555,106 +501,43 @@
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Getters + Total
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 /**
- * Returns the total number of items by summing up the totals across all groups.
+ * The visibleGroups property returns the current sections setup.
+ * That is, it only contains the visible groups that are being represented as sections in the view.
+ *
+ * If all sections are static, then visibleGroups will always be the same as allGroups.
+ * However, if one or more sections are dynamic, then the visible groups may be a subset of allGroups.
+ *
+ * Dynamic groups/sections automatically "disappear" if/when they become empty.
 **/
-- (NSUInteger)numberOfItemsInAllGroups
+- (NSArray *)visibleGroups
 {
-	if (snapshotOfLastUpdate == UINT64_MAX) return 0;
-	
-	NSUInteger total = 0;
-	
-	for (NSString *group in visibleGroups)
-	{
-		YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
-		if (rangeOpts)
-		{
-			total += rangeOpts.length;
-		}
-		else
-		{
-			total += [[counts objectForKey:group] unsignedIntegerValue];
-		}
-	}
-	
-	return total;
-}
-
-/**
- * This method is useful if you ever want to display multiple groups in a tableView,
- * but you want to display the groups without using sections.
- * 
- * For example, say you have a view that sorts users in an address book.
- * The view uses groups based on the first letter of the user's name.
- * But you want to display the address book in a tableView without using sections.
- * 
- * view = @{
- *   @"A" = @[ @"Alice" ]
- *   @"B" = @[ @"Barney", @"Bob" ]
- *   @"C" = @[ @"Chris" ]
- * }
- * 
- * NSString *group = nil;
- * NSUInteger index = 0;
- *
- * [mappings getGroup:&group index:&index forUnSectionedRow:2];
- * 
- * // group = @"B"
- * // index = 1    (Bob)
- *
- * [mappings getGroup:&group index:&index forUnSectionedRow:3];
- *
- * // group = @"C"
- * // index = 0    (Chris)
-**/
-- (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forUnSectionedRow:(NSUInteger)row
-{
-	if (snapshotOfLastUpdate == UINT64_MAX)
-	{
-		if (groupPtr) *groupPtr = nil;
-		if (indexPtr) *indexPtr = 0;
-		return NO;
-	}
-	
-	NSUInteger offset = 0;
-	
-	for (NSString *group in visibleGroups)
-	{
-		NSUInteger count;
-		
-		YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
-		if (rangeOpts)
-			count = rangeOpts.length;
-		else
-			count = [[counts objectForKey:group] unsignedIntegerValue];
-		
-		if ((row < (offset + count)) && (count > 0))
-		{
-			NSUInteger index = [self indexForRow:(row - offset) inGroup:group];
-			
-			if (groupPtr) *groupPtr = group;
-			if (indexPtr) *indexPtr = index;
-			
-			return YES;
-		}
-		
-		offset += count;
-	}
-	
-	if (groupPtr) *groupPtr = nil;
-	if (indexPtr) *indexPtr = 0;
-	return NO;
+	return [visibleGroups copy];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Getters + RangeOptions
+#pragma mark Mapping UI -> View
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * Maps from a section (in the UI) to a group (in the View).
+ *
+ * Returns the group for the given section.
+ * This method properly takes into account dynamic groups.
+ *
+ * If the section is out-of-bounds, returns nil.
+**/
+- (NSString *)groupForSection:(NSUInteger)section
+{
+	if (section < [visibleGroups count])
+		return [visibleGroups objectAtIndex:section];
+	else
+		return nil;
+}
+
+/**
+ * Maps from an indexPath (in the UI) to a group & index (within the View).
+ *
  * When using rangeOptions, the rows in your tableView/collectionView may not
  * directly match the index in the corresponding view & group.
  * 
@@ -687,6 +570,14 @@
 **/
 - (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forIndexPath:(NSIndexPath *)indexPath
 {
+	if (indexPath == nil)
+	{
+		if (groupPtr) *groupPtr = nil;
+		if (indexPtr) *indexPtr = NSNotFound;
+		
+		return NO;
+	}
+	
   #if TARGET_OS_IPHONE
 	NSUInteger section = indexPath.section;
 	NSUInteger row = indexPath.row;
@@ -695,6 +586,47 @@
 	NSUInteger row = [indexPath indexAtPosition:1];
   #endif
 	
+	return [self getGroup:groupPtr index:indexPtr forRow:row inSection:section];
+}
+
+/**
+ * Maps from an indexPath (in the UI) to a group & index (within the View).
+ *
+ * When your UI doesn't exactly match up with the View in the database, this method does all the math for you.
+ *
+ * For example, if using rangeOptions, the rows in your tableView/collectionView may not
+ * directly match the index in the corresponding view & group (in the database).
+ * 
+ * For example, say a view in the database has a group named "elders" and contains 100 items.
+ * A fixed range is used to display only the last 20 items in the "elders" group (the 20 oldest elders).
+ * Thus row zero in the tableView is actually index 80 in the "elders" group.
+ *
+ * So you pass in an indexPath or row & section from the UI perspective,
+ * and it spits out the corresponding index within the database view's group.
+ * 
+ * Code sample:
+ * 
+ * - (UITableViewCell *)tableView:(UITableView *)sender cellForRowAtIndexPath:(NSIndexPath *)indexPath
+ * {
+ *     NSString *group = nil;
+ *     NSUInteger groupIndex = 0;
+ *
+ *     [mappings getGroup:&group index:&groupIndex forIndexPath:indexPath];
+ *
+ *     __block Elder *elder = nil;
+ *     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+ *
+ *         elder = [[transaction extension:@"elders"] objectAtIndex:groupIndex inGroup:group];
+ *     }];
+ *     
+ *     // configure and return cell...
+ * }
+**/
+- (BOOL)getGroup:(NSString **)groupPtr
+           index:(NSUInteger *)indexPtr
+          forRow:(NSUInteger)row
+       inSection:(NSUInteger)section
+{
 	NSString *group = [self groupForSection:section];
 	if (group == nil)
 	{
@@ -713,20 +645,9 @@
 }
 
 /**
- * When using rangeOptions, the rows in your tableView/collectionView may not
- * directly match the index in the corresponding view & group.
- *
- * For example, say a view has a group named "elders" and contains 100 items.
- * A fixed range is used to display only the last 20 items in the "elders" group (the 20 oldest elders).
- * Thus row zero in the tableView is actually index 80 in the "elders" group.
- *
- * This method maps from a row in the UI to the corresponding index within the view.
- *
- * That is, you pass in a row from the UI perspective,
- * and it spits out the corresponding index within the view's group.
- *
- * So from the example above, you might pass in 0, and it would return 80.
- *
+ * Maps from a row & section (in the UI) to an index (within the View).
+ * 
+ * This method is shorthand for getGroup:index:forIndexPath: when you already know the group.
  * @see getGroup:index:forIndexPath:
 **/
 - (NSUInteger)indexForRow:(NSUInteger)row inSection:(NSUInteger)section
@@ -735,57 +656,228 @@
 }
 
 /**
- * When using rangeOptions, the rows in your tableView/collectionView may not
- * directly match the index in the corresponding view & group.
- *
- * For example, say a view has a group named "elders" and contains 100 items.
- * A fixed range is used to display only the last 20 items in the "elders" group (the 20 oldest elders).
- * Thus row zero in the tableView is actually index 80 in the "elders" group.
- *
- * This method maps from a row in the UI to the corresponding index within the view.
- *
- * That is, you pass in a row from the UI perspective,
- * and it spits out the corresponding index within the view's group.
- *
- * So from the example above, you might pass in 0, and it would return 80.
- *
+ * Maps from a row & section (in the UI) to an index (within the View).
+ * 
+ * This method is shorthand for getGroup:index:forIndexPath: when you already know the group.
  * @see getGroup:index:forIndexPath:
 **/
 - (NSUInteger)indexForRow:(NSUInteger)row inGroup:(NSString *)group
 {
 	if (group == nil) return NSNotFound;
 	
+	NSUInteger visibleCount = [self visibleCountForGroup:group];
+	if (row >= visibleCount)
+		return NSNotFound;
+	
+	BOOL needsReverse = [reverse containsObject:group];
+	
 	YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
 	if (rangeOpts)
 	{
 		if (rangeOpts.pin == YapDatabaseViewBeginning)
 		{
-			// Offset is from beginning (index zero)
+			// rangeOpts.offset is from beginning (index zero)
 			
-			return (rangeOpts.offset + row);
-		}
-		else // if (rangeOpts.pin == YapDatabaseViewEnd)
-		{
-			// Offset is from end (index last)
-			
-			NSUInteger count = [self fullCountForGroup:group];
-			NSUInteger reverseOffset = rangeOpts.offset + rangeOpts.length;
-			
-			if (reverseOffset <= count)
+			if (needsReverse)
 			{
-				return ((count - reverseOffset) + row);
+				NSUInteger upperBound = rangeOpts.offset + rangeOpts.length - 1;
+				return upperBound - row;
 			}
 			else
 			{
-				return NSNotFound;
+				return rangeOpts.offset + row;
+			}
+		}
+		else // if (rangeOpts.pin == YapDatabaseViewEnd)
+		{
+			// rangeOpts.offset is from end (index last)
+			
+			NSUInteger fullCount = [self fullCountForGroup:group];
+			
+			if (needsReverse)
+			{
+				NSUInteger upperBound = fullCount - rangeOpts.offset - 1;
+				return upperBound - row;
+			}
+			else
+			{
+				NSUInteger lowerBound = fullCount - rangeOpts.offset - rangeOpts.length;
+				return lowerBound + row;
 			}
 		}
 	}
 	else
 	{
-		return row;
+		if (needsReverse)
+		{
+			NSUInteger fullCount = [self fullCountForGroup:group];
+			return fullCount - row - 1;
+		}
+		else
+		{
+			return row;
+		}
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Mapping View -> UI
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Maps from a group (in the View) to the corresponding section (in the UI).
+ *
+ * Returns the visible section number for the visible group.
+ * If the group is NOT visible, returns NSNotFound.
+ * If the group is NOT valid, returns NSNotFound.
+ **/
+- (NSUInteger)sectionForGroup:(NSString *)group
+{
+	NSUInteger section = 0;
+	for (NSString *visibleGroup in visibleGroups)
+	{
+		if ([visibleGroup isEqualToString:group])
+		{
+			return section;
+		}
+		section++;
+	}
+	
+	return NSNotFound;
+}
+
+/**
+ * Maps from an index & group (in the View) to the corresponding row & section (in the UI).
+ * 
+ * Returns YES if the proper row & section were found.
+ * Returns NO if the given index is NOT visible (or out-of-bounds).
+ * Returns NO if the given group is NOT visible (or invalid).
+**/
+- (BOOL)getRow:(NSUInteger *)rowPtr
+       section:(NSUInteger *)sectionPtr
+      forIndex:(NSUInteger)index
+       inGroup:(NSString *)group
+{
+	NSUInteger section = [self sectionForGroup:group];
+	if (section == NSNotFound)
+	{
+		if (rowPtr) *rowPtr = 0;
+		if (sectionPtr) *sectionPtr = 0;
+		
+		return NO;
+	}
+	
+	NSUInteger row = [self rowForIndex:index inGroup:group];
+	if (row == NSNotFound)
+	{
+		if (rowPtr) *rowPtr = 0;
+		if (sectionPtr) *sectionPtr = 0;
+		
+		return NO;
+	}
+	
+	if (rowPtr) *rowPtr = row;
+	if (sectionPtr) *sectionPtr = section;
+	
+	return YES;
+}
+
+/**
+ * Maps from an index & group (in the View) to the corresponding indexPath (in the UI).
+ * 
+ * Returns the indexPath with the proper section and row.
+ * Returns nil if the group is NOT visible (or invalid).
+ * Returns nil if the index is NOT visible (or out-of-bounds).
+**/
+- (NSIndexPath *)indexPathForIndex:(NSUInteger)index inGroup:(NSString *)group
+{
+	NSUInteger row = 0;
+	NSUInteger section = 0;
+	
+	if ([self getRow:&row section:&section forIndex:index inGroup:group])
+	{
+	  #if TARGET_OS_IPHONE
+		return [NSIndexPath indexPathForRow:row inSection:section];
+	  #else
+		NSUInteger indexes[] = {section, row};
+		return [NSIndexPath indexPathWithIndexes:indexes length:2];
+	  #endif
+	}
+	else
+	{
+		return nil;
+	}
+}
+
+/**
+ * Maps from an index & group (in the View) to the corresponding row (in the UI).
+ * 
+ * This method is shorthand for getRow:section:forIndex:inGroup: when you already know the section.
+ * @see getRow:section:forIndex:inGroup:
+**/
+- (NSUInteger)rowForIndex:(NSUInteger)index inGroup:(NSString *)group
+{
+	if (group == nil) return NSNotFound;
+	
+	NSUInteger fullCount = [self fullCountForGroup:group];
+	if (index >= fullCount)
+		return NSNotFound;
+	
+	BOOL needsReverse = [reverse containsObject:group];
+	
+	YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+	if (rangeOpts)
+	{
+		if (rangeOpts.pin == YapDatabaseViewBeginning)
+		{
+			// rangeOpts.offset is from beginning (index zero)
+			
+			if (index < rangeOpts.offset)
+				return NSNotFound;
+			
+			NSUInteger row = index - rangeOpts.offset;
+			
+			NSUInteger visibleCount = [self visibleCountForGroup:group];
+			if (row >= visibleCount)
+				return NSNotFound;
+			
+			if (needsReverse)
+				return visibleCount - row - 1;
+			else
+				return row;
+		}
+		else // if (rangeOpts.pin == YapDatabaseViewEnd)
+		{
+			// rangeOpts.offset is from end (index last)
+			
+			NSUInteger visibleCount = [self visibleCountForGroup:group];
+			
+			NSUInteger upperBound = fullCount - rangeOpts.offset - 1;
+			if (index > upperBound)
+				return NSNotFound;
+			
+			NSUInteger lowerBound = upperBound - visibleCount + 1;
+			if (index < lowerBound)
+				return NSNotFound;
+			
+			if (needsReverse)
+				return upperBound - index;
+			else
+				return index - lowerBound;
+		}
+	}
+	else
+	{
+		if (needsReverse)
+			return fullCount - index - 1; // we know fullCount > 0
+		else
+			return index;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Getters + RangeOptions
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * The YapDatabaseViewRangePosition struct represents the range window within the full group.
@@ -897,6 +989,101 @@
 	}
 	
 	return rangePosition;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Getters + Total
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Returns the total number of items by summing up the totals across all groups.
+**/
+- (NSUInteger)numberOfItemsInAllGroups
+{
+	if (snapshotOfLastUpdate == UINT64_MAX) return 0;
+	
+	NSUInteger total = 0;
+	
+	for (NSString *group in visibleGroups)
+	{
+		YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+		if (rangeOpts)
+		{
+			total += rangeOpts.length;
+		}
+		else
+		{
+			total += [[counts objectForKey:group] unsignedIntegerValue];
+		}
+	}
+	
+	return total;
+}
+
+/**
+ * This method is useful if you ever want to display multiple groups in a tableView,
+ * but you want to display the groups without using sections.
+ * 
+ * For example, say you have a view that sorts users in an address book.
+ * The view uses groups based on the first letter of the user's name.
+ * But you want to display the address book in a tableView without using sections.
+ * 
+ * view = @{
+ *   @"A" = @[ @"Alice" ]
+ *   @"B" = @[ @"Barney", @"Bob" ]
+ *   @"C" = @[ @"Chris" ]
+ * }
+ * 
+ * NSString *group = nil;
+ * NSUInteger index = 0;
+ *
+ * [mappings getGroup:&group index:&index forUnSectionedRow:2];
+ * 
+ * // group = @"B"
+ * // index = 1    (Bob)
+ *
+ * [mappings getGroup:&group index:&index forUnSectionedRow:3];
+ *
+ * // group = @"C"
+ * // index = 0    (Chris)
+**/
+- (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forUnSectionedRow:(NSUInteger)row
+{
+	if (snapshotOfLastUpdate == UINT64_MAX)
+	{
+		if (groupPtr) *groupPtr = nil;
+		if (indexPtr) *indexPtr = 0;
+		return NO;
+	}
+	
+	NSUInteger offset = 0;
+	
+	for (NSString *group in visibleGroups)
+	{
+		NSUInteger count;
+		
+		YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+		if (rangeOpts)
+			count = rangeOpts.length;
+		else
+			count = [[counts objectForKey:group] unsignedIntegerValue];
+		
+		if ((row < (offset + count)) && (count > 0))
+		{
+			NSUInteger index = [self indexForRow:(row - offset) inGroup:group];
+			
+			if (groupPtr) *groupPtr = group;
+			if (indexPtr) *indexPtr = index;
+			
+			return YES;
+		}
+		
+		offset += count;
+	}
+	
+	if (groupPtr) *groupPtr = nil;
+	if (indexPtr) *indexPtr = 0;
+	return NO;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

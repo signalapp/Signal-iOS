@@ -4825,4 +4825,530 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	STAssertTrue(RowOp(rowChanges, 0).originalIndex == 4, @"");
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+#pragma mark Getters
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test_getter_1
+{
+	YapDatabaseViewMappings *mappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	
+	[mappings updateWithCounts:@{ @"":@(3) }];
+	
+	// Verify: UI -> View
+	
+	NSUInteger index;
+	
+	index = [mappings indexForRow:0 inSection:0];
+	STAssertTrue(index == 0, @"Expected 0, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:1 inSection:0];
+	STAssertTrue(index == 1, @"Expected 1, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:2 inSection:0];
+	STAssertTrue(index == 2, @"Expected 2, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:3 inSection:0];
+	STAssertTrue(index == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)index);
+	
+	// Verify: View -> UI
+	
+	NSUInteger row;
+	
+	row = [mappings rowForIndex:0 inGroup:@""];
+	STAssertTrue(row == 0, @"Expected 0, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:1 inGroup:@""];
+	STAssertTrue(row == 1, @"Expected 1, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:2 inGroup:@""];
+	STAssertTrue(row == 2, @"Expected 2, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:3 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+}
+
+- (void)test_getter_2
+{
+	YapDatabaseViewMappings *mappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setIsReversed:YES forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(4) }];
+	
+	// Verify: UI -> View
+	
+	NSUInteger index;
+	
+	index = [mappings indexForRow:0 inSection:0];
+	STAssertTrue(index == 3, @"Expected 3, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:1 inSection:0];
+	STAssertTrue(index == 2, @"Expected 2, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:2 inSection:0];
+	STAssertTrue(index == 1, @"Expected 1, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:3 inSection:0];
+	STAssertTrue(index == 0, @"Expected 0, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:4 inSection:0];
+	STAssertTrue(index == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)index);
+	
+	// Verify: View -> UI
+	
+	NSUInteger row;
+	
+	row = [mappings rowForIndex:0 inGroup:@""];
+	STAssertTrue(row == 3, @"Expected 3, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:1 inGroup:@""];
+	STAssertTrue(row == 2, @"Expected 2, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:2 inGroup:@""];
+	STAssertTrue(row == 1, @"Expected 1, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:3 inGroup:@""];
+	STAssertTrue(row == 0, @"Expected 0, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:4 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+}
+
+- (void)test_getter_3
+{
+	YapDatabaseViewRangeOptions *rangeOpts =
+	    [YapDatabaseViewRangeOptions fixedRangeWithLength:4 offset:0 from:YapDatabaseViewBeginning];
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(5) }];
+	
+	// Verify: UI -> View
+	
+	NSUInteger index;
+	
+	index = [mappings indexForRow:0 inSection:0];
+	STAssertTrue(index == 0, @"Expected 0, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:1 inSection:0];
+	STAssertTrue(index == 1, @"Expected 1, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:2 inSection:0];
+	STAssertTrue(index == 2, @"Expected 2, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:3 inSection:0];
+	STAssertTrue(index == 3, @"Expected 3, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:4 inSection:0];
+	STAssertTrue(index == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)index);
+	
+	// Verify: View -> UI
+	
+	NSUInteger row;
+	
+	row = [mappings rowForIndex:0 inGroup:@""];
+	STAssertTrue(row == 0, @"Expected 0, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:1 inGroup:@""];
+	STAssertTrue(row == 1, @"Expected 1, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:2 inGroup:@""];
+	STAssertTrue(row == 2, @"Expected 2, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:3 inGroup:@""];
+	STAssertTrue(row == 3, @"Expected 3, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:4 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:5 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+}
+
+- (void)test_getter_4
+{
+	YapDatabaseViewRangeOptions *rangeOpts =
+	    [YapDatabaseViewRangeOptions fixedRangeWithLength:4 offset:1 from:YapDatabaseViewBeginning];
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(6) }];
+	
+	// Verify: UI -> View
+	
+	NSUInteger index;
+	
+	index = [mappings indexForRow:0 inSection:0];
+	STAssertTrue(index == 1, @"Expected 1, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:1 inSection:0];
+	STAssertTrue(index == 2, @"Expected 2, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:2 inSection:0];
+	STAssertTrue(index == 3, @"Expected 3, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:3 inSection:0];
+	STAssertTrue(index == 4, @"Expected 4, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:4 inSection:0];
+	STAssertTrue(index == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)index);
+	
+	// Verify: View -> UI
+	
+	NSUInteger row;
+	
+	row = [mappings rowForIndex:0 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:1 inGroup:@""];
+	STAssertTrue(row == 0, @"Expected 0, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:2 inGroup:@""];
+	STAssertTrue(row == 1, @"Expected 1, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:3 inGroup:@""];
+	STAssertTrue(row == 2, @"Expected 2, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:4 inGroup:@""];
+	STAssertTrue(row == 3, @"Expected 3, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:5 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:6 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+}
+
+- (void)test_getter_5
+{
+	YapDatabaseViewRangeOptions *rangeOpts =
+	    [YapDatabaseViewRangeOptions fixedRangeWithLength:4 offset:0 from:YapDatabaseViewEnd];
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(5) }];
+	
+	// Verify: UI -> View
+	
+	NSUInteger index;
+	
+	index = [mappings indexForRow:0 inSection:0];
+	STAssertTrue(index == 1, @"Expected 1, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:1 inSection:0];
+	STAssertTrue(index == 2, @"Expected 2, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:2 inSection:0];
+	STAssertTrue(index == 3, @"Expected 3, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:3 inSection:0];
+	STAssertTrue(index == 4, @"Expected 4, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:4 inSection:0];
+	STAssertTrue(index == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)index);
+	
+	// Verify: View -> UI
+	
+	NSUInteger row;
+	
+	row = [mappings rowForIndex:0 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:1 inGroup:@""];
+	STAssertTrue(row == 0, @"Expected 0, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:2 inGroup:@""];
+	STAssertTrue(row == 1, @"Expected 1, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:3 inGroup:@""];
+	STAssertTrue(row == 2, @"Expected 2, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:4 inGroup:@""];
+	STAssertTrue(row == 3, @"Expected 3, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:5 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+}
+
+- (void)test_getter_6
+{
+	YapDatabaseViewRangeOptions *rangeOpts =
+	    [YapDatabaseViewRangeOptions fixedRangeWithLength:4 offset:1 from:YapDatabaseViewEnd];
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(6) }];
+	
+	// Verify: UI -> View
+	
+	NSUInteger index;
+	
+	index = [mappings indexForRow:0 inSection:0];
+	STAssertTrue(index == 1, @"Expected 1, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:1 inSection:0];
+	STAssertTrue(index == 2, @"Expected 2, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:2 inSection:0];
+	STAssertTrue(index == 3, @"Expected 3, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:3 inSection:0];
+	STAssertTrue(index == 4, @"Expected 4, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:4 inSection:0];
+	STAssertTrue(index == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)index);
+	
+	// Verify: View -> UI
+	
+	NSUInteger row;
+	
+	row = [mappings rowForIndex:0 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:1 inGroup:@""];
+	STAssertTrue(row == 0, @"Expected 0, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:2 inGroup:@""];
+	STAssertTrue(row == 1, @"Expected 1, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:3 inGroup:@""];
+	STAssertTrue(row == 2, @"Expected 2, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:4 inGroup:@""];
+	STAssertTrue(row == 3, @"Expected 3, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:5 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:6 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+}
+
+- (void)test_getter_7
+{
+	YapDatabaseViewRangeOptions *rangeOpts =
+	    [YapDatabaseViewRangeOptions fixedRangeWithLength:4 offset:0 from:YapDatabaseViewBeginning];
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	[mappings setIsReversed:YES forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(5) }];
+	
+	// Verify: UI -> View
+	
+	NSUInteger index;
+	
+	index = [mappings indexForRow:0 inSection:0];
+	STAssertTrue(index == 3, @"Expected 3, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:1 inSection:0];
+	STAssertTrue(index == 2, @"Expected 2, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:2 inSection:0];
+	STAssertTrue(index == 1, @"Expected 1, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:3 inSection:0];
+	STAssertTrue(index == 0, @"Expected 0, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:4 inSection:0];
+	STAssertTrue(index == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)index);
+	
+	// Verify: View -> UI
+	
+	NSUInteger row;
+	
+	row = [mappings rowForIndex:0 inGroup:@""];
+	STAssertTrue(row == 3, @"Expected 3, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:1 inGroup:@""];
+	STAssertTrue(row == 2, @"Expected 2, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:2 inGroup:@""];
+	STAssertTrue(row == 1, @"Expected 1, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:3 inGroup:@""];
+	STAssertTrue(row == 0, @"Expected 0, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:4 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:5 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+}
+
+- (void)test_getter_8
+{
+	YapDatabaseViewRangeOptions *rangeOpts =
+	    [YapDatabaseViewRangeOptions fixedRangeWithLength:4 offset:1 from:YapDatabaseViewBeginning];
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	[mappings setIsReversed:YES forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(6) }];
+	
+	// Verify: UI -> View
+	
+	NSUInteger index;
+	
+	index = [mappings indexForRow:0 inSection:0];
+	STAssertTrue(index == 4, @"Expected 4, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:1 inSection:0];
+	STAssertTrue(index == 3, @"Expected 3, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:2 inSection:0];
+	STAssertTrue(index == 2, @"Expected 2, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:3 inSection:0];
+	STAssertTrue(index == 1, @"Expected 1, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:4 inSection:0];
+	STAssertTrue(index == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)index);
+	
+	// Verify: View -> UI
+	
+	NSUInteger row;
+	
+	row = [mappings rowForIndex:0 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:1 inGroup:@""];
+	STAssertTrue(row == 3, @"Expected 3, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:2 inGroup:@""];
+	STAssertTrue(row == 2, @"Expected 2, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:3 inGroup:@""];
+	STAssertTrue(row == 1, @"Expected 1, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:4 inGroup:@""];
+	STAssertTrue(row == 0, @"Expected 0, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:5 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:6 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+}
+
+- (void)test_getter_9
+{
+	YapDatabaseViewRangeOptions *rangeOpts =
+	    [YapDatabaseViewRangeOptions fixedRangeWithLength:4 offset:0 from:YapDatabaseViewEnd];
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	[mappings setIsReversed:YES forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(5) }];
+	
+	// Verify: UI -> View
+	
+	NSUInteger index;
+	
+	index = [mappings indexForRow:0 inSection:0];
+	STAssertTrue(index == 4, @"Expected 4, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:1 inSection:0];
+	STAssertTrue(index == 3, @"Expected 3, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:2 inSection:0];
+	STAssertTrue(index == 2, @"Expected 2, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:3 inSection:0];
+	STAssertTrue(index == 1, @"Expected 1, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:4 inSection:0];
+	STAssertTrue(index == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)index);
+	
+	// Verify: View -> UI
+	
+	NSUInteger row;
+	
+	row = [mappings rowForIndex:0 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:1 inGroup:@""];
+	STAssertTrue(row == 3, @"Expected 3, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:2 inGroup:@""];
+	STAssertTrue(row == 2, @"Expected 2, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:3 inGroup:@""];
+	STAssertTrue(row == 1, @"Expected 1, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:4 inGroup:@""];
+	STAssertTrue(row == 0, @"Expected 0, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:5 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+}
+
+- (void)test_getter_10
+{
+	YapDatabaseViewRangeOptions *rangeOpts =
+	    [YapDatabaseViewRangeOptions fixedRangeWithLength:4 offset:1 from:YapDatabaseViewEnd];
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	[mappings setIsReversed:YES forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(6) }];
+	
+	// Verify: UI -> View
+	
+	NSUInteger index;
+	
+	index = [mappings indexForRow:0 inSection:0];
+	STAssertTrue(index == 4, @"Expected 4, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:1 inSection:0];
+	STAssertTrue(index == 3, @"Expected 3, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:2 inSection:0];
+	STAssertTrue(index == 2, @"Expected 2, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:3 inSection:0];
+	STAssertTrue(index == 1, @"Expected 1, got %lu", (unsigned long)index);
+	
+	index = [mappings indexForRow:4 inSection:0];
+	STAssertTrue(index == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)index);
+	
+	// Verify: View -> UI
+	
+	NSUInteger row;
+	
+	row = [mappings rowForIndex:0 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:1 inGroup:@""];
+	STAssertTrue(row == 3, @"Expected 3, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:2 inGroup:@""];
+	STAssertTrue(row == 2, @"Expected 2, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:3 inGroup:@""];
+	STAssertTrue(row == 1, @"Expected 1, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:4 inGroup:@""];
+	STAssertTrue(row == 0, @"Expected 0, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:5 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+	
+	row = [mappings rowForIndex:6 inGroup:@""];
+	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+}
+
 @end
