@@ -515,6 +515,31 @@
 	return [visibleGroups copy];
 }
 
+/**
+ * Returns YES if there are zero items in all sections/groups.
+**/
+- (BOOL)isEmpty
+{
+	if (snapshotOfLastUpdate == UINT64_MAX) return YES;
+	
+	for (NSString *group in visibleGroups)
+	{
+		YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+		if (rangeOpts)
+		{
+			if (rangeOpts.length > 0)
+				return NO;
+		}
+		else
+		{
+			if ([[counts objectForKey:group] unsignedIntegerValue] > 0)
+				return NO;
+		}
+	}
+	
+	return YES;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Mapping UI -> View
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

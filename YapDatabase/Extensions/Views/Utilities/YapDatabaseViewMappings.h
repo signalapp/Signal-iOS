@@ -469,6 +469,11 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
 **/
 - (NSArray *)visibleGroups;
 
+/**
+ * Returns YES if there are zero items in all sections/groups.
+**/
+- (BOOL)isEmpty;
+
 #pragma mark Mapping: UI -> View
 
 /**
