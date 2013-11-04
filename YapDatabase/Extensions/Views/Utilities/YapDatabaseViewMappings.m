@@ -1127,7 +1127,7 @@
 			else
 			{
 				if (rowPtr) *rowPtr = (groupOffset + row);
-				return NO;
+				return YES;
 			}
 		}
 		else
