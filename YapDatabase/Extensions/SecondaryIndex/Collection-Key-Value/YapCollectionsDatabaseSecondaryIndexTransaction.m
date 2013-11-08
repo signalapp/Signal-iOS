@@ -1031,6 +1031,122 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Count
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (BOOL)getNumberOfRows:(NSUInteger *)countPtr matchingQuery:(YapDatabaseQuery *)query
+{
+	// Create full query using given filtering clause(s)
+	
+	NSString *fullQueryString =
+	    [NSString stringWithFormat:@"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" %@;",
+	                                                           [self tableName], query.queryString];
+	
+	// Turn query into compiled sqlite statement.
+	// Use cache if possible.
+	
+	sqlite3_stmt *statement = NULL;
+	
+	YapDatabaseStatement *wrapper = [secondaryIndexConnection->queryCache objectForKey:fullQueryString];
+	if (wrapper)
+	{
+		statement = wrapper.stmt;
+	}
+	else
+	{
+		sqlite3 *db = databaseTransaction->connection->db;
+		
+		int status = sqlite3_prepare_v2(db, [fullQueryString UTF8String], -1, &statement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating query:\n query: '%@'\n error: %d %s",
+						THIS_METHOD, fullQueryString, status, sqlite3_errmsg(db));
+			
+			return NO;
+		}
+		
+		if (secondaryIndexConnection->queryCache)
+		{
+			wrapper = [[YapDatabaseStatement alloc] initWithStatement:statement];
+			[secondaryIndexConnection->queryCache setObject:wrapper forKey:fullQueryString];
+		}
+	}
+	
+	// Bind query parameters appropriately.
+	
+	int i = 1;
+	for (id value in query.queryParameters)
+	{
+		if ([value isKindOfClass:[NSNumber class]])
+		{
+			__unsafe_unretained NSNumber *cast = (NSNumber *)value;
+			
+			CFNumberType numType = CFNumberGetType((__bridge CFNumberRef)cast);
+			
+			if (numType == kCFNumberFloatType   ||
+			    numType == kCFNumberFloat32Type ||
+			    numType == kCFNumberFloat64Type ||
+			    numType == kCFNumberDoubleType  ||
+			    numType == kCFNumberCGFloatType  )
+			{
+				double num = [cast doubleValue];
+				sqlite3_bind_double(statement, i, num);
+			}
+			else
+			{
+				int64_t num = [cast longLongValue];
+				sqlite3_bind_int64(statement, i, (sqlite3_int64)num);
+			}
+		}
+		else if ([value isKindOfClass:[NSDate class]])
+		{
+			__unsafe_unretained NSDate *cast = (NSDate *)value;
+			
+			double num = [cast timeIntervalSinceReferenceDate];
+			sqlite3_bind_double(statement, i, num);
+		}
+		else if ([value isKindOfClass:[NSString class]])
+		{
+			__unsafe_unretained NSString *cast = (NSString *)value;
+			
+			sqlite3_bind_text(statement, i, [cast UTF8String], -1, SQLITE_TRANSIENT);
+		}
+		else
+		{
+			YDBLogWarn(@"Unable to bind value for with unsupported class: %@", NSStringFromClass([value class]));
+		}
+		
+		i++;
+	}
+	
+	// Execute query
+	
+	BOOL result = YES;
+	NSUInteger count = 0;
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		if (databaseTransaction->connection->needsMarkSqlLevelSharedReadLock)
+			[databaseTransaction->connection markSqlLevelSharedReadLockAcquired];
+		
+		count = (NSUInteger)sqlite3_column_int64(statement, 0);
+	}
+	else if (status == SQLITE_ERROR)
+	{
+		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD,
+		            status, sqlite3_errmsg(databaseTransaction->connection->db));
+		result = NO;
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	
+	if (countPtr) *countPtr = count;
+	return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Exceptions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

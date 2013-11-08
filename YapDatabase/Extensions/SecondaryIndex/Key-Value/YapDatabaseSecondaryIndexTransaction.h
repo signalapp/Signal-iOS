@@ -47,4 +47,10 @@
 - (BOOL)enumerateRowsMatchingQuery:(YapDatabaseQuery *)query
                         usingBlock:(void (^)(NSString *key, id object, id metadata, BOOL *stop))block;
 
+/**
+ * Skips the enumeration process, and just gives you the count of matching rows.
+**/
+
+- (BOOL)getNumberOfRows:(NSUInteger *)count matchingQuery:(YapDatabaseQuery *)query;
+
 @end

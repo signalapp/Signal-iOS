@@ -205,6 +205,18 @@
 		}];
 		
 		STAssertTrue(count == 5, @"Incorrect count: %lu", (unsigned long)count);
+		
+		count = 0;
+		query = [YapDatabaseQuery queryWithFormat:@"WHERE someInt < 105"];
+		[[transaction ext:@"idx"] getNumberOfRows:&count matchingQuery:query];
+		
+		STAssertTrue(count == 5, @"Incorrect count: %lu", (unsigned long)count);
+		
+		count = 0;
+		query = [YapDatabaseQuery queryWithFormat:@"WHERE someInt < ?", @(105)];
+		[[transaction ext:@"idx"] getNumberOfRows:&count matchingQuery:query];
+		
+		STAssertTrue(count == 5, @"Incorrect count: %lu", (unsigned long)count);
 	}];
 	
 	[connection readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
@@ -231,6 +243,20 @@
 			
 			count++;
 		}];
+		
+		STAssertTrue(count == 4, @"Incorrect count: %lu", (unsigned long)count);
+		
+		count = 0;
+		query = [YapDatabaseQuery queryWithFormat:@"WHERE someDate < ?", [startDate dateByAddingTimeInterval:5]];
+		[[transaction ext:@"idx"] getNumberOfRows:&count matchingQuery:query];
+		
+		STAssertTrue(count == 5, @"Incorrect count: %lu", (unsigned long)count);
+		
+		count = 0;
+		query = [YapDatabaseQuery queryWithFormat:@"WHERE someDate < ? AND someInt < ?",
+				 [startDate dateByAddingTimeInterval:5],           @(104)];
+		
+		[[transaction ext:@"idx"] getNumberOfRows:&count matchingQuery:query];
 		
 		STAssertTrue(count == 4, @"Incorrect count: %lu", (unsigned long)count);
 	}];
