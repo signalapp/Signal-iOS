@@ -58,7 +58,7 @@ NSString *const YapCollectionsDatabaseAllKeysRemovedKey     = @"allKeysRemoved";
 
 /**
  * Property lists ONLY support the following: NSData, NSString, NSArray, NSDictionary, NSDate, and NSNumber.
- * Property lists are highly optimized and are used extensively Apple.
+ * Property lists are highly optimized and are used extensively by Apple.
  *
  * Property lists make a good fit when your existing code already uses them,
  * such as replacing NSUserDefaults with a database.
@@ -75,7 +75,7 @@ NSString *const YapCollectionsDatabaseAllKeysRemovedKey     = @"allKeysRemoved";
 
 /**
  * Property lists ONLY support the following: NSData, NSString, NSArray, NSDictionary, NSDate, and NSNumber.
- * Property lists are highly optimized and are used extensively Apple.
+ * Property lists are highly optimized and are used extensively by Apple.
  *
  * Property lists make a good fit when your existing code already uses them,
  * such as replacing NSUserDefaults with a database.
