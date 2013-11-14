@@ -3635,15 +3635,12 @@
 		[connection->metadataCache removeObjectForKey:cacheKey];
 		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 		
-		[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
-			
-			__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue>
-			    extTransaction = extTransactionObj;
-			
+		for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction in [self orderedExtensions])
+		{
 			[extTransaction handleRemoveObjectForKey:cacheKey.key        // mutable string protection
 										inCollection:cacheKey.collection // mutable string protection
 										   withRowid:rowid];
-		}];
+		}
 	}
 }
 
@@ -3687,16 +3684,13 @@
 	[connection->metadataCache removeObjectForKey:cacheKey];
 	[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 	
-	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
-		
-		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue>
-		extTransaction = extTransactionObj;
-		
+	for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction in [self orderedExtensions])
+	{
 		[extTransaction handleUpdateMetadata:nil
 		                              forKey:cacheKey.key        // mutable string protection
 		                        inCollection:cacheKey.collection // mutable string protection
 		                           withRowid:rowid];
-	}];
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3904,11 +3898,8 @@
 		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 	}
 	
-	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
-		
-		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue>
-		    extTransaction = extTransactionObj;
-
+	for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction in [self orderedExtensions])
+	{
 		if (found)
 			[extTransaction handleUpdateObject:object
 			                            forKey:cacheKey.key        // mutable string protection
@@ -3921,7 +3912,7 @@
 			                      inCollection:cacheKey.collection // mutable string protection
 			                      withMetadata:metadata
 			                             rowid:rowid];
-	}];
+	}
 }
 
 - (void)setMetadata:(id)metadata forKey:(NSString *)key inCollection:(NSString *)collection
@@ -3999,16 +3990,13 @@
 		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 	}
 	
-	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
-		
-		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue>
-		    extTransaction = extTransactionObj;
-
+	for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction in [self orderedExtensions])
+	{
 		[extTransaction handleUpdateMetadata:metadata
 		                              forKey:cacheKey.key        // mutable string protection
 		                        inCollection:cacheKey.collection // mutable string protection
 		                           withRowid:rowid];
-	}];
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4030,15 +4018,12 @@
 	if ([connection->metadataChanges objectForKey:cacheKey] == nil)
 		[connection->metadataChanges setObject:[YapTouch touch] forKey:cacheKey];
 	
-	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
-		
-		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue>
-		    extTransaction = extTransactionObj;
-
+	for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction in [self orderedExtensions])
+	{
 		[extTransaction handleTouchObjectForKey:cacheKey.key        // mutable string protection
 			                       inCollection:cacheKey.collection // mutable string protection
-			                       withRowid:rowid];
-	}];
+		                              withRowid:rowid];
+	}
 }
 
 - (void)touchMetadataForKey:(NSString *)key inCollection:(NSString *)collection
@@ -4053,15 +4038,12 @@
 	if ([connection->metadataChanges objectForKey:cacheKey] == nil)
 		[connection->metadataChanges setObject:[YapTouch touch] forKey:cacheKey];
 	
-	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
-		
-		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue>
-		    extTransaction = extTransactionObj;
-
+	for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction in [self orderedExtensions])
+	{
 		[extTransaction handleTouchMetadataForKey:cacheKey.key        // mutable string protection
-			                         inCollection:cacheKey.collection // mutable string protection
-			                            withRowid:rowid];
-	}];
+		                             inCollection:cacheKey.collection // mutable string protection
+		                                withRowid:rowid];
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4108,15 +4090,12 @@
 	[connection->metadataChanges removeObjectForKey:cacheKey];
 	[connection->removedKeys addObject:cacheKey];
 	
-	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
-		
-		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue>
-		    extTransaction = extTransactionObj;
-
+	for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction in [self orderedExtensions])
+	{
 		[extTransaction handleRemoveObjectForKey:cacheKey.key        // mutable string protection
 		                            inCollection:cacheKey.collection // mutable string protection
 		                               withRowid:rowid];
-	}];
+	}
 }
 
 - (void)removeObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection
@@ -4294,13 +4273,13 @@
 				[connection->removedKeys addObject:cacheKey];
 			}
 			
-			[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
-				
-				__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction;
-				    extTransaction = extTransactionObj;
-				
-				[extTransaction handleRemoveObjectsForKeys:foundKeys inCollection:collection withRowids:foundRowids];
-			}];
+			for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction
+			      in [self orderedExtensions])
+			{
+				[extTransaction handleRemoveObjectsForKeys:foundKeys
+				                              inCollection:collection
+				                                withRowids:foundRowids];
+			}
 			
 		}
 		
@@ -4515,13 +4494,12 @@
 			connection->hasDiskChanges = YES;
 			isMutated = YES;  // mutation during enumeration protection
 			
-			[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
-				
-				__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction;
-				    extTransaction = extTransactionObj;
-				
-				[extTransaction handleRemoveObjectsForKeys:foundKeys inCollection:collection withRowids:foundRowids];
-			}];
+			for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction in [self orderedExtensions])
+			{
+				[extTransaction handleRemoveObjectsForKeys:foundKeys
+				                              inCollection:collection
+				                                withRowids:foundRowids];
+			}
 		}
 		
 		// Move on to the next batch (if there's more)
@@ -4559,13 +4537,10 @@
 	[connection->removedCollections removeAllObjects];
 	connection->allKeysRemoved = YES;
 	
-	[[self extensions] enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
-		
-		__unsafe_unretained id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue>
-		    extTransaction = extTransactionObj;
-		
+	for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction in [self orderedExtensions])
+	{
 		[extTransaction handleRemoveAllObjectsInAllCollections];
-	}];
+	}
 }
 
 @end

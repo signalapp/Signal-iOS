@@ -33,6 +33,7 @@ NSString *const YapDatabaseCustomKey     = @"custom";
 
 NSString *const YapDatabaseRegisteredExtensionsKey = @"registeredExtensions";
 NSString *const YapDatabaseRegisteredTablesKey     = @"registeredTables";
+NSString *const YapDatabaseExtensionsOrderKey      = @"extensionsOrder";
 NSString *const YapDatabaseNotificationKey         = @"notification";
 
 /**
@@ -134,6 +135,9 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 		
 		registeredExtensions = [[NSDictionary alloc] init];
 		registeredTables = [[NSDictionary alloc] init];
+		
+		extensionDependencies = [[NSDictionary alloc] init];
+		extensionsOrder = [[NSArray alloc] init];
 		
 		maxConnectionPoolCount = DEFAULT_MAX_CONNECTION_POOL_COUNT;
 		connectionPoolLifetime = DEFAULT_CONNECTION_POOL_LIFETIME;
@@ -1297,6 +1301,8 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 {
 	NSAssert(dispatch_get_specific(IsOnWriteQueueKey), @"Must go through writeQueue.");
 	
+	// Valid parameter checks
+	
 	if (extension == nil)
 	{
 		YDBLogError(@"Error registering extension: extension parameter is nil");
@@ -1307,26 +1313,70 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 		YDBLogError(@"Error registering extension: extensionName parameter is nil or empty string");
 		return NO;
 	}
-	if (![extension supportsDatabase:self])
-	{
-		YDBLogError(@"Error registering extension: extension doesn't support this type of database");
-		return NO;
-	}
+	
+	// Check to ensure extension isn't already registered,
+	// or that the extensionName isn't already taken.
+	
+	NSDictionary *_registeredExtensions = [self registeredExtensions];
+	
 	if (extension.registeredName != nil)
 	{
 		YDBLogError(@"Error registering extension: extension is already registered");
 		return NO;
 	}
-	if ([self registeredExtension:extensionName] != nil)
+	if ([_registeredExtensions objectForKey:extensionName] != nil)
 	{
 		YDBLogError(@"Error registering extension: extensionName(%@) already registered", extensionName);
 		return NO;
 	}
 	
+	// Make sure the extension can be supported
+	
+	if (![extension supportsDatabase:self])
+	{
+		YDBLogError(@"Error registering extension: extension doesn't support this type of database");
+		return NO;
+	}
+	
+	NSSet *dependencies = [extension dependencies];
+	if ([dependencies count] > 0)
+	{
+		NSString *missingDependency = nil;
+		
+		for (NSString *dependency in dependencies)
+		{
+			if ([_registeredExtensions objectForKey:dependency] == nil)
+			{
+				missingDependency = dependency;
+				break;
+			}
+		}
+		
+		if (missingDependency)
+		{
+			YDBLogError(@"Error registering extension:"
+			            @" extension dependency \"%@\" isn't registered", missingDependency);
+			return NO;
+		}
+	}
+	
+	// Set the registeredName now.
+	// The extension will need this in order to perform the registration tasks such as creating tables, etc.
+	
 	extension.registeredName = extensionName;
 	
 	BOOL result = [[self registrationConnection] registerExtension:extension withName:extensionName];
-	if (!result)
+	if (result)
+	{
+		if (dependencies == nil)
+			dependencies = [NSSet set];
+		
+		NSMutableDictionary *newExtensionDependencies = [extensionDependencies copy];
+		[newExtensionDependencies setObject:dependencies forKey:extensionName];
+		
+		extensionDependencies = [newExtensionDependencies copy];
+	}
+	else
 	{
 		extension.registeredName = nil;
 	}
@@ -1351,8 +1401,47 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	YapAbstractDatabaseExtension *extension = [self registeredExtension:extensionName];
 	
 	[[self registrationConnection] unregisterExtension:extensionName];
-	
 	extension.registeredName = nil;
+	
+	NSMutableDictionary *newExtensionDependencies = [extensionDependencies copy];
+	[newExtensionDependencies removeObjectForKey:extensionName];
+	
+	// Automatically unregister any extensions that were dependent upon this one.
+	
+	BOOL done;
+	do
+	{
+		__block NSString *dependentExtName = nil;
+		[extensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+			
+			__unsafe_unretained NSSet *extDependencies = (NSSet *)obj;
+		
+			if ([extDependencies containsObject:extensionName])
+			{
+				dependentExtName = (NSString *)key;
+				*stop = YES;
+			}
+		}];
+		
+		if (dependentExtName)
+		{
+			YapAbstractDatabaseExtension *dependentExt = [self registeredExtension:dependentExtName];
+			
+			[[self registrationConnection] unregisterExtension:dependentExtName];
+			dependentExt.registeredName = nil;
+			
+			[newExtensionDependencies removeObjectForKey:dependentExtName];
+			
+			done = NO;
+		}
+		else
+		{
+			done = YES;
+		}
+		
+	} while (!done);
+	
+	extensionDependencies = [newExtensionDependencies copy];
 }
 
 /**
@@ -1398,6 +1487,17 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 		dispatch_sync(snapshotQueue, block);
 	
 	return extensionsCopy;
+}
+
+/**
+ * This method is only accessible from within the snapshotQueue.
+ * Used by [YapAbstractDatabaseConnection prepare].
+**/
+- (NSArray *)extensionsOrder
+{
+	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
+	
+	return extensionsOrder;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1541,6 +1641,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	if (newRegisteredExtensions)
 	{
 		registeredExtensions = newRegisteredExtensions;
+		extensionsOrder = [changeset objectForKey:YapDatabaseExtensionsOrderKey];
 	}
 	
 	// Update registeredTables, if changed.

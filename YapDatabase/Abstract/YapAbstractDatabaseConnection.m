@@ -201,6 +201,7 @@
 	snapshot = [abstractDatabase snapshot];
 	registeredExtensions = [abstractDatabase registeredExtensions];
 	registeredTables = [abstractDatabase registeredTables];
+	extensionsOrder = [abstractDatabase extensionsOrder];
 	
 	extensionsReady = ([registeredExtensions count] == 0);
 }
@@ -899,7 +900,11 @@
 	NSMutableDictionary *newRegisteredExtensions = [registeredExtensions mutableCopy];
 	[newRegisteredExtensions setObject:extension forKey:extensionName];
 	
+	NSMutableArray *newExtensionsOrder = [extensionsOrder mutableCopy];
+	[newExtensionsOrder addObject:extensionName];
+	
 	registeredExtensions = [newRegisteredExtensions copy];
+	extensionsOrder = [newExtensionsOrder copy];
 	extensionsReady = NO;
 	
 	sharedKeySetForExtensions = [NSDictionary sharedKeySetForKeys:[registeredExtensions allKeys]];
@@ -2212,6 +2217,7 @@
 	          YapDatabaseExtensionsKey,
 	          YapDatabaseRegisteredExtensionsKey,
 	          YapDatabaseRegisteredTablesKey,
+			  YapDatabaseExtensionsOrderKey,
 	          YapDatabaseNotificationKey ];
 }
 
@@ -2308,6 +2314,7 @@
 			internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
 		
 		[internalChangeset setObject:registeredExtensions forKey:YapDatabaseRegisteredExtensionsKey];
+		[internalChangeset setObject:extensionsOrder forKey:YapDatabaseExtensionsOrderKey];
 	}
 	
 	if (registeredTablesChanged)
@@ -2337,9 +2344,10 @@
 	NSDictionary *changeset_registeredExtensions = [changeset objectForKey:YapDatabaseRegisteredExtensionsKey];
 	if (changeset_registeredExtensions)
 	{
-		// Retain new list
+		// Retain new lists
 		
 		registeredExtensions = changeset_registeredExtensions;
+		extensionsOrder = [changeset objectForKey:YapDatabaseExtensionsOrderKey];
 		
 		// Remove any extensions that have been dropped
 		
@@ -2363,7 +2371,6 @@
 	if (changeset_registeredTables)
 	{
 		// Retain new list
-		
 		registeredTables = changeset_registeredTables;
 	}
 	

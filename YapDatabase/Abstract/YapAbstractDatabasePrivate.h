@@ -23,6 +23,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 
 extern NSString *const YapDatabaseRegisteredExtensionsKey;
 extern NSString *const YapDatabaseRegisteredTablesKey;
+extern NSString *const YapDatabaseExtensionsOrderKey;
 extern NSString *const YapDatabaseNotificationKey;
 
 @interface YapAbstractDatabase () {
@@ -38,6 +39,9 @@ extern NSString *const YapDatabaseNotificationKey;
 	
 	NSDictionary *registeredExtensions;
 	NSDictionary *registeredTables;
+	
+	NSDictionary *extensionDependencies;
+	NSArray *extensionsOrder;
 	
 	YapAbstractDatabaseConnection *registrationConnection;
 	
@@ -111,10 +115,11 @@ extern NSString *const YapDatabaseNotificationKey;
 - (sqlite3 *)connectionPoolDequeue;
 
 /**
- * This method is only accessible from within the snapshotQueue.
+ * These methods are only accessible from within the snapshotQueue.
  * Used by [YapAbstractDatabaseConnection prepare].
 **/
 - (NSDictionary *)registeredTables;
+- (NSArray *)extensionsOrder;
 
 /**
  * This method is only accessible from within the snapshotQueue.
@@ -206,6 +211,8 @@ extern NSString *const YapDatabaseNotificationKey;
 	dispatch_queue_t connectionQueue;     // Only for YapAbstractDatabaseExtensionConnection subclasses
 	void *IsOnConnectionQueueKey;         // Only for YapAbstractDatabaseExtensionConnection subclasses
 	
+	NSArray *extensionsOrder;             // Read-only by YapAbstractDatabaseTransaction
+	
 	BOOL hasDiskChanges;
 	
 	YapCache *objectCache;
@@ -289,6 +296,7 @@ extern NSString *const YapDatabaseNotificationKey;
 @private
 	
 	NSMutableDictionary *extensions;
+	NSMutableArray *orderedExtensions;
 	BOOL extensionsReady;
 	
 @protected
@@ -311,6 +319,7 @@ extern NSString *const YapDatabaseNotificationKey;
 - (void)rollbackTransaction;
 
 - (NSDictionary *)extensions;
+- (NSArray *)orderedExtensions;
 
 - (YapMemoryTableTransaction *)memoryTableTransaction:(NSString *)tableName;
 

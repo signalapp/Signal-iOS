@@ -233,13 +233,8 @@
 	return [self extension:extensionName]; // This method is swizzled !
 }
 
-- (NSDictionary *)extensions
+- (void)prepareExtensions
 {
-	// This method is INTERNAL
-	
-	if (extensionsReady)
-		return extensions;
-	
 	if (extensions == nil)
 		extensions = [[NSMutableDictionary alloc] init];
 	
@@ -265,8 +260,43 @@
 		}
 	}];
 	
+	if (orderedExtensions == nil)
+		orderedExtensions = [[NSMutableArray alloc] initWithCapacity:[extensions count]];
+	
+	for (NSString *extName in abstractConnection->extensionsOrder)
+	{
+		YapAbstractDatabaseExtensionTransaction *extTransaction = [extensions objectForKey:extName];
+		if (extTransaction)
+		{
+			[orderedExtensions addObject:extTransaction];
+		}
+	}
+	
 	extensionsReady = YES;
+}
+
+- (NSDictionary *)extensions
+{
+	// This method is INTERNAL
+	
+	if (!extensionsReady)
+	{
+		[self prepareExtensions];
+	}
+	
 	return extensions;
+}
+
+- (NSArray *)orderedExtensions
+{
+	// This method is INTERNAL
+	
+	if (!extensionsReady)
+	{
+		[self prepareExtensions];
+	}
+	
+	return orderedExtensions;
 }
 
 - (void)addRegisteredExtensionTransaction:(YapAbstractDatabaseExtensionTransaction *)extTransaction
