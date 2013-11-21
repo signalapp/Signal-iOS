@@ -46,8 +46,9 @@
 - (sqlite3_stmt *)getCountForRowidStatement;
 - (sqlite3_stmt *)getRowidForKeyStatement;
 - (sqlite3_stmt *)getKeyForRowidStatement;
+- (sqlite3_stmt *)getKeyDataForRowidStatement;
+- (sqlite3_stmt *)getKeyMetadataForRowidStatement;
 - (sqlite3_stmt *)getDataForRowidStatement;
-- (sqlite3_stmt *)getMetadataForRowidStatement;
 - (sqlite3_stmt *)getAllForRowidStatement;
 - (sqlite3_stmt *)getDataForKeyStatement;
 - (sqlite3_stmt *)getMetadataForKeyStatement;
@@ -101,6 +102,8 @@
       forRowid:(int64_t)rowid;
 
 - (BOOL)hasRowForRowid:(int64_t)rowid;
+
+- (id)objectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
 
 - (void)_enumerateKeysInCollection:(NSString *)collection
                         usingBlock:(void (^)(int64_t rowid, NSString *key, BOOL *stop))block;

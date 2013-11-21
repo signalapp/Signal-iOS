@@ -184,7 +184,7 @@
 
 - (BOOL)getKey:(NSString **)keyPtr object:(id *)objectPtr forRowid:(int64_t)rowid
 {
-	sqlite3_stmt *statement = [connection getDataForRowidStatement];
+	sqlite3_stmt *statement = [connection getKeyDataForRowidStatement];
 	if (statement == NULL) {
 		if (keyPtr) *keyPtr = nil;
 		if (objectPtr) *objectPtr = nil;
@@ -232,7 +232,7 @@
 	}
 	else if (status == SQLITE_ERROR)
 	{
-		YDBLogError(@"Error executing 'getDataForRowidStatement': %d %s, key(%@)",
+		YDBLogError(@"Error executing 'getKeyDataForRowidStatement': %d %s, key(%@)",
 		            status, sqlite3_errmsg(connection->db), key);
 	}
 	
@@ -246,7 +246,7 @@
 
 - (BOOL)getKey:(NSString **)keyPtr metadata:(id *)metadataPtr forRowid:(int64_t)rowid
 {
-	sqlite3_stmt *statement = [connection getMetadataForRowidStatement];
+	sqlite3_stmt *statement = [connection getKeyMetadataForRowidStatement];
 	if (statement == NULL) {
 		if (keyPtr) *keyPtr = nil;
 		if (metadataPtr) *metadataPtr = nil;
@@ -304,7 +304,7 @@
 	}
 	else if (status == SQLITE_ERROR)
 	{
-		YDBLogError(@"Error executing 'getMetadataForRowidStatement': %d %s, key(%@)",
+		YDBLogError(@"Error executing 'getKeyMetadataForRowidStatement': %d %s, key(%@)",
 		            status, sqlite3_errmsg(connection->db), key);
 	}
 	
@@ -432,6 +432,51 @@
 	sqlite3_reset(statement);
 	
 	return result;
+}
+
+- (id)objectForKey:(NSString *)key withRowid:(int64_t)rowid
+{
+	id object = [connection->objectCache objectForKey:key];
+	if (object)
+		return object;
+	
+	sqlite3_stmt *statement = [connection getDataForRowidStatement];
+	if (statement == NULL) return nil;
+	
+	// SELECT "data" FROM "database2" WHERE "rowid" = ?;
+	
+	sqlite3_bind_int64(statement, 1, rowid);
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		if (connection->needsMarkSqlLevelSharedReadLock)
+			[connection markSqlLevelSharedReadLockAcquired];
+		
+		const void *blob = sqlite3_column_blob(statement, 0);
+		int blobSize = sqlite3_column_bytes(statement, 0);
+		
+		// Performance tuning:
+		//
+		// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+		// But be sure not to call sqlite3_reset until we're done with the data.
+		
+		NSData *oData = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+		object = connection->database->objectDeserializer(key, oData);
+		
+		if (object)
+			[connection->objectCache setObject:object forKey:key];
+	}
+	else if (status == SQLITE_ERROR)
+	{
+		YDBLogError(@"Error executing 'getDataForRowidStatement': %d %s, key(%@)",
+		            status, sqlite3_errmsg(connection->db), key);
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	
+	return object;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

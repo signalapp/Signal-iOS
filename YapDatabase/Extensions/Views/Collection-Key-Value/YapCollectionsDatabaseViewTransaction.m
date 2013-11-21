@@ -1267,6 +1267,66 @@
 	return pageOffset + indexWithinPage;
 }
 
+- (BOOL)getRowid:(int64_t *)rowidPtr atIndex:(NSUInteger)index inGroup:(NSString *)group
+{
+	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSUInteger pageOffset = 0;
+	
+	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
+	{
+		if ((index < (pageOffset + pageMetadata->count)) && (pageMetadata->count > 0))
+		{
+			YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
+			
+			int64_t rowid = [page rowidAtIndex:(index - pageOffset)];
+			
+			if (rowidPtr) *rowidPtr = rowid;
+			return YES;
+		}
+		else
+		{
+			pageOffset += pageMetadata->count;
+		}
+	}
+	
+	if (rowidPtr) *rowidPtr = 0;
+	return NO;
+}
+
+- (BOOL)getLastRowid:(int64_t *)rowidPtr inGroup:(NSString *)group
+{
+	// We can actually do something a little faster than this:
+	//
+	// NSUInteger count = [self numberOfKeysInGroup:group];
+	// if (count > 0)
+	//     return [self getRowid:rowidPtr atIndex:(count-1) inGroup:group];
+	// else
+	//     return nil;
+	
+	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	
+	__block int64_t rowid = 0;
+	__block BOOL found = NO;
+	
+	[pagesMetadataForGroup enumerateObjectsWithOptions:NSEnumerationReverse
+	                                        usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+												
+		__unsafe_unretained YapDatabaseViewPageMetadata *pageMetadata = (YapDatabaseViewPageMetadata *)obj;
+		
+		if (pageMetadata->count > 0)
+		{
+			YapDatabaseViewPage *lastPage = [self pageForPageKey:pageMetadata->pageKey];
+			
+			rowid = [lastPage rowidAtIndex:(pageMetadata->count - 1)];
+			found = YES;
+			*stop = YES;
+		}
+	}];
+	
+	if (rowidPtr) *rowidPtr = rowid;
+	return found;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Logic
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3045,7 +3105,7 @@
 			if (view->sortingBlockType == YapCollectionsDatabaseViewBlockTypeWithRow)
 			{
 				// Need the object for the sorting block
-				object = [databaseTransaction objectForKey:key inCollection:collection];
+				object = [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
 			}
 			
 			int flags = YapDatabaseViewChangedMetadata;
@@ -3078,7 +3138,7 @@
 				__unsafe_unretained YapCollectionsDatabaseViewGroupingWithRowBlock groupingBlock =
 			        (YapCollectionsDatabaseViewGroupingWithRowBlock)view->groupingBlock;
 				
-				object = [databaseTransaction objectForKey:key inCollection:collection];
+				object = [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
 				group = groupingBlock(collection, key, object, metadata);
 			}
 		}
@@ -3122,7 +3182,7 @@
 			                      view->sortingBlockType == YapCollectionsDatabaseViewBlockTypeWithRow    ))
 			{
 				// Need the object for the sorting block
-				object = [databaseTransaction objectForKey:key inCollection:collection];
+				object = [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
 			}
 			
 			int flags = YapDatabaseViewChangedMetadata;
@@ -3307,34 +3367,23 @@
        atIndex:(NSUInteger)index
        inGroup:(NSString *)group
 {
-	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
-	NSUInteger pageOffset = 0;
-	
-	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
+	int64_t rowid = 0;
+	if ([self getRowid:&rowid atIndex:index inGroup:group])
 	{
-		if ((index < (pageOffset + pageMetadata->count)) && (pageMetadata->count > 0))
-		{
-			YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
-			
-			int64_t rowid = [page rowidAtIndex:(index - pageOffset)];
-			
-			NSString *collection = nil;
-			NSString *key = nil;
-			[databaseTransaction getKey:&key collection:&collection forRowid:rowid];
-			
-			if (collectionPtr) *collectionPtr = collection;
-			if (keyPtr) *keyPtr = key;
-			return YES;
-		}
-		else
-		{
-			pageOffset += pageMetadata->count;
-		}
+		NSString *collection = nil;
+		NSString *key = nil;
+		BOOL found = [databaseTransaction getKey:&key collection:&collection forRowid:rowid];
+		
+		if (collectionPtr) *collectionPtr = collection;
+		if (keyPtr) *keyPtr = key;
+		return found;
 	}
-	
-	if (collectionPtr) *collectionPtr = nil;
-	if (keyPtr) *keyPtr = nil;
-	return NO;
+	else
+	{
+		if (collectionPtr) *collectionPtr = nil;
+		if (keyPtr) *keyPtr = nil;
+		return NO;
+	}
 }
 
 - (BOOL)getFirstKey:(NSString **)keyPtr collection:(NSString **)collectionPtr inGroup:(NSString *)group
@@ -3344,44 +3393,23 @@
 
 - (BOOL)getLastKey:(NSString **)keyPtr collection:(NSString **)collectionPtr inGroup:(NSString *)group
 {
-	// We can actually do something a little faster than this:
-	//
-	// NSUInteger count = [self numberOfKeysInGroup:group];
-	// if (count > 0) {
-	// 	return [self getKey:keyPtr collection:collectionPtr atIndex:(count-1) inGroup:group];
-	// }
-	// else {
-	// 	if (keyPtr) *keyPtr = nil;
-	// 	if (collectionPtr) *collectionPtr = nil;
-	// 	return NO;
-	// }
-	
-	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
-
-	__block BOOL found = NO;
-	__block NSString *key = nil;
-	__block NSString *collection = nil;
-	
-	[pagesMetadataForGroup enumerateObjectsWithOptions:NSEnumerationReverse
-	                                        usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+	int64_t rowid = 0;
+	if ([self getLastRowid:&rowid inGroup:group])
+	{
+		NSString *collection = nil;
+		NSString *key = nil;
+		BOOL found = [databaseTransaction getKey:&key collection:&collection forRowid:rowid];
 		
-		__unsafe_unretained YapDatabaseViewPageMetadata *pageMetadata = (YapDatabaseViewPageMetadata *)obj;
-		
-		if (pageMetadata->count > 0)
-		{
-			YapDatabaseViewPage *lastPage = [self pageForPageKey:pageMetadata->pageKey];
-			
-			int64_t rowid = [lastPage rowidAtIndex:(pageMetadata->count - 1)];
-			
-			found = [databaseTransaction getKey:&key collection:&collection forRowid:rowid];
-			*stop = YES;
-		}
-	}];
-	
-	if (keyPtr) *keyPtr = key;
-	if (collectionPtr) *collectionPtr = collection;
-	
-	return found;
+		if (collectionPtr) *collectionPtr = collection;
+		if (keyPtr) *keyPtr = key;
+		return found;
+	}
+	else
+	{
+		if (collectionPtr) *collectionPtr = nil;
+		if (keyPtr) *keyPtr = nil;
+		return NO;
+	}
 }
 
 - (NSString *)collectionAtIndex:(NSUInteger)index inGroup:(NSString *)group
@@ -4058,43 +4086,52 @@
 
 - (id)objectAtIndex:(NSUInteger)index inGroup:(NSString *)group
 {
-	// We could use either:
-	// - getKey:collection:atIndex:inGroup: + objectForKey:inCollection OR
-	// - rowidAtIndex: + getKey:collection:object:forRowid:
-	//
-	// The first option is likely faster most of the time,
-	// as objectForKey:inCollection: allows us to hit our internal cache without querying sqlite.
-	
-	NSString *key = nil;
-	NSString *collection = nil;
-	
-	if ([self getKey:&key collection:&collection atIndex:index inGroup:group])
-		return [databaseTransaction objectForKey:key inCollection:collection];
+	int64_t rowid = 0;
+	if ([self getRowid:&rowid atIndex:index inGroup:group])
+	{
+		// We could use getKey:collection:object:forRowid: at this point.
+		// But in most cases the object is going to be in the objectCache.
+		// So it's likely faster to fetch just the key first.
+		// And if the cache misses then we're still using a fetch based on the rowid.
+		
+		NSString *key = nil;
+		NSString *collection = nil;
+		[databaseTransaction getKey:&key collection:&collection forRowid:rowid];
+		
+		return [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
+	}
 	else
+	{
 		return nil;
+	}
 }
 
 
 - (id)firstObjectInGroup:(NSString *)group
 {
-	NSString *key = nil;
-	NSString *collection = nil;
-	
-	if ([self getFirstKey:&key collection:&collection inGroup:group])
-		return [databaseTransaction objectForKey:key inCollection:collection];
-	else
-		return nil;
+	return [self objectAtIndex:0 inGroup:group];
 }
 
 - (id)lastObjectInGroup:(NSString *)group
 {
-	NSString *key = nil;
-	NSString *collection = nil;
-	
-	if ([self getLastKey:&key collection:&collection inGroup:group])
-		return [databaseTransaction objectForKey:key inCollection:collection];
+	int64_t rowid = 0;
+	if ([self getLastRowid:&rowid inGroup:group])
+	{
+		// We could use getKey:collection:object:forRowid: at this point.
+		// But in most cases the object is going to be in the objectCache.
+		// So it's likely faster to fetch just the key first.
+		// And if the cache misses then we're still using a fetch based on the rowid.
+		
+		NSString *key = nil;
+		NSString *collection = nil;
+		[databaseTransaction getKey:&key collection:&collection forRowid:rowid];
+		
+		return [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
+	}
 	else
+	{
 		return nil;
+	}
 }
 
 /**

@@ -37,8 +37,9 @@
 	sqlite3_stmt *getCountForRowidStatement;
 	sqlite3_stmt *getRowidForKeyStatement;
 	sqlite3_stmt *getKeyForRowidStatement;
+	sqlite3_stmt *getKeyDataForRowidStatement;
+	sqlite3_stmt *getKeyMetadataForRowidStatement;
 	sqlite3_stmt *getDataForRowidStatement;
-	sqlite3_stmt *getMetadataForRowidStatement;
 	sqlite3_stmt *getAllForRowidStatement;
 	sqlite3_stmt *getDataForKeyStatement;
 	sqlite3_stmt *getMetadataForKeyStatement;
@@ -100,8 +101,9 @@
 	sqlite_finalize_null(&getCountForRowidStatement);
 	sqlite_finalize_null(&getRowidForKeyStatement);
 	sqlite_finalize_null(&getKeyForRowidStatement);
+	sqlite_finalize_null(&getKeyDataForRowidStatement);
+	sqlite_finalize_null(&getKeyMetadataForRowidStatement);
 	sqlite_finalize_null(&getDataForRowidStatement);
-	sqlite_finalize_null(&getMetadataForRowidStatement);
 	sqlite_finalize_null(&getAllForRowidStatement);
 	sqlite_finalize_null(&getDataForKeyStatement);
 	sqlite_finalize_null(&insertForRowidStatement);
@@ -136,8 +138,9 @@
 		sqlite_finalize_null(&getKeyCountForAllStatement);
 		sqlite_finalize_null(&getCountForRowidStatement);
 		sqlite_finalize_null(&getKeyForRowidStatement);
+		sqlite_finalize_null(&getKeyDataForRowidStatement);
+		sqlite_finalize_null(&getKeyMetadataForRowidStatement);
 		sqlite_finalize_null(&getDataForRowidStatement);
-		sqlite_finalize_null(&getMetadataForRowidStatement);
 		sqlite_finalize_null(&getAllForRowidStatement);
 		sqlite_finalize_null(&updateMetadataForRowidStatement);
 		sqlite_finalize_null(&removeForRowidStatement);
@@ -270,11 +273,45 @@
 	return getKeyForRowidStatement;
 }
 
+- (sqlite3_stmt *)getKeyDataForRowidStatement
+{
+	if (getKeyDataForRowidStatement == NULL)
+	{
+		char *stmt = "SELECT \"collection\", \"key\", \"data\" FROM \"database2\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getKeyDataForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getKeyDataForRowidStatement;
+}
+
+- (sqlite3_stmt *)getKeyMetadataForRowidStatement
+{
+	if (getKeyMetadataForRowidStatement == NULL)
+	{
+		char *stmt = "SELECT \"collection\", \"key\", \"metadata\" FROM \"database2\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getKeyMetadataForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getKeyMetadataForRowidStatement;
+}
+
 - (sqlite3_stmt *)getDataForRowidStatement
 {
 	if (getDataForRowidStatement == NULL)
 	{
-		char *stmt = "SELECT \"collection\", \"key\", \"data\" FROM \"database2\" WHERE \"rowid\" = ?;";
+		char *stmt = "SELECT \"data\" FROM \"database2\" WHERE \"rowid\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getDataForRowidStatement, NULL);
@@ -285,23 +322,6 @@
 	}
 	
 	return getDataForRowidStatement;
-}
-
-- (sqlite3_stmt *)getMetadataForRowidStatement
-{
-	if (getMetadataForRowidStatement == NULL)
-	{
-		char *stmt = "SELECT \"collection\", \"key\", \"metadata\" FROM \"database2\" WHERE \"rowid\" = ?;";
-		int stmtLen = (int)strlen(stmt);
-		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getMetadataForRowidStatement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
-		}
-	}
-	
-	return getMetadataForRowidStatement;
 }
 
 - (sqlite3_stmt *)getAllForRowidStatement
