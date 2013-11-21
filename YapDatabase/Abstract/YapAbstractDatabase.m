@@ -1371,7 +1371,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 		if (dependencies == nil)
 			dependencies = [NSSet set];
 		
-		NSMutableDictionary *newExtensionDependencies = [extensionDependencies copy];
+		NSMutableDictionary *newExtensionDependencies = [extensionDependencies mutableCopy];
 		[newExtensionDependencies setObject:dependencies forKey:extensionName];
 		
 		extensionDependencies = [newExtensionDependencies copy];
@@ -1403,7 +1403,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	[[self registrationConnection] unregisterExtension:extensionName];
 	extension.registeredName = nil;
 	
-	NSMutableDictionary *newExtensionDependencies = [extensionDependencies copy];
+	NSMutableDictionary *newExtensionDependencies = [extensionDependencies mutableCopy];
 	[newExtensionDependencies removeObjectForKey:extensionName];
 	
 	// Automatically unregister any extensions that were dependent upon this one.
