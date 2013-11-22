@@ -62,6 +62,7 @@
 
 - (id)initWithView:(YapDatabaseView *)view databaseConnection:(YapDatabaseConnection *)databaseConnection;
 
+- (void)prepareForReadWriteTransaction;
 - (void)postRollbackCleanup;
 - (void)postCommitCleanup;
 
@@ -87,15 +88,44 @@
 @interface YapDatabaseViewTransaction () {
 @private
 	
-	__unsafe_unretained YapDatabaseViewConnection *viewConnection;
-	__unsafe_unretained YapDatabaseReadTransaction *databaseTransaction;
-	
 	YapMemoryTableTransaction *mapTableTransaction;
 	YapMemoryTableTransaction *pageTableTransaction;
 	YapMemoryTableTransaction *pageMetadataTableTransaction;
+	
+@protected
+	
+	__unsafe_unretained YapDatabaseViewConnection *viewConnection;
+	__unsafe_unretained YapDatabaseReadTransaction *databaseTransaction;
+	
+	NSString *lastHandledGroup;
 }
 
 - (id)initWithViewConnection:(YapDatabaseViewConnection *)viewConnection
          databaseTransaction:(YapDatabaseReadTransaction *)databaseTransaction;
+
+// The following are declared for view subclasses (such as YapDatabaseFilteredView)
+
+- (NSString *)pageKeyForRowid:(int64_t)rowid;
+- (NSUInteger)indexForRowid:(int64_t)rowid inGroup:(NSString *)group withPageKey:(NSString *)pageKey;
+
+- (void)insertRowid:(int64_t)rowid key:(NSString *)key inNewGroup:(NSString *)group;
+- (void)insertRowid:(int64_t)rowid key:(NSString *)key
+                               inGroup:(NSString *)group
+                               atIndex:(NSUInteger)index
+                   withExistingPageKey:(NSString *)existingPageKey;
+
+- (void)insertRowid:(int64_t)rowid
+                key:(NSString *)key
+             object:(id)object
+           metadata:(id)metadata
+            inGroup:(NSString *)group
+        withChanges:(int)flags
+              isNew:(BOOL)isGuaranteedNew;
+
+- (void)removeRowid:(int64_t)rowid key:(NSString *)key;
+- (void)removeAllRowids;
+
+- (void)enumerateRowidsInGroup:(NSString *)group
+                    usingBlock:(void (^)(int64_t rowid, NSUInteger index, BOOL *stop))block;
 
 @end

@@ -151,17 +151,7 @@ static NSString *const key_changes                  = @"changes";
 	    [[YapCollectionsDatabaseViewTransaction alloc] initWithViewConnection:self
 	             databaseTransaction:(YapCollectionsDatabaseReadTransaction *)databaseTransaction];
 	
-	if (dirtyMaps == nil)
-		dirtyMaps = [[NSMutableDictionary alloc] init];
-	if (dirtyPages == nil)
-		dirtyPages = [[NSMutableDictionary alloc] init];
-	if (dirtyLinks == nil)
-		dirtyLinks = [[NSMutableDictionary alloc] init];
-	if (changes == nil)
-		changes = [[NSMutableArray alloc] init];
-	if (mutatedGroups == nil)
-		mutatedGroups = [[NSMutableSet alloc] init];
-	
+	[self prepareForReadWriteTransaction];
 	return transaction;
 }
 
@@ -207,6 +197,23 @@ static NSString *const key_changes                  = @"changes";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Changeset
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Initializes any ivars that a read-write transaction may need.
+**/
+- (void)prepareForReadWriteTransaction
+{
+	if (dirtyMaps == nil)
+		dirtyMaps = [[NSMutableDictionary alloc] init];
+	if (dirtyPages == nil)
+		dirtyPages = [[NSMutableDictionary alloc] init];
+	if (dirtyLinks == nil)
+		dirtyLinks = [[NSMutableDictionary alloc] init];
+	if (changes == nil)
+		changes = [[NSMutableArray alloc] init];
+	if (mutatedGroups == nil)
+		mutatedGroups = [[NSMutableSet alloc] init];
+}
 
 /**
  * Invoked by our YapDatabaseViewTransaction at the completion of the rollbackTransaction method.

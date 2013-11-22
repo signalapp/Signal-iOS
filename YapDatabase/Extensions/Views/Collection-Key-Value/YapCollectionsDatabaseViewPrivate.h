@@ -14,6 +14,7 @@
 #import "sqlite3.h"
 
 @class YapCache;
+@class YapCollectionKey;
 
 @interface YapCollectionsDatabaseView () {
 @public
@@ -64,6 +65,7 @@
 
 - (id)initWithView:(YapCollectionsDatabaseView *)view databaseConnection:(YapCollectionsDatabaseConnection *)dbc;
 
+- (void)prepareForReadWriteTransaction;
 - (void)postRollbackCleanup;
 - (void)postCommitCleanup;
 
@@ -89,15 +91,44 @@
 @interface YapCollectionsDatabaseViewTransaction () {
 @private
 	
-	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection;
-	__unsafe_unretained YapCollectionsDatabaseReadTransaction *databaseTransaction;
-	
 	YapMemoryTableTransaction *mapTableTransaction;
 	YapMemoryTableTransaction *pageTableTransaction;
 	YapMemoryTableTransaction *pageMetadataTableTransaction;
+	
+@protected
+	
+	__unsafe_unretained YapCollectionsDatabaseViewConnection *viewConnection;
+	__unsafe_unretained YapCollectionsDatabaseReadTransaction *databaseTransaction;
+	
+	NSString *lastHandledGroup;
 }
 
 - (id)initWithViewConnection:(YapCollectionsDatabaseViewConnection *)viewConnection
          databaseTransaction:(YapCollectionsDatabaseReadTransaction *)databaseTransaction;
+
+// The following are declared for view subclasses (such as YapCollectionsDatabaseFilteredView)
+
+- (NSString *)pageKeyForRowid:(int64_t)rowid;
+- (NSUInteger)indexForRowid:(int64_t)rowid inGroup:(NSString *)group withPageKey:(NSString *)pageKey;
+
+- (void)insertRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey inNewGroup:(NSString *)group;
+- (void)insertRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
+                                         inGroup:(NSString *)group
+                                         atIndex:(NSUInteger)index
+                             withExistingPageKey:(NSString *)existingPageKey;
+
+- (void)insertRowid:(int64_t)rowid
+      collectionKey:(YapCollectionKey *)collectionKey
+			 object:(id)object
+           metadata:(id)metadata
+            inGroup:(NSString *)group
+        withChanges:(int)flags
+              isNew:(BOOL)isGuaranteedNew;
+
+- (void)removeRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey;
+- (void)removeAllRowids;
+
+- (void)enumerateRowidsInGroup:(NSString *)group
+                    usingBlock:(void (^)(int64_t rowid, NSUInteger index, BOOL *stop))block;
 
 @end

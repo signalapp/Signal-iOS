@@ -1217,9 +1217,69 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Use this method once the insertion index of a key is known.
- * 
- * Note: This method assumes the group already exists.
+ * Creates a new group and inserts the given row.
+ * Important: The group MUST NOT already exist.
+**/
+- (void)insertRowid:(int64_t)rowid key:(NSString *)key inNewGroup:(NSString *)group
+{
+	YDBLogAutoTrace();
+	
+	NSParameterAssert(key != nil);
+	NSParameterAssert(group != nil);
+	
+	// First object added to group.
+	
+	NSString *pageKey = [self generatePageKey];
+	
+	YDBLogVerbose(@"Inserting key(%@) in new group(%@) with page(%@)", key, group, pageKey);
+	
+	// Create page
+	
+	YapDatabaseViewPage *page = [[YapDatabaseViewPage alloc] initWithCapacity:YAP_DATABASE_VIEW_MAX_PAGE_SIZE];
+	[page addRowid:rowid];
+	
+	// Create pageMetadata
+	
+	YapDatabaseViewPageMetadata *pageMetadata = [[YapDatabaseViewPageMetadata alloc] init];
+	pageMetadata->pageKey = pageKey;
+	pageMetadata->prevPageKey = nil;
+	pageMetadata->group = group;
+	pageMetadata->count = 1;
+	pageMetadata->isNew = YES;
+	
+	// Add page and pageMetadata to in-memory structures
+	
+	NSMutableArray *pagesMetadataForGroup = [[NSMutableArray alloc] initWithCapacity:1];
+	[pagesMetadataForGroup addObject:pageMetadata];
+	
+	[viewConnection->group_pagesMetadata_dict setObject:pagesMetadataForGroup forKey:group];
+	[viewConnection->pageKey_group_dict setObject:group forKey:pageKey];
+	
+	// Mark page as dirty
+	
+	[viewConnection->dirtyPages setObject:page forKey:pageKey];
+	[viewConnection->pageCache setObject:page forKey:pageKey];
+	
+	// Mark rowid for insertion
+	
+	[viewConnection->dirtyMaps setObject:pageKey forKey:@(rowid)];
+	[viewConnection->mapCache setObject:pageKey forKey:@(rowid)];
+	
+	// Add change to log
+	
+	[viewConnection->changes addObject:
+	  [YapDatabaseViewSectionChange insertGroup:group]];
+	
+	[viewConnection->changes addObject:
+	  [YapDatabaseViewRowChange insertKey:key inGroup:group atIndex:0]];
+	
+	[viewConnection->mutatedGroups addObject:group];
+}
+
+
+/**
+ * Inserts the given rowid into an existing group.
+ * Important: The group MUST already exist.
 **/
 - (void)insertRowid:(int64_t)rowid key:(NSString *)key
                                inGroup:(NSString *)group
@@ -1412,51 +1472,7 @@
 	{
 		// First object added to group.
 		
-		NSString *pageKey = [self generatePageKey];
-		
-		YDBLogVerbose(@"Inserting key(%@) in new group(%@) with page(%@)", key, group, pageKey);
-		
-		// Create page
-		
-		YapDatabaseViewPage *page = [[YapDatabaseViewPage alloc] initWithCapacity:YAP_DATABASE_VIEW_MAX_PAGE_SIZE];
-		[page addRowid:rowid];
-		
-		// Create pageMetadata
-		
-		YapDatabaseViewPageMetadata *pageMetadata = [[YapDatabaseViewPageMetadata alloc] init];
-		pageMetadata->pageKey = pageKey;
-		pageMetadata->prevPageKey = nil;
-		pageMetadata->group = group;
-		pageMetadata->count = 1;
-		pageMetadata->isNew = YES;
-		
-		// Add page and pageMetadata to in-memory structures
-		
-		pagesMetadataForGroup = [[NSMutableArray alloc] initWithCapacity:1];
-		[pagesMetadataForGroup addObject:pageMetadata];
-		
-		[viewConnection->group_pagesMetadata_dict setObject:pagesMetadataForGroup forKey:group];
-		[viewConnection->pageKey_group_dict setObject:group forKey:pageKey];
-		
-		// Mark page as dirty
-		
-		[viewConnection->dirtyPages setObject:page forKey:pageKey];
-		[viewConnection->pageCache setObject:page forKey:pageKey];
-		
-		// Mark rowid for insertion
-		
-		[viewConnection->dirtyMaps setObject:pageKey forKey:@(rowid)];
-		[viewConnection->mapCache setObject:pageKey forKey:@(rowid)];
-		
-		// Add change to log
-		
-		[viewConnection->changes addObject:
-		    [YapDatabaseViewSectionChange insertGroup:group]];
-		
-		[viewConnection->changes addObject:
-		    [YapDatabaseViewRowChange insertKey:key inGroup:group atIndex:0]];
-		
-		[viewConnection->mutatedGroups addObject:group];
+		[self insertRowid:rowid key:key inNewGroup:group];
 		
 		return;
 	}
@@ -2822,6 +2838,8 @@
 		
 		[self insertRowid:rowid key:key object:object metadata:metadata inGroup:group withChanges:flags isNew:YES];
 	}
+	
+	lastHandledGroup = group;
 }
 
 /**
@@ -2883,6 +2901,8 @@
 		
 		[self insertRowid:rowid key:key object:object metadata:metadata inGroup:group withChanges:flags isNew:NO];
 	}
+	
+	lastHandledGroup = group;
 }
 
 /**
@@ -2913,6 +2933,7 @@
 		{
 			// Nothing to do.
 			// The key wasn't previously in the view, and still isn't in the view.
+			lastHandledGroup = group;
 			return;
 		}
 		
@@ -2997,6 +3018,7 @@
 					[viewConnection->changes addObject:
 					    [YapDatabaseViewRowChange updateKey:key changes:flags inGroup:group atIndex:existingIndex]];
 					
+					lastHandledGroup = group;
 					return;
 				}
 			}
@@ -3013,6 +3035,8 @@
 			[self insertRowid:rowid key:key object:object metadata:metadata inGroup:group withChanges:flags isNew:NO];
 		}
 	}
+	
+	lastHandledGroup = group;
 }
 
 /**
