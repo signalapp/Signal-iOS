@@ -4084,3 +4084,48 @@
 }
 
 @end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@implementation YapDatabaseViewTransaction (Mappings)
+
+/**
+ * Gets the key at the given indexPath, assuming the given mappings are being used.
+ * Returns nil if the indexPath is invalid, or the mappings aren't initialized.
+**/
+- (NSString *)keyAtIndexPath:(NSIndexPath *)indexPath withMappings:(YapDatabaseViewMappings *)mappings
+{
+	if (indexPath && mappings)
+	{
+		NSString *group = nil;
+		NSUInteger index = 0;
+		
+		if ([mappings getGroup:&group index:&index forIndexPath:indexPath])
+		{
+			return [self keyAtIndex:index inGroup:group];
+		}
+	}
+	
+	return nil;
+}
+
+/**
+ * Fetches the indexPath for the given key, assuming the given mappings are being used.
+ * Returns nil if the key isn't included in the view + mappings.
+**/
+- (NSIndexPath *)indexPathForKey:(NSString *)key withMappings:(YapDatabaseViewMappings *)mappings
+{
+	NSString *group = nil;
+	NSUInteger index = 0;
+	
+	if ([self getGroup:&group index:&index forKey:key])
+	{
+		return [mappings indexPathForIndex:index inGroup:group];
+	}
+	
+	return nil;
+}
+
+@end

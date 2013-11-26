@@ -4349,3 +4349,56 @@
 }
 
 @end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@implementation YapCollectionsDatabaseViewTransaction (Mappings)
+
+/**
+ * Gets the key & collection at the given indexPath, assuming the given mappings are being used.
+ * Returns NO if the indexPath is invalid, or the mappings aren't initialized.
+ * Otherwise returns YES, and sets the key & collection ptr (both optional).
+**/
+- (BOOL)getKey:(NSString **)keyPtr
+    collection:(NSString **)collectionPtr
+   atIndexPath:(NSIndexPath *)indexPath
+  withMappings:(YapDatabaseViewMappings *)mappings
+{
+	if (indexPath && mappings)
+	{
+		NSString *group = nil;
+		NSUInteger index = 0;
+		
+		if ([mappings getGroup:&group index:&index forIndexPath:indexPath])
+		{
+			return [self getKey:keyPtr collection:collectionPtr atIndex:index inGroup:group];
+		}
+	}
+	
+	if (keyPtr) *keyPtr = nil;
+	if (collectionPtr) *collectionPtr = nil;
+	return NO;
+}
+
+/**
+ * Fetches the indexPath for the given {collection, key} tuple, assuming the given mappings are being used.
+ * Returns nil if the {collection, key} tuple isn't included in the view + mappings.
+**/
+- (NSIndexPath *)indexPathForKey:(NSString *)key
+                    inCollection:(NSString *)collection
+                    withMappings:(YapDatabaseViewMappings *)mappings
+{
+	NSString *group = nil;
+	NSUInteger index = 0;
+	
+	if ([self getGroup:&group index:&index forKey:key inCollection:collection])
+	{
+		return [mappings indexPathForIndex:index inGroup:group];
+	}
+	
+	return nil;
+}
+
+@end

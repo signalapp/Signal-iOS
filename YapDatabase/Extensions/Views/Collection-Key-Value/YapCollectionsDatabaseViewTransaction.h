@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "YapAbstractDatabaseExtensionTransaction.h"
+#import "YapDatabaseViewMappings.h"
 
 /**
  * Welcome to YapDatabase!
@@ -410,5 +411,31 @@ typedef enum {
                        range:(NSRange)range
                   usingBlock:
             (void (^)(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block;
+
+@end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@interface YapCollectionsDatabaseViewTransaction (Mappings)
+
+/**
+ * Gets the key & collection at the given indexPath, assuming the given mappings are being used.
+ * Returns NO if the indexPath is invalid, or the mappings aren't initialized.
+ * Otherwise returns YES, and sets the key & collection ptr (both optional).
+**/
+- (BOOL)getKey:(NSString **)keyPtr
+    collection:(NSString **)collectionPtr
+   atIndexPath:(NSIndexPath *)indexPath
+  withMappings:(YapDatabaseViewMappings *)mappings;
+
+/**
+ * Fetches the indexPath for the given {collection, key} tuple, assuming the given mappings are being used.
+ * Returns nil if the {collection, key} tuple isn't included in the view + mappings.
+**/
+- (NSIndexPath *)indexPathForKey:(NSString *)key
+                    inCollection:(NSString *)collection
+                    withMappings:(YapDatabaseViewMappings *)mappings;
 
 @end
