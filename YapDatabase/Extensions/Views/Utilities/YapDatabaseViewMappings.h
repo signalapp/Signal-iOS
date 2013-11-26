@@ -474,6 +474,102 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
 **/
 - (BOOL)isEmpty;
 
+
+/**
+ * This is a helper method to assist in maintaining the selection while updating the tableView/collectionView.
+ * In general the idea is this:
+ * - yapDatabaseModified is invoked on the main thread
+ * - at the beginning of the method, you grab some information about the current selection
+ * - you update the database connection, and then start the animation for the changes to the table
+ * - you reselect whatever was previously selected
+ * - if that's not possible (row was deleted) then you select the closest row to the previous selection
+ * 
+ * The last step isn't always what you want to do. Maybe you don't want to select anything at that point.
+ * But if you do, then this method can simplify the task for you.
+ * 
+ * For example:
+ * 
+ * - (void)yapDatabaseModified:(NSNotification *)notification {
+ * 
+ *     // Grab info about current selection
+ *     
+ *     NSString *selectedGroup = nil;
+ *     NSUInteger selectedRow = 0;
+ *     __block NSString *selectedWidgetId = nil;
+ *
+ *     NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
+ *     if (selectedIndexPath) {
+ *         selectedGroup = [mappings groupForSection:selectedIndexPath.section];
+ *         selectedRow = selectedIndexPath.row;
+ *         
+ *         [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+ *             selectedWidgetId = [[transaction ext:@"widgets"] keyAtIndex:selectedRow inGroup:selectedGroup];
+ *         }];
+ *     }
+ *     
+ *     // Update the database connection (move it to the latest commit)
+ *     
+ *     NSArray *notifications = [databaseConnection beginLongLivedReadTransaction];
+ *
+ *     // Process the notification(s),
+ *     // and get the changeset as it applies to me, based on my view and my mappings setup.
+ *
+ *     NSArray *sectionChanges = nil;
+ *     NSArray *rowChanges = nil;
+ *
+ *     [[databaseConnection ext:@"order"] getSectionChanges:&sectionChanges
+ *                                               rowChanges:&rowChanges
+ *                                         forNotifications:notifications
+ *                                             withMappings:mappings];
+ *
+ *     if ([sectionChanges count] == 0 & [rowChanges count] == 0)
+ *     {
+ *         // Nothing has changed that affects our tableView
+ *         return;
+ *     }
+ *
+ *     // Update the table (animating the changes)
+ *
+ *     [self.tableView beginUpdates];
+ *
+ *     for (YapDatabaseViewSectionChange *sectionChange in sectionChanges)
+ *     {
+ *         // ... (see https://github.com/yaptv/YapDatabase/wiki/Views )
+ *     }
+ *
+ *     for (YapDatabaseViewRowChange *rowChange in rowChanges)
+ *     {
+ *         // ... (see https://github.com/yaptv/YapDatabase/wiki/Views )
+ *     }
+ *
+ *     [self.tableView endUpdates];
+ *     
+ *     // Try to reselect whatever was selected before
+ * 
+ *     __block NSIndexPath *indexPath = nil;
+ *
+ *     if (selectedIndexPath) {
+ *         [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+ *             indexPath = [[transaction ext:@"widgets"] indexPathForKey:selectedWidgetId
+ *                                                          withMappings:mappings];
+ *         }];
+ *     }
+ * 
+ *     // Otherwise select the nearest row to whatever was selected before
+ * 
+ *     if (!indexPath && selectedGroup) {
+ *         indexPath = [mappings nearestIndexPathForRow:selectedRow inGroup:selectedGroup];
+ *     }
+ *     
+ *     if (indexPath) {
+ *         [self.tableView selectRowAtIndexPath:indexPath
+ *                                     animated:NO
+ *                               scrollPosition:UITableViewScrollPositionMiddle];
+ *     }
+ * }
+**/
+- (NSIndexPath *)nearestIndexPathForRow:(NSUInteger)row inGroup:(NSString *)group;
+
 #pragma mark Mapping: UI -> View
 
 /**

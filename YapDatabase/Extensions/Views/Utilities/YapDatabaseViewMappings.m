@@ -540,6 +540,96 @@
 	return YES;
 }
 
+- (NSIndexPath *)nearestIndexPathForRow:(NSUInteger)row inGroup:(NSString *)searchGroup
+{
+	if (searchGroup == nil) return nil;
+	if (snapshotOfLastUpdate == UINT64_MAX) return nil;
+	
+	BOOL foundGroup = NO;
+	NSUInteger groupIndex = 0;
+	
+	for (NSString *group in allGroups)
+	{
+		if ([group isEqualToString:searchGroup])
+		{
+			foundGroup = YES;
+			break;
+		}
+		groupIndex++;
+	}
+	
+	if (!foundGroup) return nil;
+	
+	BOOL isVisible = NO;
+	NSUInteger visibleIndex = 0;
+	
+	for (NSString *visibleGroup in visibleGroups)
+	{
+		if ([visibleGroup isEqualToString:searchGroup])
+		{
+			isVisible = YES;
+			break;
+		}
+		visibleIndex++;
+	}
+	
+	if (isVisible)
+	{
+		// The searchGroup is visible.
+		
+		NSUInteger rows = [self numberOfItemsInGroup:searchGroup];
+		if (rows > 0)
+		{
+			if (row < rows)
+				return [NSIndexPath indexPathForRow:row inSection:visibleIndex];
+			else
+				return [NSIndexPath indexPathForRow:(rows-1) inSection:visibleIndex];
+		}
+	}
+	
+	NSUInteger nearbyGroupIndex;
+	
+	// Try to select the closest row below the given group.
+	
+	nearbyGroupIndex = groupIndex;
+	while (nearbyGroupIndex > 0)
+	{
+		nearbyGroupIndex--;
+		NSString *nearbyGroup = [allGroups objectAtIndex:nearbyGroupIndex];
+		
+		NSUInteger section = [self sectionForGroup:nearbyGroup];
+		if (section != NSNotFound)
+		{
+			NSUInteger rows = [self numberOfItemsInGroup:nearbyGroup];
+			if (rows > 0)
+			{
+				return [NSIndexPath indexPathForRow:(rows-1) inSection:section];
+			}
+		}
+	}
+	
+	// Try to select the closest row above the given group.
+	
+	nearbyGroupIndex = groupIndex;
+	while ((nearbyGroupIndex + 1) < [allGroups count])
+	{
+		nearbyGroupIndex++;
+		NSString *nearbyGroup = [allGroups objectAtIndex:nearbyGroupIndex];
+		
+		NSUInteger section = [self sectionForGroup:nearbyGroup];
+		if (section != NSNotFound)
+		{
+			NSUInteger rows = [self numberOfItemsInGroup:nearbyGroup];
+			if (rows > 0)
+			{
+				return [NSIndexPath indexPathForRow:0 inSection:section];
+			}
+		}
+	}
+	
+	return nil;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Mapping UI -> View
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
