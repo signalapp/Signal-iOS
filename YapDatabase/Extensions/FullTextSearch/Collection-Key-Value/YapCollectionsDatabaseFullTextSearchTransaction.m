@@ -25,7 +25,7 @@
  * If there is a major re-write to this class, then the version number will be incremented,
  * and the class can automatically rebuild the tables as needed.
 **/
-#define YAP_DATABASE_VIEW_CLASS_VERSION 1
+#define YAP_COLLECTIONS_DATABASE_FTS_CLASS_VERSION 1
 
 
 @implementation YapCollectionsDatabaseFullTextSearchTransaction
@@ -54,7 +54,7 @@
 - (BOOL)createIfNeeded
 {
 	int oldClassVersion = [self intValueForExtensionKey:@"classVersion"];
-	int classVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
+	int classVersion = YAP_COLLECTIONS_DATABASE_FTS_CLASS_VERSION;
 	
 	if (oldClassVersion != classVersion)
 	{
