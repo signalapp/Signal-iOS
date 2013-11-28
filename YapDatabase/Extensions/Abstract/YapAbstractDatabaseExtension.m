@@ -18,15 +18,16 @@
  * 
  * Return YES if the class/instance supports the particular type of database (YapDatabase vs YapCollectionsDatabase).
 **/
-- (BOOL)supportsDatabase:(YapAbstractDatabase *)database
+- (BOOL)supportsDatabase:(YapAbstractDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions
 {
 	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return NO;
 }
 
 /**
- * Subclasses may optionally implement this method to support dependencies.
- * This method is called during the view registration process to enusre the dependencies are available.
+ * Subclasses MUST implement this method IF they have dependencies.
+ * This method is called during the view registration simply to record the needed dependencies.
+ * If any of the dependencies are unregistered, this extension will automatically be unregistered.
  *
  * Return a set of NSString objects, representing the name(s) of registered extensions
  * that this extension is dependent upon.

@@ -189,7 +189,7 @@ typedef enum {
  * 
  * @param options
  * 
- *   The options allow you to specify things like creating an in-memory-only view (non persistent).
+ *   The options allow you to specify things like creating an IN-MEMORY-ONLY VIEW (non persistent).
 **/
 
 - (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
@@ -226,7 +226,7 @@ typedef enum {
 @property (nonatomic, assign, readonly) int version;
 
 /**
- * The options allow you to specify things like creating an in-memory-only view (non persistent).
+ * The options allow you to specify things like creating an IN-MEMORY-ONLY VIEW (non persistent).
 **/
 @property (nonatomic, copy, readonly) YapDatabaseViewOptions *options;
 

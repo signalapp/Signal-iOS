@@ -33,15 +33,18 @@
 /**
  * Subclasses MUST implement this method.
  * This method is called during the view registration process to enusre the extension supports the database type.
+ * The registered extensions are passed too, in case dependencies need to be checked.
  * 
- * Return YES if the class/instance supports the particular type of database (YapDatabase vs YapCollectionsDatabase).
+ * Return YES if the class/instance supports the database type (YapDatabase vs YapCollectionsDatabase)
+ * and configuration (dependencies).
 **/
-- (BOOL)supportsDatabase:(YapAbstractDatabase *)database;
+- (BOOL)supportsDatabase:(YapAbstractDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions;
 
 /**
- * Subclasses may optionally implement this method to support dependencies.
- * This method is called during the view registration process to enusre the dependencies are available.
- * 
+ * Subclasses MUST implement this method IF they have dependencies.
+ * This method is called during the view registration simply to record the needed dependencies.
+ * If any of the dependencies are unregistered, this extension will automatically be unregistered.
+ *
  * Return a set of NSString objects, representing the name(s) of registered extensions
  * that this extension is dependent upon.
  *

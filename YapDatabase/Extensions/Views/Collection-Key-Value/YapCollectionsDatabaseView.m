@@ -160,7 +160,7 @@
  *
  * Return YES if the class/instance supports the particular type of database (YapDatabase vs YapCollectionsDatabase).
 **/
-- (BOOL)supportsDatabase:(YapAbstractDatabase *)database
+- (BOOL)supportsDatabase:(YapAbstractDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions
 {
 	if ([database isKindOfClass:[YapCollectionsDatabase class]])
 	{

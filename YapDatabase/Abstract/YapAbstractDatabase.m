@@ -1301,7 +1301,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 {
 	NSAssert(dispatch_get_specific(IsOnWriteQueueKey), @"Must go through writeQueue.");
 	
-	// Valid parameter checks
+	// Validate parameters
 	
 	if (extension == nil)
 	{
@@ -1332,32 +1332,10 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	
 	// Make sure the extension can be supported
 	
-	if (![extension supportsDatabase:self])
+	if (![extension supportsDatabase:self withRegisteredExtensions:_registeredExtensions])
 	{
-		YDBLogError(@"Error registering extension: extension doesn't support this type of database");
+		YDBLogError(@"Error registering extension: extension doesn't database type or configuration");
 		return NO;
-	}
-	
-	NSSet *dependencies = [extension dependencies];
-	if ([dependencies count] > 0)
-	{
-		NSString *missingDependency = nil;
-		
-		for (NSString *dependency in dependencies)
-		{
-			if ([_registeredExtensions objectForKey:dependency] == nil)
-			{
-				missingDependency = dependency;
-				break;
-			}
-		}
-		
-		if (missingDependency)
-		{
-			YDBLogError(@"Error registering extension:"
-			            @" extension dependency \"%@\" isn't registered", missingDependency);
-			return NO;
-		}
 	}
 	
 	// Set the registeredName now.
@@ -1365,9 +1343,16 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	
 	extension.registeredName = extensionName;
 	
+	// Attempt registration
+	
 	BOOL result = [[self registrationConnection] registerExtension:extension withName:extensionName];
 	if (result)
 	{
+		// Extension registered
+		// Record dependencies (if there are any)
+		
+		NSSet *dependencies = [extension dependencies];
+		
 		if (dependencies == nil)
 			dependencies = [NSSet set];
 		
@@ -1378,6 +1363,8 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	}
 	else
 	{
+		// Registration failed
+		
 		extension.registeredName = nil;
 	}
 	
