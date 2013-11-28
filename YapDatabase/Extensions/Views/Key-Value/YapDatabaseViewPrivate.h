@@ -13,6 +13,13 @@
 
 @class YapCache;
 
+/**
+ * This version number is stored in the yap2 table.
+ * If there is a major re-write to this class, then the version number will be incremented,
+ * and the class can automatically rebuild the tables as needed.
+**/
+#define YAP_DATABASE_VIEW_CLASS_VERSION 3
+
 
 @interface YapDatabaseView () {
 @public
@@ -104,6 +111,11 @@
          databaseTransaction:(YapDatabaseReadTransaction *)databaseTransaction;
 
 // The following are declared for view subclasses (such as YapDatabaseFilteredView)
+
+- (BOOL)createTables;
+
+- (NSString *)registeredName;
+- (BOOL)isPersistentView;
 
 - (NSString *)pageKeyForRowid:(int64_t)rowid;
 - (NSUInteger)indexForRowid:(int64_t)rowid inGroup:(NSString *)group withPageKey:(NSString *)pageKey;

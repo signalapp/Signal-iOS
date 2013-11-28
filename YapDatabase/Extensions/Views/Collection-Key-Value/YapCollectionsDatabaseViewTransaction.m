@@ -26,12 +26,6 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
-/**
- * This version number is stored in the yap2 table.
- * If there is a major re-write to this class, then the version number will be incremented,
- * and the class can automatically rebuild the tables as needed.
-**/
-#define YAP_DATABASE_VIEW_CLASS_VERSION 3
 
 /**
  * The view is tasked with storing ordered arrays of keys.
@@ -40,7 +34,7 @@
  * This reduces disk IO, as only the contents of a single page are written for a single change.
  * And only the contents of a single page need be read to fetch a single key.
 **/
-#define YAP_DATABASE_VIEW_MAX_PAGE_SIZE 50
+#define YAP_COLLECTIONS_DATABASE_VIEW_MAX_PAGE_SIZE 50
 
 /**
  * ARCHITECTURE OVERVIEW:
@@ -120,7 +114,7 @@
 	// Check classVersion (the internal version number of YapCollectionsDatabaseView implementation)
 	
 	int oldClassVersion = [self intValueForExtensionKey:@"classVersion"];
-	int classVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
+	int classVersion = YAP_COLLECTIONS_DATABASE_VIEW_CLASS_VERSION;
 	
 	if (oldClassVersion != classVersion)
 		needsCreateTables = YES;
@@ -1351,7 +1345,8 @@
 	
 	// Create page
 	
-	YapDatabaseViewPage *page = [[YapDatabaseViewPage alloc] initWithCapacity:YAP_DATABASE_VIEW_MAX_PAGE_SIZE];
+	YapDatabaseViewPage *page =
+	  [[YapDatabaseViewPage alloc] initWithCapacity:YAP_COLLECTIONS_DATABASE_VIEW_MAX_PAGE_SIZE];
 	[page addRowid:rowid];
 	
 	// Create pageMetadata
@@ -1438,7 +1433,7 @@
 			//
 			// Related method: splitOversizedPage:
 			
-			NSUInteger maxPageSize = YAP_DATABASE_VIEW_MAX_PAGE_SIZE;
+			NSUInteger maxPageSize = YAP_COLLECTIONS_DATABASE_VIEW_MAX_PAGE_SIZE;
 			
 			if (pm->count < maxPageSize)
 			{
@@ -1499,8 +1494,8 @@
 	// However, we do want to avoid allowing a single page to grow infinitely large.
 	// So we use triggers to ensure pages don't get too big.
 	
-	NSUInteger trigger = YAP_DATABASE_VIEW_MAX_PAGE_SIZE * 32;
-	NSUInteger target = YAP_DATABASE_VIEW_MAX_PAGE_SIZE * 16;
+	NSUInteger trigger = YAP_COLLECTIONS_DATABASE_VIEW_MAX_PAGE_SIZE * 32;
+	NSUInteger target = YAP_COLLECTIONS_DATABASE_VIEW_MAX_PAGE_SIZE * 16;
 	
 	if ([page count] > trigger)
 	{
@@ -2368,7 +2363,7 @@
 	// Instead we wait til the transaction has completed
 	// and then we can perform all such cleanup in a single step.
 	
-	NSUInteger maxPageSize = YAP_DATABASE_VIEW_MAX_PAGE_SIZE;
+	NSUInteger maxPageSize = YAP_COLLECTIONS_DATABASE_VIEW_MAX_PAGE_SIZE;
 	
 	// Get all the dirty pageMetadata objects.
 	// We snapshot the items so we can make modifications as we enumerate.

@@ -16,6 +16,14 @@
 @class YapCache;
 @class YapCollectionKey;
 
+/**
+ * This version number is stored in the yap2 table.
+ * If there is a major re-write to this class, then the version number will be incremented,
+ * and the class can automatically rebuild the tables as needed.
+**/
+#define YAP_COLLECTIONS_DATABASE_VIEW_CLASS_VERSION 3
+
+
 @interface YapCollectionsDatabaseView () {
 @public
 	YapCollectionsDatabaseViewGroupingBlock groupingBlock;

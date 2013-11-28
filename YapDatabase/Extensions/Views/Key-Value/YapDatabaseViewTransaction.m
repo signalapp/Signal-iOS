@@ -26,37 +26,32 @@
 #endif
 
 /**
- * This version number is stored in the yap2 table.
- * If there is a major re-write to this class, then the version number will be incremented,
- * and the class can automatically rebuild the tables as needed.
-**/
-#define YAP_DATABASE_VIEW_CLASS_VERSION 3
-
-/**
- * The view is tasked with storing ordered arrays of keys.
- * In doing so, it splits the array into "pages" of keys,
+ * The view is tasked with storing ordered arrays of int64_t rowids (YapDatabaseViewPage).
+ * In doing so, it splits the array into "pages" of rowids,
  * and stores the pages in the database.
  * This reduces disk IO, as only the contents of a single page are written for a single change.
- * And only the contents of a single page need be read to fetch a single key.
+ * And only the contents of a single page need be read to fetch a single rowid.
 **/
 #define YAP_DATABASE_VIEW_MAX_PAGE_SIZE 50
 
 /**
  * ARCHITECTURE OVERVIEW:
  * 
- * A YapDatabaseView allows one to store a ordered array of keys.
- * Furthermore, groups are supported, which means there may be multiple ordered arrays of keys, one per group.
+ * A YapDatabaseView allows one to store an ordered array of rowids.
+ * Furthermore, groups are supported, which means there may be multiple ordered arrays of rowids, one per group.
  * 
+ * A rowid can be used to quickly lookup any information in the database for the row, as the rowid is primary key.
+ *
  * Conceptually this is a very simple concept.
  * But obviously there are memory and performance requirements that add complexity.
  *
  * The view creates two database tables:
  *
- * view_name_key:
- * - key     (string, primary key) : a key from the database table
- * - pageKey (string)              : the primary key in the page table
+ * view_extensionName_key:
+ * - rowid   (int64_t, primary key) : matches rowid from database2 table
+ * - pageKey (string)               : the primary key in the page table
  * 
- * view_name_page:
+ * view_extensionName_page:
  * - pageKey  (string, primary key) : a uuid
  * - data     (blob)                : an array of keys (the page)
  * - metadata (blob)                : a YapDatabaseViewPageMetadata object

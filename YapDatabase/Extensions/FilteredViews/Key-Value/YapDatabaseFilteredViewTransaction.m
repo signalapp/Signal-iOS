@@ -1,6 +1,7 @@
 #import "YapDatabaseFilteredViewTransaction.h"
 #import "YapDatabaseFilteredViewPrivate.h"
 #import "YapDatabaseViewChangePrivate.h"
+#import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapDatabasePrivate.h"
 #import "YapDatabaseLogging.h"
 
@@ -20,6 +21,86 @@
 
 
 @implementation YapDatabaseFilteredViewTransaction
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Extension Lifecycle
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Required override method from YapAbstractDatabaseExtensionTransaction.
+ *
+ * This method is called to create any necessary tables (if needed),
+ * as well as populate the view (if needed) by enumerating over the existing rows in the database.
+**/
+- (BOOL)createIfNeeded
+{
+	BOOL needsCreateTables = NO;
+	
+	// Check classVersion (the internal version number of view implementation)
+	
+	int oldClassVersion = [self intValueForExtensionKey:@"classVersion"];
+	int classVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
+	
+	if (oldClassVersion != classVersion)
+		needsCreateTables = YES;
+	
+	// Check persistence.
+	// Need to properly transition from persistent to non-persistent, and vice-versa.
+	
+	BOOL oldIsPersistent = NO;
+	BOOL hasOldIsPersistent = [self getBoolValue:&oldIsPersistent forExtensionKey:@"persistent"];
+	
+	BOOL isPersistent = [self isPersistentView];
+	
+	if (hasOldIsPersistent && (oldIsPersistent != isPersistent))
+	{
+		[[viewConnection->view class] dropTablesForRegisteredName:[self registeredName]
+		                                          withTransaction:databaseTransaction];
+		
+		needsCreateTables = YES;
+	}
+	
+	// Create or re-populate if needed
+	
+	if (needsCreateTables)
+	{
+		// First time registration
+		
+		if (![self createTables]) return NO;
+		if (![self populateView]) return NO;
+		
+		[self setIntValue:classVersion forExtensionKey:@"classVersion"];
+		
+		[self setBoolValue:isPersistent forExtensionKey:@"persistent"];
+		
+		int userSuppliedConfigVersion = viewConnection->view->version;
+		[self setIntValue:userSuppliedConfigVersion forExtensionKey:@"version"];
+	}
+	else
+	{
+		// Check user-supplied tag.
+		// We may need to re-populate the database if the groupingBlock or sortingBlock changed.
+		
+		__unsafe_unretained YapDatabaseFilteredView *filteredView = (YapDatabaseFilteredView *)viewConnection->view;
+		
+		NSString *oldTag = [self stringValueForExtensionKey:@"tag"];
+		NSString *newTag = filteredView->tag;
+		
+		if (![oldTag isEqualToString:newTag])
+		{
+			if (![self populateView]) return NO;
+			
+			[self setStringValue:newTag forExtensionKey:@"tag"];
+		}
+		
+		if (!hasOldIsPersistent)
+		{
+			[self setBoolValue:isPersistent forExtensionKey:@"persistent"];
+		}
+	}
+	
+	return YES;
+}
 
 /**
  * Internal method.
