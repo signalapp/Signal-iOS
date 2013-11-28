@@ -35,7 +35,9 @@
 	[super tearDown];
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)test_persistent
 {
@@ -147,11 +149,22 @@
 		STAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
 	}];
 	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
+		
+		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
+		
+		STAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
+		STAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
+	}];
+	
 	connection1 = nil;
 	connection2 = nil;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)testScratch_persistent
 {
@@ -269,6 +282,171 @@
 		
 		STAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
 		STAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
+	}];
+	
+	connection1 = nil;
+	connection2 = nil;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)testRepopulate_persistent
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = YES;
+	
+	[self _testRepopulate_withPath:databasePath options:options];
+}
+
+- (void)testRepopulate_nonPersistent
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = NO;
+	
+	[self _testRepopulate_withPath:databasePath options:options];
+}
+
+- (void)_testRepopulate_withPath:(NSString *)databasePath options:(YapDatabaseViewOptions *)options
+{
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	STAssertNotNil(database, @"Oops");
+	
+	YapDatabaseConnection *connection1 = [database newConnection];
+	YapDatabaseConnection *connection2 = [database newConnection];
+	
+	YapDatabaseViewBlockType groupingBlockType;
+	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
+	
+	YapDatabaseViewBlockType sortingBlockType;
+	YapDatabaseViewSortingWithObjectBlock sortingBlock;
+	
+	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
+	groupingBlock = ^NSString *(NSString *key){
+		
+		if ([key isEqualToString:@"keyX"]) // Exclude keyX from view
+			return nil;
+		else
+			return @"";
+	};
+	
+	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
+	sortingBlock = ^(NSString *group, NSString *key1, id obj1, NSString *key2, id obj2){
+		
+		__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
+		__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
+		
+		return [number1 compare:number2];
+	};
+	
+	YapDatabaseView *view =
+	    [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
+	                                 groupingBlockType:groupingBlockType
+	                                      sortingBlock:sortingBlock
+	                                  sortingBlockType:sortingBlockType
+	                                           version:0
+	                                           options:options];
+	
+	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
+	STAssertTrue(registerResult1, @"Failure registering view extension");
+	
+	YapDatabaseViewBlockType filteringBlockType;
+	YapDatabaseViewFilteringBlock filteringBlock;
+	
+	filteringBlockType = YapDatabaseViewBlockTypeWithObject;
+	filteringBlock = ^BOOL (NSString *group, NSString *key, id object){
+		
+		__unsafe_unretained NSNumber *number = (NSNumber *)object;
+		
+		if ([number intValue] % 2 == 0)
+			return YES; // even
+		else
+			return NO;  // odd
+	};
+	
+	YapDatabaseFilteredView *filteredView =
+	  [[YapDatabaseFilteredView alloc] initWithParentViewName:@"order"
+	                                           filteringBlock:filteringBlock
+	                                       filteringBlockType:filteringBlockType
+	                                                      tag:@"even"];
+	
+	BOOL registerResult2 = [database registerExtension:filteredView withName:@"filter"];
+	STAssertTrue(registerResult2, @"Failure registering filteredView extension");
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+		
+		STAssertNil([transaction ext:@"non-existent-view"], @"Expected nil");
+		
+		STAssertNotNil([transaction ext:@"order"], @"Expected view extension");
+		STAssertNotNil([transaction ext:@"filter"], @"Expected filteredView extension");
+		
+		[transaction setObject:[NSNull null] forKey:@"keyX"];
+		
+		for (int i = 0; i < 100; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			
+			[transaction setObject:@(i) forKey:key];
+		}
+		
+		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
+		
+		STAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
+		STAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
+		
+		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
+		
+		STAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
+		STAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
+	}];
+	
+	//
+	// Now update the filterBlock
+	//
+	
+	filteringBlockType = YapDatabaseViewBlockTypeWithObject;
+	filteringBlock = ^BOOL (NSString *group, NSString *key, id object){
+		
+		int num = [(NSNumber *)object intValue];
+		
+		if ((num % 2 == 0) || (num % 5 == 0))
+			return YES; // even OR divisable by 5
+		else
+			return NO;  // odd
+	};
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[[transaction ext:@"filter"] setFilteringBlock:filteringBlock
+		                            filteringBlockType:filteringBlockType
+		                                           tag:@"even+5"];
+		
+		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
+		
+		STAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
+		STAssertTrue(filterCount == (50 + 10), @"Bad count in filter. Expected 60, got %d", (int)filterCount);
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
+		
+		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
+		
+		STAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
+		STAssertTrue(filterCount == (50 + 10), @"Bad count in filter. Expected 60, got %d", (int)filterCount);
 	}];
 	
 	connection1 = nil;

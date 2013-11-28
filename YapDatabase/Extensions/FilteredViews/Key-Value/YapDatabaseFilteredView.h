@@ -1,6 +1,12 @@
 #import <Foundation/Foundation.h>
-#import "YapDatabaseView.h"
 
+#import "YapDatabaseView.h"
+#import "YapDatabaseFilteredViewConnection.h"
+#import "YapDatabaseFilteredViewTransaction.h"
+
+
+#ifndef YapDatabaseViewFilteringBlockDefined
+#define YapDatabaseViewFilteringBlockDefined 1
 
 typedef id YapDatabaseViewFilteringBlock; // One of the YapDatabaseViewGroupingX types below.
 
@@ -9,6 +15,7 @@ typedef BOOL (^YapDatabaseViewFilteringWithObjectBlock)(NSString *group, NSStrin
 typedef BOOL (^YapDatabaseViewFilteringWithMetadataBlock)(NSString *group, NSString *key, id metadata);
 typedef BOOL (^YapDatabaseViewFilteringWithRowBlock)(NSString *group, NSString *key, id object, id metadata);
 
+#endif
 
 @interface YapDatabaseFilteredView : YapDatabaseView
 

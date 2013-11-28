@@ -119,6 +119,7 @@
 
 - (NSString *)pageKeyForRowid:(int64_t)rowid;
 - (NSUInteger)indexForRowid:(int64_t)rowid inGroup:(NSString *)group withPageKey:(NSString *)pageKey;
+- (BOOL)getRowid:(int64_t *)rowidPtr atIndex:(NSUInteger)index inGroup:(NSString *)group;
 
 - (void)insertRowid:(int64_t)rowid key:(NSString *)key inNewGroup:(NSString *)group;
 - (void)insertRowid:(int64_t)rowid key:(NSString *)key
@@ -134,6 +135,7 @@
         withChanges:(int)flags
               isNew:(BOOL)isGuaranteedNew;
 
+- (void)removeRowid:(int64_t)rowid key:(NSString *)key atIndex:(NSUInteger)index inGroup:(NSString *)group;
 - (void)removeRowid:(int64_t)rowid key:(NSString *)key;
 - (void)removeAllRowids;
 

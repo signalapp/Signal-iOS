@@ -1340,7 +1340,7 @@
 	NSString *pageKey = pageMetadata->pageKey;
 	YapDatabaseViewPage *page = [self pageForPageKey:pageKey];
 	
-	YDBLogVerbose(@"Inserting key(%@) in group(%@) at index(%lu) with page(%@) pageOffset(%lu)",
+	YDBLogVerbose(@"Inserting key(%@) in group(%@) at groupIndex(%lu) with page(%@) pageOffset(%lu)",
 	              key, group, (unsigned long)index, pageKey, (unsigned long)(index - pageOffset));
 	
 	// Update page (insert rowid)
@@ -1679,6 +1679,82 @@
 }
 
 /**
+ * Use this method when the index (within the group) is already known.
+**/
+- (void)removeRowid:(int64_t)rowid key:(NSString *)key atIndex:(NSUInteger)index inGroup:(NSString *)group
+{
+	YDBLogAutoTrace();
+	
+	NSParameterAssert(key != nil);
+	NSParameterAssert(group != nil);
+	
+	// Fetch page
+	
+	YapDatabaseViewPage *page = nil;
+	YapDatabaseViewPageMetadata *pageMetadata = nil;
+	
+	NSUInteger pageOffset = 0;
+	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	
+	for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
+	{
+		if ((index < (pageOffset + pm->count)) && (pm->count > 0))
+		{
+			pageMetadata = pm;
+			page = [self pageForPageKey:pm->pageKey];
+			
+			break;
+		}
+		else
+		{
+			pageOffset += pm->count;
+		}
+	}
+	
+	if (page == nil)
+	{
+		YDBLogError(@"%@ (%@): Unable to remove rowid at groupIndex(%lu) in group(%@)",
+		            THIS_METHOD, [self registeredName], (unsigned long)index, group);
+		return;
+	}
+	
+	// Verify specified rowid matches specified index
+	
+	NSUInteger indexWithinPage = index - pageOffset;
+	
+	NSAssert(rowid == [page rowidAtIndex:indexWithinPage], @"Rowid mismatch");
+	
+	YDBLogVerbose(@"Removing key(%@) from page(%@) at pageIndex(%lu)", key, page, (unsigned long)indexWithinPage);
+	
+	// Add change to log
+	
+	[viewConnection->changes addObject:
+	  [YapDatabaseViewRowChange deleteKey:key inGroup:group atIndex:index]];
+	
+	[viewConnection->mutatedGroups addObject:group];
+	
+	// Update page (by removing rowid from array)
+	
+	[page removeRowidAtIndex:indexWithinPage];
+	
+	// Update page metadata (by decrementing count)
+	
+	pageMetadata->count = [page count];
+	
+	// Mark page as dirty
+	
+	YDBLogVerbose(@"Dirty page(%@)", pageMetadata->pageKey);
+	
+	[viewConnection->dirtyPages setObject:page forKey:pageMetadata->pageKey];
+	[viewConnection->pageCache setObject:page forKey:pageMetadata->pageKey];
+	
+	// Mark key for deletion
+	
+	[viewConnection->dirtyMaps setObject:[NSNull null] forKey:@(rowid)];
+	[viewConnection->mapCache removeObjectForKey:@(rowid)];
+}
+
+/**
  * Use this method (instead of removeKey:) when the pageKey and group are already known.
 **/
 - (void)removeRowid:(int64_t)rowid key:(NSString *)key withPageKey:(NSString *)pageKey inGroup:(NSString *)group
@@ -1723,7 +1799,7 @@
 		return;
 	}
 	
-	YDBLogVerbose(@"Removing key(%@) from page(%@) at index(%lu)", key, page, (unsigned long)indexWithinPage);
+	YDBLogVerbose(@"Removing key(%@) from page(%@) at pageIndex(%lu)", key, page, (unsigned long)indexWithinPage);
 	
 	// Add change to log
 	
@@ -3147,14 +3223,44 @@
 #pragma mark Public API - Groups
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Returns the number of groups the view manages.
+ * Each group has one or more keys in it.
+**/
 - (NSUInteger)numberOfGroups
 {
 	return [viewConnection->group_pagesMetadata_dict count];
 }
 
+/**
+ * Returns the names of all groups in an unsorted array.
+ * Each group has one or more keys in it.
+ *
+ * @see YapDatabaseView - groupingBlock
+**/
 - (NSArray *)allGroups
 {
 	return [viewConnection->group_pagesMetadata_dict allKeys];
+}
+
+/**
+ * Returns YES if there are any keys in the given group.
+ * This is equivalent to ([viewTransaction numberOfKeysInGroup:group] > 0)
+**/
+- (BOOL)hasGroup:(NSString *)group
+{
+	// Note: We don't remove pages or groups until preCommitReadWriteTransaction.
+	// This allows us to recycle pages whenever possible, which reduces disk IO during the commit.
+	
+	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	
+	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
+	{
+		if (pageMetadata->count > 0)
+			return YES;
+	}
+	
+	return NO;
 }
 
 - (NSUInteger)numberOfKeysInGroup:(NSString *)group
@@ -3717,8 +3823,32 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Touch
+#pragma mark Exceptions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSException *)mutationDuringEnumerationException:(NSString *)group
+{
+	NSString *reason = [NSString stringWithFormat:
+	    @"View <RegisteredName=%@, Group=%@> was mutated while being enumerated.", [self registeredName], group];
+	
+	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
+	    @"If you modify the database during enumeration you must either"
+		@" (A) ensure you don't mutate the group you're enumerating OR"
+		@" (B) set the 'stop' parameter of the enumeration block to YES (*stop = YES;). "
+		@"If you're enumerating in order to remove items from the database,"
+		@" and you're enumerating in order (forwards or backwards)"
+		@" then you may also consider looping and using firstKeyInGroup / lastKeyInGroup."};
+	
+	return [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
+}
+
+@end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@implementation YapDatabaseViewTransaction (ReadWrite)
 
 /**
  * "Touching" a object allows you to mark an item in the view as "updated",
@@ -3764,7 +3894,13 @@
 
 - (void)touchRowForKey:(NSString *)key
 {
-	if (!databaseTransaction->isReadWriteTransaction) return;
+	YDBLogAutoTrace();
+	
+	if (!databaseTransaction->isReadWriteTransaction)
+	{
+		YDBLogWarn(@"%@ - Method only allowed in readWrite transaction", THIS_METHOD);
+		return;
+	}
 	
 	int64_t rowid = 0;
 	if ([databaseTransaction getRowid:&rowid forKey:key])
@@ -3786,7 +3922,13 @@
 
 - (void)touchObjectForKey:(NSString *)key
 {
-	if (!databaseTransaction->isReadWriteTransaction) return;
+	YDBLogAutoTrace();
+	
+	if (!databaseTransaction->isReadWriteTransaction)
+	{
+		YDBLogWarn(@"%@ - Method only allowed in readWrite transaction", THIS_METHOD);
+		return;
+	}
 	
 	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
 	
@@ -3816,7 +3958,13 @@
 
 - (void)touchMetadataForKey:(NSString *)key
 {
-	if (!databaseTransaction->isReadWriteTransaction) return;
+	YDBLogAutoTrace();
+	
+	if (!databaseTransaction->isReadWriteTransaction)
+	{
+		YDBLogWarn(@"%@ - Method only allowed in readWrite transaction", THIS_METHOD);
+		return;
+	}
 	
 	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
 	
@@ -3842,26 +3990,6 @@
 			}
 		}
 	}
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Exceptions
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (NSException *)mutationDuringEnumerationException:(NSString *)group
-{
-	NSString *reason = [NSString stringWithFormat:
-	    @"View <RegisteredName=%@, Group=%@> was mutated while being enumerated.", [self registeredName], group];
-	
-	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
-	    @"If you modify the database during enumeration you must either"
-		@" (A) ensure you don't mutate the group you're enumerating OR"
-		@" (B) set the 'stop' parameter of the enumeration block to YES (*stop = YES;). "
-		@"If you're enumerating in order to remove items from the database,"
-		@" and you're enumerating in order (forwards or backwards)"
-		@" then you may also consider looping and using firstKeyInGroup / lastKeyInGroup."};
-	
-	return [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
 }
 
 @end

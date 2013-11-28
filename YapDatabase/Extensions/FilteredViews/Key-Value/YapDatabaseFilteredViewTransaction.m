@@ -1,6 +1,9 @@
 #import "YapDatabaseFilteredViewTransaction.h"
 #import "YapDatabaseFilteredViewPrivate.h"
+#import "YapDatabaseViewPrivate.h"
 #import "YapDatabaseViewChangePrivate.h"
+#import "YapDatabaseViewPage.h"
+#import "YapDatabaseViewPageMetadata.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapDatabasePrivate.h"
 #import "YapDatabaseLogging.h"
@@ -251,6 +254,285 @@
 	}
 	
 	return YES;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Logic
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)repopulate
+{
+	YDBLogAutoTrace();
+	
+	__unsafe_unretained YapDatabaseFilteredView *filteredView = (YapDatabaseFilteredView *)viewConnection->view;
+	
+	YapDatabaseViewTransaction *parentViewTransaction = [databaseTransaction ext:filteredView->parentViewName];
+	
+	// Code overview:
+	//
+	// The objective is to enumerate the parentView, and invoke the new filter on each row.
+	// However, we want our changeset to properly match what actually changes.
+	// That is, we don't want to simply reset our view, and then repopulate from scratch.
+	// We want our changeset to specify the exact diff,
+	// highlighting just those items that were ultimately added or removed.
+	// This will allow for smooth animations when changing the filter.
+	//
+	// For example, in Apple's phone app, in the Recents tab, one can switch between "all" and "missed" calls.
+	// Tapping the "missed" button smoothly animates away all non-red rows. It looks great.
+	// This is what we're going for.
+	
+	if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithKey)
+	{
+		YapDatabaseViewFilteringWithKeyBlock filterBlock =
+		  (YapDatabaseViewFilteringWithKeyBlock)filteredView->filteringBlock;
+		
+		for (NSString *group in [parentViewTransaction allGroups])
+		{
+			__block BOOL existing = NO;
+			__block int64_t existingRowid = 0;
+			
+			existing = [self getRowid:&existingRowid atIndex:0 inGroup:group];
+			
+			__block NSUInteger index = 0;
+			
+			[parentViewTransaction enumerateRowidsInGroup:group
+			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop) {
+				
+				NSString *key = nil;
+				[databaseTransaction getKey:&key forRowid:rowid];
+				
+				if (filterBlock(group, key))
+				{
+					if (existing && (existingRowid == rowid))
+					{
+						// The row was previously in the view (allowed by previous filter),
+						// and is still in the view (allowed by new filter).
+						
+						index++;
+						existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
+					}
+					else
+					{
+						// The row was not previously in the view (disallowed by previous filter),
+						// but is now in the view (allowed by new filter).
+						
+						if (index == 0 && ([viewConnection->group_pagesMetadata_dict objectForKey:group] == nil))
+							[self insertRowid:rowid key:key inNewGroup:group];
+						else
+							[self insertRowid:rowid key:key inGroup:group atIndex:index withExistingPageKey:nil];
+						
+						index++;
+					}
+				}
+				else
+				{
+					if (existing && (existingRowid == rowid))
+					{
+						// The row was previously in the view (allowed by previous filter),
+						// but is no longer in the view (disallowed by new filter).
+						
+						[self removeRowid:rowid key:key atIndex:index inGroup:group];
+						existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
+					}
+					else
+					{
+						// The row was not previously in the view (disallowed by previous filter),
+						// and is still not in the view (disallowed by new filter).
+					}
+				}
+			}];
+		}
+	}
+	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithObject)
+	{
+		YapDatabaseViewFilteringWithObjectBlock filterBlock =
+		  (YapDatabaseViewFilteringWithObjectBlock)filteredView->filteringBlock;
+		
+		for (NSString *group in [parentViewTransaction allGroups])
+		{
+			__block BOOL existing = NO;
+			__block int64_t existingRowid = 0;
+			
+			existing = [self getRowid:&existingRowid atIndex:0 inGroup:group];
+			
+			__block NSUInteger index = 0;
+			
+			[parentViewTransaction enumerateRowidsInGroup:group
+			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop) {
+												   
+				NSString *key = nil;
+				id object = nil;
+				[databaseTransaction getKey:&key object:&object forRowid:rowid];
+				
+				if (filterBlock(group, key, object))
+				{
+					if (existing && (existingRowid == rowid))
+					{
+						// The row was previously in the view (allowed by previous filter),
+						// and is still in the view (allowed by new filter).
+						
+						index++;
+						existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
+					}
+					else
+					{
+						// The row was not previously in the view (disallowed by previous filter),
+						// but is now in the view (allowed by new filter).
+						
+						if (index == 0 && ([viewConnection->group_pagesMetadata_dict objectForKey:group] == nil))
+							[self insertRowid:rowid key:key inNewGroup:group];
+						else
+							[self insertRowid:rowid key:key inGroup:group atIndex:index withExistingPageKey:nil];
+						
+						index++;
+					}
+				}
+				else
+				{
+					if (existing && (existingRowid == rowid))
+					{
+						// The row was previously in the view (allowed by previous filter),
+						// but is no longer in the view (disallowed by new filter).
+						
+						[self removeRowid:rowid key:key atIndex:index inGroup:group];
+						existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
+					}
+					else
+					{
+						// The row was not previously in the view (disallowed by previous filter),
+						// and is still not in the view (disallowed by new filter).
+					}
+				}
+			}];
+		}
+	}
+	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	{
+		YapDatabaseViewFilteringWithMetadataBlock filterBlock =
+		  (YapDatabaseViewFilteringWithMetadataBlock)filteredView->filteringBlock;
+		
+		for (NSString *group in [parentViewTransaction allGroups])
+		{
+			__block BOOL existing = NO;
+			__block int64_t existingRowid = 0;
+			
+			existing = [self getRowid:&existingRowid atIndex:0 inGroup:group];
+			
+			__block NSUInteger index = 0;
+			
+			[parentViewTransaction enumerateRowidsInGroup:group
+			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop) {
+												   
+				NSString *key = nil;
+				id metadata = nil;
+				[databaseTransaction getKey:&key metadata:&metadata forRowid:rowid];
+				
+				if (filterBlock(group, key, metadata))
+				{
+					if (existing && (existingRowid == rowid))
+					{
+						// The row was previously in the view (allowed by previous filter),
+						// and is still in the view (allowed by new filter).
+						
+						index++;
+						existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
+					}
+					else
+					{
+						// The row was not previously in the view (disallowed by previous filter),
+						// but is now in the view (allowed by new filter).
+						
+						if (index == 0 && ([viewConnection->group_pagesMetadata_dict objectForKey:group] == nil))
+							[self insertRowid:rowid key:key inNewGroup:group];
+						else
+							[self insertRowid:rowid key:key inGroup:group atIndex:index withExistingPageKey:nil];
+						
+						index++;
+					}
+				}
+				else
+				{
+					if (existing && (existingRowid == rowid))
+					{
+						// The row was previously in the view (allowed by previous filter),
+						// but is no longer in the view (disallowed by new filter).
+						
+						[self removeRowid:rowid key:key atIndex:index inGroup:group];
+						existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
+					}
+					else
+					{
+						// The row was not previously in the view (disallowed by previous filter),
+						// and is still not in the view (disallowed by new filter).
+					}
+				}
+			}];
+		}
+	}
+	else // if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithRow)
+	{
+		YapDatabaseViewFilteringWithRowBlock filterBlock =
+		  (YapDatabaseViewFilteringWithRowBlock)filteredView->filteringBlock;
+		
+		for (NSString *group in [parentViewTransaction allGroups])
+		{
+			__block BOOL existing = NO;
+			__block int64_t existingRowid = 0;
+			
+			existing = [self getRowid:&existingRowid atIndex:0 inGroup:group];
+			
+			__block NSUInteger index = 0;
+			
+			[parentViewTransaction enumerateRowidsInGroup:group
+			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop) {
+												   
+				NSString *key = nil;
+				id object = nil;
+				id metadata = nil;
+				[databaseTransaction getKey:&key object:&object metadata:&metadata forRowid:rowid];
+				
+				if (filterBlock(group, key, object, metadata))
+				{
+					if (existing && (existingRowid == rowid))
+					{
+						// The row was previously in the view (allowed by previous filter),
+						// and is still in the view (allowed by new filter).
+						
+						index++;
+						existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
+					}
+					else
+					{
+						// The row was not previously in the view (disallowed by previous filter),
+						// but is now in the view (allowed by new filter).
+						
+						if (index == 0 && ([viewConnection->group_pagesMetadata_dict objectForKey:group] == nil))
+							[self insertRowid:rowid key:key inNewGroup:group];
+						else
+							[self insertRowid:rowid key:key inGroup:group atIndex:index withExistingPageKey:nil];
+						
+						index++;
+					}
+				}
+				else
+				{
+					if (existing && (existingRowid == rowid))
+					{
+						// The row was previously in the view (allowed by previous filter),
+						// but is no longer in the view (disallowed by new filter).
+						
+						[self removeRowid:rowid key:key atIndex:index inGroup:group];
+						existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
+					}
+					else
+					{
+						// The row was not previously in the view (disallowed by previous filter),
+						// and is still not in the view (disallowed by new filter).
+					}
+				}
+			}];
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -549,5 +831,43 @@
 ///
 /// All other hook methods are handled by superclass (YapDatabaseViewTransaction).
 ///
+
+@end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@implementation YapDatabaseFilteredViewTransaction (ReadWrite)
+
+- (void)setFilteringBlock:(YapDatabaseViewFilteringBlock)inFilteringBlock
+       filteringBlockType:(YapDatabaseViewBlockType)inFilteringBlockType
+                      tag:(NSString *)inTag
+{
+	YDBLogAutoTrace();
+	
+	if (!databaseTransaction->isReadWriteTransaction)
+	{
+		YDBLogWarn(@"%@ - Method only allowed in readWrite transaction", THIS_METHOD);
+		return;
+	}
+	
+	__unsafe_unretained YapDatabaseFilteredView *filteredView = (YapDatabaseFilteredView *)viewConnection->view;
+	
+	NSString *newTag = inTag ? [inTag copy] : @"";
+	
+	if ([filteredView->tag isEqualToString:newTag])
+	{
+		YDBLogWarn(@"%@ - Tag didn't change, so not updating view", THIS_METHOD);
+		return;
+	}
+	
+	filteredView->filteringBlock = inFilteringBlock;
+	filteredView->filteringBlockType = inFilteringBlockType;
+	
+	filteredView->tag = newTag;
+	
+	[self repopulate];
+}
 
 @end
