@@ -1,5 +1,21 @@
 #import "YapCollectionsDatabaseFilteredView.h"
 #import "YapCollectionsDatabaseFilteredViewPrivate.h"
+#import "YapAbstractDatabaseExtensionPrivate.h"
+#import "YapDatabaseLogging.h"
+
+#if ! __has_feature(objc_arc)
+#warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
+#endif
+
+/**
+ * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
+ * See YapDatabaseLogging.h for more information.
+**/
+#if DEBUG
+  static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
+#else
+  static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
+#endif
 
 
 @implementation YapCollectionsDatabaseFilteredView
@@ -53,6 +69,8 @@
 @synthesize filteringBlock = filteringBlock;
 @synthesize filteringBlockType = filteringBlockType;
 
+@synthesize tag = tag;
+
 - (id)initWithParentViewName:(NSString *)inParentViewName
               filteringBlock:(YapCollectionsDatabaseViewFilteringBlock)inFilteringBlock
           filteringBlockType:(YapCollectionsDatabaseViewBlockType)inFilteringBlockType
@@ -60,26 +78,26 @@
 	return [self initWithParentViewName:inParentViewName
 	                     filteringBlock:inFilteringBlock
 	                 filteringBlockType:inFilteringBlockType
-	                            version:0
+	                                tag:nil
 	                            options:nil];
 }
 
 - (id)initWithParentViewName:(NSString *)inParentViewName
               filteringBlock:(YapCollectionsDatabaseViewFilteringBlock)inFilteringBlock
           filteringBlockType:(YapCollectionsDatabaseViewBlockType)inFilteringBlockType
-                     version:(int)inVersion
+                         tag:(NSString *)inTag
 {
 	return [self initWithParentViewName:inParentViewName
 	                     filteringBlock:inFilteringBlock
 	                 filteringBlockType:inFilteringBlockType
-	                            version:inVersion
+	                                tag:inTag
 	                            options:nil];
 }
 
 - (id)initWithParentViewName:(NSString *)inParentViewName
               filteringBlock:(YapCollectionsDatabaseViewFilteringBlock)inFilteringBlock
           filteringBlockType:(YapCollectionsDatabaseViewBlockType)inFilteringBlockType
-                     version:(int)inVersion
+                         tag:(NSString *)inTag
                      options:(YapCollectionsDatabaseViewOptions *)inOptions
 {
 	NSAssert(inParentViewName != nil, @"Invalid parentViewName");
@@ -98,12 +116,51 @@
 		filteringBlock = inFilteringBlock;
 		filteringBlockType = inFilteringBlockType;
 		
-		version = inVersion;
+		version = 0; // version isn't used
+		
+		if (inTag)
+			tag = [inTag copy];
+		else
+			tag = @"";
 		
 		options = inOptions ? [inOptions copy] : [[YapCollectionsDatabaseViewOptions alloc] init];
 	}
 	return self;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Registration
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (BOOL)supportsDatabase:(YapAbstractDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions
+{
+	if (![super supportsDatabase:database withRegisteredExtensions:registeredExtensions])
+		return NO;
+	
+	YapAbstractDatabaseExtension *ext = [registeredExtensions objectForKey:parentViewName];
+	if (ext == nil)
+	{
+		YDBLogWarn(@"The specified parentViewName (%@) isn't registered", parentViewName);
+		return NO;
+	}
+	
+	if (![ext isKindOfClass:[YapCollectionsDatabaseView class]])
+	{
+		YDBLogWarn(@"The specified parentViewName (%@) isn't a view", parentViewName);
+		return NO;
+	}
+	
+	return YES;
+}
+
+- (NSSet *)dependencies
+{
+	return [NSSet setWithObject:parentViewName];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Connections
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (YapAbstractDatabaseExtensionConnection *)newConnection:(YapAbstractDatabaseConnection *)databaseConnection
 {

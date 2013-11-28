@@ -17,6 +17,7 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
+
 @implementation YapDatabaseFilteredView
 
 #pragma mark Invalid

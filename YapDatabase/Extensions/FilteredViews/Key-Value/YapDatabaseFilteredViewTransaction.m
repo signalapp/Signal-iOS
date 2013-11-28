@@ -2,8 +2,6 @@
 #import "YapDatabaseFilteredViewPrivate.h"
 #import "YapDatabaseViewPrivate.h"
 #import "YapDatabaseViewChangePrivate.h"
-#import "YapDatabaseViewPage.h"
-#import "YapDatabaseViewPageMetadata.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapDatabasePrivate.h"
 #import "YapDatabaseLogging.h"
@@ -150,8 +148,8 @@
 			__block NSUInteger filteredIndex = 0;
 			
 			[parentViewTransaction enumerateRowidsInGroup:group
-			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop) {
-				
+			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop)
+			{
 				NSString *key = nil;
 				[databaseTransaction getKey:&key forRowid:rowid];
 				
@@ -177,8 +175,8 @@
 			__block NSUInteger filteredIndex = 0;
 			
 			[parentViewTransaction enumerateRowidsInGroup:group
-			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop) {
-												   
+			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop)
+			{
 				NSString *key = nil;
 				id object = nil;
 				[databaseTransaction getKey:&key object:&object forRowid:rowid];
@@ -205,8 +203,8 @@
 			__block NSUInteger filteredIndex = 0;
 			
 			[parentViewTransaction enumerateRowidsInGroup:group
-			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop) {
-												   
+			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop)
+			{
 				NSString *key = nil;
 				id metadata = nil;
 				[databaseTransaction getKey:&key metadata:&metadata forRowid:rowid];
@@ -233,8 +231,8 @@
 			__block NSUInteger filteredIndex = 0;
 			
 			[parentViewTransaction enumerateRowidsInGroup:group
-			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop) {
-												   
+			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop)
+			{
 				NSString *key = nil;
 				id object = nil;
 				id metadata = nil;

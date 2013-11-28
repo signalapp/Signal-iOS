@@ -82,13 +82,16 @@ typedef BOOL (^YapDatabaseViewFilteringWithRowBlock)(NSString *group, NSString *
  * The tag assists you in updating the filteringBlock.
  *
  * Whenever you change the filteringBlock, just specify a tag to associate with the block.
- * The tag can be used as a versioning scheme, or perhaps helps to identify the filtering criteria.
- * 
+ * The tag can help you to identify the filtering criteria, or perhaps be used as a versioning scheme.
+ *
  * Here's how it works:
- * When you first create a filteredView, you specify a filteringBlock and associated tag.
- * If you later need to change the filteringBlock, then you change the associated tag simultaneously.
- * If the database notices the tag has changed since last time,
- * it will automatically flush the view and re-populate it using the new filteringBlock.
+ * The very first time you create the filteredView, it will populate itself from the parentView + filteringBlock.
+ * On subsequent app launches, when you re-register the filteredView, it will check the passed tag with
+ * the tag it has stored from the previous app session. If the tags match then the filteredView knows it doesn't
+ * have to do anything. (It's already setup from last app session.) However, if the tags don't match, then
+ * the filteredView will re-populate itself.
+ *
+ * It works the same way if you change the filteringBlock on-the-fly. (See setFilteringBlock:filteringBlockType:tag:)
 **/
 @property (nonatomic, copy, readonly) NSString *tag;
 

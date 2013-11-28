@@ -49,6 +49,12 @@
 - (NSArray *)allGroups;
 
 /**
+ * Returns YES if there are any keys in the given group.
+ * This is equivalent to ([viewTransaction numberOfKeysInGroup:group] > 0)
+**/
+- (BOOL)hasGroup:(NSString *)group;
+
+/**
  * Returns the total number of keys in the given group.
  * If the group doesn't exist, returns zero.
 **/
