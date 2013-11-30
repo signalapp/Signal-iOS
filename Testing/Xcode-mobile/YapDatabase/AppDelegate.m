@@ -1,12 +1,6 @@
 #import "AppDelegate.h"
 #import "ViewController.h"
 
-#import "BenchmarkYapCache.h"
-#import "BenchmarkYapDatabase.h"
-
-#import "YapDatabase.h"
-#import "YapDatabaseView.h"
-
 #import "YapCollectionsDatabase.h"
 #import "YapCollectionsDatabaseView.h"
 
@@ -17,8 +11,8 @@
 
 @implementation AppDelegate
 {
-	YapDatabase *database;
-	YapDatabaseConnection *databaseConnection;
+	YapCollectionsDatabase *database;
+	YapCollectionsDatabaseConnection *databaseConnection;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -87,14 +81,14 @@
 	
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:nil];
 	
-	database = [[YapDatabase alloc] initWithPath:databasePath];
+	database = [[YapCollectionsDatabase alloc] initWithPath:databasePath];
 //	database.connectionPoolLifetime = 15;
 	
 	databaseConnection = [database newConnection];
 	
-	[[database newConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+	[[database newConnection] readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
 		
-		[transaction setObject:@"value" forKey:@"key"];
+		[transaction setObject:@"value" forKey:@"key" inCollection:nil];
 	}];
 	
 	[NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(debugTimer:) userInfo:nil repeats:YES];
@@ -102,9 +96,9 @@
 
 - (void)debugTimer:(NSTimer *)timer
 {
-	[[database newConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+	[[database newConnection] readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
 		
-		[transaction setObject:@"value" forKey:@"key"];
+		[transaction setObject:@"value" forKey:@"key" inCollection:nil];
 	}];
 }
 
@@ -118,7 +112,7 @@
 	
 //	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	
-	database = [[YapDatabase alloc] initWithPath:databasePath];
+	database = [[YapCollectionsDatabase alloc] initWithPath:databasePath];
 	databaseConnection = [database newConnection];
 	
 	[self printDatabaseCount];
@@ -126,7 +120,7 @@
 	[self registerMainView];
 	[self printMainViewCount];
 	
-	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+	[databaseConnection readWriteWithBlock:^(YapCollectionsDatabaseReadWriteTransaction *transaction) {
 		
 		NSUInteger count = 5;
 		NSLog(@"Adding %lu items...", (unsigned long)count);
@@ -136,7 +130,7 @@
 			NSString *key = [[NSUUID UUID] UUIDString];
 			NSString *obj = [[NSUUID UUID] UUIDString];
 			
-			[transaction setObject:obj forKey:key];
+			[transaction setObject:obj forKey:key inCollection:nil];
 		}
 	}];
 	
@@ -152,29 +146,30 @@
 {
 	NSLog(@"Registering mainView....");
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithObjectBlock groupingBlock;
+	YapCollectionsDatabaseViewBlockType groupingBlockType;
+	YapCollectionsDatabaseViewGroupingWithObjectBlock groupingBlock;
 
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
+	YapCollectionsDatabaseViewBlockType sortingBlockType;
+	YapCollectionsDatabaseViewSortingWithObjectBlock sortingBlock;
 
-	groupingBlockType = YapDatabaseViewBlockTypeWithObject;
-	groupingBlock = ^NSString *(NSString *key, id object){
+	groupingBlockType = YapCollectionsDatabaseViewBlockTypeWithObject;
+	groupingBlock = ^NSString *(NSString *collection, NSString *key, id object){
 		
 		return @"";
 	};
 
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *key1, id obj1, NSString *key2, id obj2){
+	sortingBlockType = YapCollectionsDatabaseViewBlockTypeWithObject;
+	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                                  NSString *collection2, NSString *key2, id obj2){
 		
 		return [obj1 compare:obj2];
 	};
 
-	YapDatabaseView *databaseView =
-	    [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                                 groupingBlockType:groupingBlockType
-	                                      sortingBlock:sortingBlock
-	                                  sortingBlockType:sortingBlockType];
+	YapCollectionsDatabaseView *databaseView =
+	    [[YapCollectionsDatabaseView alloc] initWithGroupingBlock:groupingBlock
+	                                            groupingBlockType:groupingBlockType
+	                                                 sortingBlock:sortingBlock
+	                                             sortingBlockType:sortingBlockType];
 	
 	if ([database registerExtension:databaseView withName:@"main"])
 		NSLog(@"Registered mainView");
@@ -186,29 +181,30 @@
 {
 	NSLog(@"Registering onTheFlyView....");
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithObjectBlock groupingBlock;
+	YapCollectionsDatabaseViewBlockType groupingBlockType;
+	YapCollectionsDatabaseViewGroupingWithObjectBlock groupingBlock;
 
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
+	YapCollectionsDatabaseViewBlockType sortingBlockType;
+	YapCollectionsDatabaseViewSortingWithObjectBlock sortingBlock;
 
-	groupingBlockType = YapDatabaseViewBlockTypeWithObject;
-	groupingBlock = ^NSString *(NSString *key, id object){
+	groupingBlockType = YapCollectionsDatabaseViewBlockTypeWithObject;
+	groupingBlock = ^NSString *(NSString *collection, NSString *key, id object){
 		
 		return @"";
 	};
 
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *key1, id obj1, NSString *key2, id obj2){
+	sortingBlockType = YapCollectionsDatabaseViewBlockTypeWithObject;
+	sortingBlock = ^(NSString *group, NSString *collection, NSString *key1, id obj1,
+	                                  NSString *collection2, NSString *key2, id obj2){
 		
 		return [obj1 compare:obj2];
 	};
 
-	YapDatabaseView *databaseView =
-	    [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                                 groupingBlockType:groupingBlockType
-	                                      sortingBlock:sortingBlock
-	                                  sortingBlockType:sortingBlockType];
+	YapCollectionsDatabaseView *databaseView =
+	  [[YapCollectionsDatabaseView alloc] initWithGroupingBlock:groupingBlock
+	                                          groupingBlockType:groupingBlockType
+	                                               sortingBlock:sortingBlock
+	                                           sortingBlockType:sortingBlockType];
 	
 	if ([database registerExtension:databaseView withName:@"on-the-fly"])
 		NSLog(@"Registered onTheFlyView");
@@ -218,9 +214,9 @@
 
 - (void)printDatabaseCount
 {
-	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	[databaseConnection readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
 		
-		NSUInteger count = [transaction numberOfKeys];
+		NSUInteger count = [transaction numberOfKeysInCollection:nil];
 		
 		NSLog(@"database.count = %lu", (unsigned long)count);
 	}];
@@ -228,7 +224,7 @@
 
 - (void)printMainViewCount
 {
-	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	[databaseConnection readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
 		
 		NSUInteger count = [[transaction ext:@"main"] numberOfKeysInGroup:@""];
 		
@@ -238,7 +234,7 @@
 
 - (void)printOnTheFlyViewCount
 {
-	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	[databaseConnection readWithBlock:^(YapCollectionsDatabaseReadTransaction *transaction) {
 		
 		NSUInteger count = [[transaction ext:@"on-the-fly"] numberOfKeysInGroup:@""];
 		

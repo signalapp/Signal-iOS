@@ -4,7 +4,6 @@
 #import "YapAbstractDatabaseConnection.h"
 #import "YapAbstractDatabaseTransaction.h"
 
-#import "YapDatabaseView.h"
 #import "YapCollectionsDatabaseViewTransaction.h"
 
 #import "YapDatabaseLogging.h"
