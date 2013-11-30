@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="4510" systemVersion="12F37" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="4514" systemVersion="13A603" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ViewController">
             <connections>
                 <outlet property="cacheBenchmarksButton" destination="12" id="19"/>
                 <outlet property="view" destination="2" id="3"/>
-                <outlet property="yapCollectionsDatabaseBenchmarksButton" destination="HSz-aX-IwS" id="DDh-FY-3kV"/>
                 <outlet property="yapDatabaseBenchmarksButton" destination="4" id="kgo-NO-ooY"/>
             </connections>
         </placeholder>
@@ -19,12 +18,8 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4">
-                    <rect key="frame" x="191" y="116" width="387" height="30"/>
+                    <rect key="frame" x="265" y="116" width="239" height="33"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="30" id="fqp-vN-cSJ"/>
-                        <constraint firstAttribute="width" constant="387" id="lFv-Tw-1cJ"/>
-                    </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <state key="normal" title="Run YapDatabase Benchmarks">
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -36,31 +31,9 @@
                         <action selector="runYapDatabaseBenchmarks" destination="-1" eventType="touchUpInside" id="5Yt-Mo-log"/>
                     </connections>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HSz-aX-IwS">
-                    <rect key="frame" x="191" y="154" width="387" height="30"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="387" id="TZP-WQ-gTR"/>
-                        <constraint firstAttribute="height" constant="30" id="raD-OL-UMp"/>
-                    </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <state key="normal" title="Run YapCollectionsDatabase Benchmarks">
-                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                    <state key="disabled">
-                        <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                    <connections>
-                        <action selector="runYapCollectionsDatabaseBenchmarks" destination="-1" eventType="touchUpInside" id="zuC-P1-MTS"/>
-                    </connections>
-                </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="12">
-                    <rect key="frame" x="191" y="192" width="387" height="30"/>
+                    <rect key="frame" x="291" y="177" width="186" height="33"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="387" id="HS1-5t-yEt"/>
-                        <constraint firstAttribute="height" constant="30" id="l4D-og-aBD"/>
-                    </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <state key="normal" title="Run Cache Benchmarks">
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -75,11 +48,9 @@
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
-                <constraint firstItem="HSz-aX-IwS" firstAttribute="centerX" secondItem="4" secondAttribute="centerX" id="e9E-cP-Zsa"/>
+                <constraint firstItem="12" firstAttribute="top" secondItem="4" secondAttribute="bottom" constant="28" id="1G6-nD-G8Y"/>
+                <constraint firstAttribute="centerX" secondItem="12" secondAttribute="centerX" id="9AD-cc-Q7E"/>
                 <constraint firstItem="4" firstAttribute="top" secondItem="2" secondAttribute="top" constant="116" id="eSk-fE-UCM"/>
-                <constraint firstItem="HSz-aX-IwS" firstAttribute="top" secondItem="4" secondAttribute="bottom" constant="8" id="kg8-vG-RXk"/>
-                <constraint firstItem="12" firstAttribute="top" secondItem="HSz-aX-IwS" secondAttribute="bottom" constant="8" id="nZ5-sG-16G"/>
-                <constraint firstItem="12" firstAttribute="centerX" secondItem="HSz-aX-IwS" secondAttribute="centerX" id="oyN-7Y-B6Y"/>
                 <constraint firstAttribute="centerX" secondItem="4" secondAttribute="centerX" id="pES-xH-ZpQ"/>
             </constraints>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="blackOpaque"/>

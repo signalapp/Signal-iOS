@@ -11,11 +11,9 @@
 @interface ViewController : UIViewController
 
 @property (nonatomic, strong, readwrite) IBOutlet UIButton *yapDatabaseBenchmarksButton;
-@property (nonatomic, strong, readwrite) IBOutlet UIButton *yapCollectionsDatabaseBenchmarksButton;
 @property (nonatomic, strong, readwrite) IBOutlet UIButton *cacheBenchmarksButton;
 
 - (IBAction)runYapDatabaseBenchmarks;
-- (IBAction)runYapCollectionsDatabaseBenchmarks;
 - (IBAction)runCacheBenchmarks;
 
 @end

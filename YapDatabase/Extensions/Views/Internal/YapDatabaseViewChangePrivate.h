@@ -82,7 +82,7 @@
 /**
  * This method applies the given mappings, and then invokes the post-processing method.
  * 
- * This method is ONLY to be used by YapDatabaseViewConnection & YapCollectionsDatabaseViewConnection.
+ * This method is ONLY to be used by YapDatabaseViewConnection.
 **/
 + (void)getSectionChanges:(NSArray **)sectionChangesPtr
                rowChanges:(NSArray **)rowChangesPtr

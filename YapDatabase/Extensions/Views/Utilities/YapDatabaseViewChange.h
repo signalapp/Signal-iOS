@@ -99,7 +99,6 @@ typedef enum {
  * you've invoked changesForNotifications:withGroupToSectionMappings:.
  * 
  * @see YapDatabaseConnection changesForNotifications:withGroupToSectionMappings:
- * @see YapCollectionsDatabaseConnection changesForNotifications:withGroupToSectionMappings:
  * 
  * These properties are designed to help facilitate animations to tableViews and collectionsViews.
  * 

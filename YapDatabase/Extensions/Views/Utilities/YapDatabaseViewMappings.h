@@ -159,7 +159,6 @@
  * }
  *
  * @see YapDatabaseConnection getSectionChanges:rowChanges:forNotifications:withMappings:
- * @see YapCollectionsDatabaseConnection getSectionChanges:rowChanges:forNotifications:withMappings:
 **/
 
 /**
@@ -241,7 +240,6 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
  * The mappings object is used with:
  *
  * - YapDatabaseViewConnection getSectionChanges:rowChanges:forNotifications:withMappings:
- * - YapCollectionsDatabaseViewConnection getSectionChanges:rowChanges:forNotifications:withMappings:
  * 
  * If all your sections are static, then you won't ever get any section changes.
  * But if you have one or more dynamic sections, then be sure to process the section changes.

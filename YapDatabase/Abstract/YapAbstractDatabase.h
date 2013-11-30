@@ -13,8 +13,6 @@
  * If you're new to the project you may want to visit the wiki.
  * https://github.com/yaptv/YapDatabase/wiki
  *
- * This is the base database class which is shared by YapDatabase and YapCollectionsDatabase.
- *
  * - YapDatabase = Key/Value
  * - YapCollectionsDatabase = Collection/Key/Value
  * 

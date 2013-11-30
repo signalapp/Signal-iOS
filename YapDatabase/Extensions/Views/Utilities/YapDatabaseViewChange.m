@@ -395,11 +395,9 @@
 						// Most of the time, groups are deleted because the last key within the group was removed.
 						// Thus a regular section delete is accompanied by all the corresponding row deletes.
 						// But if the user invokes:
+						// - removeAllObjectsInAllCollections
 						//
-						// - removeAllObjects                 (YapDatabase)
-						// - removeAllObjectsInAllCollections (YapCollectionsDatabase)
-						//
-						// then we get a section delete that isn't accompanies by the corresponding row deletes.
+						// then we get a section delete that isn't accompanied by the corresponding row deletes.
 						// This operation is flagged via isReset.
 						//
 						// So here's what we do in this situation:
