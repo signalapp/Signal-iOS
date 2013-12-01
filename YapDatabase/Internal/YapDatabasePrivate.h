@@ -157,14 +157,6 @@ extern NSString *const YapDatabaseNotificationKey;
 
 @interface YapDatabaseConnection () {
 @private
-	sqlite3_stmt *beginTransactionStatement;
-	sqlite3_stmt *commitTransactionStatement;
-	sqlite3_stmt *rollbackTransactionStatement;
-	
-	sqlite3_stmt *yapGetDataForKeyStatement;   // Against "yap" database, for internal use
-	sqlite3_stmt *yapSetDataForKeyStatement;   // Against "yap" database, for internal use
-	sqlite3_stmt *yapRemoveExtensionStatement; // Against "yap" database, for internal use
-	
 	uint64_t snapshot;
 	
 	id sharedKeySetForInternalChangeset;

@@ -51,7 +51,7 @@
  *     return [NSKeyedUnarchiver unarchiveObjectWithData:data];
  * };
  *
- * If you use the initWithPath initializer, the default serializer/deserializer (above) are used.
+ * If you use the initWithPath initializer, the default serializer/deserializer are used.
  * Thus to store objects in the database, the objects need only support the NSCoding protocol.
  * You may optionally use a custom serializer/deserializer for the objects and/or metadata.
 **/
@@ -73,6 +73,9 @@ typedef id (^YapDatabaseSanitizer)(NSString *collection, NSString *key, id objec
 
 /**
  * This notification is posted following a readwrite transaction where the database was modified.
+ * 
+ * It is documented in more detail in the wiki article "YapDatabaseModifiedNotification":
+ * https://github.com/yaptv/YapDatabase/wiki/YapDatabaseModifiedNotification
  *
  * The notification object will be the database instance itself.
  * That is, it will be an instance of YapDatabase or YapCollectionsDatabase.

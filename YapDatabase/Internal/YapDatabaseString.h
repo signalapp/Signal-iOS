@@ -48,7 +48,7 @@
  * str    - Pointer to the char[] string.
  * length - Represents the length (in bytes) of the char[] str (excluding the NULL termination byte, as usual).
  * 
- * The other 2 "private" fielda are for internal use:
+ * The other 2 "private" fields are for internal use:
  * strStack - If the string doesn't exceed YapDatabaseStringMaxStackLength,
  *            then the bytes are copied here (onto stack storage), and str actually points to strStack.
  * strHeap  - If the string exceeds YapDatabaseStringMaxStackLength,
