@@ -5,7 +5,6 @@
 #import "YapDatabaseViewChange.h"
 #import "YapDatabaseViewChangePrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
-#import "YapAbstractDatabasePrivate.h"
 #import "YapDatabasePrivate.h"
 #import "YapCache.h"
 #import "YapCollectionKey.h"
@@ -129,8 +128,9 @@
 	
 	if (hasOldIsPersistent && (oldIsPersistent != isPersistent))
 	{
-		[[viewConnection->view class] dropTablesForRegisteredName:[self registeredName]
-		                                          withTransaction:databaseTransaction];
+		[[viewConnection->view class]
+		  dropTablesForRegisteredName:[self registeredName]
+		              withTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction];
 		
 		needsCreateTables = YES;
 	}
@@ -872,7 +872,7 @@
 /**
  * Required override method from YapAbstractDatabaseExtensionTransaction.
 **/
-- (YapAbstractDatabaseTransaction *)databaseTransaction
+- (YapDatabaseReadTransaction *)databaseTransaction
 {
 	return databaseTransaction;
 }

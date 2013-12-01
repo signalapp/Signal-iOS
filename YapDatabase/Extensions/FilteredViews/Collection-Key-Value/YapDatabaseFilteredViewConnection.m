@@ -16,14 +16,11 @@
 /**
  * Required override method from YapAbstractDatabaseExtensionConnection.
 **/
-- (id)newReadTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
+- (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction
 {
-	__unsafe_unretained YapDatabaseReadTransaction *dbTransaction =
-	  (YapDatabaseReadTransaction *)databaseTransaction;
-	
 	YapDatabaseFilteredViewTransaction *filteredViewTransaction =
 	  [[YapDatabaseFilteredViewTransaction alloc] initWithViewConnection:self
-	                                                 databaseTransaction:dbTransaction];
+	                                                 databaseTransaction:databaseTransaction];
 	
 	return filteredViewTransaction;
 }
@@ -31,14 +28,11 @@
 /**
  * Required override method from YapAbstractDatabaseExtensionConnection.
 **/
-- (id)newReadWriteTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
+- (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
 {
-	__unsafe_unretained YapDatabaseReadTransaction *dbTransaction =
-	  (YapDatabaseReadTransaction *)databaseTransaction;
-	
 	YapDatabaseFilteredViewTransaction *filteredViewTransaction =
 	  [[YapDatabaseFilteredViewTransaction alloc] initWithViewConnection:self
-	                                                 databaseTransaction:dbTransaction];
+	                                                 databaseTransaction:databaseTransaction];
 	
 	[self prepareForReadWriteTransaction];
 	return filteredViewTransaction;

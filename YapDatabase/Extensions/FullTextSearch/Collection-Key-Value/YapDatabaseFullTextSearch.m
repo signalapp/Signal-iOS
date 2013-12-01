@@ -1,8 +1,9 @@
 #import "YapDatabaseFullTextSearch.h"
 #import "YapDatabaseFullTextSearchPrivate.h"
-#import "YapDatabase.h"
-#import "YapAbstractDatabasePrivate.h"
+
+#import "YapDatabasePrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
+
 #import "YapDatabaseLogging.h"
 
 #if ! __has_feature(objc_arc)
@@ -22,9 +23,9 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 @implementation YapDatabaseFullTextSearch
 
 + (void)dropTablesForRegisteredName:(NSString *)registeredName
-                    withTransaction:(YapAbstractDatabaseTransaction *)transaction
+                    withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-	sqlite3 *db = transaction->abstractConnection->db;
+	sqlite3 *db = transaction->connection->db;
 	
 	NSString *tableName = [self tableNameForRegisteredName:registeredName];
 	NSString *dropTable = [NSString stringWithFormat:@"DROP TABLE IF EXISTS \"%@\";", tableName];
@@ -122,12 +123,12 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
  * Subclasses must implement this method.
  * This method is called during the view registration process to enusre the extension supports the database config.
 **/
-- (BOOL)supportsDatabase:(YapAbstractDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions
+- (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions
 {
 	return YES;
 }
 
-- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapAbstractDatabaseConnection *)databaseConnection
+- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
 	return [[YapDatabaseFullTextSearchConnection alloc] initWithFTS:self
 	                    databaseConnection:(YapDatabaseConnection *)databaseConnection];

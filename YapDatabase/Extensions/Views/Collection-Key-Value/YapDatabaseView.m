@@ -1,10 +1,9 @@
 #import "YapDatabaseView.h"
 #import "YapDatabaseViewPrivate.h"
 
-#import "YapAbstractDatabasePrivate.h"
+#import "YapDatabasePrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 
-#import "YapDatabase.h"
 #import "YapDatabaseLogging.h"
 
 #if ! __has_feature(objc_arc)
@@ -24,7 +23,7 @@
 @implementation YapDatabaseView
 
 + (void)dropTablesForRegisteredName:(NSString *)registeredName
-                    withTransaction:(YapAbstractDatabaseTransaction *)transaction
+                    withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
 	NSString *mapTableName = [self mapTableNameForRegisteredName:registeredName];
 	NSString *pageTableName = [self pageTableNameForRegisteredName:registeredName];
@@ -32,7 +31,7 @@
 	
 	// Handle persistent view
 	
-	sqlite3 *db = transaction->abstractConnection->db;
+	sqlite3 *db = transaction->connection->db;
 	
 	NSString *dropKeyTable = [NSString stringWithFormat:@"DROP TABLE IF EXISTS \"%@\";", mapTableName];
 	NSString *dropPageTable = [NSString stringWithFormat:@"DROP TABLE IF EXISTS \"%@\";", pageTableName];
@@ -55,9 +54,9 @@
 	
 	// Handle memory view
 	
-	[transaction->abstractConnection unregisterTableWithName:mapTableName];
-	[transaction->abstractConnection unregisterTableWithName:pageTableName];
-	[transaction->abstractConnection unregisterTableWithName:pageMetadataTableName];
+	[transaction->connection unregisterTableWithName:mapTableName];
+	[transaction->connection unregisterTableWithName:pageTableName];
+	[transaction->connection unregisterTableWithName:pageMetadataTableName];
 }
 
 + (NSString *)mapTableNameForRegisteredName:(NSString *)registeredName
@@ -159,12 +158,12 @@
  * This method is called during the view registration process to enusre the extension supports
  * the database configuration.
 **/
-- (BOOL)supportsDatabase:(YapAbstractDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions
+- (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions
 {
 	return YES;
 }
 
-- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapAbstractDatabaseConnection *)databaseConnection
+- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
 	return [[YapDatabaseViewConnection alloc] initWithView:self
 	                                    databaseConnection:(YapDatabaseConnection *)databaseConnection];

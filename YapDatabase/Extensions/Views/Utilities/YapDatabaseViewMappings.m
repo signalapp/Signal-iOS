@@ -1,10 +1,8 @@
 #import "YapDatabaseViewMappingsPrivate.h"
 #import "YapDatabaseViewRangeOptionsPrivate.h"
-
-#import "YapAbstractDatabaseConnection.h"
-#import "YapAbstractDatabaseTransaction.h"
-
 #import "YapDatabaseViewTransaction.h"
+
+#import "YapDatabasePrivate.h"
 
 #import "YapDatabaseLogging.h"
 
@@ -258,9 +256,9 @@
 #pragma mark Initialization & Updates
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)updateWithTransaction:(YapAbstractDatabaseTransaction *)transaction
+- (void)updateWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-	if (transaction.abstractConnection.isInLongLivedReadTransaction == NO)
+	if (![transaction->connection isInLongLivedReadTransaction])
 	{
 		NSString *reason = @"YapDatabaseViewMappings requires the connection to be in a longLivedReadTransaction.";
 		
@@ -308,7 +306,7 @@
 	}
 	
 	BOOL firstUpdate = (snapshotOfLastUpdate == UINT64_MAX);
-	snapshotOfLastUpdate = transaction.abstractConnection.snapshot;
+	snapshotOfLastUpdate = [transaction->connection snapshot];
 	
 	if (firstUpdate)
 		[self initializeRangeOptsLength];

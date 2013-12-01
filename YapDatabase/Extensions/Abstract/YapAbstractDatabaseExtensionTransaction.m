@@ -1,6 +1,6 @@
 #import "YapAbstractDatabaseExtensionTransaction.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
-#import "YapAbstractDatabasePrivate.h"
+#import "YapDatabasePrivate.h"
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
 
@@ -75,7 +75,7 @@
 	// databaseTransaction = nil;
 }
 
-- (YapAbstractDatabaseTransaction *)databaseTransaction
+- (YapDatabaseReadTransaction *)databaseTransaction
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return nil;

@@ -1,7 +1,6 @@
 #import "YapDatabaseFullTextSearchTransaction.h"
 #import "YapDatabaseFullTextSearchPrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
-#import "YapAbstractDatabasePrivate.h"
 #import "YapDatabasePrivate.h"
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
@@ -299,7 +298,7 @@
 /**
  * Required override method from YapAbstractDatabaseExtensionTransaction.
 **/
-- (YapAbstractDatabaseTransaction *)databaseTransaction
+- (YapDatabaseReadTransaction *)databaseTransaction
 {
 	return databaseTransaction;
 }

@@ -4,9 +4,9 @@
 #import "YapAbstractDatabaseExtensionConnection.h"
 #import "YapAbstractDatabaseExtensionTransaction.h"
 
-#import "YapAbstractDatabase.h"
-#import "YapAbstractDatabaseConnection.h"
-#import "YapAbstractDatabaseTransaction.h"
+#import "YapDatabase.h"
+#import "YapDatabaseConnection.h"
+#import "YapDatabaseTransaction.h"
 
 #import "sqlite3.h"
 
@@ -19,7 +19,7 @@
  * This method is used when unregistering an extension in order to drop the related tables.
 **/
 + (void)dropTablesForRegisteredName:(NSString *)registeredName
-                    withTransaction:(YapAbstractDatabaseTransaction *)transaction;
+                    withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 /**
  * After an extension has been successfully registered with a database,
@@ -38,7 +38,7 @@
  * Return YES if the class/instance supports the database type (YapDatabase vs YapCollectionsDatabase)
  * and configuration (dependencies).
 **/
-- (BOOL)supportsDatabase:(YapAbstractDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions;
+- (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions;
 
 /**
  * Subclasses MUST implement this method IF they have dependencies.
@@ -57,7 +57,7 @@
  * Subclasses MUST implement this method.
  * Returns a proper instance of the YapAbstractDatabaseExtensionConnection subclass.
 **/
-- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapAbstractDatabaseConnection *)databaseConnection;
+- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection;
 
 @end
 
@@ -105,8 +105,8 @@
  * They may optionally use different subclasses for read-only vs read-write transactions.
  * Alternatively they can just store an ivar to determine the type of the transaction in order to protect as needed.
 **/
-- (id)newReadTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction;
-- (id)newReadWriteTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction;
+- (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction;
+- (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction;
 
 /**
  * Subclasses MUST implement this method.
@@ -328,7 +328,7 @@
  * Subclasses MUST implement these methods.
  * They are needed by various utility methods.
 **/
-- (YapAbstractDatabaseTransaction *)databaseTransaction;
+- (YapDatabaseReadTransaction *)databaseTransaction;
 - (YapAbstractDatabaseExtensionConnection *)extensionConnection;
 
 /**

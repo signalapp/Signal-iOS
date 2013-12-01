@@ -1,7 +1,7 @@
 #import "YapDatabaseSecondaryIndex.h"
 #import "YapDatabaseSecondaryIndexPrivate.h"
 
-#import "YapAbstractDatabasePrivate.h"
+#import "YapDatabasePrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 
 #import "YapDatabaseLogging.h"
@@ -24,9 +24,9 @@
 @implementation YapDatabaseSecondaryIndex
 
 + (void)dropTablesForRegisteredName:(NSString *)registeredName
-                    withTransaction:(YapAbstractDatabaseTransaction *)transaction
+                    withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-	sqlite3 *db = transaction->abstractConnection->db;
+	sqlite3 *db = transaction->connection->db;
 	NSString *tableName = [self tableNameForRegisteredName:registeredName];
 	
 	NSString *dropTable = [NSString stringWithFormat:@"DROP TABLE IF EXISTS \"%@\";", tableName];
@@ -115,7 +115,7 @@
  *
  * Return YES if the class/instance supports the particular type of database (YapDatabase vs YapDatabase).
 **/
-- (BOOL)supportsDatabase:(YapAbstractDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions;
+- (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions;
 {
 	if ([database isKindOfClass:[YapDatabase class]])
 	{
@@ -129,11 +129,11 @@
 	}
 }
 
-- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapAbstractDatabaseConnection *)databaseConnection
+- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
 	return [[YapDatabaseSecondaryIndexConnection alloc]
 	           initWithSecondaryIndex:self
-	               databaseConnection:(YapDatabaseConnection *)databaseConnection];
+	               databaseConnection:databaseConnection];
 }
 
 - (NSString *)tableName

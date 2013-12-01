@@ -132,7 +132,7 @@
 #pragma mark Registration
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (BOOL)supportsDatabase:(YapAbstractDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions
+- (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions
 {
 	if (![super supportsDatabase:database withRegisteredExtensions:registeredExtensions])
 		return NO;
@@ -162,7 +162,7 @@
 #pragma mark Connections
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapAbstractDatabaseConnection *)databaseConnection
+- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
 	__unsafe_unretained YapDatabaseConnection *dbConnection =
 	  (YapDatabaseConnection *)databaseConnection;

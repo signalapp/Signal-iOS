@@ -1,7 +1,7 @@
 #import "YapDatabaseSecondaryIndexConnection.h"
 #import "YapDatabaseSecondaryIndexPrivate.h"
 
-#import "YapAbstractDatabasePrivate.h"
+#import "YapDatabasePrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
 
 #import "YapDatabaseLogging.h"
@@ -165,12 +165,12 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 /**
  * Required override method from YapAbstractDatabaseExtensionConnection.
 **/
-- (id)newReadTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
+- (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction
 {
 	YapDatabaseSecondaryIndexTransaction *transaction =
 	    [[YapDatabaseSecondaryIndexTransaction alloc]
 	        initWithSecondaryIndexConnection:self
-	                     databaseTransaction:(YapDatabaseReadTransaction *)databaseTransaction];
+	                     databaseTransaction:databaseTransaction];
 	
 	return transaction;
 }
@@ -178,12 +178,12 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 /**
  * Required override method from YapAbstractDatabaseExtensionConnection.
 **/
-- (id)newReadWriteTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
+- (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
 {
 	YapDatabaseSecondaryIndexTransaction *transaction =
 	    [[YapDatabaseSecondaryIndexTransaction alloc]
 	        initWithSecondaryIndexConnection:self
-	                     databaseTransaction:(YapDatabaseReadTransaction *)databaseTransaction];
+	                     databaseTransaction:databaseTransaction];
 	
 	if (blockDict == nil)
 		blockDict = [NSMutableDictionary dictionaryWithSharedKeySet:secondaryIndex->columnNamesSharedKeySet];

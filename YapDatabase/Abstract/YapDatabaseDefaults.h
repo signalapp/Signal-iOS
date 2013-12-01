@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-#import "YapAbstractDatabaseConnection.h"
+#import "YapDatabaseConnection.h"
 
 /**
  * When a connection is created via [database newConnection] is will be handed one of these objects.
@@ -8,18 +8,18 @@
  *
  * Of course, the connection may then override these default configuration values, and configure itself as needed.
  *
- * @see YapAbstractDatabase defaultObjectCacheEnabled
- * @see YapAbstractDatabase defaultObjectCacheLimit
+ * @see YapDatabase defaultObjectCacheEnabled
+ * @see YapDatabase defaultObjectCacheLimit
  * 
- * @see YapAbstractDatabase defaultMetadataCacheEnabled
- * @see YapAbstractDatabase defaultMetadataCacheLimit
+ * @see YapDatabase defaultMetadataCacheEnabled
+ * @see YapDatabase defaultMetadataCacheLimit
  * 
- * @see YapAbstractDatabase defaultObjectPolicy
- * @see YapAbstractDatabase defaultMetadataPolicy
+ * @see YapDatabase defaultObjectPolicy
+ * @see YapDatabase defaultMetadataPolicy
  * 
- * @see YapAbstractDatabase defaultAutoFlushMemoryLevel
+ * @see YapDatabase defaultAutoFlushMemoryLevel
 **/
-@interface YapAbstractDatabaseDefaults : NSObject <NSCopying>
+@interface YapDatabaseDefaults : NSObject <NSCopying>
 
 @property (nonatomic, assign, readwrite) BOOL objectCacheEnabled;
 @property (nonatomic, assign, readwrite) NSUInteger objectCacheLimit;

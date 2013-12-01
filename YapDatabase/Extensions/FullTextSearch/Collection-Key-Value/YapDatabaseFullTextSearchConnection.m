@@ -1,7 +1,9 @@
 #import "YapDatabaseFullTextSearchConnection.h"
 #import "YapDatabaseFullTextSearchPrivate.h"
+
+#import "YapDatabasePrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
-#import "YapAbstractDatabasePrivate.h"
+
 #import "YapDatabaseLogging.h"
 
 #if ! __has_feature(objc_arc)
@@ -89,11 +91,8 @@
 /**
  * Required override method from YapAbstractDatabaseExtensionConnection.
 **/
-- (id)newReadTransaction:(YapAbstractDatabaseTransaction *)inDatabaseTransaction
+- (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction
 {
-	__unsafe_unretained YapDatabaseReadTransaction *databaseTransaction =
-	    (YapDatabaseReadTransaction *)inDatabaseTransaction;
-	
 	YapDatabaseFullTextSearchTransaction *transaction =
 	  [[YapDatabaseFullTextSearchTransaction alloc] initWithFTSConnection:self
 	                                                  databaseTransaction:databaseTransaction];
@@ -104,11 +103,8 @@
 /**
  * Required override method from YapAbstractDatabaseExtensionConnection.
 **/
-- (id)newReadWriteTransaction:(YapAbstractDatabaseTransaction *)inDatabaseTransaction
+- (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
 {
-	__unsafe_unretained YapDatabaseReadTransaction *databaseTransaction =
-	    (YapDatabaseReadTransaction *)inDatabaseTransaction;
-	
 	YapDatabaseFullTextSearchTransaction *transaction =
 	  [[YapDatabaseFullTextSearchTransaction alloc] initWithFTSConnection:self
 	                                                  databaseTransaction:databaseTransaction];

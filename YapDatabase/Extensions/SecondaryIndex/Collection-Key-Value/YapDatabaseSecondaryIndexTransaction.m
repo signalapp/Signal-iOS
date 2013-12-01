@@ -2,9 +2,8 @@
 #import "YapDatabaseSecondaryIndexPrivate.h"
 #import "YapDatabaseStatement.h"
 
-#import "YapAbstractDatabasePrivate.h"
-#import "YapAbstractDatabaseExtensionPrivate.h"
 #import "YapDatabasePrivate.h"
+#import "YapAbstractDatabaseExtensionPrivate.h"
 
 #import "YapDatabaseLogging.h"
 
@@ -299,7 +298,7 @@
 /**
  * Required override method from YapAbstractDatabaseExtensionTransaction.
 **/
-- (YapAbstractDatabaseTransaction *)databaseTransaction
+- (YapDatabaseReadTransaction *)databaseTransaction
 {
 	return databaseTransaction;
 }

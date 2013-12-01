@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "YapDatabaseViewRangeOptions.h"
 
-@class YapAbstractDatabaseTransaction;
+@class YapDatabaseReadTransaction;
 
 /**
  * Welcome to YapDatabase!
@@ -412,7 +412,7 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
  * 
  * Please see the example code above.
 **/
-- (void)updateWithTransaction:(YapAbstractDatabaseTransaction *)transaction;
+- (void)updateWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 /**
  * Returns the snapshot of the last time the mappings were initialized/updated.

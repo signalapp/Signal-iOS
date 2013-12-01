@@ -55,8 +55,9 @@
 	
 	if (hasOldIsPersistent && (oldIsPersistent != isPersistent))
 	{
-		[[viewConnection->view class] dropTablesForRegisteredName:[self registeredName]
-		                                          withTransaction:databaseTransaction];
+		[[viewConnection->view class]
+		  dropTablesForRegisteredName:[self registeredName]
+		              withTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction];
 		
 		needsCreateTables = YES;
 	}

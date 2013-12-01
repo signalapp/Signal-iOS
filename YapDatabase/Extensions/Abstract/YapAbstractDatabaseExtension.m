@@ -5,7 +5,7 @@
 @implementation YapAbstractDatabaseExtension
 
 + (void)dropTablesForRegisteredName:(NSString *)registeredName
-                    withTransaction:(YapAbstractDatabaseTransaction *)transaction
+                    withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
 	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -18,7 +18,7 @@
  * 
  * Return YES if the class/instance supports the particular type of database (YapDatabase vs YapCollectionsDatabase).
 **/
-- (BOOL)supportsDatabase:(YapAbstractDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions
+- (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions
 {
 	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return NO;
@@ -44,7 +44,7 @@
  * Subclasses MUST implement this method.
  * Returns a proper instance of the YapAbstractDatabaseExtensionConnection subclass.
 **/
-- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapAbstractDatabaseConnection *)databaseConnection
+- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
 	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return nil;

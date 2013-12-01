@@ -1,7 +1,7 @@
 #import "YapDatabaseViewConnection.h"
 #import "YapDatabaseViewPrivate.h"
 #import "YapAbstractDatabaseExtensionPrivate.h"
-#import "YapAbstractDatabasePrivate.h"
+#import "YapDatabasePrivate.h"
 #import "YapDatabaseViewPage.h"
 #import "YapDatabaseViewChange.h"
 #import "YapDatabaseViewChangePrivate.h"
@@ -133,7 +133,7 @@ static NSString *const key_changes                  = @"changes";
 /**
  * Required override method from YapAbstractDatabaseExtensionConnection.
 **/
-- (id)newReadTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
+- (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction
 {
 	YapDatabaseViewTransaction *transaction =
 	    [[YapDatabaseViewTransaction alloc] initWithViewConnection:self
@@ -145,7 +145,7 @@ static NSString *const key_changes                  = @"changes";
 /**
  * Required override method from YapAbstractDatabaseExtensionConnection.
 **/
-- (id)newReadWriteTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
+- (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
 {
 	YapDatabaseViewTransaction *transaction =
 	    [[YapDatabaseViewTransaction alloc] initWithViewConnection:self

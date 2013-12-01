@@ -7,7 +7,7 @@
 
 @implementation YapDatabaseConnectionState
 
-- (id)initWithConnection:(YapAbstractDatabaseConnection *)inConnection
+- (id)initWithConnection:(YapDatabaseConnection *)inConnection
 {
 	if ((self = [super init]))
 	{

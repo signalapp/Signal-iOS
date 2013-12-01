@@ -10,13 +10,13 @@
 	return nil;
 }
 
-- (id)newReadTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
+- (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return nil;
 }
 
-- (id)newReadWriteTransaction:(YapAbstractDatabaseTransaction *)databaseTransaction
+- (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return nil;
