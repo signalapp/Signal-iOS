@@ -2,7 +2,7 @@
 #import "YapDatabaseSecondaryIndexPrivate.h"
 
 #import "YapDatabasePrivate.h"
-#import "YapAbstractDatabaseExtensionPrivate.h"
+#import "YapDatabaseExtensionPrivate.h"
 
 #import "YapDatabaseLogging.h"
 
@@ -55,7 +55,7 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 }
 
 /**
- * Required override method from YapAbstractDatabaseExtensionConnection
+ * Required override method from YapDatabaseExtensionConnection
 **/
 - (void)_flushMemoryWithLevel:(int)level
 {
@@ -78,9 +78,9 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Required override method from YapAbstractDatabaseExtensionConnection.
+ * Required override method from YapDatabaseExtensionConnection.
 **/
-- (YapAbstractDatabaseExtension *)extension
+- (YapDatabaseExtension *)extension
 {
 	return secondaryIndex;
 }
@@ -163,7 +163,7 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Required override method from YapAbstractDatabaseExtensionConnection.
+ * Required override method from YapDatabaseExtensionConnection.
 **/
 - (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction
 {
@@ -176,7 +176,7 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 }
 
 /**
- * Required override method from YapAbstractDatabaseExtensionConnection.
+ * Required override method from YapDatabaseExtensionConnection.
 **/
 - (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
 {
@@ -196,7 +196,7 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Required override method from YapAbstractDatabaseExtension
+ * Required override method from YapDatabaseExtension
 **/
 - (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
            externalChangeset:(NSMutableDictionary **)externalChangesetPtr
@@ -204,18 +204,18 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 {
 	// Nothing to do for this particular extension.
 	//
-	// YapAbstractDatabaseExtension throws a "not implemented" exception
+	// YapDatabaseExtension throws a "not implemented" exception
 	// to ensure extensions have implementations of all required methods.
 }
 
 /**
- * Required override method from YapAbstractDatabaseExtension
+ * Required override method from YapDatabaseExtension
 **/
 - (void)processChangeset:(NSDictionary *)changeset
 {
 	// Nothing to do for this particular extension.
 	//
-	// YapAbstractDatabaseExtension throws a "not implemented" exception
+	// YapDatabaseExtension throws a "not implemented" exception
 	// to ensure extensions have implementations of all required methods.
 }
 

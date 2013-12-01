@@ -2,7 +2,7 @@
 #import "YapDatabaseViewPrivate.h"
 
 #import "YapDatabasePrivate.h"
-#import "YapAbstractDatabaseExtensionPrivate.h"
+#import "YapDatabaseExtensionPrivate.h"
 
 #import "YapDatabaseLogging.h"
 
@@ -163,10 +163,9 @@
 	return YES;
 }
 
-- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
+- (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
-	return [[YapDatabaseViewConnection alloc] initWithView:self
-	                                    databaseConnection:(YapDatabaseConnection *)databaseConnection];
+	return [[YapDatabaseViewConnection alloc] initWithView:self databaseConnection:databaseConnection];
 }
 
 - (NSString *)mapTableName

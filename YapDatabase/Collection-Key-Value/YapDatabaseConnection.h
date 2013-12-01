@@ -397,7 +397,7 @@ typedef enum {
  * If this connection has not yet initialized the proper extension connection, it is done automatically.
  * 
  * @return
- *     A subclass of YapAbstractDatabaseExtensionConnection,
+ *     A subclass of YapDatabaseExtensionConnection,
  *     according to the type of extension registered under the given name.
  *
  * One must register an extension with the database before it can be accessed from within connections or transactions.

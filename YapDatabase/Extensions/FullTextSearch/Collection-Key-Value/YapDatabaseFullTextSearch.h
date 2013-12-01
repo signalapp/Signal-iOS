@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-#import "YapAbstractDatabaseExtension.h"
+#import "YapDatabaseExtension.h"
 #import "YapDatabaseFullTextSearchConnection.h"
 #import "YapDatabaseFullTextSearchTransaction.h"
 
@@ -51,9 +51,9 @@ typedef enum {
 	YapDatabaseFullTextSearchBlockTypeWithRow       = 204
 } YapDatabaseFullTextSearchBlockType;
 
-@interface YapDatabaseFullTextSearch : YapAbstractDatabaseExtension
+@interface YapDatabaseFullTextSearch : YapDatabaseExtension
 
-/* Inherited from YapAbstractDatabaseExtension
+/* Inherited from YapDatabaseExtension
 
 @property (nonatomic, strong, readonly) NSString *registeredName;
 

@@ -4,7 +4,7 @@
 #import "YapDatabaseDefaults.h"
 #import "YapDatabaseConnection.h"
 #import "YapDatabaseTransaction.h"
-#import "YapAbstractDatabaseExtension.h"
+#import "YapDatabaseExtension.h"
 
 #import "YapCache.h"
 #import "YapMemoryTable.h"
@@ -93,14 +93,14 @@ extern NSString *const YapDatabaseNotificationKey;
 - (void)removeConnection:(YapDatabaseConnection *)connection;
 
 /**
- * YapAbstractDatabaseConnection uses these methods to recycle sqlite3 instances using the connection pool.
+ * YapDatabaseConnection uses these methods to recycle sqlite3 instances using the connection pool.
 **/
 - (BOOL)connectionPoolEnqueue:(sqlite3 *)aDb;
 - (sqlite3 *)connectionPoolDequeue;
 
 /**
  * These methods are only accessible from within the snapshotQueue.
- * Used by [YapAbstractDatabaseConnection prepare].
+ * Used by [YapDatabaseConnection prepare].
 **/
 - (NSDictionary *)registeredTables;
 - (NSArray *)extensionsOrder;
@@ -190,10 +190,10 @@ extern NSString *const YapDatabaseNotificationKey;
 	
 	sqlite3 *db;
 	
-	dispatch_queue_t connectionQueue;     // Only for YapAbstractDatabaseExtensionConnection subclasses
-	void *IsOnConnectionQueueKey;         // Only for YapAbstractDatabaseExtensionConnection subclasses
+	dispatch_queue_t connectionQueue;     // Only for YapDatabaseExtensionConnection subclasses
+	void *IsOnConnectionQueueKey;         // Only for YapDatabaseExtensionConnection subclasses
 	
-	NSArray *extensionsOrder;             // Read-only by YapAbstractDatabaseTransaction
+	NSArray *extensionsOrder;             // Read-only by YapDatabaseTransaction
 	
 	BOOL hasDiskChanges;
 	
@@ -259,7 +259,7 @@ extern NSString *const YapDatabaseNotificationKey;
 
 - (NSDictionary *)extensions;
 
-- (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName;
+- (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName;
 - (void)unregisterExtension:(NSString *)extensionName;
 
 - (NSDictionary *)registeredTables;
@@ -319,7 +319,7 @@ extern NSString *const YapDatabaseNotificationKey;
 
 - (YapMemoryTableTransaction *)memoryTableTransaction:(NSString *)tableName;
 
-- (void)addRegisteredExtensionTransaction:(YapAbstractDatabaseExtensionTransaction *)extTransaction;
+- (void)addRegisteredExtensionTransaction:(YapDatabaseExtensionTransaction *)extTransaction;
 - (void)removeRegisteredExtensionTransaction:(NSString *)extName;
 
 

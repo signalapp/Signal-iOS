@@ -395,7 +395,7 @@
  * If the extension has not yet been opened, it is done so automatically.
  *
  * @return
- *     A subclass of YapAbstractDatabaseExtensionTransaction,
+ *     A subclass of YapDatabaseExtensionTransaction,
  *     according to the type of extension registered under the given name.
  * 
  * One must register an extension with the database before it can be accessed from within connections or transactions.

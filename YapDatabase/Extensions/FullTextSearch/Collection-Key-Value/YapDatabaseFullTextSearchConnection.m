@@ -2,7 +2,7 @@
 #import "YapDatabaseFullTextSearchPrivate.h"
 
 #import "YapDatabasePrivate.h"
-#import "YapAbstractDatabaseExtensionPrivate.h"
+#import "YapDatabaseExtensionPrivate.h"
 
 #import "YapDatabaseLogging.h"
 
@@ -57,7 +57,7 @@
 }
 
 /**
- * Required override method from YapAbstractDatabaseExtensionConnection
+ * Required override method from YapDatabaseExtensionConnection
 **/
 - (void)_flushMemoryWithLevel:(int)level
 {
@@ -77,9 +77,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Required override method from YapAbstractDatabaseExtensionConnection.
+ * Required override method from YapDatabaseExtensionConnection.
 **/
-- (YapAbstractDatabaseExtension *)extension
+- (YapDatabaseExtension *)extension
 {
 	return fts;
 }
@@ -89,7 +89,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Required override method from YapAbstractDatabaseExtensionConnection.
+ * Required override method from YapDatabaseExtensionConnection.
 **/
 - (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction
 {
@@ -101,7 +101,7 @@
 }
 
 /**
- * Required override method from YapAbstractDatabaseExtensionConnection.
+ * Required override method from YapDatabaseExtensionConnection.
 **/
 - (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
 {
@@ -120,7 +120,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Required override method from YapAbstractDatabaseExtension
+ * Required override method from YapDatabaseExtensionConnection
 **/
 - (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
            externalChangeset:(NSMutableDictionary **)externalChangesetPtr
@@ -128,18 +128,18 @@
 {
 	// Nothing to do for this particular extension.
 	//
-	// YapAbstractDatabaseExtension rows a "not implemented" exception
+	// YapDatabaseExtension rows a "not implemented" exception
 	// to ensure extensions have implementations of all required methods.
 }
 
 /**
- * Required override method from YapAbstractDatabaseExtension
+ * Required override method from YapDatabaseExtensionConnection
 **/
 - (void)processChangeset:(NSDictionary *)changeset
 {
 	// Nothing to do for this particular extension.
 	//
-	// YapAbstractDatabaseExtension rows a "not implemented" exception
+	// YapDatabaseExtension rows a "not implemented" exception
 	// to ensure extensions have implementations of all required methods.
 }
 

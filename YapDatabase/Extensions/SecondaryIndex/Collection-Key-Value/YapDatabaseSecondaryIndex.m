@@ -2,7 +2,7 @@
 #import "YapDatabaseSecondaryIndexPrivate.h"
 
 #import "YapDatabasePrivate.h"
-#import "YapAbstractDatabaseExtensionPrivate.h"
+#import "YapDatabaseExtensionPrivate.h"
 
 #import "YapDatabaseLogging.h"
 
@@ -129,7 +129,7 @@
 	}
 }
 
-- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
+- (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
 	return [[YapDatabaseSecondaryIndexConnection alloc]
 	           initWithSecondaryIndex:self

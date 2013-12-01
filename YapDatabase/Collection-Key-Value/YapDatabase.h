@@ -2,7 +2,7 @@
 
 #import "YapDatabaseConnection.h"
 #import "YapDatabaseTransaction.h"
-#import "YapAbstractDatabaseExtension.h"
+#import "YapDatabaseExtension.h"
 
 /**
  * Welcome to YapDatabase!
@@ -278,9 +278,9 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  * The default defaultObjectCacheEnabled is YES.
  * The default defaultObjectCacheLimit is 250.
  *
- * For more detailed documentation on these properties, see the YapAbstractDatabaseConnection header file.
- * @see YapAbstractDatabaseConnection objectCacheEnabled
- * @see YapAbstractDatabaseConnection objectCacheLimit
+ * For more detailed documentation on these properties, see the YapDatabaseConnection header file.
+ * @see YapDatabaseConnection objectCacheEnabled
+ * @see YapDatabaseConnection objectCacheLimit
 **/
 @property (atomic, assign, readwrite) BOOL defaultObjectCacheEnabled;
 @property (atomic, assign, readwrite) NSUInteger defaultObjectCacheLimit;
@@ -298,9 +298,9 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  * The default defaultMetadataCacheEnabled is YES.
  * The default defaultMetadataCacheLimit is 500.
  *
- * For more detailed documentation on these properties, see the YapAbstractDatabaseConnection header file.
- * @see YapAbstractDatabaseConnection metadataCacheEnabled
- * @see YapAbstractDatabaseConnection metadataCacheLimit
+ * For more detailed documentation on these properties, see the YapDatabaseConnection header file.
+ * @see YapDatabaseConnection metadataCacheEnabled
+ * @see YapDatabaseConnection metadataCacheLimit
 **/
 @property (atomic, assign, readwrite) BOOL defaultMetadataCacheEnabled;
 @property (atomic, assign, readwrite) NSUInteger defaultMetadataCacheLimit;
@@ -318,9 +318,9 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  * The default defaultObjectPolicy is YapDatabasePolicyContainment.
  * The default defaultMetadataPolicy is YapDatabasePolicyContainment.
  * 
- * For more detailed documentation on these properties, see the YapAbstractDatabaseConnection header file.
- * @see YapAbstractDatabaseConnection objectPolicy
- * @see YapAbstractDatabaseConnection metadataPolicy
+ * For more detailed documentation on these properties, see the YapDatabaseConnection header file.
+ * @see YapDatabaseConnection objectPolicy
+ * @see YapDatabaseConnection metadataPolicy
 **/
 @property (atomic, assign, readwrite) YapDatabasePolicy defaultObjectPolicy;
 @property (atomic, assign, readwrite) YapDatabasePolicy defaultMetadataPolicy;
@@ -338,8 +338,8 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  * 
  * The default defaultAutoFlushMemoryLevel is YapDatabaseConnectionFlushMemoryLevelMild.
  *
- * For more detailed documentation on these properties, see the YapAbstractDatabaseConnection header file.
- * @see YapAbstractDatabaseConnection autoFlushMemoryLevel
+ * For more detailed documentation on these properties, see the YapDatabaseConnection header file.
+ * @see YapDatabaseConnection autoFlushMemoryLevel
 **/
 @property (atomic, assign, readwrite) int defaultAutoFlushMemoryLevel;
 #endif
@@ -390,7 +390,7 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  * @see asyncRegisterExtension:withName:completionBlock:
  * @see asyncRegisterExtension:withName:completionBlock:completionQueue:
 **/
-- (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName;
+- (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName;
 
 /**
  * Asynchronoulsy starts the extension registration process.
@@ -405,7 +405,7 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  *
  * The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
 **/
-- (void)asyncRegisterExtension:(YapAbstractDatabaseExtension *)extension
+- (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
 					  withName:(NSString *)extensionName
 			   completionBlock:(void(^)(BOOL ready))completionBlock;
 
@@ -423,7 +423,7 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  * Additionally the dispatch_queue to invoke the completion block may also be specified.
  * If NULL, dispatch_get_main_queue() is automatically used.
 **/
-- (void)asyncRegisterExtension:(YapAbstractDatabaseExtension *)extension
+- (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
                       withName:(NSString *)extensionName
                completionBlock:(void(^)(BOOL ready))completionBlock
                completionQueue:(dispatch_queue_t)completionQueue;
@@ -481,13 +481,13 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 
 /**
  * Returns the registered extension with the given name.
- * The returned object will be a subclass of YapAbstractDatabaseExtension.
+ * The returned object will be a subclass of YapDatabaseExtension.
 **/
 - (id)registeredExtension:(NSString *)extensionName;
 
 /**
  * Returns all currently registered extensions as a dictionary.
- * The key is the registed name (NSString), and the value is the extension (YapAbstractDatabaseExtension subclass).
+ * The key is the registed name (NSString), and the value is the extension (YapDatabaseExtension subclass).
 **/
 - (NSDictionary *)registeredExtensions;
 

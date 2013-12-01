@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "YapAbstractDatabaseExtensionConnection.h"
+#import "YapDatabaseExtensionConnection.h"
 
 @class YapDatabaseFullTextSearch;
 
@@ -22,7 +22,7 @@
  * @see YapDatabaseFullTextSearch
  * @see YapDatabaseFullTextSearchTransaction
 **/
-@interface YapDatabaseFullTextSearchConnection : YapAbstractDatabaseExtensionConnection
+@interface YapDatabaseFullTextSearchConnection : YapDatabaseExtensionConnection
 
 /**
  * Returns the parent instance.

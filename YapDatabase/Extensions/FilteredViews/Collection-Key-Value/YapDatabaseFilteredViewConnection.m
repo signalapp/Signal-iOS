@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Required override method from YapAbstractDatabaseExtensionConnection.
+ * Required override method from YapDatabaseExtensionConnection.
 **/
 - (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction
 {
@@ -26,7 +26,7 @@
 }
 
 /**
- * Required override method from YapAbstractDatabaseExtensionConnection.
+ * Required override method from YapDatabaseExtensionConnection.
 **/
 - (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
 {

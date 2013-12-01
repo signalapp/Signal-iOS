@@ -1,6 +1,6 @@
 #import "YapDatabaseFilteredView.h"
 #import "YapDatabaseFilteredViewPrivate.h"
-#import "YapAbstractDatabaseExtensionPrivate.h"
+#import "YapDatabaseExtensionPrivate.h"
 #import "YapDatabaseLogging.h"
 
 #if ! __has_feature(objc_arc)
@@ -137,7 +137,7 @@
 	if (![super supportsDatabase:database withRegisteredExtensions:registeredExtensions])
 		return NO;
 	
-	YapAbstractDatabaseExtension *ext = [registeredExtensions objectForKey:parentViewName];
+	YapDatabaseExtension *ext = [registeredExtensions objectForKey:parentViewName];
 	if (ext == nil)
 	{
 		YDBLogWarn(@"The specified parentViewName (%@) isn't registered", parentViewName);
@@ -162,12 +162,9 @@
 #pragma mark Connections
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
+- (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
-	__unsafe_unretained YapDatabaseConnection *dbConnection =
-	  (YapDatabaseConnection *)databaseConnection;
-	
-	return [[YapDatabaseFilteredViewConnection alloc] initWithView:self databaseConnection:dbConnection];
+	return [[YapDatabaseFilteredViewConnection alloc] initWithView:self databaseConnection:databaseConnection];
 }
 
 @end

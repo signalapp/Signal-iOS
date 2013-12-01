@@ -4,7 +4,7 @@
 #import "YapDatabaseViewPageMetadata.h"
 #import "YapDatabaseViewChange.h"
 #import "YapDatabaseViewChangePrivate.h"
-#import "YapAbstractDatabaseExtensionPrivate.h"
+#import "YapDatabaseExtensionPrivate.h"
 #import "YapDatabasePrivate.h"
 #import "YapCache.h"
 #import "YapCollectionKey.h"
@@ -870,7 +870,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Required override method from YapAbstractDatabaseExtensionTransaction.
+ * Required override method from YapDatabaseExtensionTransaction.
 **/
 - (YapDatabaseReadTransaction *)databaseTransaction
 {
@@ -878,9 +878,9 @@
 }
 
 /**
- * Required override method from YapAbstractDatabaseExtensionTransaction.
+ * Required override method from YapDatabaseExtensionTransaction.
 **/
-- (YapAbstractDatabaseExtensionConnection *)extensionConnection
+- (YapDatabaseExtensionConnection *)extensionConnection
 {
 	return viewConnection;
 }
@@ -2977,7 +2977,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark YapAbstractDatabaseExtensionTransaction_CollectionKeyValue
+#pragma mark YapDatabaseExtensionTransaction_Hooks
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**

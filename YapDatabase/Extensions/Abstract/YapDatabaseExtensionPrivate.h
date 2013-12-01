@@ -1,8 +1,8 @@
 #import <Foundation/Foundation.h>
 
-#import "YapAbstractDatabaseExtension.h"
-#import "YapAbstractDatabaseExtensionConnection.h"
-#import "YapAbstractDatabaseExtensionTransaction.h"
+#import "YapDatabaseExtension.h"
+#import "YapDatabaseExtensionConnection.h"
+#import "YapDatabaseExtensionTransaction.h"
 
 #import "YapDatabase.h"
 #import "YapDatabaseConnection.h"
@@ -11,7 +11,7 @@
 #import "sqlite3.h"
 
 
-@interface YapAbstractDatabaseExtension ()
+@interface YapDatabaseExtension ()
 
 /**
  * Subclasses MUST implement this method.
@@ -25,7 +25,7 @@
  * After an extension has been successfully registered with a database,
  * the registeredName property will be set by the database.
  * 
- * This property is set by YapAbstractDatabase after a successful registration.
+ * This property is set by YapDatabase after a successful registration.
  * It should be considered read-only once set.
 **/
 @property (atomic, copy, readwrite) NSString *registeredName;
@@ -55,9 +55,9 @@
 
 /**
  * Subclasses MUST implement this method.
- * Returns a proper instance of the YapAbstractDatabaseExtensionConnection subclass.
+ * Returns a proper instance of the YapDatabaseExtensionConnection subclass.
 **/
-- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection;
+- (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection;
 
 @end
 
@@ -65,7 +65,7 @@
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@interface YapAbstractDatabaseExtensionConnection () {
+@interface YapDatabaseExtensionConnection () {
 
 // You MUST store a strong reference to the parent.
 // You MUST store an unretained reference to the corresponding database connection.
@@ -96,11 +96,11 @@
  * For example:
  * Given an extTransaction, the utility method can walk up to the base extension class, and fetch the registeredName.
 **/
-- (YapAbstractDatabaseExtension *)extension;
+- (YapDatabaseExtension *)extension;
 
 /**
  * Subclasses MUST implement these methods.
- * They are to create and return a proper instance of the YapAbstractDatabaseExtensionTransaction subclass.
+ * They are to create and return a proper instance of the YapDatabaseExtensionTransaction subclass.
  * 
  * They may optionally use different subclasses for read-only vs read-write transactions.
  * Alternatively they can just store an ivar to determine the type of the transaction in order to protect as needed.
@@ -209,7 +209,7 @@
  * 
  *     object = [[transaction ext:@"view"] objectAtIndex:index inGroup:@"sales"];
  *     //         ^^^^^^^^^^^^^^^^^^^^^^^
- *     //         ^ Returns a YapAbstractDatabaseExtensionTransaction subclass instance.
+ *     //         ^ Returns a YapDatabaseExtensionTransaction subclass instance.
  * }];
  *
  * An extension transaction has a reference to the database transction (and therefore to sqlite),
@@ -233,7 +233,7 @@
  *
  * The extension transaction is only valid from within the database transaction.
 **/
-@interface YapAbstractDatabaseExtensionTransaction () {
+@interface YapDatabaseExtensionTransaction () {
 
 // You should store an unretained reference to the parent,
 // and an unretained reference to the corresponding database transaction.
@@ -267,7 +267,7 @@
  * See 'intValueForExtensionKey:' and other related methods.
  * 
  * Note: This method is invoked on a special readWriteTransaction that is created internally
- * within YapAbstractDatabase for the sole purpose of registering and unregistering extensions.
+ * within YapDatabase for the sole purpose of registering and unregistering extensions.
  * So this method need not setup itself for regular use.
  * It is designed only to do the prep work of creating the extension dependencies (such as tables)
  * so that regular instances (possibly read-only) can operate normally.
@@ -329,10 +329,10 @@
  * They are needed by various utility methods.
 **/
 - (YapDatabaseReadTransaction *)databaseTransaction;
-- (YapAbstractDatabaseExtensionConnection *)extensionConnection;
+- (YapDatabaseExtensionConnection *)extensionConnection;
 
 /**
- * The following method are implemented by YapAbstractDatabaseExtensionTransaction.
+ * The following method are implemented by YapDatabaseExtensionTransaction.
  * 
  * They are convenience methods for getting and setting persistent configuration values for the extension.
  * The persistent values are stored in the yap2 table, which is specifically designed for this use.
@@ -385,28 +385,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * The YapAbstractDatabaseExtensionTransaction subclass MUST implement the methods in this protocol if
- * it supports YapDatabase.
+ * The YapDatabaseExtensionTransaction subclass MUST implement the methods in this protocol.
 **/
-@protocol YapAbstractDatabaseExtensionTransaction_KeyValue
-@required
-
-- (void)handleInsertObject:(id)object forKey:(NSString *)key withMetadata:(id)metadata rowid:(int64_t)rowid;
-- (void)handleUpdateObject:(id)object forKey:(NSString *)key withMetadata:(id)metadata rowid:(int64_t)rowid;
-- (void)handleUpdateMetadata:(id)metadata forKey:(NSString *)key withRowid:(int64_t)rowid;
-- (void)handleTouchObjectForKey:(NSString *)key withRowid:(int64_t)rowid;
-- (void)handleTouchMetadataForKey:(NSString *)key withRowid:(int64_t)rowid;
-- (void)handleRemoveObjectForKey:(NSString *)key withRowid:(int64_t)rowid;
-- (void)handleRemoveObjectsForKeys:(NSArray *)keys withRowids:(NSArray *)rowids;
-- (void)handleRemoveAllObjects;
-
-@end
-
-/**
- * The YapAbstractDatabaseExtensionTransaction subclass MUST implement the methods in this protocol if
- * it supports YapCollectionsDatabase.
-**/
-@protocol YapAbstractDatabaseExtensionTransaction_CollectionKeyValue
+@protocol YapDatabaseExtensionTransaction_Hooks
 @required
 
 - (void)handleInsertObject:(id)object

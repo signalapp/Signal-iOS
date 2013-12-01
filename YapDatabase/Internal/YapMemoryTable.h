@@ -28,7 +28,7 @@
 - (YapMemoryTableTransaction *)newReadWriteTransactionWithSnapshot:(uint64_t)snapshot;
 
 /**
- * Invoked automatically by YapAbstractDatabase architecture.
+ * Invoked automatically by YapDatabase architecture.
 **/
 - (void)asyncCheckpoint:(int64_t)minSnapshot;
 

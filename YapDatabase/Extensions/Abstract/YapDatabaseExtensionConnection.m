@@ -1,10 +1,10 @@
-#import "YapAbstractDatabaseExtensionConnection.h"
-#import "YapAbstractDatabaseExtensionPrivate.h"
+#import "YapDatabaseExtensionConnection.h"
+#import "YapDatabaseExtensionPrivate.h"
 
 
-@implementation YapAbstractDatabaseExtensionConnection
+@implementation YapDatabaseExtensionConnection
 
-- (YapAbstractDatabaseExtension *)extension
+- (YapDatabaseExtension *)extension
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return nil;

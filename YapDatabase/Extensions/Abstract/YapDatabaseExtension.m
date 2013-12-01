@@ -1,8 +1,8 @@
-#import "YapAbstractDatabaseExtension.h"
-#import "YapAbstractDatabaseExtensionPrivate.h"
+#import "YapDatabaseExtension.h"
+#import "YapDatabaseExtensionPrivate.h"
 
 
-@implementation YapAbstractDatabaseExtension
+@implementation YapDatabaseExtension
 
 + (void)dropTablesForRegisteredName:(NSString *)registeredName
                     withTransaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -42,9 +42,9 @@
 
 /**
  * Subclasses MUST implement this method.
- * Returns a proper instance of the YapAbstractDatabaseExtensionConnection subclass.
+ * Returns a proper instance of the YapDatabaseExtensionConnection subclass.
 **/
-- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
+- (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
 	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return nil;

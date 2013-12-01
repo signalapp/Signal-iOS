@@ -2,7 +2,7 @@
 #import "YapDatabaseFullTextSearchPrivate.h"
 
 #import "YapDatabasePrivate.h"
-#import "YapAbstractDatabaseExtensionPrivate.h"
+#import "YapDatabaseExtensionPrivate.h"
 
 #import "YapDatabaseLogging.h"
 
@@ -128,10 +128,9 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 	return YES;
 }
 
-- (YapAbstractDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
+- (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
-	return [[YapDatabaseFullTextSearchConnection alloc] initWithFTS:self
-	                    databaseConnection:(YapDatabaseConnection *)databaseConnection];
+	return [[YapDatabaseFullTextSearchConnection alloc] initWithFTS:self databaseConnection:databaseConnection];
 }
 
 - (NSString *)tableName

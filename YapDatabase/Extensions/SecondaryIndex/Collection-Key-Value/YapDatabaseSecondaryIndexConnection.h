@@ -1,10 +1,10 @@
 #import <Foundation/Foundation.h>
-#import "YapAbstractDatabaseExtensionConnection.h"
+#import "YapDatabaseExtensionConnection.h"
 
 @class YapDatabaseSecondaryIndex;
 
 
-@interface YapDatabaseSecondaryIndexConnection : YapAbstractDatabaseExtensionConnection
+@interface YapDatabaseSecondaryIndexConnection : YapDatabaseExtensionConnection
 
 /**
  * Returns the parent instance.

@@ -1,6 +1,6 @@
 #import "YapDatabaseViewConnection.h"
 #import "YapDatabaseViewPrivate.h"
-#import "YapAbstractDatabaseExtensionPrivate.h"
+#import "YapDatabaseExtensionPrivate.h"
 #import "YapDatabasePrivate.h"
 #import "YapDatabaseViewPage.h"
 #import "YapDatabaseViewChange.h"
@@ -85,7 +85,7 @@ static NSString *const key_changes                  = @"changes";
 }
 
 /**
- * Required override method from YapAbstractDatabaseExtensionConnection
+ * Required override method from YapDatabaseExtensionConnection
 **/
 - (void)_flushMemoryWithLevel:(int)level
 {
@@ -121,7 +121,7 @@ static NSString *const key_changes                  = @"changes";
 #pragma mark Accessors
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (YapAbstractDatabaseExtension *)extension
+- (YapDatabaseExtension *)extension
 {
 	return view;
 }
@@ -131,7 +131,7 @@ static NSString *const key_changes                  = @"changes";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Required override method from YapAbstractDatabaseExtensionConnection.
+ * Required override method from YapDatabaseExtensionConnection.
 **/
 - (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction
 {
@@ -143,7 +143,7 @@ static NSString *const key_changes                  = @"changes";
 }
 
 /**
- * Required override method from YapAbstractDatabaseExtensionConnection.
+ * Required override method from YapDatabaseExtensionConnection.
 **/
 - (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
 {

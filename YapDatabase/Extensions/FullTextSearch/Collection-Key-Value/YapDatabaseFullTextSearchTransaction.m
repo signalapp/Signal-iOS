@@ -1,6 +1,6 @@
 #import "YapDatabaseFullTextSearchTransaction.h"
 #import "YapDatabaseFullTextSearchPrivate.h"
-#import "YapAbstractDatabaseExtensionPrivate.h"
+#import "YapDatabaseExtensionPrivate.h"
 #import "YapDatabasePrivate.h"
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
@@ -45,7 +45,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Required override method from YapAbstractDatabaseExtensionTransaction.
+ * Required override method from YapDatabaseExtensionTransaction.
  *
  * This method is called to create any necessary tables (if needed),
  * as well as populate the view (if needed) by enumerating over the existing rows in the database.
@@ -91,7 +91,7 @@
 }
 
 /**
- * Required override method from YapAbstractDatabaseExtensionTransaction.
+ * Required override method from YapDatabaseExtensionTransaction.
  *
  * This method is called to prepare the transaction for use.
  *
@@ -296,7 +296,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Required override method from YapAbstractDatabaseExtensionTransaction.
+ * Required override method from YapDatabaseExtensionTransaction.
 **/
 - (YapDatabaseReadTransaction *)databaseTransaction
 {
@@ -304,9 +304,9 @@
 }
 
 /**
- * Required override method from YapAbstractDatabaseExtensionTransaction.
+ * Required override method from YapDatabaseExtensionTransaction.
 **/
-- (YapAbstractDatabaseExtensionConnection *)extensionConnection
+- (YapDatabaseExtensionConnection *)extensionConnection
 {
 	return ftsConnection;
 }
@@ -490,7 +490,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Required override method from YapAbstractDatabaseExtension
+ * Required override method from YapDatabaseExtension
 **/
 - (void)commitTransaction
 {
@@ -504,7 +504,7 @@
 }
 
 /**
- * Required override method from YapAbstractDatabaseExtension
+ * Required override method from YapDatabaseExtension
 **/
 - (void)rollbackTransaction
 {
@@ -518,7 +518,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark YapAbstractDatabaseExtensionTransaction_CollectionKeyValue
+#pragma mark YapDatabaseExtensionTransaction_Hooks
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**

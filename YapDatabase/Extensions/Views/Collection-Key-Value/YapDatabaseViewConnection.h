@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "YapAbstractDatabaseExtensionConnection.h"
+#import "YapDatabaseExtensionConnection.h"
 #import "YapDatabaseViewChange.h"
 #import "YapDatabaseViewMappings.h"
 
@@ -28,7 +28,7 @@
  * @see YapDatabaseView
  * @see YapDatabaseViewTransaction
 **/
-@interface YapDatabaseViewConnection : YapAbstractDatabaseExtensionConnection
+@interface YapDatabaseViewConnection : YapDatabaseExtensionConnection
 
 /**
  * Returns the parent view instance.

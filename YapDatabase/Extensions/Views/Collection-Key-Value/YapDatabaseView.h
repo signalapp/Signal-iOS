@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-#import "YapAbstractDatabaseExtension.h"
+#import "YapDatabaseExtension.h"
 #import "YapDatabaseViewOptions.h"
 #import "YapDatabaseViewConnection.h"
 #import "YapDatabaseViewTransaction.h"
@@ -122,9 +122,9 @@ typedef enum {
 
 #endif
 
-@interface YapDatabaseView : YapAbstractDatabaseExtension
+@interface YapDatabaseView : YapDatabaseExtension
 
-/* Inherited from YapAbstractDatabaseExtension
+/* Inherited from YapDatabaseExtension
  
 @property (nonatomic, strong, readonly) NSString *registeredName;
 

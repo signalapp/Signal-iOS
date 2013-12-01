@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "YapAbstractDatabaseExtensionTransaction.h"
+#import "YapDatabaseExtensionTransaction.h"
 #import "YapDatabaseViewMappings.h"
 
 /**
@@ -30,7 +30,7 @@
  * Keep in mind that the YapDatabaseViewTransaction object is linked to the YapDatabaseReadTransaction object.
  * So don't try to use it outside the transaction block (cause it won't work).
 **/
-@interface YapDatabaseViewTransaction : YapAbstractDatabaseExtensionTransaction
+@interface YapDatabaseViewTransaction : YapDatabaseExtensionTransaction
 
 #pragma mark Groups
 

@@ -1,5 +1,5 @@
-#import "YapAbstractDatabaseExtensionTransaction.h"
-#import "YapAbstractDatabaseExtensionPrivate.h"
+#import "YapDatabaseExtensionTransaction.h"
+#import "YapDatabaseExtensionPrivate.h"
 #import "YapDatabasePrivate.h"
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
@@ -19,10 +19,10 @@
 #endif
 
 
-@implementation YapAbstractDatabaseExtensionTransaction
+@implementation YapDatabaseExtensionTransaction
 
 /**
- * See YapAbstractDatabaseExtensionPrivate for discussion of this method.
+ * See YapDatabaseExtensionPrivate for discussion of this method.
 **/
 - (BOOL)createIfNeeded
 {
@@ -31,7 +31,7 @@
 }
 
 /**
- * See YapAbstractDatabaseExtensionPrivate for discussion of this method.
+ * See YapDatabaseExtensionPrivate for discussion of this method.
 **/
 - (BOOL)prepareIfNeeded
 {
@@ -81,7 +81,7 @@
 	return nil;
 }
 
-- (YapAbstractDatabaseExtensionConnection *)extensionConnection
+- (YapDatabaseExtensionConnection *)extensionConnection
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return nil;

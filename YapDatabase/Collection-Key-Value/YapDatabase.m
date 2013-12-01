@@ -1,6 +1,6 @@
 #import "YapDatabase.h"
 #import "YapDatabasePrivate.h"
-#import "YapAbstractDatabaseExtensionPrivate.h"
+#import "YapDatabaseExtensionPrivate.h"
 #import "YapCollectionKey.h"
 #import "YapDatabaseManager.h"
 #import "YapDatabaseConnectionState.h"
@@ -1159,7 +1159,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
  * @see asyncRegisterExtension:withName:completionBlock:
  * @see asyncRegisterExtension:withName:completionBlock:completionQueue:
 **/
-- (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
+- (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName
 {
 	__block BOOL ready = NO;
 	
@@ -1184,7 +1184,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
  *
  * The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
 **/
-- (void)asyncRegisterExtension:(YapAbstractDatabaseExtension *)extension
+- (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
                       withName:(NSString *)extensionName
                completionBlock:(void(^)(BOOL ready))completionBlock
 {
@@ -1208,7 +1208,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
  * Additionally the dispatch_queue to invoke the completion block may also be specified.
  * If NULL, dispatch_get_main_queue() is automatically used.
 **/
-- (void)asyncRegisterExtension:(YapAbstractDatabaseExtension *)extension
+- (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
                       withName:(NSString *)extensionName
                completionBlock:(void(^)(BOOL ready))completionBlock
                completionQueue:(dispatch_queue_t)completionQueue
@@ -1299,7 +1299,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
  * Internal method that handles extension registration.
  * This method must be invoked on the writeQueue.
 **/
-- (BOOL)_registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
+- (BOOL)_registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName
 {
 	NSAssert(dispatch_get_specific(IsOnWriteQueueKey), @"Must go through writeQueue.");
 	
@@ -1387,7 +1387,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 		return;
 	}
 	
-	YapAbstractDatabaseExtension *extension = [self registeredExtension:extensionName];
+	YapDatabaseExtension *extension = [self registeredExtension:extensionName];
 	
 	[[self registrationConnection] unregisterExtension:extensionName];
 	extension.registeredName = nil;
@@ -1414,7 +1414,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 		
 		if (dependentExtName)
 		{
-			YapAbstractDatabaseExtension *dependentExt = [self registeredExtension:dependentExtName];
+			YapDatabaseExtension *dependentExt = [self registeredExtension:dependentExtName];
 			
 			[[self registrationConnection] unregisterExtension:dependentExtName];
 			dependentExt.registeredName = nil;
@@ -1440,7 +1440,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 {
 	// This method is public
 	
-	__block YapAbstractDatabaseExtension *result = nil;
+	__block YapDatabaseExtension *result = nil;
 	
 	dispatch_block_t block = ^{
 		
@@ -1457,7 +1457,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 
 /**
  * Returns all currently registered extensions as a dictionary.
- * The key is the registed name (NSString), and the value is the extension (YapAbstractDatabaseExtension subclass).
+ * The key is the registed name (NSString), and the value is the extension (YapDatabaseExtension subclass).
 **/
 - (NSDictionary *)registeredExtensions
 {

@@ -2,7 +2,7 @@
 #import "YapDatabaseFilteredViewPrivate.h"
 #import "YapDatabasePrivate.h"
 #import "YapDatabaseViewChangePrivate.h"
-#import "YapAbstractDatabaseExtensionPrivate.h"
+#import "YapDatabaseExtensionPrivate.h"
 #import "YapCollectionKey.h"
 #import "YapDatabaseLogging.h"
 
@@ -28,7 +28,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Required override method from YapAbstractDatabaseExtensionTransaction.
+ * Required override method from YapDatabaseExtensionTransaction.
  *
  * This method is called to create any necessary tables (if needed),
  * as well as populate the view (if needed) by enumerating over the existing rows in the database.
@@ -583,7 +583,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark YapAbstractDatabaseExtensionTransaction_CollectionKeyValue
+#pragma mark YapDatabaseExtensionTransaction_Hooks
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**

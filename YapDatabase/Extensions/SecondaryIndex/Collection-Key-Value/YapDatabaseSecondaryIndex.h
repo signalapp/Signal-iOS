@@ -1,11 +1,9 @@
 #import <Foundation/Foundation.h>
 
-#import "YapAbstractDatabaseExtension.h"
-
+#import "YapDatabaseExtension.h"
+#import "YapDatabaseSecondaryIndexSetup.h"
 #import "YapDatabaseSecondaryIndexConnection.h"
 #import "YapDatabaseSecondaryIndexTransaction.h"
-
-#import "YapDatabaseSecondaryIndexSetup.h"
 
 /**
  * Welcome to YapDatabase!
@@ -58,9 +56,9 @@ typedef enum {
 } YapDatabaseSecondaryIndexBlockType;
 
 
-@interface YapDatabaseSecondaryIndex : YapAbstractDatabaseExtension
+@interface YapDatabaseSecondaryIndex : YapDatabaseExtension
 
-/* Inherited from YapAbstractDatabaseExtension
+/* Inherited from YapDatabaseExtension
 
 @property (nonatomic, strong, readonly) NSString *registeredName;
 
@@ -93,7 +91,7 @@ typedef enum {
  *    - YapDatabaseSecondaryIndexBlockTypeWithRow
  *
  * @see YapDatabaseSecondaryIndexSetup
- * @see YapAbstractDatabase registerExtension:withName:
+ * @see YapDatabase registerExtension:withName:
 **/
 - (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)setup
               block:(YapDatabaseSecondaryIndexBlock)block

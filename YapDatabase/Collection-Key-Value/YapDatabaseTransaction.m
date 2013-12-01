@@ -1,6 +1,6 @@
 #import "YapDatabaseTransaction.h"
 #import "YapDatabasePrivate.h"
-#import "YapAbstractDatabaseExtensionPrivate.h"
+#import "YapDatabaseExtensionPrivate.h"
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
 #import "YapCache.h"
@@ -83,7 +83,7 @@
 	
 	[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
 		
-		[(YapAbstractDatabaseExtensionTransaction *)extTransactionObj preCommitReadWriteTransaction];
+		[(YapDatabaseExtensionTransaction *)extTransactionObj preCommitReadWriteTransaction];
 	}];
 }
 
@@ -93,7 +93,7 @@
 	{
 		[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
 			
-			[(YapAbstractDatabaseExtensionTransaction *)extTransactionObj commitTransaction];
+			[(YapDatabaseExtensionTransaction *)extTransactionObj commitTransaction];
 		}];
 	}
 	
@@ -115,7 +115,7 @@
 {
 	[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
 		
-		[(YapAbstractDatabaseExtensionTransaction *)extTransactionObj rollbackTransaction];
+		[(YapDatabaseExtensionTransaction *)extTransactionObj rollbackTransaction];
 	}];
 	
 	sqlite3_stmt *statement = [connection rollbackTransactionStatement];
@@ -3636,13 +3636,13 @@
  * If the extension has not yet been prepared, it is done so automatically.
  *
  * @return
- *     A subclass of YapAbstractDatabaseExtensionTransaction,
+ *     A subclass of YapDatabaseExtensionTransaction,
  *     according to the type of extension registered under the given name.
  *
  * One must register an extension with the database before it can be accessed from within connections or transactions.
  * After registration everything works automatically using just the registered extension name.
  *
- * @see [YapAbstractDatabase registerExtension:withName:]
+ * @see [YapDatabase registerExtension:withName:]
 **/
 - (id)extension:(NSString *)extensionName
 {
@@ -3654,10 +3654,10 @@
 	if (extensions == nil)
 		extensions = [[NSMutableDictionary alloc] init];
 	
-	YapAbstractDatabaseExtensionTransaction *extTransaction = [extensions objectForKey:extensionName];
+	YapDatabaseExtensionTransaction *extTransaction = [extensions objectForKey:extensionName];
 	if (extTransaction == nil)
 	{
-		YapAbstractDatabaseExtensionConnection *extConnection = [connection extension:extensionName];
+		YapDatabaseExtensionConnection *extConnection = [connection extension:extensionName];
 		if (extConnection)
 		{
 			if (isReadWriteTransaction)
@@ -3701,9 +3701,9 @@
 	[extConnections enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 		
 		__unsafe_unretained NSString *extName = key;
-		__unsafe_unretained YapAbstractDatabaseExtensionConnection *extConnection = obj;
+		__unsafe_unretained YapDatabaseExtensionConnection *extConnection = obj;
 		
-		YapAbstractDatabaseExtensionTransaction *extTransaction = [extensions objectForKey:extName];
+		YapDatabaseExtensionTransaction *extTransaction = [extensions objectForKey:extName];
 		if (extTransaction == nil)
 		{
 			if (isReadWriteTransaction)
@@ -3723,7 +3723,7 @@
 	
 	for (NSString *extName in connection->extensionsOrder)
 	{
-		YapAbstractDatabaseExtensionTransaction *extTransaction = [extensions objectForKey:extName];
+		YapDatabaseExtensionTransaction *extTransaction = [extensions objectForKey:extName];
 		if (extTransaction)
 		{
 			[orderedExtensions addObject:extTransaction];
@@ -3757,7 +3757,7 @@
 	return orderedExtensions;
 }
 
-- (void)addRegisteredExtensionTransaction:(YapAbstractDatabaseExtensionTransaction *)extTransaction
+- (void)addRegisteredExtensionTransaction:(YapDatabaseExtensionTransaction *)extTransaction
 {
 	// This method is INTERNAL
 	
@@ -4371,7 +4371,7 @@
 		[connection->metadataCache removeObjectForKey:cacheKey];
 		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 		
-		for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction in [self orderedExtensions])
+		for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 		{
 			[extTransaction handleRemoveObjectForKey:cacheKey.key        // mutable string protection
 										inCollection:cacheKey.collection // mutable string protection
@@ -4420,7 +4420,7 @@
 	[connection->metadataCache removeObjectForKey:cacheKey];
 	[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 	
-	for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction in [self orderedExtensions])
+	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 	{
 		[extTransaction handleUpdateMetadata:nil
 		                              forKey:cacheKey.key        // mutable string protection
@@ -4634,7 +4634,7 @@
 		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 	}
 	
-	for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction in [self orderedExtensions])
+	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 	{
 		if (found)
 			[extTransaction handleUpdateObject:object
@@ -4726,7 +4726,7 @@
 		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 	}
 	
-	for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction in [self orderedExtensions])
+	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 	{
 		[extTransaction handleUpdateMetadata:metadata
 		                              forKey:cacheKey.key        // mutable string protection
@@ -4754,7 +4754,7 @@
 	if ([connection->metadataChanges objectForKey:cacheKey] == nil)
 		[connection->metadataChanges setObject:[YapTouch touch] forKey:cacheKey];
 	
-	for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction in [self orderedExtensions])
+	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 	{
 		[extTransaction handleTouchObjectForKey:cacheKey.key        // mutable string protection
 			                       inCollection:cacheKey.collection // mutable string protection
@@ -4774,7 +4774,7 @@
 	if ([connection->metadataChanges objectForKey:cacheKey] == nil)
 		[connection->metadataChanges setObject:[YapTouch touch] forKey:cacheKey];
 	
-	for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction in [self orderedExtensions])
+	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 	{
 		[extTransaction handleTouchMetadataForKey:cacheKey.key        // mutable string protection
 		                             inCollection:cacheKey.collection // mutable string protection
@@ -4826,7 +4826,7 @@
 	[connection->metadataChanges removeObjectForKey:cacheKey];
 	[connection->removedKeys addObject:cacheKey];
 	
-	for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction in [self orderedExtensions])
+	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 	{
 		[extTransaction handleRemoveObjectForKey:cacheKey.key        // mutable string protection
 		                            inCollection:cacheKey.collection // mutable string protection
@@ -5009,8 +5009,7 @@
 				[connection->removedKeys addObject:cacheKey];
 			}
 			
-			for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction
-			      in [self orderedExtensions])
+			for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 			{
 				[extTransaction handleRemoveObjectsForKeys:foundKeys
 				                              inCollection:collection
@@ -5230,7 +5229,7 @@
 			connection->hasDiskChanges = YES;
 			isMutated = YES;  // mutation during enumeration protection
 			
-			for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction in [self orderedExtensions])
+			for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 			{
 				[extTransaction handleRemoveObjectsForKeys:foundKeys
 				                              inCollection:collection
@@ -5273,7 +5272,7 @@
 	[connection->removedCollections removeAllObjects];
 	connection->allKeysRemoved = YES;
 	
-	for (id <YapAbstractDatabaseExtensionTransaction_CollectionKeyValue> extTransaction in [self orderedExtensions])
+	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 	{
 		[extTransaction handleRemoveAllObjectsInAllCollections];
 	}

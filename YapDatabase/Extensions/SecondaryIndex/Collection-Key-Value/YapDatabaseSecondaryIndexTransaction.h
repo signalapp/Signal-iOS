@@ -1,10 +1,10 @@
 #import <Foundation/Foundation.h>
 
-#import "YapAbstractDatabaseExtensionTransaction.h"
+#import "YapDatabaseExtensionTransaction.h"
 #import "YapDatabaseQuery.h"
 
 
-@interface YapDatabaseSecondaryIndexTransaction : YapAbstractDatabaseExtensionTransaction
+@interface YapDatabaseSecondaryIndexTransaction : YapDatabaseExtensionTransaction
 
 /**
  * These methods allow you to enumerates matches from the secondary index(es) using a given query.

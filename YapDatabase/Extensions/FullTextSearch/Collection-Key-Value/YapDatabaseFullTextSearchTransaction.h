@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-#import "YapAbstractDatabaseExtensionTransaction.h"
+#import "YapDatabaseExtensionTransaction.h"
 #import "YapDatabaseFullTextSearchSnippetOptions.h"
 
 
@@ -27,7 +27,7 @@
  *     }]
  * }];
 **/
-@interface YapDatabaseFullTextSearchTransaction : YapAbstractDatabaseExtensionTransaction
+@interface YapDatabaseFullTextSearchTransaction : YapDatabaseExtensionTransaction
 
 // Regular query matching
 

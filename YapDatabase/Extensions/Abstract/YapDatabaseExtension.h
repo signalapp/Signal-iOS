@@ -1,10 +1,10 @@
 #import <Foundation/Foundation.h>
 
-#import "YapAbstractDatabaseExtensionConnection.h"
-#import "YapAbstractDatabaseExtensionTransaction.h"
+#import "YapDatabaseExtensionConnection.h"
+#import "YapDatabaseExtensionTransaction.h"
 
 
-@interface YapAbstractDatabaseExtension : NSObject
+@interface YapDatabaseExtension : NSObject
 
 /**
  * After an extension has been successfully registered with a database,

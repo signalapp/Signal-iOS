@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 
 
-@interface YapAbstractDatabaseExtensionTransaction : NSObject
+@interface YapDatabaseExtensionTransaction : NSObject
 
 /**
  * This class is abstract and has no public API.

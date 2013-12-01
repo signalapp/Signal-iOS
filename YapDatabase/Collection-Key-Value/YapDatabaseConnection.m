@@ -1,8 +1,7 @@
 #import "YapDatabaseConnection.h"
-#import "YapDatabasePrivate.h"
 #import "YapDatabaseConnectionState.h"
-
-#import "YapAbstractDatabaseExtensionPrivate.h"
+#import "YapDatabasePrivate.h"
+#import "YapDatabaseExtensionPrivate.h"
 
 #import "YapCollectionKey.h"
 #import "YapCache.h"
@@ -352,7 +351,7 @@
 	
 	[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extConnectionObj, BOOL *stop) {
 		
-		[(YapAbstractDatabaseExtensionConnection *)extConnectionObj _flushMemoryWithLevel:level];
+		[(YapDatabaseExtensionConnection *)extConnectionObj _flushMemoryWithLevel:level];
 	}];
 }
 
@@ -2016,7 +2015,7 @@
 					YDBLogError(@"Unable to auto-unregister extension(%@) with unknown class(%@)",
 					            prevExtensionName, className);
 				}
-				if (![class isSubclassOfClass:[YapAbstractDatabaseExtension class]])
+				if (![class isSubclassOfClass:[YapDatabaseExtension class]])
 				{
 					YDBLogError(@"Unable to auto-unregister extension(%@) with improper class(%@)",
 					            prevExtensionName, className);
@@ -2583,7 +2582,7 @@
 	
 	[extensions enumerateKeysAndObjectsUsingBlock:^(id extName, id extConnectionObj, BOOL *stop) {
 		
-		__unsafe_unretained YapAbstractDatabaseExtensionConnection *extConnection = extConnectionObj;
+		__unsafe_unretained YapDatabaseExtensionConnection *extConnection = extConnectionObj;
 		
 		NSMutableDictionary *internal = nil;
 		NSMutableDictionary *external = nil;
@@ -2762,7 +2761,7 @@
 		
 		[extensions enumerateKeysAndObjectsUsingBlock:^(id extName, id extConnectionObj, BOOL *stop) {
 			
-			__unsafe_unretained YapAbstractDatabaseExtensionConnection *extConnection = extConnectionObj;
+			__unsafe_unretained YapDatabaseExtensionConnection *extConnection = extConnectionObj;
 			
 			NSDictionary *changeset_extensions_extName = [changeset_extensions objectForKey:extName];
 			if (changeset_extensions_extName)
@@ -3392,23 +3391,23 @@
  * If this connection has not yet initialized the proper extensions connection, it is done automatically.
  *
  * @return
- *     A subclass of YapAbstractDatabaseExtensionConnection,
+ *     A subclass of YapDatabaseExtensionConnection,
  *     according to the type of extension registered under the given name.
  *
  * One must register an extension with the database before it can be accessed from within connections or transactions.
  * After registration everything works automatically using just the registered extension name.
  *
- * @see [YapAbstractDatabase registerExtension:withName:]
+ * @see [YapDatabase registerExtension:withName:]
 **/
 - (id)extension:(NSString *)extName
 {
 	// This method is PUBLIC.
 	//
-	// This method returns a subclass of YapAbstractDatabaseExtensionConnection.
+	// This method returns a subclass of YapDatabaseExtensionConnection.
 	// To get:
-	// - YapAbstractDatabaseExtension            => [database registeredExtension:@"registeredNameOfExtension"]
-	// - YapAbstractDatabaseExtensionConnection  => [databaseConnection extension:@"registeredNameOfExtension"]
-	// - YapAbstractDatabaseExtensionTransaction => [databaseTransaction extension:@"registeredNameOfExtension"]
+	// - YapDatabaseExtension            => [database registeredExtension:@"registeredNameOfExtension"]
+	// - YapDatabaseExtensionConnection  => [databaseConnection extension:@"registeredNameOfExtension"]
+	// - YapDatabaseExtensionTransaction => [databaseTransaction extension:@"registeredNameOfExtension"]
 	
 	__block id extConnection = nil;
 	
@@ -3421,7 +3420,7 @@
 			// We don't have an existing connection for the extension.
 			// Create one (if we can).
 			
-			YapAbstractDatabaseExtension *ext = [registeredExtensions objectForKey:extName];
+			YapDatabaseExtension *ext = [registeredExtensions objectForKey:extName];
 			if (ext)
 			{
 				extConnection = [ext newConnection:self];
@@ -3457,7 +3456,7 @@
 		[registeredExtensions enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 			
 			__unsafe_unretained NSString *extName = key;
-			__unsafe_unretained YapAbstractDatabaseExtension *ext = obj;
+			__unsafe_unretained YapDatabaseExtension *ext = obj;
 			
 			if ([extensions objectForKey:extName] == nil)
 			{
@@ -3472,7 +3471,7 @@
 	return extensions;
 }
 
-- (BOOL)registerExtension:(YapAbstractDatabaseExtension *)extension withName:(NSString *)extensionName
+- (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName
 {
 	NSAssert(dispatch_get_specific(database->IsOnWriteQueueKey), @"Must go through writeQueue.");
 	
@@ -3483,8 +3482,8 @@
 		YapDatabaseReadWriteTransaction *transaction = [self newReadWriteTransaction];
 		[self preReadWriteTransaction:transaction];
 		
-		YapAbstractDatabaseExtensionConnection *extensionConnection;
-		YapAbstractDatabaseExtensionTransaction *extensionTransaction;
+		YapDatabaseExtensionConnection *extensionConnection;
+		YapDatabaseExtensionTransaction *extensionTransaction;
 		
 		extensionConnection = [extension newConnection:self];
 		extensionTransaction = [extensionConnection newReadWriteTransaction:transaction];
@@ -3537,7 +3536,7 @@
 		{
 			YDBLogError(@"Unable to unregister extension(%@) with unknown class(%@)", extensionName, className);
 		}
-		if (![class isSubclassOfClass:[YapAbstractDatabaseExtension class]])
+		if (![class isSubclassOfClass:[YapDatabaseExtension class]])
 		{
 			YDBLogError(@"Unable to unregister extension(%@) with improper class(%@)", extensionName, className);
 		}
@@ -3560,7 +3559,7 @@
 	}});
 }
 
-- (void)willRegisterExtension:(YapAbstractDatabaseExtension *)extension
+- (void)willRegisterExtension:(YapDatabaseExtension *)extension
               withTransaction:(YapDatabaseReadWriteTransaction *)transaction
       isFirstTimeRegistration:(BOOL *)isFirstTimeRegistrationPtr
 {
@@ -3599,7 +3598,7 @@
 		YDBLogError(@"Unable to drop tables for previously registered extension with name(%@), unknown class(%@)",
 		            extensionName, prevExtensionClassName);
 	}
-	else if (![prevExtensionClass isSubclassOfClass:[YapAbstractDatabaseExtension class]])
+	else if (![prevExtensionClass isSubclassOfClass:[YapDatabaseExtension class]])
 	{
 		YDBLogError(@"Unable to drop tables for previously registered extension with name(%@), invalid class(%@)",
 		            extensionName, prevExtensionClassName);
@@ -3612,7 +3611,7 @@
 	*isFirstTimeRegistrationPtr = YES;
 }
 
-- (void)didRegisterExtension:(YapAbstractDatabaseExtension *)extension
+- (void)didRegisterExtension:(YapDatabaseExtension *)extension
              withTransaction:(YapDatabaseReadWriteTransaction *)transaction
      isFirstTimeRegistration:(BOOL)isFirstTimeRegistration
 {
@@ -3674,7 +3673,7 @@
 	}
 }
 
-- (void)addRegisteredExtensionConnection:(YapAbstractDatabaseExtensionConnection *)extConnection
+- (void)addRegisteredExtensionConnection:(YapDatabaseExtensionConnection *)extConnection
 {
 	// This method is INTERNAL
 	

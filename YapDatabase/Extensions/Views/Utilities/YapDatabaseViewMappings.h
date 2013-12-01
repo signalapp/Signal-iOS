@@ -426,7 +426,7 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
  *
  * If never initialized/updated, the snapshot will be UINT64_MAX.
  * 
- * @see YapAbstractDatabaseConnection snapshot
+ * @see YapDatabaseConnection snapshot
 **/
 @property (nonatomic, readonly) uint64_t snapshotOfLastUpdate;
 
