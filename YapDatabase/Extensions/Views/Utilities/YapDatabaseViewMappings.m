@@ -557,20 +557,20 @@
 	
 	if (!foundGroup) return nil;
 	
-	BOOL isVisible = NO;
-	NSUInteger visibleIndex = 0;
+	BOOL isGroupVisible = NO;
+	NSUInteger visibleGroupIndex = 0;
 	
 	for (NSString *visibleGroup in visibleGroups)
 	{
 		if ([visibleGroup isEqualToString:searchGroup])
 		{
-			isVisible = YES;
+			isGroupVisible = YES;
 			break;
 		}
-		visibleIndex++;
+		visibleGroupIndex++;
 	}
 	
-	if (isVisible)
+	if (isGroupVisible)
 	{
 		// The searchGroup is visible.
 		
@@ -578,9 +578,23 @@
 		if (rows > 0)
 		{
 			if (row < rows)
-				return [NSIndexPath indexPathForRow:row inSection:visibleIndex];
+			{
+			  #if TARGET_OS_IPHONE
+				return [NSIndexPath indexPathForRow:row inSection:visibleGroupIndex];
+			  #else
+				NSUInteger indexes[] = {visibleGroupIndex, row};
+				return [NSIndexPath indexPathWithIndexes:indexes length:2];
+			  #endif
+			}
 			else
-				return [NSIndexPath indexPathForRow:(rows-1) inSection:visibleIndex];
+			{
+			  #if TARGET_OS_IPHONE
+				return [NSIndexPath indexPathForRow:(rows-1) inSection:visibleGroupIndex];
+			  #else
+				NSUInteger indexes[] = {visibleGroupIndex, (rows-1)};
+				return [NSIndexPath indexPathWithIndexes:indexes length:2];
+			  #endif
+			}
 		}
 	}
 	
@@ -600,7 +614,12 @@
 			NSUInteger rows = [self numberOfItemsInGroup:nearbyGroup];
 			if (rows > 0)
 			{
+			  #if TARGET_OS_IPHONE
 				return [NSIndexPath indexPathForRow:(rows-1) inSection:section];
+			  #else
+				NSUInteger indexes[] = {section, (rows-1)};
+				return [NSIndexPath indexPathWithIndexes:indexes length:2];
+			  #endif
 			}
 		}
 	}
@@ -619,7 +638,12 @@
 			NSUInteger rows = [self numberOfItemsInGroup:nearbyGroup];
 			if (rows > 0)
 			{
+			  #if TARGET_OS_IPHONE
 				return [NSIndexPath indexPathForRow:0 inSection:section];
+			  #else
+				NSUInteger indexes[] = {section, 0};
+				return [NSIndexPath indexPathWithIndexes:indexes length:2];
+			  #endif
 			}
 		}
 	}
