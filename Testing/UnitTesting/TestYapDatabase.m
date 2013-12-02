@@ -6,6 +6,8 @@
 #import "DDLog.h"
 #import "DDTTYLogger.h"
 
+#import <libkern/OSAtomic.h>
+
 @interface TestYapDatabase : SenTestCase
 @end
 
@@ -34,7 +36,7 @@
 	[super tearDown];
 }
 
-- (void)test
+- (void)test1
 {
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
 	
@@ -381,6 +383,203 @@
 		STAssertNil([transaction objectForKey:key4 inCollection:@"collection2"], @"Oops");
 		STAssertNil([transaction objectForKey:key5 inCollection:@"collection2"], @"Oops");
 	}];
+}
+
+- (void)test2
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	STAssertNotNil(database, @"Oops");
+	
+	/// Test concurrent connections.
+	///
+	/// Ensure that a read-only transaction can continue while a read-write transaction starts.
+	/// Ensure that a read-only transaction can start while a read-write transaction is in progress.
+	/// Ensure that a read-only transaction picks up the changes after a read-write transaction.
+	
+	YapDatabaseConnection *connection1 = [database newConnection];
+	YapDatabaseConnection *connection2 = [database newConnection];
+	
+	NSString *key = @"some-key";
+	TestObject *object = [TestObject generateTestObject];
+	TestObjectMetadata *metadata = [object extractMetadata];
+	
+	dispatch_queue_t concurrentQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+	dispatch_async(concurrentQueue, ^{
+		
+		[NSThread sleepForTimeInterval:0.1]; // Zz
+		
+		[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+			
+			[transaction setObject:object forKey:key inCollection:nil withMetadata:metadata];
+			
+			[NSThread sleepForTimeInterval:0.4]; // Zzzzzzzzzzzzzzzzzzzzzzzzzz
+		}];
+		
+	});
+	
+	// This transaction should start before the read-write transaction has started
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
+		
+		STAssertNil([transaction objectForKey:key inCollection:nil], @"Expected nil object");
+		STAssertNil([transaction metadataForKey:key inCollection:nil], @"Expected nil metadata");
+	}];
+	
+	[NSThread sleepForTimeInterval:0.2]; // Zzzzzz
+	
+	// This transaction should start after the read-write transaction has started, but before it has committed
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
+		
+		STAssertNil([transaction objectForKey:key inCollection:nil], @"Expected nil object");
+		STAssertNil([transaction metadataForKey:key inCollection:nil], @"Expected nil metadata");
+	}];
+	
+	[NSThread sleepForTimeInterval:0.4]; // Zzzzzzzzzzzzzzzzzzzzzzzzzz
+	
+	// This transaction should start after the read-write transaction has completed
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
+		
+		STAssertNotNil([transaction objectForKey:key inCollection:nil], @"Expected non-nil object");
+		STAssertNotNil([transaction metadataForKey:key inCollection:nil], @"Expected non-nil metadata");
+	}];
+}
+
+- (void)test3
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	STAssertNotNil(database, @"Oops");
+	
+	/// Test concurrent connections.
+	///
+	/// Ensure that a read-only transaction properly unblocks a blocked read-write transaction.
+	/// Need to turn on logging to check this.
+	
+	YapDatabaseConnection *connection1 = [database newConnection];
+	YapDatabaseConnection *connection2 = [database newConnection];
+	
+	NSString *key = @"some-key";
+	TestObject *object = [TestObject generateTestObject];
+	TestObjectMetadata *metadata = [object extractMetadata];
+	
+	dispatch_queue_t concurrentQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+	dispatch_async(concurrentQueue, ^{
+		
+		[NSThread sleepForTimeInterval:0.2]; // Zz
+		
+		[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+			
+			[transaction setObject:object forKey:key inCollection:nil withMetadata:metadata];
+		}];
+		
+	});
+	
+	// This transaction should before the read-write transaction
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
+		
+		[NSThread sleepForTimeInterval:1.0]; // Zzzzzzzzzzz
+		
+		STAssertNil([transaction objectForKey:key inCollection:nil], @"Expected nil object");
+		STAssertNil([transaction metadataForKey:key inCollection:nil], @"Expected nil metadata");
+	}];
+	
+	[NSThread sleepForTimeInterval:0.2]; // Zz
+	
+	// This transaction should start after the read-write transaction
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
+		
+		STAssertNotNil([transaction objectForKey:key inCollection:nil], @"Expected non-nil object");
+		STAssertNotNil([transaction metadataForKey:key inCollection:nil], @"Expected non-nil metadata");
+	}];
+}
+
+- (void)test4
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	STAssertNotNil(database, @"Oops");
+	
+	/// Ensure large write doesn't block concurrent read operations on other connections.
+	
+	YapDatabaseConnection *connection1 = [database newConnection];
+	YapDatabaseConnection *connection2 = [database newConnection];
+	
+	__block int32_t doneWritingFlag = 0;
+	
+	dispatch_queue_t concurrentQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+	dispatch_async(concurrentQueue, ^{
+		
+		NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
+		
+		[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+			
+			int i;
+			for (i = 0; i < 100; i++)
+			{
+				NSString *key = [NSString stringWithFormat:@"some-key-%d", i];
+				TestObject *object = [TestObject generateTestObject];
+				TestObjectMetadata *metadata = [object extractMetadata];
+				
+				[transaction setObject:object forKey:key inCollection:nil withMetadata:metadata];
+			}
+		}];
+		
+		NSTimeInterval elapsed = [NSDate timeIntervalSinceReferenceDate] - start;
+		NSLog(@"Write operation: %.6f", elapsed);
+		
+		OSAtomicAdd32(1, &doneWritingFlag);
+	});
+	
+	while (OSAtomicAdd32(0, &doneWritingFlag) == 0)
+	{
+		NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
+		
+		[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
+			
+			(void)[transaction objectForKey:@"some-key-0" inCollection:nil];
+		}];
+		
+		NSTimeInterval elapsed = [NSDate timeIntervalSinceReferenceDate] - start;
+		
+		STAssertTrue(elapsed < 0.05, @"Read-Only transaction taking too long...");
+	}
+}
+
+- (void)testPropertyListSerializerDeserializer
+{
+	YapDatabaseSerializer propertyListSerializer = [YapDatabase propertyListSerializer];
+	YapDatabaseDeserializer propertyListDeserializer = [YapDatabase propertyListDeserializer];
+	
+	NSDictionary *originalDict = @{ @"date":[NSDate date], @"string":@"string" };
+	
+	NSData *data = propertyListSerializer(@"collection", @"key", originalDict);
+	
+	NSDictionary *deserializedDictionary = propertyListDeserializer(@"collection", @"key", data);
+	
+	STAssertTrue([originalDict isEqualToDictionary:deserializedDictionary], @"PropertyList serialization broken");
+}
+
+- (void)testTimestampSerializerDeserializer
+{
+	YapDatabaseSerializer timestampSerializer = [YapDatabase timestampSerializer];
+	YapDatabaseDeserializer timestampDeserializer = [YapDatabase timestampDeserializer];
+	
+	NSDate *originalDate = [NSDate date];
+	
+	NSData *data = timestampSerializer(@"collection", @"key", originalDate);
+	
+	NSDate *deserializedDate = timestampDeserializer(@"collection", @"key", data);
+	
+	STAssertTrue([originalDate isEqual:deserializedDate], @"Timestamp serialization broken");
 }
 
 - (void)testMutationDuringEnumerationProtection
