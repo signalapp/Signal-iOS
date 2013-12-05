@@ -20,6 +20,11 @@
 
 @implementation YapDatabaseFilteredView
 
++ (NSArray *)previousClassNames
+{
+	return @[ @"YapCollectionsDatabaseSecondaryIndex" ];
+}
+
 #pragma mark Invalid
 
 - (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)inGroupingBlock

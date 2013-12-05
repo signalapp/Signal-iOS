@@ -39,6 +39,11 @@
 	}
 }
 
++ (NSArray *)previousClassNames
+{
+	return @[ @"YapCollectionsDatabaseSecondaryIndex" ];
+}
+
 + (NSString *)tableNameForRegisteredName:(NSString *)registeredName
 {
 	return [NSString stringWithFormat:@"secondaryIndex_%@", registeredName];

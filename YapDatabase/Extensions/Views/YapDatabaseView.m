@@ -59,6 +59,11 @@
 	[transaction->connection unregisterTableWithName:pageMetadataTableName];
 }
 
++ (NSArray *)previousClassNames
+{
+	return @[ @"YapCollectionsDatabaseView" ];
+}
+
 + (NSString *)mapTableNameForRegisteredName:(NSString *)registeredName
 {
 	return [NSString stringWithFormat:@"view_%@_map", registeredName];

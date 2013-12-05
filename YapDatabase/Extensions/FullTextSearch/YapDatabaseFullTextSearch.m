@@ -40,6 +40,11 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 	}
 }
 
++ (NSArray *)previousClassNames
+{
+	return @[ @"YapCollectionsDatabaseFullTextSearch" ];
+}
+
 + (NSString *)tableNameForRegisteredName:(NSString *)registeredName
 {
 	return [NSString stringWithFormat:@"fts_%@", registeredName];

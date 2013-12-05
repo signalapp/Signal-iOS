@@ -3496,10 +3496,10 @@
 		extensionConnection = [extension newConnection:self];
 		extensionTransaction = [extensionConnection newReadWriteTransaction:transaction];
 		
-		BOOL isFirstTimeRegistration = NO;
+		BOOL needsClassValue = NO;
 		[self willRegisterExtension:extension
 		            withTransaction:transaction
-		    isFirstTimeRegistration:&isFirstTimeRegistration];
+		            needsClassValue:&needsClassValue];
 		
 		result = [extensionTransaction createIfNeeded];
 		
@@ -3507,7 +3507,7 @@
 		{
 			[self didRegisterExtension:extension
 			           withTransaction:transaction
-			   isFirstTimeRegistration:isFirstTimeRegistration];
+			           needsClassValue:needsClassValue];
 			
 			[self addRegisteredExtensionConnection:extensionConnection];
 			[transaction addRegisteredExtensionTransaction:extensionTransaction];
@@ -3569,7 +3569,7 @@
 
 - (void)willRegisterExtension:(YapDatabaseExtension *)extension
               withTransaction:(YapDatabaseReadWriteTransaction *)transaction
-      isFirstTimeRegistration:(BOOL *)isFirstTimeRegistrationPtr
+              needsClassValue:(BOOL *)needsClassValuePtr
 {
 	// This method is INTERNAL
 	//
@@ -3584,15 +3584,27 @@
 	NSString *prevExtensionClassName = [transaction stringValueForKey:@"class" extension:extensionName];
 	if (prevExtensionClassName == nil)
 	{
-		*isFirstTimeRegistrationPtr = YES;
+		// First time registration
+		*needsClassValuePtr = YES;
 		return;
 	}
 	
 	NSString *extensionClassName = NSStringFromClass([extension class]);
 	
-	if ([prevExtensionClassName isEqualToString:extensionClassName])
+	if ([extensionClassName isEqualToString:prevExtensionClassName])
 	{
-		*isFirstTimeRegistrationPtr = NO;
+		// Re-registration
+		*needsClassValuePtr = NO;
+		return;
+	}
+	
+	NSArray *otherValidClassNames = [[extension class] previousClassNames];
+	
+	if ([otherValidClassNames containsObject:prevExtensionClassName])
+	{
+		// The extension class was renamed.
+		// We should update the class value in the database.
+		*needsClassValuePtr = YES;
 		return;
 	}
 	
@@ -3620,12 +3632,12 @@
 		[transaction removeAllValuesForExtension:extensionName];
 	}
 	
-	*isFirstTimeRegistrationPtr = YES;
+	*needsClassValuePtr = YES;
 }
 
 - (void)didRegisterExtension:(YapDatabaseExtension *)extension
              withTransaction:(YapDatabaseReadWriteTransaction *)transaction
-     isFirstTimeRegistration:(BOOL)isFirstTimeRegistration
+             needsClassValue:(BOOL)needsClassValue
 {
 	// This method is INTERNAL
 	
@@ -3633,7 +3645,7 @@
 	
 	// Record the class name of the extension in the yap2 table.
 	
-	if (isFirstTimeRegistration)
+	if (needsClassValue)
 	{
 		NSString *extensionClassName = NSStringFromClass([extension class]);
 		

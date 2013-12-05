@@ -10,6 +10,11 @@
 	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
 
++ (NSArray *)previousClassNames
+{
+	return nil;
+}
+
 @synthesize registeredName;
 
 /**
