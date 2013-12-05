@@ -3613,7 +3613,11 @@
 	}
 	else
 	{
+		// Drop tables
 		[prevExtensionClass dropTablesForRegisteredName:extensionName withTransaction:transaction];
+		
+		// Drop preferences (rows in yap2 table)
+		[transaction removeAllValuesForExtension:extensionName];
 	}
 	
 	*isFirstTimeRegistrationPtr = YES;
