@@ -1809,7 +1809,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	STAssertTrue([mappings numberOfItemsInGroup:@""] == 2, @"");
 	
-	// Delete multiple items inside the range
+	// Delete all items via removeAllObjectsInAllCollections
 	
 	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
 	
@@ -1841,6 +1841,58 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 }
 
 - (void)test_fixedRange_beginning_6B
+{
+	YapDatabaseViewRangeOptions *rangeOpts =
+	  [YapDatabaseViewRangeOptions fixedRangeWithLength:2 offset:0 from:YapDatabaseViewBeginning];
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setIsDynamicSectionForAllGroups:YES];
+	
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	[mappings updateWithCounts:@{ @"":@(4) }];
+	
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	STAssertTrue([mappings numberOfItemsInGroup:@""] == 2, @"");
+	
+	// Delete all items via removeAllObjectsInAllCollections
+	
+	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
+	
+	[mappings updateWithCounts:@{ @"":@(0) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([mappings numberOfItemsInGroup:@""] == 0, @"");
+	
+	STAssertTrue([sectionChanges count] == 1, @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sectionChanges, 0).index == 0, @"");
+	
+	STAssertTrue([rowChanges count] == 2, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalIndex == 1, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
+}
+
+- (void)test_fixedRange_beginning_6C
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -1890,7 +1942,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	STAssertTrue(RowOp(rowChanges, 2).finalIndex == 0, @"");
 }
 
-- (void)test_fixedRange_beginning_6C
+- (void)test_fixedRange_beginning_6D
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -1904,7 +1956,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	STAssertTrue([mappings numberOfItemsInGroup:@""] == 2, @"");
 	
-	// Delete multiple items inside the range
+	// Test multiple changes, forcing some change-consolidation processing
 	
 	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
 	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
@@ -1955,7 +2007,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	STAssertTrue([mappings numberOfItemsInGroup:@""] == 2, @"");
 	
-	// Delete multiple items inside the range
+	// Delete all items via removeAllObjectsInAllCollections
 	
 	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
 	
@@ -1987,6 +2039,58 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 }
 
 - (void)test_fixedRange_end_6B
+{
+	YapDatabaseViewRangeOptions *rangeOpts =
+	[YapDatabaseViewRangeOptions fixedRangeWithLength:2 offset:0 from:YapDatabaseViewEnd];
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setIsDynamicSectionForAllGroups:YES];
+	
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	[mappings updateWithCounts:@{ @"":@(4) }];
+	
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	STAssertTrue([mappings numberOfItemsInGroup:@""] == 2, @"");
+	
+	// Delete all items via removeAllObjectsInAllCollections
+	
+	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
+	
+	[mappings updateWithCounts:@{ @"":@(0) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([mappings numberOfItemsInGroup:@""] == 0, @"");
+	
+	STAssertTrue([sectionChanges count] == 1, @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sectionChanges, 0).index == 0, @"");
+	
+	STAssertTrue([rowChanges count] == 2, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalIndex == 1, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
+}
+
+- (void)test_fixedRange_end_6C
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewEnd];
@@ -2036,7 +2140,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	STAssertTrue(RowOp(rowChanges, 2).finalIndex == 0, @"");
 }
 
-- (void)test_fixedRange_end_6C
+- (void)test_fixedRange_end_6D
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewEnd];

@@ -38,10 +38,18 @@
  * After processing changeset(s), the length and/or offset may change.
  * The new length and/or offsets are properly calculated,
  * and then this method is used to avoid duplicating the calculations.
+ * 
+ * Note: After invoking this method, be sure to invoke updateVisibility (after all groups have been updated).
 **/
 - (void)updateRangeOptionsForGroup:(NSString *)group
                      withNewLength:(NSUInteger)newLength
                          newOffset:(NSUInteger)newOffset;
+
+/**
+ * Normally this method is called automatically.
+ * But needs to be called manually if you use updateRangeOptionsForGroup:withNewLength:newOffset:
+**/
+- (void)updateVisibility;
 
 /**
  * Returns a copy of the dependencies dictionary, where:

@@ -345,10 +345,10 @@
  *
  * At the end of the read-write transaction we have a big list of changes that have occurred.
  *
- * This method takes the original list pre-processes them:
+ * This method takes the original list and pre-processes it:
  *
  * - splits the array in sectionChanges and rowChanges
- * - removes any items from the changes array that don't concern us
+ * - removes any items from the changes array that don't concern us (group not in mappings)
  * - injects extra changes if there are cell dependencies configured in the mappings
 **/
 + (void)preProcessChanges:(NSArray *)changes
@@ -426,13 +426,18 @@
 							}
 						}
 						
-						NSUInteger prevRowCount = [originalMappings visibleCountForGroup:sectionChange->group];
+						YapDatabaseViewRangePosition rangePosition =
+						  [originalMappings rangePositionForGroup:sectionChange->group];
+						
+						NSUInteger prevRowOffset = rangePosition.offsetFromBeginning;
+						NSUInteger prevRowCount = rangePosition.length;
+						
 						while (prevRowCount > 0)
 						{
 							YapDatabaseViewRowChange *rowChange =
 							    [YapDatabaseViewRowChange deleteKey:nil
 							                                inGroup:sectionChange->group
-							                                atIndex:(prevRowCount-1)];
+							                                atIndex:(prevRowOffset+prevRowCount-1)];
 							
 							[rowChanges addObject:rowChange];
 							prevRowCount--;
@@ -1056,6 +1061,7 @@
 	// So any items outside of that range must be filtered.
 	
 	NSDictionary *rangeOptions = [finalMappings rangeOptions];
+	BOOL rangeOptionsChanged = YES;
 	
 	// Note: The rangeOptions are the same between originalMappings & finalMappings.
 	
@@ -1818,16 +1824,23 @@
 		}
 		
 		//
-		// STEP 4 : Update rangeOpts.length & rangeOpts.offset withhin the final mappings (if changed)
+		// STEP 4 : Update finalMappings if needed (by updating rangeOpts.length & rangeOpts.offset)
 		
 		if ((originalRangeLength != finalRangeLength) || (originalRangeOffset != finalRangeOffset))
 		{
 			[finalMappings updateRangeOptionsForGroup:group withNewLength:finalRangeLength newOffset:finalRangeOffset];
+			rangeOptionsChanged = YES;
 		}
 		
 	} // for (NSString *group in rangeOptions)
 
+	// Step 4B : Update finalMappings if needed (by updating visibleGroups)
 
+	if (rangeOptionsChanged)
+	{
+		[finalMappings updateVisibility];
+	}
+	
 	//
 	// STEP 5 : Set the originalSection & finalSection
 	// STEP 6 : Reverse indexes for reversed groups

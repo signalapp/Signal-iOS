@@ -155,7 +155,7 @@
 		// Normal setter logic
 		
 		[self updateRangeOptions:rangeOpts forGroup:group];
-		[self updateVisibilityForGroup:group];
+		[self updateVisibility];
 	}
 }
 
@@ -398,22 +398,6 @@
 		if (count > 0 || ![dynamicSections containsObject:group])
 			[visibleGroups addObject:group];
 	}
-}
-
-- (void)updateVisibilityForGroup:(NSString *)group
-{
-	NSUInteger count;
-	
-	YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
-	if (rangeOpts)
-		count = rangeOpts.length;
-	else
-		count = [[counts objectForKey:group] unsignedIntegerValue];
-	
-	if (count > 0 || ![dynamicSections containsObject:group])
-		[visibleGroups addObject:group];
-	else
-		[visibleGroups removeObject:group];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
