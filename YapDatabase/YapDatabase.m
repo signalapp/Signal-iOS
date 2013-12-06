@@ -1401,8 +1401,9 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	do
 	{
 		__block NSString *dependentExtName = nil;
-		[extensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-			
+		[newExtensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+
+		//	__unsafe_unretained NSString *extName = (NSString *)key;
 			__unsafe_unretained NSSet *extDependencies = (NSSet *)obj;
 		
 			if ([extDependencies containsObject:extensionName])
