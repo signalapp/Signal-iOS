@@ -661,6 +661,7 @@
 
 - (id)objectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid
 {
+	if (key == nil) return nil;
 	if (collection == nil) collection = @"";
 	
 	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
