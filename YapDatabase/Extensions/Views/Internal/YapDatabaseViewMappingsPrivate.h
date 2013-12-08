@@ -63,4 +63,10 @@
 **/
 - (NSSet *)reverse;
 
+/**
+ * During processing we need to disable the the isUsingConsolidatedGroup flag
+ * in order to access the raw mappings.
+**/
+- (void)setAutoConsolidatingDisabled:(BOOL)disabled;
+
 @end

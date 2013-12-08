@@ -207,8 +207,8 @@
 	op->key = key;
 	op->changes = YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata;
 	
-	op->originalGroup = nil;                                 // invalid in insert type
-	op->originalIndex = op->opOriginalIndex = NSUIntegerMax; // invalid in insert type
+	op->originalGroup = nil;                              // invalid in insert type
+	op->originalIndex = op->opOriginalIndex = NSNotFound; // invalid in insert type
 	
 	op->finalGroup = group;
 	op->finalIndex = op->opFinalIndex = index;
@@ -228,8 +228,8 @@
 	op->originalGroup = group;
 	op->originalIndex = op->opOriginalIndex = index;
 	
-	op->finalGroup = nil;                              // invalid in delete type
-	op->finalIndex = op->opFinalIndex = NSUIntegerMax; // invalid in delete type
+	op->finalGroup = nil;                           // invalid in delete type
+	op->finalIndex = op->opFinalIndex = NSNotFound; // invalid in delete type
 	
 	op->originalSection = op->finalSection = NSNotFound;
 	
@@ -548,18 +548,19 @@
 	if (rowChangesPtr) *rowChangesPtr = rowChanges;
 }
 
+
 /**
  * During a read-write transaction, every modification to the view results in one or more
  * YapDatabaseViewSectionChange or YapDatabaseViewRowChange objects being appended to an internal array.
- * 
- * At the end of the read-write transaction we have a big list of changes that have occurred.
- * 
- * This method takes a list of YapDatabaseViewRowChange objects and processes them:
  *
- * - properly calculates the original & final index of each change
- * - properly consolidates multiple changes to the same item into a single change
+ * At the end of the read-write transaction we have a big list of changes that have occurred.
+ * But each change represents the change state at the moment the change took place.
+ * And we ultimately need to get the change state to reflect the original and/or final position of the change.
+ *
+ * This method takes a list of YapDatabaseViewRowChange objects and processes them to
+ * properly calculate and set the original and/or final index of each row change.
 **/
-+ (void)processAndConsolidateRowChanges:(NSMutableArray *)changes
++ (void)processRowChanges:(NSMutableArray *)changes
 {
 	// Each YapDatabaseViewRowChange object is one of:
 	// 
@@ -591,15 +592,11 @@
 	//
 	// There are are crap ton of unit tests for this code...
 	// 
-	// Please see the unit tests for a bunch of examples that will shed additional light on the setup and algorithm:
+	// Please see the UNIT TESTS for a bunch of examples that may shed additional light on the algorithm:
 	// TestViewChangeLogic.m
 	
 	NSUInteger i;
 	NSUInteger j;
-	
-	//
-	// PROCESSING
-	//
 	
 	// First we enumerate the items BACKWARDS,
 	// and update the ORIGINAL values.
@@ -700,10 +697,16 @@
 			}
 		}
 	}
-	
-	//
-	// CONSOLIDATION
-	//
+}
+
+/**
+ * This method consolidates multiple changes to the same row into a single change that reflects
+ * the original and final position of each changed row.
+**/
++ (void)consolidateRowChanges:(NSMutableArray *)changes
+{
+	NSUInteger i;
+	NSUInteger j;
 	
 	NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSet];
 	
@@ -959,14 +962,9 @@
 }
 
 /**
- * During a read-write transaction, every modification to the view results in one or more
- * YapDatabaseViewSectionChange or YapDatabaseViewRowChange objects being appended to an internal array.
- *
- * At the end of the read-write transaction we have a big list of changes that have occurred.
- *
- * This method takes a list of YapDatabaseViewSectionChange objects and processes them.
+ * This method consolidates multiple changes to the same section into a single change.
 **/
-+ (void)processAndConsolidateSectionChanges:(NSMutableArray *)changes
++ (void)consolidateSectionChanges:(NSMutableArray *)changes
 {
 	NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSet];
 	
@@ -1824,7 +1822,7 @@
 		}
 		
 		//
-		// STEP 4 : Update finalMappings if needed (by updating rangeOpts.length & rangeOpts.offset)
+		// STEP 4.A : Update finalMappings if needed (by updating rangeOpts.length & rangeOpts.offset)
 		
 		if ((originalRangeLength != finalRangeLength) || (originalRangeOffset != finalRangeOffset))
 		{
@@ -1834,7 +1832,7 @@
 		
 	} // for (NSString *group in rangeOptions)
 
-	// Step 4B : Update finalMappings if needed (by updating visibleGroups)
+	// Step 4.B : Update finalMappings if needed (by updating visibleGroups)
 
 	if (rangeOptionsChanged)
 	{
@@ -1906,6 +1904,388 @@
 			rowChange->finalIndex = (NSUInteger)(mid - (rowChange->finalIndex - mid));
 		}
 	}
+	
+	//
+	// STEP 7 : Handle group consolidation
+	//
+	
+	BOOL oldIsUsingConsolidatedGroup = [originalMappings isUsingConsolidatedGroup];
+	BOOL newIsUsingConsolidatedGroup = [finalMappings isUsingConsolidatedGroup];
+	
+	if (oldIsUsingConsolidatedGroup && newIsUsingConsolidatedGroup)
+	{
+		//
+		// The groups were previously consolidated, and still are.
+		//
+		
+		NSString *consolidatedGroupName = [originalMappings consolidatedGroupName];
+		
+		// Step 1
+		//
+		// - calculate original & final offset for each group
+		
+		NSArray *allGroups = [originalMappings allGroups];
+		
+		NSMutableDictionary *originalOffsets = [NSMutableDictionary dictionaryWithCapacity:[allGroups count]];
+		NSMutableDictionary *finalOffsets = [NSMutableDictionary dictionaryWithCapacity:[allGroups count]];
+		
+		NSUInteger originalOffset = 0;
+		NSUInteger finalOffset = 0;
+		
+		for (NSString *group in allGroups)
+		{
+			[originalOffsets setObject:@(originalOffset) forKey:group];
+			[finalOffsets    setObject:@(finalOffset)    forKey:group];
+			
+			originalOffset += [originalMappings visibleCountForGroup:group];
+			finalOffset    += [finalMappings visibleCountForGroup:group];
+		}
+		
+		// Step 2
+		//
+		// - change section to zero, and group to consolidatedGroupName for each change
+		// - increment original & final row index for each change
+		
+		for (YapDatabaseViewRowChange *rowChange in rowChanges)
+		{
+			if (rowChange->type == YapDatabaseViewChangeDelete)
+			{
+				NSUInteger oOffset = [[originalOffsets objectForKey:rowChange->originalGroup] unsignedIntegerValue];
+				
+				rowChange->originalGroup = consolidatedGroupName;
+				rowChange->originalSection = 0;
+				rowChange->originalIndex += oOffset;
+			}
+			else if (rowChange->type == YapDatabaseViewChangeInsert)
+			{
+				NSUInteger fOffset = [[finalOffsets objectForKey:rowChange->finalGroup] unsignedIntegerValue];
+				
+				rowChange->finalGroup = consolidatedGroupName;
+				rowChange->finalSection = 0;
+				rowChange->finalIndex += fOffset;
+			}
+			else if (rowChange->type == YapDatabaseViewChangeMove)
+			{
+				NSUInteger oOffset = [[originalOffsets objectForKey:rowChange->originalGroup] unsignedIntegerValue];
+				NSUInteger fOffset = [[finalOffsets objectForKey:rowChange->finalGroup] unsignedIntegerValue];
+				
+				rowChange->originalGroup = consolidatedGroupName;
+				rowChange->originalSection = 0;
+				rowChange->originalIndex += oOffset;
+				
+				rowChange->finalGroup = consolidatedGroupName;
+				rowChange->finalSection = 0;
+				rowChange->finalIndex += fOffset;
+			}
+			else // if (rowChange->type == YapDatabaseViewChangeUpdate)
+			{
+				NSUInteger oOffset = [[originalOffsets objectForKey:rowChange->originalGroup] unsignedIntegerValue];
+				NSUInteger fOffset = [[finalOffsets objectForKey:rowChange->finalGroup] unsignedIntegerValue];
+				
+				rowChange->originalGroup = consolidatedGroupName;
+				rowChange->originalSection = 0;
+				rowChange->originalIndex += oOffset;
+				
+				rowChange->finalGroup = consolidatedGroupName;
+				rowChange->finalSection = 0;
+				rowChange->finalIndex += fOffset;
+				
+				if (rowChange->originalIndex != rowChange->finalIndex)
+				{
+					rowChange->type = YapDatabaseViewChangeMove;
+				}
+			}
+		}
+	}
+	else if (!oldIsUsingConsolidatedGroup && newIsUsingConsolidatedGroup)
+	{
+		//
+		// Switching from groups to consolidated group
+		//
+		
+		NSString *consolidatedGroupName = [originalMappings consolidatedGroupName];
+		
+		// Step 1
+		//
+		// - calculate the offsets for each group within the consolidated group
+		
+		NSArray *allGroups = [originalMappings allGroups];
+		
+		NSMutableDictionary *finalOffsets = [NSMutableDictionary dictionaryWithCapacity:[allGroups count]];
+		NSUInteger finalOffset = 0;
+		
+		for (NSString *group in allGroups)
+		{
+			[finalOffsets setObject:@(finalOffset) forKey:group];
+			
+			finalOffset += [finalMappings visibleCountForGroup:group];
+		}
+		
+		// Step 2
+		//
+		// - enumerate over every single row that was visible in the originalMappings
+		// - check to see if its already represented in the existing array of rowChanges
+		// - if not, then inject a move operation for it
+		
+		NSUInteger beginningChangeCount = [rowChanges count];
+		
+		for (NSString *group in [originalMappings visibleGroups])
+		{
+			NSUInteger originalSection = [originalMappings sectionForGroup:group];
+			NSUInteger finalSection = [finalMappings sectionForGroup:group];
+			
+			NSUInteger originalGroupCount = [originalMappings visibleCountForGroup:group];
+			
+			for (NSUInteger originalIndex = 0; originalIndex < originalGroupCount; originalIndex++)
+			{
+				BOOL found = NO;
+				NSUInteger finalIndex = originalIndex;
+				
+				for (NSUInteger i = 0; i < beginningChangeCount; i++)
+				{
+					YapDatabaseViewRowChange *rowChange = [rowChanges objectAtIndex:i];
+					
+					if (rowChange->type != YapDatabaseViewChangeInsert &&
+					    rowChange->originalSection == originalSection &&
+						rowChange->originalIndex == originalIndex)
+					{
+						found = YES;
+						break;
+					}
+					
+					if (rowChange->type == YapDatabaseViewChangeDelete ||
+					    rowChange->type == YapDatabaseViewChangeMove )
+					{
+						if (rowChange->originalSection == originalSection)
+						{
+							if (rowChange->originalIndex < finalIndex)
+							{
+								// A row was deleted below our row.
+								// So its finalIndex gets decremented.
+								finalIndex--;
+							}
+						}
+					}
+					
+					if (rowChange->type == YapDatabaseViewChangeInsert ||
+					    rowChange->type == YapDatabaseViewChangeMove )
+					{
+						if (rowChange->finalSection == finalSection)
+						{
+							if (rowChange->finalIndex <= finalIndex)
+							{
+								// A row was inserted below our row.
+								// So its finalIndex gets incremented.
+								finalIndex++;
+							}
+						}
+					}
+				}
+				
+				if (!found)
+				{
+					YapDatabaseViewRowChange *op = [[YapDatabaseViewRowChange alloc] init];
+					op->type = YapDatabaseViewChangeMove;
+					op->key = nil;
+					op->changes = 0;
+					
+					op->originalGroup = group;
+					op->originalSection = originalSection;
+					op->originalIndex = originalIndex;
+					
+					NSUInteger finalGroupOffset = [[finalOffsets objectForKey:group] unsignedIntegerValue];
+					
+					op->finalGroup = consolidatedGroupName;
+					op->finalSection = 0;
+					op->finalIndex = finalGroupOffset + finalIndex;
+					
+					[rowChanges addObject:op];
+				}
+			}
+		}
+		
+		// Step 3
+		//
+		// - update the finalGroup/finalSection/finalIndex for every rowChange
+		//   (excluding the one's we injected)
+		
+		for (NSUInteger i = 0; i < beginningChangeCount; i++)
+		{
+			YapDatabaseViewRowChange *rowChange = [rowChanges objectAtIndex:i];
+			
+			if (rowChange->type == YapDatabaseViewChangeInsert)
+			{
+				NSUInteger fOffset = [[finalOffsets objectForKey:rowChange->finalGroup] unsignedIntegerValue];
+				
+				rowChange->finalGroup = consolidatedGroupName;
+				rowChange->finalSection = 0;
+				rowChange->finalIndex += fOffset;
+			}
+			else if (rowChange->type == YapDatabaseViewChangeMove)
+			{
+				NSUInteger fOffset = [[finalOffsets objectForKey:rowChange->finalGroup] unsignedIntegerValue];
+				
+				rowChange->finalGroup = consolidatedGroupName;
+				rowChange->finalSection = 0;
+				rowChange->finalIndex += fOffset;
+			}
+			else if (rowChange->type == YapDatabaseViewChangeUpdate)
+			{
+				rowChange->type = YapDatabaseViewChangeMove;
+				
+				NSUInteger fOffset = [[finalOffsets objectForKey:rowChange->finalGroup] unsignedIntegerValue];
+				
+				rowChange->finalGroup = consolidatedGroupName;
+				rowChange->finalSection = 0;
+				rowChange->finalIndex += fOffset;
+			}
+		}
+	}
+	else if (oldIsUsingConsolidatedGroup && !newIsUsingConsolidatedGroup)
+	{
+		//
+		// Switching from consolidated group to groups
+		//
+		
+		NSString *consolidatedGroupName = [originalMappings consolidatedGroupName];
+		
+		// Step 1
+		//
+		// - calculate the offsets for each group within the consolidated group
+		
+		NSArray *allGroups = [originalMappings allGroups];
+		
+		NSMutableDictionary *originalOffsets = [NSMutableDictionary dictionaryWithCapacity:[allGroups count]];
+		
+		NSUInteger originalOffset = 0;
+		
+		for (NSString *group in allGroups)
+		{
+			[originalOffsets setObject:@(originalOffset) forKey:group];
+			
+			originalOffset += [originalMappings visibleCountForGroup:group];
+		}
+		
+		// Step 2
+		//
+		// - enumerate over every single row that was visible in the originalMappings
+		// - check to see if its already represented in the existing array of rowChanges
+		// - if not, then inject a move operation for it
+		
+		NSUInteger beginningChangeCount = [rowChanges count];
+		
+		for (NSString *group in [originalMappings visibleGroups])
+		{
+			NSUInteger originalSection = [originalMappings sectionForGroup:group];
+			NSUInteger finalSection = [finalMappings sectionForGroup:group];
+			
+			NSUInteger originalGroupCount = [originalMappings visibleCountForGroup:group];
+			
+			for (NSUInteger originalIndex = 0; originalIndex < originalGroupCount; originalIndex++)
+			{
+				BOOL found = NO;
+				NSUInteger finalIndex = originalIndex;
+				
+				for (NSUInteger i = 0; i < beginningChangeCount; i++)
+				{
+					YapDatabaseViewRowChange *rowChange = [rowChanges objectAtIndex:i];
+					
+					if (rowChange->type != YapDatabaseViewChangeInsert &&
+					    rowChange->originalSection == originalSection &&
+						rowChange->originalIndex == originalIndex)
+					{
+						found = YES;
+						break;
+					}
+					
+					if (rowChange->type == YapDatabaseViewChangeDelete ||
+					    rowChange->type == YapDatabaseViewChangeMove )
+					{
+						if (rowChange->originalSection == originalSection)
+						{
+							if (rowChange->originalIndex < finalIndex)
+							{
+								// A row was deleted below our row.
+								// So its finalIndex gets decremented.
+								finalIndex--;
+							}
+						}
+					}
+					
+					if (rowChange->type == YapDatabaseViewChangeInsert ||
+					    rowChange->type == YapDatabaseViewChangeMove )
+					{
+						if (rowChange->finalSection == finalSection)
+						{
+							if (rowChange->finalIndex <= finalIndex)
+							{
+								// A row was inserted below our row.
+								// So its finalIndex gets incremented.
+								finalIndex++;
+							}
+						}
+					}
+				}
+				
+				if (!found)
+				{
+					YapDatabaseViewRowChange *op = [[YapDatabaseViewRowChange alloc] init];
+					op->type = YapDatabaseViewChangeMove;
+					op->key = nil;
+					op->changes = 0;
+					
+					NSUInteger originalGroupOffset = [[originalOffsets objectForKey:group] unsignedIntegerValue];
+					
+					op->originalGroup = consolidatedGroupName;
+					op->originalSection = 0;
+					op->originalIndex = originalGroupOffset + originalIndex;
+					
+					op->finalGroup = group;
+					op->finalSection = finalSection;
+					op->finalIndex = finalIndex;
+					
+					[rowChanges addObject:op];
+				}
+			}
+		}
+		
+		// Step 3
+		//
+		// - update the originalGroup/originalSection/originalIndex for every rowChange
+		//   (excluding the one's we injected)
+		
+		for (NSUInteger i = 0; i < beginningChangeCount; i++)
+		{
+			YapDatabaseViewRowChange *rowChange = [rowChanges objectAtIndex:i];
+			
+			if (rowChange->type == YapDatabaseViewChangeDelete)
+			{
+				NSUInteger oOffset = [[originalOffsets objectForKey:rowChange->originalGroup] unsignedIntegerValue];
+				
+				rowChange->originalGroup = consolidatedGroupName;
+				rowChange->originalSection = 0;
+				rowChange->originalIndex += oOffset;
+			}
+			else if (rowChange->type == YapDatabaseViewChangeMove)
+			{
+				NSUInteger oOffset = [[originalOffsets objectForKey:rowChange->originalGroup] unsignedIntegerValue];
+				
+				rowChange->originalGroup = consolidatedGroupName;
+				rowChange->originalSection = 0;
+				rowChange->originalIndex += oOffset;
+			}
+			else if (rowChange->type == YapDatabaseViewChangeUpdate)
+			{
+				rowChange->type = YapDatabaseViewChangeMove;
+				
+				NSUInteger oOffset = [[originalOffsets objectForKey:rowChange->originalGroup] unsignedIntegerValue];
+				
+				rowChange->originalGroup = consolidatedGroupName;
+				rowChange->originalSection = 0;
+				rowChange->originalIndex += oOffset;
+			}
+		}
+	}
 }
 
 /**
@@ -1916,6 +2296,10 @@
                       withOriginalMappings:(YapDatabaseViewMappings *)originalMappings
                              finalMappings:(YapDatabaseViewMappings *)finalMappings
 {
+	//
+	// STEP 1 : Handle dynamic sections
+	//
+	
 	NSUInteger i = 0;
 	while (i < [sectionChanges count])
 	{
@@ -1962,6 +2346,86 @@
 			}
 		}
 	}
+	
+	//
+	// STEP 2 : Handle group consolidation
+	//
+	
+	BOOL oldIsUsingConsolidatedGroup = [originalMappings isUsingConsolidatedGroup];
+	BOOL newIsUsingConsolidatedGroup = [finalMappings isUsingConsolidatedGroup];
+	
+	if (oldIsUsingConsolidatedGroup && newIsUsingConsolidatedGroup)
+	{
+		//
+		// The groups were previously consolidated, and still are.
+		//
+		
+		// - clear section changes (everything stays within consolidated group)
+		
+		[sectionChanges removeAllObjects];
+	}
+	else if (!oldIsUsingConsolidatedGroup && newIsUsingConsolidatedGroup)
+	{
+		//
+		// Switching from groups to consolidated group
+		//
+		
+		// - clear section changes (so we can set them manually)
+		
+		[sectionChanges removeAllObjects];
+		
+		// - insert section delete for all original sections
+		
+		NSUInteger originalSection = 0;
+		for (NSString *originalGroup in [originalMappings visibleGroups])
+		{
+			YapDatabaseViewSectionChange *deleteOp = [YapDatabaseViewSectionChange deleteGroup:originalGroup];
+			deleteOp->originalSection = originalSection;
+			
+			[sectionChanges addObject:deleteOp];
+			originalSection++;
+		}
+		
+		// - insert section insert for consolidated group
+		
+		NSString *consolidatedGroupName = [originalMappings consolidatedGroupName];
+		
+		YapDatabaseViewSectionChange *insertOp = [YapDatabaseViewSectionChange insertGroup:consolidatedGroupName];
+		insertOp->finalSection = 0;
+		
+		[sectionChanges addObject:insertOp];
+	}
+	else if (oldIsUsingConsolidatedGroup && !newIsUsingConsolidatedGroup)
+	{
+		//
+		// Switching from consolidated group to groups
+		//
+		
+		// - clear section changes (so we can set them manually)
+		
+		[sectionChanges removeAllObjects];
+		
+		// - insert section delete for consolidatedGroup
+		
+		NSString *consolidatedGroupName = [originalMappings consolidatedGroupName];
+		
+		YapDatabaseViewSectionChange *deleteOp = [YapDatabaseViewSectionChange deleteGroup:consolidatedGroupName];
+		deleteOp->originalSection = 0;
+		
+		[sectionChanges addObject:deleteOp];
+		
+		// - insert section insert for all final sections
+		
+		NSUInteger finalSection = 0;
+		for (NSString *finalGroup in [finalMappings visibleGroups])
+		{
+			YapDatabaseViewSectionChange *insertOp = [YapDatabaseViewSectionChange insertGroup:finalGroup];
+			insertOp->finalSection = finalSection;
+			
+			[sectionChanges addObject:insertOp];
+			finalSection++;
+		}
+	}
 }
 
 + (void)getSectionChanges:(NSArray **)sectionChangesPtr
@@ -1970,12 +2434,15 @@
 			finalMappings:(YapDatabaseViewMappings *)finalMappings
 			  fromChanges:(NSArray *)changes
 {
+	NSMutableArray *sectionChanges = nil;
+	NSMutableArray *rowChanges = nil;
+	
+	[originalMappings setAutoConsolidatingDisabled:YES]; // disable during processing
+	[finalMappings setAutoConsolidatingDisabled:YES];    // disable during processing
+	
 	// PRE-PROCESSING
 	//
 	// Remove any items from the changes array that don't concern us.
-	
-	NSMutableArray *sectionChanges = nil;
-	NSMutableArray *rowChanges = nil;
 	
 	[self preProcessChanges:changes
 	   withOriginalMappings:originalMappings
@@ -1984,13 +2451,21 @@
 	             rowChanges:&rowChanges];
 	
 	//
-	// PROCESSING & CONSOLIDATION
+	// PROCESSING
 	//
 	// This is where the magic happens.
+	// Calculates original and final index of every change.
 	
-	[self processAndConsolidateRowChanges:rowChanges];
+	[self processRowChanges:rowChanges];
 	
-	[self processAndConsolidateSectionChanges:sectionChanges];
+	// CONSOLIDATION
+	//
+	// Merge multiple changes to same row into a single change.
+	// Merge multiple changes to a group into a zero or one change.
+	
+	[self consolidateRowChanges:rowChanges];
+	
+	[self consolidateSectionChanges:sectionChanges];
 	
 	//
 	// POST-PROCESSING
@@ -2004,6 +2479,13 @@
 	[self postProcessAndFilterSectionChanges:sectionChanges
 	                    withOriginalMappings:originalMappings
 	                           finalMappings:finalMappings];
+	
+	//
+	// DONE
+	//
+	
+	[originalMappings setAutoConsolidatingDisabled:NO];
+	[finalMappings setAutoConsolidatingDisabled:NO];
 	
 	if (sectionChangesPtr) *sectionChangesPtr = sectionChanges;
 	if (rowChangesPtr) *rowChangesPtr = rowChanges;

@@ -78,7 +78,7 @@ typedef id (^YapDatabaseSanitizer)(NSString *collection, NSString *key, id objec
  * https://github.com/yaptv/YapDatabase/wiki/YapDatabaseModifiedNotification
  *
  * The notification object will be the database instance itself.
- * That is, it will be an instance of YapDatabase or YapCollectionsDatabase.
+ * That is, it will be an instance of YapDatabase.
  *
  * The userInfo dictionary will look something like this:
  * @{

@@ -74,10 +74,11 @@
 @interface YapDatabaseViewChange : NSObject
 
 /**
- * The brains behind all the post-processing logic.
+ * The brains behind the post-processing logic.
  * Exposed privately to be used by the unit tests.
 **/
-+ (void)processAndConsolidateRowChanges:(NSMutableArray *)changes;
++ (void)processRowChanges:(NSMutableArray *)changes;
++ (void)consolidateRowChanges:(NSMutableArray *)changes;
 
 /**
  * This method applies the given mappings, and then invokes the post-processing method.

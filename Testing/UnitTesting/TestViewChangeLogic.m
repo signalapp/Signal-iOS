@@ -20,7 +20,7 @@
  * But when the transaction may consist of multiple modifications to multiple keys,
  * the complexities of the problem begin to add up...
  * 
- * For the test cases below, we will use "ascii art" to diagram the order of changes that occurred.
+ * For the test cases below, we will use "ascii art" to diagram the order of changes that occurred in the view.
  * 
  * The views record each change that modifies the view as the modifications occur:
  *
@@ -44,19 +44,20 @@
 
 static NSMutableArray *changes;
 
-static YapDatabaseViewRowChange* (^Op)(NSUInteger) = ^(NSUInteger index){
-	
-	return (YapDatabaseViewRowChange *)[changes objectAtIndex:index];
-};
-
 static YapDatabaseViewSectionChange* (^SectionOp)(NSArray*, NSUInteger) = ^(NSArray *sChanges, NSUInteger index){
 	
-	return (YapDatabaseViewSectionChange *)[sChanges objectAtIndex:index];
+	if (index < [sChanges count])
+		return (YapDatabaseViewSectionChange *)[sChanges objectAtIndex:index];
+	else
+		return (YapDatabaseViewSectionChange *)nil;
 };
 
 static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rChanges, NSUInteger index){
 	
-	return (YapDatabaseViewRowChange *)[rChanges objectAtIndex:index];
+	if (index < [rChanges count])
+		return (YapDatabaseViewRowChange *)[rChanges objectAtIndex:index];
+	else
+		return (YapDatabaseViewRowChange *)nil;
 };
 
 + (void)initialize
@@ -90,22 +91,25 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	// 3 | cat   | dog   | 
 	// 4 | dog   |       | 
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"lion" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear" inGroup:@"" atIndex:2]]; // index when it occured
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"lion" inGroup:@"" atIndex:0]]; // index when it occured
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
-	// Delete: 2 (bear)
-	// Delete: 0 (lion)
+	// Delete: (2 -> ~) (bear)
+	// Delete: (0 -> ~) (lion)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(0).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 0).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 0).finalIndex == NSNotFound, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(1).originalIndex == 0, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 1).originalIndex == 0, @"");
+	STAssertTrue(RowOp(changes, 1).finalIndex == NSNotFound, @"");
 }
 
 - (void)test1B
@@ -118,22 +122,23 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	// 3 | cat   | dog   |
 	// 4 | dog   |       |
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear" inGroup:@"" atIndex:2]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"cat"  inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"bear" inGroup:@"" atIndex:2]]; // index when it occured
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"cat"  inGroup:@"" atIndex:2]]; // index when it occured
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: (2 -> ~) (bear)
 	// Delete: (3 -> ~) (cat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(0).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(1).originalIndex == 3, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 1).originalIndex == 3, @"");
 }
 
 - (void)test1C
@@ -151,17 +156,18 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: (2 -> ~) (bear)
 	// Delete: (4 -> ~) (dog)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(0).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(1).originalIndex == 4, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 1).originalIndex == 4, @"");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -185,17 +191,18 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: (~ -> 3) (zebra)
 	// Insert: (~ -> 0) (goat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(0).finalIndex == 3, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 0).finalIndex == 3, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(1).finalIndex == 0, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 1).finalIndex == 0, @"");
 }
 
 - (void)test2B
@@ -215,17 +222,18 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: (~ -> 3) (zebra)
 	// Insert: (~ -> 2) (goat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(0).finalIndex == 3, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 0).finalIndex == 3, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(1).finalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 1).finalIndex == 2, @"");
 }
 
 - (void)test2C
@@ -245,17 +253,18 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: (~ -> 2) (zebra)
 	// Insert: (~ -> 6) (goat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(0).finalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 0).finalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(1).finalIndex == 6, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 1).finalIndex == 6, @"");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -277,17 +286,18 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Insert: 0 (zebra)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(0).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(1).finalIndex == 0, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 1).finalIndex == 0, @"");
 }
 
 - (void)test3B
@@ -305,17 +315,18 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Insert: 2 (zebra)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(0).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(1).finalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 1).finalIndex == 2, @"");
 }
 
 - (void)test3C
@@ -333,17 +344,18 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Insert: 4 (zebra)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(0).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(1).finalIndex == 4, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 1).finalIndex == 4, @"");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -366,17 +378,18 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: 1 (zebra)
 	// Delete: 0 (lion)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(0).finalIndex == 1, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 0).finalIndex == 1, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(1).originalIndex == 0, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 1).originalIndex == 0, @"");
 }
 
 - (void)test4B
@@ -395,17 +408,18 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: 1 (zebra)
 	// Delete: 1 (tiger)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(0).finalIndex == 1, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 0).finalIndex == 1, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(1).originalIndex == 1, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 1).originalIndex == 1, @"");
 }
 
 - (void)test4C
@@ -424,17 +438,18 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: 2 (zebra)
 	// Delete: 2 (bear)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(0).finalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 0).finalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(1).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 1).originalIndex == 2, @"");
 }
 
 - (void)test4D
@@ -453,17 +468,18 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: 2 (zebra)
 	// Delete: 3 (cat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(0).finalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 0).finalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(1).originalIndex == 3, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 1).originalIndex == 3, @"");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -487,21 +503,22 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: 0 (zebra)
 	// Delete: 0 (lion)
 	// Delete: 1 (tiger)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(0).finalIndex == 0, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 0).finalIndex == 0, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(1).originalIndex == 0, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 1).originalIndex == 0, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(2).originalIndex == 1, @"");
+	STAssertTrue(RowOp(changes, 2).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 2).originalIndex == 1, @"");
 }
 
 - (void)test5B
@@ -521,21 +538,22 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: 1 (zebra)
 	// Delete: 1 (tiger)
 	// Delete: 2 (bear)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(0).finalIndex == 1, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 0).finalIndex == 1, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(1).originalIndex == 1, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 1).originalIndex == 1, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(2).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 2).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 2).originalIndex == 2, @"");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -559,21 +577,22 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Insert: 1 (zebra)
 	// Insert: 0 (goat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(0).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(1).finalIndex == 1, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 1).finalIndex == 1, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(2).finalIndex == 0, @"");
+	STAssertTrue(RowOp(changes, 2).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 2).finalIndex == 0, @"");
 }
 
 - (void)test6B
@@ -593,21 +612,22 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Insert: 0 (zebra)
 	// Insert: 1 (goat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(0).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(1).finalIndex == 0, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 1).finalIndex == 0, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(2).finalIndex == 1, @"");
+	STAssertTrue(RowOp(changes, 2).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 2).finalIndex == 1, @"");
 }
 
 - (void)test6C
@@ -627,21 +647,22 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Insert: 2 (zebra)
 	// Insert: 0 (goat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(0).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(1).finalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 1).finalIndex == 2, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(2).finalIndex == 0, @"");
+	STAssertTrue(RowOp(changes, 2).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 2).finalIndex == 0, @"");
 }
 
 - (void)test6D
@@ -661,21 +682,22 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Insert: 1 (zebra)
 	// Insert: 2 (goat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(0).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(1).finalIndex == 1, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 1).finalIndex == 1, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(2).finalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 2).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 2).finalIndex == 2, @"");
 }
 
 - (void)test6E
@@ -695,21 +717,22 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Insert: 3 (zebra)
 	// Insert: 1 (goat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(0).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(1).finalIndex == 3, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 1).finalIndex == 3, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(2).finalIndex == 1, @"");
+	STAssertTrue(RowOp(changes, 2).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 2).finalIndex == 1, @"");
 }
 
 - (void)test6F
@@ -729,21 +752,22 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
 	// Insert: 3 (zebra)
 	// Insert: 2 (goat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(0).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(1).finalIndex == 3, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 1).finalIndex == 3, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(2).finalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 2).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 2).finalIndex == 2, @"");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -769,7 +793,8 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: 0 (zebra)
@@ -778,20 +803,20 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	// Delete: 2 (bear)
 	// Delete: 3 (cat)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(0).finalIndex == 0, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 0).finalIndex == 0, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(1).originalIndex == 0, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 1).originalIndex == 0, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(2).originalIndex == 1, @"");
+	STAssertTrue(RowOp(changes, 2).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 2).originalIndex == 1, @"");
 	
-	STAssertTrue(Op(3).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(3).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 3).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 3).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(4).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(4).originalIndex == 3, @"");
+	STAssertTrue(RowOp(changes, 4).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 4).originalIndex == 3, @"");
 }
 
 - (void)test7B
@@ -813,7 +838,8 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: 0 (zebra)
@@ -822,20 +848,20 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	// Delete: 3 (cat)
 	// Delete: 2 (bear)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(0).finalIndex == 0, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 0).finalIndex == 0, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(1).originalIndex == 1, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 1).originalIndex == 1, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(2).originalIndex == 0, @"");
+	STAssertTrue(RowOp(changes, 2).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 2).originalIndex == 0, @"");
 	
-	STAssertTrue(Op(3).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(3).originalIndex == 3, @"");
+	STAssertTrue(RowOp(changes, 3).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 3).originalIndex == 3, @"");
 	
-	STAssertTrue(Op(4).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(4).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 4).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 4).originalIndex == 2, @"");
 }
 
 - (void)test7C
@@ -857,7 +883,8 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Insert: 0 (zebra)
@@ -866,20 +893,20 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	// Delete: 0 (lion)
 	// Delete: 1 (tiger)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(0).finalIndex == 0, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 0).finalIndex == 0, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(1).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 1).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(2).originalIndex == 3, @"");
+	STAssertTrue(RowOp(changes, 2).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 2).originalIndex == 3, @"");
 	
-	STAssertTrue(Op(3).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(3).originalIndex == 0, @"");
+	STAssertTrue(RowOp(changes, 3).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 3).originalIndex == 0, @"");
 	
-	STAssertTrue(Op(4).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(4).originalIndex == 1, @"");
+	STAssertTrue(RowOp(changes, 4).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 4).originalIndex == 1, @"");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -905,7 +932,8 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processAndConsolidateRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
 	// Delete: 2 (bear)
@@ -913,17 +941,17 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	// Insert: 2 (goat)
 	// Insert: 3 (fish)
 	
-	STAssertTrue(Op(0).type == YapDatabaseViewChangeDelete, @"");
-	STAssertTrue(Op(0).originalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(changes, 0).originalIndex == 2, @"");
 	
-	STAssertTrue(Op(1).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(1).finalIndex == 1, @"");
+	STAssertTrue(RowOp(changes, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 1).finalIndex == 1, @"");
 	
-	STAssertTrue(Op(2).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(2).finalIndex == 2, @"");
+	STAssertTrue(RowOp(changes, 2).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 2).finalIndex == 2, @"");
 	
-	STAssertTrue(Op(3).type == YapDatabaseViewChangeInsert, @"");
-	STAssertTrue(Op(3).finalIndex == 3, @"");
+	STAssertTrue(RowOp(changes, 3).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(changes, 3).finalIndex == 3, @"");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

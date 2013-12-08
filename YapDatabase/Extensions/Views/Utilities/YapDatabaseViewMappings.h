@@ -178,6 +178,18 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
 
 /**
  * Initializes a new mappings object.
+ *
+ * @param allGroups
+ *     The ordered array of group names.
+ *     From the example above, this would be @[ @"wine", @"liquor", @"beer" ]
+ *
+ * @param registeredViewName
+ *     This is the name of the view, as you registered it with the database system.
+**/
++ (instancetype)mappingsWithGroups:(NSArray *)allGroups view:(NSString *)registeredViewName;
+
+/**
+ * Initializes a new mappings object.
  * 
  * @param allGroups
  *     The ordered array of group names.
@@ -185,12 +197,15 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
  * 
  * @param registeredViewName
  *     This is the name of the view, as you registered it with the database system.
+ * 
+ *
 **/
 - (id)initWithGroups:(NSArray *)allGroups
 				view:(NSString *)registeredViewName;
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Accessors
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * The allGroups property returns the groups that were passed in the init method.
@@ -205,8 +220,9 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
 **/
 @property (nonatomic, copy, readonly) NSString *view;
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Configuration
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * A group/section can either be "static" or "dynamic".
@@ -249,11 +265,11 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
  * You can configure this per group, or all-at-once.
 **/
 
-- (BOOL)isDynamicSectionForAllGroups;
 - (void)setIsDynamicSectionForAllGroups:(BOOL)isDynamic;
+- (BOOL)isDynamicSectionForAllGroups;
 
-- (BOOL)isDynamicSectionForGroup:(NSString *)group;
 - (void)setIsDynamicSection:(BOOL)isDynamic forGroup:(NSString *)group;
+- (BOOL)isDynamicSectionForGroup:(NSString *)group;
 
 /**
  * You can use the YapDatabaseViewRangeOptions class to configure a "range" that you would
@@ -280,8 +296,8 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
  * You can get this with only a few lines of code using range options.
  * 
  * Note that if you're using range options, then the indexPaths in your UI might not match up directly
- * with the indexes in the view's group. You can use the various mapping methods in this class
- * to automatically handle all that.
+ * with the indexes in the view's group. No worries. You can use the various mapping methods in this class
+ * to automatically handle all that for you.
  *
  * @see getGroup:viewIndex:forIndexPath:
  * @see viewIndexForRow:inSection:
@@ -309,17 +325,17 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
  * upon the cell at offset -1. That is, the drawing of cell at index 5 is dependent upon the cell at index (5-1).
  * 
  * This method allows you to specify if there are cell drawing dependecies.
- * For the example above you could the following:
+ * For the example above you could simply do the following:
  * 
  * [mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@""]
  * 
- * This will inject extra YapDatabaseViewChangeUpdate's for cells that may have been affected (and thus
- * need to be redrawn) by other Insert,Delete,Update,Move operations.
+ * This will inject extra YapDatabaseViewChangeUpdate's for cells that may have been affected by
+ * other Insert/Delete/Update/Move operations (and thus need to be redrawn).
  * 
  * Continuing the example above, if the item at index 7 is deleted, then changeset processing will automatically emit
  * and update change for the item that was previously at index 8. This is because, as specified by the "cell drawing
  * offset" configuration, the drawing of index 8 was dependent upon the item before it (offset=-1). The item
- * before it has changed, so it gets an update emitted for it.
+ * before it has changed, so it gets an update emitted for it automatically.
  *
  * Using this configuration makes it exteremely simple to handle various "cell drawing dependencies".
  * You can just ask for changesets as you would if there weren't any dependencies,
@@ -359,45 +375,96 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
  * Once you reverse a group (setIsReversed:YES forGroup:group) you can visualize the view as reversed in your head,
  * and set all other mappings options as if it was actually reversed.
  * 
+ * >>>>> ORDER MATTERS <<<<<
+ *
  * To be more precise:
  * 
- * After reversing a group, you can pass in rangeOptions as if the group were actually reversed in the database.
- * This makes it easier to configure, as your mental model can match how you configure it.
+ * - After reversing a group, you can pass in rangeOptions as if the group were actually reversed in the database.
+ *   This makes it easier to configure, as your mental model can match how you configure it.
  * 
- * In terms of rangeOptions, if the group is reversed, then the mappings object will simply switch the
- * rangeOptions.pin value of any rangeOptions you pass in for the reversed group(s).
+ *   rangeOptions = [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewEnd];
+ *   [mappings setRangeOptions:rangeOptions forGroup:@"books"];
+ *   [mappings setIsReversed:YES forGroup:@"books"];
  * 
- * rangeOptions = [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewEnd]; // <--
- * [mappings setRangeOptions:rangeOptions forGroup:@"books"];
- * [mappings setIsReversed:YES forGroup:@"books"];
+ *   is EQUIVALENT to:
  * 
- * is EQUIVALENT to:
+ *   [mappings setIsReversed:YES forGroup:@"books"];
+ *   rangeOptions = [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
+ *   [mappings setRangeOptions:rangeOptions forGroup:@"books"];
  * 
- * [mappings setIsReversed:YES forGroup:@"books"];
- * rangeOptions = [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning]; // <--
- * [mappings setRangeOptions:rangeOptions forGroup:@"books"];
+ * - In terms of cell-drawing-dependencies, its a similar effect.
  * 
- * In terms of cell-drawing-dependencies, its a similar effect.
- * 
- * [mappings setCellDrawingDependencyForNeighboringCellWithOffset:+1 forGroup:@"books"]; // <-- Positive one
- * [mappings setIsReversed:YES forGroup:@"books"];
+ *   [mappings setCellDrawingDependencyForNeighboringCellWithOffset:+1 forGroup:@"books"]; // <-- Positive one
+ *   [mappings setIsReversed:YES forGroup:@"books"];
  *
- * is EQUIVALENT to:
+ *   is EQUIVALENT to:
  * 
- * [mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@"books"]; // <-- Negative one
- * [mappings setIsReversed:YES forGroup:@"books"];
+ *   [mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@"books"]; // <-- Negative one
+ *   [mappings setIsReversed:YES forGroup:@"books"];
  * 
  *
- * ORDER MATTERS.
  * In general, if you wish to visualize other configuration options in terms of how they're going to be displayed
  * in your user interface, you should reverse the group BEFORE you make other configuration changes.
- * It's just a matter of how you visualize it. Either order is fine, but one likely makes more sense in your head.
+ * Alternatively you might visualize it differently. Perhaps you're imaging the database view, applying
+ * range options first, and then reversing the final product for dispaly in a tableView.
+ * So in this case you should reverse the group AFTER you make other configuration changes.
+ *
+ * It's simply a matter of how you visualize it.
+ * Either order is fine, but one likely makes more sense in your head.
 **/
 
-- (BOOL)isReversedForGroup:(NSString *)group;
 - (void)setIsReversed:(BOOL)isReversed forGroup:(NSString *)group;
+- (BOOL)isReversedForGroup:(NSString *)group;
 
+/**
+ * This configuration allows you to take multiple groups in a database view,
+ * and display them in a single section in your tableView / collectionView.
+ * 
+ * It's called a "consolidated group".
+ * 
+ * Further, you can configure a threshold where the mappings will automatically switch between
+ * using a "consolidated group" and normal mode.
+ *
+ * This is useful for those situations where the total number of items in your tableView
+ * could be very small or very big. When the count is small, you don't want to use sections.
+ * But when the count reaches a certain size, you do want to use sections.
+ * For these situations, you can configure the threshold to meet your requirements,
+ * and mappings will automatically handle everything for you.
+ * Including animating the changes when switching back and forth between consolidated mode and normal mode.
+ *
+ * The threshold represents the point at which the transition occurs. That is:
+ * - if the total number of items is less than the threshold, then consolidated mode will be used.
+ * - if the total number of items is equal or greater than the threshold, then normal mode will be used.
+ *
+ * If the threshold is 0, then auto consolidation is disabled.
+ *
+ * For example, imagine you're displaying a list of contacts.
+ * You might setup a view like this:
+ * 
+ * view = @{
+ *   @"A" : @[ @"Allison Jones" ],
+ *   @"B" : @[ @"Billy Bob", @"Brandon Allen" ],
+ *   @"R" : @[ @"Ricky Bobby" ]
+ * }
+ * 
+ * The total number of contacts is only 4. So it might look better to display them without sections.
+ * However, you're going to want to switch to sections at some point. Perhaps when the total count reaches 10?
+ * 
+ * It would be nice if there was something to handle this for you.
+ * And even better if that something would help you properly animate the tableView
+ * when switching between no-sections & sections (and vice versa).
+ * This is exactly what the autoConsolidateGroupsThreshold does for you!
+ *
+ * The default threshold value is 0 (disabled).
+**/
+
+- (void)setAutoConsolidateGroupsThreshold:(NSUInteger)threshold withName:(NSString *)consolidatedGroupName;
+- (NSUInteger)autoConsolidateGroupsThreshold;
+- (NSString *)consolidatedGroupName;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Initialization & Updates
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * You have to call this method to initialize the mappings.
@@ -430,7 +497,9 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
 **/
 @property (nonatomic, readonly) uint64_t snapshotOfLastUpdate;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Getters
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Returns the actual number of visible sections.
@@ -472,6 +541,191 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
 **/
 - (BOOL)isEmpty;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Mapping: UI -> View
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Maps from a section (in the UI) to a group (in the View).
+ *
+ * Returns the group for the given section.
+ * This method properly takes into account dynamic groups.
+ *
+ * If the section is out-of-bounds, returns nil.
+**/
+- (NSString *)groupForSection:(NSUInteger)section;
+
+/**
+ * Maps from an indexPath (in the UI) to a group & index (within the View).
+ *
+ * When your UI doesn't exactly match up with the View in the database, this method does all the math for you.
+ *
+ * For example, if using rangeOptions, the rows in your tableView/collectionView may not
+ * directly match the index in the corresponding view & group (in the database).
+ * 
+ * For example, say a view in the database has a group named "elders" and contains 100 items.
+ * A fixed range is used to display only the last 20 items in the "elders" group (the 20 oldest elders).
+ * Thus row zero in the tableView is actually index 80 in the "elders" group.
+ *
+ * So you pass in an indexPath or row & section from the UI perspective,
+ * and it spits out the corresponding index within the database view's group.
+ * 
+ * Code sample:
+ * 
+ * - (UITableViewCell *)tableView:(UITableView *)sender cellForRowAtIndexPath:(NSIndexPath *)indexPath
+ * {
+ *     NSString *group = nil;
+ *     NSUInteger groupIndex = 0;
+ *
+ *     [mappings getGroup:&group index:&groupIndex forIndexPath:indexPath];
+ *
+ *     __block Elder *elder = nil;
+ *     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+ *
+ *         elder = [[transaction extension:@"elders"] objectAtIndex:groupIndex inGroup:group];
+ *     }];
+ *     
+ *     // configure and return cell...
+ * }
+**/
+- (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forIndexPath:(NSIndexPath *)indexPath;
+
+/**
+ * Maps from an indexPath (in the UI) to a group & index (within the View).
+ *
+ * When your UI doesn't exactly match up with the View in the database, this method does all the math for you.
+ *
+ * For example, if using rangeOptions, the rows in your tableView/collectionView may not
+ * directly match the index in the corresponding view & group (in the database).
+ * 
+ * For example, say a view in the database has a group named "elders" and contains 100 items.
+ * A fixed range is used to display only the last 20 items in the "elders" group (the 20 oldest elders).
+ * Thus row zero in the tableView is actually index 80 in the "elders" group.
+ *
+ * So you pass in an indexPath or row & section from the UI perspective,
+ * and it spits out the corresponding index within the database view's group.
+ * 
+ * Code sample:
+ * 
+ * - (UITableViewCell *)tableView:(UITableView *)sender cellForRowAtIndexPath:(NSIndexPath *)indexPath
+ * {
+ *     NSString *group = nil;
+ *     NSUInteger groupIndex = 0;
+ *
+ *     [mappings getGroup:&group index:&groupIndex forIndexPath:indexPath];
+ *
+ *     __block Elder *elder = nil;
+ *     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+ *
+ *         elder = [[transaction extension:@"elders"] objectAtIndex:groupIndex inGroup:group];
+ *     }];
+ *     
+ *     // configure and return cell...
+ * }
+**/
+- (BOOL)getGroup:(NSString **)groupPtr
+           index:(NSUInteger *)indexPtr
+          forRow:(NSUInteger)row
+       inSection:(NSUInteger)section;
+
+/**
+ * Maps from a row & section (in the UI) to an index (within the View).
+ * 
+ * This method is shorthand for getGroup:index:forIndexPath: when you already know the group.
+ * @see getGroup:index:forIndexPath:
+ * 
+ * Returns NSNotFound if the given row & section are invalid.
+**/
+- (NSUInteger)indexForRow:(NSUInteger)row inSection:(NSUInteger)section;
+
+/**
+ * Maps from a row & section (in the UI) to an index (within the View).
+ * 
+ * This method is shorthand for getGroup:index:forIndexPath: when you already know the group.
+ * @see getGroup:index:forIndexPath:
+ * 
+ * Returns NSNotFound if the given row & group are invalid.
+**/
+- (NSUInteger)indexForRow:(NSUInteger)row inGroup:(NSString *)group;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Mapping: View -> UI
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Maps from a group (in the View) to the corresponding section (in the UI).
+ *
+ * Returns the visible section number for the visible group.
+ * Returns NSNotFound if the group is NOT visible (or invalid).
+**/
+- (NSUInteger)sectionForGroup:(NSString *)group;
+
+/**
+ * Maps from an index & group (in the View) to the corresponding row & section (in the UI).
+ * 
+ * Returns YES if the proper row & section were found.
+ * Returns NO if the given index is NOT visible (or out-of-bounds).
+ * Returns NO if the given group is NOT visible (or invalid).
+**/
+- (BOOL)getRow:(NSUInteger *)rowPtr
+       section:(NSUInteger *)sectionPtr
+      forIndex:(NSUInteger)index
+       inGroup:(NSString *)group;
+
+/**
+ * Maps from an index & group (in the View) to the corresponding indexPath (in the UI).
+ * 
+ * Returns the indexPath with the proper section and row.
+ * Returns nil if the given index & group is NOT visible (or out-of-bounds).
+**/
+- (NSIndexPath *)indexPathForIndex:(NSUInteger)index inGroup:(NSString *)group;
+
+/**
+ * Maps from an index & group (in the View) to the corresponding row (in the UI).
+ * 
+ * This method is shorthand for getRow:section:forIndex:inGroup: when you already know the section.
+ * @see getRow:section:forIndex:inGroup:
+ * 
+ * Returns NSNotFound if the given index & group is NOT visible (or out-of-bounds).
+**/
+- (NSUInteger)rowForIndex:(NSUInteger)index inGroup:(NSString *)group;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Getters + Consolidation
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Whether or not the groups have been automatically consolidated due to the configured autoConsolidateGroupsThreshold.
+**/
+- (BOOL)isUsingConsolidatedGroup;
+
+/**
+ * Returns the total number of items by summing up the totals across all groups.
+**/
+- (NSUInteger)numberOfItemsInAllGroups;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Getters + Utilities
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * The YapDatabaseViewRangePosition struct represents the range window within the full group.
+ * For example:
+ *
+ * You have a section in your tableView which represents a group that contains 100 items.
+ * However, you've setup rangeOptions to only display the first 20 items:
+ *
+ * YapDatabaseViewRangeOptions *rangeOptions =
+ *     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
+ * [mappings setRangeOptions:rangeOptions forGroup:@"sales"];
+ *
+ * The corresponding rangePosition would be: (YapDatabaseViewRangePosition){
+ *     .offsetFromBeginning = 0,
+ *     .offsetFromEnd = 80,
+ *     .length = 20
+ * }
+**/
+- (YapDatabaseViewRangePosition)rangePositionForGroup:(NSString *)group;
 
 /**
  * This is a helper method to assist in maintaining the selection while updating the tableView/collectionView.
@@ -567,209 +821,5 @@ typedef struct YapDatabaseViewRangePosition YapDatabaseViewRangePosition;
  * }
 **/
 - (NSIndexPath *)nearestIndexPathForRow:(NSUInteger)row inGroup:(NSString *)group;
-
-#pragma mark Mapping: UI -> View
-
-/**
- * Maps from a section (in the UI) to a group (in the View).
- *
- * Returns the group for the given section.
- * This method properly takes into account dynamic groups.
- *
- * If the section is out-of-bounds, returns nil.
-**/
-- (NSString *)groupForSection:(NSUInteger)section;
-
-/**
- * Maps from an indexPath (in the UI) to a group & index (within the View).
- *
- * When your UI doesn't exactly match up with the View in the database, this method does all the math for you.
- *
- * For example, if using rangeOptions, the rows in your tableView/collectionView may not
- * directly match the index in the corresponding view & group (in the database).
- * 
- * For example, say a view in the database has a group named "elders" and contains 100 items.
- * A fixed range is used to display only the last 20 items in the "elders" group (the 20 oldest elders).
- * Thus row zero in the tableView is actually index 80 in the "elders" group.
- *
- * So you pass in an indexPath or row & section from the UI perspective,
- * and it spits out the corresponding index within the database view's group.
- * 
- * Code sample:
- * 
- * - (UITableViewCell *)tableView:(UITableView *)sender cellForRowAtIndexPath:(NSIndexPath *)indexPath
- * {
- *     NSString *group = nil;
- *     NSUInteger groupIndex = 0;
- *
- *     [mappings getGroup:&group index:&groupIndex forIndexPath:indexPath];
- *
- *     __block Elder *elder = nil;
- *     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
- *
- *         elder = [[transaction extension:@"elders"] objectAtIndex:groupIndex inGroup:group];
- *     }];
- *     
- *     // configure and return cell...
- * }
-**/
-- (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forIndexPath:(NSIndexPath *)indexPath;
-
-/**
- * Maps from an indexPath (in the UI) to a group & index (within the View).
- *
- * When your UI doesn't exactly match up with the View in the database, this method does all the math for you.
- *
- * For example, if using rangeOptions, the rows in your tableView/collectionView may not
- * directly match the index in the corresponding view & group (in the database).
- * 
- * For example, say a view in the database has a group named "elders" and contains 100 items.
- * A fixed range is used to display only the last 20 items in the "elders" group (the 20 oldest elders).
- * Thus row zero in the tableView is actually index 80 in the "elders" group.
- *
- * So you pass in an indexPath or row & section from the UI perspective,
- * and it spits out the corresponding index within the database view's group.
- * 
- * Code sample:
- * 
- * - (UITableViewCell *)tableView:(UITableView *)sender cellForRowAtIndexPath:(NSIndexPath *)indexPath
- * {
- *     NSString *group = nil;
- *     NSUInteger groupIndex = 0;
- *
- *     [mappings getGroup:&group index:&groupIndex forIndexPath:indexPath];
- *
- *     __block Elder *elder = nil;
- *     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
- *
- *         elder = [[transaction extension:@"elders"] objectAtIndex:groupIndex inGroup:group];
- *     }];
- *     
- *     // configure and return cell...
- * }
-**/
-- (BOOL)getGroup:(NSString **)groupPtr
-           index:(NSUInteger *)indexPtr
-          forRow:(NSUInteger)row
-       inSection:(NSUInteger)section;
-
-/**
- * Maps from a row & section (in the UI) to an index (within the View).
- * 
- * This method is shorthand for getGroup:index:forIndexPath: when you already know the group.
- * @see getGroup:index:forIndexPath:
-**/
-- (NSUInteger)indexForRow:(NSUInteger)row inSection:(NSUInteger)section;
-
-/**
- * Maps from a row & section (in the UI) to an index (within the View).
- * 
- * This method is shorthand for getGroup:index:forIndexPath: when you already know the group.
- * @see getGroup:index:forIndexPath:
-**/
-- (NSUInteger)indexForRow:(NSUInteger)row inGroup:(NSString *)group;
-
-#pragma mark Mapping: View -> UI
-
-/**
- * Maps from a group (in the View) to the corresponding section (in the UI).
- *
- * Returns the visible section number for the visible group.
- * If the group is NOT visible, returns NSNotFound.
- * If the group is NOT valid, returns NSNotFound.
-**/
-- (NSUInteger)sectionForGroup:(NSString *)group;
-
-/**
- * Maps from an index & group (in the View) to the corresponding row & section (in the UI).
- * 
- * Returns YES if the proper row & section were found.
- * Returns NO if the given index is NOT visible (or out-of-bounds).
- * Returns NO if the given group is NOT visible (or invalid).
-**/
-- (BOOL)getRow:(NSUInteger *)rowPtr
-       section:(NSUInteger *)sectionPtr
-      forIndex:(NSUInteger)index
-       inGroup:(NSString *)group;
-
-/**
- * Maps from an index & group (in the View) to the corresponding indexPath (in the UI).
- * 
- * Returns the indexPath with the proper section and row.
- * Returns nil if the group is NOT visible (or invalid).
- * Returns nil if the index is NOT visible (or out-of-bounds).
-**/
-- (NSIndexPath *)indexPathForIndex:(NSUInteger)index inGroup:(NSString *)group;
-
-/**
- * Maps from an index & group (in the View) to the corresponding row (in the UI).
- * 
- * This method is shorthand for getRow:section:forIndex:inGroup: when you already know the section.
- * @see getRow:section:forIndex:inGroup:
-**/
-- (NSUInteger)rowForIndex:(NSUInteger)index inGroup:(NSString *)group;
-
-#pragma mark Getters + RangeOptions
-
-/**
- * The YapDatabaseViewRangePosition struct represents the range window within the full group.
- * For example:
- *
- * You have a section in your tableView which represents a group that contains 100 items.
- * However, you've setup rangeOptions to only display the first 20 items:
- *
- * YapDatabaseViewRangeOptions *rangeOptions =
- *     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
- * [mappings setRangeOptions:rangeOptions forGroup:@"sales"];
- *
- * The corresponding rangePosition would be: (YapDatabaseViewRangePosition){
- *     .offsetFromBeginning = 0,
- *     .offsetFromEnd = 80,
- *     .length = 20
- * }
-**/
-- (YapDatabaseViewRangePosition)rangePositionForGroup:(NSString *)group;
-
-#pragma mark Getters + Total
-
-/**
- * Returns the total number of items by summing up the totals across all groups.
-**/
-- (NSUInteger)numberOfItemsInAllGroups;
-
-/**
- * This method is useful if you ever want to display multiple groups in a tableView,
- * but you want to display the groups without using sections.
- * 
- * For example, say you have a view that sorts users in an address book.
- * The view uses groups based on the first letter of the user's name.
- * But you want to display the address book in a tableView without using sections.
- * 
- * view = @{
- *   @"A" = @[ @"Alice" ]
- *   @"B" = @[ @"Barney", @"Bob" ]
- *   @"C" = @[ @"Chris" ]
- * }
- * 
- * NSString *group = nil;
- * NSUInteger index = 0;
- *
- * [mappings getGroup:&group index:&index forUnSectionedRow:2];
- * 
- * // group = @"B"
- * // index = 1    (Bob)
- *
- * [mappings getGroup:&group index:&index forUnSectionedRow:3];
- *
- * // group = @"C"
- * // index = 0    (Chris)
-**/
-- (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forUnSectionedRow:(NSUInteger)row;
-
-/**
- * This method is useful if you ever want to display multiple groups in a tableView,
- * but you want to display the groups without using sections.
-**/
-- (BOOL)getUnSectionedRow:(NSUInteger *)rowPtr forIndex:(NSUInteger)index inGroup:(NSString *)group;
 
 @end

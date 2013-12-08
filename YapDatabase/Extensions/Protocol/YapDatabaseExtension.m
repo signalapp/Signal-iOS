@@ -21,7 +21,7 @@
  * Subclasses must implement this method.
  * This method is called during the view registration process to enusre the extension supports the database type.
  * 
- * Return YES if the class/instance supports the particular type of database (YapDatabase vs YapCollectionsDatabase).
+ * Return YES if the class/instance supports the database configuration.
 **/
 - (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions
 {

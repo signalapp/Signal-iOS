@@ -34,9 +34,9 @@
  * So the end result is that you will likely see the database spit out a warning like this:
  * 
  * - Dropping tables for previously registered extension with name(order),
- *     class(YapCollectionsDatabaseView) for new class(YapDatabaseView)
+ *     class(YapDatabaseQuack) for new class(YapDatabaseDuck)
  * - Unable to drop tables for previously registered extension with name(order),
- *     unknown class(YapCollectionsDatabaseView)
+ *     unknown class(YapDatabaseQuack)
  * 
  * This method helps the extension architecture to understand what's happening, and it won't spit out any warnings.
  * 
@@ -58,8 +58,7 @@
  * This method is called during the view registration process to enusre the extension supports the database type.
  * The registered extensions are passed too, in case dependencies need to be checked.
  * 
- * Return YES if the class/instance supports the database type (YapDatabase vs YapCollectionsDatabase)
- * and configuration (dependencies).
+ * Return YES if the class/instance supports the database configuration.
 **/
 - (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions;
 
