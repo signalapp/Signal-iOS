@@ -691,9 +691,6 @@
 {
 	YDBLogAutoTrace();
 	
-	NSParameterAssert(key != nil);
-	NSParameterAssert(collection != nil);
-	
 	__unsafe_unretained YapDatabaseFilteredView *filteredView =
 	  (YapDatabaseFilteredView *)viewConnection->view;
 	
@@ -791,9 +788,6 @@
                    withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
-	
-	NSParameterAssert(key != nil);
-	NSParameterAssert(collection != nil);
 	
 	__unsafe_unretained YapDatabaseFilteredView *filteredView =
 	  (YapDatabaseFilteredView *)viewConnection->view;

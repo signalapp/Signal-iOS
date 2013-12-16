@@ -99,12 +99,8 @@
  * This method is called to create any necessary tables,
  * as well as populate the view by enumerating over the existing rows in the database.
  * 
- * The given BOOL (isFirstTimeExtensionRegistration) indicates if this is the first time the view has been registered.
- * That is, this value will be YES the very first time this view is registered with this name.
- * Subsequent registrations (on later app launches) will pass NO.
- * 
- * In general, a YES parameter means the view needs to populate itself by enumerating over the rows in the database.
- * A NO parameter means the view is already up-to-date.
+ * Return YES if completed successfully, or if already prepared.
+ * Return NO if some kind of error occured.
 **/
 - (BOOL)createIfNeeded
 {
@@ -2992,9 +2988,6 @@
 {
 	YDBLogAutoTrace();
 	
-	NSParameterAssert(key != nil);
-	NSParameterAssert(collection != nil);
-	
 	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
 	
 	// Invoke the grouping block to find out if the object should be included in the view.
@@ -3147,9 +3140,6 @@
                    withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
-	
-	NSParameterAssert(key != nil);
-	NSParameterAssert(collection != nil);
 	
 	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
 	

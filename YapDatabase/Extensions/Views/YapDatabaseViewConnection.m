@@ -121,6 +121,9 @@ static NSString *const key_changes                  = @"changes";
 #pragma mark Accessors
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Required override method from YapDatabaseExtensionConnection.
+**/
 - (YapDatabaseExtension *)extension
 {
 	return view;
@@ -137,7 +140,7 @@ static NSString *const key_changes                  = @"changes";
 {
 	YapDatabaseViewTransaction *transaction =
 	    [[YapDatabaseViewTransaction alloc] initWithViewConnection:self
-	             databaseTransaction:(YapDatabaseReadTransaction *)databaseTransaction];
+	                                           databaseTransaction:databaseTransaction];
 	
 	return transaction;
 }
@@ -149,7 +152,7 @@ static NSString *const key_changes                  = @"changes";
 {
 	YapDatabaseViewTransaction *transaction =
 	    [[YapDatabaseViewTransaction alloc] initWithViewConnection:self
-	             databaseTransaction:(YapDatabaseReadTransaction *)databaseTransaction];
+	                                           databaseTransaction:databaseTransaction];
 	
 	[self prepareForReadWriteTransaction];
 	return transaction;
@@ -195,7 +198,7 @@ static NSString *const key_changes                  = @"changes";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Changeset
+#pragma mark Changeset Architecture
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -446,6 +449,10 @@ static NSString *const key_changes                  = @"changes";
 		}
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Changeset Inspection
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Gets an exact list of changes that happend to the view, translating groups to sections as requested.
