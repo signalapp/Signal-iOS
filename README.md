@@ -1,7 +1,7 @@
 YapDatabase
 ===========
 
-YapDatabase is a "**key/value store and MUCH MORE**" built atop sqlite for iOS & Mac.
+YapDatabase is a "**collection/key/value store and MUCH MORE**" built atop sqlite for iOS & Mac.
 It has the following features:
 
 * **Concurrency**. You can read from the database while another thread is simultaneously making modifications to the database. So you never have to worry about blocking the main thread, and you can easily write to the database on a background thread. And, of course, you can read from the database on multiple threads simultaneously.
