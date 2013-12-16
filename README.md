@@ -8,7 +8,7 @@ It has the following features:
 
 * **Built-In Caching**. A configurable object cache is built-in. Of course sqlite has caching too. But it's caching raw serialized bytes, and we're dealing with objects. So having a built-in cache means you can skip the deserialization process, and get your objects much faster.
 
-* **Collections**. Sometimes a single key isn't enough. Sometimes a collection & key is better. No worries. We've got a database for that.
+* **Collections**. Sometimes a single key isn't enough. Sometimes a collection & key is better. No worries. YapDatabase supports collections out of the box.
 
 * **Metadata**. Ever wanted to store extra data along with your object? Like maybe a timestamp of when it was downloaded. Or a fully separate but related object? You're in luck. Metadata support comes standard. Along with its own separate configurable cache too!
 
