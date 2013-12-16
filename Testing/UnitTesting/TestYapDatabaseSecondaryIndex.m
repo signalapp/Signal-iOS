@@ -8,7 +8,6 @@
 #import "DDLog.h"
 #import "DDTTYLogger.h"
 
-
 @interface TestYapDatabaseSecondaryIndex : SenTestCase
 
 @end
@@ -38,6 +37,7 @@
 	[super tearDown];
 }
 
+
 - (void)test
 {
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
@@ -55,7 +55,7 @@
 	
 	YapDatabaseSecondaryIndexBlockType blockType = YapDatabaseSecondaryIndexBlockTypeWithObject;
 	YapDatabaseSecondaryIndexWithObjectBlock block =
-	    ^(NSMutableDictionary *dict, NSString *key, id object){
+	    ^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object){
 		
 		// If we're storing other types of objects in our database,
 		// then we should check the object before presuming we can cast it.
@@ -71,7 +71,7 @@
 	};
 	
 	YapDatabaseSecondaryIndex *secondaryIndex =
-	    [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup block:block blockType:blockType];
+	  [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup block:block blockType:blockType];
 	
 	[database registerExtension:secondaryIndex withName:@"idx"];
 	
@@ -93,7 +93,7 @@
 			
 			NSString *key = [NSString stringWithFormat:@"key%d", i];
 			
-			[transaction setObject:object forKey:key];
+			[transaction setObject:object forKey:key inCollection:nil];
 		}
 	}];
 	
@@ -108,7 +108,8 @@
 		
 		count = 0;
 		query = [YapDatabaseQuery queryWithFormat:@"WHERE someInt < 5"];
-		[[transaction ext:@"idx"] enumerateKeysMatchingQuery:query usingBlock:^(NSString *key, BOOL *stop) {
+		[[transaction ext:@"idx"] enumerateKeysMatchingQuery:query
+		                                          usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			
 			count++;
 		}];
@@ -117,8 +118,8 @@
 		
 		count = 0;
 		query = [YapDatabaseQuery queryWithFormat:@"WHERE someInt < ?", @(5)];
-		
-		[[transaction ext:@"idx"] enumerateKeysMatchingQuery:query usingBlock:^(NSString *key, BOOL *stop) {
+		[[transaction ext:@"idx"] enumerateKeysMatchingQuery:query
+		                                          usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			
 			count++;
 		}];
@@ -133,7 +134,8 @@
 		
 		count = 0;
 		query = [YapDatabaseQuery queryWithFormat:@"WHERE someDate < ?", [startDate dateByAddingTimeInterval:5]];
-		[[transaction ext:@"idx"] enumerateKeysMatchingQuery:query usingBlock:^(NSString *key, BOOL *stop) {
+		[[transaction ext:@"idx"] enumerateKeysMatchingQuery:query
+		                                          usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			
 			count++;
 		}];
@@ -144,7 +146,8 @@
 		query = [YapDatabaseQuery queryWithFormat:@"WHERE someDate < ? AND someInt < ?",
 		                         [startDate dateByAddingTimeInterval:5],           @(4)];
 		
-		[[transaction ext:@"idx"] enumerateKeysMatchingQuery:query usingBlock:^(NSString *key, BOOL *stop) {
+		[[transaction ext:@"idx"] enumerateKeysMatchingQuery:query
+		                                          usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			
 			count++;
 		}];
@@ -170,7 +173,7 @@
 			
 			NSString *key = [NSString stringWithFormat:@"key%d", i];
 			
-			[transaction setObject:object forKey:key];
+			[transaction setObject:object forKey:key inCollection:nil];
 		}
 	}];
 	
@@ -185,7 +188,8 @@
 		
 		count = 0;
 		query = [YapDatabaseQuery queryWithFormat:@"WHERE someInt < 105"];
-		[[transaction ext:@"idx"] enumerateKeysMatchingQuery:query usingBlock:^(NSString *key, BOOL *stop) {
+		[[transaction ext:@"idx"] enumerateKeysMatchingQuery:query
+		                                          usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			
 			count++;
 		}];
@@ -194,7 +198,8 @@
 		
 		count = 0;
 		query = [YapDatabaseQuery queryWithFormat:@"WHERE someInt < ?", @(105)];
-		[[transaction ext:@"idx"] enumerateKeysMatchingQuery:query usingBlock:^(NSString *key, BOOL *stop) {
+		[[transaction ext:@"idx"] enumerateKeysMatchingQuery:query
+		                                          usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			
 			count++;
 		}];
@@ -221,7 +226,8 @@
 		
 		count = 0;
 		query = [YapDatabaseQuery queryWithFormat:@"WHERE someDate < ?", [startDate dateByAddingTimeInterval:5]];
-		[[transaction ext:@"idx"] enumerateKeysMatchingQuery:query usingBlock:^(NSString *key, BOOL *stop) {
+		[[transaction ext:@"idx"] enumerateKeysMatchingQuery:query
+		                                          usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			
 			count++;
 		}];
@@ -232,7 +238,8 @@
 		query = [YapDatabaseQuery queryWithFormat:@"WHERE someDate < ? AND someInt < ?",
 				 [startDate dateByAddingTimeInterval:5],           @(104)];
 		
-		[[transaction ext:@"idx"] enumerateKeysMatchingQuery:query usingBlock:^(NSString *key, BOOL *stop) {
+		[[transaction ext:@"idx"] enumerateKeysMatchingQuery:query
+		                                          usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			
 			count++;
 		}];

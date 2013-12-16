@@ -51,24 +51,24 @@
 	
 	YapDatabaseFullTextSearchBlockType blockType = YapDatabaseFullTextSearchBlockTypeWithObject;
 	YapDatabaseFullTextSearchWithObjectBlock block =
-	^(NSMutableDictionary *dict, NSString *key, id object){
+	^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object){
 		
 		[dict setObject:object forKey:@"content"];
 	};
 	
 	YapDatabaseFullTextSearch *fts =
-	    [[YapDatabaseFullTextSearch alloc] initWithColumnNames:@[@"content"]
-	                                                     block:block
-	                                                 blockType:blockType];
+	  [[YapDatabaseFullTextSearch alloc] initWithColumnNames:@[@"content"]
+	                                                   block:block
+	                                               blockType:blockType];
 	
 	[database registerExtension:fts withName:@"fts"];
 	
 	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[transaction setObject:@"hello world"       forKey:@"key1"];
-		[transaction setObject:@"hello coffee shop" forKey:@"key2"];
-		[transaction setObject:@"hello laptop"      forKey:@"key3"];
-		[transaction setObject:@"hello work"        forKey:@"key4"];
+		[transaction setObject:@"hello world"       forKey:@"key1" inCollection:nil];
+		[transaction setObject:@"hello coffee shop" forKey:@"key2" inCollection:nil];
+		[transaction setObject:@"hello laptop"      forKey:@"key3" inCollection:nil];
+		[transaction setObject:@"hello work"        forKey:@"key4" inCollection:nil];
 	}];
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -78,7 +78,8 @@
 		// Find matches for: hello
 		
 		count = 0;
-		[[transaction ext:@"fts"] enumerateKeysMatching:@"hello" usingBlock:^(NSString *key, BOOL *stop) {
+		[[transaction ext:@"fts"] enumerateKeysMatching:@"hello"
+		                                     usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			count++;
 		}];
 		STAssertTrue(count == 4, @"Missing search results");
@@ -86,7 +87,8 @@
 		// Find matches for: coffee
 		
 		count = 0;
-		[[transaction ext:@"fts"] enumerateKeysMatching:@"coffee" usingBlock:^(NSString *key, BOOL *stop) {
+		[[transaction ext:@"fts"] enumerateKeysMatching:@"coffee"
+		                                     usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			count++;
 		}];
 		STAssertTrue(count == 1, @"Missing search results");
@@ -94,7 +96,8 @@
 		// Find matches for: hello wor*
 		
 		count = 0;
-		[[transaction ext:@"fts"] enumerateKeysMatching:@"hello wor*" usingBlock:^(NSString *key, BOOL *stop) {
+		[[transaction ext:@"fts"] enumerateKeysMatching:@"hello wor*"
+		                                     usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			count++;
 		}];
 		STAssertTrue(count == 2, @"Missing search results");
@@ -102,7 +105,8 @@
 		// Find matches for: quack
 		
 		count = 0;
-		[[transaction ext:@"fts"] enumerateKeysMatching:@"quack" usingBlock:^(NSString *key, BOOL *stop) {
+		[[transaction ext:@"fts"] enumerateKeysMatching:@"quack"
+		                                     usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			count++;
 		}];
 		STAssertTrue(count == 0, @"Missing search results");
@@ -110,7 +114,7 @@
 	
 	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[transaction setObject:@"hello distraction" forKey:@"key4"];
+		[transaction setObject:@"hello distraction" forKey:@"key4" inCollection:nil];
 	}];
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -120,7 +124,8 @@
 		// Find matches for: hello
 		
 		count = 0;
-		[[transaction ext:@"fts"] enumerateKeysMatching:@"hello" usingBlock:^(NSString *key, BOOL *stop) {
+		[[transaction ext:@"fts"] enumerateKeysMatching:@"hello"
+		                                     usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			count++;
 		}];
 		STAssertTrue(count == 4, @"Missing search results");
@@ -128,7 +133,8 @@
 		// Find matches for: coffee
 		
 		count = 0;
-		[[transaction ext:@"fts"] enumerateKeysMatching:@"coffee" usingBlock:^(NSString *key, BOOL *stop) {
+		[[transaction ext:@"fts"] enumerateKeysMatching:@"coffee"
+		                                     usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			count++;
 		}];
 		STAssertTrue(count == 1, @"Missing search results");
@@ -136,7 +142,8 @@
 		// Find matches for: hello wor*
 		
 		count = 0;
-		[[transaction ext:@"fts"] enumerateKeysMatching:@"hello wor*" usingBlock:^(NSString *key, BOOL *stop) {
+		[[transaction ext:@"fts"] enumerateKeysMatching:@"hello wor*"
+		                                     usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			count++;
 		}];
 		STAssertTrue(count == 1, @"Missing search results");
@@ -144,7 +151,8 @@
 		// Find matches for: quack
 		
 		count = 0;
-		[[transaction ext:@"fts"] enumerateKeysMatching:@"quack" usingBlock:^(NSString *key, BOOL *stop) {
+		[[transaction ext:@"fts"] enumerateKeysMatching:@"quack"
+		                                     usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			count++;
 		}];
 		STAssertTrue(count == 0, @"Missing search results");
@@ -164,24 +172,24 @@
 	
 	YapDatabaseFullTextSearchBlockType blockType = YapDatabaseFullTextSearchBlockTypeWithObject;
 	YapDatabaseFullTextSearchWithObjectBlock block =
-	^(NSMutableDictionary *dict, NSString *key, id object){
+	^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object){
 		
 		[dict setObject:object forKey:@"content"];
 	};
 	
 	YapDatabaseFullTextSearch *fts =
-	[[YapDatabaseFullTextSearch alloc] initWithColumnNames:@[@"content"]
-													 block:block
-												 blockType:blockType];
+	  [[YapDatabaseFullTextSearch alloc] initWithColumnNames:@[@"content"]
+	                                                   block:block
+	                                               blockType:blockType];
 	
 	[database registerExtension:fts withName:@"fts"];
 	
 	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[transaction setObject:@"hello world"       forKey:@"key1"];
-		[transaction setObject:@"hello coffee shop" forKey:@"key2"];
-		[transaction setObject:@"hello laptop"      forKey:@"key3"];
-		[transaction setObject:@"hello work"        forKey:@"key4"];
+		[transaction setObject:@"hello world"       forKey:@"key1" inCollection:nil];
+		[transaction setObject:@"hello coffee shop" forKey:@"key2" inCollection:nil];
+		[transaction setObject:@"hello laptop"      forKey:@"key3" inCollection:nil];
+		[transaction setObject:@"hello work"        forKey:@"key4" inCollection:nil];
 	}];
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -193,7 +201,8 @@
 		count = 0;
 		[[transaction ext:@"fts"] enumerateKeysMatching:@"hello"
 		                             withSnippetOptions:nil
-		                                     usingBlock:^(NSString *snippet, NSString *key, BOOL *stop) {
+		                                     usingBlock:
+		    ^(NSString *snippet, NSString *collection, NSString *key, BOOL *stop) {
 			
 		//	NSLog(@"snippet: %@", snippet);
 			count++;
@@ -212,7 +221,8 @@
 		count = 0;
 		[[transaction ext:@"fts"] enumerateKeysMatching:@"coffee"
 		                             withSnippetOptions:options
-		                                     usingBlock:^(NSString *snippet, NSString *key, BOOL *stop) {
+		                                     usingBlock:
+		    ^(NSString *snippet, NSString *collection, NSString *key, BOOL *stop) {
 			
 			NSLog(@"snippet: %@", snippet);
 			count++;

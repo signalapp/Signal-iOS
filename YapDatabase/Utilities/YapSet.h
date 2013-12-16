@@ -12,8 +12,6 @@
  * 
  * @see YapDatabaseConnection hasChangeForKey:inNotifications:
  * @see YapDatabaseConnection hasChangeForAnyKeys:inNotifications:
- * 
- * @see YapCollectionsDatabaseConnection ...
 **/
 @interface YapSet : NSObject <NSFastEnumeration>
 

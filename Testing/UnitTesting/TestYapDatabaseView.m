@@ -73,7 +73,7 @@
 	YapDatabaseViewSortingWithObjectBlock sortingBlock;
 	
 	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *key){
+	groupingBlock = ^NSString *(NSString *collection, NSString *key){
 		
 		if ([key isEqualToString:@"keyX"]) // Exclude keyX from view
 			return nil;
@@ -82,7 +82,8 @@
 	};
 	
 	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *key1, id obj1, NSString *key2, id obj2){
+	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                                  NSString *collection2, NSString *key2, id obj2){
 		
 		NSString *object1 = (NSString *)obj1;
 		NSString *object2 = (NSString *)obj2;
@@ -91,12 +92,12 @@
 	};
 	
 	YapDatabaseView *databaseView =
-	    [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                                 groupingBlockType:groupingBlockType
-	                                      sortingBlock:sortingBlock
-	                                  sortingBlockType:sortingBlockType
-	                                           version:0
-	                                           options:options];
+	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
+	                               groupingBlockType:groupingBlockType
+	                                    sortingBlock:sortingBlock
+	                                sortingBlockType:sortingBlockType
+	                                         version:0
+	                                         options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -131,26 +132,23 @@
 		STAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == 0, @"Expected zero");
 		STAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == 0, @"Expected zero");
 		
-		STAssertNil([[transaction ext:@"order"] groupForKey:key0], @"Expected nil");
-		
-		STAssertNil([[transaction ext:@"order"] keyAtIndex:0 inGroup:@""], @"Expected nil");
-		STAssertNil([[transaction ext:@"order"] objectAtIndex:0 inGroup:@""], @"Expected nil");
+		STAssertNil([[transaction ext:@"order"] groupForKey:key0 inCollection:nil], @"Expected nil");
 		
 		NSString *group = nil;
 		NSUInteger index = 0;
 		
-		BOOL result = [[transaction ext:@"order"] getGroup:&group index:&index forKey:key0];
+		BOOL result = [[transaction ext:@"order"] getGroup:&group index:&index forKey:key0 inCollection:nil];
 		
 		STAssertFalse(result, @"Expected NO");
 		STAssertNil(group, @"Expected group to be set to nil");
 		STAssertTrue(index == 0, @"Expected index to be set to zero");
 	}];
-
+	
 	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		
 		// Test inserting a single object
 		
-		[transaction setObject:object0 forKey:key0]; keysCount++;
+		[transaction setObject:object0 forKey:key0 inCollection:nil]; keysCount++;
 		
 		// Read it back
 		
@@ -163,19 +161,23 @@
 		NSString *group = nil;
 		NSUInteger index = NSNotFound;
 		
-		group = [[transaction ext:@"order"] groupForKey:key0];
+		group = [[transaction ext:@"order"] groupForKey:key0 inCollection:nil];
 		
 		STAssertTrue([group isEqualToString:@""], @"Wrong group");
 		
-		id fetchedKey0 = [[transaction ext:@"order"] keyAtIndex:0 inGroup:@""];
+		id fetchedKey0;
+		id fetchedCollection0;
+		
+		[[transaction ext:@"order"] getKey:&fetchedKey0 collection:&fetchedCollection0 atIndex:0 inGroup:@""];
 		
 		STAssertTrue([fetchedKey0 isEqualToString:key0], @"Expected match");
+		STAssertTrue([fetchedCollection0 isEqualToString:@""], @"Expected match");
 		
 		id fetchedObject0 = [[transaction ext:@"order"] objectAtIndex:0 inGroup:@""];
 		
 		STAssertTrue([fetchedObject0 isEqualToString:object0], @"Expected match");
 		
-		BOOL result = [[transaction ext:@"order"] getGroup:&group index:&index forKey:key0];
+		BOOL result = [[transaction ext:@"order"] getGroup:&group index:&index forKey:key0 inCollection:nil];
 		
 		STAssertTrue(result, @"Expected YES");
 		STAssertNotNil(group, @"Expected group to be set");
@@ -195,20 +197,28 @@
 		NSString *group = nil;
 		NSUInteger index = NSNotFound;
 		
-		group = [[transaction ext:@"order"] groupForKey:key0];
+		group = [[transaction ext:@"order"] groupForKey:key0 inCollection:nil];
 		
 		STAssertTrue([group isEqualToString:@""], @"Wrong group");
 		
-		id fetchedKey0 = [[transaction ext:@"order"] keyAtIndex:0 inGroup:@""];
+		id fetchedKey0;
+		id fetchedCollection0;
 		
-		STAssertTrue([fetchedKey0 isEqualToString:key0], @"Expected match");
+		[[transaction ext:@"order"] getKey:&fetchedKey0 collection:&fetchedCollection0 atIndex:0 inGroup:@""];
+		
+		STAssertTrue([fetchedKey0 isEqualToString:key0],
+		             @"Expected match: fetched(%@) vs expected(%@)", fetchedKey0, key0);
+		
+		STAssertTrue([fetchedCollection0 isEqualToString:@""],
+		             @"Expected match: fetched(%@) expected(%@)", fetchedCollection0, @"");
 		
 		id fetchedObject0 = [[transaction ext:@"order"] objectAtIndex:0 inGroup:@""];
+	
+		STAssertTrue([fetchedObject0 isEqualToString:object0],
+		             @"Expected match: fetchedObject0(%@) vs object0(%@)", fetchedObject0, object0);
 		
-		STAssertTrue([fetchedObject0 isEqualToString:object0], @"Expected match");
-		
-		BOOL result = [[transaction ext:@"order"] getGroup:&group index:&index forKey:key0];
-		
+		BOOL result = [[transaction ext:@"order"] getGroup:&group index:&index forKey:key0 inCollection:nil];
+	
 		STAssertTrue(result, @"Expected YES");
 		STAssertNotNil(group, @"Expected group to be set");
 		STAssertTrue(index == 0, @"Expected index to be set to zero");
@@ -218,11 +228,11 @@
 		
 		// Test inserting more objects
 		
-		[transaction setObject:object1 forKey:key1]; keysCount++; // Included
-		[transaction setObject:object2 forKey:key2]; keysCount++; // Included
-		[transaction setObject:object3 forKey:key3]; keysCount++; // Included
-		[transaction setObject:object4 forKey:key4]; keysCount++; // Included
-		[transaction setObject:objectX forKey:keyX];              // Excluded !
+		[transaction setObject:object1 forKey:key1 inCollection:nil]; keysCount++; // Included
+		[transaction setObject:object2 forKey:key2 inCollection:nil]; keysCount++; // Included
+		[transaction setObject:object3 forKey:key3 inCollection:nil]; keysCount++; // Included
+		[transaction setObject:object4 forKey:key4 inCollection:nil]; keysCount++; // Included
+		[transaction setObject:objectX forKey:keyX inCollection:nil];              // Excluded !
 		
 		STAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		STAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
@@ -235,17 +245,23 @@
 		NSUInteger index = 0;
 		for (NSString *key in keys)
 		{
-			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];;
+			NSString *fetchedCollection;
+			NSString *fetchedKey;
+			
+			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			STAssertTrue([fetchedKey isEqualToString:key],
-			    @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+			             @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+			
+			STAssertTrue([fetchedCollection isEqualToString:@""],
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
 			
 			index++;
 		}
 		
 		for (NSString *key in keys)
 		{
-			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key];
+			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key inCollection:nil];
 			
 			STAssertTrue([fetchedGroup isEqualToString:@""], @"Wrong group(%@) for key(%@)", fetchedGroup, key);
 		}
@@ -256,7 +272,10 @@
 			NSString *fetchedGroup = nil;
 			NSUInteger fetchedIndex = NSNotFound;
 			
-			BOOL result = [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key];
+			BOOL result = [[transaction ext:@"order"] getGroup:&fetchedGroup
+			                                             index:&fetchedIndex
+			                                            forKey:key
+			                                      inCollection:nil];
 			
 			STAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
 			
@@ -286,17 +305,23 @@
 		NSUInteger index = 0;
 		for (NSString *key in keys)
 		{
-			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];;
+			NSString *fetchedKey;
+			NSString *fetchedCollection;
+			
+			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			STAssertTrue([fetchedKey isEqualToString:key],
 						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+			
+			STAssertTrue([fetchedCollection isEqualToString:@""],
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
 			
 			index++;
 		}
 		
 		for (NSString *key in keys)
 		{
-			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key];
+			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key inCollection:nil];
 			
 			STAssertTrue([fetchedGroup isEqualToString:@""], @"Wrong group(%@) for key(%@)", fetchedGroup, key);
 		}
@@ -307,7 +332,8 @@
 			NSString *fetchedGroup = nil;
 			NSUInteger fetchedIndex = NSNotFound;
 			
-			BOOL result = [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key];
+			BOOL result =
+			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
 			STAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
 			
@@ -329,7 +355,7 @@
 		// However, once it determines the group hasn't changed,
 		// it should abort as the sorting block only takes the object into account.
 		
-		[transaction setMetadata:@"some-metadata" forKey:key0];
+		[transaction setMetadata:@"some-metadata" forKey:key0 inCollection:nil];
 	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
@@ -338,11 +364,15 @@
 		//
 		// key0 should move from index0 to index4
 		
-		NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:1 inGroup:@""];
+		NSString *fetchedKey;
+		NSString *fetchedCollection;
+		
+		[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:1 inGroup:@""];
 		
 		STAssertTrue([fetchedKey isEqualToString:key1], @"Oops");
+		STAssertTrue([fetchedCollection isEqualToString:@""], @"Oops");
 		
-		[transaction setObject:object1B forKey:key1];
+		[transaction setObject:object1B forKey:key1 inCollection:nil];
 		
 		STAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		STAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
@@ -355,17 +385,23 @@
 		NSUInteger index = 0;
 		for (NSString *key in keys)
 		{
-			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];;
+			NSString *fetchedKey;
+			NSString *fetchedCollection;
+			
+			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			STAssertTrue([fetchedKey isEqualToString:key],
 						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+			
+			STAssertTrue([fetchedCollection isEqualToString:@""],
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
 			
 			index++;
 		}
 		
 		for (NSString *key in keys)
 		{
-			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key];
+			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key inCollection:nil];
 			
 			STAssertTrue([fetchedGroup isEqualToString:@""], @"Wrong group(%@) for key(%@)", fetchedGroup, key);
 		}
@@ -376,7 +412,8 @@
 			NSString *fetchedGroup = nil;
 			NSUInteger fetchedIndex = NSNotFound;
 			
-			BOOL result = [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key];
+			BOOL result =
+			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
 			STAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
 			
@@ -406,17 +443,23 @@
 		NSUInteger index = 0;
 		for (NSString *key in keys)
 		{
-			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];;
+			NSString *fetchedKey;
+			NSString *fetchedCollection;
+			
+			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			STAssertTrue([fetchedKey isEqualToString:key],
 						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+			
+			STAssertTrue([fetchedCollection isEqualToString:@""],
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
 			
 			index++;
 		}
 		
 		for (NSString *key in keys)
 		{
-			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key];
+			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key inCollection:nil];
 			
 			STAssertTrue([fetchedGroup isEqualToString:@""], @"Wrong group(%@) for key(%@)", fetchedGroup, key);
 		}
@@ -427,7 +470,8 @@
 			NSString *fetchedGroup = nil;
 			NSUInteger fetchedIndex = NSNotFound;
 			
-			BOOL result = [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key];
+			BOOL result =
+			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
 			STAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
 			
@@ -445,7 +489,7 @@
 		
 		// Test removing a single key
 		
-		[transaction removeObjectForKey:key1]; keysCount--;
+		[transaction removeObjectForKey:key1 inCollection:nil]; keysCount--;
 		
 		STAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		STAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
@@ -458,17 +502,23 @@
 		NSUInteger index = 0;
 		for (NSString *key in keys)
 		{
-			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];;
+			NSString *fetchedKey;
+			NSString *fetchedCollection;
+			
+			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			STAssertTrue([fetchedKey isEqualToString:key],
 						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+			
+			STAssertTrue([fetchedCollection isEqualToString:@""],
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
 			
 			index++;
 		}
 		
 		for (NSString *key in keys)
 		{
-			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key];
+			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key inCollection:nil];
 			
 			STAssertTrue([fetchedGroup isEqualToString:@""], @"Wrong group(%@) for key(%@)", fetchedGroup, key);
 		}
@@ -479,7 +529,8 @@
 			NSString *fetchedGroup = nil;
 			NSUInteger fetchedIndex = NSNotFound;
 			
-			BOOL result = [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key];
+			BOOL result =
+			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
 			STAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
 			
@@ -509,17 +560,23 @@
 		NSUInteger index = 0;
 		for (NSString *key in keys)
 		{
-			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];;
+			NSString *fetchedKey;
+			NSString *fetchedCollection;
+			
+			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			STAssertTrue([fetchedKey isEqualToString:key],
 						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+			
+			STAssertTrue([fetchedCollection isEqualToString:@""],
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
 			
 			index++;
 		}
 		
 		for (NSString *key in keys)
 		{
-			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key];
+			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key inCollection:nil];
 			
 			STAssertTrue([fetchedGroup isEqualToString:@""], @"Wrong group(%@) for key(%@)", fetchedGroup, key);
 		}
@@ -530,7 +587,8 @@
 			NSString *fetchedGroup = nil;
 			NSUInteger fetchedIndex = NSNotFound;
 			
-			BOOL result = [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key];
+			BOOL result =
+			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
 			STAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
 			
@@ -548,7 +606,7 @@
 		
 		// Test remove multiple objects
 		
-		[transaction removeObjectsForKeys:@[ key2, key3 ]]; keysCount -= 2;
+		[transaction removeObjectsForKeys:@[ key2, key3 ] inCollection:nil]; keysCount -= 2;
 		
 		STAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		STAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
@@ -561,17 +619,23 @@
 		NSUInteger index = 0;
 		for (NSString *key in keys)
 		{
-			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];;
+			NSString *fetchedKey;
+			NSString *fetchedCollection;
+			
+			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			STAssertTrue([fetchedKey isEqualToString:key],
 						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+			
+			STAssertTrue([fetchedCollection isEqualToString:@""],
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
 			
 			index++;
 		}
 		
 		for (NSString *key in keys)
 		{
-			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key];
+			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key inCollection:nil];
 			
 			STAssertTrue([fetchedGroup isEqualToString:@""], @"Wrong group(%@) for key(%@)", fetchedGroup, key);
 		}
@@ -582,7 +646,8 @@
 			NSString *fetchedGroup = nil;
 			NSUInteger fetchedIndex = NSNotFound;
 			
-			BOOL result = [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key];
+			BOOL result =
+			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
 			STAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
 			
@@ -595,7 +660,7 @@
 			index++;
 		}
 	}];
-
+	
 	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		
 		// Read the changes back on another connection
@@ -611,17 +676,23 @@
 		NSUInteger index = 0;
 		for (NSString *key in keys)
 		{
-			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];;
+			NSString *fetchedKey;
+			NSString *fetchedCollection;
+			
+			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			STAssertTrue([fetchedKey isEqualToString:key],
 						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+			
+			STAssertTrue([fetchedCollection isEqualToString:@""],
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
 			
 			index++;
 		}
 		
 		for (NSString *key in keys)
 		{
-			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key];
+			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key inCollection:nil];
 			
 			STAssertTrue([fetchedGroup isEqualToString:@""], @"Wrong group(%@) for key(%@)", fetchedGroup, key);
 		}
@@ -632,7 +703,8 @@
 			NSString *fetchedGroup = nil;
 			NSUInteger fetchedIndex = NSNotFound;
 			
-			BOOL result = [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key];
+			BOOL result =
+			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
 			STAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
 			
@@ -650,7 +722,7 @@
 		
 		// Test remove all objects
 		
-		[transaction removeAllObjects]; keysCount = 0;
+		[transaction removeAllObjectsInAllCollections]; keysCount = 0;
 		
 		STAssertTrue([[transaction ext:@"order"] numberOfGroups] == 0, @"Wrong group count");
 		STAssertTrue([[[transaction ext:@"order"] allGroups] count] == 0, @"Wrong array count");
@@ -674,12 +746,12 @@
 		
 		// Add all the objects back (in random order)
 		
-		[transaction setObject:object2 forKey:key2]; keysCount++; // Included
-		[transaction setObject:object1 forKey:key1]; keysCount++; // Included
-		[transaction setObject:object3 forKey:key3]; keysCount++; // Included
-		[transaction setObject:objectX forKey:keyX];              // Excluded !
-		[transaction setObject:object0 forKey:key0]; keysCount++; // Included
-		[transaction setObject:object4 forKey:key4]; keysCount++; // Included
+		[transaction setObject:object2 forKey:key2 inCollection:nil]; keysCount++; // Included
+		[transaction setObject:object1 forKey:key1 inCollection:nil]; keysCount++; // Included
+		[transaction setObject:object3 forKey:key3 inCollection:nil]; keysCount++; // Included
+		[transaction setObject:objectX forKey:keyX inCollection:nil];              // Excluded !
+		[transaction setObject:object0 forKey:key0 inCollection:nil]; keysCount++; // Included
+		[transaction setObject:object4 forKey:key4 inCollection:nil]; keysCount++; // Included
 		
 		STAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		STAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
@@ -692,17 +764,23 @@
 		NSUInteger index = 0;
 		for (NSString *key in keys)
 		{
-			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];;
+			NSString *fetchedKey;
+			NSString *fetchedCollection;
+			
+			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			STAssertTrue([fetchedKey isEqualToString:key],
 						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+			
+			STAssertTrue([fetchedCollection isEqualToString:@""],
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
 			
 			index++;
 		}
 		
 		for (NSString *key in keys)
 		{
-			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key];
+			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key inCollection:nil];
 			
 			STAssertTrue([fetchedGroup isEqualToString:@""], @"Wrong group(%@) for key(%@)", fetchedGroup, key);
 		}
@@ -713,7 +791,8 @@
 			NSString *fetchedGroup = nil;
 			NSUInteger fetchedIndex = NSNotFound;
 			
-			BOOL result = [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key];
+			BOOL result =
+			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
 			STAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
 			
@@ -742,17 +821,23 @@
 		NSUInteger index = 0;
 		for (NSString *key in keys)
 		{
-			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];;
+			NSString *fetchedKey;
+			NSString *fetchedCollection;
+			
+			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			STAssertTrue([fetchedKey isEqualToString:key],
 						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+			
+			STAssertTrue([fetchedCollection isEqualToString:@""],
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
 			
 			index++;
 		}
 		
 		for (NSString *key in keys)
 		{
-			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key];
+			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key inCollection:nil];
 			
 			STAssertTrue([fetchedGroup isEqualToString:@""], @"Wrong group(%@) for key(%@)", fetchedGroup, key);
 		}
@@ -763,7 +848,8 @@
 			NSString *fetchedGroup = nil;
 			NSUInteger fetchedIndex = NSNotFound;
 			
-			BOOL result = [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key];
+			BOOL result =
+			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
 			STAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
 			
@@ -782,10 +868,10 @@
 		// Again on connection 2
 		// Remove all the keys, and then add a few back
 		
-		[transaction removeAllObjects]; keysCount = 0;
+		[transaction removeAllObjectsInCollection:nil]; keysCount = 0;
 		
-		[transaction setObject:object1 forKey:key1]; keysCount++; // Included
-		[transaction setObject:object0 forKey:key0]; keysCount++; // Included
+		[transaction setObject:object1 forKey:key1 inCollection:nil]; keysCount++; // Included
+		[transaction setObject:object0 forKey:key0 inCollection:nil]; keysCount++; // Included
 		
 		STAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		STAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
@@ -798,17 +884,23 @@
 		NSUInteger index = 0;
 		for (NSString *key in keys)
 		{
-			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];;
+			NSString *fetchedKey;
+			NSString *fetchedCollection;
+			
+			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			STAssertTrue([fetchedKey isEqualToString:key],
 						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+			
+			STAssertTrue([fetchedCollection isEqualToString:@""],
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
 			
 			index++;
 		}
 		
 		for (NSString *key in keys)
 		{
-			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key];
+			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key inCollection:nil];
 			
 			STAssertTrue([fetchedGroup isEqualToString:@""], @"Wrong group(%@) for key(%@)", fetchedGroup, key);
 		}
@@ -819,7 +911,8 @@
 			NSString *fetchedGroup = nil;
 			NSUInteger fetchedIndex = NSNotFound;
 			
-			BOOL result = [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key];
+			BOOL result =
+			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
 			STAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
 			
@@ -848,17 +941,23 @@
 		NSUInteger index = 0;
 		for (NSString *key in keys)
 		{
-			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];;
+			NSString *fetchedKey;
+			NSString *fetchedCollection;
+			
+			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			STAssertTrue([fetchedKey isEqualToString:key],
 						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+			
+			STAssertTrue([fetchedCollection isEqualToString:@""],
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
 			
 			index++;
 		}
 		
 		for (NSString *key in keys)
 		{
-			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key];
+			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key inCollection:nil];
 			
 			STAssertTrue([fetchedGroup isEqualToString:@""], @"Wrong group(%@) for key(%@)", fetchedGroup, key);
 		}
@@ -869,7 +968,8 @@
 			NSString *fetchedGroup = nil;
 			NSUInteger fetchedIndex = NSNotFound;
 			
-			BOOL result = [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key];
+			BOOL result =
+			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
 			STAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
 			
@@ -887,12 +987,12 @@
 		
 		// Add all the keys back. Some are already included.
 		
-		[transaction setObject:object0 forKey:key0];              // Already included
-		[transaction setObject:object1 forKey:key1];              // Already included
-		[transaction setObject:object2 forKey:key2]; keysCount++; // Included
-		[transaction setObject:object3 forKey:key3]; keysCount++; // Included
-		[transaction setObject:object4 forKey:key4]; keysCount++; // Included
-		[transaction setObject:objectX forKey:keyX];              // Excluded !
+		[transaction setObject:object0 forKey:key0 inCollection:nil];              // Already included
+		[transaction setObject:object1 forKey:key1 inCollection:nil];              // Already included
+		[transaction setObject:object2 forKey:key2 inCollection:nil]; keysCount++; // Included
+		[transaction setObject:object3 forKey:key3 inCollection:nil]; keysCount++; // Included
+		[transaction setObject:object4 forKey:key4 inCollection:nil]; keysCount++; // Included
+		[transaction setObject:objectX forKey:keyX inCollection:nil];              // Excluded !
 		
 		STAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		STAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
@@ -905,17 +1005,23 @@
 		NSUInteger index = 0;
 		for (NSString *key in keys)
 		{
-			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];;
+			NSString *fetchedKey;
+			NSString *fetchedCollection;
+			
+			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			STAssertTrue([fetchedKey isEqualToString:key],
 						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+			
+			STAssertTrue([fetchedCollection isEqualToString:@""],
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
 			
 			index++;
 		}
 		
 		for (NSString *key in keys)
 		{
-			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key];
+			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key inCollection:nil];
 			
 			STAssertTrue([fetchedGroup isEqualToString:@""], @"Wrong group(%@) for key(%@)", fetchedGroup, key);
 		}
@@ -926,7 +1032,8 @@
 			NSString *fetchedGroup = nil;
 			NSUInteger fetchedIndex = NSNotFound;
 			
-			BOOL result = [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key];
+			BOOL result =
+			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
 			STAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
 			
@@ -955,17 +1062,23 @@
 		NSUInteger index = 0;
 		for (NSString *key in keys)
 		{
-			NSString *fetchedKey = [[transaction ext:@"order"] keyAtIndex:index inGroup:@""];;
+			NSString *fetchedKey;
+			NSString *fetchedCollection;
+			
+			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			STAssertTrue([fetchedKey isEqualToString:key],
 						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+			
+			STAssertTrue([fetchedCollection isEqualToString:@""],
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
 			
 			index++;
 		}
 		
 		for (NSString *key in keys)
 		{
-			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key];
+			NSString *fetchedGroup = [[transaction ext:@"order"] groupForKey:key inCollection:nil];
 			
 			STAssertTrue([fetchedGroup isEqualToString:@""], @"Wrong group(%@) for key(%@)", fetchedGroup, key);
 		}
@@ -976,7 +1089,8 @@
 			NSString *fetchedGroup = nil;
 			NSUInteger fetchedIndex = NSNotFound;
 			
-			BOOL result = [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key];
+			BOOL result =
+			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
 			STAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
 			
@@ -1002,7 +1116,7 @@
 		
 		correctIndex = 0;
 		[[transaction ext:@"order"] enumerateKeysInGroup:@""
-		                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+		                              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 			
 			STAssertTrue(index == correctIndex,
 						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
@@ -1018,7 +1132,7 @@
 		correctIndex = 0;
 		[[transaction ext:@"order"] enumerateKeysInGroup:@""
 		                                     withOptions:0
-		                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+		                              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 			
 			STAssertTrue(index == correctIndex,
 						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
@@ -1034,7 +1148,7 @@
 		correctIndex = 4;
 		[[transaction ext:@"order"] enumerateKeysInGroup:@""
 		                                     withOptions:NSEnumerationReverse
-		                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+		                              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 			
 			STAssertTrue(index == correctIndex,
 						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
@@ -1051,7 +1165,7 @@
 		[[transaction ext:@"order"] enumerateKeysInGroup:@""
 		                                     withOptions:0
 		                                           range:NSMakeRange(0, 5)
-		                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+		                              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 			
 			STAssertTrue(index == correctIndex,
 						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
@@ -1068,7 +1182,7 @@
 		[[transaction ext:@"order"] enumerateKeysInGroup:@""
 		                                     withOptions:NSEnumerationReverse
 		                                           range:NSMakeRange(0, 5)
-		                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+		                              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 			
 			STAssertTrue(index == correctIndex,
 						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
@@ -1085,7 +1199,7 @@
 		[[transaction ext:@"order"] enumerateKeysInGroup:@""
 		                                     withOptions:0
 		                                           range:NSMakeRange(1, 3)
-		                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+		                              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 			
 			STAssertTrue(index == correctIndex,
 						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
@@ -1102,7 +1216,7 @@
 		[[transaction ext:@"order"] enumerateKeysInGroup:@""
 		                                     withOptions:NSEnumerationReverse
 		                                           range:NSMakeRange(1, 3)
-		                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+		                              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 			
 			STAssertTrue(index == correctIndex,
 						 @"Index mismatch: %lu vs %lu", (unsigned long)index, (unsigned long)correctIndex);
@@ -1161,13 +1275,14 @@
 	YapDatabaseViewSortingWithObjectBlock sortingBlock;
 	
 	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *key){
+	groupingBlock = ^NSString *(NSString *collection, NSString *key){
 		
 		return @"";
 	};
 	
 	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *key1, id obj1, NSString *key2, id obj2){
+	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                                  NSString *collection2, NSString *key2, id obj2){
 		
 		NSString *object1 = (NSString *)obj1;
 		NSString *object2 = (NSString *)obj2;
@@ -1176,12 +1291,12 @@
 	};
 	
 	YapDatabaseView *databaseView =
-		[[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-		                             groupingBlockType:groupingBlockType
-		                                  sortingBlock:sortingBlock
-		                              sortingBlockType:sortingBlockType
-		                                       version:0
-		                                       options:options];
+	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
+	                               groupingBlockType:groupingBlockType
+	                                    sortingBlock:sortingBlock
+	                                sortingBlockType:sortingBlockType
+	                                         version:0
+	                                         options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -1204,7 +1319,7 @@
 			NSString *key = [NSString stringWithFormat:@"key%d", i];
 			NSString *obj = [NSString stringWithFormat:@"object%d", i];
 			
-			[transaction setObject:obj forKey:key];
+			[transaction setObject:obj forKey:key inCollection:nil];
 		}
 	}];
 	
@@ -1263,7 +1378,7 @@
 		{
 			NSString *key = [NSString stringWithFormat:@"key%d", i];
 			
-			[transaction removeObjectForKey:key];
+			[transaction removeObjectForKey:key inCollection:nil];
 		}
 	}];
 	
@@ -1338,7 +1453,7 @@
 			NSString *key = [NSString stringWithFormat:@"key%d", i];
 			NSString *obj = [NSString stringWithFormat:@"object%d", i];
 			
-			[transaction setObject:obj forKey:key];
+			[transaction setObject:obj forKey:key inCollection:nil];
 		}
 	}];
 	
@@ -1354,7 +1469,7 @@
 			             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
 		}
 	}];
-	
+
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		for (int i = 0; i < 150; i++)
@@ -1393,7 +1508,7 @@
 		{
 			NSString *key = [NSString stringWithFormat:@"key%d", i];
 			
-			[transaction removeObjectForKey:key];
+			[transaction removeObjectForKey:key inCollection:nil];
 		}
 	}];
 	
@@ -1417,7 +1532,7 @@
 			}
 		}
 	}];
-	
+
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		for (int i = 0; i < 150; i++)
@@ -1466,7 +1581,7 @@
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[transaction removeAllObjects];
+		[transaction removeAllObjectsInAllCollections];
 	}];
 	
 	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -1475,7 +1590,7 @@
 		
 		STAssertTrue(count == 0, @"Wrong count. Expected zero, got %lu", (unsigned long)count);
 	}];
-	
+
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		NSUInteger count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
@@ -1507,10 +1622,10 @@
 			NSString *key = [NSString stringWithFormat:@"key%d", i];
 			NSString *obj = [NSString stringWithFormat:@"object%d", i];
 			
-			[transaction setObject:obj forKey:key];
+			[transaction setObject:obj forKey:key inCollection:nil];
 		}
 	}];
-	
+
 	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		for (int i = 0; i < 150; i++)
@@ -1523,7 +1638,7 @@
 			             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
 		}
 	}];
-	
+
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		for (int i = 0; i < 150; i++)
@@ -1536,7 +1651,7 @@
 			             @"Key mismatch: expected(%@) fetched(%@)", expectedKey, fetchedKey);
 		}
 	}];
-	
+
 	[[database newConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		for (int i = 0; i < 150; i++)
@@ -1567,7 +1682,7 @@
 			[keysToRemove addObject:key];
 		}
 		
-		[transaction removeObjectsForKeys:keysToRemove];
+		[transaction removeObjectsForKeys:keysToRemove inCollection:nil];
 	}];
 	
 	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -1590,7 +1705,7 @@
 			}
 		}
 	}];
-	
+
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		for (int i = 0; i < 150; i++)
@@ -1611,7 +1726,7 @@
 			}
 		}
 	}];
-	
+
 	[[database newConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		for (int i = 0; i < 150; i++)
@@ -1639,7 +1754,7 @@
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[transaction removeAllObjects];
+		[transaction removeAllObjectsInAllCollections];
 		
 		// Add 2 pages of keys to the view
 		//
@@ -1651,7 +1766,7 @@
 			NSString *key = [NSString stringWithFormat:@"key%d", i];
 			NSString *obj = [NSString stringWithFormat:@"object%d", i];
 			
-			[transaction setObject:obj forKey:key];
+			[transaction setObject:obj forKey:key inCollection:nil];
 		}
 		
 		for (int i = 100; i < 150; i++)
@@ -1659,7 +1774,7 @@
 			NSString *key = [NSString stringWithFormat:@"key%d", i];
 			NSString *obj = [NSString stringWithFormat:@"object%d", i];
 			
-			[transaction setObject:obj forKey:key];
+			[transaction setObject:obj forKey:key inCollection:nil];
 		}
 	}];
 	
@@ -1674,7 +1789,7 @@
 			NSString *key = [NSString stringWithFormat:@"key%d", i];
 			NSString *obj = [NSString stringWithFormat:@"object%d", i];
 			
-			[transaction setObject:obj forKey:key];
+			[transaction setObject:obj forKey:key inCollection:nil];
 		}
 		
 		// Remove [key40 - key49]
@@ -1685,7 +1800,7 @@
 		{
 			NSString *key = [NSString stringWithFormat:@"key%d", i];
 			
-			[transaction removeObjectForKey:key];
+			[transaction removeObjectForKey:key inCollection:nil];
 		}
 		
 		// This test is designed to hit the codePath:
@@ -1742,7 +1857,7 @@
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[transaction removeAllObjects];
+		[transaction removeAllObjectsInAllCollections];
 		
 		// Add 2 pages of keys to the view
 		//
@@ -1754,7 +1869,7 @@
 			NSString *key = [NSString stringWithFormat:@"key%d", i];
 			NSString *obj = [NSString stringWithFormat:@"object%d", i];
 			
-			[transaction setObject:obj forKey:key];
+			[transaction setObject:obj forKey:key inCollection:nil];
 		}
 	}];
 	
@@ -1769,7 +1884,7 @@
 			NSString *key = [NSString stringWithFormat:@"key%d", i];
 			NSString *obj = [NSString stringWithFormat:@"object%d", i];
 			
-			[transaction setObject:obj forKey:key];
+			[transaction setObject:obj forKey:key inCollection:nil];
 		}
 		
 		// Remove [key100 - key109]
@@ -1780,7 +1895,7 @@
 		{
 			NSString *key = [NSString stringWithFormat:@"key%d", i];
 			
-			[transaction removeObjectForKey:key];
+			[transaction removeObjectForKey:key inCollection:nil];
 		}
 		
 		// This test is designed to hit the codePath:
@@ -1871,13 +1986,14 @@
 	YapDatabaseViewSortingWithObjectBlock sortingBlock;
 	
 	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *key){
+	groupingBlock = ^NSString *(NSString *collection, NSString *key){
 		
 		return @"";
 	};
 	
 	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *key1, id obj1, NSString *key2, id obj2){
+	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                                  NSString *collection2, NSString *key2, id obj2){
 		
 		NSString *object1 = (NSString *)obj1;
 		NSString *object2 = (NSString *)obj2;
@@ -1886,12 +2002,12 @@
 	};
 	
 	YapDatabaseView *databaseView =
-		[[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-		                             groupingBlockType:groupingBlockType
-		                                  sortingBlock:sortingBlock
-		                              sortingBlockType:sortingBlockType
-		                                       version:0
-		                                       options:options];
+	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
+	                               groupingBlockType:groupingBlockType
+	                                    sortingBlock:sortingBlock
+	                                sortingBlockType:sortingBlockType
+	                                         version:0
+	                                         options:options];
 	
 	// Without registering the view,
 	// add a bunch of keys to the database.
@@ -1903,7 +2019,7 @@
 			NSString *key = [NSString stringWithFormat:@"key%d", i];
 			NSString *obj = [NSString stringWithFormat:@"object%d", i];
 			
-			[transaction setObject:obj forKey:key];
+			[transaction setObject:obj forKey:key inCollection:nil];
 		}
 	}];
 	
@@ -1981,7 +2097,7 @@
 	YapDatabaseViewSortingWithObjectBlock sortingBlock;
 	
 	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *key){
+	groupingBlock = ^NSString *(NSString *collection, NSString *key){
 		
 		if ([key hasPrefix:@"key"])
 			return @"default-group";
@@ -1990,7 +2106,8 @@
 	};
 	
 	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *key1, id obj1, NSString *key2, id obj2){
+	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                                  NSString *collection2, NSString *key2, id obj2){
 		
 		NSString *object1 = (NSString *)obj1;
 		NSString *object2 = (NSString *)obj2;
@@ -1999,12 +2116,12 @@
 	};
 	
 	YapDatabaseView *databaseView =
-		[[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-		                             groupingBlockType:groupingBlockType
-		                                  sortingBlock:sortingBlock
-		                              sortingBlockType:sortingBlockType
-		                                       version:0
-		                                       options:options];
+	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
+	                               groupingBlockType:groupingBlockType
+	                                    sortingBlock:sortingBlock
+	                                sortingBlockType:sortingBlockType
+	                                         version:0
+	                                         options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -2019,7 +2136,7 @@
 			NSString *key = [NSString stringWithFormat:@"key-%d", i];
 			NSString *obj = [NSString stringWithFormat:@"obj-%d", i];
 			
-			[transaction setObject:obj forKey:key];
+			[transaction setObject:obj forKey:key inCollection:nil];
 		}
 	}];
 	
@@ -2033,53 +2150,61 @@
 		
 		dispatch_block_t exceptionBlock1A = ^{
 		
-			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
-												  usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
 				[transaction setObject:[NSString stringWithFormat:@"obj-%d", i]
-				                forKey:[NSString stringWithFormat:@"key-%d", i]];
+				                forKey:[NSString stringWithFormat:@"key-%d", i]
+				          inCollection:nil];
 				i++;
 				// Missing stop; Will cause exception.
 			}];
 		};
 		dispatch_block_t exceptionBlock1B = ^{
 		
-			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
-												  usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
-				[transaction removeObjectForKey:[NSString stringWithFormat:@"key-%d", j]];
+				[transaction removeObjectForKey:[NSString stringWithFormat:@"key-%d", j] inCollection:nil];
 				j++;
 				// Missing stop; Will cause exception.
 			}];
 		};
 		dispatch_block_t noExceptionBlock1A = ^{
 			
-			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
-			                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
 				[transaction setObject:[NSString stringWithFormat:@"obj-%d", i]
-				                forKey:[NSString stringWithFormat:@"key-%d", i]];
+				                forKey:[NSString stringWithFormat:@"key-%d", i]
+				          inCollection:nil];
 				i++;
 				*stop = YES;
 			}];
 		};
 		dispatch_block_t noExceptionBlock1B = ^{
 		
-			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
-												  usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
-				[transaction removeObjectForKey:[NSString stringWithFormat:@"key-%d", j]];
+				[transaction removeObjectForKey:[NSString stringWithFormat:@"key-%d", j] inCollection:nil];
 				j++;
 				*stop = YES;
 			}];
 		};
 		dispatch_block_t noExceptionBlock1C = ^{
 			
-			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
-			                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
 				[transaction setObject:[NSString stringWithFormat:@"diff-obj-%d", k]
-				                forKey:[NSString stringWithFormat:@"diff-key-%d", k]];
+				                forKey:[NSString stringWithFormat:@"diff-key-%d", k]
+				          inCollection:nil];
 				k++;
 				// No stop; Shouldn't affect default-group.
 			}];
@@ -2095,58 +2220,66 @@
 		
 		dispatch_block_t exceptionBlock2A = ^{
 			
-			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
-			                                     withOptions:NSEnumerationReverse
-			                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			             withOptions:NSEnumerationReverse
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
 				[transaction setObject:[NSString stringWithFormat:@"obj-%d", i]
-				                forKey:[NSString stringWithFormat:@"key-%d", i]];
+				                forKey:[NSString stringWithFormat:@"key-%d", i]
+				          inCollection:nil];
 				i++;
 				// Missing stop; Will cause exception.
 			}];
 		};
 		dispatch_block_t exceptionBlock2B = ^{
 			
-			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
-			                                     withOptions:NSEnumerationReverse
-			                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			             withOptions:NSEnumerationReverse
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
-				[transaction removeObjectForKey:[NSString stringWithFormat:@"key-%d", j]];
+				[transaction removeObjectForKey:[NSString stringWithFormat:@"key-%d", j] inCollection:nil];
 				j++;
 				// Missing stop; Will cause exception.
 			}];
 		};
 		dispatch_block_t noExceptionBlock2A = ^{
 			
-			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
-			                                     withOptions:NSEnumerationReverse
-			                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			             withOptions:NSEnumerationReverse
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
 				[transaction setObject:[NSString stringWithFormat:@"obj-%d", i]
-				                forKey:[NSString stringWithFormat:@"key-%d", i]];
+				                forKey:[NSString stringWithFormat:@"key-%d", i]
+				          inCollection:nil];
 				i++;
 				*stop = YES;
 			}];
 		};
 		dispatch_block_t noExceptionBlock2B = ^{
 			
-			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
-			                                     withOptions:NSEnumerationReverse
-			                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			             withOptions:NSEnumerationReverse
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
-				[transaction removeObjectForKey:[NSString stringWithFormat:@"key-%d", j]];
+				[transaction removeObjectForKey:[NSString stringWithFormat:@"key-%d", j] inCollection:nil];
 				j++;
 				*stop = YES;
 			}];
 		};
 		dispatch_block_t noExceptionBlock2C = ^{
 			
-			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
-			                                     withOptions:NSEnumerationReverse
-			                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			             withOptions:NSEnumerationReverse
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
 				[transaction setObject:[NSString stringWithFormat:@"diff-obj-%d", k]
-				                forKey:[NSString stringWithFormat:@"diff-key-%d", k]];
+				                forKey:[NSString stringWithFormat:@"diff-key-%d", k]
+				          inCollection:nil];
 				k++;
 				// No stop; Shouldn't affect default-group.
 			}];
@@ -2162,63 +2295,71 @@
 		
 		dispatch_block_t exceptionBlock3A = ^{
 			
-			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
-			                                     withOptions:0
-			                                           range:NSMakeRange(0, 10)
-			                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			             withOptions:0
+			                   range:NSMakeRange(0, 10)
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
 				[transaction setObject:[NSString stringWithFormat:@"obj-%d", i]
-				                forKey:[NSString stringWithFormat:@"key-%d", i]];
+				                forKey:[NSString stringWithFormat:@"key-%d", i]
+				          inCollection:nil];
 				i++;
 				// Missing stop; Will cause exception.
 			}];
 		};
 		dispatch_block_t exceptionBlock3B = ^{
 			
-			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
-			                                     withOptions:0
-			                                           range:NSMakeRange(0, 10)
-			                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			             withOptions:0
+			                   range:NSMakeRange(0, 10)
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
-				[transaction removeObjectForKey:[NSString stringWithFormat:@"key-%d", j]];
+				[transaction removeObjectForKey:[NSString stringWithFormat:@"key-%d", j] inCollection:nil];
 				j++;
 				// Missing stop; Will cause exception.
 			}];
 		};
 		dispatch_block_t noExceptionBlock3A = ^{
 			
-			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
-			                                     withOptions:0
-			                                           range:NSMakeRange(0, 10)
-			                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			             withOptions:0
+			                   range:NSMakeRange(0, 10)
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
 				[transaction setObject:[NSString stringWithFormat:@"obj-%d", i]
-				                forKey:[NSString stringWithFormat:@"key-%d", i]];
+				                forKey:[NSString stringWithFormat:@"key-%d", i]
+				          inCollection:nil];
 				i++;
 				*stop = YES;
 			}];
 		};
 		dispatch_block_t noExceptionBlock3B = ^{
 			
-			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
-			                                     withOptions:0
-			                                           range:NSMakeRange(0, 10)
-			                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			             withOptions:0
+			                   range:NSMakeRange(0, 10)
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
-				[transaction removeObjectForKey:[NSString stringWithFormat:@"key-%d", j]];
+				[transaction removeObjectForKey:[NSString stringWithFormat:@"key-%d", j] inCollection:nil];
 				j++;
 				*stop = YES;
 			}];
 		};
 		dispatch_block_t noExceptionBlock3C = ^{
 			
-			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
-			                                     withOptions:0
-			                                           range:NSMakeRange(0, 10)
-			                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			             withOptions:0
+			                   range:NSMakeRange(0, 10)
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
 				[transaction setObject:[NSString stringWithFormat:@"diff-obj-%d", k]
-				                forKey:[NSString stringWithFormat:@"diff-key-%d", k]];
+				                forKey:[NSString stringWithFormat:@"diff-key-%d", k]
+				          inCollection:nil];
 				k++;
 				// No stop; Shouldn't affect default-group.
 			}];
@@ -2240,15 +2381,16 @@
 			NSString *key = [NSString stringWithFormat:@"key-%d", i];
 			NSString *obj = [NSString stringWithFormat:@"obj-%d", i];
 			
-			[transaction setObject:obj forKey:key];
+			[transaction setObject:obj forKey:key inCollection:nil];
 		}
 		
 		dispatch_block_t exceptionBlock1 = ^{
 		
-			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
-												  usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
-				[transaction removeAllObjects];
+				[transaction removeAllObjectsInAllCollections];
 				// Missing stop; Will cause exception.
 			}];
 		};
@@ -2260,15 +2402,16 @@
 			NSString *key = [NSString stringWithFormat:@"key-%d", i];
 			NSString *obj = [NSString stringWithFormat:@"obj-%d", i];
 			
-			[transaction setObject:obj forKey:key];
+			[transaction setObject:obj forKey:key inCollection:nil];
 		}
 		
 		dispatch_block_t noExceptionBlock1 = ^{
 			
-			[[transaction ext:@"order"] enumerateKeysInGroup:@"default-group"
-			                                      usingBlock:^(NSString *key, NSUInteger index, BOOL *stop) {
+			[[transaction ext:@"order"]
+			    enumerateKeysInGroup:@"default-group"
+			              usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
 				
-				[transaction removeAllObjects];
+				[transaction removeAllObjectsInAllCollections];
 				*stop = YES;
 			}];
 		};
@@ -2315,13 +2458,14 @@
 	YapDatabaseViewSortingWithObjectBlock sortingBlock;
 	
 	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *key){
+	groupingBlock = ^NSString *(NSString *collection, NSString *key){
 		
 		return @"";
 	};
 	
 	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *key1, id obj1, NSString *key2, id obj2){
+	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                                  NSString *collection2, NSString *key2, id obj2) {
 		
 		NSString *object1 = (NSString *)obj1;
 		NSString *object2 = (NSString *)obj2;
@@ -2330,12 +2474,12 @@
 	};
 	
 	YapDatabaseView *databaseView =
-		[[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-		                             groupingBlockType:groupingBlockType
-		                                  sortingBlock:sortingBlock
-		                              sortingBlockType:sortingBlockType
-		                                       version:0
-		                                       options:options];
+	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
+	                               groupingBlockType:groupingBlockType
+	                                    sortingBlock:sortingBlock
+	                                sortingBlockType:sortingBlockType
+	                                         version:0
+	                                         options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -2352,7 +2496,7 @@
 			NSString *key = [NSString stringWithFormat:@"key-%d", i];
 			NSString *obj = [NSString stringWithFormat:@"obj-%d", i];
 			
-			[transaction setObject:obj forKey:key];
+			[transaction setObject:obj forKey:key inCollection:nil];
 		}
 	}];
 	
@@ -2413,13 +2557,14 @@
 	YapDatabaseViewSortingWithObjectBlock sortingBlock;
 	
 	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *key){
+	groupingBlock = ^NSString *(NSString *collection, NSString *key){
 		
 		return @"";
 	};
 	
 	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *key1, id obj1, NSString *key2, id obj2){
+	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                                  NSString *collection2, NSString *key2, id obj2){
 		
 		NSNumber *number1 = (NSNumber *)obj1;
 		NSNumber *number2 = (NSNumber *)obj2;
@@ -2428,12 +2573,12 @@
 	};
 	
 	YapDatabaseView *databaseView =
-		[[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-		                             groupingBlockType:groupingBlockType
-		                                  sortingBlock:sortingBlock
-		                              sortingBlockType:sortingBlockType
-		                                       version:0
-		                                       options:options];
+	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
+	                               groupingBlockType:groupingBlockType
+	                                    sortingBlock:sortingBlock
+	                                sortingBlockType:sortingBlockType
+	                                         version:0
+	                                         options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -2450,7 +2595,7 @@
 			NSString *key = [NSString stringWithFormat:@"key-%d", i];
 			NSNumber *num = [NSNumber numberWithInt:i];
 			
-			[transaction setObject:num forKey:key];
+			[transaction setObject:num forKey:key inCollection:nil];
 		}
 	}];
 	
@@ -2469,7 +2614,7 @@
 		int max = 5;
 		
 		YapDatabaseViewBlockType blockType = YapDatabaseViewBlockTypeWithObject;
-		YapDatabaseViewFindWithObjectBlock block = ^(NSString *key, id object){
+		YapDatabaseViewFindWithObjectBlock block = ^(NSString *collection, NSString *key, id object){
 			
 			int value = [(NSNumber *)object intValue];
 			
@@ -2496,7 +2641,7 @@
 		int max = 54;
 		
 		YapDatabaseViewBlockType blockType = YapDatabaseViewBlockTypeWithObject;
-		YapDatabaseViewFindWithObjectBlock block = ^(NSString *key, id object){
+		YapDatabaseViewFindWithObjectBlock block = ^(NSString *collection, NSString *key, id object){
 			
 			int value = [(NSNumber *)object intValue];
 			
@@ -2523,7 +2668,7 @@
 		int max = 100;
 		
 		YapDatabaseViewBlockType blockType = YapDatabaseViewBlockTypeWithObject;
-		YapDatabaseViewFindWithObjectBlock block = ^(NSString *key, id object){
+		YapDatabaseViewFindWithObjectBlock block = ^(NSString *collection, NSString *key, id object){
 			
 			int value = [(NSNumber *)object intValue];
 			
@@ -2550,7 +2695,7 @@
 		int max = 40;
 		
 		YapDatabaseViewBlockType blockType = YapDatabaseViewBlockTypeWithObject;
-		YapDatabaseViewFindWithObjectBlock block = ^(NSString *key, id object){
+		YapDatabaseViewFindWithObjectBlock block = ^(NSString *collection, NSString *key, id object){
 			
 			int value = [(NSNumber *)object intValue];
 			

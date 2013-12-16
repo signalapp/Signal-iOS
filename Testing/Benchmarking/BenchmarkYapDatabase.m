@@ -1,8 +1,8 @@
 #import "BenchmarkYapDatabase.h"
 #import "YapDatabase.h"
-#import "YapDatabaseConnection.h"
 
 #import <stdlib.h>
+
 
 @implementation BenchmarkYapDatabase
 
@@ -67,7 +67,7 @@ static NSMutableArray *keys;
 			// For now, use key for object.
 			// Later we need to test with bigger objects with more serialization overhead.
 			
-			[transaction setObject:key forKey:key];
+			[transaction setObject:key forKey:key inCollection:nil];
 		}
 	}];
 	
@@ -81,7 +81,7 @@ static NSMutableArray *keys;
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		[transaction enumerateKeysUsingBlock:^(NSString *key, BOOL *stop) {
+		[transaction enumerateKeysInAllCollectionsUsingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			
 			// Nothing to do, just testing overhead
 		}];
@@ -94,7 +94,8 @@ static NSMutableArray *keys;
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop) {
+		[transaction enumerateKeysAndObjectsInAllCollectionsUsingBlock:
+		    ^(NSString *collection, NSString *key, id object, BOOL *stop) {
 			
 			// Nothing to do, just testing overhead
 		}];
@@ -164,7 +165,7 @@ static NSMutableArray *keys;
 		
 		for (NSString *key in keysToFetch)
 		{
-			(void)[transaction objectForKey:key];
+			(void)[transaction objectForKey:key inCollection:nil];
 		}
 	}];
 	
@@ -212,7 +213,7 @@ static NSMutableArray *keys;
 	
 	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[transaction removeAllObjects];
+		[transaction removeAllObjectsInAllCollections];
 	}];
 	
 	NSTimeInterval elapsed = [start timeIntervalSinceNow] * -1.0;

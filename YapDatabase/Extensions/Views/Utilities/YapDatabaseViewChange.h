@@ -34,7 +34,9 @@ typedef enum {
 @interface YapDatabaseViewSectionChange : NSObject <NSCopying>
 
 /**
- * The type will be either Insert or Delete
+ * The type will be either:
+ * - YapDatabaseViewChangeInsert or
+ * - YapDatabaseViewChangeDelete
  *
  * @see YapDatabaseViewChangeType
 **/
@@ -62,19 +64,45 @@ typedef enum {
 @interface YapDatabaseViewRowChange : NSObject <NSCopying>
 
 /**
- * The type will be one of: Insert, Delete, Move or Update
+ * The type will be one of:
+ * - YapDatabaseViewChangeInsert
+ * - YapDatabaseViewChangeDelete
+ * - YapDatabaseViewChangeMove
+ * - YapDatabaseViewChangeUpdate
  * 
  * @see YapDatabaseViewChangeType
 **/
 @property (nonatomic, readonly) YapDatabaseViewChangeType type;
 
 /**
- * The changes property is a bitmask representing what changed for corresponding row in the database.
+ * The changes property is a bitmask representing what changed for the corresponding row in the database.
  *
- * This may be useful for various optimizations.
- * For example, if the drawing of your cell depends only on the object,
- * but you're using the metadata in your grouping or sorting block for some reason,
- * then you skip updates when only the metadata is changed.
+ * There are 3 types represented in the bit mask:
+ * - YapDatabaseViewChangedObject
+ * - YapDatabaseViewChangedMetadata
+ * - YapDatabaseViewChangedDependency
+ * 
+ * YapDatabaseViewChangedObject means the object was changed via setObject:forKey:inCollection:.
+ *
+ * YapDatabaseViewChangedMetadata means the metadata was changed.
+ * This might have happend implicitly if the user invoked setObject:forKey:inCollection: (implicitly setting
+ * the meatadata to nil). Or explicitly if the user invoked setObject:forKey:inCollection:withMetadata: or
+ * setMetadata:forKey:inCollection:.
+ * 
+ * YapDatabaseViewChangedDependency means the row was flagged due to a cell drawing dependency configuration.
+ * See YapDatabaseViewMappings: setCellDrawingDependencyForNeighboringCellWithOffset:forGroup:
+ * 
+ * Keep in mind that this is a bitmask. So, for example, all bits might be set if
+ * a row was updated, and was also flagged due to an inter-cell drawing dependency.
+ *
+ * This may be useful for various optimizations. For example:
+ * The drawing of your cell depends only on the object.
+ * However, your objects are rather large, and you're using metadata to store small subsets of the object
+ * that often need to be fetched. In addition, you're keeping other information in metadata such as refresh dates
+ * for pulling updates from the server. The grouping and sorting block are optimized and use only the metadata.
+ * However this means that the metadata may change (due to a refresh date update),
+ * when in fact the object itself didn't change.
+ * So you could optimize a bit here by skipping some cell updates.
  * 
  * if (change.type == YapDatabaseViewChangeUpdate)
  * {
@@ -82,24 +110,20 @@ typedef enum {
  *         // object changed, update cell
  *     }
  *     else {
- *         // only the metadata changed, we can skip updating the cell
+ *         // only the metadata changed, so we can skip updating the cell
  *     }
  * }
  *
- * There are 3 types represented in the bit mask:
- * - YapDatabaseViewChangedObject - means the object changed
- * - YapDatabaseViewChangedMetadata - means the metadata changed
- * - YapDatabaseViewChangedDependency - means you 
+ *
  * @see YapDatabaseViewChangesBitMask
 **/
 @property (nonatomic, readonly) int changes;
 
 /**
  * The indexPath & newIndexPath are available after
- * you've invoked changesForNotifications:withGroupToSectionMappings:.
- * 
- * @see YapDatabaseConnection changesForNotifications:withGroupToSectionMappings:
- * @see YapCollectionsDatabaseConnection changesForNotifications:withGroupToSectionMappings:
+ * you've invoked getSectionChanges:rowChanges:forNotifications:withMappings:.
+ *
+ * @see YapDatabaseConnection getSectionChanges:rowChanges:forNotifications:withMappings:
  * 
  * These properties are designed to help facilitate animations to tableViews and collectionsViews.
  * 
@@ -109,10 +133,11 @@ typedef enum {
  * 
  * Using groups allows a view to be more dynamic.
  * Your view may contain dozens of groups,
- * but a particular tableView within your app may only display a few of the groups.
+ * but a particular tableView within your app may only display a subset of the groups.
  * 
- * For example, you may a view which groups all products in a grocery store by department (produce, deli, bakery),
- * sorting products by price. Using this view you can easily bring up a table view which displays only
+ * For example, you may have a view for displaying products in a grocery store.
+ * Each product is grouped by department (e.g. produce, deli, bakery), and sorted sorted by name.
+ * Using this view you can easily bring up a table view which displays only
  * a few departments such as: liquor, wine, beer.
  * 
  * In this example:
@@ -120,50 +145,103 @@ typedef enum {
  * - Section 1 = wine
  * - Section 2 = beer
  *
- * NSDictionary *mappings = @{ @"liquor":@(0), @"wine":@(1), @"beer":@(2) };
+ * NSArray *groups = @{ @"liquor":@(0), @"wine":@(1), @"beer":@(2) };
+ * YapDatabaseMappings *mappings = [YapDatabaseViewMappings mappingsWithGroups:groups view:@"order"];
  *
- * NSArray *notifications = [databaseConnection beginLongLivedReadTransaction];
- * NSArray *changes = [databaseConnection changesForNotifications:notification
- *                                     withGroupToSectionMappings:mappings];
+ * The mappings are then used to "map" between the 'groups in the view' and 'items in the table'.
+ * 
+ * Mappings can provide a lot of additional functionality as well.
+ * For example, you can configure the mappings to only display a particular range within a group.
+ * This is similar to a LIMIT & OFFSET in SQL.
+ * This is the tip of the iceberg. See YapDatabaseViewMappings.h for more info.
+ *
+ * In order to animate changes to your tableView or collectionView, you eventually do something like this:
+ * 
+ * NSArray *sectionChanges = nil;
+ * NSArray *rowChanges = nil;
+ * [databaseConnection getSectionChanges:&sectionChanges
+ *                            rowChanges:&rowChanges
+ *                      forNotifications:notifications
+ *                          withMappings:mappings];
+ * 
+ * This gives you a list of changes as they affect your tableView / collectionView.
  *
  * The indexPath and newIndexPath properties are modeled after:
  * NSFetchedResultsControllerDelegate controller:didChangeObject:atIndexPath:forChangeType:newIndexPath:
  * 
- * - indexPath is non-nil for types    : Delete, Move, Update
- * - newIndexPath is non-nil for types : Insert, Move
+ * - indexPath represents the ORIGINAL indexPath for the row.
+ *   It is non-nil for the following types : Delete, Move, Update.
+ *   (And nil for insert since there was no original indexPath.)
+ *
+ * - newIndexPath represents the FINAL indexPath for the row.
+ *   It is non-nil for the following types : Insert, Move.
+ *   (And nil for delete since there is no final indexPath.)
+ *   (And nil for update since that's how NSFetchedResultsController works,
+ *    and thus how existing code might expect it to work.)
  * 
- * Template code:
+ * Once you have the sectionChanges & rowChanges, you can animate your tableView very simply like so:
+ * 
+ * PS - For a FULL CODE EXAMPLE, see the wiki:
+ * https://github.com/yaptv/YapDatabase/wiki/Views#wiki-animating_updates_in_tableviews_collectionviews
+ *
+ * if ([sectionChanges count] == 0 & [rowChanges count] == 0)
+ * {
+ *     // Nothing has changed that affects our tableView
+ *     return;
+ * }
+ *
+ * // Familiar with NSFetchedResultsController?
+ * // Then this should look pretty familiar
  *
  * [self.tableView beginUpdates];
  *
- * for (YapDatabaseViewChange *change in changes)
+ * for (YapDatabaseViewSectionChange *sectionChange in sectionChanges)
  * {
- *     switch (change.type)
+ *     switch (sectionChange.type)
  *     {
  *         case YapDatabaseViewChangeDelete :
  *         {
- *             [self.tableView deleteRowsAtIndexPaths:@[ change.indexPath ]
+ *             [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionChange.index]
+ *                           withRowAnimation:UITableViewRowAnimationAutomatic];
+ *             break;
+ *         }
+ *         case YapDatabaseViewChangeInsert :
+ *         {
+ *             [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionChange.index]
+ *                           withRowAnimation:UITableViewRowAnimationAutomatic];
+ *             break;
+ *         }
+ *     }
+ * }
+ *
+ * for (YapDatabaseViewRowChange *rowChange in rowChanges)
+ * {
+ *     switch (rowChange.type)
+ *     {
+ *         case YapDatabaseViewChangeDelete :
+ *         {
+ *             [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]
  *                                   withRowAnimation:UITableViewRowAnimationAutomatic];
  *             break;
  *         }
  *         case YapDatabaseViewChangeInsert :
  *         {
- *             [self.tableView insertRowsAtIndexPaths:@[ change.newIndexPath ]
+ *             [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
  *                                   withRowAnimation:UITableViewRowAnimationAutomatic];
  *             break;
  *         }
  *         case YapDatabaseViewChangeMove :
  *         {
- *             [self.tableView deleteRowsAtIndexPaths:@[ change.indexPath ]
+ *             [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]
  *                                   withRowAnimation:UITableViewRowAnimationAutomatic];
- *             [self.tableView insertRowsAtIndexPaths:@[ change.newIndexPath ]
+ *             [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
  *                                   withRowAnimation:UITableViewRowAnimationAutomatic];
  *             break;
  *         }
  *         case YapDatabaseViewChangeUpdate :
  *         {
- *             [self.tableView reloadRowsAtIndexPaths:@[ change.indexPath ]
- *                                   withRowAnimation:UITableViewRowAnimationAutomatic];
+ *             [self.tableView reloadRowsAtIndexPaths:@[ rowChange.indexPath ]
+ *                                   withRowAnimation:UITableViewRowAnimationNone];
  *             break;
  *         }
  *     }

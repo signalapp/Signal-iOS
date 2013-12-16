@@ -1,5 +1,5 @@
 #import "YapDatabaseStatement.h"
-#import "YapAbstractDatabasePrivate.h"
+#import "YapDatabasePrivate.h"
 
 
 @implementation YapDatabaseStatement

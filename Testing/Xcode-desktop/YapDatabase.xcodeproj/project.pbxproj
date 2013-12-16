@@ -7,50 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DC0DA079177E17D10025AC51 /* YapSet.m in Sources */ = {isa = PBXBuildFile; fileRef = DC0DA078177E17D10025AC51 /* YapSet.m */; };
-		DC23CF871764007200E103A9 /* YapCollectionKey.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CF861764007200E103A9 /* YapCollectionKey.m */; };
-		DC2C987417E3C5C000F1E04F /* YapCollectionsDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2C985717E3C5C000F1E04F /* YapCollectionsDatabaseView.m */; };
-		DC2C987517E3C5C000F1E04F /* YapCollectionsDatabaseViewConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2C985917E3C5C000F1E04F /* YapCollectionsDatabaseViewConnection.m */; };
-		DC2C987617E3C5C000F1E04F /* YapCollectionsDatabaseViewTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2C985C17E3C5C000F1E04F /* YapCollectionsDatabaseViewTransaction.m */; };
-		DC2C987717E3C5C000F1E04F /* YapDatabaseViewPage.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC2C986117E3C5C000F1E04F /* YapDatabaseViewPage.mm */; };
-		DC2C987817E3C5C000F1E04F /* YapDatabaseViewPageMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2C986317E3C5C000F1E04F /* YapDatabaseViewPageMetadata.m */; };
-		DC2C987917E3C5C000F1E04F /* YapDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2C986717E3C5C000F1E04F /* YapDatabaseView.m */; };
-		DC2C987A17E3C5C000F1E04F /* YapDatabaseViewConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2C986917E3C5C000F1E04F /* YapDatabaseViewConnection.m */; };
-		DC2C987B17E3C5C000F1E04F /* YapDatabaseViewTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2C986C17E3C5C000F1E04F /* YapDatabaseViewTransaction.m */; };
-		DC2C987C17E3C5C000F1E04F /* YapDatabaseViewChange.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2C986F17E3C5C000F1E04F /* YapDatabaseViewChange.m */; };
-		DC2C987D17E3C5C000F1E04F /* YapDatabaseViewMappings.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2C987117E3C5C000F1E04F /* YapDatabaseViewMappings.m */; };
-		DC2C987E17E3C5C000F1E04F /* YapDatabaseViewRangeOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2C987317E3C5C000F1E04F /* YapDatabaseViewRangeOptions.m */; };
 		DC2C988317E3C63700F1E04F /* TestViewMappingsLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2C988217E3C63700F1E04F /* TestViewMappingsLogic.m */; };
-		DC49736917E916BE00489267 /* YapCollectionsDatabaseFullTextSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = DC49735817E916BE00489267 /* YapCollectionsDatabaseFullTextSearch.m */; };
-		DC49736A17E916BE00489267 /* YapCollectionsDatabaseFullTextSearchConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC49735A17E916BE00489267 /* YapCollectionsDatabaseFullTextSearchConnection.m */; };
-		DC49736B17E916BE00489267 /* YapCollectionsDatabaseFullTextSearchTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC49735D17E916BE00489267 /* YapCollectionsDatabaseFullTextSearchTransaction.m */; };
-		DC49736C17E916BE00489267 /* YapDatabaseFullTextSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = DC49736017E916BE00489267 /* YapDatabaseFullTextSearch.m */; };
-		DC49736D17E916BE00489267 /* YapDatabaseFullTextSearchConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC49736217E916BE00489267 /* YapDatabaseFullTextSearchConnection.m */; };
-		DC49736E17E916BE00489267 /* YapDatabaseFullTextSearchTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC49736517E916BE00489267 /* YapDatabaseFullTextSearchTransaction.m */; };
-		DC49736F17E916BE00489267 /* YapDatabaseFullTextSearchSnippetOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = DC49736817E916BE00489267 /* YapDatabaseFullTextSearchSnippetOptions.m */; };
-		DC49737517E9173000489267 /* TestYapCollectionsDatabaseFullTextSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = DC49737317E9173000489267 /* TestYapCollectionsDatabaseFullTextSearch.m */; };
 		DC49737617E9173000489267 /* TestYapDatabaseFullTextSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = DC49737417E9173000489267 /* TestYapDatabaseFullTextSearch.m */; };
-		DC84002C175131BC003BFBB2 /* YapAbstractDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84FFF2175131BC003BFBB2 /* YapAbstractDatabase.m */; };
-		DC84002E175131BC003BFBB2 /* YapAbstractDatabaseConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84FFF4175131BC003BFBB2 /* YapAbstractDatabaseConnection.m */; };
-		DC840030175131BC003BFBB2 /* YapAbstractDatabaseTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84FFF7175131BC003BFBB2 /* YapAbstractDatabaseTransaction.m */; };
-		DC840032175131BC003BFBB2 /* YapCollectionsDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84FFFA175131BC003BFBB2 /* YapCollectionsDatabase.m */; };
-		DC840034175131BC003BFBB2 /* YapCollectionsDatabaseConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84FFFC175131BC003BFBB2 /* YapCollectionsDatabaseConnection.m */; };
-		DC840038175131BC003BFBB2 /* YapCollectionsDatabaseTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC840001175131BC003BFBB2 /* YapCollectionsDatabaseTransaction.m */; };
-		DC840040175131BC003BFBB2 /* YapCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84000D175131BC003BFBB2 /* YapCache.m */; };
-		DC840044175131BC003BFBB2 /* YapDatabaseConnectionState.m in Sources */ = {isa = PBXBuildFile; fileRef = DC840011175131BC003BFBB2 /* YapDatabaseConnectionState.m */; };
-		DC840046175131BC003BFBB2 /* YapDatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DC840014175131BC003BFBB2 /* YapDatabaseManager.m */; };
-		DC84004A175131BC003BFBB2 /* YapNull.m in Sources */ = {isa = PBXBuildFile; fileRef = DC840019175131BC003BFBB2 /* YapNull.m */; };
-		DC84004C175131BC003BFBB2 /* YapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84001C175131BC003BFBB2 /* YapDatabase.m */; };
-		DC84004E175131BC003BFBB2 /* YapDatabaseConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84001E175131BC003BFBB2 /* YapDatabaseConnection.m */; };
-		DC840052175131BC003BFBB2 /* YapDatabaseTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC840023175131BC003BFBB2 /* YapDatabaseTransaction.m */; };
 		DC84005B175132E7003BFBB2 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC84005A175132E7003BFBB2 /* libsqlite3.dylib */; };
 		DC84006617514255003BFBB2 /* TestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84005D17514255003BFBB2 /* TestObject.m */; };
-		DC84006717514255003BFBB2 /* TestYapCollectionsDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84005F17514255003BFBB2 /* TestYapCollectionsDatabase.m */; };
 		DC84006817514255003BFBB2 /* TestYapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84006117514255003BFBB2 /* TestYapDatabase.m */; };
 		DC84006B175142BD003BFBB2 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC84005A175132E7003BFBB2 /* libsqlite3.dylib */; };
-		DC84008217514E16003BFBB2 /* YapAbstractDatabaseExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84007217514E16003BFBB2 /* YapAbstractDatabaseExtension.m */; };
-		DC84008317514E16003BFBB2 /* YapAbstractDatabaseExtensionConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84007417514E16003BFBB2 /* YapAbstractDatabaseExtensionConnection.m */; };
-		DC84008417514E16003BFBB2 /* YapAbstractDatabaseExtensionTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84007717514E16003BFBB2 /* YapAbstractDatabaseExtensionTransaction.m */; };
 		DC84008E17514E59003BFBB2 /* TestYapDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84008D17514E59003BFBB2 /* TestYapDatabaseView.m */; };
 		DC84FF8F175130D2003BFBB2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC84FF8E175130D2003BFBB2 /* Cocoa.framework */; };
 		DC84FF99175130D3003BFBB2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC84FF97175130D3003BFBB2 /* InfoPlist.strings */; };
@@ -70,8 +32,47 @@
 		DC84FFE01751312E003BFBB2 /* DispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84FFD11751312E003BFBB2 /* DispatchQueueLogFormatter.m */; };
 		DC84FFEC17513197003BFBB2 /* BenchmarkYapCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84FFE917513197003BFBB2 /* BenchmarkYapCache.m */; };
 		DC84FFED17513197003BFBB2 /* BenchmarkYapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84FFEB17513197003BFBB2 /* BenchmarkYapDatabase.m */; };
+		DC9B1005184B1B4300174B0F /* TestYapDatabaseSecondaryIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B1004184B1B4300174B0F /* TestYapDatabaseSecondaryIndex.m */; };
+		DC9B10DE184D124E00174B0F /* YapDatabaseFilteredView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B107E184D124D00174B0F /* YapDatabaseFilteredView.m */; };
+		DC9B10DF184D124E00174B0F /* YapDatabaseFilteredViewConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B1080184D124D00174B0F /* YapDatabaseFilteredViewConnection.m */; };
+		DC9B10E0184D124E00174B0F /* YapDatabaseFilteredViewTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B1082184D124D00174B0F /* YapDatabaseFilteredViewTransaction.m */; };
+		DC9B10E1184D124E00174B0F /* YapDatabaseFullTextSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B1087184D124D00174B0F /* YapDatabaseFullTextSearch.m */; };
+		DC9B10E2184D124E00174B0F /* YapDatabaseFullTextSearchConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B1089184D124D00174B0F /* YapDatabaseFullTextSearchConnection.m */; };
+		DC9B10E3184D124E00174B0F /* YapDatabaseFullTextSearchSnippetOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B108B184D124D00174B0F /* YapDatabaseFullTextSearchSnippetOptions.m */; };
+		DC9B10E4184D124E00174B0F /* YapDatabaseFullTextSearchTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B108D184D124D00174B0F /* YapDatabaseFullTextSearchTransaction.m */; };
+		DC9B10E5184D124E00174B0F /* YapDatabaseExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B1092184D124D00174B0F /* YapDatabaseExtension.m */; };
+		DC9B10E6184D124E00174B0F /* YapDatabaseExtensionConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B1094184D124D00174B0F /* YapDatabaseExtensionConnection.m */; };
+		DC9B10E7184D124E00174B0F /* YapDatabaseExtensionTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B1096184D124D00174B0F /* YapDatabaseExtensionTransaction.m */; };
+		DC9B10E8184D124E00174B0F /* YapDatabaseSecondaryIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B109B184D124D00174B0F /* YapDatabaseSecondaryIndex.m */; };
+		DC9B10E9184D124E00174B0F /* YapDatabaseSecondaryIndexConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B109D184D124D00174B0F /* YapDatabaseSecondaryIndexConnection.m */; };
+		DC9B10EA184D124E00174B0F /* YapDatabaseSecondaryIndexSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B109F184D124D00174B0F /* YapDatabaseSecondaryIndexSetup.m */; };
+		DC9B10EB184D124E00174B0F /* YapDatabaseSecondaryIndexTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10A1184D124D00174B0F /* YapDatabaseSecondaryIndexTransaction.m */; };
+		DC9B10EC184D124E00174B0F /* YapDatabaseViewPage.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10A7184D124D00174B0F /* YapDatabaseViewPage.mm */; };
+		DC9B10ED184D124E00174B0F /* YapDatabaseViewPageMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10A9184D124D00174B0F /* YapDatabaseViewPageMetadata.m */; };
+		DC9B10EE184D124E00174B0F /* YapDatabaseViewChange.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10AE184D124D00174B0F /* YapDatabaseViewChange.m */; };
+		DC9B10EF184D124E00174B0F /* YapDatabaseViewMappings.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10B0184D124D00174B0F /* YapDatabaseViewMappings.m */; };
+		DC9B10F0184D124E00174B0F /* YapDatabaseViewRangeOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10B2184D124D00174B0F /* YapDatabaseViewRangeOptions.m */; };
+		DC9B10F1184D124E00174B0F /* YapDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10B4184D124D00174B0F /* YapDatabaseView.m */; };
+		DC9B10F2184D124E00174B0F /* YapDatabaseViewConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10B6184D124D00174B0F /* YapDatabaseViewConnection.m */; };
+		DC9B10F3184D124E00174B0F /* YapDatabaseViewOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10B8184D124D00174B0F /* YapDatabaseViewOptions.m */; };
+		DC9B10F4184D124E00174B0F /* YapDatabaseViewTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10BA184D124D00174B0F /* YapDatabaseViewTransaction.m */; };
+		DC9B10F5184D124E00174B0F /* YapCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10BD184D124D00174B0F /* YapCache.m */; };
+		DC9B10F6184D124E00174B0F /* YapDatabaseConnectionState.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10BF184D124D00174B0F /* YapDatabaseConnectionState.m */; };
+		DC9B10F7184D124E00174B0F /* YapDatabaseDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10C1184D124D00174B0F /* YapDatabaseDefaults.m */; };
+		DC9B10F8184D124E00174B0F /* YapDatabaseLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10C3184D124D00174B0F /* YapDatabaseLogging.m */; };
+		DC9B10F9184D124E00174B0F /* YapDatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10C5184D124D00174B0F /* YapDatabaseManager.m */; };
+		DC9B10FA184D124E00174B0F /* YapDatabaseStatement.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10C8184D124D00174B0F /* YapDatabaseStatement.m */; };
+		DC9B10FB184D124E00174B0F /* YapMemoryTable.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10CB184D124D00174B0F /* YapMemoryTable.m */; };
+		DC9B10FC184D124E00174B0F /* YapNull.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10CD184D124D00174B0F /* YapNull.m */; };
+		DC9B10FD184D124E00174B0F /* YapTouch.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10CF184D124D00174B0F /* YapTouch.m */; };
+		DC9B10FF184D124E00174B0F /* YapCollectionKey.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10D3184D124E00174B0F /* YapCollectionKey.m */; };
+		DC9B1100184D124E00174B0F /* YapDatabaseQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10D5184D124E00174B0F /* YapDatabaseQuery.m */; };
+		DC9B1101184D124E00174B0F /* YapSet.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10D7184D124E00174B0F /* YapSet.m */; };
+		DC9B1102184D124E00174B0F /* YapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10D9184D124E00174B0F /* YapDatabase.m */; };
+		DC9B1103184D124E00174B0F /* YapDatabaseConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10DB184D124E00174B0F /* YapDatabaseConnection.m */; };
+		DC9B1104184D124E00174B0F /* YapDatabaseTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B10DD184D124E00174B0F /* YapDatabaseTransaction.m */; };
+		DC9B1106184D143800174B0F /* TestYapDatabaseFilteredView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B1105184D143800174B0F /* TestYapDatabaseFilteredView.m */; };
 		DCA528C71797650600B4503B /* TestViewChangeLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = DCA528C41797650500B4503B /* TestViewChangeLogic.m */; };
-		DCA528C81797650600B4503B /* TestYapCollectionsDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DCA528C61797650500B4503B /* TestYapCollectionsDatabaseView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -85,91 +86,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		DC0DA077177E17D10025AC51 /* YapSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YapSet.h; path = Utilities/YapSet.h; sourceTree = "<group>"; };
-		DC0DA078177E17D10025AC51 /* YapSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YapSet.m; path = Utilities/YapSet.m; sourceTree = "<group>"; };
-		DC23CF851764007200E103A9 /* YapCollectionKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YapCollectionKey.h; path = Utilities/YapCollectionKey.h; sourceTree = "<group>"; };
-		DC23CF861764007200E103A9 /* YapCollectionKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YapCollectionKey.m; path = Utilities/YapCollectionKey.m; sourceTree = "<group>"; };
-		DC2C985617E3C5C000F1E04F /* YapCollectionsDatabaseView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCollectionsDatabaseView.h; sourceTree = "<group>"; };
-		DC2C985717E3C5C000F1E04F /* YapCollectionsDatabaseView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapCollectionsDatabaseView.m; sourceTree = "<group>"; };
-		DC2C985817E3C5C000F1E04F /* YapCollectionsDatabaseViewConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCollectionsDatabaseViewConnection.h; sourceTree = "<group>"; };
-		DC2C985917E3C5C000F1E04F /* YapCollectionsDatabaseViewConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapCollectionsDatabaseViewConnection.m; sourceTree = "<group>"; };
-		DC2C985A17E3C5C000F1E04F /* YapCollectionsDatabaseViewPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCollectionsDatabaseViewPrivate.h; sourceTree = "<group>"; };
-		DC2C985B17E3C5C000F1E04F /* YapCollectionsDatabaseViewTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCollectionsDatabaseViewTransaction.h; sourceTree = "<group>"; };
-		DC2C985C17E3C5C000F1E04F /* YapCollectionsDatabaseViewTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapCollectionsDatabaseViewTransaction.m; sourceTree = "<group>"; };
-		DC2C985E17E3C5C000F1E04F /* YapDatabaseViewChangePrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewChangePrivate.h; sourceTree = "<group>"; };
-		DC2C985F17E3C5C000F1E04F /* YapDatabaseViewMappingsPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewMappingsPrivate.h; sourceTree = "<group>"; };
-		DC2C986017E3C5C000F1E04F /* YapDatabaseViewPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewPage.h; sourceTree = "<group>"; };
-		DC2C986117E3C5C000F1E04F /* YapDatabaseViewPage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = YapDatabaseViewPage.mm; sourceTree = "<group>"; };
-		DC2C986217E3C5C000F1E04F /* YapDatabaseViewPageMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewPageMetadata.h; sourceTree = "<group>"; };
-		DC2C986317E3C5C000F1E04F /* YapDatabaseViewPageMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseViewPageMetadata.m; sourceTree = "<group>"; };
-		DC2C986417E3C5C000F1E04F /* YapDatabaseViewRangeOptionsPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewRangeOptionsPrivate.h; sourceTree = "<group>"; };
-		DC2C986617E3C5C000F1E04F /* YapDatabaseView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseView.h; sourceTree = "<group>"; };
-		DC2C986717E3C5C000F1E04F /* YapDatabaseView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseView.m; sourceTree = "<group>"; };
-		DC2C986817E3C5C000F1E04F /* YapDatabaseViewConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewConnection.h; sourceTree = "<group>"; };
-		DC2C986917E3C5C000F1E04F /* YapDatabaseViewConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseViewConnection.m; sourceTree = "<group>"; };
-		DC2C986A17E3C5C000F1E04F /* YapDatabaseViewPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewPrivate.h; sourceTree = "<group>"; };
-		DC2C986B17E3C5C000F1E04F /* YapDatabaseViewTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewTransaction.h; sourceTree = "<group>"; };
-		DC2C986C17E3C5C000F1E04F /* YapDatabaseViewTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseViewTransaction.m; sourceTree = "<group>"; };
-		DC2C986E17E3C5C000F1E04F /* YapDatabaseViewChange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewChange.h; sourceTree = "<group>"; };
-		DC2C986F17E3C5C000F1E04F /* YapDatabaseViewChange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseViewChange.m; sourceTree = "<group>"; };
-		DC2C987017E3C5C000F1E04F /* YapDatabaseViewMappings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewMappings.h; sourceTree = "<group>"; };
-		DC2C987117E3C5C000F1E04F /* YapDatabaseViewMappings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseViewMappings.m; sourceTree = "<group>"; };
-		DC2C987217E3C5C000F1E04F /* YapDatabaseViewRangeOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewRangeOptions.h; sourceTree = "<group>"; };
-		DC2C987317E3C5C000F1E04F /* YapDatabaseViewRangeOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseViewRangeOptions.m; sourceTree = "<group>"; };
-		DC2C988117E3C63700F1E04F /* TestViewMappingsLogic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestViewMappingsLogic.h; path = ../../UnitTesting/TestViewMappingsLogic.h; sourceTree = "<group>"; };
 		DC2C988217E3C63700F1E04F /* TestViewMappingsLogic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestViewMappingsLogic.m; path = ../../UnitTesting/TestViewMappingsLogic.m; sourceTree = "<group>"; };
-		DC49735717E916BE00489267 /* YapCollectionsDatabaseFullTextSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCollectionsDatabaseFullTextSearch.h; sourceTree = "<group>"; };
-		DC49735817E916BE00489267 /* YapCollectionsDatabaseFullTextSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapCollectionsDatabaseFullTextSearch.m; sourceTree = "<group>"; };
-		DC49735917E916BE00489267 /* YapCollectionsDatabaseFullTextSearchConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCollectionsDatabaseFullTextSearchConnection.h; sourceTree = "<group>"; };
-		DC49735A17E916BE00489267 /* YapCollectionsDatabaseFullTextSearchConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapCollectionsDatabaseFullTextSearchConnection.m; sourceTree = "<group>"; };
-		DC49735B17E916BE00489267 /* YapCollectionsDatabaseFullTextSearchPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCollectionsDatabaseFullTextSearchPrivate.h; sourceTree = "<group>"; };
-		DC49735C17E916BE00489267 /* YapCollectionsDatabaseFullTextSearchTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCollectionsDatabaseFullTextSearchTransaction.h; sourceTree = "<group>"; };
-		DC49735D17E916BE00489267 /* YapCollectionsDatabaseFullTextSearchTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapCollectionsDatabaseFullTextSearchTransaction.m; sourceTree = "<group>"; };
-		DC49735F17E916BE00489267 /* YapDatabaseFullTextSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseFullTextSearch.h; sourceTree = "<group>"; };
-		DC49736017E916BE00489267 /* YapDatabaseFullTextSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseFullTextSearch.m; sourceTree = "<group>"; };
-		DC49736117E916BE00489267 /* YapDatabaseFullTextSearchConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseFullTextSearchConnection.h; sourceTree = "<group>"; };
-		DC49736217E916BE00489267 /* YapDatabaseFullTextSearchConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseFullTextSearchConnection.m; sourceTree = "<group>"; };
-		DC49736317E916BE00489267 /* YapDatabaseFullTextSearchPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseFullTextSearchPrivate.h; sourceTree = "<group>"; };
-		DC49736417E916BE00489267 /* YapDatabaseFullTextSearchTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseFullTextSearchTransaction.h; sourceTree = "<group>"; };
-		DC49736517E916BE00489267 /* YapDatabaseFullTextSearchTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseFullTextSearchTransaction.m; sourceTree = "<group>"; };
-		DC49736717E916BE00489267 /* YapDatabaseFullTextSearchSnippetOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseFullTextSearchSnippetOptions.h; sourceTree = "<group>"; };
-		DC49736817E916BE00489267 /* YapDatabaseFullTextSearchSnippetOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseFullTextSearchSnippetOptions.m; sourceTree = "<group>"; };
-		DC49737317E9173000489267 /* TestYapCollectionsDatabaseFullTextSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapCollectionsDatabaseFullTextSearch.m; path = ../../UnitTesting/TestYapCollectionsDatabaseFullTextSearch.m; sourceTree = "<group>"; };
 		DC49737417E9173000489267 /* TestYapDatabaseFullTextSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseFullTextSearch.m; path = ../../UnitTesting/TestYapDatabaseFullTextSearch.m; sourceTree = "<group>"; };
-		DC840000175131BC003BFBB2 /* YapCollectionsDatabaseTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCollectionsDatabaseTransaction.h; sourceTree = "<group>"; };
-		DC840001175131BC003BFBB2 /* YapCollectionsDatabaseTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapCollectionsDatabaseTransaction.m; sourceTree = "<group>"; };
-		DC84000C175131BC003BFBB2 /* YapCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCache.h; sourceTree = "<group>"; };
-		DC84000D175131BC003BFBB2 /* YapCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapCache.m; sourceTree = "<group>"; };
-		DC840010175131BC003BFBB2 /* YapDatabaseConnectionState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseConnectionState.h; sourceTree = "<group>"; };
-		DC840011175131BC003BFBB2 /* YapDatabaseConnectionState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseConnectionState.m; sourceTree = "<group>"; };
-		DC840012175131BC003BFBB2 /* YapDatabaseLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseLogging.h; sourceTree = "<group>"; };
-		DC840013175131BC003BFBB2 /* YapDatabaseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseManager.h; sourceTree = "<group>"; };
-		DC840014175131BC003BFBB2 /* YapDatabaseManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseManager.m; sourceTree = "<group>"; };
-		DC840017175131BC003BFBB2 /* YapDatabaseString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseString.h; sourceTree = "<group>"; };
-		DC840018175131BC003BFBB2 /* YapNull.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapNull.h; sourceTree = "<group>"; };
-		DC840019175131BC003BFBB2 /* YapNull.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapNull.m; sourceTree = "<group>"; };
-		DC84001B175131BC003BFBB2 /* YapDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabase.h; sourceTree = "<group>"; };
-		DC84001C175131BC003BFBB2 /* YapDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabase.m; sourceTree = "<group>"; };
-		DC84001D175131BC003BFBB2 /* YapDatabaseConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseConnection.h; sourceTree = "<group>"; };
-		DC84001E175131BC003BFBB2 /* YapDatabaseConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseConnection.m; sourceTree = "<group>"; };
-		DC84001F175131BC003BFBB2 /* YapDatabasePrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabasePrivate.h; sourceTree = "<group>"; };
-		DC840022175131BC003BFBB2 /* YapDatabaseTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseTransaction.h; sourceTree = "<group>"; };
-		DC840023175131BC003BFBB2 /* YapDatabaseTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseTransaction.m; sourceTree = "<group>"; };
 		DC84005A175132E7003BFBB2 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		DC84005C17514255003BFBB2 /* TestObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestObject.h; path = ../../UnitTesting/TestObject.h; sourceTree = "<group>"; };
 		DC84005D17514255003BFBB2 /* TestObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestObject.m; path = ../../UnitTesting/TestObject.m; sourceTree = "<group>"; };
-		DC84005E17514255003BFBB2 /* TestYapCollectionsDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestYapCollectionsDatabase.h; path = ../../UnitTesting/TestYapCollectionsDatabase.h; sourceTree = "<group>"; };
-		DC84005F17514255003BFBB2 /* TestYapCollectionsDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapCollectionsDatabase.m; path = ../../UnitTesting/TestYapCollectionsDatabase.m; sourceTree = "<group>"; };
-		DC84006017514255003BFBB2 /* TestYapDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestYapDatabase.h; path = ../../UnitTesting/TestYapDatabase.h; sourceTree = "<group>"; };
 		DC84006117514255003BFBB2 /* TestYapDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabase.m; path = ../../UnitTesting/TestYapDatabase.m; sourceTree = "<group>"; };
-		DC84007117514E16003BFBB2 /* YapAbstractDatabaseExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapAbstractDatabaseExtension.h; sourceTree = "<group>"; };
-		DC84007217514E16003BFBB2 /* YapAbstractDatabaseExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapAbstractDatabaseExtension.m; sourceTree = "<group>"; };
-		DC84007317514E16003BFBB2 /* YapAbstractDatabaseExtensionConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapAbstractDatabaseExtensionConnection.h; sourceTree = "<group>"; };
-		DC84007417514E16003BFBB2 /* YapAbstractDatabaseExtensionConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapAbstractDatabaseExtensionConnection.m; sourceTree = "<group>"; };
-		DC84007517514E16003BFBB2 /* YapAbstractDatabaseExtensionPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapAbstractDatabaseExtensionPrivate.h; sourceTree = "<group>"; };
-		DC84007617514E16003BFBB2 /* YapAbstractDatabaseExtensionTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapAbstractDatabaseExtensionTransaction.h; sourceTree = "<group>"; };
-		DC84007717514E16003BFBB2 /* YapAbstractDatabaseExtensionTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapAbstractDatabaseExtensionTransaction.m; sourceTree = "<group>"; };
-		DC84008C17514E59003BFBB2 /* TestYapDatabaseView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestYapDatabaseView.h; path = ../../UnitTesting/TestYapDatabaseView.h; sourceTree = "<group>"; };
 		DC84008D17514E59003BFBB2 /* TestYapDatabaseView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseView.m; path = ../../UnitTesting/TestYapDatabaseView.m; sourceTree = "<group>"; };
 		DC84FF8B175130D2003BFBB2 /* YapDatabase.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YapDatabase.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC84FF8E175130D2003BFBB2 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -206,22 +128,95 @@
 		DC84FFE917513197003BFBB2 /* BenchmarkYapCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BenchmarkYapCache.m; sourceTree = "<group>"; };
 		DC84FFEA17513197003BFBB2 /* BenchmarkYapDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BenchmarkYapDatabase.h; sourceTree = "<group>"; };
 		DC84FFEB17513197003BFBB2 /* BenchmarkYapDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BenchmarkYapDatabase.m; sourceTree = "<group>"; };
-		DC84FFF1175131BC003BFBB2 /* YapAbstractDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapAbstractDatabase.h; sourceTree = "<group>"; };
-		DC84FFF2175131BC003BFBB2 /* YapAbstractDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapAbstractDatabase.m; sourceTree = "<group>"; };
-		DC84FFF3175131BC003BFBB2 /* YapAbstractDatabaseConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapAbstractDatabaseConnection.h; sourceTree = "<group>"; };
-		DC84FFF4175131BC003BFBB2 /* YapAbstractDatabaseConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapAbstractDatabaseConnection.m; sourceTree = "<group>"; };
-		DC84FFF5175131BC003BFBB2 /* YapAbstractDatabasePrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapAbstractDatabasePrivate.h; sourceTree = "<group>"; };
-		DC84FFF6175131BC003BFBB2 /* YapAbstractDatabaseTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapAbstractDatabaseTransaction.h; sourceTree = "<group>"; };
-		DC84FFF7175131BC003BFBB2 /* YapAbstractDatabaseTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapAbstractDatabaseTransaction.m; sourceTree = "<group>"; };
-		DC84FFF9175131BC003BFBB2 /* YapCollectionsDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCollectionsDatabase.h; sourceTree = "<group>"; };
-		DC84FFFA175131BC003BFBB2 /* YapCollectionsDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapCollectionsDatabase.m; sourceTree = "<group>"; };
-		DC84FFFB175131BC003BFBB2 /* YapCollectionsDatabaseConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCollectionsDatabaseConnection.h; sourceTree = "<group>"; };
-		DC84FFFC175131BC003BFBB2 /* YapCollectionsDatabaseConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapCollectionsDatabaseConnection.m; sourceTree = "<group>"; };
-		DC84FFFD175131BC003BFBB2 /* YapCollectionsDatabasePrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCollectionsDatabasePrivate.h; sourceTree = "<group>"; };
-		DCA528C31797650500B4503B /* TestViewChangeLogic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestViewChangeLogic.h; path = ../../UnitTesting/TestViewChangeLogic.h; sourceTree = "<group>"; };
+		DC9B1004184B1B4300174B0F /* TestYapDatabaseSecondaryIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseSecondaryIndex.m; path = ../../UnitTesting/TestYapDatabaseSecondaryIndex.m; sourceTree = "<group>"; };
+		DC9B107C184D124D00174B0F /* YapDatabaseFilteredViewPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseFilteredViewPrivate.h; sourceTree = "<group>"; };
+		DC9B107D184D124D00174B0F /* YapDatabaseFilteredView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseFilteredView.h; sourceTree = "<group>"; };
+		DC9B107E184D124D00174B0F /* YapDatabaseFilteredView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseFilteredView.m; sourceTree = "<group>"; };
+		DC9B107F184D124D00174B0F /* YapDatabaseFilteredViewConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseFilteredViewConnection.h; sourceTree = "<group>"; };
+		DC9B1080184D124D00174B0F /* YapDatabaseFilteredViewConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseFilteredViewConnection.m; sourceTree = "<group>"; };
+		DC9B1081184D124D00174B0F /* YapDatabaseFilteredViewTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseFilteredViewTransaction.h; sourceTree = "<group>"; };
+		DC9B1082184D124D00174B0F /* YapDatabaseFilteredViewTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseFilteredViewTransaction.m; sourceTree = "<group>"; };
+		DC9B1085184D124D00174B0F /* YapDatabaseFullTextSearchPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseFullTextSearchPrivate.h; sourceTree = "<group>"; };
+		DC9B1086184D124D00174B0F /* YapDatabaseFullTextSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseFullTextSearch.h; sourceTree = "<group>"; };
+		DC9B1087184D124D00174B0F /* YapDatabaseFullTextSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseFullTextSearch.m; sourceTree = "<group>"; };
+		DC9B1088184D124D00174B0F /* YapDatabaseFullTextSearchConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseFullTextSearchConnection.h; sourceTree = "<group>"; };
+		DC9B1089184D124D00174B0F /* YapDatabaseFullTextSearchConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseFullTextSearchConnection.m; sourceTree = "<group>"; };
+		DC9B108A184D124D00174B0F /* YapDatabaseFullTextSearchSnippetOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseFullTextSearchSnippetOptions.h; sourceTree = "<group>"; };
+		DC9B108B184D124D00174B0F /* YapDatabaseFullTextSearchSnippetOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseFullTextSearchSnippetOptions.m; sourceTree = "<group>"; };
+		DC9B108C184D124D00174B0F /* YapDatabaseFullTextSearchTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseFullTextSearchTransaction.h; sourceTree = "<group>"; };
+		DC9B108D184D124D00174B0F /* YapDatabaseFullTextSearchTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseFullTextSearchTransaction.m; sourceTree = "<group>"; };
+		DC9B1090184D124D00174B0F /* YapDatabaseExtensionPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseExtensionPrivate.h; sourceTree = "<group>"; };
+		DC9B1091184D124D00174B0F /* YapDatabaseExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseExtension.h; sourceTree = "<group>"; };
+		DC9B1092184D124D00174B0F /* YapDatabaseExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseExtension.m; sourceTree = "<group>"; };
+		DC9B1093184D124D00174B0F /* YapDatabaseExtensionConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseExtensionConnection.h; sourceTree = "<group>"; };
+		DC9B1094184D124D00174B0F /* YapDatabaseExtensionConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseExtensionConnection.m; sourceTree = "<group>"; };
+		DC9B1095184D124D00174B0F /* YapDatabaseExtensionTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseExtensionTransaction.h; sourceTree = "<group>"; };
+		DC9B1096184D124D00174B0F /* YapDatabaseExtensionTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseExtensionTransaction.m; sourceTree = "<group>"; };
+		DC9B1099184D124D00174B0F /* YapDatabaseSecondaryIndexPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseSecondaryIndexPrivate.h; sourceTree = "<group>"; };
+		DC9B109A184D124D00174B0F /* YapDatabaseSecondaryIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseSecondaryIndex.h; sourceTree = "<group>"; };
+		DC9B109B184D124D00174B0F /* YapDatabaseSecondaryIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseSecondaryIndex.m; sourceTree = "<group>"; };
+		DC9B109C184D124D00174B0F /* YapDatabaseSecondaryIndexConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseSecondaryIndexConnection.h; sourceTree = "<group>"; };
+		DC9B109D184D124D00174B0F /* YapDatabaseSecondaryIndexConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseSecondaryIndexConnection.m; sourceTree = "<group>"; };
+		DC9B109E184D124D00174B0F /* YapDatabaseSecondaryIndexSetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseSecondaryIndexSetup.h; sourceTree = "<group>"; };
+		DC9B109F184D124D00174B0F /* YapDatabaseSecondaryIndexSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseSecondaryIndexSetup.m; sourceTree = "<group>"; };
+		DC9B10A0184D124D00174B0F /* YapDatabaseSecondaryIndexTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseSecondaryIndexTransaction.h; sourceTree = "<group>"; };
+		DC9B10A1184D124D00174B0F /* YapDatabaseSecondaryIndexTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseSecondaryIndexTransaction.m; sourceTree = "<group>"; };
+		DC9B10A4184D124D00174B0F /* YapDatabaseViewChangePrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewChangePrivate.h; sourceTree = "<group>"; };
+		DC9B10A5184D124D00174B0F /* YapDatabaseViewMappingsPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewMappingsPrivate.h; sourceTree = "<group>"; };
+		DC9B10A6184D124D00174B0F /* YapDatabaseViewPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewPage.h; sourceTree = "<group>"; };
+		DC9B10A7184D124D00174B0F /* YapDatabaseViewPage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = YapDatabaseViewPage.mm; sourceTree = "<group>"; };
+		DC9B10A8184D124D00174B0F /* YapDatabaseViewPageMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewPageMetadata.h; sourceTree = "<group>"; };
+		DC9B10A9184D124D00174B0F /* YapDatabaseViewPageMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseViewPageMetadata.m; sourceTree = "<group>"; };
+		DC9B10AA184D124D00174B0F /* YapDatabaseViewPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewPrivate.h; sourceTree = "<group>"; };
+		DC9B10AB184D124D00174B0F /* YapDatabaseViewRangeOptionsPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewRangeOptionsPrivate.h; sourceTree = "<group>"; };
+		DC9B10AD184D124D00174B0F /* YapDatabaseViewChange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewChange.h; sourceTree = "<group>"; };
+		DC9B10AE184D124D00174B0F /* YapDatabaseViewChange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseViewChange.m; sourceTree = "<group>"; };
+		DC9B10AF184D124D00174B0F /* YapDatabaseViewMappings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewMappings.h; sourceTree = "<group>"; };
+		DC9B10B0184D124D00174B0F /* YapDatabaseViewMappings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseViewMappings.m; sourceTree = "<group>"; };
+		DC9B10B1184D124D00174B0F /* YapDatabaseViewRangeOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewRangeOptions.h; sourceTree = "<group>"; };
+		DC9B10B2184D124D00174B0F /* YapDatabaseViewRangeOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseViewRangeOptions.m; sourceTree = "<group>"; };
+		DC9B10B3184D124D00174B0F /* YapDatabaseView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseView.h; sourceTree = "<group>"; };
+		DC9B10B4184D124D00174B0F /* YapDatabaseView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseView.m; sourceTree = "<group>"; };
+		DC9B10B5184D124D00174B0F /* YapDatabaseViewConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewConnection.h; sourceTree = "<group>"; };
+		DC9B10B6184D124D00174B0F /* YapDatabaseViewConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseViewConnection.m; sourceTree = "<group>"; };
+		DC9B10B7184D124D00174B0F /* YapDatabaseViewOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewOptions.h; sourceTree = "<group>"; };
+		DC9B10B8184D124D00174B0F /* YapDatabaseViewOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseViewOptions.m; sourceTree = "<group>"; };
+		DC9B10B9184D124D00174B0F /* YapDatabaseViewTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewTransaction.h; sourceTree = "<group>"; };
+		DC9B10BA184D124D00174B0F /* YapDatabaseViewTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseViewTransaction.m; sourceTree = "<group>"; };
+		DC9B10BC184D124D00174B0F /* YapCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCache.h; sourceTree = "<group>"; };
+		DC9B10BD184D124D00174B0F /* YapCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapCache.m; sourceTree = "<group>"; };
+		DC9B10BE184D124D00174B0F /* YapDatabaseConnectionState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseConnectionState.h; sourceTree = "<group>"; };
+		DC9B10BF184D124D00174B0F /* YapDatabaseConnectionState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseConnectionState.m; sourceTree = "<group>"; };
+		DC9B10C0184D124D00174B0F /* YapDatabaseDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseDefaults.h; sourceTree = "<group>"; };
+		DC9B10C1184D124D00174B0F /* YapDatabaseDefaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseDefaults.m; sourceTree = "<group>"; };
+		DC9B10C2184D124D00174B0F /* YapDatabaseLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseLogging.h; sourceTree = "<group>"; };
+		DC9B10C3184D124D00174B0F /* YapDatabaseLogging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseLogging.m; sourceTree = "<group>"; };
+		DC9B10C4184D124D00174B0F /* YapDatabaseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseManager.h; sourceTree = "<group>"; };
+		DC9B10C5184D124D00174B0F /* YapDatabaseManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseManager.m; sourceTree = "<group>"; };
+		DC9B10C6184D124D00174B0F /* YapDatabasePrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabasePrivate.h; sourceTree = "<group>"; };
+		DC9B10C7184D124D00174B0F /* YapDatabaseStatement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseStatement.h; sourceTree = "<group>"; };
+		DC9B10C8184D124D00174B0F /* YapDatabaseStatement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseStatement.m; sourceTree = "<group>"; };
+		DC9B10C9184D124D00174B0F /* YapDatabaseString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseString.h; sourceTree = "<group>"; };
+		DC9B10CA184D124D00174B0F /* YapMemoryTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapMemoryTable.h; sourceTree = "<group>"; };
+		DC9B10CB184D124D00174B0F /* YapMemoryTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapMemoryTable.m; sourceTree = "<group>"; };
+		DC9B10CC184D124D00174B0F /* YapNull.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapNull.h; sourceTree = "<group>"; };
+		DC9B10CD184D124D00174B0F /* YapNull.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapNull.m; sourceTree = "<group>"; };
+		DC9B10CE184D124D00174B0F /* YapTouch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapTouch.h; sourceTree = "<group>"; };
+		DC9B10CF184D124D00174B0F /* YapTouch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapTouch.m; sourceTree = "<group>"; };
+		DC9B10D2184D124E00174B0F /* YapCollectionKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCollectionKey.h; sourceTree = "<group>"; };
+		DC9B10D3184D124E00174B0F /* YapCollectionKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapCollectionKey.m; sourceTree = "<group>"; };
+		DC9B10D4184D124E00174B0F /* YapDatabaseQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseQuery.h; sourceTree = "<group>"; };
+		DC9B10D5184D124E00174B0F /* YapDatabaseQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseQuery.m; sourceTree = "<group>"; };
+		DC9B10D6184D124E00174B0F /* YapSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapSet.h; sourceTree = "<group>"; };
+		DC9B10D7184D124E00174B0F /* YapSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapSet.m; sourceTree = "<group>"; };
+		DC9B10D8184D124E00174B0F /* YapDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabase.h; sourceTree = "<group>"; };
+		DC9B10D9184D124E00174B0F /* YapDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabase.m; sourceTree = "<group>"; };
+		DC9B10DA184D124E00174B0F /* YapDatabaseConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseConnection.h; sourceTree = "<group>"; };
+		DC9B10DB184D124E00174B0F /* YapDatabaseConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseConnection.m; sourceTree = "<group>"; };
+		DC9B10DC184D124E00174B0F /* YapDatabaseTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseTransaction.h; sourceTree = "<group>"; };
+		DC9B10DD184D124E00174B0F /* YapDatabaseTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseTransaction.m; sourceTree = "<group>"; };
+		DC9B1105184D143800174B0F /* TestYapDatabaseFilteredView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseFilteredView.m; path = ../../UnitTesting/TestYapDatabaseFilteredView.m; sourceTree = "<group>"; };
 		DCA528C41797650500B4503B /* TestViewChangeLogic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestViewChangeLogic.m; path = ../../UnitTesting/TestViewChangeLogic.m; sourceTree = "<group>"; };
-		DCA528C51797650500B4503B /* TestYapCollectionsDatabaseView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestYapCollectionsDatabaseView.h; path = ../../UnitTesting/TestYapCollectionsDatabaseView.h; sourceTree = "<group>"; };
-		DCA528C61797650500B4503B /* TestYapCollectionsDatabaseView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapCollectionsDatabaseView.m; path = ../../UnitTesting/TestYapCollectionsDatabaseView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -247,263 +242,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		DC23CF841764005B00E103A9 /* Utilities */ = {
-			isa = PBXGroup;
-			children = (
-				DC23CF851764007200E103A9 /* YapCollectionKey.h */,
-				DC23CF861764007200E103A9 /* YapCollectionKey.m */,
-				DC0DA077177E17D10025AC51 /* YapSet.h */,
-				DC0DA078177E17D10025AC51 /* YapSet.m */,
-			);
-			name = Utilities;
-			sourceTree = "<group>";
-		};
-		DC2C985417E3C5C000F1E04F /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				DC2C986D17E3C5C000F1E04F /* Utilities */,
-				DC2C985D17E3C5C000F1E04F /* Internal */,
-				DC2C986517E3C5C000F1E04F /* Key-Value */,
-				DC2C985517E3C5C000F1E04F /* Collection-Key-Value */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
-		DC2C985517E3C5C000F1E04F /* Collection-Key-Value */ = {
-			isa = PBXGroup;
-			children = (
-				DC2C988017E3C5FA00F1E04F /* Private */,
-				DC2C985617E3C5C000F1E04F /* YapCollectionsDatabaseView.h */,
-				DC2C985717E3C5C000F1E04F /* YapCollectionsDatabaseView.m */,
-				DC2C985817E3C5C000F1E04F /* YapCollectionsDatabaseViewConnection.h */,
-				DC2C985917E3C5C000F1E04F /* YapCollectionsDatabaseViewConnection.m */,
-				DC2C985B17E3C5C000F1E04F /* YapCollectionsDatabaseViewTransaction.h */,
-				DC2C985C17E3C5C000F1E04F /* YapCollectionsDatabaseViewTransaction.m */,
-			);
-			path = "Collection-Key-Value";
-			sourceTree = "<group>";
-		};
-		DC2C985D17E3C5C000F1E04F /* Internal */ = {
-			isa = PBXGroup;
-			children = (
-				DC2C985E17E3C5C000F1E04F /* YapDatabaseViewChangePrivate.h */,
-				DC2C985F17E3C5C000F1E04F /* YapDatabaseViewMappingsPrivate.h */,
-				DC2C986417E3C5C000F1E04F /* YapDatabaseViewRangeOptionsPrivate.h */,
-				DC2C986017E3C5C000F1E04F /* YapDatabaseViewPage.h */,
-				DC2C986117E3C5C000F1E04F /* YapDatabaseViewPage.mm */,
-				DC2C986217E3C5C000F1E04F /* YapDatabaseViewPageMetadata.h */,
-				DC2C986317E3C5C000F1E04F /* YapDatabaseViewPageMetadata.m */,
-			);
-			path = Internal;
-			sourceTree = "<group>";
-		};
-		DC2C986517E3C5C000F1E04F /* Key-Value */ = {
-			isa = PBXGroup;
-			children = (
-				DC2C987F17E3C5EE00F1E04F /* Private */,
-				DC2C986617E3C5C000F1E04F /* YapDatabaseView.h */,
-				DC2C986717E3C5C000F1E04F /* YapDatabaseView.m */,
-				DC2C986817E3C5C000F1E04F /* YapDatabaseViewConnection.h */,
-				DC2C986917E3C5C000F1E04F /* YapDatabaseViewConnection.m */,
-				DC2C986B17E3C5C000F1E04F /* YapDatabaseViewTransaction.h */,
-				DC2C986C17E3C5C000F1E04F /* YapDatabaseViewTransaction.m */,
-			);
-			path = "Key-Value";
-			sourceTree = "<group>";
-		};
-		DC2C986D17E3C5C000F1E04F /* Utilities */ = {
-			isa = PBXGroup;
-			children = (
-				DC2C986E17E3C5C000F1E04F /* YapDatabaseViewChange.h */,
-				DC2C986F17E3C5C000F1E04F /* YapDatabaseViewChange.m */,
-				DC2C987017E3C5C000F1E04F /* YapDatabaseViewMappings.h */,
-				DC2C987117E3C5C000F1E04F /* YapDatabaseViewMappings.m */,
-				DC2C987217E3C5C000F1E04F /* YapDatabaseViewRangeOptions.h */,
-				DC2C987317E3C5C000F1E04F /* YapDatabaseViewRangeOptions.m */,
-			);
-			path = Utilities;
-			sourceTree = "<group>";
-		};
-		DC2C987F17E3C5EE00F1E04F /* Private */ = {
-			isa = PBXGroup;
-			children = (
-				DC2C986A17E3C5C000F1E04F /* YapDatabaseViewPrivate.h */,
-			);
-			name = Private;
-			sourceTree = "<group>";
-		};
-		DC2C988017E3C5FA00F1E04F /* Private */ = {
-			isa = PBXGroup;
-			children = (
-				DC2C985A17E3C5C000F1E04F /* YapCollectionsDatabaseViewPrivate.h */,
-			);
-			name = Private;
-			sourceTree = "<group>";
-		};
-		DC49735517E916BE00489267 /* FullTextSearch */ = {
-			isa = PBXGroup;
-			children = (
-				DC49736617E916BE00489267 /* Utilities */,
-				DC49735E17E916BE00489267 /* Key-Value */,
-				DC49735617E916BE00489267 /* Collection-Key-Value */,
-			);
-			path = FullTextSearch;
-			sourceTree = "<group>";
-		};
-		DC49735617E916BE00489267 /* Collection-Key-Value */ = {
-			isa = PBXGroup;
-			children = (
-				DC49737017E916D100489267 /* Private */,
-				DC49735717E916BE00489267 /* YapCollectionsDatabaseFullTextSearch.h */,
-				DC49735817E916BE00489267 /* YapCollectionsDatabaseFullTextSearch.m */,
-				DC49735917E916BE00489267 /* YapCollectionsDatabaseFullTextSearchConnection.h */,
-				DC49735A17E916BE00489267 /* YapCollectionsDatabaseFullTextSearchConnection.m */,
-				DC49735C17E916BE00489267 /* YapCollectionsDatabaseFullTextSearchTransaction.h */,
-				DC49735D17E916BE00489267 /* YapCollectionsDatabaseFullTextSearchTransaction.m */,
-			);
-			path = "Collection-Key-Value";
-			sourceTree = "<group>";
-		};
-		DC49735E17E916BE00489267 /* Key-Value */ = {
-			isa = PBXGroup;
-			children = (
-				DC49737117E916DB00489267 /* Private */,
-				DC49735F17E916BE00489267 /* YapDatabaseFullTextSearch.h */,
-				DC49736017E916BE00489267 /* YapDatabaseFullTextSearch.m */,
-				DC49736117E916BE00489267 /* YapDatabaseFullTextSearchConnection.h */,
-				DC49736217E916BE00489267 /* YapDatabaseFullTextSearchConnection.m */,
-				DC49736417E916BE00489267 /* YapDatabaseFullTextSearchTransaction.h */,
-				DC49736517E916BE00489267 /* YapDatabaseFullTextSearchTransaction.m */,
-			);
-			path = "Key-Value";
-			sourceTree = "<group>";
-		};
-		DC49736617E916BE00489267 /* Utilities */ = {
-			isa = PBXGroup;
-			children = (
-				DC49736717E916BE00489267 /* YapDatabaseFullTextSearchSnippetOptions.h */,
-				DC49736817E916BE00489267 /* YapDatabaseFullTextSearchSnippetOptions.m */,
-			);
-			path = Utilities;
-			sourceTree = "<group>";
-		};
-		DC49737017E916D100489267 /* Private */ = {
-			isa = PBXGroup;
-			children = (
-				DC49735B17E916BE00489267 /* YapCollectionsDatabaseFullTextSearchPrivate.h */,
-			);
-			name = Private;
-			sourceTree = "<group>";
-		};
-		DC49737117E916DB00489267 /* Private */ = {
-			isa = PBXGroup;
-			children = (
-				DC49736317E916BE00489267 /* YapDatabaseFullTextSearchPrivate.h */,
-			);
-			name = Private;
-			sourceTree = "<group>";
-		};
 		DC49737217E9171800489267 /* FullTextSearch */ = {
 			isa = PBXGroup;
 			children = (
 				DC49737417E9173000489267 /* TestYapDatabaseFullTextSearch.m */,
-				DC49737317E9173000489267 /* TestYapCollectionsDatabaseFullTextSearch.m */,
 			);
 			name = FullTextSearch;
-			sourceTree = "<group>";
-		};
-		DC84000B175131BC003BFBB2 /* Internal */ = {
-			isa = PBXGroup;
-			children = (
-				DC840012175131BC003BFBB2 /* YapDatabaseLogging.h */,
-				DC840017175131BC003BFBB2 /* YapDatabaseString.h */,
-				DC840013175131BC003BFBB2 /* YapDatabaseManager.h */,
-				DC840014175131BC003BFBB2 /* YapDatabaseManager.m */,
-				DC840010175131BC003BFBB2 /* YapDatabaseConnectionState.h */,
-				DC840011175131BC003BFBB2 /* YapDatabaseConnectionState.m */,
-				DC84000C175131BC003BFBB2 /* YapCache.h */,
-				DC84000D175131BC003BFBB2 /* YapCache.m */,
-				DC840018175131BC003BFBB2 /* YapNull.h */,
-				DC840019175131BC003BFBB2 /* YapNull.m */,
-			);
-			path = Internal;
-			sourceTree = "<group>";
-		};
-		DC84001A175131BC003BFBB2 /* Key-Value */ = {
-			isa = PBXGroup;
-			children = (
-				DC84006D17514DE4003BFBB2 /* Private */,
-				DC84001B175131BC003BFBB2 /* YapDatabase.h */,
-				DC84001C175131BC003BFBB2 /* YapDatabase.m */,
-				DC84001D175131BC003BFBB2 /* YapDatabaseConnection.h */,
-				DC84001E175131BC003BFBB2 /* YapDatabaseConnection.m */,
-				DC840022175131BC003BFBB2 /* YapDatabaseTransaction.h */,
-				DC840023175131BC003BFBB2 /* YapDatabaseTransaction.m */,
-			);
-			path = "Key-Value";
-			sourceTree = "<group>";
-		};
-		DC84006C17514DDB003BFBB2 /* Private */ = {
-			isa = PBXGroup;
-			children = (
-				DC84FFF5175131BC003BFBB2 /* YapAbstractDatabasePrivate.h */,
-			);
-			name = Private;
-			sourceTree = "<group>";
-		};
-		DC84006D17514DE4003BFBB2 /* Private */ = {
-			isa = PBXGroup;
-			children = (
-				DC84001F175131BC003BFBB2 /* YapDatabasePrivate.h */,
-			);
-			name = Private;
-			sourceTree = "<group>";
-		};
-		DC84006E17514DF6003BFBB2 /* Private */ = {
-			isa = PBXGroup;
-			children = (
-				DC84FFFD175131BC003BFBB2 /* YapCollectionsDatabasePrivate.h */,
-			);
-			name = Private;
-			sourceTree = "<group>";
-		};
-		DC84006F17514E16003BFBB2 /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-				DC84007017514E16003BFBB2 /* Abstract */,
-				DC2C985417E3C5C000F1E04F /* Views */,
-				DC49735517E916BE00489267 /* FullTextSearch */,
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
-		DC84007017514E16003BFBB2 /* Abstract */ = {
-			isa = PBXGroup;
-			children = (
-				DC84008917514E1F003BFBB2 /* Private */,
-				DC84007117514E16003BFBB2 /* YapAbstractDatabaseExtension.h */,
-				DC84007217514E16003BFBB2 /* YapAbstractDatabaseExtension.m */,
-				DC84007317514E16003BFBB2 /* YapAbstractDatabaseExtensionConnection.h */,
-				DC84007417514E16003BFBB2 /* YapAbstractDatabaseExtensionConnection.m */,
-				DC84007617514E16003BFBB2 /* YapAbstractDatabaseExtensionTransaction.h */,
-				DC84007717514E16003BFBB2 /* YapAbstractDatabaseExtensionTransaction.m */,
-			);
-			path = Abstract;
-			sourceTree = "<group>";
-		};
-		DC84008917514E1F003BFBB2 /* Private */ = {
-			isa = PBXGroup;
-			children = (
-				DC84007517514E16003BFBB2 /* YapAbstractDatabaseExtensionPrivate.h */,
-			);
-			name = Private;
 			sourceTree = "<group>";
 		};
 		DC84FF82175130D2003BFBB2 = {
 			isa = PBXGroup;
 			children = (
+				DC9B1078184D124D00174B0F /* YapDatabase */,
 				DC84FFC21751312E003BFBB2 /* Logging */,
-				DC84FFEF175131BC003BFBB2 /* YapDatabase */,
 				DC84FFE717513197003BFBB2 /* Benchmarking */,
 				DC84FFB1175130D3003BFBB2 /* UnitTests */,
 				DC84FF94175130D2003BFBB2 /* App */,
@@ -573,7 +324,9 @@
 				DC84005D17514255003BFBB2 /* TestObject.m */,
 				DCA528C91797651F00B4503B /* Database */,
 				DCA528CA1797652400B4503B /* Views */,
+				DC9B101F184D10EA00174B0F /* Secondary Indexes */,
 				DC49737217E9171800489267 /* FullTextSearch */,
+				DC9B1107184D143D00174B0F /* Filtered Views */,
 				DC84FFB2175130D3003BFBB2 /* Supporting Files */,
 			);
 			name = UnitTests;
@@ -631,55 +384,232 @@
 			path = ../Benchmarking;
 			sourceTree = "<group>";
 		};
-		DC84FFEF175131BC003BFBB2 /* YapDatabase */ = {
+		DC9B101F184D10EA00174B0F /* Secondary Indexes */ = {
 			isa = PBXGroup;
 			children = (
-				DC84000B175131BC003BFBB2 /* Internal */,
-				DC23CF841764005B00E103A9 /* Utilities */,
-				DC84FFF0175131BC003BFBB2 /* Abstract */,
-				DC84001A175131BC003BFBB2 /* Key-Value */,
-				DC84FFF8175131BC003BFBB2 /* Collection-Key-Value */,
-				DC84006F17514E16003BFBB2 /* Extensions */,
+				DC9B1004184B1B4300174B0F /* TestYapDatabaseSecondaryIndex.m */,
+			);
+			name = "Secondary Indexes";
+			sourceTree = "<group>";
+		};
+		DC9B1078184D124D00174B0F /* YapDatabase */ = {
+			isa = PBXGroup;
+			children = (
+				DC9B1079184D124D00174B0F /* Extensions */,
+				DC9B10BB184D124D00174B0F /* Internal */,
+				DC9B10D1184D124E00174B0F /* Utilities */,
+				DC9B10D8184D124E00174B0F /* YapDatabase.h */,
+				DC9B10D9184D124E00174B0F /* YapDatabase.m */,
+				DC9B10DA184D124E00174B0F /* YapDatabaseConnection.h */,
+				DC9B10DB184D124E00174B0F /* YapDatabaseConnection.m */,
+				DC9B10DC184D124E00174B0F /* YapDatabaseTransaction.h */,
+				DC9B10DD184D124E00174B0F /* YapDatabaseTransaction.m */,
 			);
 			name = YapDatabase;
 			path = ../../YapDatabase;
 			sourceTree = "<group>";
 		};
-		DC84FFF0175131BC003BFBB2 /* Abstract */ = {
+		DC9B1079184D124D00174B0F /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				DC84006C17514DDB003BFBB2 /* Private */,
-				DC84FFF1175131BC003BFBB2 /* YapAbstractDatabase.h */,
-				DC84FFF2175131BC003BFBB2 /* YapAbstractDatabase.m */,
-				DC84FFF3175131BC003BFBB2 /* YapAbstractDatabaseConnection.h */,
-				DC84FFF4175131BC003BFBB2 /* YapAbstractDatabaseConnection.m */,
-				DC84FFF6175131BC003BFBB2 /* YapAbstractDatabaseTransaction.h */,
-				DC84FFF7175131BC003BFBB2 /* YapAbstractDatabaseTransaction.m */,
+				DC9B107A184D124D00174B0F /* FilteredViews */,
+				DC9B1083184D124D00174B0F /* FullTextSearch */,
+				DC9B108E184D124D00174B0F /* Protocol */,
+				DC9B1097184D124D00174B0F /* SecondaryIndex */,
+				DC9B10A2184D124D00174B0F /* Views */,
 			);
-			path = Abstract;
+			path = Extensions;
 			sourceTree = "<group>";
 		};
-		DC84FFF8175131BC003BFBB2 /* Collection-Key-Value */ = {
+		DC9B107A184D124D00174B0F /* FilteredViews */ = {
 			isa = PBXGroup;
 			children = (
-				DC84006E17514DF6003BFBB2 /* Private */,
-				DC84FFF9175131BC003BFBB2 /* YapCollectionsDatabase.h */,
-				DC84FFFA175131BC003BFBB2 /* YapCollectionsDatabase.m */,
-				DC84FFFB175131BC003BFBB2 /* YapCollectionsDatabaseConnection.h */,
-				DC84FFFC175131BC003BFBB2 /* YapCollectionsDatabaseConnection.m */,
-				DC840000175131BC003BFBB2 /* YapCollectionsDatabaseTransaction.h */,
-				DC840001175131BC003BFBB2 /* YapCollectionsDatabaseTransaction.m */,
+				DC9B107B184D124D00174B0F /* Internal */,
+				DC9B107D184D124D00174B0F /* YapDatabaseFilteredView.h */,
+				DC9B107E184D124D00174B0F /* YapDatabaseFilteredView.m */,
+				DC9B107F184D124D00174B0F /* YapDatabaseFilteredViewConnection.h */,
+				DC9B1080184D124D00174B0F /* YapDatabaseFilteredViewConnection.m */,
+				DC9B1081184D124D00174B0F /* YapDatabaseFilteredViewTransaction.h */,
+				DC9B1082184D124D00174B0F /* YapDatabaseFilteredViewTransaction.m */,
 			);
-			path = "Collection-Key-Value";
+			path = FilteredViews;
+			sourceTree = "<group>";
+		};
+		DC9B107B184D124D00174B0F /* Internal */ = {
+			isa = PBXGroup;
+			children = (
+				DC9B107C184D124D00174B0F /* YapDatabaseFilteredViewPrivate.h */,
+			);
+			path = Internal;
+			sourceTree = "<group>";
+		};
+		DC9B1083184D124D00174B0F /* FullTextSearch */ = {
+			isa = PBXGroup;
+			children = (
+				DC9B1084184D124D00174B0F /* Internal */,
+				DC9B1086184D124D00174B0F /* YapDatabaseFullTextSearch.h */,
+				DC9B1087184D124D00174B0F /* YapDatabaseFullTextSearch.m */,
+				DC9B1088184D124D00174B0F /* YapDatabaseFullTextSearchConnection.h */,
+				DC9B1089184D124D00174B0F /* YapDatabaseFullTextSearchConnection.m */,
+				DC9B108A184D124D00174B0F /* YapDatabaseFullTextSearchSnippetOptions.h */,
+				DC9B108B184D124D00174B0F /* YapDatabaseFullTextSearchSnippetOptions.m */,
+				DC9B108C184D124D00174B0F /* YapDatabaseFullTextSearchTransaction.h */,
+				DC9B108D184D124D00174B0F /* YapDatabaseFullTextSearchTransaction.m */,
+			);
+			path = FullTextSearch;
+			sourceTree = "<group>";
+		};
+		DC9B1084184D124D00174B0F /* Internal */ = {
+			isa = PBXGroup;
+			children = (
+				DC9B1085184D124D00174B0F /* YapDatabaseFullTextSearchPrivate.h */,
+			);
+			path = Internal;
+			sourceTree = "<group>";
+		};
+		DC9B108E184D124D00174B0F /* Protocol */ = {
+			isa = PBXGroup;
+			children = (
+				DC9B108F184D124D00174B0F /* Internal */,
+				DC9B1091184D124D00174B0F /* YapDatabaseExtension.h */,
+				DC9B1092184D124D00174B0F /* YapDatabaseExtension.m */,
+				DC9B1093184D124D00174B0F /* YapDatabaseExtensionConnection.h */,
+				DC9B1094184D124D00174B0F /* YapDatabaseExtensionConnection.m */,
+				DC9B1095184D124D00174B0F /* YapDatabaseExtensionTransaction.h */,
+				DC9B1096184D124D00174B0F /* YapDatabaseExtensionTransaction.m */,
+			);
+			path = Protocol;
+			sourceTree = "<group>";
+		};
+		DC9B108F184D124D00174B0F /* Internal */ = {
+			isa = PBXGroup;
+			children = (
+				DC9B1090184D124D00174B0F /* YapDatabaseExtensionPrivate.h */,
+			);
+			path = Internal;
+			sourceTree = "<group>";
+		};
+		DC9B1097184D124D00174B0F /* SecondaryIndex */ = {
+			isa = PBXGroup;
+			children = (
+				DC9B1098184D124D00174B0F /* Internal */,
+				DC9B109A184D124D00174B0F /* YapDatabaseSecondaryIndex.h */,
+				DC9B109B184D124D00174B0F /* YapDatabaseSecondaryIndex.m */,
+				DC9B109C184D124D00174B0F /* YapDatabaseSecondaryIndexConnection.h */,
+				DC9B109D184D124D00174B0F /* YapDatabaseSecondaryIndexConnection.m */,
+				DC9B109E184D124D00174B0F /* YapDatabaseSecondaryIndexSetup.h */,
+				DC9B109F184D124D00174B0F /* YapDatabaseSecondaryIndexSetup.m */,
+				DC9B10A0184D124D00174B0F /* YapDatabaseSecondaryIndexTransaction.h */,
+				DC9B10A1184D124D00174B0F /* YapDatabaseSecondaryIndexTransaction.m */,
+			);
+			path = SecondaryIndex;
+			sourceTree = "<group>";
+		};
+		DC9B1098184D124D00174B0F /* Internal */ = {
+			isa = PBXGroup;
+			children = (
+				DC9B1099184D124D00174B0F /* YapDatabaseSecondaryIndexPrivate.h */,
+			);
+			path = Internal;
+			sourceTree = "<group>";
+		};
+		DC9B10A2184D124D00174B0F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				DC9B10A3184D124D00174B0F /* Internal */,
+				DC9B10AC184D124D00174B0F /* Utilities */,
+				DC9B10B3184D124D00174B0F /* YapDatabaseView.h */,
+				DC9B10B4184D124D00174B0F /* YapDatabaseView.m */,
+				DC9B10B5184D124D00174B0F /* YapDatabaseViewConnection.h */,
+				DC9B10B6184D124D00174B0F /* YapDatabaseViewConnection.m */,
+				DC9B10B7184D124D00174B0F /* YapDatabaseViewOptions.h */,
+				DC9B10B8184D124D00174B0F /* YapDatabaseViewOptions.m */,
+				DC9B10B9184D124D00174B0F /* YapDatabaseViewTransaction.h */,
+				DC9B10BA184D124D00174B0F /* YapDatabaseViewTransaction.m */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		DC9B10A3184D124D00174B0F /* Internal */ = {
+			isa = PBXGroup;
+			children = (
+				DC9B10A4184D124D00174B0F /* YapDatabaseViewChangePrivate.h */,
+				DC9B10A5184D124D00174B0F /* YapDatabaseViewMappingsPrivate.h */,
+				DC9B10A6184D124D00174B0F /* YapDatabaseViewPage.h */,
+				DC9B10A7184D124D00174B0F /* YapDatabaseViewPage.mm */,
+				DC9B10A8184D124D00174B0F /* YapDatabaseViewPageMetadata.h */,
+				DC9B10A9184D124D00174B0F /* YapDatabaseViewPageMetadata.m */,
+				DC9B10AA184D124D00174B0F /* YapDatabaseViewPrivate.h */,
+				DC9B10AB184D124D00174B0F /* YapDatabaseViewRangeOptionsPrivate.h */,
+			);
+			path = Internal;
+			sourceTree = "<group>";
+		};
+		DC9B10AC184D124D00174B0F /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				DC9B10AD184D124D00174B0F /* YapDatabaseViewChange.h */,
+				DC9B10AE184D124D00174B0F /* YapDatabaseViewChange.m */,
+				DC9B10AF184D124D00174B0F /* YapDatabaseViewMappings.h */,
+				DC9B10B0184D124D00174B0F /* YapDatabaseViewMappings.m */,
+				DC9B10B1184D124D00174B0F /* YapDatabaseViewRangeOptions.h */,
+				DC9B10B2184D124D00174B0F /* YapDatabaseViewRangeOptions.m */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		DC9B10BB184D124D00174B0F /* Internal */ = {
+			isa = PBXGroup;
+			children = (
+				DC9B10BC184D124D00174B0F /* YapCache.h */,
+				DC9B10BD184D124D00174B0F /* YapCache.m */,
+				DC9B10BE184D124D00174B0F /* YapDatabaseConnectionState.h */,
+				DC9B10BF184D124D00174B0F /* YapDatabaseConnectionState.m */,
+				DC9B10C0184D124D00174B0F /* YapDatabaseDefaults.h */,
+				DC9B10C1184D124D00174B0F /* YapDatabaseDefaults.m */,
+				DC9B10C2184D124D00174B0F /* YapDatabaseLogging.h */,
+				DC9B10C3184D124D00174B0F /* YapDatabaseLogging.m */,
+				DC9B10C4184D124D00174B0F /* YapDatabaseManager.h */,
+				DC9B10C5184D124D00174B0F /* YapDatabaseManager.m */,
+				DC9B10C6184D124D00174B0F /* YapDatabasePrivate.h */,
+				DC9B10C7184D124D00174B0F /* YapDatabaseStatement.h */,
+				DC9B10C8184D124D00174B0F /* YapDatabaseStatement.m */,
+				DC9B10C9184D124D00174B0F /* YapDatabaseString.h */,
+				DC9B10CA184D124D00174B0F /* YapMemoryTable.h */,
+				DC9B10CB184D124D00174B0F /* YapMemoryTable.m */,
+				DC9B10CC184D124D00174B0F /* YapNull.h */,
+				DC9B10CD184D124D00174B0F /* YapNull.m */,
+				DC9B10CE184D124D00174B0F /* YapTouch.h */,
+				DC9B10CF184D124D00174B0F /* YapTouch.m */,
+			);
+			path = Internal;
+			sourceTree = "<group>";
+		};
+		DC9B10D1184D124E00174B0F /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				DC9B10D2184D124E00174B0F /* YapCollectionKey.h */,
+				DC9B10D3184D124E00174B0F /* YapCollectionKey.m */,
+				DC9B10D4184D124E00174B0F /* YapDatabaseQuery.h */,
+				DC9B10D5184D124E00174B0F /* YapDatabaseQuery.m */,
+				DC9B10D6184D124E00174B0F /* YapSet.h */,
+				DC9B10D7184D124E00174B0F /* YapSet.m */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		DC9B1107184D143D00174B0F /* Filtered Views */ = {
+			isa = PBXGroup;
+			children = (
+				DC9B1105184D143800174B0F /* TestYapDatabaseFilteredView.m */,
+			);
+			name = "Filtered Views";
 			sourceTree = "<group>";
 		};
 		DCA528C91797651F00B4503B /* Database */ = {
 			isa = PBXGroup;
 			children = (
-				DC84006017514255003BFBB2 /* TestYapDatabase.h */,
 				DC84006117514255003BFBB2 /* TestYapDatabase.m */,
-				DC84005E17514255003BFBB2 /* TestYapCollectionsDatabase.h */,
-				DC84005F17514255003BFBB2 /* TestYapCollectionsDatabase.m */,
 			);
 			name = Database;
 			sourceTree = "<group>";
@@ -687,13 +617,8 @@
 		DCA528CA1797652400B4503B /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				DC84008C17514E59003BFBB2 /* TestYapDatabaseView.h */,
 				DC84008D17514E59003BFBB2 /* TestYapDatabaseView.m */,
-				DCA528C51797650500B4503B /* TestYapCollectionsDatabaseView.h */,
-				DCA528C61797650500B4503B /* TestYapCollectionsDatabaseView.m */,
-				DCA528C31797650500B4503B /* TestViewChangeLogic.h */,
 				DCA528C41797650500B4503B /* TestViewChangeLogic.m */,
-				DC2C988117E3C63700F1E04F /* TestViewMappingsLogic.h */,
 				DC2C988217E3C63700F1E04F /* TestViewMappingsLogic.m */,
 			);
 			name = Views;
@@ -807,53 +732,55 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC9B10F2184D124E00174B0F /* YapDatabaseViewConnection.m in Sources */,
+				DC9B1103184D124E00174B0F /* YapDatabaseConnection.m in Sources */,
+				DC9B10FD184D124E00174B0F /* YapTouch.m in Sources */,
+				DC9B10E4184D124E00174B0F /* YapDatabaseFullTextSearchTransaction.m in Sources */,
+				DC9B10F1184D124E00174B0F /* YapDatabaseView.m in Sources */,
+				DC9B10FF184D124E00174B0F /* YapCollectionKey.m in Sources */,
+				DC9B10F0184D124E00174B0F /* YapDatabaseViewRangeOptions.m in Sources */,
+				DC9B1102184D124E00174B0F /* YapDatabase.m in Sources */,
+				DC9B10E7184D124E00174B0F /* YapDatabaseExtensionTransaction.m in Sources */,
 				DC84FF9B175130D3003BFBB2 /* main.m in Sources */,
-				DC2C987617E3C5C000F1E04F /* YapCollectionsDatabaseViewTransaction.m in Sources */,
 				DC84FFA2175130D3003BFBB2 /* AppDelegate.m in Sources */,
 				DC84FFD41751312E003BFBB2 /* DDAbstractDatabaseLogger.m in Sources */,
+				DC9B10E8184D124E00174B0F /* YapDatabaseSecondaryIndex.m in Sources */,
+				DC9B1100184D124E00174B0F /* YapDatabaseQuery.m in Sources */,
 				DC84FFD61751312E003BFBB2 /* DDASLLogger.m in Sources */,
+				DC9B10E3184D124E00174B0F /* YapDatabaseFullTextSearchSnippetOptions.m in Sources */,
+				DC9B10F8184D124E00174B0F /* YapDatabaseLogging.m in Sources */,
 				DC84FFD81751312E003BFBB2 /* DDFileLogger.m in Sources */,
-				DC2C987917E3C5C000F1E04F /* YapDatabaseView.m in Sources */,
+				DC9B10DE184D124E00174B0F /* YapDatabaseFilteredView.m in Sources */,
+				DC9B10EE184D124E00174B0F /* YapDatabaseViewChange.m in Sources */,
+				DC9B10E5184D124E00174B0F /* YapDatabaseExtension.m in Sources */,
+				DC9B10EF184D124E00174B0F /* YapDatabaseViewMappings.m in Sources */,
+				DC9B10EB184D124E00174B0F /* YapDatabaseSecondaryIndexTransaction.m in Sources */,
+				DC9B10E0184D124E00174B0F /* YapDatabaseFilteredViewTransaction.m in Sources */,
+				DC9B10FC184D124E00174B0F /* YapNull.m in Sources */,
+				DC9B10E6184D124E00174B0F /* YapDatabaseExtensionConnection.m in Sources */,
+				DC9B10F4184D124E00174B0F /* YapDatabaseViewTransaction.m in Sources */,
+				DC9B10F9184D124E00174B0F /* YapDatabaseManager.m in Sources */,
+				DC9B10FB184D124E00174B0F /* YapMemoryTable.m in Sources */,
 				DC84FFDA1751312E003BFBB2 /* DDLog.m in Sources */,
-				DC49736E17E916BE00489267 /* YapDatabaseFullTextSearchTransaction.m in Sources */,
+				DC9B10EC184D124E00174B0F /* YapDatabaseViewPage.mm in Sources */,
+				DC9B10ED184D124E00174B0F /* YapDatabaseViewPageMetadata.m in Sources */,
+				DC9B10E1184D124E00174B0F /* YapDatabaseFullTextSearch.m in Sources */,
 				DC84FFDC1751312E003BFBB2 /* DDTTYLogger.m in Sources */,
-				DC49736A17E916BE00489267 /* YapCollectionsDatabaseFullTextSearchConnection.m in Sources */,
+				DC9B1104184D124E00174B0F /* YapDatabaseTransaction.m in Sources */,
 				DC84FFDE1751312E003BFBB2 /* ContextFilterLogFormatter.m in Sources */,
-				DC49736C17E916BE00489267 /* YapDatabaseFullTextSearch.m in Sources */,
-				DC2C987D17E3C5C000F1E04F /* YapDatabaseViewMappings.m in Sources */,
-				DC2C987E17E3C5C000F1E04F /* YapDatabaseViewRangeOptions.m in Sources */,
-				DC2C987B17E3C5C000F1E04F /* YapDatabaseViewTransaction.m in Sources */,
+				DC9B10DF184D124E00174B0F /* YapDatabaseFilteredViewConnection.m in Sources */,
 				DC84FFE01751312E003BFBB2 /* DispatchQueueLogFormatter.m in Sources */,
+				DC9B1101184D124E00174B0F /* YapSet.m in Sources */,
+				DC9B10F3184D124E00174B0F /* YapDatabaseViewOptions.m in Sources */,
+				DC9B10E2184D124E00174B0F /* YapDatabaseFullTextSearchConnection.m in Sources */,
 				DC84FFEC17513197003BFBB2 /* BenchmarkYapCache.m in Sources */,
-				DC2C987A17E3C5C000F1E04F /* YapDatabaseViewConnection.m in Sources */,
-				DC49736D17E916BE00489267 /* YapDatabaseFullTextSearchConnection.m in Sources */,
-				DC49736917E916BE00489267 /* YapCollectionsDatabaseFullTextSearch.m in Sources */,
+				DC9B10F5184D124E00174B0F /* YapCache.m in Sources */,
+				DC9B10F7184D124E00174B0F /* YapDatabaseDefaults.m in Sources */,
 				DC84FFED17513197003BFBB2 /* BenchmarkYapDatabase.m in Sources */,
-				DC84002C175131BC003BFBB2 /* YapAbstractDatabase.m in Sources */,
-				DC49736F17E916BE00489267 /* YapDatabaseFullTextSearchSnippetOptions.m in Sources */,
-				DC84002E175131BC003BFBB2 /* YapAbstractDatabaseConnection.m in Sources */,
-				DC840030175131BC003BFBB2 /* YapAbstractDatabaseTransaction.m in Sources */,
-				DC840032175131BC003BFBB2 /* YapCollectionsDatabase.m in Sources */,
-				DC2C987817E3C5C000F1E04F /* YapDatabaseViewPageMetadata.m in Sources */,
-				DC2C987C17E3C5C000F1E04F /* YapDatabaseViewChange.m in Sources */,
-				DC840034175131BC003BFBB2 /* YapCollectionsDatabaseConnection.m in Sources */,
-				DC49736B17E916BE00489267 /* YapCollectionsDatabaseFullTextSearchTransaction.m in Sources */,
-				DC840038175131BC003BFBB2 /* YapCollectionsDatabaseTransaction.m in Sources */,
-				DC2C987517E3C5C000F1E04F /* YapCollectionsDatabaseViewConnection.m in Sources */,
-				DC840040175131BC003BFBB2 /* YapCache.m in Sources */,
-				DC2C987717E3C5C000F1E04F /* YapDatabaseViewPage.mm in Sources */,
-				DC840044175131BC003BFBB2 /* YapDatabaseConnectionState.m in Sources */,
-				DC840046175131BC003BFBB2 /* YapDatabaseManager.m in Sources */,
-				DC84004A175131BC003BFBB2 /* YapNull.m in Sources */,
-				DC84004C175131BC003BFBB2 /* YapDatabase.m in Sources */,
-				DC84004E175131BC003BFBB2 /* YapDatabaseConnection.m in Sources */,
-				DC840052175131BC003BFBB2 /* YapDatabaseTransaction.m in Sources */,
-				DC84008217514E16003BFBB2 /* YapAbstractDatabaseExtension.m in Sources */,
-				DC84008317514E16003BFBB2 /* YapAbstractDatabaseExtensionConnection.m in Sources */,
-				DC84008417514E16003BFBB2 /* YapAbstractDatabaseExtensionTransaction.m in Sources */,
-				DC23CF871764007200E103A9 /* YapCollectionKey.m in Sources */,
-				DC2C987417E3C5C000F1E04F /* YapCollectionsDatabaseView.m in Sources */,
-				DC0DA079177E17D10025AC51 /* YapSet.m in Sources */,
+				DC9B10EA184D124E00174B0F /* YapDatabaseSecondaryIndexSetup.m in Sources */,
+				DC9B10FA184D124E00174B0F /* YapDatabaseStatement.m in Sources */,
+				DC9B10E9184D124E00174B0F /* YapDatabaseSecondaryIndexConnection.m in Sources */,
+				DC9B10F6184D124E00174B0F /* YapDatabaseConnectionState.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -862,14 +789,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				DC84006617514255003BFBB2 /* TestObject.m in Sources */,
-				DC49737517E9173000489267 /* TestYapCollectionsDatabaseFullTextSearch.m in Sources */,
-				DC84006717514255003BFBB2 /* TestYapCollectionsDatabase.m in Sources */,
+				DC9B1106184D143800174B0F /* TestYapDatabaseFilteredView.m in Sources */,
 				DC84006817514255003BFBB2 /* TestYapDatabase.m in Sources */,
+				DC9B1005184B1B4300174B0F /* TestYapDatabaseSecondaryIndex.m in Sources */,
 				DC2C988317E3C63700F1E04F /* TestViewMappingsLogic.m in Sources */,
 				DC84008E17514E59003BFBB2 /* TestYapDatabaseView.m in Sources */,
 				DCA528C71797650600B4503B /* TestViewChangeLogic.m in Sources */,
 				DC49737617E9173000489267 /* TestYapDatabaseFullTextSearch.m in Sources */,
-				DCA528C81797650600B4503B /* TestYapCollectionsDatabaseView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

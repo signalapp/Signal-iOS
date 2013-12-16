@@ -12,12 +12,18 @@ static NSMutableArray *changes;
 
 static YapDatabaseViewSectionChange* (^SectionOp)(NSArray*, NSUInteger) = ^(NSArray *sChanges, NSUInteger index){
 	
-	return (YapDatabaseViewSectionChange *)[sChanges objectAtIndex:index];
+	if (index < [sChanges count])
+		return (YapDatabaseViewSectionChange *)[sChanges objectAtIndex:index];
+	else
+		return (YapDatabaseViewSectionChange *)nil;
 };
 
 static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rChanges, NSUInteger index){
 	
-	return (YapDatabaseViewRowChange *)[rChanges objectAtIndex:index];
+	if (index < [rChanges count])
+		return (YapDatabaseViewRowChange *)[rChanges objectAtIndex:index];
+	else
+		return (YapDatabaseViewRowChange *)nil;
 };
 
 + (void)initialize
@@ -1809,7 +1815,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	STAssertTrue([mappings numberOfItemsInGroup:@""] == 2, @"");
 	
-	// Delete multiple items inside the range
+	// Delete all items via removeAllObjectsInAllCollections
 	
 	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
 	
@@ -1841,6 +1847,58 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 }
 
 - (void)test_fixedRange_beginning_6B
+{
+	YapDatabaseViewRangeOptions *rangeOpts =
+	  [YapDatabaseViewRangeOptions fixedRangeWithLength:2 offset:0 from:YapDatabaseViewBeginning];
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setIsDynamicSectionForAllGroups:YES];
+	
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	[mappings updateWithCounts:@{ @"":@(4) }];
+	
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	STAssertTrue([mappings numberOfItemsInGroup:@""] == 2, @"");
+	
+	// Delete all items via removeAllObjectsInAllCollections
+	
+	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
+	
+	[mappings updateWithCounts:@{ @"":@(0) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([mappings numberOfItemsInGroup:@""] == 0, @"");
+	
+	STAssertTrue([sectionChanges count] == 1, @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sectionChanges, 0).index == 0, @"");
+	
+	STAssertTrue([rowChanges count] == 2, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalIndex == 1, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
+}
+
+- (void)test_fixedRange_beginning_6C
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -1890,7 +1948,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	STAssertTrue(RowOp(rowChanges, 2).finalIndex == 0, @"");
 }
 
-- (void)test_fixedRange_beginning_6C
+- (void)test_fixedRange_beginning_6D
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -1904,7 +1962,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	STAssertTrue([mappings numberOfItemsInGroup:@""] == 2, @"");
 	
-	// Delete multiple items inside the range
+	// Test multiple changes, forcing some change-consolidation processing
 	
 	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
 	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
@@ -1955,7 +2013,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	STAssertTrue([mappings numberOfItemsInGroup:@""] == 2, @"");
 	
-	// Delete multiple items inside the range
+	// Delete all items via removeAllObjectsInAllCollections
 	
 	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
 	
@@ -1987,6 +2045,58 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 }
 
 - (void)test_fixedRange_end_6B
+{
+	YapDatabaseViewRangeOptions *rangeOpts =
+	[YapDatabaseViewRangeOptions fixedRangeWithLength:2 offset:0 from:YapDatabaseViewEnd];
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setIsDynamicSectionForAllGroups:YES];
+	
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	[mappings updateWithCounts:@{ @"":@(4) }];
+	
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	STAssertTrue([mappings numberOfItemsInGroup:@""] == 2, @"");
+	
+	// Delete all items via removeAllObjectsInAllCollections
+	
+	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
+	
+	[mappings updateWithCounts:@{ @"":@(0) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([mappings numberOfItemsInGroup:@""] == 0, @"");
+	
+	STAssertTrue([sectionChanges count] == 1, @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sectionChanges, 0).index == 0, @"");
+	
+	STAssertTrue([rowChanges count] == 2, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalIndex == 1, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
+}
+
+- (void)test_fixedRange_end_6C
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewEnd];
@@ -2036,7 +2146,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	STAssertTrue(RowOp(rowChanges, 2).finalIndex == 0, @"");
 }
 
-- (void)test_fixedRange_end_6C
+- (void)test_fixedRange_end_6D
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewEnd];
@@ -5349,6 +5459,851 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	row = [mappings rowForIndex:6 inGroup:@""];
 	STAssertTrue(row == NSNotFound, @"Expected NSNotFound, got %lu", (unsigned long)row);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+#pragma mark Auto Consolidate Groups
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test_autoConsolidateGroups_1A
+{
+	YapDatabaseViewMappings *originalMappings, *finalMappings;
+	
+	NSString *group0 = @"g0";
+	NSString *group1 = @"g1";
+	NSString *consolidatedGroupName = @"auto";
+	
+	originalMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[group0, group1] view:@"view"];
+	[originalMappings setAutoConsolidateGroupsThreshold:5 withName:consolidatedGroupName];
+	
+	[originalMappings updateWithCounts:@{ group0:@(2), group1:@(3) }];
+	
+	// Delete single item:
+	//
+	// - [group0, section=0, row=0]
+	//
+	// This should cause all the groups to collapse (auto consolidate)
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"section0,row0" inGroup:group0 atIndex:0]];
+	
+	finalMappings = [originalMappings copy];
+	[finalMappings updateWithCounts:@{ group0:@(1), group1:@(3) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:finalMappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([sectionChanges count] == 3, @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sectionChanges, 0).index == 0, @"");
+	STAssertTrue([SectionOp(sectionChanges, 0).group isEqualToString:group0], @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sectionChanges, 1).index == 1, @"");
+	STAssertTrue([SectionOp(sectionChanges, 1).group isEqualToString:group1], @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 2).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sectionChanges, 2).index == 0, @"");
+	STAssertTrue([SectionOp(sectionChanges, 2).group isEqualToString:consolidatedGroupName], @"");
+	
+	STAssertTrue([rowChanges count] == 5, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 0).originalGroup isEqualToString:group0], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalIndex == 1, @"");
+	STAssertTrue([RowOp(rowChanges, 1).originalGroup isEqualToString:group0], @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 1).finalGroup isEqualToString:consolidatedGroupName], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 2).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 2).originalSection == 1, @"");
+	STAssertTrue(RowOp(rowChanges, 2).originalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 2).originalGroup isEqualToString:group1], @"");
+	STAssertTrue(RowOp(rowChanges, 2).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 2).finalIndex == 1, @"");
+	STAssertTrue([RowOp(rowChanges, 2).finalGroup isEqualToString:consolidatedGroupName], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 3).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 3).originalSection == 1, @"");
+	STAssertTrue(RowOp(rowChanges, 3).originalIndex == 1, @"");
+	STAssertTrue([RowOp(rowChanges, 3).originalGroup isEqualToString:group1], @"");
+	STAssertTrue(RowOp(rowChanges, 3).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 3).finalIndex == 2, @"");
+	STAssertTrue([RowOp(rowChanges, 3).finalGroup isEqualToString:consolidatedGroupName], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 4).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 4).originalSection == 1, @"");
+	STAssertTrue(RowOp(rowChanges, 4).originalIndex == 2, @"");
+	STAssertTrue([RowOp(rowChanges, 4).originalGroup isEqualToString:group1], @"");
+	STAssertTrue(RowOp(rowChanges, 4).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 4).finalIndex == 3, @"");
+	STAssertTrue([RowOp(rowChanges, 4).finalGroup isEqualToString:consolidatedGroupName], @"");
+}
+
+- (void)test_autoConsolidateGroups_1B
+{
+	YapDatabaseViewMappings *originalMappings, *finalMappings;
+	
+	NSString *group0 = @"g0";
+	NSString *group1 = @"g1";
+	NSString *consolidatedGroupName = @"auto";
+	
+	originalMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[group0, group1] view:@"view"];
+	[originalMappings setAutoConsolidateGroupsThreshold:5 withName:consolidatedGroupName];
+	
+	[originalMappings updateWithCounts:@{ group0:@(2), group1:@(3) }];
+	
+	// Delete single item:
+	//
+	// - [group1, section=1, row=1]
+	//
+	// This should cause all the groups to collapse (auto consolidate)
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"section1,row1" inGroup:group1 atIndex:1]];
+	
+	finalMappings = [originalMappings copy];
+	[finalMappings updateWithCounts:@{ group0:@(2), group1:@(2) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:finalMappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([sectionChanges count] == 3, @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sectionChanges, 0).index == 0, @"");
+	STAssertTrue([SectionOp(sectionChanges, 0).group isEqualToString:group0], @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sectionChanges, 1).index == 1, @"");
+	STAssertTrue([SectionOp(sectionChanges, 1).group isEqualToString:group1], @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 2).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sectionChanges, 2).index == 0, @"");
+	STAssertTrue([SectionOp(sectionChanges, 2).group isEqualToString:consolidatedGroupName], @"");
+	
+	STAssertTrue([rowChanges count] == 5, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalSection == 1, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalIndex == 1, @"");
+	STAssertTrue([RowOp(rowChanges, 0).originalGroup isEqualToString:group1], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 1).originalGroup isEqualToString:group0], @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 1).finalGroup isEqualToString:consolidatedGroupName], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 2).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 2).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 2).originalIndex == 1, @"");
+	STAssertTrue([RowOp(rowChanges, 2).originalGroup isEqualToString:group0], @"");
+	STAssertTrue(RowOp(rowChanges, 2).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 2).finalIndex == 1, @"");
+	STAssertTrue([RowOp(rowChanges, 2).finalGroup isEqualToString:consolidatedGroupName], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 3).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 3).originalSection == 1, @"");
+	STAssertTrue(RowOp(rowChanges, 3).originalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 3).originalGroup isEqualToString:group1], @"");
+	STAssertTrue(RowOp(rowChanges, 3).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 3).finalIndex == 2, @"");
+	STAssertTrue([RowOp(rowChanges, 3).finalGroup isEqualToString:consolidatedGroupName], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 4).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 4).originalSection == 1, @"");
+	STAssertTrue(RowOp(rowChanges, 4).originalIndex == 2, @"");
+	STAssertTrue([RowOp(rowChanges, 4).originalGroup isEqualToString:group1], @"");
+	STAssertTrue(RowOp(rowChanges, 4).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 4).finalIndex == 3, @"");
+	STAssertTrue([RowOp(rowChanges, 4).finalGroup isEqualToString:consolidatedGroupName], @"");
+}
+
+- (void)test_autoConsolidateGroups_1C
+{
+	YapDatabaseViewMappings *originalMappings, *finalMappings;
+	
+	NSString *group0 = @"g0";
+	NSString *group1 = @"g1";
+	NSString *consolidatedGroupName = @"auto";
+	
+	originalMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[group0, group1] view:@"view"];
+	[originalMappings setAutoConsolidateGroupsThreshold:5 withName:consolidatedGroupName];
+	
+	[originalMappings updateWithCounts:@{ group0:@(2), group1:@(3) }];
+	
+	// Delete multiple items:
+	//
+	// - [group0, section=0, row=0]
+	// - [group1, section=1, row=1]
+	//
+	// This should cause all the groups to collapse (auto consolidate)
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"section0,row0" inGroup:group0 atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"section1,row1" inGroup:group1 atIndex:1]];
+	
+	finalMappings = [originalMappings copy];
+	[finalMappings updateWithCounts:@{ group0:@(1), group1:@(2) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:finalMappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([sectionChanges count] == 3, @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sectionChanges, 0).index == 0, @"");
+	STAssertTrue([SectionOp(sectionChanges, 0).group isEqualToString:group0], @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sectionChanges, 1).index == 1, @"");
+	STAssertTrue([SectionOp(sectionChanges, 1).group isEqualToString:group1], @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 2).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sectionChanges, 2).index == 0, @"");
+	STAssertTrue([SectionOp(sectionChanges, 2).group isEqualToString:consolidatedGroupName], @"");
+	
+	STAssertTrue([rowChanges count] == 5, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 0).originalGroup isEqualToString:group0], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalSection == 1, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalIndex == 1, @"");
+	STAssertTrue([RowOp(rowChanges, 1).originalGroup isEqualToString:group1], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 2).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 2).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 2).originalIndex == 1, @"");
+	STAssertTrue([RowOp(rowChanges, 2).originalGroup isEqualToString:group0], @"");
+	STAssertTrue(RowOp(rowChanges, 2).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 2).finalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 2).finalGroup isEqualToString:consolidatedGroupName], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 3).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 3).originalSection == 1, @"");
+	STAssertTrue(RowOp(rowChanges, 3).originalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 3).originalGroup isEqualToString:group1], @"");
+	STAssertTrue(RowOp(rowChanges, 3).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 3).finalIndex == 1, @"");
+	STAssertTrue([RowOp(rowChanges, 3).finalGroup isEqualToString:consolidatedGroupName], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 4).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 4).originalSection == 1, @"");
+	STAssertTrue(RowOp(rowChanges, 4).originalIndex == 2, @"");
+	STAssertTrue([RowOp(rowChanges, 4).originalGroup isEqualToString:group1], @"");
+	STAssertTrue(RowOp(rowChanges, 4).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 4).finalIndex == 2, @"");
+	STAssertTrue([RowOp(rowChanges, 4).finalGroup isEqualToString:consolidatedGroupName], @"");
+}
+
+- (void)test_autoConsolidateGroups_2A
+{
+	YapDatabaseViewMappings *originalMappings, *finalMappings;
+	
+	NSString *group0 = @"g0";
+	NSString *group1 = @"g1";
+	NSString *consolidatedGroupName = @"auto";
+	
+	originalMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[group0, group1] view:@"view"];
+	[originalMappings setAutoConsolidateGroupsThreshold:5 withName:consolidatedGroupName];
+	
+	[originalMappings updateWithCounts:@{ group0:@(1), group1:@(3) }];
+	
+	// Insert single item:
+	//
+	// - [group0, section=0, row=0]
+	//
+	// This should cause all the groups to UNcollapse (auto UNconsolidate)
+	
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"section0,row0" inGroup:group0 atIndex:0]];
+	
+	finalMappings = [originalMappings copy];
+	[finalMappings updateWithCounts:@{ group0:@(2), group1:@(3) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:finalMappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([sectionChanges count] == 3, @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sectionChanges, 0).index == 0, @"");
+	STAssertTrue([SectionOp(sectionChanges, 0).group isEqualToString:consolidatedGroupName], @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sectionChanges, 1).index == 0, @"");
+	STAssertTrue([SectionOp(sectionChanges, 1).group isEqualToString:group0], @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 2).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sectionChanges, 2).index == 1, @"");
+	STAssertTrue([SectionOp(sectionChanges, 2).group isEqualToString:group1], @"");
+	
+	STAssertTrue([rowChanges count] == 5, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 0).finalGroup isEqualToString:group0], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 1).originalGroup isEqualToString:consolidatedGroupName], @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalIndex == 1, @"");
+	STAssertTrue([RowOp(rowChanges, 1).finalGroup isEqualToString:group0], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 2).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 2).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 2).originalIndex == 1, @"");
+	STAssertTrue([RowOp(rowChanges, 2).originalGroup isEqualToString:consolidatedGroupName], @"");
+	STAssertTrue(RowOp(rowChanges, 2).finalSection == 1, @"");
+	STAssertTrue(RowOp(rowChanges, 2).finalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 2).finalGroup isEqualToString:group1], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 3).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 3).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 3).originalIndex == 2, @"");
+	STAssertTrue([RowOp(rowChanges, 3).originalGroup isEqualToString:consolidatedGroupName], @"");
+	STAssertTrue(RowOp(rowChanges, 3).finalSection == 1, @"");
+	STAssertTrue(RowOp(rowChanges, 3).finalIndex == 1, @"");
+	STAssertTrue([RowOp(rowChanges, 3).finalGroup isEqualToString:group1], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 4).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 4).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 4).originalIndex == 3, @"");
+	STAssertTrue([RowOp(rowChanges, 4).originalGroup isEqualToString:consolidatedGroupName], @"");
+	STAssertTrue(RowOp(rowChanges, 4).finalSection == 1, @"");
+	STAssertTrue(RowOp(rowChanges, 4).finalIndex == 2, @"");
+	STAssertTrue([RowOp(rowChanges, 4).finalGroup isEqualToString:group1], @"");
+}
+
+- (void)test_autoConsolidateGroups_2B
+{
+	YapDatabaseViewMappings *originalMappings, *finalMappings;
+	
+	NSString *group0 = @"g0";
+	NSString *group1 = @"g1";
+	NSString *consolidatedGroupName = @"auto";
+	
+	originalMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[group0, group1] view:@"view"];
+	[originalMappings setAutoConsolidateGroupsThreshold:5 withName:consolidatedGroupName];
+	
+	[originalMappings updateWithCounts:@{ group0:@(2), group1:@(2) }];
+	
+	// Insert single item:
+	//
+	// - [group1, section=1, row=1]
+	//
+	// This should cause the groups to UNcollapse (auto UNconsolidate)
+	
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"section1,row1" inGroup:group1 atIndex:1]];
+	
+	finalMappings = [originalMappings copy];
+	[finalMappings updateWithCounts:@{ group0:@(2), group1:@(3) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:finalMappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([sectionChanges count] == 3, @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sectionChanges, 0).index == 0, @"");
+	STAssertTrue([SectionOp(sectionChanges, 0).group isEqualToString:consolidatedGroupName], @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sectionChanges, 1).index == 0, @"");
+	STAssertTrue([SectionOp(sectionChanges, 1).group isEqualToString:group0], @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 2).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sectionChanges, 2).index == 1, @"");
+	STAssertTrue([SectionOp(sectionChanges, 2).group isEqualToString:group1], @"");
+	
+	STAssertTrue([rowChanges count] == 5, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalSection == 1, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalIndex == 1, @"");
+	STAssertTrue([RowOp(rowChanges, 0).finalGroup isEqualToString:group1], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 1).originalGroup isEqualToString:consolidatedGroupName], @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 1).finalGroup isEqualToString:group0], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 2).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 2).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 2).originalIndex == 1, @"");
+	STAssertTrue([RowOp(rowChanges, 2).originalGroup isEqualToString:consolidatedGroupName], @"");
+	STAssertTrue(RowOp(rowChanges, 2).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 2).finalIndex == 1, @"");
+	STAssertTrue([RowOp(rowChanges, 2).finalGroup isEqualToString:group0], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 3).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 3).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 3).originalIndex == 2, @"");
+	STAssertTrue([RowOp(rowChanges, 3).originalGroup isEqualToString:consolidatedGroupName], @"");
+	STAssertTrue(RowOp(rowChanges, 3).finalSection == 1, @"");
+	STAssertTrue(RowOp(rowChanges, 3).finalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 3).finalGroup isEqualToString:group1], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 4).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 4).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 4).originalIndex == 3, @"");
+	STAssertTrue([RowOp(rowChanges, 4).originalGroup isEqualToString:consolidatedGroupName], @"");
+	STAssertTrue(RowOp(rowChanges, 4).finalSection == 1, @"");
+	STAssertTrue(RowOp(rowChanges, 4).finalIndex == 2, @"");
+	STAssertTrue([RowOp(rowChanges, 4).finalGroup isEqualToString:group1], @"");
+}
+
+- (void)test_autoConsolidateGroups_2C
+{
+	YapDatabaseViewMappings *originalMappings, *finalMappings;
+	
+	NSString *group0 = @"g0";
+	NSString *group1 = @"g1";
+	NSString *consolidatedGroupName = @"auto";
+	
+	originalMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[group0, group1] view:@"view"];
+	[originalMappings setAutoConsolidateGroupsThreshold:5 withName:consolidatedGroupName];
+	
+	[originalMappings updateWithCounts:@{ group0:@(1), group1:@(2) }];
+	
+	// Insert multiple items:
+	//
+	// - [group0, section=0, row=0]
+	// - [group1, section=1, row=1]
+	//
+	// This should cause all the groups to UNcollapse (auto UNconsolidate)
+	
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"section0,row0" inGroup:group0 atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"section1,row1" inGroup:group1 atIndex:1]];
+	
+	finalMappings = [originalMappings copy];
+	[finalMappings updateWithCounts:@{ group0:@(2), group1:@(3) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:finalMappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([sectionChanges count] == 3, @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(SectionOp(sectionChanges, 0).index == 0, @"");
+	STAssertTrue([SectionOp(sectionChanges, 0).group isEqualToString:consolidatedGroupName], @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sectionChanges, 1).index == 0, @"");
+	STAssertTrue([SectionOp(sectionChanges, 1).group isEqualToString:group0], @"");
+	
+	STAssertTrue(SectionOp(sectionChanges, 2).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(SectionOp(sectionChanges, 2).index == 1, @"");
+	STAssertTrue([SectionOp(sectionChanges, 2).group isEqualToString:group1], @"");
+	
+	STAssertTrue([rowChanges count] == 5, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 0).finalGroup isEqualToString:group0], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalSection == 1, @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalIndex == 1, @"");
+	STAssertTrue([RowOp(rowChanges, 1).finalGroup isEqualToString:group1], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 2).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 2).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 2).originalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 2).originalGroup isEqualToString:consolidatedGroupName], @"");
+	STAssertTrue(RowOp(rowChanges, 2).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 2).finalIndex == 1, @"");
+	STAssertTrue([RowOp(rowChanges, 2).finalGroup isEqualToString:group0], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 3).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 3).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 3).originalIndex == 1, @"");
+	STAssertTrue([RowOp(rowChanges, 3).originalGroup isEqualToString:consolidatedGroupName], @"");
+	STAssertTrue(RowOp(rowChanges, 3).finalSection == 1, @"");
+	STAssertTrue(RowOp(rowChanges, 3).finalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 3).finalGroup isEqualToString:group1], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 4).type == YapDatabaseViewChangeMove, @"");
+	STAssertTrue(RowOp(rowChanges, 4).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 4).originalIndex == 2, @"");
+	STAssertTrue([RowOp(rowChanges, 4).originalGroup isEqualToString:consolidatedGroupName], @"");
+	STAssertTrue(RowOp(rowChanges, 4).finalSection == 1, @"");
+	STAssertTrue(RowOp(rowChanges, 4).finalIndex == 2, @"");
+	STAssertTrue([RowOp(rowChanges, 4).finalGroup isEqualToString:group1], @"");
+}
+
+- (void)test_autoConsolidateGroups_3A
+{
+	YapDatabaseViewMappings *originalMappings, *finalMappings;
+	
+	NSString *group0 = @"g0";
+	NSString *group1 = @"g1";
+	NSString *consolidatedGroupName = @"auto";
+	
+	originalMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[group0, group1] view:@"view"];
+	[originalMappings setAutoConsolidateGroupsThreshold:20 withName:consolidatedGroupName];
+	
+	[originalMappings updateWithCounts:@{ group0:@(2), group1:@(3) }];
+	
+	// Delete single item:
+	//
+	// - [group0, section=0, row=0]
+	//
+	// Groups remain collapsed (auto consolidated)
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"section0,row0" inGroup:group0 atIndex:0]];
+	
+	finalMappings = [originalMappings copy];
+	[finalMappings updateWithCounts:@{ group0:@(1), group1:@(3) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:finalMappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([sectionChanges count] == 0, @"");
+	
+	STAssertTrue([rowChanges count] == 1, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 0).originalGroup isEqualToString:consolidatedGroupName], @"");
+}
+
+- (void)test_autoConsolidateGroups_3B
+{
+	YapDatabaseViewMappings *originalMappings, *finalMappings;
+	
+	NSString *group0 = @"g0";
+	NSString *group1 = @"g1";
+	NSString *consolidatedGroupName = @"auto";
+	
+	originalMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[group0, group1] view:@"view"];
+	[originalMappings setAutoConsolidateGroupsThreshold:20 withName:consolidatedGroupName];
+	
+	[originalMappings updateWithCounts:@{ group0:@(2), group1:@(3) }];
+	
+	// Delete single item:
+	//
+	// - [group1, section=1, row=1]
+	//
+	// Groups remain collapsed (auto consolidated)
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"section1,row1" inGroup:group1 atIndex:1]];
+	
+	finalMappings = [originalMappings copy];
+	[finalMappings updateWithCounts:@{ group0:@(2), group1:@(2) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:finalMappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([sectionChanges count] == 0, @"");
+	
+	STAssertTrue([rowChanges count] == 1, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalIndex == 3, @"");
+	STAssertTrue([RowOp(rowChanges, 0).originalGroup isEqualToString:consolidatedGroupName], @"");
+}
+
+- (void)test_autoConsolidateGroups_3C
+{
+	YapDatabaseViewMappings *originalMappings, *finalMappings;
+	
+	NSString *group0 = @"g0";
+	NSString *group1 = @"g1";
+	NSString *consolidatedGroupName = @"auto";
+	
+	originalMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[group0, group1] view:@"view"];
+	[originalMappings setAutoConsolidateGroupsThreshold:20 withName:consolidatedGroupName];
+	
+	[originalMappings updateWithCounts:@{ group0:@(2), group1:@(3) }];
+	
+	// Delete multiple items:
+	//
+	// - [group0, section=0, row=0]
+	// - [group1, section=1, row=1]
+	//
+	// Groups remain collapsed (auto consolidated)
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"section0,row0" inGroup:group0 atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"section1,row1" inGroup:group1 atIndex:1]];
+	
+	finalMappings = [originalMappings copy];
+	[finalMappings updateWithCounts:@{ group0:@(1), group1:@(2) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:finalMappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([sectionChanges count] == 0, @"");
+	
+	STAssertTrue([rowChanges count] == 2, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).originalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 0).originalGroup isEqualToString:consolidatedGroupName], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).originalIndex == 3, @"");
+	STAssertTrue([RowOp(rowChanges, 1).originalGroup isEqualToString:consolidatedGroupName], @"");
+}
+
+- (void)test_autoConsolidateGroups_3D
+{
+	YapDatabaseViewMappings *originalMappings, *finalMappings;
+	
+	NSString *group0 = @"g0";
+	NSString *group1 = @"g1";
+	NSString *consolidatedGroupName = @"auto";
+	
+	originalMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[group0, group1] view:@"view"];
+	[originalMappings setAutoConsolidateGroupsThreshold:20 withName:consolidatedGroupName];
+	
+	[originalMappings updateWithCounts:@{ group0:@(1), group1:@(3) }];
+	
+	// Insert single item:
+	//
+	// - [group0, section=0, row=0]
+	//
+	// Groups remain collapsed (auto consolidated)
+	
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"section0,row0" inGroup:group0 atIndex:0]];
+	
+	finalMappings = [originalMappings copy];
+	[finalMappings updateWithCounts:@{ group0:@(2), group1:@(3) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:finalMappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([sectionChanges count] == 0, @"");
+	
+	STAssertTrue([rowChanges count] == 1, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 0).finalGroup isEqualToString:consolidatedGroupName], @"");
+}
+
+- (void)test_autoConsolidateGroups_3E
+{
+	YapDatabaseViewMappings *originalMappings, *finalMappings;
+	
+	NSString *group0 = @"g0";
+	NSString *group1 = @"g1";
+	NSString *consolidatedGroupName = @"auto";
+	
+	originalMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[group0, group1] view:@"view"];
+	[originalMappings setAutoConsolidateGroupsThreshold:20 withName:consolidatedGroupName];
+	
+	[originalMappings updateWithCounts:@{ group0:@(2), group1:@(2) }];
+	
+	// Insert single item:
+	//
+	// - [group1, section=1, row=1]
+	//
+	// Groups remain collapsed (auto consolidated)
+	
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"section1,row1" inGroup:group1 atIndex:1]];
+	
+	finalMappings = [originalMappings copy];
+	[finalMappings updateWithCounts:@{ group0:@(2), group1:@(3) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:finalMappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([sectionChanges count] == 0, @"");
+	
+	STAssertTrue([rowChanges count] == 1, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalIndex == 3, @"");
+	STAssertTrue([RowOp(rowChanges, 0).finalGroup isEqualToString:consolidatedGroupName], @"");
+}
+
+- (void)test_autoConsolidateGroups_3F
+{
+	YapDatabaseViewMappings *originalMappings, *finalMappings;
+	
+	NSString *group0 = @"g0";
+	NSString *group1 = @"g1";
+	NSString *consolidatedGroupName = @"auto";
+	
+	originalMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[group0, group1] view:@"view"];
+	[originalMappings setAutoConsolidateGroupsThreshold:20 withName:consolidatedGroupName];
+	
+	[originalMappings updateWithCounts:@{ group0:@(1), group1:@(2) }];
+	
+	// Insert multiple items:
+	//
+	// - [group0, section=0, row=0]
+	// - [group1, section=1, row=1]
+	//
+	// Groups remain collapsed (auto consolidated)
+	
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"section0,row0" inGroup:group0 atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"section1,row1" inGroup:group1 atIndex:1]];
+	
+	finalMappings = [originalMappings copy];
+	[finalMappings updateWithCounts:@{ group0:@(2), group1:@(3) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:finalMappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	STAssertTrue([sectionChanges count] == 0, @"");
+	
+	STAssertTrue([rowChanges count] == 2, @"");
+	
+	STAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 0).finalIndex == 0, @"");
+	STAssertTrue([RowOp(rowChanges, 0).finalGroup isEqualToString:consolidatedGroupName], @"");
+	
+	STAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalSection == 0, @"");
+	STAssertTrue(RowOp(rowChanges, 1).finalIndex == 3, @"");
+	STAssertTrue([RowOp(rowChanges, 1).finalGroup isEqualToString:consolidatedGroupName], @"");
 }
 
 @end

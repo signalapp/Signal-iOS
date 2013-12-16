@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "YapAbstractDatabaseConnection.h"
+#import "YapDatabaseConnection.h"
 
 
 @interface YapDatabaseConnectionState : NSObject {
@@ -7,7 +7,7 @@
 	dispatch_semaphore_t writeSemaphore;
 
 @public
-	__weak YapAbstractDatabaseConnection *connection;
+	__weak YapDatabaseConnection *connection;
 	
 	BOOL yapLevelSharedReadLock;
 	BOOL sqlLevelSharedReadLock;
@@ -19,7 +19,7 @@
 	uint64_t lastKnownSnapshot;
 }
 
-- (id)initWithConnection:(YapAbstractDatabaseConnection *)connection;
+- (id)initWithConnection:(YapDatabaseConnection *)connection;
 
 - (void)prepareWriteLock;
 

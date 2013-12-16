@@ -4,7 +4,7 @@
 
 #define LOOP_COUNT 25000
 
-#define TEST_COLLECTION_KEY 0 // 0:Key=NSString, 1:Key=YapCollectionKey
+#define TEST_COLLECTION_KEY 1 // 0:Key=NSString, 1:Key=YapCollectionKey
 
 
 /**

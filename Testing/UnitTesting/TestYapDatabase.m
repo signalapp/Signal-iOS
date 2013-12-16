@@ -63,299 +63,326 @@
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		
-		// Test empty database
+		STAssertTrue([transaction numberOfCollections] == 0, @"Expected zero collection count");
+		STAssertTrue([[transaction allCollections] count] == 0, @"Expected empty array");
 		
-		STAssertTrue([transaction numberOfKeys] == 0, @"Expected zero key count");
-		STAssertTrue([[transaction allKeys] count] == 0, @"Expected empty array");
+		STAssertTrue([transaction numberOfKeysInCollection:nil] == 0, @"Expected zero key count");
 		
-		STAssertNil([transaction objectForKey:@"non-existant-key"], @"Expected nil object");
-		STAssertNil([transaction primitiveDataForKey:@"non-existant-key"], @"Expected nil data");
+		STAssertNil([transaction objectForKey:@"non-existant" inCollection:nil], @"Expected nil object");
+		STAssertNil([transaction primitiveDataForKey:@"non-existant" inCollection:nil], @"Expected nil data");
 		
-		STAssertFalse([transaction hasObjectForKey:@"non-existant-key"], @"Expected NO object for key");
+		STAssertFalse([transaction hasObjectForKey:@"non-existant" inCollection:nil], @"Expected NO object for key");
 		
-		BOOL result = [transaction getObject:&aObj metadata:&aMetadata forKey:@"non-existant-key"];
+		BOOL result = [transaction getObject:&aObj metadata:&aMetadata forKey:@"non-existant" inCollection:nil];
 		
 		STAssertFalse(result, @"Expected NO getObject for key");
 		STAssertNil(aObj, @"Expected object to be set to nil");
 		STAssertNil(aMetadata, @"Expected metadata to be set to nil");
 		
-		STAssertNil([transaction metadataForKey:@"non-existant-key"], @"Expected nil metadata");
+		STAssertNil([transaction metadataForKey:@"non-existant" inCollection:nil], @"Expected nil metadata");
 		
-		STAssertNoThrow([transaction removeObjectForKey:@"non-existant-key"], @"Expected no issues");
+		STAssertNoThrow([transaction removeObjectForKey:@"non-existant" inCollection:nil], @"Expected no issues");
 		
 		NSArray *keys = @[@"non",@"existant",@"keys"];
-		STAssertNoThrow([transaction removeObjectsForKeys:keys], @"Expected no issues");
+		STAssertNoThrow([transaction removeObjectsForKeys:keys inCollection:nil], @"Expected no issues");
 		
 		__block NSUInteger count = 0;
 		
-		[transaction enumerateKeysAndMetadataUsingBlock:^(NSString *key, id metadata, BOOL *stop){
-			count++;
-		}];
-		
-		STAssertTrue(count == 0, @"Expceted zero keys");
-		count = 0;
-		
-		[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop){
-			count++;
-		}];
-		
-		STAssertTrue(count == 0, @"Expceted zero keys");
-		count = 0;
-		
-		[transaction enumerateRowsUsingBlock:^(NSString *key, id object, id metadata, BOOL *stop){
+		[transaction enumerateKeysAndMetadataInCollection:nil usingBlock:^(NSString *key, id metadata, BOOL *stop){
 			count++;
 		}];
 		
 		STAssertTrue(count == 0, @"Expceted zero keys");
 		
+		[transaction enumerateKeysAndObjectsInCollection:nil
+		                                      usingBlock:^(NSString *key, id object, BOOL *stop){
+			count++;
+		}];
+		
+		STAssertTrue(count == 0, @"Expceted zero keys");												
+														
 		// Attempt to set metadata for a key that has no associated object.
 		// It should silently fail (do nothing).
 		// And further queries to fetch metadata for the same key should return nil.
 		
-		STAssertNoThrow([transaction setMetadata:metadata forKey:@"non-existant-key"], @"Expected nothing to happen");
+		STAssertNoThrow([transaction setMetadata:metadata forKey:@"non-existant" inCollection:nil],
+		                 @"Expected nothing to happen");
 		
-		STAssertNil([transaction metadataForKey:@"non-existant-key"], @"Expected nil metadata since no object");
+		STAssertNil([transaction metadataForKey:@"non-existant" inCollection:nil],
+		            @"Expected nil metadata since no object");
 	}];
 	
 	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		
 		// Test object without metadata
 		
-		[transaction setObject:object forKey:key1];
+		[transaction setObject:object forKey:key1 inCollection:nil];
 		
-		STAssertTrue([transaction numberOfKeys] == 1, @"Expected 1 key");
-		STAssertTrue([[transaction allKeys] count] == 1, @"Expected 1 key");
+		STAssertTrue([transaction numberOfKeysInCollection:nil] == 1, @"Expected 1 key");
+		STAssertTrue([[transaction allKeysInCollection:nil] count] == 1, @"Expected 1 key");
 		
-		STAssertNotNil([transaction objectForKey:key1], @"Expected non-nil object");
-		STAssertNotNil([transaction primitiveDataForKey:key1], @"Expected non-nil data");
+		STAssertTrue([transaction numberOfKeysInCollection:@""] == 1, @"Expected 1 key");
+		STAssertTrue([[transaction allKeysInCollection:@""] count] == 1, @"Expected 1 key");
 		
-		STAssertTrue([transaction hasObjectForKey:key1], @"Expected YES");
+		STAssertNotNil([transaction objectForKey:key1 inCollection:nil], @"Expected non-nil object");
+		STAssertNotNil([transaction primitiveDataForKey:key1 inCollection:nil], @"Expected non-nil data");
 		
-		result = [transaction getObject:&aObj metadata:&aMetadata forKey:key1];
+		STAssertTrue([transaction hasObjectForKey:key1 inCollection:nil], @"Expected YES");
+		
+		result = [transaction getObject:&aObj metadata:&aMetadata forKey:key1 inCollection:nil];
 		
 		STAssertTrue(result, @"Expected YES");
 		STAssertNotNil(aObj, @"Expected non-nil object");
 		STAssertNil(aMetadata, @"Expected nil metadata");
 		
-		STAssertNil([transaction metadataForKey:key1], @"Expected nil metadata");
+		STAssertNil([transaction metadataForKey:key1 inCollection:nil], @"Expected nil metadata");
 		
-		[transaction enumerateKeysAndMetadataUsingBlock:^(NSString *key, id metadata, BOOL *stop){
+		[transaction enumerateKeysAndMetadataInCollection:nil usingBlock:^(NSString *key, id metadata, BOOL *stop){
 			
 			STAssertNil(metadata, @"Expected nil metadata");
 		}];
 		
-		[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop){
+		[transaction enumerateKeysAndObjectsInCollection:nil
+		                                      usingBlock:^(NSString *key, id object, BOOL *stop){
 			
 			STAssertNotNil(aObj, @"Expected non-nil object");
 		}];
 		
-		[transaction enumerateRowsUsingBlock:^(NSString *key, id object, id metadata, BOOL *stop){
+		[transaction enumerateRowsInCollection:nil
+		                            usingBlock:^(NSString *key, id object, id metadata, BOOL *stop){
 			
 			STAssertNotNil(aObj, @"Expected non-nil object");
 			STAssertNil(metadata, @"Expected nil metadata");
 		}];
 	}];
-
+	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		
 		// Test remove object
 		
-		[transaction removeObjectForKey:key1];
+		[transaction removeObjectForKey:key1 inCollection:nil];
 		
-		STAssertTrue([transaction numberOfKeys] == 0, @"Expected 0 keys");
-		STAssertTrue([[transaction allKeys] count] == 0, @"Expected 0 keys");
+		STAssertTrue([transaction numberOfKeysInCollection:nil] == 0, @"Expected 0 keys");
+		STAssertTrue([[transaction allKeysInCollection:nil] count] == 0, @"Expected 0 keys");
 		
-		STAssertNil([transaction objectForKey:key1], @"Expected nil object");
-		STAssertNil([transaction primitiveDataForKey:key1], @"Expected nil data");
+		STAssertNil([transaction objectForKey:key1 inCollection:nil], @"Expected nil object");
+		STAssertNil([transaction primitiveDataForKey:key1 inCollection:nil], @"Expected nil data");
 		
-		STAssertFalse([transaction hasObjectForKey:key1], @"Expected NO");
+		STAssertFalse([transaction hasObjectForKey:key1 inCollection:nil], @"Expected NO");
 	}];
-
+	
 	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		
 		// Test object with metadata
 		
-		[transaction setObject:object forKey:key1 withMetadata:metadata];
+		[transaction setObject:object forKey:key1 inCollection:nil withMetadata:metadata];
 		
-		STAssertTrue([transaction numberOfKeys] == 1, @"Expected 1 key");
-		STAssertTrue([[transaction allKeys] count] == 1, @"Expected 1 key");
+		STAssertTrue([transaction numberOfKeysInCollection:nil] == 1, @"Expected 1 key");
+		STAssertTrue([[transaction allKeysInCollection:nil] count] == 1, @"Expected 1 key");
 		
-		STAssertNotNil([transaction objectForKey:key1], @"Expected non-nil object");
-		STAssertNotNil([transaction primitiveDataForKey:key1], @"Expected non-nil data");
+		STAssertNotNil([transaction objectForKey:key1 inCollection:nil], @"Expected non-nil object");
+		STAssertNotNil([transaction primitiveDataForKey:key1 inCollection:nil], @"Expected non-nil data");
 		
-		STAssertTrue([transaction hasObjectForKey:key1], @"Expected YES");
+		STAssertTrue([transaction hasObjectForKey:key1 inCollection:nil], @"Expected YES");
 		
-		result = [transaction getObject:&aObj metadata:&aMetadata forKey:key1];
+		result = [transaction getObject:&aObj metadata:&aMetadata forKey:key1 inCollection:nil];
 		
 		STAssertTrue(result, @"Expected YES");
 		STAssertNotNil(aObj, @"Expected non-nil object");
 		STAssertNotNil(aMetadata, @"Expected non-nil metadata");
 		
-		STAssertNotNil([transaction metadataForKey:key1], @"Expected non-nil metadata");
+		STAssertNotNil([transaction metadataForKey:key1 inCollection:nil], @"Expected non-nil metadata");
 		
-		[transaction enumerateKeysAndMetadataUsingBlock:^(NSString *key, id metadata, BOOL *stop){
+		[transaction enumerateKeysAndMetadataInCollection:nil usingBlock:^(NSString *key, id metadata, BOOL *stop){
 			
 			STAssertNotNil(metadata, @"Expected non-nil metadata");
 		}];
 		
-		[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop){
+		[transaction enumerateKeysAndObjectsInCollection:nil
+		                                      usingBlock:^(NSString *key, id object, BOOL *stop){
 			
 			STAssertNotNil(aObj, @"Expected non-nil object");
 		}];
 		
-		[transaction enumerateRowsUsingBlock:^(NSString *key, id object, id metadata, BOOL *stop){
+		[transaction enumerateRowsInCollection:nil
+		                            usingBlock:^(NSString *key, id object, id metadata, BOOL *stop){
 			
 			STAssertNotNil(aObj, @"Expected non-nil object");
 			STAssertNotNil(metadata, @"Expected non-nil metadata");
 		}];
 	}];
-
+	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		
 		// Test multiple objects
 		
-		[transaction setObject:object forKey:key2 withMetadata:metadata];
-		[transaction setObject:object forKey:key3 withMetadata:metadata];
-		[transaction setObject:object forKey:key4 withMetadata:metadata];
-		[transaction setObject:object forKey:key5 withMetadata:metadata];
+		[transaction setObject:object forKey:key1 inCollection:nil withMetadata:metadata];
+		[transaction setObject:object forKey:key2 inCollection:nil withMetadata:metadata];
+		[transaction setObject:object forKey:key3 inCollection:nil withMetadata:metadata];
+		[transaction setObject:object forKey:key4 inCollection:nil withMetadata:metadata];
+		[transaction setObject:object forKey:key5 inCollection:nil withMetadata:metadata];
 		
-		STAssertTrue([transaction numberOfKeys] == 5, @"Expected 5 keys");
-		STAssertTrue([[transaction allKeys] count] == 5, @"Expected 5 keys");
+		[transaction setObject:object forKey:key1 inCollection:@"test" withMetadata:metadata];
+		[transaction setObject:object forKey:key2 inCollection:@"test" withMetadata:metadata];
+		[transaction setObject:object forKey:key3 inCollection:@"test" withMetadata:metadata];
+		[transaction setObject:object forKey:key4 inCollection:@"test" withMetadata:metadata];
+		[transaction setObject:object forKey:key5 inCollection:@"test" withMetadata:metadata];
 		
-		STAssertNotNil([transaction objectForKey:key1], @"Expected non-nil object");
-		STAssertNotNil([transaction objectForKey:key2], @"Expected non-nil object");
-		STAssertNotNil([transaction objectForKey:key3], @"Expected non-nil object");
-		STAssertNotNil([transaction objectForKey:key4], @"Expected non-nil object");
-		STAssertNotNil([transaction objectForKey:key5], @"Expected non-nil object");
+		STAssertTrue([transaction numberOfKeysInCollection:nil] == 5, @"Expected 5 keys");
+		STAssertTrue([[transaction allKeysInCollection:nil] count] == 5, @"Expected 5 keys");
 		
-		STAssertTrue([transaction hasObjectForKey:key1], @"Expected YES");
-		STAssertTrue([transaction hasObjectForKey:key2], @"Expected YES");
-		STAssertTrue([transaction hasObjectForKey:key3], @"Expected YES");
-		STAssertTrue([transaction hasObjectForKey:key4], @"Expected YES");
-		STAssertTrue([transaction hasObjectForKey:key5], @"Expected YES");
+		STAssertTrue([transaction numberOfKeysInCollection:@"test"] == 5, @"Expected 5 keys");
+		STAssertTrue([[transaction allKeysInCollection:@"test"] count] == 5, @"Expected 5 keys");
 		
-		STAssertNotNil([transaction metadataForKey:key1], @"Expected non-nil metadata");
-		STAssertNotNil([transaction metadataForKey:key2], @"Expected non-nil metadata");
-		STAssertNotNil([transaction metadataForKey:key3], @"Expected non-nil metadata");
-		STAssertNotNil([transaction metadataForKey:key4], @"Expected non-nil metadata");
-		STAssertNotNil([transaction metadataForKey:key5], @"Expected non-nil metadata");
+		STAssertTrue([transaction numberOfKeysInAllCollections] == 10, @"Expected 10 keys");
+		
+		STAssertNotNil([transaction objectForKey:key1 inCollection:nil], @"Expected non-nil object");
+		STAssertNotNil([transaction objectForKey:key1 inCollection:@"test"], @"Expected non-nil object");
+		
+		STAssertTrue([transaction hasObjectForKey:key1 inCollection:nil], @"Expected YES");
+		STAssertTrue([transaction hasObjectForKey:key1 inCollection:@"test"], @"Expected YES");
+		
+		STAssertNotNil([transaction metadataForKey:key1 inCollection:nil], @"Expected non-nil metadata");
+		STAssertNotNil([transaction metadataForKey:key1 inCollection:@"test"], @"Expected non-nil metadata");
 	}];
-
+	
 	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		
 		// Test remove multiple objects
 		
-		[transaction removeObjectsForKeys:@[ key1, key2, key3 ]];
+		[transaction removeObjectsForKeys:@[ key1, key2, key3 ] inCollection:nil];
+		[transaction removeObjectsForKeys:@[ key1, key2, key3 ] inCollection:@"test"];
 		
-		STAssertTrue([transaction numberOfKeys] == 2, @"Expected 2 keys");
-		STAssertTrue([[transaction allKeys] count] == 2, @"Expected 2 keys");
+		STAssertTrue([transaction numberOfKeysInCollection:nil] == 2, @"Expected 2 keys");
+		STAssertTrue([[transaction allKeysInCollection:nil] count] == 2, @"Expected 2 keys");
 		
-		STAssertNil([transaction objectForKey:key1], @"Expected nil object");
-		STAssertNil([transaction objectForKey:key2], @"Expected nil object");
-		STAssertNil([transaction objectForKey:key3], @"Expected nil object");
-		STAssertNotNil([transaction objectForKey:key4], @"Expected non-nil object");
-		STAssertNotNil([transaction objectForKey:key5], @"Expected non-nil object");
+		STAssertTrue([transaction numberOfKeysInCollection:@"test"] == 2, @"Expected 2 keys");
+		STAssertTrue([[transaction allKeysInCollection:@"test"] count] == 2, @"Expected 2 keys");
 		
-		STAssertFalse([transaction hasObjectForKey:key1], @"Expected NO");
-		STAssertFalse([transaction hasObjectForKey:key2], @"Expected NO");
-		STAssertFalse([transaction hasObjectForKey:key3], @"Expected NO");
-		STAssertTrue([transaction hasObjectForKey:key4], @"Expected YES");
-		STAssertTrue([transaction hasObjectForKey:key5], @"Expected YES");
+		STAssertTrue([transaction numberOfKeysInAllCollections] == 4, @"Expected 4 keys");
 		
-		STAssertNil([transaction metadataForKey:key1], @"Expected nil metadata");
-		STAssertNil([transaction metadataForKey:key2], @"Expected nil metadata");
-		STAssertNil([transaction metadataForKey:key3], @"Expected nil metadata");
-		STAssertNotNil([transaction metadataForKey:key4], @"Expected non-nil metadata");
-		STAssertNotNil([transaction metadataForKey:key5], @"Expected non-nil metadata");
-	}];
+		STAssertNil([transaction objectForKey:key1 inCollection:nil], @"Expected nil object");
+		STAssertNil([transaction objectForKey:key1 inCollection:@"test"], @"Expected nil object");
+		
+		STAssertNotNil([transaction objectForKey:key5 inCollection:nil], @"Expected non-nil object");
+		STAssertNotNil([transaction objectForKey:key5 inCollection:@"test"], @"Expected non-nil object");
+		
+		STAssertFalse([transaction hasObjectForKey:key1 inCollection:nil], @"Expected NO");
+		STAssertFalse([transaction hasObjectForKey:key1 inCollection:nil], @"Expected NO");
 
+		STAssertTrue([transaction hasObjectForKey:key5 inCollection:nil], @"Expected YES");
+		STAssertTrue([transaction hasObjectForKey:key5 inCollection:@"test"], @"Expected YES");
+		
+		STAssertNil([transaction metadataForKey:key1 inCollection:nil], @"Expected nil metadata");
+		STAssertNil([transaction metadataForKey:key1 inCollection:@"test"], @"Expected nil metadata");
+		
+		STAssertNotNil([transaction metadataForKey:key5 inCollection:nil], @"Expected non-nil metadata");
+		STAssertNotNil([transaction metadataForKey:key5 inCollection:@"test"], @"Expected non-nil metadata");
+	}];
+	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		
 		// Test remove all objects
 		
-		[transaction removeAllObjects];
+		[transaction removeAllObjectsInAllCollections];
 		
-		STAssertNil([transaction objectForKey:key1], @"Expected nil object");
-		STAssertNil([transaction objectForKey:key2], @"Expected nil object");
-		STAssertNil([transaction objectForKey:key3], @"Expected nil object");
-		STAssertNil([transaction objectForKey:key4], @"Expected nil object");
-		STAssertNil([transaction objectForKey:key5], @"Expected nil object");
+		STAssertNil([transaction objectForKey:key1 inCollection:nil], @"Expected nil object");
+		STAssertNil([transaction objectForKey:key1 inCollection:@"test"], @"Expected nil object");
 		
-		STAssertFalse([transaction hasObjectForKey:key1], @"Expected NO");
-		STAssertFalse([transaction hasObjectForKey:key2], @"Expected NO");
-		STAssertFalse([transaction hasObjectForKey:key3], @"Expected NO");
-		STAssertFalse([transaction hasObjectForKey:key4], @"Expected NO");
-		STAssertFalse([transaction hasObjectForKey:key5], @"Expected NO");
+		STAssertFalse([transaction hasObjectForKey:key1 inCollection:nil], @"Expected NO");
+		STAssertFalse([transaction hasObjectForKey:key1 inCollection:@"test"], @"Expected NO");
 		
-		STAssertNil([transaction metadataForKey:key1], @"Expected nil metadata");
-		STAssertNil([transaction metadataForKey:key2], @"Expected nil metadata");
-		STAssertNil([transaction metadataForKey:key3], @"Expected nil metadata");
-		STAssertNil([transaction metadataForKey:key4], @"Expected nil metadata");
-		STAssertNil([transaction metadataForKey:key5], @"Expected nil metadata");
+		STAssertNil([transaction metadataForKey:key1 inCollection:nil], @"Expected nil metadata");
+		STAssertNil([transaction metadataForKey:key1 inCollection:@"test"], @"Expected nil metadata");
 	}];
 	
-	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		
-		// Test all objects have been removed
+		// Test add objects to a particular collection
 		
-		STAssertTrue([transaction numberOfKeys] == 0, @"Expected 0 objects in database");
+		[transaction setObject:object forKey:key1 inCollection:nil];
+		[transaction setObject:object forKey:key2 inCollection:nil];
+		[transaction setObject:object forKey:key3 inCollection:nil];
+		[transaction setObject:object forKey:key4 inCollection:nil];
+		[transaction setObject:object forKey:key5 inCollection:nil];
+		
+		[transaction setObject:object forKey:key1 inCollection:@"collection1"];
+		[transaction setObject:object forKey:key2 inCollection:@"collection1"];
+		[transaction setObject:object forKey:key3 inCollection:@"collection1"];
+		[transaction setObject:object forKey:key4 inCollection:@"collection1"];
+		[transaction setObject:object forKey:key5 inCollection:@"collection1"];
+		
+		[transaction setObject:object forKey:key1 inCollection:@"collection2"];
+		[transaction setObject:object forKey:key2 inCollection:@"collection2"];
+		[transaction setObject:object forKey:key3 inCollection:@"collection2"];
+		[transaction setObject:object forKey:key4 inCollection:@"collection2"];
+		[transaction setObject:object forKey:key5 inCollection:@"collection2"];
+		
+		STAssertTrue([transaction numberOfCollections] == 3,
+					   @"Incorrect number of collections. Got=%d, Expected=3", [transaction numberOfCollections]);
+		
+		STAssertTrue([transaction numberOfKeysInCollection:nil] == 5, @"Oops");
+		STAssertTrue([transaction numberOfKeysInCollection:@"collection1"] == 5, @"Oops");
+		STAssertTrue([transaction numberOfKeysInCollection:@"collection2"] ==  5, @"Oops");
+		
+		STAssertNotNil([transaction objectForKey:key1 inCollection:nil], @"Oops");
+		STAssertNotNil([transaction objectForKey:key2 inCollection:nil], @"Oops");
+		STAssertNotNil([transaction objectForKey:key3 inCollection:nil], @"Oops");
+		STAssertNotNil([transaction objectForKey:key4 inCollection:nil], @"Oops");
+		STAssertNotNil([transaction objectForKey:key5 inCollection:nil], @"Oops");
+		
+		STAssertNotNil([transaction objectForKey:key1 inCollection:@"collection1"], @"Oops");
+		STAssertNotNil([transaction objectForKey:key2 inCollection:@"collection1"], @"Oops");
+		STAssertNotNil([transaction objectForKey:key3 inCollection:@"collection1"], @"Oops");
+		STAssertNotNil([transaction objectForKey:key4 inCollection:@"collection1"], @"Oops");
+		STAssertNotNil([transaction objectForKey:key5 inCollection:@"collection1"], @"Oops");
+		
+		STAssertNotNil([transaction objectForKey:key1 inCollection:@"collection2"], @"Oops");
+		STAssertNotNil([transaction objectForKey:key2 inCollection:@"collection2"], @"Oops");
+		STAssertNotNil([transaction objectForKey:key3 inCollection:@"collection2"], @"Oops");
+		STAssertNotNil([transaction objectForKey:key4 inCollection:@"collection2"], @"Oops");
+		STAssertNotNil([transaction objectForKey:key5 inCollection:@"collection2"], @"Oops");
 	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		
-		// Test add object again
+		// Test remove all objects from collection
 		
-		[transaction setObject:object forKey:key1];
+		STAssertTrue([transaction numberOfCollections] == 3, @"Incorrect number of collections");
 		
-		STAssertTrue([transaction numberOfKeys] == 1, @"Expected 1 key");
-		STAssertTrue([[transaction allKeys] count] == 1, @"Expected 1 key");
+		STAssertTrue([transaction numberOfKeysInCollection:nil] == 5, @"Oops");
+		STAssertTrue([transaction numberOfKeysInCollection:@"collection1"] == 5, @"Oops");
+		STAssertTrue([transaction numberOfKeysInCollection:@"collection2"] == 5, @"Oops");
 		
-		STAssertNotNil([transaction objectForKey:key1], @"Expected non-nil object");
-		STAssertNotNil([transaction primitiveDataForKey:key1], @"Expected non-nil data");
-		
-		STAssertTrue([transaction hasObjectForKey:key1], @"Expected YES");
+		[transaction removeAllObjectsInCollection:@"collection2"];
 	}];
 	
-	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		
-		// Test object back again
+		STAssertTrue([transaction numberOfCollections] == 2, @"Incorrect number of collections");
 		
-		STAssertTrue([transaction numberOfKeys] == 1, @"Expected 1 key");
-		STAssertTrue([[transaction allKeys] count] == 1, @"Expected 1 key");
+		STAssertTrue([transaction numberOfKeysInCollection:nil] == 5, @"Oops");
+		STAssertTrue([transaction numberOfKeysInCollection:@"collection1"] == 5, @"Oops");
+		STAssertTrue([transaction numberOfKeysInCollection:@"collection2"] == 0, @"Oops");
 		
-		STAssertNotNil([transaction objectForKey:key1], @"Expected non-nil object");
-		STAssertNotNil([transaction primitiveDataForKey:key1], @"Expected non-nil data");
+		STAssertNotNil([transaction objectForKey:key1 inCollection:nil], @"Oops");
+		STAssertNotNil([transaction objectForKey:key2 inCollection:nil], @"Oops");
+		STAssertNotNil([transaction objectForKey:key3 inCollection:nil], @"Oops");
+		STAssertNotNil([transaction objectForKey:key4 inCollection:nil], @"Oops");
+		STAssertNotNil([transaction objectForKey:key5 inCollection:nil], @"Oops");
 		
-		STAssertTrue([transaction hasObjectForKey:key1], @"Expected YES");
+		STAssertNotNil([transaction objectForKey:key1 inCollection:@"collection1"], @"Oops");
+		STAssertNotNil([transaction objectForKey:key2 inCollection:@"collection1"], @"Oops");
+		STAssertNotNil([transaction objectForKey:key3 inCollection:@"collection1"], @"Oops");
+		STAssertNotNil([transaction objectForKey:key4 inCollection:@"collection1"], @"Oops");
+		STAssertNotNil([transaction objectForKey:key5 inCollection:@"collection1"], @"Oops");
+		
+		STAssertNil([transaction objectForKey:key1 inCollection:@"collection2"], @"Oops");
+		STAssertNil([transaction objectForKey:key2 inCollection:@"collection2"], @"Oops");
+		STAssertNil([transaction objectForKey:key3 inCollection:@"collection2"], @"Oops");
+		STAssertNil([transaction objectForKey:key4 inCollection:@"collection2"], @"Oops");
+		STAssertNil([transaction objectForKey:key5 inCollection:@"collection2"], @"Oops");
 	}];
-}
-
-- (void)testPropertyListSerializerDeserializer
-{
-	YapDatabaseSerializer propertyListSerializer = [YapDatabase propertyListSerializer];
-	YapDatabaseDeserializer propertyListDeserializer = [YapDatabase propertyListDeserializer];
-	
-	NSDictionary *originalDict = @{ @"date":[NSDate date], @"string":@"string" };
-	
-	NSData *data = propertyListSerializer(@"key", originalDict);
-	
-	NSDictionary *deserializedDictionary = propertyListDeserializer(@"key", data);
-	
-	STAssertTrue([originalDict isEqualToDictionary:deserializedDictionary], @"PropertyList serialization broken");
-}
-
-- (void)testTimestampSerializerDeserializer
-{
-	YapDatabaseSerializer timestampSerializer = [YapDatabase timestampSerializer];
-	YapDatabaseDeserializer timestampDeserializer = [YapDatabase timestampDeserializer];
-	
-	NSDate *originalDate = [NSDate date];
-	
-	NSData *data = timestampSerializer(@"key", originalDate);
-	
-	NSDate *deserializedDate = timestampDeserializer(@"key", data);
-	
-	STAssertTrue([originalDate isEqual:deserializedDate], @"Timestamp serialization broken");
 }
 
 - (void)test2
@@ -387,7 +414,7 @@
 		
 		[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 			
-			[transaction setObject:object forKey:key withMetadata:metadata];
+			[transaction setObject:object forKey:key inCollection:nil withMetadata:metadata];
 			
 			[NSThread sleepForTimeInterval:0.4]; // Zzzzzzzzzzzzzzzzzzzzzzzzzz
 		}];
@@ -397,8 +424,8 @@
 	// This transaction should start before the read-write transaction has started
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
 		
-		STAssertNil([transaction objectForKey:key], @"Expected nil object");
-		STAssertNil([transaction metadataForKey:key], @"Expected nil metadata");
+		STAssertNil([transaction objectForKey:key inCollection:nil], @"Expected nil object");
+		STAssertNil([transaction metadataForKey:key inCollection:nil], @"Expected nil metadata");
 	}];
 	
 	[NSThread sleepForTimeInterval:0.2]; // Zzzzzz
@@ -406,8 +433,8 @@
 	// This transaction should start after the read-write transaction has started, but before it has committed
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
 		
-		STAssertNil([transaction objectForKey:key], @"Expected nil object");
-		STAssertNil([transaction metadataForKey:key], @"Expected nil metadata");
+		STAssertNil([transaction objectForKey:key inCollection:nil], @"Expected nil object");
+		STAssertNil([transaction metadataForKey:key inCollection:nil], @"Expected nil metadata");
 	}];
 	
 	[NSThread sleepForTimeInterval:0.4]; // Zzzzzzzzzzzzzzzzzzzzzzzzzz
@@ -415,11 +442,10 @@
 	// This transaction should start after the read-write transaction has completed
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
 		
-		STAssertNotNil([transaction objectForKey:key], @"Expected non-nil object");
-		STAssertNotNil([transaction metadataForKey:key], @"Expected non-nil metadata");
+		STAssertNotNil([transaction objectForKey:key inCollection:nil], @"Expected non-nil object");
+		STAssertNotNil([transaction metadataForKey:key inCollection:nil], @"Expected non-nil metadata");
 	}];
 }
-
 
 - (void)test3
 {
@@ -449,7 +475,7 @@
 		
 		[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 			
-			[transaction setObject:object forKey:key withMetadata:metadata];
+			[transaction setObject:object forKey:key inCollection:nil withMetadata:metadata];
 		}];
 		
 	});
@@ -457,10 +483,10 @@
 	// This transaction should before the read-write transaction
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
 		
-		STAssertNil([transaction objectForKey:key], @"Expected nil object");
-		STAssertNil([transaction metadataForKey:key], @"Expected nil metadata");
+		[NSThread sleepForTimeInterval:1.0]; // Zzzzzzzzzzz
 		
-		[NSThread sleepForTimeInterval:2.0]; // Zzzzzzzzzzz
+		STAssertNil([transaction objectForKey:key inCollection:nil], @"Expected nil object");
+		STAssertNil([transaction metadataForKey:key inCollection:nil], @"Expected nil metadata");
 	}];
 	
 	[NSThread sleepForTimeInterval:0.2]; // Zz
@@ -468,11 +494,10 @@
 	// This transaction should start after the read-write transaction
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
 		
-		STAssertNotNil([transaction objectForKey:key], @"Expected non-nil object");
-		STAssertNotNil([transaction metadataForKey:key], @"Expected non-nil metadata");
+		STAssertNotNil([transaction objectForKey:key inCollection:nil], @"Expected non-nil object");
+		STAssertNotNil([transaction metadataForKey:key inCollection:nil], @"Expected non-nil metadata");
 	}];
 }
-
 
 - (void)test4
 {
@@ -504,7 +529,7 @@
 				TestObject *object = [TestObject generateTestObject];
 				TestObjectMetadata *metadata = [object extractMetadata];
 				
-				[transaction setObject:object forKey:key withMetadata:metadata];
+				[transaction setObject:object forKey:key inCollection:nil withMetadata:metadata];
 			}
 		}];
 		
@@ -520,13 +545,41 @@
 		
 		[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
 			
-			(void)[transaction objectForKey:@"some-key-0"];
+			(void)[transaction objectForKey:@"some-key-0" inCollection:nil];
 		}];
 		
 		NSTimeInterval elapsed = [NSDate timeIntervalSinceReferenceDate] - start;
 		
 		STAssertTrue(elapsed < 0.05, @"Read-Only transaction taking too long...");
 	}
+}
+
+- (void)testPropertyListSerializerDeserializer
+{
+	YapDatabaseSerializer propertyListSerializer = [YapDatabase propertyListSerializer];
+	YapDatabaseDeserializer propertyListDeserializer = [YapDatabase propertyListDeserializer];
+	
+	NSDictionary *originalDict = @{ @"date":[NSDate date], @"string":@"string" };
+	
+	NSData *data = propertyListSerializer(@"collection", @"key", originalDict);
+	
+	NSDictionary *deserializedDictionary = propertyListDeserializer(@"collection", @"key", data);
+	
+	STAssertTrue([originalDict isEqualToDictionary:deserializedDictionary], @"PropertyList serialization broken");
+}
+
+- (void)testTimestampSerializerDeserializer
+{
+	YapDatabaseSerializer timestampSerializer = [YapDatabase timestampSerializer];
+	YapDatabaseDeserializer timestampDeserializer = [YapDatabase timestampDeserializer];
+	
+	NSDate *originalDate = [NSDate date];
+	
+	NSData *data = timestampSerializer(@"collection", @"key", originalDate);
+	
+	NSDate *deserializedDate = timestampDeserializer(@"collection", @"key", data);
+	
+	STAssertTrue([originalDate isEqual:deserializedDate], @"Timestamp serialization broken");
 }
 
 - (void)testMutationDuringEnumerationProtection
@@ -544,127 +597,238 @@
 	
 	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[transaction setObject:@"object" forKey:@"key1"];
-		[transaction setObject:@"object" forKey:@"key2"];
-		[transaction setObject:@"object" forKey:@"key3"];
-		[transaction setObject:@"object" forKey:@"key4"];
-		[transaction setObject:@"object" forKey:@"key5"];
+		[transaction setObject:@"object" forKey:@"key1" inCollection:nil];
+		[transaction setObject:@"object" forKey:@"key2" inCollection:nil];
+		[transaction setObject:@"object" forKey:@"key3" inCollection:nil];
+		[transaction setObject:@"object" forKey:@"key4" inCollection:nil];
+		[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
 	}];
 	
 	NSArray *keys = @[@"key1", @"key2", @"key3"];
 	
 	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		// enumerateKeysUsingBlock:
+		// enumerateKeysInCollection:
 		
 		STAssertThrows(
-			[transaction enumerateKeysUsingBlock:^(NSString *key, BOOL *stop) {
+			[transaction enumerateKeysInCollection:nil usingBlock:^(NSString *key, BOOL *stop) {
 				
-				[transaction setObject:@"object" forKey:@"key5"];
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
 				// Missing stop; Will cause exception.
-				
+			
 			}], @"Should throw exception");
 		
 		STAssertNoThrow(
-			[transaction enumerateKeysUsingBlock:^(NSString *key, BOOL *stop) {
+			[transaction enumerateKeysInCollection:nil usingBlock:^(NSString *key, BOOL *stop) {
 				
-				[transaction setObject:@"object" forKey:@"key5"];
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
 				*stop = YES;
-				
+			
 			}], @"Should NOT throw exception");
 		
-		// enumerateMetadataForKeys:unorderedUsingBlock:
+		
+		// enumerateKeysInAllCollectionsUsingBlock:
+		
+		STAssertThrows(
+			[transaction enumerateKeysInAllCollectionsUsingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
+				
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
+				// Missing stop; Will cause exception.
+			
+			}], @"Should throw exception");
+		
+		STAssertNoThrow(
+			[transaction enumerateKeysInAllCollectionsUsingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
+				
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
+				*stop = YES;
+			
+			}], @"Should NOT throw exception");
+		
+		// enumerateMetadataForKeys:inCollection:unorderedUsingBlock:
 		
 		STAssertThrows(
 			[transaction enumerateMetadataForKeys:keys
+			                         inCollection:nil
 			                  unorderedUsingBlock:^(NSUInteger keyIndex, id metadata, BOOL *stop) {
 				
-				[transaction setObject:@"object" forKey:@"key5"];
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
 				// Missing stop; Will cause exception.
-				
+			
 			}], @"Should throw exception");
 		
 		STAssertNoThrow(
 			[transaction enumerateMetadataForKeys:keys
+			                         inCollection:nil
 			                  unorderedUsingBlock:^(NSUInteger keyIndex, id metadata, BOOL *stop) {
-			
-				[transaction setObject:@"object" forKey:@"key5"];
+				
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
 				*stop = YES;
 			
 			}], @"Should NOT throw exception");
 		
-		// enumerateObjectsForKeys:unorderedUsingBlock:
+		// enumerateObjectsForKeys:inCollection:unorderedUsingBlock:
 		
 		STAssertThrows(
 			[transaction enumerateObjectsForKeys:keys
-			                 unorderedUsingBlock:^(NSUInteger keyIndex, id object, BOOL *stop) {
+			                        inCollection:nil
+			                 unorderedUsingBlock:^(NSUInteger keyIndex, id metadata, BOOL *stop) {
 				
-				[transaction setObject:@"object" forKey:@"key5"];
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
 				// Missing stop; Will cause exception.
-				
+			
 			}], @"Should throw exception");
 		
 		STAssertNoThrow(
 			[transaction enumerateObjectsForKeys:keys
-			                 unorderedUsingBlock:^(NSUInteger keyIndex, id object, BOOL *stop) {
-			
-				[transaction setObject:@"object" forKey:@"key5"];
+			                        inCollection:nil
+			                 unorderedUsingBlock:^(NSUInteger keyIndex, id metadata, BOOL *stop) {
+				
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
 				*stop = YES;
 			
 			}], @"Should NOT throw exception");
 		
-		// enumerateKeysAndMetadataUsingBlock:
+		// enumerateRowsForKeys:inCollection:unorderedUsingBlock:
 		
 		STAssertThrows(
-			[transaction enumerateKeysAndMetadataUsingBlock:^(NSString *key, id metadata, BOOL *stop) {
-			
-				[transaction setObject:@"object" forKey:@"key5"];
-				// Missing stop; Should cause exception.
+			[transaction enumerateRowsForKeys:keys
+			                     inCollection:nil
+			              unorderedUsingBlock:^(NSUInteger keyIndex, id object, id metadata, BOOL *stop) {
 				
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
+				// Missing stop; Will cause exception.
+			
 			}], @"Should throw exception");
 		
 		STAssertNoThrow(
-			[transaction enumerateKeysAndMetadataUsingBlock:^(NSString *key, id metadata, BOOL *stop) {
+			[transaction enumerateRowsForKeys:keys
+			                     inCollection:nil
+			              unorderedUsingBlock:^(NSUInteger keyIndex, id object, id metadata, BOOL *stop) {
 				
-				[transaction setObject:@"object" forKey:@"key5"];
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
 				*stop = YES;
-				
+			
 			}], @"Should NOT throw exception");
 		
-		// enumerateKeysAndObjectsUsingBlock:
+		// enumerateKeysAndMetadataInCollection:usingBlock:
 		
 		STAssertThrows(
-			[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop) {
-			
-				[transaction setObject:@"object" forKey:@"key5"];
-				// Missing stop; Should cause exception.
+			[transaction enumerateKeysAndMetadataInCollection:nil
+			                                       usingBlock:^(NSString *key, id metadata, BOOL *stop) {
 				
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
+				// Missing stop; Will cause exception.
+			
 			}], @"Should throw exception");
 		
 		STAssertNoThrow(
-			[transaction enumerateKeysAndObjectsUsingBlock:^(NSString *key, id object, BOOL *stop) {
+			[transaction enumerateKeysAndMetadataInCollection:nil
+			                                       usingBlock:^(NSString *key, id metadata, BOOL *stop) {
 				
-				[transaction setObject:@"object" forKey:@"key5"];
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
 				*stop = YES;
-				
+			
 			}], @"Should NOT throw exception");
 		
-		// enumerateRowsUsingBlock:
+		// enumerateKeysAndObjectsInCollection:usingBlock:
 		
 		STAssertThrows(
-			[transaction enumerateRowsUsingBlock:^(NSString *key, id object, id metadata, BOOL *stop) {
-			
-				[transaction setObject:@"object" forKey:@"key5"];
-				// Missing stop; Should cause exception.
+			[transaction enumerateKeysAndObjectsInCollection:nil
+			                                      usingBlock:^(NSString *key, id object, BOOL *stop) {
 				
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
+				// Missing stop; Will cause exception.
+			
 			}], @"Should throw exception");
 		
 		STAssertNoThrow(
-			[transaction enumerateRowsUsingBlock:^(NSString *key, id object, id metadata, BOOL *stop) {
+			[transaction enumerateKeysAndObjectsInCollection:nil
+			                                      usingBlock:^(NSString *key, id object, BOOL *stop) {
 				
-				[transaction setObject:@"object" forKey:@"key5"];
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
 				*stop = YES;
+			
+			}], @"Should NOT throw exception");
+		
+		// enumerateKeysAndMetadataInAllCollectionsUsingBlock:
+		
+		STAssertThrows(
+			[transaction enumerateKeysAndMetadataInAllCollectionsUsingBlock:
+			                                    ^(NSString *collection, NSString *key, id metadata, BOOL *stop) {
 				
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
+				// Missing stop; Will cause exception.
+			
+			}], @"Should throw exception");
+		
+		STAssertNoThrow(
+			[transaction enumerateKeysAndMetadataInAllCollectionsUsingBlock:
+			                                    ^(NSString *collection, NSString *key, id metadata, BOOL *stop) {
+				
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
+				*stop = YES;
+			
+			}], @"Should NOT throw exception");
+		
+		// enumerateKeysAndObjectsInAllCollectionsUsingBlock:
+		
+		STAssertThrows(
+			[transaction enumerateKeysAndObjectsInAllCollectionsUsingBlock:
+			                                    ^(NSString *collection, NSString *key, id object, BOOL *stop) {
+				
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
+				// Missing stop; Will cause exception.
+			
+			}], @"Should throw exception");
+		
+		STAssertNoThrow(
+			[transaction enumerateKeysAndObjectsInAllCollectionsUsingBlock:
+			                                    ^(NSString *collection, NSString *key, id object, BOOL *stop) {
+				
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
+				*stop = YES;
+			
+			}], @"Should NOT throw exception");
+		
+		// enumerateRowsInCollection:usingBlock:
+		
+		STAssertThrows(
+			[transaction enumerateRowsInCollection:nil
+			                            usingBlock:^(NSString *key, id object, id metadata, BOOL *stop) {
+				
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
+				// Missing stop; Will cause exception.
+			
+			}], @"Should throw exception");
+		
+		STAssertNoThrow(
+			[transaction enumerateRowsInCollection:nil
+			                            usingBlock:^(NSString *key, id object, id metadata, BOOL *stop) {
+				
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
+				*stop = YES;
+			
+			}], @"Should NOT throw exception");
+		
+		// enumerateRowsInAllCollectionsUsingBlock:
+		
+		STAssertThrows(
+			[transaction enumerateRowsInAllCollectionsUsingBlock:
+			                            ^(NSString *collection, NSString *key, id object, id metadata, BOOL *stop) {
+				
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
+				// Missing stop; Will cause exception.
+			
+			}], @"Should throw exception");
+		
+		STAssertNoThrow(
+			[transaction enumerateRowsInAllCollectionsUsingBlock:
+			                            ^(NSString *collection, NSString *key, id object, id metadata, BOOL *stop) {
+				
+				[transaction setObject:@"object" forKey:@"key5" inCollection:nil];
+				*stop = YES;
+			
 			}], @"Should NOT throw exception");
 	}];
 }

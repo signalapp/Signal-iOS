@@ -1,11 +1,8 @@
 #import "YapDatabaseViewMappingsPrivate.h"
 #import "YapDatabaseViewRangeOptionsPrivate.h"
+#import "YapDatabaseViewTransaction.h"
 
-#import "YapAbstractDatabaseConnection.h"
-#import "YapAbstractDatabaseTransaction.h"
-
-#import "YapDatabaseView.h"
-#import "YapCollectionsDatabaseViewTransaction.h"
+#import "YapDatabasePrivate.h"
 
 #import "YapDatabaseLogging.h"
 
@@ -33,12 +30,16 @@
 	// Mappings and cached counts
 	NSMutableArray *visibleGroups;
 	NSMutableDictionary *counts;
+	BOOL isUsingConsolidatedGroup;
+	BOOL autoConsolidationDisabled;
 	
 	// Configuration
 	NSMutableSet *dynamicSections;
 	NSMutableSet *reverse;
 	NSMutableDictionary *rangeOptions;
 	NSMutableDictionary *dependencies;
+	NSUInteger autoConsolidateGroupsThreshold;
+	NSString *consolidatedGroupName;
 	
 	// Snapshot (used for error detection)
 	uint64_t snapshotOfLastUpdate;
@@ -48,6 +49,11 @@
 @synthesize view = registeredViewName;
 
 @synthesize snapshotOfLastUpdate = snapshotOfLastUpdate;
+
++ (instancetype)mappingsWithGroups:(NSArray *)inGroups view:(NSString *)inRegisteredViewName
+{
+	return [[YapDatabaseViewMappings alloc] initWithGroups:inGroups view:inRegisteredViewName];
+}
 
 - (id)initWithGroups:(NSArray *)inGroups
                 view:(NSString *)inRegisteredViewName
@@ -83,11 +89,15 @@
 	
 	copy->visibleGroups = [visibleGroups mutableCopy];
 	copy->counts = [counts mutableCopy];
+	copy->isUsingConsolidatedGroup = isUsingConsolidatedGroup;
+	copy->autoConsolidationDisabled = autoConsolidationDisabled;
 	
 	copy->dynamicSections = [dynamicSections mutableCopy];
 	copy->reverse = [reverse mutableCopy];
 	copy->rangeOptions = [rangeOptions mutableCopy];
 	copy->dependencies = [dependencies mutableCopy];
+	copy->autoConsolidateGroupsThreshold = autoConsolidateGroupsThreshold;
+	copy->consolidatedGroupName = consolidatedGroupName;
 	
 	copy->snapshotOfLastUpdate = snapshotOfLastUpdate;
 	
@@ -98,11 +108,6 @@
 #pragma mark Configuration
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (BOOL)isDynamicSectionForAllGroups
-{
-	return ([dynamicSections count] == [allGroups count]);
-}
-
 - (void)setIsDynamicSectionForAllGroups:(BOOL)isDynamic
 {
 	if (isDynamic)
@@ -111,9 +116,9 @@
 		[dynamicSections removeAllObjects];
 }
 
-- (BOOL)isDynamicSectionForGroup:(NSString *)group
+- (BOOL)isDynamicSectionForAllGroups
 {
-	return [dynamicSections containsObject:group];
+	return ([dynamicSections count] == [allGroups count]);
 }
 
 - (void)setIsDynamicSection:(BOOL)isDynamic forGroup:(NSString *)group
@@ -127,6 +132,11 @@
 		[dynamicSections addObject:group];
 	else
 		[dynamicSections removeObject:group];
+}
+
+- (BOOL)isDynamicSectionForGroup:(NSString *)group
+{
+	return [dynamicSections containsObject:group];
 }
 
 - (void)setRangeOptions:(YapDatabaseViewRangeOptions *)rangeOpts forGroup:(NSString *)group
@@ -158,7 +168,7 @@
 		// Normal setter logic
 		
 		[self updateRangeOptions:rangeOpts forGroup:group];
-		[self updateVisibilityForGroup:group];
+		[self updateVisibility];
 	}
 }
 
@@ -237,11 +247,6 @@
 	}
 }
 
-- (BOOL)isReversedForGroup:(NSString *)group
-{
-	return [reverse containsObject:group];
-}
-
 - (void)setIsReversed:(BOOL)isReversed forGroup:(NSString *)group
 {
 	if (![allGroups containsObject:group]) {
@@ -255,13 +260,50 @@
 		[reverse removeObject:group];
 }
 
+- (BOOL)isReversedForGroup:(NSString *)group
+{
+	return [reverse containsObject:group];
+}
+
+- (void)setAutoConsolidateGroupsThreshold:(NSUInteger)threshold withName:(NSString *)inConsolidatedGroupName
+{
+	if ([allGroups containsObject:inConsolidatedGroupName])
+	{
+		YDBLogWarn(@"%@ - consolidatedGroupName cannot match existing groupName", THIS_METHOD);
+		
+		autoConsolidateGroupsThreshold = 0;
+		consolidatedGroupName = nil;
+	}
+	
+	if (inConsolidatedGroupName == nil || threshold == 0)
+	{
+		autoConsolidateGroupsThreshold = 0;
+		consolidatedGroupName = nil;
+	}
+	else
+	{
+		autoConsolidateGroupsThreshold = threshold;
+		consolidatedGroupName = [inConsolidatedGroupName copy];
+	}
+}
+
+- (NSUInteger)autoConsolidateGroupsThreshold
+{
+	return autoConsolidateGroupsThreshold;
+}
+
+- (NSString *)consolidatedGroupName
+{
+	return consolidatedGroupName;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Initialization & Updates
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)updateWithTransaction:(YapAbstractDatabaseTransaction *)transaction
+- (void)updateWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-	if (transaction.abstractConnection.isInLongLivedReadTransaction == NO)
+	if (![transaction->connection isInLongLivedReadTransaction])
 	{
 		NSString *reason = @"YapDatabaseViewMappings requires the connection to be in a longLivedReadTransaction.";
 		
@@ -309,7 +351,7 @@
 	}
 	
 	BOOL firstUpdate = (snapshotOfLastUpdate == UINT64_MAX);
-	snapshotOfLastUpdate = transaction.abstractConnection.snapshot;
+	snapshotOfLastUpdate = [transaction->connection snapshot];
 	
 	if (firstUpdate)
 		[self initializeRangeOptsLength];
@@ -387,6 +429,7 @@
 - (void)updateVisibility
 {
 	[visibleGroups removeAllObjects];
+	NSUInteger totalCount = 0;
 	
 	for (NSString *group in allGroups)
 	{
@@ -398,25 +441,17 @@
 		else
 			count = [[counts objectForKey:group] unsignedIntegerValue];
 		
-		if (count > 0 || ![dynamicSections containsObject:group])
+		if (count > 0 || ![dynamicSections containsObject:group]) {
 			[visibleGroups addObject:group];
+		}
+		
+		totalCount += count;
 	}
-}
-
-- (void)updateVisibilityForGroup:(NSString *)group
-{
-	NSUInteger count;
 	
-	YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
-	if (rangeOpts)
-		count = rangeOpts.length;
+	if (totalCount < autoConsolidateGroupsThreshold)
+		isUsingConsolidatedGroup = YES;
 	else
-		count = [[counts objectForKey:group] unsignedIntegerValue];
-	
-	if (count > 0 || ![dynamicSections containsObject:group])
-		[visibleGroups addObject:group];
-	else
-		[visibleGroups removeObject:group];
+		isUsingConsolidatedGroup = NO;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -453,6 +488,11 @@
 	return [reverse copy];
 }
 
+- (void)setAutoConsolidatingDisabled:(BOOL)disabled
+{
+	autoConsolidationDisabled = disabled;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Getters
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -466,7 +506,10 @@
 **/
 - (NSUInteger)numberOfSections
 {
-	return [visibleGroups count];
+	if (isUsingConsolidatedGroup && !autoConsolidationDisabled)
+		return 1;
+	else
+		return [visibleGroups count];
 }
 
 /**
@@ -475,7 +518,10 @@
 **/
 - (NSUInteger)numberOfItemsInSection:(NSUInteger)section
 {
-	return [self numberOfItemsInGroup:[self groupForSection:section]];
+	if (isUsingConsolidatedGroup && !autoConsolidationDisabled)
+		return [self numberOfItemsInAllGroups];
+	else
+		return [self numberOfItemsInGroup:[self groupForSection:section]];
 }
 
 /**
@@ -489,6 +535,11 @@
 {
 	if (group == nil) return 0;
 	if (snapshotOfLastUpdate == UINT64_MAX) return 0;
+	
+	if (isUsingConsolidatedGroup && [consolidatedGroupName isEqualToString:group])
+	{
+		return [self numberOfItemsInAllGroups];
+	}
 	
 	YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
 	if (rangeOpts)
@@ -512,7 +563,10 @@
 **/
 - (NSArray *)visibleGroups
 {
-	return [visibleGroups copy];
+	if (isUsingConsolidatedGroup && !autoConsolidationDisabled)
+		return [NSArray arrayWithObjects:consolidatedGroupName, nil];
+	else
+		return [visibleGroups copy];
 }
 
 /**
@@ -522,7 +576,7 @@
 {
 	if (snapshotOfLastUpdate == UINT64_MAX) return YES;
 	
-	for (NSString *group in visibleGroups)
+	for (NSString *group in visibleGroups) // NOT [self visibleGroups]
 	{
 		YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
 		if (rangeOpts)
@@ -554,10 +608,20 @@
 **/
 - (NSString *)groupForSection:(NSUInteger)section
 {
-	if (section < [visibleGroups count])
-		return [visibleGroups objectAtIndex:section];
+	if (isUsingConsolidatedGroup && !autoConsolidationDisabled)
+	{
+		if (section == 0)
+			return consolidatedGroupName;
+		else
+			return nil;
+	}
 	else
-		return nil;
+	{
+		if (section < [visibleGroups count])
+			return [visibleGroups objectAtIndex:section];
+		else
+			return nil;
+	}
 }
 
 /**
@@ -652,21 +716,38 @@
           forRow:(NSUInteger)row
        inSection:(NSUInteger)section
 {
-	NSString *group = [self groupForSection:section];
-	if (group == nil)
+	if (isUsingConsolidatedGroup && !autoConsolidationDisabled)
 	{
-		if (groupPtr) *groupPtr = nil;
-		if (indexPtr) *indexPtr = NSNotFound;
-		
-		return NO;
+		if (section == 0)
+		{
+			return [self getGroup:groupPtr index:indexPtr forConsolidatedRow:row];
+		}
+		else
+		{
+			if (groupPtr) *groupPtr = nil;
+			if (indexPtr) *indexPtr = NSNotFound;
+			
+			return NO;
+		}
 	}
-	
-	NSUInteger index = [self indexForRow:row inGroup:group];
-	
-	if (groupPtr) *groupPtr = group;
-	if (indexPtr) *indexPtr = index;
-	
-	return (index != NSNotFound);
+	else
+	{
+		NSString *group = [self groupForSection:section];
+		if (group == nil)
+		{
+			if (groupPtr) *groupPtr = nil;
+			if (indexPtr) *indexPtr = NSNotFound;
+			
+			return NO;
+		}
+		
+		NSUInteger index = [self indexForRow:row inGroup:group];
+		
+		if (groupPtr) *groupPtr = group;
+		if (indexPtr) *indexPtr = index;
+		
+		return (index != NSNotFound);
+	}
 }
 
 /**
@@ -689,6 +770,15 @@
 - (NSUInteger)indexForRow:(NSUInteger)row inGroup:(NSString *)group
 {
 	if (group == nil) return NSNotFound;
+	
+	if (isUsingConsolidatedGroup && [group isEqualToString:consolidatedGroupName])
+	{
+		NSUInteger index = 0;
+		if ([self getGroup:NULL index:&index forConsolidatedRow:row])
+			return index;
+		else
+			return NSNotFound;
+	}
 	
 	NSUInteger visibleCount = [self visibleCountForGroup:group];
 	if (row >= visibleCount)
@@ -745,6 +835,55 @@
 	}
 }
 
+/**
+ * Use this method to extract the true group & index from a row in the consolidatedGroup.
+ * 
+ * view = @{
+ *   @"A" = @[ @"Alice" ]
+ *   @"B" = @[ @"Barney", @"Bob" ]
+ *   @"C" = @[ @"Chris" ]
+ * }
+ * mappings.isUsingConsolidateGroup == YES
+ * 
+ * NSString *group = nil;
+ * NSUInteger index = 0;
+ *
+ * [mappings getGroup:&group index:&index forConsolidatedRow:2];
+ * 
+ * // group = @"B"
+ * // index = 1    (Bob)
+ *
+ * [mappings getGroup:&group index:&index forConsolidatedRow:3];
+ *
+ * // group = @"C"
+ * // index = 0    (Chris)
+**/
+- (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forConsolidatedRow:(NSUInteger)row
+{
+	NSUInteger offset = 0;
+	
+	for (NSString *group in visibleGroups) // NOT [self visibleGroups]
+	{
+		NSUInteger count = [self visibleCountForGroup:group];
+		
+		if ((row < (offset + count)) && (count > 0))
+		{
+			NSUInteger index = [self indexForRow:(row - offset) inGroup:group];
+			
+			if (groupPtr) *groupPtr = group;
+			if (indexPtr) *indexPtr = index;
+			
+			return YES;
+		}
+		
+		offset += count;
+	}
+	
+	if (groupPtr) *groupPtr = nil;
+	if (indexPtr) *indexPtr = 0;
+	return NO;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Mapping View -> UI
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -758,17 +897,38 @@
  **/
 - (NSUInteger)sectionForGroup:(NSString *)group
 {
-	NSUInteger section = 0;
-	for (NSString *visibleGroup in visibleGroups)
+	if (isUsingConsolidatedGroup && !autoConsolidationDisabled)
 	{
-		if ([visibleGroup isEqualToString:group])
+		if ([consolidatedGroupName isEqualToString:group])
+			return 0;
+		
+		// The thought process here is that the group may be technically visible.
+		// It's just that its consolidated into a bigger group.
+		
+		for (NSString *visibleGroup in visibleGroups)
 		{
-			return section;
+			if ([visibleGroup isEqualToString:group])
+			{
+				return 0;
+			}
 		}
-		section++;
+		
+		return NSNotFound;
 	}
-	
-	return NSNotFound;
+	else
+	{
+		NSUInteger section = 0;
+		for (NSString *visibleGroup in visibleGroups)
+		{
+			if ([visibleGroup isEqualToString:group])
+			{
+				return section;
+			}
+			section++;
+		}
+		
+		return NSNotFound;
+	}
 }
 
 /**
@@ -783,28 +943,49 @@
       forIndex:(NSUInteger)index
        inGroup:(NSString *)group
 {
-	NSUInteger section = [self sectionForGroup:group];
-	if (section == NSNotFound)
+	if (isUsingConsolidatedGroup && !autoConsolidationDisabled)
 	{
-		if (rowPtr) *rowPtr = 0;
-		if (sectionPtr) *sectionPtr = 0;
-		
-		return NO;
+		NSUInteger row = 0;
+		if ([self getConsolidatedRow:&row forIndex:index inGroup:group])
+		{
+			if (rowPtr) *rowPtr = row;
+			if (sectionPtr) *sectionPtr = 0;
+			
+			return YES;
+		}
+		else
+		{
+			if (rowPtr) *rowPtr = 0;
+			if (sectionPtr) *sectionPtr = 0;
+			
+			return NO;
+		}
 	}
-	
-	NSUInteger row = [self rowForIndex:index inGroup:group];
-	if (row == NSNotFound)
+	else
 	{
-		if (rowPtr) *rowPtr = 0;
-		if (sectionPtr) *sectionPtr = 0;
+		NSUInteger section = [self sectionForGroup:group];
+		if (section == NSNotFound)
+		{
+			if (rowPtr) *rowPtr = 0;
+			if (sectionPtr) *sectionPtr = 0;
+			
+			return NO;
+		}
 		
-		return NO;
+		NSUInteger row = [self rowForIndex:index inGroup:group];
+		if (row == NSNotFound)
+		{
+			if (rowPtr) *rowPtr = 0;
+			if (sectionPtr) *sectionPtr = 0;
+			
+			return NO;
+		}
+		
+		if (rowPtr) *rowPtr = row;
+		if (sectionPtr) *sectionPtr = section;
+		
+		return YES;
 	}
-	
-	if (rowPtr) *rowPtr = row;
-	if (sectionPtr) *sectionPtr = section;
-	
-	return YES;
 }
 
 /**
@@ -843,6 +1024,15 @@
 - (NSUInteger)rowForIndex:(NSUInteger)index inGroup:(NSString *)group
 {
 	if (group == nil) return NSNotFound;
+	
+	if (isUsingConsolidatedGroup && [consolidatedGroupName isEqualToString:group])
+	{
+		NSUInteger row = 0;
+		if ([self getConsolidatedRow:&row forIndex:index inGroup:group])
+			return row;
+		else
+			return NSNotFound;
+	}
 	
 	NSUInteger fullCount = [self fullCountForGroup:group];
 	if (index >= fullCount)
@@ -900,6 +1090,40 @@
 	}
 }
 
+/**
+ * Use this method to extract the true row (in the consolidatedGroup) for a given group & index in the database.
+**/
+- (BOOL)getConsolidatedRow:(NSUInteger *)rowPtr forIndex:(NSUInteger)index inGroup:(NSString *)group
+{
+	NSUInteger groupOffset = 0;
+	
+	for (NSString *visibleGroup in visibleGroups)
+	{
+		if ([visibleGroup isEqualToString:group])
+		{
+			NSUInteger row = [self rowForIndex:index inGroup:group];
+			
+			if (row == NSNotFound)
+			{
+				if (rowPtr) *rowPtr = 0;
+				return NO;
+			}
+			else
+			{
+				if (rowPtr) *rowPtr = (groupOffset + row);
+				return YES;
+			}
+		}
+		else
+		{
+			groupOffset += [self visibleCountForGroup:visibleGroup];
+		}
+	}
+	
+	if (rowPtr) *rowPtr = 0;
+	return NO;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Getters + RangeOptions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -921,9 +1145,9 @@
  *     .length = 20
  * }
 **/
-- (YapDatabaseViewRangePosition)rangePositionForGroup:(NSString *)group;
+- (YapDatabaseViewRangePosition)rangePositionForGroup:(NSString *)group
 {
-	if (group == nil)
+	if (group == nil || [consolidatedGroupName isEqualToString:group])
 	{
 		return (YapDatabaseViewRangePosition){
 			.offsetFromBeginning = 0,
@@ -1017,8 +1241,13 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Getters + Total
+#pragma mark Getters + Consolidation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (BOOL)isUsingConsolidatedGroup
+{
+	return isUsingConsolidatedGroup;
+}
 
 /**
  * Returns the total number of items by summing up the totals across all groups.
@@ -1029,7 +1258,7 @@
 	
 	NSUInteger total = 0;
 	
-	for (NSString *group in visibleGroups)
+	for (NSString *group in visibleGroups) // NOT [self visibleGroups]
 	{
 		YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
 		if (rangeOpts)
@@ -1045,99 +1274,216 @@
 	return total;
 }
 
-/**
- * This method is useful if you ever want to display multiple groups in a tableView,
- * but you want to display the groups without using sections.
- * 
- * For example, say you have a view that sorts users in an address book.
- * The view uses groups based on the first letter of the user's name.
- * But you want to display the address book in a tableView without using sections.
- * 
- * view = @{
- *   @"A" = @[ @"Alice" ]
- *   @"B" = @[ @"Barney", @"Bob" ]
- *   @"C" = @[ @"Chris" ]
- * }
- * 
- * NSString *group = nil;
- * NSUInteger index = 0;
- *
- * [mappings getGroup:&group index:&index forUnSectionedRow:2];
- * 
- * // group = @"B"
- * // index = 1    (Bob)
- *
- * [mappings getGroup:&group index:&index forUnSectionedRow:3];
- *
- * // group = @"C"
- * // index = 0    (Chris)
-**/
-- (BOOL)getGroup:(NSString **)groupPtr index:(NSUInteger *)indexPtr forUnSectionedRow:(NSUInteger)row
-{
-	if (snapshotOfLastUpdate == UINT64_MAX)
-	{
-		if (groupPtr) *groupPtr = nil;
-		if (indexPtr) *indexPtr = 0;
-		return NO;
-	}
-	
-	NSUInteger offset = 0;
-	
-	for (NSString *group in visibleGroups)
-	{
-		NSUInteger count = [self visibleCountForGroup:group];
-		
-		if ((row < (offset + count)) && (count > 0))
-		{
-			NSUInteger index = [self indexForRow:(row - offset) inGroup:group];
-			
-			if (groupPtr) *groupPtr = group;
-			if (indexPtr) *indexPtr = index;
-			
-			return YES;
-		}
-		
-		offset += count;
-	}
-	
-	if (groupPtr) *groupPtr = nil;
-	if (indexPtr) *indexPtr = 0;
-	return NO;
-}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Getters + Utilities
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * This method is useful if you ever want to display multiple groups in a tableView,
- * but you want to display the groups without using sections.
+ * This is a helper method to assist in maintaining the selection while updating the tableView/collectionView.
+ * In general the idea is this:
+ * - yapDatabaseModified is invoked on the main thread
+ * - at the beginning of the method, you grab some information about the current selection
+ * - you update the database connection, and then start the animation for the changes to the table
+ * - you reselect whatever was previously selected
+ * - if that's not possible (row was deleted) then you select the closest row to the previous selection
+ * 
+ * The last step isn't always what you want to do. Maybe you don't want to select anything at that point.
+ * But if you do, then this method can simplify the task for you.
+ * It figures out what the closest row is, even if it's in a different section.
+ * 
+ * Code example:
+ * 
+ * - (void)yapDatabaseModified:(NSNotification *)notification {
+ * 
+ *     // Grab info about current selection
+ *     
+ *     NSString *selectedGroup = nil;
+ *     NSUInteger selectedRow = 0;
+ *     __block NSString *selectedWidgetId = nil;
+ *
+ *     NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
+ *     if (selectedIndexPath) {
+ *         selectedGroup = [mappings groupForSection:selectedIndexPath.section];
+ *         selectedRow = selectedIndexPath.row;
+ *         
+ *         [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+ *             selectedWidgetId = [[transaction ext:@"widgets"] keyAtIndex:selectedRow inGroup:selectedGroup];
+ *         }];
+ *     }
+ *     
+ *     // Update the database connection (move it to the latest commit)
+ *     
+ *     NSArray *notifications = [databaseConnection beginLongLivedReadTransaction];
+ *
+ *     // Process the notification(s),
+ *     // and get the changeset as it applies to me, based on my view and my mappings setup.
+ *
+ *     NSArray *sectionChanges = nil;
+ *     NSArray *rowChanges = nil;
+ *
+ *     [[databaseConnection ext:@"order"] getSectionChanges:&sectionChanges
+ *                                               rowChanges:&rowChanges
+ *                                         forNotifications:notifications
+ *                                             withMappings:mappings];
+ *
+ *     if ([sectionChanges count] == 0 & [rowChanges count] == 0)
+ *     {
+ *         // Nothing has changed that affects our tableView
+ *         return;
+ *     }
+ *
+ *     // Update the table (animating the changes)
+ *
+ *     [self.tableView beginUpdates];
+ *
+ *     for (YapDatabaseViewSectionChange *sectionChange in sectionChanges)
+ *     {
+ *         // ... (see https://github.com/yaptv/YapDatabase/wiki/Views )
+ *     }
+ *
+ *     for (YapDatabaseViewRowChange *rowChange in rowChanges)
+ *     {
+ *         // ... (see https://github.com/yaptv/YapDatabase/wiki/Views )
+ *     }
+ *
+ *     [self.tableView endUpdates];
+ *     
+ *     // Try to reselect whatever was selected before
+ * 
+ *     __block NSIndexPath *indexPath = nil;
+ *
+ *     if (selectedIndexPath) {
+ *         [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+ *             indexPath = [[transaction ext:@"widgets"] indexPathForKey:selectedWidgetId
+ *                                                          withMappings:mappings];
+ *         }];
+ *     }
+ * 
+ *     // Otherwise select the nearest row to whatever was selected before
+ * 
+ *     if (!indexPath && selectedGroup) {
+ *         indexPath = [mappings nearestIndexPathForRow:selectedRow inGroup:selectedGroup];
+ *     }
+ *     
+ *     if (indexPath) {
+ *         [self.tableView selectRowAtIndexPath:indexPath
+ *                                     animated:NO
+ *                               scrollPosition:UITableViewScrollPositionMiddle];
+ *     }
+ * }
 **/
-- (BOOL)getUnSectionedRow:(NSUInteger *)rowPtr forIndex:(NSUInteger)index inGroup:(NSString *)group
+- (NSIndexPath *)nearestIndexPathForRow:(NSUInteger)row inGroup:(NSString *)searchGroup
 {
-	NSUInteger groupOffset = 0;
+	if (searchGroup == nil) return nil;
+	if (snapshotOfLastUpdate == UINT64_MAX) return nil;
+	
+	BOOL foundGroup = NO;
+	NSUInteger groupIndex = 0;
+	
+	for (NSString *group in allGroups)
+	{
+		if ([group isEqualToString:searchGroup])
+		{
+			foundGroup = YES;
+			break;
+		}
+		groupIndex++;
+	}
+	
+	if (!foundGroup) return nil;
+	
+	BOOL isGroupVisible = NO;
+	NSUInteger visibleGroupIndex = 0;
 	
 	for (NSString *visibleGroup in visibleGroups)
 	{
-		if ([visibleGroup isEqualToString:group])
+		if ([visibleGroup isEqualToString:searchGroup])
 		{
-			NSUInteger row = [self rowForIndex:index inGroup:group];
-			
-			if (row == NSNotFound)
+			isGroupVisible = YES;
+			break;
+		}
+		visibleGroupIndex++;
+	}
+	
+	if (isGroupVisible)
+	{
+		// The searchGroup is visible.
+		
+		NSUInteger rows = [self numberOfItemsInGroup:searchGroup];
+		if (rows > 0)
+		{
+			if (row < rows)
 			{
-				if (rowPtr) *rowPtr = 0;
-				return NO;
+			  #if TARGET_OS_IPHONE
+				return [NSIndexPath indexPathForRow:row inSection:visibleGroupIndex];
+			  #else
+				NSUInteger indexes[] = {visibleGroupIndex, row};
+				return [NSIndexPath indexPathWithIndexes:indexes length:2];
+			  #endif
 			}
 			else
 			{
-				if (rowPtr) *rowPtr = (groupOffset + row);
-				return YES;
+			  #if TARGET_OS_IPHONE
+				return [NSIndexPath indexPathForRow:(rows-1) inSection:visibleGroupIndex];
+			  #else
+				NSUInteger indexes[] = {visibleGroupIndex, (rows-1)};
+				return [NSIndexPath indexPathWithIndexes:indexes length:2];
+			  #endif
 			}
-		}
-		else
-		{
-			groupOffset += [self visibleCountForGroup:visibleGroup];
 		}
 	}
 	
-	if (rowPtr) *rowPtr = 0;
-	return NO;
+	NSUInteger nearbyGroupIndex;
+	
+	// Try to select the closest row below the given group.
+	
+	nearbyGroupIndex = groupIndex;
+	while (nearbyGroupIndex > 0)
+	{
+		nearbyGroupIndex--;
+		NSString *nearbyGroup = [allGroups objectAtIndex:nearbyGroupIndex];
+		
+		NSUInteger section = [self sectionForGroup:nearbyGroup];
+		if (section != NSNotFound)
+		{
+			NSUInteger rows = [self numberOfItemsInGroup:nearbyGroup];
+			if (rows > 0)
+			{
+			  #if TARGET_OS_IPHONE
+				return [NSIndexPath indexPathForRow:(rows-1) inSection:section];
+			  #else
+				NSUInteger indexes[] = {section, (rows-1)};
+				return [NSIndexPath indexPathWithIndexes:indexes length:2];
+			  #endif
+			}
+		}
+	}
+	
+	// Try to select the closest row above the given group.
+	
+	nearbyGroupIndex = groupIndex;
+	while ((nearbyGroupIndex + 1) < [allGroups count])
+	{
+		nearbyGroupIndex++;
+		NSString *nearbyGroup = [allGroups objectAtIndex:nearbyGroupIndex];
+		
+		NSUInteger section = [self sectionForGroup:nearbyGroup];
+		if (section != NSNotFound)
+		{
+			NSUInteger rows = [self numberOfItemsInGroup:nearbyGroup];
+			if (rows > 0)
+			{
+			  #if TARGET_OS_IPHONE
+				return [NSIndexPath indexPathForRow:0 inSection:section];
+			  #else
+				NSUInteger indexes[] = {section, 0};
+				return [NSIndexPath indexPathWithIndexes:indexes length:2];
+			  #endif
+			}
+		}
+	}
+	
+	return nil;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1149,24 +1495,68 @@
 	NSMutableString *description = [NSMutableString string];
 	[description appendFormat:@"<YapDatabaseViewMappings[%p]: view(%@)\n", self, registeredViewName];
 	
-	NSUInteger i = 0;
-	NSString *visibleGroup = ([visibleGroups count] > 0) ? [visibleGroups objectAtIndex:0] : nil;
+	if (isUsingConsolidatedGroup)
+	{
+		[description appendFormat:@"  section(0) group(%@) totalCount(%lu) \n",
+		                            consolidatedGroupName, (unsigned long)[self numberOfItemsInAllGroups]];
+	}
+	
+	NSUInteger visibleIndex = 0;
+	NSString *visibleGroup = ([visibleGroups count] > 0) ? [visibleGroups objectAtIndex:visibleIndex] : nil;
+	
+	NSUInteger groupOffset = 0;
 	
 	for (NSString *group in allGroups)
 	{
-		if ([group isEqualToString:visibleGroup])
+		BOOL isVisible = [group isEqualToString:visibleGroup];
+		
+		NSUInteger visibleCount = [self visibleCountForGroup:group];
+		BOOL hasRangeOptions = ([rangeOptions objectForKey:group] != nil);
+		
+		if (isVisible)
 		{
-			[description appendFormat:@"  section(%lu) count(%@) group(%@)\n",
-			                              (unsigned long)i, [counts objectForKey:group], group];
+			if (isUsingConsolidatedGroup)
+				[description appendFormat:@"  -> groupOffset(%lu)", (unsigned long)groupOffset];
+			else
+				[description appendFormat:@"  section(%lu)", (unsigned long)visibleIndex];
 			
-			i++;
-			visibleGroup = ([visibleGroups count] > i) ? [visibleGroups objectAtIndex:i] : nil;
 		}
 		else
 		{
-			[description appendFormat:@"  section(-) count(%@) group(%@)\n",
-			                              [counts objectForKey:group], group];
+			if (isUsingConsolidatedGroup)
+				[description appendFormat:@"  -> groupOffset(%lu)", (unsigned long)groupOffset];
+			else
+				[description appendString:@"  section(-)"];
 		}
+		
+		[description appendFormat:@" group(%@)", group];
+		
+		if (hasRangeOptions)
+		{
+			[description appendFormat:@" groupCount(%lu) visibleCount(%lu)",
+			                           (unsigned long)[self fullCountForGroup:group],
+			                           (unsigned long)visibleCount];
+			
+			YapDatabaseViewRangePosition rangePosition = [self rangePositionForGroup:group];
+			
+			[description appendFormat:@" range.offsetFromBeginning(%lu) range.offsetFromEnd(%lu)",
+			                           (unsigned long)rangePosition.offsetFromBeginning,
+			                           (unsigned long)rangePosition.offsetFromEnd];
+		}
+		else
+		{
+			[description appendFormat:@" count(%lu)", (unsigned long)visibleCount];
+		}
+		
+		[description appendString:@"\n"];
+		
+		if (isVisible)
+		{
+			visibleIndex++;
+			visibleGroup = ([visibleGroups count] > visibleIndex) ? [visibleGroups objectAtIndex:visibleIndex] : nil;
+		}
+		
+		groupOffset += visibleCount;
 	}
 	
 	[description appendString:@">"];
