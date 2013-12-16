@@ -507,7 +507,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	status = sqlite3_exec(db, createIndexStatement, NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
-		NSLog(@"Failed creating index on 'database' table: %d %s", status, sqlite3_errmsg(db));
+		YDBLogError(@"Failed creating index on 'database' table: %d %s", status, sqlite3_errmsg(db));
 		return NO;
 	}
 	

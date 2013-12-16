@@ -195,7 +195,7 @@
 		status = sqlite3_exec(db, [createIndex UTF8String], NULL, NULL, NULL);
 		if (status != SQLITE_OK)
 		{
-			NSLog(@"Failed creating index on '%@': %d %s", column.name, status, sqlite3_errmsg(db));
+			YDBLogError(@"Failed creating index on '%@': %d %s", column.name, status, sqlite3_errmsg(db));
 			return NO;
 		}
 	}
