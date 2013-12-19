@@ -8,6 +8,7 @@
 #import "YapDatabaseRelationshipConnection.h"
 #import "YapDatabaseRelationshipTransaction.h"
 
+#import "YapDatabasePrivate.h"
 #import "YapDatabaseExtensionPrivate.h"
 #import "YapCache.h"
 
@@ -23,8 +24,6 @@
 @public
 
 	int version;
-	
-	// options ???
 }
 
 - (NSString *)tableName;
@@ -43,13 +42,14 @@
 	
 	YapCache *cache;
 	
-	NSMutableDictionary *pendingInserts;
-	NSMutableDictionary *pendingDeletes;
-	NSMutableDictionary *pendingUpdates;
-	NSMutableDictionary *pendingOrphans;
+	NSMutableDictionary *changes;
+	NSMutableOrderedSet *deletedRowids;
 }
 
 - (id)initWithRelationship:(YapDatabaseRelationship *)relationship databaseConnection:(YapDatabaseConnection *)dbc;
+
+- (sqlite3_stmt *)enumerateForSrcStatement;
+- (sqlite3_stmt *)removeAllStatement;
 
 @end
 

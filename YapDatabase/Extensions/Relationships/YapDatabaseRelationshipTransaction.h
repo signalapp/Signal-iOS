@@ -10,14 +10,19 @@
                     usingBlock:(void (^)(YapDatabaseRelationshipEdge *edge, BOOL *stop))block;
 
 - (void)enumerateEdgesWithName:(NSString *)name
-                destinationKey:(NSString *)dstKey
+                     sourceKey:(NSString *)dstKey
                     collection:(NSString *)dstCollection
                     usingBlock:(void (^)(YapDatabaseRelationshipEdge *edge, BOOL *stop))block;
 
 - (void)enumerateEdgesWithName:(NSString *)name
                 destinationKey:(NSString *)dstKey
                     collection:(NSString *)dstCollection
-                     sourceKey:(NSString *)srcKey
+                    usingBlock:(void (^)(YapDatabaseRelationshipEdge *edge, BOOL *stop))block;
+
+- (void)enumerateEdgesWithName:(NSString *)name
+                     sourceKey:(NSString *)dstKey
+                    collection:(NSString *)dstCollection
+                destinationKey:(NSString *)srcKey
                     collection:(NSString *)srcCollection
                     usingBlock:(void (^)(YapDatabaseRelationshipEdge *edge, BOOL *stop))block;
 

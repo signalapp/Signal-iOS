@@ -243,6 +243,7 @@
 		DCEE834F17AAC7F3009BF81D /* TestViewMappingsLogic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestViewMappingsLogic.m; path = ../../UnitTesting/TestViewMappingsLogic.m; sourceTree = "<group>"; };
 		DCF7E10E16F5BC6A000C2184 /* YapNull.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapNull.h; sourceTree = "<group>"; };
 		DCF7E10F16F5BC6A000C2184 /* YapNull.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapNull.m; sourceTree = "<group>"; };
+		DCFA30871860E61700126F1E /* YapDatabaseRelationshipEdgePrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = YapDatabaseRelationshipEdgePrivate.h; path = Relationships/Internal/YapDatabaseRelationshipEdgePrivate.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -367,6 +368,7 @@
 			isa = PBXGroup;
 			children = (
 				DC3740751858388100DD5953 /* YapDatabaseRelationshipPrivate.h */,
+				DCFA30871860E61700126F1E /* YapDatabaseRelationshipEdgePrivate.h */,
 			);
 			name = Internal;
 			sourceTree = "<group>";

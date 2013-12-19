@@ -1,6 +1,9 @@
 #import "YapDatabaseRelationshipConnection.h"
 #import "YapDatabaseRelationshipPrivate.h"
+#import "YapDatabaseExtensionPrivate.h"
+#import "YapDatabasePrivate.h"
 #import "YapCollectionKey.h"
+#import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
 
 #if ! __has_feature(objc_arc)
@@ -19,6 +22,10 @@
 
 
 @implementation YapDatabaseRelationshipConnection
+{
+	sqlite3_stmt *enumerateForSrcStatement;
+	sqlite3_stmt *removeAllStatement;
+}
 
 @synthesize relationship = relationship;
 
@@ -36,7 +43,8 @@
 
 - (void)dealloc
 {
-//	sqlite_finalize_null(&...);
+	sqlite_finalize_null(&enumerateForSrcStatement);
+	sqlite_finalize_null(&removeAllStatement);
 }
 
 /**
@@ -51,7 +59,8 @@
 	
 	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
 	{
-	//	sqlite_finalize_null(&...);
+		sqlite_finalize_null(&enumerateForSrcStatement);
+		sqlite_finalize_null(&removeAllStatement);
 	}
 	
 	if (level >= YapDatabaseConnectionFlushMemoryLevelFull)
@@ -110,14 +119,10 @@
 **/
 - (void)prepareForReadWriteTransaction
 {
-	if (pendingInserts == nil)
-		pendingInserts = [[NSMutableDictionary alloc] init];
-	if (pendingDeletes == nil)
-		pendingDeletes = [[NSMutableDictionary alloc] init];
-	if (pendingUpdates == nil)
-		pendingUpdates = [[NSMutableDictionary alloc] init];
-	if (pendingOrphans == nil)
-		pendingOrphans = [[NSMutableDictionary alloc] init];
+	if (changes == nil)
+		changes = [[NSMutableDictionary alloc] init];
+	if (deletedRowids == nil)
+		deletedRowids = [[NSMutableOrderedSet alloc] init];
 }
 
 /**
@@ -129,10 +134,8 @@
 	
 	[cache removeAllObjects];
 	
-	[pendingInserts removeAllObjects];
-	[pendingDeletes removeAllObjects];
-	[pendingUpdates removeAllObjects];
-	[pendingOrphans removeAllObjects];
+	[changes removeAllObjects];
+	[deletedRowids removeAllObjects];
 }
 
 /**
@@ -140,10 +143,8 @@
 **/
 - (void)postCommitCleanup
 {
-	[pendingInserts removeAllObjects];
-	[pendingDeletes removeAllObjects];
-	[pendingUpdates removeAllObjects];
-	[pendingOrphans removeAllObjects];
+	[changes removeAllObjects];
+	[deletedRowids removeAllObjects];
 }
 
 - (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
@@ -168,6 +169,51 @@
 	// Todo... ?
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Statements
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+- (sqlite3_stmt *)enumerateForSrcStatement
+{
+	if (enumerateForSrcStatement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT \"rowid\", \"name\", \"dst\", \"rules\" FROM \"%@\" WHERE \"src\" = ?;", [relationship tableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &enumerateForSrcStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return enumerateForSrcStatement;
+}
+
+- (sqlite3_stmt *)removeAllStatement
+{
+	if (removeAllStatement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:@"DELETE FROM \"%@\";", [relationship tableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &removeAllStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return removeAllStatement;
+}
 
 @end

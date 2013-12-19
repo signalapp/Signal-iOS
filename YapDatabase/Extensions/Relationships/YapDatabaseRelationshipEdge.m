@@ -1,4 +1,5 @@
 #import "YapDatabaseRelationshipEdge.h"
+#import "YapDatabaseRelationshipEdgePrivate.h"
 
 
 @implementation YapDatabaseRelationshipEdge
@@ -13,6 +14,7 @@
 
 @synthesize nodeDeleteRules = nodeDeleteRules;
 
+
 + (instancetype)edgeWithName:(NSString *)name
               destinationKey:(NSString *)key
                   collection:(NSString *)collection
@@ -24,17 +26,43 @@
 	                                         nodeDeleteRules:rules];
 }
 
+/**
+ * Public init method.
+ * This method is used by objects when creating nodes (often in yapDatabaseRelationshipEdges method).
+**/
 - (id)initWithName:(NSString *)inName
     destinationKey:(NSString *)dstKey
         collection:(NSString *)dstCollection
    nodeDeleteRules:(YDB_NodeDeleteRules)rules
 {
+	if (inName == nil) return nil; // Edge requires name
+	if (dstKey == nil) return nil; // Edge requires destination node
+	
 	if ((self = [super init]))
 	{
 		name = [inName copy];
 		
 		destinationKey = [dstKey copy];
-		destinationCollection = [dstCollection copy];
+		destinationCollection = dstCollection ? [dstCollection copy] : @"";
+		
+		nodeDeleteRules = rules;
+	}
+	return self;
+}
+
+/**
+ * Internal init method.
+ * This method is used when reading an edge from a row in the database.
+**/
+- (id)initWithRowid:(int64_t)rowid name:(NSString *)inName src:(int64_t)src dst:(int64_t)dst rules:(int)rules
+{
+	if ((self = [super init]))
+	{
+		edgeRowid = rowid;
+		sourceRowid = src;
+		destinationRowid = dst;
+		
+		name = [inName copy];
 		
 		nodeDeleteRules = rules;
 	}
@@ -74,6 +102,7 @@
 - (id)copyWithZone:(NSZone *)zone
 {
 	YapDatabaseRelationshipEdge *copy = [[YapDatabaseRelationshipEdge alloc] init];
+	
 	copy->name = name;
 	copy->sourceKey = sourceKey;
 	copy->sourceCollection = sourceCollection;
@@ -81,18 +110,31 @@
 	copy->destinationCollection = destinationCollection;
 	copy->nodeDeleteRules = nodeDeleteRules;
 	
+	copy->edgeRowid = edgeRowid;
+	copy->sourceRowid = sourceRowid;
+	copy->destinationRowid = destinationRowid;
+	copy->edgeAction = edgeAction;
+	copy->nodeAction = nodeAction;
+	
 	return copy;
 }
 
-- (id)copyWithSourceKey:(NSString *)newSourceKey collection:(NSString *)newSourceCollection
+- (id)copyWithSourceKey:(NSString *)newSrcKey collection:(NSString *)newSrcCollection rowid:(int64_t)newSrcRowid
 {
 	YapDatabaseRelationshipEdge *copy = [[YapDatabaseRelationshipEdge alloc] init];
+	
 	copy->name = name;
-	copy->sourceKey = [newSourceKey copy];
-	copy->sourceCollection = [newSourceCollection copy];
+	copy->sourceKey = [newSrcKey copy];
+	copy->sourceCollection = [newSrcCollection copy];
 	copy->destinationKey = destinationKey;
 	copy->destinationCollection = destinationCollection;
 	copy->nodeDeleteRules = nodeDeleteRules;
+	
+	copy->edgeRowid = edgeRowid;
+	copy->sourceRowid = newSrcRowid;
+	copy->destinationRowid = destinationRowid;
+	copy->edgeAction = edgeAction;
+	copy->nodeAction = nodeAction;
 	
 	return copy;
 }
