@@ -259,6 +259,8 @@
 	sqlite_finalize_null(&getDataForRowidStatement);
 	sqlite_finalize_null(&getAllForRowidStatement);
 	sqlite_finalize_null(&getDataForKeyStatement);
+	sqlite_finalize_null(&getMetadataForKeyStatement);
+	sqlite_finalize_null(&getAllForKeyStatement);
 	sqlite_finalize_null(&insertForRowidStatement);
 	sqlite_finalize_null(&updateAllForRowidStatement);
 	sqlite_finalize_null(&updateMetadataForRowidStatement);
@@ -316,18 +318,29 @@
 	
 	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
 	{
-		sqlite_finalize_null(&yapRemoveExtensionStatement);
+	//	sqlite_finalize_null(&beginTransactionStatement);
+	//	sqlite_finalize_null(&commitTransactionStatement);
 		sqlite_finalize_null(&rollbackTransactionStatement);
+		
+		sqlite_finalize_null(&yapGetDataForKeyStatement);
+		sqlite_finalize_null(&yapSetDataForKeyStatement);
+		sqlite_finalize_null(&yapRemoveExtensionStatement);
 		
 		sqlite_finalize_null(&getCollectionCountStatement);
 		sqlite_finalize_null(&getKeyCountForCollectionStatement);
 		sqlite_finalize_null(&getKeyCountForAllStatement);
 		sqlite_finalize_null(&getCountForRowidStatement);
-		sqlite_finalize_null(&getKeyForRowidStatement);
+	//	sqlite_finalize_null(&getRowidForKeyStatement);
+	//	sqlite_finalize_null(&getKeyForRowidStatement);
 		sqlite_finalize_null(&getKeyDataForRowidStatement);
 		sqlite_finalize_null(&getKeyMetadataForRowidStatement);
-		sqlite_finalize_null(&getDataForRowidStatement);
+	//	sqlite_finalize_null(&getDataForRowidStatement);
 		sqlite_finalize_null(&getAllForRowidStatement);
+	//	sqlite_finalize_null(&getDataForKeyStatement);
+		sqlite_finalize_null(&getMetadataForKeyStatement);
+		sqlite_finalize_null(&getAllForKeyStatement);
+	//	sqlite_finalize_null(&insertForRowidStatement);
+	//	sqlite_finalize_null(&updateAllForRowidStatement);
 		sqlite_finalize_null(&updateMetadataForRowidStatement);
 		sqlite_finalize_null(&removeForRowidStatement);
 		sqlite_finalize_null(&removeCollectionStatement);
@@ -346,12 +359,12 @@
 	
 	if (level >= YapDatabaseConnectionFlushMemoryLevelFull)
 	{
-		sqlite_finalize_null(&yapGetDataForKeyStatement);
-		sqlite_finalize_null(&yapSetDataForKeyStatement);
 		sqlite_finalize_null(&beginTransactionStatement);
 		sqlite_finalize_null(&commitTransactionStatement);
 		
 		sqlite_finalize_null(&getRowidForKeyStatement);
+		sqlite_finalize_null(&getKeyForRowidStatement);
+		sqlite_finalize_null(&getDataForRowidStatement);
 		sqlite_finalize_null(&getDataForKeyStatement);
 		sqlite_finalize_null(&insertForRowidStatement);
 		sqlite_finalize_null(&updateAllForRowidStatement);
