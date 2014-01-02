@@ -4787,12 +4787,10 @@
 #pragma mark Remove
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection
+- (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid
 {
+	if (key == nil) return;
 	if (collection == nil) collection = @"";
-	
-	int64_t rowid = 0;
-	if (![self getRowid:&rowid forKey:key inCollection:collection]) return;
 	
 	sqlite3_stmt *statement = [connection removeForRowidStatement];
 	if (statement == NULL) return;
@@ -4832,6 +4830,15 @@
 		[extTransaction handleRemoveObjectForKey:cacheKey.key        // mutable string protection
 		                            inCollection:cacheKey.collection // mutable string protection
 		                               withRowid:rowid];
+	}
+}
+
+- (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection
+{
+	int64_t rowid = 0;
+	if ([self getRowid:&rowid forKey:key inCollection:collection])
+	{
+		[self removeObjectForKey:key inCollection:collection withRowid:rowid];
 	}
 }
 
