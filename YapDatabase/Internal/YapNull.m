@@ -24,6 +24,10 @@ static YapNull *singleton;
 {
 	NSAssert(singleton == nil, @"Must use singleton via [YapNull null]");
 	
+	#ifdef NS_BLOCK_ASSERTIONS
+	if (singleton != nil) return nil;
+	#endif
+	
 	self = [super init];
 	return self;
 }
