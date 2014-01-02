@@ -354,7 +354,7 @@ extern NSString *const YapDatabaseNotificationKey;
       metadata:(id *)metadataPtr
       forRowid:(int64_t)rowid;
 
-- (BOOL)hasRowForRowid:(int64_t)rowid;
+- (BOOL)hasRowid:(int64_t)rowid;
 
 - (id)objectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
 

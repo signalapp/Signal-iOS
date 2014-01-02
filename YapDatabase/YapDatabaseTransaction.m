@@ -629,7 +629,7 @@
 	return result;
 }
 
-- (BOOL)hasRowForRowid:(int64_t)rowid
+- (BOOL)hasRowid:(int64_t)rowid
 {
 	sqlite3_stmt *statement = [connection getCountForRowidStatement];
 	if (statement == NULL) return NO;
