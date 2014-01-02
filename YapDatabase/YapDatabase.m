@@ -805,7 +805,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	int status = status = sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"Error in '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		YDBLogError(@"Error in '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 	}
 }
 
@@ -814,7 +814,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	int status = status = sqlite3_exec(db, "COMMIT TRANSACTION;", NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"Error in '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		YDBLogError(@"Error in '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 	}
 }
 
@@ -828,8 +828,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &statement, NULL);
 	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"%@: Error creating statement: %d %s",
-		              NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		YDBLogError(@"%@: Error creating statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 	}
 	else
 	{
@@ -844,7 +843,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 		status = sqlite3_step(statement);
 		if (status != SQLITE_DONE)
 		{
-			YDBLogError(@"%@: Error in statement: %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"%@: Error in statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 		
 		sqlite3_finalize(statement);
@@ -863,8 +862,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &statement, NULL);
 	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"%@: Error creating statement: %d %s",
-					NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+		YDBLogError(@"%@: Error creating statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 	}
 	else
 	{
@@ -884,7 +882,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 		
 		if (status != SQLITE_DONE)
 		{
-			YDBLogError(@"%@: Error in statement: %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"%@: Error in statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 		
 		sqlite3_finalize(statement);

@@ -691,7 +691,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &beginTransactionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -708,7 +708,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &commitTransactionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -725,7 +725,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &rollbackTransactionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -742,7 +742,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &yapGetDataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -759,7 +759,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &yapSetDataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -776,7 +776,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &yapRemoveExtensionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -793,7 +793,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getCollectionCountStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -810,7 +810,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getKeyCountForCollectionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -827,7 +827,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getKeyCountForAllStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -844,7 +844,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getCountForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -861,7 +861,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getRowidForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -878,7 +878,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getKeyForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -895,7 +895,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getKeyDataForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -912,7 +912,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getKeyMetadataForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -929,7 +929,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getDataForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -946,7 +946,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getAllForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -963,7 +963,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getDataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -980,7 +980,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getMetadataForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -997,7 +997,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getAllForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -1015,7 +1015,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &insertForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -1032,7 +1032,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &updateAllForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -1049,7 +1049,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &updateMetadataForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -1066,7 +1066,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &removeForRowidStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -1083,7 +1083,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &removeCollectionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -1100,7 +1100,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &removeAllStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -1117,7 +1117,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateCollectionsStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -1134,7 +1134,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateCollectionsForKeyStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -1151,7 +1151,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysInCollectionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -1168,7 +1168,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysInAllCollectionsStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -1185,7 +1185,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndMetadataInCollectionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -1203,7 +1203,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndMetadataInAllCollectionsStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -1220,7 +1220,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndObjectsInCollectionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -1238,7 +1238,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateKeysAndObjectsInAllCollectionsStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -1255,7 +1255,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateRowsInCollectionStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
@@ -1274,7 +1274,7 @@
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &enumerateRowsInAllCollectionsStatement, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error creating '%@': %d %s", NSStringFromSelector(_cmd), status, sqlite3_errmsg(db));
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
