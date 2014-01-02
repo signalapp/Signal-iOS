@@ -26,6 +26,13 @@
 **/
 #define YAP_DATABASE_FTS_CLASS_VERSION 1
 
+/**
+ * Declare that this class implements YapDatabaseExtensionTransaction_Hooks protocol.
+ * This is done privately, as the protocol is internal.
+**/
+@interface YapDatabaseFullTextSearchTransaction () <YapDatabaseExtensionTransaction_Hooks>
+@end
+
 
 @implementation YapDatabaseFullTextSearchTransaction
 

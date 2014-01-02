@@ -18,6 +18,13 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
+/**
+ * Declare that this class implements YapDatabaseExtensionTransaction_Hooks protocol.
+ * This is done privately, as the protocol is internal.
+**/
+@interface YapDatabaseRelationshipTransaction () <YapDatabaseExtensionTransaction_Hooks>
+@end
+
 
 @implementation YapDatabaseRelationshipTransaction
 

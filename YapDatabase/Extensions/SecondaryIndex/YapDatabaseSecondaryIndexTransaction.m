@@ -28,6 +28,13 @@
 **/
 #define YAP_DATABASE_SECONDARY_INDEX_CLASS_VERSION 1
 
+/**
+ * Declare that this class implements YapDatabaseExtensionTransaction_Hooks protocol.
+ * This is done privately, as the protocol is internal.
+**/
+@interface YapDatabaseSecondaryIndexTransaction () <YapDatabaseExtensionTransaction_Hooks>
+@end
+
 
 @implementation YapDatabaseSecondaryIndexTransaction
 
