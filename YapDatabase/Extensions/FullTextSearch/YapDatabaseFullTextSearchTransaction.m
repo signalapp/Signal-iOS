@@ -684,7 +684,7 @@
 			__unsafe_unretained YapDatabaseFullTextSearchWithRowBlock block =
 		        (YapDatabaseFullTextSearchWithRowBlock)fts->block;
 			
-			object = [databaseTransaction objectForKey:key inCollection:collection];
+			object = [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
 			block(ftsConnection->blockDict, collection, key, object, metadata);
 		}
 		

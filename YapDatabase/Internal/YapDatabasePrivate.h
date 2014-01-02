@@ -8,6 +8,7 @@
 
 #import "YapCache.h"
 #import "YapMemoryTable.h"
+#import "YapCollectionKey.h"
 
 #import "sqlite3.h"
 
@@ -226,6 +227,7 @@ extern NSString *const YapDatabaseNotificationKey;
 - (sqlite3_stmt *)getKeyDataForRowidStatement;
 - (sqlite3_stmt *)getKeyMetadataForRowidStatement;
 - (sqlite3_stmt *)getDataForRowidStatement;
+- (sqlite3_stmt *)getMetadataForRowidStatement;
 - (sqlite3_stmt *)getAllForRowidStatement;
 - (sqlite3_stmt *)getDataForKeyStatement;
 - (sqlite3_stmt *)getMetadataForKeyStatement;
@@ -357,6 +359,10 @@ extern NSString *const YapDatabaseNotificationKey;
 - (BOOL)hasRowid:(int64_t)rowid;
 
 - (id)objectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
+- (id)objectForCollectionKey:(YapCollectionKey *)cacheKey withRowid:(int64_t)rowid;
+
+- (id)metadataForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
+- (id)metadataForCollectionKey:(YapCollectionKey *)cacheKey withRowid:(int64_t)rowid;
 
 - (void)_enumerateKeysInCollection:(NSString *)collection
                         usingBlock:(void (^)(int64_t rowid, NSString *key, BOOL *stop))block;

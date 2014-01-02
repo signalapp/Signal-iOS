@@ -866,7 +866,7 @@
 		YapDatabaseViewFilteringWithObjectBlock filterBlock =
 		  (YapDatabaseViewFilteringWithObjectBlock)filteredView->filteringBlock;
 		
-		object = [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
+		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 		passesFilter = filterBlock(group, collection, key, object);
 	}
 	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
@@ -881,7 +881,7 @@
 		YapDatabaseViewFilteringWithRowBlock filterBlock =
 		  (YapDatabaseViewFilteringWithRowBlock)filteredView->filteringBlock;
 		
-		object = [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
+		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 		passesFilter = filterBlock(group, collection, key, object, metadata);
 	}
 	
@@ -895,7 +895,7 @@
 		BOOL sortingBlockNeedsObject = sortMayHaveChanged; // same thing, different name
 		if (sortingBlockNeedsObject && object == nil)
 		{
-			object = [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
+			object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 		}
 		
 		[self insertRowid:rowid

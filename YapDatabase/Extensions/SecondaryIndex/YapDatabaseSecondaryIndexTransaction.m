@@ -749,7 +749,7 @@
 			__unsafe_unretained YapDatabaseSecondaryIndexWithRowBlock block =
 		        (YapDatabaseSecondaryIndexWithRowBlock)secondaryIndex->block;
 			
-			object = [databaseTransaction objectForKey:key inCollection:collection];
+			object = [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
 			block(secondaryIndexConnection->blockDict, collection, key, object, metadata);
 		}
 		

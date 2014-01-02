@@ -3190,7 +3190,7 @@
 			if (view->sortingBlockType == YapDatabaseViewBlockTypeWithRow)
 			{
 				// Need the object for the sorting block
-				object = [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
+				object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 			}
 			
 			int flags = YapDatabaseViewChangedMetadata;
@@ -3223,7 +3223,7 @@
 				__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
 			        (YapDatabaseViewGroupingWithRowBlock)view->groupingBlock;
 				
-				object = [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
+				object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 				group = groupingBlock(collection, key, object, metadata);
 			}
 		}
@@ -3269,7 +3269,7 @@
 			                      view->sortingBlockType == YapDatabaseViewBlockTypeWithRow    ))
 			{
 				// Need the object for the sorting block
-				object = [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
+				object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 			}
 			
 			int flags = YapDatabaseViewChangedMetadata;

@@ -53,6 +53,7 @@
 	sqlite3_stmt *getKeyDataForRowidStatement;
 	sqlite3_stmt *getKeyMetadataForRowidStatement;
 	sqlite3_stmt *getDataForRowidStatement;
+	sqlite3_stmt *getMetadataForRowidStatement;
 	sqlite3_stmt *getAllForRowidStatement;
 	sqlite3_stmt *getDataForKeyStatement;
 	sqlite3_stmt *getMetadataForKeyStatement;
@@ -257,6 +258,7 @@
 	sqlite_finalize_null(&getKeyDataForRowidStatement);
 	sqlite_finalize_null(&getKeyMetadataForRowidStatement);
 	sqlite_finalize_null(&getDataForRowidStatement);
+	sqlite_finalize_null(&getMetadataForRowidStatement);
 	sqlite_finalize_null(&getAllForRowidStatement);
 	sqlite_finalize_null(&getDataForKeyStatement);
 	sqlite_finalize_null(&getMetadataForKeyStatement);
@@ -335,6 +337,7 @@
 		sqlite_finalize_null(&getKeyDataForRowidStatement);
 		sqlite_finalize_null(&getKeyMetadataForRowidStatement);
 	//	sqlite_finalize_null(&getDataForRowidStatement);
+		sqlite_finalize_null(&getMetadataForRowidStatement);
 		sqlite_finalize_null(&getAllForRowidStatement);
 	//	sqlite_finalize_null(&getDataForKeyStatement);
 		sqlite_finalize_null(&getMetadataForKeyStatement);
@@ -934,6 +937,23 @@
 	}
 	
 	return getDataForRowidStatement;
+}
+
+- (sqlite3_stmt *)getMetadataForRowidStatement
+{
+	if (getMetadataForRowidStatement == NULL)
+	{
+		char *stmt = "SELECT \"metadata\" FROM \"database2\" WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getMetadataForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return getMetadataForRowidStatement;
 }
 
 - (sqlite3_stmt *)getAllForRowidStatement
