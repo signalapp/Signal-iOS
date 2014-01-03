@@ -321,6 +321,188 @@
 	return changes;
 }
 
+/**
+ * Simple enumeration of existing data in database, via a SELECT query.
+ * Does not take into account anything in memory (relationshipConnection->changes dictionary).
+**/
+- (void)enumerateExistingEdgesWithSrc:(int64_t)srcRowid
+                           usingBlock:(void (^)(int64_t edgeRowid, NSString *name, int64_t dstRowid, int rules))block
+{
+	sqlite3_stmt *statement = [relationshipConnection enumerateForSrcStatement];
+	if (statement == NULL) return;
+	
+	// SELECT "rowid", "name", "dst", "rules" FROM "tableName" WHERE "src" = ?;
+	
+	sqlite3_bind_int64(statement, 1, srcRowid);
+	
+	int status;
+	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+	{
+		int64_t edgeRowid = sqlite3_column_int64(statement, 0);
+		
+		const unsigned char *text = sqlite3_column_text(statement, 1);
+		int textSize = sqlite3_column_bytes(statement, 1);
+		
+		NSString *name = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+		
+		int64_t dstRowid = sqlite3_column_int64(statement, 2);
+		int rules = sqlite3_column_int(statement, 3);
+		
+		block(edgeRowid, name, dstRowid, rules);
+	}
+	
+	if (status != SQLITE_DONE)
+	{
+		YDBLogError(@"%@ (%@): Error executing statement: %d %s",
+		            THIS_METHOD, [self registeredName],
+		            status, sqlite3_errmsg(databaseTransaction->connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+}
+
+/**
+ * Simple enumeration of existing data in database, via a SELECT query.
+ * Does not take into account anything in memory (relationshipConnection->changes dictionary).
+**/
+- (void)enumerateExistingEdgesWithDst:(int64_t)dstRowid
+                           usingBlock:(void (^)(int64_t edgeRowid, NSString *name, int64_t srcRowid, int rules))block
+{
+	sqlite3_stmt *statement = [relationshipConnection enumerateForDstStatement];
+	if (statement == NULL) return;
+	
+	// SELECT "rowid", "name", "src", "rules" FROM "tableName" WHERE "dst" = ?;
+	
+	sqlite3_bind_int64(statement, 1, dstRowid);
+	
+	int status;
+	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+	{
+		int64_t edgeRowid = sqlite3_column_int64(statement, 0);
+		
+		const unsigned char *text = sqlite3_column_text(statement, 1);
+		int textSize = sqlite3_column_bytes(statement, 1);
+		
+		NSString *name = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+		
+		int64_t srcRowid = sqlite3_column_int64(statement, 2);
+		int rules = sqlite3_column_int(statement, 3);
+		
+		block(edgeRowid, name, srcRowid, rules);
+	}
+	
+	if (status != SQLITE_DONE)
+	{
+		YDBLogError(@"%@ (%@): Error executing statement: %d %s",
+		            THIS_METHOD, [self registeredName],
+		            status, sqlite3_errmsg(databaseTransaction->connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+}
+
+/**
+ * Searches the deletedInfo ivar to retrieve the associated rowid for a node that doesn't appear in the database.
+ * If the node was deleted, we'll find it.
+ * Otherwise the edge was bad (node never existed).
+**/
+- (NSNumber *)rowidNumberForDeletedKey:(NSString *)key inCollection:(NSString *)collection
+{
+	__block NSNumber *result = nil;
+	
+	[relationshipConnection->deletedInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		
+		__unsafe_unretained NSNumber *rowidNumber = (NSNumber *)key;
+		__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
+		
+		if ([collectionKey.key isEqualToString:key] && [collectionKey.collection isEqualToString:collection])
+		{
+			result = rowidNumber;
+			*stop = YES;
+		}
+	}];
+	
+	return result;
+}
+
+/**
+ * Queries the database for the number of edges matching the given source and name.
+ * This method only queries the database, and doesn't inspect anything in memory.
+**/
+- (int64_t)edgeCountWithSource:(int64_t)srcRowid name:(NSString *)name excludingDestination:(int64_t)dstRowid
+{
+	sqlite3_stmt *statement = [relationshipConnection countForSrcNameExcludingDstStatement];
+	if (statement == NULL) return 0;
+	
+	int64_t count = 0;
+	
+	// SELECT COUNT(*) AS NumberOfRows FROM "tableName" WHERE "src" = ? AND "dst" != ? AND "name" = ?;
+	
+	sqlite3_bind_int64(statement, 1, srcRowid);
+	sqlite3_bind_int64(statement, 2, dstRowid);
+	
+	YapDatabaseString _name; MakeYapDatabaseString(&_name, name);
+	sqlite3_bind_text(statement, 3, _name.str, _name.length, SQLITE_STATIC);
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		count = sqlite3_column_int64(statement, 0);
+	}
+	else if (status == SQLITE_ERROR)
+	{
+		YDBLogError(@"%@ (%@): Error in statement: %d %s",
+		            THIS_METHOD, [self registeredName],
+		            status, sqlite3_errmsg(databaseTransaction->connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_name);
+	
+	return count;
+}
+
+/**
+ * Queries the database for the number of edges matching the given destination and name.
+ * This method only queries the database, and doesn't inspect anything in memory.
+**/
+- (int64_t)edgeCountWithDestination:(int64_t)dstRowid name:(NSString *)name excludingSource:(int64_t)srcRowid
+{
+	sqlite3_stmt *statement = [relationshipConnection countForDstNameExcludingSrcStatement];
+	if (statement == NULL) return 0;
+	
+	int64_t count = 0;
+	
+	// SELECT COUNT(*) AS NumberOfRows FROM "tableName" WHERE "dst" = ? AND "src" != ? AND "name" = ?;
+	
+	sqlite3_bind_int64(statement, 1, dstRowid);
+	sqlite3_bind_int64(statement, 2, srcRowid);
+	
+	YapDatabaseString _name; MakeYapDatabaseString(&_name, name);
+	sqlite3_bind_text(statement, 3, _name.str, _name.length, SQLITE_STATIC);
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		count = sqlite3_column_int64(statement, 0);
+	}
+	else if (status == SQLITE_ERROR)
+	{
+		YDBLogError(@"%@ (%@): Error in statement: %d %s",
+		            THIS_METHOD, [self registeredName],
+		            status, sqlite3_errmsg(databaseTransaction->connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_name);
+	
+	return count;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Logic
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2791,184 +2973,6 @@
 	}
 	
 	return edgeCount;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Private API
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (void)enumerateExistingEdgesWithSrc:(int64_t)srcRowid
-                           usingBlock:(void (^)(int64_t edgeRowid, NSString *name, int64_t dstRowid, int rules))block
-{
-	sqlite3_stmt *statement = [relationshipConnection enumerateForSrcStatement];
-	if (statement == NULL) return;
-	
-	// SELECT "rowid", "name", "dst", "rules" FROM "tableName" WHERE "src" = ?;
-	
-	sqlite3_bind_int64(statement, 1, srcRowid);
-	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
-	{
-		int64_t edgeRowid = sqlite3_column_int64(statement, 0);
-		
-		const unsigned char *text = sqlite3_column_text(statement, 1);
-		int textSize = sqlite3_column_bytes(statement, 1);
-		
-		NSString *name = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-		
-		int64_t dstRowid = sqlite3_column_int64(statement, 2);
-		int rules = sqlite3_column_int(statement, 3);
-		
-		block(edgeRowid, name, dstRowid, rules);
-	}
-	
-	if (status != SQLITE_DONE)
-	{
-		YDBLogError(@"%@ (%@): Error executing statement: %d %s",
-		            THIS_METHOD, [self registeredName],
-		            status, sqlite3_errmsg(databaseTransaction->connection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-}
-
-- (void)enumerateExistingEdgesWithDst:(int64_t)dstRowid
-                           usingBlock:(void (^)(int64_t edgeRowid, NSString *name, int64_t srcRowid, int rules))block
-{
-	sqlite3_stmt *statement = [relationshipConnection enumerateForDstStatement];
-	if (statement == NULL) return;
-	
-	// SELECT "rowid", "name", "src", "rules" FROM "tableName" WHERE "dst" = ?;
-	
-	sqlite3_bind_int64(statement, 1, dstRowid);
-	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
-	{
-		int64_t edgeRowid = sqlite3_column_int64(statement, 0);
-		
-		const unsigned char *text = sqlite3_column_text(statement, 1);
-		int textSize = sqlite3_column_bytes(statement, 1);
-		
-		NSString *name = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-		
-		int64_t srcRowid = sqlite3_column_int64(statement, 2);
-		int rules = sqlite3_column_int(statement, 3);
-		
-		block(edgeRowid, name, srcRowid, rules);
-	}
-	
-	if (status != SQLITE_DONE)
-	{
-		YDBLogError(@"%@ (%@): Error executing statement: %d %s",
-		            THIS_METHOD, [self registeredName],
-		            status, sqlite3_errmsg(databaseTransaction->connection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-}
-
-/**
- * Searches the deletedInfo ivar to retrieve the associated rowid for a node that doesn't appear in the database.
- * If the node was deleted, we'll find it.
- * Otherwise the edge was bad (node never existed).
-**/
-- (NSNumber *)rowidNumberForDeletedKey:(NSString *)key inCollection:(NSString *)collection
-{
-	__block NSNumber *result = nil;
-	
-	[relationshipConnection->deletedInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-		
-		__unsafe_unretained NSNumber *rowidNumber = (NSNumber *)key;
-		__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
-		
-		if ([collectionKey.key isEqualToString:key] && [collectionKey.collection isEqualToString:collection])
-		{
-			result = rowidNumber;
-			*stop = YES;
-		}
-	}];
-	
-	return result;
-}
-
-/**
- * Queries the database for the number of edges matching the given source and name.
- * This method only queries the database, and doesn't inspect anything in memory.
-**/
-- (int64_t)edgeCountWithSource:(int64_t)srcRowid name:(NSString *)name excludingDestination:(int64_t)dstRowid
-{
-	sqlite3_stmt *statement = [relationshipConnection countForSrcNameExcludingDstStatement];
-	if (statement == NULL) return 0;
-	
-	int64_t count = 0;
-	
-	// SELECT COUNT(*) AS NumberOfRows FROM "tableName" WHERE "src" = ? AND "dst" != ? AND "name" = ?;
-	
-	sqlite3_bind_int64(statement, 1, srcRowid);
-	sqlite3_bind_int64(statement, 2, dstRowid);
-	
-	YapDatabaseString _name; MakeYapDatabaseString(&_name, name);
-	sqlite3_bind_text(statement, 3, _name.str, _name.length, SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
-	{
-		count = sqlite3_column_int64(statement, 0);
-	}
-	else if (status == SQLITE_ERROR)
-	{
-		YDBLogError(@"%@ (%@): Error in statement: %d %s",
-		            THIS_METHOD, [self registeredName],
-		            status, sqlite3_errmsg(databaseTransaction->connection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_name);
-	
-	return count;
-}
-
-/**
- * Queries the database for the number of edges matching the given destination and name.
- * This method only queries the database, and doesn't inspect anything in memory.
-**/
-- (int64_t)edgeCountWithDestination:(int64_t)dstRowid name:(NSString *)name excludingSource:(int64_t)srcRowid
-{
-	sqlite3_stmt *statement = [relationshipConnection countForDstNameExcludingSrcStatement];
-	if (statement == NULL) return 0;
-	
-	int64_t count = 0;
-	
-	// SELECT COUNT(*) AS NumberOfRows FROM "tableName" WHERE "dst" = ? AND "src" != ? AND "name" = ?;
-	
-	sqlite3_bind_int64(statement, 1, dstRowid);
-	sqlite3_bind_int64(statement, 2, srcRowid);
-	
-	YapDatabaseString _name; MakeYapDatabaseString(&_name, name);
-	sqlite3_bind_text(statement, 3, _name.str, _name.length, SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
-	{
-		count = sqlite3_column_int64(statement, 0);
-	}
-	else if (status == SQLITE_ERROR)
-	{
-		YDBLogError(@"%@ (%@): Error in statement: %d %s",
-		            THIS_METHOD, [self registeredName],
-		            status, sqlite3_errmsg(databaseTransaction->connection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_name);
-	
-	return count;
 }
 
 @end
