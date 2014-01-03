@@ -1035,7 +1035,8 @@
 		
 		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
-		BOOL sortingBlockNeedsObject = sortMayHaveChanged; // same thing, different name
+		BOOL sortingBlockNeedsObject = filteredView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+		                               filteredView->sortingBlockType == YapDatabaseViewBlockTypeWithObject;
 		if (sortingBlockNeedsObject && object == nil)
 		{
 			object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
