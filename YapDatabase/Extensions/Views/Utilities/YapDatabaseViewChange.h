@@ -86,8 +86,8 @@ typedef enum {
  *
  * YapDatabaseViewChangedMetadata means the metadata was changed.
  * This might have happend implicitly if the user invoked setObject:forKey:inCollection: (implicitly setting
- * the meatadata to nil). Or explicitly if the user invoked setObject:forKey:inCollection:withMetadata: or
- * setMetadata:forKey:inCollection:.
+ * the metadata to nil). Or explicitly if the user invoked setObject:forKey:inCollection:withMetadata: or
+ * replaceMetadata:forKey:inCollection:.
  * 
  * YapDatabaseViewChangedDependency means the row was flagged due to a cell drawing dependency configuration.
  * See YapDatabaseViewMappings: setCellDrawingDependencyForNeighboringCellWithOffset:forGroup:

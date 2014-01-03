@@ -612,7 +612,7 @@ __attribute((deprecated("Use method replaceMetadata:forKey:inCollection: instead
  * and passing the object & metadata that already exists for the key. But without the overhead of fetching the items,
  * or re-writing the items to disk.
  *
- * The touchMetadataForKey: method is similar to calling setMetadata:forKey:,
+ * The touchMetadataForKey: method is similar to calling replaceMetadata:forKey:,
  * and passing the metadata that already exists for the key. But without the overhead of fetching the metadata,
  * or re-writing the metadata to disk.
  * 

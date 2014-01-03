@@ -355,7 +355,7 @@
 		// However, once it determines the group hasn't changed,
 		// it should abort as the sorting block only takes the object into account.
 		
-		[transaction setMetadata:@"some-metadata" forKey:key0 inCollection:nil];
+		[transaction replaceMetadata:@"some-metadata" forKey:key0 inCollection:nil];
 	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){

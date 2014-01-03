@@ -105,7 +105,7 @@
 		// It should silently fail (do nothing).
 		// And further queries to fetch metadata for the same key should return nil.
 		
-		STAssertNoThrow([transaction setMetadata:metadata forKey:@"non-existant" inCollection:nil],
+		STAssertNoThrow([transaction replaceMetadata:metadata forKey:@"non-existant" inCollection:nil],
 		                 @"Expected nothing to happen");
 		
 		STAssertNil([transaction metadataForKey:@"non-existant" inCollection:nil],
