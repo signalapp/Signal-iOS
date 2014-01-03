@@ -718,10 +718,74 @@
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleUpdateMetadata:(id)metadata
-                      forKey:(NSString *)key
-                inCollection:(NSString *)collection
-                   withRowid:(int64_t)rowid
+- (void)handleReplaceObject:(id)object
+                     forKey:(NSString *)key
+               inCollection:(NSString *)collection
+                  withRowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	__unsafe_unretained YapDatabaseSecondaryIndex *secondaryIndex = secondaryIndexConnection->secondaryIndex;
+	
+	// Invoke the block to find out if the object should be included in the index.
+	
+	id metadata = nil;
+	
+	if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithKey ||
+	    secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithMetadata)
+	{
+		// Index values are based on the key or object.
+		// Neither have changed, and thus the values haven't changed.
+		
+		return;
+	}
+	else
+	{
+		// Index values are based on object or row (object+metadata).
+		// Invoke block to see what the new values are.
+		
+		if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithObject)
+		{
+			__unsafe_unretained YapDatabaseSecondaryIndexWithObjectBlock block =
+			  (YapDatabaseSecondaryIndexWithObjectBlock)secondaryIndex->block;
+			
+			block(secondaryIndexConnection->blockDict, collection, key, object);
+		}
+		else
+		{
+			__unsafe_unretained YapDatabaseSecondaryIndexWithRowBlock block =
+			  (YapDatabaseSecondaryIndexWithRowBlock)secondaryIndex->block;
+			
+			metadata = [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
+			block(secondaryIndexConnection->blockDict, collection, key, object, metadata);
+		}
+		
+		if ([secondaryIndexConnection->blockDict count] == 0)
+		{
+			// Remove associated values from index (if needed).
+			// This was an update operation, so the rowid may have previously had values in the index.
+			
+			[self removeRowid:rowid];
+		}
+		else
+		{
+			// Add values to index (or update them).
+			// This was an update operation, so we need to insert or update.
+			
+			[self addRowid:rowid isNew:NO];
+			[secondaryIndexConnection->blockDict removeAllObjects];
+		}
+	}
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)handleReplaceMetadata:(id)metadata
+                       forKey:(NSString *)key
+                 inCollection:(NSString *)collection
+                    withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	

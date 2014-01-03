@@ -443,40 +443,148 @@
 
 /**
  * Primitive access.
+ * This method is available in case you need to store irregular data that
+ * shouldn't go through the configured serializer/deserializer.
  *
- * These are available in-case you store irregular data
- * that shouldn't go through configured serializer/deserializer.
+ * Primitive data is stored into the database, but doesn't get routed through any of the extensions.
  *
- * @see objectForKey:collection:
+ * Remember that if you place primitive data into the database via this method,
+ * you are responsible for accessing it via the appropriate primitive accessor (such as
+ * primitiveDataForKey:inCollection:). If you attempt to access it via the object accessor
+ * (objectForKey:inCollection), then the system will attempt to deserialize the primitive data via the
+ * configured deserializer, which may or may not work depending on the primitive data you're storing.
+ * 
+ * This method is the primitive version of setObject:forKey:inCollection:.
+ * For more information see the documentation for setObject:forKey:inCollection:.
+ *
+ * @see setObject:forKey:inCollection:
+ * @see primitiveDataForKey:inCollection:
 **/
-- (void)setPrimitiveData:(NSData *)data forKey:(NSString *)key inCollection:(NSString *)collection;
-- (void)setPrimitiveData:(NSData *)data
+- (void)setPrimitiveData:(NSData *)primitiveData forKey:(NSString *)key inCollection:(NSString *)collection;
+
+/**
+ * Primitive access.
+ * This method is available in case you need to store irregular data that
+ * shouldn't go through the configured serializer/deserializer.
+ *
+ * Primitive data is stored into the database, but doesn't get routed through any of the extensions.
+ *
+ * Remember that if you place primitive data into the database via this method,
+ * you are responsible for accessing it via the appropriate primitive accessor (such as
+ * primitiveDataForKey:inCollection:). If you attempt to access it via the object accessor
+ * (objectForKey:inCollection), then the system will attempt to deserialize the primitive data via the
+ * configured deserializer, which may or may not work depending on the primitive data you're storing.
+ * 
+ * This method is the primitive version of setObject:forKey:inCollection:withMetadata:.
+ * For more information see the documentation for setObject:forKey:inCollection:withMetadata:.
+ *
+ * @see setObject:forKey:inCollection:withMetadata:
+ * @see primitiveDataForKey:inCollection:
+ * @see primitiveMetadataForKey:inCollection:
+**/
+- (void)setPrimitiveData:(NSData *)primitiveData
                   forKey:(NSString *)key
             inCollection:(NSString *)collection
    withPrimitiveMetadata:(NSData *)primitiveMetadata;
-- (void)setPrimitiveMetadata:(NSData *)primitiveMetadata forKey:(NSString *)key inCollection:(NSString *)collection;
+
+/**
+ * Primitive access.
+ * This method is available in case you need to store irregular data that
+ * shouldn't go through the configured serializer/deserializer.
+ *
+ * Primitive data is stored into the database, but doesn't get routed through any of the extensions.
+ *
+ * Remember that if you place primitive data into the database via this method,
+ * you are responsible for accessing it via the appropriate primitive accessor (such as
+ * primitiveDataForKey:inCollection:). If you attempt to access it via the object accessor
+ * (objectForKey:inCollection), then the system will attempt to deserialize the primitive data via the
+ * configured deserializer, which may or may not work depending on the primitive data you're storing.
+ *
+ * This method is the primitive version of replaceObject:forKey:inCollection:.
+ * For more information see the documentation for replaceObject:forKey:inCollection:.
+ *
+ * @see replaceObject:forKey:inCollection:
+ * @see primitiveDataForKey:inCollection:
+**/
+- (void)replacePrimitiveData:(NSData *)primitiveData forKey:(NSString *)key inCollection:(NSString *)collection;
+
+/**
+ * Primitive access.
+ * This method is available in case you need to store irregular data that
+ * shouldn't go through the configured serializer/deserializer.
+ * 
+ * Primitive data is stored into the database, but doesn't get routed through any of the extensions.
+ * 
+ * Remember that if you place primitive data into the database via this method,
+ * you are responsible for accessing it via the appropriate primitive accessor (such as
+ * primitiveMetadataForKey:inCollection:). If you attempt to access it via the object accessor
+ * (metadataForKey:inCollection), then the system will attempt to deserialize the primitive data via the
+ * configured deserializer, which may or may not work depending on the primitive data you're storing.
+ *
+ * This method is the primitive version of replaceMetadata:forKey:inCollection:.
+ * For more information see the documentation for replaceMetadata:forKey:inCollection:.
+ *
+ * @see replaceMetadata:forKey:inCollection:
+ * @see primitiveMetadataForKey:inCollection:
+**/
+- (void)replacePrimitiveMetadata:(NSData *)primitiveMetadata forKey:(NSString *)key inCollection:(NSString *)collection;
+
+/**
+ * DEPRECATED: Use replacePrimitiveMetadata:forKey:inCollection: instead.
+**/
+- (void)setPrimitiveMetadata:(NSData *)primitiveMetadata forKey:(NSString *)key inCollection:(NSString *)collection
+__attribute((deprecated("Use method replacePrimitiveMetadata:forKey:inCollection: instead")));
 
 #pragma mark Object & Metadata
 
 /**
  * Sets the object for the given key/collection.
- * Objects are automatically serialized using the database's configured serializer.
+ * The object is automatically serialized using the database's configured objectSerializer.
  * 
- * You may optionally pass metadata about the object.
- * The metadata is also written to the database for persistent storage, and thus persists between sessions.
- * Metadata is serialized/deserialized to/from disk just like the object.
+ * If you pass nil for the object, then this method will remove the row from the database (if it exists).
+ *
+ * This method implicitly sets the associated metadata to nil.
 **/
 - (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection;
+
+/**
+ * Sets the object & metadata for the given key/collection.
+ * 
+ * The object is automatically serialized using the database's configured objectSerializer.
+ * The metadata is automatically serialized using the database's configured metadataSerializer.
+ * 
+ * The metadata is optional. You can pass nil for the metadata is unneeded.
+ * If non-nil then the metadata is also written to the database (metadata is also persistent).
+ *
+ * If you pass nil for the object, then this method will remove the row from the database (if it exists).
+**/
 - (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection withMetadata:(id)metadata;
 
 /**
- * Updates the metadata, and only the metadata, for the given key/collection.
- * The object for the key doesn't change.
- *
- * Note: If there is no stored object for the given key/collection, this method does nothing.
- * If you pass nil for the metadata, any given metadata associated with the key/colleciton is removed.
+ * If a row with the given key/collection exists, then replaces the object for that row with the new value.
+ * It only replaces the object. The metadata for the row doesn't change.
+ * 
+ * If there is no row in the database for the given key/collection then this method does nothing.
+ * 
+ * If you pass nil for the object, then this method will remove
 **/
-- (void)setMetadata:(id)metadata forKey:(NSString *)key inCollection:(NSString *)collection;
+- (void)replaceObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection;
+
+/**
+ * If a row with the given key/collection exists, then replaces the metadata for that row with the new value.
+ * It only replaces the metadata. The object for the row doesn't change.
+ *
+ * If there is no row in the database for the given key/collection then this method does nothing.
+ * 
+ * If you pass nil for the metadata, any metadata previously associated with the key/collection is removed.
+**/
+- (void)replaceMetadata:(id)metadata forKey:(NSString *)key inCollection:(NSString *)collection;
+
+/**
+ * DEPRECATED: Use replaceMetadata:forKey:inCollection: instead.
+**/
+- (void)setMetadata:(id)metadata forKey:(NSString *)key inCollection:(NSString *)collection
+__attribute((deprecated("Use method replaceMetadata:forKey:inCollection: instead")));
 
 #pragma mark Touch
 
@@ -487,11 +595,13 @@
  *
  *   You have a BNBook object in your database.
  *   One of the properties of the book object is a URL pointing to an image for the front cover of the book.
- *   This image gets changed. Thus the UI representation of the book needs to be updated to reflect the updated image.
- *   You realize that all your views are already listening for YapDatabaseModified notifications,
- *   so if you update the object in the database, all your views are already wired to update the UI appropriately.
- *   However, the actual object itself didn't change. So while there technically isn't any reason to
- *   update the object on disk, doing so would be the most efficient way to keep the UI up-to-date.
+ *   This image gets changed on the server. Thus the UI representation of the book needs to be updated
+ *   to reflect the updated image on the server. You realize that all your views are already listening for
+ *   YapDatabaseModified notifications, so if you update the object in the database then all your views are
+ *   already wired to update the UI appropriately. However, the actual object itself didn't change. So while
+ *   there technically isn't any reason to update the object on disk, doing so would be the easiest way to
+ *   keep the UI up-to-date. So what you really want is a way to "mark" the object as updated, without actually
+ *   incurring the overhead of rewriting it to disk.
  *
  * And this is exactly what the touch methods were designed for.
  * It won't actually cause the object to get rewritten to disk.

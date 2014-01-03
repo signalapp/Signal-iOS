@@ -60,6 +60,7 @@
 	sqlite3_stmt *getAllForKeyStatement;
 	sqlite3_stmt *insertForRowidStatement;
 	sqlite3_stmt *updateAllForRowidStatement;
+	sqlite3_stmt *updateObjectForRowidStatement;
 	sqlite3_stmt *updateMetadataForRowidStatement;
 	sqlite3_stmt *removeForRowidStatement;
 	sqlite3_stmt *removeCollectionStatement;
@@ -265,6 +266,7 @@
 	sqlite_finalize_null(&getAllForKeyStatement);
 	sqlite_finalize_null(&insertForRowidStatement);
 	sqlite_finalize_null(&updateAllForRowidStatement);
+	sqlite_finalize_null(&updateObjectForRowidStatement);
 	sqlite_finalize_null(&updateMetadataForRowidStatement);
 	sqlite_finalize_null(&removeForRowidStatement);
 	sqlite_finalize_null(&removeCollectionStatement);
@@ -344,6 +346,7 @@
 		sqlite_finalize_null(&getAllForKeyStatement);
 	//	sqlite_finalize_null(&insertForRowidStatement);
 	//	sqlite_finalize_null(&updateAllForRowidStatement);
+		sqlite_finalize_null(&updateObjectForRowidStatement);
 		sqlite_finalize_null(&updateMetadataForRowidStatement);
 		sqlite_finalize_null(&removeForRowidStatement);
 		sqlite_finalize_null(&removeCollectionStatement);
@@ -1057,6 +1060,23 @@
 	}
 	
 	return updateAllForRowidStatement;
+}
+
+- (sqlite3_stmt *)updateObjectForRowidStatement
+{
+	if (updateObjectForRowidStatement == NULL)
+	{
+		char *stmt = "UPDATE \"database2\" SET \"data\" = ? WHERE \"rowid\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &updateObjectForRowidStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return updateObjectForRowidStatement;
 }
 
 - (sqlite3_stmt *)updateMetadataForRowidStatement

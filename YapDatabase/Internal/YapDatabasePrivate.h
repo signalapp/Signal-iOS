@@ -234,6 +234,7 @@ extern NSString *const YapDatabaseNotificationKey;
 - (sqlite3_stmt *)getAllForKeyStatement;
 - (sqlite3_stmt *)insertForRowidStatement;
 - (sqlite3_stmt *)updateAllForRowidStatement;
+- (sqlite3_stmt *)updateObjectForRowidStatement;
 - (sqlite3_stmt *)updateMetadataForRowidStatement;
 - (sqlite3_stmt *)removeForRowidStatement;
 - (sqlite3_stmt *)removeCollectionStatement;
@@ -434,6 +435,12 @@ extern NSString *const YapDatabaseNotificationKey;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface YapDatabaseReadWriteTransaction ()
+
+- (void)replaceObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
+- (void)replaceMetadata:(id)metadata
+                 forKey:(NSString *)key
+           inCollection:(NSString *)collection
+              withRowid:(int64_t)rowid;
 
 - (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
 

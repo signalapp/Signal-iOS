@@ -4294,11 +4294,50 @@
 #pragma mark Primitive
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Primitive access.
+ * This method is available in case you need to store irregular data that
+ * shouldn't go through the configured serializer/deserializer.
+ *
+ * Primitive data is stored into the database, but doesn't get routed through any of the extensions.
+ *
+ * Remember that if you place primitive data into the database via this method,
+ * you are responsible for accessing it via the appropriate primitive accessor (such as
+ * primitiveDataForKey:inCollection:). If you attempt to access it via the object accessor
+ * (objectForKey:inCollection), then the system will attempt to deserialize the primitive data via the
+ * configured deserializer, which may or may not work depending on the primitive data you're storing.
+ *
+ * This method is the primitive version of setObject:forKey:inCollection:.
+ * For more information see the documentation for setObject:forKey:inCollection:.
+ *
+ * @see setObject:forKey:inCollection:
+ * @see primitiveDataForKey:inCollection:
+**/
 - (void)setPrimitiveData:(NSData *)primitiveData forKey:(NSString *)key inCollection:(NSString *)collection
 {
 	[self setPrimitiveData:primitiveData forKey:key inCollection:collection withPrimitiveMetadata:nil];
 }
 
+/**
+ * Primitive access.
+ * This method is available in case you need to store irregular data that
+ * shouldn't go through the configured serializer/deserializer.
+ *
+ * Primitive data is stored into the database, but doesn't get routed through any of the extensions.
+ *
+ * Remember that if you place primitive data into the database via this method,
+ * you are responsible for accessing it via the appropriate primitive accessor (such as
+ * primitiveDataForKey:inCollection:). If you attempt to access it via the object accessor
+ * (objectForKey:inCollection), then the system will attempt to deserialize the primitive data via the
+ * configured deserializer, which may or may not work depending on the primitive data you're storing.
+ *
+ * This method is the primitive version of setObject:forKey:inCollection:withMetadata:.
+ * For more information see the documentation for setObject:forKey:inCollection:withMetadata:.
+ *
+ * @see setObject:forKey:inCollection:withMetadata:
+ * @see primitiveDataForKey:inCollection:
+ * @see primitiveMetadataForKey:inCollection:
+**/
 - (void)setPrimitiveData:(NSData *)primitiveData
                   forKey:(NSString *)key
             inCollection:(NSString *)collection
@@ -4436,7 +4475,90 @@
 	}
 }
 
-- (void)setPrimitiveMetadata:(NSData *)primitiveMetadata forKey:(NSString *)key inCollection:(NSString *)collection
+/**
+ * Primitive access.
+ * This method is available in case you need to store irregular data that
+ * shouldn't go through the configured serializer/deserializer.
+ *
+ * Primitive data is stored into the database, but doesn't get routed through any of the extensions.
+ *
+ * Remember that if you place primitive data into the database via this method,
+ * you are responsible for accessing it via the appropriate primitive accessor (such as
+ * primitiveDataForKey:inCollection:). If you attempt to access it via the object accessor
+ * (objectForKey:inCollection), then the system will attempt to deserialize the primitive data via the
+ * configured deserializer, which may or may not work depending on the primitive data you're storing.
+ *
+ * This method is the primitive version of replaceObject:forKey:inCollection:.
+ * For more information see the documentation for replaceObject:forKey:inCollection:.
+ *
+ * @see replaceObject:forKey:inCollection:
+ * @see primitiveDataForKey:inCollection:
+**/
+- (void)replacePrimitiveData:(NSData *)primitiveData forKey:(NSString *)key inCollection:(NSString *)collection
+{
+	if (collection == nil) collection = @"";
+	
+	int64_t rowid = 0;
+	if (![self getRowid:&rowid forKey:key inCollection:collection]) return;
+	
+	sqlite3_stmt *statement = [connection updateObjectForRowidStatement];
+	if (statement == NULL) return;
+	
+	// UPDATE "database2" SET "data" = ? WHERE "rowid" = ?;
+	
+	sqlite3_bind_blob(statement, 1, primitiveData.bytes, (int)primitiveData.length, SQLITE_STATIC);
+	sqlite3_bind_int64(statement, 2, rowid);
+	
+	BOOL updated = YES;
+	
+	int status = sqlite3_step(statement);
+	if (status != SQLITE_DONE)
+	{
+		YDBLogError(@"Error executing 'updateObjectForRowidStatement': %d %s",
+		            status, sqlite3_errmsg(connection->db));
+		updated = NO;
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	
+	if (!updated) return;
+	
+	connection->hasDiskChanges = YES;
+	isMutated = YES;  // mutation during enumeration protection
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	
+	[connection->objectCache removeObjectForKey:cacheKey];
+	[connection->objectChanges setObject:[YapNull null] forKey:cacheKey];
+	
+	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
+	{
+		[extTransaction handleRemoveObjectForKey:cacheKey.key        // mutable string protection
+		                            inCollection:cacheKey.collection // mutable string protection
+		                               withRowid:rowid];
+	}
+}
+
+/**
+ * Primitive access.
+ * This method is available in case you need to store irregular data that
+ * shouldn't go through the configured serializer/deserializer.
+ *
+ * Primitive data is stored into the database, but doesn't get routed through any of the extensions.
+ *
+ * Remember that if you place primitive data into the database via this method,
+ * you are responsible for accessing it via the appropriate primitive accessor (such as
+ * primitiveMetadataForKey:inCollection:). If you attempt to access it via the object accessor
+ * (metadataForKey:inCollection), then the system will attempt to deserialize the primitive data via the
+ * configured deserializer, which may or may not work depending on the primitive data you're storing.
+ *
+ * This method is the primitive version of replaceMetadata:forKey:inCollection:.
+ * For more information see the documentation for replaceMetadata:forKey:inCollection:.
+ *
+ * @see replaceMetadata:forKey:inCollection:
+ * @see primitiveMetadataForKey:inCollection:
+**/
+- (void)replacePrimitiveMetadata:(NSData *)primitiveMetadata forKey:(NSString *)key inCollection:(NSString *)collection
 {
 	if (collection == nil) collection = @"";
 	
@@ -4447,9 +4569,6 @@
 	if (statement == NULL) return;
 	
 	// UPDATE "database2" SET "metadata" = ? WHERE "rowid" = ?;
-	//
-	// To use SQLITE_STATIC on our data blob, we use the objc_precise_lifetime attribute.
-	// This ensures the data isn't released until it goes out of scope.
 	
 	sqlite3_bind_blob(statement, 1, primitiveMetadata.bytes, (int)primitiveMetadata.length, SQLITE_STATIC);
 	sqlite3_bind_int64(statement, 2, rowid);
@@ -4478,11 +4597,19 @@
 	
 	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleUpdateMetadata:nil
-		                              forKey:cacheKey.key        // mutable string protection
-		                        inCollection:cacheKey.collection // mutable string protection
-		                           withRowid:rowid];
+		[extTransaction handleReplaceMetadata:nil
+		                               forKey:cacheKey.key        // mutable string protection
+		                         inCollection:cacheKey.collection // mutable string protection
+		                            withRowid:rowid];
 	}
+}
+
+/**
+ * DEPRECATED: Use replacePrimitiveMetadata:forKey:inCollection: instead.
+**/
+- (void)setPrimitiveMetadata:(NSData *)primitiveMetadata forKey:(NSString *)key inCollection:(NSString *)collection
+{
+	[self replacePrimitiveMetadata:primitiveMetadata forKey:key inCollection:collection];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4707,12 +4834,130 @@
 	}
 }
 
-- (void)setMetadata:(id)metadata forKey:(NSString *)key inCollection:(NSString *)collection
+/**
+ * If a row with the given key/collection exists, then replaces the object for that row with the new value.
+ * It only replaces the object. The metadata for the row doesn't change.
+ *
+ * If there is no row in the database for the given key/collection then this method does nothing.
+ *
+ * If you pass nil for the object, then this method will remove
+**/
+- (void)replaceObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection
 {
+	int64_t rowid = 0;
+	if ([self getRowid:&rowid forKey:key inCollection:collection])
+	{
+		[self replaceObject:object forKey:key inCollection:collection withRowid:rowid];
+	}
+}
+
+- (void)replaceObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid
+{
+	if (object == nil)
+	{
+		[self removeObjectForKey:key inCollection:collection];
+		return;
+	}
+	
+	NSAssert(key != nil, @"Internal error");
 	if (collection == nil) collection = @"";
 	
+	if (connection->database->objectSanitizer)
+	{
+		object = connection->database->objectSanitizer(collection, key, object);
+		if (object == nil)
+		{
+			YDBLogWarn(@"Object sanitizer returned nil for key(%@) object: %@", key, object);
+			
+			[self removeObjectForKey:key inCollection:collection withRowid:rowid];
+			return;
+		}
+	}
+	
+	sqlite3_stmt *statement = [connection updateObjectForRowidStatement];
+	if (statement == NULL) return;
+	
+	// UPDATE "database2" SET "data" = ? WHERE "rowid" = ?;
+	//
+	// To use SQLITE_STATIC on our data blob, we use the objc_precise_lifetime attribute.
+	// This ensures the data isn't released until it goes out of scope.
+	
+	__attribute__((objc_precise_lifetime)) NSData *rawData =
+	  connection->database->objectSerializer(collection, key, object);
+	sqlite3_bind_blob(statement, 1, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
+	
+	sqlite3_bind_int64(statement, 2, rowid);
+	
+	BOOL updated = YES;
+	
+	int status = sqlite3_step(statement);
+	if (status != SQLITE_DONE)
+	{
+		YDBLogError(@"Error executing 'updateDataForRowidStatement': %d %s",
+		                                                    status, sqlite3_errmsg(connection->db));
+		updated = NO;
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	
+	if (!updated) return;
+	
+	connection->hasDiskChanges = YES;
+	isMutated = YES;  // mutation during enumeration protection
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	
+	id _object = nil;
+	if (connection->objectPolicy == YapDatabasePolicyContainment) {
+		_object = [YapNull null];
+	}
+	else if (connection->objectPolicy == YapDatabasePolicyShare) {
+		_object = object;
+	}
+	else // if (connection->objectPolicy = YapDatabasePolicyCopy)
+	{
+		if ([object conformsToProtocol:@protocol(NSCopying)])
+			_object = [object copy];
+		else
+			_object = [YapNull null];
+	}
+	
+	[connection->objectCache setObject:object forKey:cacheKey];
+	[connection->objectChanges setObject:_object forKey:cacheKey];
+	
+	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
+	{
+		[extTransaction handleReplaceObject:object
+		                             forKey:cacheKey.key        // mutable string protection
+		                       inCollection:cacheKey.collection // mutable string protection
+		                          withRowid:rowid];
+	}
+}
+
+/**
+ * If a row with the given key/collection exists, then replaces the metadata for that row with the new value.
+ * It only replaces the metadata. The object for the row doesn't change.
+ *
+ * If there is no row in the database for the given key/collection then this method does nothing.
+ *
+ * If you pass nil for the metadata, any metadata previously associated with the key/collection is removed.
+**/
+- (void)replaceMetadata:(id)metadata forKey:(NSString *)key inCollection:(NSString *)collection
+{
 	int64_t rowid = 0;
-	if (![self getRowid:&rowid forKey:key inCollection:collection]) return;
+	if ([self getRowid:&rowid forKey:key inCollection:collection])
+	{
+		[self replaceMetadata:metadata forKey:key inCollection:collection withRowid:rowid];
+	}
+}
+
+- (void)replaceMetadata:(id)metadata
+                 forKey:(NSString *)key
+           inCollection:(NSString *)collection
+              withRowid:(int64_t)rowid
+{
+	NSAssert(key != nil, @"Internal error");
+	if (collection == nil) collection = @"";
 	
 	if (metadata && connection->database->metadataSanitizer)
 	{
@@ -4784,11 +5029,19 @@
 	
 	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleUpdateMetadata:metadata
-		                              forKey:cacheKey.key        // mutable string protection
-		                        inCollection:cacheKey.collection // mutable string protection
-		                           withRowid:rowid];
+		[extTransaction handleReplaceMetadata:metadata
+		                               forKey:cacheKey.key        // mutable string protection
+		                         inCollection:cacheKey.collection // mutable string protection
+		                            withRowid:rowid];
 	}
+}
+
+/**
+ * DEPRECATED: Use replaceMetadata:forKey:inCollection: instead.
+**/
+- (void)setMetadata:(id)metadata forKey:(NSString *)key inCollection:(NSString *)collection
+{
+	[self replaceMetadata:metadata forKey:key inCollection:collection];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

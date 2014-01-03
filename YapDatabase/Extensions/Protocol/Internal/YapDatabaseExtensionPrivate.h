@@ -424,10 +424,15 @@
               withMetadata:(id)metadata
                      rowid:(int64_t)rowid;
 
-- (void)handleUpdateMetadata:(id)metadata
-                      forKey:(NSString *)key
-                inCollection:(NSString *)collection
-                   withRowid:(int64_t)rowid;
+- (void)handleReplaceObject:(id)object
+                     forKey:(NSString *)key
+               inCollection:(NSString *)collection
+                  withRowid:(int64_t)rowid;
+
+- (void)handleReplaceMetadata:(id)metadata
+                       forKey:(NSString *)key
+                 inCollection:(NSString *)collection
+                    withRowid:(int64_t)rowid;
 
 - (void)handleTouchObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
 - (void)handleTouchMetadataForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;

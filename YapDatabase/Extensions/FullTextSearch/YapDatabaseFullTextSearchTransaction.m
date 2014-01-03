@@ -653,10 +653,74 @@
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleUpdateMetadata:(id)metadata
-                      forKey:(NSString *)key
-                inCollection:(NSString *)collection
-                   withRowid:(int64_t)rowid
+- (void)handleReplaceObject:(id)object
+                     forKey:(NSString *)key
+               inCollection:(NSString *)collection
+                  withRowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	__unsafe_unretained YapDatabaseFullTextSearch *fts = ftsConnection->fts;
+	
+	// Invoke the block to find out if the object should be included in the index.
+	
+	id metadata = nil;
+	
+	if (fts->blockType == YapDatabaseFullTextSearchBlockTypeWithKey ||
+	    fts->blockType == YapDatabaseFullTextSearchBlockTypeWithMetadata)
+	{
+		// Index values are based on the key or metadata.
+		// Neither have changed, and thus the values haven't changed.
+		
+		return;
+	}
+	else
+	{
+		// Index values are based on object or row (object+metadata).
+		// Invoke block to see what the new values are.
+		
+		if (fts->blockType == YapDatabaseFullTextSearchBlockTypeWithObject)
+		{
+			__unsafe_unretained YapDatabaseFullTextSearchWithObjectBlock block =
+		        (YapDatabaseFullTextSearchWithObjectBlock)fts->block;
+			
+			block(ftsConnection->blockDict, collection, key, object);
+		}
+		else
+		{
+			__unsafe_unretained YapDatabaseFullTextSearchWithRowBlock block =
+		        (YapDatabaseFullTextSearchWithRowBlock)fts->block;
+			
+			metadata = [databaseTransaction metadataForKey:key inCollection:collection withRowid:rowid];
+			block(ftsConnection->blockDict, collection, key, object, metadata);
+		}
+		
+		if ([ftsConnection->blockDict count] == 0)
+		{
+			// Remove associated values from index (if needed).
+			// This was an update operation, so the rowid may have previously had values in the index.
+			
+			[self removeRowid:rowid];
+		}
+		else
+		{
+			// Add values to index (or update them).
+			// This was an update operation, so we need to insert or update.
+			
+			[self addRowid:rowid isNew:NO];
+			[ftsConnection->blockDict removeAllObjects];
+		}
+	}
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)handleReplaceMetadata:(id)metadata
+                       forKey:(NSString *)key
+                 inCollection:(NSString *)collection
+                    withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -676,7 +740,7 @@
 	}
 	else
 	{
-		// Index values are based on metadata or objectAndMetadata.
+		// Index values are based on metadata or row (object+metadata).
 		// Invoke block to see what the new values are.
 		
 		if (fts->blockType == YapDatabaseFullTextSearchBlockTypeWithMetadata)

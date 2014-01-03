@@ -782,10 +782,153 @@
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
  * This method overrides the version in YapDatabaseViewTransaction.
 **/
-- (void)handleUpdateMetadata:(id)metadata
-                      forKey:(NSString *)key
-                inCollection:(NSString *)collection
-                   withRowid:(int64_t)rowid
+- (void)handleReplaceObject:(id)object
+                     forKey:(NSString *)key
+               inCollection:(NSString *)collection
+                  withRowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	__unsafe_unretained YapDatabaseFilteredView *filteredView =
+	  (YapDatabaseFilteredView *)viewConnection->view;
+	
+	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	
+	BOOL groupMayHaveChanged = filteredView->groupingBlockType == YapDatabaseViewBlockTypeWithRow ||
+	                           filteredView->groupingBlockType == YapDatabaseViewBlockTypeWithObject;
+	
+	BOOL sortMayHaveChanged = filteredView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+	                          filteredView->sortingBlockType == YapDatabaseViewBlockTypeWithObject;
+	
+	// Instead of going to the groupingBlock,
+	// just ask the parentViewTransaction what the last group was.
+	
+	YapDatabaseViewTransaction *parentViewTransaction =
+	  [databaseTransaction ext:filteredView->parentViewName];
+	
+	NSString *group = parentViewTransaction->lastHandledGroup;
+	
+	if (group == nil)
+	{
+		// Not included in parentView.
+		
+		if (groupMayHaveChanged)
+		{
+			// Remove key from view (if needed).
+			// This was an update operation, so the key may have previously been in the view.
+			
+			[self removeRowid:rowid collectionKey:collectionKey];
+		}
+		else
+		{
+			// The group hasn't changed.
+			// Thus it wasn't previously in view, and still isn't in the view.
+		}
+		
+		lastHandledGroup = nil;
+		return;
+	}
+	
+	BOOL filterMayHaveChanged = filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithRow ||
+	                            filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithObject;
+	
+	if (!groupMayHaveChanged && !sortMayHaveChanged && !filterMayHaveChanged)
+	{
+		// Nothing has changed that could possibly affect the view.
+		// Just note the touch.
+		
+		int flags = YapDatabaseViewChangedObject;
+		
+		NSString *pageKey = [self pageKeyForRowid:rowid];
+		NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
+		
+		[viewConnection->changes addObject:
+		    [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:existingIndex]];
+		
+		lastHandledGroup = group;
+		return;
+	}
+	
+	// Ask filter block if we should add key to view.
+	
+	BOOL passesFilter;
+	id metadata = nil;
+	
+	if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithKey)
+	{
+		YapDatabaseViewFilteringWithKeyBlock filterBlock =
+		  (YapDatabaseViewFilteringWithKeyBlock)filteredView->filteringBlock;
+		
+		passesFilter = filterBlock(group, collection, key);
+	}
+	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithObject)
+	{
+		YapDatabaseViewFilteringWithObjectBlock filterBlock =
+		  (YapDatabaseViewFilteringWithObjectBlock)filteredView->filteringBlock;
+		
+		passesFilter = filterBlock(group, collection, key, object);
+	}
+	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	{
+		YapDatabaseViewFilteringWithMetadataBlock filterBlock =
+		  (YapDatabaseViewFilteringWithMetadataBlock)filteredView->filteringBlock;
+		
+		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
+		passesFilter = filterBlock(group, collection, key, metadata);
+	}
+	else // if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithRow)
+	{
+		YapDatabaseViewFilteringWithRowBlock filterBlock =
+		  (YapDatabaseViewFilteringWithRowBlock)filteredView->filteringBlock;
+		
+		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
+		passesFilter = filterBlock(group, collection, key, object, metadata);
+	}
+	
+	if (passesFilter)
+	{
+		// Add key to view (or update position).
+		// This was an update operation, so the key may have previously been in the view.
+		
+		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		
+		BOOL sortingBlockNeedsMetadata = filteredView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+		                                 filteredView->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata;
+		if (sortingBlockNeedsMetadata && metadata == nil)
+		{
+			metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
+		}
+		
+		[self insertRowid:rowid
+		    collectionKey:collectionKey
+		           object:object
+		         metadata:metadata
+		          inGroup:group
+		      withChanges:flags
+		            isNew:NO];
+		
+		lastHandledGroup = group;
+	}
+	else
+	{
+		// Filtered from this view.
+		// Remove key from view (if needed).
+		// This was an update operation, so the key may have previously been in the view.
+		
+		[self removeRowid:rowid collectionKey:collectionKey];
+		lastHandledGroup = nil;
+	}
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+ * This method overrides the version in YapDatabaseViewTransaction.
+**/
+- (void)handleReplaceMetadata:(id)metadata
+                       forKey:(NSString *)key
+                 inCollection:(NSString *)collection
+                    withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
