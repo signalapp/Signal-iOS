@@ -58,6 +58,7 @@
 - (sqlite3_stmt *)insertEdgeStatement;
 - (sqlite3_stmt *)updateEdgeStatement;
 - (sqlite3_stmt *)deleteEdgeStatement;
+- (sqlite3_stmt *)deleteEdgesWithNodeStatement;
 - (sqlite3_stmt *)enumerateForSrcStatement;
 - (sqlite3_stmt *)enumerateForDstStatement;
 - (sqlite3_stmt *)enumerateForSrcNameStatement;
@@ -65,8 +66,10 @@
 - (sqlite3_stmt *)enumerateForNameStatement;
 - (sqlite3_stmt *)enumerateForSrcDstStatement;
 - (sqlite3_stmt *)enumerateForSrcDstNameStatement;
-- (sqlite3_stmt *)countForSrcNameStatement;
-- (sqlite3_stmt *)countForDstNameStatement;
+- (sqlite3_stmt *)countForSrcDstStatement;
+- (sqlite3_stmt *)countForSrcDstNameStatement;
+- (sqlite3_stmt *)countForSrcNameExcludingDstStatement;
+- (sqlite3_stmt *)countForDstNameExcludingSrcStatement;
 - (sqlite3_stmt *)removeAllStatement;
 
 @end

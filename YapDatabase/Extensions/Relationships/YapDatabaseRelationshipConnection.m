@@ -26,6 +26,7 @@
 	sqlite3_stmt *insertEdgeStatement;
 	sqlite3_stmt *updateEdgeStatement;
 	sqlite3_stmt *deleteEdgeStatement;
+	sqlite3_stmt *deleteEdgesWithNodeStatement;
 	sqlite3_stmt *enumerateForSrcStatement;
 	sqlite3_stmt *enumerateForDstStatement;
 	sqlite3_stmt *enumerateForSrcNameStatement;
@@ -33,8 +34,10 @@
 	sqlite3_stmt *enumerateForNameStatement;
 	sqlite3_stmt *enumerateForSrcDstStatement;
 	sqlite3_stmt *enumerateForSrcDstNameStatement;
-	sqlite3_stmt *countForSrcNameStatement;
-	sqlite3_stmt *countForDstNameStatement;
+	sqlite3_stmt *countForSrcDstStatement;
+	sqlite3_stmt *countForSrcDstNameStatement;
+	sqlite3_stmt *countForSrcNameExcludingDstStatement;
+	sqlite3_stmt *countForDstNameExcludingSrcStatement;
 	sqlite3_stmt *removeAllStatement;
 }
 
@@ -58,6 +61,7 @@
 	sqlite_finalize_null(&insertEdgeStatement);
 	sqlite_finalize_null(&updateEdgeStatement);
 	sqlite_finalize_null(&deleteEdgeStatement);
+	sqlite_finalize_null(&deleteEdgesWithNodeStatement);
 	sqlite_finalize_null(&enumerateForSrcStatement);
 	sqlite_finalize_null(&enumerateForDstStatement);
 	sqlite_finalize_null(&enumerateForSrcNameStatement);
@@ -65,8 +69,10 @@
 	sqlite_finalize_null(&enumerateForNameStatement);
 	sqlite_finalize_null(&enumerateForSrcDstStatement);
 	sqlite_finalize_null(&enumerateForSrcDstNameStatement);
-	sqlite_finalize_null(&countForSrcNameStatement);
-	sqlite_finalize_null(&countForDstNameStatement);
+	sqlite_finalize_null(&countForSrcDstStatement);
+	sqlite_finalize_null(&countForSrcDstNameStatement);
+	sqlite_finalize_null(&countForSrcNameExcludingDstStatement);
+	sqlite_finalize_null(&countForDstNameExcludingSrcStatement);
 	sqlite_finalize_null(&removeAllStatement);
 }
 
@@ -86,6 +92,7 @@
 		sqlite_finalize_null(&insertEdgeStatement);
 		sqlite_finalize_null(&updateEdgeStatement);
 		sqlite_finalize_null(&deleteEdgeStatement);
+		sqlite_finalize_null(&deleteEdgesWithNodeStatement);
 	//	sqlite_finalize_null(&enumerateForSrcStatement);
 		sqlite_finalize_null(&enumerateForDstStatement);
 		sqlite_finalize_null(&enumerateForSrcNameStatement);
@@ -93,8 +100,10 @@
 		sqlite_finalize_null(&enumerateForNameStatement);
 		sqlite_finalize_null(&enumerateForSrcDstStatement);
 		sqlite_finalize_null(&enumerateForSrcDstNameStatement);
-		sqlite_finalize_null(&countForSrcNameStatement);
-		sqlite_finalize_null(&countForDstNameStatement);
+		sqlite_finalize_null(&countForSrcDstStatement);
+		sqlite_finalize_null(&countForSrcDstNameStatement);
+		sqlite_finalize_null(&countForSrcNameExcludingDstStatement);
+		sqlite_finalize_null(&countForDstNameExcludingSrcStatement);
 		sqlite_finalize_null(&removeAllStatement);
 	}
 	
@@ -283,6 +292,28 @@
 	return deleteEdgeStatement;
 }
 
+- (sqlite3_stmt *)deleteEdgesWithNodeStatement
+{
+	if (deleteEdgesWithNodeStatement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"DELETE FROM \"%@\" WHERE \"src\" = ? OR \"dst\" = ?;", [relationship tableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &deleteEdgesWithNodeStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return deleteEdgesWithNodeStatement;
+}
+
 - (sqlite3_stmt *)enumerateForSrcStatement
 {
 	if (enumerateForSrcStatement == NULL)
@@ -442,9 +473,55 @@
 	return enumerateForSrcDstNameStatement;
 }
 
-- (sqlite3_stmt *)countForSrcNameStatement
+- (sqlite3_stmt *)countForSrcDstStatement
 {
-	if (countForSrcNameStatement == NULL)
+	if (countForSrcDstStatement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" WHERE \"src\" = ? AND \"dst\" = ?;",
+		  [relationship tableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &countForSrcDstStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return countForSrcDstStatement;
+}
+
+- (sqlite3_stmt *)countForSrcDstNameStatement
+{
+	if (countForSrcDstNameStatement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" WHERE \"src\" = ? AND \"dst\" = ? AND \"name\" = ?;",
+		  [relationship tableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &countForSrcDstNameStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return countForSrcDstNameStatement;
+}
+
+- (sqlite3_stmt *)countForSrcNameExcludingDstStatement
+{
+	if (countForSrcNameExcludingDstStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		  @"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" WHERE \"src\" = ? AND \"dst\" != ? AND \"name\" = ?;",
@@ -453,7 +530,7 @@
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &countForSrcNameStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &countForSrcNameExcludingDstStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -462,21 +539,21 @@
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return countForSrcNameStatement;
+	return countForSrcNameExcludingDstStatement;
 }
 
-- (sqlite3_stmt *)countForDstNameStatement
+- (sqlite3_stmt *)countForDstNameExcludingSrcStatement
 {
-	if (countForDstNameStatement == NULL)
+	if (countForDstNameExcludingSrcStatement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		  @"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" WHERE \"dst\" = ? AND \"name\" = ?;",
+		  @"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" WHERE \"dst\" = ? AND \"src\" != ? AND \"name\" = ?;",
 		  [relationship tableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &countForDstNameStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &countForDstNameExcludingSrcStatement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -485,7 +562,7 @@
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return countForDstNameStatement;
+	return countForDstNameExcludingSrcStatement;
 }
 
 - (sqlite3_stmt *)removeAllStatement

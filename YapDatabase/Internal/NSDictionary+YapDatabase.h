@@ -3,6 +3,6 @@
 
 @interface NSDictionary (YapDatabase)
 
-- (BOOL)containsKey:(id)key;
+- (BOOL)ydb_containsKey:(id)key;
 
 @end
