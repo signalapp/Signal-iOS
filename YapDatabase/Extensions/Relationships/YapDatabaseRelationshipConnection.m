@@ -202,7 +202,7 @@
 	NSMutableDictionary *externalChangeset = nil;
 	BOOL hasDiskChanges = NO;
 	
-	// Todo... ?
+	// In the future we may want to store a changeset that specifies which edges were added & removed.
 	
 	*internalChangesetPtr = internalChangeset;
 	*externalChangesetPtr = externalChangeset;
@@ -211,7 +211,8 @@
 
 - (void)processChangeset:(NSDictionary *)changeset
 {
-	// Todo... ?
+	// Nothing to do here.
+	// This method is required to be overriden by YapDatabaseExtensionConnection.
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
