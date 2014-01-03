@@ -7,6 +7,7 @@
 #import "YapDatabase.h"
 #import "YapDatabaseConnection.h"
 #import "YapDatabaseTransaction.h"
+#import "YapCollectionKey.h"
 
 #import "sqlite3.h"
 
@@ -413,31 +414,27 @@
 @required
 
 - (void)handleInsertObject:(id)object
-                    forKey:(NSString *)key
-              inCollection:(NSString *)collection
+          forCollectionKey:(YapCollectionKey *)collectionKey
               withMetadata:(id)metadata
                      rowid:(int64_t)rowid;
 
 - (void)handleUpdateObject:(id)object
-                    forKey:(NSString *)key
-              inCollection:(NSString *)collection
+          forCollectionKey:(YapCollectionKey *)collectionKey
               withMetadata:(id)metadata
                      rowid:(int64_t)rowid;
 
 - (void)handleReplaceObject:(id)object
-                     forKey:(NSString *)key
-               inCollection:(NSString *)collection
+           forCollectionKey:(YapCollectionKey *)collectionKey
                   withRowid:(int64_t)rowid;
 
 - (void)handleReplaceMetadata:(id)metadata
-                       forKey:(NSString *)key
-                 inCollection:(NSString *)collection
+             forCollectionKey:(YapCollectionKey *)collectionKey
                     withRowid:(int64_t)rowid;
 
-- (void)handleTouchObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
-- (void)handleTouchMetadataForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
+- (void)handleTouchObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid;
+- (void)handleTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid;
 
-- (void)handleRemoveObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
+- (void)handleRemoveObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid;
 - (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids;
 
 - (void)handleRemoveAllObjectsInAllCollections;

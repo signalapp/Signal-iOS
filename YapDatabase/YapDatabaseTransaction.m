@@ -4468,9 +4468,7 @@
 		
 		for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 		{
-			[extTransaction handleRemoveObjectForKey:cacheKey.key        // mutable string protection
-										inCollection:cacheKey.collection // mutable string protection
-										   withRowid:rowid];
+			[extTransaction handleRemoveObjectForCollectionKey:cacheKey withRowid:rowid];
 		}
 	}
 }
@@ -4533,9 +4531,7 @@
 	
 	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleRemoveObjectForKey:cacheKey.key        // mutable string protection
-		                            inCollection:cacheKey.collection // mutable string protection
-		                               withRowid:rowid];
+		[extTransaction handleRemoveObjectForCollectionKey:cacheKey withRowid:rowid];
 	}
 }
 
@@ -4597,10 +4593,7 @@
 	
 	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleReplaceMetadata:nil
-		                               forKey:cacheKey.key        // mutable string protection
-		                         inCollection:cacheKey.collection // mutable string protection
-		                            withRowid:rowid];
+		[extTransaction handleReplaceMetadata:nil forCollectionKey:cacheKey withRowid:rowid];
 	}
 }
 
@@ -4821,14 +4814,12 @@
 	{
 		if (found)
 			[extTransaction handleUpdateObject:object
-			                            forKey:cacheKey.key        // mutable string protection
-			                      inCollection:cacheKey.collection // mutable string protection
+			                  forCollectionKey:cacheKey
 			                      withMetadata:metadata
 			                             rowid:rowid];
 		else
 			[extTransaction handleInsertObject:object
-			                            forKey:cacheKey.key        // mutable string protection
-			                      inCollection:cacheKey.collection // mutable string protection
+			                  forCollectionKey:cacheKey
 			                      withMetadata:metadata
 			                             rowid:rowid];
 	}
@@ -4927,10 +4918,7 @@
 	
 	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleReplaceObject:object
-		                             forKey:cacheKey.key        // mutable string protection
-		                       inCollection:cacheKey.collection // mutable string protection
-		                          withRowid:rowid];
+		[extTransaction handleReplaceObject:object forCollectionKey:cacheKey withRowid:rowid];
 	}
 }
 
@@ -5029,10 +5017,7 @@
 	
 	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleReplaceMetadata:metadata
-		                               forKey:cacheKey.key        // mutable string protection
-		                         inCollection:cacheKey.collection // mutable string protection
-		                            withRowid:rowid];
+		[extTransaction handleReplaceMetadata:metadata forCollectionKey:cacheKey withRowid:rowid];
 	}
 }
 
@@ -5065,9 +5050,7 @@
 	
 	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleTouchObjectForKey:cacheKey.key        // mutable string protection
-			                       inCollection:cacheKey.collection // mutable string protection
-		                              withRowid:rowid];
+		[extTransaction handleTouchObjectForCollectionKey:cacheKey withRowid:rowid];
 	}
 }
 
@@ -5085,9 +5068,7 @@
 	
 	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleTouchMetadataForKey:cacheKey.key        // mutable string protection
-		                             inCollection:cacheKey.collection // mutable string protection
-		                                withRowid:rowid];
+		[extTransaction handleTouchMetadataForCollectionKey:cacheKey withRowid:rowid];
 	}
 }
 
@@ -5135,9 +5116,7 @@
 	
 	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleRemoveObjectForKey:cacheKey.key        // mutable string protection
-		                            inCollection:cacheKey.collection // mutable string protection
-		                               withRowid:rowid];
+		[extTransaction handleRemoveObjectForCollectionKey:cacheKey withRowid:rowid];
 	}
 }
 

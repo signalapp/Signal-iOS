@@ -592,8 +592,7 @@
  * This method overrides the version in YapDatabaseViewTransaction.
 **/
 - (void)handleInsertObject:(id)object
-                    forKey:(NSString *)key
-              inCollection:(NSString *)collection
+          forCollectionKey:(YapCollectionKey *)collectionKey
               withMetadata:(id)metadata
                      rowid:(int64_t)rowid
 {
@@ -601,6 +600,9 @@
 	
 	__unsafe_unretained YapDatabaseFilteredView *filteredView =
 	  (YapDatabaseFilteredView *)viewConnection->view;
+	
+	__unsafe_unretained NSString *collection = collectionKey.collection;
+	__unsafe_unretained NSString *key = collectionKey.key;
 	
 	// Instead of going to the groupingBlock,
 	// just ask the parentViewTransaction what the last group was.
@@ -656,7 +658,6 @@
 	{
 		// This was an insert operation, so we know the key wasn't already in the view.
 		
-		YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
 		[self insertRowid:rowid
@@ -684,8 +685,7 @@
  * This method overrides the version in YapDatabaseViewTransaction.
 **/
 - (void)handleUpdateObject:(id)object
-                    forKey:(NSString *)key
-              inCollection:(NSString *)collection
+          forCollectionKey:(YapCollectionKey *)collectionKey
               withMetadata:(id)metadata
                      rowid:(int64_t)rowid
 {
@@ -694,7 +694,8 @@
 	__unsafe_unretained YapDatabaseFilteredView *filteredView =
 	  (YapDatabaseFilteredView *)viewConnection->view;
 	
-	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	__unsafe_unretained NSString *collection = collectionKey.collection;
+	__unsafe_unretained NSString *key = collectionKey.key;
 	
 	// Instead of going to the groupingBlock,
 	// just ask the parentViewTransaction what the last group was.
@@ -782,17 +783,15 @@
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
  * This method overrides the version in YapDatabaseViewTransaction.
 **/
-- (void)handleReplaceObject:(id)object
-                     forKey:(NSString *)key
-               inCollection:(NSString *)collection
-                  withRowid:(int64_t)rowid
+- (void)handleReplaceObject:(id)object forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
 	__unsafe_unretained YapDatabaseFilteredView *filteredView =
 	  (YapDatabaseFilteredView *)viewConnection->view;
 	
-	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	__unsafe_unretained NSString *collection = collectionKey.collection;
+	__unsafe_unretained NSString *key = collectionKey.key;
 	
 	BOOL groupMayHaveChanged = filteredView->groupingBlockType == YapDatabaseViewBlockTypeWithRow ||
 	                           filteredView->groupingBlockType == YapDatabaseViewBlockTypeWithObject;
@@ -925,17 +924,15 @@
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
  * This method overrides the version in YapDatabaseViewTransaction.
 **/
-- (void)handleReplaceMetadata:(id)metadata
-                       forKey:(NSString *)key
-                 inCollection:(NSString *)collection
-                    withRowid:(int64_t)rowid
+- (void)handleReplaceMetadata:(id)metadata forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
 	__unsafe_unretained YapDatabaseFilteredView *filteredView =
 	  (YapDatabaseFilteredView *)viewConnection->view;
 	
-	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	__unsafe_unretained NSString *collection = collectionKey.collection;
+	__unsafe_unretained NSString *key = collectionKey.key;
 	
 	BOOL groupMayHaveChanged = filteredView->groupingBlockType == YapDatabaseViewBlockTypeWithRow ||
 	                           filteredView->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata;

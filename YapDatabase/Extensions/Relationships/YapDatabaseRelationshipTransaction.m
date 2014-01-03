@@ -1431,8 +1431,7 @@
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
 - (void)handleInsertObject:(id)object
-                    forKey:(NSString *)key
-              inCollection:(NSString *)collection
+          forCollectionKey:(YapCollectionKey *)collectionKey
               withMetadata:(id)metadata
                      rowid:(int64_t)rowid
 {
@@ -1462,6 +1461,9 @@
 	if ([givenEdges count] > 0)
 	{
 		edges = [NSMutableArray arrayWithCapacity:[givenEdges count]];
+		
+		__unsafe_unretained NSString *collection = collectionKey.collection;
+		__unsafe_unretained NSString *key = collectionKey.key;
 		
 		for (YapDatabaseRelationshipEdge *edge in givenEdges)
 		{
@@ -1510,8 +1512,7 @@
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
 - (void)handleUpdateObject:(id)object
-                    forKey:(NSString *)key
-              inCollection:(NSString *)collection
+          forCollectionKey:(YapCollectionKey *)collectionKey
               withMetadata:(id)metadata
                      rowid:(int64_t)rowid
 {
@@ -1538,6 +1539,9 @@
 	{
 		edges = [NSMutableArray arrayWithCapacity:[givenEdges count]];
 		
+		__unsafe_unretained NSString *collection = collectionKey.collection;
+		__unsafe_unretained NSString *key = collectionKey.key;
+		
 		for (YapDatabaseRelationshipEdge *edge in givenEdges)
 		{
 			[edges addObject:[edge copyWithSourceKey:key collection:collection rowid:rowid]];
@@ -1555,10 +1559,7 @@
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleReplaceObject:(id)object
-                     forKey:(NSString *)key
-               inCollection:(NSString *)collection
-                  withRowid:(int64_t)rowid
+- (void)handleReplaceObject:(id)object forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -1582,6 +1583,9 @@
 	{
 		edges = [NSMutableArray arrayWithCapacity:[givenEdges count]];
 		
+		__unsafe_unretained NSString *collection = collectionKey.collection;
+		__unsafe_unretained NSString *key = collectionKey.key;
+		
 		for (YapDatabaseRelationshipEdge *edge in givenEdges)
 		{
 			[edges addObject:[edge copyWithSourceKey:key collection:collection rowid:rowid]];
@@ -1599,10 +1603,7 @@
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleReplaceMetadata:(id)metadata
-                       forKey:(NSString *)key
-                 inCollection:(NSString *)collection
-                    withRowid:(int64_t)rowid
+- (void)handleReplaceMetadata:(id)metadata forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -1613,7 +1614,7 @@
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleTouchObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid
+- (void)handleTouchObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -1624,7 +1625,7 @@
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleTouchMetadataForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid
+- (void)handleTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -1635,14 +1636,13 @@
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleRemoveObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid
+- (void)handleRemoveObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
 	// Note: This method may be called during flush processing due to an edge's nodeDeleteRules.
 	
 	NSNumber *srcNumber = @(rowid);
-	YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	[relationshipConnection->deletedOrder addObject:srcNumber];
 	[relationshipConnection->deletedInfo setObject:collectionKey forKey:srcNumber];
