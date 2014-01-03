@@ -10,7 +10,6 @@
 
 #import "YapDatabasePrivate.h"
 #import "YapDatabaseExtensionPrivate.h"
-#import "YapCache.h"
 
 /**
  * This version number is stored in the yap2 table.
@@ -39,9 +38,6 @@
 	
 	__strong YapDatabaseRelationship *relationship;
 	__unsafe_unretained YapDatabaseConnection *databaseConnection;
-	
-	YapCache *srcCache;
-	YapCache *dstCache;
 	
 	NSMutableDictionary *changes; // key:srcRowid (NSNumber), value:NSMutableArray (of edges)
 	

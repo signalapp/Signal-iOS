@@ -49,9 +49,6 @@
 	{
 		relationship = inRelationship;
 		databaseConnection = inDbC;
-		
-		srcCache = [[YapCache alloc] initWithKeyClass:[NSNumber class]];
-		dstCache = [[YapCache alloc] initWithKeyClass:[NSNumber class]];
 	}
 	return self;
 }
@@ -83,8 +80,6 @@
 {
 	if (level >= YapDatabaseConnectionFlushMemoryLevelMild)
 	{
-		[srcCache removeAllObjects];
-		[dstCache removeAllObjects];
 	}
 	
 	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
@@ -179,9 +174,6 @@
 - (void)postRollbackCleanup
 {
 	YDBLogAutoTrace();
-	
-	[srcCache removeAllObjects];
-	[dstCache removeAllObjects];
 	
 	[changes removeAllObjects];
 	[inserted removeAllObjects];

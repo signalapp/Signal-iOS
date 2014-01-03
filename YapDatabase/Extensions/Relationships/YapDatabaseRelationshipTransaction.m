@@ -321,148 +321,6 @@
 	return changes;
 }
 
-- (NSArray *)existingEdgesWithSource:(NSNumber *)srcNumber
-{
-	YDBLogAutoTrace();
-	
-	int64_t srcRowid = [srcNumber longLongValue];
-	
-	NSMutableArray *edges = [relationshipConnection->srcCache objectForKey:srcNumber];
-	if (edges)
-	{
-		if ((id)edges == [NSNull null])
-			return nil;
-		else
-			return edges;
-	}
-	
-	sqlite3_stmt *statement = [relationshipConnection enumerateForSrcStatement];
-	if (statement == NULL)
-		return nil;
-	
-	// SELECT "rowid", "name", "dst", "rules" FROM "tableName" WHERE "src" = ?;
-	
-	sqlite3_bind_int64(statement, 1, srcRowid);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
-	{
-		edges = [[NSMutableArray alloc] init];
-		
-		do
-		{
-			int64_t edgeRowid = sqlite3_column_int64(statement, 0);
-			
-			const unsigned char *text = sqlite3_column_text(statement, 1);
-			int textSize = sqlite3_column_bytes(statement, 1);
-			
-			NSString *name = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-			
-			int64_t dstRowid = sqlite3_column_int64(statement, 2);
-			
-			int rules = sqlite3_column_int(statement, 3);
-			
-			YapDatabaseRelationshipEdge *edge =
-			  [[YapDatabaseRelationshipEdge alloc] initWithRowid:edgeRowid
-			                                                name:name
-			                                                 src:srcRowid
-			                                                 dst:dstRowid
-			                                               rules:rules];
-			
-			[edges addObject:edge];
-			
-		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
-	}
-	
-	if (status != SQLITE_DONE)
-	{
-		YDBLogError(@"%@ (%@): Error executing statement: %d %s",
-					THIS_METHOD, [self registeredName],
-					status, sqlite3_errmsg(databaseTransaction->connection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	
-	if (edges)
-		[relationshipConnection->srcCache setObject:edges forKey:srcNumber];
-	else
-		[relationshipConnection->srcCache setObject:[NSNull null] forKey:srcNumber];
-	
-	return edges;
-}
-
-- (NSArray *)existingEdgesWithDestination:(NSNumber *)dstNumber
-{
-	YDBLogAutoTrace();
-	
-	int64_t dstRowid = [dstNumber longLongValue];
-	
-	NSMutableArray *edges = [relationshipConnection->dstCache objectForKey:dstNumber];
-	if (edges)
-	{
-		if ((id)edges == [NSNull null])
-			return nil;
-		else
-			return edges;
-	}
-	
-	sqlite3_stmt *statement = [relationshipConnection enumerateForDstStatement];
-	if (statement == NULL)
-		return nil;
-	
-	// SELECT "rowid", "name", "src", "rules" FROM "tableName" WHERE "dst" = ?;
-	
-	sqlite3_bind_int64(statement, 1, dstRowid);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
-	{
-		edges = [NSMutableArray array];
-		
-		do
-		{
-			int64_t edgeRowid = sqlite3_column_int64(statement, 0);
-			
-			const unsigned char *text = sqlite3_column_text(statement, 1);
-			int textSize = sqlite3_column_bytes(statement, 1);
-			
-			NSString *name = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-			
-			int64_t srcRowid = sqlite3_column_int64(statement, 2);
-			
-			int rules = sqlite3_column_int(statement, 3);
-			
-			YapDatabaseRelationshipEdge *edge =
-			  [[YapDatabaseRelationshipEdge alloc] initWithRowid:edgeRowid
-			                                                name:name
-			                                                 src:srcRowid
-			                                                 dst:dstRowid
-			                                               rules:rules];
-			
-			[edges addObject:edge];
-			
-		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
-	}
-	
-	if (status != SQLITE_DONE)
-	{
-		YDBLogError(@"%@ (%@): Error executing statement: %d %s",
-					THIS_METHOD, [self registeredName],
-					status, sqlite3_errmsg(databaseTransaction->connection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	
-	if (edges)
-		[relationshipConnection->dstCache setObject:edges forKey:dstNumber];
-	else
-		[relationshipConnection->dstCache setObject:[NSNull null] forKey:dstNumber];
-	
-	return edges;
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Logic
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -563,22 +421,14 @@
                   forSource:(NSNumber *)srcRowidNumber
               sourceDeleted:(BOOL)sourceDeleted
 {
-	NSArray *existingEdges = [self existingEdgesWithSource:srcRowidNumber];
-	
-	if ([existingEdges count] == 0)
-	{
-		// No merge necessary as there are no existing edges with this source
-		
-		[self processInsertedEdges:newEdges sourceDeleted:sourceDeleted];
-		return;
-	}
+	int64_t srcRowid = [srcRowidNumber longLongValue];
 	
 	// Step 1 :
 	//
 	// Pre-process the updated edges.
 	// This involves looking up the destinationRowid for each edge.
 	
-	NSUInteger offset = 0;
+	__block NSUInteger offset = 0;
 	NSUInteger newEdgesCount = [newEdges count];
 	
 	for (NSUInteger i = 0; i < newEdgesCount; i++)
@@ -592,7 +442,6 @@
 		if (newEdge->destinationRowid == 0)
 		{
 			int64_t dstRowid = 0;
-			
 			BOOL found = [databaseTransaction getRowid:&dstRowid
 			                                    forKey:newEdge->destinationKey
 			                              inCollection:newEdge->destinationCollection];
@@ -634,10 +483,9 @@
 	//
 	// Enumerate the existing edges, and check to see if they match a new edge.
 	
-	for (YapDatabaseRelationshipEdge *existingEdge in existingEdges)
+	[self enumerateExistingEdgesWithSrc:srcRowid
+							 usingBlock:^(int64_t edgeRowid, NSString *name, int64_t dstRowid, int nodeDeleteRules)
 	{
-		existingEdge->flags = 0;
-		
 		YapDatabaseRelationshipEdge *matchingNewEdge = nil;
 		
 		NSUInteger i = offset;
@@ -645,8 +493,7 @@
 		{
 			YapDatabaseRelationshipEdge *newEdge = [newEdges objectAtIndex:i];
 			
-			if (newEdge->destinationRowid == existingEdge->destinationRowid &&
-			    [newEdge->name isEqualToString:existingEdge->name])
+			if (newEdge->destinationRowid == dstRowid && [newEdge->name isEqualToString:name])
 			{
 				matchingNewEdge = newEdge;
 				break;
@@ -661,11 +508,11 @@
 		{
 			// This new edges matches an existing one already in the database.
 			
-			matchingNewEdge->edgeRowid = existingEdge->edgeRowid;
+			matchingNewEdge->edgeRowid = edgeRowid;
 			
 			// Check to see if it changed at all.
 			
-			if (matchingNewEdge->nodeDeleteRules != existingEdge->nodeDeleteRules)
+			if (matchingNewEdge->nodeDeleteRules != nodeDeleteRules)
 			{
 				// The nodeDeleteRules changed. Mark for update.
 				
@@ -701,7 +548,12 @@
 			// Thus an existing edge was removed.
 			// It needs to be deleted from the database.
 			
-			YapDatabaseRelationshipEdge *edge = [existingEdge copy];
+			YapDatabaseRelationshipEdge *edge =
+			  [[YapDatabaseRelationshipEdge alloc] initWithRowid:edgeRowid
+			                                                name:name
+			                                                 src:srcRowid
+			                                                 dst:dstRowid
+			                                               rules:nodeDeleteRules];
 			
 			edge->edgeAction = YDB_EdgeActionDelete;
 			edge->nodeAction = YDB_NodeActionSourceDeleted;
@@ -714,7 +566,7 @@
 			[newEdges addObject:edge];
 			// Note: Do NOT increment newEdgesCount.
 		}
-	}
+	}];
 	
 	// Step 3 :
 	//
@@ -851,9 +703,6 @@
 	}
 		
 	sqlite3_reset(statement);
-	
-	[relationshipConnection->srcCache removeAllObjects];
-	[relationshipConnection->dstCache removeAllObjects];
 	
 	[relationshipConnection->changes removeAllObjects];
 	[relationshipConnection->inserted removeAllObjects];
@@ -1174,8 +1023,9 @@
 		YapCollectionKey *collectionKey = [relationshipConnection->deletedInfo objectForKey:rowidNumber];
 		
 		// Enumerate all edges where source node is this deleted node.
-		[self enumerateExistingRowsWithSrc:rowid usingBlock:^(NSString *name, int64_t dstRowid, int nodeDeleteRules) {
-			
+		[self enumerateExistingEdgesWithSrc:rowid
+		                         usingBlock:^(int64_t edgeRowid, NSString *name, int64_t dstRowid, int nodeDeleteRules)
+		{
 			if ([relationshipConnection->deletedInfo ydb_containsKey:@(dstRowid)])
 			{
 				// Both source and destination node have been deleted
@@ -1259,8 +1109,9 @@
 		
 		
 		// Enumerate all edges where destination node is this deleted node.
-		[self enumerateExistingRowsWithDst:rowid usingBlock:^(NSString *name, int64_t srcRowid, int nodeDeleteRules) {
-			
+		[self enumerateExistingEdgesWithDst:rowid
+		                         usingBlock:^(int64_t edgeRowid, NSString *name, int64_t srcRowid, int nodeDeleteRules)
+		{
 			if ([relationshipConnection->deletedInfo ydb_containsKey:@(srcRowid)])
 			{
 				// Both source and destination node have been deleted
@@ -1354,6 +1205,7 @@
 	// Clear ivars we've processed.
 	
 	[relationshipConnection->changes removeAllObjects];
+	[relationshipConnection->inserted removeAllObjects];
 	[relationshipConnection->deletedInfo removeAllObjects];
 	[relationshipConnection->deletedOrder removeAllObjects];
 	
@@ -2945,8 +2797,8 @@
 #pragma mark Private API
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)enumerateExistingRowsWithSrc:(int64_t)srcRowid
-                          usingBlock:(void (^)(NSString *name, int64_t dstRowid, int rules))block
+- (void)enumerateExistingEdgesWithSrc:(int64_t)srcRowid
+                           usingBlock:(void (^)(int64_t edgeRowid, NSString *name, int64_t dstRowid, int rules))block
 {
 	sqlite3_stmt *statement = [relationshipConnection enumerateForSrcStatement];
 	if (statement == NULL) return;
@@ -2958,7 +2810,7 @@
 	int status;
 	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
-	//	int64_t edgeRowid = sqlite3_column_int64(statement, 0);
+		int64_t edgeRowid = sqlite3_column_int64(statement, 0);
 		
 		const unsigned char *text = sqlite3_column_text(statement, 1);
 		int textSize = sqlite3_column_bytes(statement, 1);
@@ -2968,7 +2820,7 @@
 		int64_t dstRowid = sqlite3_column_int64(statement, 2);
 		int rules = sqlite3_column_int(statement, 3);
 		
-		block(name, dstRowid, rules);
+		block(edgeRowid, name, dstRowid, rules);
 	}
 	
 	if (status != SQLITE_DONE)
@@ -2982,8 +2834,8 @@
 	sqlite3_reset(statement);
 }
 
-- (void)enumerateExistingRowsWithDst:(int64_t)dstRowid
-                          usingBlock:(void (^)(NSString *name, int64_t srcRowid, int rules))block
+- (void)enumerateExistingEdgesWithDst:(int64_t)dstRowid
+                           usingBlock:(void (^)(int64_t edgeRowid, NSString *name, int64_t srcRowid, int rules))block
 {
 	sqlite3_stmt *statement = [relationshipConnection enumerateForDstStatement];
 	if (statement == NULL) return;
@@ -2995,7 +2847,7 @@
 	int status;
 	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
-	//	int64_t edgeRowid = sqlite3_column_int64(statement, 0);
+		int64_t edgeRowid = sqlite3_column_int64(statement, 0);
 		
 		const unsigned char *text = sqlite3_column_text(statement, 1);
 		int textSize = sqlite3_column_bytes(statement, 1);
@@ -3005,7 +2857,7 @@
 		int64_t srcRowid = sqlite3_column_int64(statement, 2);
 		int rules = sqlite3_column_int(statement, 3);
 		
-		block(name, srcRowid, rules);
+		block(edgeRowid, name, srcRowid, rules);
 	}
 	
 	if (status != SQLITE_DONE)
