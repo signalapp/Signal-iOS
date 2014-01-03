@@ -23,7 +23,18 @@
 
 @implementation YapDatabaseRelationshipConnection
 {
+	sqlite3_stmt *insertEdgeStatement;
+	sqlite3_stmt *updateEdgeStatement;
+	sqlite3_stmt *deleteEdgeStatement;
 	sqlite3_stmt *enumerateForSrcStatement;
+	sqlite3_stmt *enumerateForDstStatement;
+	sqlite3_stmt *enumerateForSrcNameStatement;
+	sqlite3_stmt *enumerateForDstNameStatement;
+	sqlite3_stmt *enumerateForNameStatement;
+	sqlite3_stmt *enumerateForSrcDstStatement;
+	sqlite3_stmt *enumerateForSrcDstNameStatement;
+	sqlite3_stmt *countForSrcNameStatement;
+	sqlite3_stmt *countForDstNameStatement;
 	sqlite3_stmt *removeAllStatement;
 }
 
@@ -36,14 +47,26 @@
 		relationship = inRelationship;
 		databaseConnection = inDbC;
 		
-		cache = [[YapCache alloc] initWithKeyClass:[YapCollectionKey class]];
+		srcCache = [[YapCache alloc] initWithKeyClass:[NSNumber class]];
+		dstCache = [[YapCache alloc] initWithKeyClass:[NSNumber class]];
 	}
 	return self;
 }
 
 - (void)dealloc
 {
+	sqlite_finalize_null(&insertEdgeStatement);
+	sqlite_finalize_null(&updateEdgeStatement);
+	sqlite_finalize_null(&deleteEdgeStatement);
 	sqlite_finalize_null(&enumerateForSrcStatement);
+	sqlite_finalize_null(&enumerateForDstStatement);
+	sqlite_finalize_null(&enumerateForSrcNameStatement);
+	sqlite_finalize_null(&enumerateForDstNameStatement);
+	sqlite_finalize_null(&enumerateForNameStatement);
+	sqlite_finalize_null(&enumerateForSrcDstStatement);
+	sqlite_finalize_null(&enumerateForSrcDstNameStatement);
+	sqlite_finalize_null(&countForSrcNameStatement);
+	sqlite_finalize_null(&countForDstNameStatement);
 	sqlite_finalize_null(&removeAllStatement);
 }
 
@@ -54,18 +77,30 @@
 {
 	if (level >= YapDatabaseConnectionFlushMemoryLevelMild)
 	{
-		[cache removeAllObjects];
+		[srcCache removeAllObjects];
+		[dstCache removeAllObjects];
 	}
 	
 	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
 	{
-		sqlite_finalize_null(&enumerateForSrcStatement);
+		sqlite_finalize_null(&insertEdgeStatement);
+		sqlite_finalize_null(&updateEdgeStatement);
+		sqlite_finalize_null(&deleteEdgeStatement);
+	//	sqlite_finalize_null(&enumerateForSrcStatement);
+		sqlite_finalize_null(&enumerateForDstStatement);
+		sqlite_finalize_null(&enumerateForSrcNameStatement);
+		sqlite_finalize_null(&enumerateForDstNameStatement);
+		sqlite_finalize_null(&enumerateForNameStatement);
+		sqlite_finalize_null(&enumerateForSrcDstStatement);
+		sqlite_finalize_null(&enumerateForSrcDstNameStatement);
+		sqlite_finalize_null(&countForSrcNameStatement);
+		sqlite_finalize_null(&countForDstNameStatement);
 		sqlite_finalize_null(&removeAllStatement);
 	}
 	
 	if (level >= YapDatabaseConnectionFlushMemoryLevelFull)
 	{
-	//	sqlite_finalize_null(&...);
+		sqlite_finalize_null(&enumerateForSrcStatement);
 	}
 }
 
@@ -121,8 +156,12 @@
 {
 	if (changes == nil)
 		changes = [[NSMutableDictionary alloc] init];
-	if (deletedRowids == nil)
-		deletedRowids = [[NSMutableOrderedSet alloc] init];
+	if (inserted == nil)
+		inserted = [[NSMutableSet alloc] init];
+	if (deletedOrder == nil)
+		deletedOrder = [[NSMutableArray alloc] init];
+	if (deletedInfo == nil)
+		deletedInfo = [[NSMutableDictionary alloc] init];
 }
 
 /**
@@ -132,10 +171,13 @@
 {
 	YDBLogAutoTrace();
 	
-	[cache removeAllObjects];
+	[srcCache removeAllObjects];
+	[dstCache removeAllObjects];
 	
 	[changes removeAllObjects];
-	[deletedRowids removeAllObjects];
+	[inserted removeAllObjects];
+	[deletedOrder removeAllObjects];
+	[deletedInfo removeAllObjects];
 }
 
 /**
@@ -144,7 +186,9 @@
 - (void)postCommitCleanup
 {
 	[changes removeAllObjects];
-	[deletedRowids removeAllObjects];
+	[inserted removeAllObjects];
+	[deletedOrder removeAllObjects];
+	[deletedInfo removeAllObjects];
 }
 
 - (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
@@ -173,6 +217,72 @@
 #pragma mark Statements
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+- (sqlite3_stmt *)insertEdgeStatement
+{
+	if (insertEdgeStatement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"INSERT INTO \"%@\" (\"name\", \"src\", \"dst\", \"rules\") VALUES (?, ?, ?, ?);", [relationship tableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &insertEdgeStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return insertEdgeStatement;
+}
+
+- (sqlite3_stmt *)updateEdgeStatement
+{
+	if (updateEdgeStatement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"UPDATE \"%@\" SET \"rules\" = ? WHERE \"rowid\" = ?;", [relationship tableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &updateEdgeStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return updateEdgeStatement;
+}
+
+- (sqlite3_stmt *)deleteEdgeStatement
+{
+	if (deleteEdgeStatement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"DELETE FROM \"%@\" WHERE \"rowid\" = ?;", [relationship tableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &deleteEdgeStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return deleteEdgeStatement;
+}
+
 - (sqlite3_stmt *)enumerateForSrcStatement
 {
 	if (enumerateForSrcStatement == NULL)
@@ -193,6 +303,189 @@
 	}
 	
 	return enumerateForSrcStatement;
+}
+
+- (sqlite3_stmt *)enumerateForDstStatement
+{
+	if (enumerateForDstStatement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT \"rowid\", \"name\", \"src\", \"rules\" FROM \"%@\" WHERE \"dst\" = ?;", [relationship tableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &enumerateForDstStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return enumerateForDstStatement;
+}
+
+- (sqlite3_stmt *)enumerateForSrcNameStatement
+{
+	if (enumerateForSrcNameStatement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT \"rowid\", \"dst\", \"rules\" FROM \"%@\" WHERE \"src\" = ? AND \"name\" = ?;",
+		  [relationship tableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &enumerateForSrcNameStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return enumerateForSrcNameStatement;
+}
+
+- (sqlite3_stmt *)enumerateForDstNameStatement
+{
+	if (enumerateForDstNameStatement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT \"rowid\", \"src\", \"rules\" FROM \"%@\" WHERE \"dst\" = ? AND \"name\" = ?;",
+		  [relationship tableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &enumerateForDstNameStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return enumerateForDstNameStatement;
+}
+
+- (sqlite3_stmt *)enumerateForNameStatement
+{
+	if (enumerateForNameStatement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT \"rowid\", \"src\", \"dst\", \"rules\" FROM \"%@\" WHERE \"name\" = ?;",
+		  [relationship tableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &enumerateForNameStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return enumerateForNameStatement;
+}
+
+- (sqlite3_stmt *)enumerateForSrcDstStatement
+{
+	if (enumerateForSrcDstStatement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT \"rowid\", \"name\", \"rules\" FROM \"%@\" WHERE \"src\" = ? AND \"dst\" = ?;",
+		  [relationship tableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &enumerateForSrcDstStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return enumerateForSrcDstStatement;
+}
+
+- (sqlite3_stmt *)enumerateForSrcDstNameStatement
+{
+	if (enumerateForSrcDstNameStatement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT \"rowid\", \"rules\" FROM \"%@\" WHERE \"src\" = ? AND \"dst\" = ? AND \"name\" = ?;",
+		  [relationship tableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &enumerateForSrcDstNameStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return enumerateForSrcDstNameStatement;
+}
+
+- (sqlite3_stmt *)countForSrcNameStatement
+{
+	if (countForSrcNameStatement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" WHERE \"src\" = ? AND \"dst\" != ? AND \"name\" = ?;",
+		  [relationship tableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &countForSrcNameStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return countForSrcNameStatement;
+}
+
+- (sqlite3_stmt *)countForDstNameStatement
+{
+	if (countForDstNameStatement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" WHERE \"dst\" = ? AND \"name\" = ?;",
+		  [relationship tableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &countForDstNameStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return countForDstNameStatement;
 }
 
 - (sqlite3_stmt *)removeAllStatement

@@ -39,6 +39,11 @@ enum {
 	
 	int edgeAction;
 	int nodeAction;
+	
+	int flags;
+	
+	BOOL notInDatabase;  // Used as a flag when edgeAction is YDB_EdgeActionDelete
+	BOOL badDestination; // Used as a flag to avoid unneeded processing
 }
 
 - (id)initWithRowid:(int64_t)rowid name:(NSString *)name src:(int64_t)src dst:(int64_t)dst rules:(int)rules;

@@ -40,15 +40,33 @@
 	__strong YapDatabaseRelationship *relationship;
 	__unsafe_unretained YapDatabaseConnection *databaseConnection;
 	
-	YapCache *cache;
+	YapCache *srcCache;
+	YapCache *dstCache;
 	
-	NSMutableDictionary *changes;
-	NSMutableOrderedSet *deletedRowids;
+	NSMutableDictionary *changes; // key:srcRowid (NSNumber), value:NSMutableArray (of edges)
+	
+	NSMutableSet *inserted; // contains rowids
+	
+	NSMutableArray *deletedOrder; // contains rowids
+	NSMutableDictionary *deletedInfo; // key:rowid, value:YapCollectionKey
+	
+//	NSMutableSet *mutatedSomething;
 }
 
 - (id)initWithRelationship:(YapDatabaseRelationship *)relationship databaseConnection:(YapDatabaseConnection *)dbc;
 
+- (sqlite3_stmt *)insertEdgeStatement;
+- (sqlite3_stmt *)updateEdgeStatement;
+- (sqlite3_stmt *)deleteEdgeStatement;
 - (sqlite3_stmt *)enumerateForSrcStatement;
+- (sqlite3_stmt *)enumerateForDstStatement;
+- (sqlite3_stmt *)enumerateForSrcNameStatement;
+- (sqlite3_stmt *)enumerateForDstNameStatement;
+- (sqlite3_stmt *)enumerateForNameStatement;
+- (sqlite3_stmt *)enumerateForSrcDstStatement;
+- (sqlite3_stmt *)enumerateForSrcDstNameStatement;
+- (sqlite3_stmt *)countForSrcNameStatement;
+- (sqlite3_stmt *)countForDstNameStatement;
 - (sqlite3_stmt *)removeAllStatement;
 
 @end

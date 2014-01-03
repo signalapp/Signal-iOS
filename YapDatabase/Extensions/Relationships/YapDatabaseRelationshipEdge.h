@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 
 enum {
+	// notify only
 	YDB_NotifyIfSourceDeleted      = 1 << 0,
 	YDB_NotifyIfDestinationDeleted = 1 << 1,
 	

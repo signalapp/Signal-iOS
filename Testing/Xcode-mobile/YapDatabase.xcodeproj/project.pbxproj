@@ -12,6 +12,7 @@
 		DC23CFAB1766A17100E103A9 /* TestYapDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CFAA1766A17100E103A9 /* TestYapDatabaseView.m */; };
 		DC24FBEF1688047700E855DC /* TestYapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBEE1688047700E855DC /* TestYapDatabase.m */; };
 		DC24FBF2168806E400E855DC /* YapCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBF1168806E400E855DC /* YapCache.m */; };
+		DC287285186C8A15000B8B13 /* NSDictionary+YapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC287284186C8A15000B8B13 /* NSDictionary+YapDatabase.m */; };
 		DC28F34D17F0FE500042BAEA /* YapTouch.m in Sources */ = {isa = PBXBuildFile; fileRef = DC28F34C17F0FE500042BAEA /* YapTouch.m */; };
 		DC2C98AB17E3C82900F1E04F /* YapDatabaseViewPage.mm in Sources */ = {isa = PBXBuildFile; fileRef = DC2C989517E3C82900F1E04F /* YapDatabaseViewPage.mm */; };
 		DC2C98AC17E3C82900F1E04F /* YapDatabaseViewPageMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2C989717E3C82900F1E04F /* YapDatabaseViewPageMetadata.m */; };
@@ -105,6 +106,8 @@
 		DC24FBEE1688047700E855DC /* TestYapDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabase.m; path = ../../UnitTesting/TestYapDatabase.m; sourceTree = "<group>"; };
 		DC24FBF0168806E400E855DC /* YapCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapCache.h; sourceTree = "<group>"; };
 		DC24FBF1168806E400E855DC /* YapCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapCache.m; sourceTree = "<group>"; };
+		DC287283186C8A15000B8B13 /* NSDictionary+YapDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSDictionary+YapDatabase.h"; path = "Utilities/NSDictionary+YapDatabase.h"; sourceTree = "<group>"; };
+		DC287284186C8A15000B8B13 /* NSDictionary+YapDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSDictionary+YapDatabase.m"; path = "Utilities/NSDictionary+YapDatabase.m"; sourceTree = "<group>"; };
 		DC28F34B17F0FE500042BAEA /* YapTouch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapTouch.h; sourceTree = "<group>"; };
 		DC28F34C17F0FE500042BAEA /* YapTouch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapTouch.m; sourceTree = "<group>"; };
 		DC2C989217E3C82900F1E04F /* YapDatabaseViewChangePrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewChangePrivate.h; sourceTree = "<group>"; };
@@ -282,6 +285,8 @@
 				DCAC1F11176B9A52005CD448 /* YapSet.m */,
 				DC7179F318144F0400D6E6C8 /* YapDatabaseQuery.h */,
 				DC7179F418144F0400D6E6C8 /* YapDatabaseQuery.m */,
+				DC287283186C8A15000B8B13 /* NSDictionary+YapDatabase.h */,
+				DC287284186C8A15000B8B13 /* NSDictionary+YapDatabase.m */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -867,6 +872,7 @@
 				DCAC1F12176B9A52005CD448 /* YapSet.m in Sources */,
 				DC28F34D17F0FE500042BAEA /* YapTouch.m in Sources */,
 				DC374079185838FD00DD5953 /* YapDatabaseRelationshipConnection.m in Sources */,
+				DC287285186C8A15000B8B13 /* NSDictionary+YapDatabase.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
