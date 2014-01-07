@@ -1124,6 +1124,8 @@
 	return NO;
 }
 
+//- (NSUInteger)groupOffsetForGroup:
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Getters + RangeOptions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1274,6 +1276,33 @@
 	return total;
 }
 
+/**
+ * When isUsingConsolidatedGroup, this method returns the offset of the given group
+ * within the flattened/consolidated group.
+**/
+- (NSUInteger)rowOffsetForGroup:(NSString *)searchGroup
+{
+	NSUInteger offset = 0;
+	
+	for (NSString *group in visibleGroups) // NOT [self visibleGroups]
+	{
+		if ([group isEqualToString:searchGroup])
+		{
+			return offset;
+		}
+		else
+		{
+			YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+			if (rangeOpts)
+				offset += rangeOpts.length;
+			else
+				offset += [[counts objectForKey:group] unsignedIntegerValue];
+		}
+	}
+	
+	return 0;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Getters + Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1390,7 +1419,16 @@
 		groupIndex++;
 	}
 	
-	if (!foundGroup) return nil;
+	if (!foundGroup)
+	{
+		// The given group doesn't exist.
+		//
+		// Note: You should NOT be passing the consolidatedGroup to this method.
+		// You need to pass the proper database view group.
+		// If the mappings are consolidated, this method will automatically translate the result for you.
+		
+		return nil;
+	}
 	
 	BOOL isGroupVisible = NO;
 	NSUInteger visibleGroupIndex = 0;
@@ -1412,24 +1450,21 @@
 		NSUInteger rows = [self numberOfItemsInGroup:searchGroup];
 		if (rows > 0)
 		{
-			if (row < rows)
+			NSUInteger _row = (row < rows) ? row : rows-1;
+			NSUInteger _section = visibleGroupIndex;
+			
+			if (isUsingConsolidatedGroup)
 			{
-			  #if TARGET_OS_IPHONE
-				return [NSIndexPath indexPathForRow:row inSection:visibleGroupIndex];
-			  #else
-				NSUInteger indexes[] = {visibleGroupIndex, row};
-				return [NSIndexPath indexPathWithIndexes:indexes length:2];
-			  #endif
+				_row += [self rowOffsetForGroup:searchGroup];
+				_section = 0;
 			}
-			else
-			{
-			  #if TARGET_OS_IPHONE
-				return [NSIndexPath indexPathForRow:(rows-1) inSection:visibleGroupIndex];
-			  #else
-				NSUInteger indexes[] = {visibleGroupIndex, (rows-1)};
-				return [NSIndexPath indexPathWithIndexes:indexes length:2];
-			  #endif
-			}
+			
+		  #if TARGET_OS_IPHONE
+			return [NSIndexPath indexPathForRow:_row inSection:_section];
+		  #else
+			NSUInteger indexes[] = {_section, _row};
+			return [NSIndexPath indexPathWithIndexes:indexes length:2];
+		  #endif
 		}
 	}
 	
@@ -1449,10 +1484,19 @@
 			NSUInteger rows = [self numberOfItemsInGroup:nearbyGroup];
 			if (rows > 0)
 			{
+				NSUInteger _row = rows-1;
+				NSUInteger _section = section;
+				
+				if (isUsingConsolidatedGroup)
+				{
+					_row += [self rowOffsetForGroup:nearbyGroup];
+					_section = 0;
+				}
+				
 			  #if TARGET_OS_IPHONE
-				return [NSIndexPath indexPathForRow:(rows-1) inSection:section];
+				return [NSIndexPath indexPathForRow:_row inSection:_section];
 			  #else
-				NSUInteger indexes[] = {section, (rows-1)};
+				NSUInteger indexes[] = {_section, _row};
 				return [NSIndexPath indexPathWithIndexes:indexes length:2];
 			  #endif
 			}
@@ -1473,10 +1517,19 @@
 			NSUInteger rows = [self numberOfItemsInGroup:nearbyGroup];
 			if (rows > 0)
 			{
+				NSUInteger _row = 0;
+				NSUInteger _section = section;
+				
+				if (isUsingConsolidatedGroup)
+				{
+					_row += [self rowOffsetForGroup:nearbyGroup];
+					_section = 0;
+				}
+				
 			  #if TARGET_OS_IPHONE
-				return [NSIndexPath indexPathForRow:0 inSection:section];
+				return [NSIndexPath indexPathForRow:_row inSection:_section];
 			  #else
-				NSUInteger indexes[] = {section, 0};
+				NSUInteger indexes[] = {_section, _row};
 				return [NSIndexPath indexPathWithIndexes:indexes length:2];
 			  #endif
 			}
