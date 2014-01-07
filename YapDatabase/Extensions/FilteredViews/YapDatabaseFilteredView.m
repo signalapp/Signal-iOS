@@ -155,6 +155,16 @@
 		return NO;
 	}
 	
+	// Capture grouping & sorting block
+	
+	__unsafe_unretained YapDatabaseView *parentView = (YapDatabaseView *)ext;
+	
+	groupingBlock = parentView->groupingBlock;
+	groupingBlockType = parentView->groupingBlockType;
+	
+	sortingBlock = parentView->sortingBlock;
+	sortingBlockType = parentView->sortingBlockType;
+	
 	return YES;
 }
 
