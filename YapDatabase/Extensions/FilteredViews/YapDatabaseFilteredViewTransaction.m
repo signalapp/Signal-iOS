@@ -122,16 +122,6 @@
 	YapDatabaseViewTransaction *parentViewTransaction =
 	  [databaseTransaction ext:filteredView->parentViewName];
 	
-	__unsafe_unretained YapDatabaseView *parentView = parentViewTransaction->viewConnection->view;
-	
-	// Capture grouping & sorting block
-	
-	filteredView->groupingBlock = parentView->groupingBlock;
-	filteredView->groupingBlockType = parentView->groupingBlockType;
-	
-	filteredView->sortingBlock = parentView->sortingBlock;
-	filteredView->sortingBlockType = parentView->sortingBlockType;
-	
 	// Remove everything from the database
 	
 	[self removeAllRowids];
