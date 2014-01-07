@@ -974,7 +974,20 @@
 				{
 					// Only source was deleted
 					
-					if (edge->nodeDeleteRules & YDB_DeleteDestinationIfSourceDeleted)
+					if (edge->nodeDeleteRules & YDB_DeleteDestinationIfAllSourcesDeleted)
+					{
+						// We need to count the number of remaining edges.
+						// That is, how many edges with the same name and same source.
+						//
+						// The problem is that we are still processing changed edges.
+						// So there may be edges that we'll add shortly that increment this count.
+						// Or possibly edges that were manually deleted which would decrement this count.
+						//
+						// So we're going to come back to this after we've finished adding all edges.
+						
+						edgeProcessed = NO;
+					}
+					else if (edge->nodeDeleteRules & YDB_DeleteDestinationIfSourceDeleted)
 					{
 						// Delete the destination node
 						
@@ -988,19 +1001,7 @@
 						                             inCollection:edge->destinationCollection
 						                                withRowid:edge->destinationRowid];
 					}
-					else if (edge->nodeDeleteRules & YDB_DeleteDestinationIfAllSourcesDeleted)
-					{
-						// We need to count the number of remaining edges.
-						// That is, how many edges with the same name and same source.
-						//
-						// The problem is that we are still processing changed edges.
-						// So there may be edges that we'll add shortly that increment this count.
-						// Or possibly edges that were manually deleted which would decrement this count.
-						//
-						// So we're going to come back to this after we've finished adding all edges.
-						
-						edgeProcessed = NO;
-					}
+					
 					else if (edge->nodeDeleteRules & YDB_NotifyIfSourceDeleted)
 					{
 						// Notify the destination node
@@ -1033,7 +1034,20 @@
 				{
 					// Only destination was deleted
 					
-					if (edge->nodeDeleteRules & YDB_DeleteSourceIfDestinationDeleted)
+					if (edge->nodeDeleteRules & YDB_DeleteSourceIfAllDestinationsDeleted)
+					{
+						// We need to count the number of remaining edges.
+						// That is, how many edges with the same name and same source.
+						//
+						// The problem is that we are still processing changed edges.
+						// So there may be edges that we'll add shortly that increment this count.
+						// Or possibly edges that were manually deleted which would decrement this count.
+						//
+						// So we're going to come back to this after we've finished adding all edges.
+						
+						edgeProcessed = NO;
+					}
+					else if (edge->nodeDeleteRules & YDB_DeleteSourceIfDestinationDeleted)
 					{
 						// Delete the source node
 						
@@ -1046,19 +1060,6 @@
 						[databaseRwTransaction removeObjectForKey:edge->sourceKey
 						                             inCollection:edge->sourceCollection
 						                                withRowid:edge->sourceRowid];
-					}
-					else if (edge->nodeDeleteRules & YDB_DeleteSourceIfAllDestinationsDeleted)
-					{
-						// We need to count the number of remaining edges.
-						// That is, how many edges with the same name and same source.
-						//
-						// The problem is that we are still processing changed edges.
-						// So there may be edges that we'll add shortly that increment this count.
-						// Or possibly edges that were manually deleted which would decrement this count.
-						//
-						// So we're going to come back to this after we've finished adding all edges.
-						
-						edgeProcessed = NO;
 					}
 					else if (edge->nodeDeleteRules & YDB_NotifyIfDestinationDeleted)
 					{
@@ -1214,22 +1215,7 @@
 			}
 			else
 			{
-				if (nodeDeleteRules & YDB_DeleteDestinationIfSourceDeleted)
-				{
-					// Delete the destination node
-					
-					NSString *dstKey = nil;
-					NSString *dstCollection = nil;
-					[databaseTransaction getKey:&dstKey collection:&dstCollection forRowid:dstRowid];
-					
-					YDBLogVerbose(@"Deleting destination node: key(%@) collection(%@)", dstKey, dstCollection);
-					
-					__unsafe_unretained YapDatabaseReadWriteTransaction *databaseRwTransaction =
-					  (YapDatabaseReadWriteTransaction *)databaseTransaction;
-					
-					[databaseRwTransaction removeObjectForKey:dstKey inCollection:dstCollection withRowid:dstRowid];
-				}
-				else if (nodeDeleteRules & YDB_DeleteDestinationIfAllSourcesDeleted)
+				if (nodeDeleteRules & YDB_DeleteDestinationIfAllSourcesDeleted)
 				{
 					// Delete the destination node IF there are no other edges pointing to it with the same name
 					
@@ -1247,6 +1233,21 @@
 						
 						[databaseRwTransaction removeObjectForKey:dstKey inCollection:dstCollection withRowid:dstRowid];
 					}
+				}
+				else if (nodeDeleteRules & YDB_DeleteDestinationIfSourceDeleted)
+				{
+					// Delete the destination node
+					
+					NSString *dstKey = nil;
+					NSString *dstCollection = nil;
+					[databaseTransaction getKey:&dstKey collection:&dstCollection forRowid:dstRowid];
+					
+					YDBLogVerbose(@"Deleting destination node: key(%@) collection(%@)", dstKey, dstCollection);
+					
+					__unsafe_unretained YapDatabaseReadWriteTransaction *databaseRwTransaction =
+					  (YapDatabaseReadWriteTransaction *)databaseTransaction;
+					
+					[databaseRwTransaction removeObjectForKey:dstKey inCollection:dstCollection withRowid:dstRowid];
 				}
 				else if (nodeDeleteRules & YDB_NotifyIfSourceDeleted)
 				{
@@ -1300,22 +1301,7 @@
 			}
 			else
 			{
-				if (nodeDeleteRules & YDB_DeleteSourceIfDestinationDeleted)
-				{
-					// Delete the source node
-					
-					NSString *srcKey = nil;
-					NSString *srcCollection = nil;
-					[databaseTransaction getKey:&srcKey collection:&srcCollection forRowid:srcRowid];
-					
-					YDBLogVerbose(@"Deleting source node: key(%@) collection(%@)", srcKey, srcCollection);
-					
-					__unsafe_unretained YapDatabaseReadWriteTransaction *databaseRwTransaction =
-					  (YapDatabaseReadWriteTransaction *)databaseTransaction;
-					
-					[databaseRwTransaction removeObjectForKey:srcKey inCollection:srcCollection withRowid:srcRowid];
-				}
-				else if (nodeDeleteRules & YDB_DeleteSourceIfAllDestinationsDeleted)
+				if (nodeDeleteRules & YDB_DeleteSourceIfAllDestinationsDeleted)
 				{
 					// Delete the source node IF there are no other edges pointing from it with the same name
 					
@@ -1329,10 +1315,25 @@
 						YDBLogVerbose(@"Deleting source node: key(%@) collection(%@)", srcKey, srcCollection);
 						
 						__unsafe_unretained YapDatabaseReadWriteTransaction *databaseRwTransaction =
-						(YapDatabaseReadWriteTransaction *)databaseTransaction;
+						  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 						
 						[databaseRwTransaction removeObjectForKey:srcKey inCollection:srcCollection withRowid:srcRowid];
 					}
+				}
+				else if (nodeDeleteRules & YDB_DeleteSourceIfDestinationDeleted)
+				{
+					// Delete the source node
+					
+					NSString *srcKey = nil;
+					NSString *srcCollection = nil;
+					[databaseTransaction getKey:&srcKey collection:&srcCollection forRowid:srcRowid];
+					
+					YDBLogVerbose(@"Deleting source node: key(%@) collection(%@)", srcKey, srcCollection);
+					
+					__unsafe_unretained YapDatabaseReadWriteTransaction *databaseRwTransaction =
+					  (YapDatabaseReadWriteTransaction *)databaseTransaction;
+					
+					[databaseRwTransaction removeObjectForKey:srcKey inCollection:srcCollection withRowid:srcRowid];
 				}
 				else if (nodeDeleteRules & YDB_NotifyIfDestinationDeleted)
 				{
