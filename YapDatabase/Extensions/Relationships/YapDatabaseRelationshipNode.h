@@ -1,6 +1,5 @@
 #import <Foundation/Foundation.h>
-
-@class YapDatabaseRelationshipEdge;
+#import "YapDatabaseRelationshipEdge.h"
 
 /**
  * Welcome to YapDatabase!
