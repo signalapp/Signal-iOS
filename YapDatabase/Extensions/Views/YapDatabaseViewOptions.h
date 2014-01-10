@@ -43,11 +43,18 @@
  * 
  * The primary motivation for this is to reduce the overhead when first populating the view.
  * For example, if you're creating a view which only includes objects from a single collection,
- * then you could specify that collection here. And when the view first populates itself,
+ * then you could specify that collection here. So when the view first populates itself,
  * it will enumerate over just the allowedCollections, as opposed to enumerating over all collections.
+ * And enumerating a small subset of the entire database during view population can improve speed,
+ * especially with larger databases.
  * 
- * The groupingBlock will still be invoked, but only if the collection is contained in allowedCollections.
- * If not, the view will not invoke the groupingBlock, and act as if the groupingBlock had returned nil.
+ * In addition to reducing the overhead when first populating the view,
+ * the allowedCollections will pre-filter while you're making changes to the database.
+ * So if you add a new object to the database, and the associated collection isn't in allowedCollections,
+ * then the groupingBlock will never be invoked, and the view will act as if the groupingBlock returned nil.
+ * 
+ * For all rows whose collection is in the allowedCollections, the view acts normally.
+ * So the groupingBlock would still be invoked as normal.
  *
  * The default value is nil.
 **/

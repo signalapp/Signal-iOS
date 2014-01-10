@@ -14,6 +14,9 @@
 @property (nonatomic, strong, readonly) NSString *collection;
 @property (nonatomic, strong, readonly) NSString *key;
 
+- (BOOL)isEqualToCollectionKey:(YapCollectionKey *)collectionKey;
+
+// These methods are overriden and optimized:
 - (BOOL)isEqual:(id)anObject;
 - (NSUInteger)hash;
 

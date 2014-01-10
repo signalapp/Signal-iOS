@@ -55,15 +55,21 @@
 
 - (id)init
 {
-	return [self initWithVersion:0];
+	return [self initWithVersion:0 options:nil];
 	
 }
 
 - (id)initWithVersion:(int)inVersion
 {
+	return [self initWithVersion:inVersion options:nil];
+}
+
+- (id)initWithVersion:(int)inVersion options:(YapDatabaseRelationshipOptions *)inOptions
+{
 	if ((self = [super init]))
 	{
 		version = inVersion;
+		options = inOptions ? [inOptions copy] : [[YapDatabaseRelationshipOptions alloc] init];
 	}
 	return self;
 }

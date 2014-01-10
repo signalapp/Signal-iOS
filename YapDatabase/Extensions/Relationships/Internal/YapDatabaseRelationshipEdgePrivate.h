@@ -8,9 +8,14 @@ enum {
 };
 
 enum {
-	YDB_NodeActionNone               = 0,
-	YDB_NodeActionSourceDeleted      = 1 << 0,
-	YDB_NodeActionDestinationDeleted = 1 << 1
+	YDB_FlagsNone                        = 0,
+	YDB_FlagsSourceDeleted               = 1 << 0,
+	YDB_FlagsDestinationDeleted          = 1 << 1,
+	YDB_FlagsBadSource                   = 1 << 2,
+	YDB_FlagsBadDestination              = 1 << 3,
+	YDB_FlagsSourceLookupSuccessful      = 1 << 4,
+	YDB_FlagsDestinationLookupSuccessful = 1 << 5,
+	YDB_FlagsNotInDatabase               = 1 << 6,
 };
 
 
@@ -30,6 +35,8 @@ enum {
 	
 	YDB_NodeDeleteRules nodeDeleteRules;
 	
+	BOOL isManualEdge;
+	
 	// Internal properties.
 	// Internal code must access these directly.
 	
@@ -38,16 +45,18 @@ enum {
 	int64_t destinationRowid;
 	
 	int edgeAction;
-	int nodeAction;
-	
 	int flags;
-	
-	BOOL notInDatabase;  // Used as a flag when edgeAction is YDB_EdgeActionDelete
-	BOOL badDestination; // Used as a flag to avoid unneeded processing
 }
 
-- (id)initWithRowid:(int64_t)rowid name:(NSString *)name src:(int64_t)src dst:(int64_t)dst rules:(int)rules;
+// Init directly from database row
+- (id)initWithRowid:(int64_t)rowid
+               name:(NSString *)name
+                src:(int64_t)src
+                dst:(int64_t)dst
+              rules:(int)rules
+             manual:(BOOL)isManual;
 
+// Copy for YapDatabaseRelationshipNode protocol
 - (id)copyWithSourceKey:(NSString *)newSrcKey collection:(NSString *)newSrcCollection rowid:(int64_t)newSrcRowid;
 
 @end

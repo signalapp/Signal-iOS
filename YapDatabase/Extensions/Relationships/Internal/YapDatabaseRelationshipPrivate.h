@@ -5,6 +5,7 @@
 #import "YapDatabaseTransaction.h"
 
 #import "YapDatabaseRelationship.h"
+#import "YapDatabaseRelationshipOptions.h"
 #import "YapDatabaseRelationshipConnection.h"
 #import "YapDatabaseRelationshipTransaction.h"
 
@@ -14,18 +15,35 @@
 /**
  * This version number is stored in the yap2 table.
  * If there is a major re-write to this class, then the version number will be incremented,
- * and the class can automatically rebuild the tables as needed.
+ * and the class can automatically rebuild the table as needed.
 **/
-#define YAP_DATABASE_RELATIONSHIP_CLASS_VERSION 1
+#define YAP_DATABASE_RELATIONSHIP_CLASS_VERSION 2
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface YapDatabaseRelationship () {
 @public
 
 	int version;
+	YapDatabaseRelationshipOptions *options;
 }
 
 - (NSString *)tableName;
+
+@end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@interface YapDatabaseRelationshipOptions () {
+@public
+	
+	BOOL disableYapDatabaseRelationshipNodeProtocol;
+	NSSet *allowedCollections;
+}
 
 @end
 
@@ -39,12 +57,13 @@
 	__strong YapDatabaseRelationship *relationship;
 	__unsafe_unretained YapDatabaseConnection *databaseConnection;
 	
-	NSMutableDictionary *changes; // key:srcRowid (NSNumber), value:NSMutableArray (of edges)
+	NSMutableDictionary *protocolChanges; // key:(NSNumber *)srcRowidNumber, value:(NSMutableArray *)edges
+	NSMutableDictionary *manualChanges;   // key:(YapCollectionKey *)srcCollectionKey, value:(NSMutableArray *)edges
 	
-	NSMutableSet *inserted; // contains rowids
+	NSMutableSet *inserted; // contains:(NSNumber *)rowidNumber
 	
-	NSMutableArray *deletedOrder; // contains rowids
-	NSMutableDictionary *deletedInfo; // key:rowid, value:YapCollectionKey
+	NSMutableArray *deletedOrder; // contains:(NSNumber *)rowidNumber
+	NSMutableDictionary *deletedInfo; // key:(NSNumber *)rowidNumber, value:(YapCollectionKey *)collectionKey
 	
 //	NSMutableSet *mutatedSomething;
 }
@@ -54,6 +73,7 @@
 - (sqlite3_stmt *)insertEdgeStatement;
 - (sqlite3_stmt *)updateEdgeStatement;
 - (sqlite3_stmt *)deleteEdgeStatement;
+- (sqlite3_stmt *)deleteManualEdgeStatement;
 - (sqlite3_stmt *)deleteEdgesWithNodeStatement;
 - (sqlite3_stmt *)enumerateForSrcStatement;
 - (sqlite3_stmt *)enumerateForDstStatement;
@@ -62,11 +82,17 @@
 - (sqlite3_stmt *)enumerateForNameStatement;
 - (sqlite3_stmt *)enumerateForSrcDstStatement;
 - (sqlite3_stmt *)enumerateForSrcDstNameStatement;
-- (sqlite3_stmt *)countForSrcDstStatement;
-- (sqlite3_stmt *)countForSrcDstNameStatement;
 - (sqlite3_stmt *)countForSrcNameExcludingDstStatement;
 - (sqlite3_stmt *)countForDstNameExcludingSrcStatement;
+- (sqlite3_stmt *)countForNameStatement;
+- (sqlite3_stmt *)countForSrcStatement;
+- (sqlite3_stmt *)countForSrcNameStatement;
+- (sqlite3_stmt *)countForDstStatement;
+- (sqlite3_stmt *)countForDstNameStatement;
+- (sqlite3_stmt *)countForSrcDstStatement;
+- (sqlite3_stmt *)countForSrcDstNameStatement;
 - (sqlite3_stmt *)removeAllStatement;
+- (sqlite3_stmt *)removeAllProtocolStatement;
 
 @end
 

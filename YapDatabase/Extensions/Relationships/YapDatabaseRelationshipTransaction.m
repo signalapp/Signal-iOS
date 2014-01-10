@@ -50,11 +50,16 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * This method is called to create any necessary tables,
- * as well as populate the view by enumerating over the existing rows in the database.
+ * This method is called to create any necessary tables (if needed),
+ * as well as populate the table by enumerating over the existing rows in the database.
+ * 
+ * Return YES if completed successfully, or if already prepared.
+ * Return NO if some kind of error occured.
 **/
 - (BOOL)createIfNeeded
 {
+	__unsafe_unretained YapDatabaseRelationship *relationship = relationshipConnection->relationship;
+	
 	BOOL needsCreateTables = NO;
 	
 	// Check classVersion (the internal version number of YapDatabaseView implementation)
@@ -63,26 +68,42 @@
 	int classVersion = YAP_DATABASE_RELATIONSHIP_CLASS_VERSION;
 	
 	if (oldClassVersion != classVersion)
+	{
 		needsCreateTables = YES;
+		
+		if (oldClassVersion == 1)
+		{
+			// In version 2 we added the 'manual' column to support manual edge management.
+			// So we're going to drop the existing table.
+			
+			__unsafe_unretained YapDatabaseReadWriteTransaction *databaseRwTransaction =
+			  (YapDatabaseReadWriteTransaction *)databaseTransaction; // cast
+			
+			[[relationship class] dropTablesForRegisteredName:[self registeredName]
+			                                  withTransaction:databaseRwTransaction];
+		}
+	}
 	
 	// Create or re-populate if needed
 	
 	if (needsCreateTables)
 	{
-		// First time registration
+		// First time extension registration
 		
 		if (![self createTables]) return NO;
 		if (![self populateTables]) return NO;
 		
 		[self setIntValue:classVersion forExtensionKey:@"classVersion"];
 		
-		int userSuppliedConfigVersion = relationshipConnection->relationship->version;
+		int userSuppliedConfigVersion = relationship->version;
 		[self setIntValue:userSuppliedConfigVersion forExtensionKey:@"version"];
 	}
 	else
 	{
 		// Check user-supplied config version.
-		// We may need to re-populate the database if the groupingBlock or sortingBlock changed.
+		// If the version gets changed, this indicates that YapDatabaseRelationshipNode objects changed.
+		// In other words, their yapDatabaseRelationshipEdges methods were channged.
+		// So we'll need to re-populate the database (at least the protocol portion of it).
 		
 		int oldVersion = [self intValueForExtensionKey:@"version"];
 		int newVersion = relationshipConnection->relationship->version;
@@ -112,6 +133,9 @@
 	return YES;
 }
 
+/**
+ * Runs the sqlite instructions to create the proper table & indexes.
+**/
 - (BOOL)createTables
 {
 	sqlite3 *db = databaseTransaction->connection->db;
@@ -126,7 +150,8 @@
 	  @"  \"name\" CHAR NOT NULL,"
 	  @"  \"src\" INTEGER,"
 	  @"  \"dst\" INTEGER,"
-	  @"  \"rules\" INTEGER"
+	  @"  \"rules\" INTEGER,"
+	  @"  \"manual\" INTEGER"
 	  @" );", tableName];
 	
 	NSString *createNameIndex = [NSString stringWithFormat:
@@ -175,16 +200,27 @@
 	return YES;
 }
 
+/**
+ * Enumerates the rows in the database and look for objects implementing the YapDatabaseRelationshipNode protocol.
+ * Query these objects, and populate the table accordingly.
+**/
 - (BOOL)populateTables
 {
-	// Remove everything from the database
+	// Remove all protocol edges from the database
 	
-	[self removeAllEdges];
+	[self removeAllProtocolEdges];
+	
+	// Skip enumeration step if YapDatabaseRelationshipNode protocol is disabled
+	
+	if (relationshipConnection->relationship->options->disableYapDatabaseRelationshipNodeProtocol)
+	{
+		return YES;
+	}
 	
 	// Enumerate the existing rows in the database and populate the view
 	
-	[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:
-	    ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop){
+	void (^ProcessRow)(int64_t rowid, NSString *collection, NSString *key, id object);
+	ProcessRow = ^(int64_t rowid, NSString *collection, NSString *key, id object){
 		
 		NSArray *givenEdges = nil;
 		
@@ -197,14 +233,39 @@
 		{
 			NSMutableArray *edges = [NSMutableArray arrayWithCapacity:[givenEdges count]];
 			
-			for (YapDatabaseRelationshipEdge *givenEdge in givenEdges)
+			for (YapDatabaseRelationshipEdge *edge in givenEdges)
 			{
-				[edges addObject:[givenEdge copyWithSourceKey:key collection:collection rowid:rowid]];
+				YapDatabaseRelationshipEdge *cleanEdge = [edge copyWithSourceKey:key collection:collection rowid:rowid];
+				cleanEdge->isManualEdge = NO;
+				
+				[edges addObject:cleanEdge];
 			}
 			
-			[relationshipConnection->changes setObject:edges forKey:@(rowid)];
+			[relationshipConnection->protocolChanges setObject:edges forKey:@(rowid)];
 		}
-	}];
+	};
+	
+	__unsafe_unretained NSSet *allowedCollections = relationshipConnection->relationship->options->allowedCollections;
+	
+	if (allowedCollections)
+	{
+		for (NSString *collection in allowedCollections)
+		{
+			[databaseTransaction _enumerateKeysAndObjectsInCollection:collection usingBlock:
+			    ^(int64_t rowid, NSString *key, id object, BOOL *stop)
+			{
+				ProcessRow(rowid, collection, key, object);
+			}];
+		}
+	}
+	else
+	{
+		[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:
+		   	^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop)
+		{
+			ProcessRow(rowid, collection, key, object);
+		}];
+	}
 	
 	[self flush];
 	return YES;
@@ -249,36 +310,44 @@
  * These edges need to replace whatever is on disk.
 **/
 - (NSMutableArray *)findChangesMatchingName:(NSString *)name
-                             destinationKey:(NSString *)dstKey
-                                 collection:(NSString *)dstCollection
 {
+	if (name == nil)
+		return nil;
+	
 	if (!databaseTransaction->isReadWriteTransaction)
 		return nil;
 	
-	if (dstCollection == nil)
-		dstCollection = @"";
-	
 	__block NSMutableArray *changes = nil;
 	
-	[relationshipConnection->changes enumerateKeysAndObjectsUsingBlock:^(id dictKey, id dictObj, BOOL *stop) {
+	[relationshipConnection->protocolChanges enumerateKeysAndObjectsUsingBlock:^(id dictKey, id dictObj, BOOL *stop){
 		
 	//	__unsafe_unretained NSString *srcRowidNumber = (NSNumber *)dictKey;
 		__unsafe_unretained NSArray *changedEdgesForSrc = (NSArray *)dictObj;
 		
 		for (YapDatabaseRelationshipEdge *edge in changedEdgesForSrc)
 		{
-			if (name && ![name isEqualToString:edge->name])
+			if (![name isEqualToString:edge->name])
 			{
 				continue;
 			}
 			
-			if (dstKey)
+			if (changes == nil)
+				changes = [NSMutableArray array];
+			
+			[changes addObject:edge];
+		}
+	}];
+	
+	[relationshipConnection->manualChanges enumerateKeysAndObjectsUsingBlock:^(id dictKey, id dictObj, BOOL *stop){
+		
+	//	__unsafe_unretained YapCollectionKey srcCollectionKey = (YapCollectionKey *)dictKey;
+		__unsafe_unretained NSArray *changedEdgesForSrc = (NSArray *)dictObj;
+		
+		for (YapDatabaseRelationshipEdge *edge in changedEdgesForSrc)
+		{
+			if (![name isEqualToString:edge->name])
 			{
-				if (![dstKey isEqualToString:edge->destinationKey] ||
-				    ![dstCollection isEqualToString:edge->destinationCollection])
-				{
-					continue;
-				}
+				continue;
 			}
 			
 			if (changes == nil)
@@ -289,32 +358,380 @@
 	}];
 	
 	// Now lookup the destinationRowid for each edge (if missing).
-	// We're going to have to do this anyways at some point.
-	// If not during the enumeration shortly,
-	// then later during the preCommit stage.
+	// We're going to need these. If not immediately, then during the next flush.
 	
 	for (YapDatabaseRelationshipEdge *edge in changes)
 	{
 		// Note: Zero is a valid rowid.
-		// So we use flags to handle this edge case.
+		// So we use flags to properly handle this edge case,
+		// which will avoid multiple lookups if the destinationRowid does happen to be zero.
 		
-		if (edge->destinationRowid == 0 && edge->flags != 2)
+		if (edge->isManualEdge && (edge->sourceRowid == 0) && !(edge->flags & YDB_FlagsSourceLookupSuccessful))
+		{
+			int64_t srcRowid = 0;
+			
+			BOOL found = [databaseTransaction getRowid:&srcRowid
+			                                    forKey:edge->sourceKey
+			                              inCollection:edge->sourceCollection];
+			if (found)
+			{
+				edge->sourceRowid = srcRowid;
+				edge->flags |= YDB_FlagsSourceLookupSuccessful;
+			}
+		}
+		
+		if ((edge->destinationRowid == 0) && !(edge->flags & YDB_FlagsDestinationLookupSuccessful))
 		{
 			int64_t dstRowid = 0;
 			
 			BOOL found = [databaseTransaction getRowid:&dstRowid
 												forKey:edge->destinationKey
 										  inCollection:edge->destinationCollection];
-			
 			if (found)
 			{
 				edge->destinationRowid = dstRowid;
-				edge->flags = 2;
+				edge->flags |= YDB_FlagsDestinationLookupSuccessful;
+			}
+		}
+	}
+	
+	return changes;
+}
+
+/**
+ * Extracts edges from the in-memory changes that match the given options.
+ * These edges need to replace whatever is on disk.
+**/
+- (NSMutableArray *)findChangesMatchingName:(NSString *)name
+                                  sourceKey:(NSString *)srcKey
+                                 collection:(NSString *)srcCollection
+                                      rowid:(int64_t)srcRowid
+{
+	if (srcKey == nil)
+		return [self findChangesMatchingName:name];
+	
+	if (!databaseTransaction->isReadWriteTransaction)
+		return nil;
+	
+	if (srcCollection == nil)
+		srcCollection = @"";
+	
+	YapCollectionKey *srcCollectionKey = [[YapCollectionKey alloc] initWithCollection:srcCollection key:srcKey];
+	
+	__block NSMutableArray *changes = nil;
+	
+	NSMutableArray *changedProtocolEdges = [relationshipConnection->protocolChanges objectForKey:@(srcRowid)];
+	for (YapDatabaseRelationshipEdge *edge in changedProtocolEdges)
+	{
+		if (name && ![name isEqualToString:edge->name])
+		{
+			continue;
+		}
+		
+		if (changes == nil)
+			changes = [NSMutableArray array];
+		
+		[changes addObject:edge];
+	}
+	
+	NSMutableArray *changedManualEdges = [relationshipConnection->manualChanges objectForKey:srcCollectionKey];
+	for (YapDatabaseRelationshipEdge *edge in changedManualEdges)
+	{
+		if (name && ![name isEqualToString:edge->name])
+		{
+			continue;
+		}
+		
+		if (changes == nil)
+			changes = [NSMutableArray array];
+		
+		[changes addObject:edge];
+	}
+	
+	// Now lookup the sourceRowid & destinationRowid for each edge (if missing).
+	// We're going to need these. If not immediately, then during the next flush.
+	
+	for (YapDatabaseRelationshipEdge *edge in changes)
+	{
+		// Note: Zero is a valid rowid.
+		// So we use flags to properly handle this edge case,
+		// which will avoid multiple lookups if the destinationRowid does happen to be zero.
+		
+		if (edge->isManualEdge && (edge->sourceRowid == 0) && !(edge->flags & YDB_FlagsSourceLookupSuccessful))
+		{
+			// Shortcut:
+			// We already know the sourceRowid. It was given to us as a parameter.
+			
+			edge->sourceRowid = srcRowid;
+			edge->flags |= YDB_FlagsSourceLookupSuccessful;
+		}
+		
+		if ((edge->destinationRowid == 0) && !(edge->flags & YDB_FlagsDestinationLookupSuccessful))
+		{
+			int64_t dstRowid = 0;
+			
+			BOOL found = [databaseTransaction getRowid:&dstRowid
+												forKey:edge->destinationKey
+										  inCollection:edge->destinationCollection];
+			if (found)
+			{
+				edge->destinationRowid = dstRowid;
+				edge->flags |= YDB_FlagsDestinationLookupSuccessful;
+			}
+		}
+	}
+	
+	return changes;
+}
+
+/**
+ * Extracts edges from the in-memory changes that match the given options.
+ * These edges need to replace whatever is on disk.
+**/
+- (NSMutableArray *)findChangesMatchingName:(NSString *)name
+                             destinationKey:(NSString *)dstKey
+                                 collection:(NSString *)dstCollection
+                                      rowid:(int64_t)dstRowid
+{
+	if (dstKey == nil)
+		return [self findChangesMatchingName:name];
+	
+	if (!databaseTransaction->isReadWriteTransaction)
+		return nil;
+	
+	if (dstCollection == nil)
+		dstCollection = @"";
+	
+	__block NSMutableArray *changes = nil;
+	
+	[relationshipConnection->protocolChanges enumerateKeysAndObjectsUsingBlock:^(id dictKey, id dictObj, BOOL *stop){
+		
+	//	__unsafe_unretained NSString *srcRowidNumber = (NSNumber *)dictKey;
+		__unsafe_unretained NSArray *changedEdgesForSrc = (NSArray *)dictObj;
+		
+		for (YapDatabaseRelationshipEdge *edge in changedEdgesForSrc)
+		{
+			if ((edge->destinationRowid != 0) || (edge->flags & YDB_FlagsDestinationLookupSuccessful))
+			{
+				if (edge->destinationRowid != dstRowid)
+				{
+					continue;
+				}
 			}
 			else
 			{
-				edge->flags = 1;
+				if (![dstKey isEqualToString:edge->destinationKey] ||
+				    ![dstCollection isEqualToString:edge->destinationCollection])
+				{
+					continue;
+				}
 			}
+			
+			if (name && ![name isEqualToString:edge->name])
+			{
+				continue;
+			}
+			
+			if (changes == nil)
+				changes = [NSMutableArray array];
+			
+			[changes addObject:edge];
+		}
+	}];
+	
+	[relationshipConnection->manualChanges enumerateKeysAndObjectsUsingBlock:^(id dictKey, id dictObj, BOOL *stop){
+		
+	//	__unsafe_unretained YapCollectionKey srcCollectionKey = (YapCollectionKey *)dictKey;
+		__unsafe_unretained NSArray *changedEdgesForSrc = (NSArray *)dictObj;
+		
+		for (YapDatabaseRelationshipEdge *edge in changedEdgesForSrc)
+		{
+			if ((edge->destinationRowid != 0) || (edge->flags & YDB_FlagsDestinationLookupSuccessful))
+			{
+				if (edge->destinationRowid != dstRowid)
+				{
+					continue;
+				}
+			}
+			else
+			{
+				if (![dstKey isEqualToString:edge->destinationKey] ||
+				    ![dstCollection isEqualToString:edge->destinationCollection])
+				{
+					continue;
+				}
+			}
+			
+			if (name && ![name isEqualToString:edge->name])
+			{
+				continue;
+			}
+			
+			if (changes == nil)
+				changes = [NSMutableArray array];
+			
+			[changes addObject:edge];
+		}
+	}];
+	
+	// Now lookup the destinationRowid for each edge (if missing).
+	// We're going to need these. If not immediately, then during the next flush.
+	
+	for (YapDatabaseRelationshipEdge *edge in changes)
+	{
+		// Note: Zero is a valid rowid.
+		// So we use flags to properly handle this edge case,
+		// which will avoid multiple lookups if the destinationRowid does happen to be zero.
+		
+		if (edge->isManualEdge && (edge->sourceRowid == 0) && !(edge->flags & YDB_FlagsSourceLookupSuccessful))
+		{
+			int64_t srcRowid = 0;
+			
+			BOOL found = [databaseTransaction getRowid:&srcRowid
+			                                    forKey:edge->sourceKey
+			                              inCollection:edge->sourceCollection];
+			if (found)
+			{
+				edge->sourceRowid = srcRowid;
+				edge->flags |= YDB_FlagsSourceLookupSuccessful;
+			}
+		}
+		
+		if ((edge->destinationRowid == 0) && !(edge->flags & YDB_FlagsDestinationLookupSuccessful))
+		{
+			// Shortcut:
+			// We already know the sourceRowid. It was given to us as a parameter.
+			
+			edge->destinationRowid = dstRowid;
+			edge->flags |= YDB_FlagsDestinationLookupSuccessful;
+		}
+	}
+	
+	return changes;
+}
+
+/**
+ * Extracts edges from the in-memory changes that match the given options.
+ * These edges need to replace whatever is on disk.
+**/
+- (NSMutableArray *)findChangesMatchingName:(NSString *)name
+                                  sourceKey:(NSString *)srcKey
+                                 collection:(NSString *)srcCollection
+                                      rowid:(int64_t)srcRowid
+                             destinationKey:(NSString *)dstKey
+                                 collection:(NSString *)dstCollection
+                                      rowid:(int64_t)dstRowid
+{
+	if (srcKey == nil)
+	{
+		if (dstKey == nil)
+			return [self findChangesMatchingName:name];
+		else
+			return [self findChangesMatchingName:name destinationKey:dstKey collection:dstCollection rowid:dstRowid];
+	}
+	if (dstKey == nil)
+	{
+		return [self findChangesMatchingName:name sourceKey:srcKey collection:srcCollection rowid:srcRowid];
+	}
+	
+	if (!databaseTransaction->isReadWriteTransaction)
+		return nil;
+	
+	if (srcCollection == nil)
+		srcCollection = @"";
+	
+	if (dstCollection == nil)
+		dstCollection = @"";
+	
+	YapCollectionKey *srcCollectionKey = [[YapCollectionKey alloc] initWithCollection:srcCollection key:srcKey];
+	
+	__block NSMutableArray *changes = nil;
+	
+	NSMutableArray *changedProtocolEdges = [relationshipConnection->protocolChanges objectForKey:@(srcRowid)];
+	for (YapDatabaseRelationshipEdge *edge in changedProtocolEdges)
+	{
+		if ((edge->destinationRowid != 0) || (edge->flags & YDB_FlagsDestinationLookupSuccessful))
+		{
+			if (edge->destinationRowid != dstRowid)
+			{
+				continue;
+			}
+		}
+		else
+		{
+			if (![dstKey isEqualToString:edge->destinationKey] ||
+				![dstCollection isEqualToString:edge->destinationCollection])
+			{
+				continue;
+			}
+		}
+		
+		if (name && ![name isEqualToString:edge->name])
+		{
+			continue;
+		}
+		
+		if (changes == nil)
+			changes = [NSMutableArray array];
+		
+		[changes addObject:edge];
+	}
+	
+	NSMutableArray *changedManualEdges = [relationshipConnection->manualChanges objectForKey:srcCollectionKey];
+	for (YapDatabaseRelationshipEdge *edge in changedManualEdges)
+	{
+		if ((edge->destinationRowid != 0) || (edge->flags & YDB_FlagsDestinationLookupSuccessful))
+		{
+			if (edge->destinationRowid != dstRowid)
+			{
+				continue;
+			}
+		}
+		else
+		{
+			if (![dstKey isEqualToString:edge->destinationKey] ||
+				![dstCollection isEqualToString:edge->destinationCollection])
+			{
+				continue;
+			}
+		}
+		
+		if (name && ![name isEqualToString:edge->name])
+		{
+			continue;
+		}
+		
+		if (changes == nil)
+			changes = [NSMutableArray array];
+		
+		[changes addObject:edge];
+	}
+	
+	// Now lookup the sourceRowid & destinationRowid for each edge (if missing).
+	// We're going to need these. If not immediately, then during the next flush.
+	
+	for (YapDatabaseRelationshipEdge *edge in changes)
+	{
+		// Note: Zero is a valid rowid.
+		// So we use flags to properly handle this edge case,
+		// which will avoid multiple lookups if the destinationRowid does happen to be zero.
+		
+		if (edge->isManualEdge && (edge->sourceRowid == 0) && !(edge->flags & YDB_FlagsSourceLookupSuccessful))
+		{
+			// Shortcut:
+			// We already know the sourceRowid. It was given to us as a parameter.
+			
+			edge->sourceRowid = srcRowid;
+			edge->flags |= YDB_FlagsSourceLookupSuccessful;
+		}
+		
+		if ((edge->destinationRowid == 0) && !(edge->flags & YDB_FlagsDestinationLookupSuccessful))
+		{
+			// Shortcut:
+			// We already know the sourceRowid. It was given to us as a parameter.
+			
+			edge->destinationRowid = dstRowid;
+			edge->flags |= YDB_FlagsDestinationLookupSuccessful;
 		}
 	}
 	
@@ -325,13 +742,13 @@
  * Simple enumeration of existing data in database, via a SELECT query.
  * Does not take into account anything in memory (relationshipConnection->changes dictionary).
 **/
-- (void)enumerateExistingEdgesWithSrc:(int64_t)srcRowid
-                           usingBlock:(void (^)(int64_t edgeRowid, NSString *name, int64_t dstRowid, int rules))block
+- (void)enumerateExistingEdgesWithSrc:(int64_t)srcRowid usingBlock:
+                        (void (^)(int64_t edgeRowid, NSString *name, int64_t dstRowid, int rules, BOOL manual))block
 {
 	sqlite3_stmt *statement = [relationshipConnection enumerateForSrcStatement];
 	if (statement == NULL) return;
 	
-	// SELECT "rowid", "name", "dst", "rules" FROM "tableName" WHERE "src" = ?;
+	// SELECT "rowid", "name", "dst", "rules", "manual" FROM "tableName" WHERE "src" = ?;
 	
 	sqlite3_bind_int64(statement, 1, srcRowid);
 	
@@ -348,13 +765,14 @@
 		int64_t dstRowid = sqlite3_column_int64(statement, 2);
 		int rules = sqlite3_column_int(statement, 3);
 		
-		block(edgeRowid, name, dstRowid, rules);
+		BOOL manual = (BOOL)sqlite3_column_int(statement, 4);
+		
+		block(edgeRowid, name, dstRowid, rules, manual);
 	}
 	
 	if (status != SQLITE_DONE)
 	{
-		YDBLogError(@"%@ (%@): Error executing statement: %d %s",
-		            THIS_METHOD, [self registeredName],
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
@@ -366,13 +784,13 @@
  * Simple enumeration of existing data in database, via a SELECT query.
  * Does not take into account anything in memory (relationshipConnection->changes dictionary).
 **/
-- (void)enumerateExistingEdgesWithDst:(int64_t)dstRowid
-                           usingBlock:(void (^)(int64_t edgeRowid, NSString *name, int64_t srcRowid, int rules))block
+- (void)enumerateExistingEdgesWithDst:(int64_t)dstRowid usingBlock:
+                        (void (^)(int64_t edgeRowid, NSString *name, int64_t srcRowid, int rules, BOOL manual))block
 {
 	sqlite3_stmt *statement = [relationshipConnection enumerateForDstStatement];
 	if (statement == NULL) return;
 	
-	// SELECT "rowid", "name", "src", "rules" FROM "tableName" WHERE "dst" = ?;
+	// SELECT "rowid", "name", "src", "rules", "manual" FROM "tableName" WHERE "dst" = ?;
 	
 	sqlite3_bind_int64(statement, 1, dstRowid);
 	
@@ -389,13 +807,14 @@
 		int64_t srcRowid = sqlite3_column_int64(statement, 2);
 		int rules = sqlite3_column_int(statement, 3);
 		
-		block(edgeRowid, name, srcRowid, rules);
+		BOOL manual = (BOOL)sqlite3_column_int(statement, 4);
+		
+		block(edgeRowid, name, srcRowid, rules, manual);
 	}
 	
 	if (status != SQLITE_DONE)
 	{
-		YDBLogError(@"%@ (%@): Error executing statement: %d %s",
-		            THIS_METHOD, [self registeredName],
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
@@ -412,7 +831,7 @@
 {
 	__block NSNumber *result = nil;
 	
-	[relationshipConnection->deletedInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+	[relationshipConnection->deletedInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
 		
 		__unsafe_unretained NSNumber *rowidNumber = (NSNumber *)key;
 		__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
@@ -453,8 +872,7 @@
 	}
 	else if (status == SQLITE_ERROR)
 	{
-		YDBLogError(@"%@ (%@): Error in statement: %d %s",
-		            THIS_METHOD, [self registeredName],
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
@@ -491,8 +909,7 @@
 	}
 	else if (status == SQLITE_ERROR)
 	{
-		YDBLogError(@"%@ (%@): Error in statement: %d %s",
-		            THIS_METHOD, [self registeredName],
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
@@ -508,25 +925,34 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * This method enumerates over the given set of edges, and sets the following properties to their appropriate value:
- * 
+ * This method enumerates over the given sets of edges, and sets the following properties to their appropriate value:
+ *
  * edge->edgeAction
- * edge->nodeAction
- * edge->notInDatabase
- * edge->badDestination
+ * edge->flags
+ *
+ * The source node of each edge must be new (inserted during this transaction).
 **/
-- (void)processInsertedEdges:(NSMutableArray *)edges sourceDeleted:(BOOL)sourceDeleted
+- (void)preprocessProtocolEdges:(NSMutableArray *)protocolEdges forInsertedSource:(NSNumber *)srcRowidNumber
 {
-	for (YapDatabaseRelationshipEdge *edge in edges)
+	// Get common info
+	
+	BOOL sourceDeleted = [relationshipConnection->deletedInfo ydb_containsKey:srcRowidNumber];
+	
+	// Process each edge.
+	//
+	// Since we know the source node is new (inserted during this transaction),
+	// we can skip doing any kind of merging with existing edges on disk.
+	
+	for (YapDatabaseRelationshipEdge *edge in protocolEdges)
 	{
 		if (sourceDeleted)
 		{
 			edge->edgeAction = YDB_EdgeActionDelete;
-			edge->notInDatabase = YES;
-			edge->nodeAction = YDB_NodeActionSourceDeleted;
+			edge->flags |= YDB_FlagsSourceDeleted;
+			edge->flags |= YDB_FlagsNotInDatabase; // no need to delete edge from database
 		}
-			
-		if (edge->destinationRowid == 0)
+		
+		if ((edge->destinationRowid == 0) && !(edge->flags & YDB_FlagsDestinationLookupSuccessful))
 		{
 			int64_t dstRowid = 0;
 			
@@ -537,12 +963,13 @@
 			if (found)
 			{
 				edge->destinationRowid = dstRowid;
+				edge->flags |= YDB_FlagsDestinationLookupSuccessful;
 				
 				if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->destinationRowid)])
 				{
 					edge->edgeAction = YDB_EdgeActionDelete;
-					edge->notInDatabase = YES;
-					edge->nodeAction |= YDB_NodeActionDestinationDeleted;
+					edge->flags |= YDB_FlagsDestinationDeleted;
+					edge->flags |= YDB_FlagsNotInDatabase; // no need to delete edge from database
 				}
 				else if (!sourceDeleted)
 				{
@@ -557,10 +984,11 @@
 				if (dstRowidNumber)
 				{
 					edge->destinationRowid = [dstRowidNumber longLongValue];
+					edge->flags |= YDB_FlagsDestinationLookupSuccessful;
 					
 					edge->edgeAction = YDB_EdgeActionDelete;
-					edge->notInDatabase = YES;
-					edge->nodeAction |= YDB_NodeActionDestinationDeleted;
+					edge->flags |= YDB_FlagsDestinationDeleted;
+					edge->flags |= YDB_FlagsNotInDatabase; // no need to delete edge from database
 				}
 				else
 				{
@@ -568,17 +996,17 @@
 					// Treat same as if destination node was deleted.
 					
 					edge->edgeAction = YDB_EdgeActionDelete;
-					edge->notInDatabase = YES;
-					edge->badDestination = YES;
-					edge->nodeAction |= YDB_NodeActionDestinationDeleted;
+					edge->flags |= YDB_FlagsDestinationDeleted;
+					edge->flags |= YDB_FlagsBadDestination;
+					edge->flags |= YDB_FlagsNotInDatabase; // no need to delete edge from database
 				}
 			}
 		}
 		else if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->destinationRowid)])
 		{
 			edge->edgeAction = YDB_EdgeActionDelete;
-			edge->notInDatabase = YES;
-			edge->nodeAction |= YDB_NodeActionDestinationDeleted;
+			edge->flags |= YDB_FlagsDestinationDeleted;
+			edge->flags |= YDB_FlagsNotInDatabase; // no need to delete edge from database
 		}
 		else if (!sourceDeleted)
 		{
@@ -589,72 +1017,85 @@
 
 /**
  * This method merges the given set of edges with the corresponding edges that already exist on disk.
- * It will update the newEdges list, adding any edges that have been manually removed from the list.
+ * It will update the given edges list, adding any edges that have been manually removed from the list.
  *
- * Sets the following properties to their appropriate value:
- * 
  * edge->edgeRowid
  * edge->edgeAction
- * edge->nodeAction
- * edge->notInDatabase
- * edge->badDestination
+ * edge->flags
+ * 
+ * The source node of each edge is non-new (updated, not inserted, during transaction).
 **/
-- (void)processUpdatedEdges:(NSMutableArray *)newEdges
-                  forSource:(NSNumber *)srcRowidNumber
-              sourceDeleted:(BOOL)sourceDeleted
+- (void)preprocessProtocolEdges:(NSMutableArray *)protocolEdges forUpdatedSource:(NSNumber *)srcRowidNumber
 {
+	BOOL sourceDeleted = [relationshipConnection->deletedInfo ydb_containsKey:srcRowidNumber];
 	int64_t srcRowid = [srcRowidNumber longLongValue];
 	
 	// Step 1 :
 	//
 	// Pre-process the updated edges.
 	// This involves looking up the destinationRowid for each edge.
+	//
+	// Implementation details:
+	//
+	// We use the offset & protocolEdgesCount to mark the range of unprocessed edges in the array:
+	// - All nodes at index < offset have already been processed.
+	// - All nodes at index >= protocolEdgesCount were added to the array and should be ignored.
+	//
+	// These added nodes represent existing edges in the database that were
+	// implicitly deleted by removing from edge list.
 	
 	__block NSUInteger offset = 0;
-	NSUInteger newEdgesCount = [newEdges count];
+	NSUInteger protocolEdgesCount = [protocolEdges count];
 	
-	for (NSUInteger i = 0; i < newEdgesCount; i++)
+	for (NSUInteger i = 0; i < protocolEdgesCount; i++)
 	{
-		YapDatabaseRelationshipEdge *newEdge = [newEdges objectAtIndex:i];
+		YapDatabaseRelationshipEdge *edge = [protocolEdges objectAtIndex:i];
 		
 		// Note: Zero is a valid rowid.
 		// But if newEdge->destinationRowid is zero, then its far far more likely
 		// that we haven't looked up the destinationRowid yet.
 		
-		if (newEdge->destinationRowid == 0)
+		if ((edge->destinationRowid == 0) && !(edge->flags & YDB_FlagsDestinationLookupSuccessful))
 		{
 			int64_t dstRowid = 0;
 			BOOL found = [databaseTransaction getRowid:&dstRowid
-			                                    forKey:newEdge->destinationKey
-			                              inCollection:newEdge->destinationCollection];
+			                                    forKey:edge->destinationKey
+			                              inCollection:edge->destinationCollection];
 			
 			if (found)
 			{
-				newEdge->destinationRowid = dstRowid;
+				edge->destinationRowid = dstRowid;
+				edge->flags |= YDB_FlagsDestinationLookupSuccessful;
+				
+				// Note: We check to see if the destination was deleted later
 			}
 			else
 			{
-				NSNumber *dstRowidNumber = [self rowidNumberForDeletedKey:newEdge->destinationKey
-				                                             inCollection:newEdge->destinationCollection];
+				// Node not found in database.
+				// Is this because it was deleted during this transaction?
+				
+				NSNumber *dstRowidNumber = [self rowidNumberForDeletedKey:edge->destinationKey
+				                                             inCollection:edge->destinationCollection];
 				
 				if (dstRowidNumber)
 				{
-					newEdge->destinationRowid = [dstRowidNumber longLongValue];
+					edge->destinationRowid = [dstRowidNumber longLongValue];
+					edge->flags |= YDB_FlagsDestinationLookupSuccessful;
 					
-					newEdge->edgeAction = YDB_EdgeActionDelete;
-					newEdge->nodeAction = YDB_NodeActionDestinationDeleted;
+					edge->edgeAction = YDB_EdgeActionDelete;
+					edge->flags |= YDB_FlagsDestinationDeleted;
 				}
 				else
 				{
 					// Bad edge (destination node never existed).
 					// Treat same as if destination node was deleted.
 					
-					newEdge->edgeAction = YDB_EdgeActionDelete;
-					newEdge->notInDatabase = YES;
-					newEdge->badDestination = YES;
-					newEdge->nodeAction = YDB_NodeActionDestinationDeleted;
+					edge->edgeAction = YDB_EdgeActionDelete;
+					edge->flags |= YDB_FlagsDestinationDeleted;
+					edge->flags |= YDB_FlagsBadDestination;
+					edge->flags |= YDB_FlagsNotInDatabase;
 					
-					[newEdges exchangeObjectAtIndex:i withObjectAtIndex:offset];
+					[protocolEdges exchangeObjectAtIndex:i withObjectAtIndex:offset];
 					offset++;
 				}
 			}
@@ -663,21 +1104,24 @@
 	
 	// Step 2 :
 	//
-	// Enumerate the existing edges, and check to see if they match a new edge.
+	// Enumerate the existing edges in the database, and try to match them up with edges from the new set.
 	
-	[self enumerateExistingEdgesWithSrc:srcRowid
-							 usingBlock:^(int64_t edgeRowid, NSString *name, int64_t dstRowid, int nodeDeleteRules)
+	[self enumerateExistingEdgesWithSrc:srcRowid usingBlock:
+	    ^(int64_t edgeRowid, NSString *name, int64_t dstRowid, int nodeDeleteRules, BOOL manual)
 	{
-		YapDatabaseRelationshipEdge *matchingNewEdge = nil;
+		// Ignore manually created edges
+		if (manual) return; // continue (next matching row)
+		
+		YapDatabaseRelationshipEdge *matchingEdge = nil;
 		
 		NSUInteger i = offset;
-		while (i < newEdgesCount)
+		while (i < protocolEdgesCount)
 		{
-			YapDatabaseRelationshipEdge *newEdge = [newEdges objectAtIndex:i];
+			YapDatabaseRelationshipEdge *edge = [protocolEdges objectAtIndex:i];
 			
-			if (newEdge->destinationRowid == dstRowid && [newEdge->name isEqualToString:name])
+			if (edge->destinationRowid == dstRowid && [edge->name isEqualToString:name])
 			{
-				matchingNewEdge = newEdge;
+				matchingEdge = edge;
 				break;
 			}
 			else
@@ -686,90 +1130,225 @@
 			}
 		}
 		
-		if (matchingNewEdge)
+		if (matchingEdge)
 		{
-			// This new edges matches an existing one already in the database.
+			// This edges matches an existing edge already in the database.
 			
-			matchingNewEdge->edgeRowid = edgeRowid;
+			matchingEdge->edgeRowid = edgeRowid;
 			
 			// Check to see if it changed at all.
 			
-			if (matchingNewEdge->nodeDeleteRules != nodeDeleteRules)
+			if (matchingEdge->nodeDeleteRules != nodeDeleteRules)
 			{
 				// The nodeDeleteRules changed. Mark for update.
 				
-				matchingNewEdge->edgeAction = YDB_EdgeActionUpdate;
+				matchingEdge->edgeAction = YDB_EdgeActionUpdate;
 			}
 			else
 			{
 				// Nothing changed
 				
-				matchingNewEdge->edgeAction = YDB_EdgeActionNone;
+				matchingEdge->edgeAction = YDB_EdgeActionNone;
 			}
 			
 			// Was source and/or destination deleted?
 			
 			if (sourceDeleted)
 			{
-				matchingNewEdge->edgeAction = YDB_EdgeActionDelete;
-				matchingNewEdge->nodeAction = YDB_NodeActionSourceDeleted;
+				matchingEdge->edgeAction = YDB_EdgeActionDelete;
+				matchingEdge->flags |= YDB_FlagsSourceDeleted;
 			}
 			
-			if ([relationshipConnection->deletedInfo ydb_containsKey:@(matchingNewEdge->destinationRowid)])
+			if ([relationshipConnection->deletedInfo ydb_containsKey:@(matchingEdge->destinationRowid)])
 			{
-				matchingNewEdge->edgeAction = YDB_EdgeActionDelete;
-				matchingNewEdge->nodeAction |= YDB_NodeActionDestinationDeleted;
+				matchingEdge->edgeAction = YDB_EdgeActionDelete;
+				matchingEdge->flags |= YDB_FlagsDestinationDeleted;
 			}
 			
-			[newEdges exchangeObjectAtIndex:i withObjectAtIndex:offset];
+			[protocolEdges exchangeObjectAtIndex:i withObjectAtIndex:offset];
 			offset++;
 		}
 		else
 		{
-			// The existing edge has no match in the new edges list.
-			// Thus an existing edge was removed.
-			// It needs to be deleted from the database.
+			// The existing edge in the database has no match in the new protocolEdges list.
+			// Thus an existing edge was removed from the list of edges,
+			// and so it needs to be deleted from the database.
 			
 			YapDatabaseRelationshipEdge *edge =
 			  [[YapDatabaseRelationshipEdge alloc] initWithRowid:edgeRowid
 			                                                name:name
 			                                                 src:srcRowid
 			                                                 dst:dstRowid
-			                                               rules:nodeDeleteRules];
+			                                               rules:nodeDeleteRules
+			                                              manual:NO];
 			
 			edge->edgeAction = YDB_EdgeActionDelete;
-			edge->nodeAction = YDB_NodeActionSourceDeleted;
+			edge->flags |= YDB_FlagsSourceDeleted;
 			
 			if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->destinationRowid)])
 			{
-				edge->nodeAction |= YDB_NodeActionDestinationDeleted;
+				edge->flags |= YDB_FlagsDestinationDeleted;
 			}
 			
-			[newEdges addObject:edge];
-			// Note: Do NOT increment newEdgesCount.
+			[protocolEdges addObject:edge];
+			// Note: Do NOT increment protocolEdgesCount.
 		}
 	}];
 	
 	// Step 3 :
 	//
-	// Process any newEdges that didn't have a matching existing edge in the database.
+	// Process any protocolEdges that didn't match an existing edge in the database.
 	
-	for (NSUInteger i = offset; i < newEdgesCount; i++)
+	for (NSUInteger i = offset; i < protocolEdgesCount; i++)
 	{
-		YapDatabaseRelationshipEdge *newEdge = [newEdges objectAtIndex:i];
+		YapDatabaseRelationshipEdge *edge = [protocolEdges objectAtIndex:i];
+		
+		edge->edgeAction = YDB_EdgeActionInsert;
 		
 		if (sourceDeleted)
 		{
-			newEdge->edgeAction = YDB_EdgeActionDelete;
-			newEdge->notInDatabase = YES;
+			edge->edgeAction = YDB_EdgeActionDelete;
+			edge->flags |= YDB_FlagsSourceDeleted;
+			edge->flags |= YDB_FlagsNotInDatabase;
 		}
-		else
+		
+		if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->destinationRowid)])
 		{
-			newEdge->edgeAction = YDB_EdgeActionInsert;
+			edge->edgeAction = YDB_EdgeActionDelete;
+			edge->flags |= YDB_FlagsDestinationDeleted;
+			edge->flags |= YDB_FlagsNotInDatabase;
 		}
 	}
 }
 
+/**
+ * This method enumerates over the given sets of edges, and sets the following properties to their appropriate value:
+ *
+ * edge->edgeAction
+ * edge->flags
+**/
+- (void)preprocessManualEdges:(NSMutableArray *)manualEdges
+{
+	for (YapDatabaseRelationshipEdge *edge in manualEdges)
+	{
+		// Lookup sourceRowid if needed.
+		// Otherwise check to see if source node was deleted.
+		
+		if ((edge->sourceRowid == 0) && !(edge->flags & YDB_FlagsSourceLookupSuccessful))
+		{
+			int64_t srcRowid = 0;
+			
+			BOOL found = [databaseTransaction getRowid:&srcRowid
+			                                    forKey:edge->sourceKey
+			                              inCollection:edge->sourceCollection];
+			
+			if (found)
+			{
+				edge->sourceRowid = srcRowid;
+				edge->flags |= YDB_FlagsSourceLookupSuccessful;
+				
+				if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->sourceRowid)])
+				{
+					edge->edgeAction = YDB_EdgeActionDelete;
+					edge->flags |= YDB_FlagsSourceDeleted;
+				}
+			}
+			else
+			{
+				// Node not found in database.
+				// Is this because it was deleted during this transaction?
+				
+				NSNumber *srcRowidNumber = [self rowidNumberForDeletedKey:edge->sourceKey
+				                                             inCollection:edge->destinationCollection];
+				
+				if (srcRowidNumber)
+				{
+					edge->sourceRowid = [srcRowidNumber longLongValue];
+					edge->flags |= YDB_FlagsSourceLookupSuccessful;
+					
+					edge->edgeAction = YDB_EdgeActionDelete;
+					edge->flags |= YDB_FlagsSourceDeleted;
+				}
+				else
+				{
+					// Bad edge (source node never existed).
+					// Treat same as if source node was deleted.
+					
+					edge->edgeAction = YDB_EdgeActionDelete;
+					edge->flags |= YDB_FlagsSourceDeleted;
+					edge->flags |= YDB_FlagsBadSource;
+					edge->flags |= YDB_FlagsNotInDatabase;
+				}
+			}
+		}
+		else if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->sourceRowid)])
+		{
+			edge->edgeAction = YDB_EdgeActionDelete;
+			edge->flags |= YDB_FlagsSourceDeleted;
+		}
+		
+		
+		// Lookup destinationRowid if needed.
+		// Otherwise check to see if destination node was deleted.
+		
+		if ((edge->destinationRowid == 0) && !(edge->flags & YDB_FlagsDestinationLookupSuccessful))
+		{
+			int64_t dstRowid = 0;
+			
+			BOOL found = [databaseTransaction getRowid:&dstRowid
+			                                    forKey:edge->destinationKey
+			                              inCollection:edge->destinationCollection];
+			
+			if (found)
+			{
+				edge->destinationRowid = dstRowid;
+				edge->flags |= YDB_FlagsDestinationLookupSuccessful;
+				
+				if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->destinationRowid)])
+				{
+					edge->edgeAction = YDB_EdgeActionDelete;
+					edge->flags |= YDB_FlagsDestinationDeleted;
+				}
+			}
+			else
+			{
+				// Node not found in database.
+				// Is this because it was deleted during this transaction?
+				
+				NSNumber *dstRowidNumber = [self rowidNumberForDeletedKey:edge->destinationKey
+				                                             inCollection:edge->destinationCollection];
+				
+				if (dstRowidNumber)
+				{
+					edge->destinationRowid = [dstRowidNumber longLongValue];
+					edge->flags |= YDB_FlagsDestinationLookupSuccessful;
+					
+					edge->edgeAction = YDB_EdgeActionDelete;
+					edge->flags |= YDB_FlagsDestinationDeleted;
+				}
+				else
+				{
+					// Bad edge (destination node never existed).
+					// Treat same as if destination node was deleted.
+					
+					edge->edgeAction = YDB_EdgeActionDelete;
+					edge->flags |= YDB_FlagsDestinationDeleted;
+					edge->flags |= YDB_FlagsBadDestination;
+					edge->flags |= YDB_FlagsNotInDatabase;
+				}
+			}
+		}
+		else if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->destinationRowid)])
+		{
+			edge->edgeAction = YDB_EdgeActionDelete;
+			edge->flags |= YDB_FlagsDestinationDeleted;
+		}
+	}
+}
+
+/**
+ * Helper method for executing the sqlite statement to insert an edge into the database.
+**/
 - (void)insertEdge:(YapDatabaseRelationshipEdge *)edge
 {
 	sqlite3_stmt *statement = [relationshipConnection insertEdgeStatement];
@@ -791,7 +1370,7 @@
 	}
 	else
 	{
-		YDBLogError(@"Error executing 'insertEdgeStatement': %d %s",
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
@@ -800,6 +1379,9 @@
 	FreeYapDatabaseString(&_name);
 }
 
+/**
+ * Helper method for executing the sqlite statement to update an edge in the database.
+**/
 - (void)updateEdge:(YapDatabaseRelationshipEdge *)edge
 {
 	sqlite3_stmt *statement = [relationshipConnection updateEdgeStatement];
@@ -813,7 +1395,7 @@
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
 	{
-		YDBLogError(@"Error executing 'updateEdgeStatement': %d %s",
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
@@ -821,26 +1403,65 @@
 	sqlite3_reset(statement);
 }
 
+/**
+ * Helper method for executing the sqlite statement to delete an edge from the database.
+**/
 - (void)deleteEdge:(YapDatabaseRelationshipEdge *)edge
 {
-	sqlite3_stmt *statement = [relationshipConnection deleteEdgeStatement];
-	if (statement == NULL) return;
-	
-	// DELETE FROM "tableName" WHERE "rowid" = ?;
-	
-	sqlite3_bind_int64(statement, 1, edge->edgeRowid);
-	
-	int status = sqlite3_step(statement);
-	if (status != SQLITE_DONE)
+	if (edge->isManualEdge)
 	{
-		YDBLogError(@"Error executing 'deleteEdgeStatement': %d %s",
-		            status, sqlite3_errmsg(databaseTransaction->connection->db));
+		// For manual edges, we don't know the edgeRowid.
+		// So we need to run a query which finds and then deletes it.
+		
+		sqlite3_stmt *statement = [relationshipConnection deleteManualEdgeStatement];
+		if (statement == NULL) return;
+		
+		// DELETE FROM "tableName" WHERE "rowid" =
+		//   (SELECT "rowid" FROM "tableName" WHERE "src" = ? AND "dst" = ? AND "name" = ? AND "manual" = 1 LIMIT 1);
+		
+		sqlite3_bind_int64(statement, 1, edge->sourceRowid);
+		sqlite3_bind_int64(statement, 2, edge->destinationRowid);
+		
+		YapDatabaseString _name; MakeYapDatabaseString(&_name, edge->name);
+		sqlite3_bind_text(statement, 3, _name.str, _name.length, SQLITE_STATIC);
+		
+		int status = sqlite3_step(statement);
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"%@ - Error executing statement (A): %d %s", THIS_METHOD,
+			            status, sqlite3_errmsg(databaseTransaction->connection->db));
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+		FreeYapDatabaseString(&_name);
 	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
+	else
+	{
+		// For non-manual edges, edge deletion is straight-forward as we know the edgeRowid.
+		
+		sqlite3_stmt *statement = [relationshipConnection deleteEdgeStatement];
+		if (statement == NULL) return;
+		
+		// DELETE FROM "tableName" WHERE "rowid" = ?;
+		
+		sqlite3_bind_int64(statement, 1, edge->edgeRowid);
+		
+		int status = sqlite3_step(statement);
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"%@ - Error executing statement (B): %d %s", THIS_METHOD,
+			            status, sqlite3_errmsg(databaseTransaction->connection->db));
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+	}
 }
 
+/**
+ * Helper method for executing the sqlite statement to delete all edges touching the given rowid.
+**/
 - (void)deleteEdgesWithSourceOrDestination:(int64_t)rowid
 {
 	sqlite3_stmt *statement = [relationshipConnection deleteEdgesWithNodeStatement];
@@ -854,14 +1475,19 @@
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
 	{
-		YDBLogError(@"Error executing 'deleteEdgesWithNodeStatement': %d %s",
-		            status, sqlite3_errmsg(databaseTransaction->connection->db));
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
+					status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
 }
 
+/**
+ * Helper method for executing the sqlite statement to delete all edges from the database.
+ * 
+ * This removes all edges, both protocol & manual edges.
+**/
 - (void)removeAllEdges
 {
 	YDBLogAutoTrace();
@@ -869,79 +1495,78 @@
 	sqlite3_stmt *statement = [relationshipConnection removeAllStatement];
 	if (statement == NULL)
 		return;
-	
-	int status;
 
 	// DELETE FROM "tableName";
 	
-	YDBLogVerbose(@"DELETE FROM '%@';", [self tableName]);
+	YDBLogVerbose(@"Removing all edges");
 	
-	status = sqlite3_step(statement);
+	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
 	{
-		YDBLogError(@"%@ (%@): Error in statement: %d %s",
-		            THIS_METHOD, [self registeredName],
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 		
 	sqlite3_reset(statement);
 	
-	[relationshipConnection->changes removeAllObjects];
+	[relationshipConnection->protocolChanges removeAllObjects];
+	[relationshipConnection->manualChanges removeAllObjects];
 	[relationshipConnection->inserted removeAllObjects];
 	[relationshipConnection->deletedOrder removeAllObjects];
 	[relationshipConnection->deletedInfo removeAllObjects];
+}
+
+/**
+ * Helper method for executing the sqlite statement to delete all protocol edges from the database.
+ *
+ * This means all edges that were created via the YapDatabaseRelationshipNode protocol.
+ * So every edge in the database where the 'manual' column in set to zero.
+**/
+- (void)removeAllProtocolEdges
+{
+	YDBLogAutoTrace();
+	
+	sqlite3_stmt *statement = [relationshipConnection removeAllProtocolStatement];
+	if (statement == NULL)
+		return;
+	
+	// DELETE FROM "tableName" WHERE "manual" = 0;
+	
+	YDBLogVerbose(@"Removing all protocol edges");
+	
+	int status = sqlite3_step(statement);
+	if (status != SQLITE_DONE)
+	{
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
+		            status, sqlite3_errmsg(databaseTransaction->connection->db));
+	}
+	
+	sqlite3_reset(statement);
+	
+	[relationshipConnection->protocolChanges removeAllObjects];
 }
 
 - (void)flush
 {
 	YDBLogAutoTrace();
 	
+	if (!databaseTransaction->isReadWriteTransaction) return;
+	
 	isFlushing = YES;
 	
-	// STEP 1:
-	//
-	// Process all edges that have been set during the transaction.
-	// This includes:
-	// - merging new edge lists with existing edge lists
-	// - writing new edges to the database
-	// - writing modified edges to the database (changed nodeDeleteRules)
-	// - deleting edges that were manually removed from the list
+	__block NSMutableArray *unprocessedEdges = nil;
 	
-	[relationshipConnection->changes enumerateKeysAndObjectsUsingBlock:^(id dictKey, id dictObj, BOOL *stop) {
+	// STEP 0:
+	//
+	// Setup block to process a given array of edges.
+	// The array must be preprocessed using one of the proper preprocess methods.
+	// The preprocess methods will properly set the edgeAction and flags for each edge.
+	// So this block need only look at the edgeAction and flags to decide how to process each edge.
+	
+	void (^ProcessEdges)(NSArray *edges) = ^(NSArray *edges){ @autoreleasepool{
 		
-		__unsafe_unretained NSNumber *srcRowidNumber = (NSNumber *)dictKey;
-		__unsafe_unretained NSMutableArray *edges = (NSMutableArray *)dictObj;
-		
-		BOOL sourceDeleted = [relationshipConnection->deletedInfo ydb_containsKey:srcRowidNumber];
-		
-		if ([relationshipConnection->inserted containsObject:srcRowidNumber])
+		for (YapDatabaseRelationshipEdge *edge in edges)
 		{
-			// The src node is new, so all the edges are new.
-			// Thus no need to merge the edges with a previous set of edges.
-			//
-			// So just enumerate over the edges, and attempt to fill in all the destinationRowid values.
-			// If either of the edge's nodes were deleted, mark accordingly.
-			
-			[self processInsertedEdges:edges sourceDeleted:sourceDeleted];
-		}
-		else
-		{
-			// The src node was updated, so the edges may have changed.
-			//
-			// We need to merge the new list with the existing list of edges in the database.
-			
-			[self processUpdatedEdges:edges forSource:srcRowidNumber sourceDeleted:sourceDeleted];
-		}
-		
-		// The edges list has now been processed,
-		// and all the various flags for each edge have been set.
-		
-		NSUInteger i = 0;
-		while (i < [edges count])
-		{
-			YapDatabaseRelationshipEdge *edge = [edges objectAtIndex:i];
-			BOOL edgeProcessed = YES;
-			
 			if (edge->edgeAction == YDB_EdgeActionNone)
 			{
 				// No edge processing required.
@@ -968,9 +1593,15 @@
 				// - Both source and destination deleted
 				// - Only source was deleted
 				// - Only destination was deleted
+				// - Bad edge (invalid source or destination node)
 				// - Edge manually deleted via source object (same as source deleted)
 				
-				if (edge->nodeAction == YDB_NodeActionSourceDeleted)
+				BOOL edgeProcessed = YES;
+				
+				BOOL sourceDeleted      = (edge->flags & (YDB_FlagsSourceDeleted      | YDB_FlagsBadSource));
+				BOOL destinationDeleted = (edge->flags & (YDB_FlagsDestinationDeleted | YDB_FlagsBadDestination));
+				
+				if (sourceDeleted && !destinationDeleted)
 				{
 					// Only source was deleted
 					
@@ -1030,7 +1661,7 @@
 						}
 					}
 				}
-				else if (edge->nodeAction == YDB_NodeActionDestinationDeleted)
+				else if (destinationDeleted && !sourceDeleted)
 				{
 					// Only destination was deleted
 					
@@ -1090,11 +1721,12 @@
 					}
 				}
 				
-				if (edge->notInDatabase)
+				if (edge->flags & YDB_FlagsNotInDatabase)
 				{
 					// The edge was added and deleted within the same transaction.
-					// This might happen if we're testing the extension,
-					// or if a bad edge was created (destination node doesn't exist).
+					// This might happen in some situations,
+					// or if we're testing the extension,
+					// or if a bad edge was created (source or destination node don't exist).
 					//
 					// Whatever the case, we don't need to attempt to delete the edge from the database.
 					// In fact, we must not run the code because the edge->edgeRowid is invalid.
@@ -1106,88 +1738,160 @@
 					[self deleteEdge:edge];
 				}
 				
+				// If we couldn't process the edge, then add to pendingEdges array.
+				// We'll come back later and process the edge after normal processing has completed.
+				
+				if (!edgeProcessed)
+				{
+					if (unprocessedEdges == nil)
+						unprocessedEdges = [NSMutableArray array];
+					
+					[unprocessedEdges addObject:edge];
+				}
+				
 			} // end else if (edge->edgeAction == YDB_EdgeActionDelete)
+		
+		} // end for (YapDatabaseRelationshipEdge *edge in edges)
+		
+	}}; // end block ProcessEdges(NSMutableArray *edges)
+	
+	
+	// STEP 1:
+	//
+	// Process all protocol edges that have been set during the transaction.
+	// This includes:
+	// - merging new edge lists with existing edge lists
+	// - writing new edges to the database
+	// - writing modified edges to the database (changed nodeDeleteRules)
+	// - deleting edges that were manually removed from the list
+	
+	[relationshipConnection->protocolChanges enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+		
+		__unsafe_unretained NSNumber *srcRowidNumber = (NSNumber *)key;
+		__unsafe_unretained NSMutableArray *protocolEdges = (NSMutableArray *)obj;
+		
+		if ([relationshipConnection->inserted containsObject:srcRowidNumber])
+		{
+			// The src node is new, so all the edges are new.
+			// Thus no need to merge the edges with a previous set of edges.
+			//
+			// So just enumerate over the edges, and attempt to fill in all the destinationRowid values.
+			// If either of the edge's nodes were deleted, mark accordingly.
 			
-			
-			// If we processed the edge, then we can remove it from the array.
-			// Otherwise, we leave it in the array so we can come back and process it later.
-			
-			if (edgeProcessed)
-				[edges removeObjectAtIndex:i];
-			else
-				i++;
+			[self preprocessProtocolEdges:protocolEdges forInsertedSource:srcRowidNumber];
 		}
+		else
+		{
+			// The src node was updated, so the edges may have changed.
+			//
+			// We need to merge the new list with the existing list of edges in the database.
+			
+			[self preprocessProtocolEdges:protocolEdges forUpdatedSource:srcRowidNumber];
+		}
+		
+		// The edges list has now been preprocessed,
+		// and all the various flags for each edge have been set.
+		//
+		// We're ready for normal edge processing.
+		
+		ProcessEdges(protocolEdges);
 	}];
+	
+	[relationshipConnection->protocolChanges removeAllObjects];
 	
 	// STEP 2:
 	//
-	// Revisit the unprocessed edges from step 1.
+	// Process all manual edges that have been set during the transaction.
+	
+	[relationshipConnection->manualChanges enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		
+	//	__unsafe_unretained YapCollectionKey *srcCollectionKey = (YapCollectionKey *)key;
+		__unsafe_unretained NSMutableArray *manualEdges = (NSMutableArray *)obj;
+		
+		[self preprocessManualEdges:manualEdges];
+		
+		// The edges list has now been preprocessed,
+		// and all the various flags for each edge have been set.
+		//
+		// We're ready for normal edge processing.
+		
+		ProcessEdges(manualEdges);
+	}];
+	
+	[relationshipConnection->manualChanges removeAllObjects];
+	
+	// STEP 3:
+	//
+	// Revisit the unprocessed edges from steps 1 & 2.
 	// That is, those edges that were deleted, but had nodeDeleteRules of either
 	// - YDB_DeleteDestinationIfAllSourcesDeleted
 	// - YDB_DeleteSourceIfAllDestinationsDeleted
 	//
 	// We were unable to fetch the remaining edge count earlier.
-	// But we can do so now.
+	// But we're ready to do so now.
 	
-	[relationshipConnection->changes enumerateKeysAndObjectsUsingBlock:^(id dictKey, id dictObj, BOOL *stop) {
-		
-		__unsafe_unretained NSMutableArray *edges = (NSMutableArray *)dictObj;
-		
-		for (YapDatabaseRelationshipEdge *edge in edges)
+	for (YapDatabaseRelationshipEdge *edge in unprocessedEdges)
+	{
+		if (edge->nodeDeleteRules & YDB_DeleteDestinationIfAllSourcesDeleted)
 		{
 			if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->destinationRowid)])
 			{
-				// Both source and destination deleted
+				// Destination node already deleted
 			}
 			else
 			{
-				if (edge->nodeAction == YDB_NodeActionSourceDeleted &&
-				    edge->nodeDeleteRules == YDB_DeleteDestinationIfAllSourcesDeleted)
+				// Delete destination node IF there are no other edges pointing to it with the same name
+				
+				int64_t count = [self edgeCountWithDestination:edge->destinationRowid
+				                                          name:edge->name
+				                               excludingSource:edge->sourceRowid];
+				if (count == 0)
 				{
-					// Delete the destination node IF there are no other edges pointing to it with the same name
+					YDBLogVerbose(@"Deleting destination node: key(%@) collection(%@)",
+					              edge->destinationKey, edge->destinationCollection);
 					
-					int64_t count = [self edgeCountWithDestination:edge->destinationRowid
-					                                          name:edge->name
-					                               excludingSource:edge->sourceRowid];
-					if (count == 0)
-					{
-						YDBLogVerbose(@"Deleting destination node: key(%@) collection(%@)",
-						              edge->destinationKey, edge->destinationCollection);
-						
-						__unsafe_unretained YapDatabaseReadWriteTransaction *databaseRwTransaction =
-						  (YapDatabaseReadWriteTransaction *)databaseTransaction;
-						
-						[databaseRwTransaction removeObjectForKey:edge->destinationKey
-						                             inCollection:edge->destinationCollection
-						                                withRowid:edge->destinationRowid];
-					}
-				}
-				else if (edge->nodeAction == YDB_NodeActionDestinationDeleted &&
-				         edge->nodeDeleteRules & YDB_DeleteSourceIfAllDestinationsDeleted)
-				{
-					// Delete the source node IF there are no other edges pointing from it with the same name
+					__unsafe_unretained YapDatabaseReadWriteTransaction *databaseRwTransaction =
+					  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 					
-					int64_t count = [self edgeCountWithSource:edge->sourceRowid
-					                                     name:edge->name
-					                     excludingDestination:edge->destinationRowid];
-					if (count == 0)
-					{
-						YDBLogVerbose(@"Deleting source node: key(%@) collection(%@)",
-						              edge->sourceKey, edge->sourceCollection);
-						
-						__unsafe_unretained YapDatabaseReadWriteTransaction *databaseRwTransaction =
-						  (YapDatabaseReadWriteTransaction *)databaseTransaction;
-						
-						[databaseRwTransaction removeObjectForKey:edge->sourceKey
-						                             inCollection:edge->sourceCollection
-						                                withRowid:edge->sourceRowid];
-					}
+					[databaseRwTransaction removeObjectForKey:edge->destinationKey
+					                             inCollection:edge->destinationCollection
+					                                withRowid:edge->destinationRowid];
 				}
 			}
 		}
-	}];
+		else if (edge->nodeDeleteRules & YDB_DeleteSourceIfAllDestinationsDeleted)
+		{
+			if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->sourceRowid)])
+			{
+				// Source node already deleted
+			}
+			else
+			{
+				// Delete source node IF there are no other edges pointing from it with the same name
+				
+				int64_t count = [self edgeCountWithSource:edge->sourceRowid
+				                                     name:edge->name
+				                     excludingDestination:edge->destinationRowid];
+				if (count == 0)
+				{
+					YDBLogVerbose(@"Deleting source node: key(%@) collection(%@)",
+					              edge->sourceKey, edge->sourceCollection);
+					
+					__unsafe_unretained YapDatabaseReadWriteTransaction *databaseRwTransaction =
+					  (YapDatabaseReadWriteTransaction *)databaseTransaction;
+					
+					[databaseRwTransaction removeObjectForKey:edge->sourceKey
+					                             inCollection:edge->sourceCollection
+					                                withRowid:edge->sourceRowid];
+				}
+			}
+		}
+	}
 	
-	// STEP 3:
+	[relationshipConnection->inserted removeAllObjects];
+	unprocessedEdges = nil;
+	
+	// STEP 4:
 	//
 	// Process all the deleted nodes.
 	// For each deleted node we're going to enumerate all connected edges.
@@ -1206,8 +1910,8 @@
 		YapCollectionKey *collectionKey = [relationshipConnection->deletedInfo objectForKey:rowidNumber];
 		
 		// Enumerate all edges where source node is this deleted node.
-		[self enumerateExistingEdgesWithSrc:rowid
-		                         usingBlock:^(int64_t edgeRowid, NSString *name, int64_t dstRowid, int nodeDeleteRules)
+		[self enumerateExistingEdgesWithSrc:rowid usingBlock:
+		    ^(int64_t edgeRowid, NSString *name, int64_t dstRowid, int nodeDeleteRules, BOOL manual)
 		{
 			if ([relationshipConnection->deletedInfo ydb_containsKey:@(dstRowid)])
 			{
@@ -1292,8 +1996,8 @@
 		
 		
 		// Enumerate all edges where destination node is this deleted node.
-		[self enumerateExistingEdgesWithDst:rowid
-		                         usingBlock:^(int64_t edgeRowid, NSString *name, int64_t srcRowid, int nodeDeleteRules)
+		[self enumerateExistingEdgesWithDst:rowid usingBlock:
+		    ^(int64_t edgeRowid, NSString *name, int64_t srcRowid, int nodeDeleteRules, BOOL manual)
 		{
 			if ([relationshipConnection->deletedInfo ydb_containsKey:@(srcRowid)])
 			{
@@ -1383,14 +2087,10 @@
 		i++;
 	}
 	
-	// DONE !
-	//
-	// Clear ivars we've processed.
-	
-	[relationshipConnection->changes removeAllObjects];
-	[relationshipConnection->inserted removeAllObjects];
 	[relationshipConnection->deletedInfo removeAllObjects];
 	[relationshipConnection->deletedOrder removeAllObjects];
+	
+	// DONE !
 	
 	isFlushing = NO;
 }
@@ -1444,6 +2144,14 @@
 		return;
 	}
 	
+	__unsafe_unretained YapDatabaseRelationshipOptions *options = relationshipConnection->relationship->options;
+	if (options->disableYapDatabaseRelationshipNodeProtocol) {
+		return;
+	}
+	if (options->allowedCollections && ![options->allowedCollections containsObject:collectionKey.collection]) {
+		return;
+	}
+	
 	NSNumber *rowidNumber = @(rowid);
 	
 	// Request edges from object
@@ -1468,7 +2176,10 @@
 		
 		for (YapDatabaseRelationshipEdge *edge in givenEdges)
 		{
-			[edges addObject:[edge copyWithSourceKey:key collection:collection rowid:rowid]];
+			YapDatabaseRelationshipEdge *cleanEdge = [edge copyWithSourceKey:key collection:collection rowid:rowid];
+			cleanEdge->isManualEdge = NO;
+			
+			[edges addObject:cleanEdge];
 		}
 	}
 	
@@ -1489,21 +2200,31 @@
 		[relationshipConnection->deletedInfo removeObjectForKey:rowidNumber];
 		
 		// Not really an insert.
-		// More like a two-step replace.
+		// More like a two-step replace (in the same transaction)
 		//
-		// Note: If the user wants the delete to cause cascading deletes, they should invoke the flush method.
+		//   1. removeObjectForKey:@"sameKey" inCollection:@"sameCollection"
+		//   2. setObjectForKey:@"sameKey" inCollection:@"sameCollection"
+		//
+		// If your intention is to have the first delete cause cascading deletes,
+		// then you must invoke the flush method before re-adding an object with the same key/collection.
+		//
+		// For example:
+		//
+		// [transaction removeObjectForKey:@"sameKey" inCollection:@"sameCollection"];
+		// [[transaction ext:@"relationship"] flush];
+		// [transaction setObject:newObject forKey:@"sameKey" inCollection:@"sameCollection"];
 		
 		if (edges == nil)
 			edges = [NSMutableArray arrayWithCapacity:0];
 		
-		[relationshipConnection->changes setObject:edges forKey:rowidNumber];
+		[relationshipConnection->protocolChanges setObject:edges forKey:rowidNumber];
 	}
 	else if (edges)
 	{
 		// We store the fact that this item was inserted.
 		// That way we can later skip the step where we query the database for existing edges.
 		
-		[relationshipConnection->changes setObject:edges forKey:rowidNumber];
+		[relationshipConnection->protocolChanges setObject:edges forKey:rowidNumber];
 		[relationshipConnection->inserted addObject:rowidNumber];
 	}
 }
@@ -1522,6 +2243,14 @@
 	if (isFlushing)
 	{
 		YDBLogWarn(@"Unable to handle update hook during flush processing");
+		return;
+	}
+	
+	__unsafe_unretained YapDatabaseRelationshipOptions *options = relationshipConnection->relationship->options;
+	if (options->disableYapDatabaseRelationshipNodeProtocol) {
+		return;
+	}
+	if (options->allowedCollections && ![options->allowedCollections containsObject:collectionKey.collection]) {
 		return;
 	}
 	
@@ -1545,7 +2274,10 @@
 		
 		for (YapDatabaseRelationshipEdge *edge in givenEdges)
 		{
-			[edges addObject:[edge copyWithSourceKey:key collection:collection rowid:rowid]];
+			YapDatabaseRelationshipEdge *cleanEdge = [edge copyWithSourceKey:key collection:collection rowid:rowid];
+			cleanEdge->isManualEdge = NO;
+			
+			[edges addObject:cleanEdge];
 		}
 	}
 	else
@@ -1553,7 +2285,7 @@
 		edges = [NSMutableArray arrayWithCapacity:0];
 	}
 	
-	[relationshipConnection->changes setObject:edges forKey:@(rowid)];
+	[relationshipConnection->protocolChanges setObject:edges forKey:@(rowid)];
 }
 
 /**
@@ -1568,6 +2300,14 @@
 	if (isFlushing)
 	{
 		// Ignore: This method is called due to edge notify rules.
+		return;
+	}
+	
+	__unsafe_unretained YapDatabaseRelationshipOptions *options = relationshipConnection->relationship->options;
+	if (options->disableYapDatabaseRelationshipNodeProtocol) {
+		return;
+	}
+	if (options->allowedCollections && ![options->allowedCollections containsObject:collectionKey.collection]) {
 		return;
 	}
 	
@@ -1589,7 +2329,10 @@
 		
 		for (YapDatabaseRelationshipEdge *edge in givenEdges)
 		{
-			[edges addObject:[edge copyWithSourceKey:key collection:collection rowid:rowid]];
+			YapDatabaseRelationshipEdge *cleanEdge = [edge copyWithSourceKey:key collection:collection rowid:rowid];
+			cleanEdge->isManualEdge = NO;
+			
+			[edges addObject:cleanEdge];
 		}
 	}
 	else
@@ -1597,7 +2340,7 @@
 		edges = [NSMutableArray arrayWithCapacity:0];
 	}
 	
-	[relationshipConnection->changes setObject:edges forKey:@(rowid)];
+	[relationshipConnection->protocolChanges setObject:edges forKey:@(rowid)];
 }
 
 /**
@@ -1711,22 +2454,20 @@
 	if (name == nil) return;
 	if (block == NULL) return;
 	
+	BOOL stop = NO;
+	
 	// There may be edges in memory that haven't yet been written to disk.
 	// We need to find these edges, and ensure they override their corresponding counterparts from disk.
 	
-	NSMutableArray *changedEdges = [self findChangesMatchingName:name
-												  destinationKey:nil
-													  collection:nil];
+	NSMutableArray *changedEdges = [self findChangesMatchingName:name];
 	
 	// Enumerate the items already in the database
 	
 	sqlite3_stmt *statement = [relationshipConnection enumerateForNameStatement];
 	if (statement == NULL)
 		return;
-	
-	BOOL stop = NO;
 
-	// SELECT "rowid", "src", "dst", "rules" FROM "tableName" WHERE "name" = ?;
+	// SELECT "rowid", "src", "dst", "rules", "manual" FROM "tableName" WHERE "name" = ?;
 	
 	YapDatabaseString _name; MakeYapDatabaseString(&_name, name);
 	sqlite3_bind_text(statement, 1, _name.str, _name.length, SQLITE_STATIC);
@@ -1740,6 +2481,8 @@
 		
 		int rules = sqlite3_column_int(statement, 3);
 		
+		BOOL manual = (BOOL)sqlite3_column_int(statement, 4);
+		
 		YapDatabaseRelationshipEdge *edge = nil;
 		
 		// Does the edge on disk have a corresponding edge in memory that overrides it?
@@ -1747,18 +2490,37 @@
 		NSUInteger i = 0;
 		for (YapDatabaseRelationshipEdge *changedEdge in changedEdges)
 		{
-			if (changedEdge->sourceRowid == srcRowid)
+			if (changedEdge->isManualEdge != manual)
 			{
-				if (changedEdge->destinationRowid != 0 || changedEdge->flags == 2)
+				continue;
+			}
+			
+			BOOL srcMatches = NO;
+			BOOL dstMatches = NO;
+			
+			if (changedEdge->isManualEdge)
+			{
+				if ((changedEdge->sourceRowid != 0) || (changedEdge->flags & YDB_FlagsSourceLookupSuccessful))
 				{
-					if (changedEdge->destinationRowid == dstRowid)
-					{
-						edge = changedEdge;
-						
-						[changedEdges removeObjectAtIndex:i];
-						break;
-					}
+					srcMatches = (changedEdge->sourceRowid == srcRowid);
 				}
+			}
+			else
+			{
+				srcMatches = (changedEdge->sourceRowid == srcRowid);
+			}
+			
+			if ((changedEdge->destinationRowid != 0) || (changedEdge->flags & YDB_FlagsDestinationLookupSuccessful))
+			{
+				dstMatches = (changedEdge->destinationRowid == dstRowid);
+			}
+			
+			if (srcMatches && dstMatches)
+			{
+				edge = changedEdge;
+				
+				[changedEdges removeObjectAtIndex:i];
+				break;
 			}
 			
 			i++;
@@ -1776,11 +2538,20 @@
 			
 			if (edge == nil)
 			{
+				BOOL hasProtocolChanges = [relationshipConnection->protocolChanges ydb_containsKey:@(srcRowid)];
+				
+				if (!manual && hasProtocolChanges)
+				{
+					// all protocol edges on disk with this srcRowid have been overriden
+					continue;
+				}
+				
 				edge = [[YapDatabaseRelationshipEdge alloc] initWithRowid:edgeRowid
 			                                                         name:name
 			                                                          src:srcRowid
 			                                                          dst:dstRowid
-			                                                        rules:rules];
+			                                                        rules:rules
+				                                                   manual:manual];
 				
 				NSString *srcKey = nil;
 				NSString *srcCollection = nil;
@@ -1796,6 +2567,11 @@
 				edge->destinationKey = dstKey;
 				edge->destinationCollection = dstCollection;
 			}
+			else if (edge->isManualEdge && edge->edgeAction == YDB_EdgeActionDelete)
+			{
+				// edge is marked for deletion
+				continue;
+			}
 			
 			block(edge, &stop);
 			if (stop) break;
@@ -1804,8 +2580,7 @@
 	
 	if (status != SQLITE_DONE && !stop)
 	{
-		YDBLogError(@"%@ (%@): Error in statement: %d %s",
-		            THIS_METHOD, [self registeredName],
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 		
@@ -1819,13 +2594,32 @@
 	
 	for (YapDatabaseRelationshipEdge *edge in changedEdges)
 	{
-		if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->sourceRowid)])
+		if (edge->isManualEdge)
 		{
-			// broken edge (source node deleted)
-			continue;
+			if (edge->edgeAction == YDB_EdgeActionDelete)
+			{
+				// edge marked for deletion
+				continue;
+			}
+			if ((edge->sourceRowid != 0) || (edge->flags & YDB_FlagsSourceLookupSuccessful))
+			{
+				if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->sourceRowid)])
+				{
+					// broken edge (source node deleted)
+					continue;
+				}
+			}
+		}
+		else
+		{
+			if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->sourceRowid)])
+			{
+				// broken edge (source node deleted)
+				continue;
+			}
 		}
 		
-		if (edge->destinationRowid != 0 || edge->flags == 2)
+		if ((edge->destinationRowid != 0) || (edge->flags & YDB_FlagsDestinationLookupSuccessful))
 		{
 			if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->destinationRowid)])
 			{
@@ -1864,12 +2658,10 @@
                     collection:(NSString *)srcCollection
                     usingBlock:(void (^)(YapDatabaseRelationshipEdge *edge, BOOL *stop))block
 {
-	if (srcKey == nil)
-	{
+	if (srcKey == nil) {
 		[self enumerateEdgesWithName:name usingBlock:block];
 		return;
 	}
-	
 	if (block == NULL) return;
 	
 	if (srcCollection == nil)
@@ -1877,7 +2669,6 @@
 	
 	int64_t srcRowid = 0;
 	BOOL found = [databaseTransaction getRowid:&srcRowid forKey:srcKey inCollection:srcCollection];
-	
 	if (!found)
 	{
 		// The item doesn't exist in the database.
@@ -1888,26 +2679,13 @@
 	
 	// There may be edges in memory that haven't yet been written to disk.
 	// We need to find these edges, and ensure they override their corresponding counterparts from disk.
-	//
-	// Note: This specific case is easy, because we can do a direct lookup using the srcRowid.
-	//       And if there's an in-memory list, then this is the complete list.
 	
-	NSMutableArray *changedEdges = [relationshipConnection->changes objectForKey:@(srcRowid)];
-	if (changedEdges)
-	{
-		for (YapDatabaseRelationshipEdge *edge in changedEdges)
-		{
-			if (name && ![name isEqualToString:edge->name])
-			{
-				continue;
-			}
-			
-			block(edge, &stop);
-			if (stop) break;
-		}
-		
-		return;
-	}
+	NSMutableArray *changedEdges = [self findChangesMatchingName:name
+	                                                   sourceKey:srcKey
+	                                                  collection:srcCollection
+	                                                       rowid:srcRowid];
+	
+	BOOL hasProtocolChanges = [relationshipConnection->protocolChanges ydb_containsKey:@(srcRowid)];
 	
 	// Enumerate the items already in the database
 	
@@ -1920,7 +2698,7 @@
 		if (statement == NULL)
 			return;
 		
-		// SELECT "rowid", "dst", "rules" FROM "tableName" WHERE "src" = ? AND "name" = ?;",
+		// SELECT "rowid", "dst", "rules", "manual" FROM "tableName" WHERE "src" = ? AND "name" = ?;",
 		
 		sqlite3_bind_int64(statement, 1, srcRowid);
 		
@@ -1933,7 +2711,7 @@
 		if (statement == NULL)
 			return;
 		
-		// SELECT "rowid", "name", "dst", "rules" FROM "tableName" WHERE "src" = ?;
+		// SELECT "rowid", "name", "dst", "rules", "manual" FROM "tableName" WHERE "src" = ?;
 		
 		sqlite3_bind_int64(statement, 1, srcRowid);
 	}
@@ -1945,12 +2723,14 @@
 		int64_t edgeRowid;
 		int64_t dstRowid;
 		int rules;
+		BOOL manual;
 		
 		if (name)
 		{
 			edgeRowid = sqlite3_column_int64(statement, 0);
 			dstRowid = sqlite3_column_int64(statement, 1);
 			rules = sqlite3_column_int(statement, 2);
+			manual = (BOOL)sqlite3_column_int(statement, 3);
 		}
 		else
 		{
@@ -1961,8 +2741,40 @@
 			
 			dstRowid = sqlite3_column_int64(statement, 2);
 			rules = sqlite3_column_int(statement, 3);
+			manual = (BOOL)sqlite3_column_int(statement, 4);
 			
 			edgeName = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+		}
+		
+		YapDatabaseRelationshipEdge *edge = nil;
+		
+		// Does the edge on disk have a corresponding edge in memory that overrides it?
+		
+		NSUInteger i = 0;
+		for (YapDatabaseRelationshipEdge *changedEdge in changedEdges)
+		{
+			if (changedEdge->isManualEdge != manual)
+			{
+				continue;
+			}
+			
+			BOOL srcMatches = YES; // We already checked this
+			BOOL dstMatches = NO;
+			
+			if ((changedEdge->destinationRowid != 0) || (changedEdge->flags & YDB_FlagsDestinationLookupSuccessful))
+			{
+				dstMatches = (changedEdge->destinationRowid == dstRowid);
+			}
+			
+			if (srcMatches && dstMatches)
+			{
+				edge = changedEdge;
+				
+				[changedEdges removeObjectAtIndex:i];
+				break;
+			}
+			
+			i++;
 		}
 		
 		// Check to see if the edge is broken (one or more nodes have been deleted).
@@ -1971,22 +2783,39 @@
 		
 		if (!edgeBroken)
 		{
-			YapDatabaseRelationshipEdge *edge =
-			  [[YapDatabaseRelationshipEdge alloc] initWithRowid:edgeRowid
-			                                                name:name ? name : edgeName
-			                                                 src:srcRowid
-			                                                 dst:dstRowid
-			                                               rules:rules];
+			// If we don't have an updated version of the edge in memory (pending update on disk),
+			// then create an edge instance from the data.
 			
-			edge->sourceKey = srcKey;
-			edge->sourceCollection = srcCollection;
-			
-			NSString *dstKey = nil;
-			NSString *dstCollection = nil;
-			[databaseTransaction getKey:&dstKey collection:&dstCollection forRowid:dstRowid];
-			
-			edge->destinationKey = dstKey;
-			edge->destinationCollection = dstCollection;
+			if (edge == nil)
+			{
+				if (!manual && hasProtocolChanges)
+				{
+					// all protocol edges on disk with this srcRowid have been overriden
+					continue;
+				}
+				
+				edge = [[YapDatabaseRelationshipEdge alloc] initWithRowid:edgeRowid
+				                                                     name:name ? name : edgeName
+				                                                      src:srcRowid
+				                                                      dst:dstRowid
+				                                                    rules:rules
+				                                                   manual:manual];
+				
+				edge->sourceKey = srcKey;
+				edge->sourceCollection = srcCollection;
+				
+				NSString *dstKey = nil;
+				NSString *dstCollection = nil;
+				[databaseTransaction getKey:&dstKey collection:&dstCollection forRowid:dstRowid];
+				
+				edge->destinationKey = dstKey;
+				edge->destinationCollection = dstCollection;
+			}
+			else if (edge->isManualEdge && edge->edgeAction == YDB_EdgeActionDelete)
+			{
+				// edge is marked for deletion
+				continue;
+			}
 			
 			block(edge, &stop);
 			if (stop) break;
@@ -1995,14 +2824,42 @@
 	
 	if (status != SQLITE_DONE && !stop)
 	{
-		YDBLogError(@"%@ (%@): Error in statement: %d %s",
-		            THIS_METHOD, [self registeredName],
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
 	sqlite3_reset(statement);
 	if (name) {
 		FreeYapDatabaseString(&_name);
+	}
+	
+	if (stop) return;
+	
+	// Any edges left sitting in the changedEdges array haven't been processed yet.
+	// So we need to enumerate them.
+	
+	for (YapDatabaseRelationshipEdge *edge in changedEdges)
+	{
+		if (edge->isManualEdge)
+		{
+			if (edge->edgeAction == YDB_EdgeActionDelete)
+			{
+				// edge marked for deletion
+				continue;
+			}
+		}
+		
+		if ((edge->destinationRowid != 0) || (edge->flags & YDB_FlagsDestinationLookupSuccessful))
+		{
+			if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->destinationRowid)])
+			{
+				// broken edge (destination node deleted)
+				continue;
+			}
+		}
+		
+		block(edge, &stop);
+		if (stop) break;
 	}
 }
 
@@ -2031,12 +2888,10 @@
                     collection:(NSString *)dstCollection
                     usingBlock:(void (^)(YapDatabaseRelationshipEdge *edge, BOOL *stop))block
 {
-	if (dstKey == nil)
-	{
+	if (dstKey == nil) {
 		[self enumerateEdgesWithName:name usingBlock:block];
 		return;
 	}
-	
 	if (block == NULL) return;
 	
 	if (dstCollection == nil)
@@ -2044,7 +2899,6 @@
 	
 	int64_t dstRowid = 0;
 	BOOL found = [databaseTransaction getRowid:&dstRowid forKey:dstKey inCollection:dstCollection];
-	
 	if (!found)
 	{
 		// The item doesn't exist in the database.
@@ -2058,7 +2912,8 @@
 	
 	NSMutableArray *changedEdges = [self findChangesMatchingName:name
 	                                              destinationKey:dstKey
-													  collection:dstCollection];
+	                                                  collection:dstCollection
+	                                                       rowid:dstRowid];
 	
 	// Enumerate the items already in the database
 	
@@ -2071,7 +2926,7 @@
 		if (statement == NULL)
 			return;
 		
-		// SELECT "rowid", "src", "rules" FROM "tableName" WHERE "dst" = ? AND "name" = ?;
+		// SELECT "rowid", "src", "rules", "manual" FROM "tableName" WHERE "dst" = ? AND "name" = ?;
 		
 		sqlite3_bind_int64(statement, 1, dstRowid);
 		
@@ -2084,7 +2939,7 @@
 		if (statement == NULL)
 			return;
 		
-		// SELECT "rowid", "name", "src", "rules" FROM "tableName" WHERE "dst" = ?;
+		// SELECT "rowid", "name", "src", "rules", "manual" FROM "tableName" WHERE "dst" = ?;
 		
 		sqlite3_bind_int64(statement, 1, dstRowid);
 	}
@@ -2096,12 +2951,14 @@
 		int64_t edgeRowid;
 		int64_t srcRowid;
 		int rules;
+		BOOL manual;
 		
 		if (name)
 		{
 			edgeRowid = sqlite3_column_int64(statement, 0);
 			srcRowid = sqlite3_column_int64(statement, 1);
 			rules = sqlite3_column_int(statement, 2);
+			manual = (BOOL)sqlite3_column_int(statement, 3);
 		}
 		else
 		{
@@ -2112,6 +2969,7 @@
 			
 			srcRowid = sqlite3_column_int64(statement, 2);
 			rules = sqlite3_column_int(statement, 3);
+			manual = (BOOL)sqlite3_column_int(statement, 4);
 			
 			edgeName = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 		}
@@ -2123,18 +2981,32 @@
 		NSUInteger i = 0;
 		for (YapDatabaseRelationshipEdge *changedEdge in changedEdges)
 		{
-			if (changedEdge->sourceRowid == srcRowid)
+			if (changedEdge->isManualEdge != manual)
 			{
-				if (changedEdge->destinationRowid != 0 || changedEdge->flags == 2)
+				continue;
+			}
+			
+			BOOL srcMatches = NO;
+			BOOL dstMatches = YES; // We already checked this
+			
+			if (changedEdge->isManualEdge)
+			{
+				if ((changedEdge->sourceRowid != 0) || (changedEdge->flags & YDB_FlagsSourceLookupSuccessful))
 				{
-					if (changedEdge->destinationRowid == dstRowid)
-					{
-						edge = changedEdge;
-						
-						[changedEdges removeObjectAtIndex:i];
-						break;
-					}
+					srcMatches = (changedEdge->sourceRowid == srcRowid);
 				}
+			}
+			else
+			{
+				srcMatches = (changedEdge->sourceRowid == srcRowid);
+			}
+			
+			if (srcMatches && dstMatches)
+			{
+				edge = changedEdge;
+				
+				[changedEdges removeObjectAtIndex:i];
+				break;
 			}
 			
 			i++;
@@ -2151,11 +3023,20 @@
 			
 			if (edge == nil)
 			{
+				BOOL hasProtocolChanges = [relationshipConnection->protocolChanges ydb_containsKey:@(srcRowid)];
+				
+				if (!manual && hasProtocolChanges)
+				{
+					// all protocol edges on disk with this srcRowid have been overriden
+					continue;
+				}
+				
 				edge = [[YapDatabaseRelationshipEdge alloc] initWithRowid:edgeRowid
 			                                                         name:name ? name : edgeName
 			                                                          src:srcRowid
 			                                                          dst:dstRowid
-			                                                        rules:rules];
+			                                                        rules:rules
+				                                                   manual:manual];
 				
 				NSString *srcKey = nil;
 				NSString *srcCollection = nil;
@@ -2167,6 +3048,11 @@
 				edge->destinationKey = dstKey;
 				edge->destinationCollection = dstCollection;
 			}
+			else if (edge->isManualEdge && edge->edgeAction == YDB_EdgeActionDelete)
+			{
+				// edge is marked for deletion
+				continue;
+			}
 			
 			block(edge, &stop);
 			if (stop) break;
@@ -2175,8 +3061,7 @@
 	
 	if (status != SQLITE_DONE && !stop)
 	{
-		YDBLogError(@"%@ (%@): Error in statement: %d %s",
-		            THIS_METHOD, [self registeredName],
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
@@ -2192,10 +3077,29 @@
 	
 	for (YapDatabaseRelationshipEdge *edge in changedEdges)
 	{
-		if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->sourceRowid)])
+		if (edge->isManualEdge)
 		{
-			// broken edge (source node deleted)
-			continue;
+			if (edge->edgeAction == YDB_EdgeActionDelete)
+			{
+				// edge marked for deletion
+				continue;
+			}
+			if ((edge->sourceRowid != 0) || (edge->flags & YDB_FlagsSourceLookupSuccessful))
+			{
+				if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->sourceRowid)])
+				{
+					// broken edge (source node deleted)
+					continue;
+				}
+			}
+		}
+		else
+		{
+			if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->sourceRowid)])
+			{
+				// broken edge (source node deleted)
+				continue;
+			}
 		}
 		
 		block(edge, &stop);
@@ -2287,32 +3191,16 @@
 	
 	// There may be edges in memory that haven't yet been written to disk.
 	// We need to find these edges, and ensure they override their corresponding counterparts from disk.
-	//
-	// Note: This specific case is easy, because we can do a direct lookup using the srcRowid.
-	//       And if there's an in-memory list, then this is the complete list.
 	
-	NSMutableArray *changedEdges = [relationshipConnection->changes objectForKey:@(srcRowid)];
-	if (changedEdges)
-	{
-		for (YapDatabaseRelationshipEdge *edge in changedEdges)
-		{
-			if (name && ![name isEqualToString:edge->name])
-			{
-				continue;
-			}
-			
-			if (![dstKey isEqualToString:edge->destinationKey] ||
-			    ![dstCollection isEqualToString:edge->destinationCollection])
-			{
-				continue;
-			}
-			
-			block(edge, &stop);
-			if (stop) break;
-		}
-		
-		return;
-	}
+	NSMutableArray *changedEdges = [self findChangesMatchingName:name
+	                                                   sourceKey:srcKey
+	                                                  collection:srcCollection
+	                                                       rowid:srcRowid
+	                                              destinationKey:dstKey
+	                                                  collection:dstCollection
+	                                                       rowid:dstRowid];
+	
+	BOOL hasProtocolChanges = [relationshipConnection->protocolChanges ydb_containsKey:@(srcRowid)];
 	
 	// Enumerate the items already in the database
 	
@@ -2325,7 +3213,7 @@
 		if (statement == NULL)
 			return;
 		
-		// SELECT "rowid", "rules" FROM "tableName" WHERE "src" = ? AND "dst" = ? AND "name" = ?;
+		// SELECT "rowid", "rules", "manual" FROM "tableName" WHERE "src" = ? AND "dst" = ? AND "name" = ?;
 		
 		sqlite3_bind_int64(statement, 1, srcRowid);
 		sqlite3_bind_int64(statement, 2, dstRowid);
@@ -2339,7 +3227,7 @@
 		if (statement == NULL)
 			return;
 		
-		// SELECT "rowid", "name", "rules" FROM "tableName" WHERE "src" = ? AND "dst" = ?;
+		// SELECT "rowid", "name", "rules", "manual" FROM "tableName" WHERE "src" = ? AND "dst" = ?;
 		
 		sqlite3_bind_int64(statement, 1, srcRowid);
 		sqlite3_bind_int64(statement, 2, dstRowid);
@@ -2351,11 +3239,13 @@
 		NSString *edgeName = nil;
 		int64_t edgeRowid;
 		int rules;
+		BOOL manual;
 		
 		if (name)
 		{
 			edgeRowid = sqlite3_column_int64(statement, 0);
 			rules = sqlite3_column_int(statement, 1);
+			manual = (BOOL)sqlite3_column_int(statement, 2);
 		}
 		else
 		{
@@ -2365,22 +3255,63 @@
 			int textSize = sqlite3_column_bytes(statement, 1);
 			
 			rules = sqlite3_column_int(statement, 2);
+			manual = (BOOL)sqlite3_column_int(statement, 3);
 			
 			edgeName = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 		}
 		
-		YapDatabaseRelationshipEdge *edge =
-		  [[YapDatabaseRelationshipEdge alloc] initWithRowid:edgeRowid
-		                                                name:name ? name : edgeName
-		                                                 src:srcRowid
-		                                                 dst:dstRowid
-		                                               rules:rules];
+		YapDatabaseRelationshipEdge *edge = nil;
 		
-		edge->sourceKey = srcKey;
-		edge->sourceCollection = srcCollection;
+		// Does the edge on disk have a corresponding edge in memory that overrides it?
 		
-		edge->destinationKey = dstKey;
-		edge->destinationCollection = dstCollection;
+		NSUInteger i = 0;
+		for (YapDatabaseRelationshipEdge *changedEdge in changedEdges)
+		{
+			if (changedEdge->isManualEdge != manual)
+			{
+				continue;
+			}
+			
+			BOOL srcMatches = YES; // We already checked this
+			BOOL dstMatches = YES; // We already checked this
+			
+			if (srcMatches && dstMatches)
+			{
+				edge = changedEdge;
+				
+				[changedEdges removeObjectAtIndex:i];
+				break;
+			}
+			
+			i++;
+		}
+		
+		if (edge == nil)
+		{
+			if (!manual && hasProtocolChanges)
+			{
+				// all protocol edges on disk with this srcRowid have been overriden
+				continue;
+			}
+			
+			edge = [[YapDatabaseRelationshipEdge alloc] initWithRowid:edgeRowid
+			                                                name:name ? name : edgeName
+			                                                 src:srcRowid
+			                                                 dst:dstRowid
+			                                               rules:rules
+			                                              manual:manual];
+			
+			edge->sourceKey = srcKey;
+			edge->sourceCollection = srcCollection;
+			
+			edge->destinationKey = dstKey;
+			edge->destinationCollection = dstCollection;
+		}
+		else if (edge->isManualEdge && edge->edgeAction == YDB_EdgeActionDelete)
+		{
+			// edge is marked for deletion
+			continue;
+		}
 		
 		block(edge, &stop);
 		if (stop) break;
@@ -2388,14 +3319,30 @@
 	
 	if (status != SQLITE_DONE && !stop)
 	{
-		YDBLogError(@"%@ (%@): Error in statement: %d %s",
-		            THIS_METHOD, [self registeredName],
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
 	sqlite3_reset(statement);
 	if (name) {
 		FreeYapDatabaseString(&_name);
+	}
+	
+	if (stop) return;
+	
+	// Any edges left sitting in the changedEdges array haven't been processed yet.
+	// So we need to enumerate them.
+	
+	for (YapDatabaseRelationshipEdge *edge in changedEdges)
+	{
+		if (edge->isManualEdge && edge->edgeAction == YDB_EdgeActionDelete)
+		{
+			// edge marked for deletion
+			continue;
+		}
+		
+		block(edge, &stop);
+		if (stop) break;
 	}
 }
 
@@ -2411,105 +3358,46 @@
 **/
 - (NSUInteger)edgeCountWithName:(NSString *)name
 {
-	if (name == nil) return 0;
+	if (name == nil)
+		return 0;
 	
-	// There may be edges in memory that haven't yet been written to disk.
-	// We need to find these edges, and ensure they override their corresponding counterparts from disk.
+	if (databaseTransaction->isReadWriteTransaction)
+	{
+		__block NSUInteger count = 0;
+		[self enumerateEdgesWithName:name usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop) {
+			
+			count++;
+		}];
+		
+		return count;
+	}
 	
-	NSMutableArray *changedEdges = [self findChangesMatchingName:name
-	                                              destinationKey:nil
-	                                                  collection:nil];
-	
-	// Enumerate the items already in the database
-	
-	sqlite3_stmt *statement = [relationshipConnection enumerateForNameStatement];
+	sqlite3_stmt *statement = [relationshipConnection countForNameStatement];
 	if (statement == NULL) return 0;
-
-	NSUInteger edgeCount = 0;
 	
-	// SELECT "rowid", "src", "dst", "rules" FROM "tableName" WHERE "name" = ?;
+	int64_t count = 0;
+	
+	// SELECT COUNT(*) AS NumberOfRows FROM "tableName" WHERE "name" = ?;
 	
 	YapDatabaseString _name; MakeYapDatabaseString(&_name, name);
 	sqlite3_bind_text(statement, 1, _name.str, _name.length, SQLITE_STATIC);
 	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
 	{
-	//	int64_t edgeRowid = sqlite3_column_int64(statement, 0);
-		int64_t srcRowid = sqlite3_column_int64(statement, 1);
-		int64_t dstRowid = sqlite3_column_int64(statement, 2);
-		
-	//	int rules = sqlite3_column_int(statement, 3);
-		
-		YapDatabaseRelationshipEdge *edge = nil;
-		
-		// Does the edge on disk have a corresponding edge in memory that overrides it?
-		
-		NSUInteger i = 0;
-		for (YapDatabaseRelationshipEdge *changedEdge in changedEdges)
-		{
-			if (changedEdge->sourceRowid == srcRowid)
-			{
-				if (changedEdge->destinationRowid != 0 || changedEdge->flags == 2)
-				{
-					if (changedEdge->destinationRowid == dstRowid)
-					{
-						edge = changedEdge;
-						
-						[changedEdges removeObjectAtIndex:i];
-						break;
-					}
-				}
-			}
-			
-			i++;
-		}
-		
-		// Check to see if the edge is broken (one or more nodes have been deleted).
-		
-		BOOL edgeBroken = [relationshipConnection->deletedInfo ydb_containsKey:@(srcRowid)] ||
-		                  [relationshipConnection->deletedInfo ydb_containsKey:@(dstRowid)];
-		
-		if (!edgeBroken)
-		{
-			edgeCount++;
-		}
+		count = sqlite3_column_int64(statement, 0);
 	}
-	
-	if (status != SQLITE_DONE)
+	else if (status == SQLITE_ERROR)
 	{
-		YDBLogError(@"%@ (%@): Error in statement: %d %s",
-		            THIS_METHOD, [self registeredName],
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
-		
+	
+	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
 	FreeYapDatabaseString(&_name);
 	
-	// Any edges left sitting in the changedEdges array haven't been processed yet.
-	// So we need to enumerate them.
-	
-	for (YapDatabaseRelationshipEdge *edge in changedEdges)
-	{
-		if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->sourceRowid)])
-		{
-			// broken edge (source node deleted)
-			continue;
-		}
-		
-		if (edge->destinationRowid != 0 || edge->flags == 2)
-		{
-			if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->destinationRowid)])
-			{
-				// broken edge (destination node deleted)
-				continue;
-			}
-		}
-		
-		edgeCount++;
-	}
-	
-	return edgeCount;
+	return (NSUInteger)count;
 }
 
 /**
@@ -2536,9 +3424,22 @@
                       sourceKey:(NSString *)srcKey
                      collection:(NSString *)srcCollection
 {
-	if (srcKey == nil)
-	{
+	if (srcKey == nil) {
 		return [self edgeCountWithName:name];
+	}
+	
+	if (databaseTransaction->isReadWriteTransaction)
+	{
+		__block NSUInteger count = 0;
+		[self enumerateEdgesWithName:name
+		                   sourceKey:srcKey
+		                  collection:srcCollection
+		                  usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop) {
+			
+			count++;
+		}];
+		
+		return count;
 	}
 	
 	if (srcCollection == nil)
@@ -2546,48 +3447,21 @@
 	
 	int64_t srcRowid = 0;
 	BOOL found = [databaseTransaction getRowid:&srcRowid forKey:srcKey inCollection:srcCollection];
-	
 	if (!found)
 	{
 		// The item doesn't exist in the database.
 		return 0;
 	}
 	
-	NSUInteger edgeCount = 0;
-	
-	// There may be edges in memory that haven't yet been written to disk.
-	// We need to find these edges, and ensure they override their corresponding counterparts from disk.
-	//
-	// Note: This specific case is easy, because we can do a direct lookup using the srcRowid.
-	//       And if there's an in-memory list, then this is the complete list.
-	
-	NSMutableArray *changedEdges = [relationshipConnection->changes objectForKey:@(srcRowid)];
-	if (changedEdges)
-	{
-		for (YapDatabaseRelationshipEdge *edge in changedEdges)
-		{
-			if (name && ![name isEqualToString:edge->name])
-			{
-				continue;
-			}
-			
-			edgeCount++;
-		}
-		
-		return edgeCount;
-	}
-	
-	// Enumerate the items already in the database
-	
-	sqlite3_stmt *statement;
+	sqlite3_stmt *statement = NULL;
 	YapDatabaseString _name;
 	
 	if (name)
 	{
-		statement = [relationshipConnection enumerateForSrcNameStatement];
+		statement = [relationshipConnection countForSrcNameStatement];
 		if (statement == NULL) return 0;
 		
-		// SELECT "rowid", "dst", "rules" FROM "tableName" WHERE "src" = ? AND "name" = ?;",
+		// SELECT COUNT(*) AS NumberOfRows FROM "tableName" WHERE "src" = ? AND "name" = ?;
 		
 		sqlite3_bind_int64(statement, 1, srcRowid);
 		
@@ -2596,64 +3470,35 @@
 	}
 	else
 	{
-		statement = [relationshipConnection enumerateForSrcStatement];
+		statement = [relationshipConnection countForSrcStatement];
 		if (statement == NULL) return 0;
 		
-		// SELECT "rowid", "name", "dst", "rules" FROM "tableName" WHERE "src" = ?;
+		// SELECT COUNT(*) AS NumberOfRows FROM "tableName" WHERE "src" = ?;
 		
 		sqlite3_bind_int64(statement, 1, srcRowid);
 	}
 	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
-	{
-	//	NSString *edgeName = nil;
-	//	int64_t edgeRowid;
-		int64_t dstRowid;
-	//	int rules;
-		
-		if (name)
-		{
-		//	edgeRowid = sqlite3_column_int64(statement, 0);
-			dstRowid = sqlite3_column_int64(statement, 1);
-		//	rules = sqlite3_column_int(statement, 2);
-		}
-		else
-		{
-		//	edgeRowid = sqlite3_column_int64(statement, 0);
-			
-		//	const unsigned char *text = sqlite3_column_text(statement, 1);
-		//	int textSize = sqlite3_column_bytes(statement, 1);
-			
-			dstRowid = sqlite3_column_int64(statement, 2);
-		//	rules = sqlite3_column_int(statement, 3);
-			
-		//	edgeName = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-		}
-		
-		// Check to see if the edge is broken (one or more nodes have been deleted).
-		
-		BOOL edgeBroken = [relationshipConnection->deletedInfo ydb_containsKey:@(dstRowid)];
-		
-		if (!edgeBroken)
-		{
-			edgeCount++;
-		}
-	}
+	int64_t count = 0;
 	
-	if (status != SQLITE_DONE)
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
 	{
-		YDBLogError(@"%@ (%@): Error in statement: %d %s",
-		            THIS_METHOD, [self registeredName],
+		count = sqlite3_column_int64(statement, 0);
+	}
+	else if (status == SQLITE_ERROR)
+	{
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
+	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
 	if (name) {
 		FreeYapDatabaseString(&_name);
 	}
 	
-	return edgeCount;
+	return (NSUInteger)count;
 }
 
 /**
@@ -2680,9 +3525,22 @@
                  destinationKey:(NSString *)dstKey
                      collection:(NSString *)dstCollection
 {
-	if (dstKey == nil)
-	{
+	if (dstKey == nil) {
 		return [self edgeCountWithName:name];
+	}
+	
+	if (databaseTransaction->isReadWriteTransaction)
+	{
+		__block NSUInteger count = 0;
+		[self enumerateEdgesWithName:name
+		              destinationKey:dstKey
+		                  collection:dstCollection
+		                  usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop) {
+			
+			count++;
+		}];
+		
+		return count;
 	}
 	
 	if (dstCollection == nil)
@@ -2690,33 +3548,21 @@
 	
 	int64_t dstRowid = 0;
 	BOOL found = [databaseTransaction getRowid:&dstRowid forKey:dstKey inCollection:dstCollection];
-	
 	if (!found)
 	{
 		// The item doesn't exist in the database.
 		return 0;
 	}
 	
-	NSUInteger edgeCount = 0;
-	
-	// There may be edges in memory that haven't yet been written to disk.
-	// We need to find these edges, and ensure they override their corresponding counterparts from disk.
-	
-	NSMutableArray *changedEdges = [self findChangesMatchingName:name
-	                                              destinationKey:dstKey
-													  collection:dstCollection];
-	
-	// Enumerate the items already in the database
-	
-	sqlite3_stmt *statement;
+	sqlite3_stmt *statement = NULL;
 	YapDatabaseString _name;
 	
 	if (name)
 	{
-		statement = [relationshipConnection enumerateForDstNameStatement];
+		statement = [relationshipConnection countForDstNameStatement];
 		if (statement == NULL) return 0;
 		
-		// SELECT "rowid", "src", "rules" FROM "tableName" WHERE "dst" = ? AND "name" = ?;
+		// SELECT COUNT(*) AS NumberOfRows FROM "tableName" WHERE "dst" = ? AND "name" = ?;
 		
 		sqlite3_bind_int64(statement, 1, dstRowid);
 		
@@ -2725,102 +3571,34 @@
 	}
 	else
 	{
-		statement = [relationshipConnection enumerateForDstStatement];
+		statement = [relationshipConnection countForDstStatement];
 		if (statement == NULL) return 0;
 		
-		// SELECT "rowid", "name", "src", "rules" FROM "tableName" WHERE "dst" = ?;
+		// SELECT COUNT(*) AS NumberOfRows FROM "tableName" WHERE "dst" = ?;
 		
 		sqlite3_bind_int64(statement, 1, dstRowid);
 	}
 	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
-	{
-	//	NSString *edgeName = nil;
-	//	int64_t edgeRowid;
-		int64_t srcRowid;
-	//	int rules;
-		
-		if (name)
-		{
-		//	edgeRowid = sqlite3_column_int64(statement, 0);
-			srcRowid = sqlite3_column_int64(statement, 1);
-		//	rules = sqlite3_column_int(statement, 2);
-		}
-		else
-		{
-		//	edgeRowid = sqlite3_column_int64(statement, 0);
-			
-		//	const unsigned char *text = sqlite3_column_text(statement, 1);
-		//	int textSize = sqlite3_column_bytes(statement, 1);
-			
-			srcRowid = sqlite3_column_int64(statement, 2);
-		//	rules = sqlite3_column_int(statement, 3);
-			
-		//	edgeName = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-		}
-		
-		YapDatabaseRelationshipEdge *edge = nil;
-		
-		// Does the edge on disk have a corresponding edge in memory that overrides it?
-		
-		NSUInteger i = 0;
-		for (YapDatabaseRelationshipEdge *changedEdge in changedEdges)
-		{
-			if (changedEdge->sourceRowid == srcRowid)
-			{
-				if (changedEdge->destinationRowid != 0 || changedEdge->flags == 2)
-				{
-					if (changedEdge->destinationRowid == dstRowid)
-					{
-						edge = changedEdge;
-						
-						[changedEdges removeObjectAtIndex:i];
-						break;
-					}
-				}
-			}
-			
-			i++;
-		}
-		
-		// Check to see if the edge is broken (one or more nodes have been deleted).
-		
-		BOOL edgeBroken = [relationshipConnection->deletedInfo ydb_containsKey:@(srcRowid)];
-		
-		if (!edgeBroken)
-		{
-			edgeCount++;
-		}
-	}
+	int64_t count = 0;
 	
-	if (status != SQLITE_DONE)
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
 	{
-		YDBLogError(@"%@ (%@): Error in statement: %d %s",
-		            THIS_METHOD, [self registeredName],
+		count = sqlite3_column_int64(statement, 0);
+	}
+	else if (status == SQLITE_ERROR)
+	{
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
+	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
 	if (name) {
 		FreeYapDatabaseString(&_name);
 	}
 	
-	// Any edges left sitting in the changedEdges array haven't been processed yet.
-	// So we need to enumerate them.
-	
-	for (YapDatabaseRelationshipEdge *edge in changedEdges)
-	{
-		if ([relationshipConnection->deletedInfo ydb_containsKey:@(edge->sourceRowid)])
-		{
-			// broken edge (source node deleted)
-			continue;
-		}
-		
-		edgeCount++;
-	}
-	
-	return edgeCount;
+	return (NSUInteger)count;
 }
 
 /**
@@ -2873,6 +3651,22 @@
 		return [self edgeCountWithName:name sourceKey:srcKey collection:srcCollection];
 	}
 	
+	if (databaseTransaction->isReadWriteTransaction)
+	{
+		__block NSUInteger count = 0;
+		[self enumerateEdgesWithName:name
+		                   sourceKey:srcKey
+		                  collection:srcCollection
+		              destinationKey:dstKey
+		                  collection:dstCollection
+		                  usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop) {
+			
+			count++;
+		}];
+		
+		return count;
+	}
+	
 	if (srcCollection == nil)
 		srcCollection = @"";
 	
@@ -2885,7 +3679,7 @@
 	found = [databaseTransaction getRowid:&srcRowid forKey:srcKey inCollection:srcCollection];
 	if (!found)
 	{
-		// The source node doesn't exist in the database.
+		// The item doesn't exist in the database.
 		return 0;
 	}
 	
@@ -2893,43 +3687,11 @@
 	found = [databaseTransaction getRowid:&dstRowid forKey:dstKey inCollection:dstCollection];
 	if (!found)
 	{
-		// The destination node doesn't exist in the database.
+		// The item doesn't exist in the database.
 		return 0;
 	}
 	
-	NSUInteger edgeCount = 0;
-	
-	// There may be edges in memory that haven't yet been written to disk.
-	// We need to find these edges, and ensure they override their corresponding counterparts from disk.
-	//
-	// Note: This specific case is easy, because we can do a direct lookup using the srcRowid.
-	//       And if there's an in-memory list, then this is the complete list.
-	
-	NSMutableArray *changedEdges = [relationshipConnection->changes objectForKey:@(srcRowid)];
-	if (changedEdges)
-	{
-		for (YapDatabaseRelationshipEdge *edge in changedEdges)
-		{
-			if (name && ![name isEqualToString:edge->name])
-			{
-				continue;
-			}
-			
-			if (![dstKey isEqualToString:edge->destinationKey] ||
-			    ![dstCollection isEqualToString:edge->destinationCollection])
-			{
-				continue;
-			}
-			
-			edgeCount++;
-		}
-		
-		return edgeCount;
-	}
-	
-	// Enumerate the items already in the database
-	
-	sqlite3_stmt *statement;
+	sqlite3_stmt *statement = NULL;
 	YapDatabaseString _name;
 	
 	if (name)
@@ -2956,24 +3718,127 @@
 		sqlite3_bind_int64(statement, 2, dstRowid);
 	}
 	
+	int64_t count = 0;
+	
+	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		edgeCount = (NSUInteger)sqlite3_column_int64(statement, 0);
+		count = sqlite3_column_int64(statement, 0);
 	}
 	else if (status == SQLITE_ERROR)
 	{
-		YDBLogError(@"%@ (%@): Error in statement: %d %s",
-		            THIS_METHOD, [self registeredName],
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
+	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
 	if (name) {
 		FreeYapDatabaseString(&_name);
 	}
 	
-	return edgeCount;
+	return (NSUInteger)count;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Manual Edge Management
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)addEdge:(YapDatabaseRelationshipEdge *)edge
+{
+	if (edge == nil) return;
+	if (edge->sourceKey == nil)
+	{
+		YDBLogWarn(@"%@ - Cannot add edge. You must pass a fully specified edge, including sourceKey/collection.",
+		           THIS_METHOD);
+		return;
+	}
+	
+	// Create a clean copy (with no set flags)
+	edge = [edge copy];
+	edge->isManualEdge = YES;
+	edge->edgeAction = YDB_EdgeActionInsert;
+	
+	// Add to manualChanges
+	
+	YapCollectionKey *srcCollectionKey =
+	  [[YapCollectionKey alloc] initWithCollection:edge->sourceCollection key:edge->sourceKey];
+	
+	NSMutableArray *edges = [relationshipConnection->manualChanges objectForKey:srcCollectionKey];
+	if (edges == nil)
+	{
+		edges = [[NSMutableArray alloc] initWithCapacity:1];
+		[relationshipConnection->manualChanges setObject:edges forKey:srcCollectionKey];
+	}
+	else
+	{
+		NSUInteger i = 0;
+		for (YapDatabaseRelationshipEdge *pendingEdge in edges)
+		{
+			if ([pendingEdge->destinationKey isEqualToString:edge->destinationKey] &&
+			    [pendingEdge->destinationCollection isEqualToString:edge->destinationCollection] &&
+			    (pendingEdge->nodeDeleteRules == edge->nodeDeleteRules) &&
+			    (pendingEdge->edgeAction == YDB_EdgeActionDelete))
+			{
+				// This insert cancels out the pending delete of the same edge
+				[edges replaceObjectAtIndex:i withObject:edge];
+				return;
+			}
+			
+			i++;
+		}
+	}
+	
+	[edges addObject:edge];
+}
+
+- (void)removeEdge:(YapDatabaseRelationshipEdge *)edge
+{
+	if (edge == nil) return;
+	if (edge->sourceKey == nil)
+	{
+		YDBLogWarn(@"%@ - Cannot remove edge. You must pass a fully specified edge, including sourceKey/collection.",
+		           THIS_METHOD);
+		return;
+	}
+	
+	// Create a clean copy (with no set flags)
+	edge = [edge copy];
+	edge->isManualEdge = YES;
+	edge->edgeAction = YDB_EdgeActionDelete;
+	
+	// Add to manualChanges
+	
+	YapCollectionKey *srcCollectionKey =
+	  [[YapCollectionKey alloc] initWithCollection:edge->sourceCollection key:edge->sourceKey];
+	
+	NSMutableArray *edges = [relationshipConnection->manualChanges objectForKey:srcCollectionKey];
+	if (edges == nil)
+	{
+		edges = [[NSMutableArray alloc] initWithCapacity:1];
+		[relationshipConnection->manualChanges setObject:edges forKey:srcCollectionKey];
+	}
+	else
+	{
+		NSUInteger i = 0;
+		for (YapDatabaseRelationshipEdge *pendingEdge in edges)
+		{
+			if ([pendingEdge->destinationKey isEqualToString:edge->destinationKey] &&
+			    [pendingEdge->destinationCollection isEqualToString:edge->destinationCollection] &&
+			    (pendingEdge->nodeDeleteRules == edge->nodeDeleteRules) &&
+			    (pendingEdge->edgeAction == YDB_EdgeActionDelete))
+			{
+				// This delete cancels out the pending insert of the same edge
+				[edges replaceObjectAtIndex:i withObject:edge];
+				return;
+			}
+			
+			i++;
+		}
+	}
+	
+	[edges addObject:edge];
 }
 
 @end

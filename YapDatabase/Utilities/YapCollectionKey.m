@@ -166,6 +166,11 @@ static NSUInteger YDB_MurmurHash(NSUInteger hash1, NSUInteger hash2)
 	return self; // Immutable
 }
 
+- (BOOL)isEqualToCollectionKey:(YapCollectionKey *)collectionKey
+{
+	return [key isEqualToString:collectionKey->key] && [collection isEqualToString:collectionKey->collection];
+}
+
 - (BOOL)isEqual:(id)obj
 {
 	if ([obj isMemberOfClass:[YapCollectionKey class]])

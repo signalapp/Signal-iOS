@@ -2,6 +2,22 @@
 
 @class YapDatabaseRelationshipEdge;
 
+/**
+ * Welcome to YapDatabase!
+ *
+ * The project page has a wealth of documentation if you have any questions.
+ * https://github.com/yaptv/YapDatabase
+ *
+ * If you're new to the project you may want to visit the wiki.
+ * https://github.com/yaptv/YapDatabase/wiki
+ *
+ * The YapDatabaseRelationship extension allow you to create relationships between objects,
+ * and configure automatic deletion rules.
+ *
+ * For tons of information about this extension, see the wiki article:
+ * https://github.com/yaptv/YapDatabase/wiki/Relationships
+**/
+
 typedef enum  {
 	YDB_SourceNodeDeleted,
 	YDB_DestinationNodeDeleted,
@@ -9,11 +25,28 @@ typedef enum  {
 
 
 /**
+ * There are 2 techniques you may use to add edges to the relationship graph:
+ *
+ * - Use the YapDatabaseRelationshipNode protocol
+ * - Manually manage the edges by adding / removing them yourself
+ *
+ * You are welcome to use either technique. In fact you can use them both simultaneously.
+ * Which you choose may simply be whichever works best depending on the situation.
+ * 
+ * The YapDatabaseRelationshipNode protocol works quite simply:
+ *
  * Any object that is stored in the database may optionally implement this protocol in order to
- * store object relationship information. You can create a relationship between any two objects in the database.
- * In common graph parlance, each item is called a node, and the line between the two nodes is called an edge.
- * This protocol allows you to specify the edges, along with a rule to specify what should happen if
- * one of the 2 nodes gets deleted from the database.
+ * specify a list of relationships that apply to it. The object just needs to:
+ * 1.) Add the YapDatabaseRelationshipNode protocol to its declared list of protocols (in header file)
+ * 2.) Implement the yapDatabaseRelationshipEdges method
+ * 
+ * When the object is inserted or updated in the database, the YapDatabaseRelationshipExtension will automatically
+ * invoke the yapDatabaseRelationshipEdges method to get the list of edges. It then inserts the list of edges
+ * into the database (if object was inserted), or updates the previously inserted list (if object was updated).
+ *
+ * Typically this protocol is convenient to use if:
+ * - Your objects already contain identifiers that can be used to create the edges you desire
+ * - You'd like to be able to delete objects in the database by simply setting identifier properties to nil
  * 
  * @see YapDatabaseRelationshipEdge
 **/
