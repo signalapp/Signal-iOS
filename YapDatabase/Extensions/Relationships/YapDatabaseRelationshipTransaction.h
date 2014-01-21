@@ -21,6 +21,24 @@
 
 @interface YapDatabaseRelationshipTransaction : YapDatabaseExtensionTransaction
 
+#pragma mark Node Fetch
+
+/**
+ * Shortcut for fetching the source object for the given edge.
+ * Equivalent to:
+ * 
+ * [transaction objectForKey:edge.sourceKey inCollection:edge.sourceCollection];
+**/
+- (id)sourceNodeForEdge:(YapDatabaseRelationshipEdge *)edge;
+
+/**
+ * Shortcut for fetching the destination object for the given edge.
+ * Equivalent to:
+ * 
+ * [transaction objectForKey:edge.destinationKey inCollection:edge.destinationCollection];
+**/
+- (id)destinationNodeForEdge:(YapDatabaseRelationshipEdge *)edge;
+
 #pragma mark Enumerate
 
 /**

@@ -2443,6 +2443,54 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * Shortcut for fetching the source object for the given edge.
+ * Equivalent to:
+ *
+ * [transaction objectForKey:edge.sourceKey inCollection:edge.sourceCollection];
+**/
+- (id)sourceNodeForEdge:(YapDatabaseRelationshipEdge *)edge
+{
+	if (edge == nil) return nil;
+	
+	if ((edge->sourceRowid != 0) || (edge->flags & YDB_FlagsSourceLookupSuccessful))
+	{
+		return [databaseTransaction objectForKey:edge->sourceKey
+		                            inCollection:edge->sourceCollection
+		                               withRowid:edge->sourceRowid];
+	}
+	else
+	{
+		return [databaseTransaction objectForKey:edge->sourceKey inCollection:edge->sourceCollection];
+	}
+}
+
+/**
+ * Shortcut for fetching the destination object for the given edge.
+ * Equivalent to:
+ *
+ * [transaction objectForKey:edge.destinationKey inCollection:edge.destinationCollection];
+**/
+- (id)destinationNodeForEdge:(YapDatabaseRelationshipEdge *)edge
+{
+	if (edge == nil) return nil;
+	
+	if ((edge->destinationRowid != 0) || (edge->flags & YDB_FlagsDestinationLookupSuccessful))
+	{
+		return [databaseTransaction objectForKey:edge->destinationKey
+		                            inCollection:edge->destinationCollection
+		                               withRowid:edge->destinationRowid];
+	}
+	else
+	{
+		return [databaseTransaction objectForKey:edge->destinationKey inCollection:edge->destinationCollection];
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Public API - Enumerate
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
  * Enumerates every edge in the graph with the given name.
  *
  * @param name
