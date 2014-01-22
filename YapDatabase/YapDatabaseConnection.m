@@ -3256,6 +3256,7 @@
  includingObjectChanges:(BOOL)includeObjectChanges
         metadataChanges:(BOOL)includeMetadataChanges
 {
+	if (key == nil) return NO;
 	if (collection == nil)
 		collection = @"";
 	
