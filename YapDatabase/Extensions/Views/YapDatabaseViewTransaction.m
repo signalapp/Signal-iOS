@@ -137,6 +137,12 @@
 		
 		needsCreateTables = YES;
 	}
+	else if (!isPersistent)
+	{
+		// We always have to create & populate the tables for non-persistent views.
+		// Even when re-registering from previous app launch.
+		needsCreateTables = YES;
+	}
 	
 	// Create or re-populate if needed
 	
