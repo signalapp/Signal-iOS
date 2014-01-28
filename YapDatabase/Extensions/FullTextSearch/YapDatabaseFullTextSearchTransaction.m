@@ -59,14 +59,17 @@
 **/
 - (BOOL)createIfNeeded
 {
-	int oldClassVersion = [self intValueForExtensionKey:@"classVersion"];
+	int oldClassVersion = 0;
+	BOOL hasOldClassVersion = [self getIntValue:&oldClassVersion forExtensionKey:@"classVersion"];
 	int classVersion = YAP_DATABASE_FTS_CLASS_VERSION;
 	
 	if (oldClassVersion != classVersion)
 	{
-		// First time registration
+		// First time registration (or at least for this version)
 		
-		[self upgradeFromForOldClassVersion:oldClassVersion];
+		if (hasOldClassVersion) {
+			if (![self dropTable]) return NO;
+		}
 		
 		if (![self createTable]) return NO;
 		if (![self populate]) return NO;
@@ -111,16 +114,6 @@
 - (BOOL)prepareIfNeeded
 {
 	return YES;
-}
-
-/**
- * Internal method.
- *
- * This method is used to handle the upgrade process from earlier architectures of this class.
-**/
-- (void)upgradeFromForOldClassVersion:(int)oldClassVersion
-{
-	// Reserved for future use...
 }
 
 /**
