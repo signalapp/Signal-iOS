@@ -82,6 +82,7 @@ extern NSString *const YapDatabaseNotificationKey;
 **/
 - (BOOL)tableExists:(NSString *)tableName using:(sqlite3 *)aDb;
 - (NSArray *)columnNamesForTable:(NSString *)tableName using:(sqlite3 *)aDb;
+- (NSDictionary *)columnNamesAndAffinityForTable:(NSString *)tableName using:(sqlite3 *)aDb;
 
 /**
  * New connections inherit their default values from this structure.

@@ -599,6 +599,58 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	return tableColumnNames;
 }
 
+/**
+ * Extracts and returns column names & affinity for the given table in the database.
+ * The dictionary format is:
+ *
+ * key:(NSString *)columnName -> value:(NSString *)affinity
+**/
+- (NSDictionary *)columnNamesAndAffinityForTable:(NSString *)tableName using:(sqlite3 *)aDb
+{
+	if (tableName == nil) return nil;
+	
+	sqlite3_stmt *statement;
+	NSString *pragma = [NSString stringWithFormat:@"PRAGMA table_info('%@');", tableName];
+	
+	int status = sqlite3_prepare_v2(aDb, [pragma UTF8String], -1, &statement, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@: Error creating statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(aDb));
+		return nil;
+	}
+	
+	NSMutableDictionary *columns = [NSMutableDictionary dictionary];
+	
+	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+	{
+		// cid|name|type|notnull|dflt|value|pk
+		
+		const unsigned char *_name = sqlite3_column_text(statement, 1);
+		int _nameSize = sqlite3_column_bytes(statement, 1);
+		
+		const unsigned char *_type = sqlite3_column_text(statement, 2);
+		int _typeSize = sqlite3_column_bytes(statement, 2);
+		
+		NSString *name     = [[NSString alloc] initWithBytes:_name length:_nameSize encoding:NSUTF8StringEncoding];
+		NSString *affinity = [[NSString alloc] initWithBytes:_type length:_typeSize encoding:NSUTF8StringEncoding];
+		
+		if (name && affinity)
+		{
+			[columns setObject:affinity forKey:name];
+		}
+	}
+	
+	if (status != SQLITE_DONE)
+	{
+		YDBLogError(@"%@: Error executing statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(aDb));
+	}
+	
+	sqlite3_finalize(statement);
+	statement = NULL;
+	
+	return columns;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Upgrade
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
