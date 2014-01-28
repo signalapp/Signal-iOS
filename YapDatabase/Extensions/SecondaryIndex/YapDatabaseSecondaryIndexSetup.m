@@ -163,6 +163,49 @@
 	return [setup countByEnumeratingWithState:state objects:buffer count:length];
 }
 
+/**
+ * The columns parameter comes from:
+ * [YapDatabase columnNamesAndAffinityForTable:using:]
+**/
+- (BOOL)matchesExistingColumnNamesAndAffinity:(NSDictionary *)columns
+{
+	// The columns parameter will include the 'rowid' column, which we need to ignore.
+	
+	if (([setup count] + 1) != [columns count])
+	{
+		return NO;
+	}
+	
+	for (YapDatabaseSecondaryIndexColumn *setupColumn in setup)
+	{
+		NSString *existingAffinity = [columns objectForKey:setupColumn.name];
+		if (existingAffinity == nil)
+		{
+			return NO;
+		}
+		else
+		{
+			if (setupColumn.type == YapDatabaseSecondaryIndexTypeInteger)
+			{
+				if ([existingAffinity caseInsensitiveCompare:@"INTEGER"] != NSOrderedSame)
+					return NO;
+			}
+			else if (setupColumn.type == YapDatabaseSecondaryIndexTypeReal)
+			{
+				if ([existingAffinity caseInsensitiveCompare:@"REAL"] != NSOrderedSame)
+					return NO;
+			}
+			else if (setupColumn.type == YapDatabaseSecondaryIndexTypeText)
+			{
+				if ([existingAffinity caseInsensitiveCompare:@"TEXT"] != NSOrderedSame)
+					return NO;
+			}
+		}
+	}
+	
+	return YES;
+}
+
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -182,6 +225,21 @@
 		type = inType;
 	}
 	return self;
+}
+
+- (NSString *)description
+{
+	NSString *typeStr;
+	if (type == YapDatabaseSecondaryIndexTypeInteger)
+		typeStr = @"Integer";
+	else if (type == YapDatabaseSecondaryIndexTypeReal)
+		typeStr = @"Real";
+	else if (type == YapDatabaseSecondaryIndexTypeText)
+		typeStr = @"Text";
+	else
+		typeStr = @"Unknown";
+	
+	return [NSString stringWithFormat:@"<YapDatabaseSecondaryIndexColumn: name(%@), type(%@)>", name, typeStr];
 }
 
 @end

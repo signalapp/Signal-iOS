@@ -97,6 +97,53 @@
 			
 			[self setIntValue:newVersion forExtensionKey:@"version"];
 		}
+		
+		// The following code is designed to assist developers in understanding extension changes.
+		// The rules are straight-forward and easy to remember:
+		//
+		// - If you make ANY changes to the configuration of the extension then you MUST change the version.
+		//
+		// For this extension, that means you MUST change the version if ANY of the following are true:
+		//
+		// - you changed the setup
+		// - you changed the block in any meaningful way (which would result in different values for any existing row)
+		//
+		// Note: The code below detects only changes to the setup.
+		// It could theoretically handle such changes, and automatically force a repopulation.
+		// This is a bad idea for two reasons:
+		//
+		// - First, it complicates the rules. The rules, as stated above, are simple. They follow the KISS principle.
+		//   Changing these rules would pose a complication that increases cognitive overhead.
+		//   It may be easy to remember now, but 6 months from now the nuance has become hazy.
+		//   Additionally, the rest of the database system follows the same set of rules.
+		//   So adding a complication for just a particular extension is even more confusing.
+		//
+		// - Second, it adds overhead to the registration process.
+		//   This sanity check doesn't come for free.
+		//   And the overhead is only helpful during the development lifecycle.
+		//   It's certainly not something you want in a shipped version.
+		//
+		#if DEBUG
+		else
+		{
+			__unsafe_unretained YapDatabase *database = databaseTransaction->connection->database;
+			sqlite3 *db = databaseTransaction->connection->db;
+			
+			NSDictionary *columns = [database columnNamesAndAffinityForTable:[self tableName] using:db];
+			
+			YapDatabaseSecondaryIndexSetup *setup = secondaryIndexConnection->secondaryIndex->setup;
+			
+			if (![setup matchesExistingColumnNamesAndAffinity:columns])
+			{
+				YDBLogError(@"Error creating secondary index extension (%@):"
+				            @" The given setup doesn't match the previously registered setup."
+				            @" If you change the setup, or you change the block in any meaningful way,"
+				            @" then you MUST change the version as well.",
+				            THIS_METHOD);
+				return NO;
+			}
+		}
+		#endif
 	}
 	
 	return YES;

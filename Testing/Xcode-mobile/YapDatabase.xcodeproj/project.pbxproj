@@ -174,6 +174,7 @@
 		DC817149187F658400B7AB5C /* YapDatabaseRelationshipOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YapDatabaseRelationshipOptions.h; path = Relationships/YapDatabaseRelationshipOptions.h; sourceTree = "<group>"; };
 		DC81714A187F658400B7AB5C /* YapDatabaseRelationshipOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YapDatabaseRelationshipOptions.m; path = Relationships/YapDatabaseRelationshipOptions.m; sourceTree = "<group>"; };
 		DC8E6042183F0A3D0091633D /* TestYapDatabaseFilteredView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseFilteredView.m; path = ../../UnitTesting/TestYapDatabaseFilteredView.m; sourceTree = "<group>"; };
+		DC9481901898384E00D190EF /* YapDatabaseSecondaryIndexSetupPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YapDatabaseSecondaryIndexSetupPrivate.h; sourceTree = "<group>"; };
 		DC9B0FB3184B12C000174B0F /* YapDatabaseExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseExtension.h; sourceTree = "<group>"; };
 		DC9B0FB4184B12C000174B0F /* YapDatabaseExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseExtension.m; sourceTree = "<group>"; };
 		DC9B0FB5184B12C000174B0F /* YapDatabaseExtensionConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseExtensionConnection.h; sourceTree = "<group>"; };
@@ -611,6 +612,7 @@
 			isa = PBXGroup;
 			children = (
 				DC9B0FE4184B14A600174B0F /* YapDatabaseSecondaryIndexPrivate.h */,
+				DC9481901898384E00D190EF /* YapDatabaseSecondaryIndexSetupPrivate.h */,
 			);
 			name = Internal;
 			path = SecondaryIndex/Internal;

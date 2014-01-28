@@ -7,6 +7,8 @@
 #import "YapDatabaseSecondaryIndexTransaction.h"
 
 #import "YapDatabaseSecondaryIndexSetup.h"
+#import "YapDatabaseSecondaryIndexSetupPrivate.h"
+
 #import "YapCache.h"
 
 #import "sqlite3.h"
