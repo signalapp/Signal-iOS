@@ -53,6 +53,8 @@
 #pragma mark Instance
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+@synthesize version = version;
+
 - (id)init
 {
 	NSAssert(NO, @"Must use designated initializer");
@@ -62,6 +64,14 @@
 - (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)inSetup
               block:(YapDatabaseSecondaryIndexBlock)inBlock
           blockType:(YapDatabaseSecondaryIndexBlockType)inBlockType
+{
+	return [self initWithSetup:inSetup block:inBlock blockType:inBlockType version:0];
+}
+
+- (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)inSetup
+              block:(YapDatabaseSecondaryIndexBlock)inBlock
+          blockType:(YapDatabaseSecondaryIndexBlockType)inBlockType
+            version:(int)inVersion
 {
 	// Sanity checks
 	
@@ -110,6 +120,8 @@
 		blockType = inBlockType;
 		
 		columnNamesSharedKeySet = [NSDictionary sharedKeySetForKeys:[setup columnNames]];
+		
+		version = inVersion;
 	}
 	return self;
 }

@@ -130,7 +130,10 @@
 
 - (YapDatabaseSecondaryIndexColumn *)columnAtIndex:(NSUInteger)index
 {
-	return [setup objectAtIndex:index];
+	if (index < [setup count])
+		return [setup objectAtIndex:index];
+	else
+		return nil;
 }
 
 - (NSArray *)columnNames

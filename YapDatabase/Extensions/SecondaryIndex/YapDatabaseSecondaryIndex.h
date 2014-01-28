@@ -97,4 +97,53 @@ typedef enum {
               block:(YapDatabaseSecondaryIndexBlock)block
           blockType:(YapDatabaseSecondaryIndexBlockType)blockType;
 
+/**
+ * Creates a new secondary index extension.
+ * After creation, you'll need to register the extension with the database system.
+ *
+ * @param setup
+ * 
+ *   A YapDatabaseSecondaryIndexSetup instance allows you to specify the column names and type.
+ *   The column names can be whatever you want, with a few exceptions for reserved names such as "rowid".
+ *   The types can reflect numbers or text.
+ * 
+ * @param block
+ * 
+ *   Pass a block that is one of the following types:
+ *    - YapDatabaseSecondaryIndexWithKeyBlock
+ *    - YapDatabaseSecondaryIndexWithObjectBlock
+ *    - YapDatabaseSecondaryIndexWithMetadataBlock
+ *    - YapDatabaseSecondaryIndexWithRowBlock
+ * 
+ * @param blockType
+ * 
+ *   Pass the blockType enum that matches the passed block:
+ *    - YapDatabaseSecondaryIndexBlockTypeWithKey
+ *    - YapDatabaseSecondaryIndexBlockTypeWithObject
+ *    - YapDatabaseSecondaryIndexBlockTypeWithMetadata
+ *    - YapDatabaseSecondaryIndexBlockTypeWithRow
+ * 
+ * @param version
+ * 
+ *   If, after creating the secondary index(es), you need to change the setup or block,
+ *   then simply increment the version parameter. If you pass a version that is different from the last
+ *   initialization of the extension, then it will automatically re-create itself.
+ *
+ * @see YapDatabaseSecondaryIndexSetup
+ * @see YapDatabase registerExtension:withName:
+**/
+- (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)setup
+              block:(YapDatabaseSecondaryIndexBlock)block
+          blockType:(YapDatabaseSecondaryIndexBlockType)blockType
+            version:(int)version;
+
+/**
+ * The version assists in making changes to the extension.
+ *
+ * If you need to change the columnNames and/or block,
+ * then simply pass an incremented version during the init method,
+ * and the FTS extension will automatically update itself.
+**/
+@property (nonatomic, assign, readonly) int version;
+
 @end
