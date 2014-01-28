@@ -558,16 +558,16 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 }
 
 /**
- * Extracts and returns column names of our database.
+ * Extracts and returns column names from the given table in the database.
 **/
 - (NSArray *)columnNamesForTable:(NSString *)tableName using:(sqlite3 *)aDb
 {
 	if (tableName == nil) return nil;
 	
 	sqlite3_stmt *statement;
-	char *stmt = "PRAGMA table_info(?);";
+	NSString *pragma = [NSString stringWithFormat:@"PRAGMA table_info('%@');", tableName];
 	
-	int status = sqlite3_prepare_v2(aDb, stmt, (int)strlen(stmt)+1, &statement, NULL);
+	int status = sqlite3_prepare_v2(aDb, [pragma UTF8String], -1, &statement, NULL);
 	if (status != SQLITE_OK)
 	{
 		YDBLogError(@"%@: Error creating statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(aDb));
@@ -575,8 +575,6 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	}
 	
 	NSMutableArray *tableColumnNames = [NSMutableArray array];
-	
-	sqlite3_bind_text(statement, 1, [tableName UTF8String], -1, SQLITE_TRANSIENT);
 	
 	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
