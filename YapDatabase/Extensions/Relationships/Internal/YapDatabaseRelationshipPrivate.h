@@ -17,7 +17,7 @@
  * If there is a major re-write to this class, then the version number will be incremented,
  * and the class can automatically rebuild the table as needed.
 **/
-#define YAP_DATABASE_RELATIONSHIP_CLASS_VERSION 2
+#define YAP_DATABASE_RELATIONSHIP_CLASS_VERSION 3
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -

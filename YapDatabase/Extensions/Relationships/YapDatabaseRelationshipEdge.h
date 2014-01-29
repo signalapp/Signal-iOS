@@ -43,11 +43,31 @@ typedef int YDB_NodeDeleteRules;
  * and so the source node information (sourceKey & sourceCollection) doesn't need to be explicitly set on the edge.
  * 
  * This method is not suitable for use with manual edge management.
- * When directly adding an edge, you must fully specify the source and destination node.
+ * When manually adding an edge, you must fully specify the source node.
 **/
 + (instancetype)edgeWithName:(NSString *)name
               destinationKey:(NSString *)destinationKey
                   collection:(NSString *)destinationCollection
+             nodeDeleteRules:(YDB_NodeDeleteRules)rules;
+
+/**
+ * Returns an edge with the given name, destinationFilePath & nodeDeleteRules.
+ * 
+ * When using a destinationFilePath, only a subset of the nodeDeleteRules apply.
+ * Specifically only the following work:
+ * - YDB_DeleteDestinationIfSourceDeleted
+ * - YDB_DeleteDestinationIfAllSourcesDeleted
+ *
+ * This method is suitable for use with the YapDatabaseRelationshipNode protocol.
+ * When using this protocol, the source object is directly queried by the YapDatabaseRelationship extension.
+ * Thus the extension already knows what the source node is,
+ * and so the source node information (sourceKey & sourceCollection) doesn't need to be explicitly set on the edge.
+ * 
+ * This method is not suitable for use with manual edge management.
+ * When directly adding an edge, you must fully specify the source node.
+**/
++ (instancetype)edgeWithName:(NSString *)name
+         destinationFilePath:(NSString *)destinationFilePath
              nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
 /**
@@ -67,12 +87,38 @@ typedef int YDB_NodeDeleteRules;
              nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
 /**
+ * Returns a fully specified edge.
+ * 
+ * When using a destinationFilePath, only a subset of the nodeDeleteRules apply.
+ * Specifically only the following work:
+ * - YDB_DeleteDestinationIfSourceDeleted
+ * - YDB_DeleteDestinationIfAllSourcesDeleted
+ *
+ * This method is suitable for use with manual edge management.
+ *
+ * If you're using the YapDatabaseRelationshipNode protocol, then you can use the shorter version of this method
+ * which doesn't specify the source node. This is because the source node is implied with the
+ * YapDatabaseRelationshipNode protocol, and thus doesn't need to be explicitly specified in the edge.
+**/
++ (instancetype)edgeWithName:(NSString *)name
+                   sourceKey:(NSString *)sourceKey
+                  collection:(NSString *)sourceCollection
+         destinationFilePath:(NSString *)destinationFilePath
+             nodeDeleteRules:(YDB_NodeDeleteRules)rules;
+
+/**
  * For documentation @see edgeWithName:destinationKey:collection:nodeDeleteRules:
 **/
 - (id)initWithName:(NSString *)name
     destinationKey:(NSString *)key
         collection:(NSString *)collection
    nodeDeleteRules:(YDB_NodeDeleteRules)rules;
+
+/**
+ * For documentation @see edgeWithName:destinationFilePath:nodeDeleteRules:
+**/
+- (id)initWithName:(NSString *)name destinationFilePath:(NSString *)destinationFilePath
+                                        nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
 /**
  * For documentation @see edgeWithName:sourceKey:collection:destinationKey:collection:nodeDeleteRules:
@@ -84,6 +130,13 @@ typedef int YDB_NodeDeleteRules;
         collection:(NSString *)destinationCollection
    nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
+/**
+ * For documentation @see edgeWithName:sourceKey:collection:destinationFilePath:nodeDeleteRules:
+**/
+- (id)initWithName:(NSString *)name sourceKey:(NSString *)sourceKey
+                                   collection:(NSString *)sourceCollection
+                          destinationFilePath:(NSString *)destinationFilePath
+                              nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
 @property (nonatomic, copy, readonly) NSString *name;
 
@@ -92,6 +145,8 @@ typedef int YDB_NodeDeleteRules;
 
 @property (nonatomic, copy, readonly) NSString *destinationKey;
 @property (nonatomic, copy, readonly) NSString *destinationCollection;
+
+@property (nonatomic, copy, readonly) NSString *destinationFilePath;
 
 @property (nonatomic, assign, readonly) YDB_NodeDeleteRules nodeDeleteRules;
 

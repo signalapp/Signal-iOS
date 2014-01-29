@@ -105,6 +105,24 @@
  * You can specify any combination of the following:
  *
  * - name only
+ * - destinationFilePath
+ * - name + destinationFilePath
+ *
+ * @param name (optional)
+ *   The name of the edge (case sensitive).
+ *
+ * @param destinationFilePath (optional)
+ *   The edge.destinationFilePath to match.
+**/
+- (void)enumerateEdgesWithName:(NSString *)name
+           destinationFilePath:(NSString *)destinationFilePath
+                    usingBlock:(void (^)(YapDatabaseRelationshipEdge *edge, BOOL *stop))block;
+
+/**
+ * Enumerates every edge that matches any parameters you specify.
+ * You can specify any combination of the following:
+ *
+ * - name only
  * - sourceKey & sourceCollection only
  * - destinationKey & destinationCollection only
  * - name + sourceKey & sourceCollection
@@ -137,6 +155,38 @@
                     collection:(NSString *)sourceCollection
                 destinationKey:(NSString *)destinationKey
                     collection:(NSString *)destinationCollection
+                    usingBlock:(void (^)(YapDatabaseRelationshipEdge *edge, BOOL *stop))block;
+
+/**
+ * Enumerates every edge that matches any parameters you specify.
+ * You can specify any combination of the following:
+ *
+ * - name only
+ * - sourceKey & sourceCollection only
+ * - destinationKey & destinationCollection only
+ * - name + sourceKey & sourceCollection
+ * - name + destinationKey & destinationCollection
+ * - name + sourceKey & sourceCollection + destinationKey & destinationCollection
+ *
+ * @param name (optional)
+ *   The name of the edge (case sensitive).
+ *
+ * @param sourceKey (optional)
+ *   The edge.sourceKey to match.
+ *
+ * @param sourceCollection (optional)
+ *   The edge.sourceCollection to match.
+ * 
+ * @param destinationFilePath (optional)
+ *   The edge.destinationFilePath to match.
+ *
+ * If you pass a non-nil sourceKey, and sourceCollection is nil,
+ * then the sourceCollection is treated as the empty string, just like the rest of the YapDatabase framework.
+**/
+- (void)enumerateEdgesWithName:(NSString *)name
+                     sourceKey:(NSString *)sourceKey
+                    collection:(NSString *)sourceCollection
+           destinationFilePath:(NSString *)destinationFilePath
                     usingBlock:(void (^)(YapDatabaseRelationshipEdge *edge, BOOL *stop))block;
 
 #pragma mark Count
@@ -202,6 +252,23 @@
  * You can specify any combination of the following:
  *
  * - name only
+ * - destinationFilePath
+ * - name + destinationFilePath
+ *
+ * @param name (optional)
+ *   The name of the edge (case sensitive).
+ *
+ * @param destinationFilePath (optional)
+ *   The edge.destinationFilePath to match.
+**/
+- (NSUInteger)edgeCountWithName:(NSString *)name
+            destinationFilePath:(NSString *)destinationFilePath;
+
+/**
+ * Returns a count of every edge that matches any parameters you specify.
+ * You can specify any combination of the following:
+ *
+ * - name only
  * - sourceKey & sourceCollection only
  * - destinationKey & destinationCollection only
  * - name + sourceKey & sourceCollection
@@ -234,6 +301,37 @@
                      collection:(NSString *)sourceCollection
                  destinationKey:(NSString *)destinationKey
                      collection:(NSString *)destinationCollection;
+
+/**
+ * Returns a count of every edge that matches any parameters you specify.
+ * You can specify any combination of the following:
+ *
+ * - name only
+ * - sourceKey & sourceCollection only
+ * - destinationFilePath
+ * - name + sourceKey & sourceCollection
+ * - name + destinationFilePath
+ * - name + sourceKey & sourceCollection + destinationFilePath
+ *
+ * @param name (optional)
+ *   The name of the edge (case sensitive).
+ *
+ * @param sourceKey (optional)
+ *   The edge.sourceKey to match.
+ *
+ * @param sourceCollection (optional)
+ *   The edge.sourceCollection to match.
+ * 
+ * @param destinationFilePath (optional)
+ *   The edge.destinationFilePath to match.
+ *
+ * If you pass a non-nil sourceKey, and sourceCollection is nil,
+ * then the sourceCollection is treated as the empty string, just like the rest of the YapDatabase framework.
+**/
+- (NSUInteger)edgeCountWithName:(NSString *)name
+                      sourceKey:(NSString *)sourceKey
+                     collection:(NSString *)sourceCollection
+            destinationFilePath:(NSString *)destinationFilePath;
 
 @end
 

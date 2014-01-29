@@ -33,6 +33,8 @@ enum {
 	NSString *destinationKey;
 	NSString *destinationCollection;
 	
+	NSString *destinationFilePath;
+	
 	YDB_NodeDeleteRules nodeDeleteRules;
 	
 	BOOL isManualEdge;
@@ -53,6 +55,14 @@ enum {
                name:(NSString *)name
                 src:(int64_t)src
                 dst:(int64_t)dst
+              rules:(int)rules
+             manual:(BOOL)isManual;
+
+// Init directly from database row
+- (id)initWithRowid:(int64_t)rowid
+               name:(NSString *)name
+                src:(int64_t)src
+        dstFilePath:(NSString *)dstFilePath
               rules:(int)rules
              manual:(BOOL)isManual;
 
