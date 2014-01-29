@@ -18,7 +18,7 @@ Current version contains binaries build with SDK iOS 7.0 (target 5.1.1), and SDK
 **Installation**
 
 ````
-pod 'OpenSSL', :podspec => 'https://raw.github.com/krzak/OpenSSL/master/OpenSSL.podspec'
+pod 'OpenSSL-Universal'
 ````
 
 **Authors**
