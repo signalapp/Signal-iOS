@@ -171,7 +171,7 @@ static NSMutableArray *keys;
 	
 	NSTimeInterval elapsed = [start timeIntervalSinceNow] * -1.0;
 	
-	NSLog(@"Fetch %lu random objs: total time: %.6f, average time per key: %.6f (cache hit %%: %.2f)",
+	NSLog(@"Fetch %lu random objs: total time: %.6f, average time per obj: %.6f (cache hit %%: %.2f)",
 		  (unsigned long)loopCount, elapsed, (elapsed / loopCount), hitPercentage);
 }
 
