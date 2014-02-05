@@ -29,7 +29,7 @@ enum {
 	YDB_DeleteSourceIfAllDestinationsDeleted = 1 << 4,
 	YDB_DeleteDestinationIfAllSourcesDeleted = 1 << 5,
 };
-typedef int YDB_NodeDeleteRules;
+typedef uint16_t YDB_NodeDeleteRules;
 
 
 @interface YapDatabaseRelationshipEdge : NSObject <NSCoding, NSCopying>

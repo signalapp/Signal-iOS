@@ -343,6 +343,17 @@
 
 #pragma mark Manual Edge Management
 
+/**
+ * There are 2 ways to manage edges (add/remove) using the YapDatabaseRelationship extension:
+ * 
+ * - Manual edge management (via the methods below)
+ * - Implement the YapDatabaseRelationshipNode protocol for some of your objects
+ * 
+ * For more information, see the wiki section "Edge Creation":
+ * 
+ * https://github.com/yaptv/YapDatabase/wiki/Relationships#wiki-edge_creation
+**/
+
 - (void)addEdge:(YapDatabaseRelationshipEdge *)edge;
 
 - (void)removeEdge:(YapDatabaseRelationshipEdge *)edge;

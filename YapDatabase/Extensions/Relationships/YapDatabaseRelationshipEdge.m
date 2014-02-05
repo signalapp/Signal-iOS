@@ -17,6 +17,7 @@
 @synthesize nodeDeleteRules = nodeDeleteRules;
 @synthesize isManualEdge = isManualEdge;
 
+#pragma mark Class Init
 
 + (instancetype)edgeWithName:(NSString *)name
               destinationKey:(NSString *)destinationKey
@@ -65,6 +66,8 @@
 	                                     destinationFilePath:destinationFilePath
 	                                         nodeDeleteRules:rules];
 }
+
+#pragma mark Init
 
 /**
  * Public init method.
@@ -222,6 +225,8 @@
 	return self;
 }
 
+#pragma mark NSCoding
+
 - (id)initWithCoder:(NSCoder *)decoder
 {
 	if ((self = [super init]))
@@ -262,6 +267,8 @@
 	[coder encodeInt:nodeDeleteRules forKey:@"nodeDeleteRules"];
 	[coder encodeBool:isManualEdge forKey:@"isManualEdge"];
 }
+
+#pragma mark NSCopying
 
 - (id)copyWithZone:(NSZone *)zone
 {
@@ -313,6 +320,58 @@
 		copy->flags = YDB_FlagsDestinationLookupSuccessful;
 	
 	return copy;
+}
+
+#pragma mark Description
+
+- (NSString *)description
+{
+	NSMutableString *rules = [NSMutableString stringWithCapacity:64];
+
+	if (nodeDeleteRules & YDB_NotifyIfSourceDeleted)
+		[rules appendString:@"NotifyIfSourceDeleted, "];
+	
+	if (nodeDeleteRules & YDB_NotifyIfDestinationDeleted)
+		[rules appendString:@"NotifyIfDestinationDeleted, "];
+	
+	if (nodeDeleteRules & YDB_DeleteSourceIfDestinationDeleted)
+		[rules appendString:@"DeleteSourceIfDestinationDeleted, "];
+	
+	if (nodeDeleteRules & YDB_DeleteDestinationIfSourceDeleted)
+		[rules appendString:@"DeleteDestinationIfSourceDeleted, "];
+	
+	if (nodeDeleteRules & YDB_DeleteSourceIfAllDestinationsDeleted)
+		[rules appendString:@"DeleteSourceIfAllDestinationsDeleted, "];
+	
+	if (nodeDeleteRules & YDB_DeleteDestinationIfAllSourcesDeleted)
+		[rules appendString:@"DeleteDestinationIfAllSourcesDeleted, "];
+	
+	if ([rules length] > 0)
+		[rules deleteCharactersInRange:NSMakeRange([rules length] - 2, 2)];
+	
+	NSMutableString *description = [NSMutableString stringWithCapacity:128];
+	
+	[description appendFormat:@"<YapDatabaseRelationshipEdge[%p]", self];
+	[description appendFormat:@" name(%@)", name];
+	
+	if (sourceKey)
+		[description appendFormat:@" src(%@, %@)", sourceKey, (sourceCollection ?: @"")];
+	
+	if (destinationKey)
+		[description appendFormat:@" dst(%@, %@)", destinationKey, (destinationCollection ?: @"")];
+	else
+		[description appendFormat:@" dstFilePath(%@)", destinationFilePath];
+	
+	[description appendFormat:@" rules(%@)", rules];
+	
+	if (isManualEdge)
+	{
+		[description appendString:@" manual"];
+	}
+	
+	[description appendString:@">"];
+	
+	return description;
 }
 
 @end

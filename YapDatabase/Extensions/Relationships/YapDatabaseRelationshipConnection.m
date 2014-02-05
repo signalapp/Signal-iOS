@@ -28,6 +28,7 @@
 	sqlite3_stmt *deleteEdgeStatement;
 	sqlite3_stmt *deleteManualEdgeStatement;
 	sqlite3_stmt *deleteEdgesWithNodeStatement;
+	sqlite3_stmt *enumerateAllDstFilePathStatement;
 	sqlite3_stmt *enumerateForSrcStatement;
 	sqlite3_stmt *enumerateForDstStatement;
 	sqlite3_stmt *enumerateForSrcNameStatement;
@@ -67,6 +68,7 @@
 	sqlite_finalize_null(&deleteEdgeStatement);
 	sqlite_finalize_null(&deleteManualEdgeStatement);
 	sqlite_finalize_null(&deleteEdgesWithNodeStatement);
+	sqlite_finalize_null(&enumerateAllDstFilePathStatement);
 	sqlite_finalize_null(&enumerateForSrcStatement);
 	sqlite_finalize_null(&enumerateForDstStatement);
 	sqlite_finalize_null(&enumerateForSrcNameStatement);
@@ -103,6 +105,7 @@
 		sqlite_finalize_null(&deleteEdgeStatement);
 		sqlite_finalize_null(&deleteManualEdgeStatement);
 		sqlite_finalize_null(&deleteEdgesWithNodeStatement);
+		sqlite_finalize_null(&enumerateAllDstFilePathStatement);
 	//	sqlite_finalize_null(&enumerateForSrcStatement);
 	//	sqlite_finalize_null(&enumerateForDstStatement);
 		sqlite_finalize_null(&enumerateForSrcNameStatement);
@@ -190,6 +193,27 @@
 		deletedOrder = [[NSMutableArray alloc] init];
 	if (deletedInfo == nil)
 		deletedInfo = [[NSMutableDictionary alloc] init];
+	if (filesToDelete == nil)
+		filesToDelete = [[NSMutableSet alloc] init];
+}
+
+/**
+ * Invoked by our YapDatabaseViewTransaction at the completion of the commitTransaction method.
+**/
+- (void)postCommitCleanup
+{
+	YDBLogAutoTrace();
+	
+	[protocolChanges removeAllObjects];
+	[manualChanges removeAllObjects];
+	[inserted removeAllObjects];
+	[deletedOrder removeAllObjects];
+	[deletedInfo removeAllObjects];
+	
+	// By nil'ing this out (instead of removing all objects)
+	// we can avoid a copy of this object.
+	if ([filesToDelete count] > 0)
+		filesToDelete = nil;
 }
 
 /**
@@ -204,18 +228,7 @@
 	[inserted removeAllObjects];
 	[deletedOrder removeAllObjects];
 	[deletedInfo removeAllObjects];
-}
-
-/**
- * Invoked by our YapDatabaseViewTransaction at the completion of the commitTransaction method.
-**/
-- (void)postCommitCleanup
-{
-	[protocolChanges removeAllObjects];
-	[manualChanges removeAllObjects];
-	[inserted removeAllObjects];
-	[deletedOrder removeAllObjects];
-	[deletedInfo removeAllObjects];
+	[filesToDelete removeAllObjects];
 }
 
 - (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
@@ -359,6 +372,49 @@
 	}
 	
 	return deleteEdgesWithNodeStatement;
+}
+
+- (sqlite3_stmt *)enumerateAllDstFilePathStatement
+{
+	if (enumerateAllDstFilePathStatement == NULL)
+	{
+		// The 'dst' column stores both integers and text.
+		// If the edge has a destination key & column, then the 'dst' affinity of row is integer (rowid of dst).
+		// If the edge has a destinationFilePath, the the 'dst' affinity of row is text.
+		//
+		// We've set the affinity of the 'dst' column to be none.
+		// Which means that we can easily find all 'dst' rows with text affinity by searching for those rows
+		// where: 'dst' > INT64_MAX
+		//
+		// This is because TEXT is always greater than INTEGER
+		//
+		// For more information, see the documentation: http://www.sqlite.org/datatype3.html
+		
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT \"dst\" FROM \"%@\" WHERE \"dst\" > ?;",
+		  [relationship tableName]];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &enumerateAllDstFilePathStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	if (enumerateAllDstFilePathStatement)
+	{
+		// We do this outside of the if statement above
+		// just in case we accidentally call sqlite3_clear_bindings.
+		
+		sqlite3_bind_int64(enumerateAllDstFilePathStatement, 1, INT64_MAX);
+	}
+	
+	return enumerateAllDstFilePathStatement;
 }
 
 - (sqlite3_stmt *)enumerateForSrcStatement

@@ -22,6 +22,9 @@
 
 
 @implementation YapDatabaseRelationship
+{
+	dispatch_queue_t fileManagerQueue;
+}
 
 /**
  * Subclasses MUST implement this method.
@@ -107,6 +110,20 @@
 - (NSString *)tableName
 {
 	return [[self class] tableNameForRegisteredName:self.registeredName];
+}
+
+/**
+ * The dispatch queue for performing file deletion operations.
+ * Note: This method is not thread-safe, as it expects to only be invoked from within a read-write transaction.
+**/
+- (dispatch_queue_t)fileManagerQueue
+{
+	if (fileManagerQueue == NULL)
+	{
+		fileManagerQueue = dispatch_queue_create("YapDatabaseRelationship.fileManager", DISPATCH_QUEUE_SERIAL);
+	}
+	
+	return fileManagerQueue;
 }
 
 @end

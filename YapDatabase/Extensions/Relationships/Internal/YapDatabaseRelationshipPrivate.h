@@ -32,6 +32,12 @@
 
 - (NSString *)tableName;
 
+/**
+ * The dispatch queue for performing file deletion operations.
+ * Note: This method is not thread-safe, as it expects to only be invoked from within a read-write transaction.
+**/
+- (dispatch_queue_t)fileManagerQueue;
+
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,16 +71,22 @@
 	NSMutableArray *deletedOrder; // contains:(NSNumber *)rowidNumber
 	NSMutableDictionary *deletedInfo; // key:(NSNumber *)rowidNumber, value:(YapCollectionKey *)collectionKey
 	
+	NSMutableSet *filesToDelete;
+	
 //	NSMutableSet *mutatedSomething;
 }
 
 - (id)initWithRelationship:(YapDatabaseRelationship *)relationship databaseConnection:(YapDatabaseConnection *)dbc;
+
+- (void)postRollbackCleanup;
+- (void)postCommitCleanup;
 
 - (sqlite3_stmt *)insertEdgeStatement;
 - (sqlite3_stmt *)updateEdgeStatement;
 - (sqlite3_stmt *)deleteEdgeStatement;
 - (sqlite3_stmt *)deleteManualEdgeStatement;
 - (sqlite3_stmt *)deleteEdgesWithNodeStatement;
+- (sqlite3_stmt *)enumerateAllDstFilePathStatement;
 - (sqlite3_stmt *)enumerateForSrcStatement;
 - (sqlite3_stmt *)enumerateForDstStatement;
 - (sqlite3_stmt *)enumerateForSrcNameStatement;
