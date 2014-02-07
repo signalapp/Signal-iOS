@@ -1,6 +1,8 @@
 #import "YapDatabaseLogging.h"
 
 
+#if YapDatabaseLoggingTechnique != YapDatabaseLoggingTechnique_Lumberjack
+
 /**
  * This method is based on CocoaLumberjack's DDExtractFileNameWithoutExtension function.
  * The copy option has been removed, as we only use __FILE__ as the filePath parameter.
@@ -67,3 +69,5 @@ NSString *YDBExtractFileNameWithoutExtension(const char *filePath)
 	                                    encoding:NSUTF8StringEncoding
 	                                freeWhenDone:NO];
 }
+
+#endif
