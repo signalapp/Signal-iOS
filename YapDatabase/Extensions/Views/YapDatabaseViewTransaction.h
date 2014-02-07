@@ -331,30 +331,30 @@ typedef enum {
 /**
  * Equivalent to invoking:
  *
- * NSString *collection = nil;
- * NSString *key = nil;
- * [[transaction ext:@"myView"] getKey:&key collection:&collection atIndex:index inGroup:group];
- * [transaction objectForKey:key inCollection:collection];
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"myView"] getKey:&key collection:&collection atIndex:index inGroup:group]) {
+ *     object = [transaction objectForKey:key inCollection:collection];
+ * }
 **/
 - (id)objectAtIndex:(NSUInteger)keyIndex inGroup:(NSString *)group;
 
 /**
  * Equivalent to invoking:
  *
- * NSString *collection = nil;
- * NSString *key = nil;
- * [[transaction ext:@"myView"] getFirstKey:&key collection:&collection inGroup:group];
- * [transaction objectForKey:key inCollection:collection];
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"myView"] getFirstKey:&key collection:&collection inGroup:group]) {
+ *     object = [transaction objectForKey:key inCollection:collection];
+ * }
 **/
 - (id)firstObjectInGroup:(NSString *)group;
 
 /**
  * Equivalent to invoking:
  *
- * NSString *collection = nil;
- * NSString *key = nil;
- * [[transaction ext:@"myView"] getLastKey:&key collection:&collection inGroup:group];
- * [transaction objectForKey:key inCollection:collection];
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"myView"] getLastKey:&key collection:&collection inGroup:group]) {
+ *     object = [transaction objectForKey:key inCollection:collection];
+ * }
 **/
 - (id)lastObjectInGroup:(NSString *)group;
 
@@ -437,11 +437,61 @@ typedef enum {
   withMappings:(YapDatabaseViewMappings *)mappings;
 
 /**
+ * Gets the key & collection at the given row & section, assuming the given mappings are being used.
+ * Returns NO if the row or section is invalid, or the mappings aren't initialized.
+ * Otherwise returns YES, and sets the key & collection ptr (both optional).
+**/
+- (BOOL)getKey:(NSString **)keyPtr
+    collection:(NSString **)collectionPtr
+        forRow:(NSUInteger)row
+     inSection:(NSUInteger)section
+  withMappings:(YapDatabaseViewMappings *)mappings;
+
+/**
+ * Gets the object at the given indexPath, assuming the given mappings are being used.
+ * 
+ * Equivalent to invoking:
+ *
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"myView"] getKey:&key collection:&collection atIndexPath:indexPath withMappings:mappings]) {
+ *     object = [transaction objectForKey:key inCollection:collection];
+ * }
+**/
+- (id)objectAtIndexPath:(NSIndexPath *)indexPath withMappings:(YapDatabaseViewMappings *)mappings;
+
+/**
+ * Gets the object at the given indexPath, assuming the given mappings are being used.
+ *
+ * Equivalent to invoking:
+ *
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"view"] getKey:&key
+ *                            collection:&collection
+ *                                forRow:row
+ *                             inSection:section
+ *                          withMappings:mappings]) {
+ *     object = [transaction objectForKey:key inCollection:collection];
+ * }
+**/
+- (id)objectAtRow:(NSUInteger)row inSection:(NSUInteger)section withMappings:(YapDatabaseViewMappings *)mappings;
+
+/**
  * Fetches the indexPath for the given {collection, key} tuple, assuming the given mappings are being used.
  * Returns nil if the {collection, key} tuple isn't included in the view + mappings.
 **/
 - (NSIndexPath *)indexPathForKey:(NSString *)key
                     inCollection:(NSString *)collection
                     withMappings:(YapDatabaseViewMappings *)mappings;
+
+/**
+ * Fetches the row & section for the given {collection, key} tuple, assuming the given mappings are being used.
+ * Returns NO if the {collection, key} tuple isn't included in the view + mappings.
+ * Otherwise returns YES, and sets the row & section (both optional).
+**/
+- (BOOL)getRow:(NSUInteger *)rowPtr
+       section:(NSUInteger *)sectionPtr
+        forKey:(NSString *)key
+  inCollection:(NSString *)collection
+  withMappings:(YapDatabaseViewMappings *)mappings;
 
 @end

@@ -4464,6 +4464,44 @@
 @implementation YapDatabaseViewTransaction (Mappings)
 
 /**
+ * Performance boost.
+ * If the object isn't in the cache, having the rowid makes for a faster fetch from sqlite.
+**/
+- (BOOL)getRowid:(int64_t *)rowidPtr
+             key:(NSString **)keyPtr
+      collection:(NSString **)collectionPtr
+          forRow:(NSUInteger)row
+       inSection:(NSUInteger)section
+    withMappings:(YapDatabaseViewMappings *)mappings
+{
+	if (mappings)
+	{
+		NSString *group = nil;
+		NSUInteger index = 0;
+		
+		if ([mappings getGroup:&group index:&index forRow:row inSection:section])
+		{
+			int64_t rowid = 0;
+			if ([self getRowid:&rowid atIndex:index inGroup:group])
+			{
+				if (keyPtr || collectionPtr)
+				{
+					[databaseTransaction getKey:keyPtr collection:collectionPtr forRowid:rowid];
+				}
+				
+				if (rowidPtr) *rowidPtr = rowid;
+				return YES;
+			}
+		}
+	}
+	
+	if (rowidPtr) *rowidPtr = 0;
+	if (keyPtr) *keyPtr = nil;
+	if (collectionPtr) *collectionPtr = nil;
+	return NO;
+}
+
+/**
  * Gets the key & collection at the given indexPath, assuming the given mappings are being used.
  * Returns NO if the indexPath is invalid, or the mappings aren't initialized.
  * Otherwise returns YES, and sets the key & collection ptr (both optional).
@@ -4473,20 +4511,116 @@
    atIndexPath:(NSIndexPath *)indexPath
   withMappings:(YapDatabaseViewMappings *)mappings
 {
-	if (indexPath && mappings)
+	if (indexPath == nil)
 	{
-		NSString *group = nil;
-		NSUInteger index = 0;
+		if (keyPtr) *keyPtr = nil;
+		if (collectionPtr) *collectionPtr = nil;
 		
-		if ([mappings getGroup:&group index:&index forIndexPath:indexPath])
-		{
-			return [self getKey:keyPtr collection:collectionPtr atIndex:index inGroup:group];
-		}
+		return NO;
 	}
 	
-	if (keyPtr) *keyPtr = nil;
-	if (collectionPtr) *collectionPtr = nil;
-	return NO;
+#if TARGET_OS_IPHONE
+	NSUInteger section = indexPath.section;
+	NSUInteger row = indexPath.row;
+#else
+	NSUInteger section = [indexPath indexAtPosition:0];
+	NSUInteger row = [indexPath indexAtPosition:1];
+#endif
+	
+	return [self getRowid:NULL
+	                  key:keyPtr
+	           collection:collectionPtr
+	               forRow:row
+	            inSection:section
+	         withMappings:mappings];
+}
+
+/**
+ * Gets the key & collection at the given row & section, assuming the given mappings are being used.
+ * Returns NO if the row or section is invalid, or the mappings aren't initialized.
+ * Otherwise returns YES, and sets the key & collection ptr (both optional).
+**/
+- (BOOL)getKey:(NSString **)keyPtr
+    collection:(NSString **)collectionPtr
+        forRow:(NSUInteger)row
+     inSection:(NSUInteger)section
+  withMappings:(YapDatabaseViewMappings *)mappings
+{
+	return [self getRowid:NULL
+	                  key:keyPtr
+	           collection:collectionPtr
+	               forRow:row
+	            inSection:section
+	         withMappings:mappings];
+}
+
+/**
+ * Gets the object at the given indexPath, assuming the given mappings are being used.
+ * 
+ * Equivalent to invoking:
+ *
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"myView"] getKey:&key collection:&collection atIndexPath:indexPath withMappings:mappings]) {
+ *     object = [transaction objectForKey:key inCollection:collection];
+ * }
+**/
+- (id)objectAtIndexPath:(NSIndexPath *)indexPath withMappings:(YapDatabaseViewMappings *)mappings
+{
+	if (indexPath == nil)
+	{
+		return nil;
+	}
+	
+#if TARGET_OS_IPHONE
+	NSUInteger section = indexPath.section;
+	NSUInteger row = indexPath.row;
+#else
+	NSUInteger section = [indexPath indexAtPosition:0];
+	NSUInteger row = [indexPath indexAtPosition:1];
+#endif
+	
+	id object = nil;
+	
+	int64_t rowid = 0;
+	NSString *key = nil;
+	NSString *collection = nil;
+	
+	if ([self getRowid:&rowid key:&key collection:&collection forRow:row inSection:section withMappings:mappings])
+	{
+		object = [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
+	}
+	
+	return object;
+}
+
+/**
+ * Gets the object at the given indexPath, assuming the given mappings are being used.
+ *
+ * Equivalent to invoking:
+ *
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"view"] getKey:&key
+ *                            collection:&collection
+ *                                forRow:row
+ *                             inSection:section
+ *                          withMappings:mappings]) {
+ *     object = [transaction objectForKey:key inCollection:collection];
+ * }
+**/
+- (id)objectAtRow:(NSUInteger)row inSection:(NSUInteger)section withMappings:(YapDatabaseViewMappings *)mappings
+{
+	id object = nil;
+	
+	int64_t rowid = 0;
+	NSString *key = nil;
+	NSString *collection = nil;
+	
+	if ([self getRowid:&rowid key:&key collection:&collection forRow:row inSection:section withMappings:mappings])
+	{
+		object = [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
+	}
+	
+	return object;
 }
 
 /**
@@ -4506,6 +4640,30 @@
 	}
 	
 	return nil;
+}
+
+/**
+ * Fetches the row & section for the given {collection, key} tuple, assuming the given mappings are being used.
+ * Returns NO if the {collection, key} tuple isn't included in the view + mappings.
+ * Otherwise returns YES, and sets the row & section (both optional).
+**/
+- (BOOL)getRow:(NSUInteger *)rowPtr
+       section:(NSUInteger *)sectionPtr
+        forKey:(NSString *)key
+  inCollection:(NSString *)collection
+  withMappings:(YapDatabaseViewMappings *)mappings
+{
+	NSString *group = nil;
+	NSUInteger index = 0;
+	
+	if ([self getGroup:&group index:&index forKey:key inCollection:collection])
+	{
+		return [mappings getRow:rowPtr section:sectionPtr forIndex:index inGroup:group];
+	}
+	
+	if (rowPtr) *rowPtr = 0;
+	if (sectionPtr) *sectionPtr = 0;
+	return NO;
 }
 
 @end
