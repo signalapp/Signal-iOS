@@ -28,6 +28,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '5.1.1'
   s.ios.source_files        = 'include-ios/openssl/**/*.h'
   s.ios.public_header_files = 'include-ios/openssl/**/*.h'
+  s.ios.header_dir          = 'openssl'
   s.ios.preserve_paths      = 'lib-ios/libcrypto.a', 'lib-ios/libssl.a'
   s.ios.vendored_libraries  = 'lib-ios/libcrypto.a', 'lib-ios/libssl.a'
 
@@ -35,6 +36,7 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = '10.7'
   s.osx.source_files        = 'include-ios/openssl/**/*.h'
   s.osx.public_header_files = 'include-osx/openssl/**/*.h'
+  s.osx.header_dir          = 'openssl'
   s.osx.preserve_paths      = 'lib-osx/libcrypto.a', 'lib-osx/libssl.a'
   s.osx.vendored_libraries  = 'lib-osx/libcrypto.a', 'lib-osx/libssl.a'
 
