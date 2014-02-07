@@ -3671,11 +3671,8 @@
 	NSMutableDictionary *newRegisteredExtensions = [registeredExtensions mutableCopy];
 	[newRegisteredExtensions setObject:extension forKey:extensionName];
 	
-	NSMutableArray *newExtensionsOrder = [extensionsOrder mutableCopy];
-	[newExtensionsOrder addObject:extensionName];
-	
 	registeredExtensions = [newRegisteredExtensions copy];
-	extensionsOrder = [newExtensionsOrder copy];
+	extensionsOrder = [extensionsOrder arrayByAddingObject:extensionName];
 	extensionsReady = NO;
 	
 	sharedKeySetForExtensions = [NSDictionary sharedKeySetForKeys:[registeredExtensions allKeys]];
