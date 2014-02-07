@@ -1397,16 +1397,20 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	
 	// Automatically unregister any extensions that were dependent upon this one.
 	
-	BOOL done;
+	NSMutableArray *extensionNameStack = [NSMutableArray arrayWithCapacity:1];
+	[extensionNameStack addObject:extensionName];
+	
 	do
 	{
+		NSString *currentExtensionName = [extensionNameStack lastObject];
+		
 		__block NSString *dependentExtName = nil;
 		[newExtensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
 
 		//	__unsafe_unretained NSString *extName = (NSString *)key;
 			__unsafe_unretained NSSet *extDependencies = (NSSet *)obj;
 		
-			if ([extDependencies containsObject:extensionName])
+			if ([extDependencies containsObject:currentExtensionName])
 			{
 				dependentExtName = (NSString *)key;
 				*stop = YES;
@@ -1415,6 +1419,9 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 		
 		if (dependentExtName)
 		{
+			// We found an extension that was dependent upon the one we just unregistered.
+			// So we need to unregister it too.
+			
 			YapDatabaseExtension *dependentExt = [self registeredExtension:dependentExtName];
 			
 			[[self registrationConnection] unregisterExtension:dependentExtName];
@@ -1422,14 +1429,17 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 			
 			[newExtensionDependencies removeObjectForKey:dependentExtName];
 			
-			done = NO;
+			// And now we need to check and see if there were any extensions dependent upon this new one.
+			// So we add it to the top of the stack, and continue our search.
+			
+			[extensionNameStack addObject:dependentExtName];
 		}
 		else
 		{
-			done = YES;
+			[extensionNameStack removeLastObject];
 		}
 		
-	} while (!done);
+	} while ([extensionNameStack count] > 0);
 	
 	extensionDependencies = [newExtensionDependencies copy];
 }
