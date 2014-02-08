@@ -119,6 +119,7 @@
 
 // The following are declared for view subclasses (such as YapDatabaseFilteredView)
 
+- (void)dropTablesForOldClassVersion:(int)oldClassVersion;
 - (BOOL)createTables;
 
 - (NSString *)registeredName;

@@ -20,6 +20,10 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
+#define ExtKey_classVersion   @"classVersion"
+#define ExtKey_persistent     @"persistent"
+#define ExtKey_parentViewName @"parentViewName"
+#define ExtKey_tag            @"tag"
 
 @implementation YapDatabaseFilteredViewTransaction
 
@@ -35,37 +39,66 @@
 **/
 - (BOOL)createIfNeeded
 {
+	__unsafe_unretained YapDatabaseFilteredView *filteredView = (YapDatabaseFilteredView *)(viewConnection->view);
+	
+	int classVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
+	BOOL isPersistent = [self isPersistentView];
+	
+	NSString *parentViewName = filteredView->parentViewName;
+	NSString *tag = filteredView->tag;
+	
+	// Figure out what steps we need to take in order to register the view
+	
 	BOOL needsCreateTables = NO;
+	
+	BOOL oldIsPersistent = NO;
+	BOOL hasOldIsPersistent = NO;
+	
+	NSString *oldParentViewName = nil;
+	NSString *oldTag = nil;
 	
 	// Check classVersion (the internal version number of view implementation)
 	
-	int oldClassVersion = [self intValueForExtensionKey:@"classVersion"];
-	int classVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
+	int oldClassVersion = 0;
+	BOOL hasOldClassVersion = [self getIntValue:&oldClassVersion forExtensionKey:ExtKey_classVersion];
 	
-	if (oldClassVersion != classVersion)
+	if (!hasOldClassVersion)
+	{
 		needsCreateTables = YES;
+	}
+	else if (oldClassVersion != classVersion)
+	{
+		[self dropTablesForOldClassVersion:oldClassVersion];
+		needsCreateTables = YES;
+	}
 	
 	// Check persistence.
 	// Need to properly transition from persistent to non-persistent, and vice-versa.
 	
-	BOOL oldIsPersistent = NO;
-	BOOL hasOldIsPersistent = [self getBoolValue:&oldIsPersistent forExtensionKey:@"persistent"];
-	
-	BOOL isPersistent = [self isPersistentView];
-	
-	if (hasOldIsPersistent && (oldIsPersistent != isPersistent))
+	if (!needsCreateTables || hasOldClassVersion)
 	{
-		[[viewConnection->view class]
-		  dropTablesForRegisteredName:[self registeredName]
-		              withTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction];
+		hasOldIsPersistent = [self getBoolValue:&oldIsPersistent forExtensionKey:ExtKey_persistent];
 		
-		needsCreateTables = YES;
-	}
-	else if (!isPersistent)
-	{
-		// We always have to create & populate the tables for non-persistent views.
-		// Even when re-registering from previous app launch.
-		needsCreateTables = YES;
+		if (hasOldIsPersistent && oldIsPersistent && !isPersistent)
+		{
+			[[viewConnection->view class]
+			  dropTablesForRegisteredName:[self registeredName]
+			              withTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction];
+		}
+		
+		if (!hasOldIsPersistent || (oldIsPersistent != isPersistent))
+		{
+			needsCreateTables = YES;
+		}
+		else if (!isPersistent)
+		{
+			// We always have to create & populate the tables for non-persistent views.
+			// Even when re-registering from previous app launch.
+			needsCreateTables = YES;
+			
+			oldParentViewName = [self stringValueForExtensionKey:ExtKey_parentViewName];
+			oldTag = [self stringValueForExtensionKey:ExtKey_tag];
+		}
 	}
 	
 	// Create or re-populate if needed
@@ -77,34 +110,57 @@
 		if (![self createTables]) return NO;
 		if (![self populateView]) return NO;
 		
-		[self setIntValue:classVersion forExtensionKey:@"classVersion"];
+		if (!hasOldClassVersion || (oldClassVersion != classVersion)) {
+			[self setIntValue:classVersion forExtensionKey:ExtKey_classVersion];
+		}
 		
-		[self setBoolValue:isPersistent forExtensionKey:@"persistent"];
+		if (!hasOldIsPersistent || (oldIsPersistent != isPersistent)) {
+			[self setBoolValue:isPersistent forExtensionKey:ExtKey_persistent];
+		}
 		
-		int userSuppliedConfigVersion = viewConnection->view->version;
-		[self setIntValue:userSuppliedConfigVersion forExtensionKey:@"version"];
+		if (![oldParentViewName isEqualToString:parentViewName]) {
+			[self setStringValue:parentViewName forExtensionKey:ExtKey_parentViewName];
+		}
+		
+		if (![oldTag isEqualToString:tag]) {
+			[self setStringValue:tag forExtensionKey:ExtKey_tag];
+		}
 	}
 	else
 	{
+		BOOL needsRepopulateView = NO;
+		
+		// Check parentViewName.
+		// Need to re-populate if the parent changed.
+		
+		oldParentViewName = [self stringValueForExtensionKey:ExtKey_parentViewName];
+		
+		if (![oldParentViewName isEqualToString:parentViewName])
+		{
+			needsRepopulateView = YES;
+		}
+		
 		// Check user-supplied tag.
 		// We may need to re-populate the database if the groupingBlock or sortingBlock changed.
 		
-		__unsafe_unretained YapDatabaseFilteredView *filteredView =
-		  (YapDatabaseFilteredView *)viewConnection->view;
+		oldTag = [self stringValueForExtensionKey:ExtKey_tag];
 		
-		NSString *oldTag = [self stringValueForExtensionKey:@"tag"];
-		NSString *newTag = filteredView->tag;
+		if (![oldTag isEqualToString:tag])
+		{
+			needsRepopulateView = YES;
+		}
 		
-		if (![oldTag isEqualToString:newTag])
+		if (needsRepopulateView)
 		{
 			if (![self populateView]) return NO;
 			
-			[self setStringValue:newTag forExtensionKey:@"tag"];
-		}
-		
-		if (!hasOldIsPersistent)
-		{
-			[self setBoolValue:isPersistent forExtensionKey:@"persistent"];
+			if (![oldParentViewName isEqualToString:parentViewName]) {
+				[self setStringValue:parentViewName forExtensionKey:ExtKey_parentViewName];
+			}
+			
+			if (![oldTag isEqualToString:tag]) {
+				[self setStringValue:tag forExtensionKey:ExtKey_tag];
+			}
 		}
 	}
 	

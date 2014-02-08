@@ -25,6 +25,9 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
+#define ExtKey_classVersion @"classVersion"
+#define ExtKey_persistent   @"persistent"
+#define ExtKey_version      @"version"
 
 /**
  * The view is tasked with storing ordered arrays of keys.
@@ -111,37 +114,62 @@
 **/
 - (BOOL)createIfNeeded
 {
+	int classVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
+	BOOL isPersistent = [self isPersistentView];
+	
+	int version = viewConnection->view->version;
+	
+	// Figure out what steps we need to take in order to register the view
+	
 	BOOL needsCreateTables = NO;
+	
+	BOOL oldIsPersistent = NO;
+	BOOL hasOldIsPersistent = NO;
+	
+	int oldVersion = 0;
+	BOOL hasOldVersion = NO;
 	
 	// Check classVersion (the internal version number of YapDatabaseView implementation)
 	
-	int oldClassVersion = [self intValueForExtensionKey:@"classVersion"];
-	int classVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
+	int oldClassVersion = 0;
+	BOOL hasOldClassVersion = [self getIntValue:&oldClassVersion forExtensionKey:ExtKey_classVersion];
 	
-	if (oldClassVersion != classVersion)
+	if (!hasOldClassVersion)
+	{
 		needsCreateTables = YES;
+	}
+	else if (oldClassVersion != classVersion)
+	{
+		[self dropTablesForOldClassVersion:oldClassVersion];
+		needsCreateTables = YES;
+	}
 	
 	// Check persistence.
 	// Need to properly transition from persistent to non-persistent, and vice-versa.
 	
-	BOOL oldIsPersistent = NO;
-	BOOL hasOldIsPersistent = [self getBoolValue:&oldIsPersistent forExtensionKey:@"persistent"];
-	
-	BOOL isPersistent = [self isPersistentView];
-	
-	if (hasOldIsPersistent && (oldIsPersistent != isPersistent))
+	if (!needsCreateTables || hasOldClassVersion)
 	{
-		[[viewConnection->view class]
-		  dropTablesForRegisteredName:[self registeredName]
-		              withTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction];
+		hasOldIsPersistent = [self getBoolValue:&oldIsPersistent forExtensionKey:ExtKey_persistent];
 		
-		needsCreateTables = YES;
-	}
-	else if (!isPersistent)
-	{
-		// We always have to create & populate the tables for non-persistent views.
-		// Even when re-registering from previous app launch.
-		needsCreateTables = YES;
+		if (hasOldIsPersistent && oldIsPersistent && !isPersistent)
+		{
+			[[viewConnection->view class]
+			  dropTablesForRegisteredName:[self registeredName]
+			              withTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction];
+		}
+		
+		if (!hasOldIsPersistent || (oldIsPersistent != isPersistent))
+		{
+			needsCreateTables = YES;
+		}
+		else if (!isPersistent)
+		{
+			// We always have to create & populate the tables for non-persistent views.
+			// Even when re-registering from previous app launch.
+			needsCreateTables = YES;
+			
+			hasOldVersion = [self getIntValue:&oldVersion forExtensionKey:ExtKey_version];
+		}
 	}
 	
 	// Create or re-populate if needed
@@ -150,36 +178,33 @@
 	{
 		// First time registration
 		
-		[self dropTablesForOldClassVersion:oldClassVersion];
-		
 		if (![self createTables]) return NO;
 		if (![self populateView]) return NO;
 		
-		[self setIntValue:classVersion forExtensionKey:@"classVersion"];
+		if (!hasOldClassVersion || (oldClassVersion != classVersion)) {
+			[self setIntValue:classVersion forExtensionKey:ExtKey_classVersion];
+		}
 		
-		[self setBoolValue:isPersistent forExtensionKey:@"persistent"];
+		if (!hasOldIsPersistent || (oldIsPersistent != isPersistent)) {
+			[self setBoolValue:isPersistent forExtensionKey:ExtKey_persistent];
+		}
 		
-		int userSuppliedConfigVersion = viewConnection->view->version;
-		[self setIntValue:userSuppliedConfigVersion forExtensionKey:@"version"];
+		if (!hasOldVersion || (oldVersion != version)) {
+			[self setIntValue:version forExtensionKey:ExtKey_version];
+		}
 	}
 	else
 	{
 		// Check user-supplied config version.
 		// We may need to re-populate the database if the groupingBlock or sortingBlock changed.
 		
-		int oldVersion = [self intValueForExtensionKey:@"version"];
-		int newVersion = viewConnection->view->version;
+		oldVersion = [self intValueForExtensionKey:ExtKey_version];
 		
-		if (oldVersion != newVersion)
+		if (oldVersion != version)
 		{
 			if (![self populateView]) return NO;
 			
-			[self setIntValue:newVersion forExtensionKey:@"version"];
-		}
-		
-		if (!hasOldIsPersistent)
-		{
-			[self setBoolValue:isPersistent forExtensionKey:@"persistent"];
+			[self setIntValue:version forExtensionKey:ExtKey_version];
 		}
 	}
 	
