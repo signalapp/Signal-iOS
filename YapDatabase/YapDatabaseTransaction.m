@@ -78,12 +78,57 @@
 
 - (void)preCommitReadWriteTransaction
 {
+	// Step 1:
+	//
+	// Allow extensions to flush changes to the main database table.
+	// This is different from flushing changes to their own private tables.
+	// We're referring here to the main collection/key/value table that's public.
+	
+	__block BOOL restart;
+	__block BOOL prevExtModifiesMainDatabaseTable;
+	do
+	{
+		isMutated = NO;
+		
+		restart = NO;
+		prevExtModifiesMainDatabaseTable = NO;
+		
+		[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
+			
+			BOOL extModifiesMainDatabaseTable =
+			  [(YapDatabaseExtensionTransaction *)extTransactionObj flushPendingChangesToMainDatabaseTable];
+			
+			if (extModifiesMainDatabaseTable)
+			{
+				if (!isMutated)
+				{
+					prevExtModifiesMainDatabaseTable = YES;
+				}
+				else
+				{
+					if (prevExtModifiesMainDatabaseTable)
+					{
+						restart = YES;
+						*stop = YES;
+					}
+					else
+					{
+						prevExtModifiesMainDatabaseTable = YES;
+					}
+				}
+			}
+		}];
+	
+	} while (restart);
+	
+	// Step 2:
+	//
 	// Allow extensions to perform any "cleanup" code needed before the changesets are requested,
 	// and before the commit is executed.
 	
 	[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
 		
-		[(YapDatabaseExtensionTransaction *)extTransactionObj preCommitReadWriteTransaction];
+		[(YapDatabaseExtensionTransaction *)extTransactionObj prepareChangeset];
 	}];
 }
 

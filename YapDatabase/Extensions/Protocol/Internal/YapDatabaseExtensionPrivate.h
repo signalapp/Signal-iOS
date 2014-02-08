@@ -330,10 +330,25 @@
  * Subclasses may OPTIONALLY implement this method.
  * This method is only called if within a readwrite transaction.
  *
+ * Subclasses should ONLY implement this method if they need to make changes to the 'database' table.
+ * That is, the main collection/key/value table that directly stores the user's objects.
+ *
+ * Return NO if the extension does not directly modify the main database table.
+ * Return YES if the extension does modify the main database table,
+ * regardless of whether it made changes during this invocation.
+ *
+ * This method may be invoked several times in a row.
+**/
+- (BOOL)flushPendingChangesToMainDatabaseTable;
+
+/**
+ * Subclasses may OPTIONALLY implement this method.
+ * This method is only called if within a readwrite transaction.
+ *
  * Subclasses may implement it to perform any "cleanup" before the changeset is requested.
  * Remember, the changeset is requested before the commitTransaction method is invoked.
 **/
-- (void)preCommitReadWriteTransaction;
+- (void)prepareChangeset;
 
 /**
  * Subclasses MUST implement this method.

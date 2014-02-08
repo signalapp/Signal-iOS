@@ -1857,7 +1857,7 @@
 	// This method is different from removeAllProtocolEdges.
 	// This method is ONLY called when the user is removing all objects in the database.
 	
-	if (YES)
+	// Step 1: Find any files we may need to delete upon commiting the transaction
 	{
 		sqlite3_stmt *statement = [relationshipConnection enumerateAllDstFilePathStatement];
 		if (statement == NULL)
@@ -1890,7 +1890,7 @@
 		sqlite3_reset(statement);
 	}
 	
-	if (YES)
+	// Step 2: Remove all edges from our database table
 	{
 		sqlite3_stmt *statement = [relationshipConnection removeAllStatement];
 		if (statement == NULL)
@@ -1909,6 +1909,8 @@
 			
 		sqlite3_reset(statement);
 	}
+	
+	// Step 3: Flush pending change lists
 	
 	[relationshipConnection->protocolChanges removeAllObjects];
 	[relationshipConnection->manualChanges removeAllObjects];
@@ -2550,18 +2552,33 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * Subclasses may OPTIONALLY implement this method.
  * This method is only called if within a readwrite transaction.
  *
- * Extensions may implement it to perform any "cleanup" before the changeset is requested.
- * Remember, the changeset is requested before the commitTransaction method is invoked.
+ * Subclasses should ONLY implement this method if they need to make changes to the 'database' table.
+ * That is, the main collection/key/value table that directly stores the user's objects.
+ *
+ * Return NO if the extension does not directly modify the main database table.
+ * Return YES if the extension does modify the main database table,
+ * regardless of whether it made changes during this invocation.
+ * 
+ * This method may be invoked several times in a row.
 **/
-- (void)preCommitReadWriteTransaction
+- (BOOL)flushPendingChangesToMainDatabaseTable
 {
 	YDBLogAutoTrace();
 	
 	// Flush any pending changes
 	
-	[self flush];
+	if ([relationshipConnection->protocolChanges count] > 0 ||
+		[relationshipConnection->manualChanges   count] > 0 ||
+		[relationshipConnection->deletedInfo     count] > 0 ||
+		[relationshipConnection->deletedOrder    count] > 0  )
+	{
+		[self flush];
+	}
+	
+	return YES;
 }
 
 /**
@@ -2647,7 +2664,7 @@
 	
 	if (isFlushing)
 	{
-		YDBLogWarn(@"Unable to handle insert hook during flush processing");
+		YDBLogError(@"Unable to handle insert hook during flush processing");
 		return;
 	}
 	
@@ -2749,7 +2766,7 @@
 	
 	if (isFlushing)
 	{
-		YDBLogWarn(@"Unable to handle update hook during flush processing");
+		YDBLogError(@"Unable to handle update hook during flush processing");
 		return;
 	}
 	
@@ -2911,7 +2928,7 @@
 	
 	if (isFlushing)
 	{
-		YDBLogWarn(@"Unable to handle multi-remove hook during flush processing");
+		YDBLogError(@"Unable to handle multi-remove hook during flush processing");
 		return;
 	}
 	
@@ -2938,7 +2955,7 @@
 	
 	if (isFlushing)
 	{
-		YDBLogWarn(@"Unable to handle remove-all hook during flush processing");
+		YDBLogError(@"Unable to handle remove-all hook during flush processing");
 		return;
 	}
 	
@@ -2948,7 +2965,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Public API - Enumerate
+#pragma mark Public API - Fetch
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -4968,7 +4985,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Manual Edge Management
+#pragma mark Public API - Manual Edge Management
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)addEdge:(YapDatabaseRelationshipEdge *)edge
