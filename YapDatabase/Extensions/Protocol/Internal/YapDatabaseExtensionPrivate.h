@@ -416,6 +416,8 @@
 - (NSData *)dataValueForExtensionKey:(NSString *)key;
 - (void)setDataValue:(NSData *)value forExtensionKey:(NSString *)key;
 
+- (void)removeValueForExtensionKey:(NSString *)key;
+
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

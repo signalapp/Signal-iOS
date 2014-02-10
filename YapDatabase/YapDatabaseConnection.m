@@ -42,6 +42,7 @@
 	
 	sqlite3_stmt *yapGetDataForKeyStatement;   // Against "yap" database, for internal use
 	sqlite3_stmt *yapSetDataForKeyStatement;   // Against "yap" database, for internal use
+	sqlite3_stmt *yapRemoveForKeyStatement;    // Against "yap" database, for internal use
 	sqlite3_stmt *yapRemoveExtensionStatement; // Against "yap" database, for internal use
 	
 	sqlite3_stmt *getCollectionCountStatement;
@@ -248,6 +249,7 @@
 	
 	sqlite_finalize_null(&yapGetDataForKeyStatement);
 	sqlite_finalize_null(&yapSetDataForKeyStatement);
+	sqlite_finalize_null(&yapRemoveForKeyStatement);
 	sqlite_finalize_null(&yapRemoveExtensionStatement);
 	
 	sqlite_finalize_null(&getCollectionCountStatement);
@@ -326,8 +328,9 @@
 	//	sqlite_finalize_null(&commitTransactionStatement);
 		sqlite_finalize_null(&rollbackTransactionStatement);
 		
-		sqlite_finalize_null(&yapGetDataForKeyStatement);
+	//	sqlite_finalize_null(&yapGetDataForKeyStatement);
 		sqlite_finalize_null(&yapSetDataForKeyStatement);
+		sqlite_finalize_null(&yapRemoveForKeyStatement);
 		sqlite_finalize_null(&yapRemoveExtensionStatement);
 		
 		sqlite_finalize_null(&getCollectionCountStatement);
@@ -344,8 +347,8 @@
 	//	sqlite_finalize_null(&getDataForKeyStatement);
 		sqlite_finalize_null(&getMetadataForKeyStatement);
 		sqlite_finalize_null(&getAllForKeyStatement);
-	//	sqlite_finalize_null(&insertForRowidStatement);
-	//	sqlite_finalize_null(&updateAllForRowidStatement);
+		sqlite_finalize_null(&insertForRowidStatement);
+		sqlite_finalize_null(&updateAllForRowidStatement);
 		sqlite_finalize_null(&updateObjectForRowidStatement);
 		sqlite_finalize_null(&updateMetadataForRowidStatement);
 		sqlite_finalize_null(&removeForRowidStatement);
@@ -368,12 +371,12 @@
 		sqlite_finalize_null(&beginTransactionStatement);
 		sqlite_finalize_null(&commitTransactionStatement);
 		
+		sqlite_finalize_null(&yapGetDataForKeyStatement);
+		
 		sqlite_finalize_null(&getRowidForKeyStatement);
 		sqlite_finalize_null(&getKeyForRowidStatement);
 		sqlite_finalize_null(&getDataForRowidStatement);
 		sqlite_finalize_null(&getDataForKeyStatement);
-		sqlite_finalize_null(&insertForRowidStatement);
-		sqlite_finalize_null(&updateAllForRowidStatement);
 	}
 	
 	[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extConnectionObj, BOOL *stop) {
@@ -770,6 +773,23 @@
 	}
 	
 	return yapSetDataForKeyStatement;
+}
+
+- (sqlite3_stmt *)yapRemoveForKeyStatement
+{
+	if (yapRemoveForKeyStatement == NULL)
+	{
+		char *stmt = "DELETE FROM \"yap2\" WHERE \"extension\" = ? AND \"key\" = ?;";
+		int stmtLen = (int)strlen(stmt);
+		
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &yapRemoveForKeyStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return yapRemoveForKeyStatement;
 }
 
 - (sqlite3_stmt *)yapRemoveExtensionStatement

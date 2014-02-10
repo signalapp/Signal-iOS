@@ -99,7 +99,7 @@
 	                               groupingBlockType:groupingBlockType
 	                                    sortingBlock:sortingBlock
 	                                sortingBlockType:sortingBlockType
-	                                         version:0
+	                                      versionTag:@"1"
 	                                         options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
@@ -227,7 +227,7 @@
 	                               groupingBlockType:groupingBlockType
 	                                    sortingBlock:sortingBlock
 	                                sortingBlockType:sortingBlockType
-	                                         version:0
+	                                      versionTag:@"1"
 	                                         options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
@@ -354,7 +354,7 @@
 	                               groupingBlockType:groupingBlockType
 	                                    sortingBlock:sortingBlock
 	                                sortingBlockType:sortingBlockType
-	                                         version:0
+	                                      versionTag:@"1"
 	                                         options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
@@ -378,7 +378,7 @@
 	  [[YapDatabaseFilteredView alloc] initWithParentViewName:@"order"
 	                                           filteringBlock:filteringBlock
 	                                       filteringBlockType:filteringBlockType
-	                                                      tag:@"even"];
+	                                               versionTag:@"even"];
 	
 	BOOL registerResult2 = [database registerExtension:filteredView withName:@"filter"];
 	STAssertTrue(registerResult2, @"Failure registering filteredView extension");
@@ -434,7 +434,7 @@
 		
 		[[transaction ext:@"filter"] setFilteringBlock:filteringBlock
 		                            filteringBlockType:filteringBlockType
-		                                           tag:@"even+5"];
+		                                    versionTag:@"even+5"];
 		
 		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
 		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
@@ -519,7 +519,7 @@
 	                               groupingBlockType:groupingBlockType
 	                                    sortingBlock:sortingBlock
 	                                sortingBlockType:sortingBlockType
-	                                         version:0
+	                                      versionTag:@"1"
 	                                         options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
@@ -629,7 +629,7 @@
 	                               groupingBlockType:groupingBlockType
 	                                    sortingBlock:sortingBlock
 	                                sortingBlockType:sortingBlockType
-	                                         version:0
+	                                      versionTag:@"1"
 	                                         options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];

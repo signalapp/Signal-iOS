@@ -20,10 +20,11 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
-#define ExtKey_classVersion   @"classVersion"
-#define ExtKey_persistent     @"persistent"
-#define ExtKey_parentViewName @"parentViewName"
-#define ExtKey_tag            @"tag"
+#define ExtKey_classVersion    @"classVersion"
+#define ExtKey_persistent      @"persistent"
+#define ExtKey_parentViewName  @"parentViewName"
+#define ExtKey_tag_deprecated  @"tag"
+#define ExtKey_versionTag      @"versionTag"
 
 @implementation YapDatabaseFilteredViewTransaction
 
@@ -45,7 +46,7 @@
 	BOOL isPersistent = [self isPersistentView];
 	
 	NSString *parentViewName = filteredView->parentViewName;
-	NSString *tag = filteredView->tag;
+	NSString *versionTag = filteredView->versionTag;
 	
 	// Figure out what steps we need to take in order to register the view
 	
@@ -55,7 +56,7 @@
 	BOOL hasOldIsPersistent = NO;
 	
 	NSString *oldParentViewName = nil;
-	NSString *oldTag = nil;
+	NSString *oldVersionTag = nil;
 	
 	// Check classVersion (the internal version number of view implementation)
 	
@@ -97,7 +98,7 @@
 			needsCreateTables = YES;
 			
 			oldParentViewName = [self stringValueForExtensionKey:ExtKey_parentViewName];
-			oldTag = [self stringValueForExtensionKey:ExtKey_tag];
+			oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag];
 		}
 	}
 	
@@ -122,8 +123,8 @@
 			[self setStringValue:parentViewName forExtensionKey:ExtKey_parentViewName];
 		}
 		
-		if (![oldTag isEqualToString:tag]) {
-			[self setStringValue:tag forExtensionKey:ExtKey_tag];
+		if (![oldVersionTag isEqualToString:versionTag]) {
+			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
 		}
 	}
 	else
@@ -143,9 +144,19 @@
 		// Check user-supplied tag.
 		// We may need to re-populate the database if the groupingBlock or sortingBlock changed.
 		
-		oldTag = [self stringValueForExtensionKey:ExtKey_tag];
+		oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag];
 		
-		if (![oldTag isEqualToString:tag])
+		NSString *oldTag_deprecated = nil;
+		if (oldVersionTag == nil)
+		{
+			oldTag_deprecated = [self stringValueForExtensionKey:ExtKey_tag_deprecated];
+			if (oldTag_deprecated)
+			{
+				oldVersionTag = oldTag_deprecated;
+			}
+		}
+		
+		if (![oldVersionTag isEqualToString:versionTag])
 		{
 			needsRepopulateView = YES;
 		}
@@ -158,9 +169,17 @@
 				[self setStringValue:parentViewName forExtensionKey:ExtKey_parentViewName];
 			}
 			
-			if (![oldTag isEqualToString:tag]) {
-				[self setStringValue:tag forExtensionKey:ExtKey_tag];
+			if (![oldVersionTag isEqualToString:versionTag]) {
+				[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
 			}
+			
+			if (oldTag_deprecated)
+				[self removeValueForExtensionKey:ExtKey_tag_deprecated];
+		}
+		else if (oldTag_deprecated)
+		{
+			[self removeValueForExtensionKey:ExtKey_tag_deprecated];
+			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
 		}
 	}
 	
@@ -1126,7 +1145,7 @@
 
 - (void)setFilteringBlock:(YapDatabaseViewFilteringBlock)inFilteringBlock
        filteringBlockType:(YapDatabaseViewBlockType)inFilteringBlockType
-                      tag:(NSString *)inTag
+               versionTag:(NSString *)inVersionTag
 
 {
 	YDBLogAutoTrace();
@@ -1140,9 +1159,9 @@
 	__unsafe_unretained YapDatabaseFilteredView *filteredView =
 	  (YapDatabaseFilteredView *)viewConnection->view;
 	
-	NSString *newTag = inTag ? [inTag copy] : @"";
+	NSString *newVersionTag = inVersionTag ? [inVersionTag copy] : @"";
 	
-	if ([filteredView->tag isEqualToString:newTag])
+	if ([filteredView->versionTag isEqualToString:newVersionTag])
 	{
 		YDBLogWarn(@"%@ - Tag didn't change, so not updating view", THIS_METHOD);
 		return;
@@ -1151,7 +1170,7 @@
 	filteredView->filteringBlock = inFilteringBlock;
 	filteredView->filteringBlockType = inFilteringBlockType;
 	
-	filteredView->tag = newTag;
+	filteredView->versionTag = newVersionTag;
 	
 	[self repopulate];
 }

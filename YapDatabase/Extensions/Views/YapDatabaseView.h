@@ -134,10 +134,10 @@ typedef enum {
  * See the wiki for an example of how to initialize a view:
  * https://github.com/yaptv/YapDatabase/wiki/Views#wiki-initializing_a_view
  *
- * @param version
+ * @param versionTag
  *
  *   If, after creating a view, you need to change either the groupingBlock or sortingBlock,
- *   then simply use the version parameter. If you pass a version that is different from the last
+ *   then simply use the versionTag parameter. If you pass a versionTag that is different from the last
  *   initialization of the view, then the view will automatically flush its tables, and re-populate itself.
  *
  * @param options
@@ -154,13 +154,13 @@ typedef enum {
           groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
                sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
            sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
-                    version:(int)version;
+                 versionTag:(NSString *)versionTag;
 
 - (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
           groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
                sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
            sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
-                    version:(int)version
+                 versionTag:(NSString *)versionTag
                     options:(YapDatabaseViewOptions *)options;
 
 @property (nonatomic, strong, readonly) YapDatabaseViewGroupingBlock groupingBlock;
@@ -170,13 +170,26 @@ typedef enum {
 @property (nonatomic, assign, readonly) YapDatabaseViewBlockType sortingBlockType;
 
 /**
- * The version assists you in updating your blocks.
+ * The versionTag assists you in updating your blocks.
  *
  * If you need to change the groupingBlock or sortingBlock,
- * then simply pass an incremented version during the init method,
- * and the view will automatically update itself.
+ * then simply pass a different versionTag during the init method, and the view will automatically update itself.
+ * 
+ * If you want to keep things simple, you can use something like @"1",
+ * representing version 1 of my groupingBlock & sortingBlock.
+ * 
+ * For more advanced applications, you may also include within the versionTag string:
+ * - localization information (if you're using localized sorting routines)
+ * - configuration information (if your sorting routine is based on some in-app configuration)
+ *
+ * For example, if you're sorting strings using a localized string compare method, then embedding the localization
+ * information into your versionTag means the view will automatically re-populate itself (re-sort)
+ * if the user launches the app in a different language than last time.
+ * 
+ * NSString *localeIdentifier = [[NSLocale currentLocale] localeIdentifier];
+ * NSString *versionTag = [NSString stringWithFormat:@"1-%@", localeIdentifier];
 **/
-@property (nonatomic, assign, readonly) int version;
+@property (nonatomic, copy, readonly) NSString *versionTag;
 
 /**
  * The options allow you to specify things like creating an in-memory-only view (non persistent).

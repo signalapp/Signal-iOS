@@ -35,7 +35,7 @@
 	YapDatabaseViewBlockType groupingBlockType;
 	YapDatabaseViewBlockType sortingBlockType;
 	
-	int version;
+	NSString *versionTag;
 	
 	YapDatabaseViewOptions *options;
 }

@@ -4240,6 +4240,45 @@
 	FreeYapDatabaseString(&_key);
 }
 
+- (void)removeValueForKey:(NSString *)key extension:(NSString *)extensionName
+{
+	// Be careful with this statement.
+	//
+	// The snapshot value is in the yap table, and uses an empty string for the extensionName.
+	// The snapshot value is critical to the underlying architecture of the system.
+	// Removing it could cripple the system.
+	
+	NSAssert(key != nil, @"Invalid key!");
+	NSAssert(extensionName != nil, @"Invalid extensionName!");
+	
+	sqlite3_stmt *statement = [connection yapRemoveForKeyStatement];
+	if (statement == NULL) return;
+	
+	// DELETE FROM "yap2" WHERE "extension" = ? AND "key" = ?;
+	
+	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
+	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
+	
+	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_DONE)
+	{
+		connection->hasDiskChanges = YES;
+	}
+	else
+	{
+		YDBLogError(@"Error executing 'yapRemoveForKeyStatement': %d %s, extension(%@)",
+					status, sqlite3_errmsg(connection->db), extensionName);
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_extension);
+	FreeYapDatabaseString(&_key);
+}
+
 - (void)removeAllValuesForExtension:(NSString *)extensionName
 {
 	// Be careful with this statement.
@@ -4248,7 +4287,7 @@
 	// The snapshot value is critical to the underlying architecture of the system.
 	// Removing it could cripple the system.
 	
-	NSAssert(extensionName != nil, @"Invalid extensionName. Would result in removing snapshot from yap table!");
+	NSAssert(extensionName != nil, @"Invalid extensionName!");
 	
 	sqlite3_stmt *statement = [connection yapRemoveExtensionStatement];
 	if (statement == NULL) return;

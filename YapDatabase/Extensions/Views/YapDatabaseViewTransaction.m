@@ -25,9 +25,10 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
-#define ExtKey_classVersion @"classVersion"
-#define ExtKey_persistent   @"persistent"
-#define ExtKey_version      @"version"
+#define ExtKey_classVersion        @"classVersion"
+#define ExtKey_persistent          @"persistent"
+#define ExtKey_version_deprecated  @"version"
+#define ExtKey_versionTag          @"versionTag"
 
 /**
  * The view is tasked with storing ordered arrays of keys.
@@ -117,7 +118,7 @@
 	int classVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
 	BOOL isPersistent = [self isPersistentView];
 	
-	int version = viewConnection->view->version;
+	NSString *versionTag = viewConnection->view->versionTag;
 	
 	// Figure out what steps we need to take in order to register the view
 	
@@ -126,8 +127,7 @@
 	BOOL oldIsPersistent = NO;
 	BOOL hasOldIsPersistent = NO;
 	
-	int oldVersion = 0;
-	BOOL hasOldVersion = NO;
+	NSString *oldVersionTag = nil;
 	
 	// Check classVersion (the internal version number of YapDatabaseView implementation)
 	
@@ -168,7 +168,7 @@
 			// Even when re-registering from previous app launch.
 			needsCreateTables = YES;
 			
-			hasOldVersion = [self getIntValue:&oldVersion forExtensionKey:ExtKey_version];
+			oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag];
 		}
 	}
 	
@@ -189,8 +189,8 @@
 			[self setBoolValue:isPersistent forExtensionKey:ExtKey_persistent];
 		}
 		
-		if (!hasOldVersion || (oldVersion != version)) {
-			[self setIntValue:version forExtensionKey:ExtKey_version];
+		if (![oldVersionTag isEqualToString:versionTag]) {
+			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
 		}
 	}
 	else
@@ -198,13 +198,34 @@
 		// Check user-supplied config version.
 		// We may need to re-populate the database if the groupingBlock or sortingBlock changed.
 		
-		oldVersion = [self intValueForExtensionKey:ExtKey_version];
+		oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag];
 		
-		if (oldVersion != version)
+		BOOL hasOldVersion_deprecated = NO;
+		if (oldVersionTag == nil)
+		{
+			int oldVersion_deprecated = 0;
+			hasOldVersion_deprecated = [self getIntValue:&oldVersion_deprecated
+			                             forExtensionKey:ExtKey_version_deprecated];
+			
+			if (hasOldVersion_deprecated)
+			{
+				oldVersionTag = [NSString stringWithFormat:@"%d", oldVersion_deprecated];
+			}
+		}
+		
+		if (![oldVersionTag isEqualToString:versionTag])
 		{
 			if (![self populateView]) return NO;
 			
-			[self setIntValue:version forExtensionKey:ExtKey_version];
+			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
+			
+			if (hasOldVersion_deprecated)
+				[self removeValueForExtensionKey:ExtKey_version_deprecated];
+		}
+		else if (hasOldVersion_deprecated)
+		{
+			[self removeValueForExtensionKey:ExtKey_version_deprecated];
+			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
 		}
 	}
 	

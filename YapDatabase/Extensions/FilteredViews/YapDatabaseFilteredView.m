@@ -31,37 +31,18 @@
           groupingBlockType:(YapDatabaseViewBlockType)inGroupingBlockType
                sortingBlock:(YapDatabaseViewSortingBlock)inSortingBlock
            sortingBlockType:(YapDatabaseViewBlockType)inSortingBlockType
-{
-	return [self initWithGroupingBlock:inGroupingBlock
-	                 groupingBlockType:inGroupingBlockType
-	                      sortingBlock:inSortingBlock
-	                  sortingBlockType:inSortingBlockType
-	                           version:0
-	                           options:nil];
-}
-
-- (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)inGroupingBlock
-          groupingBlockType:(YapDatabaseViewBlockType)inGroupingBlockType
-               sortingBlock:(YapDatabaseViewSortingBlock)inSortingBlock
-           sortingBlockType:(YapDatabaseViewBlockType)inSortingBlockType
-                    version:(int)inVersion
-{
-	return [self initWithGroupingBlock:inGroupingBlock
-	                 groupingBlockType:inGroupingBlockType
-	                      sortingBlock:inSortingBlock
-	                  sortingBlockType:inSortingBlockType
-	                           version:inVersion
-	                           options:nil];
-}
-
-- (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)inGroupingBlock
-          groupingBlockType:(YapDatabaseViewBlockType)inGroupingBlockType
-               sortingBlock:(YapDatabaseViewSortingBlock)inSortingBlock
-           sortingBlockType:(YapDatabaseViewBlockType)inSortingBlockType
-                    version:(int)inVersion
+                 versionTag:(NSString *)inVersionTag
                     options:(YapDatabaseViewOptions *)inOptions
 {
-	// Todo: Throw exception
+	NSString *reason = @"You must use the init method(s) specific to YapDatabaseFilteredView.";
+	
+	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
+	    @"YapDatabaseFilteredView is designed to filter an existing YapDatabaseView instance."
+		@" Thus it needs to know the registeredName of the YapDatabaseView instance you wish to filter."
+		@" As such, YapDatabaseFilteredView has different init methods you must use."};
+	
+	@throw [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
+	
 	return nil;
 }
 
@@ -74,8 +55,6 @@
 @synthesize filteringBlock = filteringBlock;
 @synthesize filteringBlockType = filteringBlockType;
 
-@synthesize tag = tag;
-
 - (id)initWithParentViewName:(NSString *)inParentViewName
               filteringBlock:(YapDatabaseViewFilteringBlock)inFilteringBlock
           filteringBlockType:(YapDatabaseViewBlockType)inFilteringBlockType
@@ -83,26 +62,26 @@
 	return [self initWithParentViewName:inParentViewName
 	                     filteringBlock:inFilteringBlock
 	                 filteringBlockType:inFilteringBlockType
-	                                tag:nil
+	                         versionTag:nil
 	                            options:nil];
 }
 
 - (id)initWithParentViewName:(NSString *)inParentViewName
               filteringBlock:(YapDatabaseViewFilteringBlock)inFilteringBlock
           filteringBlockType:(YapDatabaseViewBlockType)inFilteringBlockType
-                         tag:(NSString *)inTag
+                  versionTag:(NSString *)inVersionTag
 {
 	return [self initWithParentViewName:inParentViewName
 	                     filteringBlock:inFilteringBlock
 	                 filteringBlockType:inFilteringBlockType
-	                                tag:inTag
+	                         versionTag:inVersionTag
 	                            options:nil];
 }
 
 - (id)initWithParentViewName:(NSString *)inParentViewName
               filteringBlock:(YapDatabaseViewFilteringBlock)inFilteringBlock
           filteringBlockType:(YapDatabaseViewBlockType)inFilteringBlockType
-                         tag:(NSString *)inTag
+                  versionTag:(NSString *)inVersionTag
                      options:(YapDatabaseViewOptions *)inOptions
 {
 	NSAssert(inParentViewName != nil, @"Invalid parentViewName");
@@ -121,12 +100,7 @@
 		filteringBlock = inFilteringBlock;
 		filteringBlockType = inFilteringBlockType;
 		
-		version = 0; // version isn't used
-		
-		if (inTag)
-			tag = [inTag copy];
-		else
-			tag = @"";
+		inVersionTag = inVersionTag ? [inVersionTag copy] : @"";
 		
 		options = inOptions ? [inOptions copy] : [[YapDatabaseViewOptions alloc] init];
 	}

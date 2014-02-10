@@ -217,6 +217,7 @@ extern NSString *const YapDatabaseNotificationKey;
 
 - (sqlite3_stmt *)yapGetDataForKeyStatement;   // Against "yap" database, for internal use
 - (sqlite3_stmt *)yapSetDataForKeyStatement;   // Against "yap" database, for internal use
+- (sqlite3_stmt *)yapRemoveForKeyStatement;    // Against "yap" database, for internal use
 - (sqlite3_stmt *)yapRemoveExtensionStatement; // Against "yap" database, for internal use
 
 - (sqlite3_stmt *)getCollectionCountStatement;
@@ -334,6 +335,7 @@ extern NSString *const YapDatabaseNotificationKey;
 - (NSData *)dataValueForKey:(NSString *)key extension:(NSString *)extensionName;
 - (void)setDataValue:(NSData *)value forKey:(NSString *)key extension:(NSString *)extensionName;
 
+- (void)removeValueForKey:(NSString *)key extension:(NSString *)extensionName;
 - (void)removeAllValuesForExtension:(NSString *)extensionName;
 
 - (NSException *)mutationDuringEnumerationException;

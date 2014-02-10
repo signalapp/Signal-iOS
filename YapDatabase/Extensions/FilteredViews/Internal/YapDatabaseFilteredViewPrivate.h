@@ -12,8 +12,6 @@
 	
 	YapDatabaseViewFilteringBlock filteringBlock;
 	YapDatabaseViewBlockType filteringBlockType;
-	
-	NSString *tag;
 }
 
 @end

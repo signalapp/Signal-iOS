@@ -96,7 +96,7 @@
 	                               groupingBlockType:groupingBlockType
 	                                    sortingBlock:sortingBlock
 	                                sortingBlockType:sortingBlockType
-	                                         version:0
+	                                      versionTag:@"1"
 	                                         options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
@@ -1295,7 +1295,7 @@
 	                               groupingBlockType:groupingBlockType
 	                                    sortingBlock:sortingBlock
 	                                sortingBlockType:sortingBlockType
-	                                         version:0
+	                                      versionTag:@"1"
 	                                         options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
@@ -2006,7 +2006,7 @@
 	                               groupingBlockType:groupingBlockType
 	                                    sortingBlock:sortingBlock
 	                                sortingBlockType:sortingBlockType
-	                                         version:0
+	                                      versionTag:@"1"
 	                                         options:options];
 	
 	// Without registering the view,
@@ -2120,7 +2120,7 @@
 	                               groupingBlockType:groupingBlockType
 	                                    sortingBlock:sortingBlock
 	                                sortingBlockType:sortingBlockType
-	                                         version:0
+	                                      versionTag:@"1"
 	                                         options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
@@ -2478,7 +2478,7 @@
 	                               groupingBlockType:groupingBlockType
 	                                    sortingBlock:sortingBlock
 	                                sortingBlockType:sortingBlockType
-	                                         version:0
+	                                      versionTag:@"1"
 	                                         options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
@@ -2577,7 +2577,7 @@
 	                               groupingBlockType:groupingBlockType
 	                                    sortingBlock:sortingBlock
 	                                sortingBlockType:sortingBlockType
-	                                         version:0
+	                                      versionTag:@"1"
 	                                         options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];

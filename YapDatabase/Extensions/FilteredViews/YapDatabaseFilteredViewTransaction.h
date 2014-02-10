@@ -34,6 +34,6 @@ typedef BOOL (^YapDatabaseViewFilteringWithRowBlock)     \
 
 - (void)setFilteringBlock:(YapDatabaseViewFilteringBlock)filteringBlock
        filteringBlockType:(YapDatabaseViewBlockType)filteringBlockType
-                      tag:(NSString *)tag;
+               versionTag:(NSString *)tag;
 
 @end

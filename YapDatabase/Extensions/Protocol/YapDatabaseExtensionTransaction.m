@@ -195,4 +195,10 @@
 	[[self databaseTransaction] setDataValue:value forKey:key extension:registeredName];
 }
 
+- (void)removeValueForExtensionKey:(NSString *)key
+{
+	NSString *registeredName = [[[self extensionConnection] extension] registeredName];
+	[[self databaseTransaction] removeValueForKey:key extension:registeredName];
+}
+
 @end

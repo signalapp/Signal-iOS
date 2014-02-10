@@ -70,35 +70,18 @@ typedef BOOL (^YapDatabaseViewFilteringWithRowBlock)     \
 - (id)initWithParentViewName:(NSString *)viewName
               filteringBlock:(YapDatabaseViewFilteringBlock)filteringBlock
           filteringBlockType:(YapDatabaseViewBlockType)filteringBlockType
-                         tag:(NSString *)tag;
+                  versionTag:(NSString *)versionTag;
 
 - (id)initWithParentViewName:(NSString *)viewName
               filteringBlock:(YapDatabaseViewFilteringBlock)filteringBlock
           filteringBlockType:(YapDatabaseViewBlockType)filteringBlockType
-                         tag:(NSString *)tag
+                  versionTag:(NSString *)versionTag
                      options:(YapDatabaseViewOptions *)options;
 
 @property (nonatomic, strong, readonly) NSString *parentViewName;
 
 @property (nonatomic, strong, readonly) YapDatabaseViewFilteringBlock filteringBlock;
 @property (nonatomic, assign, readonly) YapDatabaseViewBlockType filteringBlockType;
-
-/**
- * The tag assists you in updating the filteringBlock.
- *
- * Whenever you change the filteringBlock, just specify a tag to associate with the block.
- * The tag can help you to identify the filtering criteria, or perhaps be used as a versioning scheme.
- *
- * Here's how it works:
- * The very first time you create the filteredView, it will populate itself from the parentView + filteringBlock.
- * On subsequent app launches, when you re-register the filteredView, it will check the passed tag with
- * the tag it has stored from the previous app session. If the tags match then the filteredView knows it doesn't
- * have to do anything. (It's already setup from last app session.) However, if the tags don't match, then
- * the filteredView will re-populate itself.
- * 
- * It works the same way if you change the filteringBlock on-the-fly. (See setFilteringBlock:filteringBlockType:tag:)
-**/
-@property (nonatomic, copy, readonly) NSString *tag;
 
 /**
  * The options allow you to specify things like creating an IN-MEMORY-ONLY VIEW (non persistent).
