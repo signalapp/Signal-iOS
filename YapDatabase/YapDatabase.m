@@ -37,10 +37,11 @@ NSString *const YapDatabaseRemovedKeysKey        = @"removedKeys";
 NSString *const YapDatabaseRemovedCollectionsKey = @"removedCollections";
 NSString *const YapDatabaseAllKeysRemovedKey     = @"allKeysRemoved";
 
-NSString *const YapDatabaseRegisteredExtensionsKey = @"registeredExtensions";
-NSString *const YapDatabaseRegisteredTablesKey     = @"registeredTables";
-NSString *const YapDatabaseExtensionsOrderKey      = @"extensionsOrder";
-NSString *const YapDatabaseNotificationKey         = @"notification";
+NSString *const YapDatabaseRegisteredExtensionsKey  = @"registeredExtensions";
+NSString *const YapDatabaseRegisteredTablesKey      = @"registeredTables";
+NSString *const YapDatabaseExtensionsOrderKey       = @"extensionsOrder";
+NSString *const YapDatabaseExtensionDependenciesKey = @"extensionDependencies";
+NSString *const YapDatabaseNotificationKey          = @"notification";
 
 /**
  * The database version is stored (via pragma user_version) to sqlite.
@@ -1388,36 +1389,9 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 		return NO;
 	}
 	
-	// Set the registeredName now.
-	// The extension will need this in order to perform the registration tasks such as creating tables, etc.
-	
-	extension.registeredName = extensionName;
-	
 	// Attempt registration
 	
 	BOOL result = [[self registrationConnection] registerExtension:extension withName:extensionName];
-	if (result)
-	{
-		// Extension registered
-		// Record dependencies (if there are any)
-		
-		NSSet *dependencies = [extension dependencies];
-		
-		if (dependencies == nil)
-			dependencies = [NSSet set];
-		
-		NSMutableDictionary *newExtensionDependencies = [extensionDependencies mutableCopy];
-		[newExtensionDependencies setObject:dependencies forKey:extensionName];
-		
-		extensionDependencies = [newExtensionDependencies copy];
-	}
-	else
-	{
-		// Registration failed
-		
-		extension.registeredName = nil;
-	}
-	
 	return result;
 }
 
@@ -1435,61 +1409,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 		return;
 	}
 	
-	YapDatabaseExtension *extension = [self registeredExtension:extensionName];
-	
 	[[self registrationConnection] unregisterExtension:extensionName];
-	extension.registeredName = nil;
-	
-	NSMutableDictionary *newExtensionDependencies = [extensionDependencies mutableCopy];
-	[newExtensionDependencies removeObjectForKey:extensionName];
-	
-	// Automatically unregister any extensions that were dependent upon this one.
-	
-	NSMutableArray *extensionNameStack = [NSMutableArray arrayWithCapacity:1];
-	[extensionNameStack addObject:extensionName];
-	
-	do
-	{
-		NSString *currentExtensionName = [extensionNameStack lastObject];
-		
-		__block NSString *dependentExtName = nil;
-		[newExtensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
-
-		//	__unsafe_unretained NSString *extName = (NSString *)key;
-			__unsafe_unretained NSSet *extDependencies = (NSSet *)obj;
-		
-			if ([extDependencies containsObject:currentExtensionName])
-			{
-				dependentExtName = (NSString *)key;
-				*stop = YES;
-			}
-		}];
-		
-		if (dependentExtName)
-		{
-			// We found an extension that was dependent upon the one we just unregistered.
-			// So we need to unregister it too.
-			
-			YapDatabaseExtension *dependentExt = [self registeredExtension:dependentExtName];
-			
-			[[self registrationConnection] unregisterExtension:dependentExtName];
-			dependentExt.registeredName = nil;
-			
-			[newExtensionDependencies removeObjectForKey:dependentExtName];
-			
-			// And now we need to check and see if there were any extensions dependent upon this new one.
-			// So we add it to the top of the stack, and continue our search.
-			
-			[extensionNameStack addObject:dependentExtName];
-		}
-		else
-		{
-			[extensionNameStack removeLastObject];
-		}
-		
-	} while ([extensionNameStack count] > 0);
-	
-	extensionDependencies = [newExtensionDependencies copy];
 }
 
 /**
@@ -1546,6 +1466,17 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
 	
 	return extensionsOrder;
+}
+
+/**
+ * This method is only accessible from within the snapshotQueue.
+ * Used by [YapDatabaseConnection prepare].
+**/
+- (NSDictionary *)extensionDependencies
+{
+	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
+	
+	return extensionDependencies;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1919,6 +1850,7 @@ NSString *const YapDatabaseNotificationKey         = @"notification";
 	{
 		registeredExtensions = newRegisteredExtensions;
 		extensionsOrder = [changeset objectForKey:YapDatabaseExtensionsOrderKey];
+		extensionDependencies = [changeset objectForKey:YapDatabaseExtensionDependenciesKey];
 	}
 	
 	// Update registeredTables, if changed.

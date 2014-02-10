@@ -217,6 +217,7 @@
 	registeredExtensions = [database registeredExtensions];
 	registeredTables = [database registeredTables];
 	extensionsOrder = [database extensionsOrder];
+	extensionDependencies = [database extensionDependencies];
 	
 	extensionsReady = ([registeredExtensions count] == 0);
 }
@@ -2083,35 +2084,7 @@
 		{
 			if ([registeredExtensions objectForKey:prevExtensionName] == nil)
 			{
-				NSString *className = [transaction stringValueForKey:@"class" extension:prevExtensionName];
-				Class class = NSClassFromString(className);
-				
-				if (className == nil)
-				{
-					YDBLogWarn(@"Unable to auto-unregister extension(%@). Doesn't appear to be registered.",
-					           prevExtensionName);
-				}
-				else if (class == NULL)
-				{
-					YDBLogError(@"Unable to auto-unregister extension(%@) with unknown class(%@)",
-					            prevExtensionName, className);
-				}
-				if (![class isSubclassOfClass:[YapDatabaseExtension class]])
-				{
-					YDBLogError(@"Unable to auto-unregister extension(%@) with improper class(%@)",
-					            prevExtensionName, className);
-				}
-				else
-				{
-					YDBLogInfo(@"Auto-unregistering extension(%@) with class(%@)",
-					            prevExtensionName, className);
-					
-					// Drop tables
-					[class dropTablesForRegisteredName:prevExtensionName withTransaction:transaction];
-					
-					// Drop preferences (rows in yap2 table)
-					[transaction removeAllValuesForExtension:prevExtensionName];
-				}
+				[self _unregisterExtension:prevExtensionName withTransaction:transaction];
 			}
 		}
 		
@@ -2614,6 +2587,7 @@
 	          YapDatabaseRegisteredExtensionsKey,
 	          YapDatabaseRegisteredTablesKey,
 			  YapDatabaseExtensionsOrderKey,
+			  YapDatabaseExtensionDependenciesKey,
 	          YapDatabaseNotificationKey,
 	          YapDatabaseObjectChangesKey,
 	          YapDatabaseMetadataChangesKey,
@@ -2717,6 +2691,7 @@
 		
 		[internalChangeset setObject:registeredExtensions forKey:YapDatabaseRegisteredExtensionsKey];
 		[internalChangeset setObject:extensionsOrder forKey:YapDatabaseExtensionsOrderKey];
+		[internalChangeset setObject:extensionDependencies forKey:YapDatabaseExtensionDependenciesKey];
 	}
 	
 	if (registeredTablesChanged)
@@ -2804,6 +2779,7 @@
 		
 		registeredExtensions = changeset_registeredExtensions;
 		extensionsOrder = [changeset objectForKey:YapDatabaseExtensionsOrderKey];
+		extensionDependencies = [changeset objectForKey:YapDatabaseExtensionDependenciesKey];
 		
 		// Remove any extensions that have been dropped
 		
@@ -3564,6 +3540,10 @@
 		YapDatabaseReadWriteTransaction *transaction = [self newReadWriteTransaction];
 		[self preReadWriteTransaction:transaction];
 		
+		// Set the registeredName now.
+		// The extension will need this in order to perform the registration tasks such as creating tables, etc.
+		extension.registeredName = extensionName;
+		
 		YapDatabaseExtensionConnection *extensionConnection;
 		YapDatabaseExtensionTransaction *extensionTransaction;
 		
@@ -3588,6 +3568,9 @@
 		}
 		else
 		{
+			// Registration failed.
+			
+			extension.registeredName = nil;
 			[transaction rollback];
 		}
 		
@@ -3607,38 +3590,101 @@
 		YapDatabaseReadWriteTransaction *transaction = [self newReadWriteTransaction];
 		[self preReadWriteTransaction:transaction];
 		
-		NSString *className = [transaction stringValueForKey:@"class" extension:extensionName];
-		Class class = NSClassFromString(className);
+		// Unregister the given extension
 		
-		if (className == nil)
-		{
-			YDBLogWarn(@"Unable to unregister extension(%@). Doesn't appear to be registered.", extensionName);
-		}
-		else if (class == NULL)
-		{
-			YDBLogError(@"Unable to unregister extension(%@) with unknown class(%@)", extensionName, className);
-		}
-		if (![class isSubclassOfClass:[YapDatabaseExtension class]])
-		{
-			YDBLogError(@"Unable to unregister extension(%@) with improper class(%@)", extensionName, className);
-		}
-		else
-		{
-			// Drop tables
-			[class dropTablesForRegisteredName:extensionName withTransaction:transaction];
-			
-			// Drop preferences (rows in yap2 table)
-			[transaction removeAllValuesForExtension:extensionName];
-			
-			[self didUnregisterExtension:extensionName];
-			
-			[self removeRegisteredExtensionConnection:extensionName];
-			[transaction removeRegisteredExtensionTransaction:extensionName];
-		}
+		YapDatabaseExtension *extension = [registeredExtensions objectForKey:extensionName];
 		
+		[self _unregisterExtension:extensionName withTransaction:transaction];
+		extension.registeredName = nil;
+		
+		// Automatically unregister any extensions that were dependent upon this one.
+		
+		NSMutableArray *extensionNameStack = [NSMutableArray arrayWithCapacity:1];
+		[extensionNameStack addObject:extensionName];
+		
+		do
+		{
+			NSString *currentExtensionName = [extensionNameStack lastObject];
+			
+			__block NSString *dependentExtName = nil;
+			[extensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+				
+			//	__unsafe_unretained NSString *extName = (NSString *)key;
+				__unsafe_unretained NSSet *extDependencies = (NSSet *)obj;
+				
+				if ([extDependencies containsObject:currentExtensionName])
+				{
+					dependentExtName = (NSString *)key;
+					*stop = YES;
+				}
+			}];
+			
+			if (dependentExtName)
+			{
+				// We found an extension that was dependent upon the one we just unregistered.
+				// So we need to unregister it too.
+				
+				YapDatabaseExtension *dependentExt = [registeredExtensions objectForKey:dependentExtName];
+				
+				[self _unregisterExtension:dependentExtName withTransaction:transaction];
+				dependentExt.registeredName = nil;
+				
+				// And now we need to check and see if there were any extensions dependent upon this new one.
+				// So we add it to the top of the stack, and continue our search.
+				
+				[extensionNameStack addObject:dependentExtName];
+			}
+			else
+			{
+				[extensionNameStack removeLastObject];
+			}
+			
+		} while ([extensionNameStack count] > 0);
+		
+		
+		// Complete the transaction
 		[self postReadWriteTransaction:transaction];
+		
+		// And reset the registeredExtensionsChanged ivar.
+		// The above method already processed it, and included the appropriate information in the changeset.
 		registeredExtensionsChanged = NO;
 	}});
+}
+
+- (void)_unregisterExtension:(NSString *)extensionName withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+	NSString *className = [transaction stringValueForKey:@"class" extension:extensionName];
+	Class class = NSClassFromString(className);
+	
+	if (className == nil)
+	{
+		YDBLogWarn(@"Unable to unregister extension(%@). Doesn't appear to be registered.", extensionName);
+	}
+	else if (class == NULL)
+	{
+		YDBLogError(@"Unable to unregister extension(%@) with unknown class(%@)", extensionName, className);
+	}
+	if (![class isSubclassOfClass:[YapDatabaseExtension class]])
+	{
+		YDBLogError(@"Unable to unregister extension(%@) with improper class(%@)", extensionName, className);
+	}
+	else
+	{
+		// Drop tables
+		[class dropTablesForRegisteredName:extensionName withTransaction:transaction];
+		
+		// Drop preferences (rows in yap2 table)
+		[transaction removeAllValuesForExtension:extensionName];
+		
+		// Remove from registeredExtensions, extensionsOrder & extensionDependencies (if needed)
+		[self didUnregisterExtension:extensionName];
+		
+		// Remove YapDatabaseExtensionConnection subclass instance (if needed)
+		[self removeRegisteredExtensionConnection:extensionName];
+		
+		// Remove YapDatabaseExtensionTransaction subclass instance (if needed)
+		[transaction removeRegisteredExtensionTransaction:extensionName];
+	}
 }
 
 - (void)willRegisterExtension:(YapDatabaseExtension *)extension
@@ -3733,8 +3779,17 @@
 	
 	registeredExtensions = [newRegisteredExtensions copy];
 	extensionsOrder = [extensionsOrder arrayByAddingObject:extensionName];
-	extensionsReady = NO;
 	
+	NSSet *dependencies = [extension dependencies];
+	if (dependencies == nil)
+		dependencies = [NSSet set];
+	
+	NSMutableDictionary *newExtensionDependencies = [extensionDependencies mutableCopy];
+	[newExtensionDependencies setObject:dependencies forKey:extensionName];
+	
+	extensionDependencies = [newExtensionDependencies copy];
+	
+	extensionsReady = NO;
 	sharedKeySetForExtensions = [NSDictionary sharedKeySetForKeys:[registeredExtensions allKeys]];
 	
 	// Set the registeredExtensionsChanged flag.
@@ -3755,8 +3810,18 @@
 		[newRegisteredExtensions removeObjectForKey:extensionName];
 		
 		registeredExtensions = [newRegisteredExtensions copy];
-		extensionsReady = NO;
 		
+		NSMutableArray *newExtensionsOrder = [extensionsOrder mutableCopy];
+		[newExtensionsOrder removeObject:extensionName];
+		
+		extensionsOrder = [newExtensionsOrder copy];
+		
+		NSMutableDictionary *newExtensionDependencies = [extensionDependencies mutableCopy];
+		[newExtensionDependencies removeObjectForKey:extensionName];
+		
+		extensionDependencies = [newExtensionDependencies copy];
+		
+		extensionsReady = NO;
 		sharedKeySetForExtensions = [NSDictionary sharedKeySetForKeys:[registeredExtensions allKeys]];
 		
 		// Set the registeredExtensionsChanged flag.

@@ -26,6 +26,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 extern NSString *const YapDatabaseRegisteredExtensionsKey;
 extern NSString *const YapDatabaseRegisteredTablesKey;
 extern NSString *const YapDatabaseExtensionsOrderKey;
+extern NSString *const YapDatabaseExtensionDependenciesKey;
 extern NSString *const YapDatabaseNotificationKey;
 
 @interface YapDatabase () {
@@ -42,8 +43,8 @@ extern NSString *const YapDatabaseNotificationKey;
 	NSDictionary *registeredExtensions;
 	NSDictionary *registeredTables;
 	
-	NSDictionary *extensionDependencies;
 	NSArray *extensionsOrder;
+	NSDictionary *extensionDependencies;
 	
 	YapDatabaseConnection *registrationConnection;
 	
@@ -106,6 +107,7 @@ extern NSString *const YapDatabaseNotificationKey;
 **/
 - (NSDictionary *)registeredTables;
 - (NSArray *)extensionsOrder;
+- (NSDictionary *)extensionDependencies;
 
 /**
  * This method is only accessible from within the snapshotQueue.
@@ -184,10 +186,11 @@ extern NSString *const YapDatabaseNotificationKey;
 	
 	sqlite3 *db;
 	
-	dispatch_queue_t connectionQueue;     // Only for YapDatabaseExtensionConnection subclasses
-	void *IsOnConnectionQueueKey;         // Only for YapDatabaseExtensionConnection subclasses
+	dispatch_queue_t connectionQueue;     // For YapDatabaseExtensionConnection subclasses
+	void *IsOnConnectionQueueKey;         // For YapDatabaseExtensionConnection subclasses
 	
 	NSArray *extensionsOrder;             // Read-only by YapDatabaseTransaction
+	NSDictionary *extensionDependencies;  // Read-only for YapDatabaseExtensionTransaction subclasses
 	
 	BOOL hasDiskChanges;
 	
