@@ -6388,5 +6388,81 @@ static NSMutableArray *changes;
 	STAssertTrue(RowOp(rowChanges, 1).finalIndex == 3, @"");
 	STAssertTrue([RowOp(rowChanges, 1).finalGroup isEqualToString:consolidatedGroupName], @"");
 }
+@end
+
+@interface TestViewMappingDynamicGroupAddition : TestViewMappingsBase
+@end
+
+@implementation TestViewMappingDynamicGroupAddition
+
+-(void)test_adding_group_should_cause_result_in_section_insert_change{
+    YapDatabaseViewMappings *originalMapping, *finalMapping;
+    originalMapping = [[YapDatabaseViewMappings alloc] initWithGroupFilterBlock:^BOOL(NSString *g){
+                                                                                            return YES;
+                                                                                        }
+                                                                                       sortBlock:^NSComparisonResult(NSString *l, NSString *r){
+                                                                                           return [l compare:r];
+                                                                                       }
+                                                                                            view:@"view"];
+    
+    
+    [originalMapping updateWithCounts:@{@"group1":@(5),
+                                @"group2":@(3)}];
+    
+    finalMapping = [originalMapping copy];
+    [finalMapping updateWithCounts:@{@"group1":@(5),
+                                     @"group2":@(3),
+                                     @"group3":@(2)}];
+    
+
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"group3"]];
+    
+    NSArray *sectionChanges = nil, *rowChanges = nil;
+    [YapDatabaseViewChange getSectionChanges:&sectionChanges
+                                  rowChanges:&rowChanges
+                        withOriginalMappings:originalMapping
+                               finalMappings:finalMapping
+                                 fromChanges:changes];
+    
+    STAssertTrue(sectionChanges.count == 1, nil);
+    STAssertTrue(SectionOp(sectionChanges, 0).type == YapDatabaseViewChangeInsert, nil);
+    STAssertTrue(SectionOp(sectionChanges, 0).index == 2, nil);
+}
+
+-(void)test_adding_empty_group_when_dynamic_section_for_all_groups_is_set_should_not_result_in_section_insert_change{
+    YapDatabaseViewMappings *originalMapping, *finalMapping;
+    originalMapping = [[YapDatabaseViewMappings alloc] initWithGroupFilterBlock:^BOOL(NSString *g){
+        return YES;
+    }
+                                                                      sortBlock:^NSComparisonResult(NSString *l, NSString *r){
+                                                                          return [l compare:r];
+                                                                      }
+                                                                           view:@"view"];
+    originalMapping.isDynamicSectionForAllGroups = YES;
+    
+    
+    [originalMapping updateWithCounts:@{@"group1":@(5),
+                                        @"group2":@(3)}];
+    
+    finalMapping = [originalMapping copy];
+    [finalMapping updateWithCounts:@{@"group1":@(5),
+                                     @"group2":@(3),
+                                     @"group3":@(0)}];
+    
+    
+	[changes addObject:[YapDatabaseViewSectionChange insertGroup:@"group3"]];
+    
+    NSArray *sectionChanges = nil, *rowChanges = nil;
+    [YapDatabaseViewChange getSectionChanges:&sectionChanges
+                                  rowChanges:&rowChanges
+                        withOriginalMappings:originalMapping
+                               finalMappings:finalMapping
+                                 fromChanges:changes];
+    
+    
+    STAssertTrue(sectionChanges.count == 0, nil);
+}
+
 
 @end
+

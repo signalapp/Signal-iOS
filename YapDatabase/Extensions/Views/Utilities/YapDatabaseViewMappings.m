@@ -447,7 +447,7 @@
 }
 
 - (BOOL)shouldUpdateAllGroupsWithNewGroups:(NSArray *)newGroups{
-    return [allGroups isEqualToArray:newGroups];
+    return ![allGroups isEqualToArray:newGroups];
 }
 
 
