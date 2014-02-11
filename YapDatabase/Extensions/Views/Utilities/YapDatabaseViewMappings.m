@@ -24,15 +24,21 @@
 @implementation YapDatabaseViewMappings
 {
 	// Immutable init parameters
-	NSArray *allGroups;
 	NSString *registeredViewName;
-	
+    
+    NSArray *allGroups;
+    
+    BOOL viewGroupsAreDynaimc;
+    YapDatabaseViewMappingGroupFilter groupFilterBlock;
+    YapDatabaseViewMappingGroupSort groupSort;
+    
 	// Mappings and cached counts
 	NSMutableArray *visibleGroups;
 	NSMutableDictionary *counts;
 	BOOL isUsingConsolidatedGroup;
 	BOOL autoConsolidationDisabled;
-	
+	BOOL isDynamicSectionForAllGroups;
+    
 	// Configuration
 	NSMutableSet *dynamicSections;
 	NSMutableSet *reverse;
@@ -60,25 +66,39 @@
 {
 	if ((self = [super init]))
 	{
-		allGroups = [[NSArray alloc] initWithArray:inGroups copyItems:YES];
-		registeredViewName = [inRegisteredViewName copy];
-		
+        allGroups = [[NSArray alloc] initWithArray:inGroups copyItems:YES];
 		NSUInteger allGroupsCount = [allGroups count];
+        viewGroupsAreDynaimc = NO;
 		
 		visibleGroups = [[NSMutableArray alloc] initWithCapacity:allGroupsCount];
-		
 		dynamicSections = [[NSMutableSet alloc] initWithCapacity:allGroupsCount];
 		reverse         = [[NSMutableSet alloc] initWithCapacity:allGroupsCount];
 		
 		id sharedKeySet = [NSDictionary sharedKeySetForKeys:allGroups];
-		
 		counts       = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
 		rangeOptions = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
 		dependencies = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
 		
-		snapshotOfLastUpdate = UINT64_MAX;
+        [self _initWithView:inRegisteredViewName];
+
 	}
 	return self;
+}
+
+- (id)initWithGroupFilterBlock:(YapDatabaseViewMappingGroupFilter)inFilter sortBlock:(YapDatabaseViewMappingGroupSort)inSort view:(NSString *)inRegisteredViewName{
+    if (self = [super init]){
+        groupFilterBlock = inFilter;
+        groupSort = inSort;
+        viewGroupsAreDynaimc = YES;
+        
+        [self _initWithView:inRegisteredViewName];
+    }
+    return self;
+}
+
+- (void)_initWithView:(NSString *)inRegisteredViewName{
+    registeredViewName = [inRegisteredViewName copy];
+    snapshotOfLastUpdate = UINT64_MAX;
 }
 
 - (id)copyWithZone:(NSZone *)zone
@@ -114,11 +134,13 @@
 		[dynamicSections addObjectsFromArray:allGroups];
 	else
 		[dynamicSections removeAllObjects];
+    
+    isDynamicSectionForAllGroups = isDynamic;
 }
 
 - (BOOL)isDynamicSectionForAllGroups
 {
-	return ([dynamicSections count] == [allGroups count]);
+    return isDynamicSectionForAllGroups;
 }
 
 - (void)setIsDynamicSection:(BOOL)isDynamic forGroup:(NSString *)group
@@ -343,9 +365,53 @@
 		@throw [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
 	}
 	
+    YapDatabaseViewTransaction *viewTransaction = [transaction ext:registeredViewName];
+    if (viewGroupsAreDynaimc){
+        NSArray *transactionGroups = [viewTransaction allGroups];
+        NSMutableArray *newAllGroups = [NSMutableArray arrayWithCapacity:allGroups.count];
+        for (NSString *group in transactionGroups) {
+            if (groupFilterBlock(group)) [newAllGroups addObject:group];
+        }
+        [newAllGroups sortUsingComparator:groupSort];
+        
+        allGroups = [newAllGroups copy];
+        NSUInteger allGroupsCount = allGroups.count;
+
+        // visible groups will be regenerated below (so will counts.
+        visibleGroups = [[NSMutableArray alloc] initWithCapacity:allGroupsCount];
+        
+        // if all sections should be dynamic, regenerate dynamic sections with all groups.
+        if (isDynamicSectionForAllGroups){
+            dynamicSections = [[NSMutableSet alloc] initWithArray:allGroups];
+        }
+        
+        //update reverse list to remove any removed groups.
+        NSMutableSet *newReverse = [[NSMutableSet alloc] initWithCapacity:allGroupsCount];
+        for (NSString *group in reverse) {
+            if ([allGroups containsObject:group]) [newReverse addObject:group];
+        }
+		reverse = newReverse;
+		
+        
+		id sharedKeySet = [NSDictionary sharedKeySetForKeys:allGroups];
+		counts       = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+		
+
+        NSMutableDictionary *newRangeOptions = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+        NSMutableDictionary *newDependencies = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+        
+        for (NSString *group in allGroups) {
+            if (rangeOptions[group]) newRangeOptions[group] = rangeOptions[group];
+            if (dependencies[group]) newDependencies[group] = dependencies[group];
+        }
+        
+        rangeOptions = newRangeOptions;
+		dependencies = newDependencies;
+    }
+    
 	for (NSString *group in allGroups)
 	{
-		NSUInteger count = [[transaction ext:registeredViewName] numberOfKeysInGroup:group];
+		NSUInteger count = [viewTransaction numberOfKeysInGroup:group];
 		
 		[counts setObject:@(count) forKey:group];
 	}
@@ -528,8 +594,13 @@
  * Returns the number of items in the given group.
  *
  * This is the cached value from the last time one of the following methods was invoked:
- * - updateWithTransaction:
- * - changesForNotifications:withMappings:
+ * - updateWithTransaction: 
+ * which should be invoked when the mapping is first created and then will be invoked whenever
+ * - (void)getSectionChanges:(NSArray **)sectionChangesPtr
+ *                rowChanges:(NSArray **)rowChangesPtr
+ *          forNotifications:(NSArray *)notifications
+ *              withMappings:(YapDatabaseViewMappings *)mappings 
+ * is called on the associated registered YapDatabaseView.
 **/
 - (NSUInteger)numberOfItemsInGroup:(NSString *)group
 {
