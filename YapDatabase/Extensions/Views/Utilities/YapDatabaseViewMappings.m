@@ -28,7 +28,7 @@
     
     NSArray *allGroups;
     
-    BOOL viewGroupsAreDynaimc;
+    BOOL viewGroupsAreDynamic;
     YapDatabaseViewMappingGroupFilter groupFilterBlock;
     YapDatabaseViewMappingGroupSort groupSort;
     
@@ -68,7 +68,7 @@
 	{
         allGroups = [[NSArray alloc] initWithArray:inGroups copyItems:YES];
 		NSUInteger allGroupsCount = [allGroups count];
-        viewGroupsAreDynaimc = NO;
+        viewGroupsAreDynamic = NO;
 		
 		visibleGroups = [[NSMutableArray alloc] initWithCapacity:allGroupsCount];
 		dynamicSections = [[NSMutableSet alloc] initWithCapacity:allGroupsCount];
@@ -89,7 +89,7 @@
     if (self = [super init]){
         groupFilterBlock = inFilter;
         groupSort = inSort;
-        viewGroupsAreDynaimc = YES;
+        viewGroupsAreDynamic = YES;
         
         [self _initWithView:inRegisteredViewName];
     }
@@ -106,12 +106,17 @@
 	YapDatabaseViewMappings *copy = [[YapDatabaseViewMappings alloc] init];
 	copy->allGroups = allGroups;
 	copy->registeredViewName = registeredViewName;
+    
+    copy->viewGroupsAreDynamic = viewGroupsAreDynamic;
+    copy->groupFilterBlock = groupFilterBlock;
+    copy->groupSort = groupSort;
 	
 	copy->visibleGroups = [visibleGroups mutableCopy];
 	copy->counts = [counts mutableCopy];
 	copy->isUsingConsolidatedGroup = isUsingConsolidatedGroup;
 	copy->autoConsolidationDisabled = autoConsolidationDisabled;
 	
+    copy->isDynamicSectionForAllGroups = isDynamicSectionForAllGroups;
 	copy->dynamicSections = [dynamicSections mutableCopy];
 	copy->reverse = [reverse mutableCopy];
 	copy->rangeOptions = [rangeOptions mutableCopy];
@@ -366,47 +371,11 @@
 	}
 	
     YapDatabaseViewTransaction *viewTransaction = [transaction ext:registeredViewName];
-    if (viewGroupsAreDynaimc){
-        NSArray *transactionGroups = [viewTransaction allGroups];
-        NSMutableArray *newAllGroups = [NSMutableArray arrayWithCapacity:allGroups.count];
-        for (NSString *group in transactionGroups) {
-            if (groupFilterBlock(group)) [newAllGroups addObject:group];
+    if (viewGroupsAreDynamic){
+        NSArray *newGroups = [self filterAndSortTransactionGroups:[viewTransaction allGroups]];
+        if ([self shouldUpdateAllGroupsWithNewGroups:newGroups]){
+            [self updateMappingWithGroups:newGroups];
         }
-        [newAllGroups sortUsingComparator:groupSort];
-        
-        allGroups = [newAllGroups copy];
-        NSUInteger allGroupsCount = allGroups.count;
-
-        // visible groups will be regenerated below (so will counts.
-        visibleGroups = [[NSMutableArray alloc] initWithCapacity:allGroupsCount];
-        
-        // if all sections should be dynamic, regenerate dynamic sections with all groups.
-        if (isDynamicSectionForAllGroups){
-            dynamicSections = [[NSMutableSet alloc] initWithArray:allGroups];
-        }
-        
-        //update reverse list to remove any removed groups.
-        NSMutableSet *newReverse = [[NSMutableSet alloc] initWithCapacity:allGroupsCount];
-        for (NSString *group in reverse) {
-            if ([allGroups containsObject:group]) [newReverse addObject:group];
-        }
-		reverse = newReverse;
-		
-        
-		id sharedKeySet = [NSDictionary sharedKeySetForKeys:allGroups];
-		counts       = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
-		
-
-        NSMutableDictionary *newRangeOptions = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
-        NSMutableDictionary *newDependencies = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
-        
-        for (NSString *group in allGroups) {
-            if (rangeOptions[group]) newRangeOptions[group] = rangeOptions[group];
-            if (dependencies[group]) newDependencies[group] = dependencies[group];
-        }
-        
-        rangeOptions = newRangeOptions;
-		dependencies = newDependencies;
     }
     
 	for (NSString *group in allGroups)
@@ -425,12 +394,75 @@
 	[self updateVisibility];
 }
 
+-(void)updateMappingWithGroups:(NSArray *)groups{
+    NSMutableArray *newAllGroups = [NSMutableArray arrayWithCapacity:groups.count];
+    for (NSString *group in groups) {
+        if (groupFilterBlock(group)) [newAllGroups addObject:group];
+    }
+    [newAllGroups sortUsingComparator:groupSort];
+    
+    allGroups = [newAllGroups copy];
+    NSUInteger allGroupsCount = allGroups.count;
+    
+    // visible groups will be regenerated below (so will counts.
+    visibleGroups = [[NSMutableArray alloc] initWithCapacity:allGroupsCount];
+    
+    // if all sections should be dynamic, regenerate dynamic sections with all groups.
+    if (isDynamicSectionForAllGroups){
+        dynamicSections = [[NSMutableSet alloc] initWithArray:allGroups];
+    }
+    
+    //update reverse list to remove any removed groups.
+    NSMutableSet *newReverse = [[NSMutableSet alloc] initWithCapacity:allGroupsCount];
+    for (NSString *group in reverse) {
+        if ([allGroups containsObject:group]) [newReverse addObject:group];
+    }
+    reverse = newReverse;
+    
+    
+    id sharedKeySet = [NSDictionary sharedKeySetForKeys:allGroups];
+    counts       = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+    
+    
+    NSMutableDictionary *newRangeOptions = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+    NSMutableDictionary *newDependencies = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+    
+    for (NSString *group in allGroups) {
+        if (rangeOptions[group]) newRangeOptions[group] = rangeOptions[group];
+        if (dependencies[group]) newDependencies[group] = dependencies[group];
+    }
+    
+    rangeOptions = newRangeOptions;
+    dependencies = newDependencies;
+}
+
+- (NSArray *)filterAndSortTransactionGroups:(NSArray *)transactionGroups{
+    NSMutableArray *newAllGroups = [NSMutableArray arrayWithCapacity:transactionGroups.count];
+    for (NSString *group in transactionGroups) {
+        if (groupFilterBlock(group)) [newAllGroups addObject:group];
+    }
+    [newAllGroups sortUsingComparator:groupSort];
+    
+    return [newAllGroups copy];
+}
+
+- (BOOL)shouldUpdateAllGroupsWithNewGroups:(NSArray *)newGroups{
+    return [allGroups isEqualToArray:newGroups];
+}
+
+
 /**
  * This method is internal.
  * It is only for use by the unit tests in TestViewChangeLogic.
 **/
 - (void)updateWithCounts:(NSDictionary *)newCounts
 {
+    if (viewGroupsAreDynamic){
+        NSArray *newGroups = [self filterAndSortTransactionGroups:[newCounts allKeys]];
+        if ([self shouldUpdateAllGroupsWithNewGroups:newGroups]){
+            [self updateMappingWithGroups:newGroups];
+        }
+    }
 	for (NSString *group in allGroups)
 	{
 		NSUInteger count = [[newCounts objectForKey:group] unsignedIntegerValue];

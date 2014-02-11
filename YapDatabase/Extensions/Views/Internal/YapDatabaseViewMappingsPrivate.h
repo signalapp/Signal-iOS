@@ -64,6 +64,12 @@
 - (NSSet *)reverse;
 
 /**
+ * method that is used to update allGroups when updateWithTransaction has new groups
+ * that should be included but aren't.
+**/
+- (void)updateMappingWithGroups:(NSArray *)groups;
+
+/**
  * During processing we need to disable the the isUsingConsolidatedGroup flag
  * in order to access the raw mappings.
 **/
