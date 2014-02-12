@@ -6639,7 +6639,7 @@ static NSMutableArray *changes;
     STAssertTrue(rowChanges.count == 0, nil);
 }
 
-- (void)test_row_delete_in_removed_group_get_filtered_out{
+- (void)test_row_delete_in_removed_group_does_not_get_filtered_out{
     YapDatabaseViewMappings *originalMapping, *finalMapping;
     originalMapping = [[YapDatabaseViewMappings alloc]
                        initWithGroupFilterBlock:^BOOL(NSString *g){
@@ -6665,7 +6665,7 @@ static NSMutableArray *changes;
                                  fromChanges:changes];
     
     
-    STAssertTrue(rowChanges.count == 0, nil);
+    STAssertTrue(rowChanges.count == 1, nil);
 }
 
 - (void)test_consolidation_threshhold_and_group_name_get_cleared_on_update_transaction_if_name_is_in_new_groups{

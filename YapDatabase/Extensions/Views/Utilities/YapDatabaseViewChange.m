@@ -468,7 +468,7 @@
 
 			if (immutableRowChange->type == YapDatabaseViewChangeDelete)
 			{
-				if ([finalGroups containsObject:immutableRowChange->originalGroup])
+				if ([originalGroups containsObject:immutableRowChange->originalGroup])
 				{
 					YapDatabaseViewRowChange *rowChange = [immutableRowChange copy];
 					[rowChanges addObject:rowChange];
