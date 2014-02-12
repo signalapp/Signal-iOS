@@ -1173,6 +1173,7 @@
 	filteredView->versionTag = newVersionTag;
 	
 	[self repopulate];
+	[self setStringValue:newVersionTag forExtensionKey:ExtKey_versionTag];
 }
 
 @end
