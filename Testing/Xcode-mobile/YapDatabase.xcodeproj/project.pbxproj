@@ -103,6 +103,7 @@
 
 /* Begin PBXFileReference section */
 		DC005BC01774C666002E57DE /* TestViewChangeLogic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestViewChangeLogic.m; path = ../../UnitTesting/TestViewChangeLogic.m; sourceTree = "<group>"; };
+		DC02C18B18A9634100BBEBAC /* YapDatabaseViewTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewTypes.h; sourceTree = "<group>"; };
 		DC23CF891764021E00E103A9 /* YapCollectionKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YapCollectionKey.h; path = Utilities/YapCollectionKey.h; sourceTree = "<group>"; };
 		DC23CF8A1764021E00E103A9 /* YapCollectionKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YapCollectionKey.m; path = Utilities/YapCollectionKey.m; sourceTree = "<group>"; };
 		DC23CFAA1766A17100E103A9 /* TestYapDatabaseView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseView.m; path = ../../UnitTesting/TestYapDatabaseView.m; sourceTree = "<group>"; };
@@ -303,6 +304,7 @@
 			children = (
 				DC2C98A117E3C82900F1E04F /* Utilities */,
 				DC2C989117E3C82900F1E04F /* Internal */,
+				DC02C18B18A9634100BBEBAC /* YapDatabaseViewTypes.h */,
 				DC9B0FBF184B134B00174B0F /* YapDatabaseView.h */,
 				DC9B0FC0184B134B00174B0F /* YapDatabaseView.m */,
 				DC9B0FC3184B134B00174B0F /* YapDatabaseViewOptions.h */,

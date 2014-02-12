@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
+
 #import "YapDatabaseExtensionTransaction.h"
+#import "YapDatabaseViewTypes.h"
 #import "YapDatabaseViewMappings.h"
 
 /**
@@ -126,18 +128,6 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithMetadataBlock) \
                                                         (NSString *collection, NSString *key, id metadata);
 typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
                                                         (NSString *collection, NSString *key, id object, id metadata);
-
-#ifndef YapDatabaseViewBlockTypeDefined
-#define YapDatabaseViewBlockTypeDefined 1
-
-typedef enum {
-	YapDatabaseViewBlockTypeWithKey       = 201,
-	YapDatabaseViewBlockTypeWithObject    = 202,
-	YapDatabaseViewBlockTypeWithMetadata  = 203,
-	YapDatabaseViewBlockTypeWithRow       = 204
-} YapDatabaseViewBlockType;
-
-#endif
 
 /**
  * This method uses a binary search algorithm to find a range of items within the view that match the given criteria.
