@@ -465,10 +465,10 @@
 			NSUInteger groupCount = 0;
 			NSUInteger groupIndex = 0;
 			BOOL wasDelete = 0;
-			
+
 			if (immutableRowChange->type == YapDatabaseViewChangeDelete)
 			{
-				if ([originalGroups containsObject:immutableRowChange->originalGroup])
+				if ([finalGroups containsObject:immutableRowChange->originalGroup])
 				{
 					YapDatabaseViewRowChange *rowChange = [immutableRowChange copy];
 					[rowChanges addObject:rowChange];
@@ -485,7 +485,7 @@
 			}
 			else if (immutableRowChange->type == YapDatabaseViewChangeInsert)
 			{
-				if ([originalGroups containsObject:immutableRowChange->finalGroup])
+				if ([finalGroups containsObject:immutableRowChange->finalGroup])
 				{
 					YapDatabaseViewRowChange *rowChange = [immutableRowChange copy];
 					[rowChanges addObject:rowChange];
@@ -500,7 +500,7 @@
 			}
 			else if (immutableRowChange->type == YapDatabaseViewChangeUpdate)
 			{
-				if ([originalGroups containsObject:immutableRowChange->originalGroup])
+				if ([finalGroups containsObject:immutableRowChange->originalGroup])
 				{
 					YapDatabaseViewRowChange *rowChange = [immutableRowChange copy];
 					[rowChanges addObject:rowChange];

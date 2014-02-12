@@ -76,8 +76,8 @@
 		
 		id sharedKeySet = [NSDictionary sharedKeySetForKeys:allGroups];
 		counts       = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
-		rangeOptions = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
-		dependencies = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+		rangeOptions = [NSMutableDictionary dictionaryWithCapacity:allGroupsCount];
+		dependencies = [NSMutableDictionary dictionaryWithCapacity:allGroupsCount];
 		
         [self _initWithView:inRegisteredViewName];
 
@@ -88,8 +88,15 @@
 - (id)initWithGroupFilterBlock:(YapDatabaseViewMappingGroupFilter)inFilter sortBlock:(YapDatabaseViewMappingGroupSort)inSort view:(NSString *)inRegisteredViewName{
     if (self = [super init]){
         groupFilterBlock = inFilter;
-        groupSort = inSort;
+         groupSort = inSort;
         viewGroupsAreDynamic = YES;
+
+        //we don't know what our capacity is going to be yet.
+        visibleGroups = [NSMutableArray new];
+        dynamicSections = [NSMutableSet new];
+        reverse = [NSMutableSet new];
+        rangeOptions = [NSMutableDictionary new];
+        dependencies = [NSMutableDictionary new];
         
         [self _initWithView:inRegisteredViewName];
     }
@@ -135,12 +142,7 @@
 
 - (void)setIsDynamicSectionForAllGroups:(BOOL)isDynamic
 {
-	if (isDynamic)
-		[dynamicSections addObjectsFromArray:allGroups];
-	else
-		[dynamicSections removeAllObjects];
-    
-    isDynamicSectionForAllGroups = isDynamic;
+	isDynamicSectionForAllGroups = isDynamic;
 }
 
 - (BOOL)isDynamicSectionForAllGroups
@@ -150,10 +152,11 @@
 
 - (void)setIsDynamicSection:(BOOL)isDynamic forGroup:(NSString *)group
 {
-	if (![allGroups containsObject:group]) {
-		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
-		return;
-	}
+    //TODO: now that allgroups are dynamic, i don't think this check should apply.
+//	if (![allGroups containsObject:group]) {
+//		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
+//		return;
+//	}
 	
 	if (isDynamic)
 		[dynamicSections addObject:group];
@@ -172,11 +175,12 @@
 		[self removeRangeOptionsForGroup:group];
 		return;
 	}
-	
-	if (![allGroups containsObject:group]) {
-		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
-		return;
-	}
+    
+    //TODO: now that allgroups are dynamic, i don't think this check should apply.
+//	if (![allGroups containsObject:group]) {
+//		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
+//		return;
+//	}
 	
 	// Store private immutable copy
 	if ([reverse containsObject:group])
@@ -223,10 +227,11 @@
 
 - (void)setCellDrawingDependencyOffsets:(NSSet *)offsets forGroup:(NSString *)group
 {
-	if (![allGroups containsObject:group]) {
-		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
-		return;
-	}
+        //TODO: now that allgroups are dynamic, i don't think this check should apply.
+//	if (![allGroups containsObject:group]) {
+//		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
+//		return;
+//	}
 
 	NSMutableSet *validOffsets = [NSMutableSet setWithCapacity:[offsets count]];
 	BOOL needsReverse = [reverse containsObject:group];
@@ -276,10 +281,11 @@
 
 - (void)setIsReversed:(BOOL)isReversed forGroup:(NSString *)group
 {
-	if (![allGroups containsObject:group]) {
-		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
-		return;
-	}
+    //TODO: now that allgroups are dynamic, i don't think this check should apply.
+//	if (![allGroups containsObject:group]) {
+//		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
+//		return;
+//	}
 	
 	if (isReversed)
 		[reverse addObject:group];
@@ -402,38 +408,9 @@
     [newAllGroups sortUsingComparator:groupSort];
     
     allGroups = [newAllGroups copy];
-    NSUInteger allGroupsCount = allGroups.count;
-    
-    // visible groups will be regenerated below (so will counts.
-    visibleGroups = [[NSMutableArray alloc] initWithCapacity:allGroupsCount];
-    
-    // if all sections should be dynamic, regenerate dynamic sections with all groups.
-    if (isDynamicSectionForAllGroups){
-        dynamicSections = [[NSMutableSet alloc] initWithArray:allGroups];
-    }
-    
-    //update reverse list to remove any removed groups.
-    NSMutableSet *newReverse = [[NSMutableSet alloc] initWithCapacity:allGroupsCount];
-    for (NSString *group in reverse) {
-        if ([allGroups containsObject:group]) [newReverse addObject:group];
-    }
-    reverse = newReverse;
-    
     
     id sharedKeySet = [NSDictionary sharedKeySetForKeys:allGroups];
     counts       = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
-    
-    
-    NSMutableDictionary *newRangeOptions = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
-    NSMutableDictionary *newDependencies = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
-    
-    for (NSString *group in allGroups) {
-        if (rangeOptions[group]) newRangeOptions[group] = rangeOptions[group];
-        if (dependencies[group]) newDependencies[group] = dependencies[group];
-    }
-    
-    rangeOptions = newRangeOptions;
-    dependencies = newDependencies;
 }
 
 - (NSArray *)filterAndSortTransactionGroups:(NSArray *)transactionGroups{
@@ -539,7 +516,7 @@
 		else
 			count = [[counts objectForKey:group] unsignedIntegerValue];
 		
-		if (count > 0 || ![dynamicSections containsObject:group]) {
+		if (count > 0 || ![self isGroupDynamic:group]) {
 			[visibleGroups addObject:group];
 		}
 		
@@ -550,6 +527,13 @@
 		isUsingConsolidatedGroup = YES;
 	else
 		isUsingConsolidatedGroup = NO;
+}
+
+-(BOOL)isGroupDynamic:(NSString *)group{
+    if (!isDynamicSectionForAllGroups){
+        return [dynamicSections containsObject:group];
+    }
+    return YES;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

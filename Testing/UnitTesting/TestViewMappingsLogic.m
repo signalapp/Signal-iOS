@@ -19,7 +19,6 @@ YapDatabaseViewRowChange* RowOp(NSArray *rChanges, NSUInteger index){
 		return (YapDatabaseViewRowChange *)nil;
 };
 
-
 @interface TestViewMappingsBase : SenTestCase
 @end
 @implementation TestViewMappingsBase
@@ -6397,13 +6396,14 @@ static NSMutableArray *changes;
 
 -(void)test_adding_group_should_cause_result_in_section_insert_change{
     YapDatabaseViewMappings *originalMapping, *finalMapping;
-    originalMapping = [[YapDatabaseViewMappings alloc] initWithGroupFilterBlock:^BOOL(NSString *g){
-                                                                                            return YES;
-                                                                                        }
-                                                                                       sortBlock:^NSComparisonResult(NSString *l, NSString *r){
-                                                                                           return [l compare:r];
-                                                                                       }
-                                                                                            view:@"view"];
+    originalMapping = [[YapDatabaseViewMappings alloc]
+                       initWithGroupFilterBlock:^BOOL(NSString *g){
+                           return YES;
+                       }
+                       sortBlock:^NSComparisonResult(NSString *l, NSString *r){
+                           return [l compare:r];
+                       }
+                       view:@"view"];
     
     
     [originalMapping updateWithCounts:@{@"group1":@(5),
@@ -6431,13 +6431,14 @@ static NSMutableArray *changes;
 
 -(void)test_adding_empty_group_when_dynamic_section_for_all_groups_is_set_should_not_result_in_section_insert_change{
     YapDatabaseViewMappings *originalMapping, *finalMapping;
-    originalMapping = [[YapDatabaseViewMappings alloc] initWithGroupFilterBlock:^BOOL(NSString *g){
-        return YES;
-    }
-                                                                      sortBlock:^NSComparisonResult(NSString *l, NSString *r){
-                                                                          return [l compare:r];
-                                                                      }
-                                                                           view:@"view"];
+    originalMapping = [[YapDatabaseViewMappings alloc]
+                       initWithGroupFilterBlock:^BOOL(NSString *g){
+                           return YES;
+                       }
+                       sortBlock:^NSComparisonResult(NSString *l, NSString *r){
+                           return [l compare:r];
+                       }
+                       view:@"view"];
     originalMapping.isDynamicSectionForAllGroups = YES;
     
     
@@ -6461,6 +6462,201 @@ static NSMutableArray *changes;
     
     
     STAssertTrue(sectionChanges.count == 0, nil);
+}
+
+-(void)test_range_options_transfer_when_new_group_is_added{
+    YapDatabaseViewMappings *originalMapping;
+    originalMapping = [[YapDatabaseViewMappings alloc]
+                       initWithGroupFilterBlock:^BOOL(NSString *g){
+                           return YES;
+                       }
+                       sortBlock:^NSComparisonResult(NSString *l, NSString *r){
+                           return [l compare:r];
+                       }
+                       view:@"view"];
+    originalMapping.isDynamicSectionForAllGroups = YES;
+    
+    
+    [originalMapping updateWithCounts:@{@"group1":@(30),
+                                        @"group2":@(3)}];
+    
+    YapDatabaseViewRangeOptions *rangeOpts =
+    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
+    
+    [originalMapping setRangeOptions:rangeOpts forGroup:@"group1"];
+
+    [originalMapping updateWithCounts:@{@"group1":@(30),
+                                        @"group2":@(3),
+                                        @"group3":@(1)}];
+    
+    
+    STAssertNotNil([originalMapping rangeOptionsForGroup:@"group1"], nil);
+    STAssertTrue([originalMapping numberOfItemsInGroup:@"group1"] == 20, nil);
+    STAssertTrue([originalMapping numberOfItemsInGroup:@"group3"] == 1, nil);
+}
+
+- (void)test_range_options_can_be_set_before_update_with_transaction{
+    YapDatabaseViewMappings *originalMapping = [[YapDatabaseViewMappings alloc]
+                       initWithGroupFilterBlock:^BOOL(NSString *g){
+                           return YES;
+                       }
+                       sortBlock:^NSComparisonResult(NSString *l, NSString *r){
+                           return [l compare:r];
+                       }
+                       view:@"view"];
+    
+    YapDatabaseViewRangeOptions *rangeOpts = [YapDatabaseViewRangeOptions fixedRangeWithLength:10 offset:0 from:YapDatabaseViewBeginning];
+    [originalMapping setRangeOptions:rangeOpts forGroup:@"group2"];
+    
+    [originalMapping updateWithCounts:@{@"group1":@(30),
+                                        @"group2":@(15)}];
+    
+    STAssertNotNil([originalMapping rangeOptionsForGroup:@"group2"], nil);
+    STAssertTrue([originalMapping numberOfItemsInGroup:@"group2"] == 10, nil);
+}
+
+- (void)test_isReversed_can_be_set_before_update_with_transaction{
+    YapDatabaseViewMappings *originalMapping = [[YapDatabaseViewMappings alloc]
+                                                initWithGroupFilterBlock:^BOOL(NSString *g){
+                                                    return YES;
+                                                }
+                                                sortBlock:^NSComparisonResult(NSString *l, NSString *r){
+                                                    return [l compare:r];
+                                                }
+                                                view:@"view"];
+    
+    [originalMapping setIsReversed:YES forGroup:@"group1"];
+    
+    [originalMapping updateWithCounts:@{@"group1":@(30),
+                                        @"group2":@(15)}];
+    
+    STAssertTrue([originalMapping isReversedForGroup:@"group1"], nil);
+    STAssertTrue([originalMapping indexForRow:29 inGroup:@"group1"] == 0 , nil);
+}
+
+- (void)test_dependencies_can_be_set_before_update_with_transaction{
+    YapDatabaseViewMappings *originalMapping = [[YapDatabaseViewMappings alloc]
+                                                initWithGroupFilterBlock:^BOOL(NSString *g){
+                                                    return YES;
+                                                }
+                                                sortBlock:^NSComparisonResult(NSString *l, NSString *r){
+                                                    return [l compare:r];
+                                                }
+                                                view:@"view"];
+    
+    [originalMapping setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@"group1"];
+    [originalMapping updateWithCounts:@{@"group1":@(30),
+                                        @"group2":@(15)}];
+    
+    YapDatabaseViewMappings *finalMapping = [originalMapping copy];
+    [finalMapping updateWithCounts:@{@"group1":@(30),
+                                     @"group2":@(15)}];
+    
+    
+	[changes addObject:[YapDatabaseViewRowChange updateKey:@"" changes:YapDatabaseViewChangedObject inGroup:@"group1" atIndex:3]];
+    
+    NSArray *sectionChanges = nil, *rowChanges = nil;
+    [YapDatabaseViewChange getSectionChanges:&sectionChanges
+                                  rowChanges:&rowChanges
+                        withOriginalMappings:originalMapping
+                               finalMappings:finalMapping
+                                 fromChanges:changes];
+    
+    STAssertTrue([[originalMapping cellDrawingDependencyOffsetsForGroup:@"group1"] isEqualToSet:[NSSet setWithObject:@(-1)]], nil);
+    STAssertTrue(rowChanges.count == 2, nil);
+    STAssertTrue(RowOp(rowChanges, 0).changes == YapDatabaseViewChangedObject, nil);
+    STAssertTrue(RowOp(rowChanges, 0).originalIndex == 3, nil);
+    STAssertTrue(RowOp(rowChanges, 1).changes == YapDatabaseViewChangedDependency, nil);
+    STAssertTrue(RowOp(rowChanges, 1).originalIndex == 4, nil);
+}
+
+- (void)test_row_insert_in_removed_group_get_filtered_out{
+    YapDatabaseViewMappings *originalMapping, *finalMapping;
+    originalMapping = [[YapDatabaseViewMappings alloc]
+                       initWithGroupFilterBlock:^BOOL(NSString *g){
+                           return YES;
+                       }
+                       sortBlock:^NSComparisonResult(NSString *l, NSString *r){
+                           return [l compare:r];
+                       }
+                       view:@"view"];
+    [originalMapping updateWithCounts:@{@"group1":@(5),
+                                        @"group2":@(3),
+                                        @"group3":@(2)}];
+    finalMapping = [originalMapping copy];
+    [finalMapping updateWithCounts:@{@"group1":@(5),
+                                     @"group2":@(3)}];
+    [changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"group3" atIndex:2]];
+    
+    
+    NSArray *sectionChanges = nil, *rowChanges = nil;
+    [YapDatabaseViewChange getSectionChanges:&sectionChanges
+                                  rowChanges:&rowChanges
+                        withOriginalMappings:originalMapping
+                               finalMappings:finalMapping
+                                 fromChanges:changes];
+    
+    
+    STAssertTrue(rowChanges.count == 0, nil);
+}
+
+- (void)test_row_update_in_removed_group_get_filtered_out{
+    YapDatabaseViewMappings *originalMapping, *finalMapping;
+    originalMapping = [[YapDatabaseViewMappings alloc]
+                       initWithGroupFilterBlock:^BOOL(NSString *g){
+                           return YES;
+                       }
+                       sortBlock:^NSComparisonResult(NSString *l, NSString *r){
+                           return [l compare:r];
+                       }
+                       view:@"view"];
+    [originalMapping updateWithCounts:@{@"group1":@(5),
+                                        @"group2":@(3),
+                                        @"group3":@(2)}];
+    finalMapping = [originalMapping copy];
+    [finalMapping updateWithCounts:@{@"group1":@(5),
+                                     @"group2":@(3)}];
+    [changes addObject:[YapDatabaseViewRowChange updateKey:@"key" changes:YapDatabaseViewChangedObject inGroup:@"group3" atIndex:0]];
+    
+    
+    NSArray *sectionChanges = nil, *rowChanges = nil;
+    [YapDatabaseViewChange getSectionChanges:&sectionChanges
+                                  rowChanges:&rowChanges
+                        withOriginalMappings:originalMapping
+                               finalMappings:finalMapping
+                                 fromChanges:changes];
+    
+    
+    STAssertTrue(rowChanges.count == 0, nil);
+}
+
+- (void)test_row_delete_in_removed_group_get_filtered_out{
+    YapDatabaseViewMappings *originalMapping, *finalMapping;
+    originalMapping = [[YapDatabaseViewMappings alloc]
+                       initWithGroupFilterBlock:^BOOL(NSString *g){
+                           return YES;
+                       }
+                       sortBlock:^NSComparisonResult(NSString *l, NSString *r){
+                           return [l compare:r];
+                       }
+                       view:@"view"];
+    [originalMapping updateWithCounts:@{@"group1":@(5),
+                                        @"group2":@(3),
+                                        @"group3":@(2)}];
+    finalMapping = [originalMapping copy];
+    [finalMapping updateWithCounts:@{@"group1":@(5),
+                                     @"group2":@(3)}];
+    [changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"group3" atIndex:0]];
+    
+    NSArray *sectionChanges = nil, *rowChanges = nil;
+    [YapDatabaseViewChange getSectionChanges:&sectionChanges
+                                  rowChanges:&rowChanges
+                        withOriginalMappings:originalMapping
+                               finalMappings:finalMapping
+                                 fromChanges:changes];
+    
+    
+    STAssertTrue(rowChanges.count == 0, nil);
 }
 
 
