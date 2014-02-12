@@ -40,6 +40,8 @@
 **/
 - (BOOL)createIfNeeded
 {
+	YDBLogAutoTrace();
+	
 	__unsafe_unretained YapDatabaseFilteredView *filteredView = (YapDatabaseFilteredView *)(viewConnection->view);
 	
 	int classVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
@@ -351,7 +353,7 @@
 #pragma mark Logic
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)repopulate
+- (void)repopulateView
 {
 	YDBLogAutoTrace();
 	
@@ -1163,7 +1165,7 @@
 	
 	if ([filteredView->versionTag isEqualToString:newVersionTag])
 	{
-		YDBLogWarn(@"%@ - Tag didn't change, so not updating view", THIS_METHOD);
+		YDBLogWarn(@"%@ - versionTag didn't change, so not updating view", THIS_METHOD);
 		return;
 	}
 	
@@ -1172,7 +1174,7 @@
 	
 	filteredView->versionTag = newVersionTag;
 	
-	[self repopulate];
+	[self repopulateView];
 	[self setStringValue:newVersionTag forExtensionKey:ExtKey_versionTag];
 }
 

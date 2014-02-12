@@ -86,6 +86,8 @@
 - (id)initWithViewConnection:(YapDatabaseViewConnection *)inViewConnection
          databaseTransaction:(YapDatabaseReadTransaction *)inDatabaseTransaction
 {
+	YDBLogAutoTrace();
+	
 	if ((self = [super init]))
 	{
 		viewConnection = inViewConnection;
@@ -115,6 +117,8 @@
 **/
 - (BOOL)createIfNeeded
 {
+	YDBLogAutoTrace();
+	
 	int classVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
 	BOOL isPersistent = [self isPersistentView];
 	
@@ -243,6 +247,8 @@
 **/
 - (BOOL)prepareIfNeeded
 {
+	YDBLogAutoTrace();
+	
 	if (viewConnection->group_pagesMetadata_dict && viewConnection->pageKey_group_dict)
 	{
 		// Already prepared
@@ -487,6 +493,8 @@
 
 - (void)dropTablesForOldClassVersion:(int)oldClassVersion
 {
+	YDBLogAutoTrace();
+	
 	if (oldClassVersion == 1)
 	{
 		// In version 2, we switched from 'view_name_key' to 'view_name_map'.
@@ -532,6 +540,8 @@
 
 - (BOOL)createTables
 {
+	YDBLogAutoTrace();
+	
 	if ([self isPersistentView])
 	{
 		sqlite3 *db = databaseTransaction->connection->db;
@@ -615,6 +625,8 @@
 
 - (BOOL)populateView
 {
+	YDBLogAutoTrace();
+	
 	// Remove everything from the database
 	
 	[self removeAllRowids];
