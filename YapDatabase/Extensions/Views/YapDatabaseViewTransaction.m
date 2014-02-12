@@ -656,37 +656,47 @@
 	BOOL needsMetadata = groupingNeedsMetadata || sortingNeedsMetadata;
 	
 	NSString *(^getGroup)(NSString *collection, NSString *key, id object, id metadata);
-	getGroup = ^(NSString *collection, NSString *key, id object, id metadata){
-		
-		if (view->groupingBlockType == YapDatabaseViewBlockTypeWithKey)
-		{
+	
+	if (view->groupingBlockType == YapDatabaseViewBlockTypeWithKey)
+	{
+		getGroup = ^(NSString *collection, NSString *key, id object, id metadata){
+			
 			__unsafe_unretained YapDatabaseViewGroupingWithKeyBlock groupingBlock =
 		        (YapDatabaseViewGroupingWithKeyBlock)view->groupingBlock;
 			
 			return groupingBlock(collection, key);
-		}
-		else if (view->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
-		{
+		};
+	}
+	else if (view->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
+	{
+		getGroup = ^(NSString *collection, NSString *key, id object, id metadata){
+			
 			__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
 		        (YapDatabaseViewGroupingWithObjectBlock)view->groupingBlock;
 			
 			return groupingBlock(collection, key, object);
-		}
-		else if (view->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
-		{
+		};
+	}
+	else if (view->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	{
+		getGroup = ^(NSString *collection, NSString *key, id object, id metadata){
+			
 			__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
 		        (YapDatabaseViewGroupingWithMetadataBlock)view->groupingBlock;
 			
 			return groupingBlock(collection, key, metadata);
-		}
-		else
-		{
+		};
+	}
+	else
+	{
+		getGroup = ^(NSString *collection, NSString *key, id object, id metadata){
+			
 			__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
 		        (YapDatabaseViewGroupingWithRowBlock)view->groupingBlock;
 			
 			return groupingBlock(collection, key, object, metadata);
-		}
-	};
+		};
+	}
 	
 	int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 	
