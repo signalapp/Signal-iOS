@@ -150,13 +150,16 @@
     return isDynamicSectionForAllGroups;
 }
 
+- (BOOL)isGroupNameValid:(NSString *)group{
+    return viewGroupsAreDynamic || [allGroups containsObject:group];
+}
+
 - (void)setIsDynamicSection:(BOOL)isDynamic forGroup:(NSString *)group
 {
-    //TODO: now that allgroups are dynamic, i don't think this check should apply.
-//	if (![allGroups containsObject:group]) {
-//		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
-//		return;
-//	}
+	if (![self isGroupNameValid:group]) {
+		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
+		return;
+	}
 	
 	if (isDynamic)
 		[dynamicSections addObject:group];
@@ -175,12 +178,11 @@
 		[self removeRangeOptionsForGroup:group];
 		return;
 	}
-    
-    //TODO: now that allgroups are dynamic, i don't think this check should apply.
-//	if (![allGroups containsObject:group]) {
-//		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
-//		return;
-//	}
+
+    if (![self isGroupNameValid:group]){
+		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
+		return;
+	}
 	
 	// Store private immutable copy
 	if ([reverse containsObject:group])
@@ -227,11 +229,11 @@
 
 - (void)setCellDrawingDependencyOffsets:(NSSet *)offsets forGroup:(NSString *)group
 {
-        //TODO: now that allgroups are dynamic, i don't think this check should apply.
-//	if (![allGroups containsObject:group]) {
-//		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
-//		return;
-//	}
+
+    if (![self isGroupNameValid:group]){
+		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
+		return;
+	}
 
 	NSMutableSet *validOffsets = [NSMutableSet setWithCapacity:[offsets count]];
 	BOOL needsReverse = [reverse containsObject:group];
@@ -281,11 +283,10 @@
 
 - (void)setIsReversed:(BOOL)isReversed forGroup:(NSString *)group
 {
-    //TODO: now that allgroups are dynamic, i don't think this check should apply.
-//	if (![allGroups containsObject:group]) {
-//		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
-//		return;
-//	}
+    if (![self isGroupNameValid:group]){
+		YDBLogWarn(@"%@ - mappings doesn't contain group(%@), only: %@", THIS_METHOD, group, allGroups);
+		return;
+	}
 	
 	if (isReversed)
 		[reverse addObject:group];
@@ -300,24 +301,9 @@
 
 - (void)setAutoConsolidateGroupsThreshold:(NSUInteger)threshold withName:(NSString *)inConsolidatedGroupName
 {
-	if ([allGroups containsObject:inConsolidatedGroupName])
-	{
-		YDBLogWarn(@"%@ - consolidatedGroupName cannot match existing groupName", THIS_METHOD);
-		
-		autoConsolidateGroupsThreshold = 0;
-		consolidatedGroupName = nil;
-	}
-	
-	if (inConsolidatedGroupName == nil || threshold == 0)
-	{
-		autoConsolidateGroupsThreshold = 0;
-		consolidatedGroupName = nil;
-	}
-	else
-	{
-		autoConsolidateGroupsThreshold = threshold;
-		consolidatedGroupName = [inConsolidatedGroupName copy];
-	}
+    autoConsolidateGroupsThreshold = threshold;
+    consolidatedGroupName = [inConsolidatedGroupName copy];
+    [self validateAutoConsolidation];
 }
 
 - (NSUInteger)autoConsolidateGroupsThreshold
@@ -408,9 +394,22 @@
     [newAllGroups sortUsingComparator:groupSort];
     
     allGroups = [newAllGroups copy];
-    
+    [self validateAutoConsolidation];
     id sharedKeySet = [NSDictionary sharedKeySetForKeys:allGroups];
     counts       = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+}
+
+- (void)validateAutoConsolidation{
+    if ([allGroups containsObject:consolidatedGroupName]){
+        YDBLogWarn(@"%@ - consolidatedGroupName cannot match existing groupName", THIS_METHOD);
+        consolidatedGroupName = nil;
+        autoConsolidateGroupsThreshold = 0;
+    }
+    
+    if (consolidatedGroupName == nil || autoConsolidateGroupsThreshold == 0){
+        consolidatedGroupName = nil;
+        autoConsolidateGroupsThreshold = 0;
+    }
 }
 
 - (NSArray *)filterAndSortTransactionGroups:(NSArray *)transactionGroups{

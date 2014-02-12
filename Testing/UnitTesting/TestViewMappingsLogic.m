@@ -6387,6 +6387,15 @@ static NSMutableArray *changes;
 	STAssertTrue(RowOp(rowChanges, 1).finalIndex == 3, @"");
 	STAssertTrue([RowOp(rowChanges, 1).finalGroup isEqualToString:consolidatedGroupName], @"");
 }
+
+- (void)test_setting_autoconsolidation_group_name_to_existing_group_should_result_in_nil_groupname_and_zero_threshold{
+    YapDatabaseViewMappings *mapping = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"group1", @"group2"] view:@"view"];
+    
+    [mapping setAutoConsolidateGroupsThreshold:100 withName:@"group1"];
+
+    STAssertNil([mapping consolidatedGroupName], nil);
+    STAssertTrue([mapping autoConsolidateGroupsThreshold] == 0, nil);
+}
 @end
 
 @interface TestViewMappingDynamicGroupAddition : TestViewMappingsBase
@@ -6659,6 +6668,26 @@ static NSMutableArray *changes;
     STAssertTrue(rowChanges.count == 0, nil);
 }
 
+- (void)test_consolidation_threshhold_and_group_name_get_cleared_on_update_transaction_if_name_is_in_new_groups{
+    YapDatabaseViewMappings *originalMapping = [[YapDatabaseViewMappings alloc]
+                                                initWithGroupFilterBlock:^BOOL(NSString *g){
+                                                    return YES;
+                                                }
+                                                sortBlock:^NSComparisonResult(NSString *l, NSString *r){
+                                                    return [l compare:r];
+                                                }
+                                                view:@"view"];
+    [originalMapping setAutoConsolidateGroupsThreshold:100 withName:@"super-omega-group"];
+    STAssertEqualObjects([originalMapping consolidatedGroupName], @"super-omega-group", nil);
+    STAssertTrue([originalMapping autoConsolidateGroupsThreshold] == 100, nil);
+    
+    [originalMapping updateWithCounts:@{@"group1":@(30),
+                                        @"group2":@(15),
+                                        @"super-omega-group":@(10)}];
+
+    STAssertNil([originalMapping consolidatedGroupName], nil);
+    STAssertTrue([originalMapping autoConsolidateGroupsThreshold] == 0, nil);
+}
 
 @end
 
