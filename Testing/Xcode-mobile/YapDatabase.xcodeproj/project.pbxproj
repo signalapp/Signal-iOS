@@ -249,6 +249,7 @@
 		DCAE52111673FE2600395076 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		DCAE52191673FE2600395076 /* YapDatabaseTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "YapDatabaseTests-Info.plist"; path = "YapDatabaseTests/YapDatabaseTests-Info.plist"; sourceTree = SOURCE_ROOT; };
 		DCAE521B1673FE2600395076 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DCD1CBBC18AB249800D09902 /* YapDatabaseFilteredViewTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = YapDatabaseFilteredViewTypes.h; path = FilteredViews/YapDatabaseFilteredViewTypes.h; sourceTree = "<group>"; };
 		DCE9DEDD1805DAB100A7057E /* BenchmarkYapDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BenchmarkYapDatabase.h; path = ../Benchmarking/BenchmarkYapDatabase.h; sourceTree = "<group>"; };
 		DCE9DEDE1805DAB100A7057E /* BenchmarkYapDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BenchmarkYapDatabase.m; path = ../Benchmarking/BenchmarkYapDatabase.m; sourceTree = "<group>"; };
 		DCE9DF1018062C7400A7057E /* YapMemoryTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapMemoryTable.h; sourceTree = "<group>"; };
@@ -561,6 +562,7 @@
 			isa = PBXGroup;
 			children = (
 				DC9B0FCB184B13F300174B0F /* Internal */,
+				DCD1CBBC18AB249800D09902 /* YapDatabaseFilteredViewTypes.h */,
 				DC9B0FCD184B13F300174B0F /* YapDatabaseFilteredView.h */,
 				DC9B0FCE184B13F300174B0F /* YapDatabaseFilteredView.m */,
 				DC9B0FCF184B13F300174B0F /* YapDatabaseFilteredViewConnection.h */,

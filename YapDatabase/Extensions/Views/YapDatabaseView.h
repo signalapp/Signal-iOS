@@ -38,21 +38,25 @@
  * @param groupingBlock
  * 
  *   The grouping block handles both filtering and grouping.
+ *   
  *   @see YapDatabaseViewTypes.h for block type definition(s).
  * 
  * @param groupingBlockType
  * 
  *   Specify the type of groupingBlock that is being passed.
+ *   
  *   @see YapDatabaseViewTypes.h for block type definition(s).
  * 
  * @param sortingBlock
  * 
  *   The sorting block handles sorting of objects within their group.
+ *   
  *   @see YapDatabaseViewTypes.h for block type definition(s).
  * 
  * @param sortingBlockType
  * 
  *   Specify the type of sortingBlock that is being passed.
+ *   
  *   @see YapDatabaseViewTypes.h for block type definition(s).
  *
  * @param versionTag

@@ -1,25 +1,11 @@
 #import <Foundation/Foundation.h>
 
 #import "YapDatabaseView.h"
+
+#import "YapDatabaseFilteredViewTypes.h"
 #import "YapDatabaseFilteredViewConnection.h"
 #import "YapDatabaseFilteredViewTransaction.h"
 
-
-#ifndef YapDatabaseViewFilteringBlockDefined
-#define YapDatabaseViewFilteringBlockDefined 1
-
-typedef id YapDatabaseViewFilteringBlock; // One of the YapDatabaseViewGroupingX types below.
-
-typedef BOOL (^YapDatabaseViewFilteringWithKeyBlock)     \
-                                        (NSString *group, NSString *collection, NSString *key);
-typedef BOOL (^YapDatabaseViewFilteringWithObjectBlock)  \
-                                        (NSString *group, NSString *collection, NSString *key, id object);
-typedef BOOL (^YapDatabaseViewFilteringWithMetadataBlock)\
-                                        (NSString *group, NSString *collection, NSString *key, id metadata);
-typedef BOOL (^YapDatabaseViewFilteringWithRowBlock)     \
-                                        (NSString *group, NSString *collection, NSString *key, id object, id metadata);
-
-#endif
 
 @interface YapDatabaseFilteredView : YapDatabaseView
 
@@ -40,6 +26,8 @@ typedef BOOL (^YapDatabaseViewFilteringWithRowBlock)     \
  *   It allows you to filter items from this view that exist in the parent view.
  *   You should pick a block type that requires the minimum number of parameters that you need.
  *
+ *   @see YapDatabaseViewTypes.h for block type definition(s).
+ *
  * @param filteringBlockType
  *
  *   This parameter identifies the type of filtering block being used.
@@ -48,6 +36,8 @@ typedef BOOL (^YapDatabaseViewFilteringWithRowBlock)     \
  *    - YapDatabaseViewBlockTypeWithObject
  *    - YapDatabaseViewBlockTypeWithMetadata
  *    - YapDatabaseViewBlockTypeWithRow
+ * 
+ *   @see YapDatabaseViewTypes.h for block type definition(s).
  *
  * @param tag
  *
