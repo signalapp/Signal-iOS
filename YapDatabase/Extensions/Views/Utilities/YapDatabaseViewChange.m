@@ -369,8 +369,9 @@
 	NSMutableArray *sectionChanges = [NSMutableArray arrayWithCapacity:1];
 	NSMutableArray *rowChanges = [NSMutableArray arrayWithCapacity:[changes count]];
 	
-	NSSet *groups = [NSSet setWithArray:[originalMappings allGroups]];
-	
+	NSSet *originalGroups = [NSSet setWithArray:[originalMappings allGroups]];
+	NSSet *finalGroups = [NSSet setWithArray:[finalMappings allGroups]];
+    
 	NSMutableDictionary *counts = [originalMappings counts];
 	NSDictionary *dependencies = [originalMappings dependencies];
 	
@@ -383,7 +384,7 @@
 			
 			if (immutableSectionChange->type == YapDatabaseViewChangeDelete)
 			{
-				if ([groups containsObject:immutableSectionChange->group])
+				if ([originalGroups containsObject:immutableSectionChange->group])
 				{
 					YapDatabaseViewSectionChange *sectionChange = [immutableSectionChange copy];
 					[sectionChanges addObject:sectionChange];
@@ -449,7 +450,7 @@
 			}
 			else if (immutableSectionChange->type == YapDatabaseViewChangeInsert)
 			{
-				if ([groups containsObject:immutableSectionChange->group])
+				if ([finalGroups containsObject:immutableSectionChange->group])
 				{
 					YapDatabaseViewSectionChange *sectionChange = [immutableSectionChange copy];
 					[sectionChanges addObject:sectionChange];
@@ -464,10 +465,10 @@
 			NSUInteger groupCount = 0;
 			NSUInteger groupIndex = 0;
 			BOOL wasDelete = 0;
-			
+
 			if (immutableRowChange->type == YapDatabaseViewChangeDelete)
 			{
-				if ([groups containsObject:immutableRowChange->originalGroup])
+				if ([originalGroups containsObject:immutableRowChange->originalGroup])
 				{
 					YapDatabaseViewRowChange *rowChange = [immutableRowChange copy];
 					[rowChanges addObject:rowChange];
@@ -484,7 +485,7 @@
 			}
 			else if (immutableRowChange->type == YapDatabaseViewChangeInsert)
 			{
-				if ([groups containsObject:immutableRowChange->finalGroup])
+				if ([finalGroups containsObject:immutableRowChange->finalGroup])
 				{
 					YapDatabaseViewRowChange *rowChange = [immutableRowChange copy];
 					[rowChanges addObject:rowChange];
@@ -499,7 +500,7 @@
 			}
 			else if (immutableRowChange->type == YapDatabaseViewChangeUpdate)
 			{
-				if ([groups containsObject:immutableRowChange->originalGroup])
+				if ([finalGroups containsObject:immutableRowChange->originalGroup])
 				{
 					YapDatabaseViewRowChange *rowChange = [immutableRowChange copy];
 					[rowChanges addObject:rowChange];
