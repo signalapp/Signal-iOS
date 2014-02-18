@@ -63,6 +63,7 @@
 - (void)removeObjectsForKeys:(NSArray *)keys;
 
 - (void)enumerateKeysWithBlock:(void (^)(id key, BOOL *stop))block;
+- (void)enumerateKeysAndObjectsWithBlock:(void (^)(id key, id obj, BOOL *stop))block;
 
 //
 // Some debugging stuff that gets compiled out

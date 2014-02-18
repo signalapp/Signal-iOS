@@ -402,6 +402,18 @@
 	}
 }
 
+- (void)enumerateKeysAndObjectsWithBlock:(void (^)(id key, id obj, BOOL *stop))block
+{
+	NSDictionary *nsdict = (__bridge NSDictionary *)cfdict;
+	
+	[nsdict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		
+		__unsafe_unretained YapCacheItem *cacheItem = (YapCacheItem *)obj;
+		
+		block(key, cacheItem->value, stop);
+	}];
+}
+
 - (NSString *)description
 {
 	NSMutableString *description = [NSMutableString string];
