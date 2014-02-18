@@ -1708,62 +1708,54 @@
 			__unsafe_unretained YapDatabaseViewSortingWithKeyBlock sortingBlock =
 			    (YapDatabaseViewSortingWithKeyBlock)view->sortingBlock;
 			
-			NSString *anotherKey = nil;
-			NSString *anotherCollection = nil;
-			[databaseTransaction getKey:&anotherKey collection:&anotherCollection forRowid:anotherRowid];
+			YapCollectionKey *another = [databaseTransaction collectionKeyForRowid:anotherRowid];
 			
 			return sortingBlock(group, collectionKey.collection, collectionKey.key,
-			                                  anotherCollection,        anotherKey);
+			                                 another.collection,       another.key);
 		}
 		else if (view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
 		{
 			__unsafe_unretained YapDatabaseViewSortingWithObjectBlock sortingBlock =
 			    (YapDatabaseViewSortingWithObjectBlock)view->sortingBlock;
 			
-			NSString *anotherKey = nil;
-			NSString *anotherCollection = nil;
+			YapCollectionKey *another = nil;
 			id anotherObject = nil;
-			[databaseTransaction getKey:&anotherKey
-			                 collection:&anotherCollection
-			                     object:&anotherObject
-			                   forRowid:anotherRowid];
+			[databaseTransaction getCollectionKey:&another
+			                               object:&anotherObject
+			                             forRowid:anotherRowid];
 			
 			return sortingBlock(group, collectionKey.collection, collectionKey.key,        object,
-			                                  anotherCollection,        anotherKey, anotherObject);
+			                                 another.collection,       another.key, anotherObject);
 		}
 		else if (view->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata)
 		{
 			__unsafe_unretained YapDatabaseViewSortingWithMetadataBlock sortingBlock =
 			    (YapDatabaseViewSortingWithMetadataBlock)view->sortingBlock;
 			
-			NSString *anotherKey = nil;
-			NSString *anotherCollection = nil;
+			YapCollectionKey *another = nil;
 			id anotherMetadata = nil;
-			[databaseTransaction getKey:&anotherKey
-			                 collection:&anotherCollection
-			                   metadata:&anotherMetadata
-			                   forRowid:anotherRowid];
+			[databaseTransaction getCollectionKey:&another
+			                             metadata:&anotherMetadata
+			                             forRowid:anotherRowid];
 			
 			return sortingBlock(group, collectionKey.collection, collectionKey.key,        metadata,
-			                                  anotherCollection,        anotherKey, anotherMetadata);
+			                                 another.collection,       another.key, anotherMetadata);
 		}
 		else
 		{
 			__unsafe_unretained YapDatabaseViewSortingWithRowBlock sortingBlock =
 			    (YapDatabaseViewSortingWithRowBlock)view->sortingBlock;
 			
-			NSString *anotherKey = nil;
-			NSString *anotherCollection = nil;
+			YapCollectionKey *another = nil;
 			id anotherObject = nil;
 			id anotherMetadata = nil;
-			[databaseTransaction getKey:&anotherKey
-			                 collection:&anotherCollection
-			                     object:&anotherObject
-			                   metadata:&anotherMetadata
-			                   forRowid:anotherRowid];
+			[databaseTransaction getCollectionKey:&another
+			                               object:&anotherObject
+			                             metadata:&anotherMetadata
+			                             forRowid:anotherRowid];
 			
 			return sortingBlock(group, collectionKey.collection, collectionKey.key,        object,        metadata,
-			                                  anotherCollection,        anotherKey, anotherObject, anotherMetadata);
+			                                 another.collection,       another.key, anotherObject, anotherMetadata);
 		}
 	};
 	
@@ -3699,20 +3691,18 @@
 	int64_t rowid = 0;
 	if ([self getRowid:&rowid atIndex:index inGroup:group])
 	{
-		NSString *collection = nil;
-		NSString *key = nil;
-		BOOL found = [databaseTransaction getKey:&key collection:&collection forRowid:rowid];
-		
-		if (collectionPtr) *collectionPtr = collection;
-		if (keyPtr) *keyPtr = key;
-		return found;
+		YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
+		if (ck)
+		{
+			if (collectionPtr) *collectionPtr = ck.collection;
+			if (keyPtr) *keyPtr = ck.key;
+			return YES;
+		}
 	}
-	else
-	{
-		if (collectionPtr) *collectionPtr = nil;
-		if (keyPtr) *keyPtr = nil;
-		return NO;
-	}
+	
+	if (collectionPtr) *collectionPtr = nil;
+	if (keyPtr) *keyPtr = nil;
+	return NO;
 }
 
 - (BOOL)getFirstKey:(NSString **)keyPtr collection:(NSString **)collectionPtr inGroup:(NSString *)group
@@ -3725,20 +3715,18 @@
 	int64_t rowid = 0;
 	if ([self getLastRowid:&rowid inGroup:group])
 	{
-		NSString *collection = nil;
-		NSString *key = nil;
-		BOOL found = [databaseTransaction getKey:&key collection:&collection forRowid:rowid];
-		
-		if (collectionPtr) *collectionPtr = collection;
-		if (keyPtr) *keyPtr = key;
-		return found;
+		YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
+		if (ck)
+		{
+			if (collectionPtr) *collectionPtr = ck.collection;
+			if (keyPtr) *keyPtr = ck.key;
+			return YES;
+		}
 	}
-	else
-	{
-		if (collectionPtr) *collectionPtr = nil;
-		if (keyPtr) *keyPtr = nil;
-		return NO;
-	}
+	
+	if (collectionPtr) *collectionPtr = nil;
+	if (keyPtr) *keyPtr = nil;
+	return NO;
 }
 
 - (NSString *)collectionAtIndex:(NSUInteger)index inGroup:(NSString *)group
@@ -3903,48 +3891,43 @@
 			__unsafe_unretained YapDatabaseViewFindWithKeyBlock findBlock =
 			    (YapDatabaseViewFindWithKeyBlock)block;
 			
-			NSString *key = nil;
-			NSString *collection = nil;
-			[databaseTransaction getKey:&key collection:&collection forRowid:rowid];
+			YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
 			
-			return findBlock(collection, key);
+			return findBlock(ck.collection, ck.key);
 		}
 		else if (blockType == YapDatabaseViewBlockTypeWithObject)
 		{
 			__unsafe_unretained YapDatabaseViewFindWithObjectBlock findBlock =
 			    (YapDatabaseViewFindWithObjectBlock)block;
 			
-			NSString *key = nil;
-			NSString *collection = nil;
+			YapCollectionKey *ck = nil;
 			id object = nil;
-			[databaseTransaction getKey:&key collection:&collection object:&object forRowid:rowid];
+			[databaseTransaction getCollectionKey:&ck object:&object forRowid:rowid];
 			
-			return findBlock(collection, key, object);
+			return findBlock(ck.collection, ck.key, object);
 		}
 		else if (blockType == YapDatabaseViewBlockTypeWithMetadata)
 		{
 			__unsafe_unretained YapDatabaseViewFindWithMetadataBlock findBlock =
 			    (YapDatabaseViewFindWithMetadataBlock)block;
 			
-			NSString *key = nil;
-			NSString *collection = nil;
+			YapCollectionKey *ck = nil;
 			id metadata = nil;
-			[databaseTransaction getKey:&key collection:&collection metadata:&metadata forRowid:rowid];
+			[databaseTransaction getCollectionKey:&ck metadata:&metadata forRowid:rowid];
 			
-			return findBlock(collection, key, metadata);
+			return findBlock(ck.collection, ck.key, metadata);
 		}
 		else
 		{
 			__unsafe_unretained YapDatabaseViewFindWithRowBlock findBlock =
 			    (YapDatabaseViewFindWithRowBlock)block;
 			
-			NSString *key = nil;
-			NSString *collection = nil;
+			YapCollectionKey *ck = nil;
 			id object = nil;
 			id metadata = nil;
-			[databaseTransaction getKey:&key collection:&collection object:&object metadata:&metadata forRowid:rowid];
+			[databaseTransaction getCollectionKey:&ck object:&object metadata:&metadata forRowid:rowid];
 			
-			return findBlock(collection, key, object, metadata);
+			return findBlock(ck.collection, ck.key, object, metadata);
 		}
 	};
 	
@@ -4035,11 +4018,9 @@
 	
 	[self enumerateRowidsInGroup:group usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop) {
 		
-		NSString *key = nil;
-		NSString *collection = nil;
-		[databaseTransaction getKey:&key collection:&collection forRowid:rowid];
+		YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
 		
-		block(collection, key, index, stop);
+		block(ck.collection, ck.key, index, stop);
 	}];
 }
 
@@ -4051,11 +4032,9 @@
 	
 	[self enumerateRowidsInGroup:group withOptions:options usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop) {
 		
-		NSString *key = nil;
-		NSString *collection = nil;
-		[databaseTransaction getKey:&key collection:&collection forRowid:rowid];
+		YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
 		
-		block(collection, key, index, stop);
+		block(ck.collection, ck.key, index, stop);
 	}];
 }
 
@@ -4069,13 +4048,11 @@
 	[self enumerateRowidsInGroup:group
 	                 withOptions:options
 	                       range:range
-	                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop) {
+	                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop)
+	{
+		YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
 		
-		NSString *key = nil;
-		NSString *collection = nil;
-		[databaseTransaction getKey:&key collection:&collection forRowid:rowid];
-		
-		block(collection, key, index, stop);
+		block(ck.collection, ck.key, index, stop);
 	}];
 }
 
@@ -4439,11 +4416,9 @@
 		// So it's likely faster to fetch just the key first.
 		// And if the cache misses then we're still using a fetch based on the rowid.
 		
-		NSString *key = nil;
-		NSString *collection = nil;
-		[databaseTransaction getKey:&key collection:&collection forRowid:rowid];
+		YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
 		
-		return [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
+		return [databaseTransaction objectForCollectionKey:ck withRowid:rowid];
 	}
 	else
 	{
@@ -4467,11 +4442,9 @@
 		// So it's likely faster to fetch just the key first.
 		// And if the cache misses then we're still using a fetch based on the rowid.
 		
-		NSString *key = nil;
-		NSString *collection = nil;
-		[databaseTransaction getKey:&key collection:&collection forRowid:rowid];
+		YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
 		
-		return [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
+		return [databaseTransaction objectForCollectionKey:ck withRowid:rowid];
 	}
 	else
 	{
@@ -4492,12 +4465,11 @@
 	
 	[self enumerateRowidsInGroup:group usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop) {
 		
-		NSString *key = nil;
-		NSString *collection = nil;
+		YapCollectionKey *ck = nil;
 		id metadata = nil;
-		[databaseTransaction getKey:&key collection:&collection metadata:&metadata forRowid:rowid];
+		[databaseTransaction getCollectionKey:&ck metadata:&metadata forRowid:rowid];
 		
-		block(collection, key, metadata, index, stop);
+		block(ck.collection, ck.key, metadata, index, stop);
 	}];
 }
 
@@ -4510,14 +4482,13 @@
 	
 	[self enumerateRowidsInGroup:group
 	                 withOptions:options
-	                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop) {
-		
-		NSString *key = nil;
-		NSString *collection = nil;
+	                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop)
+	{
+		YapCollectionKey *ck = nil;
 		id metadata = nil;
-		[databaseTransaction getKey:&key collection:&collection metadata:&metadata forRowid:rowid];
+		[databaseTransaction getCollectionKey:&ck metadata:&metadata forRowid:rowid];
 						  
-		block(collection, key, metadata, index, stop);
+		block(ck.collection, ck.key, metadata, index, stop);
 	}];
 }
 
@@ -4532,14 +4503,13 @@
 	[self enumerateRowidsInGroup:group
 	                 withOptions:options
 	                       range:range
-	                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop) {
-		
-		NSString *key = nil;
-		NSString *collection = nil;
+	                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop)
+	{
+		YapCollectionKey *ck = nil;
 		id metadata = nil;
-		[databaseTransaction getKey:&key collection:&collection metadata:&metadata forRowid:rowid];
+		[databaseTransaction getCollectionKey:&ck metadata:&metadata forRowid:rowid];
 		
-		block(collection, key, metadata, index, stop);
+		block(ck.collection, ck.key, metadata, index, stop);
 	}];
 }
 
@@ -4556,12 +4526,11 @@
 	
 	[self enumerateRowidsInGroup:group usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop) {
 		
-		NSString *key = nil;
-		NSString *collection = nil;
+		YapCollectionKey *ck = nil;
 		id object = nil;
-		[databaseTransaction getKey:&key collection:&collection object:&object forRowid:rowid];
+		[databaseTransaction getCollectionKey:&ck object:&object forRowid:rowid];
 		
-		block(collection, key, object, index, stop);
+		block(ck.collection, ck.key, object, index, stop);
 	}];
 }
 
@@ -4574,14 +4543,13 @@
 	
 	[self enumerateRowidsInGroup:group
 	                 withOptions:options
-	                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop) {
-		
-		NSString *key = nil;
-		NSString *collection = nil;
+	                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop)
+	{
+		YapCollectionKey *ck = nil;
 		id object = nil;
-		[databaseTransaction getKey:&key collection:&collection object:&object forRowid:rowid];
+		[databaseTransaction getCollectionKey:&ck object:&object forRowid:rowid];
 		
-		block(collection, key, object, index, stop);
+		block(ck.collection, ck.key, object, index, stop);
 	}];
 }
 
@@ -4596,14 +4564,13 @@
 	[self enumerateRowidsInGroup:group
 	                 withOptions:options
 	                       range:range
-	                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop) {
-		
-		NSString *key = nil;
-		NSString *collection = nil;
+	                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop)
+	{
+		YapCollectionKey *ck = nil;
 		id object = nil;
-		[databaseTransaction getKey:&key collection:&collection object:&object forRowid:rowid];
+		[databaseTransaction getCollectionKey:&ck object:&object forRowid:rowid];
 		
-		block(collection, key, object, index, stop);
+		block(ck.collection, ck.key, object, index, stop);
 	}];
 }
 
@@ -4615,13 +4582,12 @@
 	
 	[self enumerateRowidsInGroup:group usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop) {
 		
-		NSString *key = nil;
-		NSString *collection = nil;
+		YapCollectionKey *ck = nil;
 		id object = nil;
 		id metadata = nil;
-		[databaseTransaction getKey:&key collection:&collection object:&object metadata:&metadata forRowid:rowid];
+		[databaseTransaction getCollectionKey:&ck object:&object metadata:&metadata forRowid:rowid];
 		
-		block(collection, key, object, metadata, index, stop);
+		block(ck.collection, ck.key, object, metadata, index, stop);
 	}];
 }
 
@@ -4634,15 +4600,14 @@
 	
 	[self enumerateRowidsInGroup:group
 	                 withOptions:options
-	                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop) {
-						
-		NSString *key = nil;
-		NSString *collection = nil;
+	                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop)
+	{
+		YapCollectionKey *ck = nil;
 		id object = nil;
 		id metadata = nil;
-		[databaseTransaction getKey:&key collection:&collection object:&object metadata:&metadata forRowid:rowid];
-						
-		block(collection, key, object, metadata, index, stop);
+		[databaseTransaction getCollectionKey:&ck object:&object metadata:&metadata forRowid:rowid];
+		
+		block(ck.collection, ck.key, object, metadata, index, stop);
 	}];
 }
 
@@ -4657,15 +4622,14 @@
 	[self enumerateRowidsInGroup:group
 	                 withOptions:options
 	                       range:range
-	                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop) {
-		
-		NSString *key = nil;
-		NSString *collection = nil;
+	                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop)
+	{
+		YapCollectionKey *ck = nil;
 		id object = nil;
 		id metadata = nil;
-		[databaseTransaction getKey:&key collection:&collection object:&object metadata:&metadata forRowid:rowid];
+		[databaseTransaction getCollectionKey:&ck object:&object metadata:&metadata forRowid:rowid];
 		
-		block(collection, key, object, metadata, index, stop);
+		block(ck.collection, ck.key, object, metadata, index, stop);
 	}];
 }
 
@@ -4682,8 +4646,7 @@
  * If the object isn't in the cache, having the rowid makes for a faster fetch from sqlite.
 **/
 - (BOOL)getRowid:(int64_t *)rowidPtr
-             key:(NSString **)keyPtr
-      collection:(NSString **)collectionPtr
+   collectionKey:(YapCollectionKey **)collectionKeyPtr
           forRow:(NSUInteger)row
        inSection:(NSUInteger)section
     withMappings:(YapDatabaseViewMappings *)mappings
@@ -4698,9 +4661,10 @@
 			int64_t rowid = 0;
 			if ([self getRowid:&rowid atIndex:index inGroup:group])
 			{
-				if (keyPtr || collectionPtr)
+				if (collectionKeyPtr)
 				{
-					[databaseTransaction getKey:keyPtr collection:collectionPtr forRowid:rowid];
+					YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
+					*collectionKeyPtr = ck;
 				}
 				
 				if (rowidPtr) *rowidPtr = rowid;
@@ -4710,8 +4674,7 @@
 	}
 	
 	if (rowidPtr) *rowidPtr = 0;
-	if (keyPtr) *keyPtr = nil;
-	if (collectionPtr) *collectionPtr = nil;
+	if (collectionKeyPtr) *collectionKeyPtr = nil;
 	return NO;
 }
 
@@ -4741,12 +4704,17 @@
 	NSUInteger row = [indexPath indexAtPosition:1];
 #endif
 	
-	return [self getRowid:NULL
-	                  key:keyPtr
-	           collection:collectionPtr
-	               forRow:row
-	            inSection:section
-	         withMappings:mappings];
+	YapCollectionKey *ck = nil;
+	BOOL result = [self getRowid:NULL
+	               collectionKey:&ck
+	                      forRow:row
+	                   inSection:section
+	                withMappings:mappings];
+	
+	if (keyPtr) *keyPtr = ck.key;
+	if (collectionPtr) *collectionPtr = ck.collection;
+	
+	return result;
 }
 
 /**
@@ -4760,12 +4728,17 @@
      inSection:(NSUInteger)section
   withMappings:(YapDatabaseViewMappings *)mappings
 {
-	return [self getRowid:NULL
-	                  key:keyPtr
-	           collection:collectionPtr
-	               forRow:row
-	            inSection:section
-	         withMappings:mappings];
+	YapCollectionKey *ck = nil;
+	BOOL result = [self getRowid:NULL
+	               collectionKey:&ck
+	                      forRow:row
+	                   inSection:section
+	                withMappings:mappings];
+	
+	if (keyPtr) *keyPtr = ck.key;
+	if (collectionPtr) *collectionPtr = ck.collection;
+	
+	return result;
 }
 
 /**
@@ -4796,12 +4769,11 @@
 	id object = nil;
 	
 	int64_t rowid = 0;
-	NSString *key = nil;
-	NSString *collection = nil;
+	YapCollectionKey *ck = nil;
 	
-	if ([self getRowid:&rowid key:&key collection:&collection forRow:row inSection:section withMappings:mappings])
+	if ([self getRowid:&rowid collectionKey:&ck forRow:row inSection:section withMappings:mappings])
 	{
-		object = [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
+		object = [databaseTransaction objectForCollectionKey:ck withRowid:rowid];
 	}
 	
 	return object;
@@ -4826,12 +4798,11 @@
 	id object = nil;
 	
 	int64_t rowid = 0;
-	NSString *key = nil;
-	NSString *collection = nil;
+	YapCollectionKey *ck = nil;
 	
-	if ([self getRowid:&rowid key:&key collection:&collection forRow:row inSection:section withMappings:mappings])
+	if ([self getRowid:&rowid collectionKey:&ck forRow:row inSection:section withMappings:mappings])
 	{
-		object = [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
+		object = [databaseTransaction objectForCollectionKey:ck withRowid:rowid];
 	}
 	
 	return object;

@@ -2369,17 +2369,16 @@
 						int64_t count = [self edgeCountWithDestination:dstRowid name:name excludingSource:rowid];
 						if (count == 0)
 						{
-							NSString *dstKey = nil;
-							NSString *dstCollection = nil;
-							[databaseTransaction getKey:&dstKey collection:&dstCollection forRowid:dstRowid];
+							YapCollectionKey *dst = [databaseTransaction collectionKeyForRowid:dstRowid];
 							
-							YDBLogVerbose(@"Deleting destination node: key(%@) collection(%@)", dstKey, dstCollection);
+							YDBLogVerbose(@"Deleting destination node: key(%@) collection(%@)",
+							              dst.key, dst.collection);
 							
 							__unsafe_unretained YapDatabaseReadWriteTransaction *databaseRwTransaction =
 							  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 							
-							[databaseRwTransaction removeObjectForKey:dstKey
-							                             inCollection:dstCollection
+							[databaseRwTransaction removeObjectForKey:dst.key
+							                             inCollection:dst.collection
 							                                withRowid:dstRowid];
 						}
 					}
@@ -2387,31 +2386,27 @@
 					{
 						// Delete the destination node
 						
-						NSString *dstKey = nil;
-						NSString *dstCollection = nil;
-						[databaseTransaction getKey:&dstKey collection:&dstCollection forRowid:dstRowid];
+						YapCollectionKey *dst = [databaseTransaction collectionKeyForRowid:dstRowid];
 						
-						YDBLogVerbose(@"Deleting destination node: key(%@) collection(%@)", dstKey, dstCollection);
+						YDBLogVerbose(@"Deleting destination node: key(%@) collection(%@)", dst.key, dst.collection);
 						
 						__unsafe_unretained YapDatabaseReadWriteTransaction *databaseRwTransaction =
 						  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 						
-						[databaseRwTransaction removeObjectForKey:dstKey
-						                             inCollection:dstCollection
+						[databaseRwTransaction removeObjectForKey:dst.key
+						                             inCollection:dst.collection
 						                                withRowid:dstRowid];
 					}
 					else if (nodeDeleteRules & YDB_NotifyIfSourceDeleted)
 					{
 						// Notify the destination node
 						
-						NSString *dstKey = nil;
-						NSString *dstCollection = nil;
+						YapCollectionKey *dst = nil;
 						id dstNode = nil;
 						
-						[databaseTransaction getKey:&dstKey
-						                 collection:&dstCollection
-						                     object:&dstNode
-						                   forRowid:dstRowid];
+						[databaseTransaction getCollectionKey:&dst
+						                               object:&dstNode
+						                             forRowid:dstRowid];
 						
 						SEL selector = @selector(yapDatabaseRelationshipEdgeDeleted:withReason:);
 						if ([dstNode respondsToSelector:selector])
@@ -2421,8 +2416,8 @@
 							edge->sourceKey = collectionKey.key;
 							edge->sourceCollection = collectionKey.collection;
 							edge->sourceRowid = rowid;
-							edge->destinationKey = dstKey;
-							edge->destinationCollection = dstCollection;
+							edge->destinationKey = dst.key;
+							edge->destinationCollection = dst.collection;
 							edge->destinationRowid = dstRowid;
 							edge->nodeDeleteRules = nodeDeleteRules;
 							
@@ -2463,50 +2458,49 @@
 					int64_t count = [self edgeCountWithSource:srcRowid name:name excludingDestination:rowid];
 					if (count == 0)
 					{
-						NSString *srcKey = nil;
-						NSString *srcCollection = nil;
-						[databaseTransaction getKey:&srcKey collection:&srcCollection forRowid:srcRowid];
+						YapCollectionKey *src = [databaseTransaction collectionKeyForRowid:srcRowid];
 						
-						YDBLogVerbose(@"Deleting source node: key(%@) collection(%@)", srcKey, srcCollection);
+						YDBLogVerbose(@"Deleting source node: key(%@) collection(%@)", src.key, src.collection);
 						
 						__unsafe_unretained YapDatabaseReadWriteTransaction *databaseRwTransaction =
 						  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 						
-						[databaseRwTransaction removeObjectForKey:srcKey inCollection:srcCollection withRowid:srcRowid];
+						[databaseRwTransaction removeObjectForKey:src.key
+						                             inCollection:src.collection
+						                                withRowid:srcRowid];
 					}
 				}
 				else if (nodeDeleteRules & YDB_DeleteSourceIfDestinationDeleted)
 				{
 					// Delete the source node
 					
-					NSString *srcKey = nil;
-					NSString *srcCollection = nil;
-					[databaseTransaction getKey:&srcKey collection:&srcCollection forRowid:srcRowid];
+					YapCollectionKey *src = [databaseTransaction collectionKeyForRowid:srcRowid];
 					
-					YDBLogVerbose(@"Deleting source node: key(%@) collection(%@)", srcKey, srcCollection);
+					YDBLogVerbose(@"Deleting source node: key(%@) collection(%@)", src.key, src.collection);
 					
 					__unsafe_unretained YapDatabaseReadWriteTransaction *databaseRwTransaction =
 					  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 					
-					[databaseRwTransaction removeObjectForKey:srcKey inCollection:srcCollection withRowid:srcRowid];
+					[databaseRwTransaction removeObjectForKey:src.key
+					                             inCollection:src.collection
+					                                withRowid:srcRowid];
 				}
 				else if (nodeDeleteRules & YDB_NotifyIfDestinationDeleted)
 				{
 					// Notify the source node
 					
-					NSString *srcKey = nil;
-					NSString *srcCollection = nil;
+					YapCollectionKey *src = nil;
 					id srcNode = nil;
 					
-					[databaseTransaction getKey:&srcKey collection:&srcCollection object:&srcNode forRowid:srcRowid];
+					[databaseTransaction getCollectionKey:&src object:&srcNode forRowid:srcRowid];
 					
 					SEL selector = @selector(yapDatabaseRelationshipEdgeDeleted:withReason:);
 					if ([srcNode respondsToSelector:selector])
 					{
 						YapDatabaseRelationshipEdge *edge = [[YapDatabaseRelationshipEdge alloc] init];
 						edge->name = name;
-						edge->sourceKey = srcKey;
-						edge->sourceCollection = srcCollection;
+						edge->sourceKey = src.key;
+						edge->sourceCollection = src.collection;
 						edge->sourceRowid = srcRowid;
 						edge->destinationKey = collectionKey.key;
 						edge->destinationCollection = collectionKey.collection;
@@ -3128,19 +3122,15 @@
 			                                                        rules:rules
 				                                                   manual:manual];
 				
-				NSString *srcKey = nil;
-				NSString *srcCollection = nil;
-				[databaseTransaction getKey:&srcKey collection:&srcCollection forRowid:srcRowid];
+				YapCollectionKey *src = [databaseTransaction collectionKeyForRowid:srcRowid];
 				
-				edge->sourceKey = srcKey;
-				edge->sourceCollection = srcCollection;
+				edge->sourceKey = src.key;
+				edge->sourceCollection = src.collection;
 				
-				NSString *dstKey = nil;
-				NSString *dstCollection = nil;
-				[databaseTransaction getKey:&dstKey collection:&dstCollection forRowid:dstRowid];
+				YapCollectionKey *dst = [databaseTransaction collectionKeyForRowid:dstRowid];
 				
-				edge->destinationKey = dstKey;
-				edge->destinationCollection = dstCollection;
+				edge->destinationKey = dst.key;
+				edge->destinationCollection = dst.collection;
 			}
 			else if (edge->isManualEdge && edge->edgeAction == YDB_EdgeActionDelete)
 			{
@@ -3380,12 +3370,10 @@
 				edge->sourceKey = srcKey;
 				edge->sourceCollection = srcCollection;
 				
-				NSString *dstKey = nil;
-				NSString *dstCollection = nil;
-				[databaseTransaction getKey:&dstKey collection:&dstCollection forRowid:dstRowid];
+				YapCollectionKey *dst = [databaseTransaction collectionKeyForRowid:dstRowid];
 				
-				edge->destinationKey = dstKey;
-				edge->destinationCollection = dstCollection;
+				edge->destinationKey = dst.key;
+				edge->destinationCollection = dst.collection;
 			}
 			else if (edge->isManualEdge && edge->edgeAction == YDB_EdgeActionDelete)
 			{
@@ -3615,12 +3603,10 @@
 			                                                        rules:rules
 				                                                   manual:manual];
 				
-				NSString *srcKey = nil;
-				NSString *srcCollection = nil;
-				[databaseTransaction getKey:&srcKey collection:&srcCollection forRowid:srcRowid];
+				YapCollectionKey *src = [databaseTransaction collectionKeyForRowid:srcRowid];
 				
-				edge->sourceKey = srcKey;
-				edge->sourceCollection = srcCollection;
+				edge->sourceKey = src.key;
+				edge->sourceCollection = src.collection;
 				
 				edge->destinationKey = dstKey;
 				edge->destinationCollection = dstCollection;
@@ -3841,12 +3827,10 @@
 			                                                        rules:rules
 				                                                   manual:manual];
 				
-				NSString *srcKey = nil;
-				NSString *srcCollection = nil;
-				[databaseTransaction getKey:&srcKey collection:&srcCollection forRowid:srcRowid];
+				YapCollectionKey *src = [databaseTransaction collectionKeyForRowid:srcRowid];
 				
-				edge->sourceKey = srcKey;
-				edge->sourceCollection = srcCollection;
+				edge->sourceKey = src.key;
+				edge->sourceCollection = src.collection;
 			}
 			else if (edge->isManualEdge && edge->edgeAction == YDB_EdgeActionDelete)
 			{

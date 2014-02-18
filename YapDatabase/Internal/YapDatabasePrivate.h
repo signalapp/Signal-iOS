@@ -27,6 +27,7 @@ extern NSString *const YapDatabaseRegisteredExtensionsKey;
 extern NSString *const YapDatabaseRegisteredTablesKey;
 extern NSString *const YapDatabaseExtensionsOrderKey;
 extern NSString *const YapDatabaseExtensionDependenciesKey;
+extern NSString *const YapDatabaseRemovedRowidsKey;
 extern NSString *const YapDatabaseNotificationKey;
 
 @interface YapDatabase () {
@@ -194,6 +195,7 @@ extern NSString *const YapDatabaseNotificationKey;
 	
 	BOOL hasDiskChanges;
 	
+	YapCache *keyCache;
 	YapCache *objectCache;
 	YapCache *metadataCache;
 	
@@ -209,6 +211,7 @@ extern NSString *const YapDatabaseNotificationKey;
 	NSMutableDictionary *metadataChanges;
 	NSMutableSet *removedKeys;
 	NSMutableSet *removedCollections;
+	NSMutableSet *removedRowids;
 	BOOL allKeysRemoved;
 }
 
@@ -229,8 +232,6 @@ extern NSString *const YapDatabaseNotificationKey;
 - (sqlite3_stmt *)getCountForRowidStatement;
 - (sqlite3_stmt *)getRowidForKeyStatement;
 - (sqlite3_stmt *)getKeyForRowidStatement;
-- (sqlite3_stmt *)getKeyDataForRowidStatement;
-- (sqlite3_stmt *)getKeyMetadataForRowidStatement;
 - (sqlite3_stmt *)getDataForRowidStatement;
 - (sqlite3_stmt *)getMetadataForRowidStatement;
 - (sqlite3_stmt *)getAllForRowidStatement;
@@ -345,23 +346,15 @@ extern NSString *const YapDatabaseNotificationKey;
 
 - (BOOL)getRowid:(int64_t *)rowidPtr forKey:(NSString *)key inCollection:(NSString *)collection;
 
-- (BOOL)getKey:(NSString **)keyPtr collection:(NSString **)collectionPtr forRowid:(int64_t)rowid;
+- (YapCollectionKey *)collectionKeyForRowid:(int64_t)rowid;
 
-- (BOOL)getKey:(NSString **)keyPtr
-    collection:(NSString **)collectionPtr
-        object:(id *)objectPtr
-      forRowid:(int64_t)rowid;
+- (BOOL)getCollectionKey:(YapCollectionKey **)collectionKeyPtr object:(id *)objectPtr forRowid:(int64_t)rowid;
+- (BOOL)getCollectionKey:(YapCollectionKey **)collectionKeyPtr metadata:(id *)metadataPtr forRowid:(int64_t)rowid;
 
-- (BOOL)getKey:(NSString **)keyPtr
-    collection:(NSString **)collectionPtr
-      metadata:(id *)metadataPtr
-      forRowid:(int64_t)rowid;
-
-- (BOOL)getKey:(NSString **)keyPtr
-    collection:(NSString **)collectionPtr
-        object:(id *)objectPtr
-      metadata:(id *)metadataPtr
-      forRowid:(int64_t)rowid;
+- (BOOL)getCollectionKey:(YapCollectionKey **)collectionKeyPtr
+				  object:(id *)objectPtr
+				metadata:(id *)metadataPtr
+				forRowid:(int64_t)rowid;
 
 - (BOOL)hasRowid:(int64_t)rowid;
 

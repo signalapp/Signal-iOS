@@ -1066,11 +1066,9 @@
 	
 	BOOL result = [self _enumerateRowidsMatchingQuery:query usingBlock:^(int64_t rowid, BOOL *stop) {
 		
-		NSString *key = nil;
-		NSString *collection = nil;
-		[databaseTransaction getKey:&key collection:&collection forRowid:rowid];
+		YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
 		
-		block(collection, key, stop);
+		block(ck.collection, ck.key, stop);
 	}];
 	
 	return result;
@@ -1085,12 +1083,11 @@
 	
 	BOOL result = [self _enumerateRowidsMatchingQuery:query usingBlock:^(int64_t rowid, BOOL *stop) {
 		
-		NSString *key = nil;
-		NSString *collection = nil;
+		YapCollectionKey *ck = nil;
 		id metadata = nil;
-		[databaseTransaction getKey:&key collection:&collection metadata:&metadata forRowid:rowid];
+		[databaseTransaction getCollectionKey:&ck metadata:&metadata forRowid:rowid];
 		
-		block(collection, key, metadata, stop);
+		block(ck.collection, ck.key, metadata, stop);
 	}];
 	
 	return result;
@@ -1105,12 +1102,11 @@
 	
 	BOOL result = [self _enumerateRowidsMatchingQuery:query usingBlock:^(int64_t rowid, BOOL *stop) {
 		
-		NSString *key = nil;
-		NSString *collection = nil;
+		YapCollectionKey *ck = nil;
 		id object = nil;
-		[databaseTransaction getKey:&key collection:&collection object:&object forRowid:rowid];
+		[databaseTransaction getCollectionKey:&ck object:&object forRowid:rowid];
 		
-		block(collection, key, object, stop);
+		block(ck.collection, ck.key, object, stop);
 	}];
 	
 	return result;
@@ -1125,13 +1121,12 @@
 	
 	BOOL result = [self _enumerateRowidsMatchingQuery:query usingBlock:^(int64_t rowid, BOOL *stop) {
 		
-		NSString *key = nil;
-		NSString *collection = nil;
+		YapCollectionKey *ck = nil;
 		id object = nil;
 		id metadata = nil;
-		[databaseTransaction getKey:&key collection:&collection object:&object metadata:&metadata forRowid:rowid];
+		[databaseTransaction getCollectionKey:&ck object:&object metadata:&metadata forRowid:rowid];
 		
-		block(collection, key, object, metadata, stop);
+		block(ck.collection, ck.key, object, metadata, stop);
 	}];
 	
 	return result;

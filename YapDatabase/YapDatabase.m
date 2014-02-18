@@ -35,6 +35,7 @@ NSString *const YapDatabaseObjectChangesKey      = @"objectChanges";
 NSString *const YapDatabaseMetadataChangesKey    = @"metadataChanges";
 NSString *const YapDatabaseRemovedKeysKey        = @"removedKeys";
 NSString *const YapDatabaseRemovedCollectionsKey = @"removedCollections";
+NSString *const YapDatabaseRemovedRowidsKey      = @"removedRowids";
 NSString *const YapDatabaseAllKeysRemovedKey     = @"allKeysRemoved";
 
 NSString *const YapDatabaseRegisteredExtensionsKey  = @"registeredExtensions";

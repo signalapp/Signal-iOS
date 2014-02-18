@@ -228,19 +228,15 @@
 			[parentViewTransaction enumerateRowidsInGroup:group
 			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop)
 			{
-				NSString *key = nil;
-				NSString *collection = nil;
-				[databaseTransaction getKey:&key collection:&collection forRowid:rowid];
+				YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
 				
-				if (filterBlock(group, collection, key))
+				if (filterBlock(group, ck.collection, ck.key))
 				{
-					YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-					
 					if (filteredIndex == 0)
-						[self insertRowid:rowid collectionKey:collectionKey inNewGroup:group];
+						[self insertRowid:rowid collectionKey:ck inNewGroup:group];
 					else
-						[self insertRowid:rowid collectionKey:collectionKey inGroup:group atIndex:filteredIndex
-						                                                      withExistingPageKey:nil];
+						[self insertRowid:rowid collectionKey:ck inGroup:group atIndex:filteredIndex
+						                                           withExistingPageKey:nil];
 					filteredIndex++;
 				}
 			}];
@@ -258,20 +254,17 @@
 			[parentViewTransaction enumerateRowidsInGroup:group
 			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop)
 			{
-				NSString *key = nil;
-				NSString *collection = nil;
+				YapCollectionKey *ck = nil;
 				id object = nil;
-				[databaseTransaction getKey:&key collection:&collection object:&object forRowid:rowid];
+				[databaseTransaction getCollectionKey:&ck object:&object forRowid:rowid];
 				
-				if (filterBlock(group, collection, key, object))
+				if (filterBlock(group, ck.collection, ck.key, object))
 				{
-					YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-					
 					if (filteredIndex == 0)
-						[self insertRowid:rowid collectionKey:collectionKey inNewGroup:group];
+						[self insertRowid:rowid collectionKey:ck inNewGroup:group];
 					else
-						[self insertRowid:rowid collectionKey:collectionKey inGroup:group atIndex:filteredIndex
-						                                                      withExistingPageKey:nil];
+						[self insertRowid:rowid collectionKey:ck inGroup:group atIndex:filteredIndex
+						                                           withExistingPageKey:nil];
 					filteredIndex++;
 				}
 			}];
@@ -289,20 +282,17 @@
 			[parentViewTransaction enumerateRowidsInGroup:group
 			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop)
 			{
-				NSString *key = nil;
-				NSString *collection = nil;
+				YapCollectionKey *ck = nil;
 				id metadata = nil;
-				[databaseTransaction getKey:&key collection:&collection metadata:&metadata forRowid:rowid];
+				[databaseTransaction getCollectionKey:&ck metadata:&metadata forRowid:rowid];
 				
-				if (filterBlock(group, collection, key, metadata))
+				if (filterBlock(group, ck.collection, ck.key, metadata))
 				{
-					YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-					
 					if (filteredIndex == 0)
-						[self insertRowid:rowid collectionKey:collectionKey inNewGroup:group];
+						[self insertRowid:rowid collectionKey:ck inNewGroup:group];
 					else
-						[self insertRowid:rowid collectionKey:collectionKey inGroup:group atIndex:filteredIndex
-						                                                      withExistingPageKey:nil];
+						[self insertRowid:rowid collectionKey:ck inGroup:group atIndex:filteredIndex
+						                                           withExistingPageKey:nil];
 					filteredIndex++;
 				}
 			}];
@@ -320,26 +310,22 @@
 			[parentViewTransaction enumerateRowidsInGroup:group
 			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop)
 			{
-				NSString *key = nil;
-				NSString *collection = nil;
+				YapCollectionKey *ck = nil;
 				id object = nil;
 				id metadata = nil;
 				
-				[databaseTransaction getKey:&key
-				                 collection:&collection
-				                     object:&object
-				                   metadata:&metadata
-				                   forRowid:rowid];
+				[databaseTransaction getCollectionKey:&ck
+				                               object:&object
+				                             metadata:&metadata
+				                             forRowid:rowid];
 				
-				if (filterBlock(group, collection, key, object, metadata))
+				if (filterBlock(group, ck.collection, ck.key, object, metadata))
 				{
-					YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-					
 					if (filteredIndex == 0)
-						[self insertRowid:rowid collectionKey:collectionKey inNewGroup:group];
+						[self insertRowid:rowid collectionKey:ck inNewGroup:group];
 					else
-						[self insertRowid:rowid collectionKey:collectionKey inGroup:group atIndex:filteredIndex
-						                                                      withExistingPageKey:nil];
+						[self insertRowid:rowid collectionKey:ck inGroup:group atIndex:filteredIndex
+						                                           withExistingPageKey:nil];
 					filteredIndex++;
 				}
 			}];
@@ -393,11 +379,9 @@
 			[parentViewTransaction enumerateRowidsInGroup:group
 			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop)
 			{
-				NSString *key = nil;
-				NSString *collection = nil;
-				[databaseTransaction getKey:&key collection:&collection forRowid:rowid];
+				YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
 				
-				if (filterBlock(group, collection, key))
+				if (filterBlock(group, ck.collection, ck.key))
 				{
 					if (existing && (existingRowid == rowid))
 					{
@@ -411,8 +395,6 @@
 					{
 						// The row was not previously in the view (disallowed by previous filter),
 						// but is now in the view (allowed by new filter).
-						
-						YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 						
 						if (index == 0 && ([viewConnection->group_pagesMetadata_dict objectForKey:group] == nil))
 							[self insertRowid:rowid collectionKey:ck inNewGroup:group];
@@ -428,8 +410,6 @@
 					{
 						// The row was previously in the view (allowed by previous filter),
 						// but is no longer in the view (disallowed by new filter).
-						
-						YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 						
 						[self removeRowid:rowid collectionKey:ck atIndex:index inGroup:group];
 						existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
@@ -460,12 +440,11 @@
 			[parentViewTransaction enumerateRowidsInGroup:group
 			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop)
 			{
-				NSString *key = nil;
-				NSString *collection = nil;
+				YapCollectionKey *ck = nil;
 				id object = nil;
-				[databaseTransaction getKey:&key collection:&collection object:&object forRowid:rowid];
+				[databaseTransaction getCollectionKey:&ck object:&object forRowid:rowid];
 				
-				if (filterBlock(group, collection, key, object))
+				if (filterBlock(group, ck.collection, ck.key, object))
 				{
 					if (existing && (existingRowid == rowid))
 					{
@@ -479,8 +458,6 @@
 					{
 						// The row was not previously in the view (disallowed by previous filter),
 						// but is now in the view (allowed by new filter).
-						
-						YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 						
 						if (index == 0 && ([viewConnection->group_pagesMetadata_dict objectForKey:group] == nil))
 							[self insertRowid:rowid collectionKey:ck inNewGroup:group];
@@ -496,8 +473,6 @@
 					{
 						// The row was previously in the view (allowed by previous filter),
 						// but is no longer in the view (disallowed by new filter).
-						
-						YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 						
 						[self removeRowid:rowid collectionKey:ck atIndex:index inGroup:group];
 						existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
@@ -528,12 +503,11 @@
 			[parentViewTransaction enumerateRowidsInGroup:group
 			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop)
 			{
-				NSString *key = nil;
-				NSString *collection = nil;
+				YapCollectionKey *ck = nil;
 				id metadata = nil;
-				[databaseTransaction getKey:&key collection:&collection metadata:&metadata forRowid:rowid];
+				[databaseTransaction getCollectionKey:&ck metadata:&metadata forRowid:rowid];
 				
-				if (filterBlock(group, collection, key, metadata))
+				if (filterBlock(group, ck.collection, ck.key, metadata))
 				{
 					if (existing && (existingRowid == rowid))
 					{
@@ -547,8 +521,6 @@
 					{
 						// The row was not previously in the view (disallowed by previous filter),
 						// but is now in the view (allowed by new filter).
-						
-						YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 						
 						if (index == 0 && ([viewConnection->group_pagesMetadata_dict objectForKey:group] == nil))
 							[self insertRowid:rowid collectionKey:ck inNewGroup:group];
@@ -564,8 +536,6 @@
 					{
 						// The row was previously in the view (allowed by previous filter),
 						// but is no longer in the view (disallowed by new filter).
-						
-						YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 						
 						[self removeRowid:rowid collectionKey:ck atIndex:index inGroup:group];
 						existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
@@ -596,18 +566,16 @@
 			[parentViewTransaction enumerateRowidsInGroup:group
 			                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop)
 			{
-				NSString *key = nil;
-				NSString *collection = nil;
+				YapCollectionKey *ck = nil;
 				id object = nil;
 				id metadata = nil;
 				
-				[databaseTransaction getKey:&key
-				                 collection:&collection
-				                     object:&object
-				                   metadata:&metadata
-				                   forRowid:rowid];
+				[databaseTransaction getCollectionKey:&ck
+				                              object:&object
+				                            metadata:&metadata
+				                            forRowid:rowid];
 				
-				if (filterBlock(group, collection, key, object, metadata))
+				if (filterBlock(group, ck.collection, ck.key, object, metadata))
 				{
 					if (existing && (existingRowid == rowid))
 					{
@@ -621,8 +589,6 @@
 					{
 						// The row was not previously in the view (disallowed by previous filter),
 						// but is now in the view (allowed by new filter).
-						
-						YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 						
 						if (index == 0 && ([viewConnection->group_pagesMetadata_dict objectForKey:group] == nil))
 							[self insertRowid:rowid collectionKey:ck inNewGroup:group];
@@ -638,8 +604,6 @@
 					{
 						// The row was previously in the view (allowed by previous filter),
 						// but is no longer in the view (disallowed by new filter).
-						
-						YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 						
 						[self removeRowid:rowid collectionKey:ck atIndex:index inGroup:group];
 						existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
