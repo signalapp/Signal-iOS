@@ -4459,6 +4459,12 @@
 **/
 - (void)replacePrimitiveData:(NSData *)primitiveData forKey:(NSString *)key inCollection:(NSString *)collection
 {
+	if (primitiveData == nil)
+	{
+		[self removeObjectForKey:key inCollection:collection];
+		return;
+	}
+	
 	if (collection == nil) collection = @"";
 	
 	int64_t rowid = 0;
