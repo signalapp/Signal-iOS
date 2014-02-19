@@ -100,7 +100,7 @@
 		filteringBlock = inFilteringBlock;
 		filteringBlockType = inFilteringBlockType;
 		
-		inVersionTag = inVersionTag ? [inVersionTag copy] : @"";
+		versionTag = inVersionTag ? [inVersionTag copy] : @"";
 		
 		options = inOptions ? [inOptions copy] : [[YapDatabaseViewOptions alloc] init];
 	}
