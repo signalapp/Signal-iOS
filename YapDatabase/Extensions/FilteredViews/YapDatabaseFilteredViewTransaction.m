@@ -1101,6 +1101,67 @@
 /// All other hook methods are handled by superclass (YapDatabaseViewTransaction).
 ///
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark YapDatabaseFilteredViewDependency
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * This method is invoked if our parentView repopulates.
+ * For example:
+ *
+ * - The parentView is a YapDatabaseView, and the groupingBlock and/or sortingBlock was changed.
+ * - The parentView is a YapDatabaseFilteredView, and the filterBlock was changed.
+ * - The parentView of the parentView was changed...
+ * 
+ * When this happens, there has likely been a significant change in the content of the parentView,
+ * and a full repopulate is required on our part.
+**/
+- (void)viewDidRepopulate:(NSString *)parentViewName
+{
+	YDBLogAutoTrace();
+	
+	if (!databaseTransaction->isReadWriteTransaction)
+	{
+		YDBLogWarn(@"%@ - Method only allowed in readWrite transaction", THIS_METHOD);
+		return;
+	}
+	
+	__unsafe_unretained YapDatabaseFilteredView *filteredView =
+	  (YapDatabaseFilteredView *)viewConnection->view;
+	
+	if (![parentViewName isEqualToString:filteredView->parentViewName])
+	{
+		YDBLogWarn(@"%@ - Method inappropriately invoked. Doesn't match parentViewName.", THIS_METHOD);
+		return;
+	}
+	
+	// The parentView has significantly changed.
+	// We need to repopulate.
+	
+	[self repopulateView];
+	
+	// Propogate the notification onward to any extensions dependent upon this one.
+	
+	__unsafe_unretained NSString *registeredName = [self registeredName];
+	__unsafe_unretained NSDictionary *extensionDependencies = databaseTransaction->connection->extensionDependencies;
+	
+	[extensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+		
+		__unsafe_unretained NSString *extName = (NSString *)key;
+		__unsafe_unretained NSSet *extDependencies = (NSSet *)obj;
+		
+		if ([extDependencies containsObject:registeredName])
+		{
+			YapDatabaseExtensionTransaction *extTransaction = [databaseTransaction ext:extName];
+			
+			if ([extTransaction respondsToSelector:@selector(viewDidRepopulate:)])
+			{
+				[(id <YapDatabaseFilteredViewDependency>)extTransaction viewDidRepopulate:registeredName];
+			}
+		}
+	}];
+}
+
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1140,6 +1201,27 @@
 	
 	[self repopulateView];
 	[self setStringValue:newVersionTag forExtensionKey:ExtKey_versionTag];
+	
+	// Notify any extensions dependent upon this one that we repopulated.
+	
+	__unsafe_unretained NSString *registeredName = [self registeredName];
+	__unsafe_unretained NSDictionary *extensionDependencies = databaseTransaction->connection->extensionDependencies;
+	
+	[extensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+		
+		__unsafe_unretained NSString *extName = (NSString *)key;
+		__unsafe_unretained NSSet *extDependencies = (NSSet *)obj;
+		
+		if ([extDependencies containsObject:registeredName])
+		{
+			YapDatabaseExtensionTransaction *extTransaction = [databaseTransaction ext:extName];
+			
+			if ([extTransaction respondsToSelector:@selector(viewDidRepopulate:)])
+			{
+				[(id <YapDatabaseFilteredViewDependency>)extTransaction viewDidRepopulate:registeredName];
+			}
+		}
+	}];
 }
 
 @end

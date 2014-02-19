@@ -15,3 +15,10 @@
 }
 
 @end
+
+@protocol YapDatabaseFilteredViewDependency <NSObject>
+@optional
+
+- (void)viewDidRepopulate:(NSString *)registeredName;
+
+@end
