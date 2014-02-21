@@ -304,6 +304,17 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
 - (void)touchObjectForKey:(NSString *)key inCollection:(NSString *)collection;
 - (void)touchMetadataForKey:(NSString *)key inCollection:(NSString *)collection;
 
+/**
+ * This method allows you to change the groupingBlock and/or sortingBlock on-the-fly.
+ * 
+ * Note: You must pass a different versionTag, or this method does nothing.
+**/
+- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
+       groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
+            sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
+        sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
+              versionTag:(NSString *)versionTag;
+
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -34,7 +34,9 @@
 	[super tearDown];
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)test_persistent
 {
@@ -1232,7 +1234,9 @@
 	connection2 = nil;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)testMultiPage_persistent
 {
@@ -1947,7 +1951,9 @@
 	}];
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)testViewPopulation_persistent
 {
@@ -2058,7 +2064,9 @@
 	}];
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)testMutationDuringEnumerationProtection_persistent
 {
@@ -2420,7 +2428,9 @@
 	}];
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)testDropView_persistent
 {
@@ -2519,7 +2529,9 @@
 	}];
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)testFind_persistent
 {
@@ -2715,6 +2727,144 @@
 		STAssertTrue(range.location == location, @"Bad range location: %d", (int)range.location);
 		STAssertTrue(range.length == length, @"Bad range length: %d", (int)range.length);
 	}];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)testChangeBlocks_persistent
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = YES;
+	
+	[self _testChangeBlocks_withPath:databasePath options:options];
+}
+
+- (void)testChangeBlocks_nonPersistent
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = NO;
+	
+	[self _testChangeBlocks_withPath:databasePath options:options];
+}
+
+- (void)_testChangeBlocks_withPath:(NSString *)databasePath options:(YapDatabaseViewOptions *)options
+{
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	STAssertNotNil(database, @"Oops");
+	
+	YapDatabaseConnection *connection1 = [database newConnection];
+	YapDatabaseConnection *connection2 = [database newConnection];
+	
+	YapDatabaseViewBlockType groupingBlockType;
+	YapDatabaseViewGroupingWithObjectBlock groupingBlock;
+	
+	YapDatabaseViewBlockType sortingBlockType;
+	YapDatabaseViewSortingWithObjectBlock sortingBlock;
+	
+	groupingBlockType = YapDatabaseViewBlockTypeWithObject;
+	groupingBlock = ^NSString *(NSString *collection, NSString *key, id obj){
+		
+		__unsafe_unretained NSNumber *number = (NSNumber *)obj;
+		
+		if ([number intValue] % 2 == 0)
+			return @"";
+		else
+			return nil;
+	};
+	
+	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
+	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                                  NSString *collection2, NSString *key2, id obj2){
+		
+		__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
+		__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
+		
+		return [number1 compare:number2];
+	};
+	
+	YapDatabaseView *databaseView =
+	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
+	                               groupingBlockType:groupingBlockType
+	                                    sortingBlock:sortingBlock
+	                                sortingBlockType:sortingBlockType
+	                                      versionTag:@"1"
+	                                         options:options];
+	
+	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
+	
+	STAssertTrue(registerResult, @"Failure registering extension");
+	
+	// Add a bunch of values to the database & to the view
+	
+	NSUInteger count = 10;
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		for (int i = 0; i < count; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key-%d", i];
+			NSNumber *num = [NSNumber numberWithInt:i];
+			
+			[transaction setObject:num forKey:key inCollection:nil];
+		}
+	}];
+	
+	// Make sure the view is populated
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		STAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == 5, @"View count is wrong");
+	}];
+	
+	// Now change the groupingBlock
+	
+	YapDatabaseViewMappings *mappings = [YapDatabaseViewMappings mappingsWithGroups:@[ @"" ] view:@"order"];
+	
+	[connection2 beginLongLivedReadTransaction];
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		[mappings updateWithTransaction:transaction];
+	}];
+	
+	groupingBlock = ^NSString *(NSString *collection, NSString *key, id obj){
+		
+		__unsafe_unretained NSNumber *number = (NSNumber *)obj;
+		
+		if ([number intValue] % 2 == 0)
+			return @"";
+		else
+			return @""; // <<-- Allow odd numbers now too
+	};
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[[transaction ext:@"order"] setGroupingBlock:groupingBlock
+		                           groupingBlockType:groupingBlockType
+		                                sortingBlock:sortingBlock
+		                            sortingBlockType:sortingBlockType
+		                                  versionTag:@"2"];
+	}];
+	
+	NSArray *notifications =[connection2 beginLongLivedReadTransaction];
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[[connection2 ext:@"order"] getSectionChanges:&sectionChanges
+	                                   rowChanges:&rowChanges
+	                             forNotifications:notifications
+	                                 withMappings:mappings];
+	
+	STAssertTrue([sectionChanges count] == 0, @"Bad count");
+	STAssertTrue([rowChanges count] == 10, @"Bad count");
 }
 
 @end

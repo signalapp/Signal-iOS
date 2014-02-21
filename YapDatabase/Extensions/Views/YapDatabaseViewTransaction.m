@@ -633,8 +633,11 @@
 	
 	// Initialize ivars
 	
-	viewConnection->group_pagesMetadata_dict = [[NSMutableDictionary alloc] init];
-	viewConnection->pageKey_group_dict = [[NSMutableDictionary alloc] init];
+	if (viewConnection->group_pagesMetadata_dict == nil)
+		viewConnection->group_pagesMetadata_dict = [[NSMutableDictionary alloc] init];
+	
+	if (viewConnection->pageKey_group_dict == nil)
+		viewConnection->pageKey_group_dict = [[NSMutableDictionary alloc] init];
 	
 	// Enumerate the existing rows in the database and populate the view
 	
@@ -940,6 +943,55 @@
 	}
 	
 	return YES;
+}
+
+- (void)repopulateView
+{
+	YDBLogAutoTrace();
+	
+	// Code overview:
+	//
+	// We could simply run the usual algorithm.
+	// That is, enumerate over every item in the database, and run pretty much the same code as
+	// in the handleUpdateObject:forCollectionKey:withMetadata:rowid:.
+	// However, this causes a potential issue where the sortingBlock will be invoked with items that
+	// no longer exist in the given group.
+	//
+	// Instead we're going to find a way around this.
+	// That way the sortingBlock works in a manner we're used to.
+	//
+	// Here's the algorithm overview:
+	//
+	// - Insert remove ops for every row & group
+	// - Remove all items from the database tables
+	// - Flush the group_pagesMetadata_dict (and related ivars)
+	// - Set the reset flag (for internal notification creation)
+	// - And then run the normal populate routine, with one exceptione handled by the isRepopulate flag.
+	//
+	// The changeset mechanism will automatically consolidate all changes to the minimum.
+	
+	for (NSString *group in viewConnection->group_pagesMetadata_dict)
+	{
+		// We must add the changes in reverse order.
+		// Either that, or the change index of each item would have to be zero,
+		// because a YapDatabaseViewRowChange records the index at the moment the change happens.
+		
+		[self enumerateRowidsInGroup:group
+		                 withOptions:NSEnumerationReverse
+		                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop)
+		{
+			YapCollectionKey *collectionKey = [databaseTransaction collectionKeyForRowid:rowid];
+			
+			[viewConnection->changes addObject:
+			 [YapDatabaseViewRowChange deleteKey:collectionKey inGroup:group atIndex:index]];
+		}];
+		
+		[viewConnection->changes addObject:[YapDatabaseViewSectionChange deleteGroup:group]];
+	}
+	
+	isRepopulate = YES;
+	[self populateView];
+	isRepopulate = NO;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1456,7 +1508,7 @@
 	// Add change to log
 	
 	[viewConnection->changes addObject:
-	 [YapDatabaseViewSectionChange insertGroup:group]];
+	  [YapDatabaseViewSectionChange insertGroup:group]];
 	
 	[viewConnection->changes addObject:
 	  [YapDatabaseViewRowChange insertKey:collectionKey inGroup:group atIndex:0]];
@@ -2023,8 +2075,10 @@
 	
 	// Add change to log
 	
+	NSUInteger indexWithinGroup = pageOffset + indexWithinPage;
+	
 	[viewConnection->changes addObject:
-	    [YapDatabaseViewRowChange deleteKey:collectionKey inGroup:group atIndex:(pageOffset + indexWithinPage)]];
+	  [YapDatabaseViewRowChange deleteKey:collectionKey inGroup:group atIndex:indexWithinGroup]];
 	
 	[viewConnection->mutatedGroups addObject:group];
 	
@@ -2138,7 +2192,7 @@
 			numRemoved++;
 			
 			[viewConnection->changes addObject:
-			    [YapDatabaseViewRowChange deleteKey:collectionKey inGroup:group atIndex:(pageOffset + i)]];
+			  [YapDatabaseViewRowChange deleteKey:collectionKey inGroup:group atIndex:(pageOffset + i)]];
 		}
 	}
 	
@@ -2219,10 +2273,12 @@
 		[pageTableTransaction removeAllObjects];
 		[pageMetadataTableTransaction removeAllObjects];
 	}
-		
+	
 	for (NSString *group in viewConnection->group_pagesMetadata_dict)
 	{
-		[viewConnection->changes addObject:[YapDatabaseViewSectionChange resetGroup:group]];
+		if (!isRepopulate) {
+			[viewConnection->changes addObject:[YapDatabaseViewSectionChange resetGroup:group]];
+		}
 		[viewConnection->mutatedGroups addObject:group];
 	}
 	
@@ -4396,6 +4452,82 @@
 			}
 		}
 	}
+}
+
+/**
+ * This method allows you to change the groupingBlock and/or sortingBlock on-the-fly.
+ * 
+ * Note: You must pass a different versionTag, or this method does nothing.
+**/
+- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)inGroupingBlock
+       groupingBlockType:(YapDatabaseViewBlockType)inGroupingBlockType
+            sortingBlock:(YapDatabaseViewSortingBlock)inSortingBlock
+        sortingBlockType:(YapDatabaseViewBlockType)inSortingBlockType
+              versionTag:(NSString *)inVersionTag
+{
+	YDBLogAutoTrace();
+	
+	NSAssert(inGroupingBlock != NULL, @"Invalid grouping block");
+	NSAssert(inSortingBlock != NULL, @"Invalid grouping block");
+	
+	NSAssert(inGroupingBlockType == YapDatabaseViewBlockTypeWithKey ||
+	         inGroupingBlockType == YapDatabaseViewBlockTypeWithObject ||
+	         inGroupingBlockType == YapDatabaseViewBlockTypeWithMetadata ||
+	         inGroupingBlockType == YapDatabaseViewBlockTypeWithRow,
+	         @"Invalid grouping block type");
+	
+	NSAssert(inSortingBlockType == YapDatabaseViewBlockTypeWithKey ||
+	         inSortingBlockType == YapDatabaseViewBlockTypeWithObject ||
+	         inSortingBlockType == YapDatabaseViewBlockTypeWithMetadata ||
+	         inSortingBlockType == YapDatabaseViewBlockTypeWithRow,
+	         @"Invalid sorting block type");
+	
+	if (!databaseTransaction->isReadWriteTransaction)
+	{
+		YDBLogWarn(@"%@ - Method only allowed in readWrite transaction", THIS_METHOD);
+		return;
+	}
+	
+	NSString *newVersionTag = inVersionTag ? [inVersionTag copy] : @"";
+	
+	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
+	
+	if ([view->versionTag isEqualToString:newVersionTag])
+	{
+		YDBLogWarn(@"%@ - versionTag didn't change, so not updating view", THIS_METHOD);
+		return;
+	}
+	
+	view->groupingBlock = inGroupingBlock;
+	view->groupingBlockType = inGroupingBlockType;
+	view->sortingBlock = inSortingBlock;
+	view->sortingBlockType = inSortingBlockType;
+	
+	view->versionTag = newVersionTag;
+	
+	[self repopulateView];
+	[self setStringValue:newVersionTag forExtensionKey:ExtKey_versionTag];
+	
+	// Notify any extensions dependent upon this one that we repopulated.
+	
+	NSString *registeredName = [self registeredName];
+	NSDictionary *extensionDependencies = databaseTransaction->connection->extensionDependencies;
+	
+	[extensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+		
+		__unsafe_unretained NSString *extName = (NSString *)key;
+		__unsafe_unretained NSSet *extDependencies = (NSSet *)obj;
+		
+		if ([extDependencies containsObject:registeredName])
+		{
+			YapDatabaseExtensionTransaction *extTransaction = [databaseTransaction ext:extName];
+			
+			if ([extTransaction respondsToSelector:@selector(viewDidRepopulate:)])
+			{
+				[(id <YapDatabaseViewDependency>)extTransaction viewDidRepopulate:registeredName];
+			}
+		}
+	}];
 }
 
 @end

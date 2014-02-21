@@ -1102,7 +1102,7 @@
 ///
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark YapDatabaseFilteredViewDependency
+#pragma mark YapDatabaseViewDependency Protocol
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -1156,7 +1156,7 @@
 			
 			if ([extTransaction respondsToSelector:@selector(viewDidRepopulate:)])
 			{
-				[(id <YapDatabaseFilteredViewDependency>)extTransaction viewDidRepopulate:registeredName];
+				[(id <YapDatabaseViewDependency>)extTransaction viewDidRepopulate:registeredName];
 			}
 		}
 	}];
@@ -1176,6 +1176,14 @@
 
 {
 	YDBLogAutoTrace();
+	
+	NSAssert(inFilteringBlock != NULL, @"Invalid filteringBlock");
+	
+	NSAssert(inFilteringBlockType == YapDatabaseViewBlockTypeWithKey ||
+	         inFilteringBlockType == YapDatabaseViewBlockTypeWithObject ||
+	         inFilteringBlockType == YapDatabaseViewBlockTypeWithMetadata ||
+	         inFilteringBlockType == YapDatabaseViewBlockTypeWithRow,
+	         @"Invalid filteringBlockType");
 	
 	if (!databaseTransaction->isReadWriteTransaction)
 	{
@@ -1204,8 +1212,8 @@
 	
 	// Notify any extensions dependent upon this one that we repopulated.
 	
-	__unsafe_unretained NSString *registeredName = [self registeredName];
-	__unsafe_unretained NSDictionary *extensionDependencies = databaseTransaction->connection->extensionDependencies;
+	NSString *registeredName = [self registeredName];
+	NSDictionary *extensionDependencies = databaseTransaction->connection->extensionDependencies;
 	
 	[extensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
 		
@@ -1218,7 +1226,7 @@
 			
 			if ([extTransaction respondsToSelector:@selector(viewDidRepopulate:)])
 			{
-				[(id <YapDatabaseFilteredViewDependency>)extTransaction viewDidRepopulate:registeredName];
+				[(id <YapDatabaseViewDependency>)extTransaction viewDidRepopulate:registeredName];
 			}
 		}
 	}];

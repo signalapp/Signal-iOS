@@ -106,6 +106,8 @@
 	YapMemoryTableTransaction *pageTableTransaction;
 	YapMemoryTableTransaction *pageMetadataTableTransaction;
 	
+	BOOL isRepopulate;
+	
 @protected
 	
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection;
@@ -153,5 +155,16 @@
 
 - (void)enumerateRowidsInGroup:(NSString *)group
                     usingBlock:(void (^)(int64_t rowid, NSUInteger index, BOOL *stop))block;
+
+@end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@protocol YapDatabaseViewDependency <NSObject>
+@optional
+
+- (void)viewDidRepopulate:(NSString *)registeredName;
 
 @end

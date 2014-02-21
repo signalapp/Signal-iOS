@@ -293,7 +293,9 @@ static NSString *const key_changes                  = @"changes";
 	NSMutableDictionary *externalChangeset = nil;
 	BOOL hasDiskChanges = NO;
 	
-	if ([dirtyMaps count] || [dirtyPages count] || [dirtyLinks count] || reset)
+	if ([dirtyMaps count]  > 0 ||
+	    [dirtyPages count] > 0 ||
+	    [dirtyLinks count] > 0 || reset)
 	{
 		hasDiskChanges = view->options.isPersistent;
 		internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
@@ -323,7 +325,7 @@ static NSString *const key_changes                  = @"changes";
 		[internalChangeset setObject:pageKey_group_dict_copy       forKey:key_pageKey_group_dict];
 	}
 	
-	if ([changes count])
+	if ([changes count] > 0)
 	{
 		externalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
 		

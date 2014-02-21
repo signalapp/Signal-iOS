@@ -128,6 +128,9 @@
 {
 	if ((self = [super init]))
 	{
+		NSAssert(inGroupingBlock != NULL, @"Invalid grouping block");
+		NSAssert(inSortingBlock != NULL, @"Invalid sorting block");
+		
 		NSAssert(inGroupingBlockType == YapDatabaseViewBlockTypeWithKey ||
 		         inGroupingBlockType == YapDatabaseViewBlockTypeWithObject ||
 		         inGroupingBlockType == YapDatabaseViewBlockTypeWithMetadata ||

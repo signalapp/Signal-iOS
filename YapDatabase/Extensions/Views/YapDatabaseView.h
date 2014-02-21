@@ -5,6 +5,9 @@
 #import "YapDatabaseViewOptions.h"
 #import "YapDatabaseViewConnection.h"
 #import "YapDatabaseViewTransaction.h"
+#import "YapDatabaseViewMappings.h"
+#import "YapDatabaseViewChange.h"
+#import "YapDatabaseViewRangeOptions.h"
 
 /**
  * Welcome to YapDatabase!
