@@ -1362,7 +1362,7 @@
 	// Calculate the offset of the corresponding page within the group.
 	
 	NSUInteger pageOffset = 0;
-	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 	{
@@ -1392,7 +1392,7 @@
 
 - (BOOL)getRowid:(int64_t *)rowidPtr atIndex:(NSUInteger)index inGroup:(NSString *)group
 {
-	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	NSUInteger pageOffset = 0;
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
@@ -1426,7 +1426,7 @@
 	// else
 	//     return nil;
 	
-	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	
 	__block int64_t rowid = 0;
 	__block BOOL found = NO;
@@ -2643,7 +2643,7 @@
 			else
 			{
 				NSString *group = [self groupForPageKey:pageKey];
-				NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+				NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 				
 				for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 				{
@@ -2994,8 +2994,8 @@
 						if (pageMetadata == nil)
 						{
 							NSString *group = [self groupForPageKey:pageKey];
-							NSMutableArray *pagesMetadataForGroup =
-							[viewConnection->group_pagesMetadata_dict objectForKey:group];
+							NSArray *pagesMetadataForGroup =
+							  [viewConnection->group_pagesMetadata_dict objectForKey:group];
 							
 							for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 							{
@@ -3855,7 +3855,7 @@
 			// Calculate the offset of the corresponding page within the group.
 			
 			NSUInteger pageOffset = 0;
-			NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+			NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 			
 			for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 			{
@@ -3909,7 +3909,7 @@
 		return NSMakeRange(NSNotFound, 0);
 	}
 	
-	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	NSUInteger count = 0;
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
@@ -4126,7 +4126,7 @@
 	__block BOOL stop = NO;
 	
 	NSUInteger pageOffset = 0;
-	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 	{
@@ -4171,11 +4171,11 @@
 	else
 		index = [self numberOfKeysInGroup:group] - 1;
 	
-	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	
 	[pagesMetadataForGroup enumerateObjectsWithOptions:options
-	                                        usingBlock:^(id pageMetadataObj, NSUInteger outerIdx, BOOL *outerStop){
-		
+	                                        usingBlock:^(id pageMetadataObj, NSUInteger outerIdx, BOOL *outerStop)
+	{
 		__unsafe_unretained YapDatabaseViewPageMetadata *pageMetadata =
 		    (YapDatabaseViewPageMetadata *)pageMetadataObj;
 		
@@ -4211,7 +4211,7 @@
 	
 	NSEnumerationOptions options = (inOptions & NSEnumerationReverse); // We only support NSEnumerationReverse
 	
-	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	
 	// Helper block to fetch the pageOffset for some page.
 	
@@ -4238,8 +4238,8 @@
 	__block NSUInteger keysLeft = range.length;
 	
 	[pagesMetadataForGroup enumerateObjectsWithOptions:options
-	                                        usingBlock:^(id pageMetadataObj, NSUInteger pageIndex, BOOL *outerStop){
-	
+	                                        usingBlock:^(id pageMetadataObj, NSUInteger pageIndex, BOOL *outerStop)
+	{
 		__unsafe_unretained YapDatabaseViewPageMetadata *pageMetadata =
 		    (YapDatabaseViewPageMetadata *)pageMetadataObj;
 		
