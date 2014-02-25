@@ -1018,7 +1018,7 @@
 	__block int notificationCount = 0;
 	id observer =
 	  [[NSNotificationCenter defaultCenter] addObserverForName:YapDatabaseModifiedNotification
-	                                                    object:nil
+	                                                    object:database
 	                                                     queue:[NSOperationQueue mainQueue]
 	                                                usingBlock:^(NSNotification *note)
 	{
