@@ -362,13 +362,14 @@
 		@throw [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
 	}
 	
-    YapDatabaseViewTransaction *viewTransaction = [transaction ext:registeredViewName];
-    if (viewGroupsAreDynamic){
-        NSArray *newGroups = [self filterAndSortTransactionGroups:[viewTransaction allGroups]];
-        if ([self shouldUpdateAllGroupsWithNewGroups:newGroups]){
-            [self updateMappingWithGroups:newGroups];
-        }
-    }
+	YapDatabaseViewTransaction *viewTransaction = [transaction ext:registeredViewName];
+	if (viewGroupsAreDynamic)
+	{
+		NSArray *newGroups = [self filterAndSortGroups:[viewTransaction allGroups] withTransaction:transaction];
+		if ([self shouldUpdateAllGroupsWithNewGroups:newGroups]) {
+			[self updateMappingsWithNewGroups:newGroups];
+		}
+	}
     
 	for (NSString *group in allGroups)
 	{
@@ -386,17 +387,12 @@
 	[self updateVisibility];
 }
 
--(void)updateMappingWithGroups:(NSArray *)groups{
-    NSMutableArray *newAllGroups = [NSMutableArray arrayWithCapacity:groups.count];
-    for (NSString *group in groups) {
-        if (groupFilterBlock(group)) [newAllGroups addObject:group];
-    }
-    [newAllGroups sortUsingComparator:groupSort];
-    
-    allGroups = [newAllGroups copy];
+- (void)updateMappingsWithNewGroups:(NSArray *)newAllGroups
+{
+	allGroups = [newAllGroups copy];
     [self validateAutoConsolidation];
     id sharedKeySet = [NSDictionary sharedKeySetForKeys:allGroups];
-    counts       = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
+    counts = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySet];
 }
 
 - (void)validateAutoConsolidation{
@@ -412,12 +408,20 @@
     }
 }
 
-- (NSArray *)filterAndSortTransactionGroups:(NSArray *)transactionGroups{
-    NSMutableArray *newAllGroups = [NSMutableArray arrayWithCapacity:transactionGroups.count];
-    for (NSString *group in transactionGroups) {
-        if (groupFilterBlock(group)) [newAllGroups addObject:group];
-    }
-    [newAllGroups sortUsingComparator:groupSort];
+- (NSArray *)filterAndSortGroups:(NSArray *)groups withTransaction:(YapDatabaseReadTransaction *)transaction
+{
+	NSMutableArray *newAllGroups = [NSMutableArray arrayWithCapacity:[groups count]];
+	for (NSString *group in groups)
+	{
+		if (groupFilterBlock(group, transaction)) {
+			[newAllGroups addObject:group];
+		}
+	}
+	
+	[newAllGroups sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+		
+		return groupSort(obj1, obj2, transaction);
+	}];
     
     return [newAllGroups copy];
 }
@@ -433,10 +437,14 @@
 **/
 - (void)updateWithCounts:(NSDictionary *)newCounts
 {
-    if (viewGroupsAreDynamic){
-        NSArray *newGroups = [self filterAndSortTransactionGroups:[newCounts allKeys]];
-        if ([self shouldUpdateAllGroupsWithNewGroups:newGroups]){
-            [self updateMappingWithGroups:newGroups];
+	if (viewGroupsAreDynamic)
+	{
+		// The groups passed in the dictionary represent the new allGroups.
+		// This simulates as if we ran the groupFilterBlock & groupSortBlock.
+		
+		NSArray *newGroups = [newCounts allKeys];
+		if ([self shouldUpdateAllGroupsWithNewGroups:newGroups]) {
+			[self updateMappingsWithNewGroups:newGroups];
         }
     }
 	for (NSString *group in allGroups)
