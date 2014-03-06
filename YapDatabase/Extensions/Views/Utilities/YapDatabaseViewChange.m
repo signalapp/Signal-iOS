@@ -814,6 +814,7 @@
 					firstChangeForKey->type = YapDatabaseViewChangeMove;
 					firstChangeForKey->finalIndex = lastChangeForKey->finalIndex;
 					firstChangeForKey->finalGroup = lastChangeForKey->finalGroup;
+					firstChangeForKey->opFinalIndex = lastChangeForKey->opFinalIndex; // for postProcessing
 					
 					[changes removeObjectsAtIndexes:indexSet];
 					i++;
@@ -834,6 +835,7 @@
 					firstChangeForKey->type = YapDatabaseViewChangeMove;
 					firstChangeForKey->finalIndex = lastChangeForKey->finalIndex;
 					firstChangeForKey->finalGroup = lastChangeForKey->finalGroup;
+					firstChangeForKey->opFinalIndex = lastChangeForKey->opFinalIndex; // for postProcessing
 					
 					[changes removeObjectsAtIndexes:indexSet];
 					i++;
@@ -849,7 +851,6 @@
 					
 					[changes removeObjectsAtIndexes:indexSet];
 					[changes removeObjectAtIndex:i];
-					
 				}
 				else if (lastChangeForKey->type == YapDatabaseViewChangeInsert)
 				{
@@ -902,10 +903,13 @@
 					// then the tableView/collectionView will offset the update's index
 					// based on insertions & deletions at smaller indexes,
 					// and may ultimately update the wrong cell.
+					//
+					// The final location comes from the last update
 					
 					firstChangeForKey->type = YapDatabaseViewChangeMove;
 					firstChangeForKey->finalIndex = lastChangeForKey->finalIndex;
 					firstChangeForKey->finalGroup = lastChangeForKey->finalGroup;
+					firstChangeForKey->opFinalIndex = lastChangeForKey->opFinalIndex; // for postProcessing
 					
 					[changes removeObjectsAtIndexes:indexSet];
 					i++;
@@ -948,6 +952,7 @@
 						firstChangeForKey->type = YapDatabaseViewChangeMove;
 						firstChangeForKey->finalIndex = lastChangeForKey->finalIndex;
 						firstChangeForKey->finalGroup = lastChangeForKey->finalGroup;
+						firstChangeForKey->opFinalIndex = lastChangeForKey->opFinalIndex; // for postProcessing
 						
 						[changes removeObjectsAtIndexes:indexSet];
 						i++;
