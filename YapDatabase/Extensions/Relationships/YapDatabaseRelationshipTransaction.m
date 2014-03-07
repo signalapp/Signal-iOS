@@ -1413,9 +1413,6 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		YDBLogError(@"%@ - Error executing statement (A): %d %s", THIS_METHOD,
-					status, sqlite3_errmsg(databaseTransaction->connection->db));
-		
 		int64_t edgeRowid = sqlite3_column_int64(statement, 0);
 		int rules = sqlite3_column_int(statement, 1);
 		
