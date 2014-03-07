@@ -337,6 +337,7 @@
 {
 	if (level >= YapDatabaseConnectionFlushMemoryLevelMild)
 	{
+		[keyCache removeAllObjects];
 		[objectCache removeAllObjects];
 		[metadataCache removeAllObjects];
 	}
