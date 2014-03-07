@@ -31,7 +31,7 @@
 @property (nonatomic, assign, readwrite) YapDatabasePolicy metadataPolicy;
 
 #if TARGET_OS_IPHONE
-@property (nonatomic, assign, readwrite) int autoFlushMemoryLevel;
+@property (nonatomic, assign, readwrite) YapDatabaseConnectionFlushMemoryFlags autoFlushMemoryFlags;
 #endif
 
 @end

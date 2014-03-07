@@ -160,7 +160,7 @@
 		keyCache = [[YapCache alloc] initWithKeyClass:[NSNumber class] countLimit:keyCacheLimit];
 		
 		#if TARGET_OS_IPHONE
-		self.autoFlushMemoryLevel = defaults.autoFlushMemoryLevel;
+		self.autoFlushMemoryFlags = defaults.autoFlushMemoryFlags;
 		#endif
 		
 		lock = OS_SPINLOCK_INIT;
@@ -264,6 +264,36 @@
 	
 	[extensions removeAllObjects];
 	
+	[self _flushStatements];
+	
+	if (db)
+	{
+		if (![database connectionPoolEnqueue:db])
+		{
+			int status = sqlite3_close(db);
+			if (status != SQLITE_OK)
+			{
+				YDBLogError(@"Error in sqlite_close: %d %s", status, sqlite3_errmsg(db));
+			}
+		}
+		
+		db = NULL;
+	}
+	
+	[database removeConnection:self];
+	
+#if !OS_OBJECT_USE_OBJC
+	if (connectionQueue)
+		dispatch_release(connectionQueue);
+#endif
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Memory
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)_flushStatements
+{
 	sqlite_finalize_null(&beginTransactionStatement);
 	sqlite_finalize_null(&commitTransactionStatement);
 	sqlite_finalize_null(&rollbackTransactionStatement);
@@ -302,104 +332,25 @@
 	sqlite_finalize_null(&enumerateKeysAndObjectsInAllCollectionsStatement);
 	sqlite_finalize_null(&enumerateRowsInCollectionStatement);
 	sqlite_finalize_null(&enumerateRowsInAllCollectionsStatement);
-	
-	if (db)
-	{
-		if (![database connectionPoolEnqueue:db])
-		{
-			int status = sqlite3_close(db);
-			if (status != SQLITE_OK)
-			{
-				YDBLogError(@"Error in sqlite_close: %d %s", status, sqlite3_errmsg(db));
-			}
-		}
-		
-		db = NULL;
-	}
-	
-	[database removeConnection:self];
-	
-#if !OS_OBJECT_USE_OBJC
-	if (connectionQueue)
-		dispatch_release(connectionQueue);
-#endif
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Memory
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * Optional override hook.
- * Don't forget to invoke [super _flushMemoryWithLevel:level].
-**/
-- (void)_flushMemoryWithLevel:(int)level
+- (void)_flushMemoryWithFlags:(YapDatabaseConnectionFlushMemoryFlags)flags
 {
-	if (level >= YapDatabaseConnectionFlushMemoryLevelMild)
+	if (flags & YapDatabaseConnectionFlushMemoryFlags_Caches)
 	{
 		[keyCache removeAllObjects];
 		[objectCache removeAllObjects];
 		[metadataCache removeAllObjects];
 	}
 	
-	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
+	if (flags & YapDatabaseConnectionFlushMemoryFlags_Statements)
 	{
-	//	sqlite_finalize_null(&beginTransactionStatement);
-	//	sqlite_finalize_null(&commitTransactionStatement);
-		sqlite_finalize_null(&rollbackTransactionStatement);
-		
-	//	sqlite_finalize_null(&yapGetDataForKeyStatement);
-		sqlite_finalize_null(&yapSetDataForKeyStatement);
-		sqlite_finalize_null(&yapRemoveForKeyStatement);
-		sqlite_finalize_null(&yapRemoveExtensionStatement);
-		
-		sqlite_finalize_null(&getCollectionCountStatement);
-		sqlite_finalize_null(&getKeyCountForCollectionStatement);
-		sqlite_finalize_null(&getKeyCountForAllStatement);
-		sqlite_finalize_null(&getCountForRowidStatement);
-	//	sqlite_finalize_null(&getRowidForKeyStatement);
-	//	sqlite_finalize_null(&getKeyForRowidStatement);
-	//	sqlite_finalize_null(&getDataForRowidStatement);
-		sqlite_finalize_null(&getMetadataForRowidStatement);
-		sqlite_finalize_null(&getAllForRowidStatement);
-	//	sqlite_finalize_null(&getDataForKeyStatement);
-		sqlite_finalize_null(&getMetadataForKeyStatement);
-		sqlite_finalize_null(&getAllForKeyStatement);
-		sqlite_finalize_null(&insertForRowidStatement);
-		sqlite_finalize_null(&updateAllForRowidStatement);
-		sqlite_finalize_null(&updateObjectForRowidStatement);
-		sqlite_finalize_null(&updateMetadataForRowidStatement);
-		sqlite_finalize_null(&removeForRowidStatement);
-		sqlite_finalize_null(&removeCollectionStatement);
-		sqlite_finalize_null(&removeAllStatement);
-		sqlite_finalize_null(&enumerateCollectionsStatement);
-		sqlite_finalize_null(&enumerateCollectionsForKeyStatement);
-		sqlite_finalize_null(&enumerateKeysInCollectionStatement);
-		sqlite_finalize_null(&enumerateKeysInAllCollectionsStatement);
-		sqlite_finalize_null(&enumerateKeysAndMetadataInCollectionStatement);
-		sqlite_finalize_null(&enumerateKeysAndMetadataInAllCollectionsStatement);
-		sqlite_finalize_null(&enumerateKeysAndObjectsInCollectionStatement);
-		sqlite_finalize_null(&enumerateKeysAndObjectsInAllCollectionsStatement);
-		sqlite_finalize_null(&enumerateRowsInCollectionStatement);
-		sqlite_finalize_null(&enumerateRowsInAllCollectionsStatement);
-	}
-	
-	if (level >= YapDatabaseConnectionFlushMemoryLevelFull)
-	{
-		sqlite_finalize_null(&beginTransactionStatement);
-		sqlite_finalize_null(&commitTransactionStatement);
-		
-		sqlite_finalize_null(&yapGetDataForKeyStatement);
-		
-		sqlite_finalize_null(&getRowidForKeyStatement);
-		sqlite_finalize_null(&getKeyForRowidStatement);
-		sqlite_finalize_null(&getDataForRowidStatement);
-		sqlite_finalize_null(&getDataForKeyStatement);
+		[self _flushStatements];
 	}
 	
 	[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extConnectionObj, BOOL *stop) {
 		
-		[(YapDatabaseExtensionConnection *)extConnectionObj _flushMemoryWithLevel:level];
+		[(YapDatabaseExtensionConnection *)extConnectionObj _flushMemoryWithFlags:flags];
 	}];
 }
 
@@ -421,11 +372,11 @@
  * YapDatabaseConnectionFlushMemoryLevelFull (3):
  *     Full flush of all caches and removes all pre-compiled sqlite statements.
 **/
-- (void)flushMemoryWithLevel:(int)level
+- (void)flushMemoryWithFlags:(YapDatabaseConnectionFlushMemoryFlags)flags
 {
 	dispatch_block_t block = ^{
 		
-		[self _flushMemoryWithLevel:level];
+		[self _flushMemoryWithFlags:flags];
 	};
 	
 	if (dispatch_get_specific(IsOnConnectionQueueKey))
@@ -437,7 +388,7 @@
 #if TARGET_OS_IPHONE
 - (void)didReceiveMemoryWarning:(NSNotification *)notification
 {
-	[self flushMemoryWithLevel:[self autoFlushMemoryLevel]];
+	[self flushMemoryWithFlags:[self autoFlushMemoryFlags]];
 }
 #endif
 
@@ -448,10 +399,8 @@
 @synthesize database = database;
 @synthesize name = _name;
 
-//@synthesize connectionQueue = connectionQueue;
-
 #if TARGET_OS_IPHONE
-@synthesize autoFlushMemoryLevel;
+@synthesize autoFlushMemoryFlags;
 #endif
 
 - (BOOL)objectCacheEnabled

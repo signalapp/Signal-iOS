@@ -29,12 +29,14 @@
  * But for conncurrent access between multiple threads you must use multiple connections.
 **/
 
-typedef enum  {
-	YapDatabaseConnectionFlushMemoryLevelNone     = 0,
-	YapDatabaseConnectionFlushMemoryLevelMild     = 1,
-	YapDatabaseConnectionFlushMemoryLevelModerate = 2,
-	YapDatabaseConnectionFlushMemoryLevelFull     = 3,
-} YapDatabaseConnectionFlushMemoryLevel;
+enum  {
+	YapDatabaseConnectionFlushMemoryFlags_None       = 0,
+	YapDatabaseConnectionFlushMemoryFlags_Caches     = 1 << 0,
+	YapDatabaseConnectionFlushMemoryFlags_Statements = 1 << 1,
+	YapDatabaseConnectionFlushMemoryFlags_All        = (YapDatabaseConnectionFlushMemoryFlags_Caches |
+	                                                    YapDatabaseConnectionFlushMemoryFlags_Statements),
+};
+typedef int YapDatabaseConnectionFlushMemoryFlags;
 
 typedef enum {
 	YapDatabasePolicyContainment = 0,
@@ -418,30 +420,30 @@ typedef enum {
  * Depending upon how often you use the database connection,
  * you may want to be more or less aggressive on how much stuff you flush.
  *
- * YapDatabaseConnectionFlushMemoryLevelNone (0):
- *     No-op. Doesn't flush any caches or anything from internal memory.
+ * YapDatabaseConnectionFlushMemoryFlags_None:
+ *     No-op. Doesn't flush anything.
  * 
- * YapDatabaseConnectionFlushMemoryLevelMild (1):
- *     Flushes the object cache and metadata cache.
+ * YapDatabaseConnectionFlushMemoryFlags_Caches:
+ *     Flushes all caches, including the object cache and metadata cache.
  * 
- * YapDatabaseConnectionFlushMemoryLevelModerate (2):
- *     Mild plus drops less common pre-compiled sqlite statements.
+ * YapDatabaseConnectionFlushMemoryFlags_Statements:
+ *     Flushes all pre-compiled sqlite statements.
  * 
- * YapDatabaseConnectionFlushMemoryLevelFull (3):
- *     Full flush of all caches and removes all pre-compiled sqlite statements.
+ * YapDatabaseConnectionFlushMemoryFlags_All:
+ *     Full flush of all caches and  pre-compiled sqlite statements.
 **/
-- (void)flushMemoryWithLevel:(int)level;
+- (void)flushMemoryWithFlags:(YapDatabaseConnectionFlushMemoryFlags)flags;
 
 #if TARGET_OS_IPHONE
 /**
  * When a UIApplicationDidReceiveMemoryWarningNotification is received,
- * the code automatically invokes flushMemoryWithLevel and passes this set level.
+ * the code automatically invokes flushMemoryWithFlags and passes the set flags.
  * 
- * The default value is YapDatabaseConnectionFlushMemoryLevelMild.
+ * The default value is YapDatabaseConnectionFlushMemoryFlags_All.
  * 
- * @see flushMemoryWithLevel:
+ * @see flushMemoryWithFlags:
 **/
-@property (atomic, assign, readwrite) int autoFlushMemoryLevel;
+@property (atomic, assign, readwrite) YapDatabaseConnectionFlushMemoryFlags autoFlushMemoryFlags;
 #endif
 
 @end

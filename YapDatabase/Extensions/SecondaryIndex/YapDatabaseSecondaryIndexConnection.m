@@ -47,7 +47,11 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 - (void)dealloc
 {
 	[queryCache removeAllObjects];
-	
+	[self _flushStatements];
+}
+
+- (void)_flushStatements
+{
 	sqlite_finalize_null(&insertStatement);
 	sqlite_finalize_null(&updateStatement);
 	sqlite_finalize_null(&removeStatement);
@@ -57,19 +61,16 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 /**
  * Required override method from YapDatabaseExtensionConnection
 **/
-- (void)_flushMemoryWithLevel:(int)level
+- (void)_flushMemoryWithFlags:(YapDatabaseConnectionFlushMemoryFlags)flags
 {
-	if (level >= YapDatabaseConnectionFlushMemoryLevelMild)
+	if (flags & YapDatabaseConnectionFlushMemoryFlags_Caches)
 	{
 		[queryCache removeAllObjects];
 	}
 	
-	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
+	if (flags & YapDatabaseConnectionFlushMemoryFlags_Statements)
 	{
-		sqlite_finalize_null(&insertStatement);
-		sqlite_finalize_null(&updateStatement);
-		sqlite_finalize_null(&removeStatement);
-		sqlite_finalize_null(&removeAllStatement);
+		[self _flushStatements];
 	}
 }
 

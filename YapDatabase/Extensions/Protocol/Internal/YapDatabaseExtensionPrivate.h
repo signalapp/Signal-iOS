@@ -137,34 +137,19 @@
  * This method will be invoked in order to flush memory.
  * Subclasses are encouraged to do something similar to the following:
  * 
- * if (level >= YapDatabaseConnectionFlushMemoryLevelMild)
+ * if (flags & YapDatabaseConnectionFlushMemoryFlags_Caches)
  * {
  *     // Dump all caches
  * }
  * 
- * if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
+ * if (flags & YapDatabaseConnectionFlushMemoryFlags_Statements)
  * {
- *     // Release any prepared statements that aren't constantly used.
- *     //
- *     // For example, any statements that make modifications to the database,
- *     // and any other statements that are likely to be used infrequently.
+ *     // Dump all pre-compiled statements
  *
  *     sqlite_finalize_null(&myStatement);
  * }
- * 
- * if (level >= YapDatabaseConnectionFlushMemoryLevelFull)
- * {
- *     // Release all other prepared statements
- *     
- *     sqlite_finalize_null(&myOtherStatement);
- *     
- *     // And flush any state that may have been prepared via 
- *     // the extTransaction's prepareIfNeeded method.
- * 
- *     viewGroups = nil;
- * }
 **/
-- (void)_flushMemoryWithLevel:(int)level;
+- (void)_flushMemoryWithFlags:(YapDatabaseConnectionFlushMemoryFlags)flags;
 
 /**
  * Subclasses MUST implement this method.

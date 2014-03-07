@@ -63,6 +63,11 @@
 
 - (void)dealloc
 {
+	[self _flushStatements];
+}
+
+- (void)_flushStatements
+{
 	sqlite_finalize_null(&findManualEdgeStatement);
 	sqlite_finalize_null(&insertEdgeStatement);
 	sqlite_finalize_null(&updateEdgeStatement);
@@ -92,44 +97,11 @@
 /**
  * Required override method from YapDatabaseExtensionConnection
 **/
-- (void)_flushMemoryWithLevel:(int)level
+- (void)_flushMemoryWithFlags:(YapDatabaseConnectionFlushMemoryFlags)flags
 {
-	if (level >= YapDatabaseConnectionFlushMemoryLevelMild)
+	if (flags & YapDatabaseConnectionFlushMemoryFlags_Statements)
 	{
-	}
-	
-	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
-	{
-		sqlite_finalize_null(&findManualEdgeStatement);
-		sqlite_finalize_null(&insertEdgeStatement);
-		sqlite_finalize_null(&updateEdgeStatement);
-		sqlite_finalize_null(&deleteEdgeStatement);
-		sqlite_finalize_null(&deleteEdgesWithNodeStatement);
-		sqlite_finalize_null(&enumerateAllDstFilePathStatement);
-	//	sqlite_finalize_null(&enumerateForSrcStatement);
-	//	sqlite_finalize_null(&enumerateForDstStatement);
-		sqlite_finalize_null(&enumerateForSrcNameStatement);
-		sqlite_finalize_null(&enumerateForDstNameStatement);
-		sqlite_finalize_null(&enumerateForNameStatement);
-		sqlite_finalize_null(&enumerateForSrcDstStatement);
-		sqlite_finalize_null(&enumerateForSrcDstNameStatement);
-		sqlite_finalize_null(&countForSrcNameExcludingDstStatement);
-		sqlite_finalize_null(&countForDstNameExcludingSrcStatement);
-		sqlite_finalize_null(&countForNameStatement);
-		sqlite_finalize_null(&countForSrcStatement);
-		sqlite_finalize_null(&countForSrcNameStatement);
-		sqlite_finalize_null(&countForDstStatement);
-		sqlite_finalize_null(&countForDstNameStatement);
-		sqlite_finalize_null(&countForSrcDstStatement);
-		sqlite_finalize_null(&countForSrcDstNameStatement);
-		sqlite_finalize_null(&removeAllStatement);
-		sqlite_finalize_null(&removeAllProtocolStatement);
-	}
-	
-	if (level >= YapDatabaseConnectionFlushMemoryLevelFull)
-	{
-		sqlite_finalize_null(&enumerateForSrcStatement);
-		sqlite_finalize_null(&enumerateForDstStatement);
+		[self _flushStatements];
 	}
 }
 

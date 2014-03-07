@@ -22,7 +22,7 @@
 	return nil;
 }
 
-- (void)_flushMemoryWithLevel:(int)level
+- (void)_flushMemoryWithFlags:(YapDatabaseConnectionFlushMemoryFlags)flags
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }

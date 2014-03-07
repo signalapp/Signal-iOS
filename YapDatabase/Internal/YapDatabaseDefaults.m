@@ -13,7 +13,7 @@
 @synthesize metadataPolicy = metadataPolicy;
 
 #if TARGET_OS_IPHONE
-@synthesize autoFlushMemoryLevel = autoFlushMemoryLevel;
+@synthesize autoFlushMemoryFlags = autoFlushMemoryFlags;
 #endif
 
 - (id)init
@@ -30,7 +30,7 @@
 		metadataPolicy = YapDatabasePolicyContainment;
 		
 		#if TARGET_OS_IPHONE
-		autoFlushMemoryLevel = YapDatabaseConnectionFlushMemoryLevelMild;
+		autoFlushMemoryFlags = YapDatabaseConnectionFlushMemoryFlags_All;
 		#endif
 	}
 	return self;
@@ -50,7 +50,7 @@
 	copy->metadataPolicy = metadataPolicy;
 	
 	#if TARGET_OS_IPHONE
-	copy->autoFlushMemoryLevel = autoFlushMemoryLevel;
+	copy->autoFlushMemoryFlags = autoFlushMemoryFlags;
 	#endif
 	
 	return copy;

@@ -70,6 +70,11 @@ static NSString *const key_changes                  = @"changes";
 
 - (void)dealloc
 {
+	[self _flushStatements];
+}
+
+- (void)_flushStatements
+{
 	sqlite_finalize_null(&mapTable_getPageKeyForRowidStatement);
 	sqlite_finalize_null(&mapTable_setPageKeyForRowidStatement);
 	sqlite_finalize_null(&mapTable_removeForRowidStatement);
@@ -87,33 +92,17 @@ static NSString *const key_changes                  = @"changes";
 /**
  * Required override method from YapDatabaseExtensionConnection
 **/
-- (void)_flushMemoryWithLevel:(int)level
+- (void)_flushMemoryWithFlags:(YapDatabaseConnectionFlushMemoryFlags)flags
 {
-	if (level >= YapDatabaseConnectionFlushMemoryLevelMild)
+	if (flags & YapDatabaseConnectionFlushMemoryFlags_Caches)
 	{
 		[mapCache removeAllObjects];
 		[pageCache removeAllObjects];
 	}
 	
-	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
+	if (flags & YapDatabaseConnectionFlushMemoryFlags_Statements)
 	{
-		sqlite_finalize_null(&mapTable_setPageKeyForRowidStatement);
-		sqlite_finalize_null(&mapTable_removeForRowidStatement);
-		sqlite_finalize_null(&mapTable_removeAllStatement);
-		
-		sqlite_finalize_null(&pageTable_insertForPageKeyStatement);
-		sqlite_finalize_null(&pageTable_updateAllForPageKeyStatement);
-		sqlite_finalize_null(&pageTable_updatePageForPageKeyStatement);
-		sqlite_finalize_null(&pageTable_updateLinkForPageKeyStatement);
-		sqlite_finalize_null(&pageTable_removeForPageKeyStatement);
-		sqlite_finalize_null(&pageTable_removeAllStatement);
-	}
-	
-	if (level >= YapDatabaseConnectionFlushMemoryLevelFull)
-	{
-		sqlite_finalize_null(&mapTable_getPageKeyForRowidStatement);
-		
-		sqlite_finalize_null(&pageTable_getDataForPageKeyStatement);
+		[self _flushStatements];
 	}
 }
 

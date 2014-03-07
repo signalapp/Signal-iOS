@@ -330,7 +330,7 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 
 #if TARGET_OS_IPHONE
 /**
- * Allows you to set the default autoFlushMemoryLevel for all new connections.
+ * Allows you to set the default autoFlushMemoryFlags for all new connections.
  *
  * When you create a connection via [database newConnection], that new connection will inherit
  * its initial configuration via the default values configured for the parent database.
@@ -339,12 +339,12 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  * Changing the default values only affects future connections that will be created.
  * It does not affect connections that have already been created.
  * 
- * The default defaultAutoFlushMemoryLevel is YapDatabaseConnectionFlushMemoryLevelMild.
+ * The default defaultAutoFlushMemoryFlags is YapDatabaseConnectionFlushMemoryFlags_All.
  *
  * For more detailed documentation on these properties, see the YapDatabaseConnection header file.
- * @see YapDatabaseConnection autoFlushMemoryLevel
+ * @see YapDatabaseConnection autoFlushMemoryFlags
 **/
-@property (atomic, assign, readwrite) int defaultAutoFlushMemoryLevel;
+@property (atomic, assign, readwrite) int defaultAutoFlushMemoryFlags;
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

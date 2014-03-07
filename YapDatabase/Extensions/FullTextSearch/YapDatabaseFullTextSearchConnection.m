@@ -48,6 +48,11 @@
 
 - (void)dealloc
 {
+	[self _flushStatements];
+}
+
+- (void)_flushStatements
+{
 	sqlite_finalize_null(&insertRowidStatement);
 	sqlite_finalize_null(&setRowidStatement);
 	sqlite_finalize_null(&removeRowidStatement);
@@ -59,16 +64,11 @@
 /**
  * Required override method from YapDatabaseExtensionConnection
 **/
-- (void)_flushMemoryWithLevel:(int)level
+- (void)_flushMemoryWithFlags:(YapDatabaseConnectionFlushMemoryFlags)flags
 {
-	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
+	if (flags & YapDatabaseConnectionFlushMemoryFlags_Statements)
 	{
-		sqlite_finalize_null(&insertRowidStatement);
-		sqlite_finalize_null(&setRowidStatement);
-		sqlite_finalize_null(&removeRowidStatement);
-		sqlite_finalize_null(&removeAllStatement);
-		sqlite_finalize_null(&queryStatement);
-		sqlite_finalize_null(&querySnippetStatement);
+		[self _flushStatements];
 	}
 }
 

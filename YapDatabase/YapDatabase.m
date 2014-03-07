@@ -1081,23 +1081,23 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 
 #if TARGET_OS_IPHONE
 
-- (int)defaultAutoFlushMemoryLevel
+- (YapDatabaseConnectionFlushMemoryFlags)defaultAutoFlushMemoryFlags
 {
-	__block int result = YapDatabaseConnectionFlushMemoryLevelNone;
+	__block int result = YapDatabaseConnectionFlushMemoryFlags_None;
 	
 	dispatch_sync(internalQueue, ^{
 		
-		result = defaults.autoFlushMemoryLevel;
+		result = defaults.autoFlushMemoryFlags;
 	});
 	
 	return result;
 }
 
-- (void)setDefaultAutoFlushMemoryLevel:(int)defaultAutoFlushMemoryLevel
+- (void)setDefaultAutoFlushMemoryFlags:(YapDatabaseConnectionFlushMemoryFlags)defaultAutoFlushMemoryFlags
 {
 	dispatch_sync(internalQueue, ^{
 		
-		defaults.autoFlushMemoryLevel = defaultAutoFlushMemoryLevel;
+		defaults.autoFlushMemoryFlags = defaultAutoFlushMemoryFlags;
 	});
 }
 
