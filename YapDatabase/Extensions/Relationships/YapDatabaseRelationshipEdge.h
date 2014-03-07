@@ -106,6 +106,8 @@ typedef uint16_t YDB_NodeDeleteRules;
          destinationFilePath:(NSString *)destinationFilePath
              nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
+#pragma mark Init
+
 /**
  * For documentation @see edgeWithName:destinationKey:collection:nodeDeleteRules:
 **/
@@ -137,6 +139,8 @@ typedef uint16_t YDB_NodeDeleteRules;
                                    collection:(NSString *)sourceCollection
                           destinationFilePath:(NSString *)destinationFilePath
                               nodeDeleteRules:(YDB_NodeDeleteRules)rules;
+
+#pragma mark Properties
 
 @property (nonatomic, copy, readonly) NSString *name;
 

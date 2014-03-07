@@ -64,7 +64,7 @@
 	__unsafe_unretained YapDatabaseConnection *databaseConnection;
 	
 	NSMutableDictionary *protocolChanges; // key:(NSNumber *)srcRowidNumber, value:(NSMutableArray *)edges
-	NSMutableDictionary *manualChanges;   // key:(YapCollectionKey *)srcCollectionKey, value:(NSMutableArray *)edges
+	NSMutableDictionary *manualChanges;   // key:(NSString *)edgeName, value:(NSMutableArray *)edges
 	
 	NSMutableSet *inserted; // contains:(NSNumber *)rowidNumber
 	
@@ -81,10 +81,10 @@
 - (void)postRollbackCleanup;
 - (void)postCommitCleanup;
 
+- (sqlite3_stmt *)findManualEdgeStatement;
 - (sqlite3_stmt *)insertEdgeStatement;
 - (sqlite3_stmt *)updateEdgeStatement;
 - (sqlite3_stmt *)deleteEdgeStatement;
-- (sqlite3_stmt *)deleteManualEdgeStatement;
 - (sqlite3_stmt *)deleteEdgesWithNodeStatement;
 - (sqlite3_stmt *)enumerateAllDstFilePathStatement;
 - (sqlite3_stmt *)enumerateForSrcStatement;

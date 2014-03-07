@@ -13,9 +13,10 @@ enum {
 	YDB_FlagsDestinationDeleted          = 1 << 1,
 	YDB_FlagsBadSource                   = 1 << 2,
 	YDB_FlagsBadDestination              = 1 << 3,
-	YDB_FlagsSourceLookupSuccessful      = 1 << 4,
-	YDB_FlagsDestinationLookupSuccessful = 1 << 5,
-	YDB_FlagsNotInDatabase               = 1 << 6,
+	YDB_FlagsHasSourceRowid              = 1 << 4, // If set, sourceRowid lookup not needed
+	YDB_FlagsHasDestinationRowid         = 1 << 5, // If set, destinationRowid lookup not needed
+	YDB_FlagsHasEdgeRowid                = 1 << 6,
+	YDB_FlagsNotInDatabase               = 1 << 7,
 };
 
 
@@ -55,18 +56,24 @@ enum {
                name:(NSString *)name
                 src:(int64_t)src
                 dst:(int64_t)dst
-              rules:(int)rules
-             manual:(BOOL)isManual;
-
-// Init directly from database row
-- (id)initWithRowid:(int64_t)rowid
-               name:(NSString *)name
-                src:(int64_t)src
         dstFilePath:(NSString *)dstFilePath
               rules:(int)rules
              manual:(BOOL)isManual;
 
 // Copy for YapDatabaseRelationshipNode protocol
 - (id)copyWithSourceKey:(NSString *)newSrcKey collection:(NSString *)newSrcCollection rowid:(int64_t)newSrcRowid;
+
+/**
+ * Compares two manual edges to see if they represent the same relationship.
+ * That is, if both edges are manual edges, and the following are equal:
+ * 
+ * - name
+ * - sourceKey / sourceCollection
+ * - destinationKey / destinationCollection
+ * - destinationFilePath
+ * 
+ * The nodeDeleteRules do NOT need to match.
+**/
+- (BOOL)matchesManualEdge:(YapDatabaseRelationshipEdge *)edge;
 
 @end

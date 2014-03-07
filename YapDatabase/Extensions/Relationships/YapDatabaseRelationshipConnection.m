@@ -23,10 +23,10 @@
 
 @implementation YapDatabaseRelationshipConnection
 {
+	sqlite3_stmt *findManualEdgeStatement;
 	sqlite3_stmt *insertEdgeStatement;
 	sqlite3_stmt *updateEdgeStatement;
 	sqlite3_stmt *deleteEdgeStatement;
-	sqlite3_stmt *deleteManualEdgeStatement;
 	sqlite3_stmt *deleteEdgesWithNodeStatement;
 	sqlite3_stmt *enumerateAllDstFilePathStatement;
 	sqlite3_stmt *enumerateForSrcStatement;
@@ -63,10 +63,10 @@
 
 - (void)dealloc
 {
+	sqlite_finalize_null(&findManualEdgeStatement);
 	sqlite_finalize_null(&insertEdgeStatement);
 	sqlite_finalize_null(&updateEdgeStatement);
 	sqlite_finalize_null(&deleteEdgeStatement);
-	sqlite_finalize_null(&deleteManualEdgeStatement);
 	sqlite_finalize_null(&deleteEdgesWithNodeStatement);
 	sqlite_finalize_null(&enumerateAllDstFilePathStatement);
 	sqlite_finalize_null(&enumerateForSrcStatement);
@@ -100,10 +100,10 @@
 	
 	if (level >= YapDatabaseConnectionFlushMemoryLevelModerate)
 	{
+		sqlite_finalize_null(&findManualEdgeStatement);
 		sqlite_finalize_null(&insertEdgeStatement);
 		sqlite_finalize_null(&updateEdgeStatement);
 		sqlite_finalize_null(&deleteEdgeStatement);
-		sqlite_finalize_null(&deleteManualEdgeStatement);
 		sqlite_finalize_null(&deleteEdgesWithNodeStatement);
 		sqlite_finalize_null(&enumerateAllDstFilePathStatement);
 	//	sqlite_finalize_null(&enumerateForSrcStatement);
@@ -258,6 +258,32 @@
 #pragma mark Statements
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+- (sqlite3_stmt *)findManualEdgeStatement
+{
+	if (findManualEdgeStatement == NULL)
+	{
+		NSString *tableName = [relationship tableName];
+		
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT \"rowid\", \"rules\" FROM \"%@\" "
+		  @" WHERE \"src\" = ? AND \"dst\" = ? AND \"name\" = ? AND \"manual\" = 1 LIMIT 1;",
+		  tableName];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &findManualEdgeStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return findManualEdgeStatement;
+}
+
 - (sqlite3_stmt *)insertEdgeStatement
 {
 	if (insertEdgeStatement == NULL)
@@ -323,33 +349,6 @@
 	}
 	
 	return deleteEdgeStatement;
-}
-
-- (sqlite3_stmt *)deleteManualEdgeStatement
-{
-	if (deleteManualEdgeStatement == NULL)
-	{
-		NSString *tableName = [relationship tableName];
-		
-		NSString *string = [NSString stringWithFormat:
-		  @"DELETE FROM \"%@\" WHERE \"rowid\" ="
-		  @" (SELECT \"rowid\" FROM \"%@\" WHERE"
-		  @"   \"src\" = ? AND \"dst\" = ? AND \"name\" = ? AND \"manual\" = 1 LIMIT 1);",
-		  tableName, tableName];
-		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &deleteManualEdgeStatement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
-	}
-	
-	return deleteManualEdgeStatement;
 }
 
 - (sqlite3_stmt *)deleteEdgesWithNodeStatement

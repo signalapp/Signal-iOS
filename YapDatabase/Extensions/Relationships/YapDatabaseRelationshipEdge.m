@@ -113,7 +113,7 @@
 		nodeDeleteRules = rules;
 		isManualEdge = NO;
 		
-		flags = YDB_FlagsDestinationLookupSuccessful; // no need for destinationRowid lookup
+		flags = YDB_FlagsHasDestinationRowid; // no need for destinationRowid lookup
 	}
 	return self;
 }
@@ -170,7 +170,7 @@
 		nodeDeleteRules = rules;
 		isManualEdge = YES;
 		
-		flags = YDB_FlagsDestinationLookupSuccessful; // no need for destinationRowid lookup
+		flags = YDB_FlagsHasDestinationRowid; // no need for destinationRowid lookup
 	}
 	return self;
 }
@@ -183,44 +183,22 @@
                name:(NSString *)inName
                 src:(int64_t)src
                 dst:(int64_t)dst
-              rules:(int)rules
-             manual:(BOOL)manual
-{
-	if ((self = [super init]))
-	{
-		edgeRowid = rowid;
-		sourceRowid = src;
-		destinationRowid = dst;
-		
-		name = [inName copy];
-		
-		nodeDeleteRules = rules;
-		isManualEdge = manual;
-		
-		flags = YDB_FlagsSourceLookupSuccessful | YDB_FlagsDestinationLookupSuccessful;
-	}
-	return self;
-}
-
-- (id)initWithRowid:(int64_t)rowid
-               name:(NSString *)inName
-                src:(int64_t)src
         dstFilePath:(NSString *)dstFilePath
               rules:(int)rules
              manual:(BOOL)manual
 {
 	if ((self = [super init]))
 	{
-		edgeRowid = rowid;
-		sourceRowid = src;
-		destinationFilePath = [dstFilePath copy];
-		
 		name = [inName copy];
-		
+		destinationFilePath = [dstFilePath copy];
 		nodeDeleteRules = rules;
 		isManualEdge = manual;
 		
-		flags = YDB_FlagsSourceLookupSuccessful | YDB_FlagsDestinationLookupSuccessful;
+		edgeRowid = rowid;
+		sourceRowid = src;
+		destinationRowid = dst;
+		
+		flags = YDB_FlagsHasSourceRowid | YDB_FlagsHasDestinationRowid | YDB_FlagsHasEdgeRowid;
 	}
 	return self;
 }
@@ -245,7 +223,7 @@
 		isManualEdge = [decoder decodeBoolForKey:@"isManualEdge"];
 		
 		if (destinationFilePath)
-			flags = YDB_FlagsDestinationLookupSuccessful;
+			flags = YDB_FlagsHasDestinationRowid;
 		else
 			flags = YDB_FlagsNone;
 	}
@@ -290,8 +268,16 @@
 	copy->edgeAction = YDB_EdgeActionNone; // Return a clean copy
 	copy->flags = YDB_FlagsNone;           // Return a clean copy
 	
-	if (destinationFilePath)
-		copy->flags |= YDB_FlagsDestinationLookupSuccessful;
+	// Set appropriate flags
+	
+	if ((flags & YDB_FlagsHasSourceRowid))
+		copy->flags |= YDB_FlagsHasSourceRowid;
+	
+	if ((flags & YDB_FlagsHasDestinationRowid) || destinationFilePath)
+		copy->flags |= YDB_FlagsHasDestinationRowid;
+	
+	if ((flags & YDB_FlagsHasEdgeRowid))
+		copy->flags |= YDB_FlagsHasEdgeRowid;
 	
 	return copy;
 }
@@ -313,13 +299,58 @@
 	copy->sourceRowid = newSrcRowid;
 	copy->destinationRowid = destinationRowid;
 	
-	copy->edgeAction = YDB_EdgeActionNone;         // Return a clean copy
-	copy->flags = YDB_FlagsSourceLookupSuccessful; // Return a clean copy
+	copy->edgeAction = YDB_EdgeActionNone; // Return a clean copy
+	copy->flags = YDB_FlagsNone;           // Return a clean copy
 	
-	if (destinationFilePath)
-		copy->flags = YDB_FlagsDestinationLookupSuccessful;
+	// Set appropriate flags
+	
+	copy->flags |= YDB_FlagsHasSourceRowid;
+	
+	if ((flags & YDB_FlagsHasDestinationRowid) || destinationFilePath)
+		copy->flags |= YDB_FlagsHasDestinationRowid;
+	
+	if ((flags & YDB_FlagsHasEdgeRowid))
+		copy->flags |= YDB_FlagsHasEdgeRowid;
 	
 	return copy;
+}
+
+#pragma mark Comparison
+
+/**
+ * Compares two manual edges to see if they represent the same relationship.
+ * That is, if both edges are manual edges, and the following are equal:
+ *
+ * - name
+ * - sourceKey / sourceCollection
+ * - destinationKey / destinationCollection
+ * - destinationFilePath
+ *
+ * The nodeDeleteRules do NOT need to match.
+**/
+- (BOOL)matchesManualEdge:(YapDatabaseRelationshipEdge *)edge
+{
+	if (edge == nil) return NO;
+	
+	if (!isManualEdge) return NO;
+	if (!edge->isManualEdge) return NO;
+	
+	if (![name isEqualToString:edge->name]) return NO;
+	
+	if (![sourceKey isEqualToString:edge->sourceKey]) return NO;
+	if (![sourceCollection isEqualToString:edge->sourceCollection]) return NO;
+	
+	if (destinationFilePath)
+	{
+		if (![destinationFilePath isEqualToString:edge->destinationFilePath]) return NO;
+	}
+	else
+	{
+		if (![destinationKey isEqualToString:edge->destinationKey]) return NO;
+		if (![destinationCollection isEqualToString:edge->destinationCollection]) return NO;
+	}
+	
+	return YES;
 }
 
 #pragma mark Description

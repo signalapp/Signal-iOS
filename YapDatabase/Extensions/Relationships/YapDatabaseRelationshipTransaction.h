@@ -354,6 +354,10 @@
  * https://github.com/yaptv/YapDatabase/wiki/Relationships#wiki-edge_creation
 **/
 
+/**
+ * The addEdge: method will add the manual edge (if it doesn't already exist).
+ * Otherwise it will replace the the existing manual edge with the same name & srcKey/collection & dstKey/collection.
+**/
 - (void)addEdge:(YapDatabaseRelationshipEdge *)edge;
 
 - (void)removeEdge:(YapDatabaseRelationshipEdge *)edge;
