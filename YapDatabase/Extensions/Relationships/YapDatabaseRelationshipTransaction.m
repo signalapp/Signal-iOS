@@ -1780,7 +1780,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 				// Is this because it was deleted during this transaction?
 				
 				NSNumber *srcRowidNumber = [self rowidNumberForDeletedKey:edge->sourceKey
-				                                             inCollection:edge->destinationCollection];
+				                                             inCollection:edge->sourceCollection];
 				
 				if (srcRowidNumber)
 				{
