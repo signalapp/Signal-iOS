@@ -3679,12 +3679,50 @@
 
 - (NSUInteger)numberOfGroups
 {
-	return [viewConnection->group_pagesMetadata_dict count];
+	// Note: We don't remove pages or groups until preCommitReadWriteTransaction.
+	// This allows us to recycle pages whenever possible, which reduces disk IO during the commit.
+	
+	NSUInteger count = 0;
+	
+	for (NSArray *pagesMetadataForGroup in [viewConnection->group_pagesMetadata_dict objectEnumerator])
+	{
+		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
+		{
+			if (pageMetadata->count > 0)
+			{
+				count++;
+				break;
+			}
+		}
+	}
+	
+	return count;
 }
 
 - (NSArray *)allGroups
 {
-	return [viewConnection->group_pagesMetadata_dict allKeys];
+	// Note: We don't remove pages or groups until preCommitReadWriteTransaction.
+	// This allows us to recycle pages whenever possible, which reduces disk IO during the commit.
+	
+	NSMutableArray *allGroups = [NSMutableArray arrayWithCapacity:[viewConnection->group_pagesMetadata_dict count]];
+	
+	[viewConnection->group_pagesMetadata_dict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		
+		__unsafe_unretained NSString *group = (NSString *)key;
+		__unsafe_unretained NSArray *pagesMetadataForGroup = (NSArray *)obj;
+		
+		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
+		{
+			if (pageMetadata->count > 0)
+			{
+				[allGroups addObject:group];
+				break;
+			}
+		}
+		
+	}];
+	
+	return [allGroups copy];
 }
 
 /**
