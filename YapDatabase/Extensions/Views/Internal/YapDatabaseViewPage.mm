@@ -111,6 +111,11 @@
 	vector->erase(it+range.location, it+range.location+range.length);
 }
 
+- (void)removeAllRowids
+{
+	vector->clear();
+}
+
 - (void)appendRange:(NSRange)range ofPage:(YapDatabaseViewPage *)page
 {
 	std::vector<int64_t>::iterator rangeBegin = page->vector->begin();

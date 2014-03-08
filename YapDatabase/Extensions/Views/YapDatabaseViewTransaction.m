@@ -1617,8 +1617,8 @@
 	[viewConnection->mutatedGroups addObject:group];
 	
 	// During a transaction we allow pages to grow in size beyond the max page size.
-	// This increases efficiency, as we can allow multiple changes to be written,
-	// and then only perform the "cleanup" task of splitting the oversized page into multiple pages only once.
+	// This increases efficiency, as we can allow multiple changes to occur,
+	// but perform the cleanup task only once (of splitting oversized pages ).
 	//
 	// However, we do want to avoid allowing a single page to grow infinitely large.
 	// So we use triggers to ensure pages don't get too big.
@@ -2224,6 +2224,42 @@
 		[viewConnection->dirtyMaps setObject:[NSNull null] forKey:number];
 		[viewConnection->mapCache removeObjectForKey:number];
 	}
+}
+
+- (void)removeAllRowidsInGroup:(NSString *)group
+{
+	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	
+	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
+	{
+		YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
+		
+		// Mark all rowids for deletion
+		
+		[page enumerateRowidsUsingBlock:^(int64_t rowid, NSUInteger idx, BOOL *stop) {
+			
+			[viewConnection->dirtyMaps setObject:[NSNull null] forKey:@(rowid)];
+			[viewConnection->mapCache removeObjectForKey:@(rowid)];
+		}];
+		
+		// Update page (by removing all rowids from array)
+		
+		[page removeAllRowids];
+		
+		// Update page metadata (by clearing count)
+		
+		pageMetadata->count = 0;
+		
+		// Mark page as dirty
+		
+		YDBLogVerbose(@"Dirty page(%@)", pageMetadata->pageKey);
+		
+		[viewConnection->dirtyPages setObject:page forKey:pageMetadata->pageKey];
+		[viewConnection->pageCache setObject:page forKey:pageMetadata->pageKey];
+	}
+	
+	[viewConnection->changes addObject:[YapDatabaseViewSectionChange resetGroup:group]];
+	[viewConnection->mutatedGroups addObject:group];
 }
 
 - (void)removeAllRowids
@@ -3734,7 +3770,7 @@
 	// Note: We don't remove pages or groups until preCommitReadWriteTransaction.
 	// This allows us to recycle pages whenever possible, which reduces disk IO during the commit.
 	
-	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 	{
@@ -3762,7 +3798,7 @@
 {
 	NSUInteger count = 0;
 	
-	for (NSMutableArray *pagesMetadataForGroup in [viewConnection->group_pagesMetadata_dict objectEnumerator])
+	for (NSArray *pagesMetadataForGroup in [viewConnection->group_pagesMetadata_dict objectEnumerator])
 	{
 		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 		{
@@ -4328,6 +4364,11 @@
 	}
 }
 
+- (BOOL)containsRowid:(int64_t)rowid
+{
+	return ([self pageKeyForRowid:rowid] != nil);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Exceptions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4560,9 +4601,10 @@
 		{
 			YapDatabaseExtensionTransaction *extTransaction = [databaseTransaction ext:extName];
 			
-			if ([extTransaction respondsToSelector:@selector(viewDidRepopulate:)])
+			if ([extTransaction respondsToSelector:@selector(view:didRepopulateWithFlags:)])
 			{
-				[(id <YapDatabaseViewDependency>)extTransaction viewDidRepopulate:registeredName];
+				int flags = YDB_GroupingBlockChanged | YDB_SortingBlockChanged;
+				[(id <YapDatabaseViewDependency>)extTransaction view:registeredName didRepopulateWithFlags:flags];
 			}
 		}
 	}];

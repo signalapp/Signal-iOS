@@ -106,14 +106,14 @@
 	YapMemoryTableTransaction *pageTableTransaction;
 	YapMemoryTableTransaction *pageMetadataTableTransaction;
 	
-	BOOL isRepopulate;
-	
 @protected
 	
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection;
 	__unsafe_unretained YapDatabaseReadTransaction *databaseTransaction;
 	
 	NSString *lastHandledGroup;
+	
+	BOOL isRepopulate;
 }
 
 - (id)initWithViewConnection:(YapDatabaseViewConnection *)viewConnection
@@ -151,10 +151,16 @@
             inGroup:(NSString *)group;
 
 - (void)removeRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey;
+- (void)removeAllRowidsInGroup:(NSString *)group;
 - (void)removeAllRowids;
 
 - (void)enumerateRowidsInGroup:(NSString *)group
                     usingBlock:(void (^)(int64_t rowid, NSUInteger index, BOOL *stop))block;
+- (void)enumerateRowidsInGroup:(NSString *)group
+                   withOptions:(NSEnumerationOptions)inOptions
+                    usingBlock:(void (^)(int64_t rowid, NSUInteger index, BOOL *stop))block;
+
+- (BOOL)containsRowid:(int64_t)rowid;
 
 @end
 
@@ -162,9 +168,15 @@
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+enum {
+	YDB_GroupingBlockChanged  = 1 << 0,
+	YDB_SortingBlockChanged   = 1 << 1,
+	YDB_FilteringBlockChanged = 1 << 2
+};
+
 @protocol YapDatabaseViewDependency <NSObject>
 @optional
 
-- (void)viewDidRepopulate:(NSString *)registeredName;
+- (void)view:(NSString *)registeredName didRepopulateWithFlags:(int)flags;
 
 @end

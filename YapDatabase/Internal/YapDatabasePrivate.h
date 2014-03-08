@@ -364,6 +364,11 @@ extern NSString *const YapDatabaseNotificationKey;
 - (id)metadataForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
 - (id)metadataForCollectionKey:(YapCollectionKey *)cacheKey withRowid:(int64_t)rowid;
 
+- (BOOL)getObject:(id *)objectPtr
+		 metadata:(id *)metadataPtr
+ forCollectionKey:(YapCollectionKey *)collectionKey
+		withRowid:(int64_t)rowid;
+
 - (void)_enumerateKeysInCollection:(NSString *)collection
                         usingBlock:(void (^)(int64_t rowid, NSString *key, BOOL *stop))block;
 

@@ -474,85 +474,16 @@
 		return NO;
 	}
 	
-	id object = [connection->objectCache objectForKey:collectionKey];
-	id metadata = [connection->metadataCache objectForKey:collectionKey];
-	
-	if (object || metadata)
+	if ([self getObject:objectPtr metadata:metadataPtr forCollectionKey:collectionKey withRowid:rowid])
 	{
-		if (object == nil)
-		{
-			object = [self objectForCollectionKey:collectionKey withRowid:rowid];
-		}
-		else if (metadata == nil)
-		{
-			metadata = [self metadataForCollectionKey:collectionKey withRowid:rowid];
-		}
-		
 		if (collectionKeyPtr) *collectionKeyPtr = collectionKey;
-		if (objectPtr) *objectPtr = object;
-		if (metadataPtr) *metadataPtr = metadata;
 		return YES;
 	}
-	
-	sqlite3_stmt *statement = [connection getAllForRowidStatement];
-	if (statement == NULL) {
+	else
+	{
 		if (collectionKeyPtr) *collectionKeyPtr = nil;
-		if (objectPtr) *objectPtr = nil;
-		if (metadataPtr) *metadataPtr = nil;
 		return NO;
 	}
-	
-	// SELECT "data", "metadata" FROM "database2" WHERE "rowid" = ?;
-	
-	sqlite3_bind_int64(statement, 1, rowid);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
-	{
-		if (connection->needsMarkSqlLevelSharedReadLock)
-			[connection markSqlLevelSharedReadLockAcquired];
-		
-		const void *blob = sqlite3_column_blob(statement, 0);
-		int blobSize = sqlite3_column_bytes(statement, 0);
-		
-		// Performance tuning:
-		// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
-		
-		NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-		object = connection->database->objectDeserializer(collectionKey.collection, collectionKey.key, data);
-		
-		if (object)
-			[connection->objectCache setObject:object forKey:collectionKey];
-		
-		const void *mBlob = sqlite3_column_blob(statement, 1);
-		int mBlobSize = sqlite3_column_bytes(statement, 1);
-		
-		if (mBlobSize > 0)
-		{
-			// Performance tuning:
-			// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
-			
-			NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-			metadata = connection->database->metadataDeserializer(collectionKey.collection, collectionKey.key, mData);
-		}
-		
-		if (metadata)
-			[connection->metadataCache setObject:metadata forKey:collectionKey];
-		else
-			[connection->metadataCache setObject:[YapNull null] forKey:collectionKey];
-	}
-	else if (status == SQLITE_ERROR)
-	{
-		YDBLogError(@"Error executing 'getKeyForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	
-	if (collectionKeyPtr) *collectionKeyPtr = collectionKey;
-	if (objectPtr) *objectPtr = object;
-	if (metadataPtr) *metadataPtr = metadata;
-	return YES;
 }
 
 - (BOOL)hasRowid:(int64_t)rowid
@@ -685,6 +616,89 @@
 	sqlite3_reset(statement);
 	
 	return metadata;
+}
+
+- (BOOL)getObject:(id *)objectPtr
+		 metadata:(id *)metadataPtr
+ forCollectionKey:(YapCollectionKey *)collectionKey
+		withRowid:(int64_t)rowid
+{
+	id object = [connection->objectCache objectForKey:collectionKey];
+	id metadata = [connection->metadataCache objectForKey:collectionKey];
+	
+	if (object || metadata)
+	{
+		if (object == nil)
+		{
+			object = [self objectForCollectionKey:collectionKey withRowid:rowid];
+		}
+		else if (metadata == nil)
+		{
+			metadata = [self metadataForCollectionKey:collectionKey withRowid:rowid];
+		}
+		
+		if (objectPtr) *objectPtr = object;
+		if (metadataPtr) *metadataPtr = metadata;
+		return YES;
+	}
+	
+	sqlite3_stmt *statement = [connection getAllForRowidStatement];
+	if (statement == NULL) {
+		if (objectPtr) *objectPtr = nil;
+		if (metadataPtr) *metadataPtr = nil;
+		return NO;
+	}
+	
+	// SELECT "data", "metadata" FROM "database2" WHERE "rowid" = ?;
+	
+	sqlite3_bind_int64(statement, 1, rowid);
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		if (connection->needsMarkSqlLevelSharedReadLock)
+			[connection markSqlLevelSharedReadLockAcquired];
+		
+		const void *blob = sqlite3_column_blob(statement, 0);
+		int blobSize = sqlite3_column_bytes(statement, 0);
+		
+		// Performance tuning:
+		// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+		
+		NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+		object = connection->database->objectDeserializer(collectionKey.collection, collectionKey.key, data);
+		
+		if (object)
+			[connection->objectCache setObject:object forKey:collectionKey];
+		
+		const void *mBlob = sqlite3_column_blob(statement, 1);
+		int mBlobSize = sqlite3_column_bytes(statement, 1);
+		
+		if (mBlobSize > 0)
+		{
+			// Performance tuning:
+			// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+			
+			NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+			metadata = connection->database->metadataDeserializer(collectionKey.collection, collectionKey.key, mData);
+		}
+		
+		if (metadata)
+			[connection->metadataCache setObject:metadata forKey:collectionKey];
+		else
+			[connection->metadataCache setObject:[YapNull null] forKey:collectionKey];
+	}
+	else if (status == SQLITE_ERROR)
+	{
+		YDBLogError(@"Error executing 'getKeyForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	
+	if (objectPtr) *objectPtr = object;
+	if (metadataPtr) *metadataPtr = metadata;
+	return YES;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

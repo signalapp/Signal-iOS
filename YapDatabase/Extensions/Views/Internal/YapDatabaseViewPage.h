@@ -16,8 +16,8 @@
 - (void)insertRowid:(int64_t)rowid atIndex:(NSUInteger)index;
 
 - (void)removeRowidAtIndex:(NSUInteger)index;
-
 - (void)removeRange:(NSRange)range;
+- (void)removeAllRowids;
 
 - (void)appendRange:(NSRange)range ofPage:(YapDatabaseViewPage *)page;
 - (void)prependRange:(NSRange)range ofPage:(YapDatabaseViewPage *)page;
