@@ -1341,7 +1341,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		else
 		{
 			NSNumber *srcRowidNumber = [self rowidNumberForDeletedKey:edge->sourceKey
-			                                             inCollection:edge->destinationCollection];
+			                                             inCollection:edge->sourceCollection];
 			
 			if (srcRowidNumber)
 			{
