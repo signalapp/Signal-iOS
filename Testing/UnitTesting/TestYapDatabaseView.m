@@ -253,10 +253,10 @@
 			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			XCTAssertTrue([fetchedKey isEqualToString:key],
-			             @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+			             @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, (int)index);
 			
 			XCTAssertTrue([fetchedCollection isEqualToString:@""],
-						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", (int)index);
 			
 			index++;
 		}
@@ -279,13 +279,13 @@
 			                                            forKey:key
 			                                      inCollection:nil];
 			
-			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
+			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, (int)index);
 			
 			XCTAssertTrue([fetchedGroup isEqualToString:@""],
-			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, index);
+			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, (int)index);
 			
 			XCTAssertTrue(fetchedIndex == index,
-			             @"Wrong index(%d) for key(%@) at index(%d)", fetchedIndex, key, index);
+			             @"Wrong index(%d) for key(%@) at index(%d)", (int)fetchedIndex, key, (int)index);
 			
 			index++;
 		}
@@ -313,10 +313,10 @@
 			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			XCTAssertTrue([fetchedKey isEqualToString:key],
-						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, (int)index);
 			
 			XCTAssertTrue([fetchedCollection isEqualToString:@""],
-						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", (int)index);
 			
 			index++;
 		}
@@ -337,13 +337,13 @@
 			BOOL result =
 			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
-			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
+			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, (int)index);
 			
 			XCTAssertTrue([fetchedGroup isEqualToString:@""],
-			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, index);
+			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, (int)index);
 			
 			XCTAssertTrue(fetchedIndex == index,
-			             @"Wrong index(%d) for key(%@) at index(%d)", fetchedIndex, key, index);
+			             @"Wrong index(%d) for key(%@) at index(%d)", (int)fetchedIndex, key, (int)index);
 			
 			index++;
 		}
@@ -393,10 +393,10 @@
 			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			XCTAssertTrue([fetchedKey isEqualToString:key],
-						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, (int)index);
 			
 			XCTAssertTrue([fetchedCollection isEqualToString:@""],
-						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", (int)index);
 			
 			index++;
 		}
@@ -417,13 +417,13 @@
 			BOOL result =
 			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
-			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
+			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, (int)index);
 			
 			XCTAssertTrue([fetchedGroup isEqualToString:@""],
-			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, index);
+			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, (int)index);
 			
 			XCTAssertTrue(fetchedIndex == index,
-			             @"Wrong index(%d) for key(%@) at index(%d)", fetchedIndex, key, index);
+			             @"Wrong index(%d) for key(%@) at index(%d)", (int)fetchedIndex, key, (int)index);
 			
 			index++;
 		}
@@ -451,10 +451,10 @@
 			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			XCTAssertTrue([fetchedKey isEqualToString:key],
-						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, (int)index);
 			
 			XCTAssertTrue([fetchedCollection isEqualToString:@""],
-						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", (int)index);
 			
 			index++;
 		}
@@ -475,13 +475,13 @@
 			BOOL result =
 			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
-			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
+			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, (int)index);
 			
 			XCTAssertTrue([fetchedGroup isEqualToString:@""],
-			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, index);
+			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, (int)index);
 			
 			XCTAssertTrue(fetchedIndex == index,
-			             @"Wrong index(%d) for key(%@) at index(%d)", fetchedIndex, key, index);
+			             @"Wrong index(%d) for key(%@) at index(%d)", (int)fetchedIndex, key, (int)index);
 			
 			index++;
 		}
@@ -510,10 +510,10 @@
 			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			XCTAssertTrue([fetchedKey isEqualToString:key],
-						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, (int)index);
 			
 			XCTAssertTrue([fetchedCollection isEqualToString:@""],
-						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", (int)index);
 			
 			index++;
 		}
@@ -534,13 +534,13 @@
 			BOOL result =
 			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
-			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
+			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, (int)index);
 			
 			XCTAssertTrue([fetchedGroup isEqualToString:@""],
-			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, index);
+			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, (int)index);
 			
 			XCTAssertTrue(fetchedIndex == index,
-			             @"Wrong index(%d) for key(%@) at index(%d)", fetchedIndex, key, index);
+			             @"Wrong index(%d) for key(%@) at index(%d)", (int)fetchedIndex, key, (int)index);
 			
 			index++;
 		}
@@ -568,10 +568,10 @@
 			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			XCTAssertTrue([fetchedKey isEqualToString:key],
-						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, (int)index);
 			
 			XCTAssertTrue([fetchedCollection isEqualToString:@""],
-						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", (int)index);
 			
 			index++;
 		}
@@ -592,13 +592,13 @@
 			BOOL result =
 			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
-			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
+			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, (int)index);
 			
 			XCTAssertTrue([fetchedGroup isEqualToString:@""],
-			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, index);
+			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, (int)index);
 			
 			XCTAssertTrue(fetchedIndex == index,
-			             @"Wrong index(%d) for key(%@) at index(%d)", fetchedIndex, key, index);
+			             @"Wrong index(%d) for key(%@) at index(%d)", (int)fetchedIndex, key, (int)index);
 			
 			index++;
 		}
@@ -627,10 +627,10 @@
 			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			XCTAssertTrue([fetchedKey isEqualToString:key],
-						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, (int)index);
 			
 			XCTAssertTrue([fetchedCollection isEqualToString:@""],
-						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", (int)index);
 			
 			index++;
 		}
@@ -651,13 +651,13 @@
 			BOOL result =
 			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
-			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
+			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, (int)index);
 			
 			XCTAssertTrue([fetchedGroup isEqualToString:@""],
-			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, index);
+			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, (int)index);
 			
 			XCTAssertTrue(fetchedIndex == index,
-			             @"Wrong index(%d) for key(%@) at index(%d)", fetchedIndex, key, index);
+			             @"Wrong index(%d) for key(%@) at index(%d)", (int)fetchedIndex, key, (int)index);
 			
 			index++;
 		}
@@ -684,10 +684,10 @@
 			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			XCTAssertTrue([fetchedKey isEqualToString:key],
-						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, (int)index);
 			
 			XCTAssertTrue([fetchedCollection isEqualToString:@""],
-						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", (int)index);
 			
 			index++;
 		}
@@ -708,13 +708,13 @@
 			BOOL result =
 			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
-			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
+			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, (int)index);
 			
 			XCTAssertTrue([fetchedGroup isEqualToString:@""],
-			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, index);
+			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, (int)index);
 			
 			XCTAssertTrue(fetchedIndex == index,
-			             @"Wrong index(%d) for key(%@) at index(%d)", fetchedIndex, key, index);
+			             @"Wrong index(%d) for key(%@) at index(%d)", (int)fetchedIndex, key, (int)index);
 			
 			index++;
 		}
@@ -772,10 +772,10 @@
 			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			XCTAssertTrue([fetchedKey isEqualToString:key],
-						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, (int)index);
 			
 			XCTAssertTrue([fetchedCollection isEqualToString:@""],
-						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", (int)index);
 			
 			index++;
 		}
@@ -796,13 +796,13 @@
 			BOOL result =
 			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
-			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
+			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, (int)index);
 			
 			XCTAssertTrue([fetchedGroup isEqualToString:@""],
-			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, index);
+			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, (int)index);
 			
 			XCTAssertTrue(fetchedIndex == index,
-			             @"Wrong index(%d) for key(%@) at index(%d)", fetchedIndex, key, index);
+			             @"Wrong index(%d) for key(%@) at index(%d)", (int)fetchedIndex, key, (int)index);
 			
 			index++;
 		}
@@ -829,10 +829,10 @@
 			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			XCTAssertTrue([fetchedKey isEqualToString:key],
-						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, (int)index);
 			
 			XCTAssertTrue([fetchedCollection isEqualToString:@""],
-						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", (int)index);
 			
 			index++;
 		}
@@ -853,13 +853,13 @@
 			BOOL result =
 			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
-			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
+			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, (int)index);
 			
 			XCTAssertTrue([fetchedGroup isEqualToString:@""],
-			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, index);
+			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, (int)index);
 			
 			XCTAssertTrue(fetchedIndex == index,
-			             @"Wrong index(%d) for key(%@) at index(%d)", fetchedIndex, key, index);
+			             @"Wrong index(%d) for key(%@) at index(%d)", (int)fetchedIndex, key, (int)index);
 			
 			index++;
 		}
@@ -892,10 +892,10 @@
 			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			XCTAssertTrue([fetchedKey isEqualToString:key],
-						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, (int)index);
 			
 			XCTAssertTrue([fetchedCollection isEqualToString:@""],
-						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", (int)index);
 			
 			index++;
 		}
@@ -916,13 +916,13 @@
 			BOOL result =
 			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
-			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
+			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, (int)index);
 			
 			XCTAssertTrue([fetchedGroup isEqualToString:@""],
-			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, index);
+			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, (int)index);
 			
 			XCTAssertTrue(fetchedIndex == index,
-			             @"Wrong index(%d) for key(%@) at index(%d)", fetchedIndex, key, index);
+			             @"Wrong index(%d) for key(%@) at index(%d)", (int)fetchedIndex, key, (int)index);
 			
 			index++;
 		}
@@ -949,10 +949,10 @@
 			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			XCTAssertTrue([fetchedKey isEqualToString:key],
-						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, (int)index);
 			
 			XCTAssertTrue([fetchedCollection isEqualToString:@""],
-						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", (int)index);
 			
 			index++;
 		}
@@ -973,13 +973,13 @@
 			BOOL result =
 			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
-			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
+			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, (int)index);
 			
 			XCTAssertTrue([fetchedGroup isEqualToString:@""],
-			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, index);
+			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, (int)index);
 			
 			XCTAssertTrue(fetchedIndex == index,
-			             @"Wrong index(%d) for key(%@) at index(%d)", fetchedIndex, key, index);
+			             @"Wrong index(%d) for key(%@) at index(%d)", (int)fetchedIndex, key, (int)index);
 			
 			index++;
 		}
@@ -1013,10 +1013,10 @@
 			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			XCTAssertTrue([fetchedKey isEqualToString:key],
-						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, (int)index);
 			
 			XCTAssertTrue([fetchedCollection isEqualToString:@""],
-						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", (int)index);
 			
 			index++;
 		}
@@ -1037,13 +1037,13 @@
 			BOOL result =
 			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
-			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
+			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, (int)index);
 			
 			XCTAssertTrue([fetchedGroup isEqualToString:@""],
-			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, index);
+			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, (int)index);
 			
 			XCTAssertTrue(fetchedIndex == index,
-			             @"Wrong index(%d) for key(%@) at index(%d)", fetchedIndex, key, index);
+			             @"Wrong index(%d) for key(%@) at index(%d)", (int)fetchedIndex, key, (int)index);
 			
 			index++;
 		}
@@ -1070,10 +1070,10 @@
 			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			XCTAssertTrue([fetchedKey isEqualToString:key],
-						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, index);
+						 @"Non-matching keys(%@ vs %@) at index %d", fetchedKey, key, (int)index);
 			
 			XCTAssertTrue([fetchedCollection isEqualToString:@""],
-						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", index);
+						 @"Non-matching collections(%@ vs %@) at index %d", fetchedCollection, @"", (int)index);
 			
 			index++;
 		}
@@ -1094,13 +1094,13 @@
 			BOOL result =
 			    [[transaction ext:@"order"] getGroup:&fetchedGroup index:&fetchedIndex forKey:key inCollection:nil];
 			
-			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, index);
+			XCTAssertTrue(result, @"Wrong result for key(%@) at index(%d)", key, (int)index);
 			
 			XCTAssertTrue([fetchedGroup isEqualToString:@""],
-			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, index);
+			             @"Wrong group(%@) for key(%@) at index(%d)", fetchedGroup, key, (int)index);
 			
 			XCTAssertTrue(fetchedIndex == index,
-			             @"Wrong index(%d) for key(%@) at index(%d)", fetchedIndex, key, index);
+			             @"Wrong index(%d) for key(%@) at index(%d)", (int)fetchedIndex, key, (int)index);
 			
 			index++;
 		}

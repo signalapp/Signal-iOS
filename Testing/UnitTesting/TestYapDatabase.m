@@ -319,7 +319,7 @@
 		[transaction setObject:object forKey:key5 inCollection:@"collection2"];
 		
 		XCTAssertTrue([transaction numberOfCollections] == 3,
-					   @"Incorrect number of collections. Got=%d, Expected=3", [transaction numberOfCollections]);
+					   @"Incorrect number of collections. Got=%d, Expected=3", (int)[transaction numberOfCollections]);
 		
 		XCTAssertTrue([transaction numberOfKeysInCollection:nil] == 5, @"Oops");
 		XCTAssertTrue([transaction numberOfKeysInCollection:@"collection1"] == 5, @"Oops");
