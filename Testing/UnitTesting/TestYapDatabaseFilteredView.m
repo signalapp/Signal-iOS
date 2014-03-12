@@ -1,4 +1,4 @@
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 #import "YapDatabase.h"
 #import "YapDatabaseView.h"
@@ -7,7 +7,7 @@
 #import "DDLog.h"
 #import "DDTTYLogger.h"
 
-@interface TestYapDatabaseFilteredView : SenTestCase
+@interface TestYapDatabaseFilteredView : XCTestCase
 @end
 
 @implementation TestYapDatabaseFilteredView
@@ -64,7 +64,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	STAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database, @"Oops");
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
@@ -103,7 +103,7 @@
 	                                         options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
-	STAssertTrue(registerResult1, @"Failure registering view extension");
+	XCTAssertTrue(registerResult1, @"Failure registering view extension");
 	
 	YapDatabaseViewBlockType filteringBlockType;
 	YapDatabaseViewFilteringBlock filteringBlock;
@@ -125,14 +125,14 @@
 	                                       filteringBlockType:filteringBlockType];
 	
 	BOOL registerResult2 = [database registerExtension:filteredView withName:@"filter"];
-	STAssertTrue(registerResult2, @"Failure registering filteredView extension");
+	XCTAssertTrue(registerResult2, @"Failure registering filteredView extension");
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		
-		STAssertNil([transaction ext:@"non-existent-view"], @"Expected nil");
+		XCTAssertNil([transaction ext:@"non-existent-view"], @"Expected nil");
 		
-		STAssertNotNil([transaction ext:@"order"], @"Expected view extension");
-		STAssertNotNil([transaction ext:@"filter"], @"Expected filteredView extension");
+		XCTAssertNotNil([transaction ext:@"order"], @"Expected view extension");
+		XCTAssertNotNil([transaction ext:@"filter"], @"Expected filteredView extension");
 		
 		[transaction setObject:[NSNull null] forKey:@"keyX" inCollection:nil];
 		
@@ -146,8 +146,8 @@
 		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
 		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
 		
-		STAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
-		STAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
+		XCTAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
+		XCTAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
@@ -155,8 +155,8 @@
 		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
 		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
 		
-		STAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
-		STAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
+		XCTAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
+		XCTAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
 	}];
 	
 	connection1 = nil;
@@ -192,7 +192,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	STAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database, @"Oops");
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
@@ -231,12 +231,12 @@
 	                                         options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
-	STAssertTrue(registerResult1, @"Failure registering view extension");
+	XCTAssertTrue(registerResult1, @"Failure registering view extension");
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		
-		STAssertNotNil([transaction ext:@"order"], @"Expected view extension");
-		STAssertNil([transaction ext:@"filter"], @"Expected filteredView extension");
+		XCTAssertNotNil([transaction ext:@"order"], @"Expected view extension");
+		XCTAssertNil([transaction ext:@"filter"], @"Expected filteredView extension");
 		
 		[transaction setObject:[NSNull null] forKey:@"keyX" inCollection:nil];
 		
@@ -249,7 +249,7 @@
 		
 		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
 		
-		STAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
+		XCTAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
 	}];
 	
 	YapDatabaseViewBlockType filteringBlockType;
@@ -272,18 +272,18 @@
 	                                       filteringBlockType:filteringBlockType];
 	
 	BOOL registerResult2 = [database registerExtension:filteredView withName:@"filter"];
-	STAssertTrue(registerResult2, @"Failure registering filteredView extension");
+	XCTAssertTrue(registerResult2, @"Failure registering filteredView extension");
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
 		
-		STAssertNotNil([transaction ext:@"order"], @"Expected view extension");
-		STAssertNotNil([transaction ext:@"filter"], @"Expected filteredView extension");
+		XCTAssertNotNil([transaction ext:@"order"], @"Expected view extension");
+		XCTAssertNotNil([transaction ext:@"filter"], @"Expected filteredView extension");
 		
 		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
 		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
 		
-		STAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
-		STAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
+		XCTAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
+		XCTAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
 	}];
 	
 	connection1 = nil;
@@ -319,7 +319,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	STAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database, @"Oops");
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
@@ -358,7 +358,7 @@
 	                                         options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
-	STAssertTrue(registerResult1, @"Failure registering view extension");
+	XCTAssertTrue(registerResult1, @"Failure registering view extension");
 	
 	YapDatabaseViewBlockType filteringBlockType;
 	YapDatabaseViewFilteringBlock filteringBlock;
@@ -381,14 +381,14 @@
 	                                               versionTag:@"even"];
 	
 	BOOL registerResult2 = [database registerExtension:filteredView withName:@"filter"];
-	STAssertTrue(registerResult2, @"Failure registering filteredView extension");
+	XCTAssertTrue(registerResult2, @"Failure registering filteredView extension");
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		
-		STAssertNil([transaction ext:@"non-existent-view"], @"Expected nil");
+		XCTAssertNil([transaction ext:@"non-existent-view"], @"Expected nil");
 		
-		STAssertNotNil([transaction ext:@"order"], @"Expected view extension");
-		STAssertNotNil([transaction ext:@"filter"], @"Expected filteredView extension");
+		XCTAssertNotNil([transaction ext:@"order"], @"Expected view extension");
+		XCTAssertNotNil([transaction ext:@"filter"], @"Expected filteredView extension");
 		
 		[transaction setObject:[NSNull null] forKey:@"keyX" inCollection:nil];
 		
@@ -402,8 +402,8 @@
 		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
 		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
 		
-		STAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
-		STAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
+		XCTAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
+		XCTAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
@@ -411,8 +411,8 @@
 		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
 		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
 		
-		STAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
-		STAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
+		XCTAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
+		XCTAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
 	}];
 	
 	//
@@ -439,8 +439,8 @@
 		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
 		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
 		
-		STAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
-		STAssertTrue(filterCount == (50 + 10), @"Bad count in filter. Expected 60, got %d", (int)filterCount);
+		XCTAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
+		XCTAssertTrue(filterCount == (50 + 10), @"Bad count in filter. Expected 60, got %d", (int)filterCount);
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
@@ -448,8 +448,8 @@
 		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
 		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
 		
-		STAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
-		STAssertTrue(filterCount == (50 + 10), @"Bad count in filter. Expected 60, got %d", (int)filterCount);
+		XCTAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
+		XCTAssertTrue(filterCount == (50 + 10), @"Bad count in filter. Expected 60, got %d", (int)filterCount);
 	}];
 	
 	connection1 = nil;
@@ -485,7 +485,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	STAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database, @"Oops");
 	
 	YapDatabaseConnection *connection = [database newConnection];
 	
@@ -523,7 +523,7 @@
 	                                         options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
-	STAssertTrue(registerResult1, @"Failure registering view extension");
+	XCTAssertTrue(registerResult1, @"Failure registering view extension");
 	
 	YapDatabaseViewBlockType filteringBlockType;
 	YapDatabaseViewFilteringBlock filteringBlock;
@@ -545,14 +545,14 @@
 	                                       filteringBlockType:filteringBlockType];
 	
 	BOOL registerResult2 = [database registerExtension:filteredView withName:@"filter"];
-	STAssertTrue(registerResult2, @"Failure registering filteredView extension");
+	XCTAssertTrue(registerResult2, @"Failure registering filteredView extension");
 	
 	// Make sure the extensions are visible
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		STAssertNotNil([transaction ext:@"order"], @"Expected YapDatabaseViewTransaction");
-		STAssertNotNil([transaction ext:@"filter"], @"Expected YapDatabaseFilteredViewTransaction");
+		XCTAssertNotNil([transaction ext:@"order"], @"Expected YapDatabaseViewTransaction");
+		XCTAssertNotNil([transaction ext:@"filter"], @"Expected YapDatabaseFilteredViewTransaction");
 	}];
 	
 	// Now unregister the view, and make sure it automatically unregisters the filteredView too.
@@ -561,8 +561,8 @@
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		STAssertNil([transaction ext:@"order"], @"Expected nil");
-		STAssertNil([transaction ext:@"filter"], @"Expected nil");
+		XCTAssertNil([transaction ext:@"order"], @"Expected nil");
+		XCTAssertNil([transaction ext:@"filter"], @"Expected nil");
 	}];
 }
 
@@ -595,7 +595,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	STAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database, @"Oops");
 	
 	YapDatabaseConnection *connection = [database newConnection];
 	
@@ -633,7 +633,7 @@
 	                                         options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
-	STAssertTrue(registerResult1, @"Failure registering view extension");
+	XCTAssertTrue(registerResult1, @"Failure registering view extension");
 	
 	YapDatabaseViewBlockType filteringBlockType1;
 	YapDatabaseViewFilteringBlock filteringBlock1;
@@ -655,7 +655,7 @@
 	                                       filteringBlockType:filteringBlockType1];
 	
 	BOOL registerResult2 = [database registerExtension:filteredView1 withName:@"filter1"];
-	STAssertTrue(registerResult2, @"Failure registering filteredView1 extension");
+	XCTAssertTrue(registerResult2, @"Failure registering filteredView1 extension");
 	
 	YapDatabaseViewBlockType filteringBlockType2;
 	YapDatabaseViewFilteringBlock filteringBlock2;
@@ -677,15 +677,15 @@
 	                                       filteringBlockType:filteringBlockType2];
 	
 	BOOL registerResult3 = [database registerExtension:filteredView2 withName:@"filter2"];
-	STAssertTrue(registerResult3, @"Failure registering filteredView2 extension");
+	XCTAssertTrue(registerResult3, @"Failure registering filteredView2 extension");
 	
 	// Make sure the extensions are visible
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		STAssertNotNil([transaction ext:@"order"], @"Expected YapDatabaseViewTransaction");
-		STAssertNotNil([transaction ext:@"filter1"], @"Expected YapDatabaseFilteredViewTransaction");
-		STAssertNotNil([transaction ext:@"filter2"], @"Expected YapDatabaseFilteredViewTransaction");
+		XCTAssertNotNil([transaction ext:@"order"], @"Expected YapDatabaseViewTransaction");
+		XCTAssertNotNil([transaction ext:@"filter1"], @"Expected YapDatabaseFilteredViewTransaction");
+		XCTAssertNotNil([transaction ext:@"filter2"], @"Expected YapDatabaseFilteredViewTransaction");
 	}];
 	
 	// Now unregister the view, and make sure it automatically unregisters both filteredViews too.
@@ -694,9 +694,9 @@
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		STAssertNil([transaction ext:@"order"], @"Expected nil");
-		STAssertNil([transaction ext:@"filter1"], @"Expected nil");
-		STAssertNil([transaction ext:@"filter2"], @"Expected nil");
+		XCTAssertNil([transaction ext:@"order"], @"Expected nil");
+		XCTAssertNil([transaction ext:@"filter1"], @"Expected nil");
+		XCTAssertNil([transaction ext:@"filter2"], @"Expected nil");
 	}];
 }
 
@@ -730,7 +730,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	STAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database, @"Oops");
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
@@ -766,7 +766,7 @@
 	                                         options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
-	STAssertTrue(registerResult1, @"Failure registering view extension");
+	XCTAssertTrue(registerResult1, @"Failure registering view extension");
 	
 	YapDatabaseViewBlockType filteringBlockType1;
 	YapDatabaseViewFilteringBlock filteringBlock1;
@@ -789,7 +789,7 @@
 	                                               versionTag:@"1"];
 	
 	BOOL registerResult2 = [database registerExtension:filteredView1 withName:@"filter1"];
-	STAssertTrue(registerResult2, @"Failure registering filteredView1 extension");
+	XCTAssertTrue(registerResult2, @"Failure registering filteredView1 extension");
 	
 	YapDatabaseViewBlockType filteringBlockType2;
 	YapDatabaseViewFilteringBlock filteringBlock2;
@@ -812,15 +812,15 @@
 	                                               versionTag:@"1"];
 	
 	BOOL registerResult3 = [database registerExtension:filteredView2 withName:@"filter2"];
-	STAssertTrue(registerResult3, @"Failure registering filteredView2 extension");
+	XCTAssertTrue(registerResult3, @"Failure registering filteredView2 extension");
 	
 	// Make sure the extensions are visible
 	
 	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		STAssertNotNil([transaction ext:@"order"], @"Expected YapDatabaseViewTransaction");
-		STAssertNotNil([transaction ext:@"filter1"], @"Expected YapDatabaseFilteredViewTransaction");
-		STAssertNotNil([transaction ext:@"filter2"], @"Expected YapDatabaseFilteredViewTransaction");
+		XCTAssertNotNil([transaction ext:@"order"], @"Expected YapDatabaseViewTransaction");
+		XCTAssertNotNil([transaction ext:@"filter1"], @"Expected YapDatabaseFilteredViewTransaction");
+		XCTAssertNotNil([transaction ext:@"filter2"], @"Expected YapDatabaseFilteredViewTransaction");
 	}];
 	
 	// Now add a bunch of numbers to the views
@@ -843,13 +843,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 200, @"");
+		XCTAssertTrue(count == 200, @"");
 		
 		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 100, @"");
+		XCTAssertTrue(count == 100, @"");
 		
 		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 50, @"");
+		XCTAssertTrue(count == 50, @"");
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -857,13 +857,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 200, @"");
+		XCTAssertTrue(count == 200, @"");
 		
 		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 100, @"");
+		XCTAssertTrue(count == 100, @"");
 		
 		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 50, @"");
+		XCTAssertTrue(count == 50, @"");
 	}];
 	
 	// Now update the filteringBlock, and make sure the dependent filteredView is also updated properly
@@ -887,13 +887,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 200, @"");
+		XCTAssertTrue(count == 200, @"");
 		
 		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 200, @"");
+		XCTAssertTrue(count == 200, @"");
 		
 		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 100, @"");
+		XCTAssertTrue(count == 100, @"");
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -901,13 +901,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 200, @"");
+		XCTAssertTrue(count == 200, @"");
 		
 		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 200, @"");
+		XCTAssertTrue(count == 200, @"");
 		
 		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 100, @"");
+		XCTAssertTrue(count == 100, @"");
 	}];
 	
 	// Now update the filteringBlock (again), and make sure the dependent filteredView is also updated properly
@@ -931,13 +931,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 200, @"");
+		XCTAssertTrue(count == 200, @"");
 		
 		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 100, @"");
+		XCTAssertTrue(count == 100, @"");
 		
 		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 50, @"");
+		XCTAssertTrue(count == 50, @"");
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -945,13 +945,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 200, @"");
+		XCTAssertTrue(count == 200, @"");
 		
 		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 100, @"");
+		XCTAssertTrue(count == 100, @"");
 		
 		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 50, @"");
+		XCTAssertTrue(count == 50, @"");
 	}];
 
 }
@@ -986,7 +986,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	STAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database, @"Oops");
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
@@ -1027,7 +1027,7 @@
 	                                         options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
-	STAssertTrue(registerResult1, @"Failure registering view extension");
+	XCTAssertTrue(registerResult1, @"Failure registering view extension");
 	
 	YapDatabaseViewBlockType filteringBlockType1;
 	YapDatabaseViewFilteringBlock filteringBlock1;
@@ -1050,7 +1050,7 @@
 	                                               versionTag:@"1"];
 	
 	BOOL registerResult2 = [database registerExtension:filteredView1 withName:@"filter1"];
-	STAssertTrue(registerResult2, @"Failure registering filteredView1 extension");
+	XCTAssertTrue(registerResult2, @"Failure registering filteredView1 extension");
 	
 	YapDatabaseViewBlockType filteringBlockType2;
 	YapDatabaseViewFilteringBlock filteringBlock2;
@@ -1073,15 +1073,15 @@
 	                                               versionTag:@"1"];
 	
 	BOOL registerResult3 = [database registerExtension:filteredView2 withName:@"filter2"];
-	STAssertTrue(registerResult3, @"Failure registering filteredView2 extension");
+	XCTAssertTrue(registerResult3, @"Failure registering filteredView2 extension");
 	
 	// Make sure the extensions are visible
 	
 	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		STAssertNotNil([transaction ext:@"order"], @"Expected YapDatabaseViewTransaction");
-		STAssertNotNil([transaction ext:@"filter1"], @"Expected YapDatabaseFilteredViewTransaction");
-		STAssertNotNil([transaction ext:@"filter2"], @"Expected YapDatabaseFilteredViewTransaction");
+		XCTAssertNotNil([transaction ext:@"order"], @"Expected YapDatabaseViewTransaction");
+		XCTAssertNotNil([transaction ext:@"filter1"], @"Expected YapDatabaseFilteredViewTransaction");
+		XCTAssertNotNil([transaction ext:@"filter2"], @"Expected YapDatabaseFilteredViewTransaction");
 	}];
 	
 	// Now add a bunch of numbers to the views
@@ -1104,13 +1104,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 100, @"");
+		XCTAssertTrue(count == 100, @"");
 		
 		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 50, @"");
+		XCTAssertTrue(count == 50, @"");
 		
 		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 25, @"");
+		XCTAssertTrue(count == 25, @"");
 		
 	//	[[transaction ext:@"filter1"] enumerateKeysInGroup:@""
 	//	                                usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop)
@@ -1130,13 +1130,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 100, @"");
+		XCTAssertTrue(count == 100, @"");
 		
 		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 50, @"");
+		XCTAssertTrue(count == 50, @"");
 		
 		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 25, @"");
+		XCTAssertTrue(count == 25, @"");
 	}];
 	
 //	NSLog(@"===========================================================================================");
@@ -1164,13 +1164,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 200, @"");
+		XCTAssertTrue(count == 200, @"");
 		
 		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 100, @"");
+		XCTAssertTrue(count == 100, @"");
 		
 		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 50, @"");
+		XCTAssertTrue(count == 50, @"");
 		
 	//	[[transaction ext:@"filter1"] enumerateKeysInGroup:@""
 	//	                                usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop)
@@ -1190,13 +1190,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 200, @"");
+		XCTAssertTrue(count == 200, @"");
 		
 		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 100, @"");
+		XCTAssertTrue(count == 100, @"");
 		
 		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 50, @"");
+		XCTAssertTrue(count == 50, @"");
 	}];
 	
 //	NSLog(@"===========================================================================================");
@@ -1224,13 +1224,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 100, @"");
+		XCTAssertTrue(count == 100, @"");
 		
 		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 50, @"");
+		XCTAssertTrue(count == 50, @"");
 		
 		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 25, @"");
+		XCTAssertTrue(count == 25, @"");
 		
 	//	[[transaction ext:@"filter1"] enumerateKeysInGroup:@""
 	//	                                usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop)
@@ -1250,13 +1250,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 100, @"");
+		XCTAssertTrue(count == 100, @"");
 		
 		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 50, @"");
+		XCTAssertTrue(count == 50, @"");
 		
 		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
-		STAssertTrue(count == 25, @"");
+		XCTAssertTrue(count == 25, @"");
 	}];
 
 }
@@ -1290,7 +1290,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 
-	STAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database, @"Oops");
 
 	YapDatabaseConnection *connection1 = [database newConnection];
     YapDatabaseConnection *connection2 = [database newConnection];
@@ -1330,7 +1330,7 @@
 	                                         options:options];
 
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
-	STAssertTrue(registerResult1, @"Failure registering view extension");
+	XCTAssertTrue(registerResult1, @"Failure registering view extension");
 
 	YapDatabaseViewBlockType filteringBlockType1;
 	YapDatabaseViewFilteringBlock filteringBlock1;
@@ -1353,7 +1353,7 @@
 	                                               versionTag:@"0"];
 
 	BOOL registerResult2 = [database registerExtension:filteredView withName:@"filter"];
-	STAssertTrue(registerResult2, @"Failure registering filteredView extension");
+	XCTAssertTrue(registerResult2, @"Failure registering filteredView extension");
 
 
     YapDatabaseViewMappings *mappings =
@@ -1408,7 +1408,7 @@
         timedOut = ([tick compare:timeoutDate] == NSOrderedDescending);
     }
 	
-    STAssertEquals(notificationCount, 1, @"Expected notification (%d notifications)", notificationCount);
+    XCTAssertEqual(notificationCount, 1, @"Expected notification (%d notifications)", notificationCount);
 	
 	// --- Try setting an empty filter
 	
@@ -1438,7 +1438,7 @@
         timedOut = ([tick compare:timeoutDate] == NSOrderedDescending);
     }
 
-    STAssertEquals(notificationCount, 1, @"Expected notification (%d notifications)", notificationCount);
+    XCTAssertEqual(notificationCount, 1, @"Expected notification (%d notifications)", notificationCount);
 
     // --- Try setting a regular filter
 
@@ -1459,7 +1459,7 @@
         timedOut = ([tick compare:timeoutDate] == NSOrderedDescending);
     }
 
-    STAssertEquals(notificationCount, 1, @"Expected notification (%d notifications)", notificationCount);
+    XCTAssertEqual(notificationCount, 1, @"Expected notification (%d notifications)", notificationCount);
 
     // --- Try setting an empty filter
 
@@ -1480,7 +1480,7 @@
         timedOut = ([tick compare:timeoutDate] == NSOrderedDescending);
     }
 
-    STAssertEquals(notificationCount, 1, @"Expected notification (%d notifications)", notificationCount);
+    XCTAssertEqual(notificationCount, 1, @"Expected notification (%d notifications)", notificationCount);
     
     // ---
     

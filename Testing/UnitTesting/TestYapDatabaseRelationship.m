@@ -1,4 +1,4 @@
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 #import "YapDatabase.h"
 #import "YapDatabaseRelationship.h"
@@ -8,7 +8,7 @@
 #import "DDTTYLogger.h"
 
 
-@interface TestYapDatabaseRelationship : SenTestCase
+@interface TestYapDatabaseRelationship : XCTestCase
 @end
 
 @implementation TestYapDatabaseRelationship
@@ -47,7 +47,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	STAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database, @"Oops");
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
@@ -56,7 +56,7 @@
 	
 	BOOL registered = [database registerExtension:relationship withName:@"relationship"];
 	
-	STAssertTrue(registered, @"Error registering extension");
+	XCTAssertTrue(registered, @"Error registering extension");
 	
 	Node_Standard *n1 = [[Node_Standard alloc] init];
 	Node_Standard *n2 = [[Node_Standard alloc] init];
@@ -74,30 +74,30 @@
 		NSUInteger edgeCount;
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:n1.key collection:nil];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:n2.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:n3.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child"
 		                                                       sourceKey:n1.key
 		                                                      collection:nil
 		                                                  destinationKey:n2.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child"
 		                                                       sourceKey:n1.key
 		                                                      collection:nil
 		                                                  destinationKey:n3.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -105,30 +105,30 @@
 		NSUInteger edgeCount;
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:n1.key collection:nil];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:n2.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:n3.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child"
 		                                                       sourceKey:n1.key
 		                                                      collection:nil
 		                                                  destinationKey:n2.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child"
 		                                                       sourceKey:n1.key
 		                                                      collection:nil
 		                                                  destinationKey:n3.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 	}];
 	
 	// Test deleting the children
@@ -141,30 +141,30 @@
 		NSUInteger edgeCount;
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:n1.key collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:n2.key collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:n3.key collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child"
 		                                                       sourceKey:n1.key
 		                                                      collection:nil
 		                                                  destinationKey:n2.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child"
 		                                                       sourceKey:n1.key
 		                                                      collection:nil
 		                                                  destinationKey:n3.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 	}];
 	
 	// Re-add the children and edges
@@ -185,30 +185,30 @@
 		NSUInteger edgeCount;
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:n1.key collection:nil];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:n2.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:n3.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child"
 		                                                       sourceKey:n1.key
 		                                                      collection:nil
 		                                                  destinationKey:n2.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child"
 		                                                       sourceKey:n1.key
 		                                                      collection:nil
 		                                                  destinationKey:n3.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 	}];
 	
 	// Test deleting the parent
@@ -220,37 +220,37 @@
 		NSUInteger edgeCount;
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:n1.key collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:n2.key collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:n3.key collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child"
 		                                                       sourceKey:n1.key
 		                                                      collection:nil
 		                                                  destinationKey:n2.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"child"
 		                                                       sourceKey:n1.key
 		                                                      collection:nil
 		                                                  destinationKey:n3.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		
-		STAssertNil([transaction objectForKey:n2.key inCollection:nil], @"Oops");
-		STAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:n2.key inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
 	}];
 	
 	// Now test adding an edge and deleting it within the same transaction
@@ -265,8 +265,8 @@
 		
 		[[transaction ext:@"relationship"] flush];
 		
-		STAssertNil([transaction objectForKey:n2.key inCollection:nil], @"Oops");
-		STAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:n2.key inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
 	}];
 }
 
@@ -277,7 +277,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	STAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database, @"Oops");
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
@@ -286,7 +286,7 @@
 	
 	BOOL registered = [database registerExtension:relationship withName:@"relationship"];
 	
-	STAssertTrue(registered, @"Error registering extension");
+	XCTAssertTrue(registered, @"Error registering extension");
 	
 	Node_Inverse *n1 = [[Node_Inverse alloc] init];
 	Node_Inverse *n2 = [[Node_Inverse alloc] init];
@@ -304,30 +304,30 @@
 		NSUInteger edgeCount;
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent"];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent" destinationKey:n1.key collection:nil];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent" sourceKey:n2.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent" sourceKey:n3.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent"
 		                                                       sourceKey:n2.key
 		                                                      collection:nil
 		                                                  destinationKey:n1.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent"
 		                                                       sourceKey:n3.key
 		                                                      collection:nil
 		                                                  destinationKey:n1.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -335,30 +335,30 @@
 		NSUInteger edgeCount;
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent"];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent" destinationKey:n1.key collection:nil];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent" sourceKey:n2.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent" sourceKey:n3.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent"
 		                                                       sourceKey:n2.key
 		                                                      collection:nil
 		                                                  destinationKey:n1.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent"
 		                                                       sourceKey:n3.key
 		                                                      collection:nil
 		                                                  destinationKey:n1.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 	}];
 	
 	// Test deleting 1 of the children.
@@ -370,30 +370,30 @@
 		NSUInteger edgeCount;
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent"];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent" destinationKey:n1.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent" sourceKey:n2.key collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent" sourceKey:n3.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent"
 		                                                       sourceKey:n2.key
 		                                                      collection:nil
 		                                                  destinationKey:n1.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent"
 		                                                       sourceKey:n3.key
 		                                                      collection:nil
 		                                                  destinationKey:n1.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -401,30 +401,30 @@
 		NSUInteger edgeCount;
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent"];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent" destinationKey:n1.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent" sourceKey:n2.key collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent" sourceKey:n3.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent"
 		                                                       sourceKey:n2.key
 		                                                      collection:nil
 		                                                  destinationKey:n1.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"parent"
 		                                                       sourceKey:n3.key
 		                                                      collection:nil
 		                                                  destinationKey:n1.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 	}];
 	
 	// Test deleting the parent.
@@ -437,8 +437,8 @@
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		STAssertNil([transaction objectForKey:n2.key inCollection:nil], @"Oops");
-		STAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:n2.key inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
 	}];
 }
 
@@ -449,7 +449,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	STAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database, @"Oops");
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
@@ -458,7 +458,7 @@
 	
 	BOOL registered = [database registerExtension:relationship withName:@"relationship"];
 	
-	STAssertTrue(registered, @"Error registering extension");
+	XCTAssertTrue(registered, @"Error registering extension");
 	
 	Node_RetainCount *n1 = [[Node_RetainCount alloc] init];
 	Node_RetainCount *n2 = [[Node_RetainCount alloc] init];
@@ -481,30 +481,30 @@
 		NSUInteger edgeCount;
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained"];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained" destinationKey:n3.key collection:nil];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained" sourceKey:n1.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained" sourceKey:n2.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained"
 		                                                       sourceKey:n1.key
 		                                                      collection:nil
 		                                                  destinationKey:n3.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained"
 		                                                       sourceKey:n1.key
 		                                                      collection:nil
 		                                                  destinationKey:n3.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -512,30 +512,30 @@
 		NSUInteger edgeCount;
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained"];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained" destinationKey:n3.key collection:nil];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained" sourceKey:n1.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained" sourceKey:n2.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained"
 		                                                       sourceKey:n1.key
 		                                                      collection:nil
 		                                                  destinationKey:n3.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained"
 		                                                       sourceKey:n1.key
 		                                                      collection:nil
 		                                                  destinationKey:n3.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 	}];
 	
 	// Test deleting 1 of the retainers.
@@ -547,30 +547,30 @@
 		NSUInteger edgeCount;
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained"];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained" destinationKey:n3.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained" sourceKey:n1.key collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained" sourceKey:n2.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained"
 		                                                       sourceKey:n1.key
 		                                                      collection:nil
 		                                                  destinationKey:n3.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained"
 		                                                       sourceKey:n2.key
 		                                                      collection:nil
 		                                                  destinationKey:n3.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -578,30 +578,30 @@
 		NSUInteger edgeCount;
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained"];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained" destinationKey:n3.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained" sourceKey:n1.key collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained" sourceKey:n2.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained"
 		                                                       sourceKey:n1.key
 		                                                      collection:nil
 		                                                  destinationKey:n3.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retained"
 		                                                       sourceKey:n2.key
 		                                                      collection:nil
 		                                                  destinationKey:n3.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 	}];
 	
 	// Test deleting the second/last retainer.
@@ -614,7 +614,7 @@
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		STAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
 	}];
 }
 
@@ -625,7 +625,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	STAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database, @"Oops");
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
@@ -634,7 +634,7 @@
 	
 	BOOL registered = [database registerExtension:relationship withName:@"relationship"];
 	
-	STAssertTrue(registered, @"Error registering extension");
+	XCTAssertTrue(registered, @"Error registering extension");
 	
 	Node_InverseRetainCount *n1 = [[Node_InverseRetainCount alloc] init];
 	Node_InverseRetainCount *n2 = [[Node_InverseRetainCount alloc] init];
@@ -657,30 +657,30 @@
 		NSUInteger edgeCount;
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer"];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer" sourceKey:n3.key collection:nil];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer" destinationKey:n1.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer" destinationKey:n2.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer"
 		                                                       sourceKey:n3.key
 		                                                      collection:nil
 		                                                  destinationKey:n1.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer"
 		                                                       sourceKey:n3.key
 		                                                      collection:nil
 		                                                  destinationKey:n2.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -688,30 +688,30 @@
 		NSUInteger edgeCount;
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer"];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer" sourceKey:n3.key collection:nil];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer" destinationKey:n1.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer" destinationKey:n2.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer"
 		                                                       sourceKey:n3.key
 		                                                      collection:nil
 		                                                  destinationKey:n1.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer"
 		                                                       sourceKey:n3.key
 		                                                      collection:nil
 		                                                  destinationKey:n2.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 	}];
 	
 	// Test deleting both of the retainers.
@@ -725,30 +725,30 @@
 		NSUInteger edgeCount;
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer"];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer" sourceKey:n3.key collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer" destinationKey:n1.key collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer" destinationKey:n2.key collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer"
 		                                                       sourceKey:n3.key
 		                                                      collection:nil
 		                                                  destinationKey:n1.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer"
 		                                                       sourceKey:n3.key
 		                                                      collection:nil
 		                                                  destinationKey:n2.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 	}];
 	
 	// Reset all the nodes
@@ -766,30 +766,30 @@
 		NSUInteger edgeCount;
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer"];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer" sourceKey:n3.key collection:nil];
-		STAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 2, @"Bad edgeCount. expected(2) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer" destinationKey:n1.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer" destinationKey:n2.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer"
 		                                                       sourceKey:n3.key
 		                                                      collection:nil
 		                                                  destinationKey:n1.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer"
 		                                                       sourceKey:n3.key
 		                                                      collection:nil
 		                                                  destinationKey:n2.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 	}];
 	
 	// Test deleting just one of the retainers.
@@ -802,30 +802,30 @@
 		NSUInteger edgeCount;
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer"];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer" sourceKey:n3.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer" destinationKey:n1.key collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(0) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(0) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer" destinationKey:n2.key collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer"
 		                                                       sourceKey:n3.key
 		                                                      collection:nil
 		                                                  destinationKey:n1.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(0) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 0, @"Bad edgeCount. expected(0) != %d", (int)edgeCount);
 		
 		edgeCount = [[transaction ext:@"relationship"] edgeCountWithName:@"retainer"
 		                                                       sourceKey:n3.key
 		                                                      collection:nil
 		                                                  destinationKey:n2.key
 		                                                      collection:nil];
-		STAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
+		XCTAssertTrue(edgeCount == 1, @"Bad edgeCount. expected(1) != %d", (int)edgeCount);
 	}];
 	
 	// Now delete the last retainer (n2).
@@ -838,7 +838,7 @@
 	
 	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		STAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
 	}];
 	
 	// Now test adding the edges and deleting them within the same transaction
@@ -854,7 +854,7 @@
 		
 		[[transaction ext:@"relationship"] flush];
 		
-		STAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
 	}];
 }
 
@@ -869,7 +869,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	STAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database, @"Oops");
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
@@ -878,7 +878,7 @@
 	
 	BOOL registered = [database registerExtension:relationship withName:@"relationship"];
 	
-	STAssertTrue(registered, @"Error registering extension");
+	XCTAssertTrue(registered, @"Error registering extension");
 	
 	NSString *key1 = @"key1";
 	NSString *key2 = @"key2";
@@ -904,13 +904,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		STAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1, @"Oops");
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
-		STAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1, @"Oops");
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
-		STAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1, @"Oops");
 	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -919,7 +919,7 @@
 		
 		[[transaction ext:@"relationship"] flush];
 		
-		STAssertNil([transaction objectForKey:key2 inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:key2 inCollection:nil], @"Oops");
 	}];
 }
 
@@ -930,7 +930,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	STAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database, @"Oops");
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
@@ -939,7 +939,7 @@
 	
 	BOOL registered = [database registerExtension:relationship withName:@"relationship"];
 	
-	STAssertTrue(registered, @"Error registering extension");
+	XCTAssertTrue(registered, @"Error registering extension");
 	
 	NSString *key1 = @"key1";
 	NSString *key2 = @"key2";
@@ -962,13 +962,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		STAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1, @"Oops");
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
-		STAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1, @"Oops");
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
-		STAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1, @"Oops");
 	}];
 	
 	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -989,13 +989,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		STAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1, @"Oops");
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
-		STAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1, @"Oops");
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
-		STAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1, @"Oops");
 	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -1013,13 +1013,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		STAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0, @"Oops");
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
-		STAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0, @"Oops");
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
-		STAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0, @"Oops");
 	}];
 	
 	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -1037,13 +1037,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		STAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0, @"Oops");
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
-		STAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0, @"Oops");
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
-		STAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0, @"Oops");
 	}];
 }
 

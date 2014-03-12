@@ -1,4 +1,4 @@
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 #import "YapDatabase.h"
 #import "YapDatabaseFullTextSearch.h"
@@ -7,7 +7,7 @@
 #import "DDTTYLogger.h"
 
 
-@interface TestYapDatabaseFullTextSearch : SenTestCase
+@interface TestYapDatabaseFullTextSearch : XCTestCase
 
 @end
 
@@ -45,7 +45,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	STAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database, @"Oops");
 	
 	YapDatabaseConnection *connection = [database newConnection];
 	
@@ -82,7 +82,7 @@
 		                                     usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			count++;
 		}];
-		STAssertTrue(count == 4, @"Missing search results");
+		XCTAssertTrue(count == 4, @"Missing search results");
 		
 		// Find matches for: coffee
 		
@@ -91,7 +91,7 @@
 		                                     usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			count++;
 		}];
-		STAssertTrue(count == 1, @"Missing search results");
+		XCTAssertTrue(count == 1, @"Missing search results");
 		
 		// Find matches for: hello wor*
 		
@@ -100,7 +100,7 @@
 		                                     usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			count++;
 		}];
-		STAssertTrue(count == 2, @"Missing search results");
+		XCTAssertTrue(count == 2, @"Missing search results");
 		
 		// Find matches for: quack
 		
@@ -109,7 +109,7 @@
 		                                     usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			count++;
 		}];
-		STAssertTrue(count == 0, @"Missing search results");
+		XCTAssertTrue(count == 0, @"Missing search results");
 	}];
 	
 	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -128,7 +128,7 @@
 		                                     usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			count++;
 		}];
-		STAssertTrue(count == 4, @"Missing search results");
+		XCTAssertTrue(count == 4, @"Missing search results");
 		
 		// Find matches for: coffee
 		
@@ -137,7 +137,7 @@
 		                                     usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			count++;
 		}];
-		STAssertTrue(count == 1, @"Missing search results");
+		XCTAssertTrue(count == 1, @"Missing search results");
 		
 		// Find matches for: hello wor*
 		
@@ -146,7 +146,7 @@
 		                                     usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			count++;
 		}];
-		STAssertTrue(count == 1, @"Missing search results");
+		XCTAssertTrue(count == 1, @"Missing search results");
 		
 		// Find matches for: quack
 		
@@ -155,7 +155,7 @@
 		                                     usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 			count++;
 		}];
-		STAssertTrue(count == 0, @"Missing search results");
+		XCTAssertTrue(count == 0, @"Missing search results");
 	}];
 }
 
@@ -166,7 +166,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	STAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database, @"Oops");
 	
 	YapDatabaseConnection *connection = [database newConnection];
 	
@@ -207,7 +207,7 @@
 		//	NSLog(@"snippet: %@", snippet);
 			count++;
 		}];
-		STAssertTrue(count == 4, @"Missing search results");
+		XCTAssertTrue(count == 4, @"Missing search results");
 		
 		// Find matches for: coffee
 		
@@ -227,7 +227,7 @@
 			NSLog(@"snippet: %@", snippet);
 			count++;
 		}];
-		STAssertTrue(count == 1, @"Missing search results");
+		XCTAssertTrue(count == 1, @"Missing search results");
 	}];
 }
 
