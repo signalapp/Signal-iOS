@@ -357,28 +357,63 @@
 
 - (NSString *)description
 {
-	NSMutableString *rules = [NSMutableString stringWithCapacity:64];
+	// Create rules string
+	
+	NSMutableString *rulesStr = [NSMutableString stringWithCapacity:64];
 
 	if (nodeDeleteRules & YDB_NotifyIfSourceDeleted)
-		[rules appendString:@"NotifyIfSourceDeleted, "];
+		[rulesStr appendString:@"NotifyIfSourceDeleted, "];
 	
 	if (nodeDeleteRules & YDB_NotifyIfDestinationDeleted)
-		[rules appendString:@"NotifyIfDestinationDeleted, "];
+		[rulesStr appendString:@"NotifyIfDestinationDeleted, "];
 	
 	if (nodeDeleteRules & YDB_DeleteSourceIfDestinationDeleted)
-		[rules appendString:@"DeleteSourceIfDestinationDeleted, "];
+		[rulesStr appendString:@"DeleteSourceIfDestinationDeleted, "];
 	
 	if (nodeDeleteRules & YDB_DeleteDestinationIfSourceDeleted)
-		[rules appendString:@"DeleteDestinationIfSourceDeleted, "];
+		[rulesStr appendString:@"DeleteDestinationIfSourceDeleted, "];
 	
 	if (nodeDeleteRules & YDB_DeleteSourceIfAllDestinationsDeleted)
-		[rules appendString:@"DeleteSourceIfAllDestinationsDeleted, "];
+		[rulesStr appendString:@"DeleteSourceIfAllDestinationsDeleted, "];
 	
 	if (nodeDeleteRules & YDB_DeleteDestinationIfAllSourcesDeleted)
-		[rules appendString:@"DeleteDestinationIfAllSourcesDeleted, "];
+		[rulesStr appendString:@"DeleteDestinationIfAllSourcesDeleted, "];
 	
-	if ([rules length] > 0)
-		[rules deleteCharactersInRange:NSMakeRange([rules length] - 2, 2)];
+	if ([rulesStr length] > 0)
+		[rulesStr deleteCharactersInRange:NSMakeRange([rulesStr length] - 2, 2)];
+	
+	// Create flags description
+	
+	NSMutableString *flagsStr = [NSMutableString stringWithCapacity:64];
+	
+	if (flags & YDB_FlagsSourceDeleted)
+		[flagsStr appendString:@"SourceDeleted, "];
+	
+	if (flags & YDB_FlagsDestinationDeleted)
+		[flagsStr appendString:@"DestinationDeleted, "];
+	
+	if (flags & YDB_FlagsBadSource)
+		[flagsStr appendString:@"BadSource, "];
+	
+	if (flags & YDB_FlagsBadDestination)
+		[flagsStr appendString:@"BadDestination, "];
+	
+	if (flags & YDB_FlagsHasSourceRowid)
+		[flagsStr appendString:@"HasSourceRowid, "];
+	
+	if (flags & YDB_FlagsHasDestinationRowid)
+		[flagsStr appendString:@"HasDestinationRowid, "];
+	
+	if (flags & YDB_FlagsHasEdgeRowid)
+		[flagsStr appendString:@"HasEdgeRowid, "];
+	
+	if (flags & YDB_FlagsNotInDatabase)
+		[flagsStr appendString:@"NotInDatabase, "];
+	
+	if ([flagsStr length] > 0)
+		[flagsStr deleteCharactersInRange:NSMakeRange([flagsStr length] - 2, 2)];
+	
+	// Create edge description
 	
 	NSMutableString *description = [NSMutableString stringWithCapacity:128];
 	
@@ -387,16 +422,23 @@
 	
 	if (sourceKey)
 		[description appendFormat:@" src(%@, %@)", sourceKey, (sourceCollection ?: @"")];
+	else if (flags & YDB_FlagsHasSourceRowid)
+		[description appendFormat:@" srcRowid(%lld)", sourceRowid];
 	
 	if (destinationKey)
 		[description appendFormat:@" dst(%@, %@)", destinationKey, (destinationCollection ?: @"")];
-	else
+	else if (destinationFilePath)
 		[description appendFormat:@" dstFilePath(%@)", destinationFilePath];
+	else if (flags & YDB_FlagsHasDestinationRowid)
+		[description appendFormat:@" dstRowid(%lld)", destinationRowid];
 	
-	[description appendFormat:@" rules(%@)", rules];
+	[description appendFormat:@" rules(%@)", rulesStr];
 	
-	if (isManualEdge)
-	{
+	if ([flagsStr length] > 0) {
+		[description appendFormat:@" flags(%@)", flagsStr];
+	}
+	
+	if (isManualEdge) {
 		[description appendString:@" manual"];
 	}
 	

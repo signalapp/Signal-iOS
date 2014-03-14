@@ -1704,10 +1704,21 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 			edge->edgeAction = YDB_EdgeActionDelete;
 			edge->flags |= YDB_FlagsSourceDeleted;
 			
-			if (edge->destinationFilePath == nil &&
-			    [relationshipConnection->deletedInfo ydb_containsKey:@(edge->destinationRowid)])
+			if (dstFilePath == nil)
 			{
-				edge->flags |= YDB_FlagsDestinationDeleted;
+				if ([relationshipConnection->deletedInfo ydb_containsKey:@(dstRowid)])
+				{
+					edge->flags |= YDB_FlagsDestinationDeleted;
+				}
+				else
+				{
+					YapCollectionKey *dst = [databaseTransaction collectionKeyForRowid:dstRowid];
+					if (dst)
+					{
+						edge->destinationKey = dst.key;
+						edge->destinationCollection = dst.collection;
+					}
+				}
 			}
 			
 			[protocolEdges addObject:edge];

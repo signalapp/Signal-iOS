@@ -268,6 +268,31 @@
 		XCTAssertNil([transaction objectForKey:n2.key inCollection:nil], @"Oops");
 		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
 	}];
+	
+	// Re-add everything
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction setObject:n1 forKey:n1.key inCollection:nil];
+		
+		[transaction setObject:n2 forKey:n2.key inCollection:nil];
+		[transaction setObject:n3 forKey:n3.key inCollection:nil];
+	}];
+	
+	// Update n1, and remove its children, which should delete n2 & n3
+	
+	n1.childKeys = nil;
+	
+	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction setObject:n1 forKey:n1.key inCollection:nil];
+	}];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		XCTAssertNil([transaction objectForKey:n2.key inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
+	}];
 }
 
 - (void)testProtocol_Inverse
