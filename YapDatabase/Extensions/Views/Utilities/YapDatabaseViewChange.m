@@ -1041,6 +1041,8 @@
 					i++;
 				}
 			}
+            
+            [indexSet removeAllIndexes];
 		}
 	}
 }
