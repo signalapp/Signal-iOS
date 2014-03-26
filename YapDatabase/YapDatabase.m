@@ -435,16 +435,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 **/
 - (BOOL)configureDatabase
 {
-	int status;
-	
-	status = sqlite3_exec(db, "PRAGMA legacy_file_format = 0;", NULL, NULL, NULL);
-	if (status != SQLITE_OK)
-	{
-		YDBLogError(@"Error setting legacy_file_format: %d %s", status, sqlite3_errmsg(db));
-		return NO;
-	}
-	
-	status = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
+	int status = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
 		YDBLogError(@"Error setting journal_mode: %d %s", status, sqlite3_errmsg(db));
