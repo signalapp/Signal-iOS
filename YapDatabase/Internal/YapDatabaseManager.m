@@ -25,10 +25,11 @@ static OSSpinLock lock;
 	});
 }
 
-+ (BOOL)registerDatabaseForPath:(NSString *)inPath
++ (BOOL)registerDatabaseForPath:(NSString *)path
 {
-	NSString *path = [inPath stringByStandardizingPath];
 	if (path == nil) return NO;
+	
+	// Note: The path has already been standardized by the caller (path = [inPath stringByStandardizingPath]).
 	
 	BOOL result = NO;
 	
