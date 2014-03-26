@@ -183,7 +183,8 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	       metadataSerializer:NULL
 	     metadataDeserializer:NULL
 	          objectSanitizer:NULL
-	        metadataSanitizer:NULL];
+	        metadataSanitizer:NULL
+	                  options:nil];
 }
 
 - (id)initWithPath:(NSString *)inPath
@@ -196,7 +197,8 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	       metadataSerializer:inSerializer
 	     metadataDeserializer:inDeserializer
 	          objectSanitizer:NULL
-	        metadataSanitizer:NULL];
+	        metadataSanitizer:NULL
+	                  options:nil];
 }
 
 - (id)initWithPath:(NSString *)inPath
@@ -210,7 +212,8 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	       metadataSerializer:inSerializer
 	     metadataDeserializer:inDeserializer
 	          objectSanitizer:inSanitizer
-	        metadataSanitizer:inSanitizer];
+	        metadataSanitizer:inSanitizer
+	                  options:nil];
 }
 
 - (id)initWithPath:(NSString *)inPath objectSerializer:(YapDatabaseSerializer)inObjectSerializer
@@ -224,7 +227,8 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	       metadataSerializer:inMetadataSerializer
 	     metadataDeserializer:inMetadataDeserializer
 	          objectSanitizer:NULL
-	        metadataSanitizer:NULL];
+	        metadataSanitizer:NULL
+	                  options:nil];
 }
 
 - (id)initWithPath:(NSString *)inPath objectSerializer:(YapDatabaseSerializer)inObjectSerializer
@@ -233,6 +237,24 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
                                   metadataDeserializer:(YapDatabaseDeserializer)inMetadataDeserializer
                                        objectSanitizer:(YapDatabaseSanitizer)inObjectSanitizer
                                      metadataSanitizer:(YapDatabaseSanitizer)inMetadataSanitizer;
+{
+	return [self initWithPath:inPath
+	         objectSerializer:inObjectSerializer
+	       objectDeserializer:inObjectDeserializer
+	       metadataSerializer:inMetadataSerializer
+	     metadataDeserializer:inMetadataDeserializer
+	          objectSanitizer:inObjectSanitizer
+	        metadataSanitizer:inMetadataSanitizer
+	                  options:nil];
+}
+
+- (id)initWithPath:(NSString *)inPath objectSerializer:(YapDatabaseSerializer)inObjectSerializer
+                                    objectDeserializer:(YapDatabaseDeserializer)inObjectDeserializer
+                                    metadataSerializer:(YapDatabaseSerializer)inMetadataSerializer
+                                  metadataDeserializer:(YapDatabaseDeserializer)inMetadataDeserializer
+                                       objectSanitizer:(YapDatabaseSanitizer)inObjectSanitizer
+                                     metadataSanitizer:(YapDatabaseSanitizer)inMetadataSanitizer
+                                               options:(YapDatabaseOptions *)inOptions
 {
 	// First, standardize path.
 	// This allows clients to be lazy when passing paths.
@@ -250,6 +272,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	if ((self = [super init]))
 	{
 		databasePath = path;
+		options = inOptions ? [inOptions copy] : [[YapDatabaseOptions alloc] init];
 		
 		BOOL(^openConfigCreate)(void) = ^BOOL (void) { @autoreleasepool {
 		
@@ -272,22 +295,82 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 		if (!result)
 		{
 			// There are a few reasons why the database might not open.
-			// One possibility is if the database file gets corrupt.
-			// In the event of a problem, we simply delete the database file.
-			// This isn't a big deal since we can just redownload the data.
+			// One possibility is if the database file has become corrupt.
 			
-			// Delete the (possibly corrupt) database file.
-			[[NSFileManager defaultManager] removeItemAtPath:path error:NULL];
-			
-			// Then try opening a database again.
-			
-			result = openConfigCreate();
-			
-			if (result) {
-				YDBLogInfo(@"Database corruption resolved (name=%@)", [path lastPathComponent]);
+			if (options.corruptAction == YapDatabaseCorruptAction_Fail)
+			{
+				// Fail - do not try to resolve
 			}
-			else {
-				YDBLogError(@"Database corruption unresolved (name=%@)", [path lastPathComponent]);
+			else if (options.corruptAction == YapDatabaseCorruptAction_Rename)
+			{
+				// Try to rename the corrupt database file.
+				
+				BOOL renamed = NO;
+				BOOL failed = NO;
+				
+				NSString *newDatabasePath = nil;
+				int i = 0;
+				
+				do
+				{
+					NSString *extension = [NSString stringWithFormat:@"%d.corrupt", i];
+					newDatabasePath = [databasePath stringByAppendingPathExtension:extension];
+					
+					if ([[NSFileManager defaultManager] fileExistsAtPath:newDatabasePath])
+					{
+						i++;
+					}
+					else
+					{
+						NSError *error = nil;
+						renamed = [[NSFileManager defaultManager] moveItemAtPath:databasePath
+						                                                  toPath:newDatabasePath
+						                                                   error:&error];
+						if (!renamed)
+						{
+							failed = YES;
+							YDBLogError(@"Error renaming corrupt database file: (%@ -> %@) %@",
+							            [databasePath lastPathComponent], [newDatabasePath lastPathComponent], error);
+						}
+					}
+					
+				} while (i < INT_MAX && !renamed && !failed);
+				
+				if (renamed)
+				{
+					result = openConfigCreate();
+					if (result) {
+						YDBLogInfo(@"Database corruption resolved. Renamed corrupt file. (newDB=%@) (corruptDB=%@)",
+						           [databasePath lastPathComponent], [newDatabasePath lastPathComponent]);
+					}
+					else {
+						YDBLogError(@"Database corruption unresolved. (name=%@)", [databasePath lastPathComponent]);
+					}
+				}
+				
+			}
+			else // if (options.corruptAction == YapDatabaseCorruptAction_Delete)
+			{
+				// Try to delete the corrupt database file.
+				
+				NSError *error = nil;
+				BOOL deleted = [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
+				
+				if (deleted)
+				{
+					result = openConfigCreate();
+					if (result) {
+						YDBLogInfo(@"Database corruption resolved. Deleted corrupt file. (name=%@)",
+						                                                          [databasePath lastPathComponent]);
+					}
+					else {
+						YDBLogError(@"Database corruption unresolved. (name=%@)", [databasePath lastPathComponent]);
+					}
+				}
+				else
+				{
+					YDBLogError(@"Error deleting corrupt database file: %@", error);
+				}
 			}
 		}
 		if (!result)
@@ -411,11 +494,10 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	if (status != SQLITE_OK)
 	{
 		// There are a few reasons why the database might not open.
-		// One possibility is if the database file gets corrupt.
-		// In the event of a problem, we simply delete the database file.
-		// This isn't a big deal since we can just redownload the data.
+		// One possibility is if the database file has become corrupt.
 		
-		// Sometimes the open function returns a db to allow us to query it for the error message
+		// Sometimes the open function returns a db to allow us to query it for the error message.
+		// The openConfigCreate block will close it for us.
 		if (db) {
 			YDBLogWarn(@"Error opening database: %d %s", status, sqlite3_errmsg(db));
 		}
@@ -435,11 +517,31 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 **/
 - (BOOL)configureDatabase
 {
-	int status = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
+	int status;
+	
+	status = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"Error setting journal_mode: %d %s", status, sqlite3_errmsg(db));
+		YDBLogError(@"Error setting PRAGMA journal_mode: %d %s", status, sqlite3_errmsg(db));
 		return NO;
+	}
+	
+	if (options.pragmaSynchronous == YapDatabasePragmaSynchronous_Off ||
+	    options.pragmaSynchronous == YapDatabasePragmaSynchronous_Full )
+	{
+		char *pragma_stmt;
+		
+		if (options.pragmaSynchronous == YapDatabasePragmaSynchronous_Off)
+			pragma_stmt = "PRAGMA synchronous = OFF;";
+		else
+			pragma_stmt = "PRAGMA synchronous = FULL;";
+		
+		status = sqlite3_exec(db, pragma_stmt, NULL, NULL, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error setting PRAGMA synchronous: %d %s", status, sqlite3_errmsg(db));
+			// This isn't critical, so we can continue.
+		}
 	}
 	
 	// Disable autocheckpointing.

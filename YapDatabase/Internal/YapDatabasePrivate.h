@@ -33,6 +33,8 @@ extern NSString *const YapDatabaseNotificationKey;
 @interface YapDatabase () {
 @private
 	
+	YapDatabaseOptions *options;
+	
 	NSMutableArray *changesets;
 	uint64_t snapshot;
 	

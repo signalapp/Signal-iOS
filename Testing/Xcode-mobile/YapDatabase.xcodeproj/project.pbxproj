@@ -89,6 +89,7 @@
 		DCE9DF1218062C7400A7057E /* YapMemoryTable.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE9DF1118062C7400A7057E /* YapMemoryTable.m */; };
 		DCEE835017AAC7F3009BF81D /* TestViewMappingsLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = DCEE834F17AAC7F3009BF81D /* TestViewMappingsLogic.m */; };
 		DCF7E11016F5BC6A000C2184 /* YapNull.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF7E10F16F5BC6A000C2184 /* YapNull.m */; };
+		DCFC4D3F18E374AC009345AC /* YapDatabaseOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = DCFC4D3E18E374AC009345AC /* YapDatabaseOptions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -258,6 +259,8 @@
 		DCF7E10E16F5BC6A000C2184 /* YapNull.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapNull.h; sourceTree = "<group>"; };
 		DCF7E10F16F5BC6A000C2184 /* YapNull.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapNull.m; sourceTree = "<group>"; };
 		DCFA30871860E61700126F1E /* YapDatabaseRelationshipEdgePrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = YapDatabaseRelationshipEdgePrivate.h; path = Relationships/Internal/YapDatabaseRelationshipEdgePrivate.h; sourceTree = "<group>"; };
+		DCFC4D3D18E374AC009345AC /* YapDatabaseOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseOptions.h; sourceTree = "<group>"; };
+		DCFC4D3E18E374AC009345AC /* YapDatabaseOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseOptions.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -437,6 +440,8 @@
 				DC3D2EDB1673FF9500DFAFAA /* Internal */,
 				DC9B0FF8184B179600174B0F /* YapDatabase.h */,
 				DC9B0FF9184B179600174B0F /* YapDatabase.m */,
+				DCFC4D3D18E374AC009345AC /* YapDatabaseOptions.h */,
+				DCFC4D3E18E374AC009345AC /* YapDatabaseOptions.m */,
 				DC9B0FFA184B179600174B0F /* YapDatabaseConnection.h */,
 				DC9B0FFB184B179600174B0F /* YapDatabaseConnection.m */,
 				DC9B0FFC184B179600174B0F /* YapDatabaseTransaction.h */,
@@ -848,6 +853,7 @@
 			files = (
 				DC9B0FC8184B134B00174B0F /* YapDatabaseViewConnection.m in Sources */,
 				DC9B0FBC184B12C000174B0F /* YapDatabaseExtensionTransaction.m in Sources */,
+				DCFC4D3F18E374AC009345AC /* YapDatabaseOptions.m in Sources */,
 				DCAE51F71673FE2600395076 /* main.m in Sources */,
 				DCAE51FB1673FE2600395076 /* AppDelegate.m in Sources */,
 				DC2C98B217E3C82900F1E04F /* YapDatabaseViewRangeOptions.m in Sources */,
