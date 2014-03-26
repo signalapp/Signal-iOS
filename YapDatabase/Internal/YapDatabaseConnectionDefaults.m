@@ -1,7 +1,7 @@
-#import "YapDatabaseDefaults.h"
+#import "YapDatabaseConnectionDefaults.h"
 
 
-@implementation YapDatabaseDefaults
+@implementation YapDatabaseConnectionDefaults
 
 @synthesize objectCacheEnabled = objectCacheEnabled;
 @synthesize objectCacheLimit = objectCacheLimit;
@@ -38,7 +38,7 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-	YapDatabaseDefaults *copy = [[[self class] alloc] init];
+	YapDatabaseConnectionDefaults *copy = [[[self class] alloc] init];
 	
 	copy->objectCacheEnabled = objectCacheEnabled;
 	copy->objectCacheLimit = objectCacheLimit;

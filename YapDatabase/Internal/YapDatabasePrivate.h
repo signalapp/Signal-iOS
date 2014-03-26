@@ -1,8 +1,8 @@
 #import <Foundation/Foundation.h>
 
 #import "YapDatabase.h"
-#import "YapDatabaseDefaults.h"
 #import "YapDatabaseConnection.h"
+#import "YapDatabaseConnectionDefaults.h"
 #import "YapDatabaseTransaction.h"
 #import "YapDatabaseExtension.h"
 
@@ -39,7 +39,7 @@ extern NSString *const YapDatabaseNotificationKey;
 	dispatch_queue_t internalQueue;
 	dispatch_queue_t checkpointQueue;
 	
-	YapDatabaseDefaults *defaults;
+	YapDatabaseConnectionDefaults *connectionDefaults;
 	
 	NSDictionary *registeredExtensions;
 	NSDictionary *registeredTables;
@@ -89,7 +89,7 @@ extern NSString *const YapDatabaseNotificationKey;
 /**
  * New connections inherit their default values from this structure.
 **/
-- (YapDatabaseDefaults *)defaults;
+- (YapDatabaseConnectionDefaults *)connectionDefaults;
 
 /**
  * Called from YapDatabaseConnection's dealloc method to remove connection's state from connectionStates array.

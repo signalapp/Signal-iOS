@@ -303,7 +303,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 		changesets = [[NSMutableArray alloc] init];
 		connectionStates = [[NSMutableArray alloc] init];
 		
-		defaults = [[YapDatabaseDefaults alloc] init];
+		connectionDefaults = [[YapDatabaseConnectionDefaults alloc] init];
 		
 		registeredExtensions = [[NSDictionary alloc] init];
 		registeredTables = [[NSDictionary alloc] init];
@@ -938,13 +938,13 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 #pragma mark Defaults
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (YapDatabaseDefaults *)defaults
+- (YapDatabaseConnectionDefaults *)connectionDefaults
 {
-	__block YapDatabaseDefaults *result = nil;
+	__block YapDatabaseConnectionDefaults *result = nil;
 	
 	dispatch_sync(internalQueue, ^{
 		
-		result = [defaults copy];
+		result = [connectionDefaults copy];
 	});
 	
 	return result;
@@ -956,7 +956,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	
 	dispatch_sync(internalQueue, ^{
 		
-		result = defaults.objectCacheEnabled;
+		result = connectionDefaults.objectCacheEnabled;
 	});
 	
 	return result;
@@ -966,7 +966,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 {
 	dispatch_sync(internalQueue, ^{
 		
-		defaults.objectCacheEnabled = defaultObjectCacheEnabled;
+		connectionDefaults.objectCacheEnabled = defaultObjectCacheEnabled;
 	});
 }
 
@@ -976,7 +976,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	
 	dispatch_sync(internalQueue, ^{
 		
-		result = defaults.objectCacheLimit;
+		result = connectionDefaults.objectCacheLimit;
 	});
 	
 	return result;
@@ -986,7 +986,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 {
 	dispatch_sync(internalQueue, ^{
 		
-		defaults.objectCacheLimit = defaultObjectCacheLimit;
+		connectionDefaults.objectCacheLimit = defaultObjectCacheLimit;
 	});
 }
 
@@ -996,7 +996,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	
 	dispatch_sync(internalQueue, ^{
 		
-		result = defaults.metadataCacheEnabled;
+		result = connectionDefaults.metadataCacheEnabled;
 	});
 	
 	return result;
@@ -1006,7 +1006,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 {
 	dispatch_sync(internalQueue, ^{
 		
-		defaults.metadataCacheEnabled = defaultMetadataCacheEnabled;
+		connectionDefaults.metadataCacheEnabled = defaultMetadataCacheEnabled;
 	});
 }
 
@@ -1016,7 +1016,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	
 	dispatch_sync(internalQueue, ^{
 		
-		result = defaults.metadataCacheLimit;
+		result = connectionDefaults.metadataCacheLimit;
 	});
 	
 	return result;
@@ -1026,7 +1026,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 {
 	dispatch_sync(internalQueue, ^{
 		
-		defaults.metadataCacheLimit = defaultMetadataCacheLimit;
+		connectionDefaults.metadataCacheLimit = defaultMetadataCacheLimit;
 	});
 }
 
@@ -1036,7 +1036,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	
 	dispatch_sync(internalQueue, ^{
 		
-		result = defaults.objectPolicy;
+		result = connectionDefaults.objectPolicy;
 	});
 	
 	return result;
@@ -1046,7 +1046,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 {
 	dispatch_sync(internalQueue, ^{
 		
-		defaults.objectPolicy = defaultObjectPolicy;
+		connectionDefaults.objectPolicy = defaultObjectPolicy;
 	});
 }
 
@@ -1056,7 +1056,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	
 	dispatch_sync(internalQueue, ^{
 		
-		result = defaults.metadataPolicy;
+		result = connectionDefaults.metadataPolicy;
 	});
 	
 	return result;
@@ -1066,7 +1066,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 {
 	dispatch_sync(internalQueue, ^{
 		
-		defaults.metadataPolicy = defaultMetadataPolicy;
+		connectionDefaults.metadataPolicy = defaultMetadataPolicy;
 	});
 }
 
@@ -1078,7 +1078,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	
 	dispatch_sync(internalQueue, ^{
 		
-		result = defaults.autoFlushMemoryFlags;
+		result = connectionDefaults.autoFlushMemoryFlags;
 	});
 	
 	return result;
@@ -1088,7 +1088,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 {
 	dispatch_sync(internalQueue, ^{
 		
-		defaults.autoFlushMemoryFlags = defaultAutoFlushMemoryFlags;
+		connectionDefaults.autoFlushMemoryFlags = defaultAutoFlushMemoryFlags;
 	});
 }
 
@@ -1701,7 +1701,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Tables
+#pragma mark Memory Tables
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**

@@ -124,7 +124,7 @@
 		
 		extensions = [[NSMutableDictionary alloc] init];
 		
-		YapDatabaseDefaults *defaults = [database defaults];
+		YapDatabaseConnectionDefaults *defaults = [database connectionDefaults];
 		
 		NSUInteger keyCacheLimit = MIN_KEY_CACHE_LIMIT;
 		

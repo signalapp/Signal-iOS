@@ -19,7 +19,7 @@
  * 
  * @see YapDatabase defaultAutoFlushMemoryLevel
 **/
-@interface YapDatabaseDefaults : NSObject <NSCopying>
+@interface YapDatabaseConnectionDefaults : NSObject <NSCopying>
 
 @property (nonatomic, assign, readwrite) BOOL objectCacheEnabled;
 @property (nonatomic, assign, readwrite) NSUInteger objectCacheLimit;
