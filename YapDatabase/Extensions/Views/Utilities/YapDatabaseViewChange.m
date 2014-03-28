@@ -182,6 +182,21 @@
 	}
 }
 
+- (YapCollectionKey *)collectionKey
+{
+	// Note: The key should always be a YapCollectionKey,
+	// except for unit tests which might use a string for simplicity.
+	
+	if ([key isKindOfClass:[YapCollectionKey class]])
+	{
+		return (YapCollectionKey *)key;
+	}
+	else
+	{
+		return nil;
+	}
+}
+
 - (id)copyWithZone:(NSZone *)zone
 {
 	YapDatabaseViewRowChange *op = [[YapDatabaseViewRowChange alloc] init];
