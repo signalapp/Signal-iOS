@@ -279,6 +279,9 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 			BOOL result = YES;
 			
 			if (result) result = [self openDatabase];
+#ifdef SQLITE_HAS_CODEC
+            if (result) result = [self configureEncryptionForDatabase:db];
+#endif
 			if (result) result = [self configureDatabase];
 			if (result) result = [self createTables];
 			
@@ -554,6 +557,33 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	
 	return YES;
 }
+
+
+#ifdef SQLITE_HAS_CODEC
+/**
+ * Configures database encryption via SQLCipher.
+ **/
+- (BOOL)configureEncryptionForDatabase:(sqlite3*)sqlite
+{
+	int status;
+    
+    NSAssert(options.passphraseBlock != nil, @"Passphrase block must not be nil when using SQLCipher!");
+    
+    NSString *passphrase = options.passphraseBlock();
+    
+    NSAssert(passphrase != nil, @"SQLCipher passphrase cannot be nil!");
+    
+    const char *key = [passphrase UTF8String];
+    NSUInteger keyLength = [passphrase lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+    status = sqlite3_key(sqlite, key, (int)keyLength);
+    if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error setting up sqlcipher key: %d %s", status, sqlite3_errmsg(sqlite));
+		return NO;
+	}
+    return YES;
+}
+#endif
 
 /**
  * Creates the database tables we need:

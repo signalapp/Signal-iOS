@@ -25,6 +25,9 @@ typedef enum {
 	YapDatabasePragmaSynchronous_Full   = 2,
 } YapDatabasePragmaSynchronous;
 
+#ifdef SQLITE_HAS_CODEC
+typedef NSString* (^YapDatabaseOptionsPassphraseBlock)(void);
+#endif
 
 @interface YapDatabaseOptions : NSObject <NSCopying>
 
@@ -60,6 +63,17 @@ typedef enum {
 **/
 @property (nonatomic, assign, readwrite) YapDatabasePragmaSynchronous pragmaSynchronous;
 
-
+#ifdef SQLITE_HAS_CODEC
+/**
+ * Set a block here that returns the passphrase for the SQLCipher
+ * database. This way you can fetch the passphrase from the keychain
+ * (or elsewhere) only when you need it, instead of persisting 
+ * it in memory.
+ *
+ * You must use the 'YapDatabase/SQLCipher' subspec
+ * in your Podfile for this option to take effect.
+ **/
+@property (nonatomic, copy) YapDatabaseOptionsPassphraseBlock passphraseBlock;
+#endif
 
 @end

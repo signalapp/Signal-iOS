@@ -32,7 +32,9 @@
 	YapDatabaseOptions *copy = [[[self class] alloc] init];
 	copy->corruptAction = corruptAction;
 	copy->pragmaSynchronous = pragmaSynchronous;
-	
+#ifdef SQLITE_HAS_CODEC
+    copy.passphraseBlock = _passphraseBlock;
+#endif
 	return copy;
 }
 
