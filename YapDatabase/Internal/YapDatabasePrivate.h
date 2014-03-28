@@ -156,6 +156,13 @@ extern NSString *const YapDatabaseNotificationKey;
 **/
 - (void)asyncCheckpoint:(uint64_t)maxCheckpointableSnapshot;
 
+#ifdef SQLITE_HAS_CODEC
+/**
+ * Configures database encryption via SQLCipher.
+ **/
+- (BOOL)configureEncryptionForDatabase:(sqlite3*)sqlite;
+#endif
+
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

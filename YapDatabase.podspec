@@ -6,16 +6,32 @@ Pod::Spec.new do |s|
   s.license      = 'MIT'
   s.ios.deployment_target = '6.0'
   s.osx.deployment_target = '10.8'
-  s.library      = 'sqlite3'
   s.author       = { "Robbie Hanson" => "robbiehanson@deusty.com" }
   s.source       = { :git => "https://github.com/yaptv/YapDatabase.git", :tag => s.version.to_s }
 
-  s.source_files = 'YapDatabase/**/*.{h,m,mm}'
-  s.xcconfig     = { 'OTHER_LDFLAGS' => '-weak_library /usr/lib/libc++.dylib' }
+  s.default_subspec = 'standard'
 
-  s.private_header_files = 'YapDatabase/**/Internal/*.h'
-  s.dependency 'CocoaLumberjack', '~> 1.6.3'
+  s.subspec 'common' do |ss|
+    ss.source_files = 'YapDatabase/**/*.{h,m,mm}'
+    ss.xcconfig     = { 'OTHER_LDFLAGS' => '-weak_library /usr/lib/libc++.dylib' }
 
-  s.requires_arc = true
+    ss.private_header_files = 'YapDatabase/**/Internal/*.h'
+    ss.dependency 'CocoaLumberjack', '~> 1.6.3'
+
+    ss.requires_arc = true
+  end
+
+  # use a builtin version of sqlite3
+  s.subspec 'standard' do |ss|
+    ss.library = 'sqlite3'
+    ss.dependency 'YapDatabase/common'
+  end
+
+  # use SQLCipher and enable -DSQLITE_HAS_CODEC flag
+  s.subspec 'SQLCipher' do |ss|
+    ss.dependency 'SQLCipher'
+    ss.dependency 'YapDatabase/common'
+    ss.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
+  end
 
 end
