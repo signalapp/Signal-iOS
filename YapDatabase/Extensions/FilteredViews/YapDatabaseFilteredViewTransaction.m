@@ -1240,6 +1240,21 @@
 
 @implementation YapDatabaseFilteredViewTransaction (ReadWrite)
 
+- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
+       groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
+            sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
+        sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
+              versionTag:(NSString *)versionTag
+{
+	NSString *reason = @"This method is not available for YapDatabaseFilteredView.";
+	
+	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
+	    @"YapDatabaseFilteredView is designed to filter an existing YapDatabaseView instance."
+		@" You may update the filteringBlock, or you may invoke this method on the parent YapDatabaseView."};
+	
+	@throw [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
+}
+
 - (void)setFilteringBlock:(YapDatabaseViewFilteringBlock)inFilteringBlock
        filteringBlockType:(YapDatabaseViewBlockType)inFilteringBlockType
                versionTag:(NSString *)inVersionTag
