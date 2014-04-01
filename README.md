@@ -18,7 +18,7 @@ It has the following features:
 
 * **Full Text Search**. Built atop sqlite's FTS module (contributed by google), you can add extremely speedy searching to your app with minimal effort.
 
-* **Relationships**. You can setup relationships between objects and even configure cascading delete rules. (Available in 2.4)
+* **Relationships**. You can setup relationships between objects and even configure cascading delete rules.
 
 * **Extensions**. More than just a key/value store, YapDatabase comes with an extensions architecture built-in. You can even create your own extensions.
  
