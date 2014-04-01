@@ -302,6 +302,22 @@
 
 - (void)repopulateViewDueToParentGroupingBlockChange
 {
+	// Update our groupingBlock & sortingBlock to match the changed parent
+	
+	__unsafe_unretained YapDatabaseFilteredView *filteredView =
+	  (YapDatabaseFilteredView *)viewConnection->view;
+	
+	YapDatabaseViewTransaction *parentViewTransaction =
+	  [databaseTransaction ext:filteredView->parentViewName];
+	
+	__unsafe_unretained YapDatabaseView *parentView = parentViewTransaction->viewConnection->view;
+	
+	filteredView->groupingBlock = parentView->groupingBlock;
+	filteredView->groupingBlockType = parentView->groupingBlockType;
+	
+	filteredView->sortingBlock = parentView->sortingBlock;
+	filteredView->sortingBlockType = parentView->sortingBlockType;
+	
 	// Code overview:
 	//
 	// We could simply run the usual algorithm.
