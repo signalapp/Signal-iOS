@@ -24,7 +24,7 @@
 	
 	NSOrderedSet *columnNames;
 	NSDictionary *options;
-	int version;
+	NSString *versionTag;
 	
 	id columnNamesSharedKeySet;
 }

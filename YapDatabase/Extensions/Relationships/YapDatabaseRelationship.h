@@ -42,7 +42,7 @@
  * remove all protocol edges from the database, and automatically repopulate its list of protocol edges
  * by enumerating the nodes in the database.
 **/
-@property (nonatomic, assign, readonly) NSString *versionTag;
+@property (nonatomic, copy, readonly) NSString *versionTag;
 
 /**
  * The options that were used to initialize the instance.

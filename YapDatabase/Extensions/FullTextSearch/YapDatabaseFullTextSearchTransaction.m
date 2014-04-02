@@ -19,6 +19,10 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
+#define ExtKey_classVersion        @"classVersion"
+#define ExtKey_version_deprecated  @"version"
+#define ExtKey_versionTag          @"versionTag"
+
 /**
  * Declare that this class implements YapDatabaseExtensionTransaction_Hooks protocol.
  * This is done privately, as the protocol is internal.
@@ -67,26 +71,48 @@
 		if (![self createTable]) return NO;
 		if (![self populate]) return NO;
 		
-		[self setIntValue:classVersion forExtensionKey:@"classVersion"];
+		[self setIntValue:classVersion forExtensionKey:ExtKey_classVersion];
 		
-		int userSuppliedConfigVersion = ftsConnection->fts->version;
-		[self setIntValue:userSuppliedConfigVersion forExtensionKey:@"version"];
+		NSString *versionTag = ftsConnection->fts->versionTag;
+		[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
 	}
 	else
 	{
 		// Check user-supplied config version.
 		// We may need to re-populate the database if the groupingBlock or sortingBlock changed.
 		
-		int oldVersion = [self intValueForExtensionKey:@"version"];
-		int newVersion = ftsConnection->fts->version;
+		NSString *versionTag = ftsConnection->fts->versionTag;
 		
-		if (oldVersion != newVersion)
+		NSString *oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag];
+		
+		BOOL hasOldVersion_deprecated = NO;
+		if (oldVersionTag == nil)
+		{
+			int oldVersion_deprecated = 0;
+			hasOldVersion_deprecated = [self getIntValue:&oldVersion_deprecated
+			                             forExtensionKey:ExtKey_version_deprecated];
+			
+			if (hasOldVersion_deprecated)
+			{
+				oldVersionTag = [NSString stringWithFormat:@"%d", oldVersion_deprecated];
+			}
+		}
+		
+		if (![oldVersionTag isEqualToString:versionTag])
 		{
 			if (![self dropTable]) return NO;
 			if (![self createTable]) return NO;
 			if (![self populate]) return NO;
 			
-			[self setIntValue:newVersion forExtensionKey:@"version"];
+			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
+			
+			if (hasOldVersion_deprecated)
+				[self removeValueForExtensionKey:ExtKey_version_deprecated];
+		}
+		else if (hasOldVersion_deprecated)
+		{
+			[self removeValueForExtensionKey:ExtKey_version_deprecated];
+			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
 		}
 	}
 	

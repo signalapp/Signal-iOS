@@ -120,7 +120,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		if (![self createTables]) return NO;
 		if (![self populateTables]) return NO;
 		
-		[self setIntValue:classVersion forExtensionKey:@"classVersion"];
+		[self setIntValue:classVersion forExtensionKey:ExtKey_classVersion];
 		
 		NSString *versionTag = relationshipConnection->relationship->versionTag;
 		[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
