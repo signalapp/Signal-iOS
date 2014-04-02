@@ -32,4 +32,21 @@
 
 - (id)initWithVersionTag:(NSString *)versionTag options:(YapDatabaseRelationshipOptions *)options;
 
+/**
+ * The versionTag assists in making changes to the extension or any objects that implement YapDatabaseRelationshipNode.
+ *
+ * For example, say you have existing objects that implement the YapDatabaseRelationshipNode protocol.
+ * And you decide to add additional relationship connections from within the yapDatabaseRelationshipEdges method
+ * of some of your objects. All you have to do is change the versionTag. And next time you run the app,
+ * the YapDatabaseRelationship extension will notice the different versionTag, and will then automatically
+ * remove all protocol edges from the database, and automatically repopulate its list of protocol edges
+ * by enumerating the nodes in the database.
+**/
+@property (nonatomic, assign, readonly) NSString *versionTag;
+
+/**
+ * The options that were used to initialize the instance.
+**/
+@property (nonatomic, copy, readonly) YapDatabaseRelationshipOptions *options;
+
 @end

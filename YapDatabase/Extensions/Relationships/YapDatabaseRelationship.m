@@ -56,10 +56,12 @@
 #pragma mark Instance
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+@synthesize versionTag = versionTag;
+@dynamic options;
+
 - (id)init
 {
 	return [self initWithVersionTag:nil options:nil];
-	
 }
 
 - (id)initWithVersionTag:(NSString *)inVersionTag
@@ -75,6 +77,11 @@
 		options = inOptions ? [inOptions copy] : [[YapDatabaseRelationshipOptions alloc] init];
 	}
 	return self;
+}
+
+- (YapDatabaseRelationshipOptions *)options
+{
+	return [options copy];
 }
 
 /**
