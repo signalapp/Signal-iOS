@@ -302,6 +302,22 @@
 
 - (void)repopulateViewDueToParentGroupingBlockChange
 {
+	// Update our groupingBlock & sortingBlock to match the changed parent
+	
+	__unsafe_unretained YapDatabaseFilteredView *filteredView =
+	  (YapDatabaseFilteredView *)viewConnection->view;
+	
+	YapDatabaseViewTransaction *parentViewTransaction =
+	  [databaseTransaction ext:filteredView->parentViewName];
+	
+	__unsafe_unretained YapDatabaseView *parentView = parentViewTransaction->viewConnection->view;
+	
+	filteredView->groupingBlock = parentView->groupingBlock;
+	filteredView->groupingBlockType = parentView->groupingBlockType;
+	
+	filteredView->sortingBlock = parentView->sortingBlock;
+	filteredView->sortingBlockType = parentView->sortingBlockType;
+	
 	// Code overview:
 	//
 	// We could simply run the usual algorithm.
@@ -1239,6 +1255,21 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @implementation YapDatabaseFilteredViewTransaction (ReadWrite)
+
+- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
+       groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
+            sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
+        sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
+              versionTag:(NSString *)versionTag
+{
+	NSString *reason = @"This method is not available for YapDatabaseFilteredView.";
+	
+	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
+	    @"YapDatabaseFilteredView is designed to filter an existing YapDatabaseView instance."
+		@" You may update the filteringBlock, or you may invoke this method on the parent YapDatabaseView."};
+	
+	@throw [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
+}
 
 - (void)setFilteringBlock:(YapDatabaseViewFilteringBlock)inFilteringBlock
        filteringBlockType:(YapDatabaseViewBlockType)inFilteringBlockType
