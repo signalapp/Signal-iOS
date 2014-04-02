@@ -21,6 +21,10 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
+#define ExtKey_classVersion        @"classVersion"
+#define ExtKey_version_deprecated  @"version"
+#define ExtKey_versionTag          @"versionTag"
+
 /**
  * Declare that this class implements YapDatabaseExtensionTransaction_Hooks protocol.
  * This is done privately, as the protocol is internal.
@@ -55,7 +59,8 @@
 - (BOOL)createIfNeeded
 {
 	int oldClassVersion = 0;
-	BOOL hasOldClassVersion = [self getIntValue:&oldClassVersion forExtensionKey:@"classVersion"];
+	BOOL hasOldClassVersion = [self getIntValue:&oldClassVersion forExtensionKey:ExtKey_classVersion];
+	
 	int classVersion = YAP_DATABASE_SECONDARY_INDEX_CLASS_VERSION;
 	
 	if (oldClassVersion != classVersion)
@@ -69,26 +74,48 @@
 		if (![self createTable]) return NO;
 		if (![self populate]) return NO;
 		
-		[self setIntValue:classVersion forExtensionKey:@"classVersion"];
+		[self setIntValue:classVersion forExtensionKey:ExtKey_classVersion];
 		
-		int userSuppliedConfigVersion = secondaryIndexConnection->secondaryIndex->version;
-		[self setIntValue:userSuppliedConfigVersion forExtensionKey:@"version"];
+		NSString *versionTag = secondaryIndexConnection->secondaryIndex->versionTag;
+		[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
 	}
 	else
 	{
-		// Check user-supplied config version.
-		// We may need to re-populate the database if the groupingBlock or sortingBlock changed.
+		// Check user-supplied versionTag.
+		// We may need to re-populate the database if it changed.
 		
-		int oldVersion = [self intValueForExtensionKey:@"version"];
-		int newVersion = secondaryIndexConnection->secondaryIndex->version;
+		NSString *versionTag = secondaryIndexConnection->secondaryIndex->versionTag;
 		
-		if (oldVersion != newVersion)
+		NSString *oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag];
+		
+		BOOL hasOldVersion_deprecated = NO;
+		if (oldVersionTag == nil)
+		{
+			int oldVersion_deprecated = 0;
+			hasOldVersion_deprecated = [self getIntValue:&oldVersion_deprecated
+			                             forExtensionKey:ExtKey_version_deprecated];
+			
+			if (hasOldVersion_deprecated)
+			{
+				oldVersionTag = [NSString stringWithFormat:@"%d", oldVersion_deprecated];
+			}
+		}
+		
+		if (![oldVersionTag isEqualToString:versionTag])
 		{
 			if (![self dropTable]) return NO;
 			if (![self createTable]) return NO;
 			if (![self populate]) return NO;
 			
-			[self setIntValue:newVersion forExtensionKey:@"version"];
+			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
+			
+			if (hasOldVersion_deprecated)
+				[self removeValueForExtensionKey:ExtKey_version_deprecated];
+		}
+		else if (hasOldVersion_deprecated)
+		{
+			[self removeValueForExtensionKey:ExtKey_version_deprecated];
+			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
 		}
 		
 		// The following code is designed to assist developers in understanding extension changes.
@@ -117,7 +144,7 @@
 		//   It's certainly not something you want in a shipped version.
 		//
 		#if DEBUG
-		else
+		if ([oldVersionTag isEqualToString:versionTag])
 		{
 			__unsafe_unretained YapDatabase *database = databaseTransaction->connection->database;
 			sqlite3 *db = databaseTransaction->connection->db;
@@ -131,7 +158,7 @@
 				YDBLogError(@"Error creating secondary index extension (%@):"
 				            @" The given setup doesn't match the previously registered setup."
 				            @" If you change the setup, or you change the block in any meaningful way,"
-				            @" then you MUST change the version as well.",
+				            @" then you MUST change the versionTag as well.",
 				            THIS_METHOD);
 				return NO;
 			}

@@ -53,7 +53,7 @@
 #pragma mark Instance
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@synthesize version = version;
+@synthesize versionTag = versionTag;
 
 - (id)init
 {
@@ -65,13 +65,13 @@
               block:(YapDatabaseSecondaryIndexBlock)inBlock
           blockType:(YapDatabaseSecondaryIndexBlockType)inBlockType
 {
-	return [self initWithSetup:inSetup block:inBlock blockType:inBlockType version:0];
+	return [self initWithSetup:inSetup block:inBlock blockType:inBlockType versionTag:nil];
 }
 
 - (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)inSetup
               block:(YapDatabaseSecondaryIndexBlock)inBlock
           blockType:(YapDatabaseSecondaryIndexBlockType)inBlockType
-            version:(int)inVersion
+         versionTag:(NSString *)inVersionTag
 {
 	// Sanity checks
 	
@@ -121,29 +121,19 @@
 		
 		columnNamesSharedKeySet = [NSDictionary sharedKeySetForKeys:[setup columnNames]];
 		
-		version = inVersion;
+		versionTag = inVersionTag ? [inVersionTag copy] : @"";
 	}
 	return self;
 }
 
 /**
  * Subclasses must implement this method.
- * This method is called during the view registration process to enusre the extension supports the database type.
- *
- * Return YES if the class/instance supports the particular type of database (YapDatabase vs YapDatabase).
+ * This method is called during the view registration process to enusre the extension supports
+ * the database configuration.
 **/
 - (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions;
 {
-	if ([database isKindOfClass:[YapDatabase class]])
-	{
-		return YES;
-	}
-	else
-	{
-		YDBLogError(@"YapDatabaseSecondaryIndex only supports YapDatabase, not YapDatabase."
-		            @"You want YapDatabaseSecondaryIndex.");
-		return NO;
-	}
+	return YES;
 }
 
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection

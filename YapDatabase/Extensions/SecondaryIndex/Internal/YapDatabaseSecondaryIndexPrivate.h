@@ -29,7 +29,7 @@
 	YapDatabaseSecondaryIndexBlock block;
 	YapDatabaseSecondaryIndexBlockType blockType;
 	
-	int version;
+	NSString *versionTag;
 	
 	id columnNamesSharedKeySet;
 }

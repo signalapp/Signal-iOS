@@ -135,15 +135,15 @@ typedef enum {
 - (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)setup
               block:(YapDatabaseSecondaryIndexBlock)block
           blockType:(YapDatabaseSecondaryIndexBlockType)blockType
-            version:(int)version;
+         versionTag:(NSString *)versionTag;
 
 /**
- * The version assists in making changes to the extension.
+ * The versionTag assists in making changes to the extension.
  *
  * If you need to change the columnNames and/or block,
- * then simply pass an incremented version during the init method,
- * and the FTS extension will automatically update itself.
+ * then simply pass a different versionTag during the init method,
+ * and the extension will automatically update itself.
 **/
-@property (nonatomic, assign, readonly) int version;
+@property (nonatomic, copy, readonly) NSString *versionTag;
 
 @end
