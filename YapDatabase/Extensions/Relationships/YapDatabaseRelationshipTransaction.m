@@ -21,6 +21,11 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
+#define ExtKey_classVersion        @"classVersion"
+#define ExtKey_version_deprecated  @"version"
+#define ExtKey_versionTag          @"versionTag"
+
+
 NS_INLINE BOOL EdgeMatchesType(YapDatabaseRelationshipEdge *edge, BOOL isManualEdge)
 {
 	return (edge->isManualEdge == isManualEdge);
@@ -94,7 +99,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	// Check classVersion (the internal version number of the extension implementation)
 	
 	int oldClassVersion = 0;
-	BOOL hasOldClassVersion = [self getIntValue:&oldClassVersion forExtensionKey:@"classVersion"];
+	BOOL hasOldClassVersion = [self getIntValue:&oldClassVersion forExtensionKey:ExtKey_classVersion];
+	
 	int classVersion = YAP_DATABASE_RELATIONSHIP_CLASS_VERSION;
 	
 	// Create or re-populate if needed
@@ -116,8 +122,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		
 		[self setIntValue:classVersion forExtensionKey:@"classVersion"];
 		
-		int userSuppliedConfigVersion = relationshipConnection->relationship->version;
-		[self setIntValue:userSuppliedConfigVersion forExtensionKey:@"version"];
+		NSString *versionTag = relationshipConnection->relationship->versionTag;
+		[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
 	}
 	else
 	{
@@ -126,14 +132,36 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		// In other words, their yapDatabaseRelationshipEdges methods were channged.
 		// So we'll need to re-populate the database (at least the protocol portion of it).
 		
-		int oldVersion = [self intValueForExtensionKey:@"version"];
-		int newVersion = relationshipConnection->relationship->version;
+		NSString *versionTag = relationshipConnection->relationship->versionTag;
 		
-		if (oldVersion != newVersion)
+		NSString *oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag];
+		
+		BOOL hasOldVersion_deprecated = NO;
+		if (oldVersionTag == nil)
+		{
+			int oldVersion_deprecated = 0;
+			hasOldVersion_deprecated = [self getIntValue:&oldVersion_deprecated
+			                             forExtensionKey:ExtKey_version_deprecated];
+			
+			if (hasOldVersion_deprecated)
+			{
+				oldVersionTag = [NSString stringWithFormat:@"%d", oldVersion_deprecated];
+			}
+		}
+		
+		if (![oldVersionTag isEqualToString:versionTag])
 		{
 			if (![self populateTables]) return NO;
 			
-			[self setIntValue:newVersion forExtensionKey:@"version"];
+			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
+			
+			if (hasOldVersion_deprecated)
+				[self removeValueForExtensionKey:ExtKey_version_deprecated];
+		}
+		else if (hasOldVersion_deprecated)
+		{
+			[self removeValueForExtensionKey:ExtKey_version_deprecated];
+			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
 		}
 	}
 	

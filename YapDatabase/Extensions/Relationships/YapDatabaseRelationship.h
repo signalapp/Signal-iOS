@@ -28,8 +28,8 @@
 
 - (id)init;
 
-- (id)initWithVersion:(int)version;
+- (id)initWithVersionTag:(NSString *)versionTag;
 
-- (id)initWithVersion:(int)version options:(YapDatabaseRelationshipOptions *)options;
+- (id)initWithVersionTag:(NSString *)versionTag options:(YapDatabaseRelationshipOptions *)options;
 
 @end

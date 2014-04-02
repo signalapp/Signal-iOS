@@ -101,7 +101,7 @@
 	                 groupingBlockType:inGroupingBlockType
 	                      sortingBlock:inSortingBlock
 	                  sortingBlockType:inSortingBlockType
-	                        versionTag:@""
+	                        versionTag:nil
 	                           options:nil];
 }
 
