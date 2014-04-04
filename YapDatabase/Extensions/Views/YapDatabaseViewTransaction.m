@@ -4206,12 +4206,10 @@
 	{
 		YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
 		
-		__block NSUInteger index = pageOffset;
 		[page enumerateRowidsUsingBlock:^(int64_t rowid, NSUInteger idx, BOOL *innerStop) {
 			
-			block(rowid, index, &stop);
+			block(rowid, pageOffset+idx, &stop);
 			
-			index++;
 			if (stop || [viewConnection->mutatedGroups containsObject:group]) *innerStop = YES;
 		}];
 		
@@ -4285,71 +4283,106 @@
 	
 	NSEnumerationOptions options = (inOptions & NSEnumerationReverse); // We only support NSEnumerationReverse
 	
-	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
-	
-	// Helper block to fetch the pageOffset for some page.
-	
-	NSUInteger (^pageOffsetForPageMetadata)(YapDatabaseViewPageMetadata *inPageMetadata);
-	pageOffsetForPageMetadata = ^ NSUInteger (YapDatabaseViewPageMetadata *inPageMetadata){
-		
-		NSUInteger pageOffset = 0;
-		
-		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
-		{
-			if (pageMetadata == inPageMetadata)
-				return pageOffset;
-			else
-				pageOffset += pageMetadata->count;
-		}
-		
-		return pageOffset;
-	};
-	
 	[viewConnection->mutatedGroups removeObject:group]; // mutation during enumeration protection
 	
 	__block BOOL stop = NO;
-	__block BOOL startedRange = NO;
 	__block NSUInteger keysLeft = range.length;
 	
-	[pagesMetadataForGroup enumerateObjectsWithOptions:options
-	                                        usingBlock:^(id pageMetadataObj, NSUInteger pageIndex, BOOL *outerStop)
+	if ((options & NSEnumerationReverse) == 0)
 	{
-		__unsafe_unretained YapDatabaseViewPageMetadata *pageMetadata =
-		    (YapDatabaseViewPageMetadata *)pageMetadataObj;
+		// Forward enumeration (optimized)
 		
-		NSUInteger pageOffset = pageOffsetForPageMetadata(pageMetadata);
-		NSRange pageRange = NSMakeRange(pageOffset, pageMetadata->count);
-		NSRange keysRange = NSIntersectionRange(pageRange, range);
+		NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 		
-		if (keysRange.length > 0)
+		NSUInteger pageOffset = 0;
+		BOOL startedRange = NO;
+		
+		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 		{
-			startedRange = YES;
-			YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
+			NSRange pageRange = NSMakeRange(pageOffset, pageMetadata->count);
+			NSRange intersection = NSIntersectionRange(pageRange, range);
 			
-			// Enumerate the subset
-			
-			NSRange subsetRange = NSMakeRange(keysRange.location-pageOffset, keysRange.length);
-			
-			[page enumerateRowidsWithOptions:options
-			                           range:subsetRange
-			                      usingBlock:^(int64_t rowid, NSUInteger idx, BOOL *innerStop) {
+			if (intersection.length > 0)
+			{
+				startedRange = YES;
+				YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
 				
-				block(rowid, pageOffset+idx, &stop);
+				// Enumerate the subset
 				
-				if (stop || [viewConnection->mutatedGroups containsObject:group]) *innerStop = YES;
-			}];
+				NSRange enumRange = NSMakeRange(intersection.location - pageOffset, intersection.length);
+				
+				[page enumerateRowidsWithOptions:options
+				                           range:enumRange
+				                      usingBlock:^(int64_t rowid, NSUInteger idx, BOOL *innerStop)
+				{
+					block(rowid, pageOffset+idx, &stop);
+					
+					if (stop || [viewConnection->mutatedGroups containsObject:group]) *innerStop = YES;
+				}];
+				
+				if (stop || [viewConnection->mutatedGroups containsObject:group]) break;
+				
+				keysLeft -= enumRange.length;
+			}
+			else if (startedRange)
+			{
+				// We've completed the range
+				break;
+			}
 			
-			keysLeft -= keysRange.length;
-			
-			if (stop || [viewConnection->mutatedGroups containsObject:group]) *outerStop = YES;
+			pageOffset += pageMetadata->count;
 		}
-		else if (startedRange)
-		{
-			// We've completed the range
-			*outerStop = YES;
-		}
+	}
+	else
+	{
+		// Reverse enumeration
 		
-	}];
+		NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+		
+		__block NSUInteger pageOffset = [self numberOfKeysInGroup:group];
+		__block BOOL startedRange = NO;
+		
+		[pagesMetadataForGroup enumerateObjectsWithOptions:options
+		                                        usingBlock:^(id pageMetadataObj, NSUInteger pageIndex, BOOL *outerStop)
+		{
+			__unsafe_unretained YapDatabaseViewPageMetadata *pageMetadata =
+			    (YapDatabaseViewPageMetadata *)pageMetadataObj;
+			
+			pageOffset -= pageMetadata->count;
+			
+			NSRange pageRange = NSMakeRange(pageOffset, pageMetadata->count);
+			NSRange intersection = NSIntersectionRange(pageRange, range);
+			
+			if (intersection.length > 0)
+			{
+				startedRange = YES;
+				YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
+				
+				// Enumerate the subset
+				
+				NSRange enumRange = NSMakeRange(intersection.location - pageOffset, intersection.length);
+				
+				[page enumerateRowidsWithOptions:options
+				                           range:enumRange
+				                      usingBlock:^(int64_t rowid, NSUInteger idx, BOOL *innerStop) {
+					
+					block(rowid, pageOffset+idx, &stop);
+					
+					if (stop || [viewConnection->mutatedGroups containsObject:group]) *innerStop = YES;
+				}];
+				
+				if (stop || [viewConnection->mutatedGroups containsObject:group]) *outerStop = YES;
+				
+				keysLeft -= enumRange.length;
+			}
+			else if (startedRange)
+			{
+				// We've completed the range
+				*outerStop = YES;
+			}
+			
+		}];
+	}
 	
 	if (!stop && [viewConnection->mutatedGroups containsObject:group])
 	{

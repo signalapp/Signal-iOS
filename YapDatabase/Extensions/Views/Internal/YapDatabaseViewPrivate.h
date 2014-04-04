@@ -159,6 +159,10 @@
 - (void)enumerateRowidsInGroup:(NSString *)group
                    withOptions:(NSEnumerationOptions)inOptions
                     usingBlock:(void (^)(int64_t rowid, NSUInteger index, BOOL *stop))block;
+- (void)enumerateRowidsInGroup:(NSString *)group
+                   withOptions:(NSEnumerationOptions)inOptions
+                         range:(NSRange)range
+                    usingBlock:(void (^)(int64_t rowid, NSUInteger index, BOOL *stop))block;
 
 - (BOOL)containsRowid:(int64_t)rowid;
 
