@@ -74,4 +74,12 @@
 - (id)initWithFTSConnection:(YapDatabaseFullTextSearchConnection *)ftsConnection
         databaseTransaction:(YapDatabaseReadTransaction *)databaseTransaction;
 
+- (void)enumerateRowidsMatching:(NSString *)query
+                     usingBlock:(void (^)(int64_t rowid, BOOL *stop))block;
+
+- (void)enumerateRowidsMatching:(NSString *)query
+             withSnippetOptions:(YapDatabaseFullTextSearchSnippetOptions *)inOptions
+                     usingBlock:
+            (void (^)(NSString *snippet, int64_t rowid, BOOL *stop))block;
+
 @end
