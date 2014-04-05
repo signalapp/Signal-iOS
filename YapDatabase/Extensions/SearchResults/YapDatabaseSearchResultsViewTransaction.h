@@ -1,9 +1,10 @@
 #import <Foundation/Foundation.h>
+
 #import "YapDatabaseViewTransaction.h"
 #import "YapDatabaseSearchQueue.h"
 
 
-@interface YapDatabaseSearchResultsTransaction : YapDatabaseViewTransaction
+@interface YapDatabaseSearchResultsViewTransaction : YapDatabaseViewTransaction
 
 // This class extends YapDatabaseViewTransaction.
 //
@@ -11,7 +12,7 @@
 
 @end
 
-@interface YapDatabaseSearchResultsTransaction (ReadWrite)
+@interface YapDatabaseSearchResultsViewTransaction (ReadWrite)
 
 /**
  * Represents the most recent search query that is providing the search results.

@@ -1,9 +1,9 @@
 #import <Foundation/Foundation.h>
 
 #import "YapDatabaseView.h"
-#import "YapDatabaseSearchResultsOptions.h"
-#import "YapDatabaseSearchResultsConnection.h"
-#import "YapDatabaseSearchResultsTransaction.h"
+#import "YapDatabaseSearchResultsViewOptions.h"
+#import "YapDatabaseSearchResultsViewConnection.h"
+#import "YapDatabaseSearchResultsViewTransaction.h"
 
 /**
  * Welcome to YapDatabase!
@@ -16,7 +16,7 @@
  * YapDatabaseSearchResults allows you to pipe search results from YapDatabaseFullTextSearch into a YapDatabaseView.
  * This makes it easy to display search results in a tableView or collectionView.
 **/
-@interface YapDatabaseSearchResults : YapDatabaseView
+@interface YapDatabaseSearchResultsView : YapDatabaseView
 
 /**
  * In this configuration, you want to search an existing YapDatabaseView,
@@ -51,7 +51,7 @@
 - (id)initWithFullTextSearchName:(NSString *)fullTextSearchName
                   parentViewName:(NSString *)parentViewName
                   versionTag:(NSString *)versionTag
-                     options:(YapDatabaseSearchResultsOptions *)options;
+                     options:(YapDatabaseSearchResultsViewOptions *)options;
 
 /**
  * 
@@ -62,7 +62,7 @@
                     sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
                 sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
                       versionTag:(NSString *)versionTag
-                         options:(YapDatabaseSearchResultsOptions *)options;
+                         options:(YapDatabaseSearchResultsViewOptions *)options;
 
 
 @property (nonatomic, strong, readonly) NSString *fullTextSearchName;

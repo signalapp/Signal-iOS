@@ -1,7 +1,7 @@
-#import "YapDatabaseSearchResultsOptions.h"
+#import "YapDatabaseSearchResultsViewOptions.h"
 
 
-@implementation YapDatabaseSearchResultsOptions
+@implementation YapDatabaseSearchResultsViewOptions
 
 - (id)init
 {
@@ -14,7 +14,7 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-	YapDatabaseSearchResultsOptions *copy = [super copyWithZone:zone];
+	YapDatabaseSearchResultsViewOptions *copy = [super copyWithZone:zone];
 	return copy;
 }
 

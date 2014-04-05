@@ -1,11 +1,13 @@
 #import <Foundation/Foundation.h>
+
 #import "YapDatabaseViewOptions.h"
 #import "YapDatabaseFullTextSearchSnippetOptions.h"
+
 
 /**
  * Note: This class extends YapDatabaseViewOptions.
 **/
-@interface YapDatabaseSearchResultsOptions : YapDatabaseViewOptions <NSCopying>
+@interface YapDatabaseSearchResultsViewOptions : YapDatabaseViewOptions <NSCopying>
 
 /**
  * Inherited by YapDatabaseViewOptions.

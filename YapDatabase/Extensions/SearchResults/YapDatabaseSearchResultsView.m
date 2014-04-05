@@ -1,5 +1,5 @@
-#import "YapDatabaseSearchResults.h"
-#import "YapDatabaseSearchResultsPrivate.h"
+#import "YapDatabaseSearchResultsView.h"
+#import "YapDatabaseSearchResultsViewPrivate.h"
 #import "YapDatabaseExtensionPrivate.h"
 #import "YapDatabaseFullTextSearch.h"
 #import "YapDatabaseLogging.h"
@@ -19,7 +19,7 @@
 #endif
 
 
-@implementation YapDatabaseSearchResults
+@implementation YapDatabaseSearchResultsView
 
 #pragma mark Invalid
 
@@ -52,7 +52,7 @@
 - (id)initWithFullTextSearchName:(NSString *)inFullTextSearchName
                   parentViewName:(NSString *)inParentViewName
 					  versionTag:(NSString *)inVersionTag
-						 options:(YapDatabaseSearchResultsOptions *)inOptions
+						 options:(YapDatabaseSearchResultsViewOptions *)inOptions
 {
 	NSAssert(inFullTextSearchName != nil, @"Invalid fullTextSearchName");
 	NSAssert(inParentViewName != nil, @"Invalid parentViewName");
@@ -64,7 +64,7 @@
 		
 		versionTag = inVersionTag ? [inVersionTag copy] : @"";
 		
-		options = inOptions ? [inOptions copy] : [[YapDatabaseSearchResultsOptions alloc] init];
+		options = inOptions ? [inOptions copy] : [[YapDatabaseSearchResultsViewOptions alloc] init];
 	}
 	return self;
 }
@@ -75,7 +75,7 @@
                     sortingBlock:(YapDatabaseViewSortingBlock)inSortingBlock
                 sortingBlockType:(YapDatabaseViewBlockType)inSortingBlockType
                       versionTag:(NSString *)inVersionTag
-                         options:(YapDatabaseSearchResultsOptions *)inOptions
+                         options:(YapDatabaseSearchResultsViewOptions *)inOptions
 {
 	NSAssert(inFullTextSearchName != nil, @"Invalid fullTextSearchName");
 	
@@ -106,7 +106,7 @@
 		
 		versionTag = inVersionTag ? [inVersionTag copy] : @"";
 		
-		options = inOptions ? [inOptions copy] : [[YapDatabaseSearchResultsOptions alloc] init];
+		options = inOptions ? [inOptions copy] : [[YapDatabaseSearchResultsViewOptions alloc] init];
 	}
 	return self;
 }
@@ -179,7 +179,7 @@
 
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
-	return [[YapDatabaseSearchResultsConnection alloc] initWithView:self databaseConnection:databaseConnection];
+	return [[YapDatabaseSearchResultsViewConnection alloc] initWithView:self databaseConnection:databaseConnection];
 }
 
 @end

@@ -31,6 +31,8 @@
 	sqlite3_stmt *removeAllStatement;
 	sqlite3_stmt *queryStatement;
 	sqlite3_stmt *querySnippetStatement;
+	sqlite3_stmt *rowidQueryStatement;
+	sqlite3_stmt *rowidQuerySnippetStatement;
 }
 
 @synthesize fullTextSearch = fts;
@@ -59,6 +61,8 @@
 	sqlite_finalize_null(&removeAllStatement);
 	sqlite_finalize_null(&queryStatement);
 	sqlite_finalize_null(&querySnippetStatement);
+	sqlite_finalize_null(&rowidQueryStatement);
+	sqlite_finalize_null(&rowidQuerySnippetStatement);
 }
 
 /**
@@ -293,6 +297,49 @@
 	}
 	
 	return querySnippetStatement;
+}
+
+- (sqlite3_stmt *)rowidQueryStatement
+{
+	if (rowidQueryStatement == NULL)
+	{
+		NSString *tableName = [fts tableName];
+		
+		NSString *string = [NSString stringWithFormat:
+		    @"SELECT \"rowid\" FROM \"%1$@\" WHERE \"rowid\" = ? AND \"%1$@\" MATCH ?;", tableName];
+		
+		sqlite3 *db = databaseConnection->db;
+		
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &rowidQueryStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return rowidQueryStatement;
+}
+
+- (sqlite3_stmt *)rowidQuerySnippetStatement
+{
+	if (rowidQuerySnippetStatement == NULL)
+	{
+		NSString *tableName = [fts tableName];
+		
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT \"rowid\", snippet(\"%1$@\", ?, ?, ?, ?, ?) FROM \"%1$@\" WHERE \"rowid\" = ? AND \"%1$@\" MATCH ?;",
+		  tableName];
+		
+		sqlite3 *db = databaseConnection->db;
+		
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &rowidQuerySnippetStatement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+	}
+	
+	return rowidQuerySnippetStatement;
 }
 
 @end

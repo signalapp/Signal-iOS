@@ -1106,4 +1106,117 @@
 	}];
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Individual Query
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (BOOL)rowid:(int64_t)rowid matches:(NSString *)query
+{
+	if ([query length] == 0) return NO;
+	
+	sqlite3_stmt *statement = [ftsConnection rowidQueryStatement];
+	if (statement == NULL) return NO;
+	
+	// SELECT "rowid" FROM "tableName" WHERE "rowid" = ? AND "tableName" MATCH ?;
+	
+	sqlite3_bind_int64(statement, 1, rowid);
+	
+	YapDatabaseString _query; MakeYapDatabaseString(&_query, query);
+	sqlite3_bind_text(statement, 2, _query.str, _query.length, SQLITE_STATIC);
+	
+	BOOL result = NO;
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		result = YES;
+	}
+	else if (status != SQLITE_DONE)
+	{
+		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD,
+		            status, sqlite3_errmsg(databaseTransaction->connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_query);
+	
+	return result;
+}
+
+- (NSString *)rowid:(int64_t)rowid matches:(NSString *)query
+                        withSnippetOptions:(YapDatabaseFullTextSearchSnippetOptions *)inOptions
+{
+	if ([query length] == 0) return nil;
+	
+	sqlite3_stmt *statement = [ftsConnection rowidQuerySnippetStatement];
+	if (statement == NULL) return nil;
+	
+	YapDatabaseFullTextSearchSnippetOptions *options;
+	if (inOptions)
+		options = [inOptions copy];
+	else
+		options = [[YapDatabaseFullTextSearchSnippetOptions alloc] init]; // default snippet options
+	
+	// SELECT "rowid", snippet("tableName", ?, ?, ?, ?, ?) FROM "tableName" WHERE "rowid" = ? AND "tableName" MATCH ?;
+	
+	YapDatabaseString _startMatchText; MakeYapDatabaseString(&_startMatchText, options.startMatchText);
+	sqlite3_bind_text(statement, 1, _startMatchText.str, _startMatchText.length, SQLITE_STATIC);
+	
+	YapDatabaseString _endMatchText; MakeYapDatabaseString(&_endMatchText, options.endMatchText);
+	sqlite3_bind_text(statement, 2, _endMatchText.str, _endMatchText.length, SQLITE_STATIC);
+	
+	YapDatabaseString _ellipsesText; MakeYapDatabaseString(&_ellipsesText, options.ellipsesText);
+	sqlite3_bind_text(statement, 3, _ellipsesText.str, _ellipsesText.length, SQLITE_STATIC);
+
+	int columnIndex = -1;
+	if (options.columnName)
+	{
+		NSUInteger index = [ftsConnection->fts->columnNames indexOfObject:options.columnName];
+		if (index == NSNotFound)
+		{
+			YDBLogWarn(@"Invalid snippet option: columnName(%@) not found", options.columnName);
+		}
+		else
+		{
+			columnIndex = (int)index;
+		}
+	}
+	sqlite3_bind_int(statement, 4, columnIndex);
+	sqlite3_bind_int(statement, 5, options.numberOfTokens);
+	
+	sqlite3_bind_int64(statement, 6, rowid);
+	
+	YapDatabaseString _query; MakeYapDatabaseString(&_query, query);
+	sqlite3_bind_text(statement, 7, _query.str, _query.length, SQLITE_STATIC);
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	
+	NSString *snippet = nil;
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+	//	int64_t rowid = sqlite3_column_int64(statement, 0);
+			
+		const unsigned char *text = sqlite3_column_text(statement, 1);
+		int textSize = sqlite3_column_bytes(statement, 1);
+		
+		snippet = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+	}
+	else if (status != SQLITE_DONE)
+	{
+		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD,
+		            status, sqlite3_errmsg(databaseTransaction->connection->db));
+	}
+	
+	FreeYapDatabaseString(&_startMatchText);
+	FreeYapDatabaseString(&_endMatchText);
+	FreeYapDatabaseString(&_ellipsesText);
+	FreeYapDatabaseString(&_query);
+	
+	return snippet;
+}
+
 @end

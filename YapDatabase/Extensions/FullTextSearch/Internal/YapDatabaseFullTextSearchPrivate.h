@@ -55,6 +55,8 @@
 - (sqlite3_stmt *)removeAllStatement;
 - (sqlite3_stmt *)queryStatement;
 - (sqlite3_stmt *)querySnippetStatement;
+- (sqlite3_stmt *)rowidQueryStatement;
+- (sqlite3_stmt *)rowidQuerySnippetStatement;
 
 @end
 
@@ -81,5 +83,9 @@
              withSnippetOptions:(YapDatabaseFullTextSearchSnippetOptions *)inOptions
                      usingBlock:
             (void (^)(NSString *snippet, int64_t rowid, BOOL *stop))block;
+
+- (BOOL)rowid:(int64_t)rowid matches:(NSString *)query;
+- (NSString *)rowid:(int64_t)rowid matches:(NSString *)query
+                        withSnippetOptions:(YapDatabaseFullTextSearchSnippetOptions *)options;
 
 @end
