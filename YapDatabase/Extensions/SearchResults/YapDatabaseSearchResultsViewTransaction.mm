@@ -66,7 +66,6 @@ extern "C" {
 	return YES;
 }
 
-// Todo: Prepare
 /**
  * This method is called to prepare the transaction for use.
  *
@@ -316,8 +315,515 @@ extern "C" {
 {
 	YDBLogAutoTrace();
 	
+	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
+	  (YapDatabaseSearchResultsView *)viewConnection->view;
 	
+	if (searchResultsView->parentViewName)
+	{
+		// Implementation Note:
+		// This code is modeled after that in YapDatabaseFilteredViewTransaction.
+		
+		BOOL groupMayHaveChanged = searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithRow ||
+		                           searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithObject;
+		
+		BOOL sortMayHaveChanged = searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+		                          searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithObject;
+		
+		// Instead of going to the groupingBlock,
+		// just ask the parentViewTransaction what the last group was.
+		
+		__unsafe_unretained YapDatabaseViewTransaction *parentViewTransaction =
+		  [databaseTransaction ext:searchResultsView->parentViewName];
+		
+		NSString *group = parentViewTransaction->lastHandledGroup;
+		
+		if (group == nil)
+		{
+			// Not included in parentView.
+			
+			if (groupMayHaveChanged)
+			{
+				// Remove from view (if needed).
+				// This was an update operation, so it may have previously been in the view.
+				
+				[self removeRowid:rowid collectionKey:collectionKey];
+			}
+			else
+			{
+				// The group hasn't changed.
+				// Thus it wasn't previously in view, and still isn't in the view.
+			}
+			
+			lastHandledGroup = nil;
+			return;
+		}
+		
+		__unsafe_unretained YapDatabaseFullTextSearchTransaction *ftsTransaction =
+		  [databaseTransaction ext:searchResultsView->fullTextSearchName];
+		
+		__unsafe_unretained YapDatabaseFullTextSearch *fts =
+		  (YapDatabaseFullTextSearch *)[[ftsTransaction extensionConnection] extension];
+		
+		BOOL searchMayHaveChanged = fts->blockType == YapDatabaseFullTextSearchBlockTypeWithRow ||
+		                            fts->blockType == YapDatabaseFullTextSearchBlockTypeWithObject;
+		
+		if (!groupMayHaveChanged && !sortMayHaveChanged && !searchMayHaveChanged)
+		{
+			// Nothing has changed that could possibly affect the view.
+			// Just note the touch.
+			
+			int flags = YapDatabaseViewChangedObject;
+			
+			NSString *pageKey = [self pageKeyForRowid:rowid];
+			NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
+			
+			[viewConnection->changes addObject:
+			 [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:existingIndex]];
+			
+			lastHandledGroup = group;
+			return;
+		}
+		
+		BOOL matchesQuery = [ftsTransaction rowid:rowid matches:[self query]];
+		
+		if (matchesQuery)
+		{
+			// Add to view (or update position).
+			// This was an update operation, so it may have previously been in the view.
+			
+			int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+			
+			id metadata = nil;
+			if (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+			    searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+			{
+				metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
+			}
+			
+			[self insertRowid:rowid
+			    collectionKey:collectionKey
+			           object:object
+			         metadata:metadata
+			          inGroup:group
+			      withChanges:flags
+			            isNew:NO];
+			
+			lastHandledGroup = group;
+		}
+		else
+		{
+			// Filtered from this view.
+			// Remove key from view (if needed).
+			// This was an update operation, so it may have previously been in the view.
+			
+			[self removeRowid:rowid collectionKey:collectionKey];
+			lastHandledGroup = nil;
+		}
+	}
+	else
+	{
+		// Implementation Note:
+		// This code is modeled after that in YapDatabaseViewTransaction.
+		
+		id metadata = nil;
+		NSString *group = nil;
+		
+		if (searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithKey ||
+			searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+		{
+			// Grouping is based on the key or metadata.
+			// Neither have changed, and thus the group hasn't changed.
+			
+			NSString *pageKey = [self pageKeyForRowid:rowid];
+			group = [self groupForPageKey:pageKey];
+			
+			if (group == nil)
+			{
+				// Nothing to do.
+				// It wasn't previously in the view, and still isn't in the view.
+			}
+			else if (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
+			         searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+			{
+				// Nothing has moved because the group hasn't changed and
+				// nothing has changed that relates to sorting.
+				
+				int flags = YapDatabaseViewChangedObject;
+				NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
+				
+				[viewConnection->changes addObject:
+				  [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:existingIndex]];
+			}
+			else
+			{
+				// Sorting is based on the object, which has changed.
+				// So the sort order may possibly have changed.
+				
+				// From previous if statement (above) we know:
+				// sortingBlockType is object or row (object+metadata)
+				
+				if (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithRow)
+				{
+					// Need the metadata for the sorting block
+					metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
+				}
+				
+				int flags = YapDatabaseViewChangedObject;
+				
+				[self insertRowid:rowid
+					collectionKey:collectionKey
+						   object:object
+						 metadata:metadata
+						  inGroup:group withChanges:flags isNew:NO];
+			}
+		}
+		else
+		{
+			// Grouping is based on object or row (object+metadata).
+			// Invoke groupingBlock to see what the new group is.
+			
+			__unsafe_unretained NSString *collection = collectionKey.collection;
+			__unsafe_unretained NSString *key = collectionKey.key;
+			
+			NSSet *allowedCollections = searchResultsView->options.allowedCollections;
+			
+			if (!allowedCollections || [allowedCollections containsObject:collection])
+			{
+				if (searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
+				{
+					__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
+			          (YapDatabaseViewGroupingWithObjectBlock)searchResultsView->groupingBlock;
+					
+					group = groupingBlock(collection, key, object);
+				}
+				else
+				{
+					__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
+			          (YapDatabaseViewGroupingWithRowBlock)searchResultsView->groupingBlock;
+					
+					metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
+					group = groupingBlock(collection, key, object, metadata);
+				}
+			}
+			
+			if (group == nil)
+			{
+				// The key is not included in the view.
+				// Remove key from view (if needed).
+				
+				[self removeRowid:rowid collectionKey:collectionKey];
+			}
+			else
+			{
+				if (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
+				    searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+				{
+					// Sorting is based on the key or metadata, neither of which has changed.
+					// So if the group hasn't changed, then the sort order hasn't changed.
+					
+					NSString *existingPageKey = [self pageKeyForRowid:rowid];
+					NSString *existingGroup = [self groupForPageKey:existingPageKey];
+					
+					if ([group isEqualToString:existingGroup])
+					{
+						// Nothing left to do.
+						// The group didn't change, and the sort order cannot change (because the object didn't change).
+						
+						int flags = YapDatabaseViewChangedObject;
+						NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:existingPageKey];
+						
+						[viewConnection->changes addObject:
+						  [YapDatabaseViewRowChange updateKey:collectionKey
+						                              changes:flags
+						                              inGroup:group
+						                              atIndex:existingIndex]];
+						
+						lastHandledGroup = group;
+						return;
+					}
+				}
+				
+				if (metadata == nil && (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+				                        searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata))
+				{
+					// Need the metadata for the sorting block
+					metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
+				}
+				
+				int flags = YapDatabaseViewChangedObject;
+				
+				[self insertRowid:rowid
+				    collectionKey:collectionKey
+				           object:object
+				         metadata:metadata
+				          inGroup:group withChanges:flags isNew:NO];
+			}
+		}
+		
+		lastHandledGroup = group;
+	}
 }
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)handleReplaceMetadata:(id)metadata forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
+	  (YapDatabaseSearchResultsView *)viewConnection->view;
+	
+	if (searchResultsView->parentViewName)
+	{
+		// Implementation Note:
+		// This code is modeled after that in YapDatabaseFilteredViewTransaction.
+		
+		BOOL groupMayHaveChanged = searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithRow ||
+		                           searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata;
+		
+		BOOL sortMayHaveChanged = searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+		                          searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata;
+		
+		// Instead of going to the groupingBlock,
+		// just ask the parentViewTransaction what the last group was.
+		
+		__unsafe_unretained YapDatabaseViewTransaction *parentViewTransaction =
+		  [databaseTransaction ext:searchResultsView->parentViewName];
+		
+		NSString *group = parentViewTransaction->lastHandledGroup;
+		
+		if (group == nil)
+		{
+			// Not included in parentView.
+			
+			if (groupMayHaveChanged)
+			{
+				// Remove key from view (if needed).
+				// This was an update operation, so the key may have previously been in the view.
+				
+				[self removeRowid:rowid collectionKey:collectionKey];
+			}
+			else
+			{
+				// The group hasn't changed.
+				// Thus it wasn't previously in view, and still isn't in the view.
+			}
+			
+			lastHandledGroup = nil;
+			return;
+		}
+		
+		__unsafe_unretained YapDatabaseFullTextSearchTransaction *ftsTransaction =
+		  [databaseTransaction ext:searchResultsView->fullTextSearchName];
+		
+		__unsafe_unretained YapDatabaseFullTextSearch *fts =
+		  (YapDatabaseFullTextSearch *)[[ftsTransaction extensionConnection] extension];
+		
+		BOOL searchMayHaveChanged = fts->blockType == YapDatabaseFullTextSearchBlockTypeWithRow ||
+		                            fts->blockType == YapDatabaseFullTextSearchBlockTypeWithObject;
+		
+		if (!groupMayHaveChanged && !sortMayHaveChanged && !searchMayHaveChanged)
+		{
+			// Nothing has changed that could possibly affect the view.
+			// Just note the touch.
+			
+			int flags = YapDatabaseViewChangedMetadata;
+			
+			NSString *pageKey = [self pageKeyForRowid:rowid];
+			NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
+			
+			[viewConnection->changes addObject:
+			  [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:existingIndex]];
+			
+			lastHandledGroup = group;
+			return;
+		}
+		
+		BOOL matchesQuery = [ftsTransaction rowid:rowid matches:[self query]];
+		
+		if (matchesQuery)
+		{
+			// Add key to view (or update position).
+			// This was an update operation, so the key may have previously been in the view.
+			
+			int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+			
+			id object= nil;
+			if (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+			    searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
+			{
+				object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
+			}
+			
+			[self insertRowid:rowid
+			    collectionKey:collectionKey
+			           object:object
+			         metadata:metadata
+			          inGroup:group
+			      withChanges:flags
+			            isNew:NO];
+			
+			lastHandledGroup = group;
+		}
+		else
+		{
+			// Filtered from this view.
+			// Remove key from view (if needed).
+			// This was an update operation, so the key may have previously been in the view.
+			
+			[self removeRowid:rowid collectionKey:collectionKey];
+			lastHandledGroup = nil;
+		}
+	}
+	else
+	{
+		// Implementation Note:
+		// This code is modeled after that in YapDatabaseViewTransaction.
+		
+		id object = nil;
+		NSString *group = nil;
+		
+		if (searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithKey ||
+		    searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
+		{
+			// Grouping is based on the key or object.
+			// Neither have changed, and thus the group hasn't changed.
+			
+			NSString *pageKey = [self pageKeyForRowid:rowid];
+			group = [self groupForPageKey:pageKey];
+			
+			if (group == nil)
+			{
+				// Nothing to do.
+				// The key wasn't previously in the view, and still isn't in the view.
+			}
+			else if (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
+			         searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
+			{
+				// Nothing has moved because the group hasn't changed and
+				// nothing has changed that relates to sorting.
+				
+				int flags = YapDatabaseViewChangedMetadata;
+				NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
+				
+				[viewConnection->changes addObject:
+				  [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:existingIndex]];
+			}
+			else
+			{
+				// Sorting is based on the metadata, which has changed.
+				// So the sort order may possibly have changed.
+				
+				// From previous if statement (above) we know:
+				// sortingBlockType is metadata or objectAndMetadata
+				
+				if (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithRow)
+				{
+					// Need the object for the sorting block
+					object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
+				}
+				
+				int flags = YapDatabaseViewChangedMetadata;
+				
+				[self insertRowid:rowid
+				    collectionKey:collectionKey
+				           object:object
+				         metadata:metadata
+				          inGroup:group withChanges:flags isNew:NO];
+			}
+		}
+		else
+		{
+			// Grouping is based on metadata or objectAndMetadata.
+			// Invoke groupingBlock to see what the new group is.
+			
+			__unsafe_unretained NSString *collection = collectionKey.collection;
+			__unsafe_unretained NSString *key = collectionKey.key;
+			
+			NSSet *allowedCollections = searchResultsView->options.allowedCollections;
+			
+			if (!allowedCollections || [allowedCollections containsObject:collection])
+			{
+				if (searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+				{
+					__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
+			          (YapDatabaseViewGroupingWithMetadataBlock)searchResultsView->groupingBlock;
+					
+					group = groupingBlock(collection, key, metadata);
+				}
+				else
+				{
+					__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
+			          (YapDatabaseViewGroupingWithRowBlock)searchResultsView->groupingBlock;
+					
+					object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
+					group = groupingBlock(collection, key, object, metadata);
+				}
+			}
+			
+			if (group == nil)
+			{
+				// The key is not included in the view.
+				// Remove key from view (if needed).
+				
+				[self removeRowid:rowid collectionKey:collectionKey];
+			}
+			else
+			{
+				if (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
+				    searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
+				{
+					// Sorting is based on the key or object, neither of which has changed.
+					// So if the group hasn't changed, then the sort order hasn't changed.
+					
+					NSString *existingPageKey = [self pageKeyForRowid:rowid];
+					NSString *existingGroup = [self groupForPageKey:existingPageKey];
+					
+					if ([group isEqualToString:existingGroup])
+					{
+						// Nothing left to do.
+						// The group didn't change, and the sort order cannot change (because the object didn't change).
+						
+						int flags = YapDatabaseViewChangedMetadata;
+						NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:existingPageKey];
+						
+						[viewConnection->changes addObject:
+						  [YapDatabaseViewRowChange updateKey:collectionKey
+						                              changes:flags
+						                              inGroup:group
+						                              atIndex:existingIndex]];
+						
+						lastHandledGroup = group;
+						return;
+					}
+				}
+				
+				if (object == nil && (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+				                      searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithObject))
+				{
+					// Need the object for the sorting block
+					object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
+				}
+				
+				int flags = YapDatabaseViewChangedMetadata;
+				
+				[self insertRowid:rowid
+					collectionKey:collectionKey
+						   object:object
+						 metadata:metadata
+						  inGroup:group withChanges:flags isNew:NO];
+			}
+		}
+		
+		lastHandledGroup = group;
+	}
+}
+
+///
+/// All other hook methods are handled by superclass (YapDatabaseViewTransaction).
+///
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark YapDatabaseViewDependency Protocol

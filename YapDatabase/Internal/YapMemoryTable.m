@@ -123,7 +123,7 @@
 			
 			if ([snapshots count] > 0)
 			{
-				snapshot = [[snapshots objectAtIndex:0] unsignedLongLongValue];
+				snapshot = [[snapshots objectAtIndex:0] longLongValue];
 				
 				if (snapshot < minSnapshot)
 				{

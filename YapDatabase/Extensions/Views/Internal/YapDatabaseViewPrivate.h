@@ -131,6 +131,8 @@
 - (NSUInteger)indexForRowid:(int64_t)rowid inGroup:(NSString *)group withPageKey:(NSString *)pageKey;
 - (BOOL)getRowid:(int64_t *)rowidPtr atIndex:(NSUInteger)index inGroup:(NSString *)group;
 
+- (NSString *)groupForPageKey:(NSString *)pageKey;
+
 - (void)insertRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey inNewGroup:(NSString *)group;
 - (void)insertRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
                                          inGroup:(NSString *)group

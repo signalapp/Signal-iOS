@@ -1509,7 +1509,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	
 	if (![extension supportsDatabase:self withRegisteredExtensions:_registeredExtensions])
 	{
-		YDBLogError(@"Error registering extension: extension doesn't database type or configuration");
+		YDBLogError(@"Error registering extension: extension doesn't support database configuration");
 		return NO;
 	}
 	

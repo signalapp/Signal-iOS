@@ -3302,9 +3302,6 @@
 	
 	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
 	
-	__unsafe_unretained NSString *collection = collectionKey.collection;
-	__unsafe_unretained NSString *key = collectionKey.key;
-	
 	// Invoke the grouping block to find out if the object should be included in the view.
 	
 	id metadata = nil;
@@ -3323,12 +3320,9 @@
 		{
 			// Nothing to do.
 			// The key wasn't previously in the view, and still isn't in the view.
-			lastHandledGroup = group;
-			return;
 		}
-		
-		if (view->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
-		    view->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+		else if (view->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
+		         view->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata)
 		{
 			// Nothing has moved because the group hasn't changed and
 			// nothing has changed that relates to sorting.
@@ -3366,6 +3360,9 @@
 	{
 		// Grouping is based on object or row (object+metadata).
 		// Invoke groupingBlock to see what the new group is.
+		
+		__unsafe_unretained NSString *collection = collectionKey.collection;
+		__unsafe_unretained NSString *key = collectionKey.key;
 		
 		NSSet *allowedCollections = view->options.allowedCollections;
 		
@@ -3425,8 +3422,8 @@
 				}
 			}
 			
-			if (metadata == nil && (view->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata ||
-			                        view->sortingBlockType == YapDatabaseViewBlockTypeWithRow      ))
+			if (metadata == nil && (view->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+			                        view->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata))
 			{
 				// Need the metadata for the sorting block
 				metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
@@ -3455,9 +3452,6 @@
 	
 	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
 	
-	__unsafe_unretained NSString *collection = collectionKey.collection;
-	__unsafe_unretained NSString *key = collectionKey.key;
-	
 	// Invoke the grouping block to find out if the object should be included in the view.
 	
 	id object = nil;
@@ -3476,12 +3470,9 @@
 		{
 			// Nothing to do.
 			// The key wasn't previously in the view, and still isn't in the view.
-			lastHandledGroup = group;
-			return;
 		}
-		
-		if (view->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
-		    view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
+		else if (view->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
+		         view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
 		{
 			// Nothing has moved because the group hasn't changed and
 			// nothing has changed that relates to sorting.
@@ -3519,6 +3510,9 @@
 	{
 		// Grouping is based on metadata or objectAndMetadata.
 		// Invoke groupingBlock to see what the new group is.
+		
+		__unsafe_unretained NSString *collection = collectionKey.collection;
+		__unsafe_unretained NSString *key = collectionKey.key;
 		
 		NSSet *allowedCollections = view->options.allowedCollections;
 		
@@ -3578,8 +3572,8 @@
 				}
 			}
 			
-			if (object == nil && (view->sortingBlockType == YapDatabaseViewBlockTypeWithObject ||
-			                      view->sortingBlockType == YapDatabaseViewBlockTypeWithRow    ))
+			if (object == nil && (view->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+			                      view->sortingBlockType == YapDatabaseViewBlockTypeWithObject))
 			{
 				// Need the object for the sorting block
 				object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
