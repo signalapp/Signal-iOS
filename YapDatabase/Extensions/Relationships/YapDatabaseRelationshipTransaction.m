@@ -976,6 +976,9 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
                                       rowid:(int64_t)srcRowid
                         destinationFilePath:(NSString *)dstFilePath
 {
+	if (srcCollection == nil)
+		srcCollection = @"";
+
 	if (srcKey == nil)
 	{
 		if (dstFilePath == nil)
@@ -990,9 +993,6 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	
 	if (!databaseTransaction->isReadWriteTransaction)
 		return nil;
-	
-	if (srcCollection == nil)
-		srcCollection = @"";
 	
 	__block NSMutableArray *changes = nil;
 	
@@ -1397,7 +1397,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	sqlite3_bind_int64(statement, 1, edge->sourceRowid);
 	
 	YapDatabaseString _dstFilePath;
-	if (edge->destinationFilePath){
+    BOOL useDestinationFilePath = (edge->destinationFilePath != nil);
+	if (useDestinationFilePath){
 		MakeYapDatabaseString(&_dstFilePath, edge->destinationFilePath);
 		sqlite3_bind_text(statement, 2, _dstFilePath.str, _dstFilePath.length, SQLITE_STATIC);
 	}
@@ -1430,7 +1431,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
-	if (edge->destinationFilePath){
+	if (useDestinationFilePath){
 		FreeYapDatabaseString(&_dstFilePath);
 	}
 	FreeYapDatabaseString(&_name);
