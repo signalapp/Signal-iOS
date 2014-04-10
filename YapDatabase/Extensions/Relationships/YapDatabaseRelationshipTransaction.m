@@ -976,6 +976,9 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
                                       rowid:(int64_t)srcRowid
                         destinationFilePath:(NSString *)dstFilePath
 {
+	if (srcCollection == nil)
+		srcCollection = @"";
+
 	if (srcKey == nil)
 	{
 		if (dstFilePath == nil)
@@ -990,9 +993,6 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	
 	if (!databaseTransaction->isReadWriteTransaction)
 		return nil;
-	
-	if (srcCollection == nil)
-		srcCollection = @"";
 	
 	__block NSMutableArray *changes = nil;
 	
