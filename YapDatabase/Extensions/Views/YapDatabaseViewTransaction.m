@@ -2344,7 +2344,7 @@
 	NSString *group = [self groupForPageKey:pageKey];
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	
-	YapDatabaseViewPageMetadata *pageMetadata = nil;
+	YapDatabaseViewPageMetadata *pageMetadata;
 	for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 	{
 		if ([pm->pageKey isEqualToString:pageKey])
@@ -2356,7 +2356,7 @@
 	
 	// Split the page as many times as needed to make it fit the designated maxPageSize
 	
-	while (pageMetadata->count > maxPageSize)
+	while (pageMetadata && pageMetadata->count > maxPageSize)
 	{
 		// Get the current pageIndex.
 		// This may change during iterations of the while loop.
