@@ -3753,25 +3753,6 @@
 	return orderedExtensions;
 }
 
-- (void)addRegisteredExtensionTransaction:(YapDatabaseExtensionTransaction *)extTransaction
-{
-	// This method is INTERNAL
-	
-	if (extensions == nil)
-		extensions = [[NSMutableDictionary alloc] init];
-	
-	NSString *extName = [[[extTransaction extensionConnection] extension] registeredName];
-	
-	[extensions setObject:extTransaction forKey:extName];
-}
-
-- (void)removeRegisteredExtensionTransaction:(NSString *)extName
-{
-	// This method is INTERNAL
-	
-	[extensions removeObjectForKey:extName];
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Memory Tables
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4261,13 +4242,11 @@
  *
  * Thus it is recommended you integrate your own notification information into this existing notification,
  * as opposed to broadcasting your own separate notification.
- *
- * Invoking this method from within a read-only transaction does nothing.
+ * 
+ * For more information, and code samples, please see the wiki article:
+ * https://github.com/yaptv/YapDatabase/wiki/YapDatabaseModifiedNotification
 **/
-- (void)setCustomObjectForYapDatabaseModifiedNotification:(id)object
-{
-	customObjectForNotification = object;
-}
+@synthesize yapDatabaseModifiedNotificationCustomObject = customObjectForNotification;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Primitive
@@ -5611,6 +5590,29 @@
 	{
 		[extTransaction handleRemoveAllObjectsInAllCollections];
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Extensions
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)addRegisteredExtensionTransaction:(YapDatabaseExtensionTransaction *)extTransaction
+{
+	// This method is INTERNAL
+	
+	if (extensions == nil)
+		extensions = [[NSMutableDictionary alloc] init];
+	
+	NSString *extName = [[[extTransaction extensionConnection] extension] registeredName];
+	
+	[extensions setObject:extTransaction forKey:extName];
+}
+
+- (void)removeRegisteredExtensionTransaction:(NSString *)extName
+{
+	// This method is INTERNAL
+	
+	[extensions removeObjectForKey:extName];
 }
 
 @end

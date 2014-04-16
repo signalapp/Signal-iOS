@@ -436,8 +436,11 @@
  *
  * Thus it is recommended you integrate your own notification information into this existing notification,
  * as opposed to broadcasting your own separate notification.
+ * 
+ * For more information, and code samples, please see the wiki article:
+ * https://github.com/yaptv/YapDatabase/wiki/YapDatabaseModifiedNotification
 **/
-- (void)setCustomObjectForYapDatabaseModifiedNotification:(id)object;
+@property (nonatomic, strong, readwrite) id yapDatabaseModifiedNotificationCustomObject;
 
 #pragma mark Primitive
 

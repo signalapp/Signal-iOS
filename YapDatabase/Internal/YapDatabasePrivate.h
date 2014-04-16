@@ -300,21 +300,17 @@ extern NSString *const YapDatabaseNotificationKey;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface YapDatabaseReadTransaction () {
-@private
-	
+@protected
 	NSMutableDictionary *extensions;
 	NSMutableArray *orderedExtensions;
 	BOOL extensionsReady;
-
-@protected
+	
 	BOOL isMutated; // Used for "mutation during enumeration" protection
 	
 @public
 	__unsafe_unretained YapDatabaseConnection *connection;
 	
 	BOOL isReadWriteTransaction;
-	BOOL rollback;
-	id customObjectForNotification;
 }
 
 - (id)initWithConnection:(YapDatabaseConnection *)connection isReadWriteTransaction:(BOOL)flag;
@@ -328,10 +324,6 @@ extern NSString *const YapDatabaseNotificationKey;
 - (NSArray *)orderedExtensions;
 
 - (YapMemoryTableTransaction *)memoryTableTransaction:(NSString *)tableName;
-
-- (void)addRegisteredExtensionTransaction:(YapDatabaseExtensionTransaction *)extTransaction;
-- (void)removeRegisteredExtensionTransaction:(NSString *)extName;
-
 
 - (BOOL)getBoolValue:(BOOL *)valuePtr forKey:(NSString *)key extension:(NSString *)extensionName;
 - (void)setBoolValue:(BOOL)value forKey:(NSString *)key extension:(NSString *)extensionName;
@@ -447,7 +439,11 @@ extern NSString *const YapDatabaseNotificationKey;
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@interface YapDatabaseReadWriteTransaction ()
+@interface YapDatabaseReadWriteTransaction () {
+@public
+	BOOL rollback;
+	id customObjectForNotification;
+}
 
 - (void)replaceObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
 - (void)replaceMetadata:(id)metadata
@@ -456,5 +452,8 @@ extern NSString *const YapDatabaseNotificationKey;
               withRowid:(int64_t)rowid;
 
 - (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
+
+- (void)addRegisteredExtensionTransaction:(YapDatabaseExtensionTransaction *)extTransaction;
+- (void)removeRegisteredExtensionTransaction:(NSString *)extName;
 
 @end
