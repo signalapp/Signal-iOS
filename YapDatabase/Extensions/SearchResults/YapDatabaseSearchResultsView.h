@@ -54,7 +54,44 @@
                      options:(YapDatabaseSearchResultsViewOptions *)options;
 
 /**
+ * In this configuration, you want to pipe search results directly into a new YapDatabaseView.
+ * That is, there is not an existing YapDatabaseView you want to search.
+ * Rather, you simply want to perform a search using a YapDatabaseFullTextSearch extension,
+ * and then provide a groupingBlock / sortingBlock in order to present the results.
  * 
+ * @param ftsName
+ * 
+ *   The registeredName of a YapDatabaseFullTextSearch extension.
+ *   The fts extension must already be registered with the database system.
+ * 
+ * @param groupingBlock
+ * 
+ *   The groupingBlock is used to place search results into proper sections.
+ *   The block may also be used to perform secondary filtering.
+ * 
+ * @param groupingBlockType
+ * 
+ *   Must match the groupingBlock.
+ * 
+ * @param sortingBlock
+ * 
+ *   The sortingBlock is used to sort search results within their respective sections.
+ * 
+ * @param sortingBlockType
+ * 
+ *   Must match the sortingBlock.
+ * 
+ * @param versionTag
+ * 
+ *   The standard versionTag mechanism.
+ * 
+ * @param options
+ * 
+ *   Extended options for the extension.
+ *   You may pass nil to get the default extended options.
+ * 
+ * For more information on the groupingBlock & sortingBlock parmaters,
+ * please see the documentation in YapDatabaseView.h.
 **/
 - (id)initWithFullTextSearchName:(NSString *)fullTextSearchName
                    groupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock

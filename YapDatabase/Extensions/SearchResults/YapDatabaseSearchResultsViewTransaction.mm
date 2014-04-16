@@ -25,6 +25,11 @@ extern "C" {
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
+#define ExtKey_superclassVersion  @"viewClassVersion"
+#define ExtKey_subclassVersion    @"searchResultViewClassVersion"
+#define ExtKey_persistent         @"persistent"
+#define ExtKey_versionTag         @"versionTag"
+
 
 @implementation YapDatabaseSearchResultsViewTransaction
 {
@@ -61,8 +66,130 @@ extern "C" {
 - (BOOL)createIfNeeded
 {
 	YDBLogAutoTrace();
-
-	// Todo...
+	
+	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
+	  (YapDatabaseSearchResultsView *)(viewConnection->view);
+	
+	int superclassVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
+	int subclassVersion = YAP_DATABASE_SEARCH_RESULTS_VIEW_CLASS_VERSION;
+	
+	NSString *versionTag = searchResultsView->versionTag;
+	
+	BOOL isPersistent = [self isPersistentView];
+	
+	// We need to check several things in order to figure out:
+	// - do we need to delete the old table(s) ?
+	// - do we need to create the table(s) ?
+	// - do we need to (re)populate the table(s) ?
+	
+	BOOL needsCreateTables = NO;
+	
+	int oldSuperclassVersion;
+	BOOL hasOldSuperclassVersion;
+	
+	int oldSubclassVersion;
+	BOOL hasOldSubclassVersion;
+	
+	BOOL oldIsPersistent = NO;
+	BOOL hasOldIsPersistent = NO;
+	
+	NSString *oldVersionTag = nil;
+	
+	// Check classVersion (the internal version number of view implementation)
+	
+	oldSuperclassVersion = 0;
+	hasOldSuperclassVersion = [self getIntValue:&oldSuperclassVersion forExtensionKey:ExtKey_superclassVersion];
+	
+	oldSubclassVersion = 0;
+	hasOldSubclassVersion = [self getIntValue:&oldSubclassVersion forExtensionKey:ExtKey_subclassVersion];
+	
+	if (!hasOldSuperclassVersion || !hasOldSuperclassVersion)
+	{
+		needsCreateTables = YES;
+	}
+	else if ((oldSuperclassVersion != superclassVersion) ||
+	         (oldSubclassVersion != subclassVersion))
+	{
+		if (oldSuperclassVersion != superclassVersion) {
+			[self dropTablesForOldClassVersion:oldSuperclassVersion];
+		}
+		if (oldSubclassVersion != subclassVersion) {
+			[self dropTablesForOldSubclassVersion:oldSubclassVersion];
+		}
+		
+		needsCreateTables = YES;
+	}
+	
+	// Check persistence.
+	// Need to properly transition from persistent to non-persistent, and vice-versa.
+	
+	if (!needsCreateTables)
+	{
+		hasOldIsPersistent = [self getBoolValue:&oldIsPersistent forExtensionKey:ExtKey_persistent];
+		
+		if (hasOldIsPersistent && oldIsPersistent && !isPersistent)
+		{
+			__unsafe_unretained YapDatabaseReadWriteTransaction *rwDatabaseTransaction =
+			  (YapDatabaseReadWriteTransaction *)databaseTransaction;
+			
+			[[searchResultsView class] dropTablesForRegisteredName:[self registeredName]
+			                                       withTransaction:rwDatabaseTransaction];
+		}
+		
+		if (!hasOldIsPersistent || (oldIsPersistent != isPersistent))
+		{
+			needsCreateTables = YES;
+		}
+		else if (!isPersistent)
+		{
+			// We always have to create & populate the tables for non-persistent views.
+			// Even when re-registering from previous app launch.
+			needsCreateTables = YES;
+			
+			oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag];
+		}
+	}
+	
+	// Create or re-populate if needed
+	
+	if (needsCreateTables)
+	{
+		// First time registration
+		
+		if (![self createTables]) return NO;
+		if (![self populateView]) return NO;
+		
+		if (!hasOldSuperclassVersion || (oldSuperclassVersion != superclassVersion)) {
+			[self setIntValue:superclassVersion forExtensionKey:ExtKey_superclassVersion];
+		}
+		
+		if (!hasOldSubclassVersion || (oldSubclassVersion != subclassVersion)) {
+			[self setIntValue:subclassVersion forExtensionKey:ExtKey_subclassVersion];
+		}
+		
+		if (!hasOldIsPersistent || (oldIsPersistent != isPersistent)) {
+			[self setBoolValue:isPersistent forExtensionKey:ExtKey_persistent];
+		}
+		
+		if (![oldVersionTag isEqualToString:versionTag]) {
+			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
+		}
+	}
+	else
+	{
+		// Check versionTag.
+		// We need to re-populate the database if it changed.
+		
+		oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag];
+		
+		if (![oldVersionTag isEqualToString:versionTag])
+		{
+			if (![self populateView]) return NO;
+			
+			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
+		}
+	}
+	
 	return YES;
 }
 
@@ -89,7 +216,93 @@ extern "C" {
 	}
 	
 	return result;
+}
+
+/**
+ * Standard upgrade hook
+**/
+- (void)dropTablesForOldSubclassVersion:(int)oldSubclassVersion
+{
+	// Placeholder
+}
+
+- (BOOL)createTables
+{
+	YDBLogAutoTrace();
 	
+	// Create the main tables for the view
+	if (![super createTables]) return NO;
+	
+	// Check to see if we need to create the snippet table
+	
+	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
+	  (YapDatabaseSearchResultsView *)viewConnection->view;
+	
+	__unsafe_unretained YapDatabaseSearchResultsViewOptions *options =
+	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
+	
+	if (options.snippetOptions)
+	{
+		if ([self isPersistentView])
+		{
+			sqlite3 *db = databaseTransaction->connection->db;
+			
+			NSString *snippetTableName = [self snippetTableName];
+			
+			YDBLogVerbose(@"Creating view table for registeredName(%@): %@", [self registeredName], snippetTableName);
+			
+			NSString *createSnippetTable = [NSString stringWithFormat:
+			    @"CREATE TABLE IF NOT EXISTS \"%@\""
+			    @" (\"rowid\" INTEGER PRIMARY KEY,"
+			    @"  \"snippet\" CHAR"
+			    @" );", snippetTableName];
+			
+			int status = sqlite3_exec(db, [createSnippetTable UTF8String], NULL, NULL, NULL);
+			if (status != SQLITE_OK)
+			{
+				YDBLogError(@"%@ - Failed creating snippet table (%@): %d %s",
+				            THIS_METHOD, snippetTableName, status, sqlite3_errmsg(db));
+				return NO;
+			}
+		}
+		else // if (isNonPersistentView)
+		{
+			NSString *snippetTableName = [self snippetTableName];
+			
+			YapMemoryTable *snippetTable = [[YapMemoryTable alloc] initWithKeyClass:[NSNumber class]];
+			
+			if (![databaseTransaction->connection registerTable:snippetTable withName:snippetTableName])
+			{
+				YDBLogError(@"%@ - Failed registering snippet memory table", THIS_METHOD);
+				return NO;
+			}
+			
+			snippetTableTransaction = [databaseTransaction memoryTableTransaction:snippetTableName];
+		}
+	}
+	
+	return YES;
+}
+
+- (BOOL)populateView
+{
+	YDBLogAutoTrace();
+	
+	// TODO: ...
+	
+	return NO;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Accessors
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSString *)snippetTableName
+{
+	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
+	  (YapDatabaseSearchResultsView *)(viewConnection->view);
+	
+	return [searchResultsView snippetTableName];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -850,7 +1063,7 @@ extern "C" {
 		return;
 	}
 	
-	// Todo...
+	// TODO: ...
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1135,6 +1348,11 @@ extern "C" {
 	  (YapDatabaseSearchResultsViewConnection *)viewConnection;
 	
 	searchResultsViewConnection->query = [query copy];
+}
+
+- (void)performSearchWithQueue:(YapDatabaseSearchQueue *)queue
+{
+	
 }
 
 @end

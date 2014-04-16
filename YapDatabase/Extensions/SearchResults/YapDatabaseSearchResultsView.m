@@ -2,6 +2,7 @@
 #import "YapDatabaseSearchResultsViewPrivate.h"
 #import "YapDatabaseExtensionPrivate.h"
 #import "YapDatabaseFullTextSearch.h"
+#import "YapDatabasePrivate.h"
 #import "YapDatabaseLogging.h"
 
 #if ! __has_feature(objc_arc)
@@ -21,7 +22,37 @@
 
 @implementation YapDatabaseSearchResultsView
 
++ (void)dropTablesForRegisteredName:(NSString *)registeredName
+                    withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+	NSString *snippetTableName = [self snippetTableNameForRegisteredName:registeredName];
+	
+	// Handle persistent view
+	
+	sqlite3 *db = transaction->connection->db;
+	
+	NSString *dropTable = [NSString stringWithFormat:@"DROP TABLE IF EXISTS \"%@\";", snippetTableName];
+	
+	int status = sqlite3_exec(db, [dropTable UTF8String], NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@ - Failed dropping snippet table (%@): %d %s",
+		            THIS_METHOD, snippetTableName, status, sqlite3_errmsg(db));
+	}
+	
+	// Handle memory view
+	
+	[transaction->connection unregisterTableWithName:snippetTableName];
+}
+
++ (NSString *)snippetTableNameForRegisteredName:(NSString *)registeredName
+{
+	return [NSString stringWithFormat:@"view_%@_snippet", registeredName];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Invalid
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)inGroupingBlock
           groupingBlockType:(YapDatabaseViewBlockType)inGroupingBlockType
@@ -180,6 +211,15 @@
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
 	return [[YapDatabaseSearchResultsViewConnection alloc] initWithView:self databaseConnection:databaseConnection];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Internal
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSString *)snippetTableName
+{
+	return [[self class] snippetTableNameForRegisteredName:self.registeredName];
 }
 
 @end
