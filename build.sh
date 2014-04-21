@@ -50,8 +50,10 @@ build()
       # IOS
       if [ "$ARCH" == "x86_64" ]; then
          # Simulator
+         export CROSS_TOP="${IPHONESIMULATOR_PLATFORM}/Developer"
+         export CROSS_SDK="iPhoneSimulator${IOS_SDK_VERSION}.sdk"
          ./Configure darwin64-x86_64-cc --openssldir="/tmp/openssl-${OPENSSL_VERSION}-${ARCH}" &> "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}.log"
-         perl -i -pe "s|^CFLAG= (.*)|CFLAG= -isysroot ${SDK} \$1|g" Makefile
+         sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -miphoneos-version-min=${IOS_DEPLOYMENT_VERSION} !" "Makefile"
       elif [ "$ARCH" == "i386" ]; then
          # Simulator
          export CROSS_TOP="${IPHONESIMULATOR_PLATFORM}/Developer"
