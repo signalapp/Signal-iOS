@@ -1,4 +1,4 @@
-OpenSSL
+OpenSSL-Universal
 =======
 
 OpenSSL CocoaPod for iOS and OSX. Complete solution to OpenSSL on iOS and OSX. Package came with precompiled libraries, and include script to build newer version if necessary.
@@ -19,6 +19,12 @@ Current version contains binaries build with SDK iOS 7.0 (target 5.1.1), and SDK
 
 ````
 pod 'OpenSSL-Universal'
+````
+
+Or allways latest version
+
+````
+pod 'OpenSSL-Universal', :git => 'https://github.com/krzak/OpenSSL.git', :branch => :master'
 ````
 
 **Authors**
