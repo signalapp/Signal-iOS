@@ -1,15 +1,12 @@
-extern "C" {
 #import "YapDatabaseSearchResultsViewTransaction.h"
 #import "YapDatabaseSearchResultsViewPrivate.h"
 #import "YapDatabaseViewChangePrivate.h"
 #import "YapDatabaseFullTextSearchPrivate.h"
 #import "YapDatabaseExtensionPrivate.h"
 #import "YapDatabasePrivate.h"
+#import "YapRowidSet.h"
 #import "YapCollectionKey.h"
 #import "YapDatabaseLogging.h"
-}
-
-#include <unordered_set>
 
 #if ! __has_feature(objc_arc)
 #warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
@@ -33,7 +30,7 @@ extern "C" {
 
 @implementation YapDatabaseSearchResultsViewTransaction
 {
-	std::unordered_set<int64_t> *ftsRowids;
+	YapRowidSet *ftsRowids;
 }
 
 - (id)initWithViewConnection:(YapDatabaseViewConnection *)inViewConnection
@@ -41,7 +38,7 @@ extern "C" {
 {
 	if ((self = [super initWithViewConnection:inViewConnection databaseTransaction:inDatabaseTransaction]))
 	{
-		ftsRowids = new std::unordered_set<int64_t>();
+		ftsRowids = YapRowidSetCreate(0);
 	}
 	return self;
 }
@@ -49,7 +46,7 @@ extern "C" {
 - (void)dealloc
 {
 	if (ftsRowids) {
-		delete ftsRowids;
+		YapRowidSetRelease(ftsRowids);
 	}
 }
 
@@ -302,7 +299,7 @@ extern "C" {
 	
 	// Perform search (if needed)
 	
-	ftsRowids->clear();
+	YapRowidSetRemoveAll(ftsRowids);
 	
 	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
 	  (YapDatabaseSearchResultsView *)viewConnection->view;
@@ -312,10 +309,10 @@ extern "C" {
 	
 	[ftsTransaction enumerateRowidsMatching:[self query] usingBlock:^(int64_t rowid, BOOL *stop) {
 		
-		ftsRowids->insert(rowid);
+		YapRowidSetAdd(ftsRowids, rowid);
 	}];
 	
-	if (ftsRowids->size() > 0)
+	if (YapRowidSetCount(ftsRowids) > 0)
 	{
 		if (searchResultsView->parentViewName)
 			[self updateViewFromParent];
@@ -1216,7 +1213,7 @@ extern "C" {
 		[parentViewTransaction enumerateRowidsInGroup:group
 		                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop)
 		{
-			if (ftsRowids->find(rowid) != ftsRowids->end())
+			if (YapRowidSetContains(ftsRowids, rowid))
 			{
 				if (existing && (existingRowid == rowid))
 				{
@@ -1275,7 +1272,7 @@ extern "C" {
 	
 	// Create a copy of the ftsRowids set.
 	// As we enumerate the existing rowids in our view, we're going to
-	std::unordered_set<int64_t> *ftsRowidsLeft = new std::unordered_set<int64_t>(*ftsRowids);
+	YapRowidSet *ftsRowidsLeft = YapRowidSetCopy(ftsRowids);
 	
 	for (NSString *group in [self allGroups])
 	{
@@ -1291,13 +1288,13 @@ extern "C" {
 			                       range:range
 			                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop)
 			{
-				if (ftsRowidsLeft->find(rowid) != ftsRowidsLeft->end())
+				if (YapRowidSetContains(ftsRowidsLeft, rowid))
 				{
 					// The row was previously in the view (in old search results),
 					// and is still in the view (in new search results).
 					
 					// Removes from ftsRowidsLeft set
-					ftsRowidsLeft->erase(rowid);
+					YapRowidSetRemove(ftsRowidsLeft, rowid);
 				}
 				else
 				{
@@ -1328,14 +1325,9 @@ extern "C" {
 	
 	// Now enumerate any items in ftsRowidsLeft
 	
-	std::unordered_set<int64_t>::iterator iterator = ftsRowidsLeft->begin();
-	std::unordered_set<int64_t>::iterator end;
-	
 	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
 	
-	while (iterator != end)
-	{
-		int64_t rowid = *iterator;
+	YapRowidSetEnumerate(ftsRowidsLeft, ^(int64_t rowid, BOOL *stop) { @autoreleasepool {
 		
 		YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
 		
@@ -1420,13 +1412,11 @@ extern "C" {
 			         metadata:metadata
 			          inGroup:group withChanges:flags isNew:YES];
 		}
-		
-		iterator++;
-	}
+	}});
 	
 	// Dealloc the temporary c++ set
 	if (ftsRowidsLeft) {
-		delete ftsRowidsLeft;
+		YapRowidSetRelease(ftsRowidsLeft);
 	}
 }
 
@@ -1440,7 +1430,7 @@ extern "C" {
 		return;
 	}
 	
-	ftsRowids->clear();
+	YapRowidSetRemoveAll(ftsRowids);
 	
 	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
 	  (YapDatabaseSearchResultsView *)viewConnection->view;
@@ -1450,7 +1440,7 @@ extern "C" {
 	
 	[ftsTransaction enumerateRowidsMatching:query usingBlock:^(int64_t rowid, BOOL *stop) {
 		
-		ftsRowids->insert(rowid);
+		YapRowidSetAdd(ftsRowids, rowid);
 	}];
 	
 	if (searchResultsView->parentViewName)
