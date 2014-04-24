@@ -56,6 +56,8 @@
 **/
 - (BOOL)hasGroup:(NSString *)group;
 
+#pragma mark Counts
+
 /**
  * Returns the total number of keys in the given group.
  * If the group doesn't exist, returns zero.
@@ -66,6 +68,11 @@
  * Returns the total number of keys in every single group.
 **/
 - (NSUInteger)numberOfKeysInAllGroups;
+
+/**
+ * Returns YES if the view is empty (has zero groups).
+**/
+- (BOOL)isEmpty;
 
 #pragma mark Fetching
 

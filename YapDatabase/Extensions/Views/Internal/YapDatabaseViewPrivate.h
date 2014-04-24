@@ -75,6 +75,7 @@
 }
 
 - (id)initWithView:(YapDatabaseView *)view databaseConnection:(YapDatabaseConnection *)dbc;
+- (void)_flushStatements;
 
 - (void)prepareForReadWriteTransaction;
 - (void)postRollbackCleanup;

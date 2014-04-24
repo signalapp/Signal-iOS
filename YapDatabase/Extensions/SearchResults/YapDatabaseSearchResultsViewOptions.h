@@ -23,6 +23,8 @@
  * 
  * This is especially powerful if the parentView is rather large, but you're only displaying a few groups from it.
  * That way the YapDatabaseSearchResults ignores all but the given groups when performing the merge.
+ * 
+ * Note: This property only applies if using a parentView.
  *
  * The default value is nil.
 **/

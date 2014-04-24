@@ -53,10 +53,15 @@
  *
  *     // What changed in my tableView?
  *
- *     NSDictionary *mappings = @{ @"bestSellers" : @(0) };
- *     NSArray *changes = [[databaseConnection extension:@"sales"] operationsForNotifications:notifications
- * 	                                                        withGroupToSectionMappings:mappings];
- *     if ([changes count] == 0)
+ *     NSArray *sectionChanges = nil;
+ *     NSArray *rowChanges = nil;
+ * 
+ *     [[databaseConnection extension:@"sales"] getSectionChanges:&sectionChanges
+ *                                                     rowChanges:&rowChanges
+ *                                               forNotifications:notifications
+ *                                                   withMappings:mappings];
+ *
+ *     if ([sectionChanges count] == 0 && [rowChanges count] == 0)
  *     {
  *         // There aren't any changes that affect our tableView!
  *         return;
@@ -67,33 +72,51 @@
  *
  *     [self.tableView beginUpdates];
  *
- *     for (YapDatabaseViewChange *change in changes)
+ *     for (YapDatabaseViewSectionChange *sectionChange in sectionChanges)
  *     {
- *         switch (change.type)
+ *         switch (sectionChange.type)
  *         {
  *             case YapDatabaseViewChangeDelete :
  *             {
- *                [self.tableView deleteRowsAtIndexPaths:@[ change.indexPath ]
+ *                 [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionChange.index]
+ *                               withRowAnimation:UITableViewRowAnimationAutomatic];
+ *                 break;
+ *             }
+ *             case YapDatabaseViewChangeInsert :
+ *             {
+ *                 [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionChange.index]
+ *                               withRowAnimation:UITableViewRowAnimationAutomatic];
+ *                 break;
+ *             }
+ *         }
+ *     }
+ *     for (YapDatabaseViewRowChange *rowChange in rowChanges)
+ *     {
+ *         switch (rowChange.type)
+ *         {
+ *             case YapDatabaseViewChangeDelete :
+ *             {
+ *                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]
  *                                      withRowAnimation:UITableViewRowAnimationAutomatic];
  *                break;
  *            }
  *            case YapDatabaseViewChangeInsert :
  *            {
- *                [self.tableView insertRowsAtIndexPaths:@[ change.newIndexPath ]
+ *                [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
  *                                      withRowAnimation:UITableViewRowAnimationAutomatic];
  *                break;
  *            }
  *            case YapDatabaseViewChangeMove :
  *            {
- *                [self.tableView deleteRowsAtIndexPaths:@[ change.indexPath ]
+ *                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]
  *                                      withRowAnimation:UITableViewRowAnimationAutomatic];
- *                [self.tableView insertRowsAtIndexPaths:@[ change.newIndexPath ]
+ *                [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
  *                                      withRowAnimation:UITableViewRowAnimationAutomatic];
  *                break;
  *            }
  *            case YapDatabaseViewChangeUpdate :
  *            {
- *                [self.tableView reloadRowsAtIndexPaths:@[ change.indexPath ]
+ *                [self.tableView reloadRowsAtIndexPaths:@[ rowChange.indexPath ]
  *                                      withRowAnimation:UITableViewRowAnimationAutomatic];
  *                break;
  *            }

@@ -2226,6 +2226,9 @@
 	}
 }
 
+/**
+ * This method is used by subclasses.
+**/
 - (void)removeAllRowidsInGroup:(NSString *)group
 {
 	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
@@ -3775,6 +3778,10 @@
 	return NO;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Public API - Counts
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 - (NSUInteger)numberOfKeysInGroup:(NSString *)group
 {
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
@@ -3801,6 +3808,22 @@
 	}
 	
 	return count;
+}
+
+- (BOOL)isEmpty
+{
+	for (NSArray *pagesMetadataForGroup in [viewConnection->group_pagesMetadata_dict objectEnumerator])
+	{
+		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
+		{
+			if (pageMetadata->count > 0)
+			{
+				return NO;
+			}
+		}
+	}
+	
+	return YES;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

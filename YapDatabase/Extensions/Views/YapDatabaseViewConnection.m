@@ -127,6 +127,8 @@ static NSString *const key_changes                  = @"changes";
 **/
 - (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction
 {
+	YDBLogAutoTrace();
+	
 	YapDatabaseViewTransaction *transaction =
 	    [[YapDatabaseViewTransaction alloc] initWithViewConnection:self
 	                                           databaseTransaction:databaseTransaction];
@@ -139,6 +141,8 @@ static NSString *const key_changes                  = @"changes";
 **/
 - (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
 {
+	YDBLogAutoTrace();
+	
 	YapDatabaseViewTransaction *transaction =
 	    [[YapDatabaseViewTransaction alloc] initWithViewConnection:self
 	                                           databaseTransaction:databaseTransaction];
@@ -233,6 +237,8 @@ static NSString *const key_changes                  = @"changes";
 **/
 - (void)postCommitCleanup
 {
+	YDBLogAutoTrace();
+	
 	// This code is best understood alongside the getExternalChangeset:internalChangeset: method (below).
 	
 	// Both dirtyKeys & dirtyPages are sent in the internalChangeset.

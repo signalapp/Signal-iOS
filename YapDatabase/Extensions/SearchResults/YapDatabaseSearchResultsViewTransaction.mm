@@ -288,8 +288,41 @@ extern "C" {
 {
 	YDBLogAutoTrace();
 	
-	// TODO: ...
+	// Remove everything from the database
 	
+	[self removeAllRowids];
+	
+	// Initialize ivars
+	
+	if (viewConnection->group_pagesMetadata_dict == nil)
+		viewConnection->group_pagesMetadata_dict = [[NSMutableDictionary alloc] init];
+	
+	if (viewConnection->pageKey_group_dict == nil)
+		viewConnection->pageKey_group_dict = [[NSMutableDictionary alloc] init];
+	
+	// Perform search (if needed)
+	
+	ftsRowids->clear();
+	
+	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
+	  (YapDatabaseSearchResultsView *)viewConnection->view;
+	
+	__unsafe_unretained YapDatabaseFullTextSearchTransaction *ftsTransaction =
+	  (YapDatabaseFullTextSearchTransaction *)[databaseTransaction ext:searchResultsView->fullTextSearchName];
+	
+	[ftsTransaction enumerateRowidsMatching:[self query] usingBlock:^(int64_t rowid, BOOL *stop) {
+		
+		ftsRowids->insert(rowid);
+	}];
+	
+	if (ftsRowids->size() > 0)
+	{
+		if (searchResultsView->parentViewName)
+			[self updateViewFromParent];
+		else
+			[self updateViewUsingBlocks];
+	}
+
 	return NO;
 }
 
@@ -303,6 +336,53 @@ extern "C" {
 	  (YapDatabaseSearchResultsView *)(viewConnection->view);
 	
 	return [searchResultsView snippetTableName];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Logic
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * This method overrides the version in YapDatabaseViewTransaction.
+ * It handles clearing the snippet table too.
+**/
+- (void)removeAllRowids
+{
+	YDBLogAutoTrace();
+	
+	// Clear all the main view tables
+	[super removeAllRowids];
+	
+	// Clear our snippet table
+	
+	__unsafe_unretained YapDatabaseSearchResultsViewConnection *searchResultsConnection =
+	  (YapDatabaseSearchResultsViewConnection *)viewConnection;
+	
+	if ([self isPersistentView])
+	{
+		sqlite3_stmt *snippetStatement = [searchResultsConnection snippetTable_removeAllStatement];
+		if (snippetStatement == NULL) {
+			return;
+		}
+		
+		// DELETE FROM "snippetTableName";
+		
+		YDBLogVerbose(@"DELETE FROM '%@';", [self snippetTableName]);
+		
+		int status = sqlite3_step(snippetStatement);
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"%@ (%@): Error in snippetStatement: %d %s",
+			            THIS_METHOD, [self registeredName],
+			            status, sqlite3_errmsg(databaseTransaction->connection->db));
+		}
+		
+		sqlite3_reset(snippetStatement);
+	}
+	else // if (isNonPersistentView)
+	{
+		[snippetTableTransaction removeAllObjects];
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1067,6 +1147,22 @@ extern "C" {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark ReadWrite
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)inGroupingBlock
+       groupingBlockType:(YapDatabaseViewBlockType)inGroupingBlockType
+            sortingBlock:(YapDatabaseViewSortingBlock)inSortingBlock
+        sortingBlockType:(YapDatabaseViewBlockType)inSortingBlockType
+              versionTag:(NSString *)inVersionTag
+{
+	YDBLogAutoTrace();
+	
+	// TODO: Don't allow for parentView setup.
+	//       Otherwise need to implement properly.
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Searching
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1081,6 +1177,8 @@ extern "C" {
 /**
  * This method updates the view by using the updated ftsRowids set.
  * Only use this method if parentViewName is non-nil.
+ * 
+ * Note: You must update ftsRowids before invoking this method.
 **/
 - (void)updateViewFromParent
 {
@@ -1089,15 +1187,29 @@ extern "C" {
 	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
 	  (YapDatabaseSearchResultsView *)viewConnection->view;
 	
+	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
+	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
+	
 	__unsafe_unretained YapDatabaseViewTransaction *parentViewTransaction =
 	  (YapDatabaseViewTransaction *)[databaseTransaction ext:searchResultsView->parentViewName];
 	
-	for (NSString *group in [parentViewTransaction allGroups])
+	BOOL wasEmpty = [self isEmpty];
+	
+	id <NSFastEnumeration> groupsToEnumerate = nil;
+	
+	if (searchResultsOptions.allowedGroups) {
+		groupsToEnumerate = searchResultsOptions.allowedGroups;
+	}
+	else {
+		groupsToEnumerate = [parentViewTransaction allGroups];
+	}
+	
+	for (NSString *group in groupsToEnumerate)
 	{
 		__block BOOL existing = NO;
 		__block int64_t existingRowid = 0;
 		
-		existing = [self getRowid:&existingRowid atIndex:0 inGroup:group];
+		existing = wasEmpty ? NO : [self getRowid:&existingRowid atIndex:0 inGroup:group];
 		
 		__block NSUInteger index = 0;
 		
@@ -1112,7 +1224,7 @@ extern "C" {
 					// and is still in the view (in new search results).
 					
 					index++;
-					existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
+					existing = wasEmpty ? NO : [self getRowid:&existingRowid atIndex:index inGroup:group];
 				}
 				else
 				{
@@ -1154,6 +1266,8 @@ extern "C" {
 /**
  * This method updates the view by using the updated ftsRowids set.
  * Only use this method if parentViewName is nil.
+ * 
+ * Note: You must update ftsRowids before invoking this method.
 **/
 - (void)updateViewUsingBlocks
 {
