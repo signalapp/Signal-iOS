@@ -81,7 +81,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Row: Delete, Delete
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test1A
+- (void)test_row_1A
 {
 	//     orig    delte   delte
 	//
@@ -112,7 +112,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(changes, 1).finalIndex == NSNotFound, @"");
 }
 
-- (void)test1B
+- (void)test_row_1B
 {
 	//     orig    delte   delte
 	//
@@ -141,7 +141,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(changes, 1).originalIndex == 3, @"");
 }
 
-- (void)test1C
+- (void)test_row_1C
 {
 	//     orig    delte   delte
 	//
@@ -174,7 +174,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Row: Insert, Insert
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test2A
+- (void)test_row_2A
 {
 	//     orig    insrt   insrt
 	//
@@ -205,7 +205,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(changes, 1).finalIndex == 0, @"");
 }
 
-- (void)test2B
+- (void)test_row_2B
 {
 	//     orig    insrt   insrt
 	//
@@ -236,7 +236,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(changes, 1).finalIndex == 2, @"");
 }
 
-- (void)test2C
+- (void)test_row_2C
 {
 	//     orig    insrt   insrt
 	//
@@ -271,7 +271,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Row: Delete, Insert
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test3A
+- (void)test_row_3A
 {
 	//     orig    delte   insrt
 	//
@@ -300,7 +300,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(changes, 1).finalIndex == 0, @"");
 }
 
-- (void)test3B
+- (void)test_row_3B
 {
 	//     orig    delte   insrt
 	//
@@ -329,7 +329,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(changes, 1).finalIndex == 2, @"");
 }
 
-- (void)test3C
+- (void)test_row_3C
 {
 	//     orig    delte   insrt
 	//
@@ -362,7 +362,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Row: Insert, Delete
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test4A
+- (void)test_row_4A
 {
 	//     orig    insrt   delte
 	//
@@ -392,7 +392,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(changes, 1).originalIndex == 0, @"");
 }
 
-- (void)test4B
+- (void)test_row_4B
 {
 	//     orig    insrt   delte
 	//
@@ -422,7 +422,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(changes, 1).originalIndex == 1, @"");
 }
 
-- (void)test4C
+- (void)test_row_4C
 {
 	//     orig    insrt   delte
 	//
@@ -452,7 +452,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(changes, 1).originalIndex == 2, @"");
 }
 
-- (void)test4D
+- (void)test_row_4D
 {
 	//     orig    insrt   delte
 	//
@@ -486,7 +486,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Row: Insert, Delete, Delete
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test5A
+- (void)test_row_5A
 {
 	//     orig    insrt   delte   delte
 	//
@@ -521,7 +521,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(changes, 2).originalIndex == 1, @"");
 }
 
-- (void)test5B
+- (void)test_row_5B
 {
 	//     orig    insrt   delte   delte
 	//
@@ -560,7 +560,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Row: Delete, Insert, Insert
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test6A
+- (void)test_row_6A
 {
 	//     orig    delte   insrt   insrt
 	//
@@ -595,7 +595,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(changes, 2).finalIndex == 0, @"");
 }
 
-- (void)test6B
+- (void)test_row_6B
 {
 	//     orig    delte   insrt   insrt
 	//
@@ -630,7 +630,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(changes, 2).finalIndex == 1, @"");
 }
 
-- (void)test6C
+- (void)test_row_6C
 {
 	//     orig    delte   insrt   insrt
 	//
@@ -665,7 +665,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(changes, 2).finalIndex == 0, @"");
 }
 
-- (void)test6D
+- (void)test_row_6D
 {
 	//     orig    delte   insrt   insrt
 	//
@@ -700,7 +700,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(changes, 2).finalIndex == 2, @"");
 }
 
-- (void)test6E
+- (void)test_row_6E
 {
 	//     orig    delte   insrt   insrt
 	//
@@ -735,7 +735,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(changes, 2).finalIndex == 1, @"");
 }
 
-- (void)test6F
+- (void)test_row_6F
 {
 	//     orig    delte   insrt   insrt
 	//
@@ -774,7 +774,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Row: Insert, Delete ...
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test7A
+- (void)test_row_7A
 {
 	//     orig    insrt   delte   delte   delte   delte
 	//
@@ -819,7 +819,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(changes, 4).originalIndex == 3, @"");
 }
 
-- (void)test7B
+- (void)test_row_7B
 {
 	//     orig    insrt   delte   delte   delte   delte
 	//
@@ -864,7 +864,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(changes, 4).originalIndex == 2, @"");
 }
 
-- (void)test7C
+- (void)test_row_7C
 {
 	//     orig    insrt   delte   delte   delte   delte
 	//
@@ -913,7 +913,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Row: Delete, Insert ...
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test8A
+- (void)test_row_8A
 {
 	//     orig    delte   insrt   insrt   insrt
 	//
@@ -955,11 +955,39 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Row: Move
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test_row_9A
+{
+	//     orig    delte   insrt
+	//
+	// 0 | lion  | tiger | tiger |
+	// 1 | tiger | bear  | bear  |
+	// 2 | bear  |       | lion  |
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"lion"  inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"lion"  inGroup:@"" atIndex:2]];
+	
+	// Process
+	
+	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange consolidateRowChanges:changes];
+	
+	// Expecting:
+	// Move: 0 -> 2 (lion)
+	
+	XCTAssertTrue(RowOp(changes, 0).type == YapDatabaseViewChangeMove, @"");
+	XCTAssertTrue(RowOp(changes, 0).originalIndex == 0, @"");
+	XCTAssertTrue(RowOp(changes, 0).finalIndex == 2, @"");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 #pragma mark Section: Insert
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test9A
+- (void)test_section_1A
 {
 	//           orig    insrt
 	//
@@ -1000,7 +1028,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(rChanges, 0).finalIndex == 0, @"");
 }
 
-- (void)test9B
+- (void)test_section_1B
 {
 	//           orig    insrt
 	//
@@ -1044,7 +1072,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Section: Delete
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test10A
+- (void)test_section_2A
 {
 	//           orig    delte
 	//
@@ -1085,7 +1113,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(rChanges, 0).originalIndex == 0, @"");
 }
 
-- (void)test10B
+- (void)test_section_2B
 {
 	//           orig    delte
 	//
@@ -1129,7 +1157,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Section: Insert +
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test11A
+- (void)test_section_3A
 {
 	//           orig   insrt  insrt
 	//
@@ -1182,7 +1210,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(rChanges, 1).finalIndex == 1, @"");
 }
 
-- (void)test11B
+- (void)test_section_3B
 {
 	//           orig   insrt  insrt
 	//
@@ -1235,7 +1263,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(rChanges, 1).finalIndex == 1, @"");
 }
 
-- (void)test11C
+- (void)test_section_3C
 {
 	//           orig   insrt  updte
 	//
@@ -1291,7 +1319,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(rChanges, 1).finalIndex == 0, @"");
 }
 
-- (void)test11D
+- (void)test_section_3D
 {
 	//           orig   insrt  updte
 	//
@@ -1351,7 +1379,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Section: Delete +
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test12A
+- (void)test_section_4A
 {
 	//           orig   insrt  insrt
 	//
@@ -1405,7 +1433,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(rChanges, 1).finalIndex == 1, @"");
 }
 
-- (void)test12B
+- (void)test_section_4B
 {
 	//           orig   insrt  insrt
 	//
@@ -1459,7 +1487,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(rChanges, 1).finalIndex == 1, @"");
 }
 
-- (void)test12C
+- (void)test_section_4C
 {
 	//           orig   delte  updte
 	//
@@ -1516,7 +1544,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(rChanges, 1).finalIndex == 0, @"");
 }
 
-- (void)test12D
+- (void)test_section_4D
 {
 	//           orig   delte  updte
 	//
@@ -1577,7 +1605,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Section: Insert, Delete
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test13A
+- (void)test_section_5A
 {
 	//           orig   insrt  delte
 	//
@@ -1637,7 +1665,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
 }
 
-- (void)test13B
+- (void)test_section_5B
 {
 	//           orig   insrt  delte
 	//
@@ -1697,7 +1725,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
 }
 
-- (void)test13C
+- (void)test_section_5C
 {
 	//           orig   insrt  delte
 	//
@@ -1761,7 +1789,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Section: Insert, Insert
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test14A
+- (void)test_section_6A
 {
 	//           orig   insrt  delte
 	//
@@ -1821,7 +1849,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(rChanges, 1).finalIndex == 0, @"");
 }
 
-- (void)test14B
+- (void)test_section_6B
 {
 	//           orig   insrt  delte
 	//
@@ -1885,7 +1913,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Section: Delete, Delete
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test15A
+- (void)test_section_7A
 {
 	//           orig   insrt  delte
 	//
@@ -1945,7 +1973,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
 }
 
-- (void)test15B
+- (void)test_section_7B
 {
 	//           orig   insrt  delte
 	//
@@ -2009,7 +2037,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Section: Move
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test16A
+- (void)test_section_8A
 {
 	//           orig   move
 	//
@@ -2061,7 +2089,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(rChanges, 0).finalIndex == 0, @"");
 }
 
-- (void)test16B
+- (void)test_section_8B
 {
 	//           orig   move
 	//
@@ -2112,7 +2140,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(rChanges, 0).finalIndex == 1, @"");
 }
 
-- (void)test16C
+- (void)test_section_8C
 {
 	//           orig   move
 	//
@@ -2173,7 +2201,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Section: Update & Move
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test17A
+- (void)test_section_9A
 {
 	//           orig   updte  move
 	//
@@ -2226,7 +2254,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Section: Drop & Add Again
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test18A
+- (void)test_section_10A
 {
 	//           orig   delte  insrt
 	//
@@ -2280,7 +2308,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Section: Add & Drop Again
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test19A
+- (void)test_section_11A
 {
 	//           orig   insrt  delte
 	//
@@ -2327,7 +2355,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 #pragma mark Section: Reset
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test20A
+- (void)test_section_12A
 {
 	//           orig   reset
 	//
@@ -2377,7 +2405,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
 }
 
-- (void)test20B
+- (void)test_section_12B
 {
 	//           orig   reset
 	//
@@ -2424,7 +2452,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(rChanges, 1).originalIndex == 0, @"");
 }
 
-- (void)test20C
+- (void)test_section_12C
 {
 	//           orig   reset  insrt
 	//

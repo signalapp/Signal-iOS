@@ -5255,6 +5255,98 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 3).changes == flags, @"");
 }
 
+- (void)test_dependencies_9
+{
+	YapDatabaseViewMappings *mappings, *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(3) }];
+	originalMappings = [mappings copy];
+	
+	// Try hard to mess up the algorithm...
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key0" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key0" inGroup:@"" atIndex:2]];
+	
+	[mappings updateWithCounts:@{ @"":@(3) }];
+	
+	// Fetch changeset
+	
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:NULL
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	XCTAssertTrue([rowChanges count] == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeMove, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 2, @"");
+	
+	int flags = YapDatabaseViewChangedDependency;
+	
+	XCTAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeUpdate, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 1, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).changes == flags, @"");
+}
+
+- (void)test_dependencies_10
+{
+	YapDatabaseViewMappings *mappings, *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	
+	YapDatabaseViewRangeOptions *rangeOptions =
+	  [YapDatabaseViewRangeOptions flexibleRangeWithLength:50 offset:0 from:YapDatabaseViewEnd];
+	rangeOptions.maxLength = 150;
+	[mappings setRangeOptions:rangeOptions forGroup:@""];
+	
+	[mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(3) }];
+	originalMappings = [mappings copy];
+	
+	// Try hard to mess up the algorithm...
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key0" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key0" inGroup:@"" atIndex:2]];
+	
+	[mappings updateWithCounts:@{ @"":@(3) }];
+	
+	// Fetch changeset
+	
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:NULL
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	XCTAssertTrue([rowChanges count] == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeMove, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 2, @"");
+	
+	int flags = YapDatabaseViewChangedDependency;
+	
+	XCTAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeUpdate, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 1, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).changes == flags, @"");
+}
+
 @end
 
 
@@ -6724,8 +6816,10 @@ static NSMutableArray *changes;
 	XCTAssertTrue([RowOp(rowChanges, 1).finalGroup isEqualToString:consolidatedGroupName], @"");
 }
 
-- (void)test_setting_autoconsolidation_group_name_to_existing_group_should_result_in_nil_groupname_and_zero_threshold{
-    YapDatabaseViewMappings *mapping = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"group1", @"group2"] view:@"view"];
+- (void)test_setting_autoconsolidation_group_name_to_existing_group_should_result_in_nil_groupname_and_zero_threshold
+{
+	YapDatabaseViewMappings *mapping =
+	  [[YapDatabaseViewMappings alloc] initWithGroups:@[@"group1", @"group2"] view:@"view"];
     
     [mapping setAutoConsolidateGroupsThreshold:100 withName:@"group1"];
 
@@ -6733,6 +6827,10 @@ static NSMutableArray *changes;
     XCTAssertTrue([mapping autoConsolidateGroupsThreshold] == 0);
 }
 @end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Dynamic Groups
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface TestViewMappingDynamicGroupAddition : TestViewMappingsBase
 @end
