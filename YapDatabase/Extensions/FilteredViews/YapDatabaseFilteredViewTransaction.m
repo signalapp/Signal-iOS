@@ -283,11 +283,15 @@
 			
 			if (InvokeFilterBlock(group, rowid, ck))
 			{
-				if (filteredIndex == 0)
+				if (filteredIndex == 0) {
 					[self insertRowid:rowid collectionKey:ck inNewGroup:group];
-				else
-					[self insertRowid:rowid collectionKey:ck inGroup:group atIndex:filteredIndex
-					                                           withExistingPageKey:nil];
+				}
+				else {
+					[self insertRowid:rowid collectionKey:ck
+					                              inGroup:group
+					                              atIndex:filteredIndex
+					                  withExistingPageKey:nil];
+				}
 				filteredIndex++;
 			}
 		}];
@@ -297,9 +301,15 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Logic
+#pragma mark Repopulate
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * This method is invoked if:
+ *
+ * - Our parentView had its groupingBlock and/or sortingBlock changed.
+ * - A parentView of our parentView had its groupingBlock and/or sortingBlock changed.
+**/
 - (void)repopulateViewDueToParentGroupingBlockChange
 {
 	// Update our groupingBlock & sortingBlock to match the changed parent
@@ -366,7 +376,8 @@
 /**
  * This method is invoked if:
  *
- * - The parentView is a filteredView, and the filteringBlock of the parent instance is changed
+ * - Our parentView is a filteredView, and its filteringBlock was changed.
+ * - A parentView of our parentView is a filteredView, and its filteringBlock was changed.
 **/
 - (void)repopulateViewDueToParentFilteringBlockChange
 {
@@ -382,7 +393,7 @@
 	//
 	// - in the parentView, the groups may have changed
 	// - in the parentView, the items within each group may have changed
-	// - in the parentView, the order of items within each group is the same (important)
+	// - in the parentView, the order of items within each group is the same (important!)
 	//
 	// So we can run an algorithm similar to 'repopulateViewDueToFilteringBlockChange',
 	// but we have to watch out for stuff in our view that no longer exists in the parent view.
@@ -525,11 +536,15 @@
 					// The row was not previously in our view (not previously in parent view),
 					// but is now in the view (added to parent view, and allowed by our filter).
 				
-					if (index == 0 && ([viewConnection->group_pagesMetadata_dict objectForKey:group] == nil))
+					if (index == 0 && ([viewConnection->group_pagesMetadata_dict objectForKey:group] == nil)) {
 						[self insertRowid:rowid collectionKey:ck inNewGroup:group];
-					else
-						[self insertRowid:rowid collectionKey:ck inGroup:group
-								  atIndex:index withExistingPageKey:nil];
+					}
+					else {
+						[self insertRowid:rowid collectionKey:ck
+						                              inGroup:group
+						                              atIndex:index
+					  	                  withExistingPageKey:nil];
+					}
 					index++;
 				}
 				else

@@ -703,343 +703,363 @@
 
 - (sqlite3_stmt *)beginTransactionStatement
 {
-	if (beginTransactionStatement == NULL)
+	sqlite3_stmt **statement = &beginTransactionStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "BEGIN TRANSACTION;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &beginTransactionStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return beginTransactionStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)commitTransactionStatement
 {
-	if (commitTransactionStatement == NULL)
+	sqlite3_stmt **statement = &commitTransactionStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "COMMIT TRANSACTION;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &commitTransactionStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return commitTransactionStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)rollbackTransactionStatement
 {
-	if (rollbackTransactionStatement == NULL)
+	sqlite3_stmt **statement = &rollbackTransactionStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "ROLLBACK TRANSACTION;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &rollbackTransactionStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return rollbackTransactionStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)yapGetDataForKeyStatement
 {
-	if (yapGetDataForKeyStatement == NULL)
+	sqlite3_stmt **statement = &yapGetDataForKeyStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "SELECT \"data\" FROM \"yap2\" WHERE \"extension\" = ? AND \"key\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &yapGetDataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return yapGetDataForKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)yapSetDataForKeyStatement
 {
-	if (yapSetDataForKeyStatement == NULL)
+	sqlite3_stmt **statement = &yapSetDataForKeyStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "INSERT OR REPLACE INTO \"yap2\" (\"extension\", \"key\", \"data\") VALUES (?, ?, ?);";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &yapSetDataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return yapSetDataForKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)yapRemoveForKeyStatement
 {
-	if (yapRemoveForKeyStatement == NULL)
+	sqlite3_stmt **statement = &yapRemoveForKeyStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "DELETE FROM \"yap2\" WHERE \"extension\" = ? AND \"key\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &yapRemoveForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return yapRemoveForKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)yapRemoveExtensionStatement
 {
-	if (yapRemoveExtensionStatement == NULL)
+	sqlite3_stmt **statement = &yapRemoveExtensionStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "DELETE FROM \"yap2\" WHERE \"extension\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &yapRemoveExtensionStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return yapRemoveExtensionStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)getCollectionCountStatement
 {
-	if (getCollectionCountStatement == NULL)
+	sqlite3_stmt **statement = &getCollectionCountStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "SELECT COUNT(DISTINCT collection) AS NumberOfRows FROM \"database2\";";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getCollectionCountStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return getCollectionCountStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)getKeyCountForCollectionStatement
 {
-	if (getKeyCountForCollectionStatement == NULL)
+	sqlite3_stmt **statement = &getKeyCountForCollectionStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database2\" WHERE \"collection\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getKeyCountForCollectionStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return getKeyCountForCollectionStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)getKeyCountForAllStatement
 {
-	if (getKeyCountForAllStatement == NULL)
+	sqlite3_stmt **statement = &getKeyCountForAllStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database2\";";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getKeyCountForAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return getKeyCountForAllStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)getCountForRowidStatement
 {
-	if (getCountForRowidStatement == NULL)
+	sqlite3_stmt **statement = &getCountForRowidStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "SELECT COUNT(*) AS NumberOfRows FROM \"database2\" WHERE \"rowid\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getCountForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return getCountForRowidStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)getRowidForKeyStatement
 {
-	if (getRowidForKeyStatement == NULL)
+	sqlite3_stmt **statement = &getRowidForKeyStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "SELECT \"rowid\" FROM \"database2\" WHERE \"collection\" = ? AND \"key\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getRowidForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return getRowidForKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)getKeyForRowidStatement
 {
-	if (getKeyForRowidStatement == NULL)
+	sqlite3_stmt **statement = &getKeyForRowidStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "SELECT \"collection\", \"key\" FROM \"database2\" WHERE \"rowid\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getKeyForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return getKeyForRowidStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)getDataForRowidStatement
 {
-	if (getDataForRowidStatement == NULL)
+	sqlite3_stmt **statement = &getDataForRowidStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "SELECT \"data\" FROM \"database2\" WHERE \"rowid\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getDataForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return getDataForRowidStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)getMetadataForRowidStatement
 {
-	if (getMetadataForRowidStatement == NULL)
+	sqlite3_stmt **statement = &getMetadataForRowidStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "SELECT \"metadata\" FROM \"database2\" WHERE \"rowid\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getMetadataForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return getMetadataForRowidStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)getAllForRowidStatement
 {
-	if (getAllForRowidStatement == NULL)
+	sqlite3_stmt **statement = &getAllForRowidStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "SELECT \"data\", \"metadata\" FROM \"database2\" WHERE \"rowid\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getAllForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return getAllForRowidStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)getDataForKeyStatement
 {
-	if (getDataForKeyStatement == NULL)
+	sqlite3_stmt **statement = &getDataForKeyStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "SELECT \"data\" FROM \"database2\" WHERE \"collection\" = ? AND \"key\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getDataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return getDataForKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)getMetadataForKeyStatement
 {
-	if (getMetadataForKeyStatement == NULL)
+	sqlite3_stmt **statement = &getMetadataForKeyStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "SELECT \"metadata\" FROM \"database2\" WHERE \"collection\" = ? AND \"key\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getMetadataForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return getMetadataForKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)getAllForKeyStatement
 {
-	if (getAllForKeyStatement == NULL)
+	sqlite3_stmt **statement = &getAllForKeyStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "SELECT \"data\", \"metadata\" FROM \"database2\" WHERE \"collection\" = ? AND \"key\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &getAllForKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return getAllForKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)insertForRowidStatement
 {
-	if (insertForRowidStatement == NULL)
+	sqlite3_stmt **statement = &insertForRowidStatement;
+	if (*statement == NULL)
 	{
 		char *stmt = "INSERT INTO \"database2\""
 		             " (\"collection\", \"key\", \"data\", \"metadata\") VALUES (?, ?, ?, ?);";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &insertForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return insertForRowidStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)updateAllForRowidStatement

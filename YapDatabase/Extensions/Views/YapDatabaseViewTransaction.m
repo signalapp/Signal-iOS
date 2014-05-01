@@ -1514,6 +1514,10 @@
 	  [YapDatabaseViewRowChange insertKey:collectionKey inGroup:group atIndex:0]];
 	
 	[viewConnection->mutatedGroups addObject:group];
+	
+	// Subclass hook
+	
+	[self didInsertRowid:rowid collectionKey:collectionKey];
 }
 
 /**
@@ -1630,6 +1634,10 @@
 	{
 		[self splitOversizedPage:page withPageKey:pageKey toSize:target];
 	}
+	
+	// Subclass hook
+	
+	[self didInsertRowid:rowid collectionKey:collectionKey];
 }
 
 /**
@@ -1700,7 +1708,13 @@
 		}
 		else
 		{
-			[self removeRowid:rowid collectionKey:collectionKey withPageKey:existingPageKey inGroup:existingGroup];
+			// The item has changed groups.
+			// Remove it from previous group.
+			
+			[self removeRowid:rowid collectionKey:collectionKey
+			                          withPageKey:existingPageKey
+			                              inGroup:existingGroup
+			                     skipSubclassHook:YES]; // will be re-adding (in new group)
 			
 			// Don't forget to reset the existingPageKey ivar!
 			// Or else 'insertKey:inGroup:atIndex:withExistingPageKey:' will be given an invalid existingPageKey.
@@ -1855,10 +1869,13 @@
 		}
 		else
 		{
-			// The key has changed position.
+			// The item has changed position within its group.
 			// Remove it from previous position (and don't forget to decrement count).
 			
-			[self removeRowid:rowid collectionKey:collectionKey withPageKey:existingPageKey inGroup:group];
+			[self removeRowid:rowid collectionKey:collectionKey
+			                          withPageKey:existingPageKey
+			                              inGroup:group
+			                     skipSubclassHook:YES]; // will be re-adding (in new index)
 			count--;
 			
 			// Don't forget to reset the existingPageKey ivar!
@@ -1936,7 +1953,10 @@
 	YDBLogVerbose(@"Insert key(%@) collection(%@) in group(%@) took %lu comparisons",
 	              collectionKey.key, collectionKey.collection, group, (unsigned long)loopCount);
 	
-	[self insertRowid:rowid collectionKey:collectionKey inGroup:group atIndex:min withExistingPageKey:existingPageKey];
+	[self insertRowid:rowid collectionKey:collectionKey
+	                              inGroup:group
+	                              atIndex:min
+	                  withExistingPageKey:existingPageKey];
 	
 	viewConnection->lastInsertWasAtFirstIndex = (min == 0);
 	viewConnection->lastInsertWasAtLastIndex  = (min == count);
@@ -2020,6 +2040,10 @@
 	
 	[viewConnection->dirtyMaps setObject:[NSNull null] forKey:@(rowid)];
 	[viewConnection->mapCache removeObjectForKey:@(rowid)];
+	
+	// Subclass hook
+	
+	[self didRemoveRowid:rowid collectionKey:collectionKey];
 }
 
 /**
@@ -2029,6 +2053,7 @@
       collectionKey:(YapCollectionKey *)collectionKey
         withPageKey:(NSString *)pageKey
             inGroup:(NSString *)group
+   skipSubclassHook:(BOOL)skipSubclassHook
 {
 	YDBLogAutoTrace();
 	
@@ -2101,6 +2126,12 @@
 	
 	[viewConnection->dirtyMaps setObject:[NSNull null] forKey:@(rowid)];
 	[viewConnection->mapCache removeObjectForKey:@(rowid)];
+	
+	// Subclass hook
+	
+	if (!skipSubclassHook) {
+		[self didRemoveRowid:rowid collectionKey:collectionKey];
+	}
 }
 
 /**
@@ -2115,7 +2146,10 @@
 	NSString *pageKey = [self pageKeyForRowid:rowid];
 	if (pageKey)
 	{
-		[self removeRowid:rowid collectionKey:collectionKey withPageKey:pageKey inGroup:[self groupForPageKey:pageKey]];
+		[self removeRowid:rowid collectionKey:collectionKey
+		                          withPageKey:pageKey
+		                              inGroup:[self groupForPageKey:pageKey]
+		                     skipSubclassHook:NO];
 	}
 }
 
@@ -2141,7 +2175,7 @@
 			int64_t rowid = [number longLongValue];
 			YapCollectionKey *collectionKey = [keyMappings objectForKey:number];
 			
-			[self removeRowid:rowid collectionKey:collectionKey withPageKey:pageKey inGroup:group];
+			[self removeRowid:rowid collectionKey:collectionKey withPageKey:pageKey inGroup:group skipSubclassHook:NO];
 		}
 		return;
 	}
@@ -3409,7 +3443,8 @@
 				if ([group isEqualToString:existingGroup])
 				{
 					// Nothing left to do.
-					// The group didn't change, and the sort order cannot change (because the object didn't change).
+					// The group didn't change,
+					// and the sort order cannot change (because the key/metadata didn't change).
 					
 					int flags = YapDatabaseViewChangedObject;
 					NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:existingPageKey];
@@ -3559,7 +3594,8 @@
 				if ([group isEqualToString:existingGroup])
 				{
 					// Nothing left to do.
-					// The group didn't change, and the sort order cannot change (because the object didn't change).
+					// The group didn't change,
+					// and the sort order cannot change (because the key/object didn't change).
 					
 					int flags = YapDatabaseViewChangedMetadata;
 					NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:existingPageKey];
@@ -4417,6 +4453,28 @@
 - (BOOL)containsRowid:(int64_t)rowid
 {
 	return ([self pageKeyForRowid:rowid] != nil);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Subclass Hooks
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Subclasses may override this method as an easy hook for concrete changes.
+**/
+- (void)didInsertRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
+{
+	// Subclasses may override me.
+	// Default implementation does nothing.
+}
+
+/**
+ * Subclasses may override this method as an easy hook for concrete changes.
+**/
+- (void)didRemoveRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
+{
+	// Subclasses may override me.
+	// Default implementation does nothing.
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

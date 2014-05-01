@@ -31,6 +31,7 @@
 @implementation YapDatabaseSearchResultsViewTransaction
 {
 	YapRowidSet *ftsRowids;
+	NSMutableDictionary *snippets;
 }
 
 - (id)initWithViewConnection:(YapDatabaseViewConnection *)inViewConnection
@@ -47,6 +48,7 @@
 {
 	if (ftsRowids) {
 		YapRowidSetRelease(ftsRowids);
+		ftsRowids = NULL;
 	}
 }
 
@@ -74,7 +76,7 @@
 	
 	BOOL isPersistent = [self isPersistentView];
 	
-	// We need to check several things in order to figure out:
+	// We need to check several things:
 	// - do we need to delete the old table(s) ?
 	// - do we need to create the table(s) ?
 	// - do we need to (re)populate the table(s) ?
@@ -220,7 +222,8 @@
 **/
 - (void)dropTablesForOldSubclassVersion:(int)oldSubclassVersion
 {
-	// Placeholder
+	// Placeholder method.
+	// To be used if we have a major upgrade to this class.
 }
 
 - (BOOL)createTables
@@ -240,11 +243,13 @@
 	
 	if (options.snippetOptions)
 	{
+		// Need to create the snippet table
+		
+		NSString *snippetTableName = [self snippetTableName];
+		
 		if ([self isPersistentView])
 		{
 			sqlite3 *db = databaseTransaction->connection->db;
-			
-			NSString *snippetTableName = [self snippetTableName];
 			
 			YDBLogVerbose(@"Creating view table for registeredName(%@): %@", [self registeredName], snippetTableName);
 			
@@ -264,8 +269,6 @@
 		}
 		else // if (isNonPersistentView)
 		{
-			NSString *snippetTableName = [self snippetTableName];
-			
 			YapMemoryTable *snippetTable = [[YapMemoryTable alloc] initWithKeyClass:[NSNumber class]];
 			
 			if (![databaseTransaction->connection registerTable:snippetTable withName:snippetTableName])
@@ -324,6 +327,267 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Repopulate
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * This method is invoked if:
+ *
+ * - Our parentView had its groupingBlock and/or sortingBlock changed.
+ * - A parentView of our parentView had its groupingBlock and/or sortingBlock changed.
+**/
+- (void)repopulateViewDueToParentGroupingBlockChange
+{
+	YDBLogAutoTrace();
+	
+	NSAssert(((YapDatabaseSearchResultsView *)viewConnection->view)->parentViewName != nil,
+	         @"Logic error: method requires parentView");
+	
+	// Update our groupingBlock & sortingBlock to match the changed parent
+	
+	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
+	  (YapDatabaseSearchResultsView *)viewConnection->view;
+	
+	YapDatabaseViewTransaction *parentViewTransaction =
+	  [databaseTransaction ext:searchResultsView->parentViewName];
+	
+	__unsafe_unretained YapDatabaseView *parentView = parentViewTransaction->viewConnection->view;
+	
+	searchResultsView->groupingBlock = parentView->groupingBlock;
+	searchResultsView->groupingBlockType = parentView->groupingBlockType;
+	
+	searchResultsView->sortingBlock = parentView->sortingBlock;
+	searchResultsView->sortingBlockType = parentView->sortingBlockType;
+	
+	// Code overview:
+	//
+	// We could simply run the usual algorithm.
+	// That is, enumerate over every item in the database, and run pretty much the same code as
+	// in the handleUpdateObject:forCollectionKey:withMetadata:rowid:.
+	// However, this causes a potential issue where the sortingBlock will be invoked with items that
+	// no longer exist in the given group.
+	//
+	// Instead we're going to find a way around this.
+	// That way the sortingBlock works in a manner we're used to.
+	//
+	// Here's the algorithm overview:
+	//
+	// - Insert remove ops for every row & group
+	// - Remove all items from the database tables
+	// - Flush the group_pagesMetadata_dict (and related ivars)
+	// - Set the reset flag (for internal notification creation)
+	// - And then run the normal populate routine, with one exceptione handled by the isRepopulate flag.
+	//
+	// The changeset mechanism will automatically consolidate all changes to the minimum.
+	
+	for (NSString *group in viewConnection->group_pagesMetadata_dict)
+	{
+		// We must add the changes in reverse order.
+		// Either that, or the change index of each item would have to be zero,
+		// because a YapDatabaseViewRowChange records the index at the moment the change happens.
+		
+		[self enumerateRowidsInGroup:group
+		                 withOptions:NSEnumerationReverse // <- required
+		                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop)
+		{
+			YapCollectionKey *collectionKey = [databaseTransaction collectionKeyForRowid:rowid];
+			 
+			[viewConnection->changes addObject:
+			  [YapDatabaseViewRowChange deleteKey:collectionKey inGroup:group atIndex:index]];
+		}];
+		
+		[viewConnection->changes addObject:[YapDatabaseViewSectionChange deleteGroup:group]];
+	}
+	
+	isRepopulate = YES;
+	{
+		// No need to redo the search. That is, no need to re-populate the ftsRowids ivar.
+		// Instead, just run the pre & post-search code.
+		//
+		// [self populateView]; <- Nope. We want a subset of this method.
+		
+		[self removeAllRowids];
+		
+		if (YapRowidSetCount(ftsRowids) > 0)
+		{
+			[self updateViewFromParent];
+		}
+		
+	}
+	isRepopulate = NO;
+}
+
+/**
+ * This method is invoked if:
+ *
+ * - Our parentView is a filteredView, and its filteringBlock was changed.
+ * - A parentView of our parentView is a filteredView, and its filteringBlock was changed.
+**/
+- (void)repopulateViewDueToParentFilteringBlockChange
+{
+	YDBLogAutoTrace();
+	
+	NSAssert(((YapDatabaseSearchResultsView *)viewConnection->view)->parentViewName != nil,
+	         @"Logic error: method requires parentView");
+	
+	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
+	  (YapDatabaseSearchResultsView *)viewConnection->view;
+	
+	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
+	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
+	
+	YapDatabaseViewTransaction *parentViewTransaction =
+	  [databaseTransaction ext:searchResultsView->parentViewName];
+	
+	// The parentView is a filteredView, and its filteringBlock changed
+	//
+	// - in the parentView, the groups may have changed
+	// - in the parentView, the items within each group may have changed
+	// - in the parentView, the order of items within each group is the same (important!)
+	//
+	// So we can run an algorithm similar to 'repopulateViewDueToFilteringBlockChange',
+	// but we have to watch out for stuff in our view that no longer exists in the parent view.
+	
+	NSMutableArray *groupsInSelf = [[self allGroups] mutableCopy];
+	id <NSFastEnumeration> groupsInParent;
+	
+	if (searchResultsOptions.allowedGroups)
+	{
+		NSMutableSet *groupsInParentSet = [NSMutableSet setWithArray:[parentViewTransaction allGroups]];
+		[groupsInParentSet intersectSet:searchResultsOptions.allowedGroups];
+		
+		groupsInParent = groupsInParentSet;
+	}
+	else
+	{
+		groupsInParent = [parentViewTransaction allGroups];
+	}
+	
+	for (NSString *group in groupsInParent)
+	{
+		__block BOOL existing = NO;
+		__block BOOL existingKnownValid = NO;
+		__block int64_t existingRowid = 0;
+		
+		existing = [self getRowid:&existingRowid atIndex:0 inGroup:group];
+		
+		__block NSUInteger index = 0;
+		
+		[parentViewTransaction enumerateRowidsInGroup:group
+		                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop)
+		{
+			if (existing && ((existingRowid == rowid)))
+			{
+				// Shortcut #1
+				//
+				// The row was previously in the view (allowed by previous parentFilter + our filter),
+				// and is still in the view (allowed by new parentFilter + our filter).
+				
+				index++;
+				existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
+				existingKnownValid = NO;
+				
+				return; // from block (continue)
+			}
+			
+			if (existing && !existingKnownValid)
+			{
+				// Is the existingRowid still contained within the parentView?
+				do
+				{
+					if ([parentViewTransaction containsRowid:existingRowid])
+					{
+						// Yes it is
+						existingKnownValid = YES;
+					}
+					else
+					{
+						// No it's not.
+						// Remove it, and check the next rowid in the list.
+						
+						YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:existingRowid];
+						[self removeRowid:existingRowid collectionKey:ck atIndex:index inGroup:group];
+						
+						existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
+					}
+					
+				} while (existing && !existingKnownValid);
+					
+				if (existing && (existingRowid == rowid))
+				{
+					// Shortcut #2
+					//
+					// The row was previously in the view (allowed by previous parentFilter + our filter),
+					// and is still in the view (allowed by new parentFilter + our filter).
+					
+					index++;
+					existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
+					existingKnownValid = NO;
+					
+					return; // from block (continue)
+				}
+			}
+			
+			{ // otherwise
+				
+				// The row was not previously in our view.
+				// This could be because it was just inserted into the parentView,
+				// or because it doesn't match our search.
+				//
+				// Either way we have to check.
+				
+				if (YapRowidSetContains(ftsRowids, rowid))
+				{
+					// The row was not previously in our view (not previously in parent view),
+					// but is now in the view (added to parent view, and matches our search).
+					
+					YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
+					
+					if (index == 0 && ([viewConnection->group_pagesMetadata_dict objectForKey:group] == nil)) {
+						[self insertRowid:rowid collectionKey:ck inNewGroup:group];
+					}
+					else {
+						[self insertRowid:rowid collectionKey:ck
+						                              inGroup:group
+								                      atIndex:index
+						                  withExistingPageKey:nil];
+					}
+					index++;
+				}
+				else
+				{
+					// The row was not previously in our view (filtered, or not previously in parent view),
+					// and is still not in our view (filtered).
+				}
+			}
+		}];
+		
+		while (existing)
+		{
+			// Todo: This could be optimized...
+			
+			YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:existingRowid];
+			[self removeRowid:existingRowid collectionKey:ck atIndex:index inGroup:group];
+			
+			existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
+		}
+		
+		NSUInteger groupIndex = [groupsInSelf indexOfObject:group];
+		if (groupIndex != NSNotFound)
+		{
+			[groupsInSelf removeObjectAtIndex:groupIndex];
+		}
+	}
+	
+	// Check to see if there are any groups that have been completely removed.
+	
+	for (NSString *group in groupsInSelf)
+	{
+		[self removeAllRowidsInGroup:group];
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Accessors
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -333,6 +597,31 @@
 	  (YapDatabaseSearchResultsView *)(viewConnection->view);
 	
 	return [searchResultsView snippetTableName];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Subclass Hooks
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)didInsertRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
+{
+	id snippet = [snippets objectForKey:@(rowid)];
+	if (snippet == nil) return;
+	
+	if (snippet == [NSNull null])
+	{
+		
+	}
+	else
+	{
+		
+	}
+}
+
+- (void)didRemoveRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
+{
+	// Subclasses may override me.
+	// Default implementation does nothing.
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -401,6 +690,9 @@
 	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
 	  (YapDatabaseSearchResultsView *)viewConnection->view;
 	
+	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
+	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
+	
 	NSString *group = nil;
 	
 	if (searchResultsView->parentViewName)
@@ -412,6 +704,15 @@
 		  [databaseTransaction ext:searchResultsView->parentViewName];
 		
 		group = parentViewTransaction->lastHandledGroup;
+		
+		if (group)
+		{
+			NSSet *allowedGroups = searchResultsOptions.allowedGroups;
+			if (allowedGroups && ![allowedGroups containsObject:group])
+			{
+				group = nil;
+			}
+		}
 	}
 	else
 	{
@@ -420,7 +721,7 @@
 		__unsafe_unretained NSString *collection = collectionKey.collection;
 		__unsafe_unretained NSString *key = collectionKey.key;
 		
-		NSSet *allowedCollections = searchResultsView->options.allowedCollections;
+		NSSet *allowedCollections = searchResultsOptions.allowedCollections;
 		
 		if (!allowedCollections || [allowedCollections containsObject:collection])
 		{
@@ -504,6 +805,9 @@
 	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
 	  (YapDatabaseSearchResultsView *)viewConnection->view;
 	
+	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
+	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
+	
 	NSString *group = nil;
 	
 	if (searchResultsView->parentViewName)
@@ -515,6 +819,15 @@
 		  [databaseTransaction ext:searchResultsView->parentViewName];
 		
 		group = parentViewTransaction->lastHandledGroup;
+		
+		if (group)
+		{
+			NSSet *allowedGroups = searchResultsOptions.allowedGroups;
+			if (allowedGroups && ![allowedGroups containsObject:group])
+			{
+				group = nil;
+			}
+		}
 	}
 	else
 	{
@@ -523,7 +836,7 @@
 		__unsafe_unretained NSString *collection = collectionKey.collection;
 		__unsafe_unretained NSString *key = collectionKey.key;
 		
-		NSSet *allowedCollections = searchResultsView->options.allowedCollections;
+		NSSet *allowedCollections = searchResultsOptions.allowedCollections;
 		
 		if (!allowedCollections || [allowedCollections containsObject:collection])
 		{
@@ -608,6 +921,9 @@
 	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
 	  (YapDatabaseSearchResultsView *)viewConnection->view;
 	
+	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
+	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
+	
 	if (searchResultsView->parentViewName)
 	{
 		// Implementation Note:
@@ -627,9 +943,18 @@
 		
 		NSString *group = parentViewTransaction->lastHandledGroup;
 		
+		if (group)
+		{
+			NSSet *allowedGroups = searchResultsOptions.allowedGroups;
+			if (allowedGroups && ![allowedGroups containsObject:group])
+			{
+				group = nil;
+			}
+		}
+		
 		if (group == nil)
 		{
-			// Not included in parentView.
+			// Not included in parentView (or not in allowedGroups)
 			
 			if (groupMayHaveChanged)
 			{
@@ -775,7 +1100,7 @@
 			__unsafe_unretained NSString *collection = collectionKey.collection;
 			__unsafe_unretained NSString *key = collectionKey.key;
 			
-			NSSet *allowedCollections = searchResultsView->options.allowedCollections;
+			NSSet *allowedCollections = searchResultsOptions.allowedCollections;
 			
 			if (!allowedCollections || [allowedCollections containsObject:collection])
 			{
@@ -817,7 +1142,8 @@
 					if ([group isEqualToString:existingGroup])
 					{
 						// Nothing left to do.
-						// The group didn't change, and the sort order cannot change (because the object didn't change).
+						// The group didn't change,
+						// and the sort order cannot change (because the key/metadata didn't change).
 						
 						int flags = YapDatabaseViewChangedObject;
 						NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:existingPageKey];
@@ -865,6 +1191,9 @@
 	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
 	  (YapDatabaseSearchResultsView *)viewConnection->view;
 	
+	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
+	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
+	
 	if (searchResultsView->parentViewName)
 	{
 		// Implementation Note:
@@ -883,6 +1212,15 @@
 		  [databaseTransaction ext:searchResultsView->parentViewName];
 		
 		NSString *group = parentViewTransaction->lastHandledGroup;
+		
+		if (group)
+		{
+			NSSet *allowedGroups = searchResultsOptions.allowedGroups;
+			if (allowedGroups && ![allowedGroups containsObject:group])
+			{
+				group = nil;
+			}
+		}
 		
 		if (group == nil)
 		{
@@ -1032,7 +1370,7 @@
 			__unsafe_unretained NSString *collection = collectionKey.collection;
 			__unsafe_unretained NSString *key = collectionKey.key;
 			
-			NSSet *allowedCollections = searchResultsView->options.allowedCollections;
+			NSSet *allowedCollections = searchResultsOptions.allowedCollections;
 			
 			if (!allowedCollections || [allowedCollections containsObject:collection])
 			{
@@ -1074,7 +1412,8 @@
 					if ([group isEqualToString:existingGroup])
 					{
 						// Nothing left to do.
-						// The group didn't change, and the sort order cannot change (because the object didn't change).
+						// The group didn't change,
+						// and the sort order cannot change (because the key/object didn't change).
 						
 						int flags = YapDatabaseViewChangedMetadata;
 						NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:existingPageKey];
@@ -1136,11 +1475,54 @@
 	
 	if (!databaseTransaction->isReadWriteTransaction)
 	{
-	//	YDBLogWarn(@"%@ - Method only allowed in readWrite transaction", THIS_METHOD);
+		YDBLogWarn(@"%@ - Method only allowed in readWrite transaction", THIS_METHOD);
 		return;
 	}
 	
-	// TODO: ...
+	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
+	  (YapDatabaseSearchResultsView *)viewConnection->view;
+	
+	if (![parentViewName isEqualToString:searchResultsView->parentViewName])
+	{
+		YDBLogWarn(@"%@ - Method inappropriately invoked. Doesn't match parentViewName.", THIS_METHOD);
+		return;
+	}
+	
+	// The parentView has significantly changed.
+	// We need to repopulate.
+	
+	BOOL groupingBlockChanged = (flags & YDB_GroupingBlockChanged) ? YES : NO;
+	BOOL sortingBlockChanged = (flags & YDB_SortingBlockChanged) ? YES : NO;
+	
+	if (groupingBlockChanged || sortingBlockChanged)
+	{
+		[self repopulateViewDueToParentGroupingBlockChange];
+	}
+	else
+	{
+		[self repopulateViewDueToParentFilteringBlockChange];
+	}
+	
+	// Propogate the notification onward to any extensions dependent upon this one.
+	
+	__unsafe_unretained NSString *registeredName = [self registeredName];
+	__unsafe_unretained NSDictionary *extensionDependencies = databaseTransaction->connection->extensionDependencies;
+	
+	[extensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+		
+		__unsafe_unretained NSString *extName = (NSString *)key;
+		__unsafe_unretained NSSet *extDependencies = (NSSet *)obj;
+		
+		if ([extDependencies containsObject:registeredName])
+		{
+			YapDatabaseExtensionTransaction *extTransaction = [databaseTransaction ext:extName];
+			
+			if ([extTransaction respondsToSelector:@selector(view:didRepopulateWithFlags:)])
+			{
+				[(id <YapDatabaseViewDependency>)extTransaction view:registeredName didRepopulateWithFlags:flags];
+			}
+		}
+	}];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1155,8 +1537,29 @@
 {
 	YDBLogAutoTrace();
 	
-	// TODO: Don't allow for parentView setup.
-	//       Otherwise need to implement properly.
+	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
+	  (YapDatabaseSearchResultsView *)viewConnection->view;
+	
+	if (searchResultsView->parentViewName)
+	{
+		NSString *reason = @"Method not available.";
+		
+		NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
+		    @"YapDatabaseSearchResultsView is configured to use a parentView."
+			@" You may change the groupingBlock/sortingBlock of the parentView,"
+			@" but you cannot change the configuration of the YapDatabaseSearchResultsView like this."};
+		
+		@throw [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
+		return;
+	}
+	else
+	{
+		[super setGroupingBlock:inGroupingBlock
+		      groupingBlockType:inGroupingBlockType
+		           sortingBlock:inSortingBlock
+		       sortingBlockType:inSortingBlockType
+		             versionTag:inVersionTag];
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1180,6 +1583,9 @@
 - (void)updateViewFromParent
 {
 	YDBLogAutoTrace();
+	
+	NSAssert(((YapDatabaseSearchResultsView *)viewConnection->view)->parentViewName != nil,
+	         @"Logic error: method requires parentView");
 	
 	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
 	  (YapDatabaseSearchResultsView *)viewConnection->view;
@@ -1206,7 +1612,10 @@
 		__block BOOL existing = NO;
 		__block int64_t existingRowid = 0;
 		
-		existing = wasEmpty ? NO : [self getRowid:&existingRowid atIndex:0 inGroup:group];
+		if (wasEmpty)
+			existing = NO;
+		else
+			existing = [self getRowid:&existingRowid atIndex:0 inGroup:group];
 		
 		__block NSUInteger index = 0;
 		
@@ -1221,7 +1630,7 @@
 					// and is still in the view (in new search results).
 					
 					index++;
-					existing = wasEmpty ? NO : [self getRowid:&existingRowid atIndex:index inGroup:group];
+					existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
 				}
 				else
 				{
@@ -1230,11 +1639,15 @@
 					
 					YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
 					
-					if (index == 0 && ([viewConnection->group_pagesMetadata_dict objectForKey:group] == nil))
+					if (index == 0 && ([viewConnection->group_pagesMetadata_dict objectForKey:group] == nil)) {
 						[self insertRowid:rowid collectionKey:ck inNewGroup:group];
-					else
-						[self insertRowid:rowid collectionKey:ck inGroup:group
-						                                         atIndex:index withExistingPageKey:nil];
+					}
+					else {
+						[self insertRowid:rowid collectionKey:ck
+						                              inGroup:group
+						                              atIndex:index
+						                  withExistingPageKey:nil];
+					}
 					index++;
 				}
 			}
@@ -1270,6 +1683,9 @@
 {
 	YDBLogAutoTrace();
 	
+	NSAssert(((YapDatabaseSearchResultsView *)viewConnection->view)->parentViewName == nil,
+	         @"Logic error: method requires nil parentView");
+	
 	// Create a copy of the ftsRowids set.
 	// As we enumerate the existing rowids in our view, we're going to
 	YapRowidSet *ftsRowidsLeft = YapRowidSetCopy(ftsRowids);
@@ -1304,6 +1720,7 @@
 					YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
 					
 					[self removeRowid:rowid collectionKey:ck atIndex:index inGroup:group];
+					*stop = YES;
 					
 					groupCount--;
 					
@@ -1313,8 +1730,6 @@
 					if (range.length > 0){
 						done = NO;
 					}
-					
-					*stop = YES;
 				}
 			}];
 			
@@ -1435,13 +1850,42 @@
 	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
 	  (YapDatabaseSearchResultsView *)viewConnection->view;
 	
+	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
+	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
+	
 	__unsafe_unretained YapDatabaseFullTextSearchTransaction *ftsTransaction =
 	  (YapDatabaseFullTextSearchTransaction *)[databaseTransaction ext:searchResultsView->fullTextSearchName];
 	
-	[ftsTransaction enumerateRowidsMatching:query usingBlock:^(int64_t rowid, BOOL *stop) {
+	if (searchResultsOptions.snippetOptions)
+	{
+		// Need to get matching rowids and related snippets.
 		
-		YapRowidSetAdd(ftsRowids, rowid);
-	}];
+		if (snippets == nil)
+			snippets = [[NSMutableDictionary alloc] init];
+		else
+			[snippets removeAllObjects];
+		
+		[ftsTransaction enumerateRowidsMatching:query
+		                     withSnippetOptions:searchResultsOptions.snippetOptions
+		                             usingBlock:^(NSString *snippet, int64_t rowid, BOOL *stop)
+		{
+			YapRowidSetAdd(ftsRowids, rowid);
+			
+			if (snippet)
+				[snippets setObject:snippet forKey:@(rowid)];
+			else
+				[snippets setObject:[NSNull null] forKey:@(rowid)];
+		}];
+	}
+	else
+	{
+		// No snippets. Just get the matching rowids.
+		
+		[ftsTransaction enumerateRowidsMatching:query usingBlock:^(int64_t rowid, BOOL *stop) {
+			
+			YapRowidSetAdd(ftsRowids, rowid);
+		}];
+	}
 	
 	if (searchResultsView->parentViewName)
 		[self updateViewFromParent];
@@ -1456,7 +1900,7 @@
 
 - (void)performSearchWithQueue:(YapDatabaseSearchQueue *)queue
 {
-	
+	// TODO: Implement me
 }
 
 @end

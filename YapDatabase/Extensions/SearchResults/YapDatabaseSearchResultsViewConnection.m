@@ -22,9 +22,9 @@
 
 @implementation YapDatabaseSearchResultsViewConnection
 {
-//	sqlite3_stmt *mapTable_getPageKeyForRowidStatement;
-//	sqlite3_stmt *mapTable_setPageKeyForRowidStatement;
-//	sqlite3_stmt *mapTable_removeForRowidStatement;
+	sqlite3_stmt *snippetTable_getForRowidStatement;
+	sqlite3_stmt *snippetTable_setForRowidStatement;
+	sqlite3_stmt *snippetTable_removeForRowidStatement;
 	sqlite3_stmt *snippetTable_removeAllStatement;
 }
 
@@ -32,6 +32,9 @@
 {
 	[super _flushStatements];
 	
+	sqlite_finalize_null(&snippetTable_getForRowidStatement);
+	sqlite_finalize_null(&snippetTable_setForRowidStatement);
+	sqlite_finalize_null(&snippetTable_removeForRowidStatement);
 	sqlite_finalize_null(&snippetTable_removeAllStatement);
 }
 
@@ -73,20 +76,37 @@
 #pragma mark Statements - SnippetTable
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (sqlite3_stmt *)snippetTable_removeAllStatement
+- (sqlite3_stmt *)snippetTable_getForRowidStatement
 {
 	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
 	
-	if (snippetTable_removeAllStatement == NULL)
+	// TODO: Implement me
+	return NULL;
+}
+
+- (sqlite3_stmt *)snippetTable_setForRowidStatement
+{
+	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	
+	// TODO: Implement me
+	return NULL;
+}
+
+- (sqlite3_stmt *)snippetTable_removeForRowidStatement
+{
+	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	
+	sqlite3_stmt **statement = &snippetTable_removeForRowidStatement;
+	if (*statement == NULL)
 	{
-		__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView = (YapDatabaseSearchResultsView *)view;
+		NSString *snippetTableName = [(YapDatabaseSearchResultsView *)view snippetTableName];
 		
-		NSString *string = [NSString stringWithFormat:@"DELETE FROM \"%@\";", [searchResultsView snippetTableName]];
+		NSString *string = [NSString stringWithFormat:@"DELETE FROM \"%@\" WHERE \"rowid\" = ? ;", snippetTableName];
 		
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &snippetTable_removeAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -95,7 +115,33 @@
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return snippetTable_removeAllStatement;
+	return *statement;
+}
+
+- (sqlite3_stmt *)snippetTable_removeAllStatement
+{
+	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	
+	sqlite3_stmt **statement = &snippetTable_removeAllStatement;
+	if (*statement == NULL)
+	{
+		NSString *snippetTableName = [(YapDatabaseSearchResultsView *)view snippetTableName];
+		
+		NSString *string = [NSString stringWithFormat:@"DELETE FROM \"%@\";", snippetTableName];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return *statement;
 }
 
 @end
