@@ -629,7 +629,8 @@ static NSString *const key_changes                  = @"changes";
 {
 	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
 	
-	if (mapTable_getPageKeyForRowidStatement == NULL)
+	sqlite3_stmt **statement = &mapTable_getPageKeyForRowidStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"SELECT \"pageKey\" FROM \"%@\" WHERE \"rowid\" = ?;", [view mapTableName]];
@@ -637,7 +638,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &mapTable_getPageKeyForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -646,14 +647,15 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return mapTable_getPageKeyForRowidStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)mapTable_setPageKeyForRowidStatement
 {
 	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
 
-	if (mapTable_setPageKeyForRowidStatement == NULL)
+	sqlite3_stmt **statement = &mapTable_setPageKeyForRowidStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"INSERT OR REPLACE INTO \"%@\" (\"rowid\", \"pageKey\") VALUES (?, ?);", [view mapTableName]];
@@ -661,7 +663,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &mapTable_setPageKeyForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -670,14 +672,15 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return mapTable_setPageKeyForRowidStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)mapTable_removeForRowidStatement
 {
 	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
 
-	if (mapTable_removeForRowidStatement == NULL)
+	sqlite3_stmt **statement = &mapTable_removeForRowidStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"DELETE FROM \"%@\" WHERE \"rowid\" = ?;", [view mapTableName]];
@@ -685,7 +688,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &mapTable_removeForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -694,14 +697,15 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return mapTable_removeForRowidStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)mapTable_removeAllStatement
 {
 	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
 
-	if (mapTable_removeAllStatement == NULL)
+	sqlite3_stmt **statement = &mapTable_removeAllStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"DELETE FROM \"%@\";", [view mapTableName]];
@@ -709,7 +713,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &mapTable_removeAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -718,7 +722,7 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return mapTable_removeAllStatement;
+	return *statement;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -729,7 +733,8 @@ static NSString *const key_changes                  = @"changes";
 {
 	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
 
-	if (pageTable_getDataForPageKeyStatement == NULL)
+	sqlite3_stmt **statement = &pageTable_getDataForPageKeyStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"SELECT \"data\" FROM \"%@\" WHERE \"pageKey\" = ?;", [view pageTableName]];
@@ -737,7 +742,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_getDataForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -746,14 +751,15 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return pageTable_getDataForPageKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)pageTable_insertForPageKeyStatement
 {
 	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
 
-	if (pageTable_insertForPageKeyStatement == NULL)
+	sqlite3_stmt **statement = &pageTable_insertForPageKeyStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 			@"INSERT INTO \"%@\""
@@ -763,7 +769,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_insertForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -772,14 +778,15 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return pageTable_insertForPageKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)pageTable_updateAllForPageKeyStatement
 {
 	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
 
-	if (pageTable_updateAllForPageKeyStatement == NULL)
+	sqlite3_stmt **statement = &pageTable_updateAllForPageKeyStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 			@"UPDATE \"%@\" SET \"prevPageKey\" = ?, \"count\" = ?, \"data\" = ? WHERE \"pageKey\" = ?;",
@@ -788,7 +795,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_updateAllForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -797,14 +804,15 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return pageTable_updateAllForPageKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)pageTable_updatePageForPageKeyStatement
 {
 	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
 
-	if (pageTable_updatePageForPageKeyStatement == NULL)
+	sqlite3_stmt **statement = &pageTable_updatePageForPageKeyStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 			@"UPDATE \"%@\" SET \"count\" = ?, \"data\" = ? WHERE \"pageKey\" = ?;", [view pageTableName]];
@@ -812,7 +820,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_updatePageForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -821,14 +829,15 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return pageTable_updatePageForPageKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)pageTable_updateLinkForPageKeyStatement
 {
 	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
 
-	if (pageTable_updateLinkForPageKeyStatement == NULL)
+	sqlite3_stmt **statement = &pageTable_updateLinkForPageKeyStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 			@"UPDATE \"%@\" SET \"prevPageKey\" = ? WHERE \"pageKey\" = ?;", [view pageTableName]];
@@ -836,7 +845,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_updateLinkForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -845,14 +854,15 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return pageTable_updateLinkForPageKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)pageTable_removeForPageKeyStatement
 {
 	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
 
-	if (pageTable_removeForPageKeyStatement == NULL)
+	sqlite3_stmt **statement = &pageTable_removeForPageKeyStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"DELETE FROM \"%@\" WHERE \"pageKey\" = ?;", [view pageTableName]];
@@ -860,7 +870,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_removeForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -869,14 +879,15 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return pageTable_removeForPageKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)pageTable_removeAllStatement
 {
 	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
 
-	if (pageTable_removeAllStatement == NULL)
+	sqlite3_stmt **statement = &pageTable_removeAllStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"DELETE FROM \"%@\";", [view pageTableName]];
@@ -884,7 +895,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_removeAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -893,7 +904,7 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return pageTable_removeAllStatement;
+	return *statement;
 }
 
 @end

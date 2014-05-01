@@ -153,7 +153,8 @@
 
 - (sqlite3_stmt *)insertRowidStatement
 {
-	if (insertRowidStatement == NULL)
+	sqlite3_stmt **statement = &insertRowidStatement;
+	if (*statement == NULL)
 	{
 		NSMutableString *string = [NSMutableString stringWithCapacity:100];
 		[string appendFormat:@"INSERT INTO \"%@\" (\"rowid\"", [fts tableName]];
@@ -176,19 +177,20 @@
 		
 		sqlite3 *db = databaseConnection->db;
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &insertRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return insertRowidStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)setRowidStatement
 {
-	if (setRowidStatement == NULL)
+	sqlite3_stmt **statement = &setRowidStatement;
+	if (*statement == NULL)
 	{
 		NSMutableString *string = [NSMutableString stringWithCapacity:100];
 		[string appendFormat:@"INSERT OR REPLACE INTO \"%@\" (\"rowid\"", [fts tableName]];
@@ -211,55 +213,58 @@
 		
 		sqlite3 *db = databaseConnection->db;
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &setRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return setRowidStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)removeRowidStatement
 {
-	if (removeRowidStatement == NULL)
+	sqlite3_stmt **statement = &removeRowidStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:@"DELETE FROM \"%@\" WHERE \"rowid\" = ?;", [fts tableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &removeRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return removeRowidStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)removeAllStatement
 {
-	if (removeAllStatement == NULL)
+	sqlite3_stmt **statement = &removeAllStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:@"DELETE FROM \"%@\";", [fts tableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &removeAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return removeAllStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)queryStatement
 {
-	if (queryStatement == NULL)
+	sqlite3_stmt **statement = &queryStatement;
+	if (*statement == NULL)
 	{
 		NSString *tableName = [fts tableName];
 		
@@ -268,19 +273,20 @@
 		
 		sqlite3 *db = databaseConnection->db;
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &queryStatement, NULL);
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return queryStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)querySnippetStatement
 {
-	if (querySnippetStatement == NULL)
+	sqlite3_stmt **statement = &querySnippetStatement;
+	if (*statement == NULL)
 	{
 		NSString *tableName = [fts tableName];
 		
@@ -289,19 +295,20 @@
 		
 		sqlite3 *db = databaseConnection->db;
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &querySnippetStatement, NULL);
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return querySnippetStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)rowidQueryStatement
 {
-	if (rowidQueryStatement == NULL)
+	sqlite3_stmt **statement = &rowidQueryStatement;
+	if (*statement == NULL)
 	{
 		NSString *tableName = [fts tableName];
 		
@@ -310,19 +317,20 @@
 		
 		sqlite3 *db = databaseConnection->db;
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &rowidQueryStatement, NULL);
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return rowidQueryStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)rowidQuerySnippetStatement
 {
-	if (rowidQuerySnippetStatement == NULL)
+	sqlite3_stmt **statement = &rowidQuerySnippetStatement;
+	if (*statement == NULL)
 	{
 		NSString *tableName = [fts tableName];
 		
@@ -332,14 +340,14 @@
 		
 		sqlite3 *db = databaseConnection->db;
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &rowidQuerySnippetStatement, NULL);
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return rowidQuerySnippetStatement;
+	return *statement;
 }
 
 @end
