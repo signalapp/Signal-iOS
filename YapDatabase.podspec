@@ -17,7 +17,6 @@ Pod::Spec.new do |s|
 
     ss.private_header_files = 'YapDatabase/**/Internal/*.h'
     ss.dependency 'CocoaLumberjack', '~> 1.6.3'
-
     ss.requires_arc = true
   end
 
@@ -25,13 +24,16 @@ Pod::Spec.new do |s|
   s.subspec 'standard' do |ss|
     ss.library = 'sqlite3'
     ss.dependency 'YapDatabase/common'
+    ss.requires_arc = true
   end
 
   # use SQLCipher and enable -DSQLITE_HAS_CODEC flag
   s.subspec 'SQLCipher' do |ss|
-    ss.dependency 'SQLCipher'
+    ss.dependency 'SQLCipher/fts'
     ss.dependency 'YapDatabase/common'
     ss.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
+    ss.requires_arc = true
   end
 
+  s.requires_arc = true
 end
