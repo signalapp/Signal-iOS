@@ -80,16 +80,54 @@
 {
 	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
 	
-	// TODO: Implement me
-	return NULL;
+	sqlite3_stmt **statement = &snippetTable_getForRowidStatement;
+	if (*statement == NULL)
+	{
+		NSString *snippetTableName = [(YapDatabaseSearchResultsView *)view snippetTableName];
+		
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT \"snippet\" FROM \"%@\" WHERE \"rowid\" = ?;", snippetTableName];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return *statement;
 }
 
 - (sqlite3_stmt *)snippetTable_setForRowidStatement
 {
 	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
 	
-	// TODO: Implement me
-	return NULL;
+	sqlite3_stmt **statement = &snippetTable_setForRowidStatement;
+	if (*statement == NULL)
+	{
+		NSString *snippetTableName = [(YapDatabaseSearchResultsView *)view snippetTableName];
+		
+		NSString *string = [NSString stringWithFormat:
+		  @"INSERT OR REPLACE INTO \"%@\" (\"rowid\", \"snippet\") VALUES (?, ?);", snippetTableName];
+		
+		sqlite3 *db = databaseConnection->db;
+		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
+		
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		FreeYapDatabaseString(&stmt);
+	}
+	
+	return *statement;
 }
 
 - (sqlite3_stmt *)snippetTable_removeForRowidStatement

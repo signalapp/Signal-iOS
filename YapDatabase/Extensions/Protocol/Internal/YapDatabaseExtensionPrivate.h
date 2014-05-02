@@ -437,6 +437,12 @@
 - (void)handleTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid;
 
 - (void)handleRemoveObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid;
+
+/**
+ * Note: The number of items passed to this method has the following guarantee:
+ * 
+ * count <= (SQLITE_LIMIT_VARIABLE_NUMBER - 1)
+**/
 - (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids;
 
 - (void)handleRemoveAllObjectsInAllCollections;

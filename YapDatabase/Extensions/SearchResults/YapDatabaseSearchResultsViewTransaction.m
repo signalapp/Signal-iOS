@@ -6,6 +6,7 @@
 #import "YapDatabasePrivate.h"
 #import "YapRowidSet.h"
 #import "YapCollectionKey.h"
+#import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
 
 #if ! __has_feature(objc_arc)
@@ -307,13 +308,42 @@
 	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
 	  (YapDatabaseSearchResultsView *)viewConnection->view;
 	
+	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
+	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
+	
 	__unsafe_unretained YapDatabaseFullTextSearchTransaction *ftsTransaction =
 	  (YapDatabaseFullTextSearchTransaction *)[databaseTransaction ext:searchResultsView->fullTextSearchName];
 	
-	[ftsTransaction enumerateRowidsMatching:[self query] usingBlock:^(int64_t rowid, BOOL *stop) {
+	if (searchResultsOptions.snippetOptions)
+	{
+		// Need to get matching rowids and related snippets.
 		
-		YapRowidSetAdd(ftsRowids, rowid);
-	}];
+		if (snippets == nil)
+			snippets = [[NSMutableDictionary alloc] init];
+		else
+			[snippets removeAllObjects];
+		
+		[ftsTransaction enumerateRowidsMatching:[self query]
+		                     withSnippetOptions:searchResultsOptions.snippetOptions
+		                             usingBlock:^(NSString *snippet, int64_t rowid, BOOL *stop)
+		{
+			YapRowidSetAdd(ftsRowids, rowid);
+			
+			if (snippet)
+				[snippets setObject:snippet forKey:@(rowid)];
+			else
+				[snippets setObject:[NSNull null] forKey:@(rowid)];
+		 }];
+	}
+	else
+	{
+		// No snippets. Just get the matching rowids.
+		
+		[ftsTransaction enumerateRowidsMatching:[self query] usingBlock:^(int64_t rowid, BOOL *stop) {
+			
+			YapRowidSetAdd(ftsRowids, rowid);
+		}];
+	}
 	
 	if (YapRowidSetCount(ftsRowids) > 0)
 	{
@@ -603,25 +633,179 @@
 #pragma mark Subclass Hooks
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * This method is invoked whenver a item is added to our view.
+**/
 - (void)didInsertRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
 {
 	id snippet = [snippets objectForKey:@(rowid)];
 	if (snippet == nil) return;
 	
-	if (snippet == [NSNull null])
+	if ([self isPersistentView])
 	{
+		__unsafe_unretained YapDatabaseSearchResultsViewConnection *searchResultsConnection =
+		  (YapDatabaseSearchResultsViewConnection *)viewConnection;
 		
+		if (snippet == [NSNull null])
+		{
+			sqlite3_stmt *statement = [searchResultsConnection snippetTable_removeForRowidStatement];
+			if (statement == NULL) return;
+			
+			// DELETE FROM "snippetTable" WHERE "rowid" = ?;
+			
+			sqlite3_bind_int64(statement, 1, rowid);
+			
+			int status = sqlite3_step(statement);
+			if (status != SQLITE_DONE)
+			{
+				YDBLogError(@"Error executing 'snippetTable_removeForRowidStatement': %d %s, collectionKey(%@)",
+				            status, sqlite3_errmsg(databaseTransaction->connection->db), collectionKey);
+			}
+			
+			sqlite3_clear_bindings(statement);
+			sqlite3_reset(statement);
+		}
+		else
+		{
+			sqlite3_stmt *statement = [searchResultsConnection snippetTable_setForRowidStatement];
+			if (statement == NULL) return;
+			
+			// INSERT OR REPLACE INTO "snippetTable" ("rowid", "snippet") VALUES (?, ?);
+			
+			sqlite3_bind_int64(statement, 1, rowid);
+			
+			YapDatabaseString _snippet; MakeYapDatabaseString(&_snippet, snippet);
+			sqlite3_bind_text(statement, 2, _snippet.str, _snippet.length, SQLITE_STATIC);
+			
+			int status = sqlite3_step(statement);
+			if (status != SQLITE_DONE)
+			{
+				YDBLogError(@"Error executing 'snippetTable_setForRowidStatement': %d %s",
+				            status, sqlite3_errmsg(databaseTransaction->connection->db));
+			}
+			
+			FreeYapDatabaseString(&_snippet);
+			
+			sqlite3_clear_bindings(statement);
+			sqlite3_reset(statement);
+		}
 	}
-	else
+	else // if (isNonPersistentView)
 	{
-		
+		if (snippet == [NSNull null])
+		{
+			[snippetTableTransaction removeObjectForKey:@(rowid)];
+		}
+		else
+		{
+			[snippetTableTransaction setObject:snippet forKey:@(rowid)];
+		}
 	}
 }
 
+/**
+ * This method is invoked whenver a single item is removed from our view.
+**/
 - (void)didRemoveRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
 {
-	// Subclasses may override me.
-	// Default implementation does nothing.
+	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
+	  (YapDatabaseSearchResultsViewOptions *)viewConnection->view->options;
+	
+	if (searchResultsOptions.snippetOptions == nil) {
+		// Ignore - snippets not being used
+		return;
+	}
+	
+	if ([self isPersistentView])
+	{
+		__unsafe_unretained YapDatabaseSearchResultsViewConnection *searchResultsConnection =
+		  (YapDatabaseSearchResultsViewConnection *)viewConnection;
+		
+		sqlite3_stmt *statement = [searchResultsConnection snippetTable_removeForRowidStatement];
+		if (statement == NULL) return;
+		
+		// DELETE FROM "snippetTable" WHERE "rowid" = ?;
+			
+		sqlite3_bind_int64(statement, 1, rowid);
+		
+		int status = sqlite3_step(statement);
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"Error executing 'snippetTable_removeForRowidStatement': %d %s, collectionKey(%@)",
+			            status, sqlite3_errmsg(databaseTransaction->connection->db), collectionKey);
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+	}
+	else // if (isNonPersistentView)
+	{
+		[snippetTableTransaction removeObjectForKey:@(rowid)];
+	}
+}
+
+/**
+ * This method is invoked whenever a batch of items are removed from our view.
+**/
+- (void)didRemoveRowids:(NSArray *)rowids collectionKeys:(NSArray *)collectionKeys
+{
+	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
+	  (YapDatabaseSearchResultsViewOptions *)viewConnection->view->options;
+	
+	if (searchResultsOptions.snippetOptions == nil) {
+		// Ignore - snippets not being used
+		return;
+	}
+	
+	if ([self isPersistentView])
+	{
+		
+	}
+	else // if (isNonPersistentView)
+	{
+		[snippetTableTransaction removeObjectsForKeys:rowids];
+	}
+}
+
+/**
+ * This method is invoked whenever all items are removed from our view.
+**/
+- (void)didRemoveAllRowids
+{
+	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
+	  (YapDatabaseSearchResultsViewOptions *)viewConnection->view->options;
+	
+	if (searchResultsOptions.snippetOptions == nil) {
+		// Ignore - snippets not being used
+		return;
+	}
+	
+	if ([self isPersistentView])
+	{
+		__unsafe_unretained YapDatabaseSearchResultsViewConnection *searchResultsConnection =
+		  (YapDatabaseSearchResultsViewConnection *)viewConnection;
+		
+		sqlite3_stmt *snippetStatement = [searchResultsConnection snippetTable_removeAllStatement];
+		if (snippetStatement == NULL) return;
+		
+		// DELETE FROM "snippetTableName";
+		
+		YDBLogVerbose(@"DELETE FROM '%@';", [self snippetTableName]);
+		
+		int status = sqlite3_step(snippetStatement);
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"%@ (%@): Error in snippetStatement: %d %s",
+			            THIS_METHOD, [self registeredName],
+			            status, sqlite3_errmsg(databaseTransaction->connection->db));
+		}
+		
+		sqlite3_reset(snippetStatement);
+	}
+	else // if (isNonPersistentView)
+	{
+		[snippetTableTransaction removeAllObjects];
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -641,15 +825,13 @@
 	
 	// Clear our snippet table
 	
-	__unsafe_unretained YapDatabaseSearchResultsViewConnection *searchResultsConnection =
-	  (YapDatabaseSearchResultsViewConnection *)viewConnection;
-	
 	if ([self isPersistentView])
 	{
+		__unsafe_unretained YapDatabaseSearchResultsViewConnection *searchResultsConnection =
+		  (YapDatabaseSearchResultsViewConnection *)viewConnection;
+		
 		sqlite3_stmt *snippetStatement = [searchResultsConnection snippetTable_removeAllStatement];
-		if (snippetStatement == NULL) {
-			return;
-		}
+		if (snippetStatement == NULL) return;
 		
 		// DELETE FROM "snippetTableName";
 		

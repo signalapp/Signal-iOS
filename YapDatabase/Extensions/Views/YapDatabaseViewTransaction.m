@@ -1151,7 +1151,11 @@
 /**
  * This method looks up a whole bunch of pageKeys using only a few queries.
  *
- * @param input
+ * @param rowids
+ *     On input, includes all the rowids to lookup.
+ *     On output, includes all the valid rowids. That is, those rowids that are in the view.
+ * 
+ * @param keyMappings
  *     A dictionary of the form: @{
  *         @(rowid) = collectionKey, ...
  *     }
@@ -1160,11 +1164,15 @@
  *         pageKey = @{ @(rowid) = collectionKey, ... }
  *     }
 **/
-- (NSDictionary *)pageKeysForRowids:(NSArray *)rowids withKeyMappings:(NSDictionary *)keyMappings
+- (NSDictionary *)pageKeysForRowids:(NSArray **)rowidsPtr withKeyMappings:(NSDictionary *)keyMappings
 {
+	NSArray *rowids = *rowidsPtr;
+	NSMutableArray *outRowids = [NSMutableArray arrayWithCapacity:[rowids count]];
+	
 	NSUInteger count = [rowids count];
 	if (count == 0)
 	{
+		*rowidsPtr = outRowids;
 		return [NSDictionary dictionary];
 	}
 	
@@ -1174,91 +1182,88 @@
 	{
 		sqlite3 *db = databaseTransaction->connection->db;
 		
-		// Sqlite has an upper bound on the number of host parameters that may be used in a single query.
-		// We need to watch out for this in case a large array of keys is passed.
+		// Note:
+		// The handleRemoveObjectsForKeys:inCollection:withRowids: has the following guarantee:
+		//     count <= (SQLITE_LIMIT_VARIABLE_NUMBER - 1)
+		//
+		// So we don't have to worry about sqlite's upper bound on host parameters.
 		
-		NSUInteger maxHostParams = (NSUInteger) sqlite3_limit(db, SQLITE_LIMIT_VARIABLE_NUMBER, -1);
+		// SELECT "rowid", "pageKey" FROM "mapTableName" WHERE "rowid" IN (?, ?, ...);
 		
-		NSUInteger offset = 0;
-		do
+		NSUInteger capacity = 50 + (count * 3);
+		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
+		
+		[query appendFormat:@"SELECT \"rowid\", \"pageKey\" FROM \"%@\" WHERE \"rowid\" IN (", [self mapTableName]];
+		
+		for (NSUInteger i = 0; i < count; i++)
 		{
-			NSUInteger left = count - offset;
-			NSUInteger numHostParams = MIN(left, maxHostParams);
+			if (i == 0)
+				[query appendFormat:@"?"];
+			else
+				[query appendFormat:@", ?"];
+		}
+		
+		[query appendString:@");"];
+		
+		sqlite3_stmt *statement;
+		int status;
+		
+		status = sqlite3_prepare_v2(db, [query UTF8String], -1, &statement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@ (%@): Error creating statement\n"
+			            @" - status(%d), errmsg: %s\n"
+			            @" - query: %@",
+			            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db), query);
 			
-			// SELECT "rowid", "pageKey" FROM "mapTableName" WHERE "rowid" IN (?, ?, ...);
+			*rowidsPtr = nil;
+			return nil;
+		}
+		
+		for (NSUInteger i = 0; i < count; i++)
+		{
+			int64_t rowid = [[rowids objectAtIndex:i] longLongValue];
 			
-			NSUInteger capacity = 50 + (numHostParams * 3);
-			NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
+			sqlite3_bind_int64(statement, (int)(i + 1), rowid);
+		}
+		
+		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+		{
+			// Extract rowid & pageKey from row
 			
-			[query appendFormat:@"SELECT \"rowid\", \"pageKey\" FROM \"%@\" WHERE \"rowid\" IN (", [self mapTableName]];
+			int64_t rowid = sqlite3_column_int64(statement, 0);
 			
-			for (NSUInteger i = 0; i < numHostParams; i++)
+			const unsigned char *text = sqlite3_column_text(statement, 1);
+			int textSize = sqlite3_column_bytes(statement, 1);
+			
+			NSNumber *rowidNumber = @(rowid);
+			NSString *pageKey = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			
+			// Add to result dictionary
+			
+			NSMutableDictionary *subKeyMappings = [result objectForKey:pageKey];
+			if (subKeyMappings == nil)
 			{
-				if (i == 0)
-					[query appendFormat:@"?"];
-				else
-					[query appendFormat:@", ?"];
+				subKeyMappings = [NSMutableDictionary dictionaryWithCapacity:1];
+				[result setObject:subKeyMappings forKey:pageKey];
 			}
 			
-			[query appendString:@");"];
+			YapCollectionKey *collectionKey = [keyMappings objectForKey:rowidNumber];
+			[subKeyMappings setObject:collectionKey forKey:rowidNumber];
 			
-			sqlite3_stmt *statement;
-			int status;
+			// Add to outRowids
 			
-			status = sqlite3_prepare_v2(db, [query UTF8String], -1, &statement, NULL);
-			if (status != SQLITE_OK)
-			{
-				YDBLogError(@"%@ (%@): Error creating statement\n"
-				            @" - status(%d), errmsg: %s\n"
-				            @" - query: %@",
-				            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db), query);
-				return nil;
-			}
+			[outRowids addObject:rowidNumber];
+		}
+		
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"%@ (%@): Error executing statement: %d %s",
+			            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db));
 			
-			for (NSUInteger i = 0; i < numHostParams; i++)
-			{
-				int64_t rowid = [[rowids objectAtIndex:(offset + i)] longLongValue];
-				
-				sqlite3_bind_int64(statement, (int)(i + 1), rowid);
-			}
-			
-			while ((status = sqlite3_step(statement)) == SQLITE_ROW)
-			{
-				// Extract rowid & pageKey from row
-				
-				int64_t rowid = sqlite3_column_int64(statement, 0);
-				
-				const unsigned char *text = sqlite3_column_text(statement, 1);
-				int textSize = sqlite3_column_bytes(statement, 1);
-				
-				NSString *pageKey = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-				
-				// Add to result dictionary
-				
-				NSMutableDictionary *subKeyMappings = [result objectForKey:pageKey];
-				if (subKeyMappings == nil)
-				{
-					subKeyMappings = [NSMutableDictionary dictionaryWithCapacity:1];
-					[result setObject:subKeyMappings forKey:pageKey];
-				}
-				
-				NSNumber *number = @(rowid);
-				YapCollectionKey *collectionKey = [keyMappings objectForKey:number];
-				
-				[subKeyMappings setObject:collectionKey forKey:number];
-			}
-			
-			if (status != SQLITE_DONE)
-			{
-				YDBLogError(@"%@ (%@): Error executing statement: %d %s",
-				            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db));
-				return nil;
-			}
-			
-			
-			offset += numHostParams;
-			
-		} while (offset < count);
+			*rowidsPtr = nil;
+			return nil;
+		}
 	
 	}
 	else // if (isNonPersistentView)
@@ -1270,6 +1275,8 @@
 				NSString *pageKey = [mapTableTransaction objectForKey:rowidNumber];
 				if (pageKey)
 				{
+					// Add to result dictionary
+					
 					NSMutableDictionary *subKeyMappings = [result objectForKey:pageKey];
 					if (subKeyMappings == nil)
 					{
@@ -1278,13 +1285,17 @@
 					}
 					
 					NSString *key = [keyMappings objectForKey:rowidNumber];
-					
 					[subKeyMappings setObject:key forKey:rowidNumber];
+					
+					// Add to outRowids
+					
+					[outRowids addObject:rowidNumber];
 				}
 			}
 		}}];
 	}
 	
+	*rowidsPtr = outRowids;
 	return result;
 }
 
@@ -2175,7 +2186,10 @@
 			int64_t rowid = [number longLongValue];
 			YapCollectionKey *collectionKey = [keyMappings objectForKey:number];
 			
-			[self removeRowid:rowid collectionKey:collectionKey withPageKey:pageKey inGroup:group skipSubclassHook:NO];
+			[self removeRowid:rowid collectionKey:collectionKey
+			                          withPageKey:pageKey
+			                              inGroup:group
+			                     skipSubclassHook:YES]; // The handleRemoveObjectsForKeys::: does it
 		}
 		return;
 	}
@@ -3717,7 +3731,8 @@
 		[keyMappings setObject:collectionKey forKey:rowid];
 	}
 	
-	NSDictionary *output = [self pageKeysForRowids:rowids withKeyMappings:keyMappings];
+	NSArray *validRowids = rowids;
+	NSDictionary *output = [self pageKeysForRowids:&validRowids withKeyMappings:keyMappings];
 	
 	// output.key = pageKey
 	// output.value = NSDictionary with keyMappings for page
@@ -3729,6 +3744,16 @@
 		
 		[self removeRowidsWithKeyMappings:keyMappingsForPage pageKey:pageKey inGroup:[self groupForPageKey:pageKey]];
 	}];
+	
+	// Subclass hook
+	
+	NSMutableArray *validCollectionKeys = [NSMutableArray arrayWithCapacity:[validRowids count]];
+	for (NSNumber *rowid in validRowids)
+	{
+		[validCollectionKeys addObject:[keyMappings objectForKey:rowid]];
+	}
+	
+	[self didRemoveRowids:validRowids collectionKeys:validCollectionKeys];
 }
 
 /**
@@ -4461,6 +4486,12 @@
 
 /**
  * Subclasses may override this method as an easy hook for concrete changes.
+ * 
+ * That is, the handleX methods are hooks from the main database,
+ * but they don't necessarily reflect changes to this view.
+ * For example, handleRemoveObjectForCollectionKey:: notifies us that something from the main database was removed,
+ * but that item may or may not have been in our view. In contrast, these hook methods are only invoked
+ * when something is added or removed from our view.
 **/
 - (void)didInsertRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
 {
@@ -4470,11 +4501,46 @@
 
 /**
  * Subclasses may override this method as an easy hook for concrete changes.
+ * 
+ * That is, the handleX methods are hooks from the main database,
+ * but they don't necessarily reflect changes to this view.
+ * For example, handleRemoveObjectForCollectionKey:: notifies us that something from the main database was removed,
+ * but that item may or may not have been in our view. In contrast, these hook methods are only invoked
+ * when something is added or removed from our view.
 **/
 - (void)didRemoveRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
 {
 	// Subclasses may override me.
 	// Default implementation does nothing.
+}
+
+/**
+ * Subclasses may override this method as an easy hook for concrete changes.
+ * 
+ * That is, the handleX methods are hooks from the main database,
+ * but they don't necessarily reflect changes to this view.
+ * For example, handleRemoveObjectForCollectionKey:: notifies us that something from the main database was removed,
+ * but that item may or may not have been in our view. In contrast, these hook methods are only invoked
+ * when something is added or removed from our view.
+**/
+- (void)didRemoveRowids:(NSArray *)rowids collectionKeys:(NSArray *)collectionKeys
+{
+	// Subclasses may override me.
+	// Default implementation does nothing.
+}
+
+/**
+ * Subclasses may override this method as an easy hook for concrete changes.
+ *
+ * That is, the handleX methods are hooks from the main database,
+ * but they don't necessarily reflect changes to this view.
+ * For example, handleRemoveObjectForCollectionKey:: notifies us that something from the main database was removed,
+ * but that item may or may not have been in our view. In contrast, these hook methods are only invoked
+ * when something is added or removed from our view.
+**/
+- (void)didRemoveAllRowids
+{
+	
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

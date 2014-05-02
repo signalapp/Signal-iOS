@@ -32,6 +32,9 @@
 	NSString *query;
 }
 
+- (sqlite3_stmt *)snippetTable_getForRowidStatement;
+- (sqlite3_stmt *)snippetTable_setForRowidStatement;
+- (sqlite3_stmt *)snippetTable_removeForRowidStatement;
 - (sqlite3_stmt *)snippetTable_removeAllStatement;
 
 @end
