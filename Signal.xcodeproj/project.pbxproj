@@ -381,9 +381,7 @@
 		A1C32D5117A06544000A904E /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4D17A0652C000A904E /* AddressBook.framework */; };
 		AA0C8E498E2046B0B81EEE6E /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
 		B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B67EBF5C19194AC60084CCFD /* Settings.bundle */; };
-		B68DF7B71918D7FC00C7BAB9 /* KeyChainStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B68DF7B61918D7FC00C7BAB9 /* KeyChainStorage.m */; };
 		B6B6C3C71919440C00C0B76B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6B6C3C51919440C00C0B76B /* Localizable.strings */; };
-		B6BAB53F1918CA4100E4DF53 /* KeychainWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BAB53E1918CA4100E4DF53 /* KeychainWrapper.m */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B90418E7183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B942EB0E183A9633000887BB /* SearchBarTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = B942EB0D183A9633000887BB /* SearchBarTitleView.m */; };
@@ -1091,8 +1089,6 @@
 		A1FDCBEE16DAA6C300868894 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B657DDC91911A40500F45B0C /* Signal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Signal.entitlements; sourceTree = "<group>"; };
 		B67EBF5C19194AC60084CCFD /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = SettingsBundle/Settings.bundle; sourceTree = SOURCE_ROOT; };
-		B68DF7B51918D7FC00C7BAB9 /* KeyChainStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyChainStorage.h; path = ../environment/KeyChainStorage.h; sourceTree = "<group>"; };
-		B68DF7B61918D7FC00C7BAB9 /* KeyChainStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KeyChainStorage.m; path = ../environment/KeyChainStorage.m; sourceTree = "<group>"; };
 		B6B6C3C61919440C00C0B76B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6B6C3C81919441D00C0B76B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6B6C3C91919448900C0B76B /* ca-ES */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ca-ES"; path = "ca-ES.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -1101,8 +1097,6 @@
 		B6B6C3CC1919454200C0B76B /* ro-RO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ro-RO"; path = "ro-RO.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		B6B6C3CD1919455400C0B76B /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6B6C3CE1919456C00C0B76B /* sv-SE */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sv-SE"; path = "sv-SE.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		B6BAB53D1918CA4100E4DF53 /* KeychainWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeychainWrapper.h; path = ../storage/KeychainWrapper.h; sourceTree = "<group>"; };
-		B6BAB53E1918CA4100E4DF53 /* KeychainWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KeychainWrapper.m; path = ../storage/KeychainWrapper.m; sourceTree = "<group>"; };
 		B90418E4183E9DD40038554A /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
 		B90418E5183E9DD40038554A /* DateUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtil.m; sourceTree = "<group>"; };
 		B942EB0C183A9633000887BB /* SearchBarTitleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchBarTitleView.h; sourceTree = "<group>"; };
@@ -1579,7 +1573,6 @@
 				70BAFD5C190584BE00FA5E0B /* NotificationTracker.m */,
 				76EB048818170B33006006FC /* phone */,
 				76EB04B118170B33006006FC /* profiling */,
-				B6BAB53C1918CA1300E4DF53 /* storage */,
 				76EB04C818170B33006006FC /* util */,
 				76EB04FE18170B33006006FC /* view controllers */,
 				76EB052B18170B33006006FC /* views */,
@@ -2013,8 +2006,6 @@
 				76EB04E918170B33006006FC /* DictionaryUtil.m */,
 				76EB04EA18170B33006006FC /* FunctionalUtil.h */,
 				76EB04EB18170B33006006FC /* FunctionalUtil.m */,
-				B6BAB53D1918CA4100E4DF53 /* KeychainWrapper.h */,
-				B6BAB53E1918CA4100E4DF53 /* KeychainWrapper.m */,
 				76EB04EC18170B33006006FC /* NumberUtil.h */,
 				76EB04ED18170B33006006FC /* NumberUtil.m */,
 				76EB04EE18170B33006006FC /* Operation.h */,
@@ -2440,15 +2431,6 @@
 				B6B6C3C51919440C00C0B76B /* Localizable.strings */,
 			);
 			name = Translations;
-			sourceTree = "<group>";
-		};
-		B6BAB53C1918CA1300E4DF53 /* storage */ = {
-			isa = PBXGroup;
-			children = (
-				B68DF7B51918D7FC00C7BAB9 /* KeyChainStorage.h */,
-				B68DF7B61918D7FC00C7BAB9 /* KeyChainStorage.m */,
-			);
-			path = storage;
 			sourceTree = "<group>";
 		};
 		D221A07E169C9E5E00537ABF = {
@@ -3074,7 +3056,6 @@
 				76EB065A18170B34006006FC /* NextResponderScrollView.m in Sources */,
 				76EB062618170B33006006FC /* Queue.m in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
-				B6BAB53F1918CA4100E4DF53 /* KeychainWrapper.m in Sources */,
 				76EB061618170B33006006FC /* AnonymousOccurrenceLogger.m in Sources */,
 				76EB063018170B33006006FC /* Conversions.m in Sources */,
 				76EB065618170B34006006FC /* InCallViewController.m in Sources */,
@@ -3124,7 +3105,6 @@
 				E197B60C18BBEC1A00F073E5 /* AudioPacker.m in Sources */,
 				76EB055018170B33006006FC /* ObservableValue.m in Sources */,
 				E197B61218BBEC1A00F073E5 /* AudioStretcher.m in Sources */,
-				B68DF7B71918D7FC00C7BAB9 /* KeyChainStorage.m in Sources */,
 				76EB05A218170B33006006FC /* IpEndPoint.m in Sources */,
 				70B8010D190C55660042E3F0 /* AbstractMessage_Builder.m in Sources */,
 				E197B61A18BBEC1A00F073E5 /* SpeexCodec.m in Sources */,
@@ -3625,7 +3605,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = Signal;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "25E52683-9ADD-415E-A1E0-63A1C7ECF872";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_AFTER_BUILD = YES;
@@ -3673,7 +3653,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = Signal;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "25E52683-9ADD-415E-A1E0-63A1C7ECF872";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_AFTER_BUILD = YES;

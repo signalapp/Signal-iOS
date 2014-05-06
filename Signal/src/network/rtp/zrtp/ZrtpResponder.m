@@ -1,7 +1,6 @@
 #import "CommitPacket.h"
 #import "ConfirmPacket.h"
 #import "DH3KKeyAgreementProtocol.h"
-#import "KeyChainStorage.h"
 #import "PreferencesUtil.h"
 #import "FunctionalUtil.h"
 #import "MasterSecret.h"
@@ -30,7 +29,7 @@
     s->badPacketLogger = [[Environment logging] getOccurrenceLoggerForSender:self withKey:@"Bad Packet"];
     
     s->localHello = [HelloPacket helloPacketWithDefaultsAndHashChain:s->hashChain
-                                                              andZid:[KeyChainStorage getOrGenerateZid]
+                                                              andZid:[[Environment preferences] getOrGenerateZid]
                                             andKeyAgreementProtocols:s->allowedKeyAgreementProtocols];
     s->packetExpectation = EXPECTING_HELLO;
     s->callController = callController;

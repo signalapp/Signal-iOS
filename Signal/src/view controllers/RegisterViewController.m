@@ -1,6 +1,5 @@
 #import "Environment.h"
 #import "HttpManager.h"
-#import "KeyChainStorage.h"
 #import "LocalizableText.h"
 #import "NBAsYouTypeFormatter.h"
 #import "PhoneNumber.h"
@@ -122,7 +121,7 @@
 -(Future*) asyncRegister:(PhoneNumber*)phoneNumber untilCancelled:(id<CancelToken>)cancelToken {
     // @todo: should we force regenerating of all keys?
     // @todo: clear current registered status before making a new one, to avoid splinching issues?
-    [KeyChainStorage setLocalNumberTo:phoneNumber];
+    [[Environment preferences] setLocalNumberTo:phoneNumber];
 
     CancellableOperationStarter regStarter = ^Future *(id<CancelToken> internalUntilCancelledToken) {
         HttpRequest *registerRequest = [HttpRequest httpRequestToStartRegistrationOfPhoneNumber];

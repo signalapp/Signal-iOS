@@ -1,6 +1,5 @@
 #import "HttpRequestUtil.h"
 #import "Constraints.h"
-#import "KeyChainStorage.h"
 #import "PreferencesUtil.h"
 #import "Util.h"
 
@@ -18,8 +17,8 @@
     return [HttpRequest httpRequestWithBasicAuthenticationAndMethod:method
                                                         andLocation:location
                                                     andOptionalBody:optionalBody
-                                                     andLocalNumber:[KeyChainStorage forceGetLocalNumber]
-                                                        andPassword:[KeyChainStorage getOrGenerateSavedPassword]];
+                                                     andLocalNumber:[[[Environment getCurrent] preferences] forceGetLocalNumber]
+                                                        andPassword:[[[Environment getCurrent] preferences] getOrGenerateSavedPassword]];
 }
 +(HttpRequest*)httpRequestWithOtpAuthenticationAndMethod:(NSString*)method
                                              andLocation:(NSString*)location {
@@ -33,8 +32,8 @@
     return [HttpRequest httpRequestWithOtpAuthenticationAndMethod:method
                                                       andLocation:location
                                                   andOptionalBody:optionalBody
-                                                   andLocalNumber:[KeyChainStorage forceGetLocalNumber]
-                                                      andPassword:[KeyChainStorage getOrGenerateSavedPassword]
+                                                   andLocalNumber:[[[Environment getCurrent] preferences] forceGetLocalNumber]
+                                                      andPassword:[[[Environment getCurrent] preferences] getOrGenerateSavedPassword]
                                                        andCounter:[[[Environment getCurrent] preferences] getAndIncrementOneTimeCounter]];
 }
 +(HttpRequest*)httpRequestUnauthenticatedWithMethod:(NSString*)method

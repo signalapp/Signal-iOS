@@ -3,7 +3,6 @@
 #import "DH3KKeyAgreementProtocol.h"
 #import "Constraints.h"
 #import "FunctionalUtil.h"
-#import "KeyChainStorage.h"
 #import "MasterSecret.h"
 #import "Util.h"
 #import "ZrtpInitiator.h"
@@ -24,7 +23,7 @@
     
     s->allowedKeyAgreementProtocols = [[Environment getCurrent] keyAgreementProtocolsInDescendingPriority];
     s->dhSharedSecretHashes = [DhPacketSharedSecretHashes dhPacketSharedSecretHashesRandomized];
-    s->zid = [KeyChainStorage getOrGenerateZid];
+    s->zid = [[Environment preferences] getOrGenerateZid];
     s->confirmIv = [CryptoTools generateSecureRandomData:IV_LENGTH];
     s->hashChain = [HashChain hashChainWithSecureGeneratedData];
     s->badPacketLogger = [[Environment logging] getOccurrenceLoggerForSender:self withKey:@"Bad Packet"];

@@ -1,6 +1,5 @@
 #import "Environment.h"
 #import "FutureUtil.h"
-#import "KeyChainStorage.h"
 #import "LocalizableText.h"
 #import "Operation.h"
 #import "PreferencesUtil.h"
@@ -65,7 +64,7 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 #pragma mark - Local number
 
 - (void)configureLocalNumber {
-    PhoneNumber *localNumber = [KeyChainStorage tryGetLocalNumber];
+    PhoneNumber *localNumber = [[[Environment getCurrent] preferences] tryGetLocalNumber];
     if (localNumber) {
         _phoneNumberLabel.attributedText = [self localNumberAttributedStringForNumber:localNumber];
     } else {

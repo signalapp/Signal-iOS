@@ -12,4 +12,10 @@
 -(id) adjustAndTryGetNewValueForKey:(NSString*)key afterAdjuster:(id (^)(id oldValue))adjuster;
 -(void) clear;
 
+-(void) secureTryValueForKey:(NSString *)key toValue:(id)value;
+-(NSData*) secureTryGetDataForKey:(NSString *)key;
+-(NSString*) secureTryGetStringForKey:(NSString *)key;
+-(NSData*) secureDataStoreAdjustAndTryGetNewValueForKey:(NSString *)key afterAdjuster:(id (^)(id))adjuster;
+-(NSString*) secureStringStoreAdjustAndTryGetNewValueForKey:(NSString *)key afterAdjuster:(id (^)(id))adjuster;
+
 @end

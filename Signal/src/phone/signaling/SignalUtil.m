@@ -2,7 +2,6 @@
 
 #import "Constraints.h"
 #import "Environment.h"
-#import "KeyChainStorage.h"
 #import "PreferencesUtil.h"
 #import "Util.h"
 
@@ -80,12 +79,12 @@
 +(HttpRequest*) httpRequestToVerifyAccessToPhoneNumberWithChallenge:(NSString*)challenge {
     require(challenge != nil);
     
-    PhoneNumber* localPhoneNumber = [KeyChainStorage forceGetLocalNumber];
+    PhoneNumber* localPhoneNumber = [[Environment preferences] forceGetLocalNumber];
     NSString* query = [NSString stringWithFormat:@"/users/verification/%@", [localPhoneNumber toE164]];
     
-    NSData* signalingCipherKey = [KeyChainStorage getOrGenerateSignalingMacKey];
-    NSData* signalingMacKey = [KeyChainStorage getOrGenerateSignalingMacKey];
-    NSData* signalingExtraKeyData = [KeyChainStorage getOrGenerateSignalingExtraKey];
+    NSData* signalingCipherKey = [[Environment preferences] getOrGenerateSignalingCipherKey];
+    NSData* signalingMacKey = [[Environment preferences] getOrGenerateSignalingMacKey];
+    NSData* signalingExtraKeyData = [[Environment preferences] getOrGenerateSignalingExtraKey];
     NSString* encodedSignalingKey = [[@[signalingCipherKey, signalingMacKey, signalingExtraKeyData] concatDatas] encodedAsBase64];
     NSString* body = [@{@"key" : encodedSignalingKey, @"challenge" : challenge} encodedAsJson];
     

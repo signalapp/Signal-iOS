@@ -2,7 +2,6 @@
 
 #import "Constraints.h"
 #import "CryptoTools.h"
-#import "KeyChainStorage.h"
 #import "PreferencesUtil.h"
 #import "Util.h"
 #import "InitiateSignal.pb.h"
@@ -88,7 +87,7 @@
     checkOperation([data length] >= HMAC_TRUNCATED_SIZE);
     NSData* includedMac     = [data takeLast:HMAC_TRUNCATED_SIZE];
     NSData* payload         = [data skipLast:HMAC_TRUNCATED_SIZE];
-    NSData* signalingMacKey = [KeyChainStorage getOrGenerateSignalingMacKey];
+    NSData* signalingMacKey = [[Environment preferences] getOrGenerateSignalingMacKey];
     NSData* computedMac     = [[payload hmacWithSha1WithKey:signalingMacKey] takeLast:HMAC_TRUNCATED_SIZE];
     checkOperation([includedMac isEqualToData_TimingSafe:computedMac]);
     return payload;
@@ -96,7 +95,7 @@
 +(NSData*) decryptRemoteNotificationData:(NSData*)data {
     require(data != nil);
     checkOperation([data length] >= VERSION_SIZE + IV_SIZE);
-    NSData* cipherKey = [KeyChainStorage getOrGenerateSignalingCipherKey];
+    NSData* cipherKey = [[Environment preferences] getOrGenerateSignalingCipherKey];
     NSData* iv = [data subdataWithRange:NSMakeRange(VERSION_SIZE, IV_SIZE)];
     NSData* cipherText = [data skip:VERSION_SIZE+IV_SIZE];
     return [cipherText decryptWithAesInCipherBlockChainingModeWithPkcs7PaddingWithKey:cipherKey andIv:iv];

@@ -5,17 +5,16 @@
 #import "DialerViewController.h"
 #import "DiscardingLog.h"
 #import "InCallViewController.h"
-#import "KeyChainStorage.h"
 #import "LeftSideMenuViewController.h"
 #import "MMDrawerController.h"
 #import "NotificationTracker.h"
-#import "PreferencesUtil.h"
 #import "PriorityQueue.h"
 #import "RecentCallManager.h"
 #import "Release.h"
 #import "SettingsViewController.h"
 #import "TabBarParentViewController.h"
 #import "Util.h"
+#import <UICKeyChainStore/UICKeyChainStore.h>
 
 #define kSignalVersionKey @"SignalUpdateVersionKey"
 
@@ -42,7 +41,7 @@
     NSString *currentVersion  = [NSString stringWithFormat:@"%@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]];
     
     if (!previousVersion) {
-        [KeyChainStorage clear];
+        [UICKeyChainStore removeAllItems];
     } else if ([currentVersion compare:previousVersion options:NSNumericSearch] == NSOrderedDescending) {
         // The application was updated
     }

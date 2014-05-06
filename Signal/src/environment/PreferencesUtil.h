@@ -13,6 +13,14 @@
 -(NSTimeInterval) getCachedOrDefaultDesiredBufferDepth;
 -(void) setCachedDesiredBufferDepth:(double)value;
 -(int64_t) getAndIncrementOneTimeCounter;
+-(PhoneNumber*) forceGetLocalNumber;
+-(PhoneNumber*)tryGetLocalNumber;
+-(void) setLocalNumberTo:(PhoneNumber*)localNumber;
+-(Zid*) getOrGenerateZid;
+-(NSString*) getOrGenerateSavedPassword;
+-(NSData*) getOrGenerateSignalingMacKey;
+-(NSData*) getOrGenerateSignalingCipherKey;
+-(NSData*) getOrGenerateSignalingExtraKey;
 -(void) setSettingsRowExpandedPrefs:(NSArray *)prefs;
 -(NSArray *) getOrGenerateSettingsRowExpandedPrefs;
 -(NSArray *) getAvailableDateFormats;
