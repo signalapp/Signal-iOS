@@ -1,0 +1,3 @@
+The header files in this directory should only be used by code tightly integrating itself with the
+spandsp library to maximise performance. To maximise compatibility with futures revisions of spandsp,
+most users should avoid using these headers, or probing into the spandsp data structures in other ways.

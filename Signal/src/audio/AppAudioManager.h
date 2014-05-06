@@ -1,0 +1,40 @@
+#import <Foundation/Foundation.h>
+
+#import "CallProgress.h"
+#import "CallTermination.h"
+
+/**
+ *  The AppAudioManager is a Singleton object used to control audio settings / updates
+ *  for the entire application. This includes playing sounds appropriately, Initializing
+ *  Audio Settings, and interfacing with the OS. The Call Audio Pipeline it self is delegated
+ *  to the RemoteIOAudio Class.
+ *
+ *  The Audio Profile determines which preset of logic to use for playing sounds, Such as 
+ *  which speaker to use or if all sounds should be muted.
+ **/
+
+@interface AppAudioManager : NSObject
+
+enum AudioProfile {
+    AudioProfile_Default,
+    AudioProfile_ExternalSpeaker,
+};
+
++(AppAudioManager*) sharedInstance;
+
+-(void) setAudioProfile:(enum AudioProfile) profile;
+-(enum AudioProfile) getCurrentAudioProfile;
+
+-(void) respondToProgressChange:(enum CallProgressType) progressType forLocallyInitiatedCall:(BOOL) initiatedLocally;
+-(void) respondToTerminationType:(enum CallTerminationType) terminationType;
+
+-(BOOL) toggleSpeakerPhone;
+-(void) cancellAllAudio;
+
+-(void) requestRequiredPermissionsIfNeeded;
+-(BOOL) requestRecordingPrivlege;
+-(BOOL) releaseRecordingPrivlege;
+
+-(BOOL) setAudioEnabled:(BOOL) enable;
+-(void) awake;
+@end

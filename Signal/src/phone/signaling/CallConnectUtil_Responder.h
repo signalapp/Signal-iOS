@@ -1,0 +1,26 @@
+#import <Foundation/Foundation.h>
+#import "HttpManager.h"
+#import "ResponderSessionDescriptor.h"
+#import "CallController.h"
+
+/**
+ *
+ * CallConnectUtil_Responder is a utility class that deals with the details of responding to a call:
+ * - Contacting the described signaling server
+ * - Signalling busy or ringing
+ * - Forwarding later signals like 'hangup'
+ * - Contacting the described relay server
+ * - Starting the zrtp handshake
+ * - etc
+ *
+ **/
+@interface CallConnectUtil_Responder : NSObject
+
+/// Result has type Future(CallConnectResult)
++(Future*) asyncConnectToIncomingCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor
+                                         andCallController:(CallController*)callController;
+
+/// Result has type Future(HttpResponse)
++(Future*) asyncSignalTooBusyToAnswerCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor;
+
+@end

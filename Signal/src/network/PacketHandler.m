@@ -1,0 +1,31 @@
+#import "PacketHandler.h"
+#import "Constraints.h"
+
+@implementation PacketHandler
+
+@synthesize dataHandler, errorHandler;
+
++(PacketHandler*) packetHandler:(PacketHandlerBlock)dataHandler
+               withErrorHandler:(ErrorHandlerBlock)errorHandler {
+    
+    require(dataHandler != nil);
+    require(errorHandler != nil);
+    
+    PacketHandler* p = [PacketHandler new];
+    p->dataHandler = [dataHandler copy];
+    p->errorHandler = [errorHandler copy];
+    return p;
+}
+
+-(void) handlePacket:(id)packet {
+    dataHandler(packet);
+}
+
+-(void) handleError:(id)error
+        relatedInfo:(id)relatedInfo
+  causedTermination:(bool)causedTermination {
+    
+    errorHandler(error, relatedInfo, causedTermination);
+}
+
+@end
