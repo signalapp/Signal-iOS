@@ -35,3 +35,14 @@ Open Whisper Systems is currently [experimenting](https://whispersystems.org/blo
 ## Contributors
 
 Signal wouldn’t be possible without the many open-source projects we depend on. Big shoutout to the maintainers of all the [pods](https://github.com/WhisperSystems/Signal-iOS/blob/master/Podfile) we use!
+
+The original version of Signal was developed by Twisted Oak Studios.
+v1.0 development by Twisted Oak Studios: 
+
+- Connor Bell (@connorbell)
+- Craig Gidney (@strilanc)
+- Matthew Jewkes (@mjewkes) 
+- Petar Markovich (@Waxford)
+- Jazz Turner Baggs (@jazzz)
+
+Since the initial release, Signal is being managed by [Christine Corbett](https://twitter.com/corbett) and [Frederic Jacobs](https://twitter.com/FredericJacobs). 
