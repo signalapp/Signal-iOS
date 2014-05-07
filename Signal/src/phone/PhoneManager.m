@@ -97,9 +97,11 @@
         return;
     }
     
+    Contact* callingContact = [[[Environment getCurrent] contactsManager] latestContactForPhoneNumber:session.initiatorNumber];
     CallController* callController = [self cancelExistingCallAndInitNewCallWork:false
                                                                          remote:session.initiatorNumber
-                                                                optionalContact:nil];
+                                                                optionalContact:callingContact];
+
     id<CancelToken> lifetime = [callController untilCancelledToken];
     
     Future* futureConnected = [CallConnectUtil asyncRespondToCallWithSessionDescriptor:session
