@@ -2239,7 +2239,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 						{
 							id updatedDestinationNode =
 							  [destinationNode yapDatabaseRelationshipEdgeDeleted:edge
-							                                           withReason:YDB_NotifyIfSourceDeleted];
+							                                           withReason:YDB_SourceNodeDeleted];
 							
 							if (updatedDestinationNode)
 							{
@@ -2298,7 +2298,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 						{
 							id updatedSourceNode =
 							  [sourceNode yapDatabaseRelationshipEdgeDeleted:edge
-							                                      withReason:YDB_NotifyIfDestinationDeleted];
+							                                      withReason:YDB_DestinationNodeDeleted];
 							
 							if (updatedSourceNode)
 							{
@@ -2614,7 +2614,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 							edge->nodeDeleteRules = nodeDeleteRules;
 							
 							id updatedDstNode =
-							  [dstNode yapDatabaseRelationshipEdgeDeleted:edge withReason:YDB_NotifyIfSourceDeleted];
+							  [dstNode yapDatabaseRelationshipEdgeDeleted:edge withReason:YDB_SourceNodeDeleted];
 							
 							if (updatedDstNode)
 							{
@@ -2700,7 +2700,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 						edge->nodeDeleteRules = nodeDeleteRules;
 						
 						id updatedSrcNode =
-						  [srcNode yapDatabaseRelationshipEdgeDeleted:edge withReason:YDB_NotifyIfDestinationDeleted];
+						  [srcNode yapDatabaseRelationshipEdgeDeleted:edge withReason:YDB_DestinationNodeDeleted];
 						
 						if (updatedSrcNode)
 						{
