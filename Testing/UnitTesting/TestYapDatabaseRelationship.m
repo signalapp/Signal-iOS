@@ -996,6 +996,20 @@
 		XCTAssertTrue(count == 1, @"Oops");
 	}];
 	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		NSUInteger count;
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
+		XCTAssertTrue(count == 1, @"Oops");
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
+		XCTAssertTrue(count == 1, @"Oops");
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
+		XCTAssertTrue(count == 1, @"Oops");
+	}];
+	
 	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
 		[transaction setObject:key1 forKey:key1 inCollection:nil];
@@ -1023,17 +1037,30 @@
 		XCTAssertTrue(count == 1, @"Oops");
 	}];
 	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		NSUInteger count;
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
+		XCTAssertTrue(count == 1, @"Oops");
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
+		XCTAssertTrue(count == 1, @"Oops");
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
+		XCTAssertTrue(count == 1, @"Oops");
+	}];
+	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		YapDatabaseRelationshipEdge *edge =
-		  [YapDatabaseRelationshipEdge edgeWithName:@"child"
-		                                  sourceKey:key1
-		                                 collection:nil
-		                             destinationKey:key2
-		                                 collection:nil
-		                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted];
+		// Test removing an edge
 		
-		[[transaction ext:@"relationship"] removeEdge:edge];
+		[[transaction ext:@"relationship"] removeEdgeWithName:@"child"
+		                                            sourceKey:key1
+		                                           collection:nil
+		                                       destinationKey:key2
+		                                           collection:nil
+		                                       withProcessing:YDB_SourceNodeDeleted];
 		
 		NSUInteger count;
 		
@@ -1047,17 +1074,31 @@
 		XCTAssertTrue(count == 0, @"Oops");
 	}];
 	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		// The edge's nodeDeleteRules (YDB_DeleteDestinationIfSourceDeleted),
+		// plus the processing rules (YDB_SourceNodeDeleted),
+		// should have resulted in the destination node being deleted.
+		
+		id obj1 = [transaction objectForKey:key1 inCollection:nil];
+		XCTAssertNotNil(obj1, @"Relationship incorrectly deleted sourceNode");
+		
+		id obj2 = [transaction objectForKey:key2 inCollection:nil];
+		XCTAssertNil(obj2, @"Relationship extension didn't properly delete destinationNode");
+		
+	}];
+	
 	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		YapDatabaseRelationshipEdge *edge =
-		  [YapDatabaseRelationshipEdge edgeWithName:@"child"
-		                                  sourceKey:key1
-		                                 collection:nil
-		                             destinationKey:key2
-		                                 collection:nil
-		                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted];
+		// Test removing an edge that doesn't exist in the database.
+		// Make sure it doesn't do anything funky.
 		
-		[[transaction ext:@"relationship"] removeEdge:edge];
+		[[transaction ext:@"relationship"] removeEdgeWithName:@"child"
+		                                            sourceKey:key1
+		                                           collection:nil
+		                                       destinationKey:key2
+		                                           collection:nil
+		                                       withProcessing:YDB_SourceNodeDeleted];
 		
 		NSUInteger count;
 		
@@ -1069,6 +1110,172 @@
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
 		XCTAssertTrue(count == 0, @"Oops");
+	}];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		id obj1 = [transaction objectForKey:key1 inCollection:nil];
+		XCTAssertNotNil(obj1, @"Relationship incorrectly deleted sourceNode");
+		
+		id obj2 = [transaction objectForKey:key2 inCollection:nil];
+		XCTAssertNil(obj2, @"Relationship extension didn't properly delete destinationNode");
+		
+	}];
+}
+
+- (void)testManual_3
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	XCTAssertNotNil(database, @"Oops");
+	
+	YapDatabaseConnection *connection1 = [database newConnection];
+	YapDatabaseConnection *connection2 = [database newConnection];
+	
+	YapDatabaseRelationship *relationship = [[YapDatabaseRelationship alloc] init];
+	
+	BOOL registered = [database registerExtension:relationship withName:@"relationship"];
+	
+	XCTAssertTrue(registered, @"Error registering extension");
+	
+	NSString *key1 = @"key1";
+	NSString *key2 = @"key2";
+
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction setObject:key1 forKey:key1 inCollection:nil];
+		[transaction setObject:key2 forKey:key2 inCollection:nil];
+	}];
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		// Test creating an edge in a separate transaction from when the nodes are created
+		
+		YapDatabaseRelationshipEdge *edge =
+		  [YapDatabaseRelationshipEdge edgeWithName:@"child"
+		                                  sourceKey:key1
+		                                 collection:nil
+		                             destinationKey:key2
+		                                 collection:nil
+		                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted];
+		
+		[[transaction ext:@"relationship"] addEdge:edge];
+		
+		NSUInteger count;
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
+		XCTAssertTrue(count == 1, @"Oops");
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
+		XCTAssertTrue(count == 1, @"Oops");
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
+		XCTAssertTrue(count == 1, @"Oops");
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		NSUInteger count;
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
+		XCTAssertTrue(count == 1, @"Oops");
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
+		XCTAssertTrue(count == 1, @"Oops");
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
+		XCTAssertTrue(count == 1, @"Oops");
+	}];
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		// Test deleting an edge without any processing rules
+		
+		[[transaction ext:@"relationship"] removeEdgeWithName:@"child"
+		                                            sourceKey:key1
+		                                           collection:nil
+		                                       destinationKey:key2
+		                                           collection:nil
+		                                       withProcessing:YDB_EdgeDeleted];
+		
+		
+		NSUInteger count;
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
+		XCTAssertTrue(count == 0, @"Oops");
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
+		XCTAssertTrue(count == 0, @"Oops");
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
+		XCTAssertTrue(count == 0, @"Oops");
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		// The processing rules (YDB_EdgeDeleted),
+		// should * NOT * have resulted in the destination node being deleted.
+		
+		id obj1 = [transaction objectForKey:key1 inCollection:nil];
+		XCTAssertNotNil(obj1, @"Relationship incorrectly deleted sourceNode");
+		
+		id obj2 = [transaction objectForKey:key2 inCollection:nil];
+		XCTAssertNotNil(obj2, @"Relationship incorrectly deleted destinationNode");
+	}];
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		// Re-create the edge (with different nodeDeleteRules)
+		
+		YapDatabaseRelationshipEdge *edge =
+		  [YapDatabaseRelationshipEdge edgeWithName:@"child"
+		                                  sourceKey:key1
+		                                 collection:nil
+		                             destinationKey:key2
+		                                 collection:nil
+		                            nodeDeleteRules:YDB_DeleteSourceIfDestinationDeleted];
+		
+		[[transaction ext:@"relationship"] addEdge:edge];
+	}];
+	
+	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		// Test deleting an edge
+		
+		[[transaction ext:@"relationship"] removeEdgeWithName:@"child"
+		                                            sourceKey:key1
+		                                           collection:nil
+		                                       destinationKey:key2
+		                                           collection:nil
+		                                       withProcessing:YDB_DestinationNodeDeleted];
+		
+		NSUInteger count;
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
+		XCTAssertTrue(count == 0, @"Oops");
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
+		XCTAssertTrue(count == 0, @"Oops");
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
+		XCTAssertTrue(count == 0, @"Oops");
+	}];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		// The edge's nodeDeleteRules (YDB_DeleteSourceIfDestinationDeleted),
+		// plus the processing rules (YDB_DestinationNodeDeleted),
+		// should have resulted in the source node being deleted.
+		
+		id obj1 = [transaction objectForKey:key1 inCollection:nil];
+		XCTAssertNil(obj1, @"Relationship extension should have deleted sourceNode");
+		
+		id obj2 = [transaction objectForKey:key2 inCollection:nil];
+		XCTAssertNotNil(obj2, @"Relationship extension improperly deleted destinationNode");
+		
 	}];
 }
 

@@ -18,6 +18,7 @@
 **/
 
 typedef enum  {
+	YDB_EdgeDeleted,
 	YDB_SourceNodeDeleted,
 	YDB_DestinationNodeDeleted,
 } YDB_NotifyReason;
