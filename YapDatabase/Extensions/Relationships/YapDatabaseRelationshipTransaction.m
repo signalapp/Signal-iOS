@@ -1176,16 +1176,16 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
  * If the node was deleted, we'll find it.
  * Otherwise the edge was bad (node never existed).
 **/
-- (NSNumber *)rowidNumberForDeletedKey:(NSString *)key inCollection:(NSString *)collection
+- (NSNumber *)rowidNumberForDeletedKey:(NSString *)inKey inCollection:(NSString *)inCollection
 {
 	__block NSNumber *result = nil;
 	
-	[relationshipConnection->deletedInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+	[relationshipConnection->deletedInfo enumerateKeysAndObjectsUsingBlock:^(id enumKey, id enumObj, BOOL *stop){
 		
-		__unsafe_unretained NSNumber *rowidNumber = (NSNumber *)key;
-		__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
+		__unsafe_unretained NSNumber *rowidNumber = (NSNumber *)enumKey;
+		__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)enumObj;
 		
-		if ([collectionKey.key isEqualToString:key] && [collectionKey.collection isEqualToString:collection])
+		if ([collectionKey.key isEqualToString:inKey] && [collectionKey.collection isEqualToString:inCollection])
 		{
 			result = rowidNumber;
 			*stop = YES;
