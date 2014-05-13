@@ -48,8 +48,8 @@
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
-	TestObject *object = [TestObject generateTestObject];
-	TestObjectMetadata *metadata = [object extractMetadata];
+	TestObject *testObject = [TestObject generateTestObject];
+	TestObjectMetadata *testMetadata = [testObject extractMetadata];
 	
 	NSString *key1 = @"some-key-1";
 	NSString *key2 = @"some-key-2";
@@ -73,7 +73,7 @@
 		
 		XCTAssertFalse([transaction hasObjectForKey:@"non-existant" inCollection:nil], @"Expected NO object for key");
 		
-		BOOL result = [transaction getObject:&aObj metadata:&aMetadata forKey:@"non-existant" inCollection:nil];
+		result = [transaction getObject:&aObj metadata:&aMetadata forKey:@"non-existant" inCollection:nil];
 		
 		XCTAssertFalse(result, @"Expected NO getObject for key");
 		XCTAssertNil(aObj, @"Expected object to be set to nil");
@@ -105,7 +105,7 @@
 		// It should silently fail (do nothing).
 		// And further queries to fetch metadata for the same key should return nil.
 		
-		XCTAssertNoThrow([transaction replaceMetadata:metadata forKey:@"non-existant" inCollection:nil],
+		XCTAssertNoThrow([transaction replaceMetadata:testMetadata forKey:@"non-existant" inCollection:nil],
 		                 @"Expected nothing to happen");
 		
 		XCTAssertNil([transaction metadataForKey:@"non-existant" inCollection:nil],
@@ -116,7 +116,7 @@
 		
 		// Test object without metadata
 		
-		[transaction setObject:object forKey:key1 inCollection:nil];
+		[transaction setObject:testObject forKey:key1 inCollection:nil];
 		
 		XCTAssertTrue([transaction numberOfKeysInCollection:nil] == 1, @"Expected 1 key");
 		XCTAssertTrue([[transaction allKeysInCollection:nil] count] == 1, @"Expected 1 key");
@@ -175,7 +175,7 @@
 		
 		// Test object with metadata
 		
-		[transaction setObject:object forKey:key1 inCollection:nil withMetadata:metadata];
+		[transaction setObject:testObject forKey:key1 inCollection:nil withMetadata:testMetadata];
 		
 		XCTAssertTrue([transaction numberOfKeysInCollection:nil] == 1, @"Expected 1 key");
 		XCTAssertTrue([[transaction allKeysInCollection:nil] count] == 1, @"Expected 1 key");
@@ -216,17 +216,17 @@
 		
 		// Test multiple objects
 		
-		[transaction setObject:object forKey:key1 inCollection:nil withMetadata:metadata];
-		[transaction setObject:object forKey:key2 inCollection:nil withMetadata:metadata];
-		[transaction setObject:object forKey:key3 inCollection:nil withMetadata:metadata];
-		[transaction setObject:object forKey:key4 inCollection:nil withMetadata:metadata];
-		[transaction setObject:object forKey:key5 inCollection:nil withMetadata:metadata];
+		[transaction setObject:testObject forKey:key1 inCollection:nil withMetadata:testMetadata];
+		[transaction setObject:testObject forKey:key2 inCollection:nil withMetadata:testMetadata];
+		[transaction setObject:testObject forKey:key3 inCollection:nil withMetadata:testMetadata];
+		[transaction setObject:testObject forKey:key4 inCollection:nil withMetadata:testMetadata];
+		[transaction setObject:testObject forKey:key5 inCollection:nil withMetadata:testMetadata];
 		
-		[transaction setObject:object forKey:key1 inCollection:@"test" withMetadata:metadata];
-		[transaction setObject:object forKey:key2 inCollection:@"test" withMetadata:metadata];
-		[transaction setObject:object forKey:key3 inCollection:@"test" withMetadata:metadata];
-		[transaction setObject:object forKey:key4 inCollection:@"test" withMetadata:metadata];
-		[transaction setObject:object forKey:key5 inCollection:@"test" withMetadata:metadata];
+		[transaction setObject:testObject forKey:key1 inCollection:@"test" withMetadata:testMetadata];
+		[transaction setObject:testObject forKey:key2 inCollection:@"test" withMetadata:testMetadata];
+		[transaction setObject:testObject forKey:key3 inCollection:@"test" withMetadata:testMetadata];
+		[transaction setObject:testObject forKey:key4 inCollection:@"test" withMetadata:testMetadata];
+		[transaction setObject:testObject forKey:key5 inCollection:@"test" withMetadata:testMetadata];
 		
 		XCTAssertTrue([transaction numberOfKeysInCollection:nil] == 5, @"Expected 5 keys");
 		XCTAssertTrue([[transaction allKeysInCollection:nil] count] == 5, @"Expected 5 keys");
@@ -300,23 +300,23 @@
 		
 		// Test add objects to a particular collection
 		
-		[transaction setObject:object forKey:key1 inCollection:nil];
-		[transaction setObject:object forKey:key2 inCollection:nil];
-		[transaction setObject:object forKey:key3 inCollection:nil];
-		[transaction setObject:object forKey:key4 inCollection:nil];
-		[transaction setObject:object forKey:key5 inCollection:nil];
+		[transaction setObject:testObject forKey:key1 inCollection:nil];
+		[transaction setObject:testObject forKey:key2 inCollection:nil];
+		[transaction setObject:testObject forKey:key3 inCollection:nil];
+		[transaction setObject:testObject forKey:key4 inCollection:nil];
+		[transaction setObject:testObject forKey:key5 inCollection:nil];
 		
-		[transaction setObject:object forKey:key1 inCollection:@"collection1"];
-		[transaction setObject:object forKey:key2 inCollection:@"collection1"];
-		[transaction setObject:object forKey:key3 inCollection:@"collection1"];
-		[transaction setObject:object forKey:key4 inCollection:@"collection1"];
-		[transaction setObject:object forKey:key5 inCollection:@"collection1"];
+		[transaction setObject:testObject forKey:key1 inCollection:@"collection1"];
+		[transaction setObject:testObject forKey:key2 inCollection:@"collection1"];
+		[transaction setObject:testObject forKey:key3 inCollection:@"collection1"];
+		[transaction setObject:testObject forKey:key4 inCollection:@"collection1"];
+		[transaction setObject:testObject forKey:key5 inCollection:@"collection1"];
 		
-		[transaction setObject:object forKey:key1 inCollection:@"collection2"];
-		[transaction setObject:object forKey:key2 inCollection:@"collection2"];
-		[transaction setObject:object forKey:key3 inCollection:@"collection2"];
-		[transaction setObject:object forKey:key4 inCollection:@"collection2"];
-		[transaction setObject:object forKey:key5 inCollection:@"collection2"];
+		[transaction setObject:testObject forKey:key1 inCollection:@"collection2"];
+		[transaction setObject:testObject forKey:key2 inCollection:@"collection2"];
+		[transaction setObject:testObject forKey:key3 inCollection:@"collection2"];
+		[transaction setObject:testObject forKey:key4 inCollection:@"collection2"];
+		[transaction setObject:testObject forKey:key5 inCollection:@"collection2"];
 		
 		XCTAssertTrue([transaction numberOfCollections] == 3,
 					   @"Incorrect number of collections. Got=%d, Expected=3", (int)[transaction numberOfCollections]);
