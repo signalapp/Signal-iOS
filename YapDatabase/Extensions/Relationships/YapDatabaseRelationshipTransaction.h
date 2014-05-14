@@ -2,6 +2,7 @@
 
 #import "YapDatabaseExtensionTransaction.h"
 #import "YapDatabaseRelationshipEdge.h"
+#import "YapDatabaseRelationshipNode.h"
 
 /**
  * Welcome to YapDatabase!
@@ -355,12 +356,64 @@
 **/
 
 /**
- * The addEdge: method will add the manual edge (if it doesn't already exist).
+ * This method will add the manual edge (if it doesn't already exist).
  * Otherwise it will replace the the existing manual edge with the same name & srcKey/collection & dstKey/collection.
 **/
 - (void)addEdge:(YapDatabaseRelationshipEdge *)edge;
 
-- (void)removeEdge:(YapDatabaseRelationshipEdge *)edge;
+/**
+ * This method will remove the given manual edge (if it exists).
+ *
+ * The following properties are compared, for the purpose of checking edges to see if they match:
+ * - name
+ * - sourceKey & sourceCollection
+ * - destinationKey & destinationCollection
+ * - isManualEdge
+ * 
+ * In other words, to manually remove an existing manual edge, you simply need to pass an edge instance which
+ * has the same name & source & destination.
+ * 
+ * When you manually remove an edge, you can decide how the relationship extension should process it.
+ * That is, you can tell the relationship edge to act as if the source or destination node was deleted:
+ * 
+ * - YDB_EdgeDeleted            : Do nothing. Simply remove the edge from the database.
+ * - YDB_SourceNodeDeleted      : Act as if the source node was deleted.
+ * - YDB_DestinationNodeDeleted : Act as if the destination node was deleted.
+ * 
+ * This allows you to tell the relationship extension whether or not to process the nodeDeleteRules of the edge.
+ * And, if so, in what manner.
+ * 
+ * In other words, you can remove an edge, and tell the relationship extension
+ * to pretend the source node was deleted (for example), even if you didn't actually delete the source node.
+ * This allows you to execute the nodeDeleteRules that exist on an edge, without actually deleting the node.
+ * 
+ * Please note that manual edges and protocol edges are in different domains.
+ * A manual edge is one you create and add to the system via the addEdge: method.
+ * A protocol edge is one created via the YapDatabaseRelationshipNode protocol.
+ * So you cannot, for example, create an edge via the YapDatabaseRelationshipNode protocol,
+ * and then manually delete it via the removeEdge:: method. This is what is meant by "different domains".
+**/
+- (void)removeEdgeWithName:(NSString *)edgeName
+                 sourceKey:(NSString *)sourceKey
+                collection:(NSString *)sourceCollection
+            destinationKey:(NSString *)destinationKey
+                collection:(NSString *)destinationCollection
+            withProcessing:(YDB_NotifyReason)reason;
+
+/**
+ * This method is the same as removeEdgeWithName::::::, but allows you to pass an existing edge instance.
+ *
+ * The following properties of the given edge are inspected, for the purpose of checking edges to see if they match:
+ * - name
+ * - sourceKey & sourceCollection
+ * - destinationKey & destinationCollection
+ *
+ * The given edge's nodeDeleteRules are ignored.
+ * The nodeDeleteRules of the pre-existing edge are processed according to the given reason.
+ * 
+ * @see removeEdgeWithName:sourceKey:collection:destinationKey:collection:withProcessing:
+**/
+- (void)removeEdge:(YapDatabaseRelationshipEdge *)edge withProcessing:(YDB_NotifyReason)reason;
 
 #pragma mark Force Processing
 

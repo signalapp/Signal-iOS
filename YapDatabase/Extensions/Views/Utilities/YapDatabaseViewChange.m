@@ -420,11 +420,9 @@
 						// - remove any previous row changes within the group
 						// - manually inject all the proper row deletes
 						
-						__unsafe_unretained YapDatabaseViewRowChange *rowChange;
-						
 						for (NSUInteger i = [rowChanges count]; i > 0; i--)
 						{
-							rowChange = [rowChanges objectAtIndex:(i-1)];
+							__unsafe_unretained YapDatabaseViewRowChange *rowChange = [rowChanges objectAtIndex:(i-1)];
 							
 							if (rowChange->type == YapDatabaseViewChangeDelete)
 							{
@@ -548,10 +546,10 @@
 				
 				if (dependencyIndex < groupCount)
 				{
-					int changes = YapDatabaseViewChangedDependency;
+					int flags = YapDatabaseViewChangedDependency;
 					
 					YapDatabaseViewRowChange *rowChange =
-					    [YapDatabaseViewRowChange updateKey:nil changes:changes inGroup:group atIndex:dependencyIndex];
+					    [YapDatabaseViewRowChange updateKey:nil changes:flags inGroup:group atIndex:dependencyIndex];
 					
 					[rowChanges addObject:rowChange];
 				}
@@ -1712,7 +1710,7 @@
 			//
 			// Note: This code path is only taken if using a flexibleRange
 			
-			NSUInteger i = 0;
+			i = 0;
 			NSUInteger count = 0;
 			
 			NSUInteger index;

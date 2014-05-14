@@ -1754,7 +1754,7 @@
 				int blobSize = sqlite3_column_bytes(statement, 1);
 				
 				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-				NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
+				keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
 				
 				NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
 				
@@ -1961,7 +1961,7 @@
 				int blobSize = sqlite3_column_bytes(statement, 1);
 				
 				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-				NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
+				keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
 				
 				NSData *objectData = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
 				id object = connection->database->objectDeserializer(collection, key, objectData);
@@ -2174,7 +2174,7 @@
 				int textSize = sqlite3_column_bytes(statement, 0);
 				
 				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-				NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
+				keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
 				
 				YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 				

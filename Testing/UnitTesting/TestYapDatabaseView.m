@@ -366,8 +366,8 @@
 		//
 		// key0 should move from index0 to index4
 		
-		NSString *fetchedKey;
-		NSString *fetchedCollection;
+		NSString *fetchedKey = nil;
+		NSString *fetchedCollection = nil;
 		
 		[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:1 inGroup:@""];
 		
@@ -387,9 +387,6 @@
 		NSUInteger index = 0;
 		for (NSString *key in keys)
 		{
-			NSString *fetchedKey;
-			NSString *fetchedCollection;
-			
 			[[transaction ext:@"order"] getKey:&fetchedKey collection:&fetchedCollection atIndex:index inGroup:@""];
 			
 			XCTAssertTrue([fetchedKey isEqualToString:key],
