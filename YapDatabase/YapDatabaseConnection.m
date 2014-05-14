@@ -157,6 +157,9 @@
 			}
 		}
 		
+		objectPolicy = defaults.objectPolicy;
+		metadataPolicy = defaults.metadataPolicy;
+		
 		keyCache = [[YapCache alloc] initWithKeyClass:[NSNumber class] countLimit:keyCacheLimit];
 		
 		#if TARGET_OS_IPHONE
@@ -578,7 +581,7 @@
 
 - (YapDatabasePolicy)objectPolicy
 {
-	__block YapDatabasePolicy policy = YapDatabasePolicyShare;
+	__block YapDatabasePolicy policy = YapDatabasePolicyContainment;
 	
 	dispatch_block_t block = ^{
 		policy = objectPolicy;
@@ -614,7 +617,7 @@
 
 - (YapDatabasePolicy)metadataPolicy
 {
-	__block YapDatabasePolicy policy = YapDatabasePolicyShare;
+	__block YapDatabasePolicy policy = YapDatabasePolicyContainment;
 	
 	dispatch_block_t block = ^{
 		policy = metadataPolicy;
