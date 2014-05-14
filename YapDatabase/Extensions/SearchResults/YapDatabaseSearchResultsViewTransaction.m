@@ -475,8 +475,20 @@
 	// - in the parentView, the items within each group may have changed
 	// - in the parentView, the order of items within each group is the same (important!)
 	//
-	// So we can run an algorithm similar to 'repopulateViewDueToFilteringBlockChange',
-	// but we have to watch out for stuff in our view that no longer exists in the parent view.
+	// So we can run an algorithm like this:
+	//
+	//    Our View : A C D E G
+	// Parent View : A B C E F
+	//
+	// We start by comparing 'A' and 'A'. They match, so our view remains the same.
+	// Then we compare 'C' and 'B'. They don't match, so we want to determine if we should remove 'C'.
+	// To find out we check to see if 'C' exists in the parentView.
+	// We discover that it does, so we can keep the "cursor" on C, and then determine if we should insert 'B'.
+	// Then we compare 'C' and 'C' and get a match.
+	// Then we compare 'D' and 'E'. They don't match, so we want to determine if we should remove 'D'.
+	// To find out we check to see if 'D' exists in the parentView.
+	// We discover it does not, so we remove 'D'. And our "cursor" moves forward.
+	// Then we compare 'E' and 'E' ...
 	
 	NSMutableArray *groupsInSelf = [[self allGroups] mutableCopy];
 	id <NSFastEnumeration> groupsInParent;
@@ -759,6 +771,68 @@
 	
 	if ([self isPersistentView])
 	{
+		// Important:
+		// The given rowids array is unbounded.
+		// That is, normally hook methods are limited by SQLITE_LIMIT_VARIABLE_NUMBER.
+		// But that is ** NOT ** the case here.
+		// So we're required to check for this, and split the queries accordingly.
+		
+		sqlite3 *db = databaseTransaction->connection->db;
+		
+		NSUInteger maxHostParams = (NSUInteger)sqlite3_limit(db, SQLITE_LIMIT_VARIABLE_NUMBER, -1);
+		
+		NSUInteger rowidsCount = [rowids count];
+		NSUInteger offset = 0;
+		
+		do
+		{
+			NSUInteger left = rowidsCount - offset;
+			NSUInteger numParams = MIN(left, maxHostParams);
+			
+			// DELETE FROM "snippetTable" WHERE "rowid" (?, ?, ...);
+			
+			NSUInteger capacity = 100 + (numParams * 3);
+			NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
+			
+			[query appendFormat:@"DELETE FROM \"%@\" WHERE \"rowid\" IN (", [self snippetTableName]];
+			
+			for (NSUInteger i = 0; i < numParams; i++)
+			{
+				if (i == 0)
+					[query appendFormat:@"?"];
+				else
+					[query appendFormat:@", ?"];
+			}
+			
+			[query appendString:@");"];
+			
+			sqlite3_stmt *statement;
+			
+			int status = sqlite3_prepare_v2(db, [query UTF8String], -1, &statement, NULL);
+			if (status != SQLITE_OK)
+			{
+				YDBLogError(@"Error creating removeSnippets statement: %d %s", status, sqlite3_errmsg(db));
+				return;
+			}
+			
+			for (NSUInteger i = 0; i < numParams; i++)
+			{
+				int64_t rowid = [[rowids objectAtIndex:(offset + i)] unsignedLongLongValue];
+				sqlite3_bind_int64(statement, (int)(i+1), rowid);
+			}
+			
+			status = sqlite3_step(statement);
+			if (status != SQLITE_DONE)
+			{
+				YDBLogError(@"Error executing removeSnippets statement: %d %s", status, sqlite3_errmsg(db));
+			}
+			
+			sqlite3_finalize(statement);
+			statement = NULL;
+			
+			offset += numParams;
+			
+		} while(offset < rowidsCount);
 		
 	}
 	else // if (isNonPersistentView)
@@ -779,51 +853,6 @@
 		// Ignore - snippets not being used
 		return;
 	}
-	
-	if ([self isPersistentView])
-	{
-		__unsafe_unretained YapDatabaseSearchResultsViewConnection *searchResultsConnection =
-		  (YapDatabaseSearchResultsViewConnection *)viewConnection;
-		
-		sqlite3_stmt *snippetStatement = [searchResultsConnection snippetTable_removeAllStatement];
-		if (snippetStatement == NULL) return;
-		
-		// DELETE FROM "snippetTableName";
-		
-		YDBLogVerbose(@"DELETE FROM '%@';", [self snippetTableName]);
-		
-		int status = sqlite3_step(snippetStatement);
-		if (status != SQLITE_DONE)
-		{
-			YDBLogError(@"%@ (%@): Error in snippetStatement: %d %s",
-			            THIS_METHOD, [self registeredName],
-			            status, sqlite3_errmsg(databaseTransaction->connection->db));
-		}
-		
-		sqlite3_reset(snippetStatement);
-	}
-	else // if (isNonPersistentView)
-	{
-		[snippetTableTransaction removeAllObjects];
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Logic
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * This method overrides the version in YapDatabaseViewTransaction.
- * It handles clearing the snippet table too.
-**/
-- (void)removeAllRowids
-{
-	YDBLogAutoTrace();
-	
-	// Clear all the main view tables
-	[super removeAllRowids];
-	
-	// Clear our snippet table
 	
 	if ([self isPersistentView])
 	{

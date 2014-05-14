@@ -116,6 +116,16 @@
 	vector->clear();
 }
 
+- (void)appendPage:(YapDatabaseViewPage *)page
+{
+	vector->insert(vector->end(), page->vector->begin(), page->vector->end());
+}
+
+- (void)prependPage:(YapDatabaseViewPage *)page
+{
+	vector->insert(vector->begin(), page->vector->begin(), page->vector->end());
+}
+
 - (void)appendRange:(NSRange)range ofPage:(YapDatabaseViewPage *)page
 {
 	std::vector<int64_t>::iterator rangeBegin = page->vector->begin();

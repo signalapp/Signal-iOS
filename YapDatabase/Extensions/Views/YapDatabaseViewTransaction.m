@@ -2280,6 +2280,7 @@
 - (void)removeAllRowidsInGroup:(NSString *)group
 {
 	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSMutableArray *removedRowids = [NSMutableArray array];
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 	{
@@ -2288,6 +2289,8 @@
 		// Mark all rowids for deletion
 		
 		[page enumerateRowidsUsingBlock:^(int64_t rowid, NSUInteger idx, BOOL *stop) {
+			
+			[removedRowids addObject:@(rowid)];
 			
 			[viewConnection->dirtyMaps setObject:[NSNull null] forKey:@(rowid)];
 			[viewConnection->mapCache removeObjectForKey:@(rowid)];
@@ -2311,6 +2314,10 @@
 	
 	[viewConnection->changes addObject:[YapDatabaseViewSectionChange resetGroup:group]];
 	[viewConnection->mutatedGroups addObject:group];
+	
+	// Subclass hook
+	
+	[self didRemoveRowids:removedRowids collectionKeys:nil];
 }
 
 - (void)removeAllRowids
@@ -2380,6 +2387,10 @@
 	[viewConnection->dirtyLinks removeAllObjects];
 	
 	viewConnection->reset = YES;
+	
+	// Subclass hook
+	
+	[self didRemoveAllRowids];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4485,13 +4496,17 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Subclasses may override this method as an easy hook for concrete changes.
- * 
+ * Subclasses may override these methods as an easy hook for concrete changes.
+ *
  * That is, the handleX methods are hooks from the main database,
  * but they don't necessarily reflect changes to this view.
  * For example, handleRemoveObjectForCollectionKey:: notifies us that something from the main database was removed,
  * but that item may or may not have been in our view. In contrast, these hook methods are only invoked
  * when something is added or removed from our view.
+**/
+
+/**
+ * Invoked when an item is added to the view.
 **/
 - (void)didInsertRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
 {
@@ -4500,13 +4515,11 @@
 }
 
 /**
- * Subclasses may override this method as an easy hook for concrete changes.
- * 
- * That is, the handleX methods are hooks from the main database,
- * but they don't necessarily reflect changes to this view.
- * For example, handleRemoveObjectForCollectionKey:: notifies us that something from the main database was removed,
- * but that item may or may not have been in our view. In contrast, these hook methods are only invoked
- * when something is added or removed from our view.
+ * Invoked when an item is removed from the view.
+ *
+ * This method is only invoked for "single remove" operations.
+ * That is, when an individual item is removed from the view as a single operation.
+ * For larger (non-single) remove operations, the other hook methods are used.
 **/
 - (void)didRemoveRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
 {
@@ -4515,13 +4528,19 @@
 }
 
 /**
- * Subclasses may override this method as an easy hook for concrete changes.
+ * Invoked when a number of items are removed from the view in a single operation.
  * 
- * That is, the handleX methods are hooks from the main database,
- * but they don't necessarily reflect changes to this view.
- * For example, handleRemoveObjectForCollectionKey:: notifies us that something from the main database was removed,
- * but that item may or may not have been in our view. In contrast, these hook methods are only invoked
- * when something is added or removed from our view.
+ * Important #1:
+ *   The collectionKeys parameter is not always available.
+ *   If the collectionKeys parameter is non-nil, then it is correct.
+ *   Otherwise it will be nil because the opertion didn't have access to the information, and didn't need it.
+ *   Thus, if needed, you'll need to manually fetch the corresponding list of collectionKeys.
+ * 
+ * Important #2:
+ *   The given rowids array is unbounded.
+ *   That is, normally hook methods are limited by SQLITE_LIMIT_VARIABLE_NUMBER.
+ *   But that is ** NOT ** the case here.
+ *   So you'll be required to check for this, and split your queries accordingly.
 **/
 - (void)didRemoveRowids:(NSArray *)rowids collectionKeys:(NSArray *)collectionKeys
 {
@@ -4530,17 +4549,12 @@
 }
 
 /**
- * Subclasses may override this method as an easy hook for concrete changes.
- *
- * That is, the handleX methods are hooks from the main database,
- * but they don't necessarily reflect changes to this view.
- * For example, handleRemoveObjectForCollectionKey:: notifies us that something from the main database was removed,
- * but that item may or may not have been in our view. In contrast, these hook methods are only invoked
- * when something is added or removed from our view.
+ * Invoked when the view is cleared.
 **/
 - (void)didRemoveAllRowids
 {
-	
+	// Subclasses may override me.
+	// Default implementation does nothing.
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4797,19 +4811,14 @@
 	int64_t rowid = 0;
 	if ([self getRowid:&rowid atIndex:index inGroup:group])
 	{
-		// We could use getKey:collection:object:forRowid: at this point.
-		// But in most cases the object is going to be in the objectCache.
-		// So it's likely faster to fetch just the key first.
-		// And if the cache misses then we're still using a fetch based on the rowid.
-		
-		YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
-		
-		return [databaseTransaction objectForCollectionKey:ck withRowid:rowid];
+		id object = nil;
+		if ([databaseTransaction getCollectionKey:NULL object:&object forRowid:rowid])
+		{
+			return object;
+		}
 	}
-	else
-	{
-		return nil;
-	}
+	
+	return nil;
 }
 
 
@@ -4823,19 +4832,14 @@
 	int64_t rowid = 0;
 	if ([self getLastRowid:&rowid inGroup:group])
 	{
-		// We could use getKey:collection:object:forRowid: at this point.
-		// But in most cases the object is going to be in the objectCache.
-		// So it's likely faster to fetch just the key first.
-		// And if the cache misses then we're still using a fetch based on the rowid.
-		
-		YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
-		
-		return [databaseTransaction objectForCollectionKey:ck withRowid:rowid];
+		id object = nil;
+		if ([databaseTransaction getCollectionKey:NULL object:&object forRowid:rowid])
+		{
+			return object;
+		}
 	}
-	else
-	{
-		return nil;
-	}
+	
+	return nil;
 }
 
 /**
