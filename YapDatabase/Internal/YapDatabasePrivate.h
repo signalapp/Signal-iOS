@@ -284,8 +284,6 @@ extern NSString *const YapDatabaseNotificationKey;
 
 - (void)postRollbackCleanup;
 
-- (NSArray *)internalChangesetKeys;
-- (NSArray *)externalChangesetKeys;
 - (void)getInternalChangeset:(NSMutableDictionary **)internalPtr externalChangeset:(NSMutableDictionary **)externalPtr;
 - (void)processChangeset:(NSDictionary *)changeset;
 

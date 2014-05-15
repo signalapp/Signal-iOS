@@ -27,10 +27,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface YapDatabaseSearchResultsViewConnection () {
-@public
+@private
 	
 	NSString *query;
+	BOOL queryChanged;
 }
+
+- (void)setQuery:(NSString *)newQuery isChange:(BOOL)isChange;
+- (void)getQuery:(NSString **)queryPtr wasChanged:(BOOL *)wasChangedPtr;
 
 - (sqlite3_stmt *)snippetTable_getForRowidStatement;
 - (sqlite3_stmt *)snippetTable_setForRowidStatement;

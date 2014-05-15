@@ -81,6 +81,9 @@
 - (void)postRollbackCleanup;
 - (void)postCommitCleanup;
 
+- (NSArray *)internalChangesetKeys;
+- (NSArray *)externalChangesetKeys;
+
 - (sqlite3_stmt *)mapTable_getPageKeyForRowidStatement;
 - (sqlite3_stmt *)mapTable_setPageKeyForRowidStatement;
 - (sqlite3_stmt *)mapTable_removeForRowidStatement;

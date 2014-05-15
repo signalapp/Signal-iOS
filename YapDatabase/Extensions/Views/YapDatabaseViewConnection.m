@@ -23,6 +23,7 @@
 #else
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
+#pragma unused(ydbLogLevel)
 
 static NSString *const key_dirtyMaps                = @"dirtyMaps";
 static NSString *const key_dirtyPages               = @"dirtyPages";
@@ -30,6 +31,7 @@ static NSString *const key_reset                    = @"reset";
 static NSString *const key_group_pagesMetadata_dict = @"group_pagesMetadata_dict";
 static NSString *const key_pageKey_group_dict       = @"pageKey_group_dict";
 static NSString *const key_changes                  = @"changes";
+
 
 @implementation YapDatabaseViewConnection
 {

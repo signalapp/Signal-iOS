@@ -1,14 +1,45 @@
 #import "YapDatabaseSearchQueue.h"
 #import <libkern/OSAtomic.h>
 
+@interface YapDatabaseSearchQueueControl : NSObject
+
+- (id)initWithRollback:(BOOL)rollback;
+
+@property (nonatomic, readonly) BOOL abort;
+@property (nonatomic, readonly) BOOL rollback;
+
+@end
+
+@implementation YapDatabaseSearchQueueControl
+
+@synthesize rollback = rollback;
+
+- (id)initWithRollback:(BOOL)inRollback
+{
+	if ((self = [super init]))
+	{
+		rollback = inRollback;
+	}
+	return self;
+}
+
+- (BOOL)abort {
+	return YES;
+}
+
+@end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @implementation YapDatabaseSearchQueue
 {
 	NSMutableArray *queue;
 	OSSpinLock lock;
 	
-	BOOL abort;
-	BOOL rollback;
+	BOOL queueHasAbort;
+	BOOL queueHasRollback;
 }
 
 - (id)init
@@ -40,19 +71,32 @@
 {
 	OSSpinLockLock(&lock);
 	{
-		abort = YES;
-		rollback = YES;
+		YapDatabaseSearchQueueControl *control =
+		  [[YapDatabaseSearchQueueControl alloc] initWithRollback:shouldRollback];
+		
+		[queue addObject:control];
+		
+		queueHasAbort = YES;
+		queueHasRollback = queueHasRollback || shouldRollback;
 	}
 	OSSpinLockUnlock(&lock);
 }
 
 - (NSArray *)enqueuedQueries
 {
-	NSArray *queries = nil;
+	NSMutableArray *queries = nil;
 	
 	OSSpinLockLock(&lock);
 	{
-		queries = [queue copy];
+		queries = [NSMutableArray arrayWithCapacity:[queue count]];
+		
+		for (id obj in queue)
+		{
+			if ([obj isKindOfClass:[NSString class]])
+			{
+				[queries addObject:obj];
+			}
+		}
 	}
 	OSSpinLockUnlock(&lock);
 	
@@ -65,7 +109,13 @@
 	
 	OSSpinLockLock(&lock);
 	{
-		count = [queue count];
+		for (id obj in queue)
+		{
+			if ([obj isKindOfClass:[NSString class]])
+			{
+				count++;
+			}
+		}
 	}
 	OSSpinLockUnlock(&lock);
 	
@@ -82,8 +132,16 @@
 	
 	OSSpinLockLock(&lock);
 	{
-		lastQuery = [queue lastObject];
+		id lastObject = [queue lastObject];
 		[queue removeAllObjects];
+		
+		queueHasAbort = NO;
+		queueHasRollback = NO;
+		
+		if ([lastObject isKindOfClass:[NSString class]])
+		{
+			lastQuery = (NSString *)lastObject;
+		}
 	}
 	OSSpinLockUnlock(&lock);
 	
@@ -97,10 +155,8 @@
 	
 	OSSpinLockLock(&lock);
 	{
-		shouldAbort = abort;
-		shouldRollback = rollback;
-		
-		abort = rollback = NO;
+		shouldAbort = queueHasAbort;
+		shouldRollback = queueHasRollback;
 	}
 	OSSpinLockUnlock(&lock);
 	

@@ -27,6 +27,7 @@
 #define ExtKey_subclassVersion    @"searchResultViewClassVersion"
 #define ExtKey_persistent         @"persistent"
 #define ExtKey_versionTag         @"versionTag"
+#define ExtKey_query              @"query"
 
 
 @implementation YapDatabaseSearchResultsViewTransaction
@@ -212,7 +213,8 @@
 		__unsafe_unretained YapDatabaseSearchResultsViewConnection *searchResultsConnection =
 		  (YapDatabaseSearchResultsViewConnection *)viewConnection;
 		
-		searchResultsConnection->query = [self stringValueForExtensionKey:@"query"];
+		NSString *query = [self stringValueForExtensionKey:ExtKey_query];
+		[searchResultsConnection setQuery:query isChange:NO];
 	}
 	
 	return result;
@@ -227,6 +229,9 @@
 	// To be used if we have a major upgrade to this class.
 }
 
+/**
+ * Overrides createTables method in superclass in order to create extra snippet table (if needed).
+**/
 - (BOOL)createTables
 {
 	YDBLogAutoTrace();
@@ -285,6 +290,9 @@
 	return YES;
 }
 
+/**
+ * Overrides populateView method in superclass in order to provide its own independent implementation.
+**/
 - (BOOL)populateView
 {
 	YDBLogAutoTrace();
@@ -353,7 +361,7 @@
 			[self updateViewUsingBlocks];
 	}
 
-	return NO;
+	return YES;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -880,6 +888,32 @@
 	{
 		[snippetTableTransaction removeAllObjects];
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Cleanup & Commit
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)commitTransaction
+{
+	YDBLogAutoTrace();
+	
+	// If the query was changed, then we need to write it to the yap table.
+	
+	__unsafe_unretained YapDatabaseSearchResultsViewConnection *searchResultsViewConnection =
+	  (YapDatabaseSearchResultsViewConnection *)viewConnection;
+	
+	NSString *query = nil;
+	BOOL queryChanged = NO;
+	[searchResultsViewConnection getQuery:&query wasChanged:&queryChanged];
+	
+	if (queryChanged)
+	{
+		[self setStringValue:query forExtensionKey:ExtKey_query];
+	}
+	
+	// This must be done LAST.
+	[super commitTransaction];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1782,7 +1816,7 @@
 	__unsafe_unretained YapDatabaseSearchResultsViewConnection *searchResultsViewConnection =
 	  (YapDatabaseSearchResultsViewConnection *)viewConnection;
 	
-	return searchResultsViewConnection->query;
+	return [searchResultsViewConnection query];
 }
 
 /**
@@ -2106,7 +2140,7 @@
 	__unsafe_unretained YapDatabaseSearchResultsViewConnection *searchResultsViewConnection =
 	  (YapDatabaseSearchResultsViewConnection *)viewConnection;
 	
-	searchResultsViewConnection->query = [query copy];
+	[searchResultsViewConnection setQuery:query isChange:YES];
 }
 
 - (void)performSearchWithQueue:(YapDatabaseSearchQueue *)queue
