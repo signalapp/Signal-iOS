@@ -4561,14 +4561,6 @@
 	}
 }
 
-/**
- * DEPRECATED: Use replacePrimitiveMetadata:forKey:inCollection: instead.
-**/
-- (void)setPrimitiveMetadata:(NSData *)primitiveMetadata forKey:(NSString *)key inCollection:(NSString *)collection
-{
-	[self replacePrimitiveMetadata:primitiveMetadata forKey:key inCollection:collection];
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Object & Metadata
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4985,14 +4977,6 @@
 	{
 		[extTransaction handleReplaceMetadata:metadata forCollectionKey:cacheKey withRowid:rowid];
 	}
-}
-
-/**
- * DEPRECATED: Use replaceMetadata:forKey:inCollection: instead.
-**/
-- (void)setMetadata:(id)metadata forKey:(NSString *)key inCollection:(NSString *)collection
-{
-	[self replaceMetadata:metadata forKey:key inCollection:collection];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
