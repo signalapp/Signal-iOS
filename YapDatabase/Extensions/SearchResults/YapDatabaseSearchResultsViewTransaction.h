@@ -10,6 +10,13 @@
 //
 // Please see YapDatabaseViewTransaction.h
 
+/**
+ * Returns the snippet for the given collection/key tuple.
+ *
+ * Note: snippets must be enabled via YapDatabaseSearchResultsViewOptions.
+**/
+- (NSString *)snippetForKey:(NSString *)key inCollection:(NSString *)collection;
+
 @end
 
 @interface YapDatabaseSearchResultsViewTransaction (ReadWrite)

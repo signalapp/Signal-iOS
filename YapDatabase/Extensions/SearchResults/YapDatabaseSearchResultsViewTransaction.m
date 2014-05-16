@@ -42,6 +42,11 @@
 	if ((self = [super initWithViewConnection:inViewConnection databaseTransaction:inDatabaseTransaction]))
 	{
 		ftsRowids = YapRowidSetCreate(0);
+		
+		if (viewConnection->view->options.isPersistent == NO)
+		{
+			snippetTableTransaction = [databaseTransaction memoryTableTransaction:[self snippetTableName]];
+		}
 	}
 	return self;
 }
@@ -878,7 +883,7 @@
 		int status = sqlite3_step(snippetStatement);
 		if (status != SQLITE_DONE)
 		{
-			YDBLogError(@"%@ (%@): Error in snippetStatement: %d %s",
+			YDBLogError(@"%@ (%@): Error in snippetTable_removeAllStatement: %d %s",
 			            THIS_METHOD, [self registeredName],
 			            status, sqlite3_errmsg(databaseTransaction->connection->db));
 		}
@@ -2147,6 +2152,63 @@
 - (void)performSearchWithQueue:(YapDatabaseSearchQueue *)queue
 {
 	// TODO: Implement me
+}
+
+- (NSString *)snippetForKey:(NSString *)key inCollection:(NSString *)collection
+{
+	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
+	(YapDatabaseSearchResultsViewOptions *)viewConnection->view->options;
+	
+	if (searchResultsOptions.snippetOptions == nil) {
+		// Ignore - snippets not being used
+		return nil;
+	}
+	
+	int64_t rowid = 0;
+	if (![databaseTransaction getRowid:&rowid forKey:key inCollection:collection]) {
+		return nil;
+	}
+	
+	NSString *snippet = nil;
+	
+	if ([self isPersistentView])
+	{
+		__unsafe_unretained YapDatabaseSearchResultsViewConnection *searchResultsConnection =
+		  (YapDatabaseSearchResultsViewConnection *)viewConnection;
+		
+		sqlite3_stmt *statement = [searchResultsConnection snippetTable_getForRowidStatement];
+		if (statement == NULL) return nil;
+		
+		// SELECT "snippet" FROM "snippetTable" WHERE "rowid" = ?;
+		
+		sqlite3_bind_int64(statement, 1, rowid);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
+		{
+			if (databaseTransaction->connection->needsMarkSqlLevelSharedReadLock)
+				[databaseTransaction->connection markSqlLevelSharedReadLockAcquired];
+			
+			const unsigned char *text = sqlite3_column_text(statement, 0);
+			int textSize = sqlite3_column_bytes(statement, 0);
+			
+			snippet = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+		}
+		else if (status == SQLITE_ERROR)
+		{
+			YDBLogError(@"Error executing 'snippetTable_getForRowidStatement': %d %s",
+			            status, sqlite3_errmsg(databaseTransaction->connection->db));
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+	}
+	else
+	{
+		snippet = [snippetTableTransaction objectForKey:@(rowid)];
+	}
+	
+	return snippet;
 }
 
 @end

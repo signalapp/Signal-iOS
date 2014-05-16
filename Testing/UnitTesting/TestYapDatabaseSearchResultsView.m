@@ -38,13 +38,60 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
+#pragma mark With ParentView
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test1_withParentView
+- (void)test1_parentView_memory_withoutSnippets
 {
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
 	
+	YapDatabaseSearchResultsViewOptions *searchViewOptions = [[YapDatabaseSearchResultsViewOptions alloc] init];
+	searchViewOptions.isPersistent = NO;
+	
+	[self _test1_parentView_withPath:databasePath options:searchViewOptions];
+}
+
+- (void)test1_parentView_memory_withSnippets
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseFullTextSearchSnippetOptions *snippetOptions = [[YapDatabaseFullTextSearchSnippetOptions alloc] init];
+	snippetOptions.numberOfTokens = 5;
+	
+	YapDatabaseSearchResultsViewOptions *searchViewOptions = [[YapDatabaseSearchResultsViewOptions alloc] init];
+	searchViewOptions.isPersistent = NO;
+	searchViewOptions.snippetOptions = snippetOptions;
+	
+	[self _test1_parentView_withPath:databasePath options:searchViewOptions];
+}
+
+- (void)test1_parentView_persistent_withoutSnippets
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseSearchResultsViewOptions *searchViewOptions = [[YapDatabaseSearchResultsViewOptions alloc] init];
+	searchViewOptions.isPersistent = YES;
+	
+	[self _test1_parentView_withPath:databasePath options:searchViewOptions];
+}
+
+- (void)test1_parentView_persistent_withSnippets
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseFullTextSearchSnippetOptions *snippetOptions = [[YapDatabaseFullTextSearchSnippetOptions alloc] init];
+	snippetOptions.numberOfTokens = 5;
+	
+	YapDatabaseSearchResultsViewOptions *searchViewOptions = [[YapDatabaseSearchResultsViewOptions alloc] init];
+	searchViewOptions.isPersistent = YES;
+	searchViewOptions.snippetOptions = snippetOptions;
+	
+	[self _test1_parentView_withPath:databasePath options:searchViewOptions];
+}
+
+- (void)_test1_parentView_withPath:(NSString *)databasePath
+                           options:(YapDatabaseSearchResultsViewOptions *)searchViewOptions
+{
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
@@ -108,8 +155,6 @@
 	
 	// Setup SearchResultsView
 	
-	YapDatabaseSearchResultsViewOptions *searchViewOptions = [[YapDatabaseSearchResultsViewOptions alloc] init];
-	
 	YapDatabaseSearchResultsView *searchResultsView =
 	  [[YapDatabaseSearchResultsView alloc] initWithFullTextSearchName:@"fts"
 	                                                    parentViewName:@"order"
@@ -148,17 +193,25 @@
 			i++;
 		}
 		
-		[[transaction ext:@"order"] enumerateKeysAndObjectsInGroup:@""
-		                    usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop)
-		{
-			NSLog(@"Normal view: %lu : %@", (unsigned long)index, object);
-		}];
+	//	[[transaction ext:@"order"] enumerateKeysAndObjectsInGroup:@""
+	//	                    usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop)
+	//	{
+	//		NSLog(@"Normal view: %lu : %@", (unsigned long)index, object);
+	//	}];
 		
-		[[transaction ext:@"searchResults"] enumerateKeysAndObjectsInGroup:@""
-		                    usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop)
-		{
-			NSLog(@"Search view: %lu : %@", (unsigned long)index, object);
-		}];
+	//	[[transaction ext:@"searchResults"] enumerateKeysAndObjectsInGroup:@""
+	//	                    usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop)
+	//	{
+	//		NSLog(@"Search view: %lu : %@", (unsigned long)index, object);
+	//	}];
+		
+		NSUInteger count = 0;
+		
+		count = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
+		XCTAssertTrue(count == 7, @"Bad count: %lu", (unsigned long)count);
+		
+		count = [[transaction ext:@"searchResults"] numberOfItemsInGroup:@""];
+		XCTAssertTrue(count == 0, @"Bad count: %lu", (unsigned long)count);
 	}];
 
 	NSString *query = @"the";
@@ -170,8 +223,21 @@
 		[[transaction ext:@"searchResults"] enumerateKeysAndObjectsInGroup:@""
 		                    usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop)
 		{
-			NSLog(@"Search view: %lu : %@", (unsigned long)index, object);
+		//	NSLog(@"Search view: %lu : %@", (unsigned long)index, object);
+			
+			if (searchViewOptions.snippetOptions)
+			{
+				NSString *snippet = [[transaction ext:@"searchResults"] snippetForKey:key inCollection:collection];
+		//		NSLog(@"    snippet: %lu : %@", (unsigned long)index, snippet);
+				
+				XCTAssertNotNil(snippet, @"Expected a snippet");
+			}
 		}];
+		
+		NSUInteger count = 0;
+		
+		count = [[transaction ext:@"searchResults"] numberOfItemsInGroup:@""];
+		XCTAssertTrue(count == 3, @"Bad count: %lu", (unsigned long)count);
 	}];
 
 	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
