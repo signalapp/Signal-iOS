@@ -226,7 +226,7 @@
 {
 	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		NSUInteger count = [[transaction ext:@"main"] numberOfKeysInGroup:@""];
+		NSUInteger count = [[transaction ext:@"main"] numberOfItemsInGroup:@""];
 		
 		NSLog(@"mainView.count = %lu", (unsigned long)count);
 	}];
@@ -236,7 +236,7 @@
 {
 	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		NSUInteger count = [[transaction ext:@"on-the-fly"] numberOfKeysInGroup:@""];
+		NSUInteger count = [[transaction ext:@"on-the-fly"] numberOfItemsInGroup:@""];
 		
 		NSLog(@"onTheFlyView.count = %lu", (unsigned long)count);
 	}];

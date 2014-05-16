@@ -373,7 +373,7 @@
     
 	for (NSString *group in allGroups)
 	{
-		NSUInteger count = [viewTransaction numberOfKeysInGroup:group];
+		NSUInteger count = [viewTransaction numberOfItemsInGroup:group];
 		
 		[counts setObject:@(count) forKey:group];
 	}

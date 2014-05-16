@@ -1938,7 +1938,7 @@
 	
 	for (NSString *group in [self allGroups])
 	{
-		__block NSUInteger groupCount = [self numberOfKeysInGroup:group];
+		__block NSUInteger groupCount = [self numberOfItemsInGroup:group];
 		__block NSRange range = NSMakeRange(0, groupCount);
 		__block BOOL done;
 		do

@@ -1431,7 +1431,7 @@
 {
 	// We can actually do something a little faster than this:
 	//
-	// NSUInteger count = [self numberOfKeysInGroup:group];
+	// NSUInteger count = [self numberOfItemsInGroup:group];
 	// if (count > 0)
 	//     return [self getRowid:rowidPtr atIndex:(count-1) inGroup:group];
 	// else
@@ -3832,7 +3832,7 @@
 
 /**
  * Returns YES if there are any keys in the given group.
- * This is equivalent to ([viewTransaction numberOfKeysInGroup:group] > 0)
+ * This is equivalent to ([viewTransaction numberOfItemsInGroup:group] > 0)
 **/
 - (BOOL)hasGroup:(NSString *)group
 {
@@ -3854,7 +3854,7 @@
 #pragma mark Public API - Counts
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (NSUInteger)numberOfKeysInGroup:(NSString *)group
+- (NSUInteger)numberOfItemsInGroup:(NSString *)group
 {
 	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	NSUInteger count = 0;
@@ -3867,7 +3867,7 @@
 	return count;
 }
 
-- (NSUInteger)numberOfKeysInAllGroups
+- (NSUInteger)numberOfItemsInAllGroups
 {
 	NSUInteger count = 0;
 	
@@ -3896,6 +3896,22 @@
 	}
 	
 	return YES;
+}
+
+/**
+ * DEPRECATED: Use numberOfItemsInGroup: instead.
+**/
+- (NSUInteger)numberOfKeysInGroup:(NSString *)group
+{
+	return [self numberOfItemsInGroup:group];
+}
+
+/**
+ * DEPRECATED: Use numberOfItemsInAllGroups instead.
+**/
+- (NSUInteger)numberOfKeysInAllGroups
+{
+	return [self numberOfItemsInAllGroups];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4330,7 +4346,7 @@
 	if (forwardEnumeration)
 		index = 0;
 	else
-		index = [self numberOfKeysInGroup:group] - 1;
+		index = [self numberOfItemsInGroup:group] - 1;
 	
 	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 	
@@ -4428,7 +4444,7 @@
 		
 		NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
 		
-		__block NSUInteger pageOffset = [self numberOfKeysInGroup:group];
+		__block NSUInteger pageOffset = [self numberOfItemsInGroup:group];
 		__block BOOL startedRange = NO;
 		
 		[pagesMetadataForGroup enumerateObjectsWithOptions:options
@@ -4482,7 +4498,7 @@
 	{
 		YDBLogWarn(@"%@: Range out of bounds: range(%lu, %lu) >= numberOfKeys(%lu) in group %@", THIS_METHOD,
 		    (unsigned long)range.location, (unsigned long)range.length,
-		    (unsigned long)[self numberOfKeysInGroup:group], group);
+		    (unsigned long)[self numberOfItemsInGroup:group], group);
 	}
 }
 

@@ -52,7 +52,7 @@
 
 /**
  * Returns YES if there are any keys in the given group.
- * This is equivalent to ([viewTransaction numberOfKeysInGroup:group] > 0)
+ * This is equivalent to ([viewTransaction numberOfItemsInGroup:group] > 0)
 **/
 - (BOOL)hasGroup:(NSString *)group;
 
@@ -62,17 +62,29 @@
  * Returns the total number of keys in the given group.
  * If the group doesn't exist, returns zero.
 **/
-- (NSUInteger)numberOfKeysInGroup:(NSString *)group;
+- (NSUInteger)numberOfItemsInGroup:(NSString *)group;
 
 /**
  * Returns the total number of keys in every single group.
 **/
-- (NSUInteger)numberOfKeysInAllGroups;
+- (NSUInteger)numberOfItemsInAllGroups;
 
 /**
  * Returns YES if the view is empty (has zero groups).
 **/
 - (BOOL)isEmpty;
+
+/**
+ * DEPRECATED: Use numberOfItemsInGroup: instead.
+**/
+- (NSUInteger)numberOfKeysInGroup:(NSString *)group
+__attribute((deprecated("Use method numberOfItemsInGroup: instead")));
+
+/**
+ * DEPRECATED: Use numberOfItemsInAllGroups instead.
+**/
+- (NSUInteger)numberOfKeysInAllGroups
+__attribute((deprecated("Use method numberOfItemsInAllGroups instead")));
 
 #pragma mark Fetching
 
@@ -91,7 +103,7 @@
 - (BOOL)getFirstKey:(NSString **)keyPtr collection:(NSString **)collectionPtr inGroup:(NSString *)group;
 
 /**
- * Shortcut for: [view getKey:&key collection:&collection atIndex:(numberOfKeysInGroup-1) inGroup:group]
+ * Shortcut for: [view getKey:&key collection:&collection atIndex:(numberOfItemsInGroup-1) inGroup:group]
 **/
 - (BOOL)getLastKey:(NSString **)keyPtr collection:(NSString **)collectionPtr inGroup:(NSString *)group;
 
