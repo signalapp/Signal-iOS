@@ -30,7 +30,7 @@ YapRowidSet* YapRowidSetCopy(YapRowidSet *set)
 		copy->rowids = new std::unordered_set<int64_t>();
 	}
 	
-	return set;
+	return copy;
 }
 
 void YapRowidSetRelease(YapRowidSet *set)
@@ -75,7 +75,7 @@ void YapRowidSetEnumerate(YapRowidSet *set, void (^block)(int64_t rowid, BOOL *s
 	__block BOOL stop = NO;
 	
 	std::unordered_set<int64_t>::iterator iterator = set->rowids->begin();
-	std::unordered_set<int64_t>::iterator end;
+	std::unordered_set<int64_t>::iterator end = set->rowids->end();
 	
 	while (iterator != end)
 	{
