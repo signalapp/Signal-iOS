@@ -124,6 +124,9 @@
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
+	connection1.name = @"connection1";
+	connection2.name = @"connection2";
+	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
 		NSArray *phrases = @[
@@ -157,7 +160,7 @@
 			NSLog(@"Search view: %lu : %@", (unsigned long)index, object);
 		}];
 	}];
-	
+
 	NSString *query = @"the";
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -170,14 +173,18 @@
 			NSLog(@"Search view: %lu : %@", (unsigned long)index, object);
 		}];
 	}];
+
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		NSString *connectionQuery = [[transaction ext:@"searchResults"] query];
+		XCTAssertTrue([connectionQuery isEqualToString:query], @"Oops");
+	}];
 	
-	NSString *connectionQuery;
-	
-	connectionQuery = [[connection1 ext:@"searchResults"] query];
-	XCTAssertTrue([connectionQuery isEqualToString:query], @"Oops");
-	
-	connectionQuery = [[connection2 ext:@"searchResults"] query];
-	XCTAssertTrue([connectionQuery isEqualToString:query], @"Oops");
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		NSString *connectionQuery = [[transaction ext:@"searchResults"] query];
+		XCTAssertTrue([connectionQuery isEqualToString:query], @"Oops");
+	}];
 }
 
 @end

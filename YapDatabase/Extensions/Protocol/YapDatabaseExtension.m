@@ -43,7 +43,7 @@
 @synthesize registeredName;
 
 /**
- * Subclasses must implement this method.
+ * Subclasses MUST implement this method.
  * This method is called during the view registration process to enusre the extension supports the database type.
  * 
  * Return YES if the class/instance supports the database configuration.

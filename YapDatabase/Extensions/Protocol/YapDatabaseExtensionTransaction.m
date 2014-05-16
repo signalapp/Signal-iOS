@@ -48,8 +48,8 @@
 }
 
 /**
+ * Subclasses may OPTIONALLY implement this method.
  * This method is called if within a readwrite transaction.
- * This method is optional.
 **/
 - (void)prepareChangeset
 {

@@ -207,17 +207,18 @@
 {
 	YDBLogAutoTrace();
 	
-	BOOL result = [super prepareIfNeeded];
-	if (result)
+	if (![super prepareIfNeeded]) return NO;
+	
+	__unsafe_unretained YapDatabaseSearchResultsViewConnection *searchResultsConnection =
+	  (YapDatabaseSearchResultsViewConnection *)viewConnection;
+	
+	if ([searchResultsConnection query] == nil)
 	{
-		__unsafe_unretained YapDatabaseSearchResultsViewConnection *searchResultsConnection =
-		  (YapDatabaseSearchResultsViewConnection *)viewConnection;
-		
 		NSString *query = [self stringValueForExtensionKey:ExtKey_query];
 		[searchResultsConnection setQuery:query isChange:NO];
 	}
 	
-	return result;
+	return YES;
 }
 
 /**

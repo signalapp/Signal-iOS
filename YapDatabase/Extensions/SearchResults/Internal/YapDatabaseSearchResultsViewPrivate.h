@@ -33,6 +33,7 @@
 	BOOL queryChanged;
 }
 
+- (NSString *)query;
 - (void)setQuery:(NSString *)newQuery isChange:(BOOL)isChange;
 - (void)getQuery:(NSString **)queryPtr wasChanged:(BOOL *)wasChangedPtr;
 

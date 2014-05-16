@@ -584,7 +584,7 @@
 				DC2C98B717E3CABB00F1E04F /* FullTextSearch */,
 				DC7179E3181207D300D6E6C8 /* SecondaryIndexes */,
 				DC3740711858374E00DD5953 /* Relationships */,
-				DCE0CA2B18EA2A7C00F290C7 /* SearchResults */,
+				DCE0CA2B18EA2A7C00F290C7 /* SearchResultsView */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -769,7 +769,7 @@
 			name = YapDatabaseTests;
 			sourceTree = "<group>";
 		};
-		DCE0CA2B18EA2A7C00F290C7 /* SearchResults */ = {
+		DCE0CA2B18EA2A7C00F290C7 /* SearchResultsView */ = {
 			isa = PBXGroup;
 			children = (
 				DC059BB818EF864C0088574E /* Utilities */,
@@ -783,7 +783,7 @@
 				DCE0CA3418EA301D00F290C7 /* YapDatabaseSearchResultsViewTransaction.h */,
 				DCE0CA3518EA301D00F290C7 /* YapDatabaseSearchResultsViewTransaction.m */,
 			);
-			name = SearchResults;
+			name = SearchResultsView;
 			sourceTree = "<group>";
 		};
 		DCE0CA3218EA2EFF00F290C7 /* Internal */ = {
