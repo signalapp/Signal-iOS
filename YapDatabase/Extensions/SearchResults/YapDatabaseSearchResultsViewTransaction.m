@@ -4,6 +4,7 @@
 #import "YapDatabaseFullTextSearchPrivate.h"
 #import "YapDatabaseExtensionPrivate.h"
 #import "YapDatabasePrivate.h"
+#import "YapDatabaseSearchQueuePrivate.h"
 #import "YapRowidSet.h"
 #import "YapCollectionKey.h"
 #import "YapDatabaseString.h"
@@ -34,6 +35,8 @@
 {
 	YapRowidSet *ftsRowids;
 	NSMutableDictionary *snippets;
+	
+	YapDatabaseSearchQueue *searchQueue;
 }
 
 - (id)initWithViewConnection:(YapDatabaseViewConnection *)inViewConnection
@@ -41,8 +44,6 @@
 {
 	if ((self = [super initWithViewConnection:inViewConnection databaseTransaction:inDatabaseTransaction]))
 	{
-		ftsRowids = YapRowidSetCreate(0);
-		
 		if (viewConnection->view->options.isPersistent == NO)
 		{
 			snippetTableTransaction = [databaseTransaction memoryTableTransaction:[self snippetTableName]];
@@ -307,7 +308,7 @@
 	
 	[self removeAllRowids];
 	
-	// Initialize ivars
+	// Initialize ivars (if needed)
 	
 	if (viewConnection->group_pagesMetadata_dict == nil)
 		viewConnection->group_pagesMetadata_dict = [[NSMutableDictionary alloc] init];
@@ -315,9 +316,36 @@
 	if (viewConnection->pageKey_group_dict == nil)
 		viewConnection->pageKey_group_dict = [[NSMutableDictionary alloc] init];
 	
-	// Perform search (if needed)
+	// Perform search
 	
-	YapRowidSetRemoveAll(ftsRowids);
+	[self repopulateFtsRowidsAndSnippets];
+	
+	// Update the view using search results
+	
+	if (YapRowidSetCount(ftsRowids) > 0)
+	{
+		__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
+		  (YapDatabaseSearchResultsView *)viewConnection->view;
+		
+		if (searchResultsView->parentViewName)
+			[self updateViewFromParent];
+		else
+			[self updateViewUsingBlocks];
+	}
+
+	return YES;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Repopulate
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Executes the FTS query, and populates the ftsRowids & snippets ivars.
+**/
+- (void)repopulateFtsRowidsAndSnippets
+{
+	YDBLogAutoTrace();
 	
 	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
 	  (YapDatabaseSearchResultsView *)viewConnection->view;
@@ -327,6 +355,17 @@
 	
 	__unsafe_unretained YapDatabaseFullTextSearchTransaction *ftsTransaction =
 	  (YapDatabaseFullTextSearchTransaction *)[databaseTransaction ext:searchResultsView->fullTextSearchName];
+	
+	// Prepare ftsRowids ivar
+	
+	if (ftsRowids)
+		YapRowidSetRemoveAll(ftsRowids);
+	else
+		ftsRowids = YapRowidSetCreate(0);
+	
+	// Perform search
+	
+	__block int processed = 0;
 	
 	if (searchResultsOptions.snippetOptions)
 	{
@@ -347,6 +386,14 @@
 				[snippets setObject:snippet forKey:@(rowid)];
 			else
 				[snippets setObject:[NSNull null] forKey:@(rowid)];
+			
+			if (++processed == 2500)
+			{
+				processed = 0;
+				if ([searchQueue shouldAbortSearchInProgressAndRollback:NULL]) {
+					*stop = YES;
+				}
+			}
 		 }];
 	}
 	else
@@ -356,23 +403,17 @@
 		[ftsTransaction enumerateRowidsMatching:[self query] usingBlock:^(int64_t rowid, BOOL *stop) {
 			
 			YapRowidSetAdd(ftsRowids, rowid);
+			
+			if (++processed == 2500)
+			{
+				processed = 0;
+				if ([searchQueue shouldAbortSearchInProgressAndRollback:NULL]) {
+					*stop = YES;
+				}
+			}
 		}];
 	}
-	
-	if (YapRowidSetCount(ftsRowids) > 0)
-	{
-		if (searchResultsView->parentViewName)
-			[self updateViewFromParent];
-		else
-			[self updateViewUsingBlocks];
-	}
-
-	return YES;
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Repopulate
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * This method is invoked if:
@@ -420,7 +461,7 @@
 	// - Remove all items from the database tables
 	// - Flush the group_pagesMetadata_dict (and related ivars)
 	// - Set the reset flag (for internal notification creation)
-	// - And then run the normal populate routine, with one exceptione handled by the isRepopulate flag.
+	// - And then run the normal populate routine, with one exception handled by the isRepopulate flag.
 	//
 	// The changeset mechanism will automatically consolidate all changes to the minimum.
 	
@@ -445,18 +486,7 @@
 	
 	isRepopulate = YES;
 	{
-		// No need to redo the search. That is, no need to re-populate the ftsRowids ivar.
-		// Instead, just run the pre & post-search code.
-		//
-		// [self populateView]; <- Nope. We want a subset of this method.
-		
-		[self removeAllRowids];
-		
-		if (YapRowidSetCount(ftsRowids) > 0)
-		{
-			[self updateViewFromParent];
-		}
-		
+		[self populateView];
 	}
 	isRepopulate = NO;
 }
@@ -503,6 +533,12 @@
 	// To find out we check to see if 'D' exists in the parentView.
 	// We discover it does not, so we remove 'D'. And our "cursor" moves forward.
 	// Then we compare 'E' and 'E' ...
+	
+	// Run the FTS search to get our list of valid rowids
+	
+	[self repopulateFtsRowidsAndSnippets];
+	
+	// Get the list of allowed groups
 	
 	NSMutableArray *groupsInSelf = [[self allGroups] mutableCopy];
 	id <NSFastEnumeration> groupsInParent;
@@ -620,7 +656,7 @@
 		
 		while (existing)
 		{
-			// Todo: This could be optimized...
+			// Todo: This could be further optimized.
 			
 			YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:existingRowid];
 			[self removeRowid:existingRowid collectionKey:ck atIndex:index inGroup:group];
@@ -1838,6 +1874,10 @@
 	NSAssert(((YapDatabaseSearchResultsView *)viewConnection->view)->parentViewName != nil,
 	         @"Logic error: method requires parentView");
 	
+	if ([searchQueue shouldAbortSearchInProgressAndRollback:NULL]) {
+		return;
+	}
+	
 	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
 	  (YapDatabaseSearchResultsView *)viewConnection->view;
 	
@@ -1875,6 +1915,8 @@
 		{
 			if (YapRowidSetContains(ftsRowids, rowid))
 			{
+				// The item matches the FTS query (should be in view)
+				
 				if (existing && (existingRowid == rowid))
 				{
 					// The row was previously in the view (in old search results),
@@ -1904,6 +1946,8 @@
 			}
 			else
 			{
+				// The item does not match the FTS query (should not be in view)
+				
 				if (existing && (existingRowid == rowid))
 				{
 					// The row was previously in the view (in old search results),
@@ -1920,7 +1964,18 @@
 					// and is still not in the view (not in new search results).
 				}
 			}
+			
+			if ((parentIndex % 500) == 0)
+			{
+				if ([searchQueue shouldAbortSearchInProgressAndRollback:NULL]) {
+					*stop = YES;
+				}
+			}
 		}];
+		
+		if ([searchQueue shouldAbortSearchInProgressAndRollback:NULL]) {
+			return;
+		}
 	}
 }
 
@@ -1936,6 +1991,11 @@
 	
 	NSAssert(((YapDatabaseSearchResultsView *)viewConnection->view)->parentViewName == nil,
 	         @"Logic error: method requires nil parentView");
+	
+	if ([searchQueue shouldAbortSearchInProgressAndRollback:NULL]) {
+		return;
+	}
+	__block int processed = 0;
 	
 	// Create a copy of the ftsRowids set.
 	// As we enumerate the existing rowids in our view, we're going to
@@ -1982,9 +2042,22 @@
 						done = NO;
 					}
 				}
+				
+				if (++processed == 500)
+				{
+					processed = 0;
+					if ([searchQueue shouldAbortSearchInProgressAndRollback:NULL]) {
+						*stop = YES;
+						done = YES;
+					}
+				}
 			}];
 			
 		} while (!done);
+		
+		if ([searchQueue shouldAbortSearchInProgressAndRollback:NULL]) {
+			return;
+		}
 		
 	} // end for (NSString *group in [self allGroups])
 	
@@ -2078,6 +2151,14 @@
 			         metadata:metadata
 			          inGroup:group withChanges:flags isNew:YES];
 		}
+		
+		if (++processed == 500)
+		{
+			processed = 0;
+			if ([searchQueue shouldAbortSearchInProgressAndRollback:NULL]) {
+				*stop = YES;
+			}
+		}
 	}});
 	
 	// Dealloc the temporary c++ set
@@ -2086,6 +2167,14 @@
 	}
 }
 
+/**
+ * Updates the view to include search results for the given query.
+ *
+ * This method will run the given query on the parent FTS extension,
+ * and then properly pipe the results into the view.
+ *
+ * @see performSearchWithQueue:
+**/
 - (void)performSearchFor:(NSString *)query
 {
 	YDBLogAutoTrace();
@@ -2096,62 +2185,63 @@
 		return;
 	}
 	
-	YapRowidSetRemoveAll(ftsRowids);
-	
-	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
-	  (YapDatabaseSearchResultsView *)viewConnection->view;
-	
-	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
-	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
-	
-	__unsafe_unretained YapDatabaseFullTextSearchTransaction *ftsTransaction =
-	  (YapDatabaseFullTextSearchTransaction *)[databaseTransaction ext:searchResultsView->fullTextSearchName];
-	
-	if (searchResultsOptions.snippetOptions)
-	{
-		// Need to get matching rowids and related snippets.
-		
-		if (snippets == nil)
-			snippets = [[NSMutableDictionary alloc] init];
-		else
-			[snippets removeAllObjects];
-		
-		[ftsTransaction enumerateRowidsMatching:query
-		                     withSnippetOptions:searchResultsOptions.snippetOptions
-		                             usingBlock:^(NSString *snippet, int64_t rowid, BOOL *stop)
-		{
-			YapRowidSetAdd(ftsRowids, rowid);
-			
-			if (snippet)
-				[snippets setObject:snippet forKey:@(rowid)];
-			else
-				[snippets setObject:[NSNull null] forKey:@(rowid)];
-		}];
-	}
-	else
-	{
-		// No snippets. Just get the matching rowids.
-		
-		[ftsTransaction enumerateRowidsMatching:query usingBlock:^(int64_t rowid, BOOL *stop) {
-			
-			YapRowidSetAdd(ftsRowids, rowid);
-		}];
-	}
-	
-	if (searchResultsView->parentViewName)
-		[self updateViewFromParent];
-	else
-		[self updateViewUsingBlocks];
+	// Update stored query
 	
 	__unsafe_unretained YapDatabaseSearchResultsViewConnection *searchResultsViewConnection =
 	  (YapDatabaseSearchResultsViewConnection *)viewConnection;
 	
 	[searchResultsViewConnection setQuery:query isChange:YES];
+	
+	// Run the query against the FTS extension, and populate the ftsRowids & snippets ivars
+	
+	[self repopulateFtsRowidsAndSnippets];
+	
+	// Update the view (using FTS results stored in ftsRowids)
+	
+	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
+	  (YapDatabaseSearchResultsView *)viewConnection->view;
+	
+	if (searchResultsView->parentViewName)
+		[self updateViewFromParent];
+	else
+		[self updateViewUsingBlocks];
 }
 
-- (void)performSearchWithQueue:(YapDatabaseSearchQueue *)queue
+/**
+ * This method works similar to performSearchFor:,
+ * but allows you to use a special search "queue" that gives you more control over how the search progresses.
+ *
+ * With a search queue, the transaction will skip intermediate queries,
+ * and always perform the most recent query in the queue.
+ *
+ * A search queue can also be used to abort an in-progress search.
+**/
+- (void)performSearchWithQueue:(YapDatabaseSearchQueue *)inSearchQueue
 {
-	// TODO: Implement me
+	YDBLogAutoTrace();
+	
+	if (!databaseTransaction->isReadWriteTransaction)
+	{
+		YDBLogWarn(@"%@ - Method only allowed in readWrite transaction", THIS_METHOD);
+		return;
+	}
+	
+	searchQueue = inSearchQueue;
+	
+	NSString *query = [searchQueue flushQueue];
+	if (query)
+	{
+		[self performSearchFor:query];
+		
+		BOOL rollback = NO;
+		BOOL abort = [searchQueue shouldAbortSearchInProgressAndRollback:&rollback];
+		if (abort && rollback)
+		{
+			[databaseTransaction rollbackTransaction];
+		}
+	}
+	
+	searchQueue = nil;
 }
 
 - (NSString *)snippetForKey:(NSString *)key inCollection:(NSString *)collection

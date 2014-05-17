@@ -41,53 +41,53 @@
 #pragma mark With ParentView
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//- (void)test1_parentView_memory_withoutSnippets
-//{
-//	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
-//	
-//	YapDatabaseSearchResultsViewOptions *searchViewOptions = [[YapDatabaseSearchResultsViewOptions alloc] init];
-//	searchViewOptions.isPersistent = NO;
-//	
-//	[self _test1_parentView_withPath:databasePath options:searchViewOptions];
-//}
+- (void)test1_parentView_memory_withoutSnippets
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseSearchResultsViewOptions *searchViewOptions = [[YapDatabaseSearchResultsViewOptions alloc] init];
+	searchViewOptions.isPersistent = NO;
+	
+	[self _test1_parentView_withPath:databasePath options:searchViewOptions];
+}
 
-//- (void)test1_parentView_memory_withSnippets
-//{
-//	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
-//	
-//	YapDatabaseFullTextSearchSnippetOptions *snippetOptions = [[YapDatabaseFullTextSearchSnippetOptions alloc] init];
-//	snippetOptions.numberOfTokens = 5;
-//	
-//	YapDatabaseSearchResultsViewOptions *searchViewOptions = [[YapDatabaseSearchResultsViewOptions alloc] init];
-//	searchViewOptions.isPersistent = NO;
-//	searchViewOptions.snippetOptions = snippetOptions;
-//	
-//	[self _test1_parentView_withPath:databasePath options:searchViewOptions];
-//}
+- (void)test1_parentView_memory_withSnippets
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseFullTextSearchSnippetOptions *snippetOptions = [[YapDatabaseFullTextSearchSnippetOptions alloc] init];
+	snippetOptions.numberOfTokens = 5;
+	
+	YapDatabaseSearchResultsViewOptions *searchViewOptions = [[YapDatabaseSearchResultsViewOptions alloc] init];
+	searchViewOptions.isPersistent = NO;
+	searchViewOptions.snippetOptions = snippetOptions;
+	
+	[self _test1_parentView_withPath:databasePath options:searchViewOptions];
+}
 
-//- (void)test1_parentView_persistent_withoutSnippets
-//{
-//	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
-//	
-//	YapDatabaseSearchResultsViewOptions *searchViewOptions = [[YapDatabaseSearchResultsViewOptions alloc] init];
-//	searchViewOptions.isPersistent = YES;
-//	
-//	[self _test1_parentView_withPath:databasePath options:searchViewOptions];
-//}
+- (void)test1_parentView_persistent_withoutSnippets
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseSearchResultsViewOptions *searchViewOptions = [[YapDatabaseSearchResultsViewOptions alloc] init];
+	searchViewOptions.isPersistent = YES;
+	
+	[self _test1_parentView_withPath:databasePath options:searchViewOptions];
+}
 
-//- (void)test1_parentView_persistent_withSnippets
-//{
-//	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
-//	
-//	YapDatabaseFullTextSearchSnippetOptions *snippetOptions = [[YapDatabaseFullTextSearchSnippetOptions alloc] init];
-//	snippetOptions.numberOfTokens = 5;
-//	
-//	YapDatabaseSearchResultsViewOptions *searchViewOptions = [[YapDatabaseSearchResultsViewOptions alloc] init];
-//	searchViewOptions.isPersistent = YES;
-//	searchViewOptions.snippetOptions = snippetOptions;
-//	
-//	[self _test1_parentView_withPath:databasePath options:searchViewOptions];
-//}
+- (void)test1_parentView_persistent_withSnippets
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseFullTextSearchSnippetOptions *snippetOptions = [[YapDatabaseFullTextSearchSnippetOptions alloc] init];
+	snippetOptions.numberOfTokens = 5;
+	
+	YapDatabaseSearchResultsViewOptions *searchViewOptions = [[YapDatabaseSearchResultsViewOptions alloc] init];
+	searchViewOptions.isPersistent = YES;
+	searchViewOptions.snippetOptions = snippetOptions;
+	
+	[self _test1_parentView_withPath:databasePath options:searchViewOptions];
+}
 
 - (void)_test1_parentView_withPath:(NSString *)databasePath
                            options:(YapDatabaseSearchResultsViewOptions *)searchViewOptions

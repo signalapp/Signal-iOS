@@ -32,7 +32,7 @@
  * This method will run the given query on the parent FTS extension,
  * and then properly pipe the results into the view.
  * 
- * @see performSearchWithQueue
+ * @see performSearchWithQueue:
 **/
 - (void)performSearchFor:(NSString *)query;
 
@@ -42,8 +42,8 @@
  * 
  * With a search queue, the transaction will skip intermediate queries,
  * and always perform the most recent query in the queue.
- * 
- * Need a decent example here...
+ *
+ * A search queue can also be used to abort an in-progress search.
 **/
 - (void)performSearchWithQueue:(YapDatabaseSearchQueue *)queue;
 
