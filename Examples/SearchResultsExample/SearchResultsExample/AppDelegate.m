@@ -205,8 +205,8 @@ AppDelegate *TheAppDelegate;
 		
 		// Bump the objectCacheLimit for a little performance boost.
 		// https://github.com/yaptv/YapDatabase/wiki/Performance-Pro
-	//	NSUInteger originalObjectCacheLimit = bgDatabaseConnection.objectCacheLimit;
-	//	bgDatabaseConnection.objectCacheLimit = [people count];
+		NSUInteger originalObjectCacheLimit = transaction.connection.objectCacheLimit;
+		transaction.connection.objectCacheLimit = [people count];
 		
 		[people enumerateObjectsUsingBlock:^(NSDictionary *info, NSUInteger idx, BOOL *stop) {
             
@@ -218,7 +218,7 @@ AppDelegate *TheAppDelegate;
 			[transaction setObject:person forKey:person.uuid inCollection:@"people"];
 		}];
 		
-	//	bgDatabaseConnection.objectCacheLimit = originalObjectCacheLimit;
+		transaction.connection.objectCacheLimit = originalObjectCacheLimit;
 		
 		DDLogVerbose(@"Committing transaction...");
 	}];
