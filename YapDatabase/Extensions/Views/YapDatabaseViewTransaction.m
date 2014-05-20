@@ -983,7 +983,7 @@
 			YapCollectionKey *collectionKey = [databaseTransaction collectionKeyForRowid:rowid];
 			
 			[viewConnection->changes addObject:
-			 [YapDatabaseViewRowChange deleteKey:collectionKey inGroup:group atIndex:index]];
+			  [YapDatabaseViewRowChange deleteCollectionKey:collectionKey inGroup:group atIndex:index]];
 		}];
 		
 		[viewConnection->changes addObject:[YapDatabaseViewSectionChange deleteGroup:group]];
@@ -1522,7 +1522,7 @@
 	  [YapDatabaseViewSectionChange insertGroup:group]];
 	
 	[viewConnection->changes addObject:
-	  [YapDatabaseViewRowChange insertKey:collectionKey inGroup:group atIndex:0]];
+	  [YapDatabaseViewRowChange insertCollectionKey:collectionKey inGroup:group atIndex:0]];
 	
 	[viewConnection->mutatedGroups addObject:group];
 	
@@ -1627,7 +1627,7 @@
 	// Add change to log
 	
 	[viewConnection->changes addObject:
-	    [YapDatabaseViewRowChange insertKey:collectionKey inGroup:group atIndex:index]];
+	  [YapDatabaseViewRowChange insertCollectionKey:collectionKey inGroup:group atIndex:index]];
 	
 	[viewConnection->mutatedGroups addObject:group];
 	
@@ -1704,10 +1704,10 @@
 				// Thus the position within the view hasn't changed.
 				
 				[viewConnection->changes addObject:
-				    [YapDatabaseViewRowChange updateKey:collectionKey
-				                                changes:flags
-				                                inGroup:group
-				                                atIndex:existingIndexInGroup]];
+				  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+				                                        inGroup:group
+				                                        atIndex:existingIndexInGroup
+				                                    withChanges:flags]];
 				return;
 			}
 			else
@@ -1872,10 +1872,10 @@
 			YDBLogVerbose(@"Updated key(%@) in group(%@) maintains current index", collectionKey.key, group);
 			
 			[viewConnection->changes addObject:
-			    [YapDatabaseViewRowChange updateKey:collectionKey
-			                                changes:flags
-			                                inGroup:group
-			                                atIndex:existingIndexInGroup]];
+			  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+			                                        inGroup:group
+			                                        atIndex:existingIndexInGroup
+			                                    withChanges:flags]];
 			return;
 		}
 		else
@@ -2028,7 +2028,7 @@
 	// Add change to log
 	
 	[viewConnection->changes addObject:
-	  [YapDatabaseViewRowChange deleteKey:collectionKey inGroup:group atIndex:index]];
+	  [YapDatabaseViewRowChange deleteCollectionKey:collectionKey inGroup:group atIndex:index]];
 	
 	[viewConnection->mutatedGroups addObject:group];
 	
@@ -2114,7 +2114,7 @@
 	NSUInteger indexWithinGroup = pageOffset + indexWithinPage;
 	
 	[viewConnection->changes addObject:
-	  [YapDatabaseViewRowChange deleteKey:collectionKey inGroup:group atIndex:indexWithinGroup]];
+	  [YapDatabaseViewRowChange deleteCollectionKey:collectionKey inGroup:group atIndex:indexWithinGroup]];
 	
 	[viewConnection->mutatedGroups addObject:group];
 	
@@ -2240,7 +2240,7 @@
 			numRemoved++;
 			
 			[viewConnection->changes addObject:
-			  [YapDatabaseViewRowChange deleteKey:collectionKey inGroup:group atIndex:(pageOffset + i)]];
+			  [YapDatabaseViewRowChange deleteCollectionKey:collectionKey inGroup:group atIndex:(pageOffset + i)]];
 		}
 	}
 	
@@ -3393,7 +3393,10 @@
 			NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 			
 			[viewConnection->changes addObject:
-			    [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:existingIndex]];
+			  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+			                                        inGroup:group
+			                                        atIndex:existingIndex
+			                                    withChanges:flags]];
 		}
 		else
 		{
@@ -3475,10 +3478,10 @@
 					NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:existingPageKey];
 					
 					[viewConnection->changes addObject:
-					    [YapDatabaseViewRowChange updateKey:collectionKey
-					                                changes:flags
-					                                inGroup:group
-					                                atIndex:existingIndex]];
+					  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+					                                        inGroup:group
+					                                        atIndex:existingIndex
+					                                    withChanges:flags]];
 					
 					lastHandledGroup = group;
 					return;
@@ -3544,7 +3547,10 @@
 			NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 			
 			[viewConnection->changes addObject:
-			    [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:existingIndex]];
+			  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+			                                        inGroup:group
+			                                        atIndex:existingIndex
+			                                    withChanges:flags]];
 		}
 		else
 		{
@@ -3626,10 +3632,10 @@
 					NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:existingPageKey];
 					
 					[viewConnection->changes addObject:
-					    [YapDatabaseViewRowChange updateKey:collectionKey
-					                                changes:flags
-					                                inGroup:group
-					                                atIndex:existingIndex]];
+					  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+					                                        inGroup:group
+					                                        atIndex:existingIndex
+					                                    withChanges:flags]];
 					
 					lastHandledGroup = group;
 					return;
@@ -3675,7 +3681,10 @@
 		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
 		[viewConnection->changes addObject:
-		    [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:index]];
+		  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+		                                        inGroup:group
+		                                        atIndex:index
+		                                    withChanges:flags]];
 	}
 }
 
@@ -3705,7 +3714,10 @@
 			int flags = YapDatabaseViewChangedMetadata;
 			
 			[viewConnection->changes addObject:
-			    [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:index]];
+			  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+			                                        inGroup:group
+			                                        atIndex:index
+			                                    withChanges:flags]];
 		}
 	}
 }
@@ -4664,7 +4676,10 @@
 			int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 			
 			[viewConnection->changes addObject:
-			    [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:index]];
+			  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+			                                        inGroup:group
+			                                        atIndex:index
+			                                    withChanges:flags]];
 		}
 	}
 }
@@ -4697,7 +4712,10 @@
 				int flags = YapDatabaseViewChangedObject;
 				
 				[viewConnection->changes addObject:
-				    [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:index]];
+				  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+				                                        inGroup:group
+				                                        atIndex:index
+				                                    withChanges:flags]];
 			}
 		}
 	}
@@ -4731,7 +4749,10 @@
 				int flags = YapDatabaseViewChangedMetadata;
 				
 				[viewConnection->changes addObject:
-				    [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:index]];
+				  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+				                                        inGroup:group
+				                                        atIndex:index
+				                                    withChanges:flags]];
 			}
 		}
 	}

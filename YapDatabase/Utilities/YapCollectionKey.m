@@ -124,6 +124,29 @@ static NSUInteger YDB_MurmurHash(NSUInteger hash1, NSUInteger hash2)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @implementation YapCollectionKey
+{
+	// When these objects are stored in a dictionary (as the key), the hash method is invoked extremely often.
+	// And when these objects are stored in a changeset dictionary,
+	// then processing code invokes the isEqual method extremely often.
+	//
+	// So we pre-calculate the hash, and use it to optimize the isEqual method.
+	// This decision was made after significant profiling.
+	
+	NSUInteger hash;
+}
+
+YapCollectionKey* YapCollectionKeyCreate(NSString *collection, NSString *key)
+{
+	return [[YapCollectionKey alloc] initWithCollection:collection key:key];
+}
+
+NS_INLINE NSUInteger YapCollectionKeyHash(YapCollectionKey *ck)
+{
+	// We need a fast way to combine 2 hashes without creating a new string (which is slow).
+	// To accomplish this we use the murmur hashing algorithm.
+	
+	return YDB_MurmurHash([ck->collection hash], [ck->key hash]);
+}
 
 @synthesize collection = collection;
 @synthesize key = key;
@@ -141,6 +164,8 @@ static NSUInteger YDB_MurmurHash(NSUInteger hash1, NSUInteger hash2)
 			return nil;
 		else
 			key = [aKey copy];               // copy == retain if aKey is immutable
+		
+		hash = YapCollectionKeyHash(self);
 	}
 	return self;
 }
@@ -151,6 +176,8 @@ static NSUInteger YDB_MurmurHash(NSUInteger hash1, NSUInteger hash2)
 	{
 		collection = [decoder decodeObjectForKey:@"collection"];
 		key        = [decoder decodeObjectForKey:@"key"];
+		
+		hash = YapCollectionKeyHash(self);
 	}
 	return self;
 }
@@ -168,27 +195,38 @@ static NSUInteger YDB_MurmurHash(NSUInteger hash1, NSUInteger hash2)
 
 - (BOOL)isEqualToCollectionKey:(YapCollectionKey *)collectionKey
 {
-	return [key isEqualToString:collectionKey->key] && [collection isEqualToString:collectionKey->collection];
+	if (hash != collectionKey->hash)
+		return NO;
+	else
+		return [key isEqualToString:collectionKey->key] && [collection isEqualToString:collectionKey->collection];
 }
 
 - (BOOL)isEqual:(id)obj
 {
 	if ([obj isMemberOfClass:[YapCollectionKey class]])
 	{
-		YapCollectionKey *ck = (YapCollectionKey *)obj;
+		__unsafe_unretained YapCollectionKey *collectionKey = (YapCollectionKey *)obj;
 		
-		return [key isEqualToString:ck->key] && [collection isEqualToString:ck->collection];
+		if (hash != collectionKey->hash)
+			return NO;
+		else
+			return [key isEqualToString:collectionKey->key] && [collection isEqualToString:collectionKey->collection];
 	}
 	
 	return NO;
 }
 
+BOOL YapCollectionKeyEqual(__unsafe_unretained YapCollectionKey *ck1, __unsafe_unretained YapCollectionKey *ck2)
+{
+	if (ck1->hash != ck2->hash)
+		return NO;
+	else
+		return [ck1->key isEqualToString:ck2->key] && [ck1->collection isEqualToString:ck2->collection];
+}
+
 - (NSUInteger)hash
 {
-	// We need a fast way to combine 2 hashes without creating a new string (which is slow).
-	// To accomplish this we use the murmur hashing algorithm.
-
-	return YDB_MurmurHash([collection hash], [key hash]);
+	return hash;
 }
 
 - (NSString *)description

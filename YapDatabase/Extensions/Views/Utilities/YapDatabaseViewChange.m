@@ -1,6 +1,22 @@
 #import "YapDatabaseViewChange.h"
 #import "YapDatabaseViewChangePrivate.h"
 #import "YapDatabaseViewMappingsPrivate.h"
+#import "YapDatabaseLogging.h"
+
+#if ! __has_feature(objc_arc)
+#warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
+#endif
+
+/**
+ * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
+ * See YapDatabaseLogging.h for more information.
+**/
+#if DEBUG
+  static const int ydbLogLevel = YDB_LOG_LEVEL_VERBOSE;
+#else
+  static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
+#endif
+#pragma unused(ydbLogLevel)
 
 
 @implementation YapDatabaseViewSectionChange {
@@ -123,7 +139,7 @@
 
 @public
 	
-	id key; // immutable
+	YapCollectionKey *collectionKey; // immutable
 	
 	NSString *originalGroup; // immutable
 	NSString *finalGroup;    // mutable during consolidation
@@ -184,23 +200,13 @@
 
 - (YapCollectionKey *)collectionKey
 {
-	// Note: The key should always be a YapCollectionKey,
-	// except for unit tests which might use a string for simplicity.
-	
-	if ([key isKindOfClass:[YapCollectionKey class]])
-	{
-		return (YapCollectionKey *)key;
-	}
-	else
-	{
-		return nil;
-	}
+	return collectionKey;
 }
 
 - (id)copyWithZone:(NSZone *)zone
 {
 	YapDatabaseViewRowChange *op = [[YapDatabaseViewRowChange alloc] init];
-	op->key = key;
+	op->collectionKey = collectionKey;
 	op->originalGroup = originalGroup;
 	op->finalGroup = finalGroup;
 	op->type = type;
@@ -215,11 +221,13 @@
 	return op;
 }
 
-+ (YapDatabaseViewRowChange *)insertKey:(id)key inGroup:(NSString *)group atIndex:(NSUInteger)index
++ (YapDatabaseViewRowChange *)insertCollectionKey:(YapCollectionKey *)collectionKey
+                                          inGroup:(NSString *)group
+                                          atIndex:(NSUInteger)index
 {
 	YapDatabaseViewRowChange *op = [[YapDatabaseViewRowChange alloc] init];
 	op->type = YapDatabaseViewChangeInsert;
-	op->key = key;
+	op->collectionKey = collectionKey;
 	op->changes = YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata;
 	
 	op->originalGroup = nil;                              // invalid in insert type
@@ -233,11 +241,13 @@
 	return op;
 }
 
-+ (YapDatabaseViewRowChange *)deleteKey:(id)key inGroup:(NSString *)group atIndex:(NSUInteger)index
++ (YapDatabaseViewRowChange *)deleteCollectionKey:(YapCollectionKey *)collectionKey
+                                          inGroup:(NSString *)group
+                                          atIndex:(NSUInteger)index
 {
 	YapDatabaseViewRowChange *op = [[YapDatabaseViewRowChange alloc] init];
 	op->type = YapDatabaseViewChangeDelete;
-	op->key = key;
+	op->collectionKey = collectionKey;
 	op->changes = YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata;
 	
 	op->originalGroup = group;
@@ -251,11 +261,14 @@
 	return op;
 }
 
-+ (YapDatabaseViewRowChange *)updateKey:(id)key changes:(int)flags inGroup:(NSString *)group atIndex:(NSUInteger)index
++ (YapDatabaseViewRowChange *)updateCollectionKey:(YapCollectionKey *)collectionKey
+                                          inGroup:(NSString *)group
+                                          atIndex:(NSUInteger)index
+                                      withChanges:(int)flags
 {
 	YapDatabaseViewRowChange *op = [[YapDatabaseViewRowChange alloc] init];
 	op->type = YapDatabaseViewChangeUpdate;
-	op->key = key;
+	op->collectionKey = collectionKey;
 	op->changes = flags;
 	
 	op->originalGroup = group;
@@ -277,15 +290,15 @@
 		{
 			// Internal style (for debugging the processAndConsolidateOperations method)
 			return [NSString stringWithFormat:
-			    @"<YapDatabaseViewRowChange: Insert pre(~ -> %lu) post(~ -> %lu) group(%@) key(%@)",
-			        (unsigned long)opFinalIndex, (unsigned long)finalIndex, finalGroup, key];
+			  @"<YapDatabaseViewRowChange: Insert pre(~ -> %lu) post(~ -> %lu) group(%@) collectionKey(%@)",
+			    (unsigned long)opFinalIndex, (unsigned long)finalIndex, finalGroup, collectionKey];
 		}
 		else
 		{
 			// External style (for debugging UITableView & UICollectionView updates)
 			return [NSString stringWithFormat:
-			    @"<YapDatabaseViewRowChange: Insert indexPath(nil) newIndexPath(%lu, %lu) group(%@) key(%@)>",
-			        (unsigned long)finalSection, (unsigned long)finalIndex, finalGroup, key];
+			  @"<YapDatabaseViewRowChange: Insert indexPath(nil) newIndexPath(%lu, %lu) group(%@) collectionKey(%@)>",
+			    (unsigned long)finalSection, (unsigned long)finalIndex, finalGroup, collectionKey];
 		}
 	}
 	else if (type == YapDatabaseViewChangeDelete)
@@ -294,15 +307,15 @@
 		{
 			// Internal style (for debugging the processAndConsolidateOperations method)
 			return [NSString stringWithFormat:
-			    @"<YapDatabaseViewRowChange: Delete pre(%lu -> ~) post(%lu -> ~) group(%@) key(%@)",
-			        (unsigned long)opOriginalIndex, (unsigned long)originalIndex, originalGroup, key];
+			  @"<YapDatabaseViewRowChange: Delete pre(%lu -> ~) post(%lu -> ~) group(%@) collectionKey(%@)",
+			      (unsigned long)opOriginalIndex, (unsigned long)originalIndex, originalGroup, collectionKey];
 		}
 		else
 		{
 			// External style (for debugging UITableView & UICollectionView updates)
 			return [NSString stringWithFormat:
-			    @"<YapDatabaseViewRowChange: Delete indexPath(%lu, %lu) newIndexPath(nil) group(%@) key(%@)>",
-			        (unsigned long)originalSection, (unsigned long)originalIndex, originalGroup, key];
+			  @"<YapDatabaseViewRowChange: Delete indexPath(%lu, %lu) newIndexPath(nil) group(%@) collectionKey(%@)>",
+			    (unsigned long)originalSection, (unsigned long)originalIndex, originalGroup, collectionKey];
 		}
 	}
 	else if (type == YapDatabaseViewChangeMove)
@@ -311,19 +324,19 @@
 		{
 			// Internal style (for debugging the processAndConsolidateOperations method)
 			return [NSString stringWithFormat:
-				@"<YapDatabaseViewRowChange: Move pre(%lu -> %lu) post(%lu -> %lu) group(%@ -> %@) key(%@)",
-					(unsigned long)opOriginalIndex, (unsigned long)opFinalIndex,
-					(unsigned long)originalIndex,   (unsigned long)finalIndex,
-					originalGroup, finalGroup, key];
+			  @"<YapDatabaseViewRowChange: Move pre(%lu -> %lu) post(%lu -> %lu) group(%@ -> %@) collectionKey(%@)",
+			    (unsigned long)opOriginalIndex, (unsigned long)opFinalIndex,
+			    (unsigned long)originalIndex,   (unsigned long)finalIndex,
+			    originalGroup, finalGroup, collectionKey];
 		}
 		else
 		{
 			// External style (for debugging UITableView & UICollectionView updates)
 			return [NSString stringWithFormat:
-				@"<YapDatabaseViewRowChange: Move indexPath(%lu, %lu) newIndexPath(%lu, %lu) group(%@ -> %@) key(%@)",
-					(unsigned long)originalSection, (unsigned long)originalIndex,
-					(unsigned long)finalSection,    (unsigned long)finalIndex,
-					originalGroup, finalGroup, key];
+			  @"<YapDatabaseViewRowChange: Move indexPath(%lu, %lu) newIndexPath(%lu, %lu) group(%@ -> %@) collectionKey(%@)",
+			    (unsigned long)originalSection, (unsigned long)originalIndex,
+			    (unsigned long)finalSection,    (unsigned long)finalIndex,
+			    originalGroup, finalGroup, collectionKey];
 		}
 	}
 	else // if (type == YapDatabaseViewChangeUpdate)
@@ -332,16 +345,16 @@
 		{
 			// Internal style (for debugging the processAndConsolidateOperations method)
 			return [NSString stringWithFormat:
-				@"<YapDatabaseViewRowChange: Update pre(%lu) post(%lu -> %lu) group(%@) key(%@)",
-					(unsigned long)opOriginalIndex,
-					(unsigned long)originalIndex,   (unsigned long)finalIndex, originalGroup, key];
+			  @"<YapDatabaseViewRowChange: Update pre(%lu) post(%lu -> %lu) group(%@) collectionKey(%@)",
+			    (unsigned long)opOriginalIndex,
+			    (unsigned long)originalIndex,   (unsigned long)finalIndex, originalGroup, collectionKey];
 		}
 		else
 		{
 			// External style (for debugging UITableView & UICollectionView updates)
 			return [NSString stringWithFormat:
-				@"<YapDatabaseViewRowChange: Update indexPath(%lu, %lu) group(%@) key(%@)",
-					(unsigned long)originalSection, (unsigned long)originalIndex, originalGroup, key];
+			  @"<YapDatabaseViewRowChange: Update indexPath(%lu, %lu) group(%@) collectionKey(%@)",
+			    (unsigned long)originalSection, (unsigned long)originalIndex, originalGroup, collectionKey];
 		}
 	}
 }
@@ -449,9 +462,9 @@
 						while (prevRowCount > 0)
 						{
 							YapDatabaseViewRowChange *rowChange =
-							    [YapDatabaseViewRowChange deleteKey:nil
-							                                inGroup:sectionChange->group
-							                                atIndex:(prevRowOffset+prevRowCount-1)];
+							  [YapDatabaseViewRowChange deleteCollectionKey:nil
+							                                        inGroup:sectionChange->group
+							                                        atIndex:(prevRowOffset+prevRowCount-1)];
 							
 							[rowChanges addObject:rowChange];
 							prevRowCount--;
@@ -549,7 +562,10 @@
 					int flags = YapDatabaseViewChangedDependency;
 					
 					YapDatabaseViewRowChange *rowChange =
-					    [YapDatabaseViewRowChange updateKey:nil changes:flags inGroup:group atIndex:dependencyIndex];
+					  [YapDatabaseViewRowChange updateCollectionKey:nil
+					                                        inGroup:group
+					                                        atIndex:dependencyIndex
+					                                    withChanges:flags];
 					
 					[rowChanges addObject:rowChange];
 				}
@@ -751,11 +767,11 @@
 			__unsafe_unretained YapDatabaseViewRowChange *laterChange = _changes[j];
 			BOOL changesAreForSameKey = NO;
 			
-			if (firstChangeForKey->key && laterChange->key)
+			if (firstChangeForKey->collectionKey && laterChange->collectionKey)
 			{
 				// Compare keys
 				
-				if ([laterChange->key isEqual:firstChangeForKey->key])
+				if (YapCollectionKeyEqual(laterChange->collectionKey, firstChangeForKey->collectionKey))
 					changesAreForSameKey = YES;
 			}
 			else
@@ -790,10 +806,10 @@
 				
 				if (changesAreForSameKey)
 				{
-					if (mostRecentChangeForKey->key == nil)
-						mostRecentChangeForKey->key = laterChange->key;
+					if (mostRecentChangeForKey->collectionKey == nil)
+						mostRecentChangeForKey->collectionKey = laterChange->collectionKey;
 					else
-						laterChange->key = mostRecentChangeForKey->key;
+						laterChange->collectionKey = mostRecentChangeForKey->collectionKey;
 				}
 			}
 			
@@ -1695,7 +1711,7 @@
 				if (!found)
 				{
 					YapDatabaseViewRowChange *rowChange =
-					    [YapDatabaseViewRowChange deleteKey:nil inGroup:group atIndex:index];
+					  [YapDatabaseViewRowChange deleteCollectionKey:nil inGroup:group atIndex:index];
 					
 					[rowChanges addObject:rowChange];
 					count++;
@@ -1766,7 +1782,7 @@
 				if (!found)
 				{
 					YapDatabaseViewRowChange *rowChange =
-					    [YapDatabaseViewRowChange insertKey:nil inGroup:group atIndex:index];
+					  [YapDatabaseViewRowChange insertCollectionKey:nil inGroup:group atIndex:index];
 					
 					[rowChanges addObject:rowChange];
 					count++;
@@ -1838,7 +1854,7 @@
 				if (!found)
 				{
 					YapDatabaseViewRowChange *rowChange =
-					    [YapDatabaseViewRowChange insertKey:nil inGroup:group atIndex:index];
+					  [YapDatabaseViewRowChange insertCollectionKey:nil inGroup:group atIndex:index];
 					
 					[rowChanges addObject:rowChange];
 					count++;
@@ -2116,7 +2132,7 @@
 				{
 					YapDatabaseViewRowChange *op = [[YapDatabaseViewRowChange alloc] init];
 					op->type = YapDatabaseViewChangeMove;
-					op->key = nil;
+					op->collectionKey = nil;
 					op->changes = 0;
 					
 					op->originalGroup = group;
@@ -2261,7 +2277,7 @@
 				{
 					YapDatabaseViewRowChange *op = [[YapDatabaseViewRowChange alloc] init];
 					op->type = YapDatabaseViewChangeMove;
-					op->key = nil;
+					op->collectionKey = nil;
 					op->changes = 0;
 					
 					NSUInteger originalGroupOffset = [[originalOffsets objectForKey:group] unsignedIntegerValue];
@@ -2494,14 +2510,13 @@
 	// Merge multiple changes to a group into a zero or one change.
 	
 	[self consolidateRowChanges:rowChanges];
-	
 	[self consolidateSectionChanges:sectionChanges];
 	
 	//
 	// POST-PROCESSING
 	//
 	// This is where we apply the mappings to filter & alter the changeset.
-
+	
 	[self postProcessAndFilterRowChanges:rowChanges
 	                withOriginalMappings:originalMappings
 	                       finalMappings:finalMappings];

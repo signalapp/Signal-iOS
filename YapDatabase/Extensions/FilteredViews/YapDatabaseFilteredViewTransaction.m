@@ -362,7 +362,7 @@
 			YapCollectionKey *collectionKey = [databaseTransaction collectionKeyForRowid:rowid];
 			 
 			[viewConnection->changes addObject:
-			  [YapDatabaseViewRowChange deleteKey:collectionKey inGroup:group atIndex:index]];
+			  [YapDatabaseViewRowChange deleteCollectionKey:collectionKey inGroup:group atIndex:index]];
 		}];
 		
 		[viewConnection->changes addObject:[YapDatabaseViewSectionChange deleteGroup:group]];
@@ -970,7 +970,10 @@
 		NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 		
 		[viewConnection->changes addObject:
-		    [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:existingIndex]];
+		  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+		                                        inGroup:group
+		                                        atIndex:existingIndex
+		                                    withChanges:flags]];
 		
 		lastHandledGroup = group;
 		return;
@@ -1111,7 +1114,10 @@
 		NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 		
 		[viewConnection->changes addObject:
-		    [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:existingIndex]];
+		  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+		                                        inGroup:group
+		                                        atIndex:existingIndex
+		                                    withChanges:flags]];
 		
 		lastHandledGroup = group;
 		return;

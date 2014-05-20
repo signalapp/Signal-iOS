@@ -1,9 +1,7 @@
 #import "YapDatabaseViewMappingsPrivate.h"
 #import "YapDatabaseViewRangeOptionsPrivate.h"
 #import "YapDatabaseViewTransaction.h"
-
 #import "YapDatabasePrivate.h"
-
 #import "YapDatabaseLogging.h"
 
 #if ! __has_feature(objc_arc)
