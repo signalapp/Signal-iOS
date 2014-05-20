@@ -729,19 +729,26 @@
 	NSUInteger i;
 	NSUInteger j;
 	
-	NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSet];
+	NSMutableIndexSet *indexesToRemove = [NSMutableIndexSet indexSet];
+	NSMutableIndexSet *indexesThatMatch = [NSMutableIndexSet indexSet];
 	
-	i = 0;
-	while (i < [changes count])
+	NSUInteger count = [changes count];
+	
+	__unsafe_unretained id *_changes = (__unsafe_unretained id *)malloc(sizeof(id) * count);
+	[changes getObjects:_changes range:NSMakeRange(0, count)];
+	
+	for (i = 0; i < count; i++)
 	{
-		YapDatabaseViewRowChange *firstChangeForKey = [changes objectAtIndex:i];
-		YapDatabaseViewRowChange *mostRecentChangeForKey = firstChangeForKey;
+		if ([indexesToRemove containsIndex:i]) continue;
+		
+		__unsafe_unretained YapDatabaseViewRowChange *firstChangeForKey = _changes[i];
+		__unsafe_unretained YapDatabaseViewRowChange *mostRecentChangeForKey = firstChangeForKey;
 		
 		// Find later operations with the same key
 		
-		for (j = i+1; j < [changes count]; j++)
+		for (j = i+1; j < count; j++)
 		{
-			YapDatabaseViewRowChange *laterChange = [changes objectAtIndex:j];
+			__unsafe_unretained YapDatabaseViewRowChange *laterChange = _changes[j];
 			BOOL changesAreForSameKey = NO;
 			
 			if (firstChangeForKey->key && laterChange->key)
@@ -793,19 +800,15 @@
 			if (changesAreForSameKey)
 			{
 				firstChangeForKey->changes |= laterChange->changes;
-				[indexSet addIndex:j];
+				[indexesThatMatch addIndex:j];
 				
 				mostRecentChangeForKey = laterChange;
 			}
 		}
 		
-		if ([indexSet count] == 0)
+		if ([indexesThatMatch count] > 0)
 		{
-			i++; // continue;
-		}
-		else
-		{
-			YapDatabaseViewRowChange *lastChangeForKey = [changes objectAtIndex:[indexSet lastIndex]];
+			__unsafe_unretained YapDatabaseViewRowChange *lastChangeForKey = _changes[[indexesThatMatch lastIndex]];
 			
 			if (firstChangeForKey->type == YapDatabaseViewChangeDelete)
 			{
@@ -815,8 +818,7 @@
 					//
 					// All operations except the first are no-ops
 					
-					[changes removeObjectsAtIndexes:indexSet];
-					i++;
+					[indexesToRemove addIndexes:indexesThatMatch];
 				}
 				else if (lastChangeForKey->type == YapDatabaseViewChangeInsert)
 				{
@@ -836,8 +838,7 @@
 					firstChangeForKey->finalGroup = lastChangeForKey->finalGroup;
 					firstChangeForKey->opFinalIndex = lastChangeForKey->opFinalIndex; // for postProcessing
 					
-					[changes removeObjectsAtIndexes:indexSet];
-					i++;
+					[indexesToRemove addIndexes:indexesThatMatch];
 				}
 				else if (lastChangeForKey->type == YapDatabaseViewChangeUpdate)
 				{
@@ -857,8 +858,7 @@
 					firstChangeForKey->finalGroup = lastChangeForKey->finalGroup;
 					firstChangeForKey->opFinalIndex = lastChangeForKey->opFinalIndex; // for postProcessing
 					
-					[changes removeObjectsAtIndexes:indexSet];
-					i++;
+					[indexesToRemove addIndexes:indexesThatMatch];
 				}
 			}
 			else if (firstChangeForKey->type == YapDatabaseViewChangeInsert)
@@ -869,8 +869,8 @@
 					//
 					// All operations are no-ops (& i remains the same)
 					
-					[changes removeObjectsAtIndexes:indexSet];
-					[changes removeObjectAtIndex:i];
+					[indexesToRemove addIndexes:indexesThatMatch];
+					[indexesToRemove addIndex:i];
 				}
 				else if (lastChangeForKey->type == YapDatabaseViewChangeInsert)
 				{
@@ -881,8 +881,7 @@
 					firstChangeForKey->finalIndex = lastChangeForKey->finalIndex;
 					firstChangeForKey->finalGroup = lastChangeForKey->finalGroup;
 					
-					[changes removeObjectsAtIndexes:indexSet];
-					i++;
+					[indexesToRemove addIndexes:indexesThatMatch];
 				}
 				else // if (lastChangeForKey->type == YapDatabaseViewChangeUpdate)
 				{
@@ -893,8 +892,7 @@
 					firstChangeForKey->finalIndex = lastChangeForKey->finalIndex;
 					firstChangeForKey->finalGroup = lastChangeForKey->finalGroup;
 					
-					[changes removeObjectsAtIndexes:indexSet];
-					i++;
+					[indexesToRemove addIndexes:indexesThatMatch];
 				}
 			}
 			else if (firstChangeForKey->type == YapDatabaseViewChangeUpdate)
@@ -908,8 +906,7 @@
 					
 					firstChangeForKey->type = YapDatabaseViewChangeDelete;
 					
-					[changes removeObjectsAtIndexes:indexSet];
-					i++;
+					[indexesToRemove addIndexes:indexesThatMatch];
 				}
 				else if (lastChangeForKey->type == YapDatabaseViewChangeInsert)
 				{
@@ -931,8 +928,7 @@
 					firstChangeForKey->finalGroup = lastChangeForKey->finalGroup;
 					firstChangeForKey->opFinalIndex = lastChangeForKey->opFinalIndex; // for postProcessing
 					
-					[changes removeObjectsAtIndexes:indexSet];
-					i++;
+					[indexesToRemove addIndexes:indexesThatMatch];
 				}
 				else // if (lastChangeForKey->type == YapDatabaseViewChangeUpdate)
 				{
@@ -945,9 +941,9 @@
 					
 					__block BOOL isTrueUpdate = YES;
 					
-					[indexSet enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
+					[indexesThatMatch enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
 						
-						YapDatabaseViewRowChange *changeForKey = [changes objectAtIndex:idx];
+						__unsafe_unretained YapDatabaseViewRowChange *changeForKey = _changes[idx];
 						
 						if (changeForKey->type != YapDatabaseViewChangeUpdate)
 						{
@@ -960,8 +956,7 @@
 					{
 						// = Update
 						
-						[changes removeObjectsAtIndexes:indexSet];
-						i++;
+						[indexesToRemove addIndexes:indexesThatMatch];
 					}
 					else
 					{
@@ -974,17 +969,24 @@
 						firstChangeForKey->finalGroup = lastChangeForKey->finalGroup;
 						firstChangeForKey->opFinalIndex = lastChangeForKey->opFinalIndex; // for postProcessing
 						
-						[changes removeObjectsAtIndexes:indexSet];
-						i++;
+						[indexesToRemove addIndexes:indexesThatMatch];
 					}
 				}
 			}
 			
-			[indexSet removeAllIndexes];
+			[indexesThatMatch removeAllIndexes];
 			
-		} // ([indexSet count] > 0)
+		} // if ([indexesThatMatch count] > 0)
 		
-	} // while (i < [changes count])
+	} // while (i < count)
+	
+	if (_changes) {
+		free(_changes);
+	}
+	
+	if ([indexesToRemove count] > 0) {
+		[changes removeObjectsAtIndexes:indexesToRemove];
+	}
 }
 
 /**
