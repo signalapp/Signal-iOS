@@ -51,6 +51,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface YapDatabaseViewConnection () {
+@protected
+	
+	id sharedKeySetForInternalChangeset;
+	id sharedKeySetForExternalChangeset;
+	
 @public
 	
 	__strong YapDatabaseView *view;

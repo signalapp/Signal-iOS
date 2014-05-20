@@ -162,7 +162,7 @@ static NSString *const key_query = @"query";
 	if (queryChanged)
 	{
 		if (internalChangeset == nil)
-			internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:[self internalChangesetKeys]];
+			internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
 		
 		[internalChangeset setObject:query forKey:key_query];
 		hasDiskChanges = YES;

@@ -35,9 +35,6 @@ static NSString *const key_changes                  = @"changes";
 
 @implementation YapDatabaseViewConnection
 {
-	id sharedKeySetForInternalChangeset;
-	id sharedKeySetForExternalChangeset;
-	
 	sqlite3_stmt *mapTable_getPageKeyForRowidStatement;
 	sqlite3_stmt *mapTable_setPageKeyForRowidStatement;
 	sqlite3_stmt *mapTable_removeForRowidStatement;
