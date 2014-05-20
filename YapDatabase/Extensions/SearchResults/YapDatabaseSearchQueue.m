@@ -62,7 +62,7 @@
 	
 	OSSpinLockLock(&lock);
 	{
-		[queue addObject:query];
+		[queue addObject:[query copy]];
 	}
 	OSSpinLockUnlock(&lock);
 }

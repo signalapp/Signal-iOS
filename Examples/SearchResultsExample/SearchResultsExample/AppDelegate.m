@@ -67,6 +67,8 @@ AppDelegate *TheAppDelegate;
 {
 	NSString *databasePath = [self databasePath];
 	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	
 	// Create the database.
 	// We do this using the default settings.
 	// If you want to get fancy, you can do things like customize the serialization/deserialization routines.

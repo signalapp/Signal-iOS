@@ -168,6 +168,8 @@
 	
 	// Update searchResultsTableView
 	
+	rowChanges = nil;
+	
 	DDLogVerbose(@"Calculating rowChanges for searchResultsTableView...");
 	[[databaseConnection ext:@"searchResults"] getSectionChanges:NULL
 	                                                  rowChanges:&rowChanges
@@ -346,7 +348,7 @@
 	if (searchQueue == nil)
 		searchQueue = [[YapDatabaseSearchQueue alloc] init];
 	
-	[searchQueue enqueueQuery:@"searchString"];
+	[searchQueue enqueueQuery:searchString];
 	
 	[searchConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		

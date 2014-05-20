@@ -480,10 +480,10 @@
 				DC882BCD1926C4C2004C3166 /* YapDatabaseSearchQueuePrivate.h */,
 				DC882BCE1926C4C2004C3166 /* YapDatabaseSearchResultsView.h */,
 				DC882BCF1926C4C2004C3166 /* YapDatabaseSearchResultsView.m */,
-				DC882BD01926C4C2004C3166 /* YapDatabaseSearchResultsViewConnection.h */,
-				DC882BD11926C4C2004C3166 /* YapDatabaseSearchResultsViewConnection.m */,
 				DC882BD21926C4C2004C3166 /* YapDatabaseSearchResultsViewOptions.h */,
 				DC882BD31926C4C2004C3166 /* YapDatabaseSearchResultsViewOptions.m */,
+				DC882BD01926C4C2004C3166 /* YapDatabaseSearchResultsViewConnection.h */,
+				DC882BD11926C4C2004C3166 /* YapDatabaseSearchResultsViewConnection.m */,
 				DC882BD41926C4C2004C3166 /* YapDatabaseSearchResultsViewTransaction.h */,
 				DC882BD51926C4C2004C3166 /* YapDatabaseSearchResultsViewTransaction.m */,
 			);
@@ -892,6 +892,7 @@
 				DC882B791926C446004C3166 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
