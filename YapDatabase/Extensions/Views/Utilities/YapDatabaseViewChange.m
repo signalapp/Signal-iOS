@@ -617,9 +617,12 @@
 	
 	NSUInteger count = [changes count];
 	
+	__unsafe_unretained id *_changes = (__unsafe_unretained id *)malloc(sizeof(id) * count);
+	[changes getObjects:_changes range:NSMakeRange(0, count)];
+	
 	for (i = count; i > 0; i--)
 	{
-		YapDatabaseViewRowChange *change = [changes objectAtIndex:(i-1)];
+		__unsafe_unretained YapDatabaseViewRowChange *change = _changes[i-1];
 		
 		if (change->type == YapDatabaseViewChangeDelete)
 		{
@@ -628,7 +631,7 @@
 			
 			for (j = i; j < count; j++)
 			{
-				YapDatabaseViewRowChange *laterChange = [changes objectAtIndex:j];
+				__unsafe_unretained YapDatabaseViewRowChange *laterChange = _changes[j];
 				
 				if (laterChange->type == YapDatabaseViewChangeDelete ||
 					laterChange->type == YapDatabaseViewChangeUpdate)
@@ -648,7 +651,7 @@
 			
 			for (j = i; j < count; j++)
 			{
-				YapDatabaseViewRowChange *laterChange = [changes objectAtIndex:j];
+				__unsafe_unretained YapDatabaseViewRowChange *laterChange = _changes[j];
 				
 				if (laterChange->type == YapDatabaseViewChangeDelete ||
 				    laterChange->type == YapDatabaseViewChangeUpdate)
@@ -668,7 +671,7 @@
 	
 	for (i = 1; i < count; i++)
 	{
-		YapDatabaseViewRowChange *change = [changes objectAtIndex:i];
+		__unsafe_unretained YapDatabaseViewRowChange *change = _changes[i];
 		
 		if (change->type == YapDatabaseViewChangeDelete)
 		{
@@ -677,7 +680,7 @@
 			
 			for (j = i; j > 0; j--)
 			{
-				YapDatabaseViewRowChange *earlierChange = [changes objectAtIndex:(j-1)];
+				__unsafe_unretained YapDatabaseViewRowChange *earlierChange = _changes[j-1];
 				
 				if (earlierChange->type == YapDatabaseViewChangeInsert ||
 				    earlierChange->type == YapDatabaseViewChangeUpdate  )
@@ -697,7 +700,7 @@
 			
 			for (j = i; j > 0; j--)
 			{
-				YapDatabaseViewRowChange *earlierChange = [changes objectAtIndex:(j-1)];
+				__unsafe_unretained YapDatabaseViewRowChange *earlierChange = _changes[j-1];
 				
 				if (earlierChange->type == YapDatabaseViewChangeInsert ||
 				    earlierChange->type == YapDatabaseViewChangeUpdate)
@@ -710,6 +713,10 @@
 				}
 			}
 		}
+	}
+	
+	if (_changes) {
+		free(_changes);
 	}
 }
 
