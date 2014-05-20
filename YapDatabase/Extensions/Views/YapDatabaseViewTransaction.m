@@ -4184,7 +4184,7 @@
 	
 	NSUInteger mMin = 0;
 	NSUInteger mMax = count;
-	NSUInteger mMid;
+	NSUInteger mMid = 0;
 	
 	BOOL found = NO;
 	
