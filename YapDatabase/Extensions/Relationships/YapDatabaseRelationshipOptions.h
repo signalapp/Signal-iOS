@@ -2,8 +2,6 @@
 
 /**
  * Welcome to YapDatabase!
- *
- * The project page has a wealth of documentation if you have any questions.
  * https://github.com/yaptv/YapDatabase
  *
  * If you're new to the project you may want to visit the wiki.

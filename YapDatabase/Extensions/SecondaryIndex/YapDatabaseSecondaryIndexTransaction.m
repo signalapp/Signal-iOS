@@ -286,73 +286,105 @@
 	
 	__unsafe_unretained YapDatabaseSecondaryIndex *secondaryIndex = secondaryIndexConnection->secondaryIndex;
 	
+	__unsafe_unretained NSSet *allowedCollections = secondaryIndex->options.allowedCollections;
+	
 	if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithKey)
 	{
-		__unsafe_unretained YapDatabaseSecondaryIndexWithKeyBlock block =
+		__unsafe_unretained YapDatabaseSecondaryIndexWithKeyBlock secondaryIndexBlock =
 		    (YapDatabaseSecondaryIndexWithKeyBlock)secondaryIndex->block;
 		
-		[databaseTransaction _enumerateKeysInAllCollectionsUsingBlock:
-		    ^(int64_t rowid, NSString *collection, NSString *key, BOOL *stop) {
+		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, BOOL *stop);
+		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, BOOL *stop) {
 			
-			block(secondaryIndexConnection->blockDict, collection, key);
+			secondaryIndexBlock(secondaryIndexConnection->blockDict, collection, key);
 			
 			if ([secondaryIndexConnection->blockDict count] > 0)
 			{
 				[self addRowid:rowid isNew:YES];
 				[secondaryIndexConnection->blockDict removeAllObjects];
 			}
-		}];
+		};
+		
+		if (allowedCollections) {
+			[databaseTransaction _enumerateKeysInCollections:[allowedCollections allObjects] usingBlock:enumBlock];
+		}
+		else {
+			[databaseTransaction _enumerateKeysInAllCollectionsUsingBlock:enumBlock];
+		}
 	}
 	else if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithObject)
 	{
-		__unsafe_unretained YapDatabaseSecondaryIndexWithObjectBlock block =
+		__unsafe_unretained YapDatabaseSecondaryIndexWithObjectBlock secondaryIndexBlock =
 		    (YapDatabaseSecondaryIndexWithObjectBlock)secondaryIndex->block;
 		
-		[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:
-		    ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop) {
+		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop);
+		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop) {
 			
-			block(secondaryIndexConnection->blockDict, collection, key, object);
+			secondaryIndexBlock(secondaryIndexConnection->blockDict, collection, key, object);
 			
 			if ([secondaryIndexConnection->blockDict count] > 0)
 			{
 				[self addRowid:rowid isNew:YES];
 				[secondaryIndexConnection->blockDict removeAllObjects];
 			}
-		}];
+		};
+		
+		if (allowedCollections) {
+			[databaseTransaction _enumerateKeysAndObjectsInCollections:[allowedCollections allObjects]
+			                                                usingBlock:enumBlock];
+		}
+		else {
+			[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:enumBlock];
+		}
 	}
 	else if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithMetadata)
 	{
-		__unsafe_unretained YapDatabaseSecondaryIndexWithMetadataBlock block =
+		__unsafe_unretained YapDatabaseSecondaryIndexWithMetadataBlock secondaryIndexBlock =
 		    (YapDatabaseSecondaryIndexWithMetadataBlock)secondaryIndex->block;
 		
-		[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:
-		    ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop) {
+		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop);
+		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop) {
 			
-			block(secondaryIndexConnection->blockDict, collection, key, metadata);
+			secondaryIndexBlock(secondaryIndexConnection->blockDict, collection, key, metadata);
 			
 			if ([secondaryIndexConnection->blockDict count] > 0)
 			{
 				[self addRowid:rowid isNew:YES];
 				[secondaryIndexConnection->blockDict removeAllObjects];
 			}
-		}];
+		};
+		
+		if (allowedCollections) {
+			[databaseTransaction _enumerateKeysAndMetadataInCollections:[allowedCollections allObjects]
+			                                                 usingBlock:enumBlock];
+		}
+		else {
+			[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:enumBlock];
+		}
 	}
 	else // if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithRow)
 	{
-		__unsafe_unretained YapDatabaseSecondaryIndexWithRowBlock block =
+		__unsafe_unretained YapDatabaseSecondaryIndexWithRowBlock secondaryIndexBlock =
 		    (YapDatabaseSecondaryIndexWithRowBlock)secondaryIndex->block;
 		
-		[databaseTransaction _enumerateRowsInAllCollectionsUsingBlock:
-		    ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop) {
+		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop);
+		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop) {
 			
-			block(secondaryIndexConnection->blockDict, collection, key, object, metadata);
+			secondaryIndexBlock(secondaryIndexConnection->blockDict, collection, key, object, metadata);
 			
 			if ([secondaryIndexConnection->blockDict count] > 0)
 			{
 				[self addRowid:rowid isNew:YES];
 				[secondaryIndexConnection->blockDict removeAllObjects];
 			}
-		}];
+		};
+		
+		if (allowedCollections) {
+			[databaseTransaction _enumerateRowsInCollections:[allowedCollections allObjects] usingBlock:enumBlock];
+		}
+		else {
+			[databaseTransaction _enumerateRowsInAllCollectionsUsingBlock:enumBlock];
+		}
 	}
 	
 	return YES;
@@ -669,6 +701,12 @@
 	__unsafe_unretained NSString *collection = collectionKey.collection;
 	__unsafe_unretained NSString *key = collectionKey.key;
 	
+	__unsafe_unretained NSSet *allowedCollections = secondaryIndex->options.allowedCollections;
+	if (allowedCollections && ![allowedCollections containsObject:collection])
+	{
+		return;
+	}
+	
 	// Invoke the block to find out if the object should be included in the index.
 	
 	if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithKey)
@@ -730,6 +768,12 @@
 	__unsafe_unretained NSString *collection = collectionKey.collection;
 	__unsafe_unretained NSString *key = collectionKey.key;
 	
+	__unsafe_unretained NSSet *allowedCollections = secondaryIndex->options.allowedCollections;
+	if (allowedCollections && ![allowedCollections containsObject:collection])
+	{
+		return;
+	}
+	
 	// Invoke the block to find out if the object should be included in the index.
 	
 	if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithKey)
@@ -790,6 +834,12 @@
 	
 	__unsafe_unretained NSString *collection = collectionKey.collection;
 	__unsafe_unretained NSString *key = collectionKey.key;
+	
+	__unsafe_unretained NSSet *allowedCollections = secondaryIndex->options.allowedCollections;
+	if (allowedCollections && ![allowedCollections containsObject:collection])
+	{
+		return;
+	}
 	
 	// Invoke the block to find out if the object should be included in the index.
 	
@@ -854,6 +904,12 @@
 	
 	__unsafe_unretained NSString *collection = collectionKey.collection;
 	__unsafe_unretained NSString *key = collectionKey.key;
+	
+	__unsafe_unretained NSSet *allowedCollections = secondaryIndex->options.allowedCollections;
+	if (allowedCollections && ![allowedCollections containsObject:collection])
+	{
+		return;
+	}
 	
 	// Invoke the block to find out if the object should be included in the index.
 	
@@ -932,6 +988,14 @@
 {
 	YDBLogAutoTrace();
 	
+	__unsafe_unretained YapDatabaseSecondaryIndex *secondaryIndex = secondaryIndexConnection->secondaryIndex;
+	
+	__unsafe_unretained NSSet *allowedCollections = secondaryIndex->options.allowedCollections;
+	if (allowedCollections && ![allowedCollections containsObject:collectionKey.collection])
+	{
+		return;
+	}
+	
 	[self removeRowid:rowid];
 }
 
@@ -942,6 +1006,14 @@
 - (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
 {
 	YDBLogAutoTrace();
+	
+	__unsafe_unretained YapDatabaseSecondaryIndex *secondaryIndex = secondaryIndexConnection->secondaryIndex;
+	
+	__unsafe_unretained NSSet *allowedCollections = secondaryIndex->options.allowedCollections;
+	if (allowedCollections && ![allowedCollections containsObject:collection])
+	{
+		return;
+	}
 	
 	[self removeRowids:rowids];
 }

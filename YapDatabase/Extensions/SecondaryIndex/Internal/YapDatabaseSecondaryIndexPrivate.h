@@ -25,6 +25,7 @@
 @public
 	
 	YapDatabaseSecondaryIndexSetup *setup;
+	YapDatabaseSecondaryIndexOptions *options;
 	
 	YapDatabaseSecondaryIndexBlock block;
 	YapDatabaseSecondaryIndexBlockType blockType;

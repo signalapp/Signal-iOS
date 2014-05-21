@@ -65,13 +65,22 @@
               block:(YapDatabaseSecondaryIndexBlock)inBlock
           blockType:(YapDatabaseSecondaryIndexBlockType)inBlockType
 {
-	return [self initWithSetup:inSetup block:inBlock blockType:inBlockType versionTag:nil];
+	return [self initWithSetup:inSetup block:inBlock blockType:inBlockType versionTag:nil options:nil];
 }
 
 - (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)inSetup
               block:(YapDatabaseSecondaryIndexBlock)inBlock
           blockType:(YapDatabaseSecondaryIndexBlockType)inBlockType
          versionTag:(NSString *)inVersionTag
+{
+	return [self initWithSetup:inSetup block:inBlock blockType:inBlockType versionTag:inVersionTag options:nil];
+}
+
+- (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)inSetup
+              block:(YapDatabaseSecondaryIndexBlock)inBlock
+          blockType:(YapDatabaseSecondaryIndexBlockType)inBlockType
+         versionTag:(NSString *)inVersionTag
+            options:(YapDatabaseSecondaryIndexOptions *)inOptions
 {
 	// Sanity checks
 	
@@ -122,6 +131,8 @@
 		columnNamesSharedKeySet = [NSDictionary sharedKeySetForKeys:[setup columnNames]];
 		
 		versionTag = inVersionTag ? [inVersionTag copy] : @"";
+		
+		options = inOptions ? [inOptions copy] : [[YapDatabaseSecondaryIndexOptions alloc] init];
 	}
 	return self;
 }
