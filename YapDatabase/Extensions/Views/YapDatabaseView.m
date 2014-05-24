@@ -191,4 +191,47 @@
 	return [[self class] pageMetadataTableNameForRegisteredName:self.registeredName];
 }
 
+/**
+ * Subclasses may OPTIONALLY implement this method.
+ *
+ * This method is invoked on the snapshot queue.
+ * The given changeset is the most recent commit.
+**/
+- (void)processChangeset:(NSDictionary *)changeset
+{
+	group_pagesMetadata_dict = [changeset objectForKey:changeset_key_group_pagesMetadata_dict];
+	pageKey_group_dict       = [changeset objectForKey:changeset_key_pageKey_group_dict];
+}
+
+/**
+ * Optimization - Used by [YapDatabaseViewTransaction prepareIfNeeded]
+**/
+- (BOOL)getState:(NSDictionary **)group_pagesMetadata_dict_ptr
+           state:(NSDictionary **)pageKey_group_dict_ptr
+   forConnection:(YapDatabaseViewConnection *)viewConnection
+{
+	__block BOOL result = NO;
+	__block NSDictionary *state1 = nil;
+	__block NSDictionary *state2 = nil;
+	
+	int64_t extConnectionSnapshot = [viewConnection->databaseConnection snapshot];
+	
+	dispatch_sync(viewConnection->databaseConnection->database->snapshotQueue, ^{
+		
+		int64_t extSnapshot = [viewConnection->databaseConnection->database snapshot];
+		
+		if (extConnectionSnapshot == extSnapshot)
+		{
+			result = YES;
+			state1 = group_pagesMetadata_dict;
+			state2 = pageKey_group_dict;
+		}
+	});
+	
+	*group_pagesMetadata_dict_ptr = state1;
+	*pageKey_group_dict_ptr       = state2;
+	
+	return result;
+}
+
 @end

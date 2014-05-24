@@ -80,4 +80,20 @@
 	return nil;
 }
 
+/**
+ * Subclasses may OPTIONALLY implement this method.
+ *
+ * This method is invoked on the snapshot queue.
+ * The given changeset is the most recent commit.
+ *
+ * This method exists as a possible optimization.
+ * For example, the YapDatabaseView extension uses this method to capture the most recent view state.
+ * This allows new view connections to be able to (sometimes) fetch the view state from their extension,
+ * rather than read it from the database and piece it together manually.
+**/
+- (void)processChangeset:(NSDictionary *)changeset
+{
+	// Override me if needed (for optimizations)
+}
+
 @end

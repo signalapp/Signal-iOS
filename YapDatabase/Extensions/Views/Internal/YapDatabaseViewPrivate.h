@@ -23,11 +23,23 @@
 **/
 #define YAP_DATABASE_VIEW_CLASS_VERSION 3
 
+static NSString *const changeset_key_dirtyMaps                = @"dirtyMaps";
+static NSString *const changeset_key_dirtyPages               = @"dirtyPages";
+static NSString *const changeset_key_reset                    = @"reset";
+static NSString *const changeset_key_group_pagesMetadata_dict = @"group_pagesMetadata_dict";
+static NSString *const changeset_key_pageKey_group_dict       = @"pageKey_group_dict";
+static NSString *const changeset_key_changes                  = @"changes";
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface YapDatabaseView () {
+@private
+	
+	NSDictionary *group_pagesMetadata_dict;
+	NSDictionary *pageKey_group_dict;
+	
 @public
 	YapDatabaseViewGroupingBlock groupingBlock;
 	YapDatabaseViewSortingBlock sortingBlock;
@@ -43,6 +55,10 @@
 - (NSString *)mapTableName;
 - (NSString *)pageTableName;
 - (NSString *)pageMetadataTableName;
+
+- (BOOL)getState:(NSDictionary **)group_pagesMetadata_dict_ptr
+           state:(NSDictionary **)pageKey_group_dict_ptr
+   forConnection:(YapDatabaseViewConnection *)viewConnection;
 
 @end
 
@@ -101,6 +117,8 @@
 - (sqlite3_stmt *)pageTable_updateLinkForPageKeyStatement;
 - (sqlite3_stmt *)pageTable_removeForPageKeyStatement;
 - (sqlite3_stmt *)pageTable_removeAllStatement;
+
+- (NSMutableDictionary *)group_pagesMetadata_dict_deepCopy:(NSDictionary *)in_group_pagesMetadata_dict;
 
 @end
 

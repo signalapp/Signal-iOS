@@ -255,6 +255,25 @@
 		return YES;
 	}
 	
+	// Can we use the latest processed changeset in YapDatabaseView?
+	
+	NSDictionary *group_pagesMetadata_dict = nil;
+	NSDictionary *pageKey_group_dict = nil;
+	
+	BOOL shortcut = [viewConnection->view getState:&group_pagesMetadata_dict
+	                                         state:&pageKey_group_dict
+	                                 forConnection:viewConnection];
+	
+	if (shortcut && group_pagesMetadata_dict && pageKey_group_dict)
+	{
+		viewConnection->group_pagesMetadata_dict =
+		  [viewConnection group_pagesMetadata_dict_deepCopy:group_pagesMetadata_dict];
+		
+		viewConnection->pageKey_group_dict = [pageKey_group_dict mutableCopy];
+		
+		return YES;
+	}
+	
 	// Enumerate over the page rows in the database, and populate our data structure.
 	// Each row has the following information:
 	//

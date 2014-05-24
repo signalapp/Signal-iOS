@@ -25,13 +25,6 @@
 #endif
 #pragma unused(ydbLogLevel)
 
-static NSString *const key_dirtyMaps                = @"dirtyMaps";
-static NSString *const key_dirtyPages               = @"dirtyPages";
-static NSString *const key_reset                    = @"reset";
-static NSString *const key_group_pagesMetadata_dict = @"group_pagesMetadata_dict";
-static NSString *const key_pageKey_group_dict       = @"pageKey_group_dict";
-static NSString *const key_changes                  = @"changes";
-
 
 @implementation YapDatabaseViewConnection
 {
@@ -265,16 +258,16 @@ static NSString *const key_changes                  = @"changes";
 
 - (NSArray *)internalChangesetKeys
 {
-	return @[ key_dirtyMaps,
-	          key_dirtyPages,
-	          key_reset,
-	          key_group_pagesMetadata_dict,
-	          key_pageKey_group_dict ];
+	return @[ changeset_key_dirtyMaps,
+	          changeset_key_dirtyPages,
+	          changeset_key_reset,
+	          changeset_key_group_pagesMetadata_dict,
+	          changeset_key_pageKey_group_dict ];
 }
 
 - (NSArray *)externalChangesetKeys
 {
-	return @[ key_changes ];
+	return @[ changeset_key_changes ];
 }
 
 - (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
@@ -296,17 +289,17 @@ static NSString *const key_changes                  = @"changes";
 		
 		if ([dirtyMaps count] > 0)
 		{
-			[internalChangeset setObject:dirtyMaps forKey:key_dirtyMaps];
+			[internalChangeset setObject:dirtyMaps forKey:changeset_key_dirtyMaps];
 		}
 		if ([dirtyPages count] > 0)
 		{
 			[self sanitizeDirtyPages];
-			[internalChangeset setObject:dirtyPages forKey:key_dirtyPages];
+			[internalChangeset setObject:dirtyPages forKey:changeset_key_dirtyPages];
 		}
 		
 		if (reset)
 		{
-			[internalChangeset setObject:@(reset) forKey:key_reset];
+			[internalChangeset setObject:@(reset) forKey:changeset_key_reset];
 		}
 		
 		NSMutableDictionary *group_pagesMetadata_dict_copy;
@@ -315,15 +308,15 @@ static NSString *const key_changes                  = @"changes";
 		group_pagesMetadata_dict_copy = [self group_pagesMetadata_dict_deepCopy:group_pagesMetadata_dict];
 		pageKey_group_dict_copy = [pageKey_group_dict mutableCopy];
 		
-		[internalChangeset setObject:group_pagesMetadata_dict_copy forKey:key_group_pagesMetadata_dict];
-		[internalChangeset setObject:pageKey_group_dict_copy       forKey:key_pageKey_group_dict];
+		[internalChangeset setObject:group_pagesMetadata_dict_copy forKey:changeset_key_group_pagesMetadata_dict];
+		[internalChangeset setObject:pageKey_group_dict_copy       forKey:changeset_key_pageKey_group_dict];
 	}
 	
 	if ([changes count] > 0)
 	{
 		externalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
 		
-  		[externalChangeset setObject:[changes copy] forKey:key_changes];
+  		[externalChangeset setObject:[changes copy] forKey:changeset_key_changes];
 	}
 	
 	*internalChangesetPtr = internalChangeset;
@@ -335,26 +328,21 @@ static NSString *const key_changes                  = @"changes";
 {
 	YDBLogAutoTrace();
 	
-	NSMutableDictionary *changeset_group_pagesMetadata_dict = [changeset objectForKey:key_group_pagesMetadata_dict];
-	NSMutableDictionary *changeset_pageKey_group_dict       = [changeset objectForKey:key_pageKey_group_dict];
+	NSDictionary *changeset_group_pagesMetadata_dict = [changeset objectForKey:changeset_key_group_pagesMetadata_dict];
+	NSDictionary *changeset_pageKey_group_dict       = [changeset objectForKey:changeset_key_pageKey_group_dict];
 	
-	NSDictionary *changeset_dirtyMaps = [changeset objectForKey:key_dirtyMaps];
-	NSDictionary *changeset_dirtyPages = [changeset objectForKey:key_dirtyPages];
+	NSDictionary *changeset_dirtyMaps  = [changeset objectForKey:changeset_key_dirtyMaps];
+	NSDictionary *changeset_dirtyPages = [changeset objectForKey:changeset_key_dirtyPages];
 	
-	BOOL changeset_reset = [[changeset objectForKey:key_reset] boolValue];
+	BOOL changeset_reset = [[changeset objectForKey:changeset_key_reset] boolValue];
 	
-	// Perform proper deep copies
+	// Store new top level objects (making proper deep copies)
 	//
 	// Note: we make copies from changeset_dirtyPages on demand below via:
 	// - [pageCache setObject:[page copy] forKey:pageKey];
 	
-	changeset_group_pagesMetadata_dict = [self group_pagesMetadata_dict_deepCopy:changeset_group_pagesMetadata_dict];
-	changeset_pageKey_group_dict = [changeset_pageKey_group_dict mutableCopy];
-	
-	// Store new top level objects
-	
-	group_pagesMetadata_dict = changeset_group_pagesMetadata_dict;
-	pageKey_group_dict = changeset_pageKey_group_dict;
+	group_pagesMetadata_dict = [self group_pagesMetadata_dict_deepCopy:changeset_group_pagesMetadata_dict];
+	pageKey_group_dict = [changeset_pageKey_group_dict mutableCopy];
 	
 	// Update mapCache
 	
@@ -500,7 +488,7 @@ static NSString *const key_changes                  = @"changes";
 		NSDictionary *changeset =
 		    [[notification.userInfo objectForKey:YapDatabaseExtensionsKey] objectForKey:registeredName];
 		
-		NSArray *changeset_changes = [changeset objectForKey:key_changes];
+		NSArray *changeset_changes = [changeset objectForKey:changeset_key_changes];
 		
 		[all_changes addObjectsFromArray:changeset_changes];
 	}
@@ -609,7 +597,7 @@ static NSString *const key_changes                  = @"changes";
 		NSDictionary *changeset =
 		    [[notification.userInfo objectForKey:YapDatabaseExtensionsKey] objectForKey:registeredName];
 		
-		NSArray *changeset_changes = [changeset objectForKey:key_changes];
+		NSArray *changeset_changes = [changeset objectForKey:changeset_key_changes];
 		
 		if ([changeset_changes count] > 0)
 		{
