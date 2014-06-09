@@ -29,21 +29,19 @@
  * But for conncurrent access between multiple threads you must use multiple connections.
 **/
 
-enum  {
-	YapDatabaseConnectionFlushMemoryFlags_None       = 0,
-	YapDatabaseConnectionFlushMemoryFlags_Caches     = 1 << 0,
-	YapDatabaseConnectionFlushMemoryFlags_Statements = 1 << 1,
-	YapDatabaseConnectionFlushMemoryFlags_All        = (YapDatabaseConnectionFlushMemoryFlags_Caches |
-	                                                    YapDatabaseConnectionFlushMemoryFlags_Statements),
+typedef NS_OPTIONS(NSInteger, YapDatabaseConnectionFlushMemoryFlags) {
+    YapDatabaseConnectionFlushMemoryFlags_None       = 0,
+    YapDatabaseConnectionFlushMemoryFlags_Caches     = 1 << 0,
+    YapDatabaseConnectionFlushMemoryFlags_Statements = 1 << 1,
+    YapDatabaseConnectionFlushMemoryFlags_All        = (YapDatabaseConnectionFlushMemoryFlags_Caches |
+                                                        YapDatabaseConnectionFlushMemoryFlags_Statements),
 };
-typedef int YapDatabaseConnectionFlushMemoryFlags;
 
-typedef enum {
+typedef NS_ENUM(NSInteger, YapDatabasePolicy) {
 	YapDatabasePolicyContainment = 0,
 	YapDatabasePolicyShare       = 1,
 	YapDatabasePolicyCopy        = 2,
-} YapDatabasePolicy;
-
+};
 
 @interface YapDatabaseConnection : NSObject
 

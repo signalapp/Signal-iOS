@@ -1,20 +1,18 @@
 #import <Foundation/Foundation.h>
 #import "YapCollectionKey.h"
 
-typedef enum {
+typedef NS_ENUM(NSInteger, YapDatabaseViewChangeType) {
 	YapDatabaseViewChangeInsert = 1,
 	YapDatabaseViewChangeDelete = 2,
 	YapDatabaseViewChangeMove   = 3,
 	YapDatabaseViewChangeUpdate = 4,
-	
-} YapDatabaseViewChangeType;
+};
 
-typedef enum {
+typedef NS_OPTIONS(NSInteger, YapDatabaseViewChangesBitMask) {
 	YapDatabaseViewChangedObject     = 1 << 0, // 0001
 	YapDatabaseViewChangedMetadata   = 1 << 1, // 0010
 	YapDatabaseViewChangedDependency = 1 << 2, // 0100
-	
-} YapDatabaseViewChangesBitMask;
+};
 
 
 /**
