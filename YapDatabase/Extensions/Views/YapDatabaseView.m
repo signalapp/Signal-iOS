@@ -199,20 +199,17 @@
 **/
 - (void)processChangeset:(NSDictionary *)changeset
 {
-	group_pagesMetadata_dict = [changeset objectForKey:changeset_key_group_pagesMetadata_dict];
-	pageKey_group_dict       = [changeset objectForKey:changeset_key_pageKey_group_dict];
+	latestState = [changeset objectForKey:changeset_key_state];
 }
 
 /**
  * Optimization - Used by [YapDatabaseViewTransaction prepareIfNeeded]
 **/
-- (BOOL)getState:(NSDictionary **)group_pagesMetadata_dict_ptr
-           state:(NSDictionary **)pageKey_group_dict_ptr
+- (BOOL)getState:(YapDatabaseViewState **)statePtr
    forConnection:(YapDatabaseViewConnection *)viewConnection
 {
 	__block BOOL result = NO;
-	__block NSDictionary *state1 = nil;
-	__block NSDictionary *state2 = nil;
+	__block YapDatabaseViewState *state = nil;
 	
 	int64_t extConnectionSnapshot = [viewConnection->databaseConnection snapshot];
 	
@@ -223,14 +220,11 @@
 		if (extConnectionSnapshot == extSnapshot)
 		{
 			result = YES;
-			state1 = group_pagesMetadata_dict;
-			state2 = pageKey_group_dict;
+			state = latestState;
 		}
 	});
 	
-	*group_pagesMetadata_dict_ptr = state1;
-	*pageKey_group_dict_ptr       = state2;
-	
+	*statePtr = state;
 	return result;
 }
 

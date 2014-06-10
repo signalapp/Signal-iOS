@@ -8,6 +8,7 @@
 #import "YapDatabaseViewOptions.h"
 #import "YapDatabaseViewConnection.h"
 #import "YapDatabaseViewTransaction.h"
+#import "YapDatabaseViewState.h"
 
 #import "YapMemoryTable.h"
 
@@ -23,12 +24,11 @@
 **/
 #define YAP_DATABASE_VIEW_CLASS_VERSION 3
 
-static NSString *const changeset_key_dirtyMaps                = @"dirtyMaps";
-static NSString *const changeset_key_dirtyPages               = @"dirtyPages";
-static NSString *const changeset_key_reset                    = @"reset";
-static NSString *const changeset_key_group_pagesMetadata_dict = @"group_pagesMetadata_dict";
-static NSString *const changeset_key_pageKey_group_dict       = @"pageKey_group_dict";
-static NSString *const changeset_key_changes                  = @"changes";
+static NSString *const changeset_key_state      = @"state";
+static NSString *const changeset_key_dirtyMaps  = @"dirtyMaps";
+static NSString *const changeset_key_dirtyPages = @"dirtyPages";
+static NSString *const changeset_key_reset      = @"reset";
+static NSString *const changeset_key_changes    = @"changes";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
@@ -37,8 +37,7 @@ static NSString *const changeset_key_changes                  = @"changes";
 @interface YapDatabaseView () {
 @private
 	
-	NSDictionary *group_pagesMetadata_dict;
-	NSDictionary *pageKey_group_dict;
+	YapDatabaseViewState *latestState;
 	
 @public
 	YapDatabaseViewGroupingBlock groupingBlock;
@@ -56,8 +55,7 @@ static NSString *const changeset_key_changes                  = @"changes";
 - (NSString *)pageTableName;
 - (NSString *)pageMetadataTableName;
 
-- (BOOL)getState:(NSDictionary **)group_pagesMetadata_dict_ptr
-           state:(NSDictionary **)pageKey_group_dict_ptr
+- (BOOL)getState:(YapDatabaseViewState **)statePtr
    forConnection:(YapDatabaseViewConnection *)viewConnection;
 
 @end
@@ -77,8 +75,7 @@ static NSString *const changeset_key_changes                  = @"changes";
 	__strong YapDatabaseView *view;
 	__unsafe_unretained YapDatabaseConnection *databaseConnection;
 	
-	NSMutableDictionary *group_pagesMetadata_dict; // group -> @[ YapDatabaseViewPageMetadata, ... ]
-	NSMutableDictionary *pageKey_group_dict;       // pageKey -> group
+	YapDatabaseViewState *state;
 	
 	YapCache *mapCache;
 	YapCache *pageCache;
@@ -118,8 +115,6 @@ static NSString *const changeset_key_changes                  = @"changes";
 - (sqlite3_stmt *)pageTable_removeForPageKeyStatement;
 - (sqlite3_stmt *)pageTable_removeAllStatement;
 
-- (NSMutableDictionary *)group_pagesMetadata_dict_deepCopy:(NSDictionary *)in_group_pagesMetadata_dict;
-
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -157,8 +152,6 @@ static NSString *const changeset_key_changes                  = @"changes";
 - (NSString *)pageKeyForRowid:(int64_t)rowid;
 - (NSUInteger)indexForRowid:(int64_t)rowid inGroup:(NSString *)group withPageKey:(NSString *)pageKey;
 - (BOOL)getRowid:(int64_t *)rowidPtr atIndex:(NSUInteger)index inGroup:(NSString *)group;
-
-- (NSString *)groupForPageKey:(NSString *)pageKey;
 
 - (void)insertRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey inNewGroup:(NSString *)group;
 - (void)insertRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey

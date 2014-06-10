@@ -249,7 +249,7 @@
 {
 	YDBLogAutoTrace();
 	
-	if (viewConnection->group_pagesMetadata_dict && viewConnection->pageKey_group_dict)
+	if (viewConnection->state)
 	{
 		// Already prepared
 		return YES;
@@ -257,20 +257,12 @@
 	
 	// Can we use the latest processed changeset in YapDatabaseView?
 	
-	NSDictionary *group_pagesMetadata_dict = nil;
-	NSDictionary *pageKey_group_dict = nil;
+	YapDatabaseViewState *state = nil;
 	
-	BOOL shortcut = [viewConnection->view getState:&group_pagesMetadata_dict
-	                                         state:&pageKey_group_dict
-	                                 forConnection:viewConnection];
-	
-	if (shortcut && group_pagesMetadata_dict && pageKey_group_dict)
+	BOOL shortcut = [viewConnection->view getState:&state forConnection:viewConnection];
+	if (shortcut && state)
 	{
-		viewConnection->group_pagesMetadata_dict =
-		  [viewConnection group_pagesMetadata_dict_deepCopy:group_pagesMetadata_dict];
-		
-		viewConnection->pageKey_group_dict = [pageKey_group_dict mutableCopy];
-		
+		viewConnection->state = [state copy];
 		return YES;
 	}
 	
@@ -427,8 +419,7 @@
 		// Initialize ivars in viewConnection.
 		// We try not to do this before we know the table exists.
 		
-		viewConnection->group_pagesMetadata_dict = [[NSMutableDictionary alloc] init];
-		viewConnection->pageKey_group_dict = [[NSMutableDictionary alloc] init];
+		viewConnection->state = [[YapDatabaseViewState alloc] init];
 		
 		// Enumerate over each group
 		
@@ -448,14 +439,14 @@
 			//
 			// And from the keys, we can get the actual pageMetadata using the pageDict.
 			
-			NSMutableArray *pagesForGroup = [[NSMutableArray alloc] initWithCapacity:[pageDict count]];
-			[viewConnection->group_pagesMetadata_dict setObject:pagesForGroup forKey:group];
+			NSUInteger pageCount = 0;
+			NSUInteger expectedPageCount = [orderDict count];
+			
+			[viewConnection->state createGroup:group withCapacity:expectedPageCount];
 			
 			NSString *pageKey = [orderDict objectForKey:[NSNull null]];
 			while (pageKey)
 			{
-				[viewConnection->pageKey_group_dict setObject:group forKey:pageKey];
-				
 				YapDatabaseViewPageMetadata *pageMetadata = [pageDict objectForKey:pageKey];
 				if (pageMetadata == nil)
 				{
@@ -466,10 +457,14 @@
 					break;
 				}
 				
-				[pagesForGroup addObject:pageMetadata];
+				[viewConnection->state addPageMetadata:pageMetadata toGroup:group];
+				pageCount++;
+				
+				// get the next pageKey in the linked list
 				pageKey = [orderDict objectForKey:pageKey];
 				
-				if ([pagesForGroup count] > [orderDict count])
+				// sanity check for circular linked list
+				if (pageCount > expectedPageCount)
 				{
 					YDBLogError(@"%@ (%@): Circular key ordering detected in group(%@)",
 					            THIS_METHOD, [self registeredName], group);
@@ -481,7 +476,7 @@
 			
 			// Validate data for this section
 			
-			if (!error && ([pagesForGroup count] != [orderDict count]))
+			if (!error && (pageCount != expectedPageCount))
 			{
 				YDBLogError(@"%@ (%@): Missing key page(s) in group(%@)",
 				            THIS_METHOD, [self registeredName], group);
@@ -498,13 +493,11 @@
 		// If there was an error opening the view, we need to reset the ivars to nil.
 		// These are checked at the beginning of this method as a shortcut.
 		
-		viewConnection->group_pagesMetadata_dict = nil;
-		viewConnection->pageKey_group_dict = nil;
+		viewConnection->state = nil;
 	}
 	else
 	{
-		YDBLogVerbose(@"viewConnection->group_pagesMetadata_dict: %@", viewConnection->group_pagesMetadata_dict);
-		YDBLogVerbose(@"viewConnection->pageKey_group_dict: %@", viewConnection->pageKey_group_dict);
+		YDBLogVerbose(@"viewConnection->state: %@", viewConnection->state);
 	}
 	
 	return !error;
@@ -652,11 +645,8 @@
 	
 	// Initialize ivars
 	
-	if (viewConnection->group_pagesMetadata_dict == nil)
-		viewConnection->group_pagesMetadata_dict = [[NSMutableDictionary alloc] init];
-	
-	if (viewConnection->pageKey_group_dict == nil)
-		viewConnection->pageKey_group_dict = [[NSMutableDictionary alloc] init];
+	if (viewConnection->state == nil)
+		viewConnection->state = [[YapDatabaseViewState alloc] init];
 	
 	// Enumerate the existing rows in the database and populate the view
 	
@@ -989,15 +979,15 @@
 	//
 	// The changeset mechanism will automatically consolidate all changes to the minimum.
 	
-	for (NSString *group in viewConnection->group_pagesMetadata_dict)
-	{
+	[viewConnection->state enumerateGroupsWithBlock:^(NSString *group, BOOL *outerStop) {
+		
 		// We must add the changes in reverse order.
 		// Either that, or the change index of each item would have to be zero,
 		// because a YapDatabaseViewRowChange records the index at the moment the change happens.
 		
 		[self enumerateRowidsInGroup:group
 		                 withOptions:NSEnumerationReverse
-		                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop)
+		                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *innerStop)
 		{
 			YapCollectionKey *collectionKey = [databaseTransaction collectionKeyForRowid:rowid];
 			
@@ -1006,7 +996,7 @@
 		}];
 		
 		[viewConnection->changes addObject:[YapDatabaseViewSectionChange deleteGroup:group]];
-	}
+	}];
 	
 	isRepopulate = YES;
 	[self populateView];
@@ -1382,17 +1372,12 @@
 	return page;
 }
 
-- (NSString *)groupForPageKey:(NSString *)pageKey
-{
-	return [viewConnection->pageKey_group_dict objectForKey:pageKey];
-}
-
 - (NSUInteger)indexForRowid:(int64_t)rowid inGroup:(NSString *)group withPageKey:(NSString *)pageKey
 {
 	// Calculate the offset of the corresponding page within the group.
 	
 	NSUInteger pageOffset = 0;
-	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 	{
@@ -1413,6 +1398,7 @@
 	NSUInteger indexWithinPage = 0;
 	BOOL found = [page getIndex:&indexWithinPage ofRowid:rowid];
 	
+	#pragma unused(found)
 	NSAssert(found, @"Missing rowid in page");
 	
 	// Return the full index of the rowid within the group
@@ -1422,7 +1408,7 @@
 
 - (BOOL)getRowid:(int64_t *)rowidPtr atIndex:(NSUInteger)index inGroup:(NSString *)group
 {
-	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 	NSUInteger pageOffset = 0;
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
@@ -1456,7 +1442,7 @@
 	// else
 	//     return nil;
 	
-	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 	
 	__block int64_t rowid = 0;
 	__block BOOL found = NO;
@@ -1517,13 +1503,13 @@
 	pageMetadata->count = 1;
 	pageMetadata->isNew = YES;
 	
-	// Add page and pageMetadata to in-memory structures
+	// Add pageMetadata to state
 	
-	NSMutableArray *pagesMetadataForGroup = [[NSMutableArray alloc] initWithCapacity:1];
-	[pagesMetadataForGroup addObject:pageMetadata];
+	if (viewConnection->state.isImmutable)
+		viewConnection->state = [viewConnection->state mutableCopy];
 	
-	[viewConnection->group_pagesMetadata_dict setObject:pagesMetadataForGroup forKey:group];
-	[viewConnection->pageKey_group_dict setObject:group forKey:pageKey];
+	[viewConnection->state createGroup:group withCapacity:1];
+	[viewConnection->state addPageMetadata:pageMetadata toGroup:group];
 	
 	// Mark page as dirty
 	
@@ -1568,7 +1554,7 @@
 	
 	YapDatabaseViewPageMetadata *pageMetadata = nil;
 	
-	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 	
 	NSUInteger pageOffset = 0;
 	NSUInteger pageIndex = 0;
@@ -1703,7 +1689,7 @@
 		// The key is already in the view.
 		// Has it changed groups?
 		
-		NSString *existingGroup = [self groupForPageKey:existingPageKey];
+		NSString *existingGroup = [viewConnection->state groupForPageKey:existingPageKey];
 		
 		if ([group isEqualToString:existingGroup])
 		{
@@ -1750,7 +1736,7 @@
 	
 	// Fetch the pages associated with the group.
 	
-	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 	
 	// Is this a new group ?
 	
@@ -1759,7 +1745,6 @@
 		// First object added to group.
 		
 		[self insertRowid:rowid collectionKey:collectionKey inNewGroup:group];
-		
 		return;
 	}
 	
@@ -2011,7 +1996,7 @@
 	YapDatabaseViewPageMetadata *pageMetadata = nil;
 	
 	NSUInteger pageOffset = 0;
-	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 	
 	for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 	{
@@ -2098,7 +2083,7 @@
 	YapDatabaseViewPageMetadata *pageMetadata = nil;
 	NSUInteger pageOffset = 0;
 	
-	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 	
 	for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 	{
@@ -2178,7 +2163,7 @@
 	{
 		[self removeRowid:rowid collectionKey:collectionKey
 		                          withPageKey:pageKey
-		                              inGroup:[self groupForPageKey:pageKey]
+		                              inGroup:[viewConnection->state groupForPageKey:pageKey]
 		                     skipSubclassHook:NO];
 	}
 }
@@ -2223,7 +2208,7 @@
 	YapDatabaseViewPageMetadata *pageMetadata = nil;
 	NSUInteger pageOffset = 0;
 	
-	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 	
 	for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 	{
@@ -2298,7 +2283,7 @@
 **/
 - (void)removeAllRowidsInGroup:(NSString *)group
 {
-	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 	NSMutableArray *removedRowids = [NSMutableArray array];
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
@@ -2387,16 +2372,18 @@
 		[pageMetadataTableTransaction removeAllObjects];
 	}
 	
-	for (NSString *group in viewConnection->group_pagesMetadata_dict)
-	{
+	[viewConnection->state enumerateGroupsWithBlock:^(NSString *group, BOOL *stop) {
+		
 		if (!isRepopulate) {
 			[viewConnection->changes addObject:[YapDatabaseViewSectionChange resetGroup:group]];
 		}
 		[viewConnection->mutatedGroups addObject:group];
-	}
+	}];
 	
-	[viewConnection->group_pagesMetadata_dict removeAllObjects];
-	[viewConnection->pageKey_group_dict removeAllObjects];
+	if (viewConnection->state.isImmutable)
+		viewConnection->state = [viewConnection->state mutableCopy];
+	
+	[viewConnection->state removeAllGroups];
 	
 	[viewConnection->mapCache removeAllObjects];
 	[viewConnection->pageCache removeAllObjects];
@@ -2422,8 +2409,8 @@
 	
 	// Find associated pageMetadata
 	
-	NSString *group = [self groupForPageKey:pageKey];
-	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSString *group = [viewConnection->state groupForPageKey:pageKey];
+	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 	
 	YapDatabaseViewPageMetadata *pageMetadata;
 	for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
@@ -2563,10 +2550,12 @@
 		
 		// Insert new pageMetadata into array
 	
-		[pagesMetadataForGroup insertObject:newPageMetadata atIndex:(pageIndex + 1)];
+		if (viewConnection->state.isImmutable)
+			viewConnection->state = [viewConnection->state mutableCopy];
 		
-		[viewConnection->pageKey_group_dict setObject:newPageMetadata->group
-		                                       forKey:newPageMetadata->pageKey];
+		pagesMetadataForGroup = [viewConnection->state insertPageMetadata:newPageMetadata
+		                                                          atIndex:(pageIndex + 1)
+		                                                          inGroup:group];
 		
 		// Update linked-list (if needed)
 		
@@ -2615,8 +2604,8 @@
 	
 	// Find associated pageMetadata
 	
-	NSString *group = [self groupForPageKey:pageKey];
-	NSMutableArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSString *group = [viewConnection->state groupForPageKey:pageKey];
+	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 	
 	YapDatabaseViewPageMetadata *pageMetadata = nil;
 	NSUInteger pageIndex = 0;
@@ -2644,10 +2633,12 @@
 		[viewConnection->dirtyLinks setObject:nextPageMetadata forKey:nextPageMetadata->pageKey];
 	}
 	
-	// Drop page
+	// Drop pageMetada (from in-memory state)
 	
-	[pagesMetadataForGroup removeObjectAtIndex:pageIndex];
-	[viewConnection->pageKey_group_dict removeObjectForKey:pageMetadata->pageKey];
+	if (viewConnection->state.isImmutable)
+		viewConnection->state = [viewConnection->state mutableCopy];
+	
+	pagesMetadataForGroup = [viewConnection->state removePageMetadataAtIndex:pageIndex inGroup:group];
 	
 	// Mark page as dropped
 	
@@ -2665,7 +2656,7 @@
 		[viewConnection->changes addObject:
 		    [YapDatabaseViewSectionChange deleteGroup:pageMetadata->group]];
 		
-		[viewConnection->group_pagesMetadata_dict removeObjectForKey:pageMetadata->group];
+		[viewConnection->state removeGroup:group];
 	}
 }
 
@@ -2759,8 +2750,8 @@
 			}
 			else
 			{
-				NSString *group = [self groupForPageKey:pageKey];
-				NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+				NSString *group = [viewConnection->state groupForPageKey:pageKey];
+				NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 				
 				for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 				{
@@ -3110,9 +3101,8 @@
 						pageMetadata = [viewConnection->dirtyLinks objectForKey:pageKey];
 						if (pageMetadata == nil)
 						{
-							NSString *group = [self groupForPageKey:pageKey];
-							NSArray *pagesMetadataForGroup =
-							  [viewConnection->group_pagesMetadata_dict objectForKey:group];
+							NSString *group = [viewConnection->state groupForPageKey:pageKey];
+							NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 							
 							for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 							{
@@ -3395,7 +3385,7 @@
 		// Neither have changed, and thus the group hasn't changed.
 		
 		NSString *pageKey = [self pageKeyForRowid:rowid];
-		group = [self groupForPageKey:pageKey];
+		group = [viewConnection->state groupForPageKey:pageKey];
 		
 		if (group == nil)
 		{
@@ -3485,7 +3475,7 @@
 				// So if the group hasn't changed, then the sort order hasn't changed.
 				
 				NSString *existingPageKey = [self pageKeyForRowid:rowid];
-				NSString *existingGroup = [self groupForPageKey:existingPageKey];
+				NSString *existingGroup = [viewConnection->state groupForPageKey:existingPageKey];
 				
 				if ([group isEqualToString:existingGroup])
 				{
@@ -3549,7 +3539,7 @@
 		// Neither have changed, and thus the group hasn't changed.
 		
 		NSString *pageKey = [self pageKeyForRowid:rowid];
-		group = [self groupForPageKey:pageKey];
+		group = [viewConnection->state groupForPageKey:pageKey];
 		
 		if (group == nil)
 		{
@@ -3639,7 +3629,7 @@
 				// So if the group hasn't changed, then the sort order hasn't changed.
 				
 				NSString *existingPageKey = [self pageKeyForRowid:rowid];
-				NSString *existingGroup = [self groupForPageKey:existingPageKey];
+				NSString *existingGroup = [viewConnection->state groupForPageKey:existingPageKey];
 				
 				if ([group isEqualToString:existingGroup])
 				{
@@ -3694,7 +3684,7 @@
 	NSString *pageKey = [self pageKeyForRowid:rowid];
 	if (pageKey)
 	{
-		NSString *group = [self groupForPageKey:pageKey];
+		NSString *group = [viewConnection->state groupForPageKey:pageKey];
 		NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 		
 		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
@@ -3727,7 +3717,7 @@
 		NSString *pageKey = [self pageKeyForRowid:rowid];
 		if (pageKey)
 		{
-			NSString *group = [self groupForPageKey:pageKey];
+			NSString *group = [viewConnection->state groupForPageKey:pageKey];
 			NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 			
 			int flags = YapDatabaseViewChangedMetadata;
@@ -3784,7 +3774,9 @@
 		__unsafe_unretained NSString *pageKey = (NSString *)pageKeyObj;
 		__unsafe_unretained NSDictionary *keyMappingsForPage = (NSDictionary *)dictObj;
 		
-		[self removeRowidsWithKeyMappings:keyMappingsForPage pageKey:pageKey inGroup:[self groupForPageKey:pageKey]];
+		NSString *group = [viewConnection->state groupForPageKey:pageKey];
+		
+		[self removeRowidsWithKeyMappings:keyMappingsForPage pageKey:pageKey inGroup:group];
 	}];
 	
 	// Subclass hook
@@ -3818,10 +3810,10 @@
 	// Note: We don't remove pages or groups until preCommitReadWriteTransaction.
 	// This allows us to recycle pages whenever possible, which reduces disk IO during the commit.
 	
-	NSUInteger count = 0;
+	__block NSUInteger count = 0;
 	
-	for (NSArray *pagesMetadataForGroup in [viewConnection->group_pagesMetadata_dict objectEnumerator])
-	{
+	[viewConnection->state enumerateWithBlock:^(NSString *group, NSArray *pagesMetadataForGroup, BOOL *stop) {
+		
 		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 		{
 			if (pageMetadata->count > 0)
@@ -3830,7 +3822,7 @@
 				break;
 			}
 		}
-	}
+	}];
 	
 	return count;
 }
@@ -3840,12 +3832,9 @@
 	// Note: We don't remove pages or groups until preCommitReadWriteTransaction.
 	// This allows us to recycle pages whenever possible, which reduces disk IO during the commit.
 	
-	NSMutableArray *allGroups = [NSMutableArray arrayWithCapacity:[viewConnection->group_pagesMetadata_dict count]];
+	NSMutableArray *allGroups = [NSMutableArray arrayWithCapacity:[viewConnection->state numberOfGroups]];
 	
-	[viewConnection->group_pagesMetadata_dict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-		
-		__unsafe_unretained NSString *group = (NSString *)key;
-		__unsafe_unretained NSArray *pagesMetadataForGroup = (NSArray *)obj;
+	[viewConnection->state enumerateWithBlock:^(NSString *group, NSArray *pagesMetadataForGroup, BOOL *stop) {
 		
 		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 		{
@@ -3855,7 +3844,6 @@
 				break;
 			}
 		}
-		
 	}];
 	
 	return [allGroups copy];
@@ -3870,7 +3858,7 @@
 	// Note: We don't remove pages or groups until preCommitReadWriteTransaction.
 	// This allows us to recycle pages whenever possible, which reduces disk IO during the commit.
 	
-	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 	{
@@ -3887,7 +3875,7 @@
 
 - (NSUInteger)numberOfItemsInGroup:(NSString *)group
 {
-	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 	NSUInteger count = 0;
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
@@ -3900,33 +3888,38 @@
 
 - (NSUInteger)numberOfItemsInAllGroups
 {
-	NSUInteger count = 0;
+	__block NSUInteger count = 0;
 	
-	for (NSArray *pagesMetadataForGroup in [viewConnection->group_pagesMetadata_dict objectEnumerator])
-	{
+	[viewConnection->state enumerateWithBlock:^(NSString *group, NSArray *pagesMetadataForGroup, BOOL *stop) {
+		
 		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 		{
 			count += pageMetadata->count;
 		}
-	}
+	}];
 	
 	return count;
 }
 
 - (BOOL)isEmpty
 {
-	for (NSArray *pagesMetadataForGroup in [viewConnection->group_pagesMetadata_dict objectEnumerator])
-	{
+	__block BOOL result = YES;
+	
+	[viewConnection->state enumerateWithBlock:^(NSString *group, NSArray *pagesMetadataForGroup, BOOL *stop) {
+		
 		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 		{
 			if (pageMetadata->count > 0)
 			{
-				return NO;
+				result = NO;
+				
+				*stop = YES;
+				break;
 			}
 		}
-	}
+	}];
 	
-	return YES;
+	return result;
 }
 
 /**
@@ -4022,7 +4015,7 @@
 	int64_t rowid;
 	if ([databaseTransaction getRowid:&rowid forKey:key inCollection:collection])
 	{
-		return [self groupForPageKey:[self pageKeyForRowid:rowid]];
+		return [viewConnection->state groupForPageKey:[self pageKeyForRowid:rowid]];
 	}
 	
 	return nil;
@@ -4060,12 +4053,12 @@
 			// Now that we have the pageKey, fetch the corresponding group.
 			// This is done using an in-memory cache.
 			
-			group = [self groupForPageKey:pageKey];
+			group = [viewConnection->state groupForPageKey:pageKey];
 		
 			// Calculate the offset of the corresponding page within the group.
 			
 			NSUInteger pageOffset = 0;
-			NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+			NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 			
 			for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 			{
@@ -4119,7 +4112,7 @@
 		return NSMakeRange(NSNotFound, 0);
 	}
 	
-	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 	NSUInteger count = 0;
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
@@ -4336,7 +4329,7 @@
 	__block BOOL stop = NO;
 	
 	NSUInteger pageOffset = 0;
-	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 	{
@@ -4379,7 +4372,7 @@
 	else
 		index = [self numberOfItemsInGroup:group] - 1;
 	
-	NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 	
 	[pagesMetadataForGroup enumerateObjectsWithOptions:options
 	                                        usingBlock:^(id pageMetadataObj, NSUInteger outerIdx, BOOL *outerStop)
@@ -4428,7 +4421,7 @@
 	{
 		// Forward enumeration (optimized)
 		
-		NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+		NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 		
 		NSUInteger pageOffset = 0;
 		BOOL startedRange = NO;
@@ -4473,7 +4466,7 @@
 	{
 		// Reverse enumeration
 		
-		NSArray *pagesMetadataForGroup = [viewConnection->group_pagesMetadata_dict objectForKey:group];
+		NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 		
 		__block NSUInteger pageOffset = [self numberOfItemsInGroup:group];
 		__block BOOL startedRange = NO;
@@ -4688,7 +4681,7 @@
 		NSString *pageKey = [self pageKeyForRowid:rowid];
 		if (pageKey)
 		{
-			NSString *group = [self groupForPageKey:pageKey];
+			NSString *group = [viewConnection->state groupForPageKey:pageKey];
 			NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 			
 			YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
@@ -4724,7 +4717,7 @@
 			NSString *pageKey = [self pageKeyForRowid:rowid];
 			if (pageKey)
 			{
-				NSString *group = [self groupForPageKey:pageKey];
+				NSString *group = [viewConnection->state groupForPageKey:pageKey];
 				NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 				
 				YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
@@ -4761,7 +4754,7 @@
 			NSString *pageKey = [self pageKeyForRowid:rowid];
 			if (pageKey)
 			{
-				NSString *group = [self groupForPageKey:pageKey];
+				NSString *group = [viewConnection->state groupForPageKey:pageKey];
 				NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 				
 				YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];

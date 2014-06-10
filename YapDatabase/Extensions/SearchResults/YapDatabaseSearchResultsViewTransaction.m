@@ -310,11 +310,8 @@
 	
 	// Initialize ivars (if needed)
 	
-	if (viewConnection->group_pagesMetadata_dict == nil)
-		viewConnection->group_pagesMetadata_dict = [[NSMutableDictionary alloc] init];
-	
-	if (viewConnection->pageKey_group_dict == nil)
-		viewConnection->pageKey_group_dict = [[NSMutableDictionary alloc] init];
+	if (viewConnection->state == nil)
+		viewConnection->state = [[YapDatabaseViewState alloc] init];
 	
 	// Perform search
 	
@@ -465,15 +462,15 @@
 	//
 	// The changeset mechanism will automatically consolidate all changes to the minimum.
 	
-	for (NSString *group in viewConnection->group_pagesMetadata_dict)
-	{
+	[viewConnection->state enumerateGroupsWithBlock:^(NSString *group, BOOL *outerStop) {
+		
 		// We must add the changes in reverse order.
 		// Either that, or the change index of each item would have to be zero,
 		// because a YapDatabaseViewRowChange records the index at the moment the change happens.
 		
 		[self enumerateRowidsInGroup:group
 		                 withOptions:NSEnumerationReverse // <- required
-		                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop)
+		                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *innerStop)
 		{
 			YapCollectionKey *collectionKey = [databaseTransaction collectionKeyForRowid:rowid];
 			 
@@ -482,7 +479,7 @@
 		}];
 		
 		[viewConnection->changes addObject:[YapDatabaseViewSectionChange deleteGroup:group]];
-	}
+	}];
 	
 	isRepopulate = YES;
 	{
@@ -635,7 +632,7 @@
 					
 					YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
 					
-					if (index == 0 && ([viewConnection->group_pagesMetadata_dict objectForKey:group] == nil)) {
+					if (index == 0 && ([viewConnection->state pagesMetadataForGroup:group] == nil)) {
 						[self insertRowid:rowid collectionKey:ck inNewGroup:group];
 					}
 					else {
@@ -1340,7 +1337,7 @@
 			// Neither have changed, and thus the group hasn't changed.
 			
 			NSString *pageKey = [self pageKeyForRowid:rowid];
-			group = [self groupForPageKey:pageKey];
+			group = [viewConnection->state groupForPageKey:pageKey];
 			
 			if (group == nil)
 			{
@@ -1430,7 +1427,7 @@
 					// So if the group hasn't changed, then the sort order hasn't changed.
 					
 					NSString *existingPageKey = [self pageKeyForRowid:rowid];
-					NSString *existingGroup = [self groupForPageKey:existingPageKey];
+					NSString *existingGroup = [viewConnection->state groupForPageKey:existingPageKey];
 					
 					if ([group isEqualToString:existingGroup])
 					{
@@ -1616,7 +1613,7 @@
 			// Neither have changed, and thus the group hasn't changed.
 			
 			NSString *pageKey = [self pageKeyForRowid:rowid];
-			group = [self groupForPageKey:pageKey];
+			group = [viewConnection->state groupForPageKey:pageKey];
 			
 			if (group == nil)
 			{
@@ -1706,7 +1703,7 @@
 					// So if the group hasn't changed, then the sort order hasn't changed.
 					
 					NSString *existingPageKey = [self pageKeyForRowid:rowid];
-					NSString *existingGroup = [self groupForPageKey:existingPageKey];
+					NSString *existingGroup = [viewConnection->state groupForPageKey:existingPageKey];
 					
 					if ([group isEqualToString:existingGroup])
 					{
@@ -1944,7 +1941,7 @@
 					
 					YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
 					
-					if (index == 0 && ([viewConnection->group_pagesMetadata_dict objectForKey:group] == nil)) {
+					if (index == 0 && ([viewConnection->state pagesMetadataForGroup:group] == nil)) {
 						[self insertRowid:rowid collectionKey:ck inNewGroup:group];
 					}
 					else {
