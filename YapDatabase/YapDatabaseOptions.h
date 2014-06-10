@@ -13,17 +13,17 @@
  * The configuration options provided by this class are advanced (beyond the basic setup options).
 **/
 
-typedef enum {
-	YapDatabaseCorruptAction_Fail   = 0,
-	YapDatabaseCorruptAction_Rename = 1,
-	YapDatabaseCorruptAction_Delete = 2,
-} YapDatabaseCorruptAction;
+typedef NS_ENUM(NSInteger, YapDatabaseCorruptAction) {
+    YapDatabaseCorruptAction_Fail   = 0,
+    YapDatabaseCorruptAction_Rename = 1,
+    YapDatabaseCorruptAction_Delete = 2,
+};
 
-typedef enum {
+typedef NS_ENUM(NSInteger, YapDatabasePragmaSynchronous) {
 	YapDatabasePragmaSynchronous_Off    = 0,
 	YapDatabasePragmaSynchronous_Normal = 1,
 	YapDatabasePragmaSynchronous_Full   = 2,
-} YapDatabasePragmaSynchronous;
+};
 
 #ifdef SQLITE_HAS_CODEC
 typedef NSString* (^YapDatabaseOptionsPassphraseBlock)(void);

@@ -2,12 +2,11 @@
 
 @class YapDatabaseSecondaryIndexColumn;
 
-typedef enum {
+typedef NS_ENUM(NSInteger, YapDatabaseSecondaryIndexType) {
 	YapDatabaseSecondaryIndexTypeInteger,
 	YapDatabaseSecondaryIndexTypeReal,
 	YapDatabaseSecondaryIndexTypeText
-} YapDatabaseSecondaryIndexType;
-
+};
 
 @interface YapDatabaseSecondaryIndexSetup : NSObject <NSCopying, NSFastEnumeration>
 

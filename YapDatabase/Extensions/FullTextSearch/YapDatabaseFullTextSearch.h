@@ -44,12 +44,12 @@ typedef void (^YapDatabaseFullTextSearchWithRowBlock)      \
 /**
  * Use this enum to specify what kind of block you're passing.
 **/
-typedef enum {
+typedef NS_ENUM(NSInteger, YapDatabaseFullTextSearchBlockType) {
 	YapDatabaseFullTextSearchBlockTypeWithKey       = 201,
 	YapDatabaseFullTextSearchBlockTypeWithObject    = 202,
 	YapDatabaseFullTextSearchBlockTypeWithMetadata  = 203,
 	YapDatabaseFullTextSearchBlockTypeWithRow       = 204
-} YapDatabaseFullTextSearchBlockType;
+};
 
 @interface YapDatabaseFullTextSearch : YapDatabaseExtension
 

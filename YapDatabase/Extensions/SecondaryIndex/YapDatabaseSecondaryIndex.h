@@ -55,12 +55,12 @@ typedef void (^YapDatabaseSecondaryIndexWithRowBlock)      \
 /**
  * Use this enum to specify what kind of block you're passing.
 **/
-typedef enum {
+typedef NS_ENUM(NSInteger, YapDatabaseSecondaryIndexBlockType) {
 	YapDatabaseSecondaryIndexBlockTypeWithKey       = 1031,
 	YapDatabaseSecondaryIndexBlockTypeWithObject    = 1032,
 	YapDatabaseSecondaryIndexBlockTypeWithMetadata  = 1033,
 	YapDatabaseSecondaryIndexBlockTypeWithRow       = 1034
-} YapDatabaseSecondaryIndexBlockType;
+};
 
 
 @interface YapDatabaseSecondaryIndex : YapDatabaseExtension
