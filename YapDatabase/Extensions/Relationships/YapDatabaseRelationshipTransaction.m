@@ -16,7 +16,7 @@
  * See YapDatabaseLogging.h for more information.
 **/
 #if DEBUG
-  static const int ydbLogLevel = YDB_LOG_LEVEL_VERBOSE;
+  static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #else
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
