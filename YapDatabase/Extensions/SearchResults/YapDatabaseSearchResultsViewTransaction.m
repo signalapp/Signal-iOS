@@ -1055,7 +1055,7 @@
 		// Add to view.
 		// This was an insert operation, so we know it wasn't already in the view.
 		
-		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
 		[self insertRowid:rowid
 		    collectionKey:collectionKey
@@ -1170,7 +1170,7 @@
 		// Add key to view (or update position).
 		// This was an update operation, so the key may have previously been in the view.
 		
-		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
 		[self insertRowid:rowid
 		    collectionKey:collectionKey
@@ -1271,7 +1271,7 @@
 			// Nothing has changed that could possibly affect the view.
 			// Just note the touch.
 			
-			int flags = YapDatabaseViewChangedObject;
+			YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 			
 			NSString *pageKey = [self pageKeyForRowid:rowid];
 			NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
@@ -1293,7 +1293,7 @@
 			// Add to view (or update position).
 			// This was an update operation, so it may have previously been in the view.
 			
-			int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+			YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 			
 			id metadata = nil;
 			if (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
@@ -1350,7 +1350,7 @@
 				// Nothing has moved because the group hasn't changed and
 				// nothing has changed that relates to sorting.
 				
-				int flags = YapDatabaseViewChangedObject;
+				YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 				NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 				
 				[viewConnection->changes addObject:
@@ -1373,7 +1373,7 @@
 					metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 				}
 				
-				int flags = YapDatabaseViewChangedObject;
+				YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 				
 				[self insertRowid:rowid
 					collectionKey:collectionKey
@@ -1435,7 +1435,7 @@
 						// The group didn't change,
 						// and the sort order cannot change (because the key/metadata didn't change).
 						
-						int flags = YapDatabaseViewChangedObject;
+						YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 						NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:existingPageKey];
 						
 						[viewConnection->changes addObject:
@@ -1456,7 +1456,7 @@
 					metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 				}
 				
-				int flags = YapDatabaseViewChangedObject;
+				YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 				
 				[self insertRowid:rowid
 				    collectionKey:collectionKey
@@ -1547,7 +1547,7 @@
 			// Nothing has changed that could possibly affect the view.
 			// Just note the touch.
 			
-			int flags = YapDatabaseViewChangedMetadata;
+			YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedMetadata;
 			
 			NSString *pageKey = [self pageKeyForRowid:rowid];
 			NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
@@ -1569,7 +1569,7 @@
 			// Add key to view (or update position).
 			// This was an update operation, so the key may have previously been in the view.
 			
-			int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+			YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 			
 			id object= nil;
 			if (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
@@ -1626,7 +1626,7 @@
 				// Nothing has moved because the group hasn't changed and
 				// nothing has changed that relates to sorting.
 				
-				int flags = YapDatabaseViewChangedMetadata;
+				YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedMetadata;
 				NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 				
 				[viewConnection->changes addObject:
@@ -1649,7 +1649,7 @@
 					object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 				}
 				
-				int flags = YapDatabaseViewChangedMetadata;
+				YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedMetadata;
 				
 				[self insertRowid:rowid
 				    collectionKey:collectionKey
@@ -1711,7 +1711,7 @@
 						// The group didn't change,
 						// and the sort order cannot change (because the key/object didn't change).
 						
-						int flags = YapDatabaseViewChangedMetadata;
+						YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedMetadata;
 						NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:existingPageKey];
 						
 						[viewConnection->changes addObject:
@@ -1732,7 +1732,7 @@
 					object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 				}
 				
-				int flags = YapDatabaseViewChangedMetadata;
+				YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedMetadata;
 				
 				[self insertRowid:rowid
 					collectionKey:collectionKey
@@ -2129,7 +2129,7 @@
 		{
 			// Add to view.
 			
-			int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+			YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 			
 			if (view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
 			{

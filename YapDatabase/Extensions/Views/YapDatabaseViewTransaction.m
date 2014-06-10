@@ -710,7 +710,7 @@
 		};
 	}
 	
-	int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+	YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 	
 	if (needsObject && needsMetadata)
 	{
@@ -1668,7 +1668,7 @@
 			 object:(id)object
            metadata:(id)metadata
             inGroup:(NSString *)group
-        withChanges:(int)flags
+        withChanges:(YapDatabaseViewChangesBitMask)flags
               isNew:(BOOL)isGuaranteedNew
 {
 	YDBLogAutoTrace();
@@ -3274,7 +3274,7 @@
 		// Add key to view.
 		// This was an insert operation, so we know the key wasn't already in the view.
 		
-		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
 		[self insertRowid:rowid
 		    collectionKey:collectionKey
@@ -3351,7 +3351,7 @@
 		// Add key to view (or update position).
 		// This was an update operation, so the key may have previously been in the view.
 		
-		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
 		[self insertRowid:rowid
 		    collectionKey:collectionKey
@@ -3398,7 +3398,7 @@
 			// Nothing has moved because the group hasn't changed and
 			// nothing has changed that relates to sorting.
 			
-			int flags = YapDatabaseViewChangedObject;
+			YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 			NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 			
 			[viewConnection->changes addObject:
@@ -3421,7 +3421,7 @@
 				metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 			}
 			
-			int flags = YapDatabaseViewChangedObject;
+			YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 			
 			[self insertRowid:rowid
 			    collectionKey:collectionKey
@@ -3483,7 +3483,7 @@
 					// The group didn't change,
 					// and the sort order cannot change (because the key/metadata didn't change).
 					
-					int flags = YapDatabaseViewChangedObject;
+					YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 					NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:existingPageKey];
 					
 					[viewConnection->changes addObject:
@@ -3504,7 +3504,7 @@
 				metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 			}
 			
-			int flags = YapDatabaseViewChangedObject;
+			YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 			
 			[self insertRowid:rowid
 			    collectionKey:collectionKey
@@ -3552,7 +3552,7 @@
 			// Nothing has moved because the group hasn't changed and
 			// nothing has changed that relates to sorting.
 			
-			int flags = YapDatabaseViewChangedMetadata;
+			YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedMetadata;
 			NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 			
 			[viewConnection->changes addObject:
@@ -3575,7 +3575,7 @@
 				object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 			}
 			
-			int flags = YapDatabaseViewChangedMetadata;
+			YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedMetadata;
 			
 			[self insertRowid:rowid
 			    collectionKey:collectionKey
@@ -3637,7 +3637,7 @@
 					// The group didn't change,
 					// and the sort order cannot change (because the key/object didn't change).
 					
-					int flags = YapDatabaseViewChangedMetadata;
+					YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedMetadata;
 					NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:existingPageKey];
 					
 					[viewConnection->changes addObject:
@@ -3658,7 +3658,7 @@
 				object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 			}
 			
-			int flags = YapDatabaseViewChangedMetadata;
+			YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedMetadata;
 			
 			[self insertRowid:rowid
 			    collectionKey:collectionKey
@@ -3687,7 +3687,7 @@
 		NSString *group = [viewConnection->state groupForPageKey:pageKey];
 		NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 		
-		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
 		[viewConnection->changes addObject:
 		  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
@@ -3720,7 +3720,7 @@
 			NSString *group = [viewConnection->state groupForPageKey:pageKey];
 			NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 			
-			int flags = YapDatabaseViewChangedMetadata;
+			YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedMetadata;
 			
 			[viewConnection->changes addObject:
 			  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
@@ -4685,7 +4685,7 @@
 			NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 			
 			YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-			int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+			YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 			
 			[viewConnection->changes addObject:
 			  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
@@ -4721,7 +4721,7 @@
 				NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 				
 				YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-				int flags = YapDatabaseViewChangedObject;
+				YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 				
 				[viewConnection->changes addObject:
 				  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
@@ -4758,7 +4758,7 @@
 				NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 				
 				YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-				int flags = YapDatabaseViewChangedMetadata;
+				YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedMetadata;
 				
 				[viewConnection->changes addObject:
 				  [YapDatabaseViewRowChange updateCollectionKey:collectionKey

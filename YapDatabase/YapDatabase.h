@@ -367,7 +367,7 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  * For more detailed documentation on these properties, see the YapDatabaseConnection header file.
  * @see YapDatabaseConnection autoFlushMemoryFlags
 **/
-@property (atomic, assign, readwrite) int defaultAutoFlushMemoryFlags;
+@property (atomic, assign, readwrite) YapDatabaseConnectionFlushMemoryFlags defaultAutoFlushMemoryFlags;
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

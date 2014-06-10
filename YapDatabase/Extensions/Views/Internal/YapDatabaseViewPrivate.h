@@ -164,7 +164,7 @@ static NSString *const changeset_key_changes    = @"changes";
 			 object:(id)object
            metadata:(id)metadata
             inGroup:(NSString *)group
-        withChanges:(int)flags
+        withChanges:(YapDatabaseViewChangesBitMask)flags
               isNew:(BOOL)isGuaranteedNew;
 
 - (void)removeRowid:(int64_t)rowid

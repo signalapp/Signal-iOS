@@ -1206,7 +1206,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 
 - (YapDatabaseConnectionFlushMemoryFlags)defaultAutoFlushMemoryFlags
 {
-	__block int result = YapDatabaseConnectionFlushMemoryFlags_None;
+	__block YapDatabaseConnectionFlushMemoryFlags result = YapDatabaseConnectionFlushMemoryFlags_None;
 	
 	dispatch_sync(internalQueue, ^{
 		

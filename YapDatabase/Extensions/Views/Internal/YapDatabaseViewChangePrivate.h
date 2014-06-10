@@ -40,8 +40,8 @@
 	NSString *originalGroup; // immutable
 	NSString *finalGroup;    // mutable during consolidation
 	
-	YapDatabaseViewChangeType type; // mutable during consolidation
-	int changes;                    // mutable during consolidation
+	YapDatabaseViewChangeType type;        // mutable during consolidation
+	YapDatabaseViewChangesBitMask changes; // mutable during consolidation
 	
 	NSUInteger opOriginalIndex;  // immutable
 	NSUInteger opFinalIndex;     // immutable
@@ -71,7 +71,7 @@
 + (YapDatabaseViewRowChange *)updateCollectionKey:(YapCollectionKey *)ck
                                           inGroup:(NSString *)group
                                           atIndex:(NSUInteger)index
-                                      withChanges:(int)flags;
+                                      withChanges:(YapDatabaseViewChangesBitMask)flags;
 
 @end
 

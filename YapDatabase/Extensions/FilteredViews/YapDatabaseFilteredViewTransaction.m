@@ -785,7 +785,7 @@
 	{
 		// This was an insert operation, so we know the key wasn't already in the view.
 		
-		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
 		[self insertRowid:rowid
 		    collectionKey:collectionKey
@@ -882,7 +882,7 @@
 		// Add key to view (or update position).
 		// This was an update operation, so the key may have previously been in the view.
 		
-		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
 		[self insertRowid:rowid
 		    collectionKey:collectionKey
@@ -963,7 +963,7 @@
 		// Nothing has changed that could possibly affect the view.
 		// Just note the touch.
 		
-		int flags = YapDatabaseViewChangedObject;
+		YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 		
 		NSString *pageKey = [self pageKeyForRowid:rowid];
 		NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
@@ -1019,7 +1019,7 @@
 		// Add key to view (or update position).
 		// This was an update operation, so the key may have previously been in the view.
 		
-		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
 		BOOL sortingBlockNeedsMetadata = filteredView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
 		                                 filteredView->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata;
@@ -1107,7 +1107,7 @@
 		// Nothing has changed that could possibly affect the view.
 		// Just note the touch.
 		
-		int flags = YapDatabaseViewChangedMetadata;
+		YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedMetadata;
 		
 		NSString *pageKey = [self pageKeyForRowid:rowid];
 		NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
@@ -1163,7 +1163,7 @@
 		// Add key to view (or update position).
 		// This was an update operation, so the key may have previously been in the view.
 		
-		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
 		BOOL sortingBlockNeedsObject = filteredView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
 		                               filteredView->sortingBlockType == YapDatabaseViewBlockTypeWithObject;

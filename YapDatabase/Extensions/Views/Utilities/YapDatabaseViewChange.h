@@ -116,7 +116,7 @@ typedef NS_OPTIONS(NSInteger, YapDatabaseViewChangesBitMask) {
  *
  * @see YapDatabaseViewChangesBitMask
 **/
-@property (nonatomic, readonly) int changes;
+@property (nonatomic, readonly) YapDatabaseViewChangesBitMask changes;
 
 /**
  * The indexPath & newIndexPath are available after

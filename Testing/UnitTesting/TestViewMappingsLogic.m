@@ -4997,7 +4997,7 @@ static NSMutableArray *changes;
 	// Delete an item.
 	// Update the dependency change, and check for proper changes flags.
 	
-	int flags = YapDatabaseViewChangedObject;
+	YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 	
 	[changes addObject:
 	  [YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:10]];
@@ -7017,7 +7017,7 @@ static NSMutableArray *changes;
                                      @"group2":@(15)}];
     
     
-	int flags = YapDatabaseViewChangedObject;
+	YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 	
 	[changes addObject:
 	  [YapDatabaseViewRowChange updateCollectionKey:YCK(nil, @"") inGroup:@"group1" atIndex:3 withChanges:flags]];
@@ -7110,7 +7110,7 @@ static NSMutableArray *changes;
 	    @"group2":@(3)}
 	];
 	
-	int flags = YapDatabaseViewChangedObject;
+	YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
     [changes addObject:
 	  [YapDatabaseViewRowChange updateCollectionKey:YCK(nil, @"key") inGroup:@"group3" atIndex:0 withChanges:flags]];
 	

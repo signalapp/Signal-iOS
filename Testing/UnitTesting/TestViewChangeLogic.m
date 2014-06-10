@@ -1274,7 +1274,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	// --------|      |------|------|
 	// B[1, 0] |      |+lion | lion |
 	
-	int flags = YapDatabaseViewChangedObject;
+	YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 	
 	[changes addObject:
 	  [YapDatabaseViewSectionChange insertGroup:@"B"]];
@@ -1333,7 +1333,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	// --------|      |------|------|
 	// B[X, 0] | elm  | elm  |~elm  |
 	
-	int flags = YapDatabaseViewChangedObject;
+	YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 	
 	[changes addObject:
 	  [YapDatabaseViewSectionChange insertGroup:@"A"]];
@@ -1504,7 +1504,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	// --------|------|      |      |
 	// B[1, 0] | lion-|      |      |
 	
-	int flags = YapDatabaseViewChangedObject;
+	YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 	
 	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"lion") inGroup:@"B" atIndex:0]];
 	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"B"]];
@@ -1562,7 +1562,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	// --------|------|      |      |
 	// B[X, 0] | lion | lion |~lion |
 	
-	int flags = YapDatabaseViewChangedObject;
+	YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 	
 	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"elm") inGroup:@"A" atIndex:0]];
 	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"A"]];
@@ -2221,7 +2221,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	// ==============================
 	// B[X, 0] | oak  |~oak -|      |
 	
-	int flags = YapDatabaseViewChangedObject;
+	YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 	
 	[changes addObject:
 	  [YapDatabaseViewRowChange updateCollectionKey:YCK(nil, @"oak") inGroup:@"B" atIndex:0 withChanges:flags]];

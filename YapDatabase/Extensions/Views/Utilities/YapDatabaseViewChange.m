@@ -264,7 +264,7 @@
 + (YapDatabaseViewRowChange *)updateCollectionKey:(YapCollectionKey *)collectionKey
                                           inGroup:(NSString *)group
                                           atIndex:(NSUInteger)index
-                                      withChanges:(int)flags
+                                      withChanges:(YapDatabaseViewChangesBitMask)flags
 {
 	YapDatabaseViewRowChange *op = [[YapDatabaseViewRowChange alloc] init];
 	op->type = YapDatabaseViewChangeUpdate;
@@ -559,7 +559,7 @@
 				
 				if (dependencyIndex < groupCount)
 				{
-					int flags = YapDatabaseViewChangedDependency;
+					YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedDependency;
 					
 					YapDatabaseViewRowChange *rowChange =
 					  [YapDatabaseViewRowChange updateCollectionKey:nil
