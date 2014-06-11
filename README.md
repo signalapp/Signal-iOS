@@ -21,14 +21,12 @@ Current version contains binaries build with SDK iOS 7.0 (target 5.1.1), and SDK
 pod 'OpenSSL-Universal'
 ````
 
-Or allways latest version
+Or always latest version
 
 ````
-pod 'OpenSSL-Universal', :git => 'https://github.com/krzak/OpenSSL.git', :branch => :master'
+pod 'OpenSSL-Universal', :git => 'https://github.com/krzak/OpenSSL.git', :branch => :master
 ````
 
 **Authors**
 
 [Marcin Krzyżanowski](https://twitter.com/krzyzanowskim)
-
-Based on fork by @justinplouffe
