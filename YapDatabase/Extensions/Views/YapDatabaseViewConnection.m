@@ -181,6 +181,9 @@
 		changes = [[NSMutableArray alloc] init];
 	if (mutatedGroups == nil)
 		mutatedGroups = [[NSMutableSet alloc] init];
+	
+	if (state.isImmutable)
+		state = [state mutableCopy];
 }
 
 /**
@@ -316,10 +319,7 @@
 	
 	BOOL changeset_reset = [[changeset objectForKey:changeset_key_reset] boolValue];
 	
-	// Store new state (making proper copy)
-	//
-	// Note: we make copies from changeset_dirtyPages on demand below via:
-	// - [pageCache setObject:[page copy] forKey:pageKey];
+	// Store new state
 	
 	state = [changeset_state copy];
 	

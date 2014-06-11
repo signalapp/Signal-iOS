@@ -262,7 +262,11 @@
 	BOOL shortcut = [viewConnection->view getState:&state forConnection:viewConnection];
 	if (shortcut && state)
 	{
-		viewConnection->state = [state copy];
+		if (databaseTransaction->isReadWriteTransaction)
+			viewConnection->state = [state mutableCopy];
+		else
+			viewConnection->state = [state copy];
+		
 		return YES;
 	}
 	
@@ -1505,9 +1509,6 @@
 	
 	// Add pageMetadata to state
 	
-	if (viewConnection->state.isImmutable)
-		viewConnection->state = [viewConnection->state mutableCopy];
-	
 	[viewConnection->state createGroup:group withCapacity:1];
 	[viewConnection->state addPageMetadata:pageMetadata toGroup:group];
 	
@@ -2380,9 +2381,6 @@
 		[viewConnection->mutatedGroups addObject:group];
 	}];
 	
-	if (viewConnection->state.isImmutable)
-		viewConnection->state = [viewConnection->state mutableCopy];
-	
 	[viewConnection->state removeAllGroups];
 	
 	[viewConnection->mapCache removeAllObjects];
@@ -2549,9 +2547,6 @@
 		newPageMetadata->isNew = YES;
 		
 		// Insert new pageMetadata into array
-	
-		if (viewConnection->state.isImmutable)
-			viewConnection->state = [viewConnection->state mutableCopy];
 		
 		pagesMetadataForGroup = [viewConnection->state insertPageMetadata:newPageMetadata
 		                                                          atIndex:(pageIndex + 1)
@@ -2634,9 +2629,6 @@
 	}
 	
 	// Drop pageMetada (from in-memory state)
-	
-	if (viewConnection->state.isImmutable)
-		viewConnection->state = [viewConnection->state mutableCopy];
 	
 	pagesMetadataForGroup = [viewConnection->state removePageMetadataAtIndex:pageIndex inGroup:group];
 	
