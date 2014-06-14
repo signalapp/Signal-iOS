@@ -7,10 +7,10 @@
  * Welcome to Cocoa Lumberjack!
  * 
  * The project page has a wealth of documentation if you have any questions.
- * https://github.com/robbiehanson/CocoaLumberjack
+ * https://github.com/CocoaLumberjack/CocoaLumberjack
  * 
  * If you're new to the project you may wish to read the "Getting Started" wiki.
- * https://github.com/robbiehanson/CocoaLumberjack/wiki/GettingStarted
+ * https://github.com/CocoaLumberjack/CocoaLumberjack/wiki/GettingStarted
  * 
  * 
  * This class provides a logger to write log statements to a file.
@@ -69,7 +69,7 @@
  * 
  * You may optionally disable deleting old/rolled/archived log files by setting this property to zero.
 **/
-@property (readwrite, assign) NSUInteger maximumNumberOfLogFiles;
+@property (readwrite, assign, atomic) NSUInteger maximumNumberOfLogFiles;
 
 // Public methods
 
@@ -108,23 +108,68 @@
  * On Mac, this is in ~/Library/Logs/<Application Name>.
  * On iPhone, this is in ~/Library/Caches/Logs.
  * 
- * Log files are named "log-<uuid>.txt",
- * where uuid is a 6 character hexadecimal consisting of the set [0123456789ABCDEF].
+ * Log files are named "<bundle identifier> <date> <time>.log"
+ * Example: com.organization.myapp 2013-12-03 17-14.log
  * 
  * Archived log files are automatically deleted according to the maximumNumberOfLogFiles property.
 **/
 @interface DDLogFileManagerDefault : NSObject <DDLogFileManager>
 {
-	NSUInteger maximumNumberOfLogFiles;
-	NSString *_logsDirectory;
+    NSUInteger maximumNumberOfLogFiles;
+    NSString *_logsDirectory;
+#if TARGET_OS_IPHONE
+    NSString* _defaultFileProtectionLevel;
+#endif
 }
 
 - (id)init;
-- (id)initWithLogsDirectory:(NSString *)logsDirectory;
+- (instancetype)initWithLogsDirectory:(NSString *)logsDirectory;
+#if TARGET_OS_IPHONE
+/*
+ * Calling this constructor you can override the default "automagically" chosen NSFileProtection level.
+ * Useful if you are writing a command line utility / CydiaSubstrate addon for iOS that has no NSBundle
+ * or like SpringBoard no BackgroundModes key in the NSBundle:
+ *    iPhone:~ root# cycript -p SpringBoard
+ *    cy# [NSBundle mainBundle]
+ *    #"NSBundle </System/Library/CoreServices/SpringBoard.app> (loaded)"
+ *    cy# [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIBackgroundModes"];
+ *    null
+ *    cy#
+ **/
+- (instancetype)initWithLogsDirectory:(NSString *)logsDirectory defaultFileProtectionLevel:(NSString*)fileProtectionLevel;
+#endif
+
+/*
+ * Methods to override.
+ *
+ * Log files are named "<bundle identifier> <date> <time>.log"
+ * Example: com.organization.myapp 2013-12-03 17-14.log
+ *
+ * If you wish to change default filename, you can override following two methods.
+ * - newLogFileName method would be called on new logfile creation.
+ * - isLogFile: method would be called to filter logfiles from all other files in logsDirectory.
+ *   You have to parse given filename and return YES if it is logFile.
+ *
+ * **NOTE**
+ * newLogFileName returns filename. If appropriate file already exists, number would be added
+ * to filename before extension. You have to handle this case in isLogFile: method.
+ *
+ * Example:
+ * - newLogFileName returns "com.organization.myapp 2013-12-03.log",
+ *   file "com.organization.myapp 2013-12-03.log" would be created.
+ * - after some time "com.organization.myapp 2013-12-03.log" is archived
+ * - newLogFileName again returns "com.organization.myapp 2013-12-03.log",
+ *   file "com.organization.myapp 2013-12-03 2.log" would be created.
+ * - after some time "com.organization.myapp 2013-12-03 1.log" is archived
+ * - newLogFileName again returns "com.organization.myapp 2013-12-03.log",
+ *   file "com.organization.myapp 2013-12-03 3.log" would be created.
+**/
+- (NSString *)newLogFileName;
+- (BOOL)isLogFile:(NSString *)fileName;
 
 /* Inherited from DDLogFileManager protocol:
 
-@property (readwrite, assign) NSUInteger maximumNumberOfLogFiles;
+@property (readwrite, assign, atomic) NSUInteger maximumNumberOfLogFiles;
 
 - (NSString *)logsDirectory;
 
@@ -156,11 +201,11 @@
 **/
 @interface DDLogFileFormatterDefault : NSObject <DDLogFormatter>
 {
-	NSDateFormatter *dateFormatter;
+    NSDateFormatter *dateFormatter;
 }
 
 - (id)init;
-- (id)initWithDateFormatter:(NSDateFormatter *)dateFormatter;
+- (instancetype)initWithDateFormatter:(NSDateFormatter *)dateFormatter;
 
 @end
 
@@ -170,19 +215,20 @@
 
 @interface DDFileLogger : DDAbstractLogger <DDLogger>
 {
-	__strong id <DDLogFileManager> logFileManager;
-	
-	DDLogFileInfo *currentLogFileInfo;
-	NSFileHandle *currentLogFileHandle;
-	
-	dispatch_source_t rollingTimer;
-	
-	unsigned long long maximumFileSize;
-	NSTimeInterval rollingFrequency;
+    __strong id <DDLogFileManager> logFileManager;
+    
+    DDLogFileInfo *currentLogFileInfo;
+    NSFileHandle *currentLogFileHandle;
+    
+    dispatch_source_t currentLogFileVnode;
+    dispatch_source_t rollingTimer;
+    
+    unsigned long long maximumFileSize;
+    NSTimeInterval rollingFrequency;
 }
 
 - (id)init;
-- (id)initWithLogFileManager:(id <DDLogFileManager>)logFileManager;
+- (instancetype)initWithLogFileManager:(id <DDLogFileManager>)logFileManager;
 
 /**
  * Log File Rolling:
@@ -217,6 +263,7 @@
 **/
 @property (readwrite, assign) unsigned long long maximumFileSize;
 @property (readwrite, assign) NSTimeInterval rollingFrequency;
+@property (readwrite, assign, atomic) BOOL doNotReuseLogFiles;
 
 /**
  * The DDLogFileManager instance can be used to retrieve the list of log files,
@@ -228,8 +275,13 @@
 
 
 // You can optionally force the current log file to be rolled with this method.
+// CompletionBlock will be called on main queue.
 
-- (void)rollLogFile;
+- (void)rollLogFileWithCompletionBlock:(void (^)())completionBlock;
+
+// Method is deprecated. Use rollLogFileWithCompletionBlock: method instead.
+
+- (void)rollLogFile __attribute((deprecated));
 
 // Inherited from DDAbstractLogger
 
@@ -258,15 +310,15 @@
 **/
 @interface DDLogFileInfo : NSObject
 {
-	__strong NSString *filePath;
-	__strong NSString *fileName;
-	
-	__strong NSDictionary *fileAttributes;
-	
-	__strong NSDate *creationDate;
-	__strong NSDate *modificationDate;
-	
-	unsigned long long fileSize;
+    __strong NSString *filePath;
+    __strong NSString *fileName;
+    
+    __strong NSDictionary *fileAttributes;
+    
+    __strong NSDate *creationDate;
+    __strong NSDate *modificationDate;
+    
+    unsigned long long fileSize;
 }
 
 @property (strong, nonatomic, readonly) NSString *filePath;
@@ -283,9 +335,9 @@
 
 @property (nonatomic, readwrite) BOOL isArchived;
 
-+ (id)logFileWithPath:(NSString *)filePath;
++ (instancetype)logFileWithPath:(NSString *)filePath;
 
-- (id)initWithFilePath:(NSString *)filePath;
+- (instancetype)initWithFilePath:(NSString *)filePath;
 
 - (void)reset;
 - (void)renameFile:(NSString *)newFileName;
@@ -309,7 +361,8 @@
 // On the simulator we add an attribute by appending a filename extension.
 // 
 // For example:
-// log-ABC123.txt -> log-ABC123.archived.txt
+// "mylog.txt" -> "mylog.archived.txt"
+// "mylog"     -> "mylog.archived"
 
 - (BOOL)hasExtensionAttributeWithName:(NSString *)attrName;
 

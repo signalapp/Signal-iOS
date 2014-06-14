@@ -4,10 +4,10 @@
  * Welcome to Cocoa Lumberjack!
  * 
  * The project page has a wealth of documentation if you have any questions.
- * https://github.com/robbiehanson/CocoaLumberjack
+ * https://github.com/CocoaLumberjack/CocoaLumberjack
  * 
  * If you're new to the project you may wish to read the "Getting Started" wiki.
- * https://github.com/robbiehanson/CocoaLumberjack/wiki/GettingStarted
+ * https://github.com/CocoaLumberjack/CocoaLumberjack/wiki/GettingStarted
  * 
  * Otherwise, here is a quick refresher.
  * There are three steps to using the macros:
@@ -23,6 +23,18 @@
  * // Log levels: off, error, warn, info, verbose
  * static const int ddLogLevel = LOG_LEVEL_VERBOSE;
  * 
+ * Step 2 [3rd party frameworks]:
+ *
+ * Define your LOG_LEVEL_DEF to a different variable/function than ddLogLevel:
+ *
+ * // #undef LOG_LEVEL_DEF // Undefine first only if needed
+ * #define LOG_LEVEL_DEF myLibLogLevel
+ *
+ * Define your logging level in your implementation file:
+ *
+ * // Log levels: off, error, warn, info, verbose
+ * static const int myLibLogLevel = LOG_LEVEL_VERBOSE;
+ *
  * Step 3:
  * Replace your NSLog statements with DDLog statements according to the severity of the message.
  * 
@@ -32,6 +44,9 @@
  * This means you can pass it multiple variables just like NSLog.
 **/
 
+#ifndef LOG_LEVEL_DEF
+    #define LOG_LEVEL_DEF ddLogLevel
+#endif
 
 @class DDLogMessage;
 
@@ -44,15 +59,15 @@
 **/
 
 #define LOG_MACRO(isAsynchronous, lvl, flg, ctx, atag, fnct, frmt, ...) \
-  [DDLog log:isAsynchronous                                             \
-       level:lvl                                                        \
-        flag:flg                                                        \
-     context:ctx                                                        \
-        file:__FILE__                                                   \
-    function:fnct                                                       \
-        line:__LINE__                                                   \
-         tag:atag                                                       \
-      format:(frmt), ##__VA_ARGS__]
+        [DDLog log:isAsynchronous                                       \
+             level:lvl                                                  \
+              flag:flg                                                  \
+           context:ctx                                                  \
+              file:__FILE__                                             \
+          function:fnct                                                 \
+              line:__LINE__                                             \
+               tag:atag                                                 \
+            format:(frmt), ##__VA_ARGS__]
 
 /**
  * Define the Objective-C and C versions of the macro.
@@ -62,22 +77,22 @@
 **/
 
 #define LOG_OBJC_MACRO(async, lvl, flg, ctx, frmt, ...) \
-             LOG_MACRO(async, lvl, flg, ctx, nil, sel_getName(_cmd), frmt, ##__VA_ARGS__)
+        LOG_MACRO(async, lvl, flg, ctx, nil, sel_getName(_cmd), frmt, ##__VA_ARGS__)
 
 #define LOG_C_MACRO(async, lvl, flg, ctx, frmt, ...) \
-          LOG_MACRO(async, lvl, flg, ctx, nil, __FUNCTION__, frmt, ##__VA_ARGS__)
+        LOG_MACRO(async, lvl, flg, ctx, nil, __FUNCTION__, frmt, ##__VA_ARGS__)
 
-#define  SYNC_LOG_OBJC_MACRO(lvl, flg, ctx, frmt, ...) \
-              LOG_OBJC_MACRO( NO, lvl, flg, ctx, frmt, ##__VA_ARGS__)
+#define SYNC_LOG_OBJC_MACRO(lvl, flg, ctx, frmt, ...) \
+        LOG_OBJC_MACRO(NO, lvl, flg, ctx, frmt, ##__VA_ARGS__)
 
 #define ASYNC_LOG_OBJC_MACRO(lvl, flg, ctx, frmt, ...) \
-              LOG_OBJC_MACRO(YES, lvl, flg, ctx, frmt, ##__VA_ARGS__)
+        LOG_OBJC_MACRO(YES, lvl, flg, ctx, frmt, ##__VA_ARGS__)
 
-#define  SYNC_LOG_C_MACRO(lvl, flg, ctx, frmt, ...) \
-              LOG_C_MACRO( NO, lvl, flg, ctx, frmt, ##__VA_ARGS__)
+#define SYNC_LOG_C_MACRO(lvl, flg, ctx, frmt, ...) \
+        LOG_C_MACRO(NO, lvl, flg, ctx, frmt, ##__VA_ARGS__)
 
 #define ASYNC_LOG_C_MACRO(lvl, flg, ctx, frmt, ...) \
-              LOG_C_MACRO(YES, lvl, flg, ctx, frmt, ##__VA_ARGS__)
+        LOG_C_MACRO(YES, lvl, flg, ctx, frmt, ##__VA_ARGS__)
 
 /**
  * Define version of the macro that only execute if the logLevel is above the threshold.
@@ -85,38 +100,40 @@
  * 
  * if (logFlagForThisLogMsg & ddLogLevel) { execute log message }
  * 
+ * When LOG_LEVEL_DEF is defined as ddLogLevel.
+ *
  * As shown further below, Lumberjack actually uses a bitmask as opposed to primitive log levels.
  * This allows for a great amount of flexibility and some pretty advanced fine grained logging techniques.
  * 
  * Note that when compiler optimizations are enabled (as they are for your release builds),
  * the log messages above your logging threshold will automatically be compiled out.
  * 
- * (If the compiler sees ddLogLevel declared as a constant, the compiler simply checks to see if the 'if' statement
- *  would execute, and if not it strips it from the binary.)
+ * (If the compiler sees LOG_LEVEL_DEF/ddLogLevel declared as a constant, the compiler simply checks to see
+ *  if the 'if' statement would execute, and if not it strips it from the binary.)
  * 
  * We also define shorthand versions for asynchronous and synchronous logging.
 **/
 
 #define LOG_MAYBE(async, lvl, flg, ctx, fnct, frmt, ...) \
-  do { if(lvl & flg) LOG_MACRO(async, lvl, flg, ctx, nil, fnct, frmt, ##__VA_ARGS__); } while(0)
+        do { if(lvl & flg) LOG_MACRO(async, lvl, flg, ctx, nil, fnct, frmt, ##__VA_ARGS__); } while(0)
 
 #define LOG_OBJC_MAYBE(async, lvl, flg, ctx, frmt, ...) \
-             LOG_MAYBE(async, lvl, flg, ctx, sel_getName(_cmd), frmt, ##__VA_ARGS__)
+        LOG_MAYBE(async, lvl, flg, ctx, sel_getName(_cmd), frmt, ##__VA_ARGS__)
 
 #define LOG_C_MAYBE(async, lvl, flg, ctx, frmt, ...) \
-          LOG_MAYBE(async, lvl, flg, ctx, __FUNCTION__, frmt, ##__VA_ARGS__)
+        LOG_MAYBE(async, lvl, flg, ctx, __FUNCTION__, frmt, ##__VA_ARGS__)
 
-#define  SYNC_LOG_OBJC_MAYBE(lvl, flg, ctx, frmt, ...) \
-              LOG_OBJC_MAYBE( NO, lvl, flg, ctx, frmt, ##__VA_ARGS__)
+#define SYNC_LOG_OBJC_MAYBE(lvl, flg, ctx, frmt, ...) \
+        LOG_OBJC_MAYBE(NO, lvl, flg, ctx, frmt, ##__VA_ARGS__)
 
 #define ASYNC_LOG_OBJC_MAYBE(lvl, flg, ctx, frmt, ...) \
-              LOG_OBJC_MAYBE(YES, lvl, flg, ctx, frmt, ##__VA_ARGS__)
+        LOG_OBJC_MAYBE(YES, lvl, flg, ctx, frmt, ##__VA_ARGS__)
 
-#define  SYNC_LOG_C_MAYBE(lvl, flg, ctx, frmt, ...) \
-              LOG_C_MAYBE( NO, lvl, flg, ctx, frmt, ##__VA_ARGS__)
+#define SYNC_LOG_C_MAYBE(lvl, flg, ctx, frmt, ...) \
+        LOG_C_MAYBE(NO, lvl, flg, ctx, frmt, ##__VA_ARGS__)
 
 #define ASYNC_LOG_C_MAYBE(lvl, flg, ctx, frmt, ...) \
-              LOG_C_MAYBE(YES, lvl, flg, ctx, frmt, ##__VA_ARGS__)
+        LOG_C_MAYBE(YES, lvl, flg, ctx, frmt, ##__VA_ARGS__)
 
 /**
  * Define versions of the macros that also accept tags.
@@ -129,19 +146,19 @@
 **/
 
 #define LOG_OBJC_TAG_MACRO(async, lvl, flg, ctx, tag, frmt, ...) \
-                 LOG_MACRO(async, lvl, flg, ctx, tag, sel_getName(_cmd), frmt, ##__VA_ARGS__)
+        LOG_MACRO(async, lvl, flg, ctx, tag, sel_getName(_cmd), frmt, ##__VA_ARGS__)
 
 #define LOG_C_TAG_MACRO(async, lvl, flg, ctx, tag, frmt, ...) \
-              LOG_MACRO(async, lvl, flg, ctx, tag, __FUNCTION__, frmt, ##__VA_ARGS__)
+        LOG_MACRO(async, lvl, flg, ctx, tag, __FUNCTION__, frmt, ##__VA_ARGS__)
 
 #define LOG_TAG_MAYBE(async, lvl, flg, ctx, tag, fnct, frmt, ...) \
-  do { if(lvl & flg) LOG_MACRO(async, lvl, flg, ctx, tag, fnct, frmt, ##__VA_ARGS__); } while(0)
+        do { if(lvl & flg) LOG_MACRO(async, lvl, flg, ctx, tag, fnct, frmt, ##__VA_ARGS__); } while(0)
 
 #define LOG_OBJC_TAG_MAYBE(async, lvl, flg, ctx, tag, frmt, ...) \
-             LOG_TAG_MAYBE(async, lvl, flg, ctx, tag, sel_getName(_cmd), frmt, ##__VA_ARGS__)
+        LOG_TAG_MAYBE(async, lvl, flg, ctx, tag, sel_getName(_cmd), frmt, ##__VA_ARGS__)
 
 #define LOG_C_TAG_MAYBE(async, lvl, flg, ctx, tag, frmt, ...) \
-          LOG_TAG_MAYBE(async, lvl, flg, ctx, tag, __FUNCTION__, frmt, ##__VA_ARGS__)
+        LOG_TAG_MAYBE(async, lvl, flg, ctx, tag, __FUNCTION__, frmt, ##__VA_ARGS__)
 
 /**
  * Define the standard options.
@@ -151,11 +168,11 @@
  * 
  * More advanced users may choose to completely customize the levels (and level names) to suite their needs.
  * For more information on this see the "Custom Log Levels" page:
- * https://github.com/robbiehanson/CocoaLumberjack/wiki/CustomLogLevels
+ * https://github.com/CocoaLumberjack/CocoaLumberjack/wiki/CustomLogLevels
  * 
  * Advanced users may also notice that we're using a bitmask.
  * This is to allow for custom fine grained logging:
- * https://github.com/robbiehanson/CocoaLumberjack/wiki/FineGrainedLogging
+ * https://github.com/CocoaLumberjack/CocoaLumberjack/wiki/FineGrainedLogging
  * 
  * -- Flags --
  * 
@@ -166,6 +183,8 @@
  * 
  * static const int ddLogLevel = LOG_FLAG_ERROR | LOG_FLAG_INFO;
  * 
+ * When LOG_LEVEL_DEF is defined as ddLogLevel.
+ *
  * Flags may also be consulted when writing custom log formatters,
  * as the DDLogMessage class captures the individual flag that caused the log message to fire.
  * 
@@ -202,41 +221,48 @@
  * Instead, create your own MyLogging.h or ApplicationNameLogging.h or CompanyLogging.h
  * 
  * For an example of customizing your logging experience, see the "Custom Log Levels" page:
- * https://github.com/robbiehanson/CocoaLumberjack/wiki/CustomLogLevels
+ * https://github.com/CocoaLumberjack/CocoaLumberjack/wiki/CustomLogLevels
 **/
 
-#define LOG_FLAG_ERROR    (1 << 0)  // 0...0001
-#define LOG_FLAG_WARN     (1 << 1)  // 0...0010
-#define LOG_FLAG_INFO     (1 << 2)  // 0...0100
-#define LOG_FLAG_VERBOSE  (1 << 3)  // 0...1000
+#define LOG_FLAG_ERROR    (1 << 0)  // 0...00001
+#define LOG_FLAG_WARN     (1 << 1)  // 0...00010
+#define LOG_FLAG_INFO     (1 << 2)  // 0...00100
+#define LOG_FLAG_DEBUG    (1 << 3)  // 0...01000
+#define LOG_FLAG_VERBOSE  (1 << 4)  // 0...10000
 
 #define LOG_LEVEL_OFF     0
-#define LOG_LEVEL_ERROR   (LOG_FLAG_ERROR)                                                    // 0...0001
-#define LOG_LEVEL_WARN    (LOG_FLAG_ERROR | LOG_FLAG_WARN)                                    // 0...0011
-#define LOG_LEVEL_INFO    (LOG_FLAG_ERROR | LOG_FLAG_WARN | LOG_FLAG_INFO)                    // 0...0111
-#define LOG_LEVEL_VERBOSE (LOG_FLAG_ERROR | LOG_FLAG_WARN | LOG_FLAG_INFO | LOG_FLAG_VERBOSE) // 0...1111
+#define LOG_LEVEL_ERROR   (LOG_FLAG_ERROR)                                                                      // 0...00001
+#define LOG_LEVEL_WARN    (LOG_FLAG_ERROR | LOG_FLAG_WARN)                                                      // 0...00011
+#define LOG_LEVEL_INFO    (LOG_FLAG_ERROR | LOG_FLAG_WARN | LOG_FLAG_INFO)                                      // 0...00111
+#define LOG_LEVEL_DEBUG   (LOG_FLAG_ERROR | LOG_FLAG_WARN | LOG_FLAG_INFO | LOG_FLAG_DEBUG)                     // 0...01111
+#define LOG_LEVEL_VERBOSE (LOG_FLAG_ERROR | LOG_FLAG_WARN | LOG_FLAG_INFO | LOG_FLAG_DEBUG | LOG_FLAG_VERBOSE)  // 0...11111
+#define LOG_LEVEL_ALL      0xFFFFFFFF // 1111....11111 (LOG_LEVEL_VERBOSE plus any other flags)
 
-#define LOG_ERROR   (ddLogLevel & LOG_FLAG_ERROR)
-#define LOG_WARN    (ddLogLevel & LOG_FLAG_WARN)
-#define LOG_INFO    (ddLogLevel & LOG_FLAG_INFO)
-#define LOG_VERBOSE (ddLogLevel & LOG_FLAG_VERBOSE)
+#define LOG_ERROR         (LOG_LEVEL_DEF & LOG_FLAG_ERROR)
+#define LOG_WARN          (LOG_LEVEL_DEF & LOG_FLAG_WARN)
+#define LOG_INFO          (LOG_LEVEL_DEF & LOG_FLAG_INFO)
+#define LOG_DEBUG         (LOG_LEVEL_DEF & LOG_FLAG_DEBUG)
+#define LOG_VERBOSE       (LOG_LEVEL_DEF & LOG_FLAG_VERBOSE)
 
 #define LOG_ASYNC_ENABLED YES
 
-#define LOG_ASYNC_ERROR   ( NO && LOG_ASYNC_ENABLED)
-#define LOG_ASYNC_WARN    (YES && LOG_ASYNC_ENABLED)
-#define LOG_ASYNC_INFO    (YES && LOG_ASYNC_ENABLED)
-#define LOG_ASYNC_VERBOSE (YES && LOG_ASYNC_ENABLED)
+#define LOG_ASYNC_ERROR    ( NO && LOG_ASYNC_ENABLED)
+#define LOG_ASYNC_WARN     (YES && LOG_ASYNC_ENABLED)
+#define LOG_ASYNC_INFO     (YES && LOG_ASYNC_ENABLED)
+#define LOG_ASYNC_DEBUG    (YES && LOG_ASYNC_ENABLED)
+#define LOG_ASYNC_VERBOSE  (YES && LOG_ASYNC_ENABLED)
 
-#define DDLogError(frmt, ...)   LOG_OBJC_MAYBE(LOG_ASYNC_ERROR,   ddLogLevel, LOG_FLAG_ERROR,   0, frmt, ##__VA_ARGS__)
-#define DDLogWarn(frmt, ...)    LOG_OBJC_MAYBE(LOG_ASYNC_WARN,    ddLogLevel, LOG_FLAG_WARN,    0, frmt, ##__VA_ARGS__)
-#define DDLogInfo(frmt, ...)    LOG_OBJC_MAYBE(LOG_ASYNC_INFO,    ddLogLevel, LOG_FLAG_INFO,    0, frmt, ##__VA_ARGS__)
-#define DDLogVerbose(frmt, ...) LOG_OBJC_MAYBE(LOG_ASYNC_VERBOSE, ddLogLevel, LOG_FLAG_VERBOSE, 0, frmt, ##__VA_ARGS__)
+#define DDLogError(frmt, ...)   LOG_OBJC_MAYBE(LOG_ASYNC_ERROR,   LOG_LEVEL_DEF, LOG_FLAG_ERROR,   0, frmt, ##__VA_ARGS__)
+#define DDLogWarn(frmt, ...)    LOG_OBJC_MAYBE(LOG_ASYNC_WARN,    LOG_LEVEL_DEF, LOG_FLAG_WARN,    0, frmt, ##__VA_ARGS__)
+#define DDLogInfo(frmt, ...)    LOG_OBJC_MAYBE(LOG_ASYNC_INFO,    LOG_LEVEL_DEF, LOG_FLAG_INFO,    0, frmt, ##__VA_ARGS__)
+#define DDLogDebug(frmt, ...)   LOG_OBJC_MAYBE(LOG_ASYNC_DEBUG,   LOG_LEVEL_DEF, LOG_FLAG_DEBUG,   0, frmt, ##__VA_ARGS__)
+#define DDLogVerbose(frmt, ...) LOG_OBJC_MAYBE(LOG_ASYNC_VERBOSE, LOG_LEVEL_DEF, LOG_FLAG_VERBOSE, 0, frmt, ##__VA_ARGS__)
 
-#define DDLogCError(frmt, ...)   LOG_C_MAYBE(LOG_ASYNC_ERROR,   ddLogLevel, LOG_FLAG_ERROR,   0, frmt, ##__VA_ARGS__)
-#define DDLogCWarn(frmt, ...)    LOG_C_MAYBE(LOG_ASYNC_WARN,    ddLogLevel, LOG_FLAG_WARN,    0, frmt, ##__VA_ARGS__)
-#define DDLogCInfo(frmt, ...)    LOG_C_MAYBE(LOG_ASYNC_INFO,    ddLogLevel, LOG_FLAG_INFO,    0, frmt, ##__VA_ARGS__)
-#define DDLogCVerbose(frmt, ...) LOG_C_MAYBE(LOG_ASYNC_VERBOSE, ddLogLevel, LOG_FLAG_VERBOSE, 0, frmt, ##__VA_ARGS__)
+#define DDLogCError(frmt, ...)   LOG_C_MAYBE(LOG_ASYNC_ERROR,   LOG_LEVEL_DEF, LOG_FLAG_ERROR,   0, frmt, ##__VA_ARGS__)
+#define DDLogCWarn(frmt, ...)    LOG_C_MAYBE(LOG_ASYNC_WARN,    LOG_LEVEL_DEF, LOG_FLAG_WARN,    0, frmt, ##__VA_ARGS__)
+#define DDLogCInfo(frmt, ...)    LOG_C_MAYBE(LOG_ASYNC_INFO,    LOG_LEVEL_DEF, LOG_FLAG_INFO,    0, frmt, ##__VA_ARGS__)
+#define DDLogCDebug(frmt, ...)   LOG_C_MAYBE(LOG_ASYNC_DEBUG,   LOG_LEVEL_DEF, LOG_FLAG_DEBUG,   0, frmt, ##__VA_ARGS__)
+#define DDLogCVerbose(frmt, ...) LOG_C_MAYBE(LOG_ASYNC_VERBOSE, LOG_LEVEL_DEF, LOG_FLAG_VERBOSE, 0, frmt, ##__VA_ARGS__)
 
 /**
  * The THIS_FILE macro gives you an NSString of the file name.
@@ -308,6 +334,14 @@ NSString *DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy);
      format:(NSString *)format
        args:(va_list)argList;
 
+/**
+ * Logging Primitive.
+ *
+ * This method can be used if you manualy prepared DDLogMessage.
+ **/
+
++ (void)log:(BOOL)asynchronous
+    message:(DDLogMessage *)logMessage;
 
 /**
  * Since logging can be asynchronous, there may be times when you want to flush the logs.
@@ -319,14 +353,61 @@ NSString *DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy);
 /** 
  * Loggers
  * 
- * If you want your log statements to go somewhere,
- * you should create and add a logger.
+ * In order for your log statements to go somewhere, you should create and add a logger.
+ * 
+ * You can add multiple loggers in order to direct your log statements to multiple places.
+ * And each logger can be configured separately.
+ * So you could have, for example, verbose logging to the console, but a concise log file with only warnings & errors.
 **/
 
+/**
+ * Adds the logger to the system.
+ * 
+ * This is equivalent to invoking [DDLog addLogger:logger withLogLevel:LOG_LEVEL_ALL].
+**/
 + (void)addLogger:(id <DDLogger>)logger;
-+ (void)removeLogger:(id <DDLogger>)logger;
 
+/**
+ * Adds the logger to the system.
+ * 
+ * The logLevel that you provide here is a preemptive filter (for performance).
+ * That is, the logLevel specified here will be used to filter out logMessages so that
+ * the logger is never even invoked for the messages.
+ * 
+ * More information:
+ * When you issue a log statement, the logging framework iterates over each logger,
+ * and checks to see if it should forward the logMessage to the logger.
+ * This check is done using the logLevel parameter passed to this method.
+ * 
+ * For example:
+ * [DDLog addLogger:consoleLogger withLogLevel:LOG_LEVEL_VERBOSE];
+ * [DDLog addLogger:fileLogger    withLogLevel:LOG_LEVEL_WARN];
+ *
+ * DDLogError(@"oh no"); => gets forwarded to consoleLogger & fileLogger
+ * DDLogInfo(@"hi");     => gets forwarded to consoleLogger only
+ *
+ * It is important to remember that Lumberjack uses a BITMASK.
+ * Many developers & third party frameworks may define extra log levels & flags.
+ * For example:
+ * 
+ * #define SOME_FRAMEWORK_LOG_FLAG_TRACE (1 << 6) // 0...1000000
+ *
+ * So if you specify LOG_LEVEL_VERBOSE to this method, you won't see the framework's trace messages.
+ *
+ * (SOME_FRAMEWORK_LOG_FLAG_TRACE & LOG_LEVEL_VERBOSE) => (01000000 & 00011111) => NO
+ * 
+ * Consider passing LOG_LEVEL_ALL to this method, which has all bits set.
+ * You can also use the exclusive-or bitwise operator to get a bitmask that has all flags set,
+ * except the ones you explicitly don't want. For example, if you wanted everything except verbose & debug:
+ * 
+ * ((LOG_LEVEL_ALL ^ LOG_LEVEL_VERBOSE) | LOG_LEVEL_INFO)
+**/
++ (void)addLogger:(id <DDLogger>)logger withLogLevel:(int)logLevel;
+
++ (void)removeLogger:(id <DDLogger>)logger;
 + (void)removeAllLoggers;
+
++ (NSArray *)allLoggers;
 
 /**
  * Registered Dynamic Logging
@@ -422,7 +503,7 @@ NSString *DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy);
  * For example, log messages for log files may be formatted differently than log messages for the console.
  * 
  * For more information about formatters, see the "Custom Formatters" page:
- * https://github.com/robbiehanson/CocoaLumberjack/wiki/CustomFormatters
+ * https://github.com/CocoaLumberjack/CocoaLumberjack/wiki/CustomFormatters
  * 
  * The formatter may also optionally filter the log message by returning nil,
  * in which case the logger will not log the message.
@@ -488,35 +569,35 @@ NSString *DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy);
 **/
 
 enum {
-	DDLogMessageCopyFile     = 1 << 0,
-	DDLogMessageCopyFunction = 1 << 1
+    DDLogMessageCopyFile     = 1 << 0,
+    DDLogMessageCopyFunction = 1 << 1
 };
 typedef int DDLogMessageOptions;
 
-@interface DDLogMessage : NSObject
+@interface DDLogMessage : NSObject <NSCopying>
 {
 
 // The public variables below can be accessed directly (for speed).
 // For example: logMessage->logLevel
-	
+    
 @public
-	int logLevel;
-	int logFlag;
-	int logContext;
-	NSString *logMsg;
-	NSDate *timestamp;
-	char *file;
-	char *function;
-	int lineNumber;
-	mach_port_t machThreadID;
+    int logLevel;
+    int logFlag;
+    int logContext;
+    NSString *logMsg;
+    NSDate *timestamp;
+    char *file;
+    char *function;
+    int lineNumber;
+    mach_port_t machThreadID;
     char *queueLabel;
-	NSString *threadName;
-	
-	// For 3rd party extensions to the framework, where flags and contexts aren't enough.
-	id tag;
-	
-	// For 3rd party extensions that manually create DDLogMessage instances.
-	DDLogMessageOptions options;
+    NSString *threadName;
+    
+    // For 3rd party extensions to the framework, where flags and contexts aren't enough.
+    id tag;
+    
+    // For 3rd party extensions that manually create DDLogMessage instances.
+    DDLogMessageOptions options;
 }
 
 /**
@@ -534,15 +615,25 @@ typedef int DDLogMessageOptions;
  * However, if you need them to be copied you may use the options parameter to specify this.
  * Options is a bitmask which supports DDLogMessageCopyFile and DDLogMessageCopyFunction.
 **/
-- (id)initWithLogMsg:(NSString *)logMsg
-               level:(int)logLevel
-                flag:(int)logFlag
-             context:(int)logContext
-                file:(const char *)file
-            function:(const char *)function
-                line:(int)line
-                 tag:(id)tag
-             options:(DDLogMessageOptions)optionsMask;
+- (instancetype)initWithLogMsg:(NSString *)logMsg
+                         level:(int)logLevel
+                          flag:(int)logFlag
+                       context:(int)logContext
+                          file:(const char *)file
+                      function:(const char *)function
+                          line:(int)line
+                           tag:(id)tag
+                       options:(DDLogMessageOptions)optionsMask;
+- (instancetype)initWithLogMsg:(NSString *)logMsg
+                         level:(int)logLevel
+                          flag:(int)logFlag
+                       context:(int)logContext
+                          file:(const char *)file
+                      function:(const char *)function
+                          line:(int)line
+                           tag:(id)tag
+                       options:(DDLogMessageOptions)optionsMask
+                     timestamp:(NSDate *)aTimestamp;
 
 /**
  * Returns the threadID as it appears in NSLog.
@@ -586,9 +677,9 @@ typedef int DDLogMessageOptions;
 
 @interface DDAbstractLogger : NSObject <DDLogger>
 {
-	id <DDLogFormatter> formatter;
-	
-	dispatch_queue_t loggerQueue;
+    id <DDLogFormatter> formatter;
+    
+    dispatch_queue_t loggerQueue;
 }
 
 - (id <DDLogFormatter>)logFormatter;
