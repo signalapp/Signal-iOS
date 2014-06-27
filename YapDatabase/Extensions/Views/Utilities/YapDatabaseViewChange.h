@@ -8,7 +8,7 @@ typedef NS_ENUM(NSInteger, YapDatabaseViewChangeType) {
 	YapDatabaseViewChangeUpdate = 4,
 };
 
-typedef NS_OPTIONS(NSInteger, YapDatabaseViewChangesBitMask) {
+typedef NS_OPTIONS(NSUInteger, YapDatabaseViewChangesBitMask) {
 	YapDatabaseViewChangedObject     = 1 << 0, // 0001
 	YapDatabaseViewChangedMetadata   = 1 << 1, // 0010
 	YapDatabaseViewChangedDependency = 1 << 2, // 0100

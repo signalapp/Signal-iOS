@@ -29,7 +29,7 @@
  * But for conncurrent access between multiple threads you must use multiple connections.
 **/
 
-typedef NS_OPTIONS(NSInteger, YapDatabaseConnectionFlushMemoryFlags) {
+typedef NS_OPTIONS(NSUInteger, YapDatabaseConnectionFlushMemoryFlags) {
     YapDatabaseConnectionFlushMemoryFlags_None       = 0,
     YapDatabaseConnectionFlushMemoryFlags_Caches     = 1 << 0,
     YapDatabaseConnectionFlushMemoryFlags_Statements = 1 << 1,

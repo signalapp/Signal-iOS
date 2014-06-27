@@ -17,7 +17,7 @@ typedef NS_ENUM(NSInteger, YapDatabaseViewPin) {
  *
  * @see growOptions
 **/
-typedef NS_OPTIONS(NSInteger, YapDatabaseViewGrowOptions) {
+typedef NS_OPTIONS(NSUInteger, YapDatabaseViewGrowOptions) {
 	YapDatabaseViewGrowPinSide    = 1 << 0,
 	YapDatabaseViewGrowNonPinSide = 1 << 1,
 	
