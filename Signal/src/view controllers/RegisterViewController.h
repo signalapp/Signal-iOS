@@ -17,8 +17,6 @@
 @property (nonatomic, strong) IBOutlet UILabel *countryCodeLabel;
 @property (nonatomic, strong) IBOutlet UILabel *countryNameLabel;
 @property (nonatomic, strong) IBOutlet UITextField *challengeTextField;
-@property (nonatomic, strong) IBOutlet UILabel *registerErrorLabel;
-@property (nonatomic, strong) IBOutlet UILabel *challengeErrorLabel;
 @property (nonatomic, strong) IBOutlet UIActivityIndicatorView *registerActivityIndicator;
 @property (nonatomic, strong) IBOutlet UIActivityIndicatorView *challengeActivityIndicator;
 @property (nonatomic, strong) IBOutlet UIScrollView *scrollView;

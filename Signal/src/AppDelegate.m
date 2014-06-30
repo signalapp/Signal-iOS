@@ -16,6 +16,11 @@
 #import "Util.h"
 #import <UICKeyChainStore/UICKeyChainStore.h>
 
+#pragma mark Logging - Production logging wants us to write some logs to a file in case we need it for debugging.
+
+#import <CocoaLumberjack/DDTTYLogger.h>
+#import <CocoaLumberjack/DDFileLogger.h>
+
 #define kSignalVersionKey @"SignalUpdateVersionKey"
 
 #ifdef __APPLE__
@@ -68,6 +73,13 @@
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    [DDLog addLogger:[DDTTYLogger sharedInstance]];
+    DDFileLogger *fileLogger = [[DDFileLogger alloc] init];
+    fileLogger.rollingFrequency = 60 * 60 * 24; // 24 hour rolling.
+    fileLogger.logFileManager.maximumNumberOfLogFiles = 3; // Keep three days of logs.
+    [DDLog addLogger:fileLogger];
+    
     [self performUpdateCheck];
     [self disableCallLogBackup];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
