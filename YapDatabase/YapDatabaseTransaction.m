@@ -3788,6 +3788,20 @@
 	return memoryTableTransaction;
 }
 
+/**
+ * The system automatically creates a special YapMemoryTable that's available for any extension.
+ * This memoryTable is registered under the reserved name @"yap".
+ *
+ * The yapMemoryTableTransaction uses a keyClass of [YapCollectionKey class].
+ * Thus, when using it, you must pass a YapCollectionKey, where collectionKey.collection == extensionName.
+ * 
+ * This memory table is an in-memory alternative to using the yap sqlite table.
+**/
+- (YapMemoryTableTransaction *)yapMemoryTableTransaction
+{
+	return [self memoryTableTransaction:@"yap"];
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Yap2 Table
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -120,7 +120,7 @@
 	{
 		YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:registeredName key:key];
 		
-		id object = [[[self databaseTransaction] memoryTableTransaction:@"yap"] objectForKey:ck];
+		id object = [[[self databaseTransaction] yapMemoryTableTransaction] objectForKey:ck];
 		if (object)
 		{
 			if (valuePtr) *valuePtr = [object boolValue];
@@ -159,7 +159,7 @@
 		{
 			YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:registeredName key:key];
 			
-			[[databaseTransaction memoryTableTransaction:@"yap"] setObject:@(value) forKey:ck];
+			[[databaseTransaction yapMemoryTableTransaction] setObject:@(value) forKey:ck];
 		}
 	}
 	else
@@ -180,7 +180,7 @@
 	{
 		YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:registeredName key:key];
 		
-		id object = [[[self databaseTransaction] memoryTableTransaction:@"yap"] objectForKey:ck];
+		id object = [[[self databaseTransaction] yapMemoryTableTransaction] objectForKey:ck];
 		if (object)
 		{
 			if (valuePtr) *valuePtr = [object intValue];
@@ -219,7 +219,7 @@
 		{
 			YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:registeredName key:key];
 			
-			[[databaseTransaction memoryTableTransaction:@"yap"] setObject:@(value) forKey:ck];
+			[[databaseTransaction yapMemoryTableTransaction] setObject:@(value) forKey:ck];
 		}
 	}
 	else
@@ -240,7 +240,7 @@
 	{
 		YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:registeredName key:key];
 		
-		id object = [[[self databaseTransaction] memoryTableTransaction:@"yap"] objectForKey:ck];
+		id object = [[[self databaseTransaction] yapMemoryTableTransaction] objectForKey:ck];
 		if (object)
 		{
 			if (valuePtr) *valuePtr = [object doubleValue];
@@ -279,7 +279,7 @@
 		{
 			YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:registeredName key:key];
 			
-			[[databaseTransaction memoryTableTransaction:@"yap"] setObject:@(value) forKey:ck];
+			[[databaseTransaction yapMemoryTableTransaction] setObject:@(value) forKey:ck];
 		}
 	}
 	else
@@ -300,7 +300,7 @@
 	{
 		YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:registeredName key:key];
 		
-		id object = [[[self databaseTransaction] memoryTableTransaction:@"yap"] objectForKey:ck];
+		id object = [[[self databaseTransaction] yapMemoryTableTransaction] objectForKey:ck];
 		
 		if ([object isKindOfClass:[NSString class]])
 			return object;
@@ -329,7 +329,7 @@
 		{
 			YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:registeredName key:key];
 			
-			[[databaseTransaction memoryTableTransaction:@"yap"] setObject:value forKey:ck];
+			[[databaseTransaction yapMemoryTableTransaction] setObject:value forKey:ck];
 		}
 	}
 	else
@@ -350,7 +350,7 @@
 	{
 		YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:registeredName key:key];
 		
-		id object = [[[self databaseTransaction] memoryTableTransaction:@"yap"] objectForKey:ck];
+		id object = [[[self databaseTransaction] yapMemoryTableTransaction] objectForKey:ck];
 		
 		if ([object isKindOfClass:[NSData class]])
 			return (NSData *)object;
@@ -377,7 +377,7 @@
 		{
 			YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:registeredName key:key];
 			
-			[[databaseTransaction memoryTableTransaction:@"yap"] setObject:value forKey:ck];
+			[[databaseTransaction yapMemoryTableTransaction] setObject:value forKey:ck];
 		}
 	}
 	else
@@ -404,7 +404,7 @@
 		{
 			YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:registeredName key:key];
 			
-			[[databaseTransaction memoryTableTransaction:@"yap"] removeObjectForKey:ck];
+			[[databaseTransaction yapMemoryTableTransaction] removeObjectForKey:ck];
 		}
 	}
 	else

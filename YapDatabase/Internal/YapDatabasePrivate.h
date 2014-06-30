@@ -326,6 +326,7 @@ extern NSString *const YapDatabaseNotificationKey;
 - (NSArray *)orderedExtensions;
 
 - (YapMemoryTableTransaction *)memoryTableTransaction:(NSString *)tableName;
+- (YapMemoryTableTransaction *)yapMemoryTableTransaction;
 
 - (BOOL)getBoolValue:(BOOL *)valuePtr forKey:(NSString *)key extension:(NSString *)extension;
 - (BOOL)getIntValue:(int *)valuePtr forKey:(NSString *)key extension:(NSString *)extensionName;

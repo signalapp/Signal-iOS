@@ -3743,7 +3743,7 @@ static NSString *const ExtKey_class = @"class";
 	
 	BOOL wasPersistent;
 	
-	YapMemoryTableTransaction *memoryTableTransaction = [transaction memoryTableTransaction:@"yap"];
+	YapMemoryTableTransaction *memoryTableTransaction = [transaction yapMemoryTableTransaction];
 	YapCollectionKey *classKey = [[YapCollectionKey alloc] initWithCollection:extensionName key:ExtKey_class];
 	
 	className = [memoryTableTransaction objectForKey:classKey];
@@ -3916,7 +3916,7 @@ static NSString *const ExtKey_class = @"class";
 		else
 		{
 			YapCollectionKey *classKey = [[YapCollectionKey alloc] initWithCollection:extensionName key:ExtKey_class];
-			[[transaction memoryTableTransaction:@"yap"] setObject:extensionClassName forKey:classKey];
+			[[transaction yapMemoryTableTransaction] setObject:extensionClassName forKey:classKey];
 		}
 	}
 	
