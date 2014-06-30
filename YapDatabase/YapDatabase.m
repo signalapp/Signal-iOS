@@ -1404,34 +1404,65 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 }
 
 /**
+ * This method unregisters an extension with the given name.
+ * The associated underlying tables will be dropped from the database.
  *
+ * Note 1:
+ *   You don't need to re-register an extension in order to unregister it. For example,
+ *   you've previously registered an extension (in previous app launches), but you no longer need the extension.
+ *   You don't have to bother creating and registering the unneeded extension,
+ *   just so you can unregister it and have the associated tables dropped.
+ *   The database persists information about registered extensions, including the associated class of an extension.
+ *   So you can simply pass the name of the extension, and the database system will use the associated class to
+ *   drop the appropriate tables.
+ *
+ * Note 2:
+ *   In fact, you don't even have to worry about unregistering extensions that you no longer need.
+ *   That database system will automatically handle it for you.
+ *   That is, upon completion of the first readWrite transaction (that makes changes), the database system will
+ *   check to see if there are any "orphaned" extensions. Previously registered extensions that are no longer in use.
+ *   And it will automatically unregister these orhpaned extensions for you.
+ *
+ * @see asyncUnregisterExtensionWithName:completionBlock:
+ * @see asyncUnregisterExtensionWithName:completionBlock:completionQueue:
 **/
-- (void)unregisterExtension:(NSString *)extensionName
+- (void)unregisterExtensionWithName:(NSString *)extensionName
 {
 	dispatch_sync(writeQueue, ^{ @autoreleasepool {
 		
-		[self _unregisterExtension:extensionName];
+		[self _unregisterExtensionWithName:extensionName];
 	}});
 }
 
-- (void)asyncUnregisterExtension:(NSString *)extensionName
-                 completionBlock:(dispatch_block_t)completionBlock
+/**
+ * Asynchronoulsy starts the extension unregistration process.
+ *
+ * The unregistration process is equivalent to a readwrite transaction.
+ * It involves deleting various information about the extension from the database,
+ * as well as possibly dropping related tables the extension may have been using.
+ *
+ * An optional completion block may be used.
+ *
+ * The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
+**/
+- (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
+                         completionBlock:(dispatch_block_t)completionBlock
 {
-	[self asyncUnregisterExtension:extensionName
-	               completionBlock:completionBlock
-	               completionQueue:NULL];
+	[self asyncUnregisterExtensionWithName:extensionName
+	                       completionBlock:completionBlock
+	                       completionQueue:NULL];
 }
 
-- (void)asyncUnregisterExtension:(NSString *)extensionName
-                 completionBlock:(dispatch_block_t)completionBlock
-                 completionQueue:(dispatch_queue_t)completionQueue
+- (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
+                         completionBlock:(dispatch_block_t)completionBlock
+                         completionQueue:(dispatch_queue_t)completionQueue
 {
 	if (completionQueue == NULL && completionBlock != NULL)
 		completionQueue = dispatch_get_main_queue();
 	
 	dispatch_async(writeQueue, ^{ @autoreleasepool {
 		
-		[self _unregisterExtension:extensionName];
+		[self _unregisterExtensionWithName:extensionName];
 		
 		if (completionBlock)
 		{
@@ -1448,7 +1479,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
  * Handles lazy creation and destruction of short-lived registrationConnection instance.
  * 
  * @see _registerExtension:withName:
- * @see _unregisterExtension:
+ * @see _unregisterExtensionWithName:
 **/
 - (YapDatabaseConnection *)registrationConnection
 {
@@ -1523,7 +1554,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
  * Internal method that handles extension unregistration.
  * This method must be invoked on the writeQueue.
 **/
-- (void)_unregisterExtension:(NSString *)extensionName
+- (void)_unregisterExtensionWithName:(NSString *)extensionName
 {
 	NSAssert(dispatch_get_specific(IsOnWriteQueueKey), @"Must go through writeQueue.");
 	
@@ -1534,6 +1565,42 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	}
 	
 	[[self registrationConnection] unregisterExtensionWithName:extensionName];
+}
+
+/**
+ * DEPRECATED in v2.5
+ * 
+ * Use unregisterExtensionWithName: instead.
+**/
+- (void)unregisterExtension:(NSString *)extensionName
+{
+	[self unregisterExtensionWithName:extensionName];
+}
+
+/**
+ * DEPRECATED in v2.5
+ * 
+ * Use asyncUnregisterExtensionWithName:completionBlock: instead.
+**/
+- (void)asyncUnregisterExtension:(NSString *)extensionName
+                 completionBlock:(dispatch_block_t)completionBlock
+{
+	[self asyncUnregisterExtensionWithName:extensionName
+	                       completionBlock:completionBlock];
+}
+
+/**
+ * DEPRECATED in v2.5
+ * 
+ * Use asyncUnregisterExtensionWithName:completionBlock:completionQueue: instead.
+**/
+- (void)asyncUnregisterExtension:(NSString *)extensionName
+                 completionBlock:(dispatch_block_t)completionBlock
+                 completionQueue:(dispatch_queue_t)completionQueue
+{
+	[self asyncUnregisterExtensionWithName:extensionName
+	                       completionBlock:completionBlock
+	                       completionQueue:completionQueue];
 }
 
 /**

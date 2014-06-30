@@ -2525,7 +2525,7 @@
 	
 	// Now drop the view
 	
-	[database unregisterExtension:@"order"];
+	[database unregisterExtensionWithName:@"order"];
 	
 	// Now make sure it's gone
 	

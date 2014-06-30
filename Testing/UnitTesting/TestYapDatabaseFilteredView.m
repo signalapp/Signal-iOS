@@ -574,7 +574,7 @@
 	
 	// Now unregister the view, and make sure it automatically unregisters the filteredView too.
 	
-	[database unregisterExtension:@"order"];
+	[database unregisterExtensionWithName:@"order"];
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
@@ -707,7 +707,7 @@
 	
 	// Now unregister the view, and make sure it automatically unregisters both filteredViews too.
 	
-	[database unregisterExtension:@"order"];
+	[database unregisterExtensionWithName:@"order"];
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
@@ -1503,8 +1503,8 @@
     
     [[NSNotificationCenter defaultCenter] removeObserver:observer];
     
-    [database unregisterExtension:@"order"];
-//	[database unregisterExtension:@"filter"]; // <- will get automatically unregistered with order (b/c of dependency)
+    [database unregisterExtensionWithName:@"order"];
+	// The @"filter" extension will get automatically unregistered with order (b/c of dependency)
 }
 
 @end
