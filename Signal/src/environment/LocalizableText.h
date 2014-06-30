@@ -116,6 +116,10 @@
 #define ANSWER_CALL_BUTTON_TITLE NSLocalizedString(@"ANSWER_CALL_BUTTON_TITLE", @"")
 #define REJECT_CALL_BUTTON_TITLE NSLocalizedString(@"REJECT_CALL_BUTTON_TITLE", @"")
 
+#define REGISTER_ERROR_ALERT_VIEW_TITLE NSLocalizedString(@"REGISTRATION_ERROR", @"")
+#define REGISTER_ERROR_ALERT_VIEW_BODY  NSLocalizedString(@"REGISTRATION_BODY", @"")
+#define REGISTER_ERROR_ALERT_VIEW_DISMISS NSLocalizedString(@"OK", @"")
+
 #pragma mark - Invite Users
 
 #define INVITE_USERS_ACTION_SHEET_TITLE NSLocalizedString(@"INVITE_USERS_ACTION_SHEET_TITLE", @"");
@@ -132,7 +136,6 @@
 
 #define TIMEOUT                         NSLocalizedString(@"TIMEOUT",@"")
 #define TIMEOUT_CONTACTS_DETAIL         NSLocalizedString(@"TIMEOUT_CONTACTS_DETAIL", @"")
-
 
 NSDictionary* makeCallProgressLocalizedTextDictionary(void);
 NSDictionary* makeCallTerminationLocalizedTextDictionary(void);

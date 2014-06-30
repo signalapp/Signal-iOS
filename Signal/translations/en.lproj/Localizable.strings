@@ -101,6 +101,8 @@
 "REGISTER_VALIDATION_ENTER_CODE" = "Validation Code";
 "REGISTER_VALIDATION_SENT" = "We sent your validation code";
 "REGISTER_WELCOME_TEXT" = "Welcome to Signal";
+"REGISTRATION_ERROR" = "Registration Error";
+"REGISTRATION_BODY" = "We couldn't reach the Signal server. Please try again.";
 "REJECT_CALL_BUTTON_TITLE" = "Reject";
 "SETTINGS_ANONYMOUS_FEEDBACK" = "Send Anonymous Feedback";
 "SETTINGS_CALL_QUALITY" = "Call Quality";
