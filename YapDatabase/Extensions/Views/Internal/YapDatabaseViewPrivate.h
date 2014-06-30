@@ -10,6 +10,8 @@
 #import "YapDatabaseViewTransaction.h"
 #import "YapDatabaseViewState.h"
 
+#import "YapDatabaseExtensionPrivate.h"
+
 #import "YapMemoryTable.h"
 
 #import "sqlite3.h"
@@ -24,22 +26,28 @@
 **/
 #define YAP_DATABASE_VIEW_CLASS_VERSION 3
 
-static NSString *const changeset_key_state      = @"state";
-static NSString *const changeset_key_dirtyMaps  = @"dirtyMaps";
-static NSString *const changeset_key_dirtyPages = @"dirtyPages";
-static NSString *const changeset_key_reset      = @"reset";
-static NSString *const changeset_key_changes    = @"changes";
+static NSString *const changeset_key_state             = @"state";
+static NSString *const changeset_key_dirtyMaps         = @"dirtyMaps";
+static NSString *const changeset_key_dirtyPages        = @"dirtyPages";
+static NSString *const changeset_key_reset             = @"reset";
+
+static NSString *const changeset_key_groupingBlock     = @"groupingBlock";
+static NSString *const changeset_key_groupingBlockType = @"groupingBlockType";
+static NSString *const changeset_key_sortingBlock      = @"sortingBlock";
+static NSString *const changeset_key_sortingBlockType  = @"sortingBlockType";
+static NSString *const changeset_key_versionTag        = @"versionTag";
+
+static NSString *const changeset_key_changes           = @"changes";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface YapDatabaseView () {
-@private
+@protected
 	
 	YapDatabaseViewState *latestState;
 	
-@public
 	YapDatabaseViewGroupingBlock groupingBlock;
 	YapDatabaseViewSortingBlock sortingBlock;
 	
@@ -47,6 +55,8 @@ static NSString *const changeset_key_changes    = @"changes";
 	YapDatabaseViewBlockType sortingBlockType;
 	
 	NSString *versionTag;
+	
+@public
 	
 	YapDatabaseViewOptions *options;
 }
@@ -69,6 +79,18 @@ static NSString *const changeset_key_changes    = @"changes";
 	
 	id sharedKeySetForInternalChangeset;
 	id sharedKeySetForExternalChangeset;
+	
+	YapDatabaseViewGroupingBlock groupingBlock;
+	YapDatabaseViewSortingBlock sortingBlock;
+	
+	YapDatabaseViewBlockType groupingBlockType;
+	YapDatabaseViewBlockType sortingBlockType;
+	
+	NSString *versionTag;
+	
+	BOOL groupingBlockChanged;
+	BOOL sortingBlockChanged;
+	BOOL versionTagChanged;
 	
 @public
 	
@@ -95,6 +117,8 @@ static NSString *const changeset_key_changes    = @"changes";
 - (id)initWithView:(YapDatabaseView *)view databaseConnection:(YapDatabaseConnection *)dbc;
 - (void)_flushStatements;
 
+- (BOOL)isPersistentView;
+
 - (void)prepareForReadWriteTransaction;
 - (void)postRollbackCleanup;
 - (void)postCommitCleanup;
@@ -114,6 +138,26 @@ static NSString *const changeset_key_changes    = @"changes";
 - (sqlite3_stmt *)pageTable_updateLinkForPageKeyStatement;
 - (sqlite3_stmt *)pageTable_removeForPageKeyStatement;
 - (sqlite3_stmt *)pageTable_removeAllStatement;
+
+- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)newGroupingBlock
+       groupingBlockType:(YapDatabaseViewBlockType)newGroupingBlockType
+            sortingBlock:(YapDatabaseViewSortingBlock)newSortingBlock
+        sortingBlockType:(YapDatabaseViewBlockType)newSortingBlockType
+              versionTag:(NSString *)newVersionTag;
+
+- (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
+       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+            sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
+        sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr;
+
+- (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
+       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr;
+
+- (void)getSortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
+       sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr;
+
+- (void)getGroupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+            sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr;
 
 @end
 

@@ -94,16 +94,24 @@
 		return [number1 compare:number2];
 	};
 	
+	NSString *order_initialVersionTag = @"1";
+	
 	YapDatabaseView *view =
 	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
 	                               groupingBlockType:groupingBlockType
 	                                    sortingBlock:sortingBlock
 	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"1"
+	                                      versionTag:order_initialVersionTag
 	                                         options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		NSString *versionTag = [[transaction ext:@"order"] versionTag];
+		XCTAssert([versionTag isEqualToString:order_initialVersionTag], @"Bad versionTag");
+	}];
 	
 	YapDatabaseViewBlockType filteringBlockType;
 	YapDatabaseViewFilteringBlock filteringBlock;
@@ -119,13 +127,22 @@
 			return NO;  // odd
 	};
 	
+	NSString *filter_initialVersionTag = @"1";
+	
 	YapDatabaseFilteredView *filteredView =
 	  [[YapDatabaseFilteredView alloc] initWithParentViewName:@"order"
 	                                           filteringBlock:filteringBlock
-	                                       filteringBlockType:filteringBlockType];
+	                                       filteringBlockType:filteringBlockType
+	                                               versionTag:filter_initialVersionTag];
 	
 	BOOL registerResult2 = [database registerExtension:filteredView withName:@"filter"];
 	XCTAssertTrue(registerResult2, @"Failure registering filteredView extension");
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		NSString *versionTag = [[transaction ext:@"filter"] versionTag];
+		XCTAssert([versionTag isEqualToString:filter_initialVersionTag], @"Bad versionTag");
+	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		

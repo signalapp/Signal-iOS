@@ -11,6 +11,12 @@
 **/
 #define YAP_DATABASE_SEARCH_RESULTS_VIEW_CLASS_VERSION 1
 
+/**
+ * Changeset keys (for changeset notification dictionary)
+**/
+static NSString *const changeset_key_query = @"query";
+
+
 @interface YapDatabaseSearchResultsView () {
 @public
 	
@@ -41,6 +47,11 @@
 - (sqlite3_stmt *)snippetTable_setForRowidStatement;
 - (sqlite3_stmt *)snippetTable_removeForRowidStatement;
 - (sqlite3_stmt *)snippetTable_removeAllStatement;
+
+- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)newGroupingBlock
+       groupingBlockType:(YapDatabaseViewBlockType)newGroupingBlockType
+            sortingBlock:(YapDatabaseViewSortingBlock)newSortingBlock
+        sortingBlockType:(YapDatabaseViewBlockType)newSortingBlockType;
 
 @end
 

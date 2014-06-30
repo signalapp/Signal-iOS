@@ -24,6 +24,7 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 
 + (void)dropTablesForRegisteredName:(NSString *)registeredName
                     withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                      wasPersistent:(BOOL)wasPersistent
 {
 	sqlite3 *db = transaction->connection->db;
 	

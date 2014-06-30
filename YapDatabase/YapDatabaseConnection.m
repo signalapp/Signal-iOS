@@ -29,10 +29,10 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
-#define UNLIMITED_CACHE_LIMIT          0
-#define MIN_KEY_CACHE_LIMIT          500
-#define DEFAULT_OBJECT_CACHE_LIMIT   250
-#define DEFAULT_METADATA_CACHE_LIMIT 500
+static NSUInteger const UNLIMITED_CACHE_LIMIT = 0;
+static NSUInteger const MIN_KEY_CACHE_LIMIT   = 500;
+
+static NSString *const ExtKey_class = @"class";
 
 
 @implementation YapDatabaseConnection {
@@ -241,11 +241,11 @@
 	// This method is invoked from our connectionQueue, within the snapshotQueue.
 	// Don't do anything expensive here that might tie up the snapshotQueue.
 	
-	snapshot = [database snapshot];
-	registeredExtensions = [database registeredExtensions];
-	registeredTables = [database registeredTables];
-	extensionsOrder = [database extensionsOrder];
-	extensionDependencies = [database extensionDependencies];
+	snapshot               = [database snapshot];
+	registeredExtensions   = [database registeredExtensions];
+	registeredMemoryTables = [database registeredMemoryTables];
+	extensionsOrder        = [database extensionsOrder];
+	extensionDependencies  = [database extensionDependencies];
 	
 	extensionsReady = ([registeredExtensions count] == 0);
 }
@@ -1861,7 +1861,7 @@
 		
 		[database asyncCheckpoint:minSnapshot];
 		
-		[registeredTables enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		[registeredMemoryTables enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 			
 			[(YapMemoryTable *)obj asyncCheckpoint:minSnapshot];
 		}];
@@ -2105,7 +2105,7 @@
 		{
 			if ([registeredExtensions objectForKey:prevExtensionName] == nil)
 			{
-				[self _unregisterExtension:prevExtensionName withTransaction:transaction];
+				[self _unregisterExtensionWithName:prevExtensionName transaction:transaction];
 			}
 		}
 		
@@ -2270,7 +2270,7 @@
 		{
 			[database asyncCheckpoint:snapshot];
 			
-			[registeredTables enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+			[registeredMemoryTables enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 				
 				[(YapMemoryTable *)obj asyncCheckpoint:snapshot];
 			}];
@@ -2618,9 +2618,9 @@
 	return @[ YapDatabaseSnapshotKey,
 	          YapDatabaseExtensionsKey,
 	          YapDatabaseRegisteredExtensionsKey,
-	          YapDatabaseRegisteredTablesKey,
-			  YapDatabaseExtensionsOrderKey,
-			  YapDatabaseExtensionDependenciesKey,
+	          YapDatabaseRegisteredMemoryTablesKey,
+	          YapDatabaseExtensionsOrderKey,
+	          YapDatabaseExtensionDependenciesKey,
 	          YapDatabaseNotificationKey,
 	          YapDatabaseObjectChangesKey,
 	          YapDatabaseMetadataChangesKey,
@@ -2728,12 +2728,12 @@
 		[internalChangeset setObject:extensionDependencies forKey:YapDatabaseExtensionDependenciesKey];
 	}
 	
-	if (registeredTablesChanged)
+	if (registeredMemoryTablesChanged)
 	{
 		if (internalChangeset == nil)
 			internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
 		
-		[internalChangeset setObject:registeredTables forKey:YapDatabaseRegisteredTablesKey];
+		[internalChangeset setObject:registeredMemoryTables forKey:YapDatabaseRegisteredMemoryTablesKey];
 	}
 	
 	// Step 2 of 2 - Process database changes
@@ -2755,46 +2755,45 @@
 		
 		if ([objectChanges count] > 0)
 		{
-			[internalChangeset setObject:objectChanges forKey:YapDatabaseObjectChangesKey];
+			internalChangeset[YapDatabaseObjectChangesKey] = objectChanges;
 			
 			YapSet *immutableObjectChanges = [[YapSet alloc] initWithDictionary:objectChanges];
-			[externalChangeset setObject:immutableObjectChanges forKey:YapDatabaseObjectChangesKey];
+			externalChangeset[YapDatabaseObjectChangesKey] = immutableObjectChanges;
 		}
 		
 		if ([metadataChanges count] > 0)
 		{
-			[internalChangeset setObject:metadataChanges forKey:YapDatabaseMetadataChangesKey];
+			internalChangeset[YapDatabaseMetadataChangesKey] = metadataChanges;
 			
 			YapSet *immutableMetadataChanges = [[YapSet alloc] initWithDictionary:metadataChanges];
-			[externalChangeset setObject:immutableMetadataChanges forKey:YapDatabaseMetadataChangesKey];
+			externalChangeset[YapDatabaseMetadataChangesKey] = immutableMetadataChanges;
 		}
 		
 		if ([removedKeys count] > 0)
 		{
-			[internalChangeset setObject:removedKeys forKey:YapDatabaseRemovedKeysKey];
+			internalChangeset[YapDatabaseRemovedKeysKey] = removedKeys;
 			
 			YapSet *immutableRemovedKeys = [[YapSet alloc] initWithSet:removedKeys];
-			[externalChangeset setObject:immutableRemovedKeys forKey:YapDatabaseRemovedKeysKey];
+			externalChangeset[YapDatabaseRemovedKeysKey] = immutableRemovedKeys;
 		}
 		
 		if ([removedCollections count] > 0)
 		{
-			[internalChangeset setObject:removedCollections forKey:YapDatabaseRemovedCollectionsKey];
+			internalChangeset[YapDatabaseRemovedCollectionsKey] = removedCollections;
 			
 			YapSet *immutableRemovedCollections = [[YapSet alloc] initWithSet:removedCollections];
-			[externalChangeset setObject:immutableRemovedCollections
-			                      forKey:YapDatabaseRemovedCollectionsKey];
+			externalChangeset[YapDatabaseRemovedCollectionsKey] = immutableRemovedCollections;
 		}
 		
 		if ([removedRowids count] > 0)
 		{
-			[internalChangeset setObject:removedRowids forKey:YapDatabaseRemovedRowidsKey];
+			internalChangeset[YapDatabaseRemovedRowidsKey] = removedRowids;
 		}
 		
 		if (allKeysRemoved)
 		{
-			[internalChangeset setObject:@(YES) forKey:YapDatabaseAllKeysRemovedKey];
-			[externalChangeset setObject:@(YES) forKey:YapDatabaseAllKeysRemovedKey];
+			internalChangeset[YapDatabaseAllKeysRemovedKey] = @(YES);
+			externalChangeset[YapDatabaseAllKeysRemovedKey] = @(YES);
 		}
 	}
 	
@@ -2841,11 +2840,10 @@
 	
 	// Did registered memory tables change ?
 	
-	NSDictionary *changeset_registeredTables = [changeset objectForKey:YapDatabaseRegisteredTablesKey];
-	if (changeset_registeredTables)
+	NSDictionary *changeset_registeredMemoryTables = [changeset objectForKey:YapDatabaseRegisteredMemoryTablesKey];
+	if (changeset_registeredMemoryTables)
 	{
-		// Retain new list
-		registeredTables = changeset_registeredTables;
+		registeredMemoryTables = changeset_registeredMemoryTables;
 	}
 	
 	// Allow extensions to process their individual changesets
@@ -3623,6 +3621,7 @@
 		// Set the registeredName now.
 		// The extension will need this in order to perform the registration tasks such as creating tables, etc.
 		extension.registeredName = extensionName;
+		extension.registeredDatabase = database;
 		
 		YapDatabaseExtensionConnection *extensionConnection;
 		YapDatabaseExtensionTransaction *extensionTransaction;
@@ -3632,7 +3631,8 @@
 		
 		BOOL needsClassValue = NO;
 		[self willRegisterExtension:extension
-		            withTransaction:transaction
+		                   withName:extensionName
+		                transaction:transaction
 		            needsClassValue:&needsClassValue];
 		
 		result = [extensionTransaction createIfNeeded];
@@ -3640,17 +3640,20 @@
 		if (result)
 		{
 			[self didRegisterExtension:extension
-			           withTransaction:transaction
+			                  withName:extensionName
+			               transaction:transaction
 			           needsClassValue:needsClassValue];
 			
-			[self addRegisteredExtensionConnection:extensionConnection];
-			[transaction addRegisteredExtensionTransaction:extensionTransaction];
+			[self addRegisteredExtensionConnection:extensionConnection withName:extensionName];
+			[transaction addRegisteredExtensionTransaction:extensionTransaction withName:extensionName];
 		}
 		else
 		{
 			// Registration failed.
 			
 			extension.registeredName = nil;
+			extension.registeredDatabase = nil;
+			
 			[transaction rollback];
 		}
 		
@@ -3661,7 +3664,7 @@
 	return result;
 }
 
-- (void)unregisterExtension:(NSString *)extensionName
+- (void)unregisterExtensionWithName:(NSString *)extensionName
 {
 	NSAssert(dispatch_get_specific(database->IsOnWriteQueueKey), @"Must go through writeQueue.");
 	
@@ -3674,8 +3677,9 @@
 		
 		YapDatabaseExtension *extension = [registeredExtensions objectForKey:extensionName];
 		
-		[self _unregisterExtension:extensionName withTransaction:transaction];
+		[self _unregisterExtensionWithName:extensionName transaction:transaction];
 		extension.registeredName = nil;
+		extension.registeredDatabase = nil;
 		
 		// Automatically unregister any extensions that were dependent upon this one.
 		
@@ -3706,7 +3710,7 @@
 				
 				YapDatabaseExtension *dependentExt = [registeredExtensions objectForKey:dependentExtName];
 				
-				[self _unregisterExtension:dependentExtName withTransaction:transaction];
+				[self _unregisterExtensionWithName:dependentExtName transaction:transaction];
 				dependentExt.registeredName = nil;
 				
 				// And now we need to check and see if there were any extensions dependent upon this new one.
@@ -3731,10 +3735,29 @@
 	}});
 }
 
-- (void)_unregisterExtension:(NSString *)extensionName withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)_unregisterExtensionWithName:(NSString *)extensionName
+                         transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-	NSString *className = [transaction stringValueForKey:@"class" extension:extensionName];
-	Class class = NSClassFromString(className);
+	NSString *className = nil;
+	Class class = NULL;
+	
+	BOOL wasPersistent;
+	
+	YapMemoryTableTransaction *memoryTableTransaction = [transaction memoryTableTransaction:@"yap"];
+	YapCollectionKey *classKey = [[YapCollectionKey alloc] initWithCollection:extensionName key:ExtKey_class];
+	
+	className = [memoryTableTransaction objectForKey:classKey];
+	if (className)
+	{
+		wasPersistent = NO;
+	}
+	else
+	{
+		className = [transaction stringValueForKey:ExtKey_class extension:extensionName];
+		wasPersistent = YES;
+	}
+	
+	class = NSClassFromString(className);
 	
 	if (className == nil)
 	{
@@ -3751,37 +3774,75 @@
 	else
 	{
 		// Drop tables
-		[class dropTablesForRegisteredName:extensionName withTransaction:transaction];
+		[class dropTablesForRegisteredName:extensionName withTransaction:transaction wasPersistent:wasPersistent];
 		
-		// Drop preferences (rows in yap2 table)
-		[transaction removeAllValuesForExtension:extensionName];
+		// Drop preferences
+		if (wasPersistent)
+		{
+			// remove rows in yap2 table (where extension == extensionName)
+			[transaction removeAllValuesForExtension:extensionName];
+		}
+		else
+		{
+			// remove rows in yap memory table (where collectionKey.collection == extensionName)
+			NSMutableArray *keysToRemove = [NSMutableArray array];
+			
+			[memoryTableTransaction enumerateKeysWithBlock:^(id key, BOOL *stop) {
+				
+				__unsafe_unretained YapCollectionKey *ck = (YapCollectionKey *)key;
+				if ([ck.collection isEqualToString:extensionName])
+				{
+					[keysToRemove addObject:ck];
+				}
+			}];
+			
+			[memoryTableTransaction removeObjectsForKeys:keysToRemove];
+		}
 		
 		// Remove from registeredExtensions, extensionsOrder & extensionDependencies (if needed)
-		[self didUnregisterExtension:extensionName];
+		[self didUnregisterExtensionWithName:extensionName];
 		
 		// Remove YapDatabaseExtensionConnection subclass instance (if needed)
-		[self removeRegisteredExtensionConnection:extensionName];
+		[self removeRegisteredExtensionConnectionWithName:extensionName];
 		
 		// Remove YapDatabaseExtensionTransaction subclass instance (if needed)
-		[transaction removeRegisteredExtensionTransaction:extensionName];
+		[transaction removeRegisteredExtensionTransactionWithName:extensionName];
 	}
 }
 
 - (void)willRegisterExtension:(YapDatabaseExtension *)extension
-              withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                     withName:(NSString *)extensionName
+                transaction:(YapDatabaseReadWriteTransaction *)transaction
               needsClassValue:(BOOL *)needsClassValuePtr
 {
 	// This method is INTERNAL
-	//
+	
+	// Check to see if we should create the YapMemoryTable.
+	// We create this on demand the first time an extension is registered.
+	
+	if ([registeredMemoryTables objectForKey:@"yap"] == nil)
+	{
+		YapMemoryTable *memoryTable = [[YapMemoryTable alloc] initWithKeyClass:[YapCollectionKey class]];
+		
+		[self registerMemoryTable:memoryTable withName:@"yap"];
+	}
+	
+	// Special handling for non-persistent (in-memory only) extensions.
+	
+	if (![extension isPersistent])
+	{
+		// First time registration
+		*needsClassValuePtr = YES;
+		return;
+	}
+	
 	// The class name of every registered extension is recorded in the yap2 table.
 	// We ensure that re-registrations under the same name use the same extension class.
 	// If we detect a change, we auto-unregister the previous extension.
 	//
 	// Note: @"class" is a reserved key for all extensions.
 	
-	NSString *extensionName = extension.registeredName;
-	
-	NSString *prevExtensionClassName = [transaction stringValueForKey:@"class" extension:extensionName];
+	NSString *prevExtensionClassName = [transaction stringValueForKey:ExtKey_class extension:extensionName];
 	if (prevExtensionClassName == nil)
 	{
 		// First time registration
@@ -3826,7 +3887,7 @@
 	else
 	{
 		// Drop tables
-		[prevExtensionClass dropTablesForRegisteredName:extensionName withTransaction:transaction];
+		[prevExtensionClass dropTablesForRegisteredName:extensionName withTransaction:transaction wasPersistent:YES];
 		
 		// Drop preferences (rows in yap2 table)
 		[transaction removeAllValuesForExtension:extensionName];
@@ -3836,20 +3897,27 @@
 }
 
 - (void)didRegisterExtension:(YapDatabaseExtension *)extension
-             withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                    withName:(NSString *)extensionName
+                 transaction:(YapDatabaseReadWriteTransaction *)transaction
              needsClassValue:(BOOL)needsClassValue
 {
 	// This method is INTERNAL
 	
-	NSString *extensionName = extension.registeredName;
-	
-	// Record the class name of the extension in the yap2 table.
+	// Record the class name of the extension in the yap2 table (if needed)
 	
 	if (needsClassValue)
 	{
 		NSString *extensionClassName = NSStringFromClass([extension class]);
 		
-		[transaction setStringValue:extensionClassName forKey:@"class" extension:extensionName];
+		if ([extension isPersistent])
+		{
+			[transaction setStringValue:extensionClassName forKey:ExtKey_class extension:extensionName];
+		}
+		else
+		{
+			YapCollectionKey *classKey = [[YapCollectionKey alloc] initWithCollection:extensionName key:ExtKey_class];
+			[[transaction memoryTableTransaction:@"yap"] setObject:extensionClassName forKey:classKey];
+		}
 	}
 	
 	// Update the list of registered extensions.
@@ -3880,7 +3948,7 @@
 	registeredExtensionsChanged = YES;
 }
 
-- (void)didUnregisterExtension:(NSString *)extensionName
+- (void)didUnregisterExtensionWithName:(NSString *)extensionName
 {
 	// This method is INTERNAL
 	
@@ -3913,19 +3981,17 @@
 	}
 }
 
-- (void)addRegisteredExtensionConnection:(YapDatabaseExtensionConnection *)extConnection
+- (void)addRegisteredExtensionConnection:(YapDatabaseExtensionConnection *)extConnection withName:(NSString *)extName
 {
 	// This method is INTERNAL
 	
 	if (extensions == nil)
 		extensions = [[NSMutableDictionary alloc] init];
 	
-	NSString *extName = [[extConnection extension] registeredName];
-	
 	[extensions setObject:extConnection forKey:extName];
 }
 
-- (void)removeRegisteredExtensionConnection:(NSString *)extName
+- (void)removeRegisteredExtensionConnectionWithName:(NSString *)extName
 {
 	// This method is INTERNAL
 	
@@ -3936,40 +4002,40 @@
 #pragma mark Memory Tables
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (NSDictionary *)registeredTables
+- (NSDictionary *)registeredMemoryTables
 {
 	// This method is INTERNAL
 	
-	return registeredTables;
+	return registeredMemoryTables;
 }
 
-- (BOOL)registerTable:(YapMemoryTable *)table withName:(NSString *)name
+- (BOOL)registerMemoryTable:(YapMemoryTable *)table withName:(NSString *)name
 {
 	// This method is INTERNAL
 	
-	if ([registeredTables objectForKey:name])
+	if ([registeredMemoryTables objectForKey:name])
 		return NO;
 	
-	NSMutableDictionary *newRegisteredTables = [registeredTables mutableCopy];
-	[newRegisteredTables setObject:table forKey:name];
+	NSMutableDictionary *newRegisteredMemoryTables = [registeredMemoryTables mutableCopy];
+	[newRegisteredMemoryTables setObject:table forKey:name];
 	
-	registeredTables = [newRegisteredTables copy];
-	registeredTablesChanged = YES;
+	registeredMemoryTables = [newRegisteredMemoryTables copy];
+	registeredMemoryTablesChanged = YES;
 	
 	return YES;
 }
 
-- (void)unregisterTableWithName:(NSString *)name
+- (void)unregisterMemoryTableWithName:(NSString *)name
 {
 	// This method is INTERNAL
 	
-	if ([registeredTables objectForKey:name])
+	if ([registeredMemoryTables objectForKey:name])
 	{
-		NSMutableDictionary *newRegisteredTables = [registeredTables mutableCopy];
-		[newRegisteredTables removeObjectForKey:name];
+		NSMutableDictionary *newRegisteredMemoryTables = [registeredMemoryTables mutableCopy];
+		[newRegisteredMemoryTables removeObjectForKey:name];
 		
-		registeredTables = [newRegisteredTables copy];
-		registeredTablesChanged = YES;
+		registeredMemoryTables = [newRegisteredMemoryTables copy];
+		registeredMemoryTablesChanged = YES;
 	}
 }
 

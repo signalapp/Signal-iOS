@@ -6,6 +6,7 @@
 
 + (void)dropTablesForRegisteredName:(NSString *)registeredName
                     withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                      wasPersistent:(BOOL)wasPersistent
 {
 	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -18,7 +19,7 @@
  * extension class that it was previously using. If the class names differ, then the extension architecture
  * will automatically try to unregister the previous extension using the previous extension class.
  *
- * That is, it will attempt to invoke [PreviousExtensionClass dropTablesForRegisteredName: withTransaction:].
+ * That is, it will attempt to invoke [PreviousExtensionClass dropTablesForRegisteredName: withTransaction::].
  * Of course this won't work because the PreviousExtensionClass no longer exists.
  * So the end result is that you will likely see the database spit out a warning like this:
  *
@@ -37,10 +38,11 @@
 }
 
 /**
- * Read-only property.
+ * Read-only properties.
  * Automatically set by YapDatabase instance during the registration process.
 **/
 @synthesize registeredName;
+@synthesize registeredDatabase;
 
 /**
  * Subclasses MUST implement this method.
@@ -68,6 +70,15 @@
 - (NSSet *)dependencies
 {
 	return nil;
+}
+
+/**
+ * Subclasses MUST implement this method IF they are non-persistent (in-memory only).
+ * By doing so, they allow various optimizations, such as not persisting extension info in the yap2 table.
+**/
+- (BOOL)isPersistent
+{
+	return YES;
 }
 
 /**

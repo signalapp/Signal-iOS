@@ -348,7 +348,24 @@
 	if (searchQueue == nil)
 		searchQueue = [[YapDatabaseSearchQueue alloc] init];
 	
-	[searchQueue enqueueQuery:searchString];
+	// Parse the text into a proper search query
+	
+	NSCharacterSet *whitespace = [NSCharacterSet whitespaceCharacterSet];
+	
+	NSArray *searchComponents = [searchString componentsSeparatedByCharactersInSet:whitespace];
+	NSMutableString *query = [NSMutableString string];
+	
+	for (NSString *term in searchComponents)
+	{
+		if ([term length] > 0)
+			[query appendString:@""];
+		
+		[query appendFormat:@"%@*", term];
+	}
+	
+	DDLogVerbose(@"searchString(%@) -> query(%@)", searchString, query);
+	
+	[searchQueue enqueueQuery:query];
 	
 	[searchConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		

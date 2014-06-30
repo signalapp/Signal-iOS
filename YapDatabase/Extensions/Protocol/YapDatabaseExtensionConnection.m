@@ -4,12 +4,6 @@
 
 @implementation YapDatabaseExtensionConnection
 
-- (YapDatabaseExtension *)extension
-{
-	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
-	return nil;
-}
-
 - (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
@@ -41,6 +35,14 @@
 - (void)processChangeset:(NSDictionary *)changeset
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
+}
+
+#pragma mark Generic Accessor
+
+- (YapDatabaseExtension *)extension
+{
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
+	return nil;
 }
 
 @end

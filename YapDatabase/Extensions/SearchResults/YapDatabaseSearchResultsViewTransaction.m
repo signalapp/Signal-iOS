@@ -24,11 +24,10 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
-#define ExtKey_superclassVersion  @"viewClassVersion"
-#define ExtKey_subclassVersion    @"searchResultViewClassVersion"
-#define ExtKey_persistent         @"persistent"
-#define ExtKey_versionTag         @"versionTag"
-#define ExtKey_query              @"query"
+static NSString *const ExtKey_superclassVersion = @"viewClassVersion";
+static NSString *const ExtKey_subclassVersion   = @"searchResultViewClassVersion";
+static NSString *const ExtKey_versionTag        = @"versionTag";
+static NSString *const ExtKey_query             = @"query";
 
 
 @implementation YapDatabaseSearchResultsViewTransaction
@@ -74,130 +73,128 @@
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseSearchResultsView *searchResultsView =
-	  (YapDatabaseSearchResultsView *)(viewConnection->view);
-	
-	int superclassVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
-	int subclassVersion = YAP_DATABASE_SEARCH_RESULTS_VIEW_CLASS_VERSION;
-	
-	NSString *versionTag = searchResultsView->versionTag;
-	
-	BOOL isPersistent = [self isPersistentView];
-	
-	// We need to check several things:
-	// - do we need to delete the old table(s) ?
-	// - do we need to create the table(s) ?
-	// - do we need to (re)populate the table(s) ?
-	
-	BOOL needsCreateTables = NO;
-	
-	int oldSuperclassVersion;
-	BOOL hasOldSuperclassVersion;
-	
-	int oldSubclassVersion;
-	BOOL hasOldSubclassVersion;
-	
-	BOOL oldIsPersistent = NO;
-	BOOL hasOldIsPersistent = NO;
-	
-	NSString *oldVersionTag = nil;
-	
-	// Check classVersion (the internal version number of view implementation)
-	
-	oldSuperclassVersion = 0;
-	hasOldSuperclassVersion = [self getIntValue:&oldSuperclassVersion forExtensionKey:ExtKey_superclassVersion];
-	
-	oldSubclassVersion = 0;
-	hasOldSubclassVersion = [self getIntValue:&oldSubclassVersion forExtensionKey:ExtKey_subclassVersion];
-	
-	if (!hasOldSuperclassVersion || !hasOldSuperclassVersion)
+	if (![self isPersistentView])
 	{
-		needsCreateTables = YES;
-	}
-	else if ((oldSuperclassVersion != superclassVersion) ||
-	         (oldSubclassVersion != subclassVersion))
-	{
-		if (oldSuperclassVersion != superclassVersion) {
-			[self dropTablesForOldClassVersion:oldSuperclassVersion];
-		}
-		if (oldSubclassVersion != subclassVersion) {
-			[self dropTablesForOldSubclassVersion:oldSubclassVersion];
-		}
-		
-		needsCreateTables = YES;
-	}
-	
-	// Check persistence.
-	// Need to properly transition from persistent to non-persistent, and vice-versa.
-	
-	if (!needsCreateTables)
-	{
-		hasOldIsPersistent = [self getBoolValue:&oldIsPersistent forExtensionKey:ExtKey_persistent];
-		
-		if (hasOldIsPersistent && oldIsPersistent && !isPersistent)
-		{
-			__unsafe_unretained YapDatabaseReadWriteTransaction *rwDatabaseTransaction =
-			  (YapDatabaseReadWriteTransaction *)databaseTransaction;
-			
-			[[searchResultsView class] dropTablesForRegisteredName:[self registeredName]
-			                                       withTransaction:rwDatabaseTransaction];
-		}
-		
-		if (!hasOldIsPersistent || (oldIsPersistent != isPersistent))
-		{
-			needsCreateTables = YES;
-		}
-		else if (!isPersistent)
-		{
-			// We always have to create & populate the tables for non-persistent views.
-			// Even when re-registering from previous app launch.
-			needsCreateTables = YES;
-			
-			oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag];
-		}
-	}
-	
-	// Create or re-populate if needed
-	
-	if (needsCreateTables)
-	{
-		// First time registration
+		// We're registering an In-Memory-Only View (non-persistent) (not stored in the database).
+		// So we can skip all the checks because we know we need to create the memory tables.
 		
 		if (![self createTables]) return NO;
 		if (![self populateView]) return NO;
 		
-		if (!hasOldSuperclassVersion || (oldSuperclassVersion != superclassVersion)) {
-			[self setIntValue:superclassVersion forExtensionKey:ExtKey_superclassVersion];
+		// If there was a previously registered persistent view with this name,
+		// then we should drop those tables from the database.
+		
+		BOOL dropPersistentTables = [self getIntValue:NULL forExtensionKey:ExtKey_superclassVersion persistent:YES];
+		if (dropPersistentTables)
+		{
+			[[viewConnection->view class]
+			  dropTablesForRegisteredName:[self registeredName]
+			              withTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
+			                wasPersistent:YES];
 		}
 		
-		if (!hasOldSubclassVersion || (oldSubclassVersion != subclassVersion)) {
-			[self setIntValue:subclassVersion forExtensionKey:ExtKey_subclassVersion];
-		}
-		
-		if (!hasOldIsPersistent || (oldIsPersistent != isPersistent)) {
-			[self setBoolValue:isPersistent forExtensionKey:ExtKey_persistent];
-		}
-		
-		if (![oldVersionTag isEqualToString:versionTag]) {
-			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
-		}
+		return YES;
 	}
 	else
 	{
-		// Check versionTag.
-		// We need to re-populate the database if it changed.
+		int superclassVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
+		int subclassVersion = YAP_DATABASE_SEARCH_RESULTS_VIEW_CLASS_VERSION;
 		
-		oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag];
+		NSString *versionTag = [viewConnection->view versionTag]; // MUST get init value from view
 		
-		if (![oldVersionTag isEqualToString:versionTag])
+		// Figure out what steps we need to take in order to register the view
+		//
+		// We need to check several things:
+		// - do we need to delete the old table(s) ?
+		// - do we need to create the table(s) ?
+		// - do we need to (re)populate the table(s) ?
+		
+		BOOL needsCreateTables = NO;
+		BOOL needsPopulateView = NO;
+		
+		// Check classVersion (the internal version number of view implementation)
+		
+		int oldSuperclassVersion = 0;
+		BOOL hasOldSuperclassVersion = [self getIntValue:&oldSuperclassVersion
+		                                 forExtensionKey:ExtKey_superclassVersion
+		                                      persistent:YES];
+		
+		int oldSubclassVersion = 0;
+		BOOL hasOldSubclassVersion = [self getIntValue:&oldSubclassVersion
+		                               forExtensionKey:ExtKey_subclassVersion
+		                                    persistent:YES];
+		
+		if (!hasOldSuperclassVersion || !hasOldSuperclassVersion)
+		{
+			needsCreateTables = YES;
+			needsPopulateView = YES;
+		}
+		else if ((oldSuperclassVersion != superclassVersion) ||
+		         (oldSubclassVersion != subclassVersion))
+		{
+			if (oldSuperclassVersion != superclassVersion) {
+				[self dropTablesForOldClassVersion:oldSuperclassVersion];
+			}
+			if (oldSubclassVersion != subclassVersion) {
+				[self dropTablesForOldSubclassVersion:oldSubclassVersion];
+			}
+			
+			needsCreateTables = YES;
+			needsPopulateView = YES;
+		}
+		
+		// Create the database tables (if needed)
+		
+		if (needsCreateTables)
+		{
+			if (![self createTables]) return NO;
+		}
+		
+		// Check other variables (if needed)
+		
+		NSString *oldVersionTag = nil;
+		
+		if (!hasOldSuperclassVersion || !hasOldSuperclassVersion)
+		{
+			// If there wasn't classVersion info in the table,
+			// then there won't be other values either.
+		}
+		else
+		{
+			// Check versionTag.
+			// We need to re-populate the database if it changed.
+			
+			oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag persistent:YES];
+			
+			if (![oldVersionTag isEqualToString:versionTag])
+			{
+				needsPopulateView = YES;
+			}
+		}
+		
+		// Repopulate table (if needed)
+		
+		if (needsPopulateView)
 		{
 			if (![self populateView]) return NO;
-			
-			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
 		}
+		
+		// Update yap2 table values (if needed)
+		
+		if (!hasOldSuperclassVersion || (oldSuperclassVersion != superclassVersion)) {
+			[self setIntValue:superclassVersion forExtensionKey:ExtKey_superclassVersion persistent:YES];
+		}
+		
+		if (!hasOldSubclassVersion || (oldSubclassVersion != subclassVersion)) {
+			[self setIntValue:subclassVersion forExtensionKey:ExtKey_subclassVersion persistent:YES];
+		}
+		
+		if (![oldVersionTag isEqualToString:versionTag]) {
+			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:YES];
+		}
+		
+		return YES;
 	}
-	
-	return YES;
 }
 
 /**
@@ -220,7 +217,7 @@
 	
 	if ([searchResultsConnection query] == nil)
 	{
-		NSString *query = [self stringValueForExtensionKey:ExtKey_query];
+		NSString *query = [self stringValueForExtensionKey:ExtKey_query persistent:[self isPersistentView]];
 		[searchResultsConnection setQuery:query isChange:NO];
 	}
 	
@@ -284,7 +281,7 @@
 		{
 			YapMemoryTable *snippetTable = [[YapMemoryTable alloc] initWithKeyClass:[NSNumber class]];
 			
-			if (![databaseTransaction->connection registerTable:snippetTable withName:snippetTableName])
+			if (![databaseTransaction->connection registerMemoryTable:snippetTable withName:snippetTableName])
 			{
 				YDBLogError(@"%@ - Failed registering snippet memory table", THIS_METHOD);
 				return NO;
@@ -433,13 +430,25 @@
 	YapDatabaseViewTransaction *parentViewTransaction =
 	  [databaseTransaction ext:searchResultsView->parentViewName];
 	
-	__unsafe_unretained YapDatabaseView *parentView = parentViewTransaction->viewConnection->view;
+	__unsafe_unretained YapDatabaseViewConnection *parentViewConnection = parentViewTransaction->viewConnection;
 	
-	searchResultsView->groupingBlock = parentView->groupingBlock;
-	searchResultsView->groupingBlockType = parentView->groupingBlockType;
+	YapDatabaseViewGroupingBlock groupingBlock = NULL;
+	YapDatabaseViewSortingBlock sortingBlock   = NULL;
+	YapDatabaseViewBlockType groupingBlockType = 0;
+	YapDatabaseViewBlockType sortingBlockType  = 0;
 	
-	searchResultsView->sortingBlock = parentView->sortingBlock;
-	searchResultsView->sortingBlockType = parentView->sortingBlockType;
+	[parentViewConnection getGroupingBlock:&groupingBlock
+	                     groupingBlockType:&groupingBlockType
+	                          sortingBlock:&sortingBlock
+	                      sortingBlockType:&sortingBlockType];
+	
+	__unsafe_unretained YapDatabaseSearchResultsViewConnection *searchViewConnection =
+	  (YapDatabaseSearchResultsViewConnection *)viewConnection;
+	
+	[searchViewConnection setGroupingBlock:groupingBlock
+	                     groupingBlockType:groupingBlockType
+	                          sortingBlock:sortingBlock
+	                      sortingBlockType:sortingBlockType];
 	
 	// Code overview:
 	//
@@ -937,6 +946,11 @@
 {
 	YDBLogAutoTrace();
 	
+	if (![self isPersistentView])
+	{
+		[snippetTableTransaction commit];
+	}
+	
 	// If the query was changed, then we need to write it to the yap table.
 	
 	__unsafe_unretained YapDatabaseSearchResultsViewConnection *searchResultsViewConnection =
@@ -948,11 +962,24 @@
 	
 	if (queryChanged)
 	{
-		[self setStringValue:query forExtensionKey:ExtKey_query];
+		[self setStringValue:query forExtensionKey:ExtKey_query persistent:[self isPersistentView]];
 	}
 	
 	// This must be done LAST.
 	[super commitTransaction];
+}
+
+- (void)rollbackTransaction
+{
+	YDBLogAutoTrace();
+	
+	if (![self isPersistentView])
+	{
+		[snippetTableTransaction rollback];
+	}
+	
+	// This must be done LAST.
+	[super rollbackTransaction];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1009,31 +1036,37 @@
 		
 		if (!allowedCollections || [allowedCollections containsObject:collection])
 		{
-			if (searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithKey)
+			YapDatabaseViewGroupingBlock groupingBlock_generic;
+			YapDatabaseViewBlockType     groupingBlockType;
+			
+			[viewConnection getGroupingBlock:&groupingBlock_generic
+			               groupingBlockType:&groupingBlockType];
+			
+			if (groupingBlockType == YapDatabaseViewBlockTypeWithKey)
 			{
 				__unsafe_unretained YapDatabaseViewGroupingWithKeyBlock groupingBlock =
-			      (YapDatabaseViewGroupingWithKeyBlock)searchResultsView->groupingBlock;
+			      (YapDatabaseViewGroupingWithKeyBlock)groupingBlock_generic;
 				
 				group = groupingBlock(collection, key);
 			}
-			else if (searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
+			else if (groupingBlockType == YapDatabaseViewBlockTypeWithObject)
 			{
 				__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
-			      (YapDatabaseViewGroupingWithObjectBlock)searchResultsView->groupingBlock;
+			      (YapDatabaseViewGroupingWithObjectBlock)groupingBlock_generic;
 				
 				group = groupingBlock(collection, key, object);
 			}
-			else if (searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+			else if (groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
 			{
 				__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
-			      (YapDatabaseViewGroupingWithMetadataBlock)searchResultsView->groupingBlock;
+			      (YapDatabaseViewGroupingWithMetadataBlock)groupingBlock_generic;
 				
 				group = groupingBlock(collection, key, metadata);
 			}
 			else
 			{
 				__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
-			      (YapDatabaseViewGroupingWithRowBlock)searchResultsView->groupingBlock;
+			      (YapDatabaseViewGroupingWithRowBlock)groupingBlock_generic;
 				
 				group = groupingBlock(collection, key, object, metadata);
 			}
@@ -1124,31 +1157,37 @@
 		
 		if (!allowedCollections || [allowedCollections containsObject:collection])
 		{
-			if (searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithKey)
+			YapDatabaseViewGroupingBlock groupingBlock_generic;
+			YapDatabaseViewBlockType     groupingBlockType;
+			
+			[viewConnection getGroupingBlock:&groupingBlock_generic
+			               groupingBlockType:&groupingBlockType];
+			
+			if (groupingBlockType == YapDatabaseViewBlockTypeWithKey)
 			{
 				__unsafe_unretained YapDatabaseViewGroupingWithKeyBlock groupingBlock =
-			      (YapDatabaseViewGroupingWithKeyBlock)searchResultsView->groupingBlock;
+			      (YapDatabaseViewGroupingWithKeyBlock)groupingBlock_generic;
 				
 				group = groupingBlock(collection, key);
 			}
-			else if (searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
+			else if (groupingBlockType == YapDatabaseViewBlockTypeWithObject)
 			{
 				__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
-			      (YapDatabaseViewGroupingWithObjectBlock)searchResultsView->groupingBlock;
+			      (YapDatabaseViewGroupingWithObjectBlock)groupingBlock_generic;
 				
 				group = groupingBlock(collection, key, object);
 			}
-			else if (searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+			else if (groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
 			{
 				__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
-			      (YapDatabaseViewGroupingWithMetadataBlock)searchResultsView->groupingBlock;
+			      (YapDatabaseViewGroupingWithMetadataBlock)groupingBlock_generic;
 				
 				group = groupingBlock(collection, key, metadata);
 			}
 			else
 			{
 				__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
-			      (YapDatabaseViewGroupingWithRowBlock)searchResultsView->groupingBlock;
+			      (YapDatabaseViewGroupingWithRowBlock)groupingBlock_generic;
 				
 				group = groupingBlock(collection, key, object, metadata);
 			}
@@ -1208,16 +1247,25 @@
 	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
 	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
 	
+	YapDatabaseViewGroupingBlock groupingBlock_generic;
+	YapDatabaseViewBlockType     groupingBlockType;
+	YapDatabaseViewBlockType     sortingBlockType;
+	
+	[viewConnection getGroupingBlock:&groupingBlock_generic
+	               groupingBlockType:&groupingBlockType
+	                    sortingBlock:NULL
+	                sortingBlockType:&sortingBlockType];
+	
 	if (searchResultsView->parentViewName)
 	{
 		// Implementation Note:
 		// This code is modeled after that in YapDatabaseFilteredViewTransaction.
 		
-		BOOL groupMayHaveChanged = searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithRow ||
-		                           searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithObject;
+		BOOL groupMayHaveChanged = groupingBlockType == YapDatabaseViewBlockTypeWithRow ||
+		                           groupingBlockType == YapDatabaseViewBlockTypeWithObject;
 		
-		BOOL sortMayHaveChanged = searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
-		                          searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithObject;
+		BOOL sortMayHaveChanged = sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+		                          sortingBlockType == YapDatabaseViewBlockTypeWithObject;
 		
 		// Instead of going to the groupingBlock,
 		// just ask the parentViewTransaction what the last group was.
@@ -1296,8 +1344,8 @@
 			YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 			
 			id metadata = nil;
-			if (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
-			    searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+			if (sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+			    sortingBlockType == YapDatabaseViewBlockTypeWithMetadata)
 			{
 				metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 			}
@@ -1330,8 +1378,8 @@
 		id metadata = nil;
 		NSString *group = nil;
 		
-		if (searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithKey ||
-			searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+		if (groupingBlockType == YapDatabaseViewBlockTypeWithKey ||
+			groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
 		{
 			// Grouping is based on the key or metadata.
 			// Neither have changed, and thus the group hasn't changed.
@@ -1344,8 +1392,8 @@
 				// Nothing to do.
 				// It wasn't previously in the view, and still isn't in the view.
 			}
-			else if (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
-			         searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+			else if (sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
+			         sortingBlockType == YapDatabaseViewBlockTypeWithMetadata)
 			{
 				// Nothing has moved because the group hasn't changed and
 				// nothing has changed that relates to sorting.
@@ -1367,7 +1415,7 @@
 				// From previous if statement (above) we know:
 				// sortingBlockType is object or row (object+metadata)
 				
-				if (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithRow)
+				if (sortingBlockType == YapDatabaseViewBlockTypeWithRow)
 				{
 					// Need the metadata for the sorting block
 					metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
@@ -1394,17 +1442,17 @@
 			
 			if (!allowedCollections || [allowedCollections containsObject:collection])
 			{
-				if (searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
+				if (groupingBlockType == YapDatabaseViewBlockTypeWithObject)
 				{
 					__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
-			          (YapDatabaseViewGroupingWithObjectBlock)searchResultsView->groupingBlock;
+			          (YapDatabaseViewGroupingWithObjectBlock)groupingBlock_generic;
 					
 					group = groupingBlock(collection, key, object);
 				}
 				else
 				{
 					__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
-			          (YapDatabaseViewGroupingWithRowBlock)searchResultsView->groupingBlock;
+			          (YapDatabaseViewGroupingWithRowBlock)groupingBlock_generic;
 					
 					metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 					group = groupingBlock(collection, key, object, metadata);
@@ -1420,8 +1468,8 @@
 			}
 			else
 			{
-				if (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
-				    searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+				if (sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
+				    sortingBlockType == YapDatabaseViewBlockTypeWithMetadata)
 				{
 					// Sorting is based on the key or metadata, neither of which has changed.
 					// So if the group hasn't changed, then the sort order hasn't changed.
@@ -1449,8 +1497,8 @@
 					}
 				}
 				
-				if (metadata == nil && (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
-				                        searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata))
+				if (metadata == nil && (sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+				                        sortingBlockType == YapDatabaseViewBlockTypeWithMetadata))
 				{
 					// Need the metadata for the sorting block
 					metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
@@ -1484,16 +1532,25 @@
 	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
 	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
 	
+	YapDatabaseViewGroupingBlock groupingBlock_generic = NULL;
+	YapDatabaseViewBlockType groupingBlockType = 0;
+	YapDatabaseViewBlockType sortingBlockType  = 0;
+	
+	[viewConnection getGroupingBlock:&groupingBlock_generic
+	               groupingBlockType:&groupingBlockType
+	                    sortingBlock:NULL
+	                sortingBlockType:&sortingBlockType];
+	
 	if (searchResultsView->parentViewName)
 	{
 		// Implementation Note:
 		// This code is modeled after that in YapDatabaseFilteredViewTransaction.
 		
-		BOOL groupMayHaveChanged = searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithRow ||
-		                           searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata;
+		BOOL groupMayHaveChanged = groupingBlockType == YapDatabaseViewBlockTypeWithRow ||
+		                           groupingBlockType == YapDatabaseViewBlockTypeWithMetadata;
 		
-		BOOL sortMayHaveChanged = searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
-		                          searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata;
+		BOOL sortMayHaveChanged = sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+		                          sortingBlockType == YapDatabaseViewBlockTypeWithMetadata;
 		
 		// Instead of going to the groupingBlock,
 		// just ask the parentViewTransaction what the last group was.
@@ -1572,8 +1629,8 @@
 			YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 			
 			id object= nil;
-			if (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
-			    searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
+			if (sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+			    sortingBlockType == YapDatabaseViewBlockTypeWithObject)
 			{
 				object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 			}
@@ -1606,8 +1663,8 @@
 		id object = nil;
 		NSString *group = nil;
 		
-		if (searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithKey ||
-		    searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
+		if (groupingBlockType == YapDatabaseViewBlockTypeWithKey ||
+		    groupingBlockType == YapDatabaseViewBlockTypeWithObject)
 		{
 			// Grouping is based on the key or object.
 			// Neither have changed, and thus the group hasn't changed.
@@ -1620,8 +1677,8 @@
 				// Nothing to do.
 				// The key wasn't previously in the view, and still isn't in the view.
 			}
-			else if (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
-			         searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
+			else if (sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
+			         sortingBlockType == YapDatabaseViewBlockTypeWithObject)
 			{
 				// Nothing has moved because the group hasn't changed and
 				// nothing has changed that relates to sorting.
@@ -1643,7 +1700,7 @@
 				// From previous if statement (above) we know:
 				// sortingBlockType is metadata or objectAndMetadata
 				
-				if (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithRow)
+				if (sortingBlockType == YapDatabaseViewBlockTypeWithRow)
 				{
 					// Need the object for the sorting block
 					object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
@@ -1670,17 +1727,17 @@
 			
 			if (!allowedCollections || [allowedCollections containsObject:collection])
 			{
-				if (searchResultsView->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+				if (groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
 				{
 					__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
-			          (YapDatabaseViewGroupingWithMetadataBlock)searchResultsView->groupingBlock;
+			          (YapDatabaseViewGroupingWithMetadataBlock)groupingBlock_generic;
 					
 					group = groupingBlock(collection, key, metadata);
 				}
 				else
 				{
 					__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
-			          (YapDatabaseViewGroupingWithRowBlock)searchResultsView->groupingBlock;
+			          (YapDatabaseViewGroupingWithRowBlock)groupingBlock_generic;
 					
 					object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 					group = groupingBlock(collection, key, object, metadata);
@@ -1696,8 +1753,8 @@
 			}
 			else
 			{
-				if (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
-				    searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
+				if (sortingBlockType == YapDatabaseViewBlockTypeWithKey ||
+				    sortingBlockType == YapDatabaseViewBlockTypeWithObject)
 				{
 					// Sorting is based on the key or object, neither of which has changed.
 					// So if the group hasn't changed, then the sort order hasn't changed.
@@ -1725,8 +1782,8 @@
 					}
 				}
 				
-				if (object == nil && (searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
-				                      searchResultsView->sortingBlockType == YapDatabaseViewBlockTypeWithObject))
+				if (object == nil && (sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+				                      sortingBlockType == YapDatabaseViewBlockTypeWithObject))
 				{
 					// Need the object for the sorting block
 					object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
@@ -2073,7 +2130,14 @@
 	
 	// Now enumerate any items in ftsRowidsLeft
 	
-	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
+	YapDatabaseViewGroupingBlock groupingBlock_generic = NULL;
+	YapDatabaseViewBlockType groupingBlockType = 0;
+	YapDatabaseViewBlockType sortingBlockType  = 0;
+	
+	[viewConnection getGroupingBlock:&groupingBlock_generic
+	               groupingBlockType:&groupingBlockType
+	                    sortingBlock:NULL
+	                sortingBlockType:&sortingBlockType];
 	
 	YapRowidSetEnumerate(ftsRowidsLeft, ^(int64_t rowid, BOOL *stop) { @autoreleasepool {
 		
@@ -2085,30 +2149,30 @@
 		// Invoke the grouping block to find out if the object should be included in the view.
 		
 		NSString *group = nil;
-		NSSet *allowedCollections = view->options.allowedCollections;
+		NSSet *allowedCollections = viewConnection->view->options.allowedCollections;
 		
 		if (!allowedCollections || [allowedCollections containsObject:ck.collection])
 		{
-			if (view->groupingBlockType == YapDatabaseViewBlockTypeWithKey)
+			if (groupingBlockType == YapDatabaseViewBlockTypeWithKey)
 			{
 				__unsafe_unretained YapDatabaseViewGroupingWithKeyBlock groupingBlock =
-			      (YapDatabaseViewGroupingWithKeyBlock)view->groupingBlock;
+			      (YapDatabaseViewGroupingWithKeyBlock)groupingBlock_generic;
 				
 				group = groupingBlock(ck.collection, ck.key);
 			}
-			else if (view->groupingBlockType == YapDatabaseViewBlockTypeWithObject)
+			else if (groupingBlockType == YapDatabaseViewBlockTypeWithObject)
 			{
 				__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
-			      (YapDatabaseViewGroupingWithObjectBlock)view->groupingBlock;
+			      (YapDatabaseViewGroupingWithObjectBlock)groupingBlock_generic;
 				
 				object = [databaseTransaction objectForCollectionKey:ck withRowid:rowid];
 				
 				group = groupingBlock(ck.collection, ck.key, object);
 			}
-			else if (view->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+			else if (groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
 			{
 				__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
-			      (YapDatabaseViewGroupingWithMetadataBlock)view->groupingBlock;
+			      (YapDatabaseViewGroupingWithMetadataBlock)groupingBlock_generic;
 				
 				metadata = [databaseTransaction metadataForCollectionKey:ck withRowid:rowid];
 				
@@ -2117,7 +2181,7 @@
 			else
 			{
 				__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
-			      (YapDatabaseViewGroupingWithRowBlock)view->groupingBlock;
+			      (YapDatabaseViewGroupingWithRowBlock)groupingBlock_generic;
 				
 				[databaseTransaction getObject:&object metadata:&metadata forCollectionKey:ck withRowid:rowid];
 				
@@ -2131,17 +2195,17 @@
 			
 			YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 			
-			if (view->sortingBlockType == YapDatabaseViewBlockTypeWithObject)
+			if (sortingBlockType == YapDatabaseViewBlockTypeWithObject)
 			{
 				if (object == nil)
 					object = [databaseTransaction objectForCollectionKey:ck withRowid:rowid];
 			}
-			else if (view->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata)
+			else if (sortingBlockType == YapDatabaseViewBlockTypeWithMetadata)
 			{
 				if (metadata == nil)
 					metadata = [databaseTransaction metadataForCollectionKey:ck withRowid:rowid];
 			}
-			else if (view->sortingBlockType == YapDatabaseViewBlockTypeWithRow)
+			else if (sortingBlockType == YapDatabaseViewBlockTypeWithRow)
 			{
 				if (object == nil) {
 					if (metadata == nil)

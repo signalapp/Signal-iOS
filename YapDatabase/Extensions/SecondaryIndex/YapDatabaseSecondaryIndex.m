@@ -25,6 +25,7 @@
 
 + (void)dropTablesForRegisteredName:(NSString *)registeredName
                     withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                      wasPersistent:(BOOL)wasPersistent
 {
 	sqlite3 *db = transaction->connection->db;
 	NSString *tableName = [self tableNameForRegisteredName:registeredName];

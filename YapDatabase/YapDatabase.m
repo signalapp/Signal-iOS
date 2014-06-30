@@ -38,11 +38,11 @@ NSString *const YapDatabaseRemovedCollectionsKey = @"removedCollections";
 NSString *const YapDatabaseRemovedRowidsKey      = @"removedRowids";
 NSString *const YapDatabaseAllKeysRemovedKey     = @"allKeysRemoved";
 
-NSString *const YapDatabaseRegisteredExtensionsKey  = @"registeredExtensions";
-NSString *const YapDatabaseRegisteredTablesKey      = @"registeredTables";
-NSString *const YapDatabaseExtensionsOrderKey       = @"extensionsOrder";
-NSString *const YapDatabaseExtensionDependenciesKey = @"extensionDependencies";
-NSString *const YapDatabaseNotificationKey          = @"notification";
+NSString *const YapDatabaseRegisteredExtensionsKey   = @"registeredExtensions";
+NSString *const YapDatabaseRegisteredMemoryTablesKey = @"registeredMemoryTables";
+NSString *const YapDatabaseExtensionsOrderKey        = @"extensionsOrder";
+NSString *const YapDatabaseExtensionDependenciesKey  = @"extensionDependencies";
+NSString *const YapDatabaseNotificationKey           = @"notification";
 
 /**
  * The database version is stored (via pragma user_version) to sqlite.
@@ -392,7 +392,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 		connectionDefaults = [[YapDatabaseConnectionDefaults alloc] init];
 		
 		registeredExtensions = [[NSDictionary alloc] init];
-		registeredTables = [[NSDictionary alloc] init];
+		registeredMemoryTables = [[NSDictionary alloc] init];
 		
 		extensionDependencies = [[NSDictionary alloc] init];
 		extensionsOrder = [[NSArray alloc] init];
@@ -1533,7 +1533,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 		return;
 	}
 	
-	[[self registrationConnection] unregisterExtension:extensionName];
+	[[self registrationConnection] unregisterExtensionWithName:extensionName];
 }
 
 /**
@@ -1840,11 +1840,11 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
  * This method is only accessible from within the snapshotQueue.
  * Used by [YapDatabaseConnection prepare].
 **/
-- (NSDictionary *)registeredTables
+- (NSDictionary *)registeredMemoryTables
 {
 	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
 	
-	return registeredTables;
+	return registeredMemoryTables;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1977,12 +1977,12 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 		extensionDependencies = [changeset objectForKey:YapDatabaseExtensionDependenciesKey];
 	}
 	
-	// Update registeredTables, if changed.
+	// Update registeredMemoryTables, if changed.
 	
-	NSDictionary *newRegisteredTables = [changeset objectForKey:YapDatabaseRegisteredTablesKey];
-	if (newRegisteredTables)
+	NSDictionary *newRegisteredMemoryTables = [changeset objectForKey:YapDatabaseRegisteredMemoryTablesKey];
+	if (newRegisteredMemoryTables)
 	{
-		registeredTables = newRegisteredTables;
+		registeredMemoryTables = newRegisteredMemoryTables;
 	}
 	
 	// Forward the changeset to all extensions.

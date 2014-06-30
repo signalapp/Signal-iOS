@@ -93,17 +93,26 @@
 		return [object1 compare:object2 options:NSNumericSearch];
 	};
 	
+	NSString *initialVersionTag = @"1";
+	
 	YapDatabaseView *databaseView =
 	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
 	                               groupingBlockType:groupingBlockType
 	                                    sortingBlock:sortingBlock
 	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"1"
+	                                      versionTag:initialVersionTag
 	                                         options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
 	XCTAssertTrue(registerResult, @"Failure registering extension");
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		NSString *versionTag = [[transaction ext:@"order"] versionTag];
+		
+		XCTAssert([versionTag isEqualToString:initialVersionTag], @"Bad versionTag");
+	}];
 	
 	NSString *key0 = @"key0";
 	NSString *key1 = @"key1";

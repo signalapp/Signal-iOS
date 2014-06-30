@@ -24,25 +24,31 @@
 
 + (void)dropTablesForRegisteredName:(NSString *)registeredName
                     withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                      wasPersistent:(BOOL)wasPersistent
 {
 	NSString *snippetTableName = [self snippetTableNameForRegisteredName:registeredName];
 	
-	// Handle persistent view
-	
-	sqlite3 *db = transaction->connection->db;
-	
-	NSString *dropTable = [NSString stringWithFormat:@"DROP TABLE IF EXISTS \"%@\";", snippetTableName];
-	
-	int status = sqlite3_exec(db, [dropTable UTF8String], NULL, NULL, NULL);
-	if (status != SQLITE_OK)
+	if (wasPersistent)
 	{
-		YDBLogError(@"%@ - Failed dropping snippet table (%@): %d %s",
-		            THIS_METHOD, snippetTableName, status, sqlite3_errmsg(db));
+		// Handle persistent view
+		
+		sqlite3 *db = transaction->connection->db;
+		
+		NSString *dropTable = [NSString stringWithFormat:@"DROP TABLE IF EXISTS \"%@\";", snippetTableName];
+		
+		int status = sqlite3_exec(db, [dropTable UTF8String], NULL, NULL, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@ - Failed dropping snippet table (%@): %d %s",
+			            THIS_METHOD, snippetTableName, status, sqlite3_errmsg(db));
+		}
 	}
-	
-	// Handle memory view
-	
-	[transaction->connection unregisterTableWithName:snippetTableName];
+	else
+	{
+		// Handle memory view
+		
+		[transaction->connection unregisterMemoryTableWithName:snippetTableName];
+	}
 }
 
 + (NSString *)snippetTableNameForRegisteredName:(NSString *)registeredName

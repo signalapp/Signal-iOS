@@ -140,20 +140,23 @@
 			
 			[(YapDatabaseExtensionTransaction *)extTransactionObj commitTransaction];
 		}];
+		
+		[yapMemoryTableTransaction commit];
 	}
 	
 	sqlite3_stmt *statement = [connection commitTransactionStatement];
-	if (statement == NULL) return;
-	
-	// COMMIT TRANSACTION;
-	
-	int status = sqlite3_step(statement);
-	if (status != SQLITE_DONE)
+	if (statement)
 	{
-		YDBLogError(@"Couldn't commit transaction: %d %s", status, sqlite3_errmsg(connection->db));
+		// COMMIT TRANSACTION;
+		
+		int status = sqlite3_step(statement);
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"Couldn't commit transaction: %d %s", status, sqlite3_errmsg(connection->db));
+		}
+		
+		sqlite3_reset(statement);
 	}
-	
-	sqlite3_reset(statement);
 }
 
 - (void)rollbackTransaction
@@ -163,18 +166,21 @@
 		[(YapDatabaseExtensionTransaction *)extTransactionObj rollbackTransaction];
 	}];
 	
+	[yapMemoryTableTransaction rollback];
+	
 	sqlite3_stmt *statement = [connection rollbackTransactionStatement];
-	if (statement == NULL) return;
-	
-	// ROLLBACK TRANSACTION;
-	
-	int status = sqlite3_step(statement);
-	if (status != SQLITE_DONE)
+	if (statement)
 	{
-		YDBLogError(@"Couldn't rollback transaction: %d %s", status, sqlite3_errmsg(connection->db));
+		// ROLLBACK TRANSACTION;
+		
+		int status = sqlite3_step(statement);
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"Couldn't rollback transaction: %d %s", status, sqlite3_errmsg(connection->db));
+		}
+		
+		sqlite3_reset(statement);
 	}
-	
-	sqlite3_reset(statement);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3759,18 +3765,27 @@
 
 - (YapMemoryTableTransaction *)memoryTableTransaction:(NSString *)tableName
 {
-	YapMemoryTable *table = [[connection registeredTables] objectForKey:tableName];
+	BOOL isYap = [tableName isEqualToString:@"yap"];
+	if (isYap && yapMemoryTableTransaction)
+		return yapMemoryTableTransaction;
+	
+	YapMemoryTableTransaction *memoryTableTransaction = nil;
+		
+	YapMemoryTable *table = [[connection registeredMemoryTables] objectForKey:tableName];
 	if (table)
 	{
 		uint64_t snapshot = [connection snapshot];
 		
 		if (isReadWriteTransaction)
-			return [table newReadWriteTransactionWithSnapshot:(snapshot + 1)];
+			memoryTableTransaction = [table newReadWriteTransactionWithSnapshot:(snapshot + 1)];
 		else
-			return [table newReadTransactionWithSnapshot:snapshot];
+			memoryTableTransaction = [table newReadTransactionWithSnapshot:snapshot];
 	}
 	
-	return nil;
+	if (isYap) {
+		yapMemoryTableTransaction = memoryTableTransaction;
+	}
+	return memoryTableTransaction;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3784,11 +3799,6 @@
 	
 	if (valuePtr) *valuePtr = (intValue == 0) ? NO : YES;
 	return result;
-}
-
-- (void)setBoolValue:(BOOL)value forKey:(NSString *)key extension:(NSString *)extensionName
-{
-	[self setIntValue:(value ? 1 : 0) forKey:key extension:extensionName];
 }
 
 - (BOOL)getIntValue:(int *)valuePtr forKey:(NSString *)key extension:(NSString *)extensionName
@@ -3833,46 +3843,6 @@
 	return result;
 }
 
-- (void)setIntValue:(int)value forKey:(NSString *)key extension:(NSString *)extensionName
-{
-	if (!isReadWriteTransaction)
-	{
-		YDBLogError(@"Cannot modify database outside readwrite transaction.");
-		return;
-	}
-	
-	if (extensionName == nil)
-		extensionName = @"";
-	
-	sqlite3_stmt *statement = [connection yapSetDataForKeyStatement];
-	if (statement == NULL) return;
-	
-	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
-	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
-	
-	sqlite3_bind_int(statement, 3, value);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_DONE)
-	{
-		connection->hasDiskChanges = YES;
-	}
-	else
-	{
-		YDBLogError(@"Error executing 'yapSetDataForKeyStatement': %d %s", status, sqlite3_errmsg(connection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_extension);
-	FreeYapDatabaseString(&_key);
-}
-
 - (BOOL)getDoubleValue:(double *)valuePtr forKey:(NSString *)key extension:(NSString *)extensionName
 {
 	if (extensionName == nil)
@@ -3915,46 +3885,6 @@
 	return result;
 }
 
-- (void)setDoubleValue:(double)value forKey:(NSString *)key extension:(NSString *)extensionName
-{
-	if (!isReadWriteTransaction)
-	{
-		YDBLogError(@"Cannot modify database outside readwrite transaction.");
-		return;
-	}
-	
-	if (extensionName == nil)
-		extensionName = @"";
-	
-	sqlite3_stmt *statement = [connection yapSetDataForKeyStatement];
-	if (statement == NULL) return;
-	
-	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
-	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
-	
-	sqlite3_bind_double(statement, 3, value);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_DONE)
-	{
-		connection->hasDiskChanges = YES;
-	}
-	else
-	{
-		YDBLogError(@"Error executing 'yapSetDataForKeyStatement': %d %s", status, sqlite3_errmsg(connection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_extension);
-	FreeYapDatabaseString(&_key);
-}
-
 - (NSString *)stringValueForKey:(NSString *)key extension:(NSString *)extensionName
 {
 	if (extensionName == nil)
@@ -3994,48 +3924,6 @@
 	return value;
 }
 
-- (void)setStringValue:(NSString *)value forKey:(NSString *)key extension:(NSString *)extensionName
-{
-	if (!isReadWriteTransaction)
-	{
-		YDBLogError(@"Cannot modify database outside readwrite transaction.");
-		return;
-	}
-	
-	if (extensionName == nil)
-		extensionName = @"";
-	
-	sqlite3_stmt *statement = [connection yapSetDataForKeyStatement];
-	if (statement == NULL) return;
-	
-	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
-	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
-	
-	YapDatabaseString _value; MakeYapDatabaseString(&_value, value);
-	sqlite3_bind_text(statement, 3, _value.str, _value.length, SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_DONE)
-	{
-		connection->hasDiskChanges = YES;
-	}
-	else
-	{
-		YDBLogError(@"Error executing 'yapSetDataForKeyStatement': %d %s", status, sqlite3_errmsg(connection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_extension);
-	FreeYapDatabaseString(&_key);
-	FreeYapDatabaseString(&_value);
-}
-
 - (NSData *)dataValueForKey:(NSString *)key extension:(NSString *)extensionName
 {
 	if (extensionName == nil)
@@ -4073,120 +3961,6 @@
 	FreeYapDatabaseString(&_key);
 	
 	return value;
-}
-
-- (void)setDataValue:(NSData *)value forKey:(NSString *)key extension:(NSString *)extensionName
-{
-	if (!isReadWriteTransaction)
-	{
-		YDBLogError(@"Cannot modify database outside readwrite transaction.");
-		return;
-	}
-	
-	if (extensionName == nil)
-		extensionName = @"";
-	
-	sqlite3_stmt *statement = [connection yapSetDataForKeyStatement];
-	if (statement == NULL) return;
-	
-	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
-	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
-	
-	__attribute__((objc_precise_lifetime)) NSData *data = value;
-	sqlite3_bind_blob(statement, 3, data.bytes, (int)data.length, SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_DONE)
-	{
-		connection->hasDiskChanges = YES;
-	}
-	else
-	{
-		YDBLogError(@"Error executing 'yapSetDataForKeyStatement': %d %s", status, sqlite3_errmsg(connection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_extension);
-	FreeYapDatabaseString(&_key);
-}
-
-- (void)removeValueForKey:(NSString *)key extension:(NSString *)extensionName
-{
-	// Be careful with this statement.
-	//
-	// The snapshot value is in the yap table, and uses an empty string for the extensionName.
-	// The snapshot value is critical to the underlying architecture of the system.
-	// Removing it could cripple the system.
-	
-	NSAssert(key != nil, @"Invalid key!");
-	NSAssert(extensionName != nil, @"Invalid extensionName!");
-	
-	sqlite3_stmt *statement = [connection yapRemoveForKeyStatement];
-	if (statement == NULL) return;
-	
-	// DELETE FROM "yap2" WHERE "extension" = ? AND "key" = ?;
-	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_DONE)
-	{
-		connection->hasDiskChanges = YES;
-	}
-	else
-	{
-		YDBLogError(@"Error executing 'yapRemoveForKeyStatement': %d %s, extension(%@)",
-					status, sqlite3_errmsg(connection->db), extensionName);
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_extension);
-	FreeYapDatabaseString(&_key);
-}
-
-- (void)removeAllValuesForExtension:(NSString *)extensionName
-{
-	// Be careful with this statement.
-	//
-	// The snapshot value is in the yap table, and uses an empty string for the extensionName.
-	// The snapshot value is critical to the underlying architecture of the system.
-	// Removing it could cripple the system.
-	
-	NSAssert(extensionName != nil, @"Invalid extensionName!");
-	
-	sqlite3_stmt *statement = [connection yapRemoveExtensionStatement];
-	if (statement == NULL) return;
-	
-	// DELETE FROM "yap2" WHERE "extension" = ?;
-	
-	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_DONE)
-	{
-		connection->hasDiskChanges = YES;
-	}
-	else
-	{
-		YDBLogError(@"Error executing 'yapRemoveExtensionStatement': %d %s, extension(%@)",
-					status, sqlite3_errmsg(connection->db), extensionName);
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_extension);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5580,23 +5354,242 @@
 #pragma mark Extensions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)addRegisteredExtensionTransaction:(YapDatabaseExtensionTransaction *)extTransaction
+- (void)addRegisteredExtensionTransaction:(YapDatabaseExtensionTransaction *)extTransaction withName:(NSString *)extName
 {
 	// This method is INTERNAL
 	
 	if (extensions == nil)
 		extensions = [[NSMutableDictionary alloc] init];
 	
-	NSString *extName = [[[extTransaction extensionConnection] extension] registeredName];
-	
 	[extensions setObject:extTransaction forKey:extName];
 }
 
-- (void)removeRegisteredExtensionTransaction:(NSString *)extName
+- (void)removeRegisteredExtensionTransactionWithName:(NSString *)extName
 {
 	// This method is INTERNAL
 	
 	[extensions removeObjectForKey:extName];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Yap2 Table
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)setBoolValue:(BOOL)value forKey:(NSString *)key extension:(NSString *)extensionName
+{
+	[self setIntValue:(value ? 1 : 0) forKey:key extension:extensionName];
+}
+
+- (void)setIntValue:(int)value forKey:(NSString *)key extension:(NSString *)extensionName
+{
+	if (extensionName == nil)
+		extensionName = @"";
+	
+	sqlite3_stmt *statement = [connection yapSetDataForKeyStatement];
+	if (statement == NULL) return;
+	
+	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
+	
+	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
+	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
+	
+	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	
+	sqlite3_bind_int(statement, 3, value);
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_DONE)
+	{
+		connection->hasDiskChanges = YES;
+	}
+	else
+	{
+		YDBLogError(@"Error executing 'yapSetDataForKeyStatement': %d %s", status, sqlite3_errmsg(connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_extension);
+	FreeYapDatabaseString(&_key);
+}
+
+- (void)setDoubleValue:(double)value forKey:(NSString *)key extension:(NSString *)extensionName
+{
+	if (extensionName == nil)
+		extensionName = @"";
+	
+	sqlite3_stmt *statement = [connection yapSetDataForKeyStatement];
+	if (statement == NULL) return;
+	
+	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
+	
+	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
+	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
+	
+	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	
+	sqlite3_bind_double(statement, 3, value);
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_DONE)
+	{
+		connection->hasDiskChanges = YES;
+	}
+	else
+	{
+		YDBLogError(@"Error executing 'yapSetDataForKeyStatement': %d %s", status, sqlite3_errmsg(connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_extension);
+	FreeYapDatabaseString(&_key);
+}
+
+- (void)setStringValue:(NSString *)value forKey:(NSString *)key extension:(NSString *)extensionName
+{
+	if (extensionName == nil)
+		extensionName = @"";
+	
+	sqlite3_stmt *statement = [connection yapSetDataForKeyStatement];
+	if (statement == NULL) return;
+	
+	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
+	
+	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
+	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
+	
+	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	
+	YapDatabaseString _value; MakeYapDatabaseString(&_value, value);
+	sqlite3_bind_text(statement, 3, _value.str, _value.length, SQLITE_STATIC);
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_DONE)
+	{
+		connection->hasDiskChanges = YES;
+	}
+	else
+	{
+		YDBLogError(@"Error executing 'yapSetDataForKeyStatement': %d %s", status, sqlite3_errmsg(connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_extension);
+	FreeYapDatabaseString(&_key);
+	FreeYapDatabaseString(&_value);
+}
+
+- (void)setDataValue:(NSData *)value forKey:(NSString *)key extension:(NSString *)extensionName
+{
+	if (extensionName == nil)
+		extensionName = @"";
+	
+	sqlite3_stmt *statement = [connection yapSetDataForKeyStatement];
+	if (statement == NULL) return;
+	
+	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
+	
+	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
+	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
+	
+	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	
+	__attribute__((objc_precise_lifetime)) NSData *data = value;
+	sqlite3_bind_blob(statement, 3, data.bytes, (int)data.length, SQLITE_STATIC);
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_DONE)
+	{
+		connection->hasDiskChanges = YES;
+	}
+	else
+	{
+		YDBLogError(@"Error executing 'yapSetDataForKeyStatement': %d %s", status, sqlite3_errmsg(connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_extension);
+	FreeYapDatabaseString(&_key);
+}
+
+- (void)removeValueForKey:(NSString *)key extension:(NSString *)extensionName
+{
+	// Be careful with this statement.
+	//
+	// The snapshot value is in the yap table, and uses an empty string for the extensionName.
+	// The snapshot value is critical to the underlying architecture of the system.
+	// Removing it could cripple the system.
+	
+	NSAssert(key != nil, @"Invalid key!");
+	NSAssert(extensionName != nil, @"Invalid extensionName!");
+	
+	sqlite3_stmt *statement = [connection yapRemoveForKeyStatement];
+	if (statement == NULL) return;
+	
+	// DELETE FROM "yap2" WHERE "extension" = ? AND "key" = ?;
+	
+	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
+	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
+	
+	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_DONE)
+	{
+		connection->hasDiskChanges = YES;
+	}
+	else
+	{
+		YDBLogError(@"Error executing 'yapRemoveForKeyStatement': %d %s, extension(%@)",
+					status, sqlite3_errmsg(connection->db), extensionName);
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_extension);
+	FreeYapDatabaseString(&_key);
+}
+
+- (void)removeAllValuesForExtension:(NSString *)extensionName
+{
+	// Be careful with this statement.
+	//
+	// The snapshot value is in the yap table, and uses an empty string for the extensionName.
+	// The snapshot value is critical to the underlying architecture of the system.
+	// Removing it could cripple the system.
+	
+	NSAssert(extensionName != nil, @"Invalid extensionName!");
+	
+	sqlite3_stmt *statement = [connection yapRemoveExtensionStatement];
+	if (statement == NULL) return;
+	
+	// DELETE FROM "yap2" WHERE "extension" = ?;
+	
+	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
+	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_DONE)
+	{
+		connection->hasDiskChanges = YES;
+	}
+	else
+	{
+		YDBLogError(@"Error executing 'yapRemoveExtensionStatement': %d %s, extension(%@)",
+					status, sqlite3_errmsg(connection->db), extensionName);
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_extension);
 }
 
 @end

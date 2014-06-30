@@ -135,6 +135,18 @@ __attribute((deprecated("Use method numberOfItemsInAllGroups instead")));
           forKey:(NSString *)key
     inCollection:(NSString *)collection;
 
+/**
+ * Returns the versionTag in effect for this transaction.
+ * 
+ * Because this transaction may be one or more commits behind the most recent commit,
+ * this method is the best way to determine the versionTag associated with what the transaction actually sees.
+ * 
+ * Put another way:
+ * - [YapDatabaseView versionTag]            = versionTag of most recent commit
+ * - [YapDatabaseViewTransaction versionTag] = versionTag of this commit
+**/
+- (NSString *)versionTag;
+
 #pragma mark Finding
 
 typedef id YapDatabaseViewFindBlock; // One of the YapDatabaseViewFindX types below.
@@ -273,10 +285,14 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * The methods in this ReadWrite category are only available from within a ReadWriteTransaction.
+ * Invoking them from within a ReadOnlyTransaction does nothing (except log a warning).
+**/
 @interface YapDatabaseViewTransaction (ReadWrite)
 
 /**
- * "Touching" a object allows you to mark an item in the view as "updated",
+ * "Touching" an object allows you to mark an item in the view as "updated",
  * even if the object itself wasn't directly updated.
  *
  * This is most often useful when a view is being used by a tableView,
@@ -327,6 +343,7 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  * This method allows you to change the groupingBlock and/or sortingBlock on-the-fly.
  * 
  * Note: You must pass a different versionTag, or this method does nothing.
+ * If needed, you can fetch the current versionTag via the [viewTransaction versionTag] method.
 **/
 - (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
        groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
@@ -341,8 +358,8 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * YapDatabaseView deals with ordered arrays of collection/key tuples.
- * So, strictly speaking, it only knows about collection/key tuples, groups, and indexes.
+ * YapDatabaseView deals with ordered arrays (of rowid values).
+ * So, conceptually speaking, it only knows about collection/key tuples, groups, and indexes.
  * 
  * But it's really convenient to have methods that put it all together to fetch an object in a single method.
 **/

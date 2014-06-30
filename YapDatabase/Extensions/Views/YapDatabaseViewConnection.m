@@ -26,6 +26,25 @@
 #pragma unused(ydbLogLevel)
 
 
+@interface YapDatabaseView ()
+
+/**
+ * This method is designed exclusively for YapDatabaseViewConnection.
+ * All subclasses and transactions are required to use our version of the same method.
+ *
+ * So we declare it here, as opposed to within YapDatabaseViewPrivate.
+**/
+- (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
+       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+            sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
+        sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr;
+
+@end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 @implementation YapDatabaseViewConnection
 {
 	sqlite3_stmt *mapTable_getPageKeyForRowidStatement;
@@ -108,6 +127,11 @@
 - (YapDatabaseExtension *)extension
 {
 	return view;
+}
+
+- (BOOL)isPersistentView
+{
+	return view->options.isPersistent;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -212,6 +236,19 @@
 	reset = NO;
 	
 	[changes removeAllObjects];
+	
+	// Don't keep cached blocks in memory.
+	// These are loaded on-demand withing readwrite transactions.
+	groupingBlock = NULL;
+	groupingBlockType = 0;
+	sortingBlock = NULL;
+	sortingBlockType = 0;
+	
+	versionTag = nil;
+	
+	groupingBlockChanged = NO;
+	sortingBlockChanged = NO;
+	versionTagChanged = NO;
 }
 
 /**
@@ -244,6 +281,19 @@
 	[mutatedGroups removeAllObjects];
 	
 	reset = NO;
+	
+	// Don't keep cached blocks in memory.
+	// These are loaded on-demand withing readwrite transactions.
+	groupingBlock = NULL;
+	groupingBlockType = 0;
+	sortingBlock = NULL;
+	sortingBlockType = 0;
+	
+	versionTag = nil;
+	
+	groupingBlockChanged = NO;
+	sortingBlockChanged = NO;
+	versionTagChanged = NO;
 }
 
 - (NSArray *)internalChangesetKeys
@@ -251,7 +301,12 @@
 	return @[ changeset_key_state,
 	          changeset_key_dirtyMaps,
 	          changeset_key_dirtyPages,
-	          changeset_key_reset ];
+	          changeset_key_reset,
+	          changeset_key_groupingBlock,
+	          changeset_key_groupingBlockType,
+	          changeset_key_sortingBlock,
+	          changeset_key_sortingBlockType,
+	          changeset_key_versionTag ];
 }
 
 - (NSArray *)externalChangesetKeys
@@ -273,34 +328,53 @@
 	    [dirtyPages count] > 0 ||
 	    [dirtyLinks count] > 0 || reset)
 	{
-		hasDiskChanges = view->options.isPersistent;
 		internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
 		
 		if ([dirtyMaps count] > 0)
 		{
-			[internalChangeset setObject:dirtyMaps forKey:changeset_key_dirtyMaps];
+			internalChangeset[changeset_key_dirtyMaps] = dirtyMaps;
 		}
 		if ([dirtyPages count] > 0)
 		{
 			[self sanitizeDirtyPages];
-			[internalChangeset setObject:dirtyPages forKey:changeset_key_dirtyPages];
+			internalChangeset[changeset_key_dirtyPages] = dirtyPages;
 		}
 		
 		if (reset)
 		{
-			[internalChangeset setObject:@(reset) forKey:changeset_key_reset];
+			internalChangeset[changeset_key_reset] = @(reset);
 		}
 		
-		YapDatabaseViewState *state_copy = [state copy]; // immutable copy
+		internalChangeset[changeset_key_state] = [state copy]; // immutable copy
 		
-		[internalChangeset setObject:state_copy forKey:changeset_key_state];
+		hasDiskChanges = [self isPersistentView];
+	}
+	
+	if (groupingBlockChanged || sortingBlock || versionTagChanged)
+	{
+		if (internalChangeset == nil)
+			internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
+		
+		if (groupingBlockChanged) {
+			internalChangeset[changeset_key_groupingBlock] = groupingBlock;
+			internalChangeset[changeset_key_groupingBlockType] = @(groupingBlockType);
+		}
+		if (sortingBlockChanged) {
+			internalChangeset[changeset_key_sortingBlock] = sortingBlock;
+			internalChangeset[changeset_key_sortingBlockType] = @(sortingBlockType);
+		}
+		if (versionTagChanged) {
+			internalChangeset[changeset_key_versionTag] = versionTag;
+			
+			hasDiskChanges = hasDiskChanges || [self isPersistentView];
+		}
 	}
 	
 	if ([changes count] > 0)
 	{
 		externalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
 		
-  		[externalChangeset setObject:[changes copy] forKey:changeset_key_changes];
+  		externalChangeset[changeset_key_changes] = [changes copy]; // immutable copy
 	}
 	
 	*internalChangesetPtr = internalChangeset;
@@ -312,16 +386,17 @@
 {
 	YDBLogAutoTrace();
 	
-	YapDatabaseViewState *changeset_state = [changeset objectForKey:changeset_key_state];
+	YapDatabaseViewState *changeset_state = changeset[changeset_key_state];
 	
-	NSDictionary *changeset_dirtyMaps  = [changeset objectForKey:changeset_key_dirtyMaps];
-	NSDictionary *changeset_dirtyPages = [changeset objectForKey:changeset_key_dirtyPages];
+	NSDictionary *changeset_dirtyMaps  = changeset[changeset_key_dirtyMaps];
+	NSDictionary *changeset_dirtyPages = changeset[changeset_key_dirtyPages];
 	
-	BOOL changeset_reset = [[changeset objectForKey:changeset_key_reset] boolValue];
+	BOOL changeset_reset = [changeset[changeset_key_reset] boolValue];
 	
 	// Store new state
 	
-	state = [changeset_state copy];
+	if (changeset_state)
+		state = [changeset_state copy];
 	
 	// Update mapCache
 	
@@ -593,7 +668,7 @@
 
 - (sqlite3_stmt *)mapTable_getPageKeyForRowidStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 	
 	sqlite3_stmt **statement = &mapTable_getPageKeyForRowidStatement;
 	if (*statement == NULL)
@@ -618,7 +693,7 @@
 
 - (sqlite3_stmt *)mapTable_setPageKeyForRowidStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
 	sqlite3_stmt **statement = &mapTable_setPageKeyForRowidStatement;
 	if (*statement == NULL)
@@ -643,7 +718,7 @@
 
 - (sqlite3_stmt *)mapTable_removeForRowidStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
 	sqlite3_stmt **statement = &mapTable_removeForRowidStatement;
 	if (*statement == NULL)
@@ -668,7 +743,7 @@
 
 - (sqlite3_stmt *)mapTable_removeAllStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
 	sqlite3_stmt **statement = &mapTable_removeAllStatement;
 	if (*statement == NULL)
@@ -697,7 +772,7 @@
 
 - (sqlite3_stmt *)pageTable_getDataForPageKeyStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
 	sqlite3_stmt **statement = &pageTable_getDataForPageKeyStatement;
 	if (*statement == NULL)
@@ -722,7 +797,7 @@
 
 - (sqlite3_stmt *)pageTable_insertForPageKeyStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
 	sqlite3_stmt **statement = &pageTable_insertForPageKeyStatement;
 	if (*statement == NULL)
@@ -749,7 +824,7 @@
 
 - (sqlite3_stmt *)pageTable_updateAllForPageKeyStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
 	sqlite3_stmt **statement = &pageTable_updateAllForPageKeyStatement;
 	if (*statement == NULL)
@@ -775,7 +850,7 @@
 
 - (sqlite3_stmt *)pageTable_updatePageForPageKeyStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
 	sqlite3_stmt **statement = &pageTable_updatePageForPageKeyStatement;
 	if (*statement == NULL)
@@ -800,7 +875,7 @@
 
 - (sqlite3_stmt *)pageTable_updateLinkForPageKeyStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
 	sqlite3_stmt **statement = &pageTable_updateLinkForPageKeyStatement;
 	if (*statement == NULL)
@@ -825,7 +900,7 @@
 
 - (sqlite3_stmt *)pageTable_removeForPageKeyStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
 	sqlite3_stmt **statement = &pageTable_removeForPageKeyStatement;
 	if (*statement == NULL)
@@ -850,7 +925,7 @@
 
 - (sqlite3_stmt *)pageTable_removeAllStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
 	sqlite3_stmt **statement = &pageTable_removeAllStatement;
 	if (*statement == NULL)
@@ -871,6 +946,93 @@
 	}
 	
 	return *statement;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Internal
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)newGroupingBlock
+       groupingBlockType:(YapDatabaseViewBlockType)newGroupingBlockType
+            sortingBlock:(YapDatabaseViewSortingBlock)newSortingBlock
+        sortingBlockType:(YapDatabaseViewBlockType)newSortingBlockType
+              versionTag:(NSString *)newVersionTag
+{
+	groupingBlock        = newGroupingBlock;
+	groupingBlockType    = newGroupingBlockType;
+	groupingBlockChanged = YES;
+	
+	sortingBlock        = newSortingBlock;
+	sortingBlockType    = newSortingBlockType;
+	sortingBlockChanged = YES;
+	
+	versionTag        = newVersionTag;
+	versionTagChanged = YES;
+}
+
+- (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
+       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+            sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
+        sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr
+{
+	if (!groupingBlock || !sortingBlock)
+	{
+		// Fetch & Cache
+		
+		YapDatabaseViewGroupingBlock mostRecentGroupingBlock = NULL;
+		YapDatabaseViewSortingBlock  mostRecentSortingBlock  = NULL;
+		YapDatabaseViewBlockType mostRecentGroupingBlockType = 0;
+		YapDatabaseViewBlockType mostRecentSortingBlockType  = 0;
+		
+		BOOL needsGroupingBlock = (groupingBlock == NULL);
+		BOOL needsSortingBlock = (sortingBlock == NULL);
+		
+		[view getGroupingBlock:(needsGroupingBlock ? &mostRecentGroupingBlock : NULL)
+		     groupingBlockType:(needsGroupingBlock ? &mostRecentGroupingBlockType : NULL)
+		          sortingBlock:(needsSortingBlock ? &mostRecentSortingBlock : NULL)
+		      sortingBlockType:(needsSortingBlock ? &mostRecentSortingBlockType : NULL)];
+		
+		if (needsGroupingBlock) {
+			groupingBlock     = mostRecentGroupingBlock;
+			groupingBlockType = mostRecentGroupingBlockType;
+		}
+		if (needsSortingBlock) {
+			sortingBlock      = mostRecentSortingBlock;
+			sortingBlockType  = mostRecentSortingBlockType;
+		}
+	}
+	
+	if (groupingBlockPtr)     *groupingBlockPtr     = groupingBlock;
+	if (groupingBlockTypePtr) *groupingBlockTypePtr = groupingBlockType;
+	if (sortingBlockPtr)      *sortingBlockPtr      = sortingBlock;
+	if (sortingBlockTypePtr)  *sortingBlockTypePtr  = sortingBlockType;
+}
+
+- (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
+       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+{
+	[self getGroupingBlock:groupingBlockPtr
+	     groupingBlockType:groupingBlockTypePtr
+	          sortingBlock:NULL
+	      sortingBlockType:NULL];
+}
+
+- (void)getSortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
+       sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr
+{
+	[self getGroupingBlock:NULL
+	     groupingBlockType:NULL
+	          sortingBlock:sortingBlockPtr
+	      sortingBlockType:sortingBlockTypePtr];
+}
+
+- (void)getGroupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+            sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr
+{
+	[self getGroupingBlock:NULL
+	     groupingBlockType:groupingBlockTypePtr
+	          sortingBlock:NULL
+	      sortingBlockType:sortingBlockTypePtr];
 }
 
 @end

@@ -24,7 +24,7 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 }
 
 extern NSString *const YapDatabaseRegisteredExtensionsKey;
-extern NSString *const YapDatabaseRegisteredTablesKey;
+extern NSString *const YapDatabaseRegisteredMemoryTablesKey;
 extern NSString *const YapDatabaseExtensionsOrderKey;
 extern NSString *const YapDatabaseExtensionDependenciesKey;
 extern NSString *const YapDatabaseRemovedRowidsKey;
@@ -44,7 +44,7 @@ extern NSString *const YapDatabaseNotificationKey;
 	YapDatabaseConnectionDefaults *connectionDefaults;
 	
 	NSDictionary *registeredExtensions;
-	NSDictionary *registeredTables;
+	NSDictionary *registeredMemoryTables;
 	
 	NSArray *extensionsOrder;
 	NSDictionary *extensionDependencies;
@@ -108,7 +108,7 @@ extern NSString *const YapDatabaseNotificationKey;
  * These methods are only accessible from within the snapshotQueue.
  * Used by [YapDatabaseConnection prepare].
 **/
-- (NSDictionary *)registeredTables;
+- (NSDictionary *)registeredMemoryTables;
 - (NSArray *)extensionsOrder;
 - (NSDictionary *)extensionDependencies;
 
@@ -184,8 +184,8 @@ extern NSString *const YapDatabaseNotificationKey;
 	NSDictionary *registeredExtensions;
 	BOOL registeredExtensionsChanged;
 	
-	NSDictionary *registeredTables;
-	BOOL registeredTablesChanged;
+	NSDictionary *registeredMemoryTables;
+	BOOL registeredMemoryTablesChanged;
 	
 	NSMutableDictionary *extensions;
 	BOOL extensionsReady;
@@ -270,12 +270,12 @@ extern NSString *const YapDatabaseNotificationKey;
 - (NSDictionary *)extensions;
 
 - (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName;
-- (void)unregisterExtension:(NSString *)extensionName;
+- (void)unregisterExtensionWithName:(NSString *)extensionName;
 
-- (NSDictionary *)registeredTables;
+- (NSDictionary *)registeredMemoryTables;
 
-- (BOOL)registerTable:(YapMemoryTable *)table withName:(NSString *)name;
-- (void)unregisterTableWithName:(NSString *)name;
+- (BOOL)registerMemoryTable:(YapMemoryTable *)table withName:(NSString *)name;
+- (void)unregisterMemoryTableWithName:(NSString *)name;
 
 - (YapDatabaseReadTransaction *)newReadTransaction;
 - (YapDatabaseReadWriteTransaction *)newReadWriteTransaction;
@@ -298,10 +298,14 @@ extern NSString *const YapDatabaseNotificationKey;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface YapDatabaseReadTransaction () {
-@protected
-	NSMutableDictionary *extensions;
+@private
 	NSMutableArray *orderedExtensions;
 	BOOL extensionsReady;
+	
+	YapMemoryTableTransaction *yapMemoryTableTransaction;
+	
+@protected
+	NSMutableDictionary *extensions;
 	
 	BOOL isMutated; // Used for "mutation during enumeration" protection
 	
@@ -323,23 +327,11 @@ extern NSString *const YapDatabaseNotificationKey;
 
 - (YapMemoryTableTransaction *)memoryTableTransaction:(NSString *)tableName;
 
-- (BOOL)getBoolValue:(BOOL *)valuePtr forKey:(NSString *)key extension:(NSString *)extensionName;
-- (void)setBoolValue:(BOOL)value forKey:(NSString *)key extension:(NSString *)extensionName;
-
+- (BOOL)getBoolValue:(BOOL *)valuePtr forKey:(NSString *)key extension:(NSString *)extension;
 - (BOOL)getIntValue:(int *)valuePtr forKey:(NSString *)key extension:(NSString *)extensionName;
-- (void)setIntValue:(int)value forKey:(NSString *)key extension:(NSString *)extensionName;
-
 - (BOOL)getDoubleValue:(double *)valuePtr forKey:(NSString *)key extension:(NSString *)extensionName;
-- (void)setDoubleValue:(double)value forKey:(NSString *)key extension:(NSString *)extensionName;
-
 - (NSString *)stringValueForKey:(NSString *)key extension:(NSString *)extensionName;
-- (void)setStringValue:(NSString *)value forKey:(NSString *)key extension:(NSString *)extensionName;
-
 - (NSData *)dataValueForKey:(NSString *)key extension:(NSString *)extensionName;
-- (void)setDataValue:(NSData *)value forKey:(NSString *)key extension:(NSString *)extensionName;
-
-- (void)removeValueForKey:(NSString *)key extension:(NSString *)extensionName;
-- (void)removeAllValuesForExtension:(NSString *)extensionName;
 
 - (NSException *)mutationDuringEnumerationException;
 
@@ -451,7 +443,16 @@ extern NSString *const YapDatabaseNotificationKey;
 
 - (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
 
-- (void)addRegisteredExtensionTransaction:(YapDatabaseExtensionTransaction *)extTransaction;
-- (void)removeRegisteredExtensionTransaction:(NSString *)extName;
+- (void)addRegisteredExtensionTransaction:(YapDatabaseExtensionTransaction *)extTrnsactn withName:(NSString *)extName;
+- (void)removeRegisteredExtensionTransactionWithName:(NSString *)extName;
+
+- (void)setBoolValue:(BOOL)value         forKey:(NSString *)key extension:(NSString *)extensionName;
+- (void)setIntValue:(int)value           forKey:(NSString *)key extension:(NSString *)extensionName;
+- (void)setDoubleValue:(double)value     forKey:(NSString *)key extension:(NSString *)extensionName;
+- (void)setStringValue:(NSString *)value forKey:(NSString *)key extension:(NSString *)extensionName;
+- (void)setDataValue:(NSData *)value     forKey:(NSString *)key extension:(NSString *)extensionName;
+
+- (void)removeValueForKey:(NSString *)key extension:(NSString *)extensionName;
+- (void)removeAllValuesForExtension:(NSString *)extensionName;
 
 @end

@@ -20,8 +20,6 @@
 #endif
 #pragma unused(ydbLogLevel)
 
-static NSString *const key_query = @"query";
-
 
 @implementation YapDatabaseSearchResultsViewConnection
 {
@@ -44,43 +42,6 @@ static NSString *const key_query = @"query";
 - (YapDatabaseSearchResultsView *)searchResultsView
 {
 	return (YapDatabaseSearchResultsView *)view;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Query
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (NSString *)query
-{
-	__block NSString *result = nil;
-	
-	dispatch_block_t block = ^{
-		
-		result = query;
-	};
-	
-	if (dispatch_get_specific(databaseConnection->IsOnConnectionQueueKey))
-		block();
-	else
-		dispatch_sync(databaseConnection->connectionQueue, block);
-	
-	return result;
-}
-
-- (void)setQuery:(NSString *)newQuery isChange:(BOOL)isChange
-{
-	NSAssert(dispatch_get_specific(databaseConnection->IsOnConnectionQueueKey), @"Expected to be on connectionQueue");
-	
-	query = [newQuery copy];
-	queryChanged = queryChanged || isChange;
-}
-
-- (void)getQuery:(NSString **)queryPtr wasChanged:(BOOL *)wasChangedPtr
-{
-	NSAssert(dispatch_get_specific(databaseConnection->IsOnConnectionQueueKey), @"Expected to be on connectionQueue");
-	
-	if (queryPtr) *queryPtr = query;
-	if (wasChangedPtr) *wasChangedPtr = queryChanged;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -143,7 +104,7 @@ static NSString *const key_query = @"query";
 {
 	NSMutableArray *keys = [[super internalChangesetKeys] mutableCopy];
 	
-	[keys addObject:key_query];
+	[keys addObject:changeset_key_query];
 	return keys;
 }
 
@@ -164,8 +125,9 @@ static NSString *const key_query = @"query";
 		if (internalChangeset == nil)
 			internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
 		
-		[internalChangeset setObject:query forKey:key_query];
-		hasDiskChanges = YES;
+		internalChangeset[changeset_key_query] = query;
+		
+		hasDiskChanges = hasDiskChanges || [self isPersistentView];
 	}
 	
 	*internalChangesetPtr = internalChangeset;
@@ -178,7 +140,7 @@ static NSString *const key_query = @"query";
 	YDBLogAutoTrace();
 	[super processChangeset:changeset];
 	
-	NSString *changeset_query = [changeset objectForKey:key_query];
+	NSString *changeset_query = changeset[changeset_key_query];
 	if (changeset_query)
 	{
 		query = [changeset_query copy];
@@ -191,7 +153,7 @@ static NSString *const key_query = @"query";
 
 - (sqlite3_stmt *)snippetTable_getForRowidStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 	
 	sqlite3_stmt **statement = &snippetTable_getForRowidStatement;
 	if (*statement == NULL)
@@ -218,7 +180,7 @@ static NSString *const key_query = @"query";
 
 - (sqlite3_stmt *)snippetTable_setForRowidStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 	
 	sqlite3_stmt **statement = &snippetTable_setForRowidStatement;
 	if (*statement == NULL)
@@ -245,7 +207,7 @@ static NSString *const key_query = @"query";
 
 - (sqlite3_stmt *)snippetTable_removeForRowidStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 	
 	sqlite3_stmt **statement = &snippetTable_removeForRowidStatement;
 	if (*statement == NULL)
@@ -271,7 +233,7 @@ static NSString *const key_query = @"query";
 
 - (sqlite3_stmt *)snippetTable_removeAllStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 	
 	sqlite3_stmt **statement = &snippetTable_removeAllStatement;
 	if (*statement == NULL)
@@ -293,6 +255,63 @@ static NSString *const key_query = @"query";
 	}
 	
 	return *statement;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Internal
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSString *)query
+{
+	__block NSString *result = nil;
+	
+	dispatch_block_t block = ^{
+		
+		result = query;
+	};
+	
+	if (dispatch_get_specific(databaseConnection->IsOnConnectionQueueKey))
+		block();
+	else
+		dispatch_sync(databaseConnection->connectionQueue, block);
+	
+	return result;
+}
+
+- (void)setQuery:(NSString *)newQuery isChange:(BOOL)isChange
+{
+	NSAssert(dispatch_get_specific(databaseConnection->IsOnConnectionQueueKey), @"Expected to be on connectionQueue");
+	
+	query = [newQuery copy];
+	queryChanged = queryChanged || isChange;
+}
+
+- (void)getQuery:(NSString **)queryPtr wasChanged:(BOOL *)wasChangedPtr
+{
+	NSAssert(dispatch_get_specific(databaseConnection->IsOnConnectionQueueKey), @"Expected to be on connectionQueue");
+	
+	if (queryPtr) *queryPtr = query;
+	if (wasChangedPtr) *wasChangedPtr = queryChanged;
+}
+
+/**
+ * Used when the parentView's groupingBlock/sortingBlock changes.
+ *
+ * We need to update our groupingBlock/sortingBlock to match,
+ * but NOT the versionTag (since it didn't change).
+**/
+- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)newGroupingBlock
+       groupingBlockType:(YapDatabaseViewBlockType)newGroupingBlockType
+            sortingBlock:(YapDatabaseViewSortingBlock)newSortingBlock
+        sortingBlockType:(YapDatabaseViewBlockType)newSortingBlockType
+{
+	groupingBlock     = newGroupingBlock;
+	groupingBlockType = newGroupingBlockType;
+	sortingBlock      = newSortingBlock;
+	sortingBlockType  = newSortingBlockType;
+	
+	groupingBlockChanged = YES;
+	sortingBlockChanged = YES;
 }
 
 @end
