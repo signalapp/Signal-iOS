@@ -370,6 +370,16 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  *
  * NSString *collection, *key;
  * if ([[transaction ext:@"myView"] getKey:&key collection:&collection atIndex:index inGroup:group]) {
+ *     metadata = [transaction metadataForKey:key inCollection:collection];
+ * }
+**/
+- (id)metadataAtIndex:(NSUInteger)index inGroup:(NSString *)group;
+
+/**
+ * Equivalent to invoking:
+ *
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"myView"] getKey:&key collection:&collection atIndex:index inGroup:group]) {
  *     object = [transaction objectForKey:key inCollection:collection];
  * }
 **/
@@ -461,6 +471,35 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * ***** ALWAYS USE THESE METHODS WHEN USING MAPPINGS *****
+ *
+ * When using advanced features of YapDatabaseViewMappings, things can get confusing rather quickly.
+ * For example, one can configure mappings in such a way that it:
+ * - only displays a subset (range) of the original YapDatabaseView
+ * - presents the YapDatabaseView in reverse order
+ * 
+ * If you used only the core API of YapDatabaseView, you'd be forced to constantly use a 2-step lookup process:
+ * 1.) Use mappings to convert from the tableView's indexPath, to the group & index of the view.
+ * 2.) Use the resulting group & index to fetch what you need.
+ * 
+ * The annoyance of an extra step is one thing.
+ * But an extra step that's easy to forget, and which would likely cause bugs, is another.
+ * 
+ * Thus it is recommended that you ***** ALWAYS USE THESE METHODS WHEN USING MAPPINGS ***** !!!!!
+ * 
+ * One other word of encouragement:
+ *
+ * Often times developers start by using straight mappings without any advanced features.
+ * This means there's a 1-to-1 mapping between what's in the tableView, and what's in the yapView.
+ * In these situations you're still highly encouraged to use these methods.
+ * Because if/when you do turn on some advanced features, these methods will continue to work perfectly.
+ * Whereas the alternative would force you to find every instance where you weren't using these methods,
+ * and convert that code to use these methods.
+ * 
+ * So it's advised you save yourself the hassle (and the mental overhead),
+ * and simply always use these methds when using mappings.
+**/
 @interface YapDatabaseViewTransaction (Mappings)
 
 /**
@@ -485,34 +524,6 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
   withMappings:(YapDatabaseViewMappings *)mappings;
 
 /**
- * Gets the object at the given indexPath, assuming the given mappings are being used.
- * 
- * Equivalent to invoking:
- *
- * NSString *collection, *key;
- * if ([[transaction ext:@"myView"] getKey:&key collection:&collection atIndexPath:indexPath withMappings:mappings]) {
- *     object = [transaction objectForKey:key inCollection:collection];
- * }
-**/
-- (id)objectAtIndexPath:(NSIndexPath *)indexPath withMappings:(YapDatabaseViewMappings *)mappings;
-
-/**
- * Gets the object at the given indexPath, assuming the given mappings are being used.
- *
- * Equivalent to invoking:
- *
- * NSString *collection, *key;
- * if ([[transaction ext:@"view"] getKey:&key
- *                            collection:&collection
- *                                forRow:row
- *                             inSection:section
- *                          withMappings:mappings]) {
- *     object = [transaction objectForKey:key inCollection:collection];
- * }
-**/
-- (id)objectAtRow:(NSUInteger)row inSection:(NSUInteger)section withMappings:(YapDatabaseViewMappings *)mappings;
-
-/**
  * Fetches the indexPath for the given {collection, key} tuple, assuming the given mappings are being used.
  * Returns nil if the {collection, key} tuple isn't included in the view + mappings.
 **/
@@ -530,5 +541,61 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
         forKey:(NSString *)key
   inCollection:(NSString *)collection
   withMappings:(YapDatabaseViewMappings *)mappings;
+
+/**
+ * Gets the object at the given indexPath, assuming the given mappings are being used.
+ * 
+ * Equivalent to invoking:
+ *
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"myView"] getKey:&key collection:&collection atIndexPath:indexPath withMappings:mappings]) {
+ *     object = [transaction objectForKey:key inCollection:collection];
+ * }
+**/
+- (id)objectAtIndexPath:(NSIndexPath *)indexPath withMappings:(YapDatabaseViewMappings *)mappings;
+
+/**
+ * Gets the object at the given indexPath, assuming the given mappings are being used.
+ *
+ * Equivalent to invoking:
+ *
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"myView"] getKey:&key
+ *                              collection:&collection
+ *                                  forRow:row
+ *                               inSection:section
+ *                            withMappings:mappings]) {
+ *     object = [transaction objectForKey:key inCollection:collection];
+ * }
+**/
+- (id)objectAtRow:(NSUInteger)row inSection:(NSUInteger)section withMappings:(YapDatabaseViewMappings *)mappings;
+
+/**
+ * Gets the metadata at the given indexPath, assuming the given mappings are being used.
+ *
+ * Equivalent to invoking:
+ *
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"myView"] getKey:&key collection:&collection atIndexPath:indexPath withMappings:mappings]) {
+ *     metadata = [transaction metadataForKey:key inCollection:collection];
+ * }
+**/
+- (id)metadataAtIndexPath:(NSIndexPath *)indexPath withMappings:(YapDatabaseViewMappings *)mappings;
+
+/**
+ * Gets the object at the given indexPath, assuming the given mappings are being used.
+ *
+ * Equivalent to invoking:
+ *
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"myView"] getKey:&key
+ *                              collection:&collection
+ *                                  forRow:row
+ *                               inSection:section
+ *                            withMappings:mappings]) {
+ *     metadata = [transaction metadataForKey:key inCollection:collection];
+ * }
+**/
+- (id)metadataAtRow:(NSUInteger)row inSection:(NSUInteger)section withMappings:(YapDatabaseViewMappings *)mappings;
 
 @end

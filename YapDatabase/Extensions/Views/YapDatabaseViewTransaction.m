@@ -4927,21 +4927,33 @@ static NSString *const ExtKey_version_deprecated = @"version";
 
 @implementation YapDatabaseViewTransaction (Convenience)
 
+- (id)metadataAtIndex:(NSUInteger)index inGroup:(NSString *)group
+{
+	int64_t rowid = 0;
+	if ([self getRowid:&rowid atIndex:index inGroup:group])
+	{
+		YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
+		
+		return [databaseTransaction metadataForCollectionKey:ck withRowid:rowid];
+	}
+	else
+	{
+		return nil;
+	}
+}
+
 - (id)objectAtIndex:(NSUInteger)index inGroup:(NSString *)group
 {
 	int64_t rowid = 0;
 	if ([self getRowid:&rowid atIndex:index inGroup:group])
 	{
-		id object = nil;
-		if ([databaseTransaction getCollectionKey:NULL object:&object forRowid:rowid])
-		{
-			return object;
-		}
+		YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
+		
+		return [databaseTransaction objectForCollectionKey:ck withRowid:rowid];
 	}
 	
 	return nil;
 }
-
 
 - (id)firstObjectInGroup:(NSString *)group
 {
@@ -4953,11 +4965,9 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	int64_t rowid = 0;
 	if ([self getLastRowid:&rowid inGroup:group])
 	{
-		id object = nil;
-		if ([databaseTransaction getCollectionKey:NULL object:&object forRowid:rowid])
-		{
-			return object;
-		}
+		YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
+		
+		return [databaseTransaction objectForCollectionKey:ck withRowid:rowid];
 	}
 	
 	return nil;
@@ -5150,11 +5160,40 @@ static NSString *const ExtKey_version_deprecated = @"version";
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * ***** ALWAYS USE THESE METHODS WHEN USING MAPPINGS *****
+ *
+ * When using advanced features of YapDatabaseViewMappings, things can get confusing rather quickly.
+ * For example, one can configure mappings in such a way that it:
+ * - only displays a subset (range) of the original YapDatabaseView
+ * - presents the YapDatabaseView in reverse order
+ *
+ * If you used only the core API of YapDatabaseView, you'd be forced to constantly use a 2-step lookup process:
+ * 1.) Use mappings to convert from the tableView's indexPath, to the group & index of the view.
+ * 2.) Use the resulting group & index to fetch what you need.
+ *
+ * The annoyance of an extra step is one thing.
+ * But an extra step that's easy to forget, and which would likely cause bugs, is another.
+ *
+ * Thus it is recommended that you ***** ALWAYS USE THESE METHODS WHEN USING MAPPINGS ***** !!!!!
+ *
+ * One other word of encouragement:
+ *
+ * Often times developers start by using straight mappings without any advanced features.
+ * This means there's a 1-to-1 mapping between what's in the tableView, and what's in the yapView.
+ * In these situations you're still highly encouraged to use these methods.
+ * Because if/when you do turn on some advanced features, these methods will continue to work perfectly.
+ * Whereas the alternative would force you to find every instance where you weren't using these methods,
+ * and convert that code to use these methods.
+ *
+ * So it's advised you save yourself the hassle (and the mental overhead),
+ * and simply always use these methds when using mappings.
+**/
 @implementation YapDatabaseViewTransaction (Mappings)
 
 /**
  * Performance boost.
- * If the object isn't in the cache, having the rowid makes for a faster fetch from sqlite.
+ * If the item isn't in the cache, having the rowid makes for a faster fetch from sqlite.
 **/
 - (BOOL)getRowid:(int64_t *)rowidPtr
    collectionKey:(YapCollectionKey **)collectionKeyPtr
@@ -5253,6 +5292,49 @@ static NSString *const ExtKey_version_deprecated = @"version";
 }
 
 /**
+ * Fetches the indexPath for the given {collection, key} tuple, assuming the given mappings are being used.
+ * Returns nil if the {collection, key} tuple isn't included in the view + mappings.
+**/
+- (NSIndexPath *)indexPathForKey:(NSString *)key
+                    inCollection:(NSString *)collection
+                    withMappings:(YapDatabaseViewMappings *)mappings
+{
+	NSString *group = nil;
+	NSUInteger index = 0;
+	
+	if ([self getGroup:&group index:&index forKey:key inCollection:collection])
+	{
+		return [mappings indexPathForIndex:index inGroup:group];
+	}
+	
+	return nil;
+}
+
+/**
+ * Fetches the row & section for the given {collection, key} tuple, assuming the given mappings are being used.
+ * Returns NO if the {collection, key} tuple isn't included in the view + mappings.
+ * Otherwise returns YES, and sets the row & section (both optional).
+**/
+- (BOOL)getRow:(NSUInteger *)rowPtr
+       section:(NSUInteger *)sectionPtr
+        forKey:(NSString *)key
+  inCollection:(NSString *)collection
+  withMappings:(YapDatabaseViewMappings *)mappings
+{
+	NSString *group = nil;
+	NSUInteger index = 0;
+	
+	if ([self getGroup:&group index:&index forKey:key inCollection:collection])
+	{
+		return [mappings getRow:rowPtr section:sectionPtr forIndex:index inGroup:group];
+	}
+	
+	if (rowPtr) *rowPtr = 0;
+	if (sectionPtr) *sectionPtr = 0;
+	return NO;
+}
+
+/**
  * Gets the object at the given indexPath, assuming the given mappings are being used.
  * 
  * Equivalent to invoking:
@@ -5320,46 +5402,70 @@ static NSString *const ExtKey_version_deprecated = @"version";
 }
 
 /**
- * Fetches the indexPath for the given {collection, key} tuple, assuming the given mappings are being used.
- * Returns nil if the {collection, key} tuple isn't included in the view + mappings.
+ * Gets the metadata at the given indexPath, assuming the given mappings are being used.
+ *
+ * Equivalent to invoking:
+ *
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"myView"] getKey:&key collection:&collection atIndexPath:indexPath withMappings:mappings]) {
+ *     metadata = [transaction metadataForKey:key inCollection:collection];
+ * }
 **/
-- (NSIndexPath *)indexPathForKey:(NSString *)key
-                    inCollection:(NSString *)collection
-                    withMappings:(YapDatabaseViewMappings *)mappings
+- (id)metadataAtIndexPath:(NSIndexPath *)indexPath withMappings:(YapDatabaseViewMappings *)mappings
 {
-	NSString *group = nil;
-	NSUInteger index = 0;
-	
-	if ([self getGroup:&group index:&index forKey:key inCollection:collection])
+	if (indexPath == nil)
 	{
-		return [mappings indexPathForIndex:index inGroup:group];
+		return nil;
 	}
 	
-	return nil;
+#if TARGET_OS_IPHONE
+	NSUInteger section = indexPath.section;
+	NSUInteger row = indexPath.row;
+#else
+	NSUInteger section = [indexPath indexAtPosition:0];
+	NSUInteger row = [indexPath indexAtPosition:1];
+#endif
+	
+	id metadata = nil;
+	
+	int64_t rowid = 0;
+	YapCollectionKey *ck = nil;
+	
+	if ([self getRowid:&rowid collectionKey:&ck forRow:row inSection:section withMappings:mappings])
+	{
+		metadata = [databaseTransaction metadataForCollectionKey:ck withRowid:rowid];
+	}
+	
+	return metadata;
 }
 
 /**
- * Fetches the row & section for the given {collection, key} tuple, assuming the given mappings are being used.
- * Returns NO if the {collection, key} tuple isn't included in the view + mappings.
- * Otherwise returns YES, and sets the row & section (both optional).
+ * Gets the object at the given indexPath, assuming the given mappings are being used.
+ *
+ * Equivalent to invoking:
+ *
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"myView"] getKey:&key
+ *                              collection:&collection
+ *                                  forRow:row
+ *                               inSection:section
+ *                            withMappings:mappings]) {
+ *     metadata = [transaction metadataForKey:key inCollection:collection];
+ * }
 **/
-- (BOOL)getRow:(NSUInteger *)rowPtr
-       section:(NSUInteger *)sectionPtr
-        forKey:(NSString *)key
-  inCollection:(NSString *)collection
-  withMappings:(YapDatabaseViewMappings *)mappings
+- (id)metadataAtRow:(NSUInteger)row inSection:(NSUInteger)section withMappings:(YapDatabaseViewMappings *)mappings
 {
-	NSString *group = nil;
-	NSUInteger index = 0;
+	id metadata = nil;
 	
-	if ([self getGroup:&group index:&index forKey:key inCollection:collection])
+	int64_t rowid = 0;
+	YapCollectionKey *ck = nil;
+	
+	if ([self getRowid:&rowid collectionKey:&ck forRow:row inSection:section withMappings:mappings])
 	{
-		return [mappings getRow:rowPtr section:sectionPtr forIndex:index inGroup:group];
+		metadata = [databaseTransaction metadataForCollectionKey:ck withRowid:rowid];
 	}
 	
-	if (rowPtr) *rowPtr = 0;
-	if (sectionPtr) *sectionPtr = 0;
-	return NO;
+	return metadata;
 }
 
 @end
