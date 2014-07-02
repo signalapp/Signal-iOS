@@ -47,7 +47,7 @@ static unsigned char DH3K_PRIME[]={
 +(Environment*) releaseEnvironmentWithLogging:(id<Logging>)logging {
     // @todo: turn off error notification
     //ErrorHandlerBlock errorDiscarder = ^(id error, id relatedInfo, bool causedTermination) {};
-    ErrorHandlerBlock errorNoter = ^(id error, id relatedInfo, bool causedTermination) { NSLog(@"%@: %@, %d", error, relatedInfo, causedTermination); };
+    ErrorHandlerBlock errorNoter = ^(id error, id relatedInfo, bool causedTermination) { DDLogError(@"%@: %@, %d", error, relatedInfo, causedTermination); };
     
     return [Environment environmentWithPreferences:[PropertyListPreferences propertyListPreferencesWithName:@"RedPhone-Data"]
                                         andLogging:logging
@@ -68,51 +68,6 @@ static unsigned char DH3K_PRIME[]={
 						  andPhoneDirectoryManager:[PhoneNumberDirectoryFilterManager new]];
 }
 
-+(Environment*) releaseInteropEnvironmentWithLogging:(id<Logging>)logging {
-    // @todo: turn off error notification
-    //ErrorHandlerBlock errorDiscarder = ^(id error, id relatedInfo, bool causedTermination) {};
-    ErrorHandlerBlock errorNoter = ^(id error, id relatedInfo, bool causedTermination) { NSLog(@"%@: %@, %d", error, relatedInfo, causedTermination); };
-    
-    return [Environment environmentWithPreferences:[PropertyListPreferences propertyListPreferencesWithName:@"RedPhone-Data"]
-                                        andLogging:logging
-                                     andErrorNoter:errorNoter
-                                     andServerPort:31337
-                           andMasterServerHostName:@"testing.whispersystems.org"
-                               andDefaultRelayName:@"testing"
-                      andRelayServerHostNameSuffix:@"whispersystems.org"
-                                    andCertificate:[Certificate certificateFromResourcePath:@"whisperReal" ofType:@"der"]
-               andCurrentRegionCodeForPhoneNumbers:[(NSLocale*)[NSLocale currentLocale] objectForKey:NSLocaleCountryCode]
-                 andSupportedKeyAgreementProtocols:[self supportedKeyAgreementProtocols]
-                                   andPhoneManager:[PhoneManager phoneManagerWithErrorHandler:errorNoter]
-                              andRecentCallManager:[RecentCallManager new]
-                        andTestingAndLegacyOptions:@[ENVIRONMENT_LEGACY_OPTION_RTP_PADDING_BIT_IMPLIES_EXTENSION_BIT_AND_TWELVE_EXTRA_ZERO_BYTES_IN_HEADER]
-                                   andZrtpClientId:RELEASE_ZRTP_CLIENT_ID
-                                  andZrtpVersionId:RELEASE_ZRTP_VERSION_ID
-								andContactsManager:[[ContactsManager alloc] init]
-						  andPhoneDirectoryManager:[PhoneNumberDirectoryFilterManager new]];
-}
-
-+(Environment*) pseudoEnvironmentWithLogging:(id<Logging>)logging {
-    ErrorHandlerBlock errorNoter = ^(id error, id relatedInfo, bool causedTermination) { NSLog(@"%@: %@, %d", error, relatedInfo, causedTermination); };
-
-    return [Environment environmentWithPreferences:[PropertyListPreferences propertyListPreferencesWithName:@"Pseudo-RedPhone-Data"]
-                                        andLogging:logging
-                                     andErrorNoter:errorNoter
-                                     andServerPort:31337
-                           andMasterServerHostName:@"testing.whispersystems.org"
-                               andDefaultRelayName:@"testing"
-                      andRelayServerHostNameSuffix:@"whispersystems.org"
-                                    andCertificate:[Certificate certificateFromResourcePath:@"whisperReal" ofType:@"der"]
-               andCurrentRegionCodeForPhoneNumbers:[(NSLocale*)[NSLocale currentLocale] objectForKey:NSLocaleCountryCode]
-                 andSupportedKeyAgreementProtocols:[self supportedKeyAgreementProtocols]
-                                   andPhoneManager:[PhoneManager phoneManagerWithErrorHandler:errorNoter]
-                              andRecentCallManager:[RecentCallManager new]
-                        andTestingAndLegacyOptions:@[]
-                                   andZrtpClientId:RELEASE_ZRTP_CLIENT_ID
-                                  andZrtpVersionId:RELEASE_ZRTP_VERSION_ID
-								andContactsManager:[[ContactsManager alloc] init]
-						  andPhoneDirectoryManager:[PhoneNumberDirectoryFilterManager new]];
-}
 +(Environment*) unitTestEnvironment:(NSArray*)testingAndLegacyOptions {
     return [Environment environmentWithPreferences:[PropertyListPreferences propertyListPreferencesWithName:@"RedPhone-Test-Data"]
                                         andLogging:[DiscardingLog discardingLog]
