@@ -8,6 +8,7 @@
 #import "RecentCallManager.h"
 #import "RegisterViewController.h"
 #import "SettingsViewController.h"
+#import "LogSubmit.h"
 
 #import "UIViewController+MMDrawerController.h"
 
@@ -24,6 +25,8 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
     NSArray *_privacyTableViewCells;
     NSArray *_localizationTableViewCells;
     NSArray *_callQualityTableViewCells;
+    
+    NSString *gistURL;
 }
 
 @end
@@ -145,7 +148,8 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
     return @[_hideContactImagesCell,
              _disableAutocorrectCell,
              _disableHistoryCell,
-             _clearHistoryLogCell];
+             _clearHistoryLogCell,
+             _sendDebugLog];
 }
 
 - (NSArray *)localizationCells {
@@ -295,6 +299,44 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
     if (cell == _dateFormatCell) {
         [self showDateFormatPicker];
     }
+    
+    if (cell == _sendDebugLog) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:SETTINGS_SENDLOG_WAITING
+                                            message:nil delegate:self cancelButtonTitle:nil otherButtonTitles: nil];
+        
+        [alert show];
+        
+        [LogSubmit submitLogsWithCompletion:^(BOOL success, NSString *urlString) {
+            [alert dismissWithClickedButtonIndex:0 animated:YES];
+            if (success) {
+                gistURL = urlString;
+                UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:SETTINGS_SENDLOG_ALERT_TITLE message:SETTINGS_SENDLOG_ALERT_BODY delegate:self cancelButtonTitle:SETTINGS_SENDLOG_ALERT_PASTE otherButtonTitles:SETTINGS_SENDLOG_ALERT_EMAIL, nil];
+                [alertView show];
+                
+            } else{
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SETTINGS_SENDLOG_FAILED_TITLE message:SETTINGS_SENDLOG_FAILED_BODY delegate:nil cancelButtonTitle:SETTINGS_SENDLOG_FAILED_DISMISS otherButtonTitles:nil, nil];
+                [alertView show];
+            }
+        }];
+    }
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (buttonIndex == 0) {
+        [self pasteBoardCopy:gistURL];
+    } else{
+        [self submitEmail:gistURL];
+    }
+}
+
+- (void)submitEmail:(NSString*)url{
+    NSString *urlString = [NSString stringWithString: [@"mailto:support@whispersystems.org?subject=iOS%20Debug%20Log&body=" stringByAppendingString:[[NSString stringWithFormat:@"Log URL: %@ \n Tell us about the issue: ", url]stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]]];
+    [[UIApplication sharedApplication] openURL: [NSURL URLWithString: urlString]];
+}
+
+- (void)pasteBoardCopy:(NSString*)url{
+    UIPasteboard *pb = [UIPasteboard generalPasteboard];
+    [pb setString:url];
 }
 
 - (void)findAndLocalizeLabelsForView:(UIView *)view {

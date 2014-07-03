@@ -14,7 +14,7 @@
  *
  */
 
-@interface SettingsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+@interface SettingsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate>
 
 @property (nonatomic, strong) IBOutlet UITableView *settingsTableView;
 @property (nonatomic, strong) IBOutlet UILabel *phoneNumberLabel;
@@ -39,6 +39,7 @@
 @property (nonatomic, strong) IBOutlet UITableViewCell *directoryUpdateCell;
 
 @property (nonatomic, strong) IBOutlet UIButton *sendFeedbackButton;
+@property (nonatomic, strong) IBOutlet UITableViewCell *sendDebugLog;
 
 @property (nonatomic, assign) FutureSource *apnId;
 

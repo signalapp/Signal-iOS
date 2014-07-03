@@ -121,6 +121,14 @@
 "SETTINGS_NUMBER_PREFIX" = "Your Number:";
 "SETTINGS_PRIVACY_AND_SECURITY" = "Privacy and Security";
 "SETTINGS_RINGTONE" = "Ringtone";
+"SETTINGS_SENDLOG" = "Submit Debug Log"; 
+"SETTINGS_SENDLOGS_WAITING" = "Sending anonymized log file\n Please wait...";
+"SETTINGS_SENDLOG_ALERT_TITLE" = "Submit debug log";
+"SETTINGS_SENDLOG_ALERT_BODY" = "Do you want to copy the log URL to the pasteboard or submit it by email?";
+"SETTINGS_SENDLOG_ALERT_PASTE" = "Pasteboard";
+"SETTINGS_SENDLOG_ALERT_EMAIL" = "Email";
+"SETTINGS_SENDLOG_FAILED_TITLE" = "Failed to submit debug log";
+"SETTINGS_SENDLOG_FAILED_BODY" = "The debug log could not be submitted. Please try again.";
 "SETTINGS_VIBRATE_ON_RING" = "Vibrate on Ring";
 "SETTINGS_VIBRATE_ON_SILENT" = "Vibrate on Silent";
 "SPEAKER_BUTTON_TITLE" = "Speaker";

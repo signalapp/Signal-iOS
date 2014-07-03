@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="4510" systemVersion="13A603" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SettingsViewController">
@@ -21,6 +21,7 @@
                 <outlet property="locationOverridesHeaderView" destination="9Ou-py-Aq1" id="nC3-ta-AyD"/>
                 <outlet property="phoneNumberLabel" destination="G77-lz-XM0" id="adE-bu-2Kn"/>
                 <outlet property="privacyAndSecurityHeaderView" destination="XIa-5u-rk1" id="kap-XQ-9AL"/>
+                <outlet property="sendDebugLog" destination="Yc0-ZL-RM6" id="wyq-HF-B9c"/>
                 <outlet property="sendFeedbackButton" destination="cqe-Lt-yoW" id="yOB-Zk-xpw"/>
                 <outlet property="settingsTableView" destination="ajL-B0-V0M" id="0zr-QP-yQl"/>
                 <outlet property="titleLabel" destination="X1p-jb-cMh" id="Duc-Ac-qHm"/>
@@ -554,6 +555,30 @@
                     <constraint firstItem="aic-Lf-XeI" firstAttribute="top" secondItem="710-np-6sk" secondAttribute="top" id="DeF-Nt-zK8"/>
                     <constraint firstItem="aic-Lf-XeI" firstAttribute="leading" secondItem="710-np-6sk" secondAttribute="leading" constant="20" symbolic="YES" id="h6l-yK-z5z"/>
                 </constraints>
+            </tableViewCellContentView>
+        </tableViewCell>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="SettingsTableViewCell" id="Yc0-ZL-RM6">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Yc0-ZL-RM6" id="S9z-bI-5FI">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Submit Debug Log" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cPQ-gV-EF9" customClass="HelveticaNeueLTStdMedLabel">
+                        <rect key="frame" x="20" y="11" width="223" height="21"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <nil key="highlightedColor"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="string" keyPath="localizationKey" value="SETTINGS_SENDLOG"/>
+                        </userDefinedRuntimeAttributes>
+                    </label>
+                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rLV-oR-lWh" userLabel="Seperator View">
+                        <rect key="frame" x="15" y="42" width="290" height="1"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" red="0.7843137255" green="0.7843137255" blue="0.7843137255" alpha="1" colorSpace="calibratedRGB"/>
+                    </view>
+                </subviews>
             </tableViewCellContentView>
         </tableViewCell>
     </objects>
