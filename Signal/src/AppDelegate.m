@@ -16,11 +16,6 @@
 #import "Util.h"
 #import <UICKeyChainStore/UICKeyChainStore.h>
 
-#pragma mark Logging - Production logging wants us to write some logs to a file in case we need it for debugging.
-
-#import <CocoaLumberjack/DDTTYLogger.h>
-#import <CocoaLumberjack/DDFileLogger.h>
-
 #define kSignalVersionKey @"SignalUpdateVersionKey"
 
 #ifdef __APPLE__
@@ -31,6 +26,7 @@
 
 @property (nonatomic, strong) MMDrawerController *drawerController;
 @property (nonatomic, strong) NotificationTracker *notificationTracker;
+@property (nonatomic) DDFileLogger *fileLogger;
 
 @end
 
@@ -75,13 +71,14 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     [DDLog addLogger:[DDTTYLogger sharedInstance]];
-    DDFileLogger *fileLogger = [[DDFileLogger alloc] init];
-    fileLogger.rollingFrequency = 60 * 60 * 24; // 24 hour rolling.
-    fileLogger.logFileManager.maximumNumberOfLogFiles = 3; // Keep three days of logs.
-    [DDLog addLogger:fileLogger];
+    self.fileLogger = [[DDFileLogger alloc] init]; //Logging to file, because it's in the Cache folder, they are not uploaded in iTunes/iCloud backups.
+    self.fileLogger.rollingFrequency = 60 * 60 * 24; // 24 hour rolling.
+    self.fileLogger.logFileManager.maximumNumberOfLogFiles = 3; // Keep three days of logs.
+    [DDLog addLogger:self.fileLogger];
     
     [self performUpdateCheck];
     [self disableCallLogBackup];
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.notificationTracker = [NotificationTracker notificationTracker];
     
@@ -102,8 +99,7 @@
     leftSideMenuViewController.centerTabBarViewController.inboxFeedViewController.apnId = futureApnIdSource;
     leftSideMenuViewController.centerTabBarViewController.settingsViewController.apnId = futureApnIdSource;
 
-    self.drawerController = [[MMDrawerController alloc] initWithCenterViewController:leftSideMenuViewController.centerTabBarViewController
-                                                            leftDrawerViewController:leftSideMenuViewController];
+    self.drawerController = [[MMDrawerController alloc] initWithCenterViewController:leftSideMenuViewController.centerTabBarViewController leftDrawerViewController:leftSideMenuViewController];
     self.window.rootViewController = _drawerController;
     [self.window makeKeyAndVisible];
 

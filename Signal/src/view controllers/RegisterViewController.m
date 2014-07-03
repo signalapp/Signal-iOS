@@ -128,7 +128,7 @@
                                             andErrorHandler:[Environment errorNoter]];
     };
     Future *futurePhoneRegistrationStarted = [AsyncUtil raceCancellableOperation:regStarter
-                                                                  againstTimeout:30.0
+                                                                  againstTimeout:20.0
                                                                   untilCancelled:cancelToken];
 
     Future *futurePhoneRegistrationVerified = [futurePhoneRegistrationStarted then:^(id _) {
@@ -201,13 +201,13 @@
         if ([error isKindOfClass:[HttpResponse class]]) {
             HttpResponse* badResponse = error;
             if ([badResponse getStatusCode] == 401) {
+#warning localize this alert
                 UIAlertView *incorrectChallengeCodeAV = [[UIAlertView alloc]initWithTitle:@"Registration error" message:@"The challenge code you entered is incorrect." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
                 [incorrectChallengeCodeAV show];
                 return;
             }
         }
         [Environment errorNoter](error, @"While Verifying Challenge.", NO);
-#warning add implementation
     }];
 
     [futureDone thenDo:^(id result) {
