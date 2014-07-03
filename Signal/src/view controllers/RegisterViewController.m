@@ -201,8 +201,7 @@
         if ([error isKindOfClass:[HttpResponse class]]) {
             HttpResponse* badResponse = error;
             if ([badResponse getStatusCode] == 401) {
-#warning localize this alert
-                UIAlertView *incorrectChallengeCodeAV = [[UIAlertView alloc]initWithTitle:@"Registration error" message:@"The challenge code you entered is incorrect." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                UIAlertView *incorrectChallengeCodeAV = [[UIAlertView alloc]initWithTitle:REGISTER_CHALLENGE_ALERT_VIEW_TITLE message:REGISTER_CHALLENGE_ALERT_VIEW_BODY delegate:nil cancelButtonTitle:REGISTER_CHALLENGE_ALERT_DISMISS otherButtonTitles:nil, nil];
                 [incorrectChallengeCodeAV show];
                 return;
             }
