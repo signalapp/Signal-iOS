@@ -40,8 +40,16 @@ NSArray* Permutations(NSUInteger count) {
 @implementation PriorityQueueTest
 
 -(void) testTrivialPrioritizing {
-    PriorityQueue* q = [PriorityQueue priorityQueueAscendingWithComparator:^(id obj1, id obj2){ return
-        [obj1 intValue] - [obj2 intValue]; }];
+    PriorityQueue* q = [PriorityQueue priorityQueueAscendingWithComparator:^(id obj1, id obj2){
+        int diff =[obj2 intValue] - [obj1 intValue];
+        if (diff > 0 ) {
+            return (NSComparisonResult)NSOrderedAscending;
+        } else if (diff < 0){
+            return (NSComparisonResult)NSOrderedDescending;
+        } else{
+            return (NSComparisonResult)NSOrderedSame;
+        }
+    }];
     test([q count] == 0);
     testThrows([q peek]);
     testThrows([q dequeue]);
@@ -60,8 +68,17 @@ NSArray* Permutations(NSUInteger count) {
     testThrows([q dequeue]);
 }
 -(void) testOrdersByComparator {
-    PriorityQueue* q = [PriorityQueue priorityQueueAscendingWithComparator:^(id obj1, id obj2){ return
-        [obj2 intValue] - [obj1 intValue]; }];
+    PriorityQueue* q = [PriorityQueue priorityQueueAscendingWithComparator:^(id obj1, id obj2){
+        int diff =[obj2 intValue] - [obj1 intValue];
+        if (diff > 0 ) {
+            return (NSComparisonResult)NSOrderedAscending;
+        } else if (diff < 0){
+            return (NSComparisonResult)NSOrderedDescending;
+        } else{
+            return (NSComparisonResult)NSOrderedSame;
+        }
+    }];
+                        
     [q enqueue:@1];
     [q enqueue:@2];
     [q enqueue:@3];
@@ -72,8 +89,16 @@ NSArray* Permutations(NSUInteger count) {
 -(void) testSortsAllSmallPermutations {
     const NSUInteger N = 7;
     for (NSArray* permutation in Permutations(N)) {
-        PriorityQueue* q = [PriorityQueue priorityQueueAscendingWithComparator:^(id obj1, id obj2){ return
-            [obj1 intValue] - [obj2 intValue]; }];
+        PriorityQueue* q = [PriorityQueue priorityQueueAscendingWithComparator:^(id obj1, id obj2){
+            int diff =[obj2 intValue] - [obj1 intValue];
+            if (diff > 0 ) {
+                return (NSComparisonResult)NSOrderedAscending;
+            } else if (diff < 0){
+                return (NSComparisonResult)NSOrderedDescending;
+            } else{
+                return (NSComparisonResult)NSOrderedSame;
+            }
+        }];
         for (NSNumber* e in permutation) {
             [q enqueue:e];
         }
@@ -90,8 +115,16 @@ NSArray* Permutations(NSUInteger count) {
     const NSUInteger Size = 500;
     const NSUInteger Repetitions = 50;
     for (NSUInteger repeat = 0; repeat < Repetitions; repeat++) {
-        PriorityQueue* q = [PriorityQueue priorityQueueAscendingWithComparator:^(id obj1, id obj2){ return
-            [obj1 intValue] - [obj2 intValue]; }];
+        PriorityQueue* q = [PriorityQueue priorityQueueAscendingWithComparator:^(id obj1, id obj2){
+            int diff =[obj2 intValue] - [obj1 intValue];
+            if (diff > 0 ) {
+                return (NSComparisonResult)NSOrderedAscending;
+            } else if (diff < 0){
+                return (NSComparisonResult)NSOrderedDescending;
+            } else{
+                return (NSComparisonResult)NSOrderedSame;
+            }
+        }];
         NSArray* permutation = RandomPermutation(Size);
         for (NSNumber* e in permutation) {
             [q enqueue:e];
