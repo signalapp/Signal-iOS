@@ -94,12 +94,15 @@
 "REGISTER_CHALLENGE_TEXTBLOCK_PART1" = "Let’s make sure you’re real. We've sent you a SMS with a six digit code to:";
 "REGISTER_CHALLENGE_TEXTBLOCK_PART2" = "To complete your phone number verification, please enter the code below.";
 "REGISTER_CHALLENGE_VOICECALL_TEXT" = "If you are unable to recieve an SMS, we will call you in";
+"REGISTER_CHALLENGE_ALERT_VIEW_TITLE" = "Incorrect code";
+"REGISTER_CHALLENGE_ALERT_VIEW_BODY" = "Please verify the code and try again";
 "REGISTER_ENTER_COUNTRY_CODE" = "Your number's country code";
 "REGISTER_ENTER_NUMBER" = "Your phone number";
 "REGISTER_SUCCESS_TEXTBLOCK" = "Congratulations! Your registration was successful. You may start using Signal to make secure phone calls.";
 "REGISTER_TEXTBLOCK" = "To get started making secure calls, please confirm your country code and enter your device's phone number.";
 "REGISTER_VALIDATION_ENTER_CODE" = "Validation Code";
 "REGISTER_VALIDATION_SENT" = "We sent your validation code";
+
 "REGISTER_WELCOME_TEXT" = "Welcome to Signal";
 "REGISTRATION_ERROR" = "Registration Error";
 "REGISTRATION_BODY" = "We couldn't reach the Signal server. Please try again.";
