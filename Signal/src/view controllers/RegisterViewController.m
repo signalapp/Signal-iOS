@@ -191,7 +191,7 @@
     [_challengeTextField resignFirstResponder];
     _challengeButton.enabled = NO;
     [_challengeActivityIndicator startAnimating];
-
+    
     HttpRequest *verifyRequest = [HttpRequest httpRequestToVerifyAccessToPhoneNumberWithChallenge:_challengeTextField.text];
     Future *futureDone = [HttpManager asyncOkResponseFromMasterServer:verifyRequest
                                                       unlessCancelled:nil

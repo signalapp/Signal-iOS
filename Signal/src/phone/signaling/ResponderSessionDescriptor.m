@@ -59,6 +59,7 @@
     
     NSData* encryptedPayload = [self verifyAndRemoveMacFromRemoteNotifcationData:authenticatedPayload];
     NSData* payload = [self decryptRemoteNotificationData:encryptedPayload];
+    
     InitiateSignal* parsedPayload = [InitiateSignal parseFromData:payload];
 
     in_port_t maxPort = (in_port_t)-1;
@@ -75,6 +76,8 @@
     in_port_t relayUdpPort = (in_port_t)parsedPayload.port;
     NSString* relayServerName = parsedPayload.serverName;
     PhoneNumber* phoneNumber = [PhoneNumber phoneNumberFromE164:parsedPayload.initiator];
+    
+    DDLogDebug(@"Initiating call with session descriptor: %i UDP-Port:%hu sessionID:%lld, relayServerName:%@", interopVersion, relayUdpPort, sessionId, relayServerName);
     
     return [ResponderSessionDescriptor responderSessionDescriptorWithInteropVersion:interopVersion
                                                                     andRelayUdpPort:relayUdpPort
