@@ -27,7 +27,7 @@
     NSData* data = [self getIdForNotification:notification];
     [_witnessedNotifications insertObject:data atIndex:0];
     
-    while( MAX_NOTIFICATIONS_TO_TRACK < [_witnessedNotifications count]){
+    while(MAX_NOTIFICATIONS_TO_TRACK < [_witnessedNotifications count]){
         [_witnessedNotifications removeLastObject];
     }
 }
