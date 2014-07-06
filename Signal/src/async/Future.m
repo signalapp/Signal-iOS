@@ -11,6 +11,7 @@
     return v;
 }
 +(Future*) failed:(id)value {
+    DDLogVerbose(@"Future failed: %@", value);
     FutureSource* v = [FutureSource new];
     [v trySetFailure:value];
     return v;
@@ -21,7 +22,6 @@
         return value;
     }];
 }
-
 
 -(void) finallyDo:(void(^)(Future* completed))callback {
     require(callback != nil);

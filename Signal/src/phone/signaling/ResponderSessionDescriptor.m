@@ -91,6 +91,7 @@
     NSData* includedMac     = [data takeLast:HMAC_TRUNCATED_SIZE];
     NSData* payload         = [data skipLast:HMAC_TRUNCATED_SIZE];
     NSData* signalingMacKey = [[Environment preferences] getOrGenerateSignalingMacKey];
+    require(signalingMacKey != nil);
     NSData* computedMac     = [[payload hmacWithSha1WithKey:signalingMacKey] takeLast:HMAC_TRUNCATED_SIZE];
     checkOperation([includedMac isEqualToData_TimingSafe:computedMac]);
     return payload;

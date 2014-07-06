@@ -6,6 +6,7 @@
 #define IV_LENGTH 16
 
 @implementation SrtpStream
+
 +(SrtpStream*) srtpStreamWithCipherKey:(NSData*)cipherKey andMacKey:(NSData*)macKey andCipherIvSalt:(NSData*)cipherIvSalt {
     require(cipherKey != nil);
     require(macKey != nil);

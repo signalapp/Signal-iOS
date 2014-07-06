@@ -56,6 +56,7 @@
     @synchronized(self) {
         if (value == nil) {
             [dictionary removeObjectForKey:key];
+            DDLogWarn(@"Removing object for key: %@ ", key);
         } else {
             [dictionary setObject:value forKey:key];
         }
@@ -80,11 +81,14 @@
     @synchronized(self) {
         if (value == nil) {
             [UICKeyChainStore removeItemForKey:key];
+            DDLogWarn(@"Removing object for key: %@", key);
         } else {
             if ([value isKindOfClass:[NSData class]]) {
                 [UICKeyChainStore setData:value forKey:key];
             } else if ([value isKindOfClass:[NSString class]]){
                 [UICKeyChainStore setString:value forKey:key];
+            } else{
+                DDLogError(@"Unexpected class stored in the Keychain.");
             }
         }
     }

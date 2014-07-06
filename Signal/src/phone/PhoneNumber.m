@@ -44,9 +44,11 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 +(PhoneNumber*) phoneNumberFromE164:(NSString*)text {
     require(text != nil);
     checkOperation([text hasPrefix:COUNTRY_CODE_PREFIX]);
+    PhoneNumber *number = [PhoneNumber phoneNumberFromText:text
+                                                 andRegion:@"ZZ"];
 
-    return [PhoneNumber phoneNumberFromText:text
-                                  andRegion:@"ZZ"];
+    checkOperation(number != nil);
+    return number;
 }
 
 +(NSString*) bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString*)input {
@@ -84,6 +86,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     @try {
         return [self phoneNumberFromText:text andRegion:regionCode];
     } @catch (OperationFailed* ex) {
+        DDLogError(@"Error parsing phone number from region code");
         return nil;
     }
 }

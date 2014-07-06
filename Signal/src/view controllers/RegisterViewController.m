@@ -142,15 +142,17 @@
     }];
 
     Future *futureApnToRegister = [futurePhoneRegistrationVerified then:^(HttpResponse* okResponse) {
-        // @todo: keep handling code for simulator?
         return [futureApnId catch:^id(id error) {
+            DDLogError(@"Could not get APN. Runs in Simulator?");
             return nil;
         }];
     }];
 
     return [futureApnToRegister then:^Future*(NSData* deviceToken) {
-        // @todo: distinguish between simulator no-apn error and other no-apn errors
-        if (deviceToken == nil) return futureApnToRegister;
+        if (deviceToken == nil){
+            DDLogError(@"Couldn't get a device token for APN. Runs in Simulator?");
+            return futureApnToRegister;
+        }
         
         HttpRequest* request = [HttpRequest httpRequestToRegisterForApnSignalingWithDeviceToken:deviceToken];
         return [HttpManager asyncOkResponseFromMasterServer:request
