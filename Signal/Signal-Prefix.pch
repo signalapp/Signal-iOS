@@ -12,7 +12,8 @@
     #ifdef DEBUG
     static const int ddLogLevel = LOG_LEVEL_VERBOSE;
     #else
-    static const int ddLogLevel = LOG_LEVEL_WARN;
+// As long as we have call initialization issues we'll log a bit more aggressively
+    static const int ddLogLevel = LOG_LEVEL_VERBOSE;
     #endif
 
 #endif

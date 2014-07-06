@@ -83,6 +83,8 @@
             return oldValue;
         }
         
+        DDLogInfo(@"A new %@ key of sie %lu has been generated.", key, (unsigned long)length);
+        
         return [CryptoTools generateSecureRandomData:length];
     }];
 }
@@ -116,6 +118,7 @@
 }
 -(void) setLocalNumberTo:(PhoneNumber*)localNumber {
     require(localNumber != nil);
+    require([localNumber toE164]!= nil);
     [self setValueForKey:LOCAL_NUMBER_KEY toValue:[localNumber toE164]];
 }
 

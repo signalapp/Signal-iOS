@@ -108,7 +108,10 @@
     }
 
     [[[Environment phoneManager] currentCallObservable] watchLatestValue:^(CallState* latestCall) {
-        if (latestCall == nil) return;
+        if (latestCall == nil){
+            DDLogError(@"Latest Call is nil.");
+            return;
+        }
         
         InCallViewController *callViewController = [InCallViewController inCallViewControllerWithCallState:latestCall
                     andOptionallyKnownContact:[latestCall potentiallySpecifiedContact]];
