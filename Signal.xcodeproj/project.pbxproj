@@ -382,6 +382,7 @@
 		AA0C8E498E2046B0B81EEE6E /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
 		B62686301964AE3D00D2D697 /* LogSubmit.m in Sources */ = {isa = PBXBuildFile; fileRef = B626862F1964AE3D00D2D697 /* LogSubmit.m */; };
 		B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B67EBF5C19194AC60084CCFD /* Settings.bundle */; };
+		B6B1013C196D213F007E3930 /* SGNKeychainUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SGNKeychainUtil.m */; };
 		B6B6C3C71919440C00C0B76B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6B6C3C51919440C00C0B76B /* Localizable.strings */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B90418E7183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
@@ -1092,6 +1093,8 @@
 		B626862F1964AE3D00D2D697 /* LogSubmit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogSubmit.m; sourceTree = "<group>"; };
 		B657DDC91911A40500F45B0C /* Signal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Signal.entitlements; sourceTree = "<group>"; };
 		B67EBF5C19194AC60084CCFD /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = SettingsBundle/Settings.bundle; sourceTree = SOURCE_ROOT; };
+		B6B1013A196D213F007E3930 /* SGNKeychainUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGNKeychainUtil.h; sourceTree = "<group>"; };
+		B6B1013B196D213F007E3930 /* SGNKeychainUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGNKeychainUtil.m; sourceTree = "<group>"; };
 		B6B6C3C61919440C00C0B76B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6B6C3C81919441D00C0B76B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6B6C3C91919448900C0B76B /* ca-ES */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ca-ES"; path = "ca-ES.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -1670,6 +1673,8 @@
 				76EB041918170B33006006FC /* PropertyListPreferences.m */,
 				76EB041A18170B33006006FC /* Release.h */,
 				76EB041B18170B33006006FC /* Release.m */,
+				B6B1013A196D213F007E3930 /* SGNKeychainUtil.h */,
+				B6B1013B196D213F007E3930 /* SGNKeychainUtil.m */,
 			);
 			path = environment;
 			sourceTree = "<group>";
@@ -3172,6 +3177,7 @@
 				76EB054418170B33006006FC /* AsyncUtilHelperRacingOperation.m in Sources */,
 				76EB060418170B33006006FC /* PhoneNumberDirectoryFilter.m in Sources */,
 				B97CBFA818860EA3008E0DE9 /* CountryCodeViewController.m in Sources */,
+				B6B1013C196D213F007E3930 /* SGNKeychainUtil.m in Sources */,
 				76EB059218170B33006006FC /* UnrecognizedRequestFailure.m in Sources */,
 				76EB05F818170B33006006FC /* CallConnectUtil_Initiator.m in Sources */,
 				B97CBFAE1886100E008E0DE9 /* CountryCodeTableViewCell.m in Sources */,

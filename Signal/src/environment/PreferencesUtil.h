@@ -12,15 +12,6 @@
 -(void) setSavedPhoneNumberDirectory:(PhoneNumberDirectoryFilter*)phoneNumberDirectoryFilter;
 -(NSTimeInterval) getCachedOrDefaultDesiredBufferDepth;
 -(void) setCachedDesiredBufferDepth:(double)value;
--(int64_t) getAndIncrementOneTimeCounter;
--(PhoneNumber*) forceGetLocalNumber;
--(PhoneNumber*)tryGetLocalNumber;
--(void) setLocalNumberTo:(PhoneNumber*)localNumber;
--(Zid*) getOrGenerateZid;
--(NSString*) getOrGenerateSavedPassword;
--(NSData*) getOrGenerateSignalingMacKey;
--(NSData*) getOrGenerateSignalingCipherKey;
--(NSData*) getOrGenerateSignalingExtraKey;
 -(void) setSettingsRowExpandedPrefs:(NSArray *)prefs;
 -(NSArray *) getOrGenerateSettingsRowExpandedPrefs;
 -(NSArray *) getAvailableDateFormats;
@@ -30,7 +21,6 @@
 -(BOOL) getAutocorrectEnabled;
 -(BOOL) getHistoryLogEnabled;
 -(BOOL) getAnonymousFeedbackEnabled;
--(BOOL)	getIsRegistered;
 -(NSString *) getDateFormat;
 
 -(void) setDateFormat:(NSString *)format;
@@ -39,7 +29,6 @@
 -(void) setAutocorrectEnabled:(BOOL)enabled;
 -(void) setHistoryLogEnabled:(BOOL)enabled;
 -(void) setAnonymousFeedbackEnabled:(BOOL)enabled;
--(void) setIsRegistered:(BOOL)registered;
 
 -(NSString *)getDateFormatKey;
 
