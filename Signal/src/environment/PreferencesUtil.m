@@ -7,22 +7,12 @@
 #import "NotificationManifest.h"
 
 #define CALL_STREAM_DES_BUFFER_LEVEL_KEY @"CallStreamDesiredBufferLevel"
-#define LOCAL_NUMBER_KEY @"Number"
-#define PASSWORD_COUNTER_KEY @"PasswordCounter"
-#define SAVED_PASSWORD_KEY @"Password"
-#define SIGNALING_MAC_KEY @"Signaling Mac Key"
-#define SIGNALING_CIPHER_KEY @"Signaling Cipher Key"
-#define ZID_KEY @"ZID"
-#define SIGNALING_EXTRA_KEY @"Signaling Extra Key"
+
 #define PHONE_DIRECTORY_BLOOM_FILTER_HASH_COUNT_KEY @"Directory Bloom Hash Count"
 #define PHONE_DIRECTORY_BLOOM_FILTER_DATA_KEY @"Directory Bloom Data"
 #define PHONE_DIRECTORY_EXPIRATION @"Directory Expiration"
 
 #define DEFAULT_CALL_STREAM_DES_BUFFER_LEVEL 0.5
-#define SIGNALING_MAC_KEY_LENGTH    20
-#define SIGNALING_CIPHER_KEY_LENGTH 16
-#define SAVED_PASSWORD_LENGTH 18
-#define SIGNALING_EXTRA_KEY_LENGTH 4
 
 #define SETTINGS_EXPANDED_ROW_PREF_DICT_KEY @"Settings Expanded Row Pref Dict Key"
 
@@ -39,8 +29,6 @@
 #define DATE_FORMAT_4 @"dd/MM/yyyy"
 #define DATE_FORMAT_5 @"yyyy/MM/dd"
 #define DATE_FORMAT_6 @"MM/dd/yyyy"
-
-#define IS_REGISTERED_KEY @"Is Registered"
 
 @implementation PropertyListPreferences (PropertyUtil)
 
@@ -73,22 +61,6 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_UPDATE object:nil];
 }
 
--(NSData*) getOrGenerateRandomDataWithKey:(NSString*)key andLength:(NSUInteger)length {
-    require(key != nil);
-    
-    return [self secureDataStoreAdjustAndTryGetNewValueForKey:key afterAdjuster:^NSData*(NSData* oldValue) {
-        if (oldValue != nil) {
-            requireState([oldValue isKindOfClass:[NSData class]]);
-            requireState([oldValue length] == length);
-            return oldValue;
-        }
-        
-        DDLogInfo(@"A new %@ key of sie %lu has been generated.", key, (unsigned long)length);
-        
-        return [CryptoTools generateSecureRandomData:length];
-    }];
-}
-
 -(NSTimeInterval) getCachedOrDefaultDesiredBufferDepth {
     id v = [self tryGetValueForKey:CALL_STREAM_DES_BUFFER_LEVEL_KEY];
     if (v == nil) return DEFAULT_CALL_STREAM_DES_BUFFER_LEVEL;
@@ -97,62 +69,6 @@
 -(void) setCachedDesiredBufferDepth:(double)value {
     require(value >= 0);
     [self setValueForKey:CALL_STREAM_DES_BUFFER_LEVEL_KEY toValue:[NSNumber numberWithDouble:value]];
-}
-
--(int64_t) getAndIncrementOneTimeCounter {
-    __block int64_t oldCounter;
-    [self adjustAndTryGetNewValueForKey:PASSWORD_COUNTER_KEY afterAdjuster:^(id oldValue) {
-        oldCounter = [oldValue longLongValue];
-        int64_t newCounter = (oldCounter == INT64_MAX)
-                           ? INT64_MIN
-                           : (oldCounter + 1);
-        return [NSNumber numberWithLongLong:newCounter];
-    }];
-    return oldCounter;
-}
-
--(PhoneNumber*) forceGetLocalNumber {
-    NSString* localNumber = [self tryGetValueForKey:LOCAL_NUMBER_KEY];
-    checkOperation(localNumber != nil);
-    return [PhoneNumber tryParsePhoneNumberFromE164:localNumber];
-}
--(void) setLocalNumberTo:(PhoneNumber*)localNumber {
-    require(localNumber != nil);
-    require([localNumber toE164]!= nil);
-    [self setValueForKey:LOCAL_NUMBER_KEY toValue:[localNumber toE164]];
-}
-
--(PhoneNumber*)tryGetLocalNumber {
-    NSString* localNumber = [self tryGetValueForKey:LOCAL_NUMBER_KEY];
-	return (localNumber != nil ? [PhoneNumber tryParsePhoneNumberFromE164:localNumber] : nil);
-}
-
--(Zid*) getOrGenerateZid {
-    return [Zid zidWithData:[self getOrGenerateRandomDataWithKey:ZID_KEY andLength:12]];
-}
-
--(NSString*) getOrGenerateSavedPassword {
-    return [self secureStringStoreAdjustAndTryGetNewValueForKey:SAVED_PASSWORD_KEY afterAdjuster:^NSString*(id oldValue) {
-        if (oldValue != nil) {
-            requireState([oldValue isKindOfClass:[NSString class]]);
-            return oldValue;
-        }
-        
-        NSString *string = [[CryptoTools generateSecureRandomData:SAVED_PASSWORD_LENGTH] encodedAsBase64];
-        return string;
-    }];
-}
-
--(NSData*) getOrGenerateSignalingMacKey {
-    return [self getOrGenerateRandomDataWithKey:SIGNALING_MAC_KEY andLength:SIGNALING_MAC_KEY_LENGTH];
-}
-
--(NSData*) getOrGenerateSignalingCipherKey {
-    return [self getOrGenerateRandomDataWithKey:SIGNALING_CIPHER_KEY andLength:SIGNALING_CIPHER_KEY_LENGTH];
-}
-
--(NSData*) getOrGenerateSignalingExtraKey {
-    return [self getOrGenerateRandomDataWithKey:SIGNALING_EXTRA_KEY andLength:SIGNALING_EXTRA_KEY_LENGTH];
 }
 
 -(void) setSettingsRowExpandedPrefs:(NSArray *)prefs {
@@ -224,15 +140,6 @@
     }
 }
 
--(BOOL)	getIsRegistered {
-    NSNumber *preference = [self tryGetValueForKey:IS_REGISTERED_KEY];
-    if (preference) {
-        return [preference boolValue];
-    } else {
-        return NO;
-    }
-}
-
 -(void) setDateFormat:(NSString *)format {
     [self setValueForKey:DATE_FORMAT_KEY toValue:format];
 }
@@ -252,8 +159,4 @@
 -(void) setAnonymousFeedbackEnabled:(BOOL)enabled {
     [self setValueForKey:ANONYMOUS_FEEDBACK_ENABLED_KEY toValue:[NSNumber numberWithBool:enabled]];
 }
--(void) setIsRegistered:(BOOL)registered {
-    [self setValueForKey:IS_REGISTERED_KEY toValue:[NSNumber numberWithBool:registered]];
-}
-
 @end

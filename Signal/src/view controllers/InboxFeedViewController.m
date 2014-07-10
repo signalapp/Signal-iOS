@@ -48,7 +48,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
     [self observeKeyboardNotifications];
     [self setupLabelLocalizationAndStyles];
 
-    if (![[Environment preferences] getIsRegistered]) {
+    if (![Environment isRegistered]) {
         RegisterViewController *registerViewController = [RegisterViewController registerViewControllerForApn:_apnId];
         [self presentViewController:registerViewController animated:NO completion:nil];
     }

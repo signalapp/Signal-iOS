@@ -8,6 +8,7 @@
 #import "PreferencesUtil.h"
 #import "RegisterViewController.h"
 #import "SignalUtil.h"
+#import "SGNKeychainUtil.h"
 #import "ThreadManager.h"
 #import "Util.h"
 
@@ -41,7 +42,7 @@
     
     _scrollView.contentSize = _containerView.bounds.size;
 
-    BOOL isRegisteredAlready = [[Environment preferences] getIsRegistered];
+    BOOL isRegisteredAlready = [Environment isRegistered];
     _registerCancelButton.hidden = !isRegisteredAlready;
 
     [self initializeKeyboardHandlers];
@@ -116,10 +117,11 @@
 }
 
 -(Future*) asyncRegister:(PhoneNumber*)phoneNumber untilCancelled:(id<CancelToken>)cancelToken {
-    // @todo: should we force regenerating of all keys?
     // @todo: clear current registered status before making a new one, to avoid splinching issues?
-    [[Environment preferences] setLocalNumberTo:phoneNumber];
+    [SGNKeychainUtil setLocalNumberTo:phoneNumber];
 
+    [SGNKeychainUtil generateKeyingMaterial];
+    
     CancellableOperationStarter regStarter = ^Future *(id<CancelToken> internalUntilCancelledToken) {
         HttpRequest *registerRequest = [HttpRequest httpRequestToStartRegistrationOfPhoneNumber];
        

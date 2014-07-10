@@ -5,6 +5,7 @@
 #import "PreferencesUtil.h"
 #import "Util.h"
 #import "InitiateSignal.pb.h"
+#import "SGNKeychainUtil.h"
 
 #define MessagePropertyKey @"m"
 #define RelayPortKey       @"p"
@@ -90,7 +91,7 @@
     checkOperation([data length] >= HMAC_TRUNCATED_SIZE);
     NSData* includedMac     = [data takeLast:HMAC_TRUNCATED_SIZE];
     NSData* payload         = [data skipLast:HMAC_TRUNCATED_SIZE];
-    NSData* signalingMacKey = [[Environment preferences] getOrGenerateSignalingMacKey];
+    NSData* signalingMacKey = [SGNKeychainUtil signalingMacKey];
     require(signalingMacKey != nil);
     NSData* computedMac     = [[payload hmacWithSha1WithKey:signalingMacKey] takeLast:HMAC_TRUNCATED_SIZE];
     checkOperation([includedMac isEqualToData_TimingSafe:computedMac]);
@@ -99,7 +100,7 @@
 +(NSData*) decryptRemoteNotificationData:(NSData*)data {
     require(data != nil);
     checkOperation([data length] >= VERSION_SIZE + IV_SIZE);
-    NSData* cipherKey = [[Environment preferences] getOrGenerateSignalingCipherKey];
+    NSData* cipherKey = [SGNKeychainUtil signalingCipherKey];
     NSData* iv = [data subdataWithRange:NSMakeRange(VERSION_SIZE, IV_SIZE)];
     NSData* cipherText = [data skip:VERSION_SIZE+IV_SIZE];
     return [cipherText decryptWithAesInCipherBlockChainingModeWithPkcs7PaddingWithKey:cipherKey andIv:iv];

@@ -9,6 +9,7 @@
 #import "RegisterViewController.h"
 #import "SettingsViewController.h"
 #import "LogSubmit.h"
+#import "SGNKeychainUtil.h"
 
 #import "UIViewController+MMDrawerController.h"
 
@@ -67,7 +68,7 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 #pragma mark - Local number
 
 - (void)configureLocalNumber {
-    PhoneNumber *localNumber = [[[Environment getCurrent] preferences] tryGetLocalNumber];
+    PhoneNumber *localNumber = [SGNKeychainUtil localNumber];
     if (localNumber) {
         _phoneNumberLabel.attributedText = [self localNumberAttributedStringForNumber:localNumber];
     } else {
