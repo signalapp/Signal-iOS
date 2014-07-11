@@ -7,6 +7,9 @@
 #import "RecentCallManager.h"
 #import "ContactsManager.h"
 #import "PhoneNumberDirectoryFilterManager.h"
+#import "SGNKeychainUtil.h"
+
+#define isRegisteredUserDefaultString @"isRegistered"
 
 static Environment* environment = nil;
 
@@ -141,6 +144,30 @@ static Environment* environment = nil;
 }
 +(id<Logging>) logging {
     return [[Environment getCurrent] logging];
+}
+
++(BOOL)isRegistered{
+    // Attributes that need to be set
+    NSData *signalingKey = [SGNKeychainUtil signalingCipherKey];
+    NSData *macKey       = [SGNKeychainUtil signalingMacKey];
+    NSData *extra        = [SGNKeychainUtil signalingExtraKey];
+    NSString *serverAuth = [SGNKeychainUtil serverAuthPassword];
+    BOOL registered = [NSNumber numberWithBool:[[[NSUserDefaults standardUserDefaults] objectForKey:isRegisteredUserDefaultString] boolValue]];
+    
+    if (signalingKey && macKey && extra && serverAuth && registered) {
+        return YES;
+    } else{
+        return NO;
+    }
+}
+
++(void)setRegistered:(BOOL)status{
+    [[NSUserDefaults standardUserDefaults] setObject:status?@YES:@NO forKey:isRegisteredUserDefaultString];
+}
+
++(void)resetAppData{
+    [SGNKeychainUtil wipeKeychain];
+    [NSUserDefaults resetStandardUserDefaults];
 }
 
 @end

@@ -15,6 +15,7 @@
 #import "TabBarParentViewController.h"
 #import "Util.h"
 #import <UICKeyChainStore/UICKeyChainStore.h>
+#import "Environment.h"
 
 #define kSignalVersionKey @"SignalUpdateVersionKey"
 
@@ -42,9 +43,11 @@
     NSString *currentVersion  = [NSString stringWithFormat:@"%@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]];
     
     if (!previousVersion) {
-        [UICKeyChainStore removeAllItems];
+        DDLogError(@"No previous version found. Possibly first launch since install.");
+        [Environment resetAppData]; // We clean previous keychain entries in case their are some entries remaining.
     } else if ([currentVersion compare:previousVersion options:NSNumericSearch] == NSOrderedDescending) {
         // The application was updated
+        DDLogWarn(@"Application was updated from %@ to %@", previousVersion, currentVersion);
     }
     
     [[NSUserDefaults standardUserDefaults] setObject:currentVersion forKey:kSignalVersionKey];
