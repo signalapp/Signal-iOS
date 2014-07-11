@@ -37,6 +37,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    DDLogInfo(@"Opened Registration View");
 
     [self populateDefaultCountryNameAndCode];
     
