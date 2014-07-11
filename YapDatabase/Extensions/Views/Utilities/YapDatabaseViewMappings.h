@@ -17,6 +17,9 @@
  * For the full documentation on Views, please see the related wiki article:
  * https://github.com/yaptv/YapDatabase/wiki/Views
  * 
+ * There is also an entire section that details YapDatabaseViewMappings:
+ * https://github.com/yaptv/YapDatabase/wiki/Views#mappings
+ * 
  * YapDatabaseViewMappings helps you map from groups to sections.
  * Let's take a look at a concrete example:
  * 
@@ -34,8 +37,8 @@
  * Plus it can properly take into account empty sections. For example, if there are no items
  * for sale in the liquor department then it can automatically move beer to section 1 (optional).
  * 
- * But the primary purpose of this class has to do with assisting in animating changes to your view.
- * In order to provide the proper animation instructions to your tableView or collectionView,
+ * This class also assists you in animating changes to your tableView/collectionView.
+ * In order to provide the proper animation instructions to your UI,
  * the database layer needs to know a little about how you're setting things up.
  * 
  * Using the example above, we might have code that looks something like this:
@@ -144,21 +147,14 @@
  * 
  * - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
  * {
- *     // If my sections are dynamic (they automatically come and go as individual sections become empty & non-empty),
- *     // then I can easily use the mappings object to find the appropriate group.
- *     
- *     NSString *group = [mappings groupForSection:indexPath.section];
- *
- *     __block id object = nil;
+ *      __block id object = nil;
  *     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
  *         
- *         object = [[transaction ext:@"view"] objectAtIndex:indexPath.row inGroup:group];
+ *         object = [[transaction ext:@"view"] objectAtIndexPath:indexPath withMappings:mappings];
  *     }];
  * 
  *     // configure and return cell...
  * }
- *
- * @see YapDatabaseConnection getSectionChanges:rowChanges:forNotifications:withMappings:
 **/
 
 /**
