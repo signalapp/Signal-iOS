@@ -82,6 +82,7 @@
     
     PhoneNumber* localPhoneNumber = [SGNKeychainUtil localNumber];
     NSString* query = [NSString stringWithFormat:@"/users/verification/%@", [localPhoneNumber toE164]];
+    [SGNKeychainUtil generateSignaling];
     
     NSData* signalingCipherKey = [SGNKeychainUtil signalingCipherKey];
     NSData* signalingMacKey = [SGNKeychainUtil signalingMacKey];

@@ -117,10 +117,8 @@
 }
 
 -(Future*) asyncRegister:(PhoneNumber*)phoneNumber untilCancelled:(id<CancelToken>)cancelToken {
-    // @todo: clear current registered status before making a new one, to avoid splinching issues?
+    [SGNKeychainUtil generateServerAuthPassword];
     [SGNKeychainUtil setLocalNumberTo:phoneNumber];
-
-    [SGNKeychainUtil generateKeyingMaterial];
     
     CancellableOperationStarter regStarter = ^Future *(id<CancelToken> internalUntilCancelledToken) {
         HttpRequest *registerRequest = [HttpRequest httpRequestToStartRegistrationOfPhoneNumber];
@@ -135,7 +133,7 @@
 
     Future *futurePhoneRegistrationVerified = [futurePhoneRegistrationStarted then:^(id _) {
         [self showViewNumber:CHALLENGE_VIEW_NUMBER];
-        [[Environment preferences] setIsRegistered:NO];
+        [Environment setRegistered:YES];
         [self.challengeNumberLabel setText:[phoneNumber description]];
         [_registerCancelButton removeFromSuperview];
         [self startVoiceVerificationCountdownTimer];
@@ -214,7 +212,7 @@
     }];
 
     [futureDone thenDo:^(id result) {
-        [[Environment preferences] setIsRegistered:YES];
+        [Environment setRegistered:YES];
         [[[Environment getCurrent] phoneDirectoryManager] forceUpdate];
         [registered trySetResult:@YES];
         [self dismissView];
@@ -229,7 +227,6 @@
 
 - (void)showViewNumber:(NSInteger)viewNumber {
 
-    
     if (viewNumber == REGISTER_VIEW_NUMBER) {
         [_registerActivityIndicator stopAnimating];
         _registerButton.enabled = YES;
@@ -274,7 +271,7 @@
     NSCalendar *sysCalendar = [NSCalendar currentCalendar];
     unsigned int unitFlags = NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit;
     NSDateComponents *conversionInfo = [sysCalendar components:unitFlags fromDate:now  toDate:timeoutDate  options:0];
-    NSString* timeLeft = [NSString stringWithFormat:@"%d:%02d",[conversionInfo minute],[conversionInfo second]];
+    NSString* timeLeft = [NSString stringWithFormat:@"%ld:%02ld",(long)[conversionInfo minute],(long)[conversionInfo second]];
 
     [self.voiceChallengeTextLabel setText:timeLeft];
 

@@ -12,7 +12,9 @@
 
 @interface SGNKeychainUtil : NSObject
 
-+(void)generateKeyingMaterial;
++(void)generateSignaling;
++(void)generateServerAuthPassword;
+
 +(void)wipeKeychain;
 
 #pragma mark Registered Phone Number
