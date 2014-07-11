@@ -28,7 +28,7 @@
     
     BOOL viewGroupsAreDynamic;
     YapDatabaseViewMappingGroupFilter groupFilterBlock;
-    YapDatabaseViewMappingGroupSort groupSort;
+    YapDatabaseViewMappingGroupSort groupSortBlock;
     
 	// Mappings and cached counts
 	NSMutableArray *visibleGroups;
@@ -77,33 +77,37 @@
 		rangeOptions = [NSMutableDictionary dictionaryWithCapacity:allGroupsCount];
 		dependencies = [NSMutableDictionary dictionaryWithCapacity:allGroupsCount];
 		
-        [self _initWithView:inRegisteredViewName];
-
+        [self commonInit:inRegisteredViewName];
 	}
 	return self;
 }
 
-- (id)initWithGroupFilterBlock:(YapDatabaseViewMappingGroupFilter)inFilter sortBlock:(YapDatabaseViewMappingGroupSort)inSort view:(NSString *)inRegisteredViewName{
-    if (self = [super init]){
-        groupFilterBlock = inFilter;
-         groupSort = inSort;
-        viewGroupsAreDynamic = YES;
-
-        //we don't know what our capacity is going to be yet.
-        visibleGroups = [NSMutableArray new];
-        dynamicSections = [NSMutableSet new];
-        reverse = [NSMutableSet new];
-        rangeOptions = [NSMutableDictionary new];
-        dependencies = [NSMutableDictionary new];
+- (id)initWithGroupFilterBlock:(YapDatabaseViewMappingGroupFilter)inFilter
+                     sortBlock:(YapDatabaseViewMappingGroupSort)inSort
+                          view:(NSString *)inRegisteredViewName
+{
+	if ((self = [super init]))
+	{
+		groupFilterBlock = inFilter;
+		groupSortBlock = inSort;
+		viewGroupsAreDynamic = YES;
+		
+		// We don't know what our capacity is going to be yet.
+		visibleGroups = [NSMutableArray new];
+		dynamicSections = [NSMutableSet new];
+		reverse = [NSMutableSet new];
+		rangeOptions = [NSMutableDictionary new];
+		dependencies = [NSMutableDictionary new];
         
-        [self _initWithView:inRegisteredViewName];
+        [self commonInit:inRegisteredViewName];
     }
     return self;
 }
 
-- (void)_initWithView:(NSString *)inRegisteredViewName{
-    registeredViewName = [inRegisteredViewName copy];
-    snapshotOfLastUpdate = UINT64_MAX;
+- (void)commonInit:(NSString *)inRegisteredViewName
+{
+	registeredViewName = [inRegisteredViewName copy];
+	snapshotOfLastUpdate = UINT64_MAX;
 }
 
 - (id)copyWithZone:(NSZone *)zone
@@ -114,7 +118,7 @@
     
     copy->viewGroupsAreDynamic = viewGroupsAreDynamic;
     copy->groupFilterBlock = groupFilterBlock;
-    copy->groupSort = groupSort;
+    copy->groupSortBlock = groupSortBlock;
 	
 	copy->visibleGroups = [visibleGroups mutableCopy];
 	copy->counts = [counts mutableCopy];
@@ -416,18 +420,18 @@
 		}
 	}
 	
-	[newAllGroups sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+	[newAllGroups sortUsingComparator:^NSComparisonResult(NSString *group1, NSString *group2) {
 		
-		return groupSort(obj1, obj2, transaction);
+		return groupSortBlock(group1, group2, transaction);
 	}];
     
     return [newAllGroups copy];
 }
 
-- (BOOL)shouldUpdateAllGroupsWithNewGroups:(NSArray *)newGroups{
-    return ![allGroups isEqualToArray:newGroups];
+- (BOOL)shouldUpdateAllGroupsWithNewGroups:(NSArray *)newGroups
+{
+	return ![allGroups isEqualToArray:newGroups];
 }
-
 
 /**
  * This method is internal.
