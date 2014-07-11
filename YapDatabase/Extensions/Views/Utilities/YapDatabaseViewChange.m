@@ -1167,14 +1167,14 @@
 			//
 			//   Group : <---------------------------------------->
 			//   Range :                  <--------->
-			//   Offset: <---------------->                          (pin == YapDatabaseViewBeginning)
+			//   Offset: <--------------->                           (pin == YapDatabaseViewBeginning)
 			//
 			// If pinned to the END:
 			//   The offset represents how far the end of the range is from the end of the group.
 			//
 			//   Group : <---------------------------------------->
 			//   Range :                  <--------->
-			//   Offset:                            <------------->  (pin == YapDatabaseViewEnd)
+			//   Offset:                             <------------>  (pin == YapDatabaseViewEnd)
 			
 			finalRangeOffset = originalRangeOffset;
 			
@@ -1409,11 +1409,11 @@
 		NSUInteger deleteCount = 0;
 		NSUInteger insertCount = 0;
 		
-		NSUInteger i = 0;
-		while (i < [rowChanges count])
+		NSMutableIndexSet *indexesToRemove = [NSMutableIndexSet indexSet];
+		
+		NSUInteger rowChangeIndex = 0;
+		for (YapDatabaseViewRowChange *rowChange in rowChanges)
 		{
-			YapDatabaseViewRowChange *rowChange = [rowChanges objectAtIndex:i];
-			
 			if (rowChange->type == YapDatabaseViewChangeDelete)
 			{
 				if ([rowChange->originalGroup isEqualToString:group])
@@ -1422,7 +1422,6 @@
 					    rowChange->originalIndex <  originalRangeMax)
 					{
 						// Include in changeset
-						i++;
 						deleteCount++;
 						
 						// Update index to match range
@@ -1431,7 +1430,7 @@
 					else
 					{
 						// Exclude from changeset
-						[rowChanges removeObjectAtIndex:i];
+						[indexesToRemove addIndex:rowChangeIndex];
 					}
 				}
 			}
@@ -1443,7 +1442,6 @@
 					    rowChange->finalIndex <  finalRangeMax)
 					{
 						// Include in changeset
-						i++;
 						insertCount++;
 						
 						// Update index to match range
@@ -1452,7 +1450,7 @@
 					else
 					{
 						// Exclude from changeset
-						[rowChanges removeObjectAtIndex:i];
+						[indexesToRemove addIndex:rowChangeIndex];
 					}
 				}
 			}
@@ -1464,7 +1462,6 @@
 					    rowChange->originalIndex <  originalRangeMax)
 					{
 						// Include in changeset
-						i++;
 						
 						// Update index to match range
 						rowChange->originalIndex -= originalRangeMin;
@@ -1473,7 +1470,7 @@
 					else
 					{
 						// Exclude from changeset
-						[rowChanges removeObjectAtIndex:i];
+						[indexesToRemove addIndex:rowChangeIndex];
 					}
 				}
 			}
@@ -1484,70 +1481,82 @@
 				// Sometimes only one.
 				// Sometimes neither.
 				
-				BOOL filterDelete = NO;
-				BOOL filterInsert = NO;
+				BOOL deleteAffectsGroup = [rowChange->originalGroup isEqualToString:group];
+				BOOL insertAffectsGroup = [rowChange->finalGroup isEqualToString:group];
 				
-				if ([rowChange->originalGroup isEqualToString:group])
+				if (deleteAffectsGroup || insertAffectsGroup)
 				{
-					if (rowChange->originalIndex >= originalRangeMin &&
-					    rowChange->originalIndex <  originalRangeMax)
+					BOOL filterDelete = NO;
+					BOOL filterInsert = NO;
+					
+					if (deleteAffectsGroup)
 					{
-						// Include (delete operation) in changeset
-						
-						// Update index to match range
-						rowChange->originalIndex -= originalRangeMin;
+						if (rowChange->originalIndex >= originalRangeMin &&
+						    rowChange->originalIndex <  originalRangeMax)
+						{
+							// Include (delete operation) in changeset
+							
+							// Update index to match range
+							rowChange->originalIndex -= originalRangeMin;
+						}
+						else
+						{
+							// Exclude (delete operation) from changeset
+							filterDelete = YES;
+						}
+					}
+					
+					if (insertAffectsGroup)
+					{
+						if (rowChange->finalIndex >= finalRangeMin &&
+						    rowChange->finalIndex <  finalRangeMax)
+						{
+							// Include (insert operation) in changeset
+							
+							// Update index to match range
+							rowChange->finalIndex -= finalRangeMin;
+						}
+						else
+						{
+							// Exclude (insert operation) from changeset
+							filterInsert = YES;
+						}
+					}
+					
+					if (filterDelete && filterInsert)
+					{
+						// Exclude from changeset
+						[indexesToRemove addIndex:rowChangeIndex];
+					}
+					else if (filterDelete && !filterInsert)
+					{
+						// Move -> Insert
+						rowChange->type = YapDatabaseViewChangeInsert;
+						insertCount++;
+					}
+					else if (!filterDelete && filterInsert)
+					{
+						// Move -> Delete
+						rowChange->type = YapDatabaseViewChangeDelete;
+						deleteCount++;
 					}
 					else
 					{
-						// Exclude (delete operation) from changeset
-						filterDelete = YES;
+						// Move
+						insertCount++;
+						deleteCount++;
 					}
-				}
-				
-				if ([rowChange->finalGroup isEqualToString:group])
-				{
-					if (rowChange->finalIndex >= finalRangeMin &&
-					    rowChange->finalIndex <  finalRangeMax)
-					{
-						// Include (insert operation) in changeset
-						
-						// Update index to match range
-						rowChange->finalIndex -= finalRangeMin;
-					}
-					else
-					{
-						// Exclude (insert operation) from changeset
-						filterInsert = YES;
-					}
-				}
-				
-				if (filterDelete && filterInsert)
-				{
-					// Exclude from changeset
-					[rowChanges removeObjectAtIndex:i];
-				}
-				else if (filterDelete && !filterInsert)
-				{
-					// Move -> Insert
-					rowChange->type = YapDatabaseViewChangeInsert;
-					i++;
-					insertCount++;
-				}
-				else if (!filterDelete && filterInsert)
-				{
-					// Move -> Delete
-					rowChange->type = YapDatabaseViewChangeDelete;
-					i++;
-					deleteCount++;
-				}
-				else
-				{
-					// Move
-					i++;
-					insertCount++;
-					deleteCount++;
-				}
-			}
+					
+				} // end if (deleteAffectsGroup || insertAffectsGroup)
+			
+			} // end else if (rowChange->type == YapDatabaseViewChangeMove)
+			
+			rowChangeIndex++;
+			
+		} // end for (YapDatabaseViewRowChange *rowChange in rowChanges)
+		
+		if ([indexesToRemove count] > 0) {
+			[rowChanges removeObjectsAtIndexes:indexesToRemove];
 		}
 		
 		//
@@ -1735,7 +1744,7 @@
 			//
 			// Note: This code path is only taken if using a flexibleRange
 			
-			i = 0;
+			NSUInteger i = 0;
 			NSUInteger count = 0;
 			
 			NSUInteger index;

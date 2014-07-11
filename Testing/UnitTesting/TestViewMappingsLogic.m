@@ -59,7 +59,7 @@ static NSMutableArray *changes;
 #pragma mark Fixed Range Beginning: Insert
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_inserting_row_inside_range_deletes_the_row_previously_at_the_end_of_the_range
+- (void)test_fixedRange_beginning_1A
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -100,7 +100,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 19, @"");
 }
 
-- (void)test_insert_row_at_beginning_deletes_the_row_previously_at_the_end_of_the_range
+- (void)test_fixedRange_beginning_1B
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -141,7 +141,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 19, @"");
 }
 
-- (void)test_insert_row_at_end_of_range_cause_insert_and_delete_of_row
+- (void)test_fixedRange_beginning_1C
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -182,7 +182,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 19, @"");
 }
 
-- (void)test_insert_row_outside_of_the_range_causes_no_row_changes
+- (void)test_fixedRange_beginning_1D
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -221,7 +221,7 @@ static NSMutableArray *changes;
 #pragma mark Fixed Range Beginning: Delete
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_delete_row_in_range_adds_a_new_row_at_the_end
+- (void)test_fixedRange_beginning_2A
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -262,7 +262,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 19, @"");
 }
 
-- (void)test_delete_row_at_beginning_of_range_adds_a_new_row_at_the_end_of_the_range
+- (void)test_fixedRange_beginning_2B
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -303,7 +303,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 19, @"");
 }
 
-- (void)test_deleting_row_at_end_of_range_causes_the_last_item_to_update
+- (void)test_fixedRange_beginning_2C
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -344,7 +344,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 19, @"");
 }
 
-- (void)test_deleting_row_outside_of_range_causes_no_row_changes
+- (void)test_fixedRange_beginning_2D
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -383,7 +383,7 @@ static NSMutableArray *changes;
 #pragma mark Fixed Range Beginning: Insert, Insert, ...
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_insert_twice_at_same_position_in_range_bumps_two_rows_off_end_of_range
+- (void)test_fixedRange_beginning_3A
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -433,7 +433,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 3).originalIndex == 18, @"");
 }
 
-- (void)test_insert_twice_at_beginning_of_range_bumps_two_rows_off_end_of_range
+- (void)test_fixedRange_beginning_3B
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -483,7 +483,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 3).originalIndex == 18, @"");
 }
 
-- (void)test_insert_twice_at_end_of_range_bumps_two_rows_off_end_of_range
+- (void)test_fixedRange_beginning_3C
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -533,7 +533,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 3).originalIndex == 18, @"");
 }
 
-- (void)test_inserting_four_times_at_end_of_range_bumps_four_items_two_items_off_end_of_range
+- (void)test_fixedRange_beginning_3D
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -589,7 +589,7 @@ static NSMutableArray *changes;
 #pragma mark Fixed Range Beginning: Delete, Delete, ...
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_deleting_two_rows_in_middle_of_range_adds_two_rows_to_the_end
+- (void)test_fixedRange_beginning_4A
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -641,7 +641,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 3).finalIndex == 18, @"");
 }
 
-- (void)test_deleting_two_rows_at_beginning_of_range_adds_two_rows_to_the_end
+- (void)test_fixedRange_beginning_4B
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -693,7 +693,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 3).finalIndex == 18, @"");
 }
 
-- (void)test_deleteing_two_rows_at_end_of_range_adds_two_rows_to_the_end
+- (void)test_fixedRange_beginning_4C
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -745,7 +745,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 3).finalIndex == 18, @"");
 }
 
-- (void)test_deleting_the_same_row_four_times_pulls_rows_up_and_deletes_them
+- (void)test_fixedRange_beginning_4D
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -803,7 +803,7 @@ static NSMutableArray *changes;
 #pragma mark Fixed Range Beginning: Changing Length
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_adding_two_rows_when_range_contents_are_empty_results_in_count_of_two_rows
+- (void)test_fixedRange_beginning_5A
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -849,7 +849,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 1, @"");
 }
 
-- (void)test_adding_two_rows_when_range_is_partially_full_increases_count_by_two
+- (void)test_fixedRange_beginning_5B
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -895,7 +895,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 1, @"");
 }
 
-- (void)test_adding_two_rows_when_range_only_has_nineteen_returns_correct_count_of_twenty
+- (void)test_fixedRange_beginning_5C
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -949,7 +949,7 @@ static NSMutableArray *changes;
 #pragma mark Fixed Range Beginning: Reset
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_resetting_group_results_in_count_zero_with_corresponding_delete_changes_for_all_rows
+- (void)test_fixedRange_beginning_6A
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -994,7 +994,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
 }
 
-- (void)test_resetting_group_when_group_has_more_rows_than_range_only_results_in_delete_actions_for_rows_in_range
+- (void)test_fixedRange_beginning_6B
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:2 offset:0 from:YapDatabaseViewBeginning];
@@ -1046,7 +1046,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
 }
 
-- (void)test_reset_group_and_add_row_results_in_delete_actions_for_original_rows_and_insert_action_for_newly_added_row
+- (void)test_fixedRange_beginning_6C
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -1096,7 +1096,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 2).finalIndex == 0, @"");
 }
 
-- (void)test_insert_change_before_reset_with_insert_after_doesnt_return_delete_action_for_pre_reset_insert
+- (void)test_fixedRange_beginning_6D
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -1149,6 +1149,7 @@ static NSMutableArray *changes;
 
 @end
 
+
 #pragma mark -
 #pragma mark Fixed Range End
 
@@ -1161,7 +1162,7 @@ static NSMutableArray *changes;
 #pragma mark Fixed Range End: Insert
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_inserting_row_inside_range_deletes_the_row_previously_at_the_beginning_of_the_range
+- (void)test_fixedRange_end_1A
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewEnd];
@@ -1204,7 +1205,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
 }
 
-- (void)test_insert_row_at_end_deletes_row_at_beginning_and_adds_row_at_end
+- (void)test_fixedRange_end_1B
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewEnd];
@@ -1245,7 +1246,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
 }
 
-- (void)test_inserting_at_beginning_of_range_inserts_row_at_the_beginning_and_deletes_the_old_row_at_the_beginning
+- (void)test_fixedRange_end_1C
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewEnd];
@@ -1286,7 +1287,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
 }
 
-- (void)test_inserting_row_outside_of_range_causes_no_change
+- (void)test_fixedRange_end_1D
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewEnd];
@@ -2244,15 +2245,142 @@ static NSMutableArray *changes;
 
 @end
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+#pragma mark Fixed Range: Multiple Groups
+
+@interface TestViewMappingsFixedRangeMulti : TestViewMappingsBase
+@end
+
+@implementation TestViewMappingsFixedRangeMulti
+
+/**
+ * Addressing issue #89
+ * https://github.com/yaptv/YapDatabase/issues/89
+ * 
+ * Infinite loop when using ranges on multiple groups.
+**/
+- (void)test_fixedRange_multi_1A
+{
+	YapDatabaseViewRangeOptions *rangeOpts =
+	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A",@"B"] view:@"view"];
+	
+	[mappings updateWithCounts:@{ @"A":@(40), @"B":@(40) }];
+	[mappings setRangeOptions:rangeOpts forGroup:@"A"];
+	[mappings setRangeOptions:rangeOpts forGroup:@"B"];
+	
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	// Insert item in the middle of the range
+	
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"A", @"key") inGroup:@"A" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"B", @"key") inGroup:@"B" atIndex:2]];
+	
+	[mappings updateWithCounts:@{ @"A":@(41), @"B":@(41) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@"A"] == 20, @"");
+	XCTAssertTrue([mappings numberOfItemsInGroup:@"B"] == 20, @"");
+	
+	XCTAssertTrue([sectionChanges count] == 0, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).finalSection == 0, @""); // A
+	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalSection == 1, @""); // B
+	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 2).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 2).originalSection == 0, @""); // A
+	XCTAssertTrue(RowOp(rowChanges, 2).originalIndex == 19, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 3).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 3).originalSection == 1, @""); // B
+	XCTAssertTrue(RowOp(rowChanges, 3).originalIndex == 19, @"");
+}
+
+- (void)test_fixedRange_multi_2A
+{
+	YapDatabaseViewRangeOptions *rangeOpts =
+	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewEnd];
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A",@"B"] view:@"view"];
+	
+	[mappings setRangeOptions:rangeOpts forGroup:@"A"];
+	[mappings setRangeOptions:rangeOpts forGroup:@"B"];
+	[mappings updateWithCounts:@{ @"A":@(40), @"B":@(40) }];         // full=[0-39], range=[20-39]
+	
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	// Changes:
+	// Insert item in the middle of the range
+	
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"A", @"key") inGroup:@"A" atIndex:30]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"B", @"key") inGroup:@"B" atIndex:30]];
+	
+	// After
+	[mappings updateWithCounts:@{ @"A":@(41), @"B":@(41) }];         // indexes=[0-40], range=[21-40]
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@"A"] == 20, @"");
+	XCTAssertTrue([mappings numberOfItemsInGroup:@"B"] == 20, @"");
+	
+	XCTAssertTrue([sectionChanges count] == 0, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).finalSection == 0, @""); // A
+	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 9, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalSection == 1, @""); // B
+	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 9, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 2).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 2).originalSection == 0, @""); // A
+	XCTAssertTrue(RowOp(rowChanges, 2).originalIndex == 0, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 3).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 3).originalSection == 1, @""); // B
+	XCTAssertTrue(RowOp(rowChanges, 3).originalIndex == 0, @"");
+}
+
+@end
+
 #pragma mark -
 #pragma mark Flexible Range
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface TestViewMappingsFlexibleRange : TestViewMappingsBase
 @end
 
 @implementation TestViewMappingsFlexibleRange
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Flexible Range: Insert
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
