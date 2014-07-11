@@ -152,7 +152,7 @@ static Environment* environment = nil;
     NSData *macKey       = [SGNKeychainUtil signalingMacKey];
     NSData *extra        = [SGNKeychainUtil signalingExtraKey];
     NSString *serverAuth = [SGNKeychainUtil serverAuthPassword];
-    BOOL registered = [[NSUserDefaults standardUserDefaults] objectForKey:isRegisteredUserDefaultString];
+    BOOL registered = [NSNumber numberWithBool:[[[NSUserDefaults standardUserDefaults] objectForKey:isRegisteredUserDefaultString] boolValue]];
     
     if (signalingKey && macKey && extra && serverAuth && registered) {
         return YES;
@@ -161,7 +161,7 @@ static Environment* environment = nil;
     }
 }
 
--(void)setRegistered:(BOOL)status{
++(void)setRegistered:(BOOL)status{
     [[NSUserDefaults standardUserDefaults] setObject:status?@YES:@NO forKey:isRegisteredUserDefaultString];
 }
 

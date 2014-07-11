@@ -75,7 +75,7 @@
 +(PhoneManager*) phoneManager;
 
 +(BOOL)isRegistered;
--(void)setRegistered;
++(void)setRegistered:(BOOL)status;
 +(void)resetAppData;
 
 @end

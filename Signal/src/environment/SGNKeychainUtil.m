@@ -27,13 +27,17 @@
 
 @implementation SGNKeychainUtil
 
-+ (void)generateKeyingMaterial{
++ (void)generateServerAuthPassword{
+    [self storeString:[[CryptoTools generateSecureRandomData:SAVED_PASSWORD_LENGTH] encodedAsBase64] forKey:SAVED_PASSWORD_KEY];
+}
+
++ (void)generateSignaling{
     [self storeData:[CryptoTools generateSecureRandomData:SIGNALING_MAC_KEY_LENGTH] forKey:SIGNALING_MAC_KEY];
     [self storeData:[CryptoTools generateSecureRandomData:SIGNALING_CIPHER_KEY_LENGTH] forKey:SIGNALING_CIPHER_KEY];
     [self storeData:[CryptoTools generateSecureRandomData:SIGNALING_EXTRA_KEY_LENGTH] forKey:SIGNALING_EXTRA_KEY];
     
     [self storeData:[CryptoTools generateSecureRandomData:ZID_LENGTH] forKey:ZID_KEY];
-    [self storeString:[[CryptoTools generateSecureRandomData:SAVED_PASSWORD_LENGTH] encodedAsBase64] forKey:SAVED_PASSWORD_KEY];
+    
 }
 
 +(void)wipeKeychain{
