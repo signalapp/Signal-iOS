@@ -74,4 +74,8 @@
 +(bool) hasEnabledTestingOrLegacyOption:(NSString*)flag;
 +(PhoneManager*) phoneManager;
 
++(BOOL)isRegistered;
++(void)setRegistered:(BOOL)status;
++(void)resetAppData;
+
 @end
