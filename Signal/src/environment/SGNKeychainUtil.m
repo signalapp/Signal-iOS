@@ -64,7 +64,7 @@
     NSString *lnString = [self stringForKey:LOCAL_NUMBER_KEY];
     checkOperation(lnString != nil );
     PhoneNumber *num = [PhoneNumber tryParsePhoneNumberFromE164:lnString];
-    return num;
+    return lnString?num:nil;
 }
 
 +(Zid *)zid{
