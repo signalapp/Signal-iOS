@@ -266,7 +266,16 @@ typedef NSComparisonResult (^YapDatabaseViewMappingGroupSort)(NSString *group1, 
  * @see groupForSection:
  * @see visibleGroups
  * 
- * The mappings object is used with:
+ * Also note that there's an extremely helpful category: YapDatabaseViewTransaction(Mappings).
+ * Methods in this category will be of great help as you take advantage of advanced mappings configurations.
+ * For example:
+ *
+ * id object = [[transaction ext:@"myView"] objectAtIndexPath:indexPath withMappings:mappings];
+ *
+ * These methods are extensively unit tested to ensure they work properly with all kinds of mappings configurations.
+ * Translation: You can use them without thinking, and they'll just work everytime.
+ *
+ * The mappings object is also used to assist with tableView/collectionView change animations:
  *
  * - YapDatabaseViewConnection getSectionChanges:rowChanges:forNotifications:withMappings:
  * 
@@ -275,14 +284,25 @@ typedef NSComparisonResult (^YapDatabaseViewMappingGroupSort)(NSString *group1, 
  * As the dynamic sections disappear & re-appear, the proper section changes will be emitted.
  *
  * By DEFAULT, all groups/sections are STATIC.
- * You can configure this per group, or all-at-once.
+ *
+ * You can configure this however you want to meet your needs.
+ * This includes per-group configuration, all-at-once, and even overrides.
+ * 
+ * ORDER MATTERS.
+ *
+ * If you invoke setIsDynamicSectionForAllGroups, this sets the configuration for every group.
+ * Including future groups if using dynamic groups via initWithGroupFilterBlock:sortBlock:view:.
+ * 
+ * Once the configuration is set for all groups, you can then choose to provide overriden settings for select groups.
+ * That is, if you then invoke setIsDynamicSection:forGroup: is will override the "global" setting
+ * for this particular group.
 **/
-
-- (void)setIsDynamicSectionForAllGroups:(BOOL)isDynamic;
-- (BOOL)isDynamicSectionForAllGroups;
 
 - (void)setIsDynamicSection:(BOOL)isDynamic forGroup:(NSString *)group;
 - (BOOL)isDynamicSectionForGroup:(NSString *)group;
+
+- (void)setIsDynamicSectionForAllGroups:(BOOL)isDynamic;
+- (BOOL)isDynamicSectionForAllGroups;
 
 /**
  * You can use the YapDatabaseViewRangeOptions class to configure a "range" that you would
