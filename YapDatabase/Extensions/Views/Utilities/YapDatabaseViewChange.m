@@ -1979,21 +1979,27 @@
 		//
 		// - calculate original & final offset for each group
 		
-		NSArray *allGroups = [originalMappings allGroups];
+		NSArray *originalGroups = [originalMappings allGroups];
+		NSArray *finalGroups    = [finalMappings allGroups];
 		
-		NSMutableDictionary *originalOffsets = [NSMutableDictionary dictionaryWithCapacity:[allGroups count]];
-		NSMutableDictionary *finalOffsets = [NSMutableDictionary dictionaryWithCapacity:[allGroups count]];
+		NSMutableDictionary *originalOffsets = [NSMutableDictionary dictionaryWithCapacity:[originalGroups count]];
+		NSMutableDictionary *finalOffsets = [NSMutableDictionary dictionaryWithCapacity:[finalGroups count]];
 		
 		NSUInteger originalOffset = 0;
 		NSUInteger finalOffset = 0;
 		
-		for (NSString *group in allGroups)
+		for (NSString *group in originalGroups)
 		{
 			[originalOffsets setObject:@(originalOffset) forKey:group];
-			[finalOffsets    setObject:@(finalOffset)    forKey:group];
 			
 			originalOffset += [originalMappings visibleCountForGroup:group];
-			finalOffset    += [finalMappings visibleCountForGroup:group];
+		}
+		
+		for (NSString *group in finalGroups)
+		{
+			[finalOffsets setObject:@(finalOffset) forKey:group];
+			
+			finalOffset += [finalMappings visibleCountForGroup:group];
 		}
 		
 		// Step 2
@@ -2064,12 +2070,12 @@
 		//
 		// - calculate the offsets for each group within the consolidated group
 		
-		NSArray *allGroups = [originalMappings allGroups];
+		NSArray *finalGroups = [finalMappings allGroups];
 		
-		NSMutableDictionary *finalOffsets = [NSMutableDictionary dictionaryWithCapacity:[allGroups count]];
+		NSMutableDictionary *finalOffsets = [NSMutableDictionary dictionaryWithCapacity:[finalGroups count]];
 		NSUInteger finalOffset = 0;
 		
-		for (NSString *group in allGroups)
+		for (NSString *group in finalGroups)
 		{
 			[finalOffsets setObject:@(finalOffset) forKey:group];
 			
@@ -2208,13 +2214,13 @@
 		//
 		// - calculate the offsets for each group within the consolidated group
 		
-		NSArray *allGroups = [originalMappings allGroups];
+		NSArray *originalGroups = [originalMappings allGroups];
 		
-		NSMutableDictionary *originalOffsets = [NSMutableDictionary dictionaryWithCapacity:[allGroups count]];
+		NSMutableDictionary *originalOffsets = [NSMutableDictionary dictionaryWithCapacity:[originalGroups count]];
 		
 		NSUInteger originalOffset = 0;
 		
-		for (NSString *group in allGroups)
+		for (NSString *group in originalGroups)
 		{
 			[originalOffsets setObject:@(originalOffset) forKey:group];
 			
