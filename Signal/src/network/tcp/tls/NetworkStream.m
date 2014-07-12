@@ -74,6 +74,7 @@
     NSStreamStatus status = [outputStream streamStatus];
     if (status < NSStreamStatusOpen) return;
     if (status >= NSStreamStatusAtEnd) {
+        DDLogError(@"Status of the stream: %lu", status);
         [rawDataHandler handleError:@"Wrote to ended/closed/errored stream."
                         relatedInfo:nil
                   causedTermination:false];
@@ -123,6 +124,7 @@
         [futureOpenedSource trySetFailure:error];
         [futureConnectedAndWritableSource trySetFailure:error];
         [rawDataHandler handleError:error relatedInfo:nil causedTermination:true];
+        DDLogError(@"Network failure happened on network stream: %@", error);
         [self terminate];
     }
 }
@@ -159,9 +161,20 @@
 }
 
 -(void) onErrorOccurred:(id)fallbackError {
-    id error = [inputStream streamError];
-    if (error == nil) error = [outputStream streamError];
-    if (error == nil) error = fallbackError;
+    NSError *error;
+    
+    DDLogError(@"Stream status: %@", self.description);
+    
+    if ([inputStream streamError]) {
+        error = [inputStream streamError];
+        DDLogError(@"Error on incoming stream : %@");
+    } else if ([outputStream streamError]){
+        error = [outputStream streamError];
+        DDLogError(@"Error on outgoing stream: %@", error);
+    } else{
+        error = fallbackError;
+        DDLogError(@"Fallback error: %@", fallbackError);
+    }
     [self onNetworkFailure:error];
 }
 
