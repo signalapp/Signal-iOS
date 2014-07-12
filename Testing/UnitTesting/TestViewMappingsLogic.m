@@ -2306,11 +2306,13 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 2, @"");
 	
 	XCTAssertTrue(RowOp(rowChanges, 2).type == YapDatabaseViewChangeDelete, @"");
-	XCTAssertTrue(RowOp(rowChanges, 2).originalSection == 0, @""); // A
+	XCTAssertTrue(RowOp(rowChanges, 2).originalSection == 0, // A
+	              @"Expected 0, got %lu", (unsigned long)(RowOp(rowChanges, 2).originalSection));
 	XCTAssertTrue(RowOp(rowChanges, 2).originalIndex == 19, @"");
 	
 	XCTAssertTrue(RowOp(rowChanges, 3).type == YapDatabaseViewChangeDelete, @"");
-	XCTAssertTrue(RowOp(rowChanges, 3).originalSection == 1, @""); // B
+	XCTAssertTrue(RowOp(rowChanges, 3).originalSection == 1, // B
+	              @"Expected 1, got %lu", (unsigned long)(RowOp(rowChanges, 3).originalSection));
 	XCTAssertTrue(RowOp(rowChanges, 3).originalIndex == 19, @"");
 }
 
@@ -2363,11 +2365,13 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 9, @"");
 	
 	XCTAssertTrue(RowOp(rowChanges, 2).type == YapDatabaseViewChangeDelete, @"");
-	XCTAssertTrue(RowOp(rowChanges, 2).originalSection == 0, @""); // A
+	XCTAssertTrue(RowOp(rowChanges, 2).originalSection == 0, // A
+	              @"Expected 0, got %lu", (unsigned long)(RowOp(rowChanges, 2).originalSection));
 	XCTAssertTrue(RowOp(rowChanges, 2).originalIndex == 0, @"");
 	
 	XCTAssertTrue(RowOp(rowChanges, 3).type == YapDatabaseViewChangeDelete, @"");
-	XCTAssertTrue(RowOp(rowChanges, 3).originalSection == 1, @""); // B
+	XCTAssertTrue(RowOp(rowChanges, 3).originalSection == 1, // B
+	              @"Expected 1, got %lu", (unsigned long)(RowOp(rowChanges, 3).originalSection));
 	XCTAssertTrue(RowOp(rowChanges, 3).originalIndex == 0, @"");
 }
 

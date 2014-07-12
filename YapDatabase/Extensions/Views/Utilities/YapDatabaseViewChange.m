@@ -1104,14 +1104,10 @@
 	// The user has a hard range on group "fiction" in the "bookSalesRank" view in order to display the top 20.
 	// So any items outside of that range must be filtered.
 	
-	NSDictionary *rangeOptions = [finalMappings rangeOptions];
-	BOOL rangeOptionsChanged = YES;
+	__block BOOL rangeOptionsChanged = YES;
 	
-	// Note: The rangeOptions are the same between originalMappings & finalMappings.
-	
-	for (NSString *group in rangeOptions)
-	{
-		YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+	void (^ApplyRangeOptionsForGroup)(YapDatabaseViewRangeOptions *rangeOpts, NSString *group);
+	ApplyRangeOptionsForGroup = ^(YapDatabaseViewRangeOptions *rangeOpts, NSString *group){
 		
 		NSUInteger originalGroupCount = [originalMappings fullCountForGroup:group];
 		NSUInteger finalGroupCount    = [finalMappings fullCountForGroup:group];
@@ -1885,8 +1881,38 @@
 			rangeOptionsChanged = YES;
 		}
 		
-	} // for (NSString *group in rangeOptions)
+	}; // end ApplyRangeOptionsForGroup
 
+	
+	NSDictionary *rangeOptions = [finalMappings rangeOptions];
+	
+	// Note: The rangeOptions are the same between originalMappings & finalMappings.
+	
+	BOOL hasRangeOptions = [rangeOptions count] > 0;
+	if (hasRangeOptions)
+	{
+		NSMutableSet *handledGroups = [NSMutableSet setWithCapacity:[rangeOptions count]];
+		
+		for (NSString *group in [originalMappings allGroups])
+		{
+			YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+			if (rangeOpts)
+			{
+				ApplyRangeOptionsForGroup(rangeOpts, group);
+				[handledGroups addObject:group];
+			}
+		}
+		
+		for (NSString *group in [finalMappings allGroups])
+		{
+			YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
+			if (rangeOpts && ![handledGroups containsObject:group])
+			{
+				ApplyRangeOptionsForGroup(rangeOpts, group);
+			}
+		}
+	}
+	
 	// Step 4.B : Update finalMappings if needed (by updating visibleGroups)
 
 	if (rangeOptionsChanged)
