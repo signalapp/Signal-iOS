@@ -78,8 +78,6 @@
     NSString* relayServerName = parsedPayload.serverName;
     PhoneNumber* phoneNumber = [PhoneNumber phoneNumberFromE164:parsedPayload.initiator];
     
-    DDLogDebug(@"Initiating call with session descriptor: %i UDP-Port:%hu sessionID:%lld, relayServerName:%@", interopVersion, relayUdpPort, sessionId, relayServerName);
-    
     return [ResponderSessionDescriptor responderSessionDescriptorWithInteropVersion:interopVersion
                                                                     andRelayUdpPort:relayUdpPort
                                                                        andSessionId:sessionId
