@@ -258,8 +258,38 @@ typedef NS_ENUM(NSInteger, YapDatabasePolicy) {
  * If NULL, dispatch_get_main_queue() is automatically used.
 **/
 - (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
+           completionQueue:(dispatch_queue_t)completionQueue
+           completionBlock:(dispatch_block_t)completionBlock;
+
+/**
+ * DEPRECATED in v2.5
+ *
+ * The syntax has been changed in order to make the code easier to read.
+ * In the past the code would end up looking like this:
+ * 
+ * [databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ *     // 100 lines of code here
+ * } completionBlock:^{
+ *     // 50 lines of code here
+ * }
+ * completionQueue:importantQueue]; <-- Very hidden in code. Often overlooked.
+ * 
+ * The new syntax puts the completionQueue declaration before the completionBlock declaration.
+ * Since the two are intricately linked, they should be next to each other in code.
+ * Then end result is much easier to read:
+ * 
+ * [databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ *     // 100 lines of code here
+ * }
+ * completionQueue:importantQueue <-- Easier to see
+ * completionBlock:^{
+ *     // 50 lines of code here
+ * }];
+**/
+- (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
            completionBlock:(dispatch_block_t)completionBlock
-           completionQueue:(dispatch_queue_t)completionQueue;
+           completionQueue:(dispatch_queue_t)completionQueue
+__attribute((deprecated("Use method asyncReadWithBlock:completionQueue:completionBlock: instead")));
 
 /**
  * Read-write access to the database.
@@ -300,8 +330,38 @@ typedef NS_ENUM(NSInteger, YapDatabasePolicy) {
  * If NULL, dispatch_get_main_queue() is automatically used.
 **/
 - (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
+                completionQueue:(dispatch_queue_t)completionQueue
+                completionBlock:(dispatch_block_t)completionBlock;
+
+/**
+ * DEPRECATED in v2.5
+ *
+ * The syntax has been changed in order to make the code easier to read.
+ * In the past the code would end up looking like this:
+ *
+ * [databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ *     // 100 lines of code here
+ * } completionBlock:^{
+ *     // 50 lines of code here
+ * }
+ * completionQueue:importantQueue]; <-- Very hidden in code. Often overlooked.
+ *
+ * The new syntax puts the completionQueue declaration before the completionBlock declaration.
+ * Since the two are intricately linked, they should be next to each other in code.
+ * Then end result is much easier to read:
+ *
+ * [databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ *     // 100 lines of code here
+ * }
+ * completionQueue:importantQueue <-- Easier to see
+ * completionBlock:^{
+ *     // 50 lines of code here
+ * }];
+**/
+- (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
                 completionBlock:(dispatch_block_t)completionBlock
-                completionQueue:(dispatch_queue_t)completionQueue;
+                completionQueue:(dispatch_queue_t)completionQueue
+__attribute((deprecated("Use method asyncReadWriteWithBlock:completionQueue:completionBlock: instead")));
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Long-Lived Transactions

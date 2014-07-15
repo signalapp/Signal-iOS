@@ -1330,7 +1330,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
  *     NO if an error occurred, such as the extensionName is already registered.
  * 
  * @see asyncRegisterExtension:withName:completionBlock:
- * @see asyncRegisterExtension:withName:completionBlock:completionQueue:
+ * @see asyncRegisterExtension:withName:completionQueue:completionBlock:
 **/
 - (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName
 {
@@ -1363,8 +1363,8 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 {
 	[self asyncRegisterExtension:extension
 	                    withName:extensionName
-	             completionBlock:completionBlock
-	             completionQueue:NULL];
+	             completionQueue:NULL
+	             completionBlock:completionBlock];
 }
 
 /**
@@ -1383,8 +1383,8 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 **/
 - (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
                       withName:(NSString *)extensionName
-               completionBlock:(void(^)(BOOL ready))completionBlock
                completionQueue:(dispatch_queue_t)completionQueue
+               completionBlock:(void(^)(BOOL ready))completionBlock
 {
 	if (completionQueue == NULL && completionBlock != NULL)
 		completionQueue = dispatch_get_main_queue();
@@ -1401,6 +1401,44 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 			}});
 		}
 	}});
+}
+
+/**
+ * DEPRECATED in v2.5
+ *
+ * The syntax has been changed in order to make the code easier to read.
+ * In the past the code would end up looking like this:
+ *
+ * [database asyncRegisterExtension:ext
+ *                         withName:@"name"
+ *                  completionBlock:^
+ * {
+ *     // A bunch of code here
+ *     // code...
+ *     // code...
+ * } completionQueue:importantQueue]; <-- Hidden in code. Often overlooked.
+ *
+ * The new syntax puts the completionQueue declaration before the completionBlock declaration.
+ * Since the two are intricately linked, they should be next to each other in code.
+ * Then end result is easier to read:
+ *
+ * [database asyncRegisterExtension:ext
+ *                         withName:@"name"
+ *                  completionQueue:importantQueue <-- Easier to see
+ *                  completionBlock:^
+ * {
+ *     // 100 lines of code here
+ * }];
+**/
+- (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
+                      withName:(NSString *)extensionName
+               completionBlock:(void(^)(BOOL ready))completionBlock
+               completionQueue:(dispatch_queue_t)completionQueue
+{
+	[self asyncRegisterExtension:extension
+	                    withName:extensionName
+	             completionQueue:completionQueue
+	             completionBlock:completionBlock];
 }
 
 /**
@@ -1424,7 +1462,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
  *   And it will automatically unregister these orhpaned extensions for you.
  *
  * @see asyncUnregisterExtensionWithName:completionBlock:
- * @see asyncUnregisterExtensionWithName:completionBlock:completionQueue:
+ * @see asyncUnregisterExtensionWithName:completionQueue:completionBlock:
 **/
 - (void)unregisterExtensionWithName:(NSString *)extensionName
 {
@@ -1449,13 +1487,25 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
                          completionBlock:(dispatch_block_t)completionBlock
 {
 	[self asyncUnregisterExtensionWithName:extensionName
-	                       completionBlock:completionBlock
-	                       completionQueue:NULL];
+	                       completionQueue:NULL
+	                       completionBlock:completionBlock];
 }
 
+/**
+ * Asynchronoulsy starts the extension unregistration process.
+ *
+ * The unregistration process is equivalent to a readwrite transaction.
+ * It involves deleting various information about the extension from the database,
+ * as well as possibly dropping related tables the extension may have been using.
+ *
+ * An optional completion block may be used.
+ *
+ * Additionally the dispatch_queue to invoke the completion block may also be specified.
+ * If NULL, dispatch_get_main_queue() is automatically used.
+**/
 - (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
-                         completionBlock:(dispatch_block_t)completionBlock
                          completionQueue:(dispatch_queue_t)completionQueue
+                         completionBlock:(dispatch_block_t)completionBlock
 {
 	if (completionQueue == NULL && completionBlock != NULL)
 		completionQueue = dispatch_get_main_queue();
@@ -1472,6 +1522,40 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 			}});
 		}
 	}});
+}
+
+/**
+ * DEPRECATED in v2.5
+ *
+ * The syntax has been changed in order to make the code easier to read.
+ * In the past the code would end up looking like this:
+ *
+ * [database asyncUnregisterExtensionWithName:@"name"
+ *                            completionBlock:^
+ * {
+ *     // A bunch of code here
+ *     // code...
+ *     // code...
+ * } completionQueue:importantQueue]; <-- Hidden in code. Often overlooked.
+ *
+ * The new syntax puts the completionQueue declaration before the completionBlock declaration.
+ * Since the two are intricately linked, they should be next to each other in code.
+ * Then end result is easier to read:
+ *
+ * [database asyncUnregisterExtensionWithName:@"name"
+ *                            completionQueue:importantQueue <-- Easier to see
+ *                            completionBlock:^
+ * {
+ *     // 100 lines of code here
+ * }];
+**/
+- (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
+                         completionBlock:(dispatch_block_t)completionBlock
+                         completionQueue:(dispatch_queue_t)completionQueue
+{
+	[self asyncUnregisterExtensionWithName:extensionName
+	                       completionQueue:completionQueue
+	                       completionBlock:completionBlock];
 }
 
 /**
@@ -1592,15 +1676,15 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 /**
  * DEPRECATED in v2.5
  * 
- * Use asyncUnregisterExtensionWithName:completionBlock:completionQueue: instead.
+ * Use asyncUnregisterExtensionWithName:completionQueue:completionBlock: instead.
 **/
 - (void)asyncUnregisterExtension:(NSString *)extensionName
                  completionBlock:(dispatch_block_t)completionBlock
                  completionQueue:(dispatch_queue_t)completionQueue
 {
 	[self asyncUnregisterExtensionWithName:extensionName
-	                       completionBlock:completionBlock
-	                       completionQueue:completionQueue];
+	                       completionQueue:completionQueue
+	                       completionBlock:completionBlock];
 }
 
 /**

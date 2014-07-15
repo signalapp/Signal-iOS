@@ -1449,7 +1449,7 @@ static NSString *const ExtKey_class = @"class";
 **/
 - (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
 {
-	[self asyncReadWithBlock:block completionBlock:NULL completionQueue:NULL];
+	[self asyncReadWithBlock:block completionQueue:NULL completionBlock:NULL];
 }
 
 /**
@@ -1466,7 +1466,7 @@ static NSString *const ExtKey_class = @"class";
 - (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
            completionBlock:(dispatch_block_t)completionBlock
 {
-	[self asyncReadWithBlock:block completionBlock:completionBlock completionQueue:NULL];
+	[self asyncReadWithBlock:block completionQueue:NULL completionBlock:completionBlock];
 }
 
 /**
@@ -1482,8 +1482,8 @@ static NSString *const ExtKey_class = @"class";
  * If NULL, dispatch_get_main_queue() is automatically used.
 **/
 - (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
-           completionBlock:(dispatch_block_t)completionBlock
            completionQueue:(dispatch_queue_t)completionQueue
+           completionBlock:(dispatch_block_t)completionBlock
 {
 	if (completionQueue == NULL && completionBlock != NULL)
 		completionQueue = dispatch_get_main_queue();
@@ -1509,6 +1509,38 @@ static NSString *const ExtKey_class = @"class";
 }
 
 /**
+ * DEPRECATED in v2.5
+ *
+ * The syntax has been changed in order to make the code easier to read.
+ * In the past the code would end up looking like this:
+ *
+ * [databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ *     // 100 lines of code here
+ * } completionBlock:^{
+ *     // 50 lines of code here
+ * }
+ * completionQueue:importantQueue]; <-- Very hidden in code. Often overlooked.
+ *
+ * The new syntax puts the completionQueue declaration before the completionBlock declaration.
+ * Since the two are intricately linked, they should be next to each other in code.
+ * Then end result is much easier to read:
+ *
+ * [databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ *     // 100 lines of code here
+ * }
+ * completionQueue:importantQueue <-- Easier to see
+ * completionBlock:^{
+ *     // 50 lines of code here
+ * }];
+**/
+- (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
+           completionBlock:(dispatch_block_t)completionBlock
+           completionQueue:(dispatch_queue_t)completionQueue
+{
+	[self asyncReadWithBlock:block completionQueue:completionQueue completionBlock:completionBlock];
+}
+
+/**
  * Read-write access to the database.
  * 
  * Only a single read-write block can execute among all sibling connections.
@@ -1518,7 +1550,7 @@ static NSString *const ExtKey_class = @"class";
 **/
 - (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
 {
-	[self asyncReadWriteWithBlock:block completionBlock:NULL completionQueue:NULL];
+	[self asyncReadWriteWithBlock:block completionQueue:NULL completionBlock:NULL];
 }
 
 /**
@@ -1536,7 +1568,7 @@ static NSString *const ExtKey_class = @"class";
 - (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
                 completionBlock:(dispatch_block_t)completionBlock
 {
-	[self asyncReadWriteWithBlock:block completionBlock:completionBlock completionQueue:NULL];
+	[self asyncReadWriteWithBlock:block completionQueue:NULL completionBlock:completionBlock];
 }
 
 /**
@@ -1553,8 +1585,8 @@ static NSString *const ExtKey_class = @"class";
  * If NULL, dispatch_get_main_queue() is automatically used.
 **/
 - (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
-                completionBlock:(dispatch_block_t)completionBlock
                 completionQueue:(dispatch_queue_t)completionQueue
+                completionBlock:(dispatch_block_t)completionBlock
 {
 	if (completionQueue == NULL && completionBlock != NULL)
 		completionQueue = dispatch_get_main_queue();
@@ -1598,6 +1630,38 @@ static NSString *const ExtKey_class = @"class";
 		}}); // End dispatch_sync(database->writeQueue)
 		__postWriteQueue(self);
 	});      // End dispatch_async(connectionQueue)
+}
+
+/**
+ * DEPRECATED in v2.5
+ *
+ * The syntax has been changed in order to make the code easier to read.
+ * In the past the code would end up looking like this:
+ *
+ * [databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ *     // 100 lines of code here
+ * } completionBlock:^{
+ *     // 50 lines of code here
+ * }
+ * completionQueue:importantQueue]; <-- Very hidden in code. Often overlooked.
+ *
+ * The new syntax puts the completionQueue declaration before the completionBlock declaration.
+ * Since the two are intricately linked, they should be next to each other in code.
+ * Then end result is much easier to read:
+ *
+ * [databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ *     // 100 lines of code here
+ * }
+ * completionQueue:importantQueue <-- Easier to see
+ * completionBlock:^{
+ *     // 50 lines of code here
+ * }];
+**/
+- (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
+                completionBlock:(dispatch_block_t)completionBlock
+                completionQueue:(dispatch_queue_t)completionQueue
+{
+	[self asyncReadWriteWithBlock:block completionQueue:completionQueue completionBlock:completionBlock];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
