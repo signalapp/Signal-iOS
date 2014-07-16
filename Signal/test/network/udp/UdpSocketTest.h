@@ -1,5 +1,5 @@
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-@interface UdpSocketTest : SenTestCase
+@interface UdpSocketTest : XCTestCase
 
 @end

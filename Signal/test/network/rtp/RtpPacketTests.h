@@ -1,6 +1,6 @@
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "RtpPacket.h"
 
-@interface RtpPacketTests : SenTestCase
+@interface RtpPacketTests : XCTestCase
 
 @end

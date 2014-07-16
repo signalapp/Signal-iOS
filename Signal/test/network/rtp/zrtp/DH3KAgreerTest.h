@@ -6,8 +6,8 @@
 //  Copyright (c) 2013 Twisted Oak Studios. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-@interface DH3KAgreerTest : SenTestCase
+@interface DH3KAgreerTest : XCTestCase
 
 @end

@@ -1,5 +1,5 @@
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-@interface QueueTest : SenTestCase
+@interface QueueTest : XCTestCase
 
 @end

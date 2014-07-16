@@ -1,8 +1,8 @@
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "TestUtil.h"
 #import "ContactsManager.h"
 
-@interface ContactManagerTest : SenTestCase
+@interface ContactManagerTest : XCTestCase
 
 @end
 

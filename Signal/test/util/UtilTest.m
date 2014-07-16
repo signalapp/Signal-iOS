@@ -276,8 +276,8 @@
         NSString* b = [d encodedAsBase64];
         NSData* d2 = [b decodedAsBase64Data];
         if (![d isEqualToData:d2]) {
-            STFail([d description]);
-        }
+            XCTFail(@"%@",[d description]);
+        } 
     }
 }
 -(void) testToRegex {

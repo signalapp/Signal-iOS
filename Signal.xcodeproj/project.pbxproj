@@ -382,6 +382,7 @@
 		AA0C8E498E2046B0B81EEE6E /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
 		B62686301964AE3D00D2D697 /* LogSubmit.m in Sources */ = {isa = PBXBuildFile; fileRef = B626862F1964AE3D00D2D697 /* LogSubmit.m */; };
 		B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B67EBF5C19194AC60084CCFD /* Settings.bundle */; };
+		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
 		B6B1013C196D213F007E3930 /* SGNKeychainUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SGNKeychainUtil.m */; };
 		B6B6C3C71919440C00C0B76B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6B6C3C51919440C00C0B76B /* Localizable.strings */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
@@ -421,7 +422,6 @@
 		D221A090169C9E5E00537ABF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A08F169C9E5E00537ABF /* Foundation.framework */; };
 		D221A092169C9E5E00537ABF /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A091169C9E5E00537ABF /* CoreGraphics.framework */; };
 		D221A09A169C9E5E00537ABF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D221A099169C9E5E00537ABF /* main.m */; };
-		D221A0AC169C9E5F00537ABF /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A0AB169C9E5F00537ABF /* SenTestingKit.framework */; };
 		D221A0AD169C9E5F00537ABF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A08D169C9E5E00537ABF /* UIKit.framework */; };
 		D221A0AE169C9E5F00537ABF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A08F169C9E5E00537ABF /* Foundation.framework */; };
 		D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A0E7169DFFC500537ABF /* AVFoundation.framework */; };
@@ -621,6 +621,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = A1FDCBF916DBC57D00868894;
 			remoteInfo = speex;
+		};
+		B6913FF419773C5000AE2BF5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D221A088169C9E5E00537ABF;
+			remoteInfo = Signal;
+		};
+		B6913FF619773C5100AE2BF5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D221A088169C9E5E00537ABF;
+			remoteInfo = Signal;
 		};
 		D221A0AF169C9E5F00537ABF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1093,6 +1107,7 @@
 		B626862F1964AE3D00D2D697 /* LogSubmit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogSubmit.m; sourceTree = "<group>"; };
 		B657DDC91911A40500F45B0C /* Signal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Signal.entitlements; sourceTree = "<group>"; };
 		B67EBF5C19194AC60084CCFD /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = SettingsBundle/Settings.bundle; sourceTree = SOURCE_ROOT; };
+		B69CD25019773E79005CE69A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		B6B1013A196D213F007E3930 /* SGNKeychainUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGNKeychainUtil.h; sourceTree = "<group>"; };
 		B6B1013B196D213F007E3930 /* SGNKeychainUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGNKeychainUtil.m; sourceTree = "<group>"; };
 		B6B6C3C61919440C00C0B76B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1139,8 +1154,7 @@
 		D221A095169C9E5E00537ABF /* Signal-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Signal-Info.plist"; sourceTree = "<group>"; };
 		D221A099169C9E5E00537ABF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		D221A09B169C9E5E00537ABF /* Signal-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Signal-Prefix.pch"; sourceTree = "<group>"; };
-		D221A0AA169C9E5F00537ABF /* SignalTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SignalTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D221A0AB169C9E5F00537ABF /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		D221A0AA169C9E5F00537ABF /* SignalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SignalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D221A0E7169DFFC500537ABF /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = ../../../../../../System/Library/Frameworks/AVFoundation.framework; sourceTree = "<group>"; };
 		D24B5BD4169F568C00681372 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = ../../../../../../System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<group>"; };
 		D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
@@ -1340,6 +1354,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */,
 				E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */,
 				A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */,
 				A1A018531805C60D00A052A6 /* CoreGraphics.framework in Frameworks */,
@@ -1351,7 +1366,6 @@
 				D202868316DBE0FC009068E9 /* CoreTelephony.framework in Frameworks */,
 				D202868216DBE0F4009068E9 /* SystemConfiguration.framework in Frameworks */,
 				D202868116DBE0E7009068E9 /* CFNetwork.framework in Frameworks */,
-				D221A0AC169C9E5F00537ABF /* SenTestingKit.framework in Frameworks */,
 				D221A0AD169C9E5F00537ABF /* UIKit.framework in Frameworks */,
 				D221A0AE169C9E5F00537ABF /* Foundation.framework in Frameworks */,
 				AA0C8E498E2046B0B81EEE6E /* libPods.a in Frameworks */,
@@ -2460,7 +2474,7 @@
 			isa = PBXGroup;
 			children = (
 				D221A089169C9E5E00537ABF /* Signal.app */,
-				D221A0AA169C9E5F00537ABF /* SignalTests.octest */,
+				D221A0AA169C9E5F00537ABF /* SignalTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2468,6 +2482,7 @@
 		D221A08C169C9E5E00537ABF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B69CD25019773E79005CE69A /* XCTest.framework */,
 				70377AAA1918450100CAF501 /* MobileCoreServices.framework */,
 				B9EB5ABC1884C002007CBB57 /* MessageUI.framework */,
 				A1C32D4D17A0652C000A904E /* AddressBook.framework */,
@@ -2486,7 +2501,6 @@
 				D221A08D169C9E5E00537ABF /* UIKit.framework */,
 				D221A08F169C9E5E00537ABF /* Foundation.framework */,
 				D221A091169C9E5E00537ABF /* CoreGraphics.framework */,
-				D221A0AB169C9E5F00537ABF /* SenTestingKit.framework */,
 				8313AE91B4954215858A5662 /* libPods.a */,
 			);
 			name = Frameworks;
@@ -2659,11 +2673,13 @@
 			);
 			dependencies = (
 				D221A0B0169C9E5F00537ABF /* PBXTargetDependency */,
+				B6913FF519773C5000AE2BF5 /* PBXTargetDependency */,
+				B6913FF719773C5100AE2BF5 /* PBXTargetDependency */,
 			);
 			name = SignalTests;
 			productName = RedPhoneTests;
-			productReference = D221A0AA169C9E5F00537ABF /* SignalTests.octest */;
-			productType = "com.apple.product-type.bundle";
+			productReference = D221A0AA169C9E5F00537ABF /* SignalTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -2671,7 +2687,7 @@
 		D221A080169C9E5E00537ABF /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastTestingUpgradeCheck = 0510;
+				LastTestingUpgradeCheck = 0600;
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Open Whisper Systems";
 				TargetAttributes = {
@@ -2685,6 +2701,9 @@
 								enabled = 0;
 							};
 						};
+					};
+					D221A0A9169C9E5F00537ABF = {
+						TestTargetID = D221A088169C9E5E00537ABF;
 					};
 				};
 			};
@@ -3411,6 +3430,16 @@
 			name = speex;
 			targetProxy = 70B800AD190C54870042E3F0 /* PBXContainerItemProxy */;
 		};
+		B6913FF519773C5000AE2BF5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D221A088169C9E5E00537ABF /* Signal */;
+			targetProxy = B6913FF419773C5000AE2BF5 /* PBXContainerItemProxy */;
+		};
+		B6913FF719773C5100AE2BF5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D221A088169C9E5E00537ABF /* Signal */;
+			targetProxy = B6913FF619773C5100AE2BF5 /* PBXContainerItemProxy */;
+		};
 		D221A0B0169C9E5F00537ABF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D221A088169C9E5E00537ABF /* Signal */;
@@ -3568,6 +3597,8 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
 				);
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = YES;
@@ -3601,8 +3632,7 @@
 				);
 				PRODUCT_NAME = SignalTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
-				VALID_ARCHS = "arm64 armv7s armv7 i386";
-				WRAPPER_EXTENSION = octest;
+				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";
 			};
 			name = "Ad-Hoc Distribution";
 		};
@@ -3851,6 +3881,8 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
 				);
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = YES;
@@ -3884,8 +3916,7 @@
 				);
 				PRODUCT_NAME = SignalTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
-				VALID_ARCHS = "arm64 armv7s armv7 i386";
-				WRAPPER_EXTENSION = octest;
+				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";
 			};
 			name = Debug;
 		};
@@ -3897,6 +3928,8 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
 				);
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = YES;
@@ -3930,8 +3963,7 @@
 				);
 				PRODUCT_NAME = SignalTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
-				VALID_ARCHS = "arm64 armv7s armv7 i386";
-				WRAPPER_EXTENSION = octest;
+				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";
 			};
 			name = "App Store Release";
 		};
