@@ -168,6 +168,7 @@ static Environment* environment = nil;
 +(void)resetAppData{
     [SGNKeychainUtil wipeKeychain];
     [NSUserDefaults resetStandardUserDefaults];
+    [[[Environment getCurrent] preferences] clear];
 }
 
 @end
