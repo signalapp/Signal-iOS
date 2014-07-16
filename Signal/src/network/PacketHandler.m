@@ -25,6 +25,7 @@
         relatedInfo:(id)relatedInfo
   causedTermination:(bool)causedTermination {
     
+    DDLogError(@"Pack handler failed with error: %@ and info: %@", error, relatedInfo);
     errorHandler(error, relatedInfo, causedTermination);
 }
 
