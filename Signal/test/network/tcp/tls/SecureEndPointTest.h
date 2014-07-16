@@ -1,5 +1,5 @@
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-@interface SecureEndPointTest : SenTestCase
+@interface SecureEndPointTest : XCTestCase
 
 @end

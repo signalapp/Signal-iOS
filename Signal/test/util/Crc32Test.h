@@ -1,5 +1,5 @@
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-@interface Crc32Test : SenTestCase
+@interface Crc32Test : XCTestCase
 
 @end

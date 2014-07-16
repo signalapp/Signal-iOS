@@ -1,4 +1,4 @@
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "ZrtpManager.h"
 #import "HelloPacket.h"
 #import "ConfirmPacket.h"
@@ -12,6 +12,6 @@
 #import "ZrtpResponder.h"
 #import "ZrtpInitiator.h"
 
-@interface ZrtpTest : SenTestCase
+@interface ZrtpTest : XCTestCase
 
 @end

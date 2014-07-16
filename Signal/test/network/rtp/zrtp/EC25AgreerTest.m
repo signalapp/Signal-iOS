@@ -1,9 +1,9 @@
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "TestUtil.h"
 #import "EC25KeyAgreementParticipant.h"
 #import "EC25KeyAgreementProtocol.h"
 
-@interface EC25AgreerTest : SenTestCase{
+@interface EC25AgreerTest : XCTestCase{
     
     
 }

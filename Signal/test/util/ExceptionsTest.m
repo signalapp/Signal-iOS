@@ -7,7 +7,7 @@
     require(1 + 1 == 2);
     @try {
         require(1 + 1 == 3);
-        STFail(@"");
+        XCTFail(@"");
     } @catch (BadArgument* ex) {
         test([[ex reason] hasPrefix:@"require 1 + 1 == 3"]);
     }
@@ -15,7 +15,7 @@
     requireState(1 + 1 == 2);
     @try {
         requireState(1 + 1 == 3);
-        STFail(@"");
+        XCTFail(@"");
     } @catch (BadState* ex) {
         test([[ex reason]  hasPrefix:@"required state: 1 + 1 == 3"]);
     }
@@ -23,7 +23,7 @@
     checkOperationDescribe(1 + 1 == 2, @"addition.");
     @try {
         checkOperationDescribe(1 + 1 == 3, @"addition.");
-        STFail(@"");
+        XCTFail(@"");
     } @catch (OperationFailed* ex) {
         test([[ex reason] hasPrefix:@"Operation failed: addition. Expected: 1 + 1 == 3"]);
     }
@@ -31,7 +31,7 @@
     checkOperation(1 + 1 == 2);
     @try {
         checkOperation(1 + 1 == 3);
-        STFail(@"");
+        XCTFail(@"");
     } @catch (OperationFailed* ex) {
         test([[ex reason] hasPrefix:@"Operation failed. Expected: 1 + 1 == 3"]);
     }

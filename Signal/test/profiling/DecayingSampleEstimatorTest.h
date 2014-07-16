@@ -1,5 +1,5 @@
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-@interface DecayingSampleEstimatorTest : SenTestCase
+@interface DecayingSampleEstimatorTest : XCTestCase
 
 @end
