@@ -59,7 +59,7 @@
 "HOME_FOOTER_SECOND_MESSAGE_CALLS_NIL" = "No calls";
 "HOME_FOOTER_SECOND_MESSAGE_CALL_UNSORTED" = "unsorted call";
 "INBOX_VIEW_TUTORIAL_LABEL_MIDDLE" = "Check your contacts to see which of your friends support secure calls";
-"INBOX_VIEW_TUTORIAL_LABEL_TOP" = "You haven't recieved a call from a Signal user yet.";
+"INBOX_VIEW_TUTORIAL_LABEL_TOP" = "You haven't received a call from a Signal user yet.";
 "INVITE_USERS_ACTION_SHEET_TITLE" = "Invite Number";
 "INVITE_USERS_MESSAGE" = "I'd like to call you securely using Signal. You can install Signal from the App Store:";
 "INVITE_USER_MODAL_TITLE" = "Unregistered Contact";
@@ -93,7 +93,7 @@
 "REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "Country Code Error";
 "REGISTER_CHALLENGE_TEXTBLOCK_PART1" = "Let’s make sure you’re real. We've sent you a SMS with a six digit code to:";
 "REGISTER_CHALLENGE_TEXTBLOCK_PART2" = "To complete your phone number verification, please enter the code below.";
-"REGISTER_CHALLENGE_VOICECALL_TEXT" = "If you are unable to recieve an SMS, we will call you in";
+"REGISTER_CHALLENGE_VOICECALL_TEXT" = "If you are unable to receive an SMS, we will call you in";
 "REGISTER_CHALLENGE_ALERT_VIEW_TITLE" = "Incorrect code";
 "REGISTER_CHALLENGE_ALERT_VIEW_BODY" = "Please verify the code and try again";
 "REGISTER_ENTER_COUNTRY_CODE" = "Your number's country code";
