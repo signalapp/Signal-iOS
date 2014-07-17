@@ -173,7 +173,7 @@
                                               CGRectGetMinY(_tabBarInboxButton.frame),
                                               CGRectGetWidth(_tabBarInboxButton.frame),
                                               CGRectGetHeight(_tabBarInboxButton.frame) - CGRectGetHeight(_missedCallCountLabel.frame));
-        _missedCallCountLabel.text = [NSString stringWithFormat:@"%d",missedCallCount];
+        _missedCallCountLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)missedCallCount];
         _missedCallCountLabel.hidden = NO;
     } else {
         _tabBarInboxButton.frame = CGRectMake(CGRectGetMinX(_tabBarInboxButton.frame),

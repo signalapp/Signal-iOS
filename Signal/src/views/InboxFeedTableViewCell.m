@@ -109,11 +109,11 @@
                                               _archiveImageView.bounds.size.height);
     } else {
 
-        float ratio = (_archiveView.frame.size.width/2.0f - _scrollView.contentOffset.x) / (_archiveView.frame.size.width/2.0f);
-        float newWidth = ARCHIVE_IMAGE_VIEW_WIDTH/2 + (ARCHIVE_IMAGE_VIEW_WIDTH * ratio)/2.0f;
+        double ratio = (_archiveView.frame.size.width/2.0f - _scrollView.contentOffset.x) / (_archiveView.frame.size.width/2.0f);
+        double newWidth = ARCHIVE_IMAGE_VIEW_WIDTH/2 + (ARCHIVE_IMAGE_VIEW_WIDTH * ratio)/2.0f;
         _archiveImageView.bounds = CGRectMake(_archiveImageView.bounds.origin.x,
                                               _archiveImageView.bounds.origin.y,
-                                              newWidth,
+                                              (CGFloat)newWidth,
                                               _archiveImageView.bounds.size.height);
         _archiveImageView.tintColor = [UIColor whiteColor];
 
@@ -127,12 +127,12 @@
                                              _deleteImageView.bounds.size.height);
     } else {
 
-        float ratio = _scrollView.contentOffset.x / (CGRectGetWidth(_deleteView.frame)*2);
-        float newWidth = DELETE_IMAGE_VIEW_WIDTH/2 + (DELETE_IMAGE_VIEW_WIDTH * ratio)/2.0f;
+        double ratio = _scrollView.contentOffset.x / (CGRectGetWidth(_deleteView.frame)*2);
+        double newWidth = DELETE_IMAGE_VIEW_WIDTH/2 + (DELETE_IMAGE_VIEW_WIDTH * ratio)/2.0f;
         
         _deleteImageView.bounds = CGRectMake(_deleteImageView.bounds.origin.x,
                                              _deleteImageView.bounds.origin.y,
-                                             newWidth,
+                                             (CGFloat)newWidth,
                                              _deleteImageView.bounds.size.height);
         _deleteImageView.tintColor = [UIColor whiteColor];
     }

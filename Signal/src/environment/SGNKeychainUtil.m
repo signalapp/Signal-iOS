@@ -112,7 +112,7 @@
     NSData *data = [self dataForKey:key];
     
     if ([data length] != length) {
-        DDLogError(@"Length of data not matching. Got %lu, expected %u", [data length], length);
+        DDLogError(@"Length of data not matching. Got %lu, expected %u", (unsigned long)[data length], length);
     }
     
     return data;

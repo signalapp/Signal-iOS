@@ -22,7 +22,7 @@
     
     checkOperationDescribe(time_scale_rate(&timeScaleState, (float)stretchFactor) == 0, @"Changing time scaling");
     
-    int inputSampleCount = [audioData length]/sizeof(int16_t);
+    int inputSampleCount = (unsigned int)[audioData length]/sizeof(int16_t);
     int maxOutputSampleCount = [self getSafeMaxOutputSampleCountFromInputSampleCount:inputSampleCount];
     
     int16_t* input = (int16_t*)[audioData bytes];

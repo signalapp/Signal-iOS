@@ -15,7 +15,7 @@
                 _inboxMessageLabelFirst.text = HOME_FOOTER_FIRST_MESSAGE_CALLS_NIL;
                 _inboxMessageLabelSecond.text = HOME_FOOTER_SECOND_MESSAGE_CALLS_NIL;
             } else {
-                _inboxCountLabel.text = [NSString stringWithFormat:@"%d", inboxCount];
+                _inboxCountLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)inboxCount];
                 _inboxMessageLabelFirst.text = HOME_FOOTER_FIRST_MESSAGE_CALLS_UNSORTED;
                 _inboxMessageLabelSecond.text = inboxCount == 1 ? HOME_FOOTER_SECOND_MESSAGE_CALL_UNSORTED : HOME_FOOTER_SECOND_MESSAGE_CALLS_UNSORTED;
             }

@@ -119,7 +119,7 @@ static NSInteger connectingFlashCounter = 0;
 - (void)rotateConnectingIndicator {
     [_connectingIndicatorImageView setImage:[UIImage imageNamed:SPINNER_RINGING_IMAGE_NAME]];
     [UIView animateWithDuration:RINGING_ROTATION_DURATION delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-        _connectingIndicatorImageView.transform = CGAffineTransformRotate(_connectingIndicatorImageView.transform, M_PI_2);
+        _connectingIndicatorImageView.transform = CGAffineTransformRotate(_connectingIndicatorImageView.transform, (float)M_PI_2);
     } completion:nil];
 }
 

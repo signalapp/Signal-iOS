@@ -69,7 +69,7 @@
     SecTrustResultType trustResult = kSecTrustResultInvalid;
     OSStatus evalResult = SecTrustEvaluate(trust, &trustResult);
     checkSecurityOperation(evalResult == 0,
-                           ([NSString stringWithFormat:@"NetworkStream: SecTrustEvaluate failed with error code: %ld", evalResult]));
+                           ([NSString stringWithFormat:@"NetworkStream: SecTrustEvaluate failed with error code: %d", (int)evalResult]));
     checkSecurityOperation(trustResult != kSecTrustResultProceed,
                            @"Unexpected: User approved certificate somehow? Failing safe.");
     checkSecurityOperation(trustResult == kSecTrustResultUnspecified,

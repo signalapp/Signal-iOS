@@ -9,7 +9,7 @@
         if (isExpanded) {
             _columnStateImageView.transform = CGAffineTransformMakeRotation(0 * M_PI/180);
         } else {
-            _columnStateImageView.transform = CGAffineTransformMakeRotation(270 * M_PI/180);
+            _columnStateImageView.transform = CGAffineTransformMakeRotation( 270 * (float)M_PI/180);
         }
     }];
 }

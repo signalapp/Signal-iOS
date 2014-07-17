@@ -60,7 +60,7 @@
     [self log:@"JitterQueue arrival" details:[NSString stringWithFormat:@"sequence: %d", sequenceNumber]];
 }
 -(void) notifyDequeue:(uint16_t)sequenceNumber withRemainingEnqueuedItemCount:(NSUInteger)remainingCount {
-    [self log:@"JitterQueue dequeue" details:[NSString stringWithFormat:@"sequence: %d, remaining: %d", sequenceNumber, remainingCount]];
+    [self log:@"JitterQueue dequeue" details:[NSString stringWithFormat:@"sequence: %d, remaining: %lu", sequenceNumber, (unsigned long)remainingCount]];
 }
 -(void) notifyBadArrival:(uint16_t)sequenceNumber ofType:(enum JitterBadArrivalType)arrivalType {
     [self log:@"JitterQueue bad arrival" details:[NSString stringWithFormat:@"sequence: %d, arrival type: %d", sequenceNumber, arrivalType]];

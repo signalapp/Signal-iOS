@@ -2,7 +2,7 @@
 #import "Constraints.h"
 #import "Util.h"
 
-#define INITIAL_CAPACITY 100
+#define INITIAL_CAPACITY 100 // The buffer size can not be longer than an unsigned int.
 
 @implementation CyclicalBuffer
 
@@ -55,7 +55,7 @@
 -(void) discard:(NSUInteger)length {
     require(length <= count);
     count -= length;
-    readOffset = (readOffset + length)%[buffer length];
+    readOffset = (readOffset + length)%(unsigned int)[buffer length];
 }
 
 -(NSData*) peekDataWithLength:(NSUInteger)length{
