@@ -126,8 +126,7 @@
     Future* futureEndPoint = [futureDnsResult then:^(NSArray* ipAddresses) {
         require([ipAddresses count] > 0);
         
-        // @todo: is this the correct way to pick an address (random)? What about low latency? Different each time? dns beforehand?
-        IpAddress* address = [ipAddresses objectAtIndex:arc4random_uniform([ipAddresses count])];
+        IpAddress* address = [ipAddresses objectAtIndex:arc4random_uniform((unsigned int)[ipAddresses count])];
         return [IpEndPoint ipEndPointAtAddress:address
                                         onPort:sessionDescriptor.relayUdpPort];
     }];

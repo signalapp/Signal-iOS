@@ -375,7 +375,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 -(NSArray*) contactsForContactIds:(NSArray *)contactIds {
     NSMutableArray *contacts = [NSMutableArray array];
     for (NSNumber *favouriteId in contactIds) {
-        Contact *contact = [self latestContactWithRecordId:[favouriteId integerValue]];
+        Contact *contact = [self latestContactWithRecordId:[favouriteId intValue]];
         
         if (contact) {
             [contacts addObject:contact];
@@ -427,7 +427,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 #pragma mark - Whisper User Management
 
--(unsigned int) checkForNewWhisperUsers {
+-(NSUInteger) checkForNewWhisperUsers {
 	NSArray *currentUsers = [self getWhisperUsersFromContactsArray:[latestContactsById allValues]];
 	NSArray *newUsers     = [self getNewItemsFrom:currentUsers comparedTo:[latestWhisperUsersById allValues]];
     

@@ -67,12 +67,12 @@
                                              _deleteImageView.bounds.size.height);
     } else {
         
-        float ratio = _scrollView.contentOffset.x / CGRectGetWidth(_deleteView.frame);
-        float newWidth = DELETE_IMAGE_VIEW_WIDTH/2 + (DELETE_IMAGE_VIEW_WIDTH * ratio)/2.0f;
+        double ratio = _scrollView.contentOffset.x / CGRectGetWidth(_deleteView.frame);
+        double newWidth = DELETE_IMAGE_VIEW_WIDTH/2 + (DELETE_IMAGE_VIEW_WIDTH * ratio)/2.0f;
         
         _deleteImageView.bounds = CGRectMake(_deleteImageView.bounds.origin.x,
                                              _deleteImageView.bounds.origin.y,
-                                             newWidth,
+                                             (CGFloat)newWidth,
                                              _deleteImageView.bounds.size.height);
         _deleteImageView.tintColor = [UIColor whiteColor];
     }

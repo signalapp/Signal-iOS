@@ -40,7 +40,7 @@
 - (void)configureWithNotes:(NSString *)notes {
     _infoDisplayLabel.frame = CGRectMake(_infoDisplayLabel.frame.origin.x,
                                          _infoDisplayLabel.frame.origin.y,
-                                         fabs(_infoDisplayLabel.frame.origin.x - CGRectGetWidth(self.frame)),
+                                         (CGFloat)(fabs(_infoDisplayLabel.frame.origin.x - CGRectGetWidth(self.frame))),
                                          CGRectGetHeight(_infoDisplayLabel.frame));
     _infoDisplayLabel.text = notes;
     _infoTypeLabel.text = CONTACT_DETAIL_COMM_TYPE_NOTES;

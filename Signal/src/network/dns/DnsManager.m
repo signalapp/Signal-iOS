@@ -67,8 +67,8 @@ void handleDnsCompleted(CFHostRef hostRef, CFHostInfoType typeInfo, const CFStre
     Boolean startedSuccess = CFHostStartInfoResolution(hostRef, kCFHostAddresses, &d->error);
     CFRelease(hostRef);
     if (!startedSuccess) {
-        [d->futureResultSource trySetFailure:[OperationFailed new:[NSString stringWithFormat:@"DNS query failed to start. Error code: %ld",
-                                                                   d->error.error]]];
+        [d->futureResultSource trySetFailure:[OperationFailed new:[NSString stringWithFormat:@"DNS query failed to start. Error code: %d",
+                                                                   (int)d->error.error]]];
     }
     [unlessCancelledToken whenCancelledTryCancel:d->futureResultSource];
     

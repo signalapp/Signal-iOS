@@ -36,7 +36,7 @@
     
     NSMutableDictionary* headers = [NSMutableDictionary dictionary];
     if (optionalBody != nil) {
-        [headers setObject:[[NSNumber numberWithLongLong:[optionalBody length]] stringValue] forKey:@"Content-Length"];
+        [headers setObject:[[NSNumber numberWithUnsignedInteger:[optionalBody length]] stringValue] forKey:@"Content-Length"];
     }
 
     HttpRequest* s = [HttpRequest new];
@@ -58,7 +58,7 @@
     
     NSMutableDictionary* headers = [NSMutableDictionary dictionary];
     if (optionalBody != nil) {
-        [headers setObject:[[NSNumber numberWithLongLong:[optionalBody length]] stringValue] forKey:@"Content-Length"];
+        [headers setObject:[[NSNumber numberWithUnsignedInteger:[optionalBody length]] stringValue] forKey:@"Content-Length"];
     }
     [headers setObject:[HttpRequest computeBasicAuthorizationTokenForLocalNumber:localNumber andPassword:password] forKey:@"Authorization"];
     
@@ -81,7 +81,7 @@
     
     NSMutableDictionary* headers = [NSMutableDictionary dictionary];
     if (optionalBody != nil) {
-        [headers setObject:[[NSNumber numberWithLongLong:[optionalBody length]] stringValue] forKey:@"Content-Length"];
+        [headers setObject:[[NSNumber numberWithUnsignedInteger:[optionalBody length]] stringValue] forKey:@"Content-Length"];
     }
     [headers setObject:[HttpRequest computeOtpAuthorizationTokenForLocalNumber:localNumber andCounterValue:counter andPassword:password] forKey:@"Authorization"];
     

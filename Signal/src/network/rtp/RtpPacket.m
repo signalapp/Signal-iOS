@@ -266,7 +266,7 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
 }
 -(NSData*) generateCcrcData {
     return [[contributingSourceIdentifiers map:^id(NSNumber* ccsrc) {
-        return [NSData dataWithBigEndianBytesOfUInt32:[ccsrc unsignedLongValue]];
+        return [NSData dataWithBigEndianBytesOfUInt32:[ccsrc unsignedIntValue]];
     }] concatDatas];
 }
 -(NSData*) generateExtensionHeaderData {

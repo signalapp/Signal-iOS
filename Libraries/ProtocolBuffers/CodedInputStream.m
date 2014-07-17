@@ -598,7 +598,7 @@ int64_t decodeZigZag64(int64_t n) {
   bufferPos = 0;
   bufferSize = 0;
   if (input != nil) {
-    bufferSize = [input read:buffer.mutableBytes maxLength:buffer.length];
+    bufferSize = (int32_t)[input read:buffer.mutableBytes maxLength:buffer.length];
   }
 
   if (bufferSize <= 0) {
@@ -610,7 +610,7 @@ int64_t decodeZigZag64(int64_t n) {
     }
   } else {
     [self recomputeBufferSizeAfterLimit];
-    int32_t totalBytesRead = totalBytesRetired + bufferSize + bufferSizeAfterLimit;
+    NSInteger totalBytesRead = totalBytesRetired + bufferSize + bufferSizeAfterLimit;
     if (totalBytesRead > sizeLimit || totalBytesRead < 0) {
       @throw [NSException exceptionWithName:@"InvalidProtocolBuffer" reason:@"sizeLimitExceeded" userInfo:nil];
     }
@@ -713,7 +713,7 @@ int64_t decodeZigZag64(int64_t n) {
       while (pos < (int32_t)chunk.length) {
         int32_t n = 0;
         if (input != nil) {
-          n = [input read:(((uint8_t*) chunk.mutableBytes) + pos) maxLength:chunk.length - (NSUInteger)pos];
+          n = (int32_t)[input read:(((uint8_t*) chunk.mutableBytes) + pos) maxLength:chunk.length - (NSUInteger)pos];
         }
         if (n <= 0) {
           @throw [NSException exceptionWithName:@"InvalidProtocolBuffer" reason:@"truncatedMessage" userInfo:nil];

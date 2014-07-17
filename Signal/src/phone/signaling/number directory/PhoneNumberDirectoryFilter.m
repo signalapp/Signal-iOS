@@ -40,7 +40,7 @@
     NSString* hashCountHeader = [[response getHeaders] objectForKey:HASH_COUNT_HEADER_KEY];
     checkOperation(hashCountHeader != nil);
     
-    int hashCountValue = [hashCountHeader integerValue];
+    int hashCountValue = [hashCountHeader intValue];
     checkOperation(hashCountValue > 0);
     
     NSData* responseBody = [response getOptionalBodyData];

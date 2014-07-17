@@ -49,8 +49,8 @@
     CFRelease(anchorCerts);
 
     checkOperationDescribe(setAnchorResult == 0,
-                           ([NSString stringWithFormat:@"SecTrustSetAnchorCertificates failed with error code: %ld",
-                             setAnchorResult]));
+                           ([NSString stringWithFormat:@"SecTrustSetAnchorCertificates failed with error code: %d",
+                             (int)setAnchorResult]));
 }
 
 -(NSString *)description {

@@ -106,7 +106,7 @@
     NSString* body = [self getOptionalBodyText];
     if (body != nil) {
         [r addObject:@"Content-Length: "];
-        [r addObject:[[NSNumber numberWithLongLong:[body length]] stringValue]];
+        [r addObject:[[NSNumber numberWithUnsignedInteger:[body length]] stringValue]];
         [r addObject:@"\r\n"];
         [r addObject:body];
     } else {
@@ -120,8 +120,8 @@
 }
 
 -(NSString*) description {
-    return [NSString stringWithFormat:@"%d %@%@",
-            statusCode,
+    return [NSString stringWithFormat:@"%lu %@%@",
+            (unsigned long)statusCode,
             statusText,
             ![self hasBody] ? @""
               : [self hasEmptyBody] ? @" [empty body]"
