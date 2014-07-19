@@ -8,7 +8,7 @@
 #import "RecentCallManager.h"
 #import "RegisterViewController.h"
 #import "SettingsViewController.h"
-#import "LogSubmit.h"
+#import "Pastelog.h"
 #import "SGNKeychainUtil.h"
 
 #import "UIViewController+MMDrawerController.h"
@@ -307,9 +307,9 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
         
         [alert show];
         
-        [LogSubmit submitLogsWithCompletion:^(BOOL success, NSString *urlString) {
+        [Pastelog submitLogsWithCompletion:^(NSError *error, NSString *urlString) {
             [alert dismissWithClickedButtonIndex:0 animated:YES];
-            if (success) {
+            if (!error) {
                 gistURL = urlString;
                 UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:SETTINGS_SENDLOG_ALERT_TITLE message:SETTINGS_SENDLOG_ALERT_BODY delegate:self cancelButtonTitle:SETTINGS_SENDLOG_ALERT_PASTE otherButtonTitles:SETTINGS_SENDLOG_ALERT_EMAIL, nil];
                 [alertView show];

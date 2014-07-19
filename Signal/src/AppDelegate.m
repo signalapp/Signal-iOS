@@ -46,7 +46,7 @@
         DDLogError(@"No previous version found. Possibly first launch since install.");
         [Environment setCurrent:[Release releaseEnvironmentWithLogging:nil]];
         [Environment resetAppData]; // We clean previous keychain entries in case their are some entries remaining.
-    } else if ([currentVersion compare:previousVersion options:NSNumericSearch] == NSOrderedDescending) {
+    } else if ([currentVersion compare:previousVersion options:NSNumericSearch] == NSOrderedDescending){
         // The application was updated
         DDLogWarn(@"Application was updated from %@ to %@", previousVersion, currentVersion);
     }
@@ -108,6 +108,7 @@
     //Accept push notification when app is not open
     NSDictionary *remoteNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotif) {
+        DDLogInfo(@"Application was launched by tapping a push notification.");
         [self application:application didReceiveRemoteNotification:remoteNotif];
     }
 

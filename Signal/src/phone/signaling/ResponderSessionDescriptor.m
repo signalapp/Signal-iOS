@@ -105,11 +105,10 @@
 }
 
 -(NSString*) description {
-    return [NSString stringWithFormat:@"relay name: %@, relay port: %d, session id: %llud, initiator phone number: %@, interop version: %d",
+    return [NSString stringWithFormat:@"relay name: %@, relay port: %d, session id: %llud, interop version: %d",
             relayServerName,
             relayUdpPort,
             sessionId,
-            initiatorNumber,
             interopVersion];
 }
 
