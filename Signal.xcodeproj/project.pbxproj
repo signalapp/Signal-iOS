@@ -3549,6 +3549,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 					HAVE_CONFIG_H,
+					"ADHOC=1",
 				);
 				GCC_STRICT_ALIASING = NO;
 				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = NO;
