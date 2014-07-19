@@ -331,7 +331,16 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 }
 
 - (void)submitEmail:(NSString*)url{
-    NSString *urlString = [NSString stringWithString: [@"mailto:support@whispersystems.org?subject=iOS%20Debug%20Log&body=" stringByAppendingString:[[NSString stringWithFormat:@"Log URL: %@ \n Tell us about the issue: ", url]stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]]];
+    NSString *emailAddress;
+    
+#ifdef ADHOC
+    emailAddress = @"signal-beta@fredericjacobs.com";
+#else
+    emailAddress = @"support@whispersystems.org";
+#endif
+    
+    NSString *urlString = [NSString stringWithString: [[NSString stringWithFormat:@"mailto:%@?subject=iOS%%20Debug%%20Log&body=", emailAddress] stringByAppendingString:[[NSString stringWithFormat:@"Log URL: %@ \n Tell us about the issue: ", url]stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]]];
+    
     [[UIApplication sharedApplication] openURL: [NSURL URLWithString: urlString]];
 }
 
