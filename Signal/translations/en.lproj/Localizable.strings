@@ -79,7 +79,7 @@
 "MAIN_MENU_OPTION_DIALER" = "Dialer";
 "MAIN_MENU_OPTION_FAVOURITES" = "Favorites";
 "MAIN_MENU_OPTION_RECENT_CALLS" = "Recents";
-"MAIN_MENU_OPTION_REPORT_BUG" = "Report Bug";
+"MAIN_MENU_OPTION_REPORT_BUG" = "Support";
 "MAIN_MENU_OPTION_SETTINGS" = "Settings";
 "MUTE_BUTTON_TITLE" = "Mute";
 "NOTIFICATION_TEXT" = "Some of your contacts have recently registered numbers with Signal!";
@@ -126,10 +126,9 @@
 "SETTINGS_RINGTONE" = "Ringtone";
 "SETTINGS_SENDLOG" = "Submit Debug Log"; 
 "SETTINGS_SENDLOGS_WAITING" = "Sending anonymized log file\n Please wait...";
-"SETTINGS_SENDLOG_ALERT_TITLE" = "Submit debug log";
-"SETTINGS_SENDLOG_ALERT_BODY" = "Do you want to copy the log URL to the pasteboard or submit it by email?";
-"SETTINGS_SENDLOG_ALERT_PASTE" = "Pasteboard";
-"SETTINGS_SENDLOG_ALERT_EMAIL" = "Email";
+"SETTINGS_SENDLOG_ALERT_BODY" = "Bugs can be reported by email or by copying the log in a GitHub Issue (advanced).";
+"SETTINGS_SENDLOG_ALERT_PASTE" = "Email";
+"SETTINGS_SENDLOG_ALERT_EMAIL" = "GitHub Issue";
 "SETTINGS_SENDLOG_FAILED_TITLE" = "Failed to submit debug log";
 "SETTINGS_SENDLOG_FAILED_BODY" = "The debug log could not be submitted. Please try again.";
 "SETTINGS_VIBRATE_ON_RING" = "Vibrate on Ring";

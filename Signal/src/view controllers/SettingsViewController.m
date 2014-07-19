@@ -324,9 +324,9 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if (buttonIndex == 0) {
-        [self pasteBoardCopy:gistURL];
-    } else{
         [self submitEmail:gistURL];
+    } else{
+        [self pasteBoardCopy:gistURL];
     }
 }
 
@@ -338,6 +338,7 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 - (void)pasteBoardCopy:(NSString*)url{
     UIPasteboard *pb = [UIPasteboard generalPasteboard];
     [pb setString:url];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://github.com/WhisperSystems/Signal-iOS/issues"]];
 }
 
 - (void)findAndLocalizeLabelsForView:(UIView *)view {
