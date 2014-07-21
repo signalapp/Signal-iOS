@@ -46,6 +46,11 @@ build()
    tar xfz "openssl-${OPENSSL_VERSION}.tar.gz"
    pushd .
    cd "openssl-${OPENSSL_VERSION}"
+
+   #fix header for Swift
+
+   sed -ie "s/BIGNUM \*I,/BIGNUM \*i,/g" crypto/rsa/rsa.h
+
    if [ "$TYPE" == "ios" ]; then
       # IOS
       if [ "$ARCH" == "x86_64" ]; then
