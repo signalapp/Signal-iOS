@@ -82,8 +82,8 @@
 "MAIN_MENU_OPTION_REPORT_BUG" = "Support";
 "MAIN_MENU_OPTION_SETTINGS" = "Settings";
 "MUTE_BUTTON_TITLE" = "Mute";
-"NOTIFICATION_TEXT" = "Some of your contacts have recently registered numbers with Signal!";
-"NO_FAVOURITES_TEXT" = "To favourite a contact, tap the star on a contact page.";
+"NOTIFICATION_TEXT" = "Some of your contacts have recently registered numbers with Signal!";
+"NO_FAVOURITES_TEXT" = "To favorite a contact, tap the star on a contact page.";
 "OK" = "Ok";
 "QUICK_LINKS_TITLE" = "Quick Links";
 "RECENT_CALLS_SORTING_TITLE" = "Sorting Method";
