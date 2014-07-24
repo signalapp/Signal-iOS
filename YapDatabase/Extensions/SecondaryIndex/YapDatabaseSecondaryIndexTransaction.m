@@ -394,7 +394,7 @@
 	for (YapDatabaseSecondaryIndexColumn *column in secondaryIndexConnection->secondaryIndex->setup)
 	{
 		id columnValue = [secondaryIndexConnection->blockDict objectForKey:column.name];
-		if (columnValue)
+		if (columnValue && columnValue != [NSNull null])
 		{
 			if (column.type == YapDatabaseSecondaryIndexTypeInteger)
 			{
