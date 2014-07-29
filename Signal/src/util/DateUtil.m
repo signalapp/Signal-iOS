@@ -6,26 +6,25 @@
 #define ONE_WEEK_TIME_INTERVAL (double)60*60*24*7
 
 static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
-static NSString *const DATE_FORMAT_HOUR_MINUTE = @"h:mm a   ";
 
 @implementation DateUtil
 
 + (NSDateFormatter *)dateFormatter {
     NSDateFormatter *formatter = [NSDateFormatter new];
     [formatter setDateFormat:[[[Environment getCurrent] preferences] getDateFormat]];
-return formatter;
+    return formatter;
 }
 
 + (NSDateFormatter *)weekdayFormatter {
     NSDateFormatter *formatter = [NSDateFormatter new];
     [formatter setDateFormat:DATE_FORMAT_WEEKDAY];
-return formatter;
+    return formatter;
 }
 
 + (NSDateFormatter *)timeFormatter {
     NSDateFormatter *formatter = [NSDateFormatter new];
-    [formatter setDateFormat:DATE_FORMAT_HOUR_MINUTE];
-return formatter;
+    [formatter setTimeStyle:NSDateFormatterShortStyle];
+    return formatter;
 }
 
 + (BOOL)dateIsOlderThanOneDay:(NSDate *)date {

@@ -113,13 +113,13 @@
                 <outlet property="callTypeImageView" destination="rco-hN-IJi" id="KIi-Or-oUh"/>
                 <outlet property="contactPictureView" destination="SGJ-F7-TXB" id="SP2-5s-dfM"/>
                 <outlet property="contentContainerView" destination="P2L-GB-lTw" id="R7S-Nm-HOb"/>
+                <outlet property="dateTimeLabel" destination="Jvp-D8-ptE" id="zif-AA-MHs"/>
                 <outlet property="deleteImageView" destination="KDh-W4-xtN" id="QS1-a9-NhP"/>
                 <outlet property="deleteView" destination="TjP-Yh-EcA" id="I0p-N5-eee"/>
                 <outlet property="missedCallView" destination="caw-pS-8aG" id="bfx-g4-N59"/>
                 <outlet property="nameLabel" destination="XL5-Bj-JVM" id="OaW-xh-IE1"/>
                 <outlet property="numberLabel" destination="SWw-w0-Ecn" id="n88-4c-kjp"/>
                 <outlet property="scrollView" destination="6KV-fO-6FE" id="Jb7-Gj-uYL"/>
-                <outlet property="timeLabel" destination="Jvp-D8-ptE" id="xz2-mm-WCn"/>
             </connections>
         </tableViewCell>
     </objects>

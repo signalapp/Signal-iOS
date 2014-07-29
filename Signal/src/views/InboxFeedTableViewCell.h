@@ -24,7 +24,7 @@
 @property (nonatomic, strong) IBOutlet UIImageView *contactPictureView;
 @property (nonatomic, strong) IBOutlet UIImageView *callTypeImageView;
 @property (nonatomic, strong) IBOutlet UILabel *numberLabel;
-@property (nonatomic, strong) IBOutlet UILabel *timeLabel;
+@property (nonatomic, strong) IBOutlet UILabel *dateTimeLabel;
 @property (nonatomic, strong) IBOutlet NextResponderScrollView *scrollView;
 @property (nonatomic, strong) IBOutlet UIView *contentContainerView;
 @property (nonatomic, strong) IBOutlet UIView *missedCallView;
