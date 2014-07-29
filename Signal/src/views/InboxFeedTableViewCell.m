@@ -59,7 +59,7 @@
 
     _missedCallView.hidden = recentCall.userNotified;
     _numberLabel.text = [recentCall.phoneNumber localizedDescriptionForUser];
-    _timeLabel.attributedText = [self dateArrributedString:[recentCall date]];
+    _dateTimeLabel.attributedText = [self dateArrributedString:[recentCall date]];
 }
 
 #pragma mark - Date formatting
@@ -67,7 +67,9 @@
 - (NSAttributedString *)dateArrributedString:(NSDate *)date {
 
     NSString *dateString;
-    NSString *timeString = [[DateUtil timeFormatter] stringFromDate:date];
+    NSString *timeString = [NSString stringWithFormat : @"%@  %@",
+                                [[DateUtil timeFormatter] stringFromDate:date],
+                                @"   "];
 
       
     if ([DateUtil dateIsOlderThanOneWeek:date]) {
