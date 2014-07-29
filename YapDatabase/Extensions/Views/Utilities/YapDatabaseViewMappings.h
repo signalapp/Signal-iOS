@@ -176,6 +176,7 @@ typedef NSComparisonResult (^YapDatabaseViewMappingGroupSort)(NSString *group1, 
 
 /**
  * Initializes a new mappings object.
+ * Use this initializer when the groups, and their order, are known at initialization time.
  *
  * @param allGroups
  *     The ordered array of group names.
@@ -186,8 +187,11 @@ typedef NSComparisonResult (^YapDatabaseViewMappingGroupSort)(NSString *group1, 
 **/
 + (instancetype)mappingsWithGroups:(NSArray *)allGroups view:(NSString *)registeredViewName;
 
+
+
 /**
- * Initializes a new mappings object.
+ * Initializes a new mappings object with a static list of groups.
+ * Use this initializer when the groups, and their order, are known at initialization time.
  * 
  * @param allGroups
  *     The ordered array of group names.
@@ -195,8 +199,6 @@ typedef NSComparisonResult (^YapDatabaseViewMappingGroupSort)(NSString *group1, 
  * 
  * @param registeredViewName
  *     This is the name of the view, as you registered it with the database system.
- * 
- *
 **/
 - (id)initWithGroups:(NSArray *)allGroups
 				view:(NSString *)registeredViewName;

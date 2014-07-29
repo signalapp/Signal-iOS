@@ -90,7 +90,7 @@ typedef id (^YapDatabaseSanitizer)(NSString *collection, NSString *key, id objec
  * }
  *
  * This notification is always posted to the main thread.
- **/
+**/
 extern NSString *const YapDatabaseModifiedNotification;
 
 extern NSString *const YapDatabaseSnapshotKey;
@@ -123,14 +123,14 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  *
  * Property lists make a good fit when your existing code already uses them,
  * such as replacing NSUserDefaults with a database.
- **/
+**/
 + (YapDatabaseSerializer)propertyListSerializer;
 + (YapDatabaseDeserializer)propertyListDeserializer;
 
 /**
  * A FASTER serializer & deserializer than the default, if serializing ONLY a NSDate object.
  * You may want to use timestampSerializer & timestampDeserializer if your metadata is simply an NSDate.
- **/
+**/
 + (YapDatabaseSerializer)timestampSerializer;
 + (YapDatabaseDeserializer)timestampDeserializer;
 
