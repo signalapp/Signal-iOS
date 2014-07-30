@@ -16,22 +16,21 @@ static Environment* environment = nil;
 @implementation Environment
 
 @synthesize testingAndLegacyOptions,
-            currentRegionCodeForPhoneNumbers,
-            errorNoter,
-            keyAgreementProtocolsInDescendingPriority,
-            logging,
-            masterServerSecureEndPoint,
-            preferences,
-            defaultRelayName,
-            relayServerHostNameSuffix,
-            certificate,
-            serverPort,
-            zrtpClientId,
-            zrtpVersionId,
-			phoneManager,
-			recentCallManager,
-			contactsManager,
-			phoneDirectoryManager;
+currentRegionCodeForPhoneNumbers,
+errorNoter,
+keyAgreementProtocolsInDescendingPriority,
+logging,
+masterServerSecureEndPoint,
+defaultRelayName,
+relayServerHostNameSuffix,
+certificate,
+serverPort,
+zrtpClientId,
+zrtpVersionId,
+phoneManager,
+recentCallManager,
+contactsManager,
+phoneDirectoryManager;
 
 +(NSString*) currentRegionCodeForPhoneNumbers {
     return [[self getCurrent] currentRegionCodeForPhoneNumbers];
@@ -71,8 +70,7 @@ static Environment* environment = nil;
     return [SecureEndPoint secureEndPointForHost:location identifiedByCertificate:env.certificate];
 }
 
-    +(Environment*) environmentWithPreferences:(PropertyListPreferences*)preferences
-                                andLogging:(id<Logging>)logging
++(Environment*) environmentWithLogging:(id<Logging>)logging
                              andErrorNoter:(ErrorHandlerBlock)errorNoter
                              andServerPort:(in_port_t)serverPort
                    andMasterServerHostName:(NSString*)masterServerHostName
@@ -88,8 +86,8 @@ static Environment* environment = nil;
                           andZrtpVersionId:(NSData*)zrtpVersionId
                         andContactsManager:(ContactsManager *)contactsManager
                   andPhoneDirectoryManager:(PhoneNumberDirectoryFilterManager*)phoneDirectoryManager {
+    
     require(errorNoter != nil);
-    require(preferences != nil);
     require(zrtpClientId != nil);
     require(zrtpVersionId != nil);
     require(testingAndLegacyOptions != nil);
@@ -98,14 +96,13 @@ static Environment* environment = nil;
     require([keyAgreementProtocolsInDescendingPriority all:^int(id p) {
         return [p conformsToProtocol:@protocol(KeyAgreementProtocol)];
     }]);
-
+    
     // must support DH3k
     require([keyAgreementProtocolsInDescendingPriority any:^int(id p) {
         return [p isKindOfClass:[DH3KKeyAgreementProtocol class]];
     }]);
-
+    
     Environment* e = [Environment new];
-    e->preferences = preferences;
     e->errorNoter = errorNoter;
     e->logging = logging;
     e->testingAndLegacyOptions = testingAndLegacyOptions;
@@ -124,7 +121,7 @@ static Environment* environment = nil;
     e->zrtpClientId = zrtpClientId;
     e->zrtpVersionId = zrtpVersionId;
     e->contactsManager = contactsManager;
-
+    
     // @todo: better place for this?
     if (recentCallManager != nil) {
         [recentCallManager watchForCallsThrough:phoneManager
@@ -132,13 +129,10 @@ static Environment* environment = nil;
         [recentCallManager watchForContactUpdatesFrom:contactsManager
                                       untillCancelled:nil];
     }
-
+    
     return e;
-    }
-
-+(PropertyListPreferences*) preferences {
-    return [[Environment getCurrent] preferences];
 }
+
 +(PhoneManager*) phoneManager {
     return [[Environment getCurrent] phoneManager];
 }
@@ -163,6 +157,10 @@ static Environment* environment = nil;
 
 +(void)setRegistered:(BOOL)status{
     [[NSUserDefaults standardUserDefaults] setObject:status?@YES:@NO forKey:isRegisteredUserDefaultString];
+}
+
+-(PropertyListPreferences*)preferences{
+    return [[PropertyListPreferences alloc]init];
 }
 
 +(void)resetAppData{

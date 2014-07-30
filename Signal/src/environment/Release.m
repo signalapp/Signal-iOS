@@ -49,8 +49,7 @@ static unsigned char DH3K_PRIME[]={
     //ErrorHandlerBlock errorDiscarder = ^(id error, id relatedInfo, bool causedTermination) {};
     ErrorHandlerBlock errorNoter = ^(id error, id relatedInfo, bool causedTermination) { DDLogError(@"%@: %@, %d", error, relatedInfo, causedTermination); };
     
-    return [Environment environmentWithPreferences:[PropertyListPreferences propertyListPreferencesWithName:@"RedPhone-Data"]
-                                        andLogging:logging
+    return [Environment environmentWithLogging:logging
                                      andErrorNoter:errorNoter
                                      andServerPort:31337
                            andMasterServerHostName:@"master.whispersystems.org"
@@ -69,8 +68,7 @@ static unsigned char DH3K_PRIME[]={
 }
 
 +(Environment*) unitTestEnvironment:(NSArray*)testingAndLegacyOptions {
-    return [Environment environmentWithPreferences:[PropertyListPreferences propertyListPreferencesWithName:@"RedPhone-Test-Data"]
-                                        andLogging:[DiscardingLog discardingLog]
+    return [Environment environmentWithLogging:[DiscardingLog discardingLog]
                                      andErrorNoter:^(id error, id relatedInfo, bool causedTermination) {}
                                      andServerPort:31337
                            andMasterServerHostName:@"testing.whispersystems.org"
