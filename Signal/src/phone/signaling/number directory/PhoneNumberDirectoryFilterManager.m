@@ -103,7 +103,7 @@
         @synchronized(self) {
             phoneNumberDirectoryFilter = directory;
         }
-        [[Environment preferences] setSavedPhoneNumberDirectory:directory];
+        [[[Environment getCurrent]preferences] setSavedPhoneNumberDirectory:directory];
         [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
         [self scheduleUpdate];
     }];

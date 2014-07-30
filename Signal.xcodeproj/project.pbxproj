@@ -48,8 +48,6 @@
 		765052B3182BF839008313E1 /* HelveticaNeueLTStd-Th.otf in Resources */ = {isa = PBXBuildFile; fileRef = 765052B1182BF839008313E1 /* HelveticaNeueLTStd-Th.otf */; };
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		76919BF71805D190008C664A /* ContactManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 76919BF61805D190008C664A /* ContactManagerTest.m */; };
-		76B8189E182C39460088060E /* PreferenceListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76B8189C182C39460088060E /* PreferenceListViewController.m */; };
-		76B8189F182C39460088060E /* PreferenceListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76B8189C182C39460088060E /* PreferenceListViewController.m */; };
 		76B818A1182C39460088060E /* PreferenceListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76B8189D182C39460088060E /* PreferenceListViewController.xib */; };
 		76C87F13181EE11C00C4ACAB /* InboxFeedFooterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 76C87F12181EE11C00C4ACAB /* InboxFeedFooterCell.m */; };
 		76C87F14181EE11C00C4ACAB /* InboxFeedFooterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 76C87F12181EE11C00C4ACAB /* InboxFeedFooterCell.m */; };
@@ -380,6 +378,7 @@
 		A1C32D5017A06538000A904E /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4F17A06537000A904E /* AddressBookUI.framework */; };
 		A1C32D5117A06544000A904E /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4D17A0652C000A904E /* AddressBook.framework */; };
 		AA0C8E498E2046B0B81EEE6E /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
+		B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */ = {isa = PBXBuildFile; fileRef = B60C16641988999D00E97A6C /* VersionMigrations.m */; };
 		B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B67EBF5C19194AC60084CCFD /* Settings.bundle */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
 		B6B1013C196D213F007E3930 /* SGNKeychainUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SGNKeychainUtil.m */; };
@@ -719,8 +718,6 @@
 		765052B1182BF839008313E1 /* HelveticaNeueLTStd-Th.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HelveticaNeueLTStd-Th.otf"; sourceTree = "<group>"; };
 		768A1A2A17FC9CD300E00ED8 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		76919BF61805D190008C664A /* ContactManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactManagerTest.m; path = contact/ContactManagerTest.m; sourceTree = "<group>"; };
-		76B8189B182C39460088060E /* PreferenceListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferenceListViewController.h; sourceTree = "<group>"; };
-		76B8189C182C39460088060E /* PreferenceListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferenceListViewController.m; sourceTree = "<group>"; };
 		76B8189D182C39460088060E /* PreferenceListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PreferenceListViewController.xib; path = ../PreferenceListViewController.xib; sourceTree = "<group>"; };
 		76C87F11181EE11C00C4ACAB /* InboxFeedFooterCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InboxFeedFooterCell.h; sourceTree = "<group>"; };
 		76C87F12181EE11C00C4ACAB /* InboxFeedFooterCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InboxFeedFooterCell.m; sourceTree = "<group>"; };
@@ -1102,6 +1099,8 @@
 		A1C32D4D17A0652C000A904E /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		A1C32D4F17A06537000A904E /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		A1FDCBEE16DAA6C300868894 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		B60C16631988999D00E97A6C /* VersionMigrations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionMigrations.h; sourceTree = "<group>"; };
+		B60C16641988999D00E97A6C /* VersionMigrations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VersionMigrations.m; sourceTree = "<group>"; };
 		B657DDC91911A40500F45B0C /* Signal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Signal.entitlements; sourceTree = "<group>"; };
 		B67EBF5C19194AC60084CCFD /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = SettingsBundle/Settings.bundle; sourceTree = SOURCE_ROOT; };
 		B69CD25019773E79005CE69A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -1686,6 +1685,8 @@
 				76EB041B18170B33006006FC /* Release.m */,
 				B6B1013A196D213F007E3930 /* SGNKeychainUtil.h */,
 				B6B1013B196D213F007E3930 /* SGNKeychainUtil.m */,
+				B60C16631988999D00E97A6C /* VersionMigrations.h */,
+				B60C16641988999D00E97A6C /* VersionMigrations.m */,
 			);
 			path = environment;
 			sourceTree = "<group>";
@@ -2123,8 +2124,6 @@
 				76EB050E18170B33006006FC /* LeftSideMenuViewController.m */,
 				76EB050F18170B33006006FC /* NextResponderScrollView.h */,
 				76EB051018170B33006006FC /* NextResponderScrollView.m */,
-				76B8189B182C39460088060E /* PreferenceListViewController.h */,
-				76B8189C182C39460088060E /* PreferenceListViewController.m */,
 				76EB051518170B33006006FC /* RegisterViewController.h */,
 				76EB051618170B33006006FC /* RegisterViewController.m */,
 				76EB051718170B33006006FC /* SettingsViewController.h */,
@@ -3038,6 +3037,7 @@
 				76EB066218170B34006006FC /* SettingsViewController.m in Sources */,
 				76EB054818170B33006006FC /* CancelTokenSource.m in Sources */,
 				76EB05AC18170B33006006FC /* SrtpSocket.m in Sources */,
+				B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */,
 				76EB062A18170B33006006FC /* BadState.m in Sources */,
 				B97940271832BD2400BD66CB /* UIUtil.m in Sources */,
 				76EB05BE18170B33006006FC /* ConfirmPacket.m in Sources */,
@@ -3098,7 +3098,6 @@
 				76EB058218170B33006006FC /* Environment.m in Sources */,
 				76EB064418170B33006006FC /* ThreadManager.m in Sources */,
 				70B8011A190C55660042E3F0 /* UnknownFieldSet.m in Sources */,
-				76B8189E182C39460088060E /* PreferenceListViewController.m in Sources */,
 				70B80114190C55660042E3F0 /* Field.m in Sources */,
 				E197B61E18BBEC6D00F073E5 /* AudioRouter.m in Sources */,
 				E197B60D18BBEC1A00F073E5 /* AudioSocket.m in Sources */,
@@ -3232,7 +3231,6 @@
 				76EB05BF18170B33006006FC /* ConfirmPacket.m in Sources */,
 				76EB05E518170B33006006FC /* UdpSocket.m in Sources */,
 				76EB05BD18170B33006006FC /* ConfirmAckPacket.m in Sources */,
-				76B8189F182C39460088060E /* PreferenceListViewController.m in Sources */,
 				76EB05DB18170B33006006FC /* LowLatencyConnector.m in Sources */,
 				76EB060F18170B33006006FC /* DecayingSampleEstimator.m in Sources */,
 				76EB055318170B33006006FC /* TimeoutFailure.m in Sources */,

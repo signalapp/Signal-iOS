@@ -16,6 +16,7 @@
 #import "Util.h"
 #import <UICKeyChainStore/UICKeyChainStore.h>
 #import "Environment.h"
+#import "VersionMigrations.h"
 
 #define kSignalVersionKey @"SignalUpdateVersionKey"
 
@@ -47,18 +48,39 @@
         [Environment setCurrent:[Release releaseEnvironmentWithLogging:nil]];
         [Environment resetAppData]; // We clean previous keychain entries in case their are some entries remaining.
     } else if ([currentVersion compare:previousVersion options:NSNumericSearch] == NSOrderedDescending){
-        // The application was updated
-        DDLogWarn(@"Application was updated from %@ to %@", previousVersion, currentVersion);
+        // Application was updated, let's see if we have a migration scheme for it.
+        
+        if ([previousVersion isEqualToString:@"1.0.2"]) {
+            
+        }
+        
     }
     
     [[NSUserDefaults standardUserDefaults] setObject:currentVersion forKey:kSignalVersionKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-#pragma mark Disable cloud/iTunes syncing of call log
 
-- (void)disableCallLogBackup{
-    NSString *preferencesPath = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingString:@"/Preferences"];
+/**
+ *  Protects the preference and logs file with disk encryption and prevents them to leak to iCloud.
+ */
+
+- (void)protectPreferenceFiles{
+    
+    // We have two kind of data to deal with for now, preference files (/Library/Preferences), logs (/Library/Caches) and pr
+    
+    NSString *path = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSLog(@"PATH: %@", path);
+    
+    NSString *path2 = [NSHomeDirectory() stringByAppendingString:@"/Documents"];
+    
+    NSArray *directoryEnum = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path2 error:nil];
+    
+    NSLog(@"%@",directoryEnum);
+    
+    NSLog(@"%@ vs %@", NSHomeDirectory(), [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0]);
+    
+    NSString *preferencesPath = [NSHomeDirectory() stringByAppendingString:@"/Library/Preferences"];
     NSString *userDefaultsString = [NSString stringWithFormat:@"%@/%@.plist", preferencesPath,[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"]];
     
     NSURL *userDefaultsURL = [NSURL fileURLWithPath:userDefaultsString];
@@ -81,7 +103,7 @@
     [DDLog addLogger:self.fileLogger];
     
     [self performUpdateCheck];
-    [self disableCallLogBackup];
+    [self protectPreferenceFiles];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.notificationTracker = [NotificationTracker notificationTracker];
