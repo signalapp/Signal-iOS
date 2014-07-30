@@ -1,10 +1,10 @@
 #import "EvpKeyAgreement.h"
 #import "Constraints.h"
 #import "NumberUtil.h"
-#import <OpenSSL/bn.h>
-#import <OpenSSL/dh.h>
-#import <OpenSSL/ec.h>
-#import <OpenSSL/pem.h>
+#import <openssl/bn.h>
+#import <openssl/dh.h>
+#import <openssl/ec.h>
+#import <openssl/pem.h>
 
 #define checkEvpSucess(expr, desc)  checkSecurityOperation((expr) == 1, desc)
 #define checkEvpNotNull(expr, desc) checkSecurityOperation((expr) != NULL, desc)

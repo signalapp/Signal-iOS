@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import <OpenSSL/evp.h>
+#import <openssl/evp.h>
 
 // Implements Symetric encryption methods using Openssl EVP Api. Raises Exceptions on failure.
 
