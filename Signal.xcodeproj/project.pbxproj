@@ -365,7 +365,7 @@
 		A157077617F0CD6D007C2BD6 /* CancelTokenTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157074117F0CD6D007C2BD6 /* CancelTokenTest.m */; };
 		A157077717F0CD6D007C2BD6 /* ConversionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157074317F0CD6D007C2BD6 /* ConversionsTest.m */; };
 		A157077817F0CD6D007C2BD6 /* Crc32Test.m in Sources */ = {isa = PBXBuildFile; fileRef = A157074517F0CD6D007C2BD6 /* Crc32Test.m */; };
-		A157077917F0CD6D007C2BD6 /* CryptoUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157074717F0CD6D007C2BD6 /* CryptoUtilTest.m */; };
+		A157077917F0CD6D007C2BD6 /* CryptoToolsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157074717F0CD6D007C2BD6 /* CryptoToolsTest.m */; };
 		A157077A17F0CD6D007C2BD6 /* CyclicalBufferTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157074917F0CD6D007C2BD6 /* CyclicalBufferTest.m */; };
 		A157077B17F0CD6D007C2BD6 /* ExceptionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157074B17F0CD6D007C2BD6 /* ExceptionsTest.m */; };
 		A157077C17F0CD6D007C2BD6 /* FunctionalUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157074D17F0CD6D007C2BD6 /* FunctionalUtilTest.m */; };
@@ -1084,8 +1084,8 @@
 		A157074317F0CD6D007C2BD6 /* ConversionsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversionsTest.m; sourceTree = "<group>"; };
 		A157074417F0CD6D007C2BD6 /* Crc32Test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Crc32Test.h; sourceTree = "<group>"; };
 		A157074517F0CD6D007C2BD6 /* Crc32Test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Crc32Test.m; sourceTree = "<group>"; };
-		A157074617F0CD6D007C2BD6 /* CryptoUtilTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoUtilTest.h; sourceTree = "<group>"; };
-		A157074717F0CD6D007C2BD6 /* CryptoUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptoUtilTest.m; sourceTree = "<group>"; };
+		A157074617F0CD6D007C2BD6 /* CryptoToolsTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoToolsTest.h; sourceTree = "<group>"; };
+		A157074717F0CD6D007C2BD6 /* CryptoToolsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptoToolsTest.m; sourceTree = "<group>"; };
 		A157074817F0CD6D007C2BD6 /* CyclicalBufferTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CyclicalBufferTest.h; sourceTree = "<group>"; };
 		A157074917F0CD6D007C2BD6 /* CyclicalBufferTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CyclicalBufferTest.m; sourceTree = "<group>"; };
 		A157074A17F0CD6D007C2BD6 /* ExceptionsTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExceptionsTest.h; sourceTree = "<group>"; };
@@ -2426,8 +2426,8 @@
 				A157074317F0CD6D007C2BD6 /* ConversionsTest.m */,
 				A157074417F0CD6D007C2BD6 /* Crc32Test.h */,
 				A157074517F0CD6D007C2BD6 /* Crc32Test.m */,
-				A157074617F0CD6D007C2BD6 /* CryptoUtilTest.h */,
-				A157074717F0CD6D007C2BD6 /* CryptoUtilTest.m */,
+				A157074617F0CD6D007C2BD6 /* CryptoToolsTest.h */,
+				A157074717F0CD6D007C2BD6 /* CryptoToolsTest.m */,
 				A157074817F0CD6D007C2BD6 /* CyclicalBufferTest.h */,
 				A157074917F0CD6D007C2BD6 /* CyclicalBufferTest.m */,
 				A157074A17F0CD6D007C2BD6 /* ExceptionsTest.h */,
@@ -3363,7 +3363,7 @@
 				B97CBFA918860EA3008E0DE9 /* CountryCodeViewController.m in Sources */,
 				76EB060918170B33006006FC /* ResponderSessionDescriptor.m in Sources */,
 				76EB062518170B33006006FC /* PriorityQueue.m in Sources */,
-				A157077917F0CD6D007C2BD6 /* CryptoUtilTest.m in Sources */,
+				A157077917F0CD6D007C2BD6 /* CryptoToolsTest.m in Sources */,
 				76EB066118170B34006006FC /* RegisterViewController.m in Sources */,
 				76EB068D18170B34006006FC /* InboxFeedTableViewCell.m in Sources */,
 				76EB05A918170B33006006FC /* RtpSocket.m in Sources */,

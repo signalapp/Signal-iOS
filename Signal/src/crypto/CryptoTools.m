@@ -30,7 +30,7 @@
 
 @end
 
-@implementation NSData (CryptoUtil)
+@implementation NSData (CryptoTools)
 
 -(NSData*)hmacWithSha1WithKey:(NSData*)key {
     return [EvpMessageDigest hmacUsingSha1Data:self withKey:key];
