@@ -70,4 +70,45 @@
     test([p.hashChainH3 isEqual:h.h3]);
     test([p.clientId isEqual:[@"RedPhone 019    " encodedAsAscii]]);
 }
+-(void) testHandshakeMacAuthenticationSucceeds{
+    NSData* type = [@"0f0f0f0f0f0f0f0f" decodedAsHexString];
+    NSData* payload =[@"ff00ff00" decodedAsHexString];
+    NSData* untouchedPayload =[@"ff00ff00" decodedAsHexString];
+    
+    NSData* key =[@"11" decodedAsHexString];
+    
+    HandshakePacket* p = [HandshakePacket handshakePacketWithTypeId:type
+                                                         andPayload:payload];
+    HandshakePacket* withHMAC = [p withHmacAppended:key];
+    HandshakePacket* strippedOfValidHMAC = [withHMAC withHmacVerifiedAndRemoved:key];
+    
+    test([[p payload] isEqualToData:[strippedOfValidHMAC payload]]);
+    
+    test([untouchedPayload isEqualToData:[p payload]]);
+    test([untouchedPayload isEqualToData:[strippedOfValidHMAC payload]]);
+}
+-(void) testHandshakeMacAuthenticationFails{
+    NSData* type = [@"0f0f0f0f0f0f0f0f" decodedAsHexString];
+    NSData* payload =[@"ff00ff00" decodedAsHexString];
+    NSData* untouchedPayload =[@"ff00ff00" decodedAsHexString];
+    
+    NSData* key =[@"11" decodedAsHexString];
+    
+    NSData* badkey =[@"10" decodedAsHexString];
+    
+    
+    HandshakePacket* p = [HandshakePacket handshakePacketWithTypeId:type
+                                                         andPayload:payload];
+    HandshakePacket* withHMAC = [p withHmacAppended:key];
+    
+    testThrows([withHMAC withHmacVerifiedAndRemoved:badkey]);
+    
+    HandshakePacket* strippedOfValidHMAC = [withHMAC withHmacVerifiedAndRemoved:key];
+    
+    test([[p payload] isEqualToData:[strippedOfValidHMAC payload]]);
+    
+    test([untouchedPayload isEqualToData:[p payload]]);
+    test([untouchedPayload isEqualToData:[strippedOfValidHMAC payload]]);
+    
+}
 @end
