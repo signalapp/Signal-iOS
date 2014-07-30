@@ -125,7 +125,7 @@
 "SETTINGS_PRIVACY_AND_SECURITY" = "Privacy and Security";
 "SETTINGS_RINGTONE" = "Ringtone";
 "SETTINGS_SENDLOG" = "Submit Debug Log"; 
-"SETTINGS_SENDLOGS_WAITING" = "Sending anonymized log file\n Please wait...";
+"SETTINGS_SENDLOGS_WAITING" = "Sending log file\n Please wait...";
 "SETTINGS_SENDLOG_ALERT_BODY" = "Bugs can be reported by email or by copying the log in a GitHub Issue (advanced).";
 "SETTINGS_SENDLOG_ALERT_PASTE" = "Email";
 "SETTINGS_SENDLOG_ALERT_EMAIL" = "GitHub Issue";

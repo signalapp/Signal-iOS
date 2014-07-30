@@ -9,7 +9,7 @@
  * Environment is a data and data accessor class.
  * It handles application-level component wiring in order to support mocks for testing.
  * It also handles network configuration for testing/deployment server configurations.
- * 
+ *
  **/
 
 #define SAMPLE_RATE 8000
@@ -24,7 +24,6 @@
 @class PhoneNumberDirectoryFilterManager;
 
 @interface Environment : NSObject
-@property (nonatomic, readonly) PropertyListPreferences* preferences;
 @property (nonatomic, readonly) in_port_t serverPort;
 @property (nonatomic, readonly) id<Logging> logging;
 @property (nonatomic, readonly) SecureEndPoint* masterServerSecureEndPoint;
@@ -46,33 +45,33 @@
 +(SecureEndPoint*) getSecureEndPointToDefaultRelayServer;
 +(SecureEndPoint*) getSecureEndPointToSignalingServerNamed:(NSString*)name;
 
-+(Environment*) environmentWithPreferences:(PropertyListPreferences*)preferences
-                                andLogging:(id<Logging>)logging
-                             andErrorNoter:(ErrorHandlerBlock)errorNoter
-                             andServerPort:(in_port_t)serverPort
-                   andMasterServerHostName:(NSString*)masterServerHostName
-                       andDefaultRelayName:(NSString*)defaultRelayName
-              andRelayServerHostNameSuffix:(NSString*)relayServerHostNameSuffix
-                            andCertificate:(Certificate*)certificate
-       andCurrentRegionCodeForPhoneNumbers:(NSString*)currentRegionCodeForPhoneNumbers
-         andSupportedKeyAgreementProtocols:(NSArray*)keyAgreementProtocolsInDescendingPriority
-                           andPhoneManager:(PhoneManager*)phoneManager
-                      andRecentCallManager:(RecentCallManager *)recentCallManager
-                andTestingAndLegacyOptions:(NSArray*)testingAndLegacyOptions
-                           andZrtpClientId:(NSData*)zrtpClientId
-                           andZrtpVersionId:(NSData*)zrtpVersionId
-                        andContactsManager:(ContactsManager *)contactsManager
-                  andPhoneDirectoryManager:(PhoneNumberDirectoryFilterManager*)phoneDirectoryManager;
++(Environment*) environmentWithLogging:(id<Logging>)logging
+                     andErrorNoter:(ErrorHandlerBlock)errorNoter
+                     andServerPort:(in_port_t)serverPort
+           andMasterServerHostName:(NSString*)masterServerHostName
+               andDefaultRelayName:(NSString*)defaultRelayName
+      andRelayServerHostNameSuffix:(NSString*)relayServerHostNameSuffix
+                    andCertificate:(Certificate*)certificate
+andCurrentRegionCodeForPhoneNumbers:(NSString*)currentRegionCodeForPhoneNumbers
+ andSupportedKeyAgreementProtocols:(NSArray*)keyAgreementProtocolsInDescendingPriority
+                   andPhoneManager:(PhoneManager*)phoneManager
+              andRecentCallManager:(RecentCallManager *)recentCallManager
+        andTestingAndLegacyOptions:(NSArray*)testingAndLegacyOptions
+                   andZrtpClientId:(NSData*)zrtpClientId
+                  andZrtpVersionId:(NSData*)zrtpVersionId
+                andContactsManager:(ContactsManager *)contactsManager
+          andPhoneDirectoryManager:(PhoneNumberDirectoryFilterManager*)phoneDirectoryManager;
 
 +(Environment*) getCurrent;
 +(void) setCurrent:(Environment*)curEnvironment;
-+(PropertyListPreferences*) preferences;
 +(id<Logging>) logging;
 +(NSString*) relayServerNameToHostName:(NSString*)name;
 +(ErrorHandlerBlock) errorNoter;
 +(NSString*) currentRegionCodeForPhoneNumbers;
 +(bool) hasEnabledTestingOrLegacyOption:(NSString*)flag;
 +(PhoneManager*) phoneManager;
+
+-(PropertyListPreferences*)preferences;
 
 +(BOOL)isRegistered;
 +(void)setRegistered:(BOOL)status;

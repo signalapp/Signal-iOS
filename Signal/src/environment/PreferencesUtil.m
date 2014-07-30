@@ -20,15 +20,6 @@
 #define CONTACT_IMAGES_ENABLED_KEY @"Contact Images Enabled Key"
 #define AUTOCORRECT_ENABLED_KEY @"Autocorrect Enabled Key"
 #define HISTORY_LOG_ENABLED_KEY @"History Log Enabled Key"
-#define ANONYMOUS_FEEDBACK_ENABLED_KEY @"Anonymous Feedback Enabled Key"
-
-#define DATE_FORMAT_KEY @"Date Format Key"
-#define DATE_FORMAT_1 @"dd-MM-yyyy"
-#define DATE_FORMAT_2 @"yyyy-MM-dd"
-#define DATE_FORMAT_3 @"MM-dd-yyyy"
-#define DATE_FORMAT_4 @"dd/MM/yyyy"
-#define DATE_FORMAT_5 @"yyyy/MM/dd"
-#define DATE_FORMAT_6 @"MM/dd/yyyy"
 
 @implementation PropertyListPreferences (PropertyUtil)
 
@@ -42,7 +33,6 @@
                                                                andExpirationDate:expiration];
 }
 -(void) setSavedPhoneNumberDirectory:(PhoneNumberDirectoryFilter*)phoneNumberDirectoryFilter {
-    // note: clearing before setting so that torn reads can be detected
     [self setValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_DATA_KEY toValue:nil];
     [self setValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_HASH_COUNT_KEY toValue:nil];
     [self setValueForKey:PHONE_DIRECTORY_EXPIRATION toValue:nil];
@@ -71,34 +61,6 @@
     [self setValueForKey:CALL_STREAM_DES_BUFFER_LEVEL_KEY toValue:[NSNumber numberWithDouble:value]];
 }
 
--(void) setSettingsRowExpandedPrefs:(NSArray *)prefs {
-	[self setValueForKey:SETTINGS_EXPANDED_ROW_PREF_DICT_KEY toValue:prefs];
-}
-
--(NSArray *) getOrGenerateSettingsRowExpandedPrefs {
-    NSArray *prefs = [self tryGetValueForKey:SETTINGS_EXPANDED_ROW_PREF_DICT_KEY];
-    if (!prefs) {
-        prefs = @[[NSNumber numberWithBool:true], [NSNumber numberWithBool:true], [NSNumber numberWithBool:true], [NSNumber numberWithBool:true]];
-    }
-    return prefs;
-}
-
--(NSArray *) getAvailableDateFormats {
-    return @[DATE_FORMAT_1, DATE_FORMAT_2, DATE_FORMAT_3, DATE_FORMAT_4, DATE_FORMAT_5, DATE_FORMAT_6];
-}
-
-- (NSString *)getDateFormat {
-    NSString *format = [self tryGetValueForKey:DATE_FORMAT_KEY];
-    if (format) {
-        return format;
-    } else {
-        return DATE_FORMAT_1;
-    }
-}
-
-- (NSString *)getDateFormatKey {
-    return DATE_FORMAT_KEY;
-}
 -(BOOL) getFreshInstallTutorialsEnabled {
     NSNumber *preference = [self tryGetValueForKey:FRESH_INSTALL_TUTORIALS_ENABLED_KEY];
     if (preference) {
@@ -131,18 +93,6 @@
         return YES;
     }
 }
--(BOOL) getAnonymousFeedbackEnabled {
-    NSNumber *preference = [self tryGetValueForKey:ANONYMOUS_FEEDBACK_ENABLED_KEY];
-    if (preference) {
-        return [preference boolValue];
-    } else {
-        return NO;
-    }
-}
-
--(void) setDateFormat:(NSString *)format {
-    [self setValueForKey:DATE_FORMAT_KEY toValue:format];
-}
 
 -(void) setFreshInstallTutorialsEnabled:(BOOL)enabled {
     [self setValueForKey:FRESH_INSTALL_TUTORIALS_ENABLED_KEY toValue:[NSNumber numberWithBool:enabled]];
@@ -156,7 +106,5 @@
 -(void) setHistoryLogEnabled:(BOOL)enabled {
     [self setValueForKey:HISTORY_LOG_ENABLED_KEY toValue:[NSNumber numberWithBool:enabled]];
 }
--(void) setAnonymousFeedbackEnabled:(BOOL)enabled {
-    [self setValueForKey:ANONYMOUS_FEEDBACK_ENABLED_KEY toValue:[NSNumber numberWithBool:enabled]];
-}
+
 @end
