@@ -1,6 +1,6 @@
 #import "CryptoTools.h"
 
-#import <OpenSSL/hmac.h>
+#import <openssl/hmac.h>
 
 #import "Constraints.h"
 #import "Conversions.h"
