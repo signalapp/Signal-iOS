@@ -17,7 +17,7 @@
     
     NSTimeInterval audioDurationPerPacket = (NSTimeInterval)(AUDIO_FRAMES_PER_PACKET*[SpeexCodec frameSizeInSamples])
                                           / SAMPLE_RATE;
-    double initialDesiredBufferDepth = [[Environment preferences] getCachedOrDefaultDesiredBufferDepth];
+    double initialDesiredBufferDepth = [[[Environment getCurrent]preferences] getCachedOrDefaultDesiredBufferDepth];
     
     DropoutTracker* dropoutTracker = [DropoutTracker dropoutTrackerWithAudioDurationPerPacket:audioDurationPerPacket];
 
@@ -59,7 +59,7 @@
 }
 
 -(void) terminate {
-    [[Environment preferences] setCachedDesiredBufferDepth:[decayingDesiredBufferDepth currentEstimate]];
+    [[[Environment getCurrent]preferences] setCachedDesiredBufferDepth:[decayingDesiredBufferDepth currentEstimate]];
 }
 
 @end

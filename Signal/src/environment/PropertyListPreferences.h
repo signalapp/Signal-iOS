@@ -1,11 +1,6 @@
 #import <Foundation/Foundation.h>
 
-@interface PropertyListPreferences : NSObject {
-@private NSMutableDictionary* dictionary;
-@private NSString* plistName;
-}
-
-+(PropertyListPreferences*) propertyListPreferencesWithName:(NSString*)name;
+@interface PropertyListPreferences : NSObject
 
 -(id) tryGetValueForKey:(NSString*)key;
 -(void) setValueForKey:(NSString*)key toValue:(id)value;
