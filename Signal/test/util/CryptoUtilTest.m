@@ -1,9 +1,11 @@
-#import "CryptoUtilTest.h"
+#import "CryptoToolsTest.h"
 #import "Util.h"
 #import "CryptoTools.h"
 #import "TestUtil.h"
 
-@implementation CryptoUtilTest
+//This test class covers CryptoTools.h - the accessor class for the core crypto library.
+
+@implementation CryptoToolsTest
 -(void) testIsEqualToData_TimingSafe {
     test([[NSMutableData dataWithLength:0] isEqualToData_TimingSafe:[NSMutableData dataWithLength:0]]);
     test([[NSMutableData dataWithLength:1] isEqualToData_TimingSafe:[NSMutableData dataWithLength:1]]);
@@ -49,7 +51,7 @@
     NSData* actual = [val hashWithSha256];
     test([actual isEqualToData:expected]);
 }
--(void) testRandom {
+-(void) testRandomForVariance {
     NSData* d = [CryptoTools generateSecureRandomData:8];
     NSData* d2 = [CryptoTools generateSecureRandomData:8];
     
@@ -59,6 +61,17 @@
     // extremely unlikely to fail if any reasonable amount of entropy is going into d and d2
     test(![d isEqualToData:d2]);
 }
+
+-(void) testRandomUInt16GenerationForVariance{
+    uint16_t a = [CryptoTools generateSecureRandomUInt16];
+    uint16_t b = [CryptoTools generateSecureRandomUInt16];
+    uint16_t c = [CryptoTools generateSecureRandomUInt16];
+    uint16_t d = [CryptoTools generateSecureRandomUInt16];
+    int n = sizeof(uint32_t);
+    // extremely unlikely to fail if any reasonable amount of entropy is going into d and d2
+    test(!(a==b==c==d));
+}
+
 -(void) testKnownAesCipherFeedback {
     NSData* iv = [@"000102030405060708090a0b0c0d0e0f" decodedAsHexString];
     NSData* plain =[@"6bc1bee22e409f96e93d7e117393172a" decodedAsHexString];
@@ -110,10 +123,5 @@
 -(void) testComputeKnownOtp {
     test([[CryptoTools computeOtpWithPassword:@"password" andCounter:123] isEqualToString:@"SiYZc8Xg6KSmCECSImVSmjnRNfc="]);
 }
--(void) testMacAuthenticationSucceeds{
-    
-}
--(void) testMacAuthenticationFails{
-    
-}
+
 @end

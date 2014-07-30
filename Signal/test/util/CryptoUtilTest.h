@@ -1,5 +1,5 @@
 #import <XCTest/XCTest.h>
 
-@interface CryptoUtilTest : XCTestCase
+@interface CryptoToolsTest : XCTestCase
 
 @end
