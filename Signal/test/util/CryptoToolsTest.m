@@ -3,8 +3,6 @@
 #import "CryptoTools.h"
 #import "TestUtil.h"
 
-//This test class covers CryptoTools.h - the accessor class for the core crypto library.
-
 @implementation CryptoToolsTest
 -(void) testIsEqualToData_TimingSafe {
     test([[NSMutableData dataWithLength:0] isEqualToData_TimingSafe:[NSMutableData dataWithLength:0]]);
