@@ -16,7 +16,7 @@
 
 @end
 
-@interface NSData (CryptoUtil)
+@interface NSData (CryptoTools)
 
 -(NSData*)hashWithSha256;
 
