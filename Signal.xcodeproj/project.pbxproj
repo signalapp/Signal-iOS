@@ -1012,6 +1012,8 @@
 		76EB053C18170B33006006FC /* InboxFeedTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InboxFeedTableViewCell.xib; sourceTree = "<group>"; };
 		76EB053F18170B33006006FC /* CallLogTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CallLogTableViewCell.xib; sourceTree = "<group>"; };
 		8313AE91B4954215858A5662 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		84C6503E1988724F0037747D /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		84C6503F198887000037747D /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A15706EC17F0CD6D007C2BD6 /* AsyncUtilTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsyncUtilTest.h; sourceTree = "<group>"; };
 		A15706ED17F0CD6D007C2BD6 /* AsyncUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AsyncUtilTest.m; sourceTree = "<group>"; };
@@ -2715,6 +2717,8 @@
 				"ro-RO",
 				nl,
 				"sv-SE",
+				"zh-Hans",
+				"zh-Hant",
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -3453,6 +3457,8 @@
 				B6B6C3CC1919454200C0B76B /* ro-RO */,
 				B6B6C3CD1919455400C0B76B /* nl */,
 				B6B6C3CE1919456C00C0B76B /* sv-SE */,
+				84C6503E1988724F0037747D /* zh-Hans */,
+				84C6503F198887000037747D /* zh-Hant */,
 			);
 			name = Localizable.strings;
 			path = translations;
