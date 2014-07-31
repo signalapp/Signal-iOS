@@ -406,7 +406,7 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
 - (id)lastObjectInGroup:(NSString *)group;
 
 /**
- * The following methods are equivalent to invoking the enumerateKeysInGroup:... methods,
+ * The following methods are similar to invoking the enumerateKeysInGroup:... methods,
  * and then fetching the metadata within your own block.
 **/
 
@@ -425,8 +425,16 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
                              usingBlock:
                     (void (^)(NSString *collection, NSString *key, id metadata, NSUInteger index, BOOL *stop))block;
 
+- (void)enumerateKeysAndMetadataInGroup:(NSString *)group
+                            withOptions:(NSEnumerationOptions)options
+                                  range:(NSRange)range
+                             usingBlock:
+                    (void (^)(NSString *collection, NSString *key, id metadata, NSUInteger index, BOOL *stop))block
+                             withFilter:
+                    (BOOL (^)(NSString *collection, NSString *key))filter;
+
 /**
- * The following methods are equivalent to invoking the enumerateKeysInGroup:... methods,
+ * The following methods are similar to invoking the enumerateKeysInGroup:... methods,
  * and then fetching the object within your own block.
 **/
 
@@ -445,8 +453,16 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
                             usingBlock:
             (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block;
 
+- (void)enumerateKeysAndObjectsInGroup:(NSString *)group
+                           withOptions:(NSEnumerationOptions)options
+                                 range:(NSRange)range
+                            usingBlock:
+            (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block
+                            withFilter:
+            (BOOL (^)(NSString *collection, NSString *key))filter;
+
 /**
- * The following methods are equivalent to invoking the enumerateKeysInGroup:... methods,
+ * The following methods are similar to invoking the enumerateKeysInGroup:... methods,
  * and then fetching the object and metadata within your own block.
 **/
 
@@ -464,6 +480,14 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
                        range:(NSRange)range
                   usingBlock:
             (void (^)(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block;
+
+- (void)enumerateRowsInGroup:(NSString *)group
+                 withOptions:(NSEnumerationOptions)options
+                       range:(NSRange)range
+                  usingBlock:
+            (void (^)(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block
+                  withFilter:
+            (BOOL (^)(NSString *collection, NSString *key))filter;
 
 @end
 
