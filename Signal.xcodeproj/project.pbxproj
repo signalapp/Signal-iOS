@@ -377,7 +377,6 @@
 		A1C32D5017A06538000A904E /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4F17A06537000A904E /* AddressBookUI.framework */; };
 		A1C32D5117A06544000A904E /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4D17A0652C000A904E /* AddressBook.framework */; };
 		AA0C8E498E2046B0B81EEE6E /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
-		B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */ = {isa = PBXBuildFile; fileRef = B60C16641988999D00E97A6C /* VersionMigrations.m */; };
 		B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B67EBF5C19194AC60084CCFD /* Settings.bundle */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
 		B6B1013C196D213F007E3930 /* SGNKeychainUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SGNKeychainUtil.m */; };
@@ -1018,7 +1017,6 @@
 		A15706FA17F0CD6D007C2BD6 /* JitterQueueTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JitterQueueTest.m; sourceTree = "<group>"; };
 		A15706FC17F0CD6D007C2BD6 /* SpeexCodecTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpeexCodecTest.m; sourceTree = "<group>"; };
 		A157070317F0CD6D007C2BD6 /* DnsManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DnsManagerTest.m; sourceTree = "<group>"; };
-		A157070517F0CD6D007C2BD6 /* HttpRequestResponseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequestResponseTest.h; sourceTree = "<group>"; };
 		A157070617F0CD6D007C2BD6 /* HttpRequestResponseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequestResponseTest.m; sourceTree = "<group>"; };
 		A157070817F0CD6D007C2BD6 /* IpAddressTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IpAddressTest.m; sourceTree = "<group>"; };
 		A157070A17F0CD6D007C2BD6 /* IpEndPointTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IpEndPointTest.m; sourceTree = "<group>"; };
@@ -1036,10 +1034,8 @@
 		A157072517F0CD6D007C2BD6 /* LowLatencyConnectorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LowLatencyConnectorTest.m; sourceTree = "<group>"; };
 		A157072817F0CD6D007C2BD6 /* NetworkStreamTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkStreamTest.m; sourceTree = "<group>"; };
 		A157072A17F0CD6D007C2BD6 /* SecureEndPointTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecureEndPointTest.m; sourceTree = "<group>"; };
-		A157072C17F0CD6D007C2BD6 /* UdpSocketTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UdpSocketTest.h; sourceTree = "<group>"; };
 		A157072D17F0CD6D007C2BD6 /* UdpSocketTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UdpSocketTest.m; sourceTree = "<group>"; };
 		A157073017F0CD6D007C2BD6 /* PhoneNumberTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberTest.m; sourceTree = "<group>"; };
-		A157073217F0CD6D007C2BD6 /* SessionDescriptorTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SessionDescriptorTest.h; sourceTree = "<group>"; };
 		A157073317F0CD6D007C2BD6 /* SessionDescriptorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SessionDescriptorTest.m; sourceTree = "<group>"; };
 		A157073617F0CD6D007C2BD6 /* DecayingSampleEstimatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DecayingSampleEstimatorTest.m; sourceTree = "<group>"; };
 		A157073817F0CD6D007C2BD6 /* EventWindowTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventWindowTest.m; sourceTree = "<group>"; };
@@ -1072,8 +1068,6 @@
 		A1C32D4D17A0652C000A904E /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		A1C32D4F17A06537000A904E /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		A1FDCBEE16DAA6C300868894 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		B60C16631988999D00E97A6C /* VersionMigrations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionMigrations.h; sourceTree = "<group>"; };
-		B60C16641988999D00E97A6C /* VersionMigrations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VersionMigrations.m; sourceTree = "<group>"; };
 		B657DDC91911A40500F45B0C /* Signal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Signal.entitlements; sourceTree = "<group>"; };
 		B67EBF5C19194AC60084CCFD /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = SettingsBundle/Settings.bundle; sourceTree = SOURCE_ROOT; };
 		B69CD25019773E79005CE69A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -1658,8 +1652,6 @@
 				76EB041B18170B33006006FC /* Release.m */,
 				B6B1013A196D213F007E3930 /* SGNKeychainUtil.h */,
 				B6B1013B196D213F007E3930 /* SGNKeychainUtil.m */,
-				B60C16631988999D00E97A6C /* VersionMigrations.h */,
-				B60C16641988999D00E97A6C /* VersionMigrations.m */,
 			);
 			path = environment;
 			sourceTree = "<group>";
@@ -2250,7 +2242,6 @@
 		A157070417F0CD6D007C2BD6 /* http */ = {
 			isa = PBXGroup;
 			children = (
-				A157070517F0CD6D007C2BD6 /* HttpRequestResponseTest.h */,
 				A157070617F0CD6D007C2BD6 /* HttpRequestResponseTest.m */,
 			);
 			path = http;
@@ -2320,7 +2311,6 @@
 		A157072B17F0CD6D007C2BD6 /* udp */ = {
 			isa = PBXGroup;
 			children = (
-				A157072C17F0CD6D007C2BD6 /* UdpSocketTest.h */,
 				A157072D17F0CD6D007C2BD6 /* UdpSocketTest.m */,
 			);
 			path = udp;
@@ -2338,7 +2328,6 @@
 		A157073117F0CD6D007C2BD6 /* signaling */ = {
 			isa = PBXGroup;
 			children = (
-				A157073217F0CD6D007C2BD6 /* SessionDescriptorTest.h */,
 				A157073317F0CD6D007C2BD6 /* SessionDescriptorTest.m */,
 			);
 			path = signaling;
@@ -2984,7 +2973,6 @@
 				76EB066218170B34006006FC /* SettingsViewController.m in Sources */,
 				76EB054818170B33006006FC /* CancelTokenSource.m in Sources */,
 				76EB05AC18170B33006006FC /* SrtpSocket.m in Sources */,
-				B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */,
 				76EB062A18170B33006006FC /* BadState.m in Sources */,
 				B97940271832BD2400BD66CB /* UIUtil.m in Sources */,
 				76EB05BE18170B33006006FC /* ConfirmPacket.m in Sources */,
@@ -3479,7 +3467,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C71793B33D9C45079F74487E /* Pods.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3519,7 +3507,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = Signal;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "B26CF658-AD7F-4F4C-B94F-74884941DF87";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_AFTER_BUILD = YES;
@@ -3716,7 +3704,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C71793B33D9C45079F74487E /* Pods.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3768,7 +3756,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C71793B33D9C45079F74487E /* Pods.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3803,7 +3791,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = Signal;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "7214A823-1F7A-4460-82D8-D89CA511CEA6";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_AFTER_BUILD = YES;

@@ -1,4 +1,4 @@
-#import "UdpSocketTest.h"
+#import <XCTest/XCTest.h>
 #import "UdpSocket.h"
 #import "Util.h"
 #import "IpAddress.h"
@@ -6,6 +6,10 @@
 #import "TestUtil.h"
 #import "ThreadManager.h"
 #import "CancelTokenSource.h"
+
+@interface UdpSocketTest : XCTestCase
+
+@end
 
 @implementation UdpSocketTest
 -(void) testSpecifiedPortLocally {

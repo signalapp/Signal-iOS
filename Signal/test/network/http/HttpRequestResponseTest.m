@@ -1,4 +1,4 @@
-#import "HttpRequestResponseTest.h"
+#import <XCTest/XCTest.h>
 #import "TestUtil.h"
 #import "Util.h"
 #import "HttpSocket.h"
@@ -8,7 +8,12 @@
 #import "SGNKeychainUtil.h"
 #import <UICKeyChainStore/UICKeyChainStore.h>
 
+@interface HttpRequestResponseTest : XCTestCase
+
+@end
+
 @implementation HttpRequestResponseTest
+
 -(void) testRequestToInitiate {
     [Environment setCurrent:testEnv];
     [SGNKeychainUtil setLocalNumberTo:[PhoneNumber phoneNumberFromE164:@"+19025555555"]];

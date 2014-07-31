@@ -1,8 +1,12 @@
-#import "SessionDescriptorTest.h"
+#import <XCTest/XCTest.h>
 #import "InitiatorSessionDescriptor.h"
 #import "ResponderSessionDescriptor.h"
 #import "TestUtil.h"
 #import "Util.h"
+
+@interface SessionDescriptorTest : XCTestCase
+
+@end
 
 @implementation SessionDescriptorTest
 
