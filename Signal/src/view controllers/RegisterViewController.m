@@ -381,7 +381,7 @@
 
 #pragma mark - UITextFieldDelegate
 
-- (NSUInteger) recalculateLocation:(NSUInteger)location {
+- (NSUInteger) calculateLocationOffset:(NSUInteger)location {
     uint offset = 0, phonenumberposition = 0;
     for (uint i=0;i<location;i++) {
         if ([_phoneNumberTextField.text characterAtIndex:i] != [_enteredPhoneNumber characterAtIndex:phonenumberposition])
@@ -395,20 +395,32 @@
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range
                                                        replacementString:(NSString *)string {
-    
-    range.location -= [self recalculateLocation:range.location];
+    uint offset = [self calculateLocationOffset:range.location];
+    unsigned short currentPosCharacter = 0;
+    range.location -= offset;
     BOOL handleBackspace = range.length == 1;
     if (handleBackspace) {
+        if ((range.location + offset) <  _phoneNumberTextField.text.length)
+            currentPosCharacter = [_phoneNumberTextField.text characterAtIndex:(range.location + offset)];
+        
+        if (currentPosCharacter < '0' || currentPosCharacter > '9')
+            range.location --;
         NSRange backspaceRange = NSMakeRange(range.location, 1);
         [_enteredPhoneNumber replaceCharactersInRange:backspaceRange withString:string];
+        range.location ++;
     } else {
         NSString* sanitizedString = [[string componentsSeparatedByCharactersInSet:[[NSCharacterSet decimalDigitCharacterSet ] invertedSet]] componentsJoinedByString:@""];
         NSMutableString* mutablePhoneNumber = [NSMutableString stringWithString:_enteredPhoneNumber];
         [mutablePhoneNumber insertString:sanitizedString atIndex:range.location];
         _enteredPhoneNumber = mutablePhoneNumber;
+        if ((range.location + offset +1) <  _phoneNumberTextField.text.length)
+            currentPosCharacter = [_phoneNumberTextField.text characterAtIndex:(range.location + offset +1)];
+        
+        if ((currentPosCharacter < '0' || currentPosCharacter > '9') && currentPosCharacter != 0)
+            range.location++;
     }
 
-    [self updatePhoneNumberFieldWithString:_enteredPhoneNumber cursorposition:range.location+1];
+    [self updatePhoneNumberFieldWithString:_enteredPhoneNumber cursorposition:range.location+offset];
     return NO;
 }
 
@@ -416,7 +428,11 @@
                           cursorposition:(NSUInteger)cursorpos {
     NSString* result = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:_enteredPhoneNumber
                                                                     withSpecifiedCountryCodeString:_countryCodeLabel.text];
+    cursorpos += result.length - _phoneNumberTextField.text.length;
     _phoneNumberTextField.text = result;
+    UITextPosition *position = [_phoneNumberTextField positionFromPosition:[_phoneNumberTextField beginningOfDocument]
+                                                 offset:(NSInteger)cursorpos];
+    [_phoneNumberTextField setSelectedTextRange:[_phoneNumberTextField textRangeFromPosition:position toPosition:position]];
 }
 
 @end
