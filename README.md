@@ -25,6 +25,10 @@ sudo gem update
 
 3) Open the `Signal.xcworkspace` in Xcode. Build and Run and you are ready to go!
 
+## Translation
+
+Help us translate Signal! The translation effort happens on [Transifex](https://www.transifex.com/projects/p/signal-ios/)
+
 ## Interoperability 
 
 Signal works with [RedPhone on Android](https://github.com/WhisperSystems/Redphone).
