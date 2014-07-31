@@ -1,7 +1,11 @@
-#import "ObservableTest.h"
+#import <XCTest/XCTest.h>
 #import "ObservableValue.h"
 #import "TestUtil.h"
 #import "CancelTokenSource.h"
+
+@interface ObservableTest : XCTestCase
+
+@end
 
 @implementation ObservableTest
 

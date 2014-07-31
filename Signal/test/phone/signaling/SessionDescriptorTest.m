@@ -34,8 +34,8 @@
                                    };
     
     [Environment setCurrent:testEnv];
-    [[Environment preferences] setValueForKey:@"Signaling Mac Key" toValue:[@"0000000000000000000000000000000000000000" decodedAsHexString]];
-    [[Environment preferences] setValueForKey:@"Signaling Cipher Key" toValue:[@"00000000000000000000000000000000" decodedAsHexString]];
+    [[[Environment getCurrent] preferences] setValueForKey:@"Signaling Mac Key" toValue:[@"0000000000000000000000000000000000000000" decodedAsHexString]];
+    [[[Environment getCurrent]preferences] setValueForKey:@"Signaling Cipher Key" toValue:[@"00000000000000000000000000000000" decodedAsHexString]];
     
     ResponderSessionDescriptor* d = [ResponderSessionDescriptor responderSessionDescriptorFromEncryptedRemoteNotification:notification];
   

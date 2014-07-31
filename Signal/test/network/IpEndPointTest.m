@@ -1,7 +1,11 @@
-#import "IpEndPointTest.h"
+#import <XCTest/XCTest.h>
 #import "TestUtil.h"
 #import "IpEndPoint.h"
 #import "IpAddress.h"
+
+@interface IpEndPointTest : XCTestCase
+
+@end
 
 @implementation IpEndPointTest
 -(void) testTrivial {

@@ -1,6 +1,10 @@
-#import "DecayingSampleEstimatorTest.h"
+#import <XCTest/XCTest.h>
 #import "DecayingSampleEstimator.h"
 #import "TestUtil.h"
+
+@interface DecayingSampleEstimatorTest : XCTestCase
+
+@end
 
 @implementation DecayingSampleEstimatorTest
 -(void) testDecayingSampleEstimator {

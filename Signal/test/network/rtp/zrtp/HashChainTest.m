@@ -1,8 +1,12 @@
-#import "HashChainTest.h"
+#import <XCTest/XCTest.h>
 #import "HashChain.h"
 #import "Util.h"
 #import "CryptoTools.h"
 #import "TestUtil.h"
+
+@interface HashChainTest : XCTestCase
+
+@end
 
 @implementation HashChainTest
 -(void) testHashChainKnown {

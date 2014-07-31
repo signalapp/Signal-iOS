@@ -1,7 +1,11 @@
-#import "SecureStreamTest.h"
+#import <XCTest/XCTest.h>
 #import "SrtpStream.h"
 #import "Util.h"
 #import "TestUtil.h"
+
+@interface SecureStreamTest : XCTestCase
+
+@end
 
 @implementation SecureStreamTest
 -(void) testPerturbedRoundTrip {

@@ -1,6 +1,10 @@
-#import "AudioFrameTest.h"
+#import <XCTest/XCTest.h>
 #import "EncodedAudioPacket.h"
 #import "TestUtil.h"
+
+@interface AudioFrameTest : XCTestCase
+
+@end
 
 @implementation AudioFrameTest
 -(void) testTrivial {

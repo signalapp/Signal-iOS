@@ -1,7 +1,11 @@
-#import "MasterSecretTest.h"
+#import <XCTest/XCTest.h>
 #import "MasterSecret.h"
 #import "Util.h"
 #import "TestUtil.h"
+
+@interface MasterSecretTest : XCTestCase
+
+@end
 
 @implementation MasterSecretTest
 -(void) testKnownCalculateSharedSecret {

@@ -1,6 +1,10 @@
-#import "PhoneNumberTest.h"
+#import <XCTest/XCTest.h>
 #import "TestUtil.h"
 #import "PhoneNumber.h"
+
+@interface PhoneNumberTest : XCTestCase
+
+@end
 
 @implementation PhoneNumberTest
 
