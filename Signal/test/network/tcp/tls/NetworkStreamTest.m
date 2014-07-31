@@ -1,4 +1,4 @@
-#import "NetworkStreamTest.h"
+#import <XCTest/XCTest.h>
 #import "NetworkStream.h"
 #import "TestUtil.h"
 #import "Util.h"
@@ -14,6 +14,10 @@
 #define TEST_SERVER_INCORRECT_HOST_TO_SAME_IP @"96.126.120.52"
 #define TEST_SERVER_INCORRECT_CERT_PATH @"whisperTest"
 #define TEST_SERVER_INCORRECT_CERT_TYPE @"der"
+
+@interface NetworkStreamTest : XCTestCase
+
+@end
 
 @implementation NetworkStreamTest
 

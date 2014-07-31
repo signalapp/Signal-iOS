@@ -1,6 +1,10 @@
-#import "EventWindowTest.h"
+#import <XCTest/XCTest.h>
 #import "EventWindow.h"
 #import "TestUtil.h"
+
+@interface EventWindowTest : XCTestCase
+
+@end
 
 @implementation EventWindowTest
 -(void) testEventWindow {

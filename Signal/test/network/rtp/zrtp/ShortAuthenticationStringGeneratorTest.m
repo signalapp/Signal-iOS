@@ -1,7 +1,11 @@
-#import "ShortAuthenticationStringGeneratorTest.h"
+#import <XCTest/XCTest.h>
 #import "ShortAuthenticationStringGenerator.h"
 #import "Util.h"
 #import "TestUtil.h"
+
+@interface ShortAuthenticationStringGeneratorTest : XCTestCase
+
+@end
 
 @implementation ShortAuthenticationStringGeneratorTest
 -(void) testSAS {

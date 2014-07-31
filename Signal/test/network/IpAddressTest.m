@@ -1,6 +1,10 @@
-#import "IpAddressTest.h"
+#import <XCTest/XCTest.h>
 #import "TestUtil.h"
 #import "IpAddress.h"
+
+@interface IpAddressTest : XCTestCase
+
+@end
 
 @implementation IpAddressTest
 -(void) testFromString {

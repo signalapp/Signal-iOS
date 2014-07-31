@@ -1,6 +1,10 @@
-#import "SequenceCounterTest.h"
+#import <XCTest/XCTest.h>
 #import "SequenceCounter.h"
 #import "TestUtil.h"
+
+@interface SequenceCounterTest : XCTestCase
+
+@end
 
 @implementation SequenceCounterTest
 -(void)testCountingForwards {

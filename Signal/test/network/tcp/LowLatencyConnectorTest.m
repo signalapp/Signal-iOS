@@ -1,4 +1,4 @@
-#import "LowLatencyConnectorTest.h"
+#import <XCTest/XCTest.h>
 #import "LowLatencyConnector.h"
 #import "NetworkStream.h"
 #import "Util.h"
@@ -7,6 +7,10 @@
 #import "Future.h"
 #import "CancelledToken.h"
 #import "ThreadManager.h"
+
+@interface LowLatencyConnectorTest : XCTestCase
+
+@end
 
 @implementation LowLatencyConnectorTest
 
