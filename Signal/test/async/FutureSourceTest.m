@@ -1,7 +1,11 @@
-#import "FutureSourceTest.h"
+#import <XCTest/XCTest.h>
 #import "TestUtil.h"
 #import "FutureSource.h"
 #import "Util.h"
+
+@interface FutureSourceTest:XCTestCase
+
+@end
 
 @implementation FutureSourceTest
 

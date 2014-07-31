@@ -1,4 +1,4 @@
-#import "JitterQueueTest.h"
+#import <XCTest/XCTest.h>
 #import "JitterQueue.h"
 #import "TestUtil.h"
 #import "EncodedAudioPacket.h"
@@ -14,6 +14,10 @@
 #define testLoggedDequeue(q, sequenceNumber, remainingCount) testLogged(q, ([NSString stringWithFormat:@"bad -%d: %d", sequenceNumber, remainingCount]))
 #define testLoggedDiscard(q, sequenceNumber, oldReadHeadSequenceNumber, newReadHeadSequenceNumber) testLogged(q, ([NSString stringWithFormat:@"discard %d,%d,%d", sequenceNumber, oldReadHeadSequenceNumber, newReadHeadSequenceNumber]))
 #define testLoggedResync(q, oldReadHeadSequenceNumber, newReadHeadSequenceNumber) testLogged(q, ([NSString stringWithFormat:@"resync %d to %d", oldReadHeadSequenceNumber,newReadHeadSequenceNumber]))
+
+@interface JitterQueueTest : XCTestCase
+
+@end
 
 @implementation JitterQueueTest
 

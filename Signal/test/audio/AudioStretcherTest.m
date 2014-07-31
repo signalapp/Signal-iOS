@@ -1,6 +1,10 @@
-#import "AudioStretcherTest.h"
+#import <XCTest/XCTest.h>
 #import "TestUtil.h"
 #import "AudioStretcher.h"
+
+@interface AudioStretcherTest : XCTestCase
+
+@end
 
 @implementation AudioStretcherTest
 -(void) testStretchAudioStretches {

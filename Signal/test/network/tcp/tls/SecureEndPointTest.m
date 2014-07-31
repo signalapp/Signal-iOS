@@ -1,7 +1,11 @@
-#import "SecureEndPointTest.h"
+#import <XCTest/XCTest.h>
 #import "SecureEndPoint.h"
 #import "TestUtil.h"
 #import "IpEndPoint.h"
+
+@interface SecureEndPointTest : XCTestCase
+
+@end
 
 @implementation SecureEndPointTest
 
