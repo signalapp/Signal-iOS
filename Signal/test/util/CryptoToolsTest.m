@@ -1,7 +1,11 @@
-#import "CryptoToolsTest.h"
+#import <XCTest/XCTest.h>
 #import "Util.h"
 #import "CryptoTools.h"
 #import "TestUtil.h"
+
+@interface CryptoToolsTest : XCTestCase
+
+@end
 
 @implementation CryptoToolsTest
 -(void) testIsEqualToData_TimingSafe {
