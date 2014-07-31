@@ -16,6 +16,7 @@
 #import "Util.h"
 #import <UICKeyChainStore/UICKeyChainStore.h>
 #import "Environment.h"
+#import "VersionMigrations.h"
 
 #define kSignalVersionKey @"SignalUpdateVersionKey"
 
