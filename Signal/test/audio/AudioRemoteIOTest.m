@@ -1,8 +1,12 @@
-#import "AudioRemoteIOTest.h"
+#import <XCTest/XCTest.h>
 #import "RemoteIOAudio.h"
 #import "AnonymousAudioCallbackHandler.h"
 #import "TestUtil.h"
 #import "CancelTokenSource.h"
+
+@interface AudioRemoteIOTest : XCTestCase
+
+@end
 
 @implementation AudioRemoteIOTest
 

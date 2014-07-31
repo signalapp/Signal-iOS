@@ -1,6 +1,10 @@
-#import "RtpPacketTests.h"
+#import <XCTest/XCTest.h>
 #import "TestUtil.h"
 #import "Util.h"
+
+@interface RtpPacketTests : XCTestCase
+
+@end
 
 @implementation RtpPacketTests
 

@@ -1,4 +1,4 @@
-#import "DnsManagerTest.h"
+#import <XCTest/XCTest.h>
 #import "DnsManager.h"
 #import "TestUtil.h"
 #import "Util.h"
@@ -12,6 +12,10 @@
 #define invalidHostname @"∆©˙∆¨¥©©˜¨¥©˜†¥µ¬¬¨˙µ†¥∫®∂®†"
 #define nonExistentHostname [NSString stringWithFormat:@"%@kfurmtludehntlgihmvnduyebntiinvbudydepqowudyfnrkt.com", \
     [[CryptoTools generateSecureRandomData:10] encodedAsBase64]]
+
+@interface DnsManagerTest : XCTestCase
+
+@end
 
 @implementation DnsManagerTest
 

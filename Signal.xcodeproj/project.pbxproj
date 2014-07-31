@@ -343,7 +343,6 @@
 		A157076117F0CD6D007C2BD6 /* RtpPacketTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A157070D17F0CD6D007C2BD6 /* RtpPacketTests.m */; };
 		A157076217F0CD6D007C2BD6 /* SecureStreamTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157071017F0CD6D007C2BD6 /* SecureStreamTest.m */; };
 		A157076317F0CD6D007C2BD6 /* SequenceCounterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157071217F0CD6D007C2BD6 /* SequenceCounterTest.m */; };
-		A157076417F0CD6D007C2BD6 /* DH3KAgreerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157071517F0CD6D007C2BD6 /* DH3KAgreerTest.m */; };
 		A157076517F0CD6D007C2BD6 /* HandshakePacketTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157071717F0CD6D007C2BD6 /* HandshakePacketTest.m */; };
 		A157076617F0CD6D007C2BD6 /* HashChainTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157071917F0CD6D007C2BD6 /* HashChainTest.m */; };
 		A157076717F0CD6D007C2BD6 /* MasterSecretTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157071B17F0CD6D007C2BD6 /* MasterSecretTest.m */; };
@@ -1010,65 +1009,39 @@
 		76EB053F18170B33006006FC /* CallLogTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CallLogTableViewCell.xib; sourceTree = "<group>"; };
 		8313AE91B4954215858A5662 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		A15706EC17F0CD6D007C2BD6 /* AsyncUtilTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsyncUtilTest.h; sourceTree = "<group>"; };
 		A15706ED17F0CD6D007C2BD6 /* AsyncUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AsyncUtilTest.m; sourceTree = "<group>"; };
-		A15706EE17F0CD6D007C2BD6 /* FutureSourceTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FutureSourceTest.h; sourceTree = "<group>"; };
 		A15706EF17F0CD6D007C2BD6 /* FutureSourceTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FutureSourceTest.m; sourceTree = "<group>"; };
-		A15706F017F0CD6D007C2BD6 /* ObservableTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObservableTest.h; sourceTree = "<group>"; };
 		A15706F117F0CD6D007C2BD6 /* ObservableTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObservableTest.m; sourceTree = "<group>"; };
-		A15706F317F0CD6D007C2BD6 /* AudioFrameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioFrameTest.h; sourceTree = "<group>"; };
 		A15706F417F0CD6D007C2BD6 /* AudioFrameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioFrameTest.m; sourceTree = "<group>"; };
-		A15706F517F0CD6D007C2BD6 /* AudioRemoteIOTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioRemoteIOTest.h; sourceTree = "<group>"; };
 		A15706F617F0CD6D007C2BD6 /* AudioRemoteIOTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioRemoteIOTest.m; sourceTree = "<group>"; };
-		A15706F717F0CD6D007C2BD6 /* AudioStretcherTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioStretcherTest.h; sourceTree = "<group>"; };
 		A15706F817F0CD6D007C2BD6 /* AudioStretcherTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioStretcherTest.m; sourceTree = "<group>"; };
-		A15706F917F0CD6D007C2BD6 /* JitterQueueTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JitterQueueTest.h; sourceTree = "<group>"; };
 		A15706FA17F0CD6D007C2BD6 /* JitterQueueTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JitterQueueTest.m; sourceTree = "<group>"; };
-		A15706FB17F0CD6D007C2BD6 /* SpeexCodecTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeexCodecTest.h; sourceTree = "<group>"; };
 		A15706FC17F0CD6D007C2BD6 /* SpeexCodecTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpeexCodecTest.m; sourceTree = "<group>"; };
-		A157070217F0CD6D007C2BD6 /* DnsManagerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DnsManagerTest.h; sourceTree = "<group>"; };
 		A157070317F0CD6D007C2BD6 /* DnsManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DnsManagerTest.m; sourceTree = "<group>"; };
 		A157070517F0CD6D007C2BD6 /* HttpRequestResponseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequestResponseTest.h; sourceTree = "<group>"; };
 		A157070617F0CD6D007C2BD6 /* HttpRequestResponseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequestResponseTest.m; sourceTree = "<group>"; };
-		A157070717F0CD6D007C2BD6 /* IpAddressTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IpAddressTest.h; sourceTree = "<group>"; };
 		A157070817F0CD6D007C2BD6 /* IpAddressTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IpAddressTest.m; sourceTree = "<group>"; };
-		A157070917F0CD6D007C2BD6 /* IpEndPointTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IpEndPointTest.h; sourceTree = "<group>"; };
 		A157070A17F0CD6D007C2BD6 /* IpEndPointTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IpEndPointTest.m; sourceTree = "<group>"; };
-		A157070C17F0CD6D007C2BD6 /* RtpPacketTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtpPacketTests.h; sourceTree = "<group>"; };
 		A157070D17F0CD6D007C2BD6 /* RtpPacketTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RtpPacketTests.m; sourceTree = "<group>"; };
-		A157070F17F0CD6D007C2BD6 /* SecureStreamTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecureStreamTest.h; sourceTree = "<group>"; };
 		A157071017F0CD6D007C2BD6 /* SecureStreamTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecureStreamTest.m; sourceTree = "<group>"; };
-		A157071117F0CD6D007C2BD6 /* SequenceCounterTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SequenceCounterTest.h; sourceTree = "<group>"; };
 		A157071217F0CD6D007C2BD6 /* SequenceCounterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SequenceCounterTest.m; sourceTree = "<group>"; };
-		A157071417F0CD6D007C2BD6 /* DH3KAgreerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DH3KAgreerTest.h; sourceTree = "<group>"; };
-		A157071517F0CD6D007C2BD6 /* DH3KAgreerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DH3KAgreerTest.m; sourceTree = "<group>"; };
-		A157071617F0CD6D007C2BD6 /* HandshakePacketTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HandshakePacketTest.h; sourceTree = "<group>"; };
 		A157071717F0CD6D007C2BD6 /* HandshakePacketTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HandshakePacketTest.m; sourceTree = "<group>"; };
-		A157071817F0CD6D007C2BD6 /* HashChainTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashChainTest.h; sourceTree = "<group>"; };
 		A157071917F0CD6D007C2BD6 /* HashChainTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HashChainTest.m; sourceTree = "<group>"; };
-		A157071A17F0CD6D007C2BD6 /* MasterSecretTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterSecretTest.h; sourceTree = "<group>"; };
 		A157071B17F0CD6D007C2BD6 /* MasterSecretTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterSecretTest.m; sourceTree = "<group>"; };
-		A157071C17F0CD6D007C2BD6 /* ShortAuthenticationStringGeneratorTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShortAuthenticationStringGeneratorTest.h; sourceTree = "<group>"; };
 		A157071D17F0CD6D007C2BD6 /* ShortAuthenticationStringGeneratorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShortAuthenticationStringGeneratorTest.m; sourceTree = "<group>"; };
 		A157071F17F0CD6D007C2BD6 /* PregeneratedKeyAgreementParticipantProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PregeneratedKeyAgreementParticipantProtocol.h; sourceTree = "<group>"; };
 		A157072017F0CD6D007C2BD6 /* PregeneratedKeyAgreementParticipantProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PregeneratedKeyAgreementParticipantProtocol.m; sourceTree = "<group>"; };
 		A157072117F0CD6D007C2BD6 /* ZrtpTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZrtpTest.h; sourceTree = "<group>"; };
 		A157072217F0CD6D007C2BD6 /* ZrtpTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZrtpTest.m; sourceTree = "<group>"; };
-		A157072417F0CD6D007C2BD6 /* LowLatencyConnectorTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LowLatencyConnectorTest.h; sourceTree = "<group>"; };
 		A157072517F0CD6D007C2BD6 /* LowLatencyConnectorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LowLatencyConnectorTest.m; sourceTree = "<group>"; };
-		A157072717F0CD6D007C2BD6 /* NetworkStreamTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkStreamTest.h; sourceTree = "<group>"; };
 		A157072817F0CD6D007C2BD6 /* NetworkStreamTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkStreamTest.m; sourceTree = "<group>"; };
-		A157072917F0CD6D007C2BD6 /* SecureEndPointTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecureEndPointTest.h; sourceTree = "<group>"; };
 		A157072A17F0CD6D007C2BD6 /* SecureEndPointTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecureEndPointTest.m; sourceTree = "<group>"; };
 		A157072C17F0CD6D007C2BD6 /* UdpSocketTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UdpSocketTest.h; sourceTree = "<group>"; };
 		A157072D17F0CD6D007C2BD6 /* UdpSocketTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UdpSocketTest.m; sourceTree = "<group>"; };
-		A157072F17F0CD6D007C2BD6 /* PhoneNumberTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneNumberTest.h; sourceTree = "<group>"; };
 		A157073017F0CD6D007C2BD6 /* PhoneNumberTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberTest.m; sourceTree = "<group>"; };
 		A157073217F0CD6D007C2BD6 /* SessionDescriptorTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SessionDescriptorTest.h; sourceTree = "<group>"; };
 		A157073317F0CD6D007C2BD6 /* SessionDescriptorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SessionDescriptorTest.m; sourceTree = "<group>"; };
-		A157073517F0CD6D007C2BD6 /* DecayingSampleEstimatorTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DecayingSampleEstimatorTest.h; sourceTree = "<group>"; };
 		A157073617F0CD6D007C2BD6 /* DecayingSampleEstimatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DecayingSampleEstimatorTest.m; sourceTree = "<group>"; };
-		A157073717F0CD6D007C2BD6 /* EventWindowTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventWindowTest.h; sourceTree = "<group>"; };
 		A157073817F0CD6D007C2BD6 /* EventWindowTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventWindowTest.m; sourceTree = "<group>"; };
 		A157073A17F0CD6D007C2BD6 /* SignalTests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "SignalTests-Info.plist"; sourceTree = "<group>"; };
 		A157073B17F0CD6D007C2BD6 /* TestUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestUtil.h; sourceTree = "<group>"; };
@@ -2233,11 +2206,8 @@
 		A15706EB17F0CD6D007C2BD6 /* async */ = {
 			isa = PBXGroup;
 			children = (
-				A15706EC17F0CD6D007C2BD6 /* AsyncUtilTest.h */,
 				A15706ED17F0CD6D007C2BD6 /* AsyncUtilTest.m */,
-				A15706EE17F0CD6D007C2BD6 /* FutureSourceTest.h */,
 				A15706EF17F0CD6D007C2BD6 /* FutureSourceTest.m */,
-				A15706F017F0CD6D007C2BD6 /* ObservableTest.h */,
 				A15706F117F0CD6D007C2BD6 /* ObservableTest.m */,
 			);
 			path = async;
@@ -2246,15 +2216,10 @@
 		A15706F217F0CD6D007C2BD6 /* audio */ = {
 			isa = PBXGroup;
 			children = (
-				A15706F317F0CD6D007C2BD6 /* AudioFrameTest.h */,
 				A15706F417F0CD6D007C2BD6 /* AudioFrameTest.m */,
-				A15706F517F0CD6D007C2BD6 /* AudioRemoteIOTest.h */,
 				A15706F617F0CD6D007C2BD6 /* AudioRemoteIOTest.m */,
-				A15706F717F0CD6D007C2BD6 /* AudioStretcherTest.h */,
 				A15706F817F0CD6D007C2BD6 /* AudioStretcherTest.m */,
-				A15706F917F0CD6D007C2BD6 /* JitterQueueTest.h */,
 				A15706FA17F0CD6D007C2BD6 /* JitterQueueTest.m */,
-				A15706FB17F0CD6D007C2BD6 /* SpeexCodecTest.h */,
 				A15706FC17F0CD6D007C2BD6 /* SpeexCodecTest.m */,
 			);
 			path = audio;
@@ -2265,9 +2230,7 @@
 			children = (
 				A157070117F0CD6D007C2BD6 /* dns */,
 				A157070417F0CD6D007C2BD6 /* http */,
-				A157070717F0CD6D007C2BD6 /* IpAddressTest.h */,
 				A157070817F0CD6D007C2BD6 /* IpAddressTest.m */,
-				A157070917F0CD6D007C2BD6 /* IpEndPointTest.h */,
 				A157070A17F0CD6D007C2BD6 /* IpEndPointTest.m */,
 				A157070B17F0CD6D007C2BD6 /* rtp */,
 				A157072317F0CD6D007C2BD6 /* tcp */,
@@ -2279,7 +2242,6 @@
 		A157070117F0CD6D007C2BD6 /* dns */ = {
 			isa = PBXGroup;
 			children = (
-				A157070217F0CD6D007C2BD6 /* DnsManagerTest.h */,
 				A157070317F0CD6D007C2BD6 /* DnsManagerTest.m */,
 			);
 			path = dns;
@@ -2297,7 +2259,6 @@
 		A157070B17F0CD6D007C2BD6 /* rtp */ = {
 			isa = PBXGroup;
 			children = (
-				A157070C17F0CD6D007C2BD6 /* RtpPacketTests.h */,
 				A157070D17F0CD6D007C2BD6 /* RtpPacketTests.m */,
 				A157070E17F0CD6D007C2BD6 /* srtp */,
 				A157071317F0CD6D007C2BD6 /* zrtp */,
@@ -2308,9 +2269,7 @@
 		A157070E17F0CD6D007C2BD6 /* srtp */ = {
 			isa = PBXGroup;
 			children = (
-				A157070F17F0CD6D007C2BD6 /* SecureStreamTest.h */,
 				A157071017F0CD6D007C2BD6 /* SecureStreamTest.m */,
-				A157071117F0CD6D007C2BD6 /* SequenceCounterTest.h */,
 				A157071217F0CD6D007C2BD6 /* SequenceCounterTest.m */,
 			);
 			path = srtp;
@@ -2319,15 +2278,9 @@
 		A157071317F0CD6D007C2BD6 /* zrtp */ = {
 			isa = PBXGroup;
 			children = (
-				A157071417F0CD6D007C2BD6 /* DH3KAgreerTest.h */,
-				A157071517F0CD6D007C2BD6 /* DH3KAgreerTest.m */,
-				A157071617F0CD6D007C2BD6 /* HandshakePacketTest.h */,
 				A157071717F0CD6D007C2BD6 /* HandshakePacketTest.m */,
-				A157071817F0CD6D007C2BD6 /* HashChainTest.h */,
 				A157071917F0CD6D007C2BD6 /* HashChainTest.m */,
-				A157071A17F0CD6D007C2BD6 /* MasterSecretTest.h */,
 				A157071B17F0CD6D007C2BD6 /* MasterSecretTest.m */,
-				A157071C17F0CD6D007C2BD6 /* ShortAuthenticationStringGeneratorTest.h */,
 				A157071D17F0CD6D007C2BD6 /* ShortAuthenticationStringGeneratorTest.m */,
 				A157071E17F0CD6D007C2BD6 /* utilities */,
 				A157072117F0CD6D007C2BD6 /* ZrtpTest.h */,
@@ -2349,7 +2302,6 @@
 		A157072317F0CD6D007C2BD6 /* tcp */ = {
 			isa = PBXGroup;
 			children = (
-				A157072417F0CD6D007C2BD6 /* LowLatencyConnectorTest.h */,
 				A157072517F0CD6D007C2BD6 /* LowLatencyConnectorTest.m */,
 				A157072617F0CD6D007C2BD6 /* tls */,
 			);
@@ -2359,9 +2311,7 @@
 		A157072617F0CD6D007C2BD6 /* tls */ = {
 			isa = PBXGroup;
 			children = (
-				A157072717F0CD6D007C2BD6 /* NetworkStreamTest.h */,
 				A157072817F0CD6D007C2BD6 /* NetworkStreamTest.m */,
-				A157072917F0CD6D007C2BD6 /* SecureEndPointTest.h */,
 				A157072A17F0CD6D007C2BD6 /* SecureEndPointTest.m */,
 			);
 			path = tls;
@@ -2379,7 +2329,6 @@
 		A157072E17F0CD6D007C2BD6 /* phone */ = {
 			isa = PBXGroup;
 			children = (
-				A157072F17F0CD6D007C2BD6 /* PhoneNumberTest.h */,
 				A157073017F0CD6D007C2BD6 /* PhoneNumberTest.m */,
 				A157073117F0CD6D007C2BD6 /* signaling */,
 			);
@@ -2398,9 +2347,7 @@
 		A157073417F0CD6D007C2BD6 /* profiling */ = {
 			isa = PBXGroup;
 			children = (
-				A157073517F0CD6D007C2BD6 /* DecayingSampleEstimatorTest.h */,
 				A157073617F0CD6D007C2BD6 /* DecayingSampleEstimatorTest.m */,
-				A157073717F0CD6D007C2BD6 /* EventWindowTest.h */,
 				A157073817F0CD6D007C2BD6 /* EventWindowTest.m */,
 			);
 			path = profiling;
@@ -3299,7 +3246,6 @@
 				76EB063B18170B33006006FC /* FunctionalUtil.m in Sources */,
 				A157076217F0CD6D007C2BD6 /* SecureStreamTest.m in Sources */,
 				A157076317F0CD6D007C2BD6 /* SequenceCounterTest.m in Sources */,
-				A157076417F0CD6D007C2BD6 /* DH3KAgreerTest.m in Sources */,
 				76EB062318170B33006006FC /* CyclicalBuffer.m in Sources */,
 				A157076517F0CD6D007C2BD6 /* HandshakePacketTest.m in Sources */,
 				76EB054918170B33006006FC /* CancelTokenSource.m in Sources */,
@@ -3533,7 +3479,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C71793B33D9C45079F74487E /* Pods.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3573,7 +3519,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = Signal;
-				PROVISIONING_PROFILE = "B26CF658-AD7F-4F4C-B94F-74884941DF87";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_AFTER_BUILD = YES;
@@ -3770,7 +3716,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C71793B33D9C45079F74487E /* Pods.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3822,7 +3768,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C71793B33D9C45079F74487E /* Pods.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3857,7 +3803,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = Signal;
-				PROVISIONING_PROFILE = "7214A823-1F7A-4460-82D8-D89CA511CEA6";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_AFTER_BUILD = YES;

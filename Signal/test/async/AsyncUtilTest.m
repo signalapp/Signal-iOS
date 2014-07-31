@@ -1,10 +1,14 @@
-#import "AsyncUtilTest.h"
+#import <XCTest/XCTest.h>
 #import "TestUtil.h"
 #import "AsyncUtil.h"
 #import "FutureSource.h"
 #import "CancelTokenSource.h"
 #import "CancelledToken.h"
 #import "ThreadManager.h"
+
+@interface AsyncUtilTest : XCTestCase
+
+@end
 
 @implementation AsyncUtilTest
 
