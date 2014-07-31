@@ -371,7 +371,7 @@
                        forCountry:(NSString *)country {
     _countryCodeLabel.text = code;
     _countryNameLabel.text = country;
-    [self updatePhoneNumberFieldWithString:code];
+    [self updatePhoneNumberFieldWithString:code cursorposition:_enteredPhoneNumber.length];
     [vc dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -381,23 +381,39 @@
 
 #pragma mark - UITextFieldDelegate
 
+- (NSUInteger) recalculateLocation:(NSUInteger)location {
+    uint offset = 0, phonenumberposition = 0;
+    for (uint i=0;i<location;i++) {
+        if ([_phoneNumberTextField.text characterAtIndex:i] != [_enteredPhoneNumber characterAtIndex:phonenumberposition])
+            offset ++;
+        else
+            phonenumberposition ++;
+    }
+    
+    return offset;
+}
+
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range
                                                        replacementString:(NSString *)string {
     
+    range.location -= [self recalculateLocation:range.location];
     BOOL handleBackspace = range.length == 1;
     if (handleBackspace) {
-        NSRange backspaceRange = NSMakeRange([_enteredPhoneNumber length] - 1, 1);
+        NSRange backspaceRange = NSMakeRange(range.location, 1);
         [_enteredPhoneNumber replaceCharactersInRange:backspaceRange withString:string];
     } else {
         NSString* sanitizedString = [[string componentsSeparatedByCharactersInSet:[[NSCharacterSet decimalDigitCharacterSet ] invertedSet]] componentsJoinedByString:@""];
-        [_enteredPhoneNumber appendString:sanitizedString];
+        NSMutableString* mutablePhoneNumber = [NSMutableString stringWithString:_enteredPhoneNumber];
+        [mutablePhoneNumber insertString:sanitizedString atIndex:range.location];
+        _enteredPhoneNumber = mutablePhoneNumber;
     }
 
-    [self updatePhoneNumberFieldWithString:_enteredPhoneNumber];
+    [self updatePhoneNumberFieldWithString:_enteredPhoneNumber cursorposition:range.location+1];
     return NO;
 }
 
--(void) updatePhoneNumberFieldWithString:(NSString*) input {
+-(void) updatePhoneNumberFieldWithString:(NSString*)input
+                          cursorposition:(NSUInteger)cursorpos {
     NSString* result = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:_enteredPhoneNumber
                                                                     withSpecifiedCountryCodeString:_countryCodeLabel.text];
     _phoneNumberTextField.text = result;
