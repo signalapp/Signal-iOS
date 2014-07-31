@@ -2,6 +2,8 @@
 
 Signal allows you to make private phone calls and we are working on bringing secure messaging to it soon.
 
+[![Available on the AppStore](http://cl.ly/WouG/Download_on_the_App_Store_Badge_US-UK_135x40.svg)](https://itunes.apple.com/app/id874139669)
+
 ## Building
 
 1) Clone the repo to a working directory
