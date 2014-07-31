@@ -33,6 +33,11 @@ Help us translate Signal! The translation effort happens on [Transifex](https://
 
 Signal works with [RedPhone on Android](https://github.com/WhisperSystems/Redphone).
 
+Current BitHub Payment Per Commit:
+=================
+![Current Price](https://bithub.herokuapp.com/v1/status/payment/commit)
+
+
 ## Cryptography Notice
 
 This distribution includes cryptographic software. The country in which you currently reside may have restrictions on the import, possession, use, and/or re-export to another country, of encryption software. 
