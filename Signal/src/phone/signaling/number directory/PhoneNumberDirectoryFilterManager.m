@@ -24,7 +24,7 @@
 -(void) startUntilCancelled:(id<CancelToken>)cancelToken {
     lifetimeToken = cancelToken;
     
-    phoneNumberDirectoryFilter = [[[Environment getCurrent] preferences] tryGetSavedPhoneNumberDirectory];
+    phoneNumberDirectoryFilter = [[Environment preferences] tryGetSavedPhoneNumberDirectory];
     if (phoneNumberDirectoryFilter == nil) {
         phoneNumberDirectoryFilter = [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterDefault];
     }
@@ -103,7 +103,7 @@
         @synchronized(self) {
             phoneNumberDirectoryFilter = directory;
         }
-        [[[Environment getCurrent]preferences] setSavedPhoneNumberDirectory:directory];
+        [[Environment preferences] setSavedPhoneNumberDirectory:directory];
         [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
         [self scheduleUpdate];
     }];

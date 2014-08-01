@@ -43,7 +43,6 @@
         _inviteContactsNavigationController = [[UINavigationController alloc] initWithRootViewController:_inviteContactsViewController];
         _contactsViewController = [ContactBrowseViewController new];
         _contactNavigationController = [[UINavigationController alloc] initWithRootViewController:_contactsViewController];
-        [[AppAudioManager sharedInstance] requestRequiredPermissionsIfNeeded];
     }
     return self;
 }

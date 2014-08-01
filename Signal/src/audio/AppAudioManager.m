@@ -159,7 +159,10 @@ AppAudioManager*  sharedAppAudioManager;
 
 -(void) requestRequiredPermissionsIfNeeded {
     [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
-        //todo: take action?
+        if (!granted) {
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"") message:NSLocalizedString(@"AUDIO_PERMISSION_MESSAGE", @"") delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil, nil];
+            [alertView show];
+        }
     }];
 }
 

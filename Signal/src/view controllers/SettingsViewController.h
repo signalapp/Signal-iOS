@@ -35,8 +35,6 @@
 
 @property (nonatomic, strong) IBOutlet UITableViewCell *sendDebugLog;
 
-@property (nonatomic, assign) FutureSource *apnId;
-
 - (IBAction)registerTapped;
 
 - (IBAction)privacyAndSecurityTapped;

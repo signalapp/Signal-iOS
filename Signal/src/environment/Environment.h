@@ -71,7 +71,7 @@ andCurrentRegionCodeForPhoneNumbers:(NSString*)currentRegionCodeForPhoneNumbers
 +(bool) hasEnabledTestingOrLegacyOption:(NSString*)flag;
 +(PhoneManager*) phoneManager;
 
--(PropertyListPreferences*)preferences;
++(PropertyListPreferences*)preferences;
 
 +(BOOL)isRegistered;
 +(void)setRegistered:(BOOL)status;

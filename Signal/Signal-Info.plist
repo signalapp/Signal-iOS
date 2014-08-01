@@ -47,9 +47,8 @@
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
-		<string>remote-notification</string>
-		<string>fetch</string>
 		<string>audio</string>
+		<string>remote-notification</string>
 		<string>voip</string>
 	</array>
 	<key>UIRequiredDeviceCapabilities</key>

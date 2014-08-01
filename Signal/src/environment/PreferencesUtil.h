@@ -22,5 +22,7 @@
 -(void) setContactImagesEnabled:(BOOL)enabled;
 -(void) setAutocorrectEnabled:(BOOL)enabled;
 -(void) setHistoryLogEnabled:(BOOL)enabled;
+-(BOOL) encounteredRevokedPushPermission;
+-(void) setRevokedPushPermission:(BOOL)revoked;
 
 @end

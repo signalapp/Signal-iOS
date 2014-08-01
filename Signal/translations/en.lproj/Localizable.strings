@@ -1,5 +1,7 @@
+"ACTION_REQUIRED_TITLE" = "Action Required";
 "ANSWER_CALL_BUTTON_TITLE" = "Answer";
 "APN" = "Incoming Call";
+"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can restore the permission in the Settings app >> Privacy >> Microphone >> Signal";
 "CALL_BUTTON_TITLE" = "Call";
 "CHALLENGE_CODE_BUTTON_TITLE" = "VERIFY";
 "CHOOSE_COUNTRY_CODE" = "Choose Country Code";
@@ -32,7 +34,6 @@
 "DIALER_NUMBER_7" = "7";
 "DIALER_NUMBER_8" = "8";
 "DIALER_NUMBER_9" = "9";
-"DIALER_NUMBER_PLUS" = "+";
 "DIALER_NUMBER_PLUS" = "+";
 "DIALER_NUMBER_POUND" = "#";
 "DISABLING_BACKUP_FAILED" = "We encountered an issue while disabling the backup of your call log. Call logs might leak in your iTunes/iCloud backups.";
@@ -85,6 +86,7 @@
 "NOTIFICATION_TEXT" = "Some of your contacts have recently registered numbers with Signal!";
 "NO_FAVOURITES_TEXT" = "To favorite a contact, tap the star on a contact page.";
 "OK" = "Ok";
+"PUSH_SETTINGS_MESSAGE" = "Signal requires push notification alerts and sounds to be enabled to work properly. Please change it in the Settings app >> Notification Center >> Signal.";
 "QUICK_LINKS_TITLE" = "Quick Links";
 "RECENT_CALLS_SORTING_TITLE" = "Sorting Method";
 "RECENT_NAV_BAR_TITLE" = "Call Log";
@@ -102,12 +104,10 @@
 "REGISTER_TEXTBLOCK" = "To get started making secure calls, please confirm your country code and enter your device's phone number.";
 "REGISTER_VALIDATION_ENTER_CODE" = "Validation Code";
 "REGISTER_VALIDATION_SENT" = "We sent your validation code";
-
 "REGISTER_WELCOME_TEXT" = "Welcome to Signal";
 "REGISTRATION_ERROR" = "Registration Error";
 "REGISTRATION_BODY" = "We couldn't reach the Signal server. Please try again.";
 "REJECT_CALL_BUTTON_TITLE" = "Reject";
-"SETTINGS_ANONYMOUS_FEEDBACK" = "Send Anonymous Feedback";
 "SETTINGS_CALL_QUALITY" = "Call Quality";
 "SETTINGS_CHANGE_VOLUME" = "Change Volume With Buttons";
 "SETTINGS_CLEAR_HISTORY_LOG" = "Clear History Log";
