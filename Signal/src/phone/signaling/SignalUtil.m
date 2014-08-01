@@ -99,8 +99,6 @@
     
     NSString* query = [NSString stringWithFormat:@"/apn/%@", [deviceToken encodedAsHexString]];
     
-    DDLogInfo(@"Registered APN Device Token with Signal Server");
-    
     return [HttpRequest httpRequestWithBasicAuthenticationAndMethod:@"PUT"
                                                         andLocation:query];
 }

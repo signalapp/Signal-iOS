@@ -22,6 +22,5 @@
 @property (nonatomic, strong) IBOutlet UILabel *freshAppTutorialMiddleLabel;
 
 
-@property (nonatomic, assign) FutureSource *apnId;
 
 @end

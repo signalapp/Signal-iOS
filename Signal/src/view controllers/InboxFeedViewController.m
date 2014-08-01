@@ -49,7 +49,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
     [self setupLabelLocalizationAndStyles];
 
     if (![Environment isRegistered]) {
-        RegisterViewController *registerViewController = [RegisterViewController registerViewControllerForApn:_apnId];
+        RegisterViewController *registerViewController = [RegisterViewController registerViewController];
         [self presentViewController:registerViewController animated:NO completion:nil];
     }
     _inboxFeedTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -181,7 +181,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 }
 
 - (void)updateTutorialVisibility {
-    _freshInboxView.hidden = ![[[Environment getCurrent] preferences] getFreshInstallTutorialsEnabled];
+    _freshInboxView.hidden = ![[Environment preferences] getFreshInstallTutorialsEnabled];
     _inboxFeedTableView.hidden = !_freshInboxView.hidden;
 }
 

@@ -5,7 +5,6 @@
 #import "FutureSource.h"
 
 @interface RegisterViewController : UIViewController <CountryCodeViewControllerDelegate, UITextFieldDelegate> {
-@private Future* futureApnId;
 @private FutureSource* registered;
 @private FutureSource* futureChallengeAcceptedSource;
 @private CancelTokenSource* life;
@@ -36,6 +35,6 @@
 - (IBAction)changeCountryCodeTapped;
 - (IBAction)initiateVoiceVerificationButtonHandler;
 
-+ (RegisterViewController*)registerViewControllerForApn:(Future *)apnId;
++ (RegisterViewController*)registerViewController;
 
 @end

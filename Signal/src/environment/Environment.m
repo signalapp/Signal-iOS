@@ -159,14 +159,13 @@ phoneDirectoryManager;
     [[NSUserDefaults standardUserDefaults] setObject:status?@YES:@NO forKey:isRegisteredUserDefaultString];
 }
 
--(PropertyListPreferences*)preferences{
++(PropertyListPreferences*)preferences{
     return [[PropertyListPreferences alloc]init];
 }
 
 +(void)resetAppData{
     [SGNKeychainUtil wipeKeychain];
-    [NSUserDefaults resetStandardUserDefaults];
-    [[[Environment getCurrent] preferences] clear];
+    [[Environment preferences] clear];
 }
 
 @end

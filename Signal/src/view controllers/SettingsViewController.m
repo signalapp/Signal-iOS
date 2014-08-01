@@ -106,7 +106,7 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
         [button setImage:[UIImage imageNamed:CHECKBOX_CHECKMARK_IMAGE_NAME]
                 forState:UIControlStateSelected];
     }
-    PropertyListPreferences *prefs = [[Environment getCurrent] preferences];
+    PropertyListPreferences *prefs = [Environment preferences];
     _hideContactImagesButton.selected = ![prefs getContactImagesEnabled];
     _disableAutocorrectButton.selected = ![prefs getAutocorrectEnabled];
     _disableHistoryButton.selected = ![prefs getHistoryLogEnabled];
@@ -155,7 +155,7 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 #pragma mark - Actions
 
 - (void)registerTapped {
-    RegisterViewController *registerViewController = [RegisterViewController registerViewControllerForApn:_apnId];
+    RegisterViewController *registerViewController = [RegisterViewController registerViewController];
     [self presentViewController:registerViewController animated:YES completion:nil];
 }
 
@@ -181,17 +181,17 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 
 - (IBAction)hideContactImagesButtonTapped {
     _hideContactImagesButton.selected = !_hideContactImagesButton.selected;
-    [[[Environment getCurrent] preferences] setContactImagesEnabled:!_hideContactImagesButton.selected];
+    [[Environment preferences] setContactImagesEnabled:!_hideContactImagesButton.selected];
 }
 
 - (IBAction)disableAutocorrectButtonTapped {
     _disableAutocorrectButton.selected = !_disableAutocorrectButton.selected;
-    [[[Environment getCurrent] preferences] setAutocorrectEnabled:!_disableAutocorrectButton.selected];
+    [[Environment preferences] setAutocorrectEnabled:!_disableAutocorrectButton.selected];
 }
 
 - (IBAction)disableHistoryButtonTapped {
     _disableHistoryButton.selected = !_disableHistoryButton.selected;
-    [[[Environment getCurrent] preferences] setHistoryLogEnabled:!_disableHistoryButton.selected];
+    [[Environment preferences] setHistoryLogEnabled:!_disableHistoryButton.selected];
 }
 
 - (void)clearHistory {

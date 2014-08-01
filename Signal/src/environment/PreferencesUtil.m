@@ -20,6 +20,7 @@
 #define CONTACT_IMAGES_ENABLED_KEY @"Contact Images Enabled Key"
 #define AUTOCORRECT_ENABLED_KEY @"Autocorrect Enabled Key"
 #define HISTORY_LOG_ENABLED_KEY @"History Log Enabled Key"
+#define PUSH_REVOKED_KEY @"Push Revoked Key"
 
 @implementation PropertyListPreferences (PropertyUtil)
 
@@ -105,6 +106,13 @@
 }
 -(void) setHistoryLogEnabled:(BOOL)enabled {
     [self setValueForKey:HISTORY_LOG_ENABLED_KEY toValue:[NSNumber numberWithBool:enabled]];
+}
+
+-(BOOL) encounteredRevokedPushPermission{
+    return [[self tryGetValueForKey:PUSH_REVOKED_KEY] boolValue];
+}
+-(void) setRevokedPushPermission:(BOOL)revoked{
+    [self setValueForKey:PUSH_REVOKED_KEY toValue:[NSNumber numberWithBool:revoked]];
 }
 
 @end

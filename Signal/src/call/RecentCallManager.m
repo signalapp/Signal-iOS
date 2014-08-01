@@ -51,7 +51,7 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
     require(phoneManager != nil);
 
     [[phoneManager currentCallObservable] watchLatestValue:^(CallState* latestCall) {
-        if (latestCall != nil && [[[Environment getCurrent] preferences] getHistoryLogEnabled]) {
+        if (latestCall != nil && [[Environment preferences] getHistoryLogEnabled]) {
             [self addCall:latestCall];
         }
     } onThread:[NSThread mainThread] untilCancelled:untilCancelledToken];
@@ -101,7 +101,7 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
 
 - (void)addRecentCall:(RecentCall *)recentCall {
     [_allRecents insertObject:recentCall atIndex:0];
-    [[[Environment getCurrent] preferences] setFreshInstallTutorialsEnabled:NO];
+    [[Environment preferences] setFreshInstallTutorialsEnabled:NO];
     [observableRecentsController updateValue:[_allRecents copy]];
     [self saveContactsToDefaults];
 }

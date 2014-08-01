@@ -6,6 +6,7 @@
 #import "PhoneNumberDirectoryFilterManager.h"
 #import "PhoneNumberUtil.h"
 #import "PreferencesUtil.h"
+#import "PushManager.h"
 #import "RegisterViewController.h"
 #import "SignalUtil.h"
 #import "SGNKeychainUtil.h"
@@ -52,11 +53,8 @@
     _enteredPhoneNumber = [NSMutableString string];
 }
 
-+ (RegisterViewController*)registerViewControllerForApn:(Future *)apnId {
-    require(apnId != nil);
-
++ (RegisterViewController*)registerViewController {
     RegisterViewController *viewController = [RegisterViewController new];
-    viewController->futureApnId = apnId;
     viewController->registered = [FutureSource new];
     viewController->life = [CancelTokenSource cancelTokenSource];
     [[viewController->life getToken] whenCancelledTryCancel:viewController->registered];
@@ -133,7 +131,7 @@
                                                                   againstTimeout:20.0
                                                                   untilCancelled:cancelToken];
 
-    Future *futurePhoneRegistrationVerified = [futurePhoneRegistrationStarted then:^(id _) {
+    return [futurePhoneRegistrationStarted then:^(id _) {
         [self showViewNumber:CHALLENGE_VIEW_NUMBER];
         [Environment setRegistered:YES];
         [self.challengeNumberLabel setText:[phoneNumber description]];
@@ -143,24 +141,6 @@
         return futureChallengeAcceptedSource;
     }];
 
-    Future *futureApnToRegister = [futurePhoneRegistrationVerified then:^(HttpResponse* okResponse) {
-        return [futureApnId catch:^id(id error) {
-            DDLogError(@"Could not get APN. Runs in Simulator?");
-            return nil;
-        }];
-    }];
-
-    return [futureApnToRegister then:^Future*(NSData* deviceToken) {
-        if (deviceToken == nil){
-            DDLogError(@"Couldn't get a device token for APN. Runs in Simulator?");
-            return futureApnToRegister;
-        }
-        
-        HttpRequest* request = [HttpRequest httpRequestToRegisterForApnSignalingWithDeviceToken:deviceToken];
-        return [HttpManager asyncOkResponseFromMasterServer:request
-                                            unlessCancelled:cancelToken
-                                            andErrorHandler:[Environment errorNoter]];
-    }];    
 }
 
 - (void)registerPhoneNumberTapped {
@@ -219,6 +199,7 @@
         [registered trySetResult:@YES];
         [self dismissView];
         [futureChallengeAcceptedSource trySetResult:result];
+        [[PushManager sharedManager] askForPushRegistration];
     }];
 
     [futureDone finallyDo:^(Future *completed) {
