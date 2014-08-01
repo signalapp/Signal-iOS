@@ -12,7 +12,6 @@
 
 + (instancetype)sharedManager;
 
-
 - (void)verifyPushActivated;
 
 - (void)askForPushRegistration;

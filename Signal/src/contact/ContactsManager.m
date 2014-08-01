@@ -10,9 +10,6 @@
 #import "PreferencesUtil.h"
 #import "Util.h"
 
-
-//@TODO: Split Up into Seperate components.
-
 #define ADDRESSBOOK_QUEUE dispatch_get_main_queue()
 
 static NSString *const FAVOURITES_DEFAULT_KEY = @"FAVOURITES_DEFAULT_KEY";

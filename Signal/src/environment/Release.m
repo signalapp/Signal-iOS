@@ -45,7 +45,6 @@ static unsigned char DH3K_PRIME[]={
 @implementation Release
 
 +(Environment*) releaseEnvironmentWithLogging:(id<Logging>)logging {
-    // @todo: turn off error notification
     //ErrorHandlerBlock errorDiscarder = ^(id error, id relatedInfo, bool causedTermination) {};
     ErrorHandlerBlock errorNoter = ^(id error, id relatedInfo, bool causedTermination) { DDLogError(@"%@: %@, %d", error, relatedInfo, causedTermination); };
     
