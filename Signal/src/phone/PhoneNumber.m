@@ -124,7 +124,6 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 -(NSURL*) toUrl {
-    // @todo: can we return a more user-friendly link (using original text) in some limited cases?
     NSString* link = [NSString stringWithFormat:@"telprompt://%@", e164];
     return [NSURL URLWithString:link];
 }

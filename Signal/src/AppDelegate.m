@@ -4,6 +4,7 @@
 #import "CategorizingLogger.h"
 #import "DialerViewController.h"
 #import "DiscardingLog.h"
+#import "Environment.h"
 #import "InCallViewController.h"
 #import "LeftSideMenuViewController.h"
 #import "MMDrawerController.h"
@@ -15,9 +16,7 @@
 #import "SettingsViewController.h"
 #import "TabBarParentViewController.h"
 #import "Util.h"
-#import <UICKeyChainStore/UICKeyChainStore.h>
-#import "Environment.h"
-#import "CallServerRequestsManager.h"
+#import "VersionMigrations.h"
 
 #define kSignalVersionKey @"SignalUpdateVersionKey"
 
@@ -49,6 +48,7 @@
         // Application was updated, let's see if we have a migration scheme for it.
         if ([previousVersion isEqualToString:@"1.0.2"]) {
             // Migrate from custom preferences to NSUserDefaults
+            [VersionMigrations migrationFrom1Dot0Dot2toLarger];
         }
         
     }
@@ -63,13 +63,12 @@
  */
 
 - (void)protectPreferenceFiles{
-    
     NSMutableArray *pathsToExclude = [NSMutableArray array];
     
     [pathsToExclude addObject:[[[NSHomeDirectory() stringByAppendingString:@"/Library/Preferences/"] stringByAppendingString:[[NSBundle mainBundle] bundleIdentifier]] stringByAppendingString:@".plist"]];
     
     NSError *error;
-
+    
     NSString *logPath    = [NSHomeDirectory() stringByAppendingString:@"/Library/Caches/Logs/"];
     NSArray  *logsFiles  = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:logPath error:&error];
     
@@ -79,17 +78,17 @@
     
     for (NSUInteger i = 0; i < [pathsToExclude count]; i++) {
         [[NSURL fileURLWithPath:[pathsToExclude objectAtIndex:i]] setResourceValue: [NSNumber numberWithBool: YES]
-                                   forKey: NSURLIsExcludedFromBackupKey error: &error];
+                                                                            forKey: NSURLIsExcludedFromBackupKey error: &error];
     }
     
     if (error) {
-        NSLog(@"Error: %@", error.description);
+        DDLogError(@"Error while removing log files from backup: %@", error.description);
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:NSLocalizedString(@"WARNING", @"") message:NSLocalizedString(@"DISABLING_BACKUP_FAILED", @"") delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil, nil];
         [alert show];
         
         return;
     }
-
+    
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -112,27 +111,27 @@
     [[Environment getCurrent].phoneDirectoryManager startUntilCancelled:nil];
     [[Environment getCurrent].contactsManager doAfterEnvironmentInitSetup];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
-
+    
     LeftSideMenuViewController *leftSideMenuViewController = [LeftSideMenuViewController new];
-
+    
     self.drawerController = [[MMDrawerController alloc] initWithCenterViewController:leftSideMenuViewController.centerTabBarViewController leftDrawerViewController:leftSideMenuViewController];
     self.window.rootViewController = _drawerController;
     [self.window makeKeyAndVisible];
-
+    
     //Accept push notification when app is not open
     NSDictionary *remoteNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotif) {
         DDLogInfo(@"Application was launched by tapping a push notification.");
         [self application:application didReceiveRemoteNotification:remoteNotif];
     }
-
+    
     [[[Environment phoneManager] currentCallObservable] watchLatestValue:^(CallState* latestCall) {
         if (latestCall == nil){
             return;
         }
         
         InCallViewController *callViewController = [InCallViewController inCallViewControllerWithCallState:latestCall
-                    andOptionallyKnownContact:[latestCall potentiallySpecifiedContact]];
+                                                                                 andOptionallyKnownContact:[latestCall potentiallySpecifiedContact]];
         [_drawerController.centerViewController presentViewController:callViewController animated:YES completion:nil];
     } onThread:[NSThread mainThread] untilCancelled:nil];
     
@@ -158,7 +157,7 @@
         DDLogError(@"Error parsing remote notification. Error: %@.", ex);
         return;
     }
-
+    
     [[Environment phoneManager] incomingCallWithSession:call];
 }
 

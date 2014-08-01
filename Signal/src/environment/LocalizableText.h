@@ -21,7 +21,6 @@
 #define TXT_END_CALL_HANGUP_REMOTE                  NSLocalizedString(@"END_CALL_HANGUP_REMOTE", @"")
 #define TXT_END_CALL_HANGUP_LOCAL                   NSLocalizedString(@"END_CALL_HANGUP_LOCAL", @"")
 #define TXT_END_CALL_REPLACED_BY_NEXT               NSLocalizedString(@"END_CALL_REPLACED_BY_NEXT", @"")
-// @todo: some languages probably don't prefix this sort of thing
 #define TXT_END_CALL_MESSAGE_FROM_SERVER_PREFIX     NSLocalizedString(@"END_CALL_MESSAGE_FROM_SERVER_PREFIX", @"")
 
 #pragma mark - Menu Table Cell Titles
