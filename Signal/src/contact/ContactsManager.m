@@ -174,14 +174,19 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 -(NSArray*) getContactsFromAddressBook:(ABAddressBookRef)addressBook {
-    ABRecordRef source = ABAddressBookCopyDefaultSource(addressBook);
-
-    NSArray *allPeople = (__bridge_transfer NSArray *)
-                         (ABAddressBookCopyArrayOfAllPeopleInSourceWithSortOrdering(addressBook,
-                                                                                    source,
-                                                                                    kABPersonSortByFirstName));
-
-    return [allPeople map:^id(id item) {
+    CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
+    CFMutableArrayRef allPeopleMutable = CFArrayCreateMutableCopy(kCFAllocatorDefault,
+                                                                  CFArrayGetCount(allPeople),allPeople);
+    
+    CFArraySortValues(allPeopleMutable,CFRangeMake(0, CFArrayGetCount(allPeopleMutable)),
+                      (CFComparatorFunction)ABPersonComparePeopleByName,
+                      (void*)(unsigned long)ABPersonGetSortOrdering());
+    
+    NSArray *sortedPeople = (__bridge_transfer NSArray *)allPeopleMutable;
+    
+    CFRelease(allPeople);
+    
+    return [sortedPeople map:^id(id item) {
         return [self contactForRecord:(__bridge ABRecordRef)item];
     }];
 }
