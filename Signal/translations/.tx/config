@@ -1,0 +1,7 @@
+[main]
+host = https://www.transifex.com
+
+[signal-ios.localizablestrings-30]
+source_lang = en
+source_file = en.lproj/Localizable.strings
+file_filter = <lang>.lproj/Localizable.strings
