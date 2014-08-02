@@ -181,9 +181,24 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     
     NSArray *sortedPeople = (__bridge_transfer NSArray *)allPeopleMutable;
     
+    NSPredicate* predicate = [NSPredicate predicateWithBlock: ^BOOL(id record, NSDictionary *bindings) {
+        ABMultiValueRef phoneNumbers = ABRecordCopyValue( (__bridge ABRecordRef)record, kABPersonPhoneProperty);
+        BOOL result = NO;
+        
+        for (CFIndex i = 0; i < ABMultiValueGetCount(phoneNumbers); i++) {
+            NSString* phoneNumber = (__bridge_transfer NSString*) ABMultiValueCopyValueAtIndex(phoneNumbers, i);
+            if ([phoneNumber length]>0) {
+                result = YES;
+                break;
+                }
+            }
+        CFRelease(phoneNumbers);
+        return result;
+        }];
     CFRelease(allPeople);
+    NSArray* filteredContacts = [sortedPeople filteredArrayUsingPredicate:predicate];
     
-    return [sortedPeople map:^id(id item) {
+    return [filteredContacts map:^id(id item) {
         return [self contactForRecord:(__bridge ABRecordRef)item];
     }];
 }
