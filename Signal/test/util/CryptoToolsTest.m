@@ -69,8 +69,10 @@
     uint16_t b = [CryptoTools generateSecureRandomUInt16];
     uint16_t c = [CryptoTools generateSecureRandomUInt16];
     uint16_t d = [CryptoTools generateSecureRandomUInt16];
-    // extremely unlikely to fail if any reasonable amount of entropy is going into d and d2
-    test(!(a==b==c==d));
+
+    // extremely unlikely to fail if any reasonable amount of entropy is generated
+    BOOL same =((a==b) && (a==c) && (a==d));
+    test (!same);
 }
 
 -(void) testKnownAesCipherFeedback {
