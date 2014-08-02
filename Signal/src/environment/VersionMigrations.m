@@ -24,8 +24,6 @@
     NSPropertyListFormat format;
     NSDictionary *dict = [NSPropertyListSerialization propertyListWithData:plistData options:NSPropertyListImmutable format:&format error:&error];
     
-    NSLog(@"%@", dict);
-    
     NSArray *entries = [dict allKeys];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
@@ -45,6 +43,12 @@
     // Some users push IDs were not correctly registered, by precaution, we are going to re-register all of them
     
     [[PushManager sharedManager] askForPushRegistration];
+    
+    [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
+    
+    if (error) {
+        DDLogError(@"Error upgrading from 1.0.2 : %@", error.description);
+    }
     
     return;
 }
