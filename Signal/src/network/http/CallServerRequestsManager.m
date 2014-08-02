@@ -40,7 +40,7 @@
         NSURL *endPointURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@:%hu", endpoint.hostname, endpoint.port]];
         NSURLSessionConfiguration *sessionConf = [NSURLSessionConfiguration ephemeralSessionConfiguration];
         self.operationManager = [[AFHTTPSessionManager alloc] initWithBaseURL:endPointURL sessionConfiguration:sessionConf];
-        [self.operationManager setSecurityPolicy:[AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeNone]];
+        [self.operationManager setSecurityPolicy:[AFSecurityPolicy policyWithPinningMode:AFSSLPinningModePublicKey]];
         self.operationManager.securityPolicy.allowInvalidCertificates = YES; // We use a custom certificate, not signed by a CA.
         self.operationManager.responseSerializer                      = [AFJSONResponseSerializer serializer];
     }

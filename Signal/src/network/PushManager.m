@@ -12,6 +12,9 @@
 
 @interface PushManager ()
 
+@property (nonatomic, copy) void (^PushRegisteringSuccessBlock)();
+@property (nonatomic, copy) void (^PushRegisteringFailureBlock)();
+
 @property int retries;
 
 @end
@@ -60,6 +63,12 @@
 
 }
 
+- (void)askForPushRegistrationWithSuccess:(void (^)())success failure:(void (^)())failure{
+    self.PushRegisteringSuccessBlock  = success;
+    self.PushRegisteringFailureBlock = failure;
+    [self askForPushRegistration];
+}
+
 - (void)askForPushRegistration{
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeBadge)];
     self.retries = 3;
@@ -72,17 +81,37 @@
             if (statusCode == 200) {
                 DDLogInfo(@"Device sent push ID to server");
                 [[Environment preferences] setRevokedPushPermission:NO];
+                if (self.PushRegisteringSuccessBlock) {
+                    self.PushRegisteringSuccessBlock();
+                    self.PushRegisteringSuccessBlock = nil;
+                }
+            } else{
+                [self registerFailureWithToken:token];
             }
         }
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        if (self.retries > 0) {
-            [self registerForPushWithToken:token];
-            self.retries--;
-        } else{
-            [[Environment preferences] setRevokedPushPermission:YES];
-        }
+        [self registerForPushWithToken:token];
     }];
 }
 
+
+/**
+ *  Token was not sucessfully register. Try again / deal with failure
+ *
+ *  @param token Token to register
+ */
+
+- (void)registerFailureWithToken:(NSData*)token{
+    if (self.retries > 0) {
+        [self registerForPushWithToken:token];
+        self.retries--;
+    } else{
+        if (self.PushRegisteringFailureBlock) {
+            self.PushRegisteringFailureBlock();
+            self.PushRegisteringFailureBlock = nil;
+        }
+        [[Environment preferences] setRevokedPushPermission:YES];
+    }
+}
 
 @end

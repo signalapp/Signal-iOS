@@ -194,12 +194,16 @@
     }];
 
     [futureDone thenDo:^(id result) {
-        [Environment setRegistered:YES];
-        [[[Environment getCurrent] phoneDirectoryManager] forceUpdate];
-        [registered trySetResult:@YES];
-        [self dismissView];
-        [futureChallengeAcceptedSource trySetResult:result];
-        [[PushManager sharedManager] askForPushRegistration];
+        [[PushManager sharedManager] askForPushRegistrationWithSuccess:^{
+            [Environment setRegistered:YES];
+            [[[Environment getCurrent] phoneDirectoryManager] forceUpdate];
+            [registered trySetResult:@YES];
+            [self dismissView];
+            [futureChallengeAcceptedSource trySetResult:result];
+        } failure:^{
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:REGISTER_ERROR_ALERT_VIEW_TITLE message:REGISTER_ERROR_ALERT_VIEW_BODY delegate:nil cancelButtonTitle:REGISTER_ERROR_ALERT_VIEW_DISMISS otherButtonTitles:nil, nil];
+            [alertView show];
+        }];
     }];
 
     [futureDone finallyDo:^(Future *completed) {

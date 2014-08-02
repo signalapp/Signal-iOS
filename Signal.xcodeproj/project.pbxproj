@@ -410,7 +410,6 @@
 		B621B08D198C69A100D36C3D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B621B053198C69A100D36C3D /* Localizable.strings */; };
 		B621B08E198C69A100D36C3D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B621B056198C69A100D36C3D /* Localizable.strings */; };
 		B621B08F198C69A100D36C3D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B621B059198C69A100D36C3D /* Localizable.strings */; };
-		B621B090198C69A100D36C3D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B621B05C198C69A100D36C3D /* Localizable.strings */; };
 		B621B091198C69A100D36C3D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B621B05F198C69A100D36C3D /* Localizable.strings */; };
 		B621B092198C69A100D36C3D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B621B062198C69A100D36C3D /* Localizable.strings */; };
 		B621B093198C69A100D36C3D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B621B065198C69A100D36C3D /* Localizable.strings */; };
@@ -484,7 +483,7 @@
 		E1370BF018A0689000826894 /* AppIcon60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E18AB3FA18A05734001A532A /* AppIcon60x60@2x.png */; };
 		E1370BF118A0689000826894 /* AppIcon76x76.png in Resources */ = {isa = PBXBuildFile; fileRef = E18AB3FB18A05734001A532A /* AppIcon76x76.png */; };
 		E1370BF218A0689000826894 /* AppIcon76x76@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E18AB3FC18A05734001A532A /* AppIcon76x76@2x.png */; };
-		E1370BF618A068A600826894 /* whisperReal.der in Resources */ = {isa = PBXBuildFile; fileRef = E1C407C117F0C246007BEE65 /* whisperReal.der */; };
+		E1370BF618A068A600826894 /* whisperReal.cer in Resources */ = {isa = PBXBuildFile; fileRef = E1C407C117F0C246007BEE65 /* whisperReal.cer */; };
 		E14874A218A0692F002CC4F3 /* archive_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = E1370B3018A0660300826894 /* archive_icon.png */; };
 		E14874A318A0692F002CC4F3 /* archive_icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E1370B3118A0660300826894 /* archive_icon@2x.png */; };
 		E14874A418A0692F002CC4F3 /* backspace.png in Resources */ = {isa = PBXBuildFile; fileRef = E1370B3218A0660300826894 /* backspace.png */; };
@@ -1142,7 +1141,6 @@
 		B621B054198C69A100D36C3D /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = Localizable.strings; sourceTree = "<group>"; };
 		B621B057198C69A100D36C3D /* sq */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sq; path = Localizable.strings; sourceTree = "<group>"; };
 		B621B05A198C69A100D36C3D /* sv_SE */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv_SE; path = Localizable.strings; sourceTree = "<group>"; };
-		B621B05D198C69A100D36C3D /* sv-SE */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sv-SE"; path = Localizable.strings; sourceTree = "<group>"; };
 		B621B060198C69A100D36C3D /* ta */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ta; path = Localizable.strings; sourceTree = "<group>"; };
 		B621B063198C69A100D36C3D /* tr_TR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr_TR; path = Localizable.strings; sourceTree = "<group>"; };
 		B621B066198C69A100D36C3D /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = Localizable.strings; sourceTree = "<group>"; };
@@ -1358,7 +1356,7 @@
 		E197B62618BBF63B00F073E5 /* SoundBoard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundBoard.m; sourceTree = "<group>"; };
 		E1A0AD8B16E13FDD0071E604 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		E1B3DC731885EFA100B7F794 /* NotificationManifest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationManifest.h; sourceTree = "<group>"; };
-		E1C407C117F0C246007BEE65 /* whisperReal.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperReal.der; sourceTree = "<group>"; };
+		E1C407C117F0C246007BEE65 /* whisperReal.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperReal.cer; sourceTree = "<group>"; };
 		E1CD329418BCFF9900B1A496 /* SoundInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundInstance.h; sourceTree = "<group>"; };
 		E1CD329518BCFF9900B1A496 /* SoundInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundInstance.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -2749,15 +2747,6 @@
 			path = translations/sv_SE.lproj;
 			sourceTree = "<group>";
 		};
-		B621B05B198C69A100D36C3D /* sv-SE.lproj */ = {
-			isa = PBXGroup;
-			children = (
-				B621B05C198C69A100D36C3D /* Localizable.strings */,
-			);
-			name = "sv-SE.lproj";
-			path = "translations/sv-SE.lproj";
-			sourceTree = "<group>";
-		};
 		B621B05E198C69A100D36C3D /* ta.lproj */ = {
 			isa = PBXGroup;
 			children = (
@@ -2847,7 +2836,6 @@
 				B621B052198C69A100D36C3D /* sl.lproj */,
 				B621B055198C69A100D36C3D /* sq.lproj */,
 				B621B058198C69A100D36C3D /* sv_SE.lproj */,
-				B621B05B198C69A100D36C3D /* sv-SE.lproj */,
 				B621B05E198C69A100D36C3D /* ta.lproj */,
 				B621B061198C69A100D36C3D /* tr_TR.lproj */,
 				B621B064198C69A100D36C3D /* uk.lproj */,
@@ -2935,7 +2923,7 @@
 				D221A099169C9E5E00537ABF /* main.m */,
 				D221A095169C9E5E00537ABF /* Signal-Info.plist */,
 				D221A09B169C9E5E00537ABF /* Signal-Prefix.pch */,
-				E1C407C117F0C246007BEE65 /* whisperReal.der */,
+				E1C407C117F0C246007BEE65 /* whisperReal.cer */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -3339,12 +3327,11 @@
 				E14874F118A06930002CC4F3 /* volume_high.png in Resources */,
 				E14874F218A06930002CC4F3 /* volume_high@2x.png in Resources */,
 				70B8FEE21909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav in Resources */,
-				B621B090198C69A100D36C3D /* Localizable.strings in Resources */,
 				E14874F318A06930002CC4F3 /* volume_low.png in Resources */,
 				E14874F418A06930002CC4F3 /* volume_low@2x.png in Resources */,
 				E14874F518A06930002CC4F3 /* whisper_notification_icon.png in Resources */,
 				E14874F618A06930002CC4F3 /* whisper_notification_icon@2x.png in Resources */,
-				E1370BF618A068A600826894 /* whisperReal.der in Resources */,
+				E1370BF618A068A600826894 /* whisperReal.cer in Resources */,
 				E1370BEA18A0689000826894 /* AppIcon29x29.jpg in Resources */,
 				E1370BEB18A0689000826894 /* AppIcon29x29.png in Resources */,
 				E1370BEC18A0689000826894 /* AppIcon29x29@2x.png in Resources */,
@@ -4169,14 +4156,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				B621B05A198C69A100D36C3D /* sv_SE */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
-		B621B05C198C69A100D36C3D /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				B621B05D198C69A100D36C3D /* sv-SE */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

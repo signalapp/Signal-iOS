@@ -16,6 +16,8 @@
 
 - (void)askForPushRegistration;
 
+- (void)askForPushRegistrationWithSuccess:(void (^)())success failure:(void (^)())failure;
+
 - (void)registerForPushWithToken:(NSData*)token;
 
 @end
