@@ -3643,7 +3643,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-fobjc-arc-exceptions";
 				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "A4026C2D-D5F0-40C5-B1B4-5EA8E8A1876B";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
