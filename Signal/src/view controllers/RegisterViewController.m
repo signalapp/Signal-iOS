@@ -171,6 +171,16 @@
     [self dismissView];
 }
 
+- (void)popuateChallengeTextFieldInputWithString:(NSString *)challengeString {
+    require(challengeString!=nil);
+    if (_registerButton.enabled == NO) {
+        [_challengeTextField setText:challengeString];
+    }else{
+        UIAlertView *incorrectChallengeCodeAV = [[UIAlertView alloc]initWithTitle:REGISTER_CHALLENGE_ALERT_VIEW_TITLE message:REGISTER_CHALLENGE_ALERT_VIEW_BODY delegate:nil cancelButtonTitle:REGISTER_CHALLENGE_ALERT_DISMISS otherButtonTitles:nil, nil];
+        [incorrectChallengeCodeAV show];
+    }
+}
+
 - (void)verifyChallengeTapped {
     [_challengeTextField resignFirstResponder];
     _challengeButton.enabled = NO;

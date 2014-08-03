@@ -35,6 +35,8 @@
 - (IBAction)changeCountryCodeTapped;
 - (IBAction)initiateVoiceVerificationButtonHandler;
 
+- (void)popuateChallengeTextFieldInputWithString:(NSString *)challengeString;
+
 + (RegisterViewController*)registerViewController;
 
 @end
