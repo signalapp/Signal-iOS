@@ -20,6 +20,10 @@
 
 #define kSignalVersionKey @"SignalUpdateVersionKey"
 
+#define URL_SCHEME_CALL_HOST @"call"
+#define URL_SCHEME_TEXT_HOST @"text"
+#define URL_SCHEME_CHALLENGECODE_HOST @"vcode"
+
 #ifdef __APPLE__
 #include "TargetConditionals.h"
 #endif
@@ -178,6 +182,33 @@
         [[PushManager sharedManager] verifyPushActivated];
         [[AppAudioManager sharedInstance] requestRequiredPermissionsIfNeeded];
     }
+}
+
+-(BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url{
+    
+    if ([Environment isRegistered]) {
+        __block BOOL inCall;
+        [[[Environment phoneManager] currentCallObservable] watchLatestValue:^(CallState* latestCall) {
+            if (latestCall == nil){
+                inCall=NO;
+                return;
+            }
+        } onThread:[NSThread mainThread] untilCancelled:nil];
+        if (inCall) {
+            return NO;
+        }
+        
+        if ([[url host] isEqualToString:URL_SCHEME_CALL_HOST]) {
+        }
+        if ([[url host] isEqualToString:URL_SCHEME_TEXT_HOST]) {
+            //Not supported yet
+            return NO;
+        }
+    }else{
+        if ([[url host] isEqualToString:URL_SCHEME_CHALLENGECODE_HOST]) {
+        }
+    }
+    return NO;
 }
 
 @end
