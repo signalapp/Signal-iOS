@@ -199,6 +199,12 @@
         }
         
         if ([[url host] isEqualToString:URL_SCHEME_CALL_HOST]) {
+            NSString *strippedQuery = [[[url query] componentsSeparatedByCharactersInSet:
+                                        [[NSCharacterSet characterSetWithCharactersInString:@"+0123456789"] invertedSet]]
+                                       componentsJoinedByString:@""];
+            PhoneNumber *queryPhoneNumber = [PhoneNumber phoneNumberFromUserSpecifiedText: strippedQuery];
+            [(TabBarParentViewController *)self.drawerController.centerViewController showDialerViewControllerWithNumber:queryPhoneNumber];
+            return YES;
         }
         if ([[url host] isEqualToString:URL_SCHEME_TEXT_HOST]) {
             //Not supported yet

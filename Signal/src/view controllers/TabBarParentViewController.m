@@ -153,16 +153,22 @@
 }
 
 - (void)showDialerViewControllerWithNumber:(PhoneNumber *)number {
-    if (!_dialerViewController) {
-        _dialerViewController = [DialerViewController new];
-        _dialerNavigationController = [[UINavigationController alloc] initWithRootViewController:_dialerViewController];
+    if (_currentViewController == _dialerNavigationController) {
+        if (number) {
+            [(DialerViewController *)_dialerNavigationController.visibleViewController popuateNumberLabelWithNumber:number];
+        }
+    }else{
+        if (!_dialerViewController) {
+            _dialerViewController = [DialerViewController new];
+            _dialerNavigationController = [[UINavigationController alloc] initWithRootViewController:_dialerViewController];
+        }
+        if (number) {
+            _dialerViewController.phoneNumber = number;
+        }
+        [_dialerNavigationController popToRootViewControllerAnimated:NO];
+        [self presentChildViewController:_dialerNavigationController];
+        _tabBarDialerButton.backgroundColor = [UIColor darkGrayColor];
     }
-    if (number) {
-        _dialerViewController.phoneNumber = number;
-    }
-    [_dialerNavigationController popToRootViewControllerAnimated:NO];
-    [self presentChildViewController:_dialerNavigationController];
-    _tabBarDialerButton.backgroundColor = [UIColor darkGrayColor];
 }
 
 - (void)updateMissedCallCountLabel {
