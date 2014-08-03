@@ -25,10 +25,12 @@
 @property (nonatomic, strong) IBOutlet DialerButtonView *buttonStar;
 @property (nonatomic, strong) IBOutlet DialerButtonView *buttonPound;
 
-@property (nonatomic, assign) PhoneNumber *phoneNumber;
+@property (nonatomic, strong) PhoneNumber *phoneNumber;
 
 - (IBAction)callButtonTapped;
 - (IBAction)backspaceButtonTouchDown;
 - (IBAction)backspaceButtonTouchUp;
+
+- (void)popuateNumberLabelWithNumber:(PhoneNumber *)phoneNumber;
 
 @end

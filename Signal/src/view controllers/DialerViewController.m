@@ -75,6 +75,11 @@
     return cleanNumber;
 }
 
+- (void)popuateNumberLabelWithNumber:(PhoneNumber *)phoneNumber{
+    _currentNumberMutable = [[phoneNumber toE164] mutableCopy];
+    [self updateNumberLabel];
+}
+
 #pragma mark - DialerButtonViewDelegate
 
 - (void)dialerButtonViewDidSelect:(DialerButtonView *)view {
