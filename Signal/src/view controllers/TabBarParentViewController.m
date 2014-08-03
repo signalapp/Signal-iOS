@@ -171,6 +171,22 @@
     }
 }
 
+- (void)showRegistrationViewControllerWithChallengeCode:(NSString *)challengeText{
+    if (!_inboxFeedNavigationController) {
+        _inboxFeedNavigationController = [[UINavigationController alloc] initWithRootViewController:_inboxFeedViewController];
+    }
+    if (_currentViewController == _inboxFeedNavigationController) {
+        if ([_inboxFeedNavigationController.visibleViewController respondsToSelector:@selector(popuateChallengeTextFieldInputWithString:)]) {
+            if (challengeText) {
+                [(RegisterViewController *)_inboxFeedNavigationController.visibleViewController popuateChallengeTextFieldInputWithString:challengeText];
+            }
+        }
+    } else {
+        [self presentChildViewController:_inboxFeedNavigationController];
+        _tabBarInboxButton.backgroundColor = [UIColor darkGrayColor];
+    }
+}
+
 - (void)updateMissedCallCountLabel {
     NSUInteger missedCallCount = [[[Environment getCurrent] recentCallManager] missedCallCount];
     if (missedCallCount > 0) {

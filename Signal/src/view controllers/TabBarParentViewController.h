@@ -33,5 +33,6 @@
 - (void)setNewWhisperUsersAsSeen:(NSArray *)users;
 
 - (void)showDialerViewControllerWithNumber:(PhoneNumber *)number;
+- (void)showRegistrationViewControllerWithChallengeCode:(NSString *)challengeCode;
 
 @end

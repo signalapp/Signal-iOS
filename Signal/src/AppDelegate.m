@@ -212,6 +212,11 @@
         }
     }else{
         if ([[url host] isEqualToString:URL_SCHEME_CHALLENGECODE_HOST]) {
+            NSString *strippedQuery = [[[url query] componentsSeparatedByCharactersInSet:
+                                        [[NSCharacterSet decimalDigitCharacterSet] invertedSet]]
+                                       componentsJoinedByString:@""];
+            [(TabBarParentViewController *)self.drawerController.centerViewController showRegistrationViewControllerWithChallengeCode:strippedQuery];
+            return YES;
         }
     }
     return NO;
