@@ -396,7 +396,6 @@
 		B621B07F198C69A100D36C3D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B621B029198C69A100D36C3D /* Localizable.strings */; };
 		B621B080198C69A100D36C3D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B621B02C198C69A100D36C3D /* Localizable.strings */; };
 		B621B081198C69A100D36C3D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B621B02F198C69A100D36C3D /* Localizable.strings */; };
-		B621B082198C69A100D36C3D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B621B032198C69A100D36C3D /* Localizable.strings */; };
 		B621B083198C69A100D36C3D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B621B035198C69A100D36C3D /* Localizable.strings */; };
 		B621B084198C69A100D36C3D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B621B038198C69A100D36C3D /* Localizable.strings */; };
 		B621B085198C69A100D36C3D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B621B03B198C69A100D36C3D /* Localizable.strings */; };
@@ -1127,7 +1126,6 @@
 		B621B02A198C69A100D36C3D /* fil */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fil; path = Localizable.strings; sourceTree = "<group>"; };
 		B621B02D198C69A100D36C3D /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = Localizable.strings; sourceTree = "<group>"; };
 		B621B030198C69A100D36C3D /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = Localizable.strings; sourceTree = "<group>"; };
-		B621B033198C69A100D36C3D /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = Localizable.strings; sourceTree = "<group>"; };
 		B621B036198C69A100D36C3D /* it_IT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it_IT; path = Localizable.strings; sourceTree = "<group>"; };
 		B621B039198C69A100D36C3D /* ja_JP */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja_JP; path = Localizable.strings; sourceTree = "<group>"; };
 		B621B03C198C69A100D36C3D /* lv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = lv; path = Localizable.strings; sourceTree = "<group>"; };
@@ -2621,15 +2619,6 @@
 			path = translations/he.lproj;
 			sourceTree = "<group>";
 		};
-		B621B031198C69A100D36C3D /* hu.lproj */ = {
-			isa = PBXGroup;
-			children = (
-				B621B032198C69A100D36C3D /* Localizable.strings */,
-			);
-			name = hu.lproj;
-			path = translations/hu.lproj;
-			sourceTree = "<group>";
-		};
 		B621B034198C69A100D36C3D /* it_IT.lproj */ = {
 			isa = PBXGroup;
 			children = (
@@ -2822,7 +2811,6 @@
 				B621B028198C69A100D36C3D /* fil.lproj */,
 				B621B02B198C69A100D36C3D /* fr.lproj */,
 				B621B02E198C69A100D36C3D /* he.lproj */,
-				B621B031198C69A100D36C3D /* hu.lproj */,
 				B621B034198C69A100D36C3D /* it_IT.lproj */,
 				B621B037198C69A100D36C3D /* ja_JP.lproj */,
 				B621B03A198C69A100D36C3D /* lv.lproj */,
@@ -3252,7 +3240,6 @@
 				E14874BD18A0692F002CC4F3 /* icon_keypad.png in Resources */,
 				B621B080198C69A100D36C3D /* Localizable.strings in Resources */,
 				E14874BE18A0692F002CC4F3 /* icon_recents.png in Resources */,
-				B621B082198C69A100D36C3D /* Localizable.strings in Resources */,
 				B621B078198C69A100D36C3D /* Localizable.strings in Resources */,
 				E14874BF18A0692F002CC4F3 /* in_call_phone_icon.png in Resources */,
 				E14874C018A0692F002CC4F3 /* in_call_phone_icon@2x.png in Resources */,
@@ -4044,14 +4031,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				B621B030198C69A100D36C3D /* he */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
-		B621B032198C69A100D36C3D /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				B621B033198C69A100D36C3D /* hu */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
