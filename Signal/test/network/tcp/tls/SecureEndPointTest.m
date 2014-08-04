@@ -11,12 +11,7 @@
 
 -(void) testCert {
     Certificate* r = [Certificate certificateFromResourcePath:@"whisperReal"
-                                                       ofType:@"der"];
-    test(r != nil);
-}
--(void) testCert2 {
-    Certificate* r = [Certificate certificateFromResourcePath:@"whisperTest"
-                                                       ofType:@"der"];
+                                                       ofType:@"cer"];
     test(r != nil);
 }
 

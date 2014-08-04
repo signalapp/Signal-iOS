@@ -8,6 +8,7 @@
 #import "ConfirmAckPacket.h"
 #import "HostNameEndPoint.h"
 #import "IpAddress.h"
+#import "SGNKeychainUtil.h"
 
 bool pm(HandshakePacket* p1, HandshakePacket* p2);
 bool pm(HandshakePacket* p1, HandshakePacket* p2) {
@@ -20,11 +21,14 @@ bool pm(HandshakePacket* p1, HandshakePacket* p2) {
 
 @implementation ZrtpTest
 
+- (void)setUp{
+    [SGNKeychainUtil generateSignaling];
+    [Environment setCurrent:testEnv];
+}
+
 -(void) testPerturbedZrtpHandshake {
     IpEndPoint* receiver = [IpEndPoint ipEndPointAtAddress:[IpAddress localhost]
                                                     onPort:10000 + (in_port_t)arc4random_uniform(20000)];
-    
-    [Environment setCurrent:testEnv];
     
     UdpSocket* u1 = [UdpSocket udpSocketToFirstSenderOnLocalPort:receiver.port];
     CallController* cc1 = [CallController callControllerForCallInitiatedLocally:true

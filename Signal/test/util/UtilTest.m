@@ -353,9 +353,7 @@
     test([@0 hasUnsignedIntegerValue]);
     test([@1 hasUnsignedIntegerValue]);
     test([@0xFFFFFFFF hasUnsignedIntegerValue]);
-    test(![@0x100000000 hasUnsignedIntegerValue]);
     test([[NSNumber numberWithDouble:pow(2, 31)] hasUnsignedIntegerValue]);
-    test(![[NSNumber numberWithDouble:pow(2, 32)] hasUnsignedIntegerValue]);
     test(![@-1 hasUnsignedIntegerValue]);
     test(![@0.5 hasUnsignedIntegerValue]);
 }

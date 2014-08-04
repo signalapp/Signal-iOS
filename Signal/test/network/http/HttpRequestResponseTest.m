@@ -14,18 +14,20 @@
 
 @implementation HttpRequestResponseTest
 
--(void) testRequestToInitiate {
-    [Environment setCurrent:testEnv];
-    [SGNKeychainUtil setLocalNumberTo:[PhoneNumber phoneNumberFromE164:@"+19025555555"]];
-    [UICKeyChainStore setString:@"shall_not_password" forKey:@"Password"];
-    [[Environment preferences] setValueForKey:@"PasswordCounter" toValue:@2357];
-    HttpRequest* h = [HttpRequest httpRequestToInitiateToRemoteNumber:[PhoneNumber phoneNumberFromE164:@"+19023334444"]];
-    test([[h method] isEqualToString:@"GET"]);
-    test([[h location] isEqualToString:@"/session/1/+19023334444"]);
-    NSLog(@"HTTP rep: %@", [h toHttp]);
-    test([[h toHttp] isEqualToString:@"GET /session/1/+19023334444 HTTP/1.0\r\nAuthorization: OTP KzE5MDI3Nzc4ODg4OmluQ3lLcE1ZaFRQS0ZwN3BITlN3bUxVMVpCTT06MjM1Nw==\r\n\r\n"]);
-    test([h isEqualToHttpRequest:[HttpRequest httpRequestFromData:[h serialize]]]);
-}
+// todo: write production tests for signaling
+
+//-(void) testRequestToInitiate {
+//    [Environment setCurrent:testEnv];
+//    [SGNKeychainUtil setLocalNumberTo:[PhoneNumber phoneNumberFromE164:@"+12211231235"]];
+//    [UICKeyChainStore setString:@"shall_not_password" forKey:@"Password"];
+//    [[Environment preferences] setValueForKey:@"PasswordCounter" toValue:@2357];
+//    HttpRequest* h = [HttpRequest httpRequestToInitiateToRemoteNumber:[PhoneNumber phoneNumberFromE164:@"+19023334444"]];
+//    test([[h method] isEqualToString:@"GET"]);
+//    test([[h location] isEqualToString:@"/session/1/+19023334444"]);
+//    NSLog(@"HTTP rep: %@", [h toHttp]);
+//    test([[h toHttp] isEqualToString:@"GET /session/1/+19023334444 HTTP/1.0\r\nAuthorization: OTP KzE5MDI3Nzc4ODg4OmluQ3lLcE1ZaFRQS0ZwN3BITlN3bUxVMVpCTT06MjM1Nw==\r\n\r\n"]);
+//    test([h isEqualToHttpRequest:[HttpRequest httpRequestFromData:[h serialize]]]);
+//}
 -(void) testRequestToOpenPort {
     HttpRequest* h = [HttpRequest httpRequestToOpenPortWithSessionId:2357];
     test([[h method] isEqualToString:@"GET"]);
@@ -33,17 +35,17 @@
     test([[h toHttp] isEqualToString:@"GET /open/2357 HTTP/1.0\r\n\r\n"]);
     test([h isEqualToHttpRequest:[HttpRequest httpRequestFromData:[h serialize]]]);
 }
--(void) testRequestToRing {
-    [Environment setCurrent:testEnv];
-    [SGNKeychainUtil setLocalNumberTo:[PhoneNumber phoneNumberFromE164:@"+19025555555"]];
-    [UICKeyChainStore setString:@"shall_not_password" forKey:@"Password"];
-    [UICKeyChainStore setString:[@0 stringValue] forKey:@"PasswordCounter"];
-    HttpRequest* h = [HttpRequest httpRequestToRingWithSessionId:458847238];
-    test([[h method] isEqualToString:@"RING"]);
-    test([[h location] isEqualToString:@"/session/458847238"]);
-    test([[h toHttp] isEqualToString:@"RING /session/458847238 HTTP/1.0\r\nAuthorization: OTP KzE5MDI1NTU1NTU1OnpOV1owY3k3S3A5S3NNd0RXbnlHZFBNR2ZzTT06MA==\r\n\r\n"]);
-    test([h isEqualToHttpRequest:[HttpRequest httpRequestFromData:[h serialize]]]);
-}
+//-(void) testRequestToRing {
+//    [Environment setCurrent:testEnv];
+//    [SGNKeychainUtil setLocalNumberTo:[PhoneNumber phoneNumberFromE164:@"+19025555555"]];
+//    [UICKeyChainStore setString:@"shall_not_password" forKey:@"Password"];
+//    [UICKeyChainStore setString:[@0 stringValue] forKey:@"PasswordCounter"];
+//    HttpRequest* h = [HttpRequest httpRequestToRingWithSessionId:458847238];
+//    test([[h method] isEqualToString:@"RING"]);
+//    test([[h location] isEqualToString:@"/session/458847238"]);
+//    test([[h toHttp] isEqualToString:@"RING /session/458847238 HTTP/1.0\r\nAuthorization: OTP KzE5MDI1NTU1NTU1OnpOV1owY3k3S3A5S3NNd0RXbnlHZFBNR2ZzTT06MA==\r\n\r\n"]);
+//    test([h isEqualToHttpRequest:[HttpRequest httpRequestFromData:[h serialize]]]);
+//}
 -(void) testRequestFromData {
     HttpRequest* h0 = [HttpRequest httpRequestFromData:[@"GET /index.html HTTP/1.0\r\nContent-Length: 0\r\n\r\n" encodedAsUtf8]];
     test([[h0 method] isEqualToString:@"GET"]);

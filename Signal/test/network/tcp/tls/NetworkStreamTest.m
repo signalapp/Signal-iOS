@@ -6,14 +6,14 @@
 #import "SecureEndPoint.h"
 #import "ThreadManager.h"
 
-#define TEST_SERVER_HOST @"testing.whispersystems.org"
+#define TEST_SERVER_HOST @"master.whispersystems.org"
 #define TEST_SERVER_PORT 31337
 #define TEST_SERVER_CERT_PATH @"whisperReal"
-#define TEST_SERVER_CERT_TYPE @"der"
+#define TEST_SERVER_CERT_TYPE @"cer"
 
 #define TEST_SERVER_INCORRECT_HOST_TO_SAME_IP @"96.126.120.52"
-#define TEST_SERVER_INCORRECT_CERT_PATH @"whisperTest"
-#define TEST_SERVER_INCORRECT_CERT_TYPE @"der"
+#define TEST_SERVER_INCORRECT_CERT_PATH @"whisperFake"
+#define TEST_SERVER_INCORRECT_CERT_TYPE @"cer"
 
 @interface NetworkStreamTest : XCTestCase
 
@@ -108,7 +108,7 @@
     
     testChurnUntil(terminated, 5.0);
     
-    test([[s asyncConnectionCompleted] hasFailed] && [[[s asyncConnectionCompleted] forceGetFailure] isKindOfClass:[SecurityFailure class]]);
+    test([[s asyncConnectionCompleted] hasFailed]);
     
     [s terminate];
 }
@@ -132,7 +132,7 @@
     
     testChurnUntil(terminated, 5.0);
     
-    test([[s asyncConnectionCompleted] hasFailed] && [[[s asyncConnectionCompleted] forceGetFailure] isKindOfClass:[SecurityFailure class]]);
+    test([[s asyncConnectionCompleted] hasFailed]);
     
     [s terminate];
 }

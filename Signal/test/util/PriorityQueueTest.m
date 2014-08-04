@@ -67,10 +67,10 @@ NSArray* Permutations(NSUInteger count) {
     testThrows([q peek]);
     testThrows([q dequeue]);
 }
--(void) testOrdersByComparator {
-    PriorityQueue* q = [PriorityQueue priorityQueueAscendingWithComparator:^(id obj1, id obj2){
-        int diff =[obj2 intValue] - [obj1 intValue];
-        if (diff > 0 ) {
+-(void) testOrdersByComparatorInverse {
+    PriorityQueue* q = [PriorityQueue priorityQueueAscendingWithComparator:^(NSNumber* obj1, NSNumber* obj2){
+        int diff =[obj1 intValue] - [obj2 intValue];
+        if (diff > 0) {
             return (NSComparisonResult)NSOrderedAscending;
         } else if (diff < 0){
             return (NSComparisonResult)NSOrderedDescending;
