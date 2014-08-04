@@ -1,6 +1,5 @@
 # Exclude the build directory
 build/*
-Pods/*
 # Exclude temp nibs and swap files
 *~.nib
 *.swp

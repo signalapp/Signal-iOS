@@ -1,3 +1,4 @@
 language: objective-c
+cache: cocoapods
 
-script: xcodebuild -workspace Signal.xcworkspace -scheme Signal -sdk iphonesimulator ONLY_ACTIVE_ARCH=YES
+script: xcodebuild test -workspace Signal.xcworkspace -scheme Signal -sdk iphonesimulator ONLY_ACTIVE_ARCH=YES
