@@ -542,6 +542,15 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		return NO;
 	}
 	
+	if (isNewDatabaseFile)
+	{
+		status = sqlite3_exec(db, "PRAGMA auto_vacuum = FULL; VACUUM;", NULL, NULL, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error setting PRAGMA auto_vacuum: %d %s", status, sqlite3_errmsg(db));
+		}
+	}
+	
 	// Set synchronous to normal for THIS sqlite instance.
 	//
 	// This does NOT affect normal connections.
