@@ -226,6 +226,8 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 @property (nonatomic, strong, readonly) YapDatabaseSanitizer objectSanitizer;
 @property (nonatomic, strong, readonly) YapDatabaseSanitizer metadataSanitizer;
 
+@property (nonatomic, copy, readonly) YapDatabaseOptions *options;
+
 /**
  * The snapshot number is the internal synchronization state primitive for the database.
  * It's generally only useful for database internals,
