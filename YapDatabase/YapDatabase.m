@@ -674,7 +674,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		int count = sqlite3_column_int(statement, 1);
+		int count = sqlite3_column_int(statement, 0);
 		
 		result = (count > 0);
 	}
