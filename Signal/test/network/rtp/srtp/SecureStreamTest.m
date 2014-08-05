@@ -8,6 +8,11 @@
 @end
 
 @implementation SecureStreamTest
+
+-(void)setUp{
+    [Environment setCurrent:[Release unitTestEnvironment:@[]]];
+}
+
 -(void) testPerturbedRoundTrip {
     for (int repeat = 0; repeat < 10; repeat++) {
         NSData* key = generatePseudoRandomData(16);

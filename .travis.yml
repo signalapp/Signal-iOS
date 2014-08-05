@@ -1,4 +1,5 @@
 language: objective-c
-cache: cocoapods
-
-script: xcodebuild test -workspace Signal.xcworkspace -scheme Signal -sdk iphonesimulator ONLY_ACTIVE_ARCH=YES
+xcode_sdk: iphonesimulator7.1
+install: true
+xcode_workspace: Signal.xcworkspace
+xcode_scheme: Signal

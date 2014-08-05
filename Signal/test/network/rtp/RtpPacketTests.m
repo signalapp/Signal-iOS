@@ -8,6 +8,10 @@
 
 @implementation RtpPacketTests
 
+- (void)setUp{
+    [Environment setCurrent:[Release unitTestEnvironment:@[]]];
+}
+
 -(void) testRawDataSimple {
     RtpPacket* r = [RtpPacket rtpPacketWithVersion:2
                                         andPadding:0

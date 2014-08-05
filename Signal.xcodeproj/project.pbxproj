@@ -1113,6 +1113,7 @@
 		B621B06F198C69A100D36C3D /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = Localizable.strings; sourceTree = "<group>"; };
 		B624C4E5198FD2830009264A /* whisperFake.cer */ = {isa = PBXFileReference; lastKnownFileType = file; name = whisperFake.cer; path = Signal/test/whisperFake.cer; sourceTree = SOURCE_ROOT; };
 		B657DDC91911A40500F45B0C /* Signal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Signal.entitlements; sourceTree = "<group>"; };
+		B661C211198EE2EA00548CA1 /* iOSVersions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iOSVersions.h; path = src/environment/iOSVersions.h; sourceTree = "<group>"; };
 		B67ADDC21989FF8700E1A773 /* CallServerRequestsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallServerRequestsManager.h; sourceTree = "<group>"; };
 		B67ADDC31989FF8700E1A773 /* CallServerRequestsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallServerRequestsManager.m; sourceTree = "<group>"; };
 		B67EBF5C19194AC60084CCFD /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = SettingsBundle/Settings.bundle; sourceTree = SOURCE_ROOT; };
@@ -2878,6 +2879,7 @@
 				D221A099169C9E5E00537ABF /* main.m */,
 				D221A095169C9E5E00537ABF /* Signal-Info.plist */,
 				D221A09B169C9E5E00537ABF /* Signal-Prefix.pch */,
+				B661C211198EE2EA00548CA1 /* iOSVersions.h */,
 				E1C407C117F0C246007BEE65 /* whisperReal.cer */,
 				B624C4E5198FD2830009264A /* whisperFake.cer */,
 			);

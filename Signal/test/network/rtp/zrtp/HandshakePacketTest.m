@@ -9,6 +9,11 @@
 @end
 
 @implementation HandshakePacketTest
+
+- (void)setUp{
+    [Environment setCurrent:[Release unitTestEnvironment:@[]]];
+}
+
 -(void) testHelloPacket {
     [Environment setCurrent:testEnv];
     HashChain* h = [HashChain hashChainWithSeed:[NSData dataWithLength:32]];

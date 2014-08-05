@@ -70,10 +70,10 @@ static unsigned char DH3K_PRIME[]={
     return [Environment environmentWithLogging:[DiscardingLog discardingLog]
                                      andErrorNoter:^(id error, id relatedInfo, bool causedTermination) {}
                                      andServerPort:31337
-                           andMasterServerHostName:@"testing.whispersystems.org"
-                               andDefaultRelayName:@"testing"
+                           andMasterServerHostName:@"master.whispersystems.org"
+                               andDefaultRelayName:@"relay"
                       andRelayServerHostNameSuffix:@"whispersystems.org"
-                                    andCertificate:[Certificate certificateFromResourcePath:@"whisperReal" ofType:@"der"]
+                                    andCertificate:[Certificate certificateFromResourcePath:@"whisperReal" ofType:@"cer"]
                andCurrentRegionCodeForPhoneNumbers:@"US"
                  andSupportedKeyAgreementProtocols:[self supportedKeyAgreementProtocols]
                                    andPhoneManager:nil

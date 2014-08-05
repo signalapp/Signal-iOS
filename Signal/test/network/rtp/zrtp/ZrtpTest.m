@@ -22,6 +22,7 @@ bool pm(HandshakePacket* p1, HandshakePacket* p2) {
 @implementation ZrtpTest
 
 - (void)setUp{
+    [Environment setCurrent:[Release unitTestEnvironment:@[]]];
     [SGNKeychainUtil generateSignaling];
     [Environment setCurrent:testEnv];
 }

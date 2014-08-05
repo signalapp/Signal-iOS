@@ -21,6 +21,10 @@
 
 @implementation NetworkStreamTest
 
+- (void)setUp{
+    [Environment setCurrent:[Release unitTestEnvironment:@[]]];
+}
+
 -(void) testReplies {
     [Environment setCurrent:testEnvWith(ENVIRONMENT_TESTING_OPTION_ALLOW_NETWORK_STREAM_TO_NON_SECURE_END_POINTS)];
     
