@@ -281,6 +281,8 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		databasePath = path;
 		options = inOptions ? [inOptions copy] : [[YapDatabaseOptions alloc] init];
 		
+		BOOL isNewDatabaseFile = ![[NSFileManager defaultManager] fileExistsAtPath:databasePath];
+		
 		BOOL(^openConfigCreate)(void) = ^BOOL (void) { @autoreleasepool {
 		
 			BOOL result = YES;
@@ -289,7 +291,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 #ifdef SQLITE_HAS_CODEC
             if (result) result = [self configureEncryptionForDatabase:db];
 #endif
-			if (result) result = [self configureDatabase];
+			if (result) result = [self configureDatabase:isNewDatabaseFile];
 			if (result) result = [self createTables];
 			
 			if (!result && db)
@@ -348,6 +350,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 				
 				if (renamed)
 				{
+					isNewDatabaseFile = YES;
 					result = openConfigCreate();
 					if (result) {
 						YDBLogInfo(@"Database corruption resolved. Renamed corrupt file. (newDB=%@) (corruptDB=%@)",
@@ -368,6 +371,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 				
 				if (deleted)
 				{
+					isNewDatabaseFile = YES;
 					result = openConfigCreate();
 					if (result) {
 						YDBLogInfo(@"Database corruption resolved. Deleted corrupt file. (name=%@)",
@@ -525,9 +529,11 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
  * Configures the database connection.
  * This mainly means enabling WAL mode, and configuring the auto-checkpoint.
 **/
-- (BOOL)configureDatabase
+- (BOOL)configureDatabase:(BOOL)isNewDatabaseFile
 {
 	int status;
+	
+	// Set mandatory pragmas
 	
 	status = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
 	if (status != SQLITE_OK)
@@ -536,22 +542,25 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		return NO;
 	}
 	
-	if (options.pragmaSynchronous == YapDatabasePragmaSynchronous_Off ||
-	    options.pragmaSynchronous == YapDatabasePragmaSynchronous_Full )
+	// Set synchronous to normal for THIS sqlite instance.
+	//
+	// This does NOT affect normal connections.
+	// That is, this does NOT affect YapDatabaseConnection instances.
+	// The sqlite connections of normal YapDatabaseConnection instances will follow the set pragmaSynchronous value.
+	//
+	// The reason we hardcode normal for this sqlite instance is because
+	// it's only used to write the initial snapshot value.
+	// And this doesn't need to be durable, as it is initialized to zero everytime.
+	//
+	// (This sqlite db is also used to perform checkpoints.
+	//  But a normal value won't affect these operations,
+	//  as they will perform sync operations whether the connection is normal or full.)
+	
+	status = sqlite3_exec(db, "PRAGMA synchronous = NORMAL;", NULL, NULL, NULL);
+	if (status != SQLITE_OK)
 	{
-		char *pragma_stmt;
-		
-		if (options.pragmaSynchronous == YapDatabasePragmaSynchronous_Off)
-			pragma_stmt = "PRAGMA synchronous = OFF;";
-		else
-			pragma_stmt = "PRAGMA synchronous = FULL;";
-		
-		status = sqlite3_exec(db, pragma_stmt, NULL, NULL, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"Error setting PRAGMA synchronous: %d %s", status, sqlite3_errmsg(db));
-			// This isn't critical, so we can continue.
-		}
+		YDBLogError(@"Error setting PRAGMA synchronous: %d %s", status, sqlite3_errmsg(db));
+		// This isn't critical, so we can continue.
 	}
 	
 	// Disable autocheckpointing.
@@ -569,8 +578,8 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 #ifdef SQLITE_HAS_CODEC
 /**
  * Configures database encryption via SQLCipher.
- **/
-- (BOOL)configureEncryptionForDatabase:(sqlite3*)sqlite
+**/
+- (BOOL)configureEncryptionForDatabase:(sqlite3 *)sqlite
 {
 	int status;
     
@@ -650,10 +659,64 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 #pragma mark Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
++ (int)pragma:(NSString *)pragmaSetting using:(sqlite3 *)db
+{
+	if (pragmaSetting == nil) return 0;
+	
+	sqlite3_stmt *statement;
+	NSString *pragma = [NSString stringWithFormat:@"PRAGMA %@;", pragmaSetting];
+	
+	int status = sqlite3_prepare_v2(db, [pragma UTF8String], -1, &statement, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@: Error creating statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		return NO;
+	}
+	
+	int result = 0;
+	
+	status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		result = sqlite3_column_int(statement, 0);
+	}
+	else if (status == SQLITE_ERROR)
+	{
+		YDBLogError(@"%@: Error executing statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+	}
+	
+	sqlite3_finalize(statement);
+	statement = NULL;
+	
+	return result;
+}
+
++ (NSString *)pragmaValueForAutoVacuum:(int)auto_vacuum
+{
+	switch(auto_vacuum)
+	{
+		case 0 : return @"NONE";
+		case 1 : return @"FULL";
+		case 2 : return @"INCREMENTAL";
+		default: return @"UNKNOWN";
+	}
+}
+
++ (NSString *)pragmaValueForSynchronous:(int)synchronous
+{
+	switch(synchronous)
+	{
+		case 0 : return @"OFF";
+		case 1 : return @"NORMAL";
+		case 2 : return @"FULL";
+		default: return @"UNKNOWN";
+	}
+}
+
 /**
  * Returns whether or not the given table exists.
 **/
-- (BOOL)tableExists:(NSString *)tableName using:(sqlite3 *)aDb
++ (BOOL)tableExists:(NSString *)tableName using:(sqlite3 *)aDb
 {
 	if (tableName == nil) return NO;
 	
@@ -692,7 +755,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 /**
  * Extracts and returns column names from the given table in the database.
 **/
-- (NSArray *)columnNamesForTable:(NSString *)tableName using:(sqlite3 *)aDb
++ (NSArray *)columnNamesForTable:(NSString *)tableName using:(sqlite3 *)aDb
 {
 	if (tableName == nil) return nil;
 	
@@ -710,6 +773,8 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	
 	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
+		// cid|name|type|notnull|dflt|value|pk
+		
 		const unsigned char *text = sqlite3_column_text(statement, 1);
 		int textSize = sqlite3_column_bytes(statement, 1);
 		
@@ -737,7 +802,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
  *
  * key:(NSString *)columnName -> value:(NSString *)affinity
 **/
-- (NSDictionary *)columnNamesAndAffinityForTable:(NSString *)tableName using:(sqlite3 *)aDb
++ (NSDictionary *)columnNamesAndAffinityForTable:(NSString *)tableName using:(sqlite3 *)aDb
 {
 	if (tableName == nil) return nil;
 	

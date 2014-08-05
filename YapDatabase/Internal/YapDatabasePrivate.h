@@ -84,9 +84,12 @@ extern NSString *const YapDatabaseNotificationKey;
 /**
  * General utility methods.
 **/
-- (BOOL)tableExists:(NSString *)tableName using:(sqlite3 *)aDb;
-- (NSArray *)columnNamesForTable:(NSString *)tableName using:(sqlite3 *)aDb;
-- (NSDictionary *)columnNamesAndAffinityForTable:(NSString *)tableName using:(sqlite3 *)aDb;
++ (int)pragma:(NSString *)pragmaSetting using:(sqlite3 *)db;
++ (NSString *)pragmaValueForAutoVacuum:(int)auto_vacuum;
++ (NSString *)pragmaValueForSynchronous:(int)synchronous;
++ (BOOL)tableExists:(NSString *)tableName using:(sqlite3 *)aDb;
++ (NSArray *)columnNamesForTable:(NSString *)tableName using:(sqlite3 *)aDb;
++ (NSDictionary *)columnNamesAndAffinityForTable:(NSString *)tableName using:(sqlite3 *)aDb;
 
 /**
  * New connections inherit their default values from this structure.
@@ -160,7 +163,7 @@ extern NSString *const YapDatabaseNotificationKey;
 /**
  * Configures database encryption via SQLCipher.
  **/
-- (BOOL)configureEncryptionForDatabase:(sqlite3*)sqlite;
+- (BOOL)configureEncryptionForDatabase:(sqlite3 *)sqlite;
 #endif
 
 @end

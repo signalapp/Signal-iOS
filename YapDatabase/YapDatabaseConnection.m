@@ -191,6 +191,27 @@ static NSString *const ExtKey_class = @"class";
 			}
 			else
 			{
+				// Set configurable pragmas
+				
+				YapDatabasePragmaSynchronous pragmaSynchronous = database.options.pragmaSynchronous;
+				
+				if (pragmaSynchronous == YapDatabasePragmaSynchronous_Off ||
+				    pragmaSynchronous == YapDatabasePragmaSynchronous_Normal)
+				{
+					char *pragma_stmt = NULL;
+					
+					if (pragmaSynchronous == YapDatabasePragmaSynchronous_Off)
+						pragma_stmt = "PRAGMA synchronous = OFF;";
+					else
+						pragma_stmt = "PRAGMA synchronous = NORMAL;";
+				
+					status = sqlite3_exec(db, pragma_stmt, NULL, NULL, NULL);
+					if (status != SQLITE_OK)
+					{
+						YDBLogError(@"Error setting PRAGMA synchronous: %d %s", status, sqlite3_errmsg(db));
+					}
+				}
+				
 				// Disable autocheckpointing.
 				//
 				// YapDatabase has its own optimized checkpointing algorithm built-in.

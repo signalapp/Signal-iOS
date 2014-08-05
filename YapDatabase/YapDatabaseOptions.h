@@ -59,7 +59,7 @@ typedef NSString* (^YapDatabaseOptionsPassphraseBlock)(void);
  * 
  * Note that YapDatabase uses sqlite in WAL mode.
  *
- * The default value is YapDatabasePragmaSynchronous_Normal.
+ * The default value is YapDatabasePragmaSynchronous_Full.
 **/
 @property (nonatomic, assign, readwrite) YapDatabasePragmaSynchronous pragmaSynchronous;
 

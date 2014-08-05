@@ -146,10 +146,9 @@ static NSString *const ExtKey_version_deprecated = @"version";
 		#if DEBUG
 		if ([oldVersionTag isEqualToString:versionTag])
 		{
-			__unsafe_unretained YapDatabase *database = databaseTransaction->connection->database;
 			sqlite3 *db = databaseTransaction->connection->db;
 			
-			NSDictionary *columns = [database columnNamesAndAffinityForTable:[self tableName] using:db];
+			NSDictionary *columns = [YapDatabase columnNamesAndAffinityForTable:[self tableName] using:db];
 			
 			YapDatabaseSecondaryIndexSetup *setup = secondaryIndexConnection->secondaryIndex->setup;
 			

@@ -22,7 +22,7 @@
 	if ((self = [super init]))
 	{
 		corruptAction = YapDatabaseCorruptAction_Rename;
-		pragmaSynchronous = YapDatabasePragmaSynchronous_Normal;
+		pragmaSynchronous = YapDatabasePragmaSynchronous_Full;
 	}
 	return self;
 }
