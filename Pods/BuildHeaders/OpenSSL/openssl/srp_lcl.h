@@ -1,1 +1,0 @@
-../../../OpenSSL/crypto/srp/srp_lcl.h

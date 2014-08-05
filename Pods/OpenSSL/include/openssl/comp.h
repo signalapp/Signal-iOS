@@ -1,1 +1,0 @@
-../../crypto/comp/comp.h
