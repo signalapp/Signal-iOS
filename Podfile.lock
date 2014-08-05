@@ -1,0 +1,67 @@
+PODS:
+  - AFNetworking (2.3.1):
+    - AFNetworking/NSURLConnection
+    - AFNetworking/NSURLSession
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+    - AFNetworking/UIKit
+  - AFNetworking/NSURLConnection (2.3.1):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/NSURLSession (2.3.1):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (2.3.1)
+  - AFNetworking/Security (2.3.1)
+  - AFNetworking/Serialization (2.3.1)
+  - AFNetworking/UIKit (2.3.1):
+    - AFNetworking/NSURLConnection
+    - AFNetworking/NSURLSession
+  - CocoaLumberjack (1.9.1):
+    - CocoaLumberjack/Extensions
+  - CocoaLumberjack/Core (1.9.1)
+  - CocoaLumberjack/Extensions (1.9.1):
+    - CocoaLumberjack/Core
+  - libPhoneNumber-iOS (0.7.3)
+  - MMDrawerController (0.5.6):
+    - MMDrawerController/Core
+    - MMDrawerController/MMDrawerBarButtonItem
+    - MMDrawerController/MMDrawerVisualStates
+    - MMDrawerController/Subclass
+  - MMDrawerController/Core (0.5.6)
+  - MMDrawerController/MMDrawerBarButtonItem (0.5.6):
+    - MMDrawerController/Core
+  - MMDrawerController/MMDrawerVisualStates (0.5.6):
+    - MMDrawerController/Core
+  - MMDrawerController/Subclass (0.5.6):
+    - MMDrawerController/Core
+  - OpenSSL (1.0.108)
+  - PastelogKit (1.1):
+    - CocoaLumberjack (~> 1.9)
+  - UICKeyChainStore (1.0.7)
+
+DEPENDENCIES:
+  - AFNetworking (~> 2.3.1)
+  - libPhoneNumber-iOS (~> 0.7)
+  - MMDrawerController (~> 0.5.0)
+  - OpenSSL (~> 1.0.108)
+  - PastelogKit (~> 1.1)
+  - UICKeyChainStore (from `Podspecs/UICKeyChainStore.podspec`)
+
+EXTERNAL SOURCES:
+  UICKeyChainStore:
+    :podspec: Podspecs/UICKeyChainStore.podspec
+
+SPEC CHECKSUMS:
+  AFNetworking: 6d7b76aa5d04c8c37daad3eef4b7e3f2a7620da3
+  CocoaLumberjack: 94accd5749f5c5d15134c8d50f34a973aed8ef69
+  libPhoneNumber-iOS: 98fc07d70c8fdb5e6a8e3442c37e97353065c20e
+  MMDrawerController: 4bae84535ca7a5f4cb55a66a001e6035c3571677
+  OpenSSL: 1a36afaefdb88f47dad16629c9d38750a5896601
+  PastelogKit: 32836ec27e587a8876326abeaf9a1b5e2bc484ea
+  UICKeyChainStore: eef407137f0397e95a3df32cdf05f7e2ddd99647
+
+COCOAPODS: 0.33.1
