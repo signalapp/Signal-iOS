@@ -1,0 +1,3 @@
+[submodule "Pods"]
+	path = Pods
+	url = https://github.com/WhisperSystems/Signal-iOS.git 
