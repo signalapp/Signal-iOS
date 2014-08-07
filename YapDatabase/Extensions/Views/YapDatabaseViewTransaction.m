@@ -4336,6 +4336,29 @@ static NSString *const ExtKey_version_deprecated = @"version";
 #pragma mark Public API - Enumerating
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+- (void)enumerateGroupsUsingBlock:(void (^)(NSString *group, BOOL *stop))block
+{
+	if (block == NULL) return;
+	
+	[viewConnection->mutatedGroups removeAllObjects]; // mutation during enumeration protection
+	
+	__block BOOL stop = NO;
+	
+	[viewConnection->state enumerateGroupsWithBlock:^(NSString *group, BOOL *innerStop) {
+		
+		block(group, &stop);
+		
+		if (stop || [viewConnection->mutatedGroups count] > 0) *innerStop = YES;
+	}];
+	
+	if (!stop && [viewConnection->mutatedGroups count] > 0)
+	{
+		NSString *anyMutatedGroup = [viewConnection->mutatedGroups anyObject];
+		
+		@throw [self mutationDuringEnumerationException:anyMutatedGroup];
+	}
+}
+
 - (void)enumerateKeysInGroup:(NSString *)group
                   usingBlock:(void (^)(NSString *collection, NSString *key, NSUInteger index, BOOL *stop))block
 {

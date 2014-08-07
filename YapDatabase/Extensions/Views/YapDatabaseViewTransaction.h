@@ -257,6 +257,11 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
 #pragma mark Enumerating
 
 /**
+ * Enumerates the groups in the view.
+**/
+- (void)enumerateGroupsUsingBlock:(void (^)(NSString *group, BOOL *stop))block;
+
+/**
  * Enumerates the keys in the given group.
 **/
 - (void)enumerateKeysInGroup:(NSString *)group
