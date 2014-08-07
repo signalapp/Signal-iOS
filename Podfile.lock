@@ -38,7 +38,7 @@ PODS:
     - MMDrawerController/Core
   - MMDrawerController/Subclass (0.5.6):
     - MMDrawerController/Core
-  - OpenSSL (1.0.108)
+  - OpenSSL (1.0.109)
   - PastelogKit (1.1):
     - CocoaLumberjack (~> 1.9)
   - UICKeyChainStore (1.0.7)
@@ -47,7 +47,7 @@ DEPENDENCIES:
   - AFNetworking (~> 2.3.1)
   - libPhoneNumber-iOS (~> 0.7)
   - MMDrawerController (~> 0.5.0)
-  - OpenSSL (~> 1.0.108)
+  - OpenSSL (~> 1.0.109)
   - PastelogKit (~> 1.1)
   - UICKeyChainStore (from `Podspecs/UICKeyChainStore.podspec`)
 
@@ -60,7 +60,7 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 94accd5749f5c5d15134c8d50f34a973aed8ef69
   libPhoneNumber-iOS: 98fc07d70c8fdb5e6a8e3442c37e97353065c20e
   MMDrawerController: 4bae84535ca7a5f4cb55a66a001e6035c3571677
-  OpenSSL: 1a36afaefdb88f47dad16629c9d38750a5896601
+  OpenSSL: 4810adf5c99b0e2cd20670a11a987c805e8a521c
   PastelogKit: 32836ec27e587a8876326abeaf9a1b5e2bc484ea
   UICKeyChainStore: eef407137f0397e95a3df32cdf05f7e2ddd99647
 
