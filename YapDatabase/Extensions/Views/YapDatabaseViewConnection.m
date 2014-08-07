@@ -662,6 +662,28 @@
 	return NO;
 }
 
+/**
+ * This method provides a rough estimate of the size of the change-set.
+ * See the header file for more information.
+**/
+- (NSUInteger)numberOfRawChangesForNotifications:(NSArray *)notifications
+{
+	NSString *registeredName = self.view.registeredName;
+	NSUInteger count = 0;
+	
+	for (NSNotification *notification in notifications)
+	{
+		NSDictionary *changeset =
+		  [[notification.userInfo objectForKey:YapDatabaseExtensionsKey] objectForKey:registeredName];
+		
+		NSArray *changeset_changes = [changeset objectForKey:changeset_key_changes];
+		
+		count += [changeset_changes count];
+	}
+	
+	return count;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Statements - KeyTable
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
