@@ -29,7 +29,7 @@
 
 +(NSString*) regionCodeFromCountryCodeString:(NSString*) countryCodeString;
 
--(NSURL*) toUrl;
+-(NSURL*) toSystemDialerURL;
 -(NSString *)toE164;
 -(NSString *)localizedDescriptionForUser;
 -(NSNumber*)getCountryCode;

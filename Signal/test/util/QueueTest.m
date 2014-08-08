@@ -3,6 +3,7 @@
 #import "TestUtil.h"
 
 @implementation QueueTest
+
 -(void) queueTest {
     Queue* q = [Queue new];
     test([q count] == 0);
@@ -26,4 +27,5 @@
     testThrows([q peek]);
     testThrows([q dequeue]);
 }
+
 @end

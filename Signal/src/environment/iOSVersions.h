@@ -81,7 +81,7 @@
  Add a Singelton implementation to the .m File
  */
 
-#define MacrosSingletonImplemantion \
+#define MacrosSingletonImplemention \
 + (instancetype)sharedInstance { \
 \
 static dispatch_once_t onceToken; \
@@ -93,4 +93,4 @@ sharedInstance = [self.class new]; \
 return sharedInstance; \
 }
 
-#define CJAMacrosSingletonInterface + (instancetype)sharedInstance;
+#define MacrosSingletonInterface + (instancetype)sharedInstance;

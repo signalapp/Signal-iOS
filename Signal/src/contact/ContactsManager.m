@@ -2,6 +2,7 @@
 #import "FutureSource.h"
 #import "FutureUtil.h"
 #import <AddressBook/AddressBook.h>
+#import <libPhoneNumber-iOS/NBPhoneNumber.h>
 #import "Constraints.h"
 #import "Environment.h"
 #import "NotificationManifest.h"
@@ -180,6 +181,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
                       (void*)(unsigned long)ABPersonGetSortOrdering());
     
     NSArray *sortedPeople = (__bridge_transfer NSArray *)allPeopleMutable;
+
+    // This predicate returns all contacts from the addressbook having at least one phone number
     
     NSPredicate* predicate = [NSPredicate predicateWithBlock: ^BOOL(id record, NSDictionary *bindings) {
         ABMultiValueRef phoneNumbers = ABRecordCopyValue( (__bridge ABRecordRef)record, kABPersonPhoneProperty);
@@ -285,8 +288,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         
         NSMutableArray *numbers = [NSMutableArray array];
         
-        for (CFIndex i = 0; i < (NSInteger)[phoneNumbers count]; i++) {
-            NSString *phoneNumber = phoneNumbers[(NSUInteger)i];
+        for (NSUInteger i = 0; i < [phoneNumbers count]; i++) {
+            NSString *phoneNumber = phoneNumbers[i];
             [numbers addObject:phoneNumber];
         }
         

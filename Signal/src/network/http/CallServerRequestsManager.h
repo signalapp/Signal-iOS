@@ -11,7 +11,7 @@
 
 @interface CallServerRequestsManager : NSObject
 
-+ (instancetype)sharedManager;
+MacrosSingletonInterface
 
 - (void)registerPushToken:(NSData*)deviceToken success:(void (^)(NSURLSessionDataTask *task, id responseObject))success failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure;
 

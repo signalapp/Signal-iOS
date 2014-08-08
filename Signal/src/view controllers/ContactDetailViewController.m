@@ -142,7 +142,7 @@ static NSString *const FAVOURITE_FALSE_ICON_NAME = @"favourite_false_icon";
 
 - (void)openPhoneAppWithPhoneNumber:(PhoneNumber *)phoneNumber {
     if (phoneNumber) {
-        [[UIApplication sharedApplication] openURL:[phoneNumber toUrl]];
+        [[UIApplication sharedApplication] openURL:[phoneNumber toSystemDialerURL]];
     }
 }
 

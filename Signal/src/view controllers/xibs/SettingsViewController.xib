@@ -6,13 +6,14 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SettingsViewController">
             <connections>
-                <outlet property="callQualityHeaderView" destination="j1j-ta-39S" id="l3w-bt-UWR"/>
                 <outlet property="clearHistoryLogCell" destination="d8g-sW-ZOU" id="gqj-U8-aKQ"/>
-                <outlet property="directoryUpdateCell" destination="spk-JC-Hnw" id="mbt-cO-iOG"/>
+                <outlet property="debuggingHeaderView" destination="j1j-ta-39S" id="bzx-QG-fO4"/>
                 <outlet property="disableAutocorrectButton" destination="dLe-ku-opM" id="Edi-TS-ZcR"/>
                 <outlet property="disableAutocorrectCell" destination="nQL-pT-i5g" id="YZo-pL-RM7"/>
+                <outlet property="disableDebugLogsButton" destination="ENH-DC-cin" id="E5S-Rf-oAr"/>
                 <outlet property="disableHistoryButton" destination="trw-DG-amf" id="97O-Y4-iu3"/>
                 <outlet property="disableHistoryCell" destination="5Wr-Th-YJI" id="fQY-Qd-xv0"/>
+                <outlet property="disableLogsCell" destination="Zs4-3i-4Dm" id="eeD-Br-M2J"/>
                 <outlet property="hideContactImagesButton" destination="kv5-cc-It9" id="Ftz-lp-Eqd"/>
                 <outlet property="hideContactImagesCell" destination="1Sy-9w-LqE" id="Rvh-96-REp"/>
                 <outlet property="phoneNumberLabel" destination="G77-lz-XM0" id="adE-bu-2Kn"/>
@@ -265,7 +266,7 @@
                     <color key="textColor" red="0.0" green="0.5450980392" blue="0.93725490199999995" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                     <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="string" keyPath="localizationKey" value="SETTINGS_CALL_QUALITY"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="localizationKey" value="SETTINGS_DEBUGGING"/>
                     </userDefinedRuntimeAttributes>
                 </label>
                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JV0-FE-CfM">
@@ -275,7 +276,7 @@
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                     <connections>
-                        <action selector="callQualityTapped" destination="-1" eventType="touchUpInside" id="Rdi-DX-FQ1"/>
+                        <action selector="debuggingTapped:" destination="-1" eventType="touchUpInside" id="Qv2-AR-CPk"/>
                     </connections>
                 </button>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="expanded_cell_icon.png" translatesAutoresizingMaskIntoConstraints="NO" id="Xs2-Ls-WP3">
@@ -367,51 +368,6 @@
                 </subviews>
             </tableViewCellContentView>
         </tableViewCell>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="SettingsTableViewCell" id="Ssg-87-RAe">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Ssg-87-RAe" id="uEn-bq-BsY">
-                <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
-                <autoresizingMask key="autoresizingMask"/>
-                <subviews>
-                    <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" minimumValueImage="volume_low.png" maximumValueImage="volume_high.png" translatesAutoresizingMaskIntoConstraints="NO" id="dIo-Jr-g26">
-                        <rect key="frame" x="18" y="6" width="284" height="33"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="minimumTrackTintColor" red="0.0" green="0.5450980392" blue="0.93725490199999995" alpha="1" colorSpace="calibratedRGB"/>
-                        <color key="thumbTintColor" red="0.81960784313725488" green="0.82745098039215681" blue="0.83137254901960778" alpha="1" colorSpace="calibratedRGB"/>
-                    </slider>
-                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cUv-oD-DGX" userLabel="Seperator View">
-                        <rect key="frame" x="15" y="42" width="290" height="1"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="backgroundColor" red="0.7843137255" green="0.7843137255" blue="0.7843137255" alpha="1" colorSpace="calibratedRGB"/>
-                    </view>
-                </subviews>
-            </tableViewCellContentView>
-        </tableViewCell>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="spk-JC-Hnw">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="spk-JC-Hnw" id="710-np-6sk">
-                <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
-                <autoresizingMask key="autoresizingMask"/>
-                <subviews>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Force Directory Update" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aic-Lf-XeI">
-                        <rect key="frame" x="20" y="0.0" width="223" height="44"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="44" id="MAp-p5-S8N"/>
-                            <constraint firstAttribute="width" constant="223" id="Vj8-Eh-41I"/>
-                        </constraints>
-                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                        <nil key="highlightedColor"/>
-                    </label>
-                </subviews>
-                <constraints>
-                    <constraint firstItem="aic-Lf-XeI" firstAttribute="top" secondItem="710-np-6sk" secondAttribute="top" id="DeF-Nt-zK8"/>
-                    <constraint firstItem="aic-Lf-XeI" firstAttribute="leading" secondItem="710-np-6sk" secondAttribute="leading" constant="20" symbolic="YES" id="h6l-yK-z5z"/>
-                </constraints>
-            </tableViewCellContentView>
-        </tableViewCell>
         <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="SettingsTableViewCell" id="Yc0-ZL-RM6">
             <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -436,12 +392,60 @@
                 </subviews>
             </tableViewCellContentView>
         </tableViewCell>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="SettingsTableViewCell" id="Zs4-3i-4Dm">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Zs4-3i-4Dm" id="wUC-kf-XXe">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Disable Debug Log" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vS9-x4-0OY" customClass="HelveticaNeueLTStdMedLabel">
+                        <rect key="frame" x="20" y="0.0" width="223" height="44"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="44" id="E4U-ry-REH"/>
+                            <constraint firstAttribute="width" constant="223" id="RGD-TX-v5k"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <nil key="highlightedColor"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="string" keyPath="localizationKey" value="SETTINGS_DISABLE_LOGS"/>
+                        </userDefinedRuntimeAttributes>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HN4-Id-TUu" userLabel="Seperator View">
+                        <rect key="frame" x="15" y="42" width="290" height="1"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" red="0.7843137255" green="0.7843137255" blue="0.7843137255" alpha="1" colorSpace="calibratedRGB"/>
+                    </view>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ENH-DC-cin">
+                        <rect key="frame" x="265" y="2" width="40" height="40"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <state key="normal" image="checkbox_empty.png">
+                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                        </state>
+                        <connections>
+                            <action selector="disableLogTapped:" destination="-1" eventType="touchUpInside" id="Rfa-IA-Fd9"/>
+                        </connections>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="HN4-Id-TUu" firstAttribute="centerX" secondItem="wUC-kf-XXe" secondAttribute="centerX" id="5gQ-Vu-35O"/>
+                    <constraint firstItem="HN4-Id-TUu" firstAttribute="top" secondItem="ENH-DC-cin" secondAttribute="bottom" id="97R-QY-RR4"/>
+                    <constraint firstItem="ENH-DC-cin" firstAttribute="top" secondItem="wUC-kf-XXe" secondAttribute="top" constant="2" id="G4T-2R-9mg"/>
+                    <constraint firstItem="HN4-Id-TUu" firstAttribute="top" secondItem="wUC-kf-XXe" secondAttribute="top" constant="42" id="MFo-Df-tsx"/>
+                    <constraint firstItem="HN4-Id-TUu" firstAttribute="leading" secondItem="wUC-kf-XXe" secondAttribute="leading" constant="15" id="O6V-dk-vg4"/>
+                    <constraint firstItem="vS9-x4-0OY" firstAttribute="leading" secondItem="wUC-kf-XXe" secondAttribute="leading" constant="20" symbolic="YES" id="TEO-FA-N8x"/>
+                    <constraint firstItem="vS9-x4-0OY" firstAttribute="top" secondItem="wUC-kf-XXe" secondAttribute="top" id="fQT-vn-inw"/>
+                    <constraint firstItem="ENH-DC-cin" firstAttribute="leading" secondItem="vS9-x4-0OY" secondAttribute="trailing" constant="22" id="oAo-Z7-YC0"/>
+                    <constraint firstItem="vS9-x4-0OY" firstAttribute="bottom" secondItem="HN4-Id-TUu" secondAttribute="bottom" constant="1" id="oSz-Df-RyZ"/>
+                    <constraint firstItem="HN4-Id-TUu" firstAttribute="trailing" secondItem="ENH-DC-cin" secondAttribute="trailing" id="rZG-jh-FwU"/>
+                </constraints>
+            </tableViewCellContentView>
+        </tableViewCell>
     </objects>
     <resources>
         <image name="checkbox_empty.png" width="19" height="19"/>
         <image name="expanded_cell_icon.png" width="7" height="7"/>
         <image name="menu_icon.png" width="54" height="50"/>
-        <image name="volume_high.png" width="19" height="19"/>
-        <image name="volume_low.png" width="12" height="12"/>
     </resources>
 </document>

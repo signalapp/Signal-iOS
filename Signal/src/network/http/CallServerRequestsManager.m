@@ -23,14 +23,7 @@
 
 @implementation CallServerRequestsManager
 
-+ (instancetype)sharedManager {
-    static CallServerRequestsManager *sharedManager = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedManager = [[self alloc] init];
-    });
-    return sharedManager;
-}
+MacrosSingletonImplemention
 
 - (id)init{
     self = [super init];

@@ -21,6 +21,9 @@
 #define AUTOCORRECT_ENABLED_KEY @"Autocorrect Enabled Key"
 #define HISTORY_LOG_ENABLED_KEY @"History Log Enabled Key"
 #define PUSH_REVOKED_KEY @"Push Revoked Key"
+#define DEBUG_IS_ENABLED_KEY @"Debugging Log Enabled Key"
+
+#define kSignalVersionKey @"SignalUpdateVersionKey"
 
 @implementation PropertyListPreferences (PropertyUtil)
 
@@ -95,9 +98,19 @@
     }
 }
 
+- (BOOL)loggingIsEnabled{
+    NSNumber *preference = [self tryGetValueForKey:DEBUG_IS_ENABLED_KEY];
+    if (preference) {
+        return [preference boolValue];
+    } else{
+        return YES;
+    }
+}
+
 -(void) setFreshInstallTutorialsEnabled:(BOOL)enabled {
     [self setValueForKey:FRESH_INSTALL_TUTORIALS_ENABLED_KEY toValue:[NSNumber numberWithBool:enabled]];
 }
+
 -(void) setContactImagesEnabled:(BOOL)enabled {
     [self setValueForKey:CONTACT_IMAGES_ENABLED_KEY toValue:[NSNumber numberWithBool:enabled]];
 }
@@ -114,5 +127,22 @@
 -(void) setRevokedPushPermission:(BOOL)revoked{
     [self setValueForKey:PUSH_REVOKED_KEY toValue:[NSNumber numberWithBool:revoked]];
 }
+
+-(void) setLoggingEnabled:(BOOL)flag{
+    [self setValueForKey:DEBUG_IS_ENABLED_KEY toValue:[NSNumber numberWithBool:flag]];
+}
+
+-(NSString*)lastRanVersion{
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kSignalVersionKey];
+}
+
+-(NSString*)setAndGetCurrentVersion{
+    NSString *lastVersion = [self lastRanVersion];
+    
+    [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]] forKey:kSignalVersionKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    return lastVersion;
+}
+
 
 @end

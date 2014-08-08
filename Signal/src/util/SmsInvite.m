@@ -16,7 +16,7 @@
         
         NSString *inviteMessage = INVITE_USERS_MESSAGE;
         
-        messageController.body = [inviteMessage stringByAppendingString:@" http://appstore.com/signalprivatemessenger"];
+        messageController.body = [inviteMessage stringByAppendingString:@" https://itunes.apple.com/app/id874139669"];
         messageController.recipients = @[[number toE164]];
         messageController.messageComposeDelegate = self;
         

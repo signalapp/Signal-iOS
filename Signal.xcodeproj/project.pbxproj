@@ -379,13 +379,13 @@
 		AA0C8E498E2046B0B81EEE6E /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
 		B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */ = {isa = PBXBuildFile; fileRef = B60C16641988999D00E97A6C /* VersionMigrations.m */; };
 		B621B079198C69A100D36C3D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B621B017198C69A100D36C3D /* Localizable.strings */; };
-		B624C4E6198FD2830009264A /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B624C4E5198FD2830009264A /* whisperFake.cer */; };
-		B624C4E7198FD3910009264A /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B624C4E5198FD2830009264A /* whisperFake.cer */; };
 		B67ADDC41989FF8700E1A773 /* CallServerRequestsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B67ADDC31989FF8700E1A773 /* CallServerRequestsManager.m */; };
 		B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B67EBF5C19194AC60084CCFD /* Settings.bundle */; };
+		B69B6305199573970072E805 /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B69B6304199573970072E805 /* whisperFake.cer */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
 		B6B1013C196D213F007E3930 /* SGNKeychainUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SGNKeychainUtil.m */; };
 		B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B9ECFB198B31BA00C620D3 /* PushManager.m */; };
+		B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C93C4D199567AD00EDF894 /* DebugLogger.m */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B90418E7183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B942EB0E183A9633000887BB /* SearchBarTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = B942EB0D183A9633000887BB /* SearchBarTitleView.m */; };
@@ -1111,17 +1111,19 @@
 		B621B069198C69A100D36C3D /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = Localizable.strings; sourceTree = "<group>"; };
 		B621B06C198C69A100D36C3D /* zh_TW.Big5 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW.Big5; path = Localizable.strings; sourceTree = "<group>"; };
 		B621B06F198C69A100D36C3D /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = Localizable.strings; sourceTree = "<group>"; };
-		B624C4E5198FD2830009264A /* whisperFake.cer */ = {isa = PBXFileReference; lastKnownFileType = file; name = whisperFake.cer; path = Signal/test/whisperFake.cer; sourceTree = SOURCE_ROOT; };
 		B657DDC91911A40500F45B0C /* Signal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Signal.entitlements; sourceTree = "<group>"; };
 		B661C211198EE2EA00548CA1 /* iOSVersions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iOSVersions.h; path = src/environment/iOSVersions.h; sourceTree = "<group>"; };
 		B67ADDC21989FF8700E1A773 /* CallServerRequestsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallServerRequestsManager.h; sourceTree = "<group>"; };
 		B67ADDC31989FF8700E1A773 /* CallServerRequestsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallServerRequestsManager.m; sourceTree = "<group>"; };
 		B67EBF5C19194AC60084CCFD /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = SettingsBundle/Settings.bundle; sourceTree = SOURCE_ROOT; };
+		B69B6304199573970072E805 /* whisperFake.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperFake.cer; sourceTree = "<group>"; };
 		B69CD25019773E79005CE69A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		B6B1013A196D213F007E3930 /* SGNKeychainUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGNKeychainUtil.h; sourceTree = "<group>"; };
 		B6B1013B196D213F007E3930 /* SGNKeychainUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGNKeychainUtil.m; sourceTree = "<group>"; };
 		B6B9ECFA198B31BA00C620D3 /* PushManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PushManager.h; sourceTree = "<group>"; };
 		B6B9ECFB198B31BA00C620D3 /* PushManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushManager.m; sourceTree = "<group>"; };
+		B6C93C4C199567AD00EDF894 /* DebugLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugLogger.h; sourceTree = "<group>"; };
+		B6C93C4D199567AD00EDF894 /* DebugLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugLogger.m; sourceTree = "<group>"; };
 		B90418E4183E9DD40038554A /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
 		B90418E5183E9DD40038554A /* DateUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtil.m; sourceTree = "<group>"; };
 		B942EB0C183A9633000887BB /* SearchBarTitleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchBarTitleView.h; sourceTree = "<group>"; };
@@ -1683,6 +1685,8 @@
 			children = (
 				76EB041218170B33006006FC /* Environment.h */,
 				76EB041318170B33006006FC /* Environment.m */,
+				B6C93C4C199567AD00EDF894 /* DebugLogger.h */,
+				B6C93C4D199567AD00EDF894 /* DebugLogger.m */,
 				76EB041418170B33006006FC /* LocalizableText.h */,
 				76EB041518170B33006006FC /* LocalizableText.m */,
 				76EB041618170B33006006FC /* PreferencesUtil.h */,
@@ -2228,6 +2232,7 @@
 		A15706EA17F0CD6D007C2BD6 /* test */ = {
 			isa = PBXGroup;
 			children = (
+				B69B6304199573970072E805 /* whisperFake.cer */,
 				76919BF51805D169008C664A /* contact */,
 				A15706EB17F0CD6D007C2BD6 /* async */,
 				A15706F217F0CD6D007C2BD6 /* audio */,
@@ -2881,7 +2886,6 @@
 				D221A09B169C9E5E00537ABF /* Signal-Prefix.pch */,
 				B661C211198EE2EA00548CA1 /* iOSVersions.h */,
 				E1C407C117F0C246007BEE65 /* whisperReal.cer */,
-				B624C4E5198FD2830009264A /* whisperFake.cer */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -3278,7 +3282,6 @@
 				E1370BE418A0686C00826894 /* outring.mp3 in Resources */,
 				E1370BE518A0686C00826894 /* r.caf in Resources */,
 				E1370BE618A0686C00826894 /* sonarping.mp3 in Resources */,
-				B624C4E7198FD3910009264A /* whisperFake.cer in Resources */,
 				E148751218A06AFD002CC4F3 /* HelveticaNeueLTStd-Bd.otf in Resources */,
 				E148751318A06AFD002CC4F3 /* HelveticaNeueLTStd-Th.otf in Resources */,
 				E148751418A06AFD002CC4F3 /* HelveticaNeueLTStd-Lt.otf in Resources */,
@@ -3306,7 +3309,7 @@
 				76EB067918170B34006006FC /* InCallViewController.xib in Resources */,
 				76EB068318170B34006006FC /* SettingsViewController.xib in Resources */,
 				76EB068118170B34006006FC /* RegisterViewController.xib in Resources */,
-				B624C4E6198FD2830009264A /* whisperFake.cer in Resources */,
+				B69B6305199573970072E805 /* whisperFake.cer in Resources */,
 				B97CBFB218861023008E0DE9 /* CountryCodeTableViewCell.xib in Resources */,
 				B9A578B5183D610300C17105 /* FavouriteTableViewCell.xib in Resources */,
 				B9B89C58185A2B7000A24465 /* LeftSideMenuCell.xib in Resources */,
@@ -3507,6 +3510,7 @@
 				76EB065818170B34006006FC /* LeftSideMenuViewController.m in Sources */,
 				76EB05EA18170B33006006FC /* CallProgress.m in Sources */,
 				76EB05C218170B33006006FC /* DhPacketSharedSecretHashes.m in Sources */,
+				B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */,
 				76EB063218170B33006006FC /* Crc32.m in Sources */,
 				E197B62418BBF5BB00F073E5 /* SoundPlayer.m in Sources */,
 				E197B61018BBEC1A00F073E5 /* EncodedAudioPacket.m in Sources */,
@@ -4499,7 +4503,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Signal/Signal-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = HAVE_CONFIG_H;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					HAVE_CONFIG_H,
+					"RELEASE=1",
+				);
 				GCC_STRICT_ALIASING = NO;
 				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = NO;
 				GCC_WARN_STRICT_SELECTOR_MATCH = YES;

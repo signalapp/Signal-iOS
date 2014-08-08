@@ -21,27 +21,30 @@
 @property (nonatomic, strong) IBOutlet UILabel *titleLabel;
 
 @property (nonatomic, strong) IBOutlet SettingsTableHeaderView *privacyAndSecurityHeaderView;
+@property (nonatomic, strong) IBOutlet SettingsTableHeaderView *debuggingHeaderView;
 @property (nonatomic, strong) IBOutlet UITableViewCell *hideContactImagesCell;
 @property (nonatomic, strong) IBOutlet UITableViewCell *disableAutocorrectCell;
 @property (nonatomic, strong) IBOutlet UITableViewCell *disableHistoryCell;
 @property (nonatomic, strong) IBOutlet UITableViewCell *clearHistoryLogCell;
+@property (nonatomic, strong) IBOutlet UITableViewCell *disableLogsCell;
 
 @property (nonatomic, strong) IBOutlet UIButton *hideContactImagesButton;
 @property (nonatomic, strong) IBOutlet UIButton *disableAutocorrectButton;
 @property (nonatomic, strong) IBOutlet UIButton *disableHistoryButton;
-
-@property (nonatomic, strong) IBOutlet SettingsTableHeaderView *callQualityHeaderView;
-@property (nonatomic, strong) IBOutlet UITableViewCell *directoryUpdateCell;
+@property (nonatomic, strong) IBOutlet UIButton *disableDebugLogsButton;
 
 @property (nonatomic, strong) IBOutlet UITableViewCell *sendDebugLog;
 
 - (IBAction)registerTapped;
 
 - (IBAction)privacyAndSecurityTapped;
+- (IBAction)debuggingTapped:(id)sender;
 
 - (IBAction)hideContactImagesButtonTapped;
 - (IBAction)disableAutocorrectButtonTapped;
 - (IBAction)disableHistoryButtonTapped;
+
+- (IBAction)disableLogTapped:(id)sender;
 
 - (IBAction)menuButtonTapped;
 

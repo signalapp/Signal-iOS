@@ -190,6 +190,8 @@
                 return;
             }
         }
+        _challengeButton.enabled = YES;
+        [_challengeActivityIndicator stopAnimating];
         [Environment errorNoter](error, @"While Verifying Challenge.", NO);
     }];
 
@@ -200,15 +202,14 @@
             [registered trySetResult:@YES];
             [self dismissView];
             [futureChallengeAcceptedSource trySetResult:result];
+            _challengeButton.enabled = YES;
+            [_challengeActivityIndicator stopAnimating];
         } failure:^{
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:REGISTER_ERROR_ALERT_VIEW_TITLE message:REGISTER_ERROR_ALERT_VIEW_BODY delegate:nil cancelButtonTitle:REGISTER_ERROR_ALERT_VIEW_DISMISS otherButtonTitles:nil, nil];
             [alertView show];
+            _challengeButton.enabled = YES;
+            [_challengeActivityIndicator stopAnimating];
         }];
-    }];
-
-    [futureDone finallyDo:^(Future *completed) {
-        _challengeButton.enabled = YES;
-        [_challengeActivityIndicator stopAnimating];
     }];
 }
 

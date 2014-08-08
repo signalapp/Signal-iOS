@@ -1,3 +1,4 @@
+#import "DebugLogger.h"
 #import "Environment.h"
 #import "Constraints.h"
 #import "FunctionalUtil.h"
@@ -6,6 +7,7 @@
 #import "HostNameEndPoint.h"
 #import "RecentCallManager.h"
 #import "ContactsManager.h"
+#import "PreferencesUtil.h"
 #import "PhoneNumberDirectoryFilterManager.h"
 #import "SGNKeychainUtil.h"
 
@@ -122,8 +124,9 @@ phoneDirectoryManager;
     e->zrtpVersionId = zrtpVersionId;
     e->contactsManager = contactsManager;
     
-    // @todo: better place for this?
     if (recentCallManager != nil) {
+        // recentCallManagers are nil in unit tests because they would require unnecessary allocations. Detailed explanation: https://github.com/WhisperSystems/Signal-iOS/issues/62#issuecomment-51482195
+        
         [recentCallManager watchForCallsThrough:phoneManager
                                  untilCancelled:nil];
         [recentCallManager watchForContactUpdatesFrom:contactsManager
@@ -166,6 +169,10 @@ phoneDirectoryManager;
 +(void)resetAppData{
     [SGNKeychainUtil wipeKeychain];
     [[Environment preferences] clear];
+    if ([[self preferences] loggingIsEnabled]) {
+        [[DebugLogger sharedInstance] wipeLogs];
+    }
+    [[self preferences] setAndGetCurrentVersion];
 }
 
 @end

@@ -2,12 +2,14 @@
 #import "AppAudioManager.h"
 #import "CallLogViewController.h"
 #import "CategorizingLogger.h"
+#import "DebugLogger.h"
 #import "DialerViewController.h"
 #import "DiscardingLog.h"
 #import "Environment.h"
 #import "InCallViewController.h"
 #import "LeftSideMenuViewController.h"
 #import "MMDrawerController.h"
+#import "PreferencesUtil.h"
 #import "NotificationTracker.h"
 #import "PushManager.h"
 #import "PriorityQueue.h"
@@ -28,7 +30,6 @@
 
 @property (nonatomic, strong) MMDrawerController *drawerController;
 @property (nonatomic, strong) NotificationTracker *notificationTracker;
-@property (nonatomic) DDFileLogger *fileLogger;
 
 @end
 
@@ -38,8 +39,8 @@
 
 - (void)performUpdateCheck{
     // We check if NSUserDefaults key for version exists.
-    NSString *previousVersion = [[NSUserDefaults standardUserDefaults] objectForKey:kSignalVersionKey];
-    NSString *currentVersion  = [NSString stringWithFormat:@"%@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]];
+    NSString *previousVersion = [[Environment preferences] lastRanVersion];
+    NSString *currentVersion  = [[Environment preferences] setAndGetCurrentVersion];
     
     if (!previousVersion) {
         DDLogError(@"No previous version found. Possibly first launch since install.");
@@ -52,9 +53,6 @@
         }
         
     }
-    
-    [[NSUserDefaults standardUserDefaults] setObject:currentVersion forKey:kSignalVersionKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 
@@ -63,14 +61,22 @@
  */
 
 - (void)protectPreferenceFiles{
-    NSMutableArray *pathsToExclude = [NSMutableArray array];
     
-    [pathsToExclude addObject:[[[NSHomeDirectory() stringByAppendingString:@"/Library/Preferences/"] stringByAppendingString:[[NSBundle mainBundle] bundleIdentifier]] stringByAppendingString:@".plist"]];
+    NSMutableArray *pathsToExclude = [NSMutableArray array];
+    NSString *preferencesPath =[NSHomeDirectory() stringByAppendingString:@"/Library/Preferences/"];
     
     NSError *error;
     
+    NSDictionary *attrs = [NSDictionary dictionaryWithObject:NSFileProtectionComplete forKey:NSFileProtectionKey];
+    [[NSFileManager defaultManager] setAttributes:attrs ofItemAtPath:preferencesPath error:&error];
+    
+    [pathsToExclude addObject:[[preferencesPath stringByAppendingString:[[NSBundle mainBundle] bundleIdentifier]] stringByAppendingString:@".plist"]];
+    
     NSString *logPath    = [NSHomeDirectory() stringByAppendingString:@"/Library/Caches/Logs/"];
     NSArray  *logsFiles  = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:logPath error:&error];
+    
+    attrs = [NSDictionary dictionaryWithObject:NSFileProtectionComplete forKey:NSFileProtectionKey];
+    [[NSFileManager defaultManager] setAttributes:attrs ofItemAtPath:logPath error:&error];
     
     for (NSUInteger i = 0; i < [logsFiles count]; i++) {
         [pathsToExclude addObject:[logPath stringByAppendingString:[logsFiles objectAtIndex:i]]];
@@ -85,7 +91,6 @@
         DDLogError(@"Error while removing log files from backup: %@", error.description);
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:NSLocalizedString(@"WARNING", @"") message:NSLocalizedString(@"DISABLING_BACKUP_FAILED", @"") delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil, nil];
         [alert show];
-        
         return;
     }
     
@@ -93,11 +98,19 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-    [DDLog addLogger:[DDTTYLogger sharedInstance]];
-    self.fileLogger = [[DDFileLogger alloc] init]; //Logging to file, because it's in the Cache folder, they are not uploaded in iTunes/iCloud backups.
-    self.fileLogger.rollingFrequency = 60 * 60 * 24; // 24 hour rolling.
-    self.fileLogger.logFileManager.maximumNumberOfLogFiles = 3; // Keep three days of logs.
-    [DDLog addLogger:self.fileLogger];
+    BOOL loggingIsEnabled;
+
+#ifdef DEBUG
+    loggingIsEnabled = TRUE;
+    [[DebugLogger sharedInstance] enableTTYLogging];
+    
+#elif RELEASE
+    loggingIsEnabled = [[Environment preferences] loggingIsEnabled];
+#endif
+
+    if (loggingIsEnabled) {
+        [[DebugLogger sharedInstance] enableFileLogging];
+    }
     
     [self performUpdateCheck];
     [self protectPreferenceFiles];

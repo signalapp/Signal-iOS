@@ -10,7 +10,7 @@
 
 @implementation AudioRemoteIOTest
 
--(void) ______REMOVE_THIS_PREFIX_TO_ENABLE_ACTUAL_AUDIO_TEST______testPlaysAndRecordsAudio {
+-(void) testPlaysAndRecordsAudio {
     __block RemoteIOAudio* a = nil;
     
     __block double t = 0;

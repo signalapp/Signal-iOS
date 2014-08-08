@@ -89,7 +89,7 @@ static NSString *const CONTACT_TABLE_VIEW_CELL_IDENTIFIER = @"ContactTableViewCe
         }
     }
 
-    [[UIApplication sharedApplication] openURL:[contact.parsedPhoneNumbers[0] toUrl]];
+    [[UIApplication sharedApplication] openURL:[contact.parsedPhoneNumbers[0] toSystemDialerURL]];
 }
 
 #pragma mark - UITableViewDelegate

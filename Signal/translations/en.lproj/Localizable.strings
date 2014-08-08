@@ -108,15 +108,10 @@
 "REGISTRATION_ERROR" = "Registration Error";
 "REGISTRATION_BODY" = "We couldn't reach the Signal server. Please try again.";
 "REJECT_CALL_BUTTON_TITLE" = "Reject";
-"SETTINGS_CALL_QUALITY" = "Call Quality";
-"SETTINGS_CHANGE_VOLUME" = "Change Volume With Buttons";
 "SETTINGS_CLEAR_HISTORY_LOG" = "Clear History Log";
-"SETTINGS_DATE_FORMAT" = "Date Format";
 "SETTINGS_DISABLE_AUTOCORRECT" = "Disable Autocorrect";
 "SETTINGS_DISABLE_HISTORY_LOG" = "Disable History Log";
 "SETTINGS_HIDE_CONTACT_IMAGES" = "Hide Contact Images";
-"SETTINGS_LOCALIZATION_OVERRIDE" = "Localization Override";
-"SETTINGS_LOCALIZATION_OVERRIDES" = "Localization Overrides";
 "SETTINGS_LOG_CLEAR_MESSAGE" = "Call History Cleared";
 "SETTINGS_LOG_CLEAR_TITLE" = "Operation Completed";
 "SETTINGS_NAV_BAR_TITLE" = "Settings";
@@ -124,6 +119,8 @@
 "SETTINGS_NUMBER_PREFIX" = "Your Number:";
 "SETTINGS_PRIVACY_AND_SECURITY" = "Privacy and Security";
 "SETTINGS_RINGTONE" = "Ringtone";
+"SETTINGS_DEBUGGING" = "Debugging";
+"SETTINGS_DISABLE_LOGS" = "Disable debugging logs";
 "SETTINGS_SENDLOG" = "Submit Debug Log"; 
 "SETTINGS_SENDLOGS_WAITING" = "Sending log file\n Please wait...";
 "SETTINGS_SENDLOG_ALERT_BODY" = "Bugs can be reported by email or by copying the log in a GitHub Issue (advanced).";

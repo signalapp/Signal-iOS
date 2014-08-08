@@ -97,7 +97,6 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     char s[[text length]+1];
     int xx = 0;
     for (NSUInteger i = 0; i < [text length]; i++) {
-        // @todo: Don't be terrible
         unichar x = [text characterAtIndex:i];
         if (x == '+' || (x >= '0' && x <= '9')) {
             s[xx++] = (char)x;
@@ -123,7 +122,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     }
 }
 
--(NSURL*) toUrl {
+-(NSURL*) toSystemDialerURL {
     NSString* link = [NSString stringWithFormat:@"telprompt://%@", e164];
     return [NSURL URLWithString:link];
 }

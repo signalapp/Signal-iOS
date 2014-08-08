@@ -104,7 +104,7 @@
 }
 
 - (void)registerForPushWithToken:(NSData*)token{
-    [[CallServerRequestsManager sharedManager] registerPushToken:token success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[CallServerRequestsManager sharedInstance] registerPushToken:token success:^(NSURLSessionDataTask *task, id responseObject) {
         if ([task.response isKindOfClass: [NSHTTPURLResponse class]]){
             NSInteger statusCode = [(NSHTTPURLResponse*) task.response statusCode];
             if (statusCode == 200) {
