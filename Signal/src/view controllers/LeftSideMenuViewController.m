@@ -11,8 +11,8 @@
 #define NUMBER_OF_TABLE_VIEW_SECTIONS 2
 
 static NSString *SIDE_MENU_TABLE_CELL_IDENTIFIER = @"LeftSideMenuCell";
-static NSString *WHISPER_SYSTEMS_URL = @"http://whispersystems.org/";
-static NSString *WHISPER_SYSTEMS_BLOG_URL = @"http://whispersystems.org/blog";
+static NSString *WHISPER_SYSTEMS_URL = @"https://www.whispersystems.org/";
+static NSString *WHISPER_SYSTEMS_BLOG_URL = @"https://www.whispersystems.org/blog";
 static NSString *WHISPER_SYSTEMS_BUGREPORT_URL = @"http://support.whispersystems.org";
 
 @interface LeftSideMenuViewController () {
