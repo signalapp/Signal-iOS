@@ -572,6 +572,21 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		// This isn't critical, so we can continue.
 	}
 	
+	// Set journal_size_imit.
+	//
+	// We only need to do set this pragma for THIS connection,
+	// because it is the only connection that performs checkpoints.
+	
+	NSString *stmt =
+	  [NSString stringWithFormat:@"PRAGMA journal_size_limit = %ld;", (long)options.pragmaJournalSizeLimit];
+	
+	status = sqlite3_exec(db, [stmt UTF8String], NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error setting PRAGMA journal_size_limit: %d %s", status, sqlite3_errmsg(db));
+		// This isn't critical, so we can continue.
+	}
+	
 	// Disable autocheckpointing.
 	//
 	// YapDatabase has its own optimized checkpointing algorithm built-in.
@@ -2345,6 +2360,8 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 **/
 - (void)asyncCheckpoint:(uint64_t)maxCheckpointableSnapshot
 {
+	static BOOL const PRINT_WAL_SIZE = NO;
+	
 	__weak YapDatabase *weakSelf = self;
 	
 	dispatch_async(checkpointQueue, ^{ @autoreleasepool {
@@ -2353,6 +2370,18 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		if (strongSelf == nil) return;
 		
 		YDBLogVerbose(@"Checkpointing up to snapshot %llu", maxCheckpointableSnapshot);
+		
+		if (YDB_LOG_VERBOSE && PRINT_WAL_SIZE)
+		{
+			NSString *walFilePath = [strongSelf.databasePath stringByAppendingString:@"-wal"];
+			
+			NSDictionary *walAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:walFilePath error:NULL];
+			unsigned long long walFileSize = [walAttr fileSize];
+			
+			YDBLogVerbose(@"Pre-checkpoint file size: %@",
+			  [NSByteCountFormatter stringFromByteCount:(long long)walFileSize
+			                                 countStyle:NSByteCountFormatterCountStyleFile]);
+		}
 		
 		// We're ready to checkpoint more frames.
 		//
@@ -2416,6 +2445,18 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 					}
 				}
 			});
+		}
+		
+		if (YDB_LOG_VERBOSE && PRINT_WAL_SIZE)
+		{
+			NSString *walFilePath = [strongSelf.databasePath stringByAppendingString:@"-wal"];
+			
+			NSDictionary *walAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:walFilePath error:NULL];
+			unsigned long long walFileSize = [walAttr fileSize];
+			
+			YDBLogVerbose(@"Post-checkpoint file size: %@",
+			  [NSByteCountFormatter stringFromByteCount:(long long)walFileSize
+			                                 countStyle:NSByteCountFormatterCountStyleFile]);
 		}
 	}});
 }

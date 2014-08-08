@@ -16,6 +16,7 @@
 
 @synthesize corruptAction = corruptAction;
 @synthesize pragmaSynchronous = pragmaSynchronous;
+@synthesize pragmaJournalSizeLimit = pragmaJournalSizeLimit;
 
 - (id)init
 {
@@ -23,6 +24,7 @@
 	{
 		corruptAction = YapDatabaseCorruptAction_Rename;
 		pragmaSynchronous = YapDatabasePragmaSynchronous_Full;
+		pragmaJournalSizeLimit = 0;
 	}
 	return self;
 }
@@ -32,6 +34,7 @@
 	YapDatabaseOptions *copy = [[[self class] alloc] init];
 	copy->corruptAction = corruptAction;
 	copy->pragmaSynchronous = pragmaSynchronous;
+	copy->pragmaJournalSizeLimit = pragmaJournalSizeLimit;
 #ifdef SQLITE_HAS_CODEC
     copy.passphraseBlock = _passphraseBlock;
 #endif

@@ -63,6 +63,19 @@ typedef NSString* (^YapDatabaseOptionsPassphraseBlock)(void);
 **/
 @property (nonatomic, assign, readwrite) YapDatabasePragmaSynchronous pragmaSynchronous;
 
+/**
+ * Allows you to configure the sqlite "PRAGMA journal_size_limit" option.
+ * 
+ * For more information, see the sqlite docs:
+ * http://www.sqlite.org/pragma.html#pragma_journal_size_limit
+ * 
+ * Note that YapDatabase uses sqlite in WAL mode.
+ * 
+ * The default value is zero,
+ * meaning that every checkpoint will reduce the WAL file to its minimum size (if possible).
+**/
+@property (nonatomic, assign, readwrite) NSInteger pragmaJournalSizeLimit;
+
 #ifdef SQLITE_HAS_CODEC
 /**
  * Set a block here that returns the passphrase for the SQLCipher
