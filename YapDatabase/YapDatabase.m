@@ -668,6 +668,38 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 #pragma mark Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
++ (NSString *)sqliteVersionUsing:(sqlite3 *)db
+{
+	sqlite3_stmt *statement;
+	
+	int status = sqlite3_prepare_v2(db, "SELECT sqlite_version();", -1, &statement, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@: Error creating statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		return nil;
+	}
+	
+	NSString *version = nil;
+	
+	status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		const unsigned char *text = sqlite3_column_text(statement, 0);
+		int textSize = sqlite3_column_bytes(statement, 0);
+		
+		version = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+	}
+	else
+	{
+		YDBLogError(@"%@: Error executing statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+	}
+	
+	sqlite3_finalize(statement);
+	statement = NULL;
+	
+	return version;
+}
+
 + (int)pragma:(NSString *)pragmaSetting using:(sqlite3 *)db
 {
 	if (pragmaSetting == nil) return 0;
@@ -1051,8 +1083,14 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	// Write it to disk (replacing any previous value from last app run)
 	
 	[self beginTransaction];
-	[self writeSnapshot];
-	[self fetchPreviouslyRegisteredExtensionNames];
+	{
+		#if 0
+		YDBLogVerbose(@"sqlite version = %@", [YapDatabase sqliteVersionUsing:db]);
+		#endif
+		
+		[self writeSnapshot];
+		[self fetchPreviouslyRegisteredExtensionNames];
+	}
 	[self commitTransaction];
 }
 
