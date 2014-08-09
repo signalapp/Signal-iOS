@@ -119,7 +119,7 @@
             }
         }
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        [self registerForPushWithToken:token];
+        [self registerFailureWithToken:token];
     }];
 }
 

@@ -5,9 +5,7 @@
  * Certificate is responsible for loading, exposing, and managing a SecCertificateRef.
  *
  */
-@interface Certificate : NSObject {
-@private SecCertificateRef secCertificateRef;
-}
+@interface Certificate : NSObject
 
 +(Certificate*) certificateFromTrust:(SecTrustRef)trust
                              atIndex:(CFIndex)index;

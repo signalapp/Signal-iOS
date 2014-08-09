@@ -10,7 +10,8 @@
 
 @implementation AudioRemoteIOTest
 
--(void) testPlaysAndRecordsAudio {
+// Disabled because won't work on Travis
+-(void)___testPlaysAndRecordsAudio {
     __block RemoteIOAudio* a = nil;
     
     __block double t = 0;
@@ -39,7 +40,7 @@
     a = [RemoteIOAudio remoteIOInterfaceStartedWithDelegate:[AnonymousAudioCallbackHandler anonymousAudioInterfaceDelegateWithRecordingCallback:countCalls
                                                                                                                     andPlaybackOccurredCallback:generateWhooOOOoooOOOOooOOOOoooSineWave]
                                              untilCancelled:[life getToken]];
-
+    
     // churn the run loop, to allow the audio to play and be recorded
     // YOU SHOULD HEAR A WOOOoooOOOOoooOOO TONE WHILE THIS IS HAPPENING (with the frequency going up and down)
     testChurnAndConditionMustStayTrue(true, 10);

@@ -381,7 +381,7 @@
 		B621B079198C69A100D36C3D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B621B017198C69A100D36C3D /* Localizable.strings */; };
 		B67ADDC41989FF8700E1A773 /* CallServerRequestsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B67ADDC31989FF8700E1A773 /* CallServerRequestsManager.m */; };
 		B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B67EBF5C19194AC60084CCFD /* Settings.bundle */; };
-		B69B6305199573970072E805 /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B69B6304199573970072E805 /* whisperFake.cer */; };
+		B6850E5A1995A4710068E715 /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6850E591995A4710068E715 /* whisperFake.cer */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
 		B6B1013C196D213F007E3930 /* SGNKeychainUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SGNKeychainUtil.m */; };
 		B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B9ECFB198B31BA00C620D3 /* PushManager.m */; };
@@ -1116,7 +1116,7 @@
 		B67ADDC21989FF8700E1A773 /* CallServerRequestsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallServerRequestsManager.h; sourceTree = "<group>"; };
 		B67ADDC31989FF8700E1A773 /* CallServerRequestsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallServerRequestsManager.m; sourceTree = "<group>"; };
 		B67EBF5C19194AC60084CCFD /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = SettingsBundle/Settings.bundle; sourceTree = SOURCE_ROOT; };
-		B69B6304199573970072E805 /* whisperFake.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperFake.cer; sourceTree = "<group>"; };
+		B6850E591995A4710068E715 /* whisperFake.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperFake.cer; sourceTree = "<group>"; };
 		B69CD25019773E79005CE69A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		B6B1013A196D213F007E3930 /* SGNKeychainUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGNKeychainUtil.h; sourceTree = "<group>"; };
 		B6B1013B196D213F007E3930 /* SGNKeychainUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGNKeychainUtil.m; sourceTree = "<group>"; };
@@ -2232,7 +2232,6 @@
 		A15706EA17F0CD6D007C2BD6 /* test */ = {
 			isa = PBXGroup;
 			children = (
-				B69B6304199573970072E805 /* whisperFake.cer */,
 				76919BF51805D169008C664A /* contact */,
 				A15706EB17F0CD6D007C2BD6 /* async */,
 				A15706F217F0CD6D007C2BD6 /* audio */,
@@ -2397,6 +2396,7 @@
 		A157073917F0CD6D007C2BD6 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				B6850E591995A4710068E715 /* whisperFake.cer */,
 				A157073A17F0CD6D007C2BD6 /* SignalTests-Info.plist */,
 			);
 			path = "Supporting Files";
@@ -3260,7 +3260,6 @@
 				E14874F418A06930002CC4F3 /* volume_low@2x.png in Resources */,
 				E14874F518A06930002CC4F3 /* whisper_notification_icon.png in Resources */,
 				E14874F618A06930002CC4F3 /* whisper_notification_icon@2x.png in Resources */,
-				E1370BF618A068A600826894 /* whisperReal.cer in Resources */,
 				E1370BEA18A0689000826894 /* AppIcon29x29.jpg in Resources */,
 				E1370BEB18A0689000826894 /* AppIcon29x29.png in Resources */,
 				E1370BEC18A0689000826894 /* AppIcon29x29@2x.png in Resources */,
@@ -3286,6 +3285,7 @@
 				E148751318A06AFD002CC4F3 /* HelveticaNeueLTStd-Th.otf in Resources */,
 				E148751418A06AFD002CC4F3 /* HelveticaNeueLTStd-Lt.otf in Resources */,
 				E148751518A06AFD002CC4F3 /* HelveticaNeueLTStd-Md.otf in Resources */,
+				E1370BF618A068A600826894 /* whisperReal.cer in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3309,7 +3309,7 @@
 				76EB067918170B34006006FC /* InCallViewController.xib in Resources */,
 				76EB068318170B34006006FC /* SettingsViewController.xib in Resources */,
 				76EB068118170B34006006FC /* RegisterViewController.xib in Resources */,
-				B69B6305199573970072E805 /* whisperFake.cer in Resources */,
+				B6850E5A1995A4710068E715 /* whisperFake.cer in Resources */,
 				B97CBFB218861023008E0DE9 /* CountryCodeTableViewCell.xib in Resources */,
 				B9A578B5183D610300C17105 /* FavouriteTableViewCell.xib in Resources */,
 				B9B89C58185A2B7000A24465 /* LeftSideMenuCell.xib in Resources */,

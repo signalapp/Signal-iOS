@@ -19,6 +19,10 @@
 
 @end
 
+@interface Certificate ()
+@property SecCertificateRef secCertificateRef;
+@end
+
 @implementation NetworkStreamTest
 
 - (void)setUp{
@@ -93,9 +97,20 @@
     
     [s terminate];
 }
+
 -(void) testAuthenticationFail_WrongCert {
     [Environment setCurrent:testEnv];
     
+    NSString *certPath = [[[NSBundle bundleForClass:[NetworkStream class]] resourcePath] stringByAppendingPathComponent:@"whisperFake.cer"];
+    NSData *certData = [[NSData alloc] initWithContentsOfFile:certPath];
+    checkOperation(certData != nil);
+    
+    SecCertificateRef cert = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certData);
+    checkOperation(cert != nil);
+    
+    Certificate* instance = [Certificate new];
+    instance.secCertificateRef = cert;
+
     SecureEndPoint* e = [SecureEndPoint secureEndPointForHost:[HostNameEndPoint hostNameEndPointWithHostName:TEST_SERVER_HOST andPort:TEST_SERVER_PORT]
                                       identifiedByCertificate:[Certificate certificateFromResourcePath:TEST_SERVER_INCORRECT_CERT_PATH
                                                                                                 ofType:TEST_SERVER_INCORRECT_CERT_TYPE]];
@@ -116,6 +131,7 @@
     
     [s terminate];
 }
+
 -(void) testAuthenticationFail_WrongHostName {
     [Environment setCurrent:testEnv];
     

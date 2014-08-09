@@ -1,6 +1,10 @@
 #import "Certificate.h"
 #import "Util.h"
 
+@interface Certificate ()
+@property SecCertificateRef secCertificateRef;
+@end
+
 @implementation Certificate
 
 +(Certificate*) certificateFromTrust:(SecTrustRef)trust
@@ -13,7 +17,7 @@
     CFRetain(cert);
     
     Certificate* instance = [Certificate new];
-    instance->secCertificateRef = cert;
+    instance.secCertificateRef = cert;
     return instance;
 }
 
@@ -30,12 +34,12 @@
     checkOperation(cert != nil);
     
     Certificate* instance = [Certificate new];
-    instance->secCertificateRef = cert;
+    instance.secCertificateRef = cert;
     return instance;
 }
 
 -(void) dealloc {
-    CFRelease(secCertificateRef);
+    CFRelease(self.secCertificateRef);
 }
 
 -(void) setAsAnchorForTrust:(SecTrustRef)trust {
@@ -44,7 +48,7 @@
     CFMutableArrayRef anchorCerts = CFArrayCreateMutable(NULL, 1, &kCFTypeArrayCallBacks);
     checkOperation(anchorCerts != NULL);
     
-    CFArrayAppendValue(anchorCerts, secCertificateRef);
+    CFArrayAppendValue(anchorCerts, self.secCertificateRef);
     OSStatus setAnchorResult = SecTrustSetAnchorCertificates(trust, anchorCerts);
     CFRelease(anchorCerts);
 
@@ -54,7 +58,7 @@
 }
 
 -(NSString *)description {
-    return (__bridge_transfer NSString*)SecCertificateCopySubjectSummary(secCertificateRef);
+    return (__bridge_transfer NSString*)SecCertificateCopySubjectSummary(self.secCertificateRef);
 }
 
 @end

@@ -133,7 +133,6 @@
 
     return [futurePhoneRegistrationStarted then:^(id _) {
         [self showViewNumber:CHALLENGE_VIEW_NUMBER];
-        [Environment setRegistered:YES];
         [self.challengeNumberLabel setText:[phoneNumber description]];
         [_registerCancelButton removeFromSuperview];
         [self startVoiceVerificationCountdownTimer];
@@ -196,14 +195,17 @@
     }];
 
     [futureDone thenDo:^(id result) {
+        [futureChallengeAcceptedSource trySetResult:@YES];
+    }];
+    
+    [futureChallengeAcceptedSource thenDo:^(id value) {
         [[PushManager sharedManager] askForPushRegistrationWithSuccess:^{
             [Environment setRegistered:YES];
-            [[[Environment getCurrent] phoneDirectoryManager] forceUpdate];
             [registered trySetResult:@YES];
             [self dismissView];
-            [futureChallengeAcceptedSource trySetResult:result];
             _challengeButton.enabled = YES;
             [_challengeActivityIndicator stopAnimating];
+            [[[Environment getCurrent] phoneDirectoryManager] forceUpdate];
         } failure:^{
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:REGISTER_ERROR_ALERT_VIEW_TITLE message:REGISTER_ERROR_ALERT_VIEW_BODY delegate:nil cancelButtonTitle:REGISTER_ERROR_ALERT_VIEW_DISMISS otherButtonTitles:nil, nil];
             [alertView show];
@@ -211,6 +213,7 @@
             [_challengeActivityIndicator stopAnimating];
         }];
     }];
+    
 }
 
 - (void)showViewNumber:(NSInteger)viewNumber {
