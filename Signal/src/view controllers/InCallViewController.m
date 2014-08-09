@@ -263,7 +263,6 @@ static NSInteger connectingFlashCounter = 0;
     
     if ([termination type] == CallTerminationType_ServerMessage) {
         CallFailedServerMessage* serverMessage = [termination messageInfo];
-        // @todo: forcing it to be a prefix is not particularly localizable
         message = [message stringByAppendingString:[serverMessage text]];
     }
     

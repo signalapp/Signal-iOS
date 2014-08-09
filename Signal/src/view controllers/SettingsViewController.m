@@ -136,9 +136,9 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 
 - (NSArray *)privacyAndSecurityCells {
     return @[_hideContactImagesCell,
-             _disableHistoryCell,
-             _disableAutocorrectCell,
              _enableScreenSecurityCell,
+             _disableAutocorrectCell,
+             _disableHistoryCell,
              _clearHistoryLogCell];
 }
 

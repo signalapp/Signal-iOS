@@ -33,16 +33,13 @@ MacrosSingletonImplemention
         NSURL *endPointURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@:%hu", endpoint.hostname, endpoint.port]];
         NSURLSessionConfiguration *sessionConf = [NSURLSessionConfiguration ephemeralSessionConfiguration];
         self.operationManager = [[AFHTTPSessionManager alloc] initWithBaseURL:endPointURL sessionConfiguration:sessionConf];
-        [self.operationManager setSecurityPolicy:[AFSecurityPolicy policyWithPinningMode:AFSSLPinningModePublicKey]];
-        
+        self.operationManager.responseSerializer                      = [AFJSONResponseSerializer serializer];
+        self.operationManager.securityPolicy.allowInvalidCertificates = YES;
         NSString *certPath = [[NSBundle mainBundle] pathForResource:@"whisperReal" ofType:@"cer"];
         NSData *certData = [NSData dataWithContentsOfFile:certPath];
-        
         SecCertificateRef cert = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certData));
-        
         self.operationManager.securityPolicy.pinnedCertificates = @[(__bridge_transfer NSData *)SecCertificateCopyData(cert)];
-        self.operationManager.securityPolicy.allowInvalidCertificates = YES; // We use a custom certificate, not signed by a CA.
-        self.operationManager.responseSerializer                      = [AFJSONResponseSerializer serializer];
+        self.operationManager.securityPolicy.SSLPinningMode     = AFSSLPinningModePublicKey;
     }
     return self;
 }

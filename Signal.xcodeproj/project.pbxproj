@@ -306,7 +306,6 @@
 		76EB066D18170B34006006FC /* ContactDetailTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB051F18170B33006006FC /* ContactDetailTableViewCell.xib */; };
 		76EB066F18170B34006006FC /* ContactDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052018170B33006006FC /* ContactDetailViewController.xib */; };
 		76EB067118170B34006006FC /* DialerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052118170B33006006FC /* DialerViewController.xib */; };
-		76EB067318170B34006006FC /* DowngradeCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052218170B33006006FC /* DowngradeCallViewController.xib */; };
 		76EB067518170B34006006FC /* FavouritesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052318170B33006006FC /* FavouritesViewController.xib */; };
 		76EB067718170B34006006FC /* InboxFeedViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052418170B33006006FC /* InboxFeedViewController.xib */; };
 		76EB067918170B34006006FC /* InCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052518170B33006006FC /* InCallViewController.xib */; };
@@ -550,7 +549,6 @@
 		E148750418A06966002CC4F3 /* ContactDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052018170B33006006FC /* ContactDetailViewController.xib */; };
 		E148750518A06966002CC4F3 /* CountryCodeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B97CBFA718860EA3008E0DE9 /* CountryCodeViewController.xib */; };
 		E148750618A06966002CC4F3 /* DialerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052118170B33006006FC /* DialerViewController.xib */; };
-		E148750718A06966002CC4F3 /* DowngradeCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052218170B33006006FC /* DowngradeCallViewController.xib */; };
 		E148750818A06966002CC4F3 /* FavouritesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052318170B33006006FC /* FavouritesViewController.xib */; };
 		E148750918A06966002CC4F3 /* InboxFeedViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052418170B33006006FC /* InboxFeedViewController.xib */; };
 		E148750A18A06966002CC4F3 /* InCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052518170B33006006FC /* InCallViewController.xib */; };
@@ -992,7 +990,6 @@
 		76EB051F18170B33006006FC /* ContactDetailTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactDetailTableViewCell.xib; sourceTree = "<group>"; };
 		76EB052018170B33006006FC /* ContactDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactDetailViewController.xib; sourceTree = "<group>"; };
 		76EB052118170B33006006FC /* DialerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DialerViewController.xib; sourceTree = "<group>"; };
-		76EB052218170B33006006FC /* DowngradeCallViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DowngradeCallViewController.xib; sourceTree = "<group>"; };
 		76EB052318170B33006006FC /* FavouritesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FavouritesViewController.xib; sourceTree = "<group>"; };
 		76EB052418170B33006006FC /* InboxFeedViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InboxFeedViewController.xib; sourceTree = "<group>"; };
 		76EB052518170B33006006FC /* InCallViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InCallViewController.xib; sourceTree = "<group>"; };
@@ -2161,7 +2158,6 @@
 				76EB052018170B33006006FC /* ContactDetailViewController.xib */,
 				B97CBFA718860EA3008E0DE9 /* CountryCodeViewController.xib */,
 				76EB052118170B33006006FC /* DialerViewController.xib */,
-				76EB052218170B33006006FC /* DowngradeCallViewController.xib */,
 				76EB052318170B33006006FC /* FavouritesViewController.xib */,
 				76EB052418170B33006006FC /* InboxFeedViewController.xib */,
 				76EB052518170B33006006FC /* InCallViewController.xib */,
@@ -3153,7 +3149,6 @@
 				E148750418A06966002CC4F3 /* ContactDetailViewController.xib in Resources */,
 				E148750518A06966002CC4F3 /* CountryCodeViewController.xib in Resources */,
 				E148750618A06966002CC4F3 /* DialerViewController.xib in Resources */,
-				E148750718A06966002CC4F3 /* DowngradeCallViewController.xib in Resources */,
 				E148750818A06966002CC4F3 /* FavouritesViewController.xib in Resources */,
 				E148750918A06966002CC4F3 /* InboxFeedViewController.xib in Resources */,
 				E148750A18A06966002CC4F3 /* InCallViewController.xib in Resources */,
@@ -3324,7 +3319,6 @@
 				765052B3182BF839008313E1 /* HelveticaNeueLTStd-Th.otf in Resources */,
 				76B818A1182C39460088060E /* PreferenceListViewController.xib in Resources */,
 				76EB066D18170B34006006FC /* ContactDetailTableViewCell.xib in Resources */,
-				76EB067318170B34006006FC /* DowngradeCallViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

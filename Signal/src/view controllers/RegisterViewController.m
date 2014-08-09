@@ -38,6 +38,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self localizeButtonText];
     
     DDLogInfo(@"Opened Registration View");
 
@@ -186,6 +187,8 @@
             if ([badResponse getStatusCode] == 401) {
                 UIAlertView *incorrectChallengeCodeAV = [[UIAlertView alloc]initWithTitle:REGISTER_CHALLENGE_ALERT_VIEW_TITLE message:REGISTER_CHALLENGE_ALERT_VIEW_BODY delegate:nil cancelButtonTitle:REGISTER_CHALLENGE_ALERT_DISMISS otherButtonTitles:nil, nil];
                 [incorrectChallengeCodeAV show];
+                _challengeButton.enabled = YES;
+                [_challengeActivityIndicator stopAnimating];
                 return;
             }
         }
@@ -202,10 +205,8 @@
         [[PushManager sharedManager] askForPushRegistrationWithSuccess:^{
             [Environment setRegistered:YES];
             [registered trySetResult:@YES];
-            [self dismissView];
-            _challengeButton.enabled = YES;
-            [_challengeActivityIndicator stopAnimating];
             [[[Environment getCurrent] phoneDirectoryManager] forceUpdate];
+            [self dismissView];
         } failure:^{
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:REGISTER_ERROR_ALERT_VIEW_TITLE message:REGISTER_ERROR_ALERT_VIEW_BODY delegate:nil cancelButtonTitle:REGISTER_ERROR_ALERT_VIEW_DISMISS otherButtonTitles:nil, nil];
             [alertView show];

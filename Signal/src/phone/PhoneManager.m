@@ -88,7 +88,6 @@
             return;
         }
 
-        // @todo: maybe a more general mechanism, so other things can watch?
         [[[Environment getCurrent] recentCallManager] addMissedCallDueToBusy:session];
         
         [[CallConnectUtil asyncSignalTooBusyToAnswerCallWithSessionDescriptor:session] catchDo:^(id error) {
