@@ -27,11 +27,13 @@
 @property (nonatomic, strong) IBOutlet UITableViewCell *disableHistoryCell;
 @property (nonatomic, strong) IBOutlet UITableViewCell *clearHistoryLogCell;
 @property (nonatomic, strong) IBOutlet UITableViewCell *disableLogsCell;
+@property (nonatomic, strong) IBOutlet UITableViewCell *enableScreenSecurityCell;
 
 @property (nonatomic, strong) IBOutlet UIButton *hideContactImagesButton;
 @property (nonatomic, strong) IBOutlet UIButton *disableAutocorrectButton;
 @property (nonatomic, strong) IBOutlet UIButton *disableHistoryButton;
 @property (nonatomic, strong) IBOutlet UIButton *disableDebugLogsButton;
+@property (nonatomic, strong) IBOutlet UIButton *enableScreenSecurityButton;
 
 @property (nonatomic, strong) IBOutlet UITableViewCell *sendDebugLog;
 
@@ -45,6 +47,8 @@
 - (IBAction)disableHistoryButtonTapped;
 
 - (IBAction)disableLogTapped:(id)sender;
+
+- (IBAction)enableScreenSecurityTapped:(id)sender;
 
 - (IBAction)menuButtonTapped;
 

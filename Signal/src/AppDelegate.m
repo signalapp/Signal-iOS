@@ -28,7 +28,8 @@
 
 @interface AppDelegate ()
 
-@property (nonatomic, strong) MMDrawerController *drawerController;
+@property (nonatomic, retain) UIWindow            *blankWindow;
+@property (nonatomic, strong) MMDrawerController  *drawerController;
 @property (nonatomic, strong) NotificationTracker *notificationTracker;
 
 @end
@@ -51,10 +52,8 @@
             // Migrate from custom preferences to NSUserDefaults
             [VersionMigrations migrationFrom1Dot0Dot2toLarger];
         }
-        
     }
 }
-
 
 /**
  *  Protects the preference and logs file with disk encryption and prevents them to leak to iCloud.
@@ -116,6 +115,9 @@
     [self protectPreferenceFiles];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    
+    [self prepareScreenshotProtection];
+    
     self.notificationTracker = [NotificationTracker notificationTracker];
     
     CategorizingLogger* logger = [CategorizingLogger categorizingLogger];
@@ -186,10 +188,48 @@
 -(void) applicationDidBecomeActive:(UIApplication *)application {
     [[AppAudioManager sharedInstance] awake];
     application.applicationIconBadgeNumber = 0;
+    [self removeScreenProtection];
     
     if ([Environment isRegistered]) {
         [[PushManager sharedManager] verifyPushActivated];
         [[AppAudioManager sharedInstance] requestRequiredPermissionsIfNeeded];
+    }
+}
+
+- (void)applicationWillResignActive:(UIApplication *)application{
+    [self protectScreen];
+}
+
+- (void)prepareScreenshotProtection{
+    self.blankWindow = ({
+        UIWindow *window = [[UIWindow alloc] initWithFrame:self.window.bounds];
+        window.hidden = YES;
+        window.opaque = YES;
+        window.userInteractionEnabled = NO;
+        window.windowLevel = CGFLOAT_MAX;
+        window;
+    });
+}
+
+- (void)protectScreen{
+    if ([[Environment preferences] screenSecurityIsEnabled]) {
+        self.blankWindow.rootViewController = [[UIViewController alloc] init];
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.blankWindow.bounds];
+        if (self.blankWindow.bounds.size.height == 568) {
+            imageView.image = [UIImage imageNamed:@"Default-568h"];
+        } else {
+            imageView.image = [UIImage imageNamed:@"Default"];
+        }
+        imageView.opaque = YES;
+        [self.blankWindow.rootViewController.view addSubview:imageView];
+        self.blankWindow.hidden = NO;
+    }
+}
+
+- (void)removeScreenProtection{
+    if ([[Environment preferences] screenSecurityIsEnabled]) {
+        self.blankWindow.rootViewController = nil;
+        self.blankWindow.hidden = YES;
     }
 }
 

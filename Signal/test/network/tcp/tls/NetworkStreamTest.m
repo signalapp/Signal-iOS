@@ -112,8 +112,8 @@
     instance.secCertificateRef = cert;
 
     SecureEndPoint* e = [SecureEndPoint secureEndPointForHost:[HostNameEndPoint hostNameEndPointWithHostName:TEST_SERVER_HOST andPort:TEST_SERVER_PORT]
-                                      identifiedByCertificate:[Certificate certificateFromResourcePath:TEST_SERVER_INCORRECT_CERT_PATH
-                                                                                                ofType:TEST_SERVER_INCORRECT_CERT_TYPE]];
+                                      identifiedByCertificate:instance];
+    
     NetworkStream* s = [NetworkStream networkStreamToEndPoint:e];
     
     __block bool terminated = false;

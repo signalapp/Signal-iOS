@@ -14,6 +14,8 @@
                 <outlet property="disableHistoryButton" destination="trw-DG-amf" id="97O-Y4-iu3"/>
                 <outlet property="disableHistoryCell" destination="5Wr-Th-YJI" id="fQY-Qd-xv0"/>
                 <outlet property="disableLogsCell" destination="Zs4-3i-4Dm" id="eeD-Br-M2J"/>
+                <outlet property="enableScreenSecurityButton" destination="Lv5-XS-B3n" id="XlL-nk-Hbh"/>
+                <outlet property="enableScreenSecurityCell" destination="9qY-qg-UWw" id="RPW-Fn-NdF"/>
                 <outlet property="hideContactImagesButton" destination="kv5-cc-It9" id="Ftz-lp-Eqd"/>
                 <outlet property="hideContactImagesCell" destination="1Sy-9w-LqE" id="Rvh-96-REp"/>
                 <outlet property="phoneNumberLabel" destination="G77-lz-XM0" id="adE-bu-2Kn"/>
@@ -439,6 +441,56 @@
                     <constraint firstItem="ENH-DC-cin" firstAttribute="leading" secondItem="vS9-x4-0OY" secondAttribute="trailing" constant="22" id="oAo-Z7-YC0"/>
                     <constraint firstItem="vS9-x4-0OY" firstAttribute="bottom" secondItem="HN4-Id-TUu" secondAttribute="bottom" constant="1" id="oSz-Df-RyZ"/>
                     <constraint firstItem="HN4-Id-TUu" firstAttribute="trailing" secondItem="ENH-DC-cin" secondAttribute="trailing" id="rZG-jh-FwU"/>
+                </constraints>
+            </tableViewCellContentView>
+        </tableViewCell>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="SettingsTableViewCell" id="9qY-qg-UWw">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="9qY-qg-UWw" id="Sh2-R0-QWn">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable Screen Security" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uVg-2E-0e2" customClass="HelveticaNeueLTStdMedLabel">
+                        <rect key="frame" x="20" y="0.0" width="223" height="44"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="44" id="Ajf-ml-YgK"/>
+                            <constraint firstAttribute="width" constant="223" id="dLp-oG-7LG"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <nil key="highlightedColor"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="string" keyPath="localizationKey" value="SETTINGS_SCREEN_SECURITY"/>
+                        </userDefinedRuntimeAttributes>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iml-Q7-4vG" userLabel="Seperator View">
+                        <rect key="frame" x="15" y="42" width="290" height="1"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" red="0.7843137255" green="0.7843137255" blue="0.7843137255" alpha="1" colorSpace="calibratedRGB"/>
+                    </view>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lv5-XS-B3n">
+                        <rect key="frame" x="265" y="2" width="40" height="40"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <state key="normal" image="checkbox_empty.png">
+                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                        </state>
+                        <connections>
+                            <action selector="enableScreenSecurityTapped:" destination="-1" eventType="touchUpInside" id="72r-h1-KkU"/>
+                        </connections>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="iml-Q7-4vG" firstAttribute="leading" secondItem="Sh2-R0-QWn" secondAttribute="leading" constant="15" id="2f5-sg-LO5"/>
+                    <constraint firstItem="iml-Q7-4vG" firstAttribute="top" secondItem="Sh2-R0-QWn" secondAttribute="top" constant="42" id="BwK-BP-uRz"/>
+                    <constraint firstItem="uVg-2E-0e2" firstAttribute="bottom" secondItem="iml-Q7-4vG" secondAttribute="bottom" constant="1" id="EEe-s7-X3t"/>
+                    <constraint firstItem="Lv5-XS-B3n" firstAttribute="top" secondItem="Sh2-R0-QWn" secondAttribute="top" constant="2" id="Io9-sI-ubP"/>
+                    <constraint firstItem="Lv5-XS-B3n" firstAttribute="leading" secondItem="uVg-2E-0e2" secondAttribute="trailing" constant="22" id="MyM-rR-ZRq"/>
+                    <constraint firstItem="uVg-2E-0e2" firstAttribute="top" secondItem="Sh2-R0-QWn" secondAttribute="top" id="PLq-lf-BQ3"/>
+                    <constraint firstItem="iml-Q7-4vG" firstAttribute="trailing" secondItem="Lv5-XS-B3n" secondAttribute="trailing" id="T83-en-yfE"/>
+                    <constraint firstItem="uVg-2E-0e2" firstAttribute="leading" secondItem="Sh2-R0-QWn" secondAttribute="leading" constant="20" symbolic="YES" id="fiZ-5C-Nqu"/>
+                    <constraint firstItem="iml-Q7-4vG" firstAttribute="top" secondItem="Lv5-XS-B3n" secondAttribute="bottom" id="hfU-ah-Tbb"/>
+                    <constraint firstItem="iml-Q7-4vG" firstAttribute="centerX" secondItem="Sh2-R0-QWn" secondAttribute="centerX" id="zYo-ei-1Yu"/>
                 </constraints>
             </tableViewCellContentView>
         </tableViewCell>

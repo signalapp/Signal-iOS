@@ -21,6 +21,7 @@
 #define AUTOCORRECT_ENABLED_KEY @"Autocorrect Enabled Key"
 #define HISTORY_LOG_ENABLED_KEY @"History Log Enabled Key"
 #define PUSH_REVOKED_KEY @"Push Revoked Key"
+#define SCREEN_SECURITY_KEY @"Screen Security Key"
 #define DEBUG_IS_ENABLED_KEY @"Debugging Log Enabled Key"
 
 #define kSignalVersionKey @"SignalUpdateVersionKey"
@@ -107,6 +108,19 @@
     }
 }
 
+-(BOOL)screenSecurityIsEnabled{
+    NSNumber *preference = [self tryGetValueForKey:SCREEN_SECURITY_KEY];
+    if (preference) {
+        return [preference boolValue];
+    } else{
+        return NO;
+    }
+}
+
+-(void)setScreenSecurity:(BOOL)flag{
+    [self setValueForKey:SCREEN_SECURITY_KEY toValue:[NSNumber numberWithBool:flag]];
+}
+
 -(void) setFreshInstallTutorialsEnabled:(BOOL)enabled {
     [self setValueForKey:FRESH_INSTALL_TUTORIALS_ENABLED_KEY toValue:[NSNumber numberWithBool:enabled]];
 }
@@ -143,6 +157,5 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
     return lastVersion;
 }
-
 
 @end

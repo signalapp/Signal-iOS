@@ -121,6 +121,7 @@
 "SETTINGS_RINGTONE" = "Ringtone";
 "SETTINGS_DEBUGGING" = "Debugging";
 "SETTINGS_DISABLE_LOGS" = "Disable debugging logs";
+"SETTINGS_SCREEN_SECURITY" = "Enable Screen Security";
 "SETTINGS_SENDLOG" = "Submit Debug Log"; 
 "SETTINGS_SENDLOGS_WAITING" = "Sending log file\n Please wait...";
 "SETTINGS_SENDLOG_ALERT_BODY" = "Bugs can be reported by email or by copying the log in a GitHub Issue (advanced).";

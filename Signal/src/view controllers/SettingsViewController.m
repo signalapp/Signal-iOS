@@ -97,6 +97,7 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 
 - (void)configureCheckboxPreferences {
     NSArray *buttons = @[_hideContactImagesButton,
+                         _enableScreenSecurityButton,
                          _disableAutocorrectButton,
                          _disableHistoryButton,
                          _disableDebugLogsButton];
@@ -108,11 +109,12 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
         [button setImage:[UIImage imageNamed:CHECKBOX_CHECKMARK_IMAGE_NAME]
                 forState:UIControlStateSelected];
     }
-    PropertyListPreferences *prefs     = [Environment preferences];
-    _hideContactImagesButton.selected  = ![prefs getContactImagesEnabled];
-    _disableAutocorrectButton.selected = ![prefs getAutocorrectEnabled];
-    _disableHistoryButton.selected     = ![prefs getHistoryLogEnabled];
-    _disableLogsCell.selected          = ![prefs loggingIsEnabled];
+    PropertyListPreferences *prefs       = [Environment preferences];
+    _hideContactImagesButton.selected    = ![prefs getContactImagesEnabled];
+    _enableScreenSecurityButton.selected = [prefs screenSecurityIsEnabled];
+    _disableAutocorrectButton.selected   = ![prefs getAutocorrectEnabled];
+    _disableHistoryButton.selected       = ![prefs getHistoryLogEnabled];
+    _disableLogsCell.selected            = ![prefs loggingIsEnabled];
 }
 
 - (void)configureAllCells {
@@ -134,8 +136,9 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 
 - (NSArray *)privacyAndSecurityCells {
     return @[_hideContactImagesCell,
-             _disableAutocorrectCell,
              _disableHistoryCell,
+             _disableAutocorrectCell,
+             _enableScreenSecurityCell,
              _clearHistoryLogCell];
 }
 
@@ -215,6 +218,11 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 - (IBAction)disableHistoryButtonTapped {
     _disableHistoryButton.selected = !_disableHistoryButton.selected;
     [[Environment preferences] setHistoryLogEnabled:!_disableHistoryButton.selected];
+}
+
+- (IBAction)enableScreenSecurityTapped:(id)sender{
+    _enableScreenSecurityButton.selected = !_enableScreenSecurityButton.selected;
+    [[Environment preferences] setScreenSecurity:_enableScreenSecurityButton.selected];
 }
 
 - (IBAction)disableLogTapped:(id)sender{
