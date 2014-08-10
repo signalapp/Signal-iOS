@@ -142,6 +142,7 @@
 		A1B98B0D1725EC6500B6E8B5 /* vector_float.h in Headers */ = {isa = PBXBuildFile; fileRef = A1B98A861725EC6400B6E8B5 /* vector_float.h */; };
 		A1B98B0E1725EC6500B6E8B5 /* vector_int.h in Headers */ = {isa = PBXBuildFile; fileRef = A1B98A871725EC6400B6E8B5 /* vector_int.h */; };
 		A1B98B0F1725EC6500B6E8B5 /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = A1B98A881725EC6400B6E8B5 /* version.h */; };
+		B6C7AA3F1996F99C00B233D7 /* floating_fudge.h in Headers */ = {isa = PBXBuildFile; fileRef = B6C7AA3E1996F99C00B233D7 /* floating_fudge.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -283,6 +284,7 @@
 		A1B98A871725EC6400B6E8B5 /* vector_int.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vector_int.h; sourceTree = "<group>"; };
 		A1B98A881725EC6400B6E8B5 /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = version.h; sourceTree = "<group>"; };
 		A1B98A891725EC6400B6E8B5 /* version.h.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = version.h.in; sourceTree = "<group>"; };
+		B6C7AA3E1996F99C00B233D7 /* floating_fudge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = floating_fudge.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -347,6 +349,7 @@
 				A1B98A151725EC6400B6E8B5 /* fast_convert.h */,
 				A1B98A161725EC6400B6E8B5 /* fax.h */,
 				A1B98A171725EC6400B6E8B5 /* fax_modems.h */,
+				B6C7AA3E1996F99C00B233D7 /* floating_fudge.h */,
 				A1B98A181725EC6400B6E8B5 /* fir.h */,
 				A1B98A191725EC6400B6E8B5 /* fsk.h */,
 				A1B98A1A1725EC6400B6E8B5 /* g168models.h */,
@@ -544,6 +547,7 @@
 				A1B98AC81725EC6500B6E8B5 /* modem_echo.h in Headers */,
 				A1B98AC91725EC6500B6E8B5 /* noise.h in Headers */,
 				A1B98ACA1725EC6500B6E8B5 /* oki_adpcm.h in Headers */,
+				B6C7AA3F1996F99C00B233D7 /* floating_fudge.h in Headers */,
 				A1B98ACB1725EC6500B6E8B5 /* queue.h in Headers */,
 				A1B98ACC1725EC6500B6E8B5 /* schedule.h in Headers */,
 				A1B98ACD1725EC6500B6E8B5 /* sig_tone.h in Headers */,
