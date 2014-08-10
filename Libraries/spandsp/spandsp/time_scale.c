@@ -21,6 +21,8 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * $Id: time_scale.c,v 1.30 2009/02/10 13:06:47 steveu Exp $
  */
 
 /*! \file */
@@ -42,7 +44,7 @@
 #if defined(HAVE_MATH_H)
 #include <math.h>
 #endif
-#include "floating_fudge.h"
+//#include "floating_fudge.h"
 
 #include "spandsp/telephony.h"
 #include "spandsp/fast_convert.h"
@@ -108,6 +110,7 @@ SPAN_DECLARE(int) time_scale_rate(time_scale_state_t *s, float playout_rate)
         /* Treat rate close to normal speed as exactly normal speed, and
            avoid divide by zero, and other numerical problems. */
         playout_rate = 1.0f;
+	s->lcp=0;
     }
     else if (playout_rate < 1.0f)
     {
@@ -180,6 +183,18 @@ SPAN_DECLARE(int) time_scale(time_scale_state_t *s, int16_t out[], int16_t in[],
     out_len = 0;
     in_len = 0;
 
+    //    loge( "ts: %f %d", s->playout_rate, s->lcp );
+
+    //just copy on straight playout
+    if( s->playout_rate == 1.0f ) {
+      memcpy( out, s->buf, s->fill * sizeof(int16_t) );
+      memcpy( out+s->fill, in, len * sizeof(int16_t) );
+      out_len = len + s->fill;
+      s->fill = 0;
+      //      loge( "tsr1: %d", out_len );
+      return out_len;
+    }
+
     /* Top up the buffer */
     if (s->fill + len < s->buf_len)
     {
@@ -229,7 +244,7 @@ SPAN_DECLARE(int) time_scale(time_scale_state_t *s, int16_t out[], int16_t in[],
         }
         if (s->playout_rate == 1.0f)
         {
-            s->lcp = 0x7FFFFFFF;
+	  s->lcp = 0;//0x7FFFFFFF;
         }
         else
         {
