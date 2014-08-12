@@ -105,7 +105,63 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		DC431595199A6DCD00600AFE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCAE51DF1673FE2600395076 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCAE51E61673FE2600395076;
+			remoteInfo = YapDatabase;
+		};
+		DC431597199A6DD100600AFE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCAE51DF1673FE2600395076 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCAE51E61673FE2600395076;
+			remoteInfo = YapDatabase;
+		};
+		DC431599199A6DDC00600AFE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCAE51DF1673FE2600395076 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCAE51E61673FE2600395076;
+			remoteInfo = YapDatabase;
+		};
+		DC43159B199A6DDD00600AFE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCAE51DF1673FE2600395076 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCAE51E61673FE2600395076;
+			remoteInfo = YapDatabase;
+		};
 		DCAE52151673FE2600395076 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCAE51DF1673FE2600395076 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCAE51E61673FE2600395076;
+			remoteInfo = YapDatabase;
+		};
+		DCE633B2199A6EED00D1A19B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCAE51DF1673FE2600395076 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCAE51E61673FE2600395076;
+			remoteInfo = YapDatabase;
+		};
+		DCE633B4199A6EEE00D1A19B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCAE51DF1673FE2600395076 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCAE51E61673FE2600395076;
+			remoteInfo = YapDatabase;
+		};
+		DCE633B6199A6EF000D1A19B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCAE51DF1673FE2600395076 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCAE51E61673FE2600395076;
+			remoteInfo = YapDatabase;
+		};
+		DCE633B8199A6EF400D1A19B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DCAE51DF1673FE2600395076 /* Project object */;
 			proxyType = 1;
@@ -871,6 +927,14 @@
 			);
 			dependencies = (
 				DCAE52161673FE2600395076 /* PBXTargetDependency */,
+				DC431596199A6DCD00600AFE /* PBXTargetDependency */,
+				DC431598199A6DD100600AFE /* PBXTargetDependency */,
+				DC43159A199A6DDC00600AFE /* PBXTargetDependency */,
+				DC43159C199A6DDD00600AFE /* PBXTargetDependency */,
+				DCE633B3199A6EED00D1A19B /* PBXTargetDependency */,
+				DCE633B5199A6EEE00D1A19B /* PBXTargetDependency */,
+				DCE633B7199A6EF000D1A19B /* PBXTargetDependency */,
+				DCE633B9199A6EF400D1A19B /* PBXTargetDependency */,
 			);
 			name = YapDatabaseTests;
 			productName = YapDatabaseTests;
@@ -889,6 +953,9 @@
 				TargetAttributes = {
 					DCAE51E61673FE2600395076 = {
 						DevelopmentTeam = 4D98PK6HWS;
+					};
+					DCAE520F1673FE2600395076 = {
+						TestTargetID = DCAE51E61673FE2600395076;
 					};
 				};
 			};
@@ -1047,10 +1114,50 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		DC431596199A6DCD00600AFE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCAE51E61673FE2600395076 /* YapDatabase */;
+			targetProxy = DC431595199A6DCD00600AFE /* PBXContainerItemProxy */;
+		};
+		DC431598199A6DD100600AFE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCAE51E61673FE2600395076 /* YapDatabase */;
+			targetProxy = DC431597199A6DD100600AFE /* PBXContainerItemProxy */;
+		};
+		DC43159A199A6DDC00600AFE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCAE51E61673FE2600395076 /* YapDatabase */;
+			targetProxy = DC431599199A6DDC00600AFE /* PBXContainerItemProxy */;
+		};
+		DC43159C199A6DDD00600AFE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCAE51E61673FE2600395076 /* YapDatabase */;
+			targetProxy = DC43159B199A6DDD00600AFE /* PBXContainerItemProxy */;
+		};
 		DCAE52161673FE2600395076 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = DCAE51E61673FE2600395076 /* YapDatabase */;
 			targetProxy = DCAE52151673FE2600395076 /* PBXContainerItemProxy */;
+		};
+		DCE633B3199A6EED00D1A19B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCAE51E61673FE2600395076 /* YapDatabase */;
+			targetProxy = DCE633B2199A6EED00D1A19B /* PBXContainerItemProxy */;
+		};
+		DCE633B5199A6EEE00D1A19B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCAE51E61673FE2600395076 /* YapDatabase */;
+			targetProxy = DCE633B4199A6EEE00D1A19B /* PBXContainerItemProxy */;
+		};
+		DCE633B7199A6EF000D1A19B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCAE51E61673FE2600395076 /* YapDatabase */;
+			targetProxy = DCE633B6199A6EF000D1A19B /* PBXContainerItemProxy */;
+		};
+		DCE633B9199A6EF400D1A19B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCAE51E61673FE2600395076 /* YapDatabase */;
+			targetProxy = DCE633B8199A6EF400D1A19B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1182,7 +1289,7 @@
 		DCAE52261673FE2600395076 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/YapDatabase.app/YapDatabase";
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -1192,14 +1299,14 @@
 				GCC_PREFIX_HEADER = "YapDatabase/YapDatabase-Prefix.pch";
 				INFOPLIST_FILE = "YapDatabaseTests/YapDatabaseTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/YapDatabase.app/YapDatabase";
 			};
 			name = Debug;
 		};
 		DCAE52271673FE2600395076 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/YapDatabase.app/YapDatabase";
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -1209,7 +1316,7 @@
 				GCC_PREFIX_HEADER = "YapDatabase/YapDatabase-Prefix.pch";
 				INFOPLIST_FILE = "YapDatabaseTests/YapDatabaseTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/YapDatabase.app/YapDatabase";
 			};
 			name = Release;
 		};

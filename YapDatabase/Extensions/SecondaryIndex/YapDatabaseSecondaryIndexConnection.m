@@ -266,20 +266,23 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 	if (*statement == NULL)
 	{
 		NSMutableString *string = [NSMutableString stringWithCapacity:100];
-		[string appendFormat:@"UPDATE \"%@\" SET ", [secondaryIndex tableName]];
+		[string appendFormat:@"INSERT OR REPLACE INTO \"%@\" (\"rowid\"", [secondaryIndex tableName]];
 		
-		NSUInteger i = 0;
 		for (YapDatabaseSecondaryIndexColumn *column in secondaryIndex->setup)
 		{
-			if (i == 0)
-				[string appendFormat:@"\"%@\" = ?", column.name];
-			else
-				[string appendFormat:@", \"%@\" = ?", column.name];
-			
-			i++;
+			[string appendFormat:@", \"%@\"", column.name];
 		}
 		
-		[string appendString:@" WHERE rowid = ?;"];
+		[string appendString:@") VALUES (?"];
+		
+		NSUInteger count = [secondaryIndex->setup count];
+		NSUInteger i;
+		for (i = 0; i < count; i++)
+		{
+			[string appendString:@", ?"];
+		}
+		
+		[string appendString:@");"];
 		
 		sqlite3 *db = databaseConnection->db;
 		

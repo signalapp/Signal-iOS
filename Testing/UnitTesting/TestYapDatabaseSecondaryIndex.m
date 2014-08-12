@@ -262,4 +262,91 @@
 	}];
 }
 
+/**
+ * https://github.com/yaptv/YapDatabase/issues/104
+**/
+- (void)testIssue104
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	XCTAssertNotNil(database, @"Oops");
+	
+	YapDatabaseConnection *connection = [database newConnection];
+	
+	YapDatabaseSecondaryIndexSetup *setup = [[YapDatabaseSecondaryIndexSetup alloc] init];
+	[setup addColumn:@"str" withType:YapDatabaseSecondaryIndexTypeText];
+	
+	YapDatabaseSecondaryIndexBlockType blockType = YapDatabaseSecondaryIndexBlockTypeWithObject;
+	YapDatabaseSecondaryIndexWithObjectBlock block =
+	^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object){
+		
+		// If we're storing other types of objects in our database,
+		// then we should check the object before presuming we can cast it.
+		if ([object isKindOfClass:[NSString class]])
+		{
+			__unsafe_unretained NSString *str = (NSString *)object;
+			
+			if ([str hasPrefix:@"like "]) {
+				[dict setObject:str forKey:@"str"];
+			}
+		}
+	};
+	
+	YapDatabaseSecondaryIndex *secondaryIndex =
+	[[YapDatabaseSecondaryIndex alloc] initWithSetup:setup block:block blockType:blockType];
+	
+	[database registerExtension:secondaryIndex withName:@"idx"];
+	
+	//
+	// Test initial population
+	//
+	
+	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction setObject:@"like whatever" forKey:@"1" inCollection:nil];
+		[transaction setObject:@"as if"         forKey:@"2" inCollection:nil];
+		
+		
+		__block NSUInteger count = 0;
+		
+		YapDatabaseQuery *query = [YapDatabaseQuery queryMatchingAll];
+		[[transaction ext:@"idx"] enumerateKeysAndObjectsMatchingQuery:query usingBlock:
+		    ^(NSString *collection, NSString *key, id object, BOOL *stop)
+		{
+			count++;
+			
+			XCTAssert([object isEqual:@"like whatever"], @"like whatever, guess the code sucks");
+		}];
+		
+		XCTAssertTrue(count == 1, @"Incorrect count: %lu", (unsigned long)count);
+	}];
+	
+	//
+	// Test update
+	//
+	
+	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction setObject:@"whatever"   forKey:@"1" inCollection:nil];
+		[transaction setObject:@"like as if" forKey:@"2" inCollection:nil];
+		
+		
+		__block NSUInteger count = 0;
+		
+		YapDatabaseQuery *query = [YapDatabaseQuery queryMatchingAll];
+		[[transaction ext:@"idx"] enumerateKeysAndObjectsMatchingQuery:query usingBlock:
+		    ^(NSString *collection, NSString *key, id object, BOOL *stop)
+		{
+			count++;
+			
+			XCTAssert([object isEqual:@"like as if"], @"like as if, the code was going to work");
+		}];
+		
+		XCTAssertTrue(count == 1, @"Incorrect count: %lu", (unsigned long)count);
+	}];
+}
+
 @end

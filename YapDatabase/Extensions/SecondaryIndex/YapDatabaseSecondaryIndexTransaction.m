@@ -439,15 +439,13 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	if (statement == NULL)
 		return;
 	
-	//  isNew : INSERT INTO "tableName" ("rowid", "column1", "column2", ...) VALUES (?, ?, ? ...);
-	// !isNew : UPDATE "tableName" SET "column1" = ?, "column2" = ?, ... WHERE "rowid" = ?;
+	//  isNew : INSERT            INTO "tableName" ("rowid", "column1", "column2", ...) VALUES (?, ?, ? ...);
+	// !isNew : INSERT OR REPLACE INTO "tableName" ("rowid", "column1", "column2", ...) VALUES (?, ?, ? ...);
 	
 	int i = 1;
 	
-	if (isNew) {
-		sqlite3_bind_int64(statement, i, rowid);
-		i++;
-	}
+	sqlite3_bind_int64(statement, i, rowid);
+	i++;
 	
 	for (YapDatabaseSecondaryIndexColumn *column in secondaryIndexConnection->secondaryIndex->setup)
 	{
@@ -510,11 +508,6 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			}
 		}
 		
-		i++;
-	}
-	
-	if (!isNew) {
-		sqlite3_bind_int64(statement, i, rowid);
 		i++;
 	}
 	
