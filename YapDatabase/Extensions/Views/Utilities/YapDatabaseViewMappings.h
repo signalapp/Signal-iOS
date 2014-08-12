@@ -331,12 +331,9 @@ typedef NSComparisonResult (^YapDatabaseViewMappingGroupSort)(NSString *group1, 
  * You can get this with only a few lines of code using range options.
  * 
  * Note that if you're using range options, then the indexPaths in your UI might not match up directly
- * with the indexes in the view's group. No worries. You can use the various mapping methods in this class
- * to automatically handle all that for you.
- *
- * @see getGroup:viewIndex:forIndexPath:
- * @see viewIndexForRow:inSection:
- * @see viewIndexForRow:inGroup:
+ * with the indexes in the view's group. But don't worry.
+ * Just use the methods in "YapDatabaseViewTransaction (Mappings)" to automatically handle it all for you.
+ * Or, if you want to be advanced, the various mapping methods in this class.
  * 
  * The rangeOptions you pass in are copied, and YapDatabaseViewMappings keeps a private immutable version of them.
  * So if you make changes to the rangeOptions, you need to invoke this method again to set the changes.
