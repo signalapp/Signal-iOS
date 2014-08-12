@@ -4542,7 +4542,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 				
 				keysLeft -= enumRange.length;
 			}
-			else if (startedRange)
+			else if (startedRange && (pageRange.length > 0))
 			{
 				// We've completed the range
 				break;
@@ -4593,7 +4593,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 				
 				keysLeft -= enumRange.length;
 			}
-			else if (startedRange)
+			else if (startedRange && (pageRange.length > 0))
 			{
 				// We've completed the range
 				*outerStop = YES;
