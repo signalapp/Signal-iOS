@@ -20,10 +20,10 @@ PODS:
   - AFNetworking/UIKit (2.3.1):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - CocoaLumberjack (1.9.1):
+  - CocoaLumberjack (1.9.2):
     - CocoaLumberjack/Extensions
-  - CocoaLumberjack/Core (1.9.1)
-  - CocoaLumberjack/Extensions (1.9.1):
+  - CocoaLumberjack/Core (1.9.2)
+  - CocoaLumberjack/Extensions (1.9.2):
     - CocoaLumberjack/Core
   - libPhoneNumber-iOS (0.7.3)
   - MMDrawerController (0.5.6):
@@ -57,7 +57,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AFNetworking: 6d7b76aa5d04c8c37daad3eef4b7e3f2a7620da3
-  CocoaLumberjack: 94accd5749f5c5d15134c8d50f34a973aed8ef69
+  CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
   libPhoneNumber-iOS: 98fc07d70c8fdb5e6a8e3442c37e97353065c20e
   MMDrawerController: 4bae84535ca7a5f4cb55a66a001e6035c3571677
   OpenSSL: 4810adf5c99b0e2cd20670a11a987c805e8a521c
