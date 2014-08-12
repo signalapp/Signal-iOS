@@ -209,3 +209,114 @@
 }
 
 @end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Standard file relationship: (parent)->(filePath)
+ * nodeDeleteRule = YDB_DeleteDestinationIfSourceDeleted
+ * 
+ * So the parent node creates the edge which points to the "child" filePath.
+ * And the file should get deleted if the parent is deleted.
+**/
+@implementation Node_Standard_FilePath
+
+@synthesize key = key;
+@synthesize filePath = filePath;
+
+- (id)init
+{
+	if ((self = [super init]))
+	{
+		key = [[NSUUID UUID] UUIDString];
+	}
+	return self;
+}
+
+- (id)initWithCoder:(NSCoder *)decoder
+{
+	if ((self = [super init]))
+	{
+		key = [decoder decodeObjectForKey:@"key"];
+		filePath = [decoder decodeObjectForKey:@"filePath"];
+	}
+	return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+	[coder encodeObject:key forKey:@"key"];
+	[coder encodeObject:filePath forKey:@"filePath"];
+}
+
+- (NSArray *)yapDatabaseRelationshipEdges
+{
+	if (filePath == nil) return nil;
+	
+	YapDatabaseRelationshipEdge *edge =
+	  [YapDatabaseRelationshipEdge edgeWithName:@"random"
+	                        destinationFilePath:filePath
+	                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted];
+	
+	return @[ edge ];
+}
+
+@end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Retain count file relationship: (parent)->(filePath)
+ * nodeDeleteRule = YDB_DeleteDestinationIfAllSourcesDeleted
+ *
+ * So the retainer node creates the edge which points the the retained file.
+ * And there may be multiple retainers pointing to the same retained file.
+ * And the file doesn't get deleted unless all the retainers are deleted.
+ **/
+@implementation Node_RetainCount_FilePath
+
+@synthesize key = key;
+@synthesize filePath = filePath;
+
+- (id)init
+{
+	if ((self = [super init]))
+	{
+		key = [[NSUUID UUID] UUIDString];
+	}
+	return self;
+}
+
+- (id)initWithCoder:(NSCoder *)decoder
+{
+	if ((self = [super init]))
+	{
+		key = [decoder decodeObjectForKey:@"key"];
+		filePath = [decoder decodeObjectForKey:@"filePath"];
+	}
+	return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+	[coder encodeObject:key forKey:@"key"];
+	[coder encodeObject:filePath forKey:@"filePath"];
+}
+
+- (NSArray *)yapDatabaseRelationshipEdges
+{
+	if (filePath == nil) return nil;
+	
+	YapDatabaseRelationshipEdge *edge =
+	  [YapDatabaseRelationshipEdge edgeWithName:@"shared"
+	                        destinationFilePath:filePath
+	                            nodeDeleteRules:YDB_DeleteDestinationIfAllSourcesDeleted];
+	
+	return @[ edge ];
+}
+
+@end

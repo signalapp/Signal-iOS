@@ -90,7 +90,7 @@ typedef id (^YapDatabaseSanitizer)(NSString *collection, NSString *key, id objec
  * }
  *
  * This notification is always posted to the main thread.
- **/
+**/
 extern NSString *const YapDatabaseModifiedNotification;
 
 extern NSString *const YapDatabaseSnapshotKey;
@@ -123,14 +123,14 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  *
  * Property lists make a good fit when your existing code already uses them,
  * such as replacing NSUserDefaults with a database.
- **/
+**/
 + (YapDatabaseSerializer)propertyListSerializer;
 + (YapDatabaseDeserializer)propertyListDeserializer;
 
 /**
  * A FASTER serializer & deserializer than the default, if serializing ONLY a NSDate object.
  * You may want to use timestampSerializer & timestampDeserializer if your metadata is simply an NSDate.
- **/
+**/
 + (YapDatabaseSerializer)timestampSerializer;
 + (YapDatabaseDeserializer)timestampDeserializer;
 
@@ -225,6 +225,8 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 
 @property (nonatomic, strong, readonly) YapDatabaseSanitizer objectSanitizer;
 @property (nonatomic, strong, readonly) YapDatabaseSanitizer metadataSanitizer;
+
+@property (nonatomic, copy, readonly) YapDatabaseOptions *options;
 
 /**
  * The snapshot number is the internal synchronization state primitive for the database.
@@ -367,7 +369,7 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  * For more detailed documentation on these properties, see the YapDatabaseConnection header file.
  * @see YapDatabaseConnection autoFlushMemoryFlags
 **/
-@property (atomic, assign, readwrite) int defaultAutoFlushMemoryFlags;
+@property (atomic, assign, readwrite) YapDatabaseConnectionFlushMemoryFlags defaultAutoFlushMemoryFlags;
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -414,7 +416,7 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  *     NO if an error occurred, such as the extensionName is already registered.
  * 
  * @see asyncRegisterExtension:withName:completionBlock:
- * @see asyncRegisterExtension:withName:completionBlock:completionQueue:
+ * @see asyncRegisterExtension:withName:completionQueue:completionBlock:
 **/
 - (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName;
 
@@ -451,29 +453,66 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 **/
 - (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
                       withName:(NSString *)extensionName
+               completionQueue:(dispatch_queue_t)completionQueue
+               completionBlock:(void(^)(BOOL ready))completionBlock;
+
+/**
+ * DEPRECATED in v2.5
+ *
+ * The syntax has been changed in order to make the code easier to read.
+ * In the past the code would end up looking like this:
+ *
+ * [database asyncRegisterExtension:ext
+ *                         withName:@"name"
+ *                  completionBlock:^
+ * {
+ *     // A bunch of code here
+ *     // code...
+ *     // code...
+ * } completionQueue:importantQueue]; <-- Hidden in code. Often overlooked.
+ *
+ * The new syntax puts the completionQueue declaration before the completionBlock declaration.
+ * Since the two are intricately linked, they should be next to each other in code.
+ * Then end result is easier to read:
+ *
+ * [database asyncRegisterExtension:ext
+ *                         withName:@"name"
+ *                  completionQueue:importantQueue <-- Easier to see
+ *                  completionBlock:^
+ * {
+ *     // 100 lines of code here
+ * }];
+**/
+- (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
+                      withName:(NSString *)extensionName
                completionBlock:(void(^)(BOOL ready))completionBlock
-               completionQueue:(dispatch_queue_t)completionQueue;
+               completionQueue:(dispatch_queue_t)completionQueue
+__attribute((deprecated("Use method asyncRegisterExtension:withName:completionQueue:completionBlock: instead")));
 
 /**
  * This method unregisters an extension with the given name.
  * The associated underlying tables will be dropped from the database.
  * 
  * Note 1:
- * You can unregister an extension that was hasn't been registered. For example,
- * you've previously registered an extension (in previous app launches), but you no longer need the extension.
- * You don't have to bother creating and registering the unneeded extension,
- * just so you can unregister it and have the associated tables dropped.
- * The database persists information about registered extensions, including the associated class of an extension.
- * So you can simply pass the name of the extension, and the database system will use the associated class to
- * drop the appropriate tables.
+ *   You don't need to re-register an extension in order to unregister it. For example,
+ *   you've previously registered an extension (in previous app launches), but you no longer need the extension.
+ *   You don't have to bother creating and registering the unneeded extension,
+ *   just so you can unregister it and have the associated tables dropped.
+ *   The database persists information about registered extensions, including the associated class of an extension.
+ *   So you can simply pass the name of the extension, and the database system will use the associated class to
+ *   drop the appropriate tables.
  *
- * Note:
- * You don't have to worry about unregistering extensions that you no longer need.
+ * Note 2:
+ *   In fact, you don't even have to worry about unregistering extensions that you no longer need.
+ *   That database system will automatically handle it for you.
+ *   That is, upon completion of the first readWrite transaction (that makes changes), the database system will
+ *   check to see if there are any "orphaned" extensions. Previously registered extensions that are no longer in use.
+ *   And it will automatically unregister these orhpaned extensions for you.
  *       
- * @see asyncUnregisterExtension:completionBlock:
- * @see asyncUnregisterExtension:completionBlock:completionQueue:
+ * @see asyncUnregisterExtensionWithName:completionBlock:
+ * @see asyncUnregisterExtensionWithName:completionQueue:completionBlock:
 **/
-- (void)unregisterExtension:(NSString *)extensionName;
+- (void)unregisterExtensionWithName:(NSString *)extensionName;
 
 /**
  * Asynchronoulsy starts the extension unregistration process.
@@ -486,8 +525,8 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  * 
  * The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
 **/
-- (void)asyncUnregisterExtension:(NSString *)extensionName
-                 completionBlock:(dispatch_block_t)completionBlock;
+- (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
+                         completionBlock:(dispatch_block_t)completionBlock;
 
 /**
  * Asynchronoulsy starts the extension unregistration process.
@@ -501,9 +540,54 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  * Additionally the dispatch_queue to invoke the completion block may also be specified.
  * If NULL, dispatch_get_main_queue() is automatically used.
 **/
+- (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
+                         completionQueue:(dispatch_queue_t)completionQueue
+                         completionBlock:(dispatch_block_t)completionBlock;
+
+/**
+ * DEPRECATED in v2.5
+ *
+ * The syntax has been changed in order to make the code easier to read.
+ * In the past the code would end up looking like this:
+ *
+ * [database asyncUnregisterExtensionWithName:@"name"
+ *                            completionBlock:^
+ * {
+ *     // A bunch of code here
+ *     // code...
+ *     // code...
+ * } completionQueue:importantQueue]; <-- Hidden in code. Often overlooked.
+ *
+ * The new syntax puts the completionQueue declaration before the completionBlock declaration.
+ * Since the two are intricately linked, they should be next to each other in code.
+ * Then end result is easier to read:
+ *
+ * [database asyncUnregisterExtensionWithName:@"name"
+ *                            completionQueue:importantQueue <-- Easier to see
+ *                            completionBlock:^
+ * {
+ *     // 100 lines of code here
+ * }];
+**/
+- (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
+                         completionBlock:(dispatch_block_t)completionBlock
+                         completionQueue:(dispatch_queue_t)completionQueue
+__attribute((deprecated("Use method asyncUnregisterExtensionWithName:completionQueue:completionBlock: instead")));
+
+/**
+ * DEPRECATED in v2.5
+**/
+- (void)unregisterExtension:(NSString *)extensionName
+__attribute((deprecated("Use method unregisterExtensionWithName: instead")));
+
 - (void)asyncUnregisterExtension:(NSString *)extensionName
                  completionBlock:(dispatch_block_t)completionBlock
-                 completionQueue:(dispatch_queue_t)completionQueue;
+__attribute((deprecated("Use method asyncUnregisterExtensionWithName:completionBlock: instead")));
+
+- (void)asyncUnregisterExtension:(NSString *)extensionName
+                 completionBlock:(dispatch_block_t)completionBlock
+                 completionQueue:(dispatch_queue_t)completionQueue
+__attribute((deprecated("Use method asyncUnregisterExtensionWithName:completionQueue:completionBlock: instead")));
 
 /**
  * Returns the registered extension with the given name.

@@ -93,17 +93,26 @@
 		return [object1 compare:object2 options:NSNumericSearch];
 	};
 	
+	NSString *initialVersionTag = @"1";
+	
 	YapDatabaseView *databaseView =
 	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
 	                               groupingBlockType:groupingBlockType
 	                                    sortingBlock:sortingBlock
 	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"1"
+	                                      versionTag:initialVersionTag
 	                                         options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
 	XCTAssertTrue(registerResult, @"Failure registering extension");
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		NSString *versionTag = [[transaction ext:@"order"] versionTag];
+		
+		XCTAssert([versionTag isEqualToString:initialVersionTag], @"Bad versionTag");
+	}];
 	
 	NSString *key0 = @"key0";
 	NSString *key1 = @"key1";
@@ -131,8 +140,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 0, @"Expected zero group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 0, @"Expected empty array");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == 0, @"Expected zero");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == 0, @"Expected zero");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == 0, @"Expected zero");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == 0, @"Expected zero");
 		
 		XCTAssertNil([[transaction ext:@"order"] groupForKey:key0 inCollection:nil], @"Expected nil");
 		
@@ -157,8 +166,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == keysCount, @"Wrong count");
 		
 		NSString *group = nil;
 		NSUInteger index = NSNotFound;
@@ -193,8 +202,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == keysCount, @"Wrong count");
 		
 		NSString *group = nil;
 		NSUInteger index = NSNotFound;
@@ -239,8 +248,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == keysCount, @"Wrong count");
 		
 		NSArray *keys = @[ key0, key1, key2, key3, key4 ];
 		
@@ -299,8 +308,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == keysCount, @"Wrong count");
 		
 		NSArray *keys = @[ key0, key1, key2, key3, key4 ];
 		
@@ -379,8 +388,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == keysCount, @"Wrong count");
 		
 		NSArray *keys = @[ key0, key2, key3, key4, key1 ]; // <-- Updated order (key1 moved to end)
 		
@@ -434,8 +443,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == keysCount, @"Wrong count");
 		
 		NSArray *keys = @[ key0, key2, key3, key4, key1 ]; // <-- Updated order (key1 moved to end)
 		
@@ -493,8 +502,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == keysCount, @"Wrong count");
 		
 		NSArray *keys = @[ key0, key2, key3, key4, ]; // <-- Updated order (key1 removed)
 		
@@ -551,8 +560,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == keysCount, @"Wrong count");
 		
 		NSArray *keys = @[ key0, key2, key3, key4, ]; // <-- Updated order (key1 removed)
 		
@@ -610,8 +619,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == keysCount, @"Wrong count");
 		
 		NSArray *keys = @[ key0, key4, ]; // <-- Updated order (key2 & key3 removed)
 		
@@ -667,8 +676,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == keysCount, @"Wrong count");
 		
 		NSArray *keys = @[ key0, key4, ]; // <-- Updated order (key2 & key3 removed)
 		
@@ -726,8 +735,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 0, @"Wrong group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 0, @"Wrong array count");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == keysCount, @"Wrong count");
 	}];
 
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
@@ -737,8 +746,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 0, @"Wrong group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 0, @"Wrong array count");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == keysCount, @"Wrong count");
 	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
@@ -755,8 +764,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == keysCount, @"Wrong count");
 		
 		NSArray *keys = @[ key0, key1, key2, key3, key4 ];
 		
@@ -812,8 +821,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == keysCount, @"Wrong count");
 		
 		NSArray *keys = @[ key0, key1, key2, key3, key4 ]; // <-- Updated order (key1 moved to end)
 		
@@ -875,8 +884,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == keysCount, @"Wrong count");
 		
 		NSArray *keys = @[ key0, key1 ];
 		
@@ -932,8 +941,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == keysCount, @"Wrong count");
 		
 		NSArray *keys = @[ key0, key1 ];
 		
@@ -996,8 +1005,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == keysCount, @"Wrong count");
 		
 		NSArray *keys = @[ key0, key1, key2, key3, key4 ];
 		
@@ -1053,8 +1062,8 @@
 		XCTAssertTrue([[transaction ext:@"order"] numberOfGroups] == 1, @"Wrong group count");
 		XCTAssertTrue([[[transaction ext:@"order"] allGroups] count] == 1, @"Wrong array count");
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == keysCount, @"Wrong count");
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInAllGroups] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == keysCount, @"Wrong count");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInAllGroups] == keysCount, @"Wrong count");
 		
 		NSArray *keys = @[ key0, key1, key2, key3, key4 ];
 		
@@ -1587,21 +1596,21 @@
 	
 	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		NSUInteger count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		NSUInteger count = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
 		
 		XCTAssertTrue(count == 0, @"Wrong count. Expected zero, got %lu", (unsigned long)count);
 	}];
 
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		NSUInteger count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		NSUInteger count = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
 		
 		XCTAssertTrue(count == 0, @"Wrong count. Expected zero, got %lu", (unsigned long)count);
 	}];
 	
 	[[database newConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		NSUInteger count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		NSUInteger count = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
 		
 		XCTAssertTrue(count == 0, @"Wrong count. Expected zero, got %lu", (unsigned long)count);
 	}];
@@ -2511,12 +2520,12 @@
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == count, @"View count is wrong");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == count, @"View count is wrong");
 	}];
 	
 	// Now drop the view
 	
-	[database unregisterExtension:@"order"];
+	[database unregisterExtensionWithName:@"order"];
 	
 	// Now make sure it's gone
 	
@@ -2612,7 +2621,7 @@
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == count, @"View count is wrong");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == count, @"View count is wrong");
 	}];
 	
 	// Now test finding different ranges
@@ -2818,7 +2827,7 @@
 	
 	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		XCTAssertTrue([[transaction ext:@"order"] numberOfKeysInGroup:@""] == 5, @"View count is wrong");
+		XCTAssertTrue([[transaction ext:@"order"] numberOfItemsInGroup:@""] == 5, @"View count is wrong");
 	}];
 	
 	// Now change the groupingBlock

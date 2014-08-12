@@ -26,7 +26,7 @@
 @interface YapDatabaseRelationship () {
 @public
 
-	int version;
+	NSString *versionTag;
 	YapDatabaseRelationshipOptions *options;
 }
 

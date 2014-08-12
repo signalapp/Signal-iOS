@@ -17,6 +17,9 @@
  * For the full documentation on Views, please see the related wiki article:
  * https://github.com/yaptv/YapDatabase/wiki/Views
  * 
+ * There is also an entire section that details YapDatabaseViewMappings:
+ * https://github.com/yaptv/YapDatabase/wiki/Views#mappings
+ * 
  * YapDatabaseViewMappings helps you map from groups to sections.
  * Let's take a look at a concrete example:
  * 
@@ -34,8 +37,8 @@
  * Plus it can properly take into account empty sections. For example, if there are no items
  * for sale in the liquor department then it can automatically move beer to section 1 (optional).
  * 
- * But the primary purpose of this class has to do with assisting in animating changes to your view.
- * In order to provide the proper animation instructions to your tableView or collectionView,
+ * This class also assists you in animating changes to your tableView/collectionView.
+ * In order to provide the proper animation instructions to your UI,
  * the database layer needs to know a little about how you're setting things up.
  * 
  * Using the example above, we might have code that looks something like this:
@@ -144,21 +147,14 @@
  * 
  * - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
  * {
- *     // If my sections are dynamic (they automatically come and go as individual sections become empty & non-empty),
- *     // then I can easily use the mappings object to find the appropriate group.
- *     
- *     NSString *group = [mappings groupForSection:indexPath.section];
- *
- *     __block id object = nil;
+ *      __block id object = nil;
  *     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
  *         
- *         object = [[transaction ext:@"view"] objectAtIndex:indexPath.row inGroup:group];
+ *         object = [[transaction ext:@"view"] objectAtIndexPath:indexPath withMappings:mappings];
  *     }];
  * 
  *     // configure and return cell...
  * }
- *
- * @see YapDatabaseConnection getSectionChanges:rowChanges:forNotifications:withMappings:
 **/
 
 /**
@@ -180,6 +176,7 @@ typedef NSComparisonResult (^YapDatabaseViewMappingGroupSort)(NSString *group1, 
 
 /**
  * Initializes a new mappings object.
+ * Use this initializer when the groups, and their order, are known at initialization time.
  *
  * @param allGroups
  *     The ordered array of group names.
@@ -190,8 +187,11 @@ typedef NSComparisonResult (^YapDatabaseViewMappingGroupSort)(NSString *group1, 
 **/
 + (instancetype)mappingsWithGroups:(NSArray *)allGroups view:(NSString *)registeredViewName;
 
+
+
 /**
- * Initializes a new mappings object.
+ * Initializes a new mappings object with a static list of groups.
+ * Use this initializer when the groups, and their order, are known at initialization time.
  * 
  * @param allGroups
  *     The ordered array of group names.
@@ -199,8 +199,6 @@ typedef NSComparisonResult (^YapDatabaseViewMappingGroupSort)(NSString *group1, 
  * 
  * @param registeredViewName
  *     This is the name of the view, as you registered it with the database system.
- * 
- *
 **/
 - (id)initWithGroups:(NSArray *)allGroups
 				view:(NSString *)registeredViewName;
@@ -270,7 +268,16 @@ typedef NSComparisonResult (^YapDatabaseViewMappingGroupSort)(NSString *group1, 
  * @see groupForSection:
  * @see visibleGroups
  * 
- * The mappings object is used with:
+ * Also note that there's an extremely helpful category: YapDatabaseViewTransaction(Mappings).
+ * Methods in this category will be of great help as you take advantage of advanced mappings configurations.
+ * For example:
+ *
+ * id object = [[transaction ext:@"myView"] objectAtIndexPath:indexPath withMappings:mappings];
+ *
+ * These methods are extensively unit tested to ensure they work properly with all kinds of mappings configurations.
+ * Translation: You can use them without thinking, and they'll just work everytime.
+ *
+ * The mappings object is also used to assist with tableView/collectionView change animations:
  *
  * - YapDatabaseViewConnection getSectionChanges:rowChanges:forNotifications:withMappings:
  * 
@@ -279,14 +286,25 @@ typedef NSComparisonResult (^YapDatabaseViewMappingGroupSort)(NSString *group1, 
  * As the dynamic sections disappear & re-appear, the proper section changes will be emitted.
  *
  * By DEFAULT, all groups/sections are STATIC.
- * You can configure this per group, or all-at-once.
+ *
+ * You can configure this however you want to meet your needs.
+ * This includes per-group configuration, all-at-once, and even overrides.
+ * 
+ * ORDER MATTERS.
+ *
+ * If you invoke setIsDynamicSectionForAllGroups, this sets the configuration for every group.
+ * Including future groups if using dynamic groups via initWithGroupFilterBlock:sortBlock:view:.
+ * 
+ * Once the configuration is set for all groups, you can then choose to provide overriden settings for select groups.
+ * That is, if you then invoke setIsDynamicSection:forGroup: is will override the "global" setting
+ * for this particular group.
 **/
-
-- (void)setIsDynamicSectionForAllGroups:(BOOL)isDynamic;
-- (BOOL)isDynamicSectionForAllGroups;
 
 - (void)setIsDynamicSection:(BOOL)isDynamic forGroup:(NSString *)group;
 - (BOOL)isDynamicSectionForGroup:(NSString *)group;
+
+- (void)setIsDynamicSectionForAllGroups:(BOOL)isDynamic;
+- (BOOL)isDynamicSectionForAllGroups;
 
 /**
  * You can use the YapDatabaseViewRangeOptions class to configure a "range" that you would
@@ -313,12 +331,9 @@ typedef NSComparisonResult (^YapDatabaseViewMappingGroupSort)(NSString *group1, 
  * You can get this with only a few lines of code using range options.
  * 
  * Note that if you're using range options, then the indexPaths in your UI might not match up directly
- * with the indexes in the view's group. No worries. You can use the various mapping methods in this class
- * to automatically handle all that for you.
- *
- * @see getGroup:viewIndex:forIndexPath:
- * @see viewIndexForRow:inSection:
- * @see viewIndexForRow:inGroup:
+ * with the indexes in the view's group. But don't worry.
+ * Just use the methods in "YapDatabaseViewTransaction (Mappings)" to automatically handle it all for you.
+ * Or, if you want to be advanced, the various mapping methods in this class.
  * 
  * The rangeOptions you pass in are copied, and YapDatabaseViewMappings keeps a private immutable version of them.
  * So if you make changes to the rangeOptions, you need to invoke this method again to set the changes.

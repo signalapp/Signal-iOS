@@ -1,5 +1,6 @@
 #import "YapDatabaseFilteredView.h"
 #import "YapDatabaseFilteredViewPrivate.h"
+#import "YapDatabasePrivate.h"
 #import "YapDatabaseExtensionPrivate.h"
 #import "YapDatabaseLogging.h"
 
@@ -20,10 +21,10 @@
 
 @implementation YapDatabaseFilteredView
 
-+ (NSArray *)previousClassNames
-{
-	return @[ @"YapCollectionsDatabaseSecondaryIndex" ];
-}
+@synthesize parentViewName = parentViewName;
+
+@synthesize filteringBlock = filteringBlock;
+@synthesize filteringBlockType = filteringBlockType;
 
 #pragma mark Invalid
 
@@ -47,13 +48,8 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Instance
+#pragma mark Init
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-@synthesize parentViewName = parentViewName;
-
-@synthesize filteringBlock = filteringBlock;
-@synthesize filteringBlockType = filteringBlockType;
 
 - (id)initWithParentViewName:(NSString *)inParentViewName
               filteringBlock:(YapDatabaseViewFilteringBlock)inFilteringBlock
@@ -108,6 +104,64 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Custom Getters
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (YapDatabaseViewFilteringBlock)filteringBlock
+{
+	// This property can be changed from within a readWriteTransaction.
+	// We go through the snapshot queue to ensure we're fetching the most recent value.
+	
+	__block YapDatabaseViewFilteringBlock mostRecentFilteringBlock = NULL;
+	dispatch_block_t block = ^{
+		
+		mostRecentFilteringBlock = filteringBlock;
+	};
+	
+	__strong YapDatabase *database = self.registeredDatabase;
+	if (database)
+	{
+		if (dispatch_get_specific(database->IsOnSnapshotQueueKey))
+			block();
+		else
+			dispatch_sync(database->snapshotQueue, block);
+	}
+	else // not registered
+	{
+		block();
+	}
+	
+	return mostRecentFilteringBlock;
+}
+
+- (YapDatabaseViewBlockType)filteringBlockType
+{
+	// This property can be changed from within a readWriteTransaction.
+	// We go through the snapshot queue to ensure we're fetching the most recent value.
+	
+	__block YapDatabaseViewBlockType mostRecentFilteringBlockType = 0;
+	dispatch_block_t block = ^{
+		
+		mostRecentFilteringBlockType = filteringBlockType;
+	};
+	
+	__strong YapDatabase *database = self.registeredDatabase;
+	if (database)
+	{
+		if (dispatch_get_specific(database->IsOnSnapshotQueueKey))
+			block();
+		else
+			dispatch_sync(database->snapshotQueue, block);
+	}
+	else // not registered
+	{
+		block();
+	}
+	
+	return mostRecentFilteringBlockType;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Registration
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -154,6 +208,78 @@
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
 	return [[YapDatabaseFilteredViewConnection alloc] initWithView:self databaseConnection:databaseConnection];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Changeset
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Subclasses may OPTIONALLY implement this method.
+ *
+ * This method is invoked on the snapshot queue.
+ * The given changeset is the most recent commit.
+**/
+- (void)processChangeset:(NSDictionary *)changeset
+{
+	YDBLogAutoTrace();
+	
+	[super processChangeset:changeset];
+	
+	YapDatabaseViewFilteringBlock newFilteringBlock = changeset[changeset_key_filteringBlock];
+	if (newFilteringBlock)
+	{
+		filteringBlock = newFilteringBlock;
+		filteringBlockType = [changeset[changeset_key_filteringBlockType] integerValue];
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Internal
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Used by YapDatabaseFilteredViewConnection to fetch & cache the values for a readWriteTransaction.
+**/
+- (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
+       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+            sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
+        sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr
+          filteringBlock:(YapDatabaseViewFilteringBlock *)filteringBlockPtr
+      filteringBlockType:(YapDatabaseViewBlockType *)filteringBlockTypePtr
+{
+	__block YapDatabaseViewGroupingBlock  mostRecentGroupingBlock  = NULL;
+	__block YapDatabaseViewSortingBlock   mostRecentSortingBlock   = NULL;
+	__block YapDatabaseViewFilteringBlock mostRecentFilteringBlock = NULL;
+	__block YapDatabaseViewBlockType mostRecentGroupingBlockType  = 0;
+	__block YapDatabaseViewBlockType mostRecentSortingBlockType   = 0;
+	__block YapDatabaseViewBlockType mostRecentFilteringBlockType = 0;
+	
+	dispatch_block_t block = ^{
+	
+		mostRecentGroupingBlock      = groupingBlock;
+		mostRecentGroupingBlockType  = groupingBlockType;
+		mostRecentSortingBlock       = sortingBlock;
+		mostRecentSortingBlockType   = sortingBlockType;
+		mostRecentFilteringBlock     = filteringBlock;
+		mostRecentFilteringBlockType = filteringBlockType;
+	};
+	
+	__strong YapDatabase *database = self.registeredDatabase;
+	if (database)
+	{
+		if (dispatch_get_specific(database->IsOnSnapshotQueueKey))
+			block();
+		else
+			dispatch_sync(database->snapshotQueue, block);
+	}
+	
+	if (groupingBlockPtr)      *groupingBlockPtr      = mostRecentGroupingBlock;
+	if (groupingBlockTypePtr)  *groupingBlockTypePtr  = mostRecentGroupingBlockType;
+	if (sortingBlockPtr)       *sortingBlockPtr       = mostRecentSortingBlock;
+	if (sortingBlockTypePtr)   *sortingBlockTypePtr   = mostRecentSortingBlockType;
+	if (filteringBlockPtr)     *filteringBlockPtr     = mostRecentFilteringBlock;
+	if (filteringBlockTypePtr) *filteringBlockTypePtr = mostRecentFilteringBlockType;
 }
 
 @end

@@ -7,7 +7,9 @@
 #import "YapDatabase.h"
 #import "YapDatabaseConnection.h"
 #import "YapDatabaseTransaction.h"
+
 #import "YapCollectionKey.h"
+#import "YapMemoryTable.h"
 
 #import "sqlite3.h"
 
@@ -18,9 +20,21 @@
  * Subclasses MUST implement this method.
  *
  * This method is used when unregistering an extension in order to drop the related tables.
+ * 
+ * @param registeredName
+ *   The name the extension was registered using.
+ *   The extension should be able to generated the proper table name(s) using the given registered name.
+ * 
+ * @param transaction
+ *   A readWrite transaction for proper database access.
+ * 
+ * @param wasPersistent
+ *   If YES, then the extension should drop tables from sqlite.
+ *   If NO, then the extension should unregister the proper YapMemoryTable(s).
 **/
 + (void)dropTablesForRegisteredName:(NSString *)registeredName
-                    withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+                    withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                      wasPersistent:(BOOL)wasPersistent;
 
 /**
  * Subclasses may OPTIONALLY implement this method.
@@ -30,7 +44,7 @@
  * extension class that it was previously using. If the class names differ, then the extension architecture
  * will automatically try to unregister the previous extension using the previous extension class.
  * 
- * That is, it will attempt to invoke [PreviousExtensionClass dropTablesForRegisteredName: withTransaction:].
+ * That is, it will attempt to invoke [PreviousExtensionClass dropTablesForRegisteredName: withTransaction::].
  * Of course this won't work because the PreviousExtensionClass no longer exists.
  * So the end result is that you will likely see the database spit out a warning like this:
  * 
@@ -47,12 +61,12 @@
 
 /**
  * After an extension has been successfully registered with a database,
- * the registeredName property will be set by the database.
+ * these properties will be set by the database.
  * 
- * This property is set by YapDatabase after a successful registration.
- * It should be considered read-only once set.
+ * These properties should be considered read-only once set.
 **/
 @property (atomic, copy, readwrite) NSString *registeredName;
+@property (atomic, weak, readwrite) YapDatabase *registeredDatabase;
 
 /**
  * Subclasses MUST implement this method.
@@ -77,10 +91,29 @@
 - (NSSet *)dependencies;
 
 /**
+ * Subclasses MUST implement this method IF they are non-persistent (in-memory only).
+ * By doing so, they allow their yap2 table values to be stored in-memory automatically.
+**/
+- (BOOL)isPersistent;
+
+/**
  * Subclasses MUST implement this method.
  * Returns a proper instance of the YapDatabaseExtensionConnection subclass.
 **/
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection;
+
+/**
+ * Subclasses may OPTIONALLY implement this method.
+ *
+ * This method is invoked on the snapshot queue.
+ * The given changeset is the most recent commit.
+ * 
+ * This method exists as a possible optimization.
+ * For example, the YapDatabaseView extension uses this method to capture the most recent view state.
+ * This allows new view connections to be able to (sometimes) fetch the view state from their extension,
+ * rather than read it from the database and piece it together manually.
+**/
+- (void)processChangeset:(NSDictionary *)changeset;
 
 @end
 
@@ -383,25 +416,25 @@
  * then the database system automatically deletes all values from the yap2 table where extension == registeredName.
 **/
 
-- (BOOL)getBoolValue:(BOOL *)valuePtr forExtensionKey:(NSString *)key;
-- (BOOL)boolValueForExtensionKey:(NSString *)key;
-- (void)setBoolValue:(BOOL)value forExtensionKey:(NSString *)key;
+- (BOOL)getBoolValue:(BOOL *)valuePtr forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+- (BOOL)boolValueForExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+- (void)setBoolValue:(BOOL)value forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
 
-- (BOOL)getIntValue:(int *)valuePtr forExtensionKey:(NSString *)key;
-- (int)intValueForExtensionKey:(NSString *)key;
-- (void)setIntValue:(int)value forExtensionKey:(NSString *)key;
+- (BOOL)getIntValue:(int *)valuePtr forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+- (int)intValueForExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+- (void)setIntValue:(int)value forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
 
-- (BOOL)getDoubleValue:(double *)valuePtr forExtensionKey:(NSString *)key;
-- (double)doubleValueForExtensionKey:(NSString *)key;
-- (void)setDoubleValue:(double)value forExtensionKey:(NSString *)key;
+- (BOOL)getDoubleValue:(double *)valuePtr forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+- (double)doubleValueForExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+- (void)setDoubleValue:(double)value forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
 
-- (NSString *)stringValueForExtensionKey:(NSString *)key;
-- (void)setStringValue:(NSString *)value forExtensionKey:(NSString *)key;
+- (NSString *)stringValueForExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+- (void)setStringValue:(NSString *)value forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
 
-- (NSData *)dataValueForExtensionKey:(NSString *)key;
-- (void)setDataValue:(NSData *)value forExtensionKey:(NSString *)key;
+- (NSData *)dataValueForExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+- (void)setDataValue:(NSData *)value forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
 
-- (void)removeValueForExtensionKey:(NSString *)key;
+- (void)removeValueForExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
 
 @end
 
@@ -437,6 +470,12 @@
 - (void)handleTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid;
 
 - (void)handleRemoveObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid;
+
+/**
+ * Note: The number of items passed to this method has the following guarantee:
+ * 
+ * count <= (SQLITE_LIMIT_VARIABLE_NUMBER - 1)
+**/
 - (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids;
 
 - (void)handleRemoveAllObjectsInAllCollections;

@@ -94,16 +94,24 @@
 		return [number1 compare:number2];
 	};
 	
+	NSString *order_initialVersionTag = @"1";
+	
 	YapDatabaseView *view =
 	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
 	                               groupingBlockType:groupingBlockType
 	                                    sortingBlock:sortingBlock
 	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"1"
+	                                      versionTag:order_initialVersionTag
 	                                         options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		NSString *versionTag = [[transaction ext:@"order"] versionTag];
+		XCTAssert([versionTag isEqualToString:order_initialVersionTag], @"Bad versionTag");
+	}];
 	
 	YapDatabaseViewBlockType filteringBlockType;
 	YapDatabaseViewFilteringBlock filteringBlock;
@@ -119,13 +127,22 @@
 			return NO;  // odd
 	};
 	
+	NSString *filter_initialVersionTag = @"1";
+	
 	YapDatabaseFilteredView *filteredView =
 	  [[YapDatabaseFilteredView alloc] initWithParentViewName:@"order"
 	                                           filteringBlock:filteringBlock
-	                                       filteringBlockType:filteringBlockType];
+	                                       filteringBlockType:filteringBlockType
+	                                               versionTag:filter_initialVersionTag];
 	
 	BOOL registerResult2 = [database registerExtension:filteredView withName:@"filter"];
 	XCTAssertTrue(registerResult2, @"Failure registering filteredView extension");
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		NSString *versionTag = [[transaction ext:@"filter"] versionTag];
+		XCTAssert([versionTag isEqualToString:filter_initialVersionTag], @"Bad versionTag");
+	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		
@@ -143,8 +160,8 @@
 			[transaction setObject:@(i) forKey:key inCollection:nil];
 		}
 		
-		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
+		NSUInteger orderCount = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
+		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfItemsInGroup:@""];
 		
 		XCTAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
 		XCTAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
@@ -152,8 +169,8 @@
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
 		
-		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
+		NSUInteger orderCount = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
+		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfItemsInGroup:@""];
 		
 		XCTAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
 		XCTAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
@@ -247,7 +264,7 @@
 			[transaction setObject:@(i) forKey:key inCollection:nil];
 		}
 		
-		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		NSUInteger orderCount = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
 		
 		XCTAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
 	}];
@@ -279,8 +296,8 @@
 		XCTAssertNotNil([transaction ext:@"order"], @"Expected view extension");
 		XCTAssertNotNil([transaction ext:@"filter"], @"Expected filteredView extension");
 		
-		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
+		NSUInteger orderCount = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
+		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfItemsInGroup:@""];
 		
 		XCTAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
 		XCTAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
@@ -399,8 +416,8 @@
 			[transaction setObject:@(i) forKey:key inCollection:nil];
 		}
 		
-		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
+		NSUInteger orderCount = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
+		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfItemsInGroup:@""];
 		
 		XCTAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
 		XCTAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
@@ -408,8 +425,8 @@
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
 		
-		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
+		NSUInteger orderCount = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
+		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfItemsInGroup:@""];
 		
 		XCTAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
 		XCTAssertTrue(filterCount == 50, @"Bad count in filter. Expected 50, got %d", (int)filterCount);
@@ -436,8 +453,8 @@
 		                            filteringBlockType:filteringBlockType
 		                                    versionTag:@"even+5"];
 		
-		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
+		NSUInteger orderCount = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
+		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfItemsInGroup:@""];
 		
 		XCTAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
 		XCTAssertTrue(filterCount == (50 + 10), @"Bad count in filter. Expected 60, got %d", (int)filterCount);
@@ -445,8 +462,8 @@
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
 		
-		NSUInteger orderCount = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
-		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfKeysInGroup:@""];
+		NSUInteger orderCount = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
+		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfItemsInGroup:@""];
 		
 		XCTAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
 		XCTAssertTrue(filterCount == (50 + 10), @"Bad count in filter. Expected 60, got %d", (int)filterCount);
@@ -557,7 +574,7 @@
 	
 	// Now unregister the view, and make sure it automatically unregisters the filteredView too.
 	
-	[database unregisterExtension:@"order"];
+	[database unregisterExtensionWithName:@"order"];
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
@@ -690,7 +707,7 @@
 	
 	// Now unregister the view, and make sure it automatically unregisters both filteredViews too.
 	
-	[database unregisterExtension:@"order"];
+	[database unregisterExtensionWithName:@"order"];
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
@@ -842,13 +859,13 @@
 		
 		NSUInteger count;
 		
-		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 200, @"");
 		
-		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter1"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 100, @"");
 		
-		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter2"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 50, @"");
 	}];
 	
@@ -856,13 +873,13 @@
 		
 		NSUInteger count;
 		
-		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 200, @"");
 		
-		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter1"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 100, @"");
 		
-		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter2"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 50, @"");
 	}];
 	
@@ -886,13 +903,13 @@
 		
 		NSUInteger count;
 		
-		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 200, @"");
 		
-		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter1"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 200, @"");
 		
-		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter2"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 100, @"");
 	}];
 	
@@ -900,13 +917,13 @@
 		
 		NSUInteger count;
 		
-		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 200, @"");
 		
-		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter1"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 200, @"");
 		
-		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter2"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 100, @"");
 	}];
 	
@@ -930,13 +947,13 @@
 		
 		NSUInteger count;
 		
-		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 200, @"");
 		
-		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter1"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 100, @"");
 		
-		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter2"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 50, @"");
 	}];
 	
@@ -944,13 +961,13 @@
 		
 		NSUInteger count;
 		
-		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 200, @"");
 		
-		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter1"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 100, @"");
 		
-		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter2"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 50, @"");
 	}];
 
@@ -1103,13 +1120,13 @@
 		
 		NSUInteger count;
 		
-		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 100, @"");
 		
-		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter1"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 50, @"");
 		
-		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter2"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 25, @"");
 		
 	//	[[transaction ext:@"filter1"] enumerateKeysInGroup:@""
@@ -1129,13 +1146,13 @@
 		
 		NSUInteger count;
 		
-		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 100, @"");
 		
-		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter1"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 50, @"");
 		
-		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter2"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 25, @"");
 	}];
 	
@@ -1163,13 +1180,13 @@
 		
 		NSUInteger count;
 		
-		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 200, @"");
 		
-		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter1"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 100, @"");
 		
-		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter2"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 50, @"");
 		
 	//	[[transaction ext:@"filter1"] enumerateKeysInGroup:@""
@@ -1189,13 +1206,13 @@
 		
 		NSUInteger count;
 		
-		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 200, @"");
 		
-		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter1"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 100, @"");
 		
-		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter2"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 50, @"");
 	}];
 	
@@ -1223,13 +1240,13 @@
 		
 		NSUInteger count;
 		
-		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 100, @"");
 		
-		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter1"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 50, @"");
 		
-		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter2"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 25, @"");
 		
 	//	[[transaction ext:@"filter1"] enumerateKeysInGroup:@""
@@ -1249,13 +1266,13 @@
 		
 		NSUInteger count;
 		
-		count = [[transaction ext:@"order"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 100, @"");
 		
-		count = [[transaction ext:@"filter1"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter1"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 50, @"");
 		
-		count = [[transaction ext:@"filter2"] numberOfKeysInGroup:@""];
+		count = [[transaction ext:@"filter2"] numberOfItemsInGroup:@""];
 		XCTAssertTrue(count == 25, @"");
 	}];
 
@@ -1486,8 +1503,8 @@
     
     [[NSNotificationCenter defaultCenter] removeObserver:observer];
     
-    [database unregisterExtension:@"order"];
-//	[database unregisterExtension:@"filter"]; // <- will get automatically unregistered with order (b/c of dependency)
+    [database unregisterExtensionWithName:@"order"];
+	// The @"filter" extension will get automatically unregistered with order (b/c of dependency)
 }
 
 @end

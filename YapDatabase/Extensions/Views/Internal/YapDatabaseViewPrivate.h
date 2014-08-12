@@ -8,6 +8,9 @@
 #import "YapDatabaseViewOptions.h"
 #import "YapDatabaseViewConnection.h"
 #import "YapDatabaseViewTransaction.h"
+#import "YapDatabaseViewState.h"
+
+#import "YapDatabaseExtensionPrivate.h"
 
 #import "YapMemoryTable.h"
 
@@ -23,12 +26,28 @@
 **/
 #define YAP_DATABASE_VIEW_CLASS_VERSION 3
 
+static NSString *const changeset_key_state             = @"state";
+static NSString *const changeset_key_dirtyMaps         = @"dirtyMaps";
+static NSString *const changeset_key_dirtyPages        = @"dirtyPages";
+static NSString *const changeset_key_reset             = @"reset";
+
+static NSString *const changeset_key_groupingBlock     = @"groupingBlock";
+static NSString *const changeset_key_groupingBlockType = @"groupingBlockType";
+static NSString *const changeset_key_sortingBlock      = @"sortingBlock";
+static NSString *const changeset_key_sortingBlockType  = @"sortingBlockType";
+static NSString *const changeset_key_versionTag        = @"versionTag";
+
+static NSString *const changeset_key_changes           = @"changes";
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface YapDatabaseView () {
-@public
+@protected
+	
+	YapDatabaseViewState *latestState;
+	
 	YapDatabaseViewGroupingBlock groupingBlock;
 	YapDatabaseViewSortingBlock sortingBlock;
 	
@@ -37,12 +56,17 @@
 	
 	NSString *versionTag;
 	
+@public
+	
 	YapDatabaseViewOptions *options;
 }
 
 - (NSString *)mapTableName;
 - (NSString *)pageTableName;
 - (NSString *)pageMetadataTableName;
+
+- (BOOL)getState:(YapDatabaseViewState **)statePtr
+   forConnection:(YapDatabaseViewConnection *)viewConnection;
 
 @end
 
@@ -51,13 +75,29 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface YapDatabaseViewConnection () {
+@protected
+	
+	id sharedKeySetForInternalChangeset;
+	id sharedKeySetForExternalChangeset;
+	
+	YapDatabaseViewGroupingBlock groupingBlock;
+	YapDatabaseViewSortingBlock sortingBlock;
+	
+	YapDatabaseViewBlockType groupingBlockType;
+	YapDatabaseViewBlockType sortingBlockType;
+	
+	NSString *versionTag;
+	
+	BOOL groupingBlockChanged;
+	BOOL sortingBlockChanged;
+	BOOL versionTagChanged;
+	
 @public
 	
 	__strong YapDatabaseView *view;
 	__unsafe_unretained YapDatabaseConnection *databaseConnection;
 	
-	NSMutableDictionary *group_pagesMetadata_dict; // group -> @[ YapDatabaseViewPageMetadata, ... ]
-	NSMutableDictionary *pageKey_group_dict;       // pageKey -> group
+	YapDatabaseViewState *state;
 	
 	YapCache *mapCache;
 	YapCache *pageCache;
@@ -75,10 +115,16 @@
 }
 
 - (id)initWithView:(YapDatabaseView *)view databaseConnection:(YapDatabaseConnection *)dbc;
+- (void)_flushStatements;
+
+- (BOOL)isPersistentView;
 
 - (void)prepareForReadWriteTransaction;
 - (void)postRollbackCleanup;
 - (void)postCommitCleanup;
+
+- (NSArray *)internalChangesetKeys;
+- (NSArray *)externalChangesetKeys;
 
 - (sqlite3_stmt *)mapTable_getPageKeyForRowidStatement;
 - (sqlite3_stmt *)mapTable_setPageKeyForRowidStatement;
@@ -92,6 +138,26 @@
 - (sqlite3_stmt *)pageTable_updateLinkForPageKeyStatement;
 - (sqlite3_stmt *)pageTable_removeForPageKeyStatement;
 - (sqlite3_stmt *)pageTable_removeAllStatement;
+
+- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)newGroupingBlock
+       groupingBlockType:(YapDatabaseViewBlockType)newGroupingBlockType
+            sortingBlock:(YapDatabaseViewSortingBlock)newSortingBlock
+        sortingBlockType:(YapDatabaseViewBlockType)newSortingBlockType
+              versionTag:(NSString *)newVersionTag;
+
+- (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
+       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+            sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
+        sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr;
+
+- (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
+       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr;
+
+- (void)getSortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
+       sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr;
+
+- (void)getGroupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+            sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr;
 
 @end
 
@@ -142,7 +208,7 @@
 			 object:(id)object
            metadata:(id)metadata
             inGroup:(NSString *)group
-        withChanges:(int)flags
+        withChanges:(YapDatabaseViewChangesBitMask)flags
               isNew:(BOOL)isGuaranteedNew;
 
 - (void)removeRowid:(int64_t)rowid
@@ -158,6 +224,10 @@
                     usingBlock:(void (^)(int64_t rowid, NSUInteger index, BOOL *stop))block;
 - (void)enumerateRowidsInGroup:(NSString *)group
                    withOptions:(NSEnumerationOptions)inOptions
+                    usingBlock:(void (^)(int64_t rowid, NSUInteger index, BOOL *stop))block;
+- (void)enumerateRowidsInGroup:(NSString *)group
+                   withOptions:(NSEnumerationOptions)inOptions
+                         range:(NSRange)range
                     usingBlock:(void (^)(int64_t rowid, NSUInteger index, BOOL *stop))block;
 
 - (BOOL)containsRowid:(int64_t)rowid;

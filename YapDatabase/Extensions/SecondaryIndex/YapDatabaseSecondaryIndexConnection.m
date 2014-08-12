@@ -226,7 +226,8 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 
 - (sqlite3_stmt *)insertStatement
 {
-	if (insertStatement == NULL)
+	sqlite3_stmt **statement = &insertStatement;
+	if (*statement == NULL)
 	{
 		NSMutableString *string = [NSMutableString stringWithCapacity:100];
 		[string appendFormat:@"INSERT INTO \"%@\" (\"rowid\"", [secondaryIndex tableName]];
@@ -249,83 +250,89 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 		
 		sqlite3 *db = databaseConnection->db;
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &insertStatement, NULL);
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return insertStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)updateStatement
 {
-	if (updateStatement == NULL)
+	sqlite3_stmt **statement = &updateStatement;
+	if (*statement == NULL)
 	{
 		NSMutableString *string = [NSMutableString stringWithCapacity:100];
-		[string appendFormat:@"UPDATE \"%@\" SET ", [secondaryIndex tableName]];
+		[string appendFormat:@"INSERT OR REPLACE INTO \"%@\" (\"rowid\"", [secondaryIndex tableName]];
 		
-		NSUInteger i = 0;
 		for (YapDatabaseSecondaryIndexColumn *column in secondaryIndex->setup)
 		{
-			if (i == 0)
-				[string appendFormat:@"\"%@\" = ?", column.name];
-			else
-				[string appendFormat:@", \"%@\" = ?", column.name];
-			
-			i++;
+			[string appendFormat:@", \"%@\"", column.name];
 		}
 		
-		[string appendString:@" WHERE rowid = ?;"];
+		[string appendString:@") VALUES (?"];
+		
+		NSUInteger count = [secondaryIndex->setup count];
+		NSUInteger i;
+		for (i = 0; i < count; i++)
+		{
+			[string appendString:@", ?"];
+		}
+		
+		[string appendString:@");"];
 		
 		sqlite3 *db = databaseConnection->db;
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &updateStatement, NULL);
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return updateStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)removeStatement
 {
-	if (removeStatement == NULL)
+	sqlite3_stmt **statement = &removeStatement;
+	if (*statement == NULL)
 	{
 		NSString *string =
 		    [NSString stringWithFormat:@"DELETE FROM \"%@\" WHERE \"rowid\" = ?;", [secondaryIndex tableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &removeStatement, NULL);
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return removeStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)removeAllStatement
 {
-	if (removeAllStatement == NULL)
+	sqlite3_stmt **statement = &removeAllStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:@"DELETE FROM \"%@\";", [secondaryIndex tableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
-		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, &removeAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, [string UTF8String], -1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
 	}
 	
-	return removeAllStatement;
+	return *statement;
 }
 
 @end

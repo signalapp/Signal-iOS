@@ -73,33 +73,74 @@
 #pragma mark General Debugging
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+- (NSString *)randomLetters:(NSUInteger)length
+{
+	NSString *alphabet = @"abcdefghijklmnopqrstuvwxyz";
+	NSUInteger alphabetLength = [alphabet length];
+	
+	NSMutableString *result = [NSMutableString stringWithCapacity:length];
+	
+	NSUInteger i;
+	for (i = 0; i < length; i++)
+	{
+		uint32_t randomIndex = arc4random_uniform((uint32_t)alphabetLength);
+		unichar c = [alphabet characterAtIndex:(NSUInteger)randomIndex];
+		
+		[result appendFormat:@"%C", c];
+	}
+	
+	return result;
+}
+
 - (void)debug
 {
 	NSLog(@"Starting debug...");
 	
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	NSLog(@"databasePath: %@", databasePath);
 	
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:nil];
 	
 	database = [[YapDatabase alloc] initWithPath:databasePath];
-//	database.connectionPoolLifetime = 15;
 	
-	databaseConnection = [database newConnection];
+	// Fill up the database with stuff
 	
 	[[database newConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[transaction setObject:@"value" forKey:@"key" inCollection:nil];
+		for (int i = 0; i < 1500; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"%d", i];
+			
+			[transaction setObject:[self randomLetters:100] forKey:key inCollection:nil];
+		}
 	}];
 	
-	[NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(debugTimer:) userInfo:nil repeats:YES];
-}
-
-- (void)debugTimer:(NSTimer *)timer
-{
+	// Delete a bunch of stuff (to make more pages in the WAL)
+	
 	[[database newConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[transaction setObject:@"value" forKey:@"key" inCollection:nil];
+		for (int i = 0; i < 1000; i+=2)
+		{
+			NSString *key = [NSString stringWithFormat:@"%d", i];
+			
+			[transaction removeObjectForKey:key inCollection:nil];
+		}
 	}];
+	
+	NSLog(@"database WAL should be fairly big now...");
+	
+	// This next change should reset the WAL file size (to something much smaller)
+	
+	dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC));
+	dispatch_after(when, dispatch_get_main_queue(), ^{
+		
+		NSLog(@"This change should reset the WAL file size to something much smaller...");
+		
+		[[database newConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+			
+			[transaction setObject:@"bar" forKey:@"foo" inCollection:nil];
+		}];
+	});
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -226,7 +267,7 @@
 {
 	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		NSUInteger count = [[transaction ext:@"main"] numberOfKeysInGroup:@""];
+		NSUInteger count = [[transaction ext:@"main"] numberOfItemsInGroup:@""];
 		
 		NSLog(@"mainView.count = %lu", (unsigned long)count);
 	}];
@@ -236,7 +277,7 @@
 {
 	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		NSUInteger count = [[transaction ext:@"on-the-fly"] numberOfKeysInGroup:@""];
+		NSUInteger count = [[transaction ext:@"on-the-fly"] numberOfItemsInGroup:@""];
 		
 		NSLog(@"onTheFlyView.count = %lu", (unsigned long)count);
 	}];

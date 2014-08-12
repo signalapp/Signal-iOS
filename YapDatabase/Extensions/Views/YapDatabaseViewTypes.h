@@ -90,10 +90,10 @@ typedef NSComparisonResult (^YapDatabaseViewSortingWithRowBlock) \
  * 
  * Thus you will have to specify what kind of block you're passing.
 **/
-typedef enum {
+typedef NS_ENUM(NSInteger, YapDatabaseViewBlockType) {
 	YapDatabaseViewBlockTypeWithKey       = 1,
 	YapDatabaseViewBlockTypeWithObject    = 2,
 	YapDatabaseViewBlockTypeWithMetadata  = 3,
 	YapDatabaseViewBlockTypeWithRow       = 4
-} YapDatabaseViewBlockType;
+};
 

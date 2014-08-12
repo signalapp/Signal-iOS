@@ -23,19 +23,30 @@
 #else
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
+#pragma unused(ydbLogLevel)
 
-static NSString *const key_dirtyMaps                = @"dirtyMaps";
-static NSString *const key_dirtyPages               = @"dirtyPages";
-static NSString *const key_reset                    = @"reset";
-static NSString *const key_group_pagesMetadata_dict = @"group_pagesMetadata_dict";
-static NSString *const key_pageKey_group_dict       = @"pageKey_group_dict";
-static NSString *const key_changes                  = @"changes";
+
+@interface YapDatabaseView ()
+
+/**
+ * This method is designed exclusively for YapDatabaseViewConnection.
+ * All subclasses and transactions are required to use our version of the same method.
+ *
+ * So we declare it here, as opposed to within YapDatabaseViewPrivate.
+**/
+- (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
+       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+            sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
+        sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr;
+
+@end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @implementation YapDatabaseViewConnection
 {
-	id sharedKeySetForInternalChangeset;
-	id sharedKeySetForExternalChangeset;
-	
 	sqlite3_stmt *mapTable_getPageKeyForRowidStatement;
 	sqlite3_stmt *mapTable_setPageKeyForRowidStatement;
 	sqlite3_stmt *mapTable_removeForRowidStatement;
@@ -118,6 +129,11 @@ static NSString *const key_changes                  = @"changes";
 	return view;
 }
 
+- (BOOL)isPersistentView
+{
+	return view->options.isPersistent;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Transactions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,6 +143,8 @@ static NSString *const key_changes                  = @"changes";
 **/
 - (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction
 {
+	YDBLogAutoTrace();
+	
 	YapDatabaseViewTransaction *transaction =
 	    [[YapDatabaseViewTransaction alloc] initWithViewConnection:self
 	                                           databaseTransaction:databaseTransaction];
@@ -139,6 +157,8 @@ static NSString *const key_changes                  = @"changes";
 **/
 - (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
 {
+	YDBLogAutoTrace();
+	
 	YapDatabaseViewTransaction *transaction =
 	    [[YapDatabaseViewTransaction alloc] initWithViewConnection:self
 	                                           databaseTransaction:databaseTransaction];
@@ -150,26 +170,6 @@ static NSString *const key_changes                  = @"changes";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (NSMutableDictionary *)group_pagesMetadata_dict_deepCopy:(NSDictionary *)in_group_pagesMetadata_dict
-{
-	NSMutableDictionary *deepCopy = [NSMutableDictionary dictionaryWithCapacity:[in_group_pagesMetadata_dict count]];
-	
-	[in_group_pagesMetadata_dict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-		
-		__unsafe_unretained NSString *group = (NSString *)key;
-		__unsafe_unretained NSMutableArray *pagesMetadata = (NSMutableArray *)obj;
-		
-		// We need a mutable copy of the pages array,
-		// and we need a copy of each YapDatabaseViewPageMetadata object within the pages array.
-		
-		NSMutableArray *pagesMetadataDeepCopy = [[NSMutableArray alloc] initWithArray:pagesMetadata copyItems:YES];
-		
-		[deepCopy setObject:pagesMetadataDeepCopy forKey:group];
-	}];
-	
-	return deepCopy;
-}
 
 - (void)sanitizeDirtyPages
 {
@@ -205,6 +205,9 @@ static NSString *const key_changes                  = @"changes";
 		changes = [[NSMutableArray alloc] init];
 	if (mutatedGroups == nil)
 		mutatedGroups = [[NSMutableSet alloc] init];
+	
+	if (state.isImmutable)
+		state = [state mutableCopy];
 }
 
 /**
@@ -214,8 +217,15 @@ static NSString *const key_changes                  = @"changes";
 {
 	YDBLogAutoTrace();
 	
-	group_pagesMetadata_dict = nil;
-	pageKey_group_dict = nil;
+	YapDatabaseViewState *previousState = nil;
+	
+	BOOL shortcut = [view getState:&previousState forConnection:self];
+	if (shortcut && previousState) {
+		state = [previousState copy];
+	}
+	else {
+		state = nil;
+	}
 	
 	[mapCache removeAllObjects];
 	[pageCache removeAllObjects];
@@ -226,6 +236,19 @@ static NSString *const key_changes                  = @"changes";
 	reset = NO;
 	
 	[changes removeAllObjects];
+	
+	// Don't keep cached blocks in memory.
+	// These are loaded on-demand withing readwrite transactions.
+	groupingBlock = NULL;
+	groupingBlockType = 0;
+	sortingBlock = NULL;
+	sortingBlockType = 0;
+	
+	versionTag = nil;
+	
+	groupingBlockChanged = NO;
+	sortingBlockChanged = NO;
+	versionTagChanged = NO;
 }
 
 /**
@@ -233,6 +256,8 @@ static NSString *const key_changes                  = @"changes";
 **/
 - (void)postCommitCleanup
 {
+	YDBLogAutoTrace();
+	
 	// This code is best understood alongside the getExternalChangeset:internalChangeset: method (below).
 	
 	// Both dirtyKeys & dirtyPages are sent in the internalChangeset.
@@ -256,20 +281,37 @@ static NSString *const key_changes                  = @"changes";
 	[mutatedGroups removeAllObjects];
 	
 	reset = NO;
+	
+	// Don't keep cached blocks in memory.
+	// These are loaded on-demand withing readwrite transactions.
+	groupingBlock = NULL;
+	groupingBlockType = 0;
+	sortingBlock = NULL;
+	sortingBlockType = 0;
+	
+	versionTag = nil;
+	
+	groupingBlockChanged = NO;
+	sortingBlockChanged = NO;
+	versionTagChanged = NO;
 }
 
 - (NSArray *)internalChangesetKeys
 {
-	return @[ key_dirtyMaps,
-	          key_dirtyPages,
-	          key_reset,
-	          key_group_pagesMetadata_dict,
-	          key_pageKey_group_dict ];
+	return @[ changeset_key_state,
+	          changeset_key_dirtyMaps,
+	          changeset_key_dirtyPages,
+	          changeset_key_reset,
+	          changeset_key_groupingBlock,
+	          changeset_key_groupingBlockType,
+	          changeset_key_sortingBlock,
+	          changeset_key_sortingBlockType,
+	          changeset_key_versionTag ];
 }
 
 - (NSArray *)externalChangesetKeys
 {
-	return @[ key_changes ];
+	return @[ changeset_key_changes ];
 }
 
 - (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
@@ -286,39 +328,53 @@ static NSString *const key_changes                  = @"changes";
 	    [dirtyPages count] > 0 ||
 	    [dirtyLinks count] > 0 || reset)
 	{
-		hasDiskChanges = view->options.isPersistent;
 		internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
 		
 		if ([dirtyMaps count] > 0)
 		{
-			[internalChangeset setObject:dirtyMaps forKey:key_dirtyMaps];
+			internalChangeset[changeset_key_dirtyMaps] = dirtyMaps;
 		}
 		if ([dirtyPages count] > 0)
 		{
 			[self sanitizeDirtyPages];
-			[internalChangeset setObject:dirtyPages forKey:key_dirtyPages];
+			internalChangeset[changeset_key_dirtyPages] = dirtyPages;
 		}
 		
 		if (reset)
 		{
-			[internalChangeset setObject:@(reset) forKey:key_reset];
+			internalChangeset[changeset_key_reset] = @(reset);
 		}
 		
-		NSMutableDictionary *group_pagesMetadata_dict_copy;
-		NSMutableDictionary *pageKey_group_dict_copy;
+		internalChangeset[changeset_key_state] = [state copy]; // immutable copy
 		
-		group_pagesMetadata_dict_copy = [self group_pagesMetadata_dict_deepCopy:group_pagesMetadata_dict];
-		pageKey_group_dict_copy = [pageKey_group_dict mutableCopy];
+		hasDiskChanges = [self isPersistentView];
+	}
+	
+	if (groupingBlockChanged || sortingBlock || versionTagChanged)
+	{
+		if (internalChangeset == nil)
+			internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
 		
-		[internalChangeset setObject:group_pagesMetadata_dict_copy forKey:key_group_pagesMetadata_dict];
-		[internalChangeset setObject:pageKey_group_dict_copy       forKey:key_pageKey_group_dict];
+		if (groupingBlockChanged) {
+			internalChangeset[changeset_key_groupingBlock] = groupingBlock;
+			internalChangeset[changeset_key_groupingBlockType] = @(groupingBlockType);
+		}
+		if (sortingBlockChanged) {
+			internalChangeset[changeset_key_sortingBlock] = sortingBlock;
+			internalChangeset[changeset_key_sortingBlockType] = @(sortingBlockType);
+		}
+		if (versionTagChanged) {
+			internalChangeset[changeset_key_versionTag] = versionTag;
+			
+			hasDiskChanges = hasDiskChanges || [self isPersistentView];
+		}
 	}
 	
 	if ([changes count] > 0)
 	{
 		externalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
 		
-  		[externalChangeset setObject:[changes copy] forKey:key_changes];
+  		externalChangeset[changeset_key_changes] = [changes copy]; // immutable copy
 	}
 	
 	*internalChangesetPtr = internalChangeset;
@@ -330,26 +386,17 @@ static NSString *const key_changes                  = @"changes";
 {
 	YDBLogAutoTrace();
 	
-	NSMutableDictionary *changeset_group_pagesMetadata_dict = [changeset objectForKey:key_group_pagesMetadata_dict];
-	NSMutableDictionary *changeset_pageKey_group_dict       = [changeset objectForKey:key_pageKey_group_dict];
+	YapDatabaseViewState *changeset_state = changeset[changeset_key_state];
 	
-	NSDictionary *changeset_dirtyMaps = [changeset objectForKey:key_dirtyMaps];
-	NSDictionary *changeset_dirtyPages = [changeset objectForKey:key_dirtyPages];
+	NSDictionary *changeset_dirtyMaps  = changeset[changeset_key_dirtyMaps];
+	NSDictionary *changeset_dirtyPages = changeset[changeset_key_dirtyPages];
 	
-	BOOL changeset_reset = [[changeset objectForKey:key_reset] boolValue];
+	BOOL changeset_reset = [changeset[changeset_key_reset] boolValue];
 	
-	// Perform proper deep copies
-	//
-	// Note: we make copies from changeset_dirtyPages on demand below via:
-	// - [pageCache setObject:[page copy] forKey:pageKey];
+	// Store new state
 	
-	changeset_group_pagesMetadata_dict = [self group_pagesMetadata_dict_deepCopy:changeset_group_pagesMetadata_dict];
-	changeset_pageKey_group_dict = [changeset_pageKey_group_dict mutableCopy];
-	
-	// Store new top level objects
-	
-	group_pagesMetadata_dict = changeset_group_pagesMetadata_dict;
-	pageKey_group_dict = changeset_pageKey_group_dict;
+	if (changeset_state)
+		state = [changeset_state copy];
 	
 	// Update mapCache
 	
@@ -495,7 +542,7 @@ static NSString *const key_changes                  = @"changes";
 		NSDictionary *changeset =
 		    [[notification.userInfo objectForKey:YapDatabaseExtensionsKey] objectForKey:registeredName];
 		
-		NSArray *changeset_changes = [changeset objectForKey:key_changes];
+		NSArray *changeset_changes = [changeset objectForKey:changeset_key_changes];
 		
 		[all_changes addObjectsFromArray:changeset_changes];
 	}
@@ -604,7 +651,7 @@ static NSString *const key_changes                  = @"changes";
 		NSDictionary *changeset =
 		    [[notification.userInfo objectForKey:YapDatabaseExtensionsKey] objectForKey:registeredName];
 		
-		NSArray *changeset_changes = [changeset objectForKey:key_changes];
+		NSArray *changeset_changes = [changeset objectForKey:changeset_key_changes];
 		
 		if ([changeset_changes count] > 0)
 		{
@@ -615,15 +662,38 @@ static NSString *const key_changes                  = @"changes";
 	return NO;
 }
 
+/**
+ * This method provides a rough estimate of the size of the change-set.
+ * See the header file for more information.
+**/
+- (NSUInteger)numberOfRawChangesForNotifications:(NSArray *)notifications
+{
+	NSString *registeredName = self.view.registeredName;
+	NSUInteger count = 0;
+	
+	for (NSNotification *notification in notifications)
+	{
+		NSDictionary *changeset =
+		  [[notification.userInfo objectForKey:YapDatabaseExtensionsKey] objectForKey:registeredName];
+		
+		NSArray *changeset_changes = [changeset objectForKey:changeset_key_changes];
+		
+		count += [changeset_changes count];
+	}
+	
+	return count;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Statements - KeyTable
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (sqlite3_stmt *)mapTable_getPageKeyForRowidStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 	
-	if (mapTable_getPageKeyForRowidStatement == NULL)
+	sqlite3_stmt **statement = &mapTable_getPageKeyForRowidStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"SELECT \"pageKey\" FROM \"%@\" WHERE \"rowid\" = ?;", [view mapTableName]];
@@ -631,7 +701,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &mapTable_getPageKeyForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -640,14 +710,15 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return mapTable_getPageKeyForRowidStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)mapTable_setPageKeyForRowidStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
-	if (mapTable_setPageKeyForRowidStatement == NULL)
+	sqlite3_stmt **statement = &mapTable_setPageKeyForRowidStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"INSERT OR REPLACE INTO \"%@\" (\"rowid\", \"pageKey\") VALUES (?, ?);", [view mapTableName]];
@@ -655,7 +726,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &mapTable_setPageKeyForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -664,14 +735,15 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return mapTable_setPageKeyForRowidStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)mapTable_removeForRowidStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
-	if (mapTable_removeForRowidStatement == NULL)
+	sqlite3_stmt **statement = &mapTable_removeForRowidStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"DELETE FROM \"%@\" WHERE \"rowid\" = ?;", [view mapTableName]];
@@ -679,7 +751,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &mapTable_removeForRowidStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -688,14 +760,15 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return mapTable_removeForRowidStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)mapTable_removeAllStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
-	if (mapTable_removeAllStatement == NULL)
+	sqlite3_stmt **statement = &mapTable_removeAllStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"DELETE FROM \"%@\";", [view mapTableName]];
@@ -703,7 +776,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &mapTable_removeAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -712,7 +785,7 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return mapTable_removeAllStatement;
+	return *statement;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -721,9 +794,10 @@ static NSString *const key_changes                  = @"changes";
 
 - (sqlite3_stmt *)pageTable_getDataForPageKeyStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
-	if (pageTable_getDataForPageKeyStatement == NULL)
+	sqlite3_stmt **statement = &pageTable_getDataForPageKeyStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"SELECT \"data\" FROM \"%@\" WHERE \"pageKey\" = ?;", [view pageTableName]];
@@ -731,7 +805,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_getDataForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -740,14 +814,15 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return pageTable_getDataForPageKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)pageTable_insertForPageKeyStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
-	if (pageTable_insertForPageKeyStatement == NULL)
+	sqlite3_stmt **statement = &pageTable_insertForPageKeyStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 			@"INSERT INTO \"%@\""
@@ -757,7 +832,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_insertForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -766,14 +841,15 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return pageTable_insertForPageKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)pageTable_updateAllForPageKeyStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
-	if (pageTable_updateAllForPageKeyStatement == NULL)
+	sqlite3_stmt **statement = &pageTable_updateAllForPageKeyStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 			@"UPDATE \"%@\" SET \"prevPageKey\" = ?, \"count\" = ?, \"data\" = ? WHERE \"pageKey\" = ?;",
@@ -782,7 +858,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_updateAllForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -791,14 +867,15 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return pageTable_updateAllForPageKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)pageTable_updatePageForPageKeyStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
-	if (pageTable_updatePageForPageKeyStatement == NULL)
+	sqlite3_stmt **statement = &pageTable_updatePageForPageKeyStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 			@"UPDATE \"%@\" SET \"count\" = ?, \"data\" = ? WHERE \"pageKey\" = ?;", [view pageTableName]];
@@ -806,7 +883,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_updatePageForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -815,14 +892,15 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return pageTable_updatePageForPageKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)pageTable_updateLinkForPageKeyStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
-	if (pageTable_updateLinkForPageKeyStatement == NULL)
+	sqlite3_stmt **statement = &pageTable_updateLinkForPageKeyStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 			@"UPDATE \"%@\" SET \"prevPageKey\" = ? WHERE \"pageKey\" = ?;", [view pageTableName]];
@@ -830,7 +908,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_updateLinkForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -839,14 +917,15 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return pageTable_updateLinkForPageKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)pageTable_removeForPageKeyStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
-	if (pageTable_removeForPageKeyStatement == NULL)
+	sqlite3_stmt **statement = &pageTable_removeForPageKeyStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"DELETE FROM \"%@\" WHERE \"pageKey\" = ?;", [view pageTableName]];
@@ -854,7 +933,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_removeForPageKeyStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -863,14 +942,15 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return pageTable_removeForPageKeyStatement;
+	return *statement;
 }
 
 - (sqlite3_stmt *)pageTable_removeAllStatement
 {
-	NSAssert(view->options.isPersistent, @"In-memory view accessing sqlite");
+	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
 
-	if (pageTable_removeAllStatement == NULL)
+	sqlite3_stmt **statement = &pageTable_removeAllStatement;
+	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
 		    @"DELETE FROM \"%@\";", [view pageTableName]];
@@ -878,7 +958,7 @@ static NSString *const key_changes                  = @"changes";
 		sqlite3 *db = databaseConnection->db;
 		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
 		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, &pageTable_removeAllStatement, NULL);
+		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
@@ -887,7 +967,94 @@ static NSString *const key_changes                  = @"changes";
 		FreeYapDatabaseString(&stmt);
 	}
 	
-	return pageTable_removeAllStatement;
+	return *statement;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Internal
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)newGroupingBlock
+       groupingBlockType:(YapDatabaseViewBlockType)newGroupingBlockType
+            sortingBlock:(YapDatabaseViewSortingBlock)newSortingBlock
+        sortingBlockType:(YapDatabaseViewBlockType)newSortingBlockType
+              versionTag:(NSString *)newVersionTag
+{
+	groupingBlock        = newGroupingBlock;
+	groupingBlockType    = newGroupingBlockType;
+	groupingBlockChanged = YES;
+	
+	sortingBlock        = newSortingBlock;
+	sortingBlockType    = newSortingBlockType;
+	sortingBlockChanged = YES;
+	
+	versionTag        = newVersionTag;
+	versionTagChanged = YES;
+}
+
+- (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
+       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+            sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
+        sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr
+{
+	if (!groupingBlock || !sortingBlock)
+	{
+		// Fetch & Cache
+		
+		YapDatabaseViewGroupingBlock mostRecentGroupingBlock = NULL;
+		YapDatabaseViewSortingBlock  mostRecentSortingBlock  = NULL;
+		YapDatabaseViewBlockType mostRecentGroupingBlockType = 0;
+		YapDatabaseViewBlockType mostRecentSortingBlockType  = 0;
+		
+		BOOL needsGroupingBlock = (groupingBlock == NULL);
+		BOOL needsSortingBlock = (sortingBlock == NULL);
+		
+		[view getGroupingBlock:(needsGroupingBlock ? &mostRecentGroupingBlock : NULL)
+		     groupingBlockType:(needsGroupingBlock ? &mostRecentGroupingBlockType : NULL)
+		          sortingBlock:(needsSortingBlock ? &mostRecentSortingBlock : NULL)
+		      sortingBlockType:(needsSortingBlock ? &mostRecentSortingBlockType : NULL)];
+		
+		if (needsGroupingBlock) {
+			groupingBlock     = mostRecentGroupingBlock;
+			groupingBlockType = mostRecentGroupingBlockType;
+		}
+		if (needsSortingBlock) {
+			sortingBlock      = mostRecentSortingBlock;
+			sortingBlockType  = mostRecentSortingBlockType;
+		}
+	}
+	
+	if (groupingBlockPtr)     *groupingBlockPtr     = groupingBlock;
+	if (groupingBlockTypePtr) *groupingBlockTypePtr = groupingBlockType;
+	if (sortingBlockPtr)      *sortingBlockPtr      = sortingBlock;
+	if (sortingBlockTypePtr)  *sortingBlockTypePtr  = sortingBlockType;
+}
+
+- (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
+       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+{
+	[self getGroupingBlock:groupingBlockPtr
+	     groupingBlockType:groupingBlockTypePtr
+	          sortingBlock:NULL
+	      sortingBlockType:NULL];
+}
+
+- (void)getSortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
+       sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr
+{
+	[self getGroupingBlock:NULL
+	     groupingBlockType:NULL
+	          sortingBlock:sortingBlockPtr
+	      sortingBlockType:sortingBlockTypePtr];
+}
+
+- (void)getGroupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+            sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr
+{
+	[self getGroupingBlock:NULL
+	     groupingBlockType:groupingBlockTypePtr
+	          sortingBlock:NULL
+	      sortingBlockType:sortingBlockTypePtr];
 }
 
 @end

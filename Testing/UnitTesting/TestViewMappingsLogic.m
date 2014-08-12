@@ -2,6 +2,9 @@
 
 #import "YapDatabaseViewChangePrivate.h"
 #import "YapDatabaseViewMappingsPrivate.h"
+#import "YapCollectionKey.h"
+
+#define YCK(collection, key) YapCollectionKeyCreate(collection, key)
 
 YapDatabaseViewSectionChange* SectionOp(NSArray*sChanges, NSUInteger index){
 	
@@ -56,7 +59,7 @@ static NSMutableArray *changes;
 #pragma mark Fixed Range Beginning: Insert
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_inserting_row_inside_range_deletes_the_row_previously_at_the_end_of_the_range
+- (void)test_fixedRange_beginning_1A
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -70,7 +73,7 @@ static NSMutableArray *changes;
 	
 	// Insert item in the middle of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:2]];
 	
 	[mappings updateWithCounts:@{ @"":@(41) }];
 	
@@ -97,7 +100,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 19, @"");
 }
 
-- (void)test_insert_row_at_beginning_deletes_the_row_previously_at_the_end_of_the_range
+- (void)test_fixedRange_beginning_1B
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -111,7 +114,7 @@ static NSMutableArray *changes;
 
 	// Insert item at the beginning of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(41) }];
 	
@@ -138,7 +141,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 19, @"");
 }
 
-- (void)test_insert_row_at_end_of_range_cause_insert_and_delete_of_row
+- (void)test_fixedRange_beginning_1C
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -152,7 +155,7 @@ static NSMutableArray *changes;
 	
 	// Insert item at the end of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:19]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:19]];
 	
 	[mappings updateWithCounts:@{ @"":@(41) }];
 	
@@ -179,7 +182,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 19, @"");
 }
 
-- (void)test_insert_row_outside_of_the_range_causes_no_row_changes
+- (void)test_fixedRange_beginning_1D
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -193,7 +196,7 @@ static NSMutableArray *changes;
 	
 	// Insert item outside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:20]];
 	
 	[mappings updateWithCounts:@{ @"":@(41) }];
 	
@@ -218,7 +221,7 @@ static NSMutableArray *changes;
 #pragma mark Fixed Range Beginning: Delete
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_delete_row_in_range_adds_a_new_row_at_the_end
+- (void)test_fixedRange_beginning_2A
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -232,7 +235,7 @@ static NSMutableArray *changes;
 	
 	// Delete item in the middle of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:2]];
 	
 	[mappings updateWithCounts:@{ @"":@(39) }];
 	
@@ -259,7 +262,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 19, @"");
 }
 
-- (void)test_delete_row_at_beginning_of_range_adds_a_new_row_at_the_end_of_the_range
+- (void)test_fixedRange_beginning_2B
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -273,7 +276,7 @@ static NSMutableArray *changes;
 	
 	// Delete item in the beginning of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(39) }];
 	
@@ -300,7 +303,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 19, @"");
 }
 
-- (void)test_deleting_row_at_end_of_range_causes_the_last_item_to_update
+- (void)test_fixedRange_beginning_2C
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -314,7 +317,7 @@ static NSMutableArray *changes;
 	
 	// Delete item at the end of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:19]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:19]];
 	
 	[mappings updateWithCounts:@{ @"":@(39) }];
 	
@@ -341,7 +344,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 19, @"");
 }
 
-- (void)test_deleting_row_outside_of_range_causes_no_row_changes
+- (void)test_fixedRange_beginning_2D
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -355,7 +358,7 @@ static NSMutableArray *changes;
 	
 	// Delete item outside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:20]];
 	
 	[mappings updateWithCounts:@{ @"":@(39) }];
 	
@@ -380,7 +383,7 @@ static NSMutableArray *changes;
 #pragma mark Fixed Range Beginning: Insert, Insert, ...
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_insert_twice_at_same_position_in_range_bumps_two_rows_off_end_of_range
+- (void)test_fixedRange_beginning_3A
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -394,8 +397,8 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items inside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:10]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:10]];
 	
 	[mappings updateWithCounts:@{ @"":@(42) }];
 	
@@ -430,7 +433,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 3).originalIndex == 18, @"");
 }
 
-- (void)test_insert_twice_at_beginning_of_range_bumps_two_rows_off_end_of_range
+- (void)test_fixedRange_beginning_3B
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -444,8 +447,8 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items at the beginning of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(42) }];
 	
@@ -480,7 +483,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 3).originalIndex == 18, @"");
 }
 
-- (void)test_insert_twice_at_end_of_range_bumps_two_rows_off_end_of_range
+- (void)test_fixedRange_beginning_3C
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -494,8 +497,8 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items at the end of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:18]];
 	
 	[mappings updateWithCounts:@{ @"":@(42) }];
 	
@@ -530,7 +533,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 3).originalIndex == 18, @"");
 }
 
-- (void)test_inserting_four_times_at_end_of_range_bumps_four_items_two_items_off_end_of_range
+- (void)test_fixedRange_beginning_3D
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -544,10 +547,10 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items at the end of the range, some of them end out outside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key3" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key4" inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key3") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key4") inGroup:@"" atIndex:18]];
 	
 	[mappings updateWithCounts:@{ @"":@(44) }];
 	
@@ -586,7 +589,7 @@ static NSMutableArray *changes;
 #pragma mark Fixed Range Beginning: Delete, Delete, ...
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_deleting_two_rows_in_middle_of_range_adds_two_rows_to_the_end
+- (void)test_fixedRange_beginning_4A
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -602,8 +605,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items inside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:10]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key2" inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:10]];
 	
 	[mappings updateWithCounts:@{ @"":@(38) }];
 	
@@ -638,7 +641,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 3).finalIndex == 18, @"");
 }
 
-- (void)test_deleting_two_rows_at_beginning_of_range_adds_two_rows_to_the_end
+- (void)test_fixedRange_beginning_4B
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -652,8 +655,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items at the beginning of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key2" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(38) }];
 	
@@ -690,7 +693,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 3).finalIndex == 18, @"");
 }
 
-- (void)test_deleteing_two_rows_at_end_of_range_adds_two_rows_to_the_end
+- (void)test_fixedRange_beginning_4C
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -704,8 +707,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items at the end of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:19]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key2" inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:19]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:18]];
 	
 	[mappings updateWithCounts:@{ @"":@(38) }];
 	
@@ -742,7 +745,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 3).finalIndex == 18, @"");
 }
 
-- (void)test_deleting_the_same_row_four_times_pulls_rows_up_and_deletes_them
+- (void)test_fixedRange_beginning_4D
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -758,10 +761,10 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items at the end of the range, and some outside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key2" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key3" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key4" inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key3") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key4") inGroup:@"" atIndex:18]];
 	
 	[mappings updateWithCounts:@{ @"":@(36) }];
 	
@@ -800,7 +803,7 @@ static NSMutableArray *changes;
 #pragma mark Fixed Range Beginning: Changing Length
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_adding_two_rows_when_range_contents_are_empty_results_in_count_of_two_rows
+- (void)test_fixedRange_beginning_5A
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -816,8 +819,8 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items into an empty view
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:1]];
 	
 	[mappings updateWithCounts:@{ @"":@(2) }];
 	
@@ -846,7 +849,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 1, @"");
 }
 
-- (void)test_adding_two_rows_when_range_is_partially_full_increases_count_by_two
+- (void)test_fixedRange_beginning_5B
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -862,8 +865,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items inside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:1]];
 	
 	[mappings updateWithCounts:@{ @"":@(12) }];
 	
@@ -892,7 +895,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 1, @"");
 }
 
-- (void)test_adding_two_rows_when_range_only_has_nineteen_returns_correct_count_of_twenty
+- (void)test_fixedRange_beginning_5C
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -908,8 +911,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items inside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:1]];
 	
 	[mappings updateWithCounts:@{ @"":@(21) }];
 	
@@ -946,7 +949,7 @@ static NSMutableArray *changes;
 #pragma mark Fixed Range Beginning: Reset
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_resetting_group_results_in_count_zero_with_corresponding_delete_changes_for_all_rows
+- (void)test_fixedRange_beginning_6A
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -991,7 +994,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
 }
 
-- (void)test_resetting_group_when_group_has_more_rows_than_range_only_results_in_delete_actions_for_rows_in_range
+- (void)test_fixedRange_beginning_6B
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:2 offset:0 from:YapDatabaseViewBeginning];
@@ -1043,7 +1046,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
 }
 
-- (void)test_reset_group_and_add_row_results_in_delete_actions_for_original_rows_and_insert_action_for_newly_added_row
+- (void)test_fixedRange_beginning_6C
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -1060,7 +1063,7 @@ static NSMutableArray *changes;
 	// Delete multiple items inside the range
 	
 	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(1) }];
 	
@@ -1093,7 +1096,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 2).finalIndex == 0, @"");
 }
 
-- (void)test_insert_change_before_reset_with_insert_after_doesnt_return_delete_action_for_pre_reset_insert
+- (void)test_fixedRange_beginning_6D
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
     [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
@@ -1109,9 +1112,9 @@ static NSMutableArray *changes;
 	
 	// Test multiple changes, forcing some change-consolidation processing
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(1) }];
 	
@@ -1146,6 +1149,7 @@ static NSMutableArray *changes;
 
 @end
 
+
 #pragma mark -
 #pragma mark Fixed Range End
 
@@ -1158,7 +1162,7 @@ static NSMutableArray *changes;
 #pragma mark Fixed Range End: Insert
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_inserting_row_inside_range_deletes_the_row_previously_at_the_beginning_of_the_range
+- (void)test_fixedRange_end_1A
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewEnd];
@@ -1173,7 +1177,7 @@ static NSMutableArray *changes;
 	// Changes:
 	// Insert item in the middle of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:30]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:30]];
 	
 	// After
 	[mappings updateWithCounts:@{ @"":@(41) }];         // indexes=[0-40], range=[21-40]
@@ -1201,7 +1205,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
 }
 
-- (void)test_insert_row_at_end_deletes_row_at_beginning_and_adds_row_at_end
+- (void)test_fixedRange_end_1B
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewEnd];
@@ -1215,7 +1219,7 @@ static NSMutableArray *changes;
 	
 	// Insert item at the beginning of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:40]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:40]];
 	
 	[mappings updateWithCounts:@{ @"":@(41) }];         // full=[0-40], range=[21-40]
 	
@@ -1242,7 +1246,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
 }
 
-- (void)test_inserting_at_beginning_of_range_inserts_row_at_the_beginning_and_deletes_the_old_row_at_the_beginning
+- (void)test_fixedRange_end_1C
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewEnd];
@@ -1256,7 +1260,7 @@ static NSMutableArray *changes;
 	
 	// Insert item at the end of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:21]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:21]];
 	
 	[mappings updateWithCounts:@{ @"":@(41) }];         // full=[0-40], range=[21-40]
 	
@@ -1283,7 +1287,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
 }
 
-- (void)test_inserting_row_outside_of_range_causes_no_change
+- (void)test_fixedRange_end_1D
 {
 	YapDatabaseViewRangeOptions *rangeOpts =
 	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewEnd];
@@ -1297,7 +1301,7 @@ static NSMutableArray *changes;
 	
 	// Insert item outside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:10]];
 	
 	[mappings updateWithCounts:@{ @"":@(41) }];         // full=[0-40], range=[21-40]
 	
@@ -1336,7 +1340,7 @@ static NSMutableArray *changes;
 	
 	// Delete item in the middle of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:30]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:30]];
 	
 	[mappings updateWithCounts:@{ @"":@(39) }];         // full=[0-38], range=[19-38]
 	
@@ -1377,7 +1381,7 @@ static NSMutableArray *changes;
 	
 	// Delete item in the beginning of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:20]];
 	
 	[mappings updateWithCounts:@{ @"":@(39) }];         // full=[0-38], range=[19-38]
 	
@@ -1418,7 +1422,7 @@ static NSMutableArray *changes;
 	
 	// Delete item at the end of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:39]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:39]];
 	
 	[mappings updateWithCounts:@{ @"":@(39) }];         // full=[0-38], range=[19-38]
 	
@@ -1459,7 +1463,7 @@ static NSMutableArray *changes;
 	
 	// Delete item outside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:10]];
 	
 	[mappings updateWithCounts:@{ @"":@(39) }];         // full=[0-38], range=[19-38]
 	
@@ -1498,8 +1502,8 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items inside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:30]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:31]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:30]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:31]];
 
 	[mappings updateWithCounts:@{ @"":@(42) }];         // full=[0-41], range=[22-41]
 	
@@ -1548,8 +1552,8 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items at the beginning of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:22]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:23]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:22]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:23]];
 	
 	[mappings updateWithCounts:@{ @"":@(42) }];          // full=[0-41], range=[22-41]
 	
@@ -1598,8 +1602,8 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items at the end of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:40]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:41]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:40]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:41]];
 	
 	[mappings updateWithCounts:@{ @"":@(42) }];         // full=[0-41], range=[22-41]
 	
@@ -1648,10 +1652,10 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items at the end of the range, some of them end out outside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:22]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:23]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key3" inGroup:@"" atIndex:24]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key4" inGroup:@"" atIndex:25]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:22]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:23]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key3") inGroup:@"" atIndex:24]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key4") inGroup:@"" atIndex:25]];
 	
 	[mappings updateWithCounts:@{ @"":@(44) }];         // full=[0-43], range=[24-43]
 	
@@ -1706,8 +1710,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items inside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:30]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key2" inGroup:@"" atIndex:30]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:30]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:30]];
 	
 	[mappings updateWithCounts:@{ @"":@(38) }];         // full=[0-37], range=[18-37]
 	
@@ -1758,8 +1762,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items at the beginning of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:21]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key2" inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:21]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:20]];
 	
 	[mappings updateWithCounts:@{ @"":@(38) }];         // full=[0-37], range=[18-37]
 	
@@ -1810,8 +1814,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items at the end of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:39]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key2" inGroup:@"" atIndex:38]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:39]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:38]];
 	
 	[mappings updateWithCounts:@{ @"":@(38) }];         // full=[0-37], range=[18-37]
 	
@@ -1862,10 +1866,10 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items at the beginning of the range, and some outside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key2" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key3" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key4" inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key3") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key4") inGroup:@"" atIndex:18]];
 	
 	[mappings updateWithCounts:@{ @"":@(36) }];         // full=[0-37], range=[18-37]
 	
@@ -1919,8 +1923,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items inside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:1]];
 	
 	[mappings updateWithCounts:@{ @"":@(2) }];
 	
@@ -1965,8 +1969,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items inside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:1]];
 	
 	[mappings updateWithCounts:@{ @"":@(12) }];
 	
@@ -2011,8 +2015,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items inside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:1]];
 	
 	[mappings updateWithCounts:@{ @"":@(21) }];
 	
@@ -2155,7 +2159,7 @@ static NSMutableArray *changes;
 	// Delete multiple items inside the range
 	
 	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(1) }];
 	
@@ -2204,9 +2208,9 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items inside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(1) }];
 	
@@ -2241,15 +2245,146 @@ static NSMutableArray *changes;
 
 @end
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+#pragma mark Fixed Range: Multiple Groups
+
+@interface TestViewMappingsFixedRangeMulti : TestViewMappingsBase
+@end
+
+@implementation TestViewMappingsFixedRangeMulti
+
+/**
+ * Addressing issue #89
+ * https://github.com/yaptv/YapDatabase/issues/89
+ * 
+ * Infinite loop when using ranges on multiple groups.
+**/
+- (void)test_fixedRange_multi_1A
+{
+	YapDatabaseViewRangeOptions *rangeOpts =
+	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewBeginning];
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A",@"B"] view:@"view"];
+	
+	[mappings updateWithCounts:@{ @"A":@(40), @"B":@(40) }];
+	[mappings setRangeOptions:rangeOpts forGroup:@"A"];
+	[mappings setRangeOptions:rangeOpts forGroup:@"B"];
+	
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	// Insert item in the middle of the range
+	
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"A", @"key") inGroup:@"A" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"B", @"key") inGroup:@"B" atIndex:2]];
+	
+	[mappings updateWithCounts:@{ @"A":@(41), @"B":@(41) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@"A"] == 20, @"");
+	XCTAssertTrue([mappings numberOfItemsInGroup:@"B"] == 20, @"");
+	
+	XCTAssertTrue([sectionChanges count] == 0, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).finalSection == 0, @""); // A
+	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalSection == 1, @""); // B
+	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 2).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 2).originalSection == 0, // A
+	              @"Expected 0, got %lu", (unsigned long)(RowOp(rowChanges, 2).originalSection));
+	XCTAssertTrue(RowOp(rowChanges, 2).originalIndex == 19, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 3).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 3).originalSection == 1, // B
+	              @"Expected 1, got %lu", (unsigned long)(RowOp(rowChanges, 3).originalSection));
+	XCTAssertTrue(RowOp(rowChanges, 3).originalIndex == 19, @"");
+}
+
+- (void)test_fixedRange_multi_2A
+{
+	YapDatabaseViewRangeOptions *rangeOpts =
+	    [YapDatabaseViewRangeOptions fixedRangeWithLength:20 offset:0 from:YapDatabaseViewEnd];
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A",@"B"] view:@"view"];
+	
+	[mappings setRangeOptions:rangeOpts forGroup:@"A"];
+	[mappings setRangeOptions:rangeOpts forGroup:@"B"];
+	[mappings updateWithCounts:@{ @"A":@(40), @"B":@(40) }];         // full=[0-39], range=[20-39]
+	
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	// Changes:
+	// Insert item in the middle of the range
+	
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"A", @"key") inGroup:@"A" atIndex:30]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"B", @"key") inGroup:@"B" atIndex:30]];
+	
+	// After
+	[mappings updateWithCounts:@{ @"A":@(41), @"B":@(41) }];         // indexes=[0-40], range=[21-40]
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@"A"] == 20, @"");
+	XCTAssertTrue([mappings numberOfItemsInGroup:@"B"] == 20, @"");
+	
+	XCTAssertTrue([sectionChanges count] == 0, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeInsert, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).finalSection == 0, @""); // A
+	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 9, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalSection == 1, @""); // B
+	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 9, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 2).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 2).originalSection == 0, // A
+	              @"Expected 0, got %lu", (unsigned long)(RowOp(rowChanges, 2).originalSection));
+	XCTAssertTrue(RowOp(rowChanges, 2).originalIndex == 0, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 3).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 3).originalSection == 1, // B
+	              @"Expected 1, got %lu", (unsigned long)(RowOp(rowChanges, 3).originalSection));
+	XCTAssertTrue(RowOp(rowChanges, 3).originalIndex == 0, @"");
+}
+
+@end
+
 #pragma mark -
 #pragma mark Flexible Range
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface TestViewMappingsFlexibleRange : TestViewMappingsBase
 @end
 
 @implementation TestViewMappingsFlexibleRange
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Flexible Range: Insert
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2270,7 +2405,7 @@ static NSMutableArray *changes;
 	
 	// Insert item in the middle of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:2]];
 	
 	[mappings updateWithCounts:@{ @"":@(41) }];
 	
@@ -2311,7 +2446,7 @@ static NSMutableArray *changes;
 	
 	// Insert item at the beginning of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(41) }];
 	
@@ -2352,7 +2487,7 @@ static NSMutableArray *changes;
 	
 	// Insert item at the end of the range (still inside)
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:19]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:19]];
 	
 	[mappings updateWithCounts:@{ @"":@(41) }];
 	
@@ -2393,7 +2528,7 @@ static NSMutableArray *changes;
 	
 	// Insert item at the end of the range (just outside)
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:20]];
 	
 	[mappings updateWithCounts:@{ @"":@(41) }];
 	
@@ -2430,7 +2565,7 @@ static NSMutableArray *changes;
 	
 	// Insert item in the middle of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:30]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:30]];
 	
 	[mappings updateWithCounts:@{ @"":@(41) }];         // full=[0-40], range=[20-40]
 	
@@ -2471,7 +2606,7 @@ static NSMutableArray *changes;
 	
 	// Insert item at the beginning of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:40]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:40]];
 	
 	[mappings updateWithCounts:@{ @"":@(41) }];         // full=[0-40], range=[20-40]
 	
@@ -2512,7 +2647,7 @@ static NSMutableArray *changes;
 	
 	// Insert item at the end of the range (just inside)
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:21]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:21]];
 	
 	[mappings updateWithCounts:@{ @"":@(41) }];         // full=[0-40], range=[20-40]
 	
@@ -2553,7 +2688,7 @@ static NSMutableArray *changes;
 	
 	// Insert item at the end of the range (just outside)
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:20]];
 	
 	[mappings updateWithCounts:@{ @"":@(41) }];         // full=[0-40], range=[21-40]
 	
@@ -2594,7 +2729,7 @@ static NSMutableArray *changes;
 	
 	// Delete item in the middle of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:2]];
 	
 	[mappings updateWithCounts:@{ @"":@(39) }];
 	
@@ -2635,7 +2770,7 @@ static NSMutableArray *changes;
 	
 	// Delete item in the beginning of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(39) }];
 	
@@ -2676,7 +2811,7 @@ static NSMutableArray *changes;
 	
 	// Delete item at the end of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:19]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:19]];
 	
 	[mappings updateWithCounts:@{ @"":@(39) }];
 	
@@ -2717,7 +2852,7 @@ static NSMutableArray *changes;
 	
 	// Delete item outside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:20]];
 	
 	[mappings updateWithCounts:@{ @"":@(39) }];
 	
@@ -2754,7 +2889,7 @@ static NSMutableArray *changes;
 	
 	// Delete item in the middle of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:22]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:22]];
 	
 	[mappings updateWithCounts:@{ @"":@(39) }];         // full=[0-38], range=[20-38]
 	
@@ -2795,7 +2930,7 @@ static NSMutableArray *changes;
 	
 	// Delete item in the beginning of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:39]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:39]];
 	
 	[mappings updateWithCounts:@{ @"":@(39) }];         // full=[0-38], range=[20-38]
 	
@@ -2836,7 +2971,7 @@ static NSMutableArray *changes;
 	
 	// Delete item at the end of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:20]];
 	
 	[mappings updateWithCounts:@{ @"":@(39) }];         // full=[0-38], range=[20-38]
 	
@@ -2877,7 +3012,7 @@ static NSMutableArray *changes;
 	
 	// Delete item outside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:19]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:19]];
 	
 	[mappings updateWithCounts:@{ @"":@(39) }];        // full=[0-39], range=[19-38]
 	
@@ -2918,8 +3053,8 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items inside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:10]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:10]];
 	
 	[mappings updateWithCounts:@{ @"":@(42) }];
 	
@@ -2964,8 +3099,8 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items at the beginning of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(42) }];
 	
@@ -3010,8 +3145,8 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items at the end of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:18]];
 	
 	[mappings updateWithCounts:@{ @"":@(42) }];
 	
@@ -3056,10 +3191,10 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items at the end of the range, some of them end out outside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:20]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:20]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key3" inGroup:@"" atIndex:19]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key4" inGroup:@"" atIndex:19]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key3") inGroup:@"" atIndex:19]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key4") inGroup:@"" atIndex:19]];
 	
 	[mappings updateWithCounts:@{ @"":@(44) }];
 	
@@ -3104,8 +3239,8 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items inside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:30]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:31]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:30]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:31]];
 
 	[mappings updateWithCounts:@{ @"":@(42) }];         // full=[0-41], range=[20-41]
 	
@@ -3148,8 +3283,8 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items at the beginning of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:40]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:41]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:40]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:41]];
 	
 	[mappings updateWithCounts:@{ @"":@(42) }];          // full=[0-41], range=[20-41]
 	
@@ -3192,8 +3327,8 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items at the end of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:21]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:21]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:21]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:21]];
 	
 	[mappings updateWithCounts:@{ @"":@(42) }];         // full=[0-41], range=[20-41]
 	
@@ -3236,10 +3371,10 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items at the end of the range, some of them end out outside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:20]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:20]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key3" inGroup:@"" atIndex:23]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key4" inGroup:@"" atIndex:23]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key3") inGroup:@"" atIndex:23]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key4") inGroup:@"" atIndex:23]];
 	
 	[mappings updateWithCounts:@{ @"":@(44) }];         // full=[0-43], range=[22-43]
 	
@@ -3288,8 +3423,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items inside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:10]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key2" inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:10]];
 	
 	[mappings updateWithCounts:@{ @"":@(38) }];
 	
@@ -3334,8 +3469,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items at the beginning of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key2" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(38) }];
 	
@@ -3380,8 +3515,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items at the end of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:19]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key2" inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:19]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:18]];
 	
 	[mappings updateWithCounts:@{ @"":@(38) }];
 	
@@ -3424,10 +3559,10 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items at the end of the range, and some outside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key2" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key3" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key4" inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key3") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key4") inGroup:@"" atIndex:18]];
 	
 	[mappings updateWithCounts:@{ @"":@(36) }];
 	
@@ -3472,8 +3607,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items inside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:30]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key2" inGroup:@"" atIndex:30]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:30]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:30]];
 	
 	[mappings updateWithCounts:@{ @"":@(38) }];         // full=[0-37], range=[20-37]
 	
@@ -3518,8 +3653,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items at the beginning of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:39]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key2" inGroup:@"" atIndex:38]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:39]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:38]];
 	
 	[mappings updateWithCounts:@{ @"":@(38) }];         // full=[0-37], range=[20-37]
 	
@@ -3564,8 +3699,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items at the end of the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:20]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key2" inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:20]];
 	
 	[mappings updateWithCounts:@{ @"":@(38) }];         // full=[0-37], range=[20-37]
 	
@@ -3610,10 +3745,10 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items at the beginning of the range, and some outside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key2" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key3" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key4" inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key3") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key4") inGroup:@"" atIndex:18]];
 	
 	[mappings updateWithCounts:@{ @"":@(36) }];         // full=[0-37], range=[16-37]
 	
@@ -3660,8 +3795,8 @@ static NSMutableArray *changes;
 	
 	// Move item within range (19 -> 0)
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:19]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:19]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(20) }];
 	
@@ -3702,8 +3837,8 @@ static NSMutableArray *changes;
 	
 	// Move item within range (18 -> 1)
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:1]];
 	
 	[mappings updateWithCounts:@{ @"":@(20) }];
 	
@@ -3744,8 +3879,8 @@ static NSMutableArray *changes;
 	
 	// Move item outside range (0 -> 24)
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:24]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:24]];
 	
 	[mappings updateWithCounts:@{ @"":@(25) }];
 	
@@ -3784,8 +3919,8 @@ static NSMutableArray *changes;
 	
 	// Move item into range (24 -> 0)
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:24]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:24]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(25) }];
 	
@@ -3826,8 +3961,8 @@ static NSMutableArray *changes;
 	
 	// Move item within range (0 -> 19)
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:19]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:19]];
 
 	[mappings updateWithCounts:@{ @"":@(20) }];
 	
@@ -3870,8 +4005,8 @@ static NSMutableArray *changes;
 	
 	// Move item within range (1 -> 18)
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:1]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:18]];
 
 	[mappings updateWithCounts:@{ @"":@(20) }];
 	
@@ -3912,8 +4047,8 @@ static NSMutableArray *changes;
 	
 	// Move item outside range (24 -> 0)
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:24]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:24]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(25) }];
 	
@@ -3952,8 +4087,8 @@ static NSMutableArray *changes;
 	
 	// Move item into range (0 -> 24)
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:24]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:24]];
 	
 	[mappings updateWithCounts:@{ @"":@(25) }];
 	
@@ -3998,8 +4133,8 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items to an empty view
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:1]];
 	
 	[mappings updateWithCounts:@{ @"":@(2) }];
 	
@@ -4044,8 +4179,8 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items into a small view
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:10]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(12) }];
 	
@@ -4086,8 +4221,8 @@ static NSMutableArray *changes;
 	
 	// Insert multiple items into a view to grow the length
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:20]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(21) }];
 	
@@ -4128,8 +4263,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items inside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:1]];
 	
 	[mappings updateWithCounts:@{ @"":@(2) }];
 	
@@ -4174,8 +4309,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items inside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:11]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:11]];
 	
 	[mappings updateWithCounts:@{ @"":@(12) }];
 	
@@ -4216,8 +4351,8 @@ static NSMutableArray *changes;
 	
 	// Delete multiple items inside the range
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:20]];
 	
 	[mappings updateWithCounts:@{ @"":@(21) }];
 	
@@ -4308,7 +4443,7 @@ static NSMutableArray *changes;
 	// Delete all from the view, then add one
 	
 	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(1) }];
 	
@@ -4357,9 +4492,9 @@ static NSMutableArray *changes;
 	
 	// Delete all from the view (with other operations beforehand), and then add one
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(1) }];
 	
@@ -4454,7 +4589,7 @@ static NSMutableArray *changes;
 	// Delete all from the view, then add one
 	
 	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(1) }];
 	
@@ -4503,9 +4638,9 @@ static NSMutableArray *changes;
 	
 	// Delete all from the view (with other operations beforehand), and then add one
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(1) }];
 	
@@ -4559,9 +4694,9 @@ static NSMutableArray *changes;
 	
 	// Inset enough items to exceed max length
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key0" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(11) }];
 	
@@ -4615,8 +4750,8 @@ static NSMutableArray *changes;
 	
 	// Delete enough items to drop below min length
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key0" inGroup:@"" atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(8) }];
 	
@@ -4668,9 +4803,9 @@ static NSMutableArray *changes;
 	
 	// Delete enough items to drop below min length
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key0" inGroup:@"" atIndex:1]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:1]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key2" inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:1]];
 	
 	[mappings updateWithCounts:@{ @"":@(17) }];
 	
@@ -4731,9 +4866,9 @@ static NSMutableArray *changes;
 	
 	// Delete all from the view (with other operations beforehand), and then add one
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key2" inGroup:@"" atIndex:8]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:9]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key0" inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:8]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:9]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:10]];
 	
 	[mappings updateWithCounts:@{ @"":@(11) }];
 	
@@ -4787,8 +4922,8 @@ static NSMutableArray *changes;
 	
 	// Delete enough items to drop below min length
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key0" inGroup:@"" atIndex:9]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:8]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:9]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:8]];
 	
 	[mappings updateWithCounts:@{ @"":@(8) }];         // full=[0-7], range=[3-7]
 	
@@ -4840,9 +4975,9 @@ static NSMutableArray *changes;
 	
 	// Delete enough items to drop below min length
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key0" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:17]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key2" inGroup:@"" atIndex:16]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:17]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:16]];
 	
 	[mappings updateWithCounts:@{ @"":@(17) }];
 	
@@ -4911,7 +5046,7 @@ static NSMutableArray *changes;
 	// Delete an item.
 	// Make sure there is a dependency change.
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key0" inGroup:@"" atIndex:17]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:17]];
 	
 	[mappings updateWithCounts:@{ @"":@(19) }];
 	
@@ -4953,8 +5088,8 @@ static NSMutableArray *changes;
 	// Delete multiple items right next to each other.
 	// Make sure there is only one dependency change.
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key0" inGroup:@"" atIndex:18]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:18]];
 	
 	[mappings updateWithCounts:@{ @"":@(18) }];
 	
@@ -4994,10 +5129,12 @@ static NSMutableArray *changes;
 	// Delete an item.
 	// Update the dependency change, and check for proper changes flags.
 	
-	int flags = YapDatabaseViewChangedObject;
+	YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key0" inGroup:@"" atIndex:10]];
-	[changes addObject:[YapDatabaseViewRowChange updateKey:@"key1" changes:flags inGroup:@"" atIndex:10]];
+	[changes addObject:
+	  [YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:10]];
+	[changes addObject:
+	  [YapDatabaseViewRowChange updateCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:10 withChanges:flags]];
 	
 	[mappings updateWithCounts:@{ @"":@(19) }];
 	
@@ -5047,7 +5184,7 @@ static NSMutableArray *changes;
 	// Insert an item in the middle.
 	// Check for proper dependency change.
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key0" inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:10]];
 	
 	[mappings updateWithCounts:@{ @"":@(21) }];
 	
@@ -5092,7 +5229,7 @@ static NSMutableArray *changes;
 	// Insert item at the very end.
 	// There shouldn't be any dependency related changes.
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key0" inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:20]];
 	
 	[mappings updateWithCounts:@{ @"":@(21) }];
 	
@@ -5128,7 +5265,7 @@ static NSMutableArray *changes;
 	// Insert item at the very end.
 	// Make sure there is a dependency change.
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key0" inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:20]];
 	
 	[mappings updateWithCounts:@{ @"":@(21) }];
 	
@@ -5173,7 +5310,7 @@ static NSMutableArray *changes;
 	// Insert item at the very beginning.
 	// There shouldn't be a dependency change.
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key0" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(21) }];
 	
@@ -5208,9 +5345,9 @@ static NSMutableArray *changes;
 	
 	// Try hard to mess up the algorithm...
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key0" inGroup:@"" atIndex:10]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key1" inGroup:@"" atIndex:10]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"key1" inGroup:@"" atIndex:14]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:14]];
 	
 	[mappings updateWithCounts:@{ @"":@(19) }];
 	
@@ -5255,6 +5392,98 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 3).changes == flags, @"");
 }
 
+- (void)test_dependencies_9
+{
+	YapDatabaseViewMappings *mappings, *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	[mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(3) }];
+	originalMappings = [mappings copy];
+	
+	// Try hard to mess up the algorithm...
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:2]];
+	
+	[mappings updateWithCounts:@{ @"":@(3) }];
+	
+	// Fetch changeset
+	
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:NULL
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	XCTAssertTrue([rowChanges count] == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeMove, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 2, @"");
+	
+	int flags = YapDatabaseViewChangedDependency;
+	
+	XCTAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeUpdate, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 1, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).changes == flags, @"");
+}
+
+- (void)test_dependencies_10
+{
+	YapDatabaseViewMappings *mappings, *originalMappings;
+	
+	mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	
+	YapDatabaseViewRangeOptions *rangeOptions =
+	  [YapDatabaseViewRangeOptions flexibleRangeWithLength:50 offset:0 from:YapDatabaseViewEnd];
+	rangeOptions.maxLength = 150;
+	[mappings setRangeOptions:rangeOptions forGroup:@""];
+	
+	[mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(3) }];
+	originalMappings = [mappings copy];
+	
+	// Try hard to mess up the algorithm...
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:2]];
+	
+	[mappings updateWithCounts:@{ @"":@(3) }];
+	
+	// Fetch changeset
+	
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:NULL
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	XCTAssertTrue([rowChanges count] == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeMove, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 2, @"");
+	
+	int flags = YapDatabaseViewChangedDependency;
+	
+	XCTAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeUpdate, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 1, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).changes == flags, @"");
+}
+
 @end
 
 
@@ -5280,7 +5509,7 @@ static NSMutableArray *changes;
 	
 	// Delete an item.
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key5" inGroup:@"" atIndex:5]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key5") inGroup:@"" atIndex:5]];
 	
 	[mappings updateWithCounts:@{ @"":@(5) }];
 	
@@ -5315,7 +5544,7 @@ static NSMutableArray *changes;
 	
 	// Delete an item.
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"key5" inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key5") inGroup:@"" atIndex:0]];
 	
 	[mappings updateWithCounts:@{ @"":@(4) }];
 	
@@ -5903,7 +6132,8 @@ static NSMutableArray *changes;
 	//
 	// This should cause all the groups to collapse (auto consolidate)
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"section0,row0" inGroup:group0 atIndex:0]];
+	[changes addObject:
+	  [YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"section0,row0") inGroup:group0 atIndex:0]];
 	
 	finalMappings = [originalMappings copy];
 	[finalMappings updateWithCounts:@{ group0:@(1), group1:@(3) }];
@@ -5994,7 +6224,8 @@ static NSMutableArray *changes;
 	//
 	// This should cause all the groups to collapse (auto consolidate)
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"section1,row1" inGroup:group1 atIndex:1]];
+	[changes addObject:
+	  [YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"section1,row1") inGroup:group1 atIndex:1]];
 	
 	finalMappings = [originalMappings copy];
 	[finalMappings updateWithCounts:@{ group0:@(2), group1:@(2) }];
@@ -6086,8 +6317,10 @@ static NSMutableArray *changes;
 	//
 	// This should cause all the groups to collapse (auto consolidate)
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"section0,row0" inGroup:group0 atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"section1,row1" inGroup:group1 atIndex:1]];
+	[changes addObject:
+	  [YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"section0,row0") inGroup:group0 atIndex:0]];
+	[changes addObject:
+	  [YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"section1,row1") inGroup:group1 atIndex:1]];
 	
 	finalMappings = [originalMappings copy];
 	[finalMappings updateWithCounts:@{ group0:@(1), group1:@(2) }];
@@ -6175,7 +6408,8 @@ static NSMutableArray *changes;
 	//
 	// This should cause all the groups to UNcollapse (auto UNconsolidate)
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"section0,row0" inGroup:group0 atIndex:0]];
+	[changes addObject:
+	  [YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"section0,row0") inGroup:group0 atIndex:0]];
 	
 	finalMappings = [originalMappings copy];
 	[finalMappings updateWithCounts:@{ group0:@(2), group1:@(3) }];
@@ -6266,7 +6500,8 @@ static NSMutableArray *changes;
 	//
 	// This should cause the groups to UNcollapse (auto UNconsolidate)
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"section1,row1" inGroup:group1 atIndex:1]];
+	[changes addObject:
+	  [YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"section1,row1") inGroup:group1 atIndex:1]];
 	
 	finalMappings = [originalMappings copy];
 	[finalMappings updateWithCounts:@{ group0:@(2), group1:@(3) }];
@@ -6358,8 +6593,10 @@ static NSMutableArray *changes;
 	//
 	// This should cause all the groups to UNcollapse (auto UNconsolidate)
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"section0,row0" inGroup:group0 atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"section1,row1" inGroup:group1 atIndex:1]];
+	[changes addObject:
+	  [YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"section0,row0") inGroup:group0 atIndex:0]];
+	[changes addObject:
+	  [YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"section1,row1") inGroup:group1 atIndex:1]];
 	
 	finalMappings = [originalMappings copy];
 	[finalMappings updateWithCounts:@{ group0:@(2), group1:@(3) }];
@@ -6447,7 +6684,8 @@ static NSMutableArray *changes;
 	//
 	// Groups remain collapsed (auto consolidated)
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"section0,row0" inGroup:group0 atIndex:0]];
+	[changes addObject:
+	  [YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"section0,row0") inGroup:group0 atIndex:0]];
 	
 	finalMappings = [originalMappings copy];
 	[finalMappings updateWithCounts:@{ group0:@(1), group1:@(3) }];
@@ -6494,7 +6732,8 @@ static NSMutableArray *changes;
 	//
 	// Groups remain collapsed (auto consolidated)
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"section1,row1" inGroup:group1 atIndex:1]];
+	[changes addObject:
+	  [YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"section1,row1") inGroup:group1 atIndex:1]];
 	
 	finalMappings = [originalMappings copy];
 	[finalMappings updateWithCounts:@{ group0:@(2), group1:@(2) }];
@@ -6542,8 +6781,10 @@ static NSMutableArray *changes;
 	//
 	// Groups remain collapsed (auto consolidated)
 	
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"section0,row0" inGroup:group0 atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange deleteKey:@"section1,row1" inGroup:group1 atIndex:1]];
+	[changes addObject:
+	  [YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"section0,row0") inGroup:group0 atIndex:0]];
+	[changes addObject:
+	  [YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"section1,row1") inGroup:group1 atIndex:1]];
 	
 	finalMappings = [originalMappings copy];
 	[finalMappings updateWithCounts:@{ group0:@(1), group1:@(2) }];
@@ -6595,7 +6836,8 @@ static NSMutableArray *changes;
 	//
 	// Groups remain collapsed (auto consolidated)
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"section0,row0" inGroup:group0 atIndex:0]];
+	[changes addObject:
+	  [YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"section0,row0") inGroup:group0 atIndex:0]];
 	
 	finalMappings = [originalMappings copy];
 	[finalMappings updateWithCounts:@{ group0:@(2), group1:@(3) }];
@@ -6642,7 +6884,8 @@ static NSMutableArray *changes;
 	//
 	// Groups remain collapsed (auto consolidated)
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"section1,row1" inGroup:group1 atIndex:1]];
+	[changes addObject:
+	  [YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"section1,row1") inGroup:group1 atIndex:1]];
 	
 	finalMappings = [originalMappings copy];
 	[finalMappings updateWithCounts:@{ group0:@(2), group1:@(3) }];
@@ -6690,8 +6933,10 @@ static NSMutableArray *changes;
 	//
 	// Groups remain collapsed (auto consolidated)
 	
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"section0,row0" inGroup:group0 atIndex:0]];
-	[changes addObject:[YapDatabaseViewRowChange insertKey:@"section1,row1" inGroup:group1 atIndex:1]];
+	[changes addObject:
+	  [YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"section0,row0") inGroup:group0 atIndex:0]];
+	[changes addObject:
+	  [YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"section1,row1") inGroup:group1 atIndex:1]];
 	
 	finalMappings = [originalMappings copy];
 	[finalMappings updateWithCounts:@{ group0:@(2), group1:@(3) }];
@@ -6724,8 +6969,10 @@ static NSMutableArray *changes;
 	XCTAssertTrue([RowOp(rowChanges, 1).finalGroup isEqualToString:consolidatedGroupName], @"");
 }
 
-- (void)test_setting_autoconsolidation_group_name_to_existing_group_should_result_in_nil_groupname_and_zero_threshold{
-    YapDatabaseViewMappings *mapping = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"group1", @"group2"] view:@"view"];
+- (void)test_setting_autoconsolidation_group_name_to_existing_group_should_result_in_nil_groupname_and_zero_threshold
+{
+	YapDatabaseViewMappings *mapping =
+	  [[YapDatabaseViewMappings alloc] initWithGroups:@[@"group1", @"group2"] view:@"view"];
     
     [mapping setAutoConsolidateGroupsThreshold:100 withName:@"group1"];
 
@@ -6733,6 +6980,10 @@ static NSMutableArray *changes;
     XCTAssertTrue([mapping autoConsolidateGroupsThreshold] == 0);
 }
 @end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Dynamic Groups
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface TestViewMappingDynamicGroupAddition : TestViewMappingsBase
 @end
@@ -6898,7 +7149,10 @@ static NSMutableArray *changes;
                                      @"group2":@(15)}];
     
     
-	[changes addObject:[YapDatabaseViewRowChange updateKey:@"" changes:YapDatabaseViewChangedObject inGroup:@"group1" atIndex:3]];
+	YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
+	
+	[changes addObject:
+	  [YapDatabaseViewRowChange updateCollectionKey:YCK(nil, @"") inGroup:@"group1" atIndex:3 withChanges:flags]];
     
     NSArray *sectionChanges = nil, *rowChanges = nil;
     [YapDatabaseViewChange getSectionChanges:&sectionChanges
@@ -6907,7 +7161,9 @@ static NSMutableArray *changes;
                                finalMappings:finalMapping
                                  fromChanges:changes];
     
-    XCTAssertTrue([[originalMapping cellDrawingDependencyOffsetsForGroup:@"group1"] isEqualToSet:[NSSet setWithObject:@(-1)]]);
+	NSSet *expectedSet = [NSSet setWithObject:@(-1)];
+	
+    XCTAssertTrue([[originalMapping cellDrawingDependencyOffsetsForGroup:@"group1"] isEqualToSet:expectedSet]);
     XCTAssertTrue(rowChanges.count == 2);
     XCTAssertTrue(RowOp(rowChanges, 0).changes == YapDatabaseViewChangedObject);
     XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 3);
@@ -6915,114 +7171,166 @@ static NSMutableArray *changes;
     XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 4);
 }
 
-- (void)test_row_insert_in_removed_group_get_filtered_out{
-    YapDatabaseViewMappings *originalMapping, *finalMapping;
-    originalMapping = [[YapDatabaseViewMappings alloc]
-                       initWithGroupFilterBlock:^BOOL(NSString *g, YapDatabaseReadTransaction *t){
-                           return YES;
-                       }
-                       sortBlock:^NSComparisonResult(NSString *l, NSString *r, YapDatabaseReadTransaction *t){
-                           return [l compare:r];
-                       }
-                       view:@"view"];
-    [originalMapping updateWithCounts:@{@"group1":@(5),
-                                        @"group2":@(3),
-                                        @"group3":@(2)}];
-    finalMapping = [originalMapping copy];
-    [finalMapping updateWithCounts:@{@"group1":@(5),
-                                     @"group2":@(3)}];
-    [changes addObject:[YapDatabaseViewRowChange insertKey:@"key" inGroup:@"group3" atIndex:2]];
-    
-    
-    NSArray *sectionChanges = nil, *rowChanges = nil;
-    [YapDatabaseViewChange getSectionChanges:&sectionChanges
-                                  rowChanges:&rowChanges
-                        withOriginalMappings:originalMapping
-                               finalMappings:finalMapping
-                                 fromChanges:changes];
-    
-    
-    XCTAssertTrue(rowChanges.count == 0);
+- (void)test_row_insert_in_removed_group_get_filtered_out
+{
+	YapDatabaseViewMappingGroupFilter groupFilter;
+	YapDatabaseViewMappingGroupSort groupSort;
+	
+	groupFilter = ^BOOL(NSString *g, YapDatabaseReadTransaction *t){
+		
+		return YES;
+	};
+	groupSort = ^NSComparisonResult(NSString *l, NSString *r, YapDatabaseReadTransaction *t){
+		
+		return [l compare:r];
+	};
+	
+    YapDatabaseViewMappings *originalMappings =
+	  [[YapDatabaseViewMappings alloc] initWithGroupFilterBlock:groupFilter sortBlock:groupSort view:@"view"];
+    [originalMappings updateWithCounts:@{
+	    @"group1":@(5),
+	    @"group2":@(3),
+	    @"group3":@(2)}
+	];
+	
+	YapDatabaseViewMappings *finalMappings = [originalMappings copy];
+	[finalMappings updateWithCounts:@{
+	    @"group1":@(5),
+	    @"group2":@(3)}
+	];
+	
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(nil, @"key") inGroup:@"group3" atIndex:2]];
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:finalMappings
+	                             fromChanges:changes];
+	
+	XCTAssertTrue([rowChanges count] == 0);
 }
 
-- (void)test_row_update_in_removed_group_get_filtered_out{
-    YapDatabaseViewMappings *originalMapping, *finalMapping;
-    originalMapping = [[YapDatabaseViewMappings alloc]
-                       initWithGroupFilterBlock:^BOOL(NSString *g, YapDatabaseReadTransaction *t){
-                           return YES;
-                       }
-                       sortBlock:^NSComparisonResult(NSString *l, NSString *r, YapDatabaseReadTransaction *t){
-                           return [l compare:r];
-                       }
-                       view:@"view"];
-    [originalMapping updateWithCounts:@{@"group1":@(5),
-                                        @"group2":@(3),
-                                        @"group3":@(2)}];
-    finalMapping = [originalMapping copy];
-    [finalMapping updateWithCounts:@{@"group1":@(5),
-                                     @"group2":@(3)}];
-    [changes addObject:[YapDatabaseViewRowChange updateKey:@"key" changes:YapDatabaseViewChangedObject inGroup:@"group3" atIndex:0]];
-    
-    
-    NSArray *sectionChanges = nil, *rowChanges = nil;
-    [YapDatabaseViewChange getSectionChanges:&sectionChanges
-                                  rowChanges:&rowChanges
-                        withOriginalMappings:originalMapping
-                               finalMappings:finalMapping
-                                 fromChanges:changes];
-    
-    
-    XCTAssertTrue(rowChanges.count == 0);
+- (void)test_row_update_in_removed_group_get_filtered_out
+{
+	YapDatabaseViewMappingGroupFilter groupFilter;
+	YapDatabaseViewMappingGroupSort groupSort;
+	
+	groupFilter = ^BOOL(NSString *g, YapDatabaseReadTransaction *t) {
+		
+		return YES;
+	};
+	groupSort = ^NSComparisonResult(NSString *l, NSString *r, YapDatabaseReadTransaction *t) {
+		
+		return [l compare:r];
+	};
+	
+    YapDatabaseViewMappings *originalMappings =
+	  [[YapDatabaseViewMappings alloc] initWithGroupFilterBlock:groupFilter sortBlock:groupSort view:@"view"];
+	
+	[originalMappings updateWithCounts:@{
+	    @"group1":@(5),
+	    @"group2":@(3),
+	    @"group3":@(2)}
+	];
+	
+	YapDatabaseViewMappings *finalMappings = [originalMappings copy];
+	[finalMappings updateWithCounts:@{
+	    @"group1":@(5),
+	    @"group2":@(3)}
+	];
+	
+	YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
+    [changes addObject:
+	  [YapDatabaseViewRowChange updateCollectionKey:YCK(nil, @"key") inGroup:@"group3" atIndex:0 withChanges:flags]];
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:finalMappings
+	                             fromChanges:changes];
+	
+	XCTAssertTrue([rowChanges count] == 0);
 }
 
-- (void)test_row_delete_in_removed_group_does_not_get_filtered_out{
-    YapDatabaseViewMappings *originalMapping, *finalMapping;
-    originalMapping = [[YapDatabaseViewMappings alloc]
-                       initWithGroupFilterBlock:^BOOL(NSString *g, YapDatabaseReadTransaction *t){
-                           return YES;
-                       }
-                       sortBlock:^NSComparisonResult(NSString *l, NSString *r, YapDatabaseReadTransaction *t){
-                           return [l compare:r];
-                       }
-                       view:@"view"];
-    [originalMapping updateWithCounts:@{@"group1":@(5),
-                                        @"group2":@(3),
-                                        @"group3":@(2)}];
-    finalMapping = [originalMapping copy];
-    [finalMapping updateWithCounts:@{@"group1":@(5),
-                                     @"group2":@(3)}];
-    [changes addObject:[YapDatabaseViewRowChange deleteKey:@"key" inGroup:@"group3" atIndex:0]];
+- (void)test_row_delete_in_removed_group_does_not_get_filtered_out
+{
+	YapDatabaseViewMappingGroupFilter groupFilter;
+	YapDatabaseViewMappingGroupSort groupSort;
+
+	groupFilter = ^BOOL(NSString *g, YapDatabaseReadTransaction *t){
+		
+		return YES;
+	};
+	groupSort = ^NSComparisonResult(NSString *l, NSString *r, YapDatabaseReadTransaction *t){
+		
+		return [l compare:r];
+	};
+	
+	YapDatabaseViewMappings *originalMappings =
+	  [[YapDatabaseViewMappings alloc] initWithGroupFilterBlock:groupFilter sortBlock:groupSort view:@"view"];
+	
+	[originalMappings updateWithCounts:@{
+	    @"group1":@(5),
+	    @"group2":@(3),
+	    @"group3":@(2)}
+	];
+	
+	YapDatabaseViewMappings *finalMappings = [originalMappings copy];
+	[finalMappings updateWithCounts:@{
+	    @"group1":@(5),
+	    @"group2":@(3)}
+	];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"group3" atIndex:0]];
     
-    NSArray *sectionChanges = nil, *rowChanges = nil;
-    [YapDatabaseViewChange getSectionChanges:&sectionChanges
-                                  rowChanges:&rowChanges
-                        withOriginalMappings:originalMapping
-                               finalMappings:finalMapping
-                                 fromChanges:changes];
-    
-    
-    XCTAssertTrue(rowChanges.count == 1);
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:finalMappings
+	                             fromChanges:changes];
+	
+	XCTAssertTrue([rowChanges count] == 1);
 }
 
-- (void)test_consolidation_threshhold_and_group_name_get_cleared_on_update_transaction_if_name_is_in_new_groups{
-	YapDatabaseViewMappings *originalMapping = [[YapDatabaseViewMappings alloc]
-	                   initWithGroupFilterBlock:^BOOL(NSString *g, YapDatabaseReadTransaction *t){
-	                       return YES;
-	                   }
-	                   sortBlock:^NSComparisonResult(NSString *l, NSString *r, YapDatabaseReadTransaction *t){
-	                       return [l compare:r];
-	                   }
-	                   view:@"view"];
-    [originalMapping setAutoConsolidateGroupsThreshold:100 withName:@"super-omega-group"];
-    XCTAssertEqualObjects([originalMapping consolidatedGroupName], @"super-omega-group");
-    XCTAssertTrue([originalMapping autoConsolidateGroupsThreshold] == 100);
-    
-    [originalMapping updateWithCounts:@{@"group1":@(30),
-                                        @"group2":@(15),
-                                        @"super-omega-group":@(10)}];
-
-    XCTAssertNil([originalMapping consolidatedGroupName]);
-    XCTAssertTrue([originalMapping autoConsolidateGroupsThreshold] == 0);
+- (void)test_consolidation_threshhold_and_group_name_get_cleared_on_update_transaction_if_name_is_in_new_groups
+{
+	YapDatabaseViewMappingGroupFilter groupFilter;
+	YapDatabaseViewMappingGroupSort groupSort;
+	
+	groupFilter = ^BOOL(NSString *g, YapDatabaseReadTransaction *t){
+		
+		return YES;
+	};
+	groupSort = ^NSComparisonResult(NSString *l, NSString *r, YapDatabaseReadTransaction *t){
+		
+		return [l compare:r];
+	};
+	
+	YapDatabaseViewMappings *originalMappings =
+	  [[YapDatabaseViewMappings alloc] initWithGroupFilterBlock:groupFilter sortBlock:groupSort view:@"view"];
+	
+	[originalMappings setAutoConsolidateGroupsThreshold:100 withName:@"super-omega-group"];
+	
+	XCTAssertEqualObjects([originalMappings consolidatedGroupName], @"super-omega-group");
+	XCTAssertTrue([originalMappings autoConsolidateGroupsThreshold] == 100);
+	
+	[originalMappings updateWithCounts:@{
+	    @"group1":@(30),
+	    @"group2":@(15),
+	    @"super-omega-group":@(10)}
+	];
+	
+	XCTAssertNil([originalMappings consolidatedGroupName]);
+	XCTAssertTrue([originalMappings autoConsolidateGroupsThreshold] == 0);
 }
 
 @end

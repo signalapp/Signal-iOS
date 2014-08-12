@@ -7,25 +7,23 @@
  * @see fixedRangeWithLength:offset:from:
  * @see flexibleRangeWithStartingLength:startingOffset:from:
 **/
-typedef enum {
+typedef NS_ENUM(NSInteger, YapDatabaseViewPin) {
 	YapDatabaseViewBeginning = 0, // index == 0
 	YapDatabaseViewEnd       = 1, // index == last
-	
-} YapDatabaseViewPin;
+};
 
 /**
  * Grow options allow you to specify in which direction flexible ranges can grow.
  *
  * @see growOptions
 **/
-typedef enum {
+typedef NS_OPTIONS(NSUInteger, YapDatabaseViewGrowOptions) {
 	YapDatabaseViewGrowPinSide    = 1 << 0,
 	YapDatabaseViewGrowNonPinSide = 1 << 1,
 	
 	YapDatabaseViewGrowInRangeOnly = 0,
-	YapDatabaseViewGrowOnBothSides = (YapDatabaseViewGrowPinSide | YapDatabaseViewGrowNonPinSide)
-	
-} YapDatabaseViewGrowOptions;
+	YapDatabaseViewGrowOnBothSides = (YapDatabaseViewGrowPinSide | YapDatabaseViewGrowNonPinSide)	
+};
 
 /**
  * Range options allow you to specify a particular range of a group.

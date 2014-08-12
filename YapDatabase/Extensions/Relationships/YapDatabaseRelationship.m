@@ -33,6 +33,7 @@
 **/
 + (void)dropTablesForRegisteredName:(NSString *)registeredName
                     withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                      wasPersistent:(BOOL)wasPersistent
 {
 	sqlite3 *db = transaction->connection->db;
 	
@@ -56,25 +57,32 @@
 #pragma mark Instance
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+@synthesize versionTag = versionTag;
+@dynamic options;
+
 - (id)init
 {
-	return [self initWithVersion:0 options:nil];
-	
+	return [self initWithVersionTag:nil options:nil];
 }
 
-- (id)initWithVersion:(int)inVersion
+- (id)initWithVersionTag:(NSString *)inVersionTag
 {
-	return [self initWithVersion:inVersion options:nil];
+	return [self initWithVersionTag:inVersionTag options:nil];
 }
 
-- (id)initWithVersion:(int)inVersion options:(YapDatabaseRelationshipOptions *)inOptions
+- (id)initWithVersionTag:(NSString *)inVersionTag options:(YapDatabaseRelationshipOptions *)inOptions
 {
 	if ((self = [super init]))
 	{
-		version = inVersion;
+		versionTag = inVersionTag ? [inVersionTag copy] : @"";
 		options = inOptions ? [inOptions copy] : [[YapDatabaseRelationshipOptions alloc] init];
 	}
 	return self;
+}
+
+- (YapDatabaseRelationshipOptions *)options
+{
+	return [options copy];
 }
 
 /**

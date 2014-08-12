@@ -9,6 +9,8 @@
 **/
 @interface YapCollectionKey : NSObject <NSCopying, NSCoding>
 
+YapCollectionKey* YapCollectionKeyCreate(NSString *collection, NSString *key);
+
 - (id)initWithCollection:(NSString *)collection key:(NSString *)key;
 
 @property (nonatomic, strong, readonly) NSString *collection;
@@ -19,5 +21,8 @@
 // These methods are overriden and optimized:
 - (BOOL)isEqual:(id)anObject;
 - (NSUInteger)hash;
+
+// Super optimized:
+BOOL YapCollectionKeyEqual(__unsafe_unretained YapCollectionKey *ck1, __unsafe_unretained YapCollectionKey *ck2);
 
 @end

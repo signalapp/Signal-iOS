@@ -17,11 +17,11 @@
  * https://github.com/yaptv/YapDatabase/wiki/Relationships
 **/
 
-typedef enum  {
+typedef NS_ENUM(NSInteger, YDB_NotifyReason) {
 	YDB_EdgeDeleted,
 	YDB_SourceNodeDeleted,
 	YDB_DestinationNodeDeleted,
-} YDB_NotifyReason;
+};
 
 
 /**

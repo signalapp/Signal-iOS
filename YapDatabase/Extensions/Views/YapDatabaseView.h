@@ -116,6 +116,13 @@
  * 
  * NSString *localeIdentifier = [[NSLocale currentLocale] localeIdentifier];
  * NSString *versionTag = [NSString stringWithFormat:@"1-%@", localeIdentifier];
+ * 
+ * The groupingBlock/sortingBlock/versionTag can me changed after the view has been created.
+ * See YapDatabaseViewTransaction(ReadWrite).
+ * 
+ * Note:
+ * - [YapDatabaseView versionTag]            = versionTag of most recent commit
+ * - [YapDatabaseViewTransaction versionTag] = versionTag of this commit
 **/
 @property (nonatomic, copy, readonly) NSString *versionTag;
 

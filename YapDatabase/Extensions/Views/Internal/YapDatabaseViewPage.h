@@ -19,6 +19,9 @@
 - (void)removeRange:(NSRange)range;
 - (void)removeAllRowids;
 
+- (void)appendPage:(YapDatabaseViewPage *)page;
+- (void)prependPage:(YapDatabaseViewPage *)page;
+
 - (void)appendRange:(NSRange)range ofPage:(YapDatabaseViewPage *)page;
 - (void)prependRange:(NSRange)range ofPage:(YapDatabaseViewPage *)page;
 

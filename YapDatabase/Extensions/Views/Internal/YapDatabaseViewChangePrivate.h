@@ -35,13 +35,13 @@
 	
 	// This header file is PRIVATE, and is only to be used by YapDatabaseView classes
 	
-	id key; // immutable
+	YapCollectionKey *collectionKey; // immutable
 	
 	NSString *originalGroup; // immutable
 	NSString *finalGroup;    // mutable during consolidation
 	
-	YapDatabaseViewChangeType type; // mutable during consolidation
-	int changes;                    // mutable during consolidation
+	YapDatabaseViewChangeType type;        // mutable during consolidation
+	YapDatabaseViewChangesBitMask changes; // mutable during consolidation
 	
 	NSUInteger opOriginalIndex;  // immutable
 	NSUInteger opFinalIndex;     // immutable
@@ -60,10 +60,18 @@
  * or if multiple operations can be consolidated into one.
 **/
 
-+ (YapDatabaseViewRowChange *)insertKey:(id)key inGroup:(NSString *)group atIndex:(NSUInteger)index;
-+ (YapDatabaseViewRowChange *)deleteKey:(id)key inGroup:(NSString *)group atIndex:(NSUInteger)index;
++ (YapDatabaseViewRowChange *)insertCollectionKey:(YapCollectionKey *)key
+                                          inGroup:(NSString *)group
+                                          atIndex:(NSUInteger)index;
 
-+ (YapDatabaseViewRowChange *)updateKey:(id)key changes:(int)flags inGroup:(NSString *)group atIndex:(NSUInteger)index;
++ (YapDatabaseViewRowChange *)deleteCollectionKey:(YapCollectionKey *)key
+                                          inGroup:(NSString *)group
+                                          atIndex:(NSUInteger)index;
+
++ (YapDatabaseViewRowChange *)updateCollectionKey:(YapCollectionKey *)ck
+                                          inGroup:(NSString *)group
+                                          atIndex:(NSUInteger)index
+                                      withChanges:(YapDatabaseViewChangesBitMask)flags;
 
 @end
 

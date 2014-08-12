@@ -52,20 +52,39 @@
 
 /**
  * Returns YES if there are any keys in the given group.
- * This is equivalent to ([viewTransaction numberOfKeysInGroup:group] > 0)
+ * This is equivalent to ([viewTransaction numberOfItemsInGroup:group] > 0)
 **/
 - (BOOL)hasGroup:(NSString *)group;
+
+#pragma mark Counts
 
 /**
  * Returns the total number of keys in the given group.
  * If the group doesn't exist, returns zero.
 **/
-- (NSUInteger)numberOfKeysInGroup:(NSString *)group;
+- (NSUInteger)numberOfItemsInGroup:(NSString *)group;
 
 /**
  * Returns the total number of keys in every single group.
 **/
-- (NSUInteger)numberOfKeysInAllGroups;
+- (NSUInteger)numberOfItemsInAllGroups;
+
+/**
+ * Returns YES if the view is empty (has zero groups).
+**/
+- (BOOL)isEmpty;
+
+/**
+ * DEPRECATED: Use numberOfItemsInGroup: instead.
+**/
+- (NSUInteger)numberOfKeysInGroup:(NSString *)group
+__attribute((deprecated("Use method numberOfItemsInGroup: instead")));
+
+/**
+ * DEPRECATED: Use numberOfItemsInAllGroups instead.
+**/
+- (NSUInteger)numberOfKeysInAllGroups
+__attribute((deprecated("Use method numberOfItemsInAllGroups instead")));
 
 #pragma mark Fetching
 
@@ -84,7 +103,7 @@
 - (BOOL)getFirstKey:(NSString **)keyPtr collection:(NSString **)collectionPtr inGroup:(NSString *)group;
 
 /**
- * Shortcut for: [view getKey:&key collection:&collection atIndex:(numberOfKeysInGroup-1) inGroup:group]
+ * Shortcut for: [view getKey:&key collection:&collection atIndex:(numberOfItemsInGroup-1) inGroup:group]
 **/
 - (BOOL)getLastKey:(NSString **)keyPtr collection:(NSString **)collectionPtr inGroup:(NSString *)group;
 
@@ -115,6 +134,18 @@
            index:(NSUInteger *)indexPtr
           forKey:(NSString *)key
     inCollection:(NSString *)collection;
+
+/**
+ * Returns the versionTag in effect for this transaction.
+ * 
+ * Because this transaction may be one or more commits behind the most recent commit,
+ * this method is the best way to determine the versionTag associated with what the transaction actually sees.
+ * 
+ * Put another way:
+ * - [YapDatabaseView versionTag]            = versionTag of most recent commit
+ * - [YapDatabaseViewTransaction versionTag] = versionTag of this commit
+**/
+- (NSString *)versionTag;
 
 #pragma mark Finding
 
@@ -226,6 +257,11 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
 #pragma mark Enumerating
 
 /**
+ * Enumerates the groups in the view.
+**/
+- (void)enumerateGroupsUsingBlock:(void (^)(NSString *group, BOOL *stop))block;
+
+/**
  * Enumerates the keys in the given group.
 **/
 - (void)enumerateKeysInGroup:(NSString *)group
@@ -254,10 +290,14 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * The methods in this ReadWrite category are only available from within a ReadWriteTransaction.
+ * Invoking them from within a ReadOnlyTransaction does nothing (except log a warning).
+**/
 @interface YapDatabaseViewTransaction (ReadWrite)
 
 /**
- * "Touching" a object allows you to mark an item in the view as "updated",
+ * "Touching" an object allows you to mark an item in the view as "updated",
  * even if the object itself wasn't directly updated.
  *
  * This is most often useful when a view is being used by a tableView,
@@ -308,6 +348,7 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  * This method allows you to change the groupingBlock and/or sortingBlock on-the-fly.
  * 
  * Note: You must pass a different versionTag, or this method does nothing.
+ * If needed, you can fetch the current versionTag via the [viewTransaction versionTag] method.
 **/
 - (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
        groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
@@ -322,12 +363,22 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * YapDatabaseView deals with ordered arrays of collection/key tuples.
- * So, strictly speaking, it only knows about collection/key tuples, groups, and indexes.
+ * YapDatabaseView deals with ordered arrays (of rowid values).
+ * So, conceptually speaking, it only knows about collection/key tuples, groups, and indexes.
  * 
  * But it's really convenient to have methods that put it all together to fetch an object in a single method.
 **/
 @interface YapDatabaseViewTransaction (Convenience)
+
+/**
+ * Equivalent to invoking:
+ *
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"myView"] getKey:&key collection:&collection atIndex:index inGroup:group]) {
+ *     metadata = [transaction metadataForKey:key inCollection:collection];
+ * }
+**/
+- (id)metadataAtIndex:(NSUInteger)index inGroup:(NSString *)group;
 
 /**
  * Equivalent to invoking:
@@ -360,7 +411,7 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
 - (id)lastObjectInGroup:(NSString *)group;
 
 /**
- * The following methods are equivalent to invoking the enumerateKeysInGroup:... methods,
+ * The following methods are similar to invoking the enumerateKeysInGroup:... methods,
  * and then fetching the metadata within your own block.
 **/
 
@@ -379,8 +430,16 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
                              usingBlock:
                     (void (^)(NSString *collection, NSString *key, id metadata, NSUInteger index, BOOL *stop))block;
 
+- (void)enumerateKeysAndMetadataInGroup:(NSString *)group
+                            withOptions:(NSEnumerationOptions)options
+                                  range:(NSRange)range
+                             usingBlock:
+                    (void (^)(NSString *collection, NSString *key, id metadata, NSUInteger index, BOOL *stop))block
+                             withFilter:
+                    (BOOL (^)(NSString *collection, NSString *key))filter;
+
 /**
- * The following methods are equivalent to invoking the enumerateKeysInGroup:... methods,
+ * The following methods are similar to invoking the enumerateKeysInGroup:... methods,
  * and then fetching the object within your own block.
 **/
 
@@ -399,8 +458,16 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
                             usingBlock:
             (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block;
 
+- (void)enumerateKeysAndObjectsInGroup:(NSString *)group
+                           withOptions:(NSEnumerationOptions)options
+                                 range:(NSRange)range
+                            usingBlock:
+            (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block
+                            withFilter:
+            (BOOL (^)(NSString *collection, NSString *key))filter;
+
 /**
- * The following methods are equivalent to invoking the enumerateKeysInGroup:... methods,
+ * The following methods are similar to invoking the enumerateKeysInGroup:... methods,
  * and then fetching the object and metadata within your own block.
 **/
 
@@ -419,12 +486,49 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
                   usingBlock:
             (void (^)(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block;
 
+- (void)enumerateRowsInGroup:(NSString *)group
+                 withOptions:(NSEnumerationOptions)options
+                       range:(NSRange)range
+                  usingBlock:
+            (void (^)(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block
+                  withFilter:
+            (BOOL (^)(NSString *collection, NSString *key))filter;
+
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * ***** ALWAYS USE THESE METHODS WHEN USING MAPPINGS *****
+ *
+ * When using advanced features of YapDatabaseViewMappings, things can get confusing rather quickly.
+ * For example, one can configure mappings in such a way that it:
+ * - only displays a subset (range) of the original YapDatabaseView
+ * - presents the YapDatabaseView in reverse order
+ * 
+ * If you used only the core API of YapDatabaseView, you'd be forced to constantly use a 2-step lookup process:
+ * 1.) Use mappings to convert from the tableView's indexPath, to the group & index of the view.
+ * 2.) Use the resulting group & index to fetch what you need.
+ * 
+ * The annoyance of an extra step is one thing.
+ * But an extra step that's easy to forget, and which would likely cause bugs, is another.
+ * 
+ * Thus it is recommended that you ***** ALWAYS USE THESE METHODS WHEN USING MAPPINGS ***** !!!!!
+ * 
+ * One other word of encouragement:
+ *
+ * Often times developers start by using straight mappings without any advanced features.
+ * This means there's a 1-to-1 mapping between what's in the tableView, and what's in the yapView.
+ * In these situations you're still highly encouraged to use these methods.
+ * Because if/when you do turn on some advanced features, these methods will continue to work perfectly.
+ * Whereas the alternative would force you to find every instance where you weren't using these methods,
+ * and convert that code to use these methods.
+ * 
+ * So it's advised you save yourself the hassle (and the mental overhead),
+ * and simply always use these methds when using mappings.
+**/
 @interface YapDatabaseViewTransaction (Mappings)
 
 /**
@@ -449,34 +553,6 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
   withMappings:(YapDatabaseViewMappings *)mappings;
 
 /**
- * Gets the object at the given indexPath, assuming the given mappings are being used.
- * 
- * Equivalent to invoking:
- *
- * NSString *collection, *key;
- * if ([[transaction ext:@"myView"] getKey:&key collection:&collection atIndexPath:indexPath withMappings:mappings]) {
- *     object = [transaction objectForKey:key inCollection:collection];
- * }
-**/
-- (id)objectAtIndexPath:(NSIndexPath *)indexPath withMappings:(YapDatabaseViewMappings *)mappings;
-
-/**
- * Gets the object at the given indexPath, assuming the given mappings are being used.
- *
- * Equivalent to invoking:
- *
- * NSString *collection, *key;
- * if ([[transaction ext:@"view"] getKey:&key
- *                            collection:&collection
- *                                forRow:row
- *                             inSection:section
- *                          withMappings:mappings]) {
- *     object = [transaction objectForKey:key inCollection:collection];
- * }
-**/
-- (id)objectAtRow:(NSUInteger)row inSection:(NSUInteger)section withMappings:(YapDatabaseViewMappings *)mappings;
-
-/**
  * Fetches the indexPath for the given {collection, key} tuple, assuming the given mappings are being used.
  * Returns nil if the {collection, key} tuple isn't included in the view + mappings.
 **/
@@ -494,5 +570,61 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
         forKey:(NSString *)key
   inCollection:(NSString *)collection
   withMappings:(YapDatabaseViewMappings *)mappings;
+
+/**
+ * Gets the object at the given indexPath, assuming the given mappings are being used.
+ * 
+ * Equivalent to invoking:
+ *
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"myView"] getKey:&key collection:&collection atIndexPath:indexPath withMappings:mappings]) {
+ *     object = [transaction objectForKey:key inCollection:collection];
+ * }
+**/
+- (id)objectAtIndexPath:(NSIndexPath *)indexPath withMappings:(YapDatabaseViewMappings *)mappings;
+
+/**
+ * Gets the object at the given indexPath, assuming the given mappings are being used.
+ *
+ * Equivalent to invoking:
+ *
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"myView"] getKey:&key
+ *                              collection:&collection
+ *                                  forRow:row
+ *                               inSection:section
+ *                            withMappings:mappings]) {
+ *     object = [transaction objectForKey:key inCollection:collection];
+ * }
+**/
+- (id)objectAtRow:(NSUInteger)row inSection:(NSUInteger)section withMappings:(YapDatabaseViewMappings *)mappings;
+
+/**
+ * Gets the metadata at the given indexPath, assuming the given mappings are being used.
+ *
+ * Equivalent to invoking:
+ *
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"myView"] getKey:&key collection:&collection atIndexPath:indexPath withMappings:mappings]) {
+ *     metadata = [transaction metadataForKey:key inCollection:collection];
+ * }
+**/
+- (id)metadataAtIndexPath:(NSIndexPath *)indexPath withMappings:(YapDatabaseViewMappings *)mappings;
+
+/**
+ * Gets the object at the given indexPath, assuming the given mappings are being used.
+ *
+ * Equivalent to invoking:
+ *
+ * NSString *collection, *key;
+ * if ([[transaction ext:@"myView"] getKey:&key
+ *                              collection:&collection
+ *                                  forRow:row
+ *                               inSection:section
+ *                            withMappings:mappings]) {
+ *     metadata = [transaction metadataForKey:key inCollection:collection];
+ * }
+**/
+- (id)metadataAtRow:(NSUInteger)row inSection:(NSUInteger)section withMappings:(YapDatabaseViewMappings *)mappings;
 
 @end

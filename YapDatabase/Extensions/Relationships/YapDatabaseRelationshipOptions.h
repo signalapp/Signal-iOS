@@ -2,8 +2,6 @@
 
 /**
  * Welcome to YapDatabase!
- *
- * The project page has a wealth of documentation if you have any questions.
  * https://github.com/yaptv/YapDatabase
  *
  * If you're new to the project you may want to visit the wiki.
@@ -15,6 +13,10 @@
  * For tons of information about this extension, see the wiki article:
  * https://github.com/yaptv/YapDatabase/wiki/Relationships
 **/
+
+typedef NSData* (^YapDatabaseRelationshipFilePathEncryptor)(NSString *dstFilePath);
+typedef id (^YapDatabaseRelationshipFilePathDecryptor)(NSData *data);
+
 
 @interface YapDatabaseRelationshipOptions : NSObject <NSCopying>
 
@@ -55,5 +57,25 @@
  * The default value is nil.
 **/
 @property (nonatomic, copy, readwrite) NSSet *allowedCollections;
+
+/**
+ * The relationship extension allows you to create relationships between objects in the database & files on disk.
+ * This allows you to use the relationship extension to automatically delete files
+ * when their associated object(s) is/are removed from the database.
+ * 
+ * However, you may not want this information stored in plaintext.
+ * For example:
+ * - you're encrypting the objects you store to the database via the serializer & deserializer
+ * - you want to use the relationship extension in order to take advantage of auto file deletion
+ * - but you don't want to store the filepath in plaintext for security reasons
+ * 
+ * You must set both the destinationFilePathEncryptor & destinationFilePathDecryptor.
+ * 
+ * If the destinationFilePathEncryptor returns nil for any filePath, then that filePath will be stored in plaintext.
+ * Otherwise the returned data will be stored as a blob.
+**/
+@property (nonatomic, strong, readwrite) YapDatabaseRelationshipFilePathEncryptor destinationFilePathEncryptor;
+@property (nonatomic, strong, readwrite) YapDatabaseRelationshipFilePathDecryptor destinationFilePathDecryptor;
+
 
 @end

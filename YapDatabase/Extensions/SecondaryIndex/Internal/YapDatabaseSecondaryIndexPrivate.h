@@ -25,11 +25,12 @@
 @public
 	
 	YapDatabaseSecondaryIndexSetup *setup;
+	YapDatabaseSecondaryIndexOptions *options;
 	
 	YapDatabaseSecondaryIndexBlock block;
 	YapDatabaseSecondaryIndexBlockType blockType;
 	
-	int version;
+	NSString *versionTag;
 	
 	id columnNamesSharedKeySet;
 }

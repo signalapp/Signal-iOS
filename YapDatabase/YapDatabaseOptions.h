@@ -13,17 +13,17 @@
  * The configuration options provided by this class are advanced (beyond the basic setup options).
 **/
 
-typedef enum {
-	YapDatabaseCorruptAction_Fail   = 0,
-	YapDatabaseCorruptAction_Rename = 1,
-	YapDatabaseCorruptAction_Delete = 2,
-} YapDatabaseCorruptAction;
+typedef NS_ENUM(NSInteger, YapDatabaseCorruptAction) {
+    YapDatabaseCorruptAction_Fail   = 0,
+    YapDatabaseCorruptAction_Rename = 1,
+    YapDatabaseCorruptAction_Delete = 2,
+};
 
-typedef enum {
+typedef NS_ENUM(NSInteger, YapDatabasePragmaSynchronous) {
 	YapDatabasePragmaSynchronous_Off    = 0,
 	YapDatabasePragmaSynchronous_Normal = 1,
 	YapDatabasePragmaSynchronous_Full   = 2,
-} YapDatabasePragmaSynchronous;
+};
 
 #ifdef SQLITE_HAS_CODEC
 typedef NSString* (^YapDatabaseOptionsPassphraseBlock)(void);
@@ -59,9 +59,22 @@ typedef NSString* (^YapDatabaseOptionsPassphraseBlock)(void);
  * 
  * Note that YapDatabase uses sqlite in WAL mode.
  *
- * The default value is YapDatabasePragmaSynchronous_Normal.
+ * The default value is YapDatabasePragmaSynchronous_Full.
 **/
 @property (nonatomic, assign, readwrite) YapDatabasePragmaSynchronous pragmaSynchronous;
+
+/**
+ * Allows you to configure the sqlite "PRAGMA journal_size_limit" option.
+ * 
+ * For more information, see the sqlite docs:
+ * http://www.sqlite.org/pragma.html#pragma_journal_size_limit
+ * 
+ * Note that YapDatabase uses sqlite in WAL mode.
+ * 
+ * The default value is zero,
+ * meaning that every checkpoint will reduce the WAL file to its minimum size (if possible).
+**/
+@property (nonatomic, assign, readwrite) NSInteger pragmaJournalSizeLimit;
 
 #ifdef SQLITE_HAS_CODEC
 /**

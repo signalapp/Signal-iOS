@@ -6,6 +6,7 @@
 
 + (void)dropTablesForRegisteredName:(NSString *)registeredName
                     withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                      wasPersistent:(BOOL)wasPersistent
 {
 	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -18,7 +19,7 @@
  * extension class that it was previously using. If the class names differ, then the extension architecture
  * will automatically try to unregister the previous extension using the previous extension class.
  *
- * That is, it will attempt to invoke [PreviousExtensionClass dropTablesForRegisteredName: withTransaction:].
+ * That is, it will attempt to invoke [PreviousExtensionClass dropTablesForRegisteredName: withTransaction::].
  * Of course this won't work because the PreviousExtensionClass no longer exists.
  * So the end result is that you will likely see the database spit out a warning like this:
  *
@@ -37,13 +38,14 @@
 }
 
 /**
- * Read-only property.
+ * Read-only properties.
  * Automatically set by YapDatabase instance during the registration process.
 **/
 @synthesize registeredName;
+@synthesize registeredDatabase;
 
 /**
- * Subclasses must implement this method.
+ * Subclasses MUST implement this method.
  * This method is called during the view registration process to enusre the extension supports the database type.
  * 
  * Return YES if the class/instance supports the database configuration.
@@ -71,6 +73,15 @@
 }
 
 /**
+ * Subclasses MUST implement this method IF they are non-persistent (in-memory only).
+ * By doing so, they allow various optimizations, such as not persisting extension info in the yap2 table.
+**/
+- (BOOL)isPersistent
+{
+	return YES;
+}
+
+/**
  * Subclasses MUST implement this method.
  * Returns a proper instance of the YapDatabaseExtensionConnection subclass.
 **/
@@ -78,6 +89,22 @@
 {
 	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return nil;
+}
+
+/**
+ * Subclasses may OPTIONALLY implement this method.
+ *
+ * This method is invoked on the snapshot queue.
+ * The given changeset is the most recent commit.
+ *
+ * This method exists as a possible optimization.
+ * For example, the YapDatabaseView extension uses this method to capture the most recent view state.
+ * This allows new view connections to be able to (sometimes) fetch the view state from their extension,
+ * rather than read it from the database and piece it together manually.
+**/
+- (void)processChangeset:(NSDictionary *)changeset
+{
+	// Override me if needed (for optimizations)
 }
 
 @end

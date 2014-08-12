@@ -35,6 +35,11 @@
 **/
 + (instancetype)queryWithFormat:(NSString *)format, ...;
 
+/**
+ * Shorthand for a query with no 'WHERE' clause.
+ * Equivalent to [YapDatabaseQuery queryWithFormat:@""].
+**/
++ (instancetype)queryMatchingAll;
 
 @property (nonatomic, strong, readonly) NSString *queryString;
 @property (nonatomic, strong, readonly) NSArray *queryParameters;

@@ -38,11 +38,11 @@ NSString *const YapDatabaseRemovedCollectionsKey = @"removedCollections";
 NSString *const YapDatabaseRemovedRowidsKey      = @"removedRowids";
 NSString *const YapDatabaseAllKeysRemovedKey     = @"allKeysRemoved";
 
-NSString *const YapDatabaseRegisteredExtensionsKey  = @"registeredExtensions";
-NSString *const YapDatabaseRegisteredTablesKey      = @"registeredTables";
-NSString *const YapDatabaseExtensionsOrderKey       = @"extensionsOrder";
-NSString *const YapDatabaseExtensionDependenciesKey = @"extensionDependencies";
-NSString *const YapDatabaseNotificationKey          = @"notification";
+NSString *const YapDatabaseRegisteredExtensionsKey   = @"registeredExtensions";
+NSString *const YapDatabaseRegisteredMemoryTablesKey = @"registeredMemoryTables";
+NSString *const YapDatabaseExtensionsOrderKey        = @"extensionsOrder";
+NSString *const YapDatabaseExtensionDependenciesKey  = @"extensionDependencies";
+NSString *const YapDatabaseNotificationKey           = @"notification";
 
 /**
  * The database version is stored (via pragma user_version) to sqlite.
@@ -171,6 +171,13 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 @synthesize objectSanitizer = objectSanitizer;
 @synthesize metadataSanitizer = metadataSanitizer;
 
+@dynamic options;
+
+- (YapDatabaseOptions *)options
+{
+	return [options copy];
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Init
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -274,6 +281,8 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 		databasePath = path;
 		options = inOptions ? [inOptions copy] : [[YapDatabaseOptions alloc] init];
 		
+		BOOL isNewDatabaseFile = ![[NSFileManager defaultManager] fileExistsAtPath:databasePath];
+		
 		BOOL(^openConfigCreate)(void) = ^BOOL (void) { @autoreleasepool {
 		
 			BOOL result = YES;
@@ -282,7 +291,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 #ifdef SQLITE_HAS_CODEC
             if (result) result = [self configureEncryptionForDatabase:db];
 #endif
-			if (result) result = [self configureDatabase];
+			if (result) result = [self configureDatabase:isNewDatabaseFile];
 			if (result) result = [self createTables];
 			
 			if (!result && db)
@@ -341,6 +350,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 				
 				if (renamed)
 				{
+					isNewDatabaseFile = YES;
 					result = openConfigCreate();
 					if (result) {
 						YDBLogInfo(@"Database corruption resolved. Renamed corrupt file. (newDB=%@) (corruptDB=%@)",
@@ -361,6 +371,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 				
 				if (deleted)
 				{
+					isNewDatabaseFile = YES;
 					result = openConfigCreate();
 					if (result) {
 						YDBLogInfo(@"Database corruption resolved. Deleted corrupt file. (name=%@)",
@@ -392,7 +403,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 		connectionDefaults = [[YapDatabaseConnectionDefaults alloc] init];
 		
 		registeredExtensions = [[NSDictionary alloc] init];
-		registeredTables = [[NSDictionary alloc] init];
+		registeredMemoryTables = [[NSDictionary alloc] init];
 		
 		extensionDependencies = [[NSDictionary alloc] init];
 		extensionsOrder = [[NSArray alloc] init];
@@ -518,9 +529,11 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
  * Configures the database connection.
  * This mainly means enabling WAL mode, and configuring the auto-checkpoint.
 **/
-- (BOOL)configureDatabase
+- (BOOL)configureDatabase:(BOOL)isNewDatabaseFile
 {
 	int status;
+	
+	// Set mandatory pragmas
 	
 	status = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
 	if (status != SQLITE_OK)
@@ -529,22 +542,49 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 		return NO;
 	}
 	
-	if (options.pragmaSynchronous == YapDatabasePragmaSynchronous_Off ||
-	    options.pragmaSynchronous == YapDatabasePragmaSynchronous_Full )
+	if (isNewDatabaseFile)
 	{
-		char *pragma_stmt;
-		
-		if (options.pragmaSynchronous == YapDatabasePragmaSynchronous_Off)
-			pragma_stmt = "PRAGMA synchronous = OFF;";
-		else
-			pragma_stmt = "PRAGMA synchronous = FULL;";
-		
-		status = sqlite3_exec(db, pragma_stmt, NULL, NULL, NULL);
+		status = sqlite3_exec(db, "PRAGMA auto_vacuum = FULL; VACUUM;", NULL, NULL, NULL);
 		if (status != SQLITE_OK)
 		{
-			YDBLogError(@"Error setting PRAGMA synchronous: %d %s", status, sqlite3_errmsg(db));
-			// This isn't critical, so we can continue.
+			YDBLogError(@"Error setting PRAGMA auto_vacuum: %d %s", status, sqlite3_errmsg(db));
 		}
+	}
+	
+	// Set synchronous to normal for THIS sqlite instance.
+	//
+	// This does NOT affect normal connections.
+	// That is, this does NOT affect YapDatabaseConnection instances.
+	// The sqlite connections of normal YapDatabaseConnection instances will follow the set pragmaSynchronous value.
+	//
+	// The reason we hardcode normal for this sqlite instance is because
+	// it's only used to write the initial snapshot value.
+	// And this doesn't need to be durable, as it is initialized to zero everytime.
+	//
+	// (This sqlite db is also used to perform checkpoints.
+	//  But a normal value won't affect these operations,
+	//  as they will perform sync operations whether the connection is normal or full.)
+	
+	status = sqlite3_exec(db, "PRAGMA synchronous = NORMAL;", NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error setting PRAGMA synchronous: %d %s", status, sqlite3_errmsg(db));
+		// This isn't critical, so we can continue.
+	}
+	
+	// Set journal_size_imit.
+	//
+	// We only need to do set this pragma for THIS connection,
+	// because it is the only connection that performs checkpoints.
+	
+	NSString *stmt =
+	  [NSString stringWithFormat:@"PRAGMA journal_size_limit = %ld;", (long)options.pragmaJournalSizeLimit];
+	
+	status = sqlite3_exec(db, [stmt UTF8String], NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error setting PRAGMA journal_size_limit: %d %s", status, sqlite3_errmsg(db));
+		// This isn't critical, so we can continue.
 	}
 	
 	// Disable autocheckpointing.
@@ -562,8 +602,8 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 #ifdef SQLITE_HAS_CODEC
 /**
  * Configures database encryption via SQLCipher.
- **/
-- (BOOL)configureEncryptionForDatabase:(sqlite3*)sqlite
+**/
+- (BOOL)configureEncryptionForDatabase:(sqlite3 *)sqlite
 {
 	int status;
     
@@ -643,10 +683,96 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 #pragma mark Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
++ (NSString *)sqliteVersionUsing:(sqlite3 *)db
+{
+	sqlite3_stmt *statement;
+	
+	int status = sqlite3_prepare_v2(db, "SELECT sqlite_version();", -1, &statement, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@: Error creating statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		return nil;
+	}
+	
+	NSString *version = nil;
+	
+	status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		const unsigned char *text = sqlite3_column_text(statement, 0);
+		int textSize = sqlite3_column_bytes(statement, 0);
+		
+		version = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+	}
+	else
+	{
+		YDBLogError(@"%@: Error executing statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+	}
+	
+	sqlite3_finalize(statement);
+	statement = NULL;
+	
+	return version;
+}
+
++ (int)pragma:(NSString *)pragmaSetting using:(sqlite3 *)db
+{
+	if (pragmaSetting == nil) return 0;
+	
+	sqlite3_stmt *statement;
+	NSString *pragma = [NSString stringWithFormat:@"PRAGMA %@;", pragmaSetting];
+	
+	int status = sqlite3_prepare_v2(db, [pragma UTF8String], -1, &statement, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@: Error creating statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		return NO;
+	}
+	
+	int result = 0;
+	
+	status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		result = sqlite3_column_int(statement, 0);
+	}
+	else if (status == SQLITE_ERROR)
+	{
+		YDBLogError(@"%@: Error executing statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+	}
+	
+	sqlite3_finalize(statement);
+	statement = NULL;
+	
+	return result;
+}
+
++ (NSString *)pragmaValueForAutoVacuum:(int)auto_vacuum
+{
+	switch(auto_vacuum)
+	{
+		case 0 : return @"NONE";
+		case 1 : return @"FULL";
+		case 2 : return @"INCREMENTAL";
+		default: return @"UNKNOWN";
+	}
+}
+
++ (NSString *)pragmaValueForSynchronous:(int)synchronous
+{
+	switch(synchronous)
+	{
+		case 0 : return @"OFF";
+		case 1 : return @"NORMAL";
+		case 2 : return @"FULL";
+		default: return @"UNKNOWN";
+	}
+}
+
 /**
  * Returns whether or not the given table exists.
 **/
-- (BOOL)tableExists:(NSString *)tableName using:(sqlite3 *)aDb
++ (BOOL)tableExists:(NSString *)tableName using:(sqlite3 *)aDb
 {
 	if (tableName == nil) return NO;
 	
@@ -667,7 +793,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		int count = sqlite3_column_int(statement, 1);
+		int count = sqlite3_column_int(statement, 0);
 		
 		result = (count > 0);
 	}
@@ -685,7 +811,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 /**
  * Extracts and returns column names from the given table in the database.
 **/
-- (NSArray *)columnNamesForTable:(NSString *)tableName using:(sqlite3 *)aDb
++ (NSArray *)columnNamesForTable:(NSString *)tableName using:(sqlite3 *)aDb
 {
 	if (tableName == nil) return nil;
 	
@@ -703,6 +829,8 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	
 	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
+		// cid|name|type|notnull|dflt|value|pk
+		
 		const unsigned char *text = sqlite3_column_text(statement, 1);
 		int textSize = sqlite3_column_bytes(statement, 1);
 		
@@ -730,7 +858,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
  *
  * key:(NSString *)columnName -> value:(NSString *)affinity
 **/
-- (NSDictionary *)columnNamesAndAffinityForTable:(NSString *)tableName using:(sqlite3 *)aDb
++ (NSDictionary *)columnNamesAndAffinityForTable:(NSString *)tableName using:(sqlite3 *)aDb
 {
 	if (tableName == nil) return nil;
 	
@@ -970,8 +1098,14 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	// Write it to disk (replacing any previous value from last app run)
 	
 	[self beginTransaction];
-	[self writeSnapshot];
-	[self fetchPreviouslyRegisteredExtensionNames];
+	{
+		#if 0
+		YDBLogVerbose(@"sqlite version = %@", [YapDatabase sqliteVersionUsing:db]);
+		#endif
+		
+		[self writeSnapshot];
+		[self fetchPreviouslyRegisteredExtensionNames];
+	}
 	[self commitTransaction];
 }
 
@@ -1206,7 +1340,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 
 - (YapDatabaseConnectionFlushMemoryFlags)defaultAutoFlushMemoryFlags
 {
-	__block int result = YapDatabaseConnectionFlushMemoryFlags_None;
+	__block YapDatabaseConnectionFlushMemoryFlags result = YapDatabaseConnectionFlushMemoryFlags_None;
 	
 	dispatch_sync(internalQueue, ^{
 		
@@ -1330,7 +1464,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
  *     NO if an error occurred, such as the extensionName is already registered.
  * 
  * @see asyncRegisterExtension:withName:completionBlock:
- * @see asyncRegisterExtension:withName:completionBlock:completionQueue:
+ * @see asyncRegisterExtension:withName:completionQueue:completionBlock:
 **/
 - (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName
 {
@@ -1363,8 +1497,8 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 {
 	[self asyncRegisterExtension:extension
 	                    withName:extensionName
-	             completionBlock:completionBlock
-	             completionQueue:NULL];
+	             completionQueue:NULL
+	             completionBlock:completionBlock];
 }
 
 /**
@@ -1383,8 +1517,8 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 **/
 - (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
                       withName:(NSString *)extensionName
-               completionBlock:(void(^)(BOOL ready))completionBlock
                completionQueue:(dispatch_queue_t)completionQueue
+               completionBlock:(void(^)(BOOL ready))completionBlock
 {
 	if (completionQueue == NULL && completionBlock != NULL)
 		completionQueue = dispatch_get_main_queue();
@@ -1404,34 +1538,115 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 }
 
 /**
+ * DEPRECATED in v2.5
  *
+ * The syntax has been changed in order to make the code easier to read.
+ * In the past the code would end up looking like this:
+ *
+ * [database asyncRegisterExtension:ext
+ *                         withName:@"name"
+ *                  completionBlock:^
+ * {
+ *     // A bunch of code here
+ *     // code...
+ *     // code...
+ * } completionQueue:importantQueue]; <-- Hidden in code. Often overlooked.
+ *
+ * The new syntax puts the completionQueue declaration before the completionBlock declaration.
+ * Since the two are intricately linked, they should be next to each other in code.
+ * Then end result is easier to read:
+ *
+ * [database asyncRegisterExtension:ext
+ *                         withName:@"name"
+ *                  completionQueue:importantQueue <-- Easier to see
+ *                  completionBlock:^
+ * {
+ *     // 100 lines of code here
+ * }];
 **/
-- (void)unregisterExtension:(NSString *)extensionName
+- (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
+                      withName:(NSString *)extensionName
+               completionBlock:(void(^)(BOOL ready))completionBlock
+               completionQueue:(dispatch_queue_t)completionQueue
+{
+	[self asyncRegisterExtension:extension
+	                    withName:extensionName
+	             completionQueue:completionQueue
+	             completionBlock:completionBlock];
+}
+
+/**
+ * This method unregisters an extension with the given name.
+ * The associated underlying tables will be dropped from the database.
+ *
+ * Note 1:
+ *   You don't need to re-register an extension in order to unregister it. For example,
+ *   you've previously registered an extension (in previous app launches), but you no longer need the extension.
+ *   You don't have to bother creating and registering the unneeded extension,
+ *   just so you can unregister it and have the associated tables dropped.
+ *   The database persists information about registered extensions, including the associated class of an extension.
+ *   So you can simply pass the name of the extension, and the database system will use the associated class to
+ *   drop the appropriate tables.
+ *
+ * Note 2:
+ *   In fact, you don't even have to worry about unregistering extensions that you no longer need.
+ *   That database system will automatically handle it for you.
+ *   That is, upon completion of the first readWrite transaction (that makes changes), the database system will
+ *   check to see if there are any "orphaned" extensions. Previously registered extensions that are no longer in use.
+ *   And it will automatically unregister these orhpaned extensions for you.
+ *
+ * @see asyncUnregisterExtensionWithName:completionBlock:
+ * @see asyncUnregisterExtensionWithName:completionQueue:completionBlock:
+**/
+- (void)unregisterExtensionWithName:(NSString *)extensionName
 {
 	dispatch_sync(writeQueue, ^{ @autoreleasepool {
 		
-		[self _unregisterExtension:extensionName];
+		[self _unregisterExtensionWithName:extensionName];
 	}});
 }
 
-- (void)asyncUnregisterExtension:(NSString *)extensionName
-                 completionBlock:(dispatch_block_t)completionBlock
+/**
+ * Asynchronoulsy starts the extension unregistration process.
+ *
+ * The unregistration process is equivalent to a readwrite transaction.
+ * It involves deleting various information about the extension from the database,
+ * as well as possibly dropping related tables the extension may have been using.
+ *
+ * An optional completion block may be used.
+ *
+ * The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
+**/
+- (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
+                         completionBlock:(dispatch_block_t)completionBlock
 {
-	[self asyncUnregisterExtension:extensionName
-	               completionBlock:completionBlock
-	               completionQueue:NULL];
+	[self asyncUnregisterExtensionWithName:extensionName
+	                       completionQueue:NULL
+	                       completionBlock:completionBlock];
 }
 
-- (void)asyncUnregisterExtension:(NSString *)extensionName
-                 completionBlock:(dispatch_block_t)completionBlock
-                 completionQueue:(dispatch_queue_t)completionQueue
+/**
+ * Asynchronoulsy starts the extension unregistration process.
+ *
+ * The unregistration process is equivalent to a readwrite transaction.
+ * It involves deleting various information about the extension from the database,
+ * as well as possibly dropping related tables the extension may have been using.
+ *
+ * An optional completion block may be used.
+ *
+ * Additionally the dispatch_queue to invoke the completion block may also be specified.
+ * If NULL, dispatch_get_main_queue() is automatically used.
+**/
+- (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
+                         completionQueue:(dispatch_queue_t)completionQueue
+                         completionBlock:(dispatch_block_t)completionBlock
 {
 	if (completionQueue == NULL && completionBlock != NULL)
 		completionQueue = dispatch_get_main_queue();
 	
 	dispatch_async(writeQueue, ^{ @autoreleasepool {
 		
-		[self _unregisterExtension:extensionName];
+		[self _unregisterExtensionWithName:extensionName];
 		
 		if (completionBlock)
 		{
@@ -1444,11 +1659,45 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 }
 
 /**
+ * DEPRECATED in v2.5
+ *
+ * The syntax has been changed in order to make the code easier to read.
+ * In the past the code would end up looking like this:
+ *
+ * [database asyncUnregisterExtensionWithName:@"name"
+ *                            completionBlock:^
+ * {
+ *     // A bunch of code here
+ *     // code...
+ *     // code...
+ * } completionQueue:importantQueue]; <-- Hidden in code. Often overlooked.
+ *
+ * The new syntax puts the completionQueue declaration before the completionBlock declaration.
+ * Since the two are intricately linked, they should be next to each other in code.
+ * Then end result is easier to read:
+ *
+ * [database asyncUnregisterExtensionWithName:@"name"
+ *                            completionQueue:importantQueue <-- Easier to see
+ *                            completionBlock:^
+ * {
+ *     // 100 lines of code here
+ * }];
+**/
+- (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
+                         completionBlock:(dispatch_block_t)completionBlock
+                         completionQueue:(dispatch_queue_t)completionQueue
+{
+	[self asyncUnregisterExtensionWithName:extensionName
+	                       completionQueue:completionQueue
+	                       completionBlock:completionBlock];
+}
+
+/**
  * Internal utility method.
  * Handles lazy creation and destruction of short-lived registrationConnection instance.
  * 
  * @see _registerExtension:withName:
- * @see _unregisterExtension:
+ * @see _unregisterExtensionWithName:
 **/
 - (YapDatabaseConnection *)registrationConnection
 {
@@ -1509,7 +1758,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 	
 	if (![extension supportsDatabase:self withRegisteredExtensions:_registeredExtensions])
 	{
-		YDBLogError(@"Error registering extension: extension doesn't database type or configuration");
+		YDBLogError(@"Error registering extension: extension doesn't support database configuration");
 		return NO;
 	}
 	
@@ -1523,7 +1772,7 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
  * Internal method that handles extension unregistration.
  * This method must be invoked on the writeQueue.
 **/
-- (void)_unregisterExtension:(NSString *)extensionName
+- (void)_unregisterExtensionWithName:(NSString *)extensionName
 {
 	NSAssert(dispatch_get_specific(IsOnWriteQueueKey), @"Must go through writeQueue.");
 	
@@ -1533,7 +1782,43 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 		return;
 	}
 	
-	[[self registrationConnection] unregisterExtension:extensionName];
+	[[self registrationConnection] unregisterExtensionWithName:extensionName];
+}
+
+/**
+ * DEPRECATED in v2.5
+ * 
+ * Use unregisterExtensionWithName: instead.
+**/
+- (void)unregisterExtension:(NSString *)extensionName
+{
+	[self unregisterExtensionWithName:extensionName];
+}
+
+/**
+ * DEPRECATED in v2.5
+ * 
+ * Use asyncUnregisterExtensionWithName:completionBlock: instead.
+**/
+- (void)asyncUnregisterExtension:(NSString *)extensionName
+                 completionBlock:(dispatch_block_t)completionBlock
+{
+	[self asyncUnregisterExtensionWithName:extensionName
+	                       completionBlock:completionBlock];
+}
+
+/**
+ * DEPRECATED in v2.5
+ * 
+ * Use asyncUnregisterExtensionWithName:completionQueue:completionBlock: instead.
+**/
+- (void)asyncUnregisterExtension:(NSString *)extensionName
+                 completionBlock:(dispatch_block_t)completionBlock
+                 completionQueue:(dispatch_queue_t)completionQueue
+{
+	[self asyncUnregisterExtensionWithName:extensionName
+	                       completionQueue:completionQueue
+	                       completionBlock:completionBlock];
 }
 
 /**
@@ -1840,11 +2125,11 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
  * This method is only accessible from within the snapshotQueue.
  * Used by [YapDatabaseConnection prepare].
 **/
-- (NSDictionary *)registeredTables
+- (NSDictionary *)registeredMemoryTables
 {
 	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
 	
-	return registeredTables;
+	return registeredMemoryTables;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1977,12 +2262,29 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 		extensionDependencies = [changeset objectForKey:YapDatabaseExtensionDependenciesKey];
 	}
 	
-	// Update registeredTables, if changed.
+	// Update registeredMemoryTables, if changed.
 	
-	NSDictionary *newRegisteredTables = [changeset objectForKey:YapDatabaseRegisteredTablesKey];
-	if (newRegisteredTables)
+	NSDictionary *newRegisteredMemoryTables = [changeset objectForKey:YapDatabaseRegisteredMemoryTablesKey];
+	if (newRegisteredMemoryTables)
 	{
-		registeredTables = newRegisteredTables;
+		registeredMemoryTables = newRegisteredMemoryTables;
+	}
+	
+	// Forward the changeset to all extensions.
+	
+	NSDictionary *changeset_extensions = [changeset objectForKey:YapDatabaseExtensionsKey];
+	if (changeset_extensions)
+	{
+		[registeredExtensions enumerateKeysAndObjectsUsingBlock:^(id extName, id extObj, BOOL *stop) {
+			
+			NSDictionary *changeset_extensions_extName = [changeset_extensions objectForKey:extName];
+			if (changeset_extensions_extName)
+			{
+				__unsafe_unretained YapDatabaseExtension *ext = extObj;
+				
+				[ext processChangeset:changeset_extensions_extName];
+			}
+		}];
 	}
 	
 	// Forward the changeset to all other connections so they can perform any needed updates.
@@ -2058,6 +2360,8 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 **/
 - (void)asyncCheckpoint:(uint64_t)maxCheckpointableSnapshot
 {
+	static BOOL const PRINT_WAL_SIZE = NO;
+	
 	__weak YapDatabase *weakSelf = self;
 	
 	dispatch_async(checkpointQueue, ^{ @autoreleasepool {
@@ -2066,6 +2370,18 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 		if (strongSelf == nil) return;
 		
 		YDBLogVerbose(@"Checkpointing up to snapshot %llu", maxCheckpointableSnapshot);
+		
+		if (YDB_LOG_VERBOSE && PRINT_WAL_SIZE)
+		{
+			NSString *walFilePath = [strongSelf.databasePath stringByAppendingString:@"-wal"];
+			
+			NSDictionary *walAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:walFilePath error:NULL];
+			unsigned long long walFileSize = [walAttr fileSize];
+			
+			YDBLogVerbose(@"Pre-checkpoint file size: %@",
+			  [NSByteCountFormatter stringFromByteCount:(long long)walFileSize
+			                                 countStyle:NSByteCountFormatterCountStyleFile]);
+		}
 		
 		// We're ready to checkpoint more frames.
 		//
@@ -2129,6 +2445,18 @@ NSString *const YapDatabaseNotificationKey          = @"notification";
 					}
 				}
 			});
+		}
+		
+		if (YDB_LOG_VERBOSE && PRINT_WAL_SIZE)
+		{
+			NSString *walFilePath = [strongSelf.databasePath stringByAppendingString:@"-wal"];
+			
+			NSDictionary *walAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:walFilePath error:NULL];
+			unsigned long long walFileSize = [walAttr fileSize];
+			
+			YDBLogVerbose(@"Post-checkpoint file size: %@",
+			  [NSByteCountFormatter stringFromByteCount:(long long)walFileSize
+			                                 countStyle:NSByteCountFormatterCountStyleFile]);
 		}
 	}});
 }

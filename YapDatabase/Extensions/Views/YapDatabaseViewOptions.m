@@ -17,7 +17,7 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-	YapDatabaseViewOptions *copy = [[YapDatabaseViewOptions alloc] init];
+	YapDatabaseViewOptions *copy = [[[self class] alloc] init]; // [self class] required to support subclassing
 	copy->isPersistent = isPersistent;
 	copy->allowedCollections = allowedCollections;
 	

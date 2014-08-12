@@ -532,12 +532,6 @@
 **/
 - (void)replacePrimitiveMetadata:(NSData *)primitiveMetadata forKey:(NSString *)key inCollection:(NSString *)collection;
 
-/**
- * DEPRECATED: Use replacePrimitiveMetadata:forKey:inCollection: instead.
-**/
-- (void)setPrimitiveMetadata:(NSData *)primitiveMetadata forKey:(NSString *)key inCollection:(NSString *)collection
-__attribute((deprecated("Use method replacePrimitiveMetadata:forKey:inCollection: instead")));
-
 #pragma mark Object & Metadata
 
 /**
@@ -582,12 +576,6 @@ __attribute((deprecated("Use method replacePrimitiveMetadata:forKey:inCollection
  * If you pass nil for the metadata, any metadata previously associated with the key/collection is removed.
 **/
 - (void)replaceMetadata:(id)metadata forKey:(NSString *)key inCollection:(NSString *)collection;
-
-/**
- * DEPRECATED: Use replaceMetadata:forKey:inCollection: instead.
-**/
-- (void)setMetadata:(id)metadata forKey:(NSString *)key inCollection:(NSString *)collection
-__attribute((deprecated("Use method replaceMetadata:forKey:inCollection: instead")));
 
 #pragma mark Touch
 

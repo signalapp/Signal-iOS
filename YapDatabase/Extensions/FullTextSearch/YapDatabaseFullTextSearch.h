@@ -44,12 +44,12 @@ typedef void (^YapDatabaseFullTextSearchWithRowBlock)      \
 /**
  * Use this enum to specify what kind of block you're passing.
 **/
-typedef enum {
+typedef NS_ENUM(NSInteger, YapDatabaseFullTextSearchBlockType) {
 	YapDatabaseFullTextSearchBlockTypeWithKey       = 201,
 	YapDatabaseFullTextSearchBlockTypeWithObject    = 202,
 	YapDatabaseFullTextSearchBlockTypeWithMetadata  = 203,
 	YapDatabaseFullTextSearchBlockTypeWithRow       = 204
-} YapDatabaseFullTextSearchBlockType;
+};
 
 @interface YapDatabaseFullTextSearch : YapDatabaseExtension
 
@@ -66,24 +66,24 @@ typedef enum {
 - (id)initWithColumnNames:(NSArray *)columnNames
                     block:(YapDatabaseFullTextSearchBlock)block
                 blockType:(YapDatabaseFullTextSearchBlockType)blockType
-                  version:(int)version;
+               versionTag:(NSString *)versionTag;
 
 - (id)initWithColumnNames:(NSArray *)columnNames
                   options:(NSDictionary *)options
                     block:(YapDatabaseFullTextSearchBlock)block
                 blockType:(YapDatabaseFullTextSearchBlockType)blockType
-                  version:(int)version;
+               versionTag:(NSString *)versionTag;
 
 @property (nonatomic, strong, readonly) YapDatabaseFullTextSearchBlock block;
 @property (nonatomic, assign, readonly) YapDatabaseFullTextSearchBlockType blockType;
 
 /**
- * The version assists in making changes to the extension.
+ * The versionTag assists in making changes to the extension.
  *
  * If you need to change the columnNames and/or block,
- * then simply pass an incremented version during the init method,
+ * then simply pass a different versionTag during the init method,
  * and the FTS extension will automatically update itself.
 **/
-@property (nonatomic, assign, readonly) int version;
+@property (nonatomic, copy, readonly) NSString *versionTag;
 
 @end

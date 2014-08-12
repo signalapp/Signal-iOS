@@ -20,11 +20,10 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
-#define ExtKey_classVersion    @"classVersion"
-#define ExtKey_persistent      @"persistent"
-#define ExtKey_parentViewName  @"parentViewName"
-#define ExtKey_tag_deprecated  @"tag"
-#define ExtKey_versionTag      @"versionTag"
+static NSString *const ExtKey_classVersion   = @"classVersion";
+static NSString *const ExtKey_parentViewName = @"parentViewName";
+static NSString *const ExtKey_tag_deprecated = @"tag";
+static NSString *const ExtKey_versionTag     = @"versionTag";
 
 @implementation YapDatabaseFilteredViewTransaction
 
@@ -42,150 +41,151 @@
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseFilteredView *filteredView = (YapDatabaseFilteredView *)(viewConnection->view);
-	
-	int classVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
-	BOOL isPersistent = [self isPersistentView];
-	
-	NSString *parentViewName = filteredView->parentViewName;
-	NSString *versionTag = filteredView->versionTag;
-	
-	// Figure out what steps we need to take in order to register the view
-	
-	BOOL needsCreateTables = NO;
-	
-	BOOL oldIsPersistent = NO;
-	BOOL hasOldIsPersistent = NO;
-	
-	NSString *oldParentViewName = nil;
-	NSString *oldVersionTag = nil;
-	
-	// Check classVersion (the internal version number of view implementation)
-	
-	int oldClassVersion = 0;
-	BOOL hasOldClassVersion = [self getIntValue:&oldClassVersion forExtensionKey:ExtKey_classVersion];
-	
-	if (!hasOldClassVersion)
+	if (![self isPersistentView])
 	{
-		needsCreateTables = YES;
-	}
-	else if (oldClassVersion != classVersion)
-	{
-		[self dropTablesForOldClassVersion:oldClassVersion];
-		needsCreateTables = YES;
-	}
-	
-	// Check persistence.
-	// Need to properly transition from persistent to non-persistent, and vice-versa.
-	
-	if (!needsCreateTables || hasOldClassVersion)
-	{
-		hasOldIsPersistent = [self getBoolValue:&oldIsPersistent forExtensionKey:ExtKey_persistent];
-		
-		if (hasOldIsPersistent && oldIsPersistent && !isPersistent)
-		{
-			[[viewConnection->view class]
-			  dropTablesForRegisteredName:[self registeredName]
-			              withTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction];
-		}
-		
-		if (!hasOldIsPersistent || (oldIsPersistent != isPersistent))
-		{
-			needsCreateTables = YES;
-		}
-		else if (!isPersistent)
-		{
-			// We always have to create & populate the tables for non-persistent views.
-			// Even when re-registering from previous app launch.
-			needsCreateTables = YES;
-			
-			oldParentViewName = [self stringValueForExtensionKey:ExtKey_parentViewName];
-			oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag];
-		}
-	}
-	
-	// Create or re-populate if needed
-	
-	if (needsCreateTables)
-	{
-		// First time registration
+		// We're registering an In-Memory-Only View (non-persistent) (not stored in the database).
+		// So we can skip all the checks because we know we need to create the memory tables.
 		
 		if (![self createTables]) return NO;
 		if (![self populateView]) return NO;
 		
-		if (!hasOldClassVersion || (oldClassVersion != classVersion)) {
-			[self setIntValue:classVersion forExtensionKey:ExtKey_classVersion];
+		// Store initial versionTag in prefs table
+		
+		NSString *versionTag = [viewConnection->view versionTag]; // MUST get init value from view
+		
+		[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:NO];
+		
+		// If there was a previously registered persistent view with this name,
+		// then we should drop those tables from the database.
+		
+		BOOL dropPersistentTables = [self getIntValue:NULL forExtensionKey:ExtKey_classVersion persistent:YES];
+		if (dropPersistentTables)
+		{
+			[[viewConnection->view class]
+			  dropTablesForRegisteredName:[self registeredName]
+			              withTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
+			                wasPersistent:YES];
 		}
 		
-		if (!hasOldIsPersistent || (oldIsPersistent != isPersistent)) {
-			[self setBoolValue:isPersistent forExtensionKey:ExtKey_persistent];
-		}
-		
-		if (![oldParentViewName isEqualToString:parentViewName]) {
-			[self setStringValue:parentViewName forExtensionKey:ExtKey_parentViewName];
-		}
-		
-		if (![oldVersionTag isEqualToString:versionTag]) {
-			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
-		}
+		return YES;
 	}
 	else
 	{
-		BOOL needsRepopulateView = NO;
+		// We're registering a Peristent View (stored in the database).
 		
-		// Check parentViewName.
-		// Need to re-populate if the parent changed.
+		__unsafe_unretained YapDatabaseFilteredView *filteredView = (YapDatabaseFilteredView *)(viewConnection->view);
 		
-		oldParentViewName = [self stringValueForExtensionKey:ExtKey_parentViewName];
+		int classVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
 		
-		if (![oldParentViewName isEqualToString:parentViewName])
+		NSString *parentViewName = filteredView->parentViewName;
+		NSString *versionTag = [viewConnection->view versionTag]; // MUST get init value from view
+		
+		// Figure out what steps we need to take in order to register the view
+		
+		BOOL needsCreateTables = NO;
+		BOOL needsPopulateView = NO;
+		
+		// Check classVersion (the internal version number of view implementation)
+		
+		int oldClassVersion = 0;
+		BOOL hasOldClassVersion = [self getIntValue:&oldClassVersion
+		                            forExtensionKey:ExtKey_classVersion persistent:YES];
+		
+		if (!hasOldClassVersion)
 		{
-			needsRepopulateView = YES;
+			// First time registration
+			
+			needsCreateTables = YES;
+			needsPopulateView = YES;
+		}
+		else if (oldClassVersion != classVersion)
+		{
+			// Upgrading from older codebase
+			
+			[self dropTablesForOldClassVersion:oldClassVersion];
+			needsCreateTables = YES;
+			needsPopulateView = YES;
 		}
 		
-		// Check user-supplied tag.
-		// We may need to re-populate the database if the groupingBlock or sortingBlock changed.
+		// Create the database tables (if needed)
 		
-		oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag];
-		
-		NSString *oldTag_deprecated = nil;
-		if (oldVersionTag == nil)
+		if (needsCreateTables)
 		{
-			oldTag_deprecated = [self stringValueForExtensionKey:ExtKey_tag_deprecated];
-			if (oldTag_deprecated)
+			if (![self createTables]) return NO;
+		}
+		
+		// Check other variables (if needed)
+		
+		NSString *oldParentViewName = nil;
+		NSString *oldVersionTag = nil;
+		NSString *oldTag_deprecated = nil;
+		
+		if (!hasOldClassVersion)
+		{
+			// If there wasn't a classVersion in the table,
+			// then there won't be other values either.
+		}
+		else
+		{
+			// Check parentViewName.
+			// Need to re-populate if the parent changed.
+			
+			oldParentViewName = [self stringValueForExtensionKey:ExtKey_parentViewName persistent:YES];
+			
+			if (![oldParentViewName isEqualToString:parentViewName])
 			{
-				oldVersionTag = oldTag_deprecated;
+				needsPopulateView = YES;
+			}
+			
+			// Check user-supplied tag.
+			// We may need to re-populate the database if the groupingBlock or sortingBlock changed.
+			
+			oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag persistent:YES];
+			
+			if (oldVersionTag == nil)
+			{
+				oldTag_deprecated = [self stringValueForExtensionKey:ExtKey_tag_deprecated persistent:YES];
+				if (oldTag_deprecated)
+				{
+					oldVersionTag = oldTag_deprecated;
+				}
+			}
+			
+			if (![oldVersionTag isEqualToString:versionTag])
+			{
+				needsPopulateView = YES;
 			}
 		}
 		
-		if (![oldVersionTag isEqualToString:versionTag])
-		{
-			needsRepopulateView = YES;
-		}
+		// Repopulate table (if needed)
 		
-		if (needsRepopulateView)
+		if (needsPopulateView)
 		{
 			if (![self populateView]) return NO;
-			
-			if (![oldParentViewName isEqualToString:parentViewName]) {
-				[self setStringValue:parentViewName forExtensionKey:ExtKey_parentViewName];
-			}
-			
-			if (![oldVersionTag isEqualToString:versionTag]) {
-				[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
-			}
-			
-			if (oldTag_deprecated)
-				[self removeValueForExtensionKey:ExtKey_tag_deprecated];
 		}
-		else if (oldTag_deprecated)
+		
+		// Update yap2 table values (if needed)
+		
+		if (!hasOldClassVersion || (oldClassVersion != classVersion)) {
+			[self setIntValue:classVersion forExtensionKey:ExtKey_classVersion persistent:YES];
+		}
+		
+		if (![oldParentViewName isEqualToString:parentViewName]) {
+			[self setStringValue:parentViewName forExtensionKey:ExtKey_parentViewName persistent:YES];
+		}
+		
+		if (oldTag_deprecated)
 		{
-			[self removeValueForExtensionKey:ExtKey_tag_deprecated];
-			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag];
+			[self removeValueForExtensionKey:ExtKey_tag_deprecated persistent:YES];
+			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:YES];
 		}
-	}
+		else if (![oldVersionTag isEqualToString:versionTag])
+		{
+			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:YES];
+		}
 	
-	return YES;
+		return YES;
+	}
 }
 
 /**
@@ -199,6 +199,9 @@
 {
 	YDBLogAutoTrace();
 	
+	__unsafe_unretained YapDatabaseFilteredViewConnection *filteredViewConnection =
+	  (YapDatabaseFilteredViewConnection *)viewConnection;
+	
 	__unsafe_unretained YapDatabaseFilteredView *filteredView =
 	  (YapDatabaseFilteredView *)viewConnection->view;
 	
@@ -209,32 +212,35 @@
 	
 	[self removeAllRowids];
 	
-	// Initialize ivars
+	// Initialize ivars (if needed)
 	
-	if (viewConnection->group_pagesMetadata_dict == nil)
-		viewConnection->group_pagesMetadata_dict = [[NSMutableDictionary alloc] init];
-	
-	if (viewConnection->pageKey_group_dict == nil)
-		viewConnection->pageKey_group_dict = [[NSMutableDictionary alloc] init];
+	if (viewConnection->state == nil)
+		viewConnection->state = [[YapDatabaseViewState alloc] init];
 	
 	// Setup the block to properly invoke the filterBlock.
 	
+	YapDatabaseViewFilteringBlock filteringBlock_generic;
+	YapDatabaseViewBlockType filteringBlockType;
+	
+	[filteredViewConnection getFilteringBlock:&filteringBlock_generic
+	                       filteringBlockType:&filteringBlockType];
+	
 	BOOL (^InvokeFilterBlock)(NSString *group, int64_t rowid, YapCollectionKey *ck);
 	
-	if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithKey)
+	if (filteringBlockType == YapDatabaseViewBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithKeyBlock filterBlock =
-		  (YapDatabaseViewFilteringWithKeyBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithKeyBlock)filteringBlock_generic;
 		
 		InvokeFilterBlock = ^(NSString *group, int64_t rowid, YapCollectionKey *ck){
 			
 			return filterBlock(group, ck.collection, ck.key);
 		};
 	}
-	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithObject)
+	else if (filteringBlockType == YapDatabaseViewBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithObjectBlock filterBlock =
-		  (YapDatabaseViewFilteringWithObjectBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithObjectBlock)filteringBlock_generic;
 		
 		InvokeFilterBlock = ^(NSString *group, int64_t rowid, YapCollectionKey *ck){
 			
@@ -243,10 +249,10 @@
 			return filterBlock(group, ck.collection, ck.key, object);
 		};
 	}
-	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	else if (filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithMetadataBlock filterBlock =
-		  (YapDatabaseViewFilteringWithMetadataBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithMetadataBlock)filteringBlock_generic;
 		
 		InvokeFilterBlock = ^(NSString *group, int64_t rowid, YapCollectionKey *ck){
 			
@@ -255,10 +261,10 @@
 			return filterBlock(group, ck.collection, ck.key, metadata);
 		};
 	}
-	else // if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithRow)
+	else // if (filteringBlockType == YapDatabaseViewBlockTypeWithRow)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithRowBlock filterBlock =
-		  (YapDatabaseViewFilteringWithRowBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithRowBlock)filteringBlock_generic;
 		
 		InvokeFilterBlock = ^(NSString *group, int64_t rowid, YapCollectionKey *ck){
 			
@@ -283,11 +289,15 @@
 			
 			if (InvokeFilterBlock(group, rowid, ck))
 			{
-				if (filteredIndex == 0)
+				if (filteredIndex == 0) {
 					[self insertRowid:rowid collectionKey:ck inNewGroup:group];
-				else
-					[self insertRowid:rowid collectionKey:ck inGroup:group atIndex:filteredIndex
-					                                           withExistingPageKey:nil];
+				}
+				else {
+					[self insertRowid:rowid collectionKey:ck
+					                              inGroup:group
+					                              atIndex:filteredIndex
+					                  withExistingPageKey:nil];
+				}
 				filteredIndex++;
 			}
 		}];
@@ -297,9 +307,15 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Logic
+#pragma mark Repopulate
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * This method is invoked if:
+ *
+ * - Our parentView had its groupingBlock and/or sortingBlock changed.
+ * - A parentView of our parentView had its groupingBlock and/or sortingBlock changed.
+**/
 - (void)repopulateViewDueToParentGroupingBlockChange
 {
 	// Update our groupingBlock & sortingBlock to match the changed parent
@@ -310,13 +326,25 @@
 	YapDatabaseViewTransaction *parentViewTransaction =
 	  [databaseTransaction ext:filteredView->parentViewName];
 	
-	__unsafe_unretained YapDatabaseView *parentView = parentViewTransaction->viewConnection->view;
+	__unsafe_unretained YapDatabaseViewConnection *parentViewConnection = parentViewTransaction->viewConnection;
 	
-	filteredView->groupingBlock = parentView->groupingBlock;
-	filteredView->groupingBlockType = parentView->groupingBlockType;
+	YapDatabaseViewGroupingBlock newGroupingBlock;
+	YapDatabaseViewSortingBlock  newSortingBlock;
+	YapDatabaseViewBlockType newGroupingBlockType;
+	YapDatabaseViewBlockType newSortingBlockType;
 	
-	filteredView->sortingBlock = parentView->sortingBlock;
-	filteredView->sortingBlockType = parentView->sortingBlockType;
+	[parentViewConnection getGroupingBlock:&newGroupingBlock
+	                     groupingBlockType:&newGroupingBlockType
+	                          sortingBlock:&newSortingBlock
+	                      sortingBlockType:&newSortingBlockType];
+	
+	__unsafe_unretained YapDatabaseFilteredViewConnection *filteredViewConnection =
+	  (YapDatabaseFilteredViewConnection *)viewConnection;
+	
+	[filteredViewConnection setGroupingBlock:newGroupingBlock
+	                       groupingBlockType:newGroupingBlockType
+	                            sortingBlock:newSortingBlock
+	                        sortingBlockType:newSortingBlockType];
 	
 	// Code overview:
 	//
@@ -339,24 +367,24 @@
 	//
 	// The changeset mechanism will automatically consolidate all changes to the minimum.
 	
-	for (NSString *group in viewConnection->group_pagesMetadata_dict)
-	{
+	[viewConnection->state enumerateGroupsWithBlock:^(NSString *group, BOOL *outerStop) {
+		
 		// We must add the changes in reverse order.
 		// Either that, or the change index of each item would have to be zero,
 		// because a YapDatabaseViewRowChange records the index at the moment the change happens.
 		
 		[self enumerateRowidsInGroup:group
 		                 withOptions:NSEnumerationReverse
-		                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop)
+		                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *innerStop)
 		{
 			YapCollectionKey *collectionKey = [databaseTransaction collectionKeyForRowid:rowid];
 			 
 			[viewConnection->changes addObject:
-			  [YapDatabaseViewRowChange deleteKey:collectionKey inGroup:group atIndex:index]];
+			  [YapDatabaseViewRowChange deleteCollectionKey:collectionKey inGroup:group atIndex:index]];
 		}];
 		
 		[viewConnection->changes addObject:[YapDatabaseViewSectionChange deleteGroup:group]];
-	}
+	}];
 	
 	isRepopulate = YES;
 	[self populateView];
@@ -366,11 +394,15 @@
 /**
  * This method is invoked if:
  *
- * - The parentView is a filteredView, and the filteringBlock of the parent instance is changed
+ * - Our parentView is a filteredView, and its filteringBlock was changed.
+ * - A parentView of our parentView is a filteredView, and its filteringBlock was changed.
 **/
 - (void)repopulateViewDueToParentFilteringBlockChange
 {
 	YDBLogAutoTrace();
+	
+	__unsafe_unretained YapDatabaseFilteredViewConnection *filteredViewConnection =
+	  (YapDatabaseFilteredViewConnection *)viewConnection;
 	
 	__unsafe_unretained YapDatabaseFilteredView *filteredView =
 	  (YapDatabaseFilteredView *)viewConnection->view;
@@ -382,29 +414,35 @@
 	//
 	// - in the parentView, the groups may have changed
 	// - in the parentView, the items within each group may have changed
-	// - in the parentView, the order of items within each group is the same (important)
+	// - in the parentView, the order of items within each group is the same (important!)
 	//
 	// So we can run an algorithm similar to 'repopulateViewDueToFilteringBlockChange',
 	// but we have to watch out for stuff in our view that no longer exists in the parent view.
 	
 	// Setup the block to properly invoke the filterBlock.
 	
+	YapDatabaseViewFilteringBlock filteringBlock_generic;
+	YapDatabaseViewBlockType filteringBlockType;
+	
+	[filteredViewConnection getFilteringBlock:&filteringBlock_generic
+	                       filteringBlockType:&filteringBlockType];
+	
 	BOOL (^InvokeFilterBlock)(NSString *group, int64_t rowid, YapCollectionKey *ck);
 	
-	if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithKey)
+	if (filteringBlockType == YapDatabaseViewBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithKeyBlock filterBlock =
-		  (YapDatabaseViewFilteringWithKeyBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithKeyBlock)filteringBlock_generic;
 		
 		InvokeFilterBlock = ^(NSString *group, int64_t rowid, YapCollectionKey *ck){
 			
 			return filterBlock(group, ck.collection, ck.key);
 		};
 	}
-	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithObject)
+	else if (filteringBlockType == YapDatabaseViewBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithObjectBlock filterBlock =
-		  (YapDatabaseViewFilteringWithObjectBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithObjectBlock)filteringBlock_generic;
 		
 		InvokeFilterBlock = ^(NSString *group, int64_t rowid, YapCollectionKey *ck){
 			
@@ -413,10 +451,10 @@
 			return filterBlock(group, ck.collection, ck.key, object);
 		};
 	}
-	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	else if (filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithMetadataBlock filterBlock =
-		  (YapDatabaseViewFilteringWithMetadataBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithMetadataBlock)filteringBlock_generic;
 		
 		InvokeFilterBlock = ^(NSString *group, int64_t rowid, YapCollectionKey *ck){
 			
@@ -425,10 +463,10 @@
 			return filterBlock(group, ck.collection, ck.key, metadata);
 		};
 	}
-	else // if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithRow)
+	else // if (filteringBlockType == YapDatabaseViewBlockTypeWithRow)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithRowBlock filterBlock =
-		  (YapDatabaseViewFilteringWithRowBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithRowBlock)filteringBlock_generic;
 		
 		InvokeFilterBlock = ^(NSString *group, int64_t rowid, YapCollectionKey *ck){
 			
@@ -525,11 +563,15 @@
 					// The row was not previously in our view (not previously in parent view),
 					// but is now in the view (added to parent view, and allowed by our filter).
 				
-					if (index == 0 && ([viewConnection->group_pagesMetadata_dict objectForKey:group] == nil))
+					if (index == 0 && ([viewConnection->state pagesMetadataForGroup:group] == nil)) {
 						[self insertRowid:rowid collectionKey:ck inNewGroup:group];
-					else
-						[self insertRowid:rowid collectionKey:ck inGroup:group
-								  atIndex:index withExistingPageKey:nil];
+					}
+					else {
+						[self insertRowid:rowid collectionKey:ck
+						                              inGroup:group
+						                              atIndex:index
+					  	                  withExistingPageKey:nil];
+					}
 					index++;
 				}
 				else
@@ -572,6 +614,9 @@
 {
 	YDBLogAutoTrace();
 	
+	__unsafe_unretained YapDatabaseFilteredViewConnection *filteredViewConnection =
+	  (YapDatabaseFilteredViewConnection *)viewConnection;
+	
 	__unsafe_unretained YapDatabaseFilteredView *filteredView =
 	  (YapDatabaseFilteredView *)viewConnection->view;
 	
@@ -585,22 +630,28 @@
 	
 	// Setup the block to properly invoke the filterBlock.
 	
+	YapDatabaseViewFilteringBlock filteringBlock_generic;
+	YapDatabaseViewBlockType filteringBlockType;
+	
+	[filteredViewConnection getFilteringBlock:&filteringBlock_generic
+	                       filteringBlockType:&filteringBlockType];
+	
 	BOOL (^InvokeFilterBlock)(NSString *group, int64_t rowid, YapCollectionKey *ck);
 	
-	if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithKey)
+	if (filteringBlockType == YapDatabaseViewBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithKeyBlock filterBlock =
-		  (YapDatabaseViewFilteringWithKeyBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithKeyBlock)filteringBlock_generic;
 		
 		InvokeFilterBlock = ^(NSString *group, int64_t rowid, YapCollectionKey *ck){
 			
 			return filterBlock(group, ck.collection, ck.key);
 		};
 	}
-	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithObject)
+	else if (filteringBlockType == YapDatabaseViewBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithObjectBlock filterBlock =
-		  (YapDatabaseViewFilteringWithObjectBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithObjectBlock)filteringBlock_generic;
 		
 		InvokeFilterBlock = ^(NSString *group, int64_t rowid, YapCollectionKey *ck){
 			
@@ -609,10 +660,10 @@
 			return filterBlock(group, ck.collection, ck.key, object);
 		};
 	}
-	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	else if (filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithMetadataBlock filterBlock =
-		  (YapDatabaseViewFilteringWithMetadataBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithMetadataBlock)filteringBlock_generic;
 		
 		InvokeFilterBlock = ^(NSString *group, int64_t rowid, YapCollectionKey *ck){
 			
@@ -621,10 +672,10 @@
 			return filterBlock(group, ck.collection, ck.key, metadata);
 		};
 	}
-	else // if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithRow)
+	else // if (filteringBlockType == YapDatabaseViewBlockTypeWithRow)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithRowBlock filterBlock =
-		  (YapDatabaseViewFilteringWithRowBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithRowBlock)filteringBlock_generic;
 		
 		InvokeFilterBlock = ^(NSString *group, int64_t rowid, YapCollectionKey *ck){
 			
@@ -667,11 +718,13 @@
 					// The row was not previously in the view (disallowed by previous filter),
 					// but is now in the view (allowed by new filter).
 					
-					if (index == 0 && ([viewConnection->group_pagesMetadata_dict objectForKey:group] == nil))
+					if (index == 0 && ([viewConnection->state pagesMetadataForGroup:group] == nil)) {
 						[self insertRowid:rowid collectionKey:ck inNewGroup:group];
-					else
+					}
+					else {
 						[self insertRowid:rowid collectionKey:ck inGroup:group
 						                                         atIndex:index withExistingPageKey:nil];
+					}
 					index++;
 				}
 			}
@@ -736,33 +789,42 @@
 	
 	// Ask filter block if we should add key to view.
 	
+	__unsafe_unretained YapDatabaseFilteredViewConnection *filteredViewConnection =
+	  (YapDatabaseFilteredViewConnection *)viewConnection;
+	
+	YapDatabaseViewFilteringBlock filteringBlock_generic;
+	YapDatabaseViewBlockType filteringBlockType;
+	
+	[filteredViewConnection getFilteringBlock:&filteringBlock_generic
+	                       filteringBlockType:&filteringBlockType];
+	
 	BOOL passesFilter;
 	
-	if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithKey)
+	if (filteringBlockType == YapDatabaseViewBlockTypeWithKey)
 	{
 		YapDatabaseViewFilteringWithKeyBlock filterBlock =
-		  (YapDatabaseViewFilteringWithKeyBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithKeyBlock)filteringBlock_generic;
 		
 		passesFilter = filterBlock(group, collection, key);
 	}
-	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithObject)
+	else if (filteringBlockType == YapDatabaseViewBlockTypeWithObject)
 	{
 		YapDatabaseViewFilteringWithObjectBlock filterBlock =
-		  (YapDatabaseViewFilteringWithObjectBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithObjectBlock)filteringBlock_generic;
 		
 		passesFilter = filterBlock(group, collection, key, object);
 	}
-	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	else if (filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
 	{
 		YapDatabaseViewFilteringWithMetadataBlock filterBlock =
-		  (YapDatabaseViewFilteringWithMetadataBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithMetadataBlock)filteringBlock_generic;
 		
 		passesFilter = filterBlock(group, collection, key, metadata);
 	}
-	else // if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithRow)
+	else // if (filteringBlockType == YapDatabaseViewBlockTypeWithRow)
 	{
 		YapDatabaseViewFilteringWithRowBlock filterBlock =
-		  (YapDatabaseViewFilteringWithRowBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithRowBlock)filteringBlock_generic;
 		
 		passesFilter = filterBlock(group, collection, key, object, metadata);
 	}
@@ -771,7 +833,7 @@
 	{
 		// This was an insert operation, so we know the key wasn't already in the view.
 		
-		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
 		[self insertRowid:rowid
 		    collectionKey:collectionKey
@@ -832,33 +894,42 @@
 	
 	// Ask filter block if we should add key to view.
 	
+	__unsafe_unretained YapDatabaseFilteredViewConnection *filteredViewConnection =
+	  (YapDatabaseFilteredViewConnection *)viewConnection;
+	
+	YapDatabaseViewFilteringBlock filteringBlock_generic;
+	YapDatabaseViewBlockType filteringBlockType;
+	
+	[filteredViewConnection getFilteringBlock:&filteringBlock_generic
+	                       filteringBlockType:&filteringBlockType];
+	
 	BOOL passesFilter;
 	
-	if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithKey)
+	if (filteringBlockType == YapDatabaseViewBlockTypeWithKey)
 	{
 		YapDatabaseViewFilteringWithKeyBlock filterBlock =
-		  (YapDatabaseViewFilteringWithKeyBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithKeyBlock)filteringBlock_generic;
 		
 		passesFilter = filterBlock(group, collection, key);
 	}
-	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithObject)
+	else if (filteringBlockType == YapDatabaseViewBlockTypeWithObject)
 	{
 		YapDatabaseViewFilteringWithObjectBlock filterBlock =
-		  (YapDatabaseViewFilteringWithObjectBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithObjectBlock)filteringBlock_generic;
 		
 		passesFilter = filterBlock(group, collection, key, object);
 	}
-	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	else if (filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
 	{
 		YapDatabaseViewFilteringWithMetadataBlock filterBlock =
-		  (YapDatabaseViewFilteringWithMetadataBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithMetadataBlock)filteringBlock_generic;
 		
 		passesFilter = filterBlock(group, collection, key, metadata);
 	}
-	else // if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithRow)
+	else // if (filteringBlockType == YapDatabaseViewBlockTypeWithRow)
 	{
 		YapDatabaseViewFilteringWithRowBlock filterBlock =
-		  (YapDatabaseViewFilteringWithRowBlock)filteredView->filteringBlock;
+		  (YapDatabaseViewFilteringWithRowBlock)filteringBlock_generic;
 		
 		passesFilter = filterBlock(group, collection, key, object, metadata);
 	}
@@ -868,7 +939,7 @@
 		// Add key to view (or update position).
 		// This was an update operation, so the key may have previously been in the view.
 		
-		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
 		[self insertRowid:rowid
 		    collectionKey:collectionKey
@@ -900,17 +971,32 @@
 {
 	YDBLogAutoTrace();
 	
+	__unsafe_unretained YapDatabaseFilteredViewConnection *filteredViewConnection =
+	  (YapDatabaseFilteredViewConnection *)viewConnection;
+	
 	__unsafe_unretained YapDatabaseFilteredView *filteredView =
 	  (YapDatabaseFilteredView *)viewConnection->view;
+	
+	YapDatabaseViewFilteringBlock filteringBlock_generic = NULL;
+	YapDatabaseViewBlockType groupingBlockType  = 0;
+	YapDatabaseViewBlockType sortingBlockType   = 0;
+	YapDatabaseViewBlockType filteringBlockType = 0;
+	
+	[filteredViewConnection getGroupingBlock:NULL
+	                       groupingBlockType:&groupingBlockType
+	                            sortingBlock:NULL
+	                        sortingBlockType:&sortingBlockType
+	                          filteringBlock:&filteringBlock_generic
+	                      filteringBlockType:&filteringBlockType];
 	
 	__unsafe_unretained NSString *collection = collectionKey.collection;
 	__unsafe_unretained NSString *key = collectionKey.key;
 	
-	BOOL groupMayHaveChanged = filteredView->groupingBlockType == YapDatabaseViewBlockTypeWithRow ||
-	                           filteredView->groupingBlockType == YapDatabaseViewBlockTypeWithObject;
+	BOOL groupMayHaveChanged = groupingBlockType == YapDatabaseViewBlockTypeWithRow ||
+	                           groupingBlockType == YapDatabaseViewBlockTypeWithObject;
 	
-	BOOL sortMayHaveChanged = filteredView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
-	                          filteredView->sortingBlockType == YapDatabaseViewBlockTypeWithObject;
+	BOOL sortMayHaveChanged = sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+	                          sortingBlockType == YapDatabaseViewBlockTypeWithObject;
 	
 	// Instead of going to the groupingBlock,
 	// just ask the parentViewTransaction what the last group was.
@@ -941,21 +1027,24 @@
 		return;
 	}
 	
-	BOOL filterMayHaveChanged = filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithRow ||
-	                            filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithObject;
+	BOOL filterMayHaveChanged = filteringBlockType == YapDatabaseViewBlockTypeWithRow ||
+	                            filteringBlockType == YapDatabaseViewBlockTypeWithObject;
 	
 	if (!groupMayHaveChanged && !sortMayHaveChanged && !filterMayHaveChanged)
 	{
 		// Nothing has changed that could possibly affect the view.
 		// Just note the touch.
 		
-		int flags = YapDatabaseViewChangedObject;
+		YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 		
 		NSString *pageKey = [self pageKeyForRowid:rowid];
 		NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 		
 		[viewConnection->changes addObject:
-		    [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:existingIndex]];
+		  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+		                                        inGroup:group
+		                                        atIndex:existingIndex
+		                                    withChanges:flags]];
 		
 		lastHandledGroup = group;
 		return;
@@ -966,35 +1055,35 @@
 	BOOL passesFilter;
 	id metadata = nil;
 	
-	if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithKey)
+	if (filteringBlockType == YapDatabaseViewBlockTypeWithKey)
 	{
-		YapDatabaseViewFilteringWithKeyBlock filterBlock =
-		  (YapDatabaseViewFilteringWithKeyBlock)filteredView->filteringBlock;
+		__unsafe_unretained YapDatabaseViewFilteringWithKeyBlock filteringBlock =
+		  (YapDatabaseViewFilteringWithKeyBlock)filteringBlock_generic;
 		
-		passesFilter = filterBlock(group, collection, key);
+		passesFilter = filteringBlock(group, collection, key);
 	}
-	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithObject)
+	else if (filteringBlockType == YapDatabaseViewBlockTypeWithObject)
 	{
-		YapDatabaseViewFilteringWithObjectBlock filterBlock =
-		  (YapDatabaseViewFilteringWithObjectBlock)filteredView->filteringBlock;
+		__unsafe_unretained YapDatabaseViewFilteringWithObjectBlock filteringBlock =
+		  (YapDatabaseViewFilteringWithObjectBlock)filteringBlock_generic;
 		
-		passesFilter = filterBlock(group, collection, key, object);
+		passesFilter = filteringBlock(group, collection, key, object);
 	}
-	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	else if (filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
 	{
-		YapDatabaseViewFilteringWithMetadataBlock filterBlock =
-		  (YapDatabaseViewFilteringWithMetadataBlock)filteredView->filteringBlock;
+		__unsafe_unretained YapDatabaseViewFilteringWithMetadataBlock filteringBlock =
+		  (YapDatabaseViewFilteringWithMetadataBlock)filteringBlock_generic;
 		
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
-		passesFilter = filterBlock(group, collection, key, metadata);
+		passesFilter = filteringBlock(group, collection, key, metadata);
 	}
-	else // if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithRow)
+	else // if (filteringBlockType == YapDatabaseViewBlockTypeWithRow)
 	{
-		YapDatabaseViewFilteringWithRowBlock filterBlock =
-		  (YapDatabaseViewFilteringWithRowBlock)filteredView->filteringBlock;
+		__unsafe_unretained YapDatabaseViewFilteringWithRowBlock filteringBlock =
+		  (YapDatabaseViewFilteringWithRowBlock)filteringBlock_generic;
 		
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
-		passesFilter = filterBlock(group, collection, key, object, metadata);
+		passesFilter = filteringBlock(group, collection, key, object, metadata);
 	}
 	
 	if (passesFilter)
@@ -1002,10 +1091,10 @@
 		// Add key to view (or update position).
 		// This was an update operation, so the key may have previously been in the view.
 		
-		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
-		BOOL sortingBlockNeedsMetadata = filteredView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
-		                                 filteredView->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata;
+		BOOL sortingBlockNeedsMetadata = sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+		                                 sortingBlockType == YapDatabaseViewBlockTypeWithMetadata;
 		if (sortingBlockNeedsMetadata && metadata == nil)
 		{
 			metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
@@ -1041,17 +1130,32 @@
 {
 	YDBLogAutoTrace();
 	
+	__unsafe_unretained YapDatabaseFilteredViewConnection *filteredViewConnection =
+	  (YapDatabaseFilteredViewConnection *)viewConnection;
+	
 	__unsafe_unretained YapDatabaseFilteredView *filteredView =
 	  (YapDatabaseFilteredView *)viewConnection->view;
+	
+	YapDatabaseViewFilteringBlock filteringBlock_generic = NULL;
+	YapDatabaseViewBlockType groupingBlockType  = 0;
+	YapDatabaseViewBlockType sortingBlockType   = 0;
+	YapDatabaseViewBlockType filteringBlockType = 0;
+	
+	[filteredViewConnection getGroupingBlock:NULL
+	                       groupingBlockType:&groupingBlockType
+	                            sortingBlock:NULL
+	                        sortingBlockType:&sortingBlockType
+	                          filteringBlock:&filteringBlock_generic
+	                      filteringBlockType:&filteringBlockType];
 	
 	__unsafe_unretained NSString *collection = collectionKey.collection;
 	__unsafe_unretained NSString *key = collectionKey.key;
 	
-	BOOL groupMayHaveChanged = filteredView->groupingBlockType == YapDatabaseViewBlockTypeWithRow ||
-	                           filteredView->groupingBlockType == YapDatabaseViewBlockTypeWithMetadata;
+	BOOL groupMayHaveChanged = groupingBlockType == YapDatabaseViewBlockTypeWithRow ||
+	                           groupingBlockType == YapDatabaseViewBlockTypeWithMetadata;
 	
-	BOOL sortMayHaveChanged = filteredView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
-	                          filteredView->sortingBlockType == YapDatabaseViewBlockTypeWithMetadata;
+	BOOL sortMayHaveChanged = sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+	                          sortingBlockType == YapDatabaseViewBlockTypeWithMetadata;
 	
 	// Instead of going to the groupingBlock,
 	// just ask the parentViewTransaction what the last group was.
@@ -1082,21 +1186,24 @@
 		return;
 	}
 	
-	BOOL filterMayHaveChanged = filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithRow ||
-	                            filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithMetadata;
+	BOOL filterMayHaveChanged = filteringBlockType == YapDatabaseViewBlockTypeWithRow ||
+	                            filteringBlockType == YapDatabaseViewBlockTypeWithMetadata;
 	
 	if (!groupMayHaveChanged && !sortMayHaveChanged && !filterMayHaveChanged)
 	{
 		// Nothing has changed that could possibly affect the view.
 		// Just note the touch.
 		
-		int flags = YapDatabaseViewChangedMetadata;
+		YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedMetadata;
 		
 		NSString *pageKey = [self pageKeyForRowid:rowid];
 		NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
 		
 		[viewConnection->changes addObject:
-		    [YapDatabaseViewRowChange updateKey:collectionKey changes:flags inGroup:group atIndex:existingIndex]];
+		  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+		                                        inGroup:group
+		                                        atIndex:existingIndex
+		                                    withChanges:flags]];
 		
 		lastHandledGroup = group;
 		return;
@@ -1107,35 +1214,35 @@
 	BOOL passesFilter;
 	id object = nil;
 	
-	if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithKey)
+	if (filteringBlockType == YapDatabaseViewBlockTypeWithKey)
 	{
-		YapDatabaseViewFilteringWithKeyBlock filterBlock =
-		  (YapDatabaseViewFilteringWithKeyBlock)filteredView->filteringBlock;
+		__unsafe_unretained YapDatabaseViewFilteringWithKeyBlock filteringBlock =
+		  (YapDatabaseViewFilteringWithKeyBlock)filteringBlock_generic;
 		
-		passesFilter = filterBlock(group, collection, key);
+		passesFilter = filteringBlock(group, collection, key);
 	}
-	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithObject)
+	else if (filteringBlockType == YapDatabaseViewBlockTypeWithObject)
 	{
-		YapDatabaseViewFilteringWithObjectBlock filterBlock =
-		  (YapDatabaseViewFilteringWithObjectBlock)filteredView->filteringBlock;
+		__unsafe_unretained YapDatabaseViewFilteringWithObjectBlock filteringBlock =
+		  (YapDatabaseViewFilteringWithObjectBlock)filteringBlock_generic;
 		
 		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
-		passesFilter = filterBlock(group, collection, key, object);
+		passesFilter = filteringBlock(group, collection, key, object);
 	}
-	else if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	else if (filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
 	{
-		YapDatabaseViewFilteringWithMetadataBlock filterBlock =
-		  (YapDatabaseViewFilteringWithMetadataBlock)filteredView->filteringBlock;
+		__unsafe_unretained YapDatabaseViewFilteringWithMetadataBlock filteringBlock =
+		  (YapDatabaseViewFilteringWithMetadataBlock)filteringBlock_generic;
 		
-		passesFilter = filterBlock(group, collection, key, metadata);
+		passesFilter = filteringBlock(group, collection, key, metadata);
 	}
-	else // if (filteredView->filteringBlockType == YapDatabaseViewBlockTypeWithRow)
+	else // if (filteringBlockType == YapDatabaseViewBlockTypeWithRow)
 	{
-		YapDatabaseViewFilteringWithRowBlock filterBlock =
-		  (YapDatabaseViewFilteringWithRowBlock)filteredView->filteringBlock;
+		__unsafe_unretained YapDatabaseViewFilteringWithRowBlock filteringBlock =
+		  (YapDatabaseViewFilteringWithRowBlock)filteringBlock_generic;
 		
 		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
-		passesFilter = filterBlock(group, collection, key, object, metadata);
+		passesFilter = filteringBlock(group, collection, key, object, metadata);
 	}
 	
 	if (passesFilter)
@@ -1143,10 +1250,10 @@
 		// Add key to view (or update position).
 		// This was an update operation, so the key may have previously been in the view.
 		
-		int flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
-		BOOL sortingBlockNeedsObject = filteredView->sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
-		                               filteredView->sortingBlockType == YapDatabaseViewBlockTypeWithObject;
+		BOOL sortingBlockNeedsObject = sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
+		                               sortingBlockType == YapDatabaseViewBlockTypeWithObject;
 		if (sortingBlockNeedsObject && object == nil)
 		{
 			object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
@@ -1271,19 +1378,19 @@
 	@throw [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
 }
 
-- (void)setFilteringBlock:(YapDatabaseViewFilteringBlock)inFilteringBlock
-       filteringBlockType:(YapDatabaseViewBlockType)inFilteringBlockType
+- (void)setFilteringBlock:(YapDatabaseViewFilteringBlock)newFilteringBlock
+       filteringBlockType:(YapDatabaseViewBlockType)newFilteringBlockType
                versionTag:(NSString *)inVersionTag
 
 {
 	YDBLogAutoTrace();
 	
-	NSAssert(inFilteringBlock != NULL, @"Invalid filteringBlock");
+	NSAssert(newFilteringBlock != NULL, @"Invalid filteringBlock");
 	
-	NSAssert(inFilteringBlockType == YapDatabaseViewBlockTypeWithKey ||
-	         inFilteringBlockType == YapDatabaseViewBlockTypeWithObject ||
-	         inFilteringBlockType == YapDatabaseViewBlockTypeWithMetadata ||
-	         inFilteringBlockType == YapDatabaseViewBlockTypeWithRow,
+	NSAssert(newFilteringBlockType == YapDatabaseViewBlockTypeWithKey ||
+	         newFilteringBlockType == YapDatabaseViewBlockTypeWithObject ||
+	         newFilteringBlockType == YapDatabaseViewBlockTypeWithMetadata ||
+	         newFilteringBlockType == YapDatabaseViewBlockTypeWithRow,
 	         @"Invalid filteringBlockType");
 	
 	if (!databaseTransaction->isReadWriteTransaction)
@@ -1292,24 +1399,26 @@
 		return;
 	}
 	
-	__unsafe_unretained YapDatabaseFilteredView *filteredView =
-	  (YapDatabaseFilteredView *)viewConnection->view;
-	
 	NSString *newVersionTag = inVersionTag ? [inVersionTag copy] : @"";
 	
-	if ([filteredView->versionTag isEqualToString:newVersionTag])
+	if ([[self versionTag] isEqualToString:newVersionTag])
 	{
 		YDBLogWarn(@"%@ - versionTag didn't change, so not updating view", THIS_METHOD);
 		return;
 	}
 	
-	filteredView->filteringBlock = inFilteringBlock;
-	filteredView->filteringBlockType = inFilteringBlockType;
+	__unsafe_unretained YapDatabaseFilteredViewConnection *filteredViewConnection =
+	  (YapDatabaseFilteredViewConnection *)viewConnection;
 	
-	filteredView->versionTag = newVersionTag;
+	[filteredViewConnection setFilteringBlock:newFilteringBlock
+	                       filteringBlockType:newFilteringBlockType
+	                               versionTag:newVersionTag];
 	
 	[self repopulateViewDueToFilteringBlockChange];
-	[self setStringValue:newVersionTag forExtensionKey:ExtKey_versionTag];
+	
+	[self setStringValue:newVersionTag
+	     forExtensionKey:ExtKey_versionTag
+	          persistent:[self isPersistentView]];
 	
 	// Notify any extensions dependent upon this one that we repopulated.
 	
