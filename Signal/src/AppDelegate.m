@@ -187,7 +187,11 @@
 
 -(void) applicationDidBecomeActive:(UIApplication *)application {
     [[AppAudioManager sharedInstance] awake];
-    application.applicationIconBadgeNumber = 0;
+    
+    // Hacky way to clear notification center after processed push
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:1];
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+    
     [self removeScreenProtection];
     
     if ([Environment isRegistered]) {

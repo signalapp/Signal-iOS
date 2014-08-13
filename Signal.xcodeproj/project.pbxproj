@@ -415,7 +415,6 @@
 		B6416FD0199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F9F199A0478003C5699 /* Localizable.strings */; };
 		B6416FD1199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416FA2199A0478003C5699 /* Localizable.strings */; };
 		B6416FD2199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416FA5199A0478003C5699 /* Localizable.strings */; };
-		B6416FD3199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416FA8199A0478003C5699 /* Localizable.strings */; };
 		B6416FD4199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416FAB199A0478003C5699 /* Localizable.strings */; };
 		B67ADDC41989FF8700E1A773 /* CallServerRequestsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B67ADDC31989FF8700E1A773 /* CallServerRequestsManager.m */; };
 		B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B67EBF5C19194AC60084CCFD /* Settings.bundle */; };
@@ -1148,7 +1147,6 @@
 		B6416FA0199A0478003C5699 /* tr_TR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr_TR; path = Localizable.strings; sourceTree = "<group>"; };
 		B6416FA3199A0478003C5699 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = Localizable.strings; sourceTree = "<group>"; };
 		B6416FA6199A0478003C5699 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = Localizable.strings; sourceTree = "<group>"; };
-		B6416FA9199A0478003C5699 /* zh_TW.Big5 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW.Big5; path = Localizable.strings; sourceTree = "<group>"; };
 		B6416FAC199A0478003C5699 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = Localizable.strings; sourceTree = "<group>"; };
 		B657DDC91911A40500F45B0C /* Signal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Signal.entitlements; sourceTree = "<group>"; };
 		B661C211198EE2EA00548CA1 /* iOSVersions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iOSVersions.h; path = src/environment/iOSVersions.h; sourceTree = "<group>"; };
@@ -2810,15 +2808,6 @@
 			path = translations/zh_CN.lproj;
 			sourceTree = "<group>";
 		};
-		B6416FA7199A0478003C5699 /* zh_TW.Big5.lproj */ = {
-			isa = PBXGroup;
-			children = (
-				B6416FA8199A0478003C5699 /* Localizable.strings */,
-			);
-			name = zh_TW.Big5.lproj;
-			path = translations/zh_TW.Big5.lproj;
-			sourceTree = "<group>";
-		};
 		B6416FAA199A0478003C5699 /* zh_TW.lproj */ = {
 			isa = PBXGroup;
 			children = (
@@ -2869,7 +2858,6 @@
 				B6416F9E199A0478003C5699 /* tr_TR.lproj */,
 				B6416FA1199A0478003C5699 /* uk.lproj */,
 				B6416FA4199A0478003C5699 /* zh_CN.lproj */,
-				B6416FA7199A0478003C5699 /* zh_TW.Big5.lproj */,
 				B6416FAA199A0478003C5699 /* zh_TW.lproj */,
 			);
 			name = Translations;
@@ -3350,7 +3338,6 @@
 				E14874EA18A06930002CC4F3 /* tab_icon_inbox@2x.png in Resources */,
 				E14874EB18A06930002CC4F3 /* tab_icon_keypad.png in Resources */,
 				E14874EC18A06930002CC4F3 /* tab_icon_keypad@2x.png in Resources */,
-				B6416FD3199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874ED18A06930002CC4F3 /* tab_icon_menu.png in Resources */,
 				B6416FCD199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874EE18A06930002CC4F3 /* tab_icon_menu@2x.png in Resources */,
@@ -4242,14 +4229,6 @@
 			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
-		B6416FA8199A0478003C5699 /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				B6416FA9199A0478003C5699 /* zh_TW.Big5 */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
 		B6416FAB199A0478003C5699 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -4375,7 +4354,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = Signal;
-				PROVISIONING_PROFILE = "A4026C2D-D5F0-40C5-B1B4-5EA8E8A1876B";
+				PROVISIONING_PROFILE = "036480DA-A21D-4CC6-BF48-98E8AE1EE981";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_AFTER_BUILD = YES;
@@ -4495,7 +4474,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-fobjc-arc-exceptions";
 				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "A4026C2D-D5F0-40C5-B1B4-5EA8E8A1876B";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -4662,7 +4641,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = Signal;
-				PROVISIONING_PROFILE = "A4026C2D-D5F0-40C5-B1B4-5EA8E8A1876B";
+				PROVISIONING_PROFILE = "7214A823-1F7A-4460-82D8-D89CA511CEA6";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_AFTER_BUILD = YES;
