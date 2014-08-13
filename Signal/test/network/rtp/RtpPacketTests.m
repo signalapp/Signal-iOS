@@ -15,7 +15,7 @@
 -(void) testRawDataSimple {
     RtpPacket* r = [RtpPacket rtpPacketWithVersion:2
                                         andPadding:0
-                  andContributingSourceIdentifiers:[NSArray array]
+                  andContributingSourceIdentifiers:@[]
                 andSynchronizationSourceIdentifier:0
                                       andMarkerBit:false
                                     andPayloadtype:0
@@ -89,7 +89,7 @@
 -(void) testExtendedData {
     RtpPacket* r = [RtpPacket rtpPacketWithVersion:2
                                         andPadding:0
-                  andContributingSourceIdentifiers:[NSArray array]
+                  andContributingSourceIdentifiers:@[]
                 andSynchronizationSourceIdentifier:0
                             andExtensionIdentifier:0xFEAB
                                   andExtensionData:increasingDataFrom(10, 5)

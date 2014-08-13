@@ -51,7 +51,7 @@ MacrosSingletonImplemention
     NSArray  *logsFiles  = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:logPath error:&error];
 
     for (NSUInteger i = 0; i < [logsFiles count]; i++) {
-        [[NSFileManager defaultManager] removeItemAtPath:[logPath stringByAppendingString:[logsFiles objectAtIndex:i]] error:&error];
+        [[NSFileManager defaultManager] removeItemAtPath:[logPath stringByAppendingString:logsFiles[i]] error:&error];
     }
     
     if (error) {

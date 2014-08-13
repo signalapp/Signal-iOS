@@ -74,7 +74,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
 +(NSString*) regionCodeFromCountryCodeString:(NSString*) countryCodeString {
     NBPhoneNumberUtil* phoneUtil = [NBPhoneNumberUtil sharedInstance];
-    NSString* regionCode = [phoneUtil getRegionCodeForCountryCode:[NSNumber numberWithInteger:[[countryCodeString substringFromIndex:1] integerValue]]];
+    NSString* regionCode = [phoneUtil getRegionCodeForCountryCode:@([[countryCodeString substringFromIndex:1] integerValue])];
     return regionCode;
 }
 

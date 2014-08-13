@@ -67,11 +67,11 @@
                                   andFlags0SMP:0
                             andFlagsUnusedLow4:0
                            andFlagsUnusedHigh4:0
-                                andHashSpecIds:[NSArray array]
-                              andCipherSpecIds:[NSArray array]
-                                andAuthSpecIds:[NSArray array]
+                                andHashSpecIds:@[]
+                              andCipherSpecIds:@[]
+                                andAuthSpecIds:@[]
                                andAgreeSpecIds:[self getAgreeIdsFromKeyAgreementProtocols:keyAgreementProtocols]
-                                 andSasSpecIds:[NSArray array]
+                                 andSasSpecIds:@[]
                       authenticatedWithHmacKey:[hashChain h2]];
 }
 
@@ -212,11 +212,11 @@
                         [NSNumber numberWithUnsignedInteger:sasIdsCount]];
     
     NSArray* specIds = [HelloPacket getSpecIdsFromPayload:payload counts:counts];
-    hashIds = [specIds objectAtIndex:HASH_IDS_INDEX];
-    cipherIds = [specIds objectAtIndex:CIPHER_IDS_INDEX];
-    authIds = [specIds objectAtIndex:AUTH_IDS_INDEX];
-    agreeIds = [specIds objectAtIndex:AGREE_IDS_INDEX];
-    sasIds = [specIds objectAtIndex:SAS_IDS_INDEX];
+    hashIds = specIds[HASH_IDS_INDEX];
+    cipherIds = specIds[CIPHER_IDS_INDEX];
+    authIds = specIds[AUTH_IDS_INDEX];
+    agreeIds = specIds[AGREE_IDS_INDEX];
+    sasIds = specIds[SAS_IDS_INDEX];
 }
 +(HelloPacket*) helloPacketParsedFromHandshakePacket:(HandshakePacket*)handshakePacket {
     require(handshakePacket != nil);

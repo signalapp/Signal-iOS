@@ -351,19 +351,19 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 +(NSDictionary *)keyContactsById:(NSArray *)contacts {
     return [contacts keyedBy:^id(Contact* contact) {
-        return [NSNumber numberWithInt:(int)contact.recordID];
+        return @((int)contact.recordID);
     }];
 }
 
 -(Contact *)latestContactWithRecordId:(ABRecordID)recordId {
     @synchronized(self) {
-        return [latestContactsById objectForKey:[NSNumber numberWithInt:recordId]];
+        return latestContactsById[@(recordId)];
     }
 }
 
 -(NSArray*) recordsForContacts:(NSArray*) contacts{
     return [contacts map:^id(Contact *contact) {
-        return [NSNumber numberWithInt:[contact recordID]];
+        return @([contact recordID]);
     }];
 }
 
@@ -423,7 +423,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
     contact.isFavourite = !contact.isFavourite;
     if (contact.isFavourite) {
-        [_favouriteContactIds addObject:[NSNumber numberWithInt:contact.recordID]];
+        [_favouriteContactIds addObject:@(contact.recordID)];
     } else {
         
         ContactSearchBlock removeBlock = ^BOOL(NSNumber *favouriteNumber, NSUInteger idx, BOOL *stop) {
@@ -461,7 +461,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         if(!newUserNotificationsEnabled){
             [self addContactsToKnownWhisperUsers:unacknowledgedUsers];
         }else{
-            NSDictionary *payload = [NSDictionary dictionaryWithObject:unacknowledgedUsers forKey:NOTIFICATION_DATAKEY_NEW_USERS];
+            NSDictionary *payload = @{NOTIFICATION_DATAKEY_NEW_USERS: unacknowledgedUsers};
             [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_NEW_USERS_AVAILABLE object:self userInfo:payload];
         }
     }
@@ -534,7 +534,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 -(void) clearKnownWhisUsers{
-    [[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:KNOWN_USERS_DEFAULT_KEY];
+    [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:KNOWN_USERS_DEFAULT_KEY];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 

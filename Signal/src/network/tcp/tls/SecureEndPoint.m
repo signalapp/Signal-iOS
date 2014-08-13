@@ -45,10 +45,8 @@
     [[streamPair outputStream] setProperty:NSStreamSocketSecurityLevelNegotiatedSSL
                                     forKey:NSStreamSocketSecurityLevelKey];
     
-    NSDictionary *settings = [[NSDictionary alloc] initWithObjectsAndKeys:
-                              [NSNumber numberWithBool:NO], kCFStreamSSLValidatesCertificateChain,
-                              hostNameEndPoint.hostname, kCFStreamSSLPeerName,
-                              nil];
+    NSDictionary *settings = @{(id)kCFStreamSSLValidatesCertificateChain: @NO,
+                              (id)kCFStreamSSLPeerName: hostNameEndPoint.hostname};
     
     CFReadStreamSetProperty((CFReadStreamRef)[streamPair inputStream],
                             kCFStreamPropertySSLSettings,

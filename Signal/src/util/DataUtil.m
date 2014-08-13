@@ -32,7 +32,7 @@
     const uint8_t* subDataBytes = [subData bytes];
     for (NSUInteger i = 0; i <= excessLength; i++) {
         if (memcmp(selfBytes+i, subDataBytes, subDataLength) == 0) {
-            return [NSNumber numberWithUnsignedInteger:i];
+            return @(i);
         }
     }
     return nil;

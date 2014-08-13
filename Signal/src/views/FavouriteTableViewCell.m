@@ -5,7 +5,7 @@
 @implementation FavouriteTableViewCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
-    self = [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class]) owner:self options:nil] objectAtIndex:0];
+    self = [[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class]) owner:self options:nil][0];
     _contactPictureView.layer.borderColor = [[UIColor lightGrayColor] CGColor];
     _contactPictureView.layer.masksToBounds = YES;
     return self;

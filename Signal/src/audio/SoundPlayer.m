@@ -44,7 +44,7 @@ NSMutableDictionary* currentActiveAudioPlayers;
 }
 
 -(void) stopSound:(SoundInstance*) sound {
-    SoundInstance* playingSoundInstance = [currentActiveAudioPlayers objectForKey:[sound getId] ];
+    SoundInstance* playingSoundInstance = currentActiveAudioPlayers[[sound getId]];
     [self removeSoundFromManifest:sound];
     [playingSoundInstance stop];
 }
@@ -56,7 +56,7 @@ NSMutableDictionary* currentActiveAudioPlayers;
 }
 
 -(BOOL) isSoundPlaying:(SoundInstance*) sound {
-    return nil != [currentActiveAudioPlayers objectForKey:[sound getId]];
+    return nil != currentActiveAudioPlayers[[sound getId]];
 }
 
 -(void) awake {

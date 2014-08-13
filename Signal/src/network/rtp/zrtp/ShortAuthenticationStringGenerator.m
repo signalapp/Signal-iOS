@@ -84,8 +84,8 @@ const char* PGP_LIST_ODD[] = {
     uint8_t wordIndexTwo = [sasBytes uint8At:1];
     
     return [NSString stringWithFormat:@"%@ %@",
-            [NSString stringWithUTF8String:PGP_LIST_EVEN[wordIndexOne]],
-            [NSString stringWithUTF8String:PGP_LIST_ODD[wordIndexTwo]]];
+            @(PGP_LIST_EVEN[wordIndexOne]),
+            @(PGP_LIST_ODD[wordIndexTwo])];
 }
 @end
 

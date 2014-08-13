@@ -32,15 +32,15 @@
 }
 
 -(bool) isRingingForSession:(int64_t)targetSessionId {
-    return [self.method isEqualToString:@"RING"] && [[NSNumber numberWithLongLong:targetSessionId] isEqualToNumber:[self tryGetSessionId]];
+    return [self.method isEqualToString:@"RING"] && [@(targetSessionId) isEqualToNumber:[self tryGetSessionId]];
 }
 
 -(bool) isHangupForSession:(int64_t)targetSessionId {
-    return [self.method isEqualToString:@"DELETE"] && [[NSNumber numberWithLongLong:targetSessionId] isEqualToNumber:[self tryGetSessionId]];
+    return [self.method isEqualToString:@"DELETE"] && [@(targetSessionId) isEqualToNumber:[self tryGetSessionId]];
 }
 
 -(bool) isBusyForSession:(int64_t)targetSessionId {
-    return [self.method isEqualToString:@"BUSY"] && [[NSNumber numberWithLongLong:targetSessionId] isEqualToNumber:[self tryGetSessionId]];
+    return [self.method isEqualToString:@"BUSY"] && [@(targetSessionId) isEqualToNumber:[self tryGetSessionId]];
 }
 
 +(HttpRequest*) httpRequestToOpenPortWithSessionId:(int64_t)sessionId {

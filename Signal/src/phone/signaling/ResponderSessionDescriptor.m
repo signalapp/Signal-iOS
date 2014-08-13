@@ -50,7 +50,7 @@
 +(ResponderSessionDescriptor*)responderSessionDescriptorFromEncryptedRemoteNotification:(NSDictionary*)remoteNotif {
     require(remoteNotif != nil);
     
-    NSString* message = [remoteNotif objectForKey:MessagePropertyKey];
+    NSString* message = remoteNotif[MessagePropertyKey];
     checkOperation(message != nil);
     NSData* authenticatedPayload = [message decodedAsBase64Data];
 

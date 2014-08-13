@@ -37,7 +37,7 @@
     
     checkOperation([response isOkResponse]);
     
-    NSString* hashCountHeader = [[response getHeaders] objectForKey:HASH_COUNT_HEADER_KEY];
+    NSString* hashCountHeader = [response getHeaders][HASH_COUNT_HEADER_KEY];
     checkOperation(hashCountHeader != nil);
     
     int hashCountValue = [hashCountHeader intValue];

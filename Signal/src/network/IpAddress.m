@@ -126,13 +126,13 @@
     char buffer[INET_ADDRSTRLEN];
     const char* result = inet_ntop(AF_INET, &addr->sin_addr, buffer, INET_ADDRSTRLEN);
     checkOperationDescribe(result != NULL, @"Invalid ipv4 address data");
-    return [NSString stringWithUTF8String:result];
+    return @(result);
 }
 +(NSString*) ipv6AddressToString:(const struct sockaddr_in6*)addr {
     char buffer[INET6_ADDRSTRLEN];
     const char* result = inet_ntop(AF_INET6, &addr->sin6_addr, buffer, INET6_ADDRSTRLEN);
     checkOperationDescribe(result != NULL, @"Invalid ipv6 address data");
-    return [NSString stringWithUTF8String:result];
+    return @(result);
 }
 
 @end

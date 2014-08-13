@@ -23,7 +23,7 @@
 +(NSString*) computeOtpWithPassword:(NSString*)password andCounter:(int64_t)counter {
     require(password != nil);
     
-    NSData* d = [[[NSNumber numberWithLongLong:counter] stringValue] encodedAsUtf8];
+    NSData* d = [[@(counter) stringValue] encodedAsUtf8];
     NSData* h = [d hmacWithSha1WithKey:[password encodedAsUtf8]];
     return [h encodedAsBase64];
 }

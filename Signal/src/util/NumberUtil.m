@@ -83,13 +83,13 @@
 @implementation NSNumber (NumberUtil)
 
 -(bool) hasUnsignedIntegerValue {
-    return [self isEqual:[NSNumber numberWithUnsignedInteger:[self unsignedIntegerValue]]];
+    return [self isEqual:@([self unsignedIntegerValue])];
 }
 -(bool) hasUnsignedLongLongValue {
-    return [self isEqual:[NSNumber numberWithUnsignedLongLong:[self unsignedLongLongValue]]];
+    return [self isEqual:@([self unsignedLongLongValue])];
 }
 -(bool) hasLongLongValue {
-    return [self isEqual:[NSNumber numberWithLongLong:[self longLongValue]]];
+    return [self isEqual:@([self longLongValue])];
 }
 
 @end

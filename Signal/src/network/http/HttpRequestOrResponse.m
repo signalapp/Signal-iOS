@@ -49,25 +49,25 @@
     
     //      GET /index.html HTTP/1.1
     //      HTTP/1.1 200 OK
-    NSString* requestOrResponseLine = [headerLines objectAtIndex:0];
+    NSString* requestOrResponseLine = headerLines[0];
     NSArray* requestOrResponseLineParts = [requestOrResponseLine componentsSeparatedByString:@" "];
     checkOperation([requestOrResponseLineParts count] >= 3);
-    bool isResponse = [[requestOrResponseLineParts objectAtIndex:0] hasPrefix:@"HTTP/"];
+    bool isResponse = [requestOrResponseLineParts[0] hasPrefix:@"HTTP/"];
     
     //      Host: www.example.com
     //      Content-Length: 5
     NSMutableDictionary* headers = [NSMutableDictionary dictionary];
     for (NSUInteger i = 1; i < [headerLines count]; i++) {
-        NSString* headerLine = [headerLines objectAtIndex:i];
+        NSString* headerLine = headerLines[i];
         
         NSArray* headerLineParts = [headerLine componentsSeparatedByString:@":"];
         checkOperation([headerLineParts count] >= 2);
-        NSString* headerKey = [[headerLineParts objectAtIndex:0] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        NSString* headerValue = [[headerLine substringFromIndex:[(NSString *)[headerLineParts objectAtIndex:0] length]+1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        [headers setObject:headerValue forKey:headerKey];
+        NSString* headerKey = [headerLineParts[0] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString* headerValue = [[headerLine substringFromIndex:[(NSString *)headerLineParts[0] length]+1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        headers[headerKey] = headerValue;
     }
     
-    NSString* contextLengthText = [headers objectForKey:@"Content-Length"];
+    NSString* contextLengthText = headers[@"Content-Length"];
     NSNumber* contentLengthParsed = [contextLengthText tryParseAsUnsignedInteger];
     checkOperation((contextLengthText == nil) == (contentLengthParsed == nil));
     
@@ -78,7 +78,7 @@
     
     *usedLengthPtr = headerLength + contentLength;
     if (isResponse) {
-        NSNumber* statusCodeParsed = [[requestOrResponseLineParts objectAtIndex:1] tryParseAsUnsignedInteger];
+        NSNumber* statusCodeParsed = [requestOrResponseLineParts[1] tryParseAsUnsignedInteger];
         checkOperation(statusCodeParsed != nil);
         
         NSUInteger statusCode = [statusCodeParsed unsignedIntegerValue];
@@ -90,8 +90,8 @@
         return [HttpRequestOrResponse httpRequestOrResponse:response];
     } else {
         checkOperation([requestOrResponseLineParts count] == 3);
-        NSString* method = [requestOrResponseLineParts objectAtIndex:0];
-        NSString* location = [requestOrResponseLineParts objectAtIndex:1];
+        NSString* method = requestOrResponseLineParts[0];
+        NSString* location = requestOrResponseLineParts[1];
         HttpRequest* request = [HttpRequest httpRequestWithMethod:method
                                                       andLocation:location
                                                        andHeaders:headers

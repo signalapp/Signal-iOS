@@ -242,9 +242,9 @@ static NSString *const INVITE_CONTACTS_TABLE_CELL_IDENTIFIER = @"ContactTableVie
 #pragma mark - Keyboard
 
 - (void)keyboardWillShow:(NSNotification *)notification {
-    double duration = [[[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     [UIView animateWithDuration:duration animations:^{
-        CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+        CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
         CGFloat height = CGRectGetHeight(_contactTableView.frame) - (keyboardSize.height-BOTTOM_TAB_BAR_HEIGHT);
         _contactTableView.frame = CGRectMake(CGRectGetMinX(_contactTableView.frame),
                                                CGRectGetMinY(_contactTableView.frame),
@@ -254,7 +254,7 @@ static NSString *const INVITE_CONTACTS_TABLE_CELL_IDENTIFIER = @"ContactTableVie
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification {
-    CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
+    CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     CGFloat height = CGRectGetHeight(_contactTableView.frame) + (keyboardSize.height-BOTTOM_TAB_BAR_HEIGHT);
     _contactTableView.frame = CGRectMake(CGRectGetMinX(_contactTableView.frame),
                                            CGRectGetMinY(_contactTableView.frame),

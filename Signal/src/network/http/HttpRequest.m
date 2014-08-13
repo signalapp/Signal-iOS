@@ -18,8 +18,8 @@
     require(method != nil);
     require(location != nil);
     require(headers != nil);
-    require((optionalBody == nil) == ([headers objectForKey:@"Content-Length"] == nil));
-    require(optionalBody == nil || [[[NSNumber numberWithUnsignedInteger:[optionalBody length]] description] isEqualToString:[headers objectForKey:@"Content-Length"]]);
+    require((optionalBody == nil) == (headers[@"Content-Length"] == nil));
+    require(optionalBody == nil || [[@([optionalBody length]) description] isEqualToString:headers[@"Content-Length"]]);
     
     HttpRequest* s = [HttpRequest new];
     s->_method = method;
@@ -36,7 +36,7 @@
     
     NSMutableDictionary* headers = [NSMutableDictionary dictionary];
     if (optionalBody != nil) {
-        [headers setObject:[[NSNumber numberWithUnsignedInteger:[optionalBody length]] stringValue] forKey:@"Content-Length"];
+        headers[@"Content-Length"] = [@([optionalBody length]) stringValue];
     }
 
     HttpRequest* s = [HttpRequest new];
@@ -58,9 +58,9 @@
     
     NSMutableDictionary* headers = [NSMutableDictionary dictionary];
     if (optionalBody != nil) {
-        [headers setObject:[[NSNumber numberWithUnsignedInteger:[optionalBody length]] stringValue] forKey:@"Content-Length"];
+        headers[@"Content-Length"] = [@([optionalBody length]) stringValue];
     }
-    [headers setObject:[HttpRequest computeBasicAuthorizationTokenForLocalNumber:localNumber andPassword:password] forKey:@"Authorization"];
+    headers[@"Authorization"] = [HttpRequest computeBasicAuthorizationTokenForLocalNumber:localNumber andPassword:password];
     
     HttpRequest* s = [HttpRequest new];
     s->_method = method;
@@ -81,9 +81,9 @@
     
     NSMutableDictionary* headers = [NSMutableDictionary dictionary];
     if (optionalBody != nil) {
-        [headers setObject:[[NSNumber numberWithUnsignedInteger:[optionalBody length]] stringValue] forKey:@"Content-Length"];
+        headers[@"Content-Length"] = [@([optionalBody length]) stringValue];
     }
-    [headers setObject:[HttpRequest computeOtpAuthorizationTokenForLocalNumber:localNumber andCounterValue:counter andPassword:password] forKey:@"Authorization"];
+    headers[@"Authorization"] = [HttpRequest computeOtpAuthorizationTokenForLocalNumber:localNumber andCounterValue:counter andPassword:password];
     
     HttpRequest* s = [HttpRequest new];
     s->_method = method;
@@ -131,7 +131,7 @@
     for (NSString* key in self.headers) {
         [r addObject:key];
         [r addObject:@": "];
-        [r addObject:[self.headers objectForKey:key]];
+        [r addObject:(self.headers)[key]];
         [r addObject:@"\r\n"];
     }
     

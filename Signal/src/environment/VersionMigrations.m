@@ -29,8 +29,8 @@
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         
         for (NSUInteger i = 0; i < [entries count]; i++) {
-            NSString *key = [entries objectAtIndex:i];
-            [defaults setObject:[dict objectForKey:key] forKey:key];
+            NSString *key = entries[i];
+            [defaults setObject:dict[key] forKey:key];
         }
         
         [defaults synchronize];

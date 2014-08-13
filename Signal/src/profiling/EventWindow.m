@@ -16,7 +16,7 @@
 }
 
 -(void) addEventAtTime:(NSTimeInterval)eventTime {
-    [events enqueue:[NSNumber numberWithDouble:eventTime]];
+    [events enqueue:@(eventTime)];
 }
 
 -(NSUInteger) countAfterRemovingEventsBeforeWindowEndingAt:(NSTimeInterval)endOfWindowTime {

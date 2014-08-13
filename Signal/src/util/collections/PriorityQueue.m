@@ -16,7 +16,7 @@
     [items addObject:item];
     while (curIndex > 0) {
         NSUInteger parentIndex = (curIndex - 1) >> 1;
-        id  parentItem = [items objectAtIndex:parentIndex];
+        id  parentItem = items[parentIndex];
         if (_comparator(item, parentItem) >= 0) break;
         
         [items setObject:parentItem atIndexedSubscript:curIndex];
@@ -27,24 +27,24 @@
 
 -(id)peek {
     requireState([items count] > 0);
-    return [items objectAtIndex:0];
+    return items[0];
 }
 
 -(id) dequeue {
     requireState([items count] > 0);
-    id result = [items objectAtIndex:0];
+    id result = items[0];
     
     // iteratively pull up smaller child until we hit the bottom of the heap
     NSUInteger endangeredIndex = [items count] - 1;
-    id endangeredItem = [items objectAtIndex:endangeredIndex];
+    id endangeredItem = items[endangeredIndex];
     NSUInteger i = 0;
     while (true) {
         NSUInteger childIndex1 = i*2+1;
         NSUInteger childIndex2 = i*2+2;
         if (childIndex1 >= endangeredIndex) break;
         
-        NSUInteger smallerChildIndex = _comparator([items objectAtIndex:childIndex1], [items objectAtIndex:childIndex2]) <= 0 ? childIndex1 : childIndex2;
-        id smallerChild = [items objectAtIndex:smallerChildIndex];
+        NSUInteger smallerChildIndex = _comparator(items[childIndex1], items[childIndex2]) <= 0 ? childIndex1 : childIndex2;
+        id smallerChild = items[smallerChildIndex];
         bool useEndangered = _comparator(endangeredItem, smallerChild) <= 0;
         if (useEndangered) break;
         

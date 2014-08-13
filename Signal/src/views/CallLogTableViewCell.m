@@ -11,9 +11,9 @@
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
 
-    self = [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class])
+    self = [[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class])
                                           owner:self
-                                        options:nil] objectAtIndex:0];
+                                        options:nil][0];
     if (self) {
         _scrollView.contentSize = CGSizeMake(CGRectGetWidth(_contentContainerView.bounds),
                                              CGRectGetHeight(_scrollView.frame));

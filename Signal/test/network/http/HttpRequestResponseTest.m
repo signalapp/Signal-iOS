@@ -51,14 +51,14 @@
     test([[h0 method] isEqualToString:@"GET"]);
     test([[h0 location] isEqualToString:@"/index.html"]);
     test([[h0 headers] count] == 1);
-    test([[[h0 headers] objectForKey:@"Content-Length"] isEqualToString:@"0"]);
+    test([[h0 headers][@"Content-Length"] isEqualToString:@"0"]);
     test([[h0 optionalBody] isEqualToString:@""]);
 
     HttpRequest* h1 = [HttpRequest httpRequestFromData:[@"GET /index.html HTTP/1.0\r\nContent-Length: 10\r\n\r\nabcdefghij" encodedAsUtf8]];
     test([[h1 method] isEqualToString:@"GET"]);
     test([[h1 location] isEqualToString:@"/index.html"]);
     test([[h1 headers] count] == 1);
-    test([[[h1 headers] objectForKey:@"Content-Length"] isEqualToString:@"10"]);
+    test([[h1 headers][@"Content-Length"] isEqualToString:@"10"]);
     test([[h1 optionalBody] isEqualToString:@"abcdefghij"]);
     
     HttpRequest* h = [HttpRequest httpRequestFromData:[@"GET /index.html HTTP/1.0\r\n\r\n" encodedAsUtf8]];
