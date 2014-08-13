@@ -34,7 +34,7 @@
         return false;
     }
     
-    [idsInJitterQueue addObject:[NSNumber numberWithUnsignedInt:sequenceNumber]];
+    [idsInJitterQueue addObject:@(sequenceNumber)];
     [resultPriorityQueue enqueue:audioPacket];
     if ([NumberUtil congruentDifferenceMod2ToThe16From:largestLatestEnqueued to:sequenceNumber] > 0) {
         largestLatestEnqueued = sequenceNumber;
@@ -58,7 +58,7 @@
         badArrivalType = JitterBadArrivalType_Stale;
     } else if (sequenceNumberRelativeToReadHead > READ_HEAD_MAX_QUEUE_AHEAD) {
         badArrivalType = JitterBadArrivalType_TooSoon;
-    } else if ([idsInJitterQueue containsObject:[NSNumber numberWithUnsignedInt:sequenceNumber]]) {
+    } else if ([idsInJitterQueue containsObject:@(sequenceNumber)]) {
         badArrivalType = JitterBadArrivalType_Duplicate;
     } else {
         return true;
@@ -100,7 +100,7 @@
     
     EncodedAudioPacket* discarded = [resultPriorityQueue dequeue];
     uint16_t discardedSequenceNumber = [discarded sequenceNumber];
-    [idsInJitterQueue removeObject:[NSNumber numberWithUnsignedInt:discardedSequenceNumber]];
+    [idsInJitterQueue removeObject:@(discardedSequenceNumber)];
     
     uint16_t oldReadHeadMax = readHeadMin+readHeadSpan-1;
     readHeadMin = [[resultPriorityQueue peek] sequenceNumber];
@@ -124,7 +124,7 @@
     EncodedAudioPacket* result = [resultPriorityQueue dequeue];
     readHeadMin = [result sequenceNumber]+1;
     readHeadSpan = 1;
-    [idsInJitterQueue removeObject:[NSNumber numberWithUnsignedInt:[result sequenceNumber]]];
+    [idsInJitterQueue removeObject:@([result sequenceNumber])];
     
     for (id<JitterQueueNotificationReceiver> e in watchers) {
         [e notifyDequeue:[result sequenceNumber] withRemainingEnqueuedItemCount:[idsInJitterQueue count]];

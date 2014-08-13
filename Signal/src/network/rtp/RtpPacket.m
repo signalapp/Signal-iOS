@@ -161,7 +161,7 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
     NSMutableArray* contributingSources = [NSMutableArray array];
     for (NSUInteger i = 0; i < contributingSourceCount; i++) {
         uint32_t ccsrc = [packetData bigEndianUInt32At:*offset];
-        [contributingSources addObject:[NSNumber numberWithUnsignedLong:ccsrc]];
+        [contributingSources addObject:@(ccsrc)];
         *offset += CONTRIBUTING_SOURCE_ID_LENGTH;
     }
     

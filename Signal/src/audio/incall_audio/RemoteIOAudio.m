@@ -255,7 +255,7 @@ static OSStatus playbackCallback(void *inRefCon,
         
         if (availableByteCount < requestedByteCount) {
             NSUInteger starveAmount = requestedByteCount - availableByteCount;
-            [instance->starveLogger markOccurrence:[NSNumber numberWithDouble:starveAmount]];
+            [instance->starveLogger markOccurrence:@(starveAmount)];
         } else {
             NSData* audioToCopyVolatile = [[instance playbackQueue] dequeuePotentialyVolatileDataWithLength:requestedByteCount];
             memcpy(ioData->mBuffers[0].mData, [audioToCopyVolatile bytes], [audioToCopyVolatile length]);
@@ -309,7 +309,7 @@ static OSStatus playbackCallback(void *inRefCon,
     } else if (resultCode == errSecParam){
         failure = @"oneOrMoreNonValidParameter";
     }else {
-        failure = [[NSNumber numberWithInt:resultCode] description];
+        failure = [@(resultCode) description];
     }
     [conditionLogger logError:[NSString stringWithFormat:@"StatusCheck failed: %@", failure]];
 }

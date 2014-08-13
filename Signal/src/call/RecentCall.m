@@ -36,7 +36,7 @@ NSString *const CALL_TYPE_IMAGE_NAME_OUTGOING = @"outgoing_call_icon";
 #pragma mark - Serialization
 
 - (void)encodeWithCoder:(NSCoder *)encoder {
-    [encoder encodeObject:[NSNumber numberWithInt:callType] forKey:DEFAULTS_KEY_CALL_TYPE];
+    [encoder encodeObject:@(callType) forKey:DEFAULTS_KEY_CALL_TYPE];
     [encoder encodeObject:phoneNumber forKey:DEFAULTS_KEY_PHONE_NUMBER];
     [encoder encodeObject:@((int)contactRecordID) forKey:DEFAULTS_KEY_CONTACT_ID];
     [encoder encodeObject:date forKey:DEFAULTS_KEY_DATE];
