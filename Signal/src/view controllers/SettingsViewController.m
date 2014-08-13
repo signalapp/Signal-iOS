@@ -126,8 +126,8 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 
 - (void)saveExpandedSectionPreferences {
     NSMutableArray *expandedSectionPrefs = [NSMutableArray array];
-    NSNumber *numberBoolYes = [NSNumber numberWithBool:YES];
-    NSNumber *numberBoolNo = [NSNumber numberWithBool:NO];
+    NSNumber *numberBoolYes = @YES;
+    NSNumber *numberBoolNo = @NO;
     
     [expandedSectionPrefs addObject:(_privacyTableViewCells ? numberBoolYes : numberBoolNo)];
 }

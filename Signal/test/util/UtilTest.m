@@ -353,7 +353,7 @@
     test([@0 hasUnsignedIntegerValue]);
     test([@1 hasUnsignedIntegerValue]);
     test([@0xFFFFFFFF hasUnsignedIntegerValue]);
-    test([[NSNumber numberWithDouble:pow(2, 31)] hasUnsignedIntegerValue]);
+    test([@(pow(2, 31)) hasUnsignedIntegerValue]);
     test(![@-1 hasUnsignedIntegerValue]);
     test(![@0.5 hasUnsignedIntegerValue]);
 }
@@ -361,8 +361,8 @@
     test([@0 hasUnsignedLongLongValue]);
     test([@1 hasUnsignedLongLongValue]);
     test([@0xFFFFFFFFFFFFFFFF hasUnsignedLongLongValue]);
-    test([[NSNumber numberWithDouble:pow(2, 63)] hasUnsignedLongLongValue]);
-    test(![[NSNumber numberWithDouble:pow(2, 64)] hasUnsignedLongLongValue]);
+    test([@(pow(2, 63)) hasUnsignedLongLongValue]);
+    test(![@(pow(2, 64)) hasUnsignedLongLongValue]);
     test(![@-1 hasUnsignedLongLongValue]);
     test(![@0.5 hasUnsignedLongLongValue]);
 }
@@ -373,9 +373,9 @@
     test([@LONG_LONG_MAX hasLongLongValue]);
     test([@LONG_LONG_MIN hasLongLongValue]);
     test(![@ULONG_LONG_MAX hasLongLongValue]);
-    test([[NSNumber numberWithDouble:pow(2, 62)] hasLongLongValue]);
-    test(![[NSNumber numberWithDouble:pow(2, 63)] hasLongLongValue]);
-    test(![[NSNumber numberWithDouble:-pow(2, 64)] hasLongLongValue]);
+    test([@(pow(2, 62)) hasLongLongValue]);
+    test(![@(pow(2, 63)) hasLongLongValue]);
+    test(![@(-pow(2, 64)) hasLongLongValue]);
     test(![@0.5 hasLongLongValue]);
 }
 -(void) tryParseAsUnsignedInteger {

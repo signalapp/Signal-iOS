@@ -174,7 +174,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
         [[[Environment getCurrent] recentCallManager] archiveRecentCall:recent];
     }
 
-    [_inboxFeedTableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+    [_inboxFeedTableView deleteRowsAtIndexPaths:@[indexPath]
                                withRowAnimation:animation];
 
     [_inboxFeedTableView endUpdates];
@@ -399,9 +399,9 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 #pragma mark - Keyboard
 
 - (void)keyboardWillShow:(NSNotification *)notification {
-    double duration = [[[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     [UIView animateWithDuration:duration animations:^{
-        CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+        CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
         CGFloat height = CGRectGetHeight(_inboxFeedTableView.frame) - (keyboardSize.height-BOTTOM_TAB_BAR_HEIGHT);
         _inboxFeedTableView.frame = CGRectMake(CGRectGetMinX(_inboxFeedTableView.frame),
                                                CGRectGetMinY(_inboxFeedTableView.frame),
@@ -411,7 +411,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification {
-    CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
+    CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     CGFloat height = CGRectGetHeight(_inboxFeedTableView.frame) + (keyboardSize.height-BOTTOM_TAB_BAR_HEIGHT);
     _inboxFeedTableView.frame = CGRectMake(CGRectGetMinX(_inboxFeedTableView.frame),
                                            CGRectGetMinY(_inboxFeedTableView.frame),

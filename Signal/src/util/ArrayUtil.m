@@ -7,7 +7,7 @@
     NSUInteger n = [self count];
     uint8_t x[n];
     for (NSUInteger i = 0; i < n; i++) {
-        x[i] = [(NSNumber*)[self objectAtIndex:i] unsignedCharValue];
+        x[i] = [(NSNumber*)self[i] unsignedCharValue];
     }
     return [NSData dataWithBytes:x length:n];
 }

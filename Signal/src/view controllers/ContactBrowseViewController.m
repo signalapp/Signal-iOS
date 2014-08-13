@@ -161,7 +161,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 }
 
 - (NSArray *)contactsForSectionIndex:(NSUInteger)index {
-    return [_latestAlphabeticalContacts valueForKey:[_latestSortedAlphabeticalContactKeys objectAtIndex:index]];
+    return [_latestAlphabeticalContacts valueForKey:_latestSortedAlphabeticalContactKeys[index]];
 }
 
 - (void)pushContactViewControllerForContactIndexPath:(NSIndexPath *)indexPath {
@@ -178,7 +178,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    return [_latestSortedAlphabeticalContactKeys objectAtIndex:(NSUInteger)section];
+    return _latestSortedAlphabeticalContactKeys[(NSUInteger)section];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -230,9 +230,9 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 #pragma mark - Keyboard
 
 - (void)keyboardWillShow:(NSNotification *)notification {
-    double duration = [[[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     [UIView animateWithDuration:duration animations:^{
-        CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+        CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
         _contactTableView.frame = CGRectMake(CGRectGetMinX(_contactTableView.frame),
                                              CGRectGetMinY(_contactTableView.frame),
                                              CGRectGetWidth(_contactTableView.frame),
@@ -241,7 +241,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification {
-    CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
+    CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     _contactTableView.frame = CGRectMake(CGRectGetMinX(_contactTableView.frame),
                                          CGRectGetMinY(_contactTableView.frame),
                                          CGRectGetWidth(_contactTableView.frame),

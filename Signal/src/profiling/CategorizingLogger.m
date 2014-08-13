@@ -17,10 +17,10 @@
 }
 
 -(void) log:(NSString*)category details:(id)details {
-    NSNumber* index = [indexDic objectForKey:category];
+    NSNumber* index = indexDic[category];
     if (index == nil) {
-        index = [NSNumber numberWithUnsignedInteger:[indexDic count]];
-        [indexDic setObject:index forKey:category];
+        index = @([indexDic count]);
+        indexDic[category] = index;
     }
     NSUInteger x = [index unsignedIntegerValue];
     for (void (^callback)(NSString* category, id details, NSUInteger index) in callbacks) {
@@ -30,7 +30,7 @@
 
 -(id<ValueLogger>) getValueLoggerForValue:(id)valueIdentity from:(id)sender {
     id<ValueLogger> r = [AnonymousValueLogger anonymousValueLogger:^(double value) {
-        [self log:[NSString stringWithFormat:@"Value %@ from %@", valueIdentity, sender] details:[NSNumber numberWithDouble:value]];
+        [self log:[NSString stringWithFormat:@"Value %@ from %@", valueIdentity, sender] details:@(value)];
     }];
     return [LoggingUtil throttleValueLogger:r discardingAfterEventForDuration:0.5];
 }

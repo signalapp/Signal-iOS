@@ -66,7 +66,7 @@
     
     NSError *error;
     
-    NSDictionary *attrs = [NSDictionary dictionaryWithObject:NSFileProtectionComplete forKey:NSFileProtectionKey];
+    NSDictionary *attrs = @{NSFileProtectionKey: NSFileProtectionComplete};
     [[NSFileManager defaultManager] setAttributes:attrs ofItemAtPath:preferencesPath error:&error];
     
     [pathsToExclude addObject:[[preferencesPath stringByAppendingString:[[NSBundle mainBundle] bundleIdentifier]] stringByAppendingString:@".plist"]];
@@ -74,15 +74,15 @@
     NSString *logPath    = [NSHomeDirectory() stringByAppendingString:@"/Library/Caches/Logs/"];
     NSArray  *logsFiles  = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:logPath error:&error];
     
-    attrs = [NSDictionary dictionaryWithObject:NSFileProtectionComplete forKey:NSFileProtectionKey];
+    attrs = @{NSFileProtectionKey: NSFileProtectionComplete};
     [[NSFileManager defaultManager] setAttributes:attrs ofItemAtPath:logPath error:&error];
     
     for (NSUInteger i = 0; i < [logsFiles count]; i++) {
-        [pathsToExclude addObject:[logPath stringByAppendingString:[logsFiles objectAtIndex:i]]];
+        [pathsToExclude addObject:[logPath stringByAppendingString:logsFiles[i]]];
     }
     
     for (NSUInteger i = 0; i < [pathsToExclude count]; i++) {
-        [[NSURL fileURLWithPath:[pathsToExclude objectAtIndex:i]] setResourceValue: [NSNumber numberWithBool: YES]
+        [[NSURL fileURLWithPath:pathsToExclude[i]] setResourceValue: @YES
                                                                             forKey: NSURLIsExcludedFromBackupKey error: &error];
     }
     
@@ -134,7 +134,7 @@
     [self.window makeKeyAndVisible];
     
     //Accept push notification when app is not open
-    NSDictionary *remoteNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+    NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotif) {
         DDLogInfo(@"Application was launched by tapping a push notification.");
         [self application:application didReceiveRemoteNotification:remoteNotif];

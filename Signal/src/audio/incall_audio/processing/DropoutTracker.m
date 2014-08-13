@@ -22,7 +22,7 @@
     d->lateBins = [NSMutableArray array];
 
     for (NSUInteger i = 0; i < PRIOR_LATENESS_LENGTH; i++) {
-        [d->priorLatenesses enqueue:[NSNumber numberWithDouble:0]];
+        [d->priorLatenesses enqueue:@0.0];
     }
     for (NSUInteger i = 0; i < LATE_BINS_LENGTH; i++) {
         [d->lateBins addObject:[EventWindow eventWindowWithWindowDuration:LATE_BIN_WINDOW_IN_SECONDS]];
@@ -53,7 +53,7 @@
     NSTimeInterval expectedTime = startTime + drift + expandedSequenceNumber * audioDurationPerPacket;
     NSTimeInterval now = [TimeUtil time];
     NSTimeInterval secLate = now-expectedTime;
-    [priorLatenesses enqueue:[NSNumber numberWithDouble:secLate]];
+    [priorLatenesses enqueue:@(secLate)];
     [priorLatenesses dequeue];
     
     // update zero time
@@ -69,7 +69,7 @@
                                                     andMax:LATE_BINS_LENGTH - 1];
         
         if (peakLatency <= maxActionableLatency) {
-            [[lateBins objectAtIndex:lateBin] addEventAtTime:now];
+            [lateBins[lateBin] addEventAtTime:now];
         }
     }
     
@@ -80,7 +80,7 @@
     NSUInteger eventCount = 0;
     NSTimeInterval now = [TimeUtil time];
     for (NSUInteger depth = LATE_BINS_LENGTH; depth > 0; depth--) {
-        eventCount += [[lateBins objectAtIndex:depth-1] countAfterRemovingEventsBeforeWindowEndingAt:now];
+        eventCount += [lateBins[depth-1] countAfterRemovingEventsBeforeWindowEndingAt:now];
         if (eventCount > maxEvents) {
             return (depth-1)/binsPerPacket;
         }

@@ -62,7 +62,7 @@
 +(HttpResponse*) httpResponse200OkWithOptionalBody:(NSString*)optionalBody {
     return [HttpResponse httpResponseFromStatusCode:200
                                       andStatusText:@"OK"
-                                         andHeaders:[NSDictionary dictionary]
+                                         andHeaders:@{}
                                 andOptionalBodyText:optionalBody];
 }
 -(bool) isOkResponse {
@@ -98,7 +98,7 @@
     NSMutableArray* r = [NSMutableArray array];
     
     [r addObject:@"HTTP/1.0 "];
-    [r addObject:[[NSNumber numberWithUnsignedInteger:statusCode] description]];
+    [r addObject:[@(statusCode) description]];
     [r addObject:@" "];
     [r addObject:statusText];
     [r addObject:@"\r\n"];
@@ -106,7 +106,7 @@
     NSString* body = [self getOptionalBodyText];
     if (body != nil) {
         [r addObject:@"Content-Length: "];
-        [r addObject:[[NSNumber numberWithUnsignedInteger:[body length]] stringValue]];
+        [r addObject:[@([body length]) stringValue]];
         [r addObject:@"\r\n"];
         [r addObject:body];
     } else {

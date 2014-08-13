@@ -44,7 +44,7 @@
     if (phoneNumberDirectoryFilter == nil) return;
     
     NSData* data = [[phoneNumberDirectoryFilter bloomFilter] data];
-    NSNumber* hashCount = [NSNumber numberWithUnsignedInteger:[[phoneNumberDirectoryFilter bloomFilter] hashCount]];
+    NSNumber* hashCount = @([[phoneNumberDirectoryFilter bloomFilter] hashCount]);
     NSDate* expiry = [phoneNumberDirectoryFilter getExpirationDate];
     [self setValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_DATA_KEY toValue:data];
     [self setValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_HASH_COUNT_KEY toValue:hashCount];
@@ -63,7 +63,7 @@
 }
 -(void) setCachedDesiredBufferDepth:(double)value {
     require(value >= 0);
-    [self setValueForKey:CALL_STREAM_DES_BUFFER_LEVEL_KEY toValue:[NSNumber numberWithDouble:value]];
+    [self setValueForKey:CALL_STREAM_DES_BUFFER_LEVEL_KEY toValue:@(value)];
 }
 
 -(BOOL) getFreshInstallTutorialsEnabled {
@@ -118,32 +118,32 @@
 }
 
 -(void)setScreenSecurity:(BOOL)flag{
-    [self setValueForKey:SCREEN_SECURITY_KEY toValue:[NSNumber numberWithBool:flag]];
+    [self setValueForKey:SCREEN_SECURITY_KEY toValue:@(flag)];
 }
 
 -(void) setFreshInstallTutorialsEnabled:(BOOL)enabled {
-    [self setValueForKey:FRESH_INSTALL_TUTORIALS_ENABLED_KEY toValue:[NSNumber numberWithBool:enabled]];
+    [self setValueForKey:FRESH_INSTALL_TUTORIALS_ENABLED_KEY toValue:@(enabled)];
 }
 
 -(void) setContactImagesEnabled:(BOOL)enabled {
-    [self setValueForKey:CONTACT_IMAGES_ENABLED_KEY toValue:[NSNumber numberWithBool:enabled]];
+    [self setValueForKey:CONTACT_IMAGES_ENABLED_KEY toValue:@(enabled)];
 }
 -(void) setAutocorrectEnabled:(BOOL)enabled {
-    [self setValueForKey:AUTOCORRECT_ENABLED_KEY toValue:[NSNumber numberWithBool:enabled]];
+    [self setValueForKey:AUTOCORRECT_ENABLED_KEY toValue:@(enabled)];
 }
 -(void) setHistoryLogEnabled:(BOOL)enabled {
-    [self setValueForKey:HISTORY_LOG_ENABLED_KEY toValue:[NSNumber numberWithBool:enabled]];
+    [self setValueForKey:HISTORY_LOG_ENABLED_KEY toValue:@(enabled)];
 }
 
 -(BOOL) encounteredRevokedPushPermission{
     return [[self tryGetValueForKey:PUSH_REVOKED_KEY] boolValue];
 }
 -(void) setRevokedPushPermission:(BOOL)revoked{
-    [self setValueForKey:PUSH_REVOKED_KEY toValue:[NSNumber numberWithBool:revoked]];
+    [self setValueForKey:PUSH_REVOKED_KEY toValue:@(revoked)];
 }
 
 -(void) setLoggingEnabled:(BOOL)flag{
-    [self setValueForKey:DEBUG_IS_ENABLED_KEY toValue:[NSNumber numberWithBool:flag]];
+    [self setValueForKey:DEBUG_IS_ENABLED_KEY toValue:@(flag)];
 }
 
 -(NSString*)lastRanVersion{
@@ -153,7 +153,7 @@
 -(NSString*)setAndGetCurrentVersion{
     NSString *lastVersion = [self lastRanVersion];
     
-    [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]] forKey:kSignalVersionKey];
+    [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%@", [[NSBundle mainBundle] infoDictionary][@"CFBundleVersion"]] forKey:kSignalVersionKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
     return lastVersion;
 }

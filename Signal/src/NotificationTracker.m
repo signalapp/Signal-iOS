@@ -42,7 +42,7 @@
 
 // Uniquely Identify a notification by the hash of the message payload.
 -(NSData*) getIdForNotification:(NSDictionary*) notification {
-    NSData* data = [[notification objectForKey:NOTIFICATION_PAYLOAD_KEY] dataUsingEncoding:NSUTF8StringEncoding];
+    NSData* data = [notification[NOTIFICATION_PAYLOAD_KEY] dataUsingEncoding:NSUTF8StringEncoding];
     NSData* notificationHash = [data hashWithSha256];
     return notificationHash;
 }

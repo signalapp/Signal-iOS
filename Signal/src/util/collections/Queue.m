@@ -19,17 +19,17 @@
 }
 -(id) dequeue {
     requireState([self count] > 0);
-    id result = [items objectAtIndex:0];
+    id result = items[0];
     [items removeObjectAtIndex:0];
     return result;
 }
 -(id) peek {
     requireState([self count] > 0);
-    return [items objectAtIndex:0];
+    return items[0];
 }
 -(id) peekAt:(NSUInteger)offset {
     require(offset < [self count]);
-    return [items objectAtIndex:offset];
+    return items[offset];
 }
 -(NSUInteger) count {
     return [items count];

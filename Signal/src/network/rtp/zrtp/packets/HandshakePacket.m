@@ -123,7 +123,7 @@
     NSData* extensionDataWithZeroCrc = [(@[payloadExceptCrc, [NSData dataWithBigEndianBytesOfUInt32:0]]) concatDatas];
     RtpPacket* packetWithZeroCrc = [RtpPacket rtpPacketWithVersion:0 // invalid version 0 indicates a zrtp handshake packet
                                                        andPadding:false
-                                 andContributingSourceIdentifiers:[NSArray array]
+                                 andContributingSourceIdentifiers:@[]
                                andSynchronizationSourceIdentifier:0
                                            andExtensionIdentifier:HANDSHAKE_PACKET_EXTENSION_IDENTIFIER
                                                  andExtensionData:extensionDataWithZeroCrc
@@ -138,7 +138,7 @@
     
     return [RtpPacket rtpPacketWithVersion:0 // invalid version 0 indicates a zrtp handshake packet
                                 andPadding:false
-          andContributingSourceIdentifiers:[NSArray array]
+          andContributingSourceIdentifiers:@[]
         andSynchronizationSourceIdentifier:0
                     andExtensionIdentifier:HANDSHAKE_PACKET_EXTENSION_IDENTIFIER
                           andExtensionData:extensionData

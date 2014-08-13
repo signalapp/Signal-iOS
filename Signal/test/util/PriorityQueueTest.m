@@ -18,18 +18,18 @@ NSArray* RandomPermutation(NSUInteger count) {
     }
     NSMutableArray* r = [NSMutableArray array];
     for (NSUInteger i = 0; i < count; i++)
-        [r addObject:[NSNumber numberWithUnsignedInteger:d[i]]];
+        [r addObject:@(d[i])];
     return r;
 }
 NSArray* Permutations(NSUInteger count) {
-    if (count == 0) return [NSArray array];
+    if (count == 0) return @[];
     NSMutableArray* r = [NSMutableArray array];
     for (NSArray* s in Permutations(count - 1)) {
         for (NSUInteger e = 0; e < count; e++) {
             NSMutableArray* a = [NSMutableArray array];
-            [a addObject:[NSNumber numberWithUnsignedInteger:e]];
+            [a addObject:@(e)];
             for (NSNumber* x in s) {
-                [a addObject:[x unsignedIntegerValue] < e ? x : [NSNumber numberWithUnsignedInteger:[x unsignedIntegerValue] + 1]];
+                [a addObject:[x unsignedIntegerValue] < e ? x : @([x unsignedIntegerValue] + 1)];
             }
             [r addObject:a];
         }

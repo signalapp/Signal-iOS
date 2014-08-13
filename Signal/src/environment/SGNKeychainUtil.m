@@ -46,7 +46,7 @@
     __block int64_t oldCounter;
     oldCounter = [[UICKeyChainStore stringForKey:PASSWORD_COUNTER_KEY] longLongValue];
     int64_t newCounter = (oldCounter == INT64_MAX)?INT64_MIN:(oldCounter + 1);
-    [self storeString:[[NSNumber numberWithLongLong:newCounter] stringValue] forKey:PASSWORD_COUNTER_KEY];
+    [self storeString:[@(newCounter) stringValue] forKey:PASSWORD_COUNTER_KEY];
     return newCounter;
 }
 

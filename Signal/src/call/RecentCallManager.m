@@ -115,7 +115,7 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
 - (void)archiveRecentCall:(RecentCall *)recentCall {
     NSUInteger indexOfRecent = [_allRecents indexOfObject:recentCall];
     recentCall.isArchived = YES;
-    [_allRecents replaceObjectAtIndex:indexOfRecent withObject:recentCall];
+    _allRecents[indexOfRecent] = recentCall;
     [self saveContactsToDefaults];
     [observableRecentsController updateValue:[_allRecents copy]];
 }

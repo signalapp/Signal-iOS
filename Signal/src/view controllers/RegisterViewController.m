@@ -74,7 +74,7 @@
                                                     effectiveRange:NULL];
         
         NSMutableDictionary *newAttributes = [[NSMutableDictionary alloc] initWithDictionary:attributes];
-        [newAttributes setObject:color forKey:NSForegroundColorAttributeName];
+        newAttributes[NSForegroundColorAttributeName] = color;
         
         NSString *placeholderString = [placeholder string];
         _phoneNumberTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:placeholderString
@@ -334,9 +334,9 @@
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification {
-    double duration = [[[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     [UIView animateWithDuration:duration animations:^{
-        CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;;
+        CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;;
         _scrollView.frame = CGRectMake(CGRectGetMinX(_scrollView.frame),
                                        CGRectGetMinY(_scrollView.frame)-keyboardSize.height,
                                        CGRectGetWidth(_scrollView.frame),
@@ -345,7 +345,7 @@
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification {
-    double duration = [[[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     [UIView animateWithDuration:duration animations:^{
         _scrollView.frame = CGRectMake(CGRectGetMinX(_scrollView.frame),
                                        CGRectGetMinY(self.view.frame),

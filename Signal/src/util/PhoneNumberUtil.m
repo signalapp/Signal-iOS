@@ -7,8 +7,7 @@
 
 
 + (NSString *)countryNameFromCountryCode:(NSString *)code {
-    NSDictionary *countryCodeComponent = [NSDictionary dictionaryWithObject:code
-                                                                     forKey:NSLocaleCountryCode];
+    NSDictionary *countryCodeComponent = @{NSLocaleCountryCode: code};
     NSString *identifier = [NSLocale localeIdentifierFromComponents:countryCodeComponent];
     NSString *country = [[NSLocale currentLocale] displayNameForKey:NSLocaleIdentifier
                                                               value:identifier];

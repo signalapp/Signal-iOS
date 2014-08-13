@@ -187,7 +187,7 @@
 
 - (void)newUsersDetected:(NSNotification* )notification {
     dispatch_async( dispatch_get_main_queue(), ^{
-        NSArray *newUsers = [[notification userInfo] objectForKey:NOTIFICATION_DATAKEY_NEW_USERS];
+        NSArray *newUsers = [notification userInfo][NOTIFICATION_DATAKEY_NEW_USERS];
         [self updateNewUsers:newUsers];
     });
 }

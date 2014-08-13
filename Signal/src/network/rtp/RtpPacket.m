@@ -46,7 +46,7 @@ const uint8_t PACKET_VERSION = 2;
     require(payload != nil);
     return [RtpPacket rtpPacketWithVersion:PACKET_VERSION
                                 andPadding:0
-          andContributingSourceIdentifiers:[NSArray array]
+          andContributingSourceIdentifiers:@[]
         andSynchronizationSourceIdentifier:0
                               andMarkerBit:false
                             andPayloadtype:0
