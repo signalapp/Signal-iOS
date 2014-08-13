@@ -205,11 +205,11 @@
     uint8_t authIdsCount = [flags lowUint4AtByteOffset:AUTH_ID_AND_CIPHER_ID_FLAG_INDEX];
     uint8_t agreeIdsCount = [flags highUint4AtByteOffset:SAS_ID_AND_AGREE_ID_FLAG_INDEX];
     uint8_t sasIdsCount = [flags lowUint4AtByteOffset:SAS_ID_AND_AGREE_ID_FLAG_INDEX];
-    NSArray* counts = @[[NSNumber numberWithUnsignedInteger:hashIdsCount],
-                        [NSNumber numberWithUnsignedInteger:cipherIdsCount],
-                        [NSNumber numberWithUnsignedInteger:authIdsCount],
-                        [NSNumber numberWithUnsignedInteger:agreeIdsCount],
-                        [NSNumber numberWithUnsignedInteger:sasIdsCount]];
+    NSArray* counts = @[@(hashIdsCount),
+                        @(cipherIdsCount),
+                        @(authIdsCount),
+                        @(agreeIdsCount),
+                        @(sasIdsCount)];
     
     NSArray* specIds = [HelloPacket getSpecIdsFromPayload:payload counts:counts];
     hashIds = specIds[HASH_IDS_INDEX];
