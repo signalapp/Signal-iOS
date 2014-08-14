@@ -82,8 +82,9 @@
     }
     
     for (NSUInteger i = 0; i < pathsToExclude.count; i++) {
-        [[NSURL fileURLWithPath:pathsToExclude[i]] setResourceValue: @YES
-                                                                            forKey: NSURLIsExcludedFromBackupKey error: &error];
+        [[NSURL fileURLWithPath:pathsToExclude[i]] setResourceValue:@YES
+                                                             forKey:NSURLIsExcludedFromBackupKey
+                                                              error:&error];
     }
     
     if (error) {
