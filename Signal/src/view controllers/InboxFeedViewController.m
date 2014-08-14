@@ -48,11 +48,6 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
     [self observeKeyboardNotifications];
     [self setupLabelLocalizationAndStyles];
 
-    if (![Environment isRegistered]) {
-        [Environment resetAppData];
-        RegisterViewController *registerViewController = [RegisterViewController registerViewController];
-        [self presentViewController:registerViewController animated:NO completion:nil];
-    }
     _inboxFeedTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
@@ -67,6 +62,12 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
     [self.navigationController setNavigationBarHidden:YES animated:NO];
     [_searchBarTitleView updateAutoCorrectionType];
     [_inboxFeedTableView reloadData];
+    
+    if (![Environment isRegistered]) {
+        [Environment resetAppData];
+        RegisterViewController *registerViewController = [RegisterViewController registerViewController];
+        [self presentViewController:registerViewController animated:NO completion:nil];
+    }
 }
 
 - (void)dealloc {

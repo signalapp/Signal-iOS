@@ -99,6 +99,7 @@
     require(data != nil);
     checkOperation([data length] >= VERSION_SIZE + IV_SIZE);
     NSData* cipherKey = [SGNKeychainUtil signalingCipherKey];
+    require(cipherKey != nil);
     NSData* iv = [data subdataWithRange:NSMakeRange(VERSION_SIZE, IV_SIZE)];
     NSData* cipherText = [data skip:VERSION_SIZE+IV_SIZE];
     return [cipherText decryptWithAesInCipherBlockChainingModeWithPkcs7PaddingWithKey:cipherKey andIv:iv];

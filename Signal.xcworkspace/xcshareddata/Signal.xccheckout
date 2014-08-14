@@ -22,7 +22,7 @@
 		<key>5D79A077E31B3FE97A3C6613CBFFDD71C314D14C</key>
 		<string>..</string>
 		<key>D74FB800F048CB516BB4BC70047F7CC676D291B9</key>
-		<string>..Pods/</string>
+		<string>..Pods</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>github.com:WhisperSystems/Signal-iOS.git</string>
@@ -36,17 +36,17 @@
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>D74FB800F048CB516BB4BC70047F7CC676D291B9</string>
+			<string>5D79A077E31B3FE97A3C6613CBFFDD71C314D14C</string>
 			<key>IDESourceControlWCCName</key>
-			<string>Pods</string>
+			<string>Signal-iOS</string>
 		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>5D79A077E31B3FE97A3C6613CBFFDD71C314D14C</string>
+			<string>D74FB800F048CB516BB4BC70047F7CC676D291B9</string>
 			<key>IDESourceControlWCCName</key>
-			<string>Signal-iOS</string>
+			<string>Signal-iOSPods</string>
 		</dict>
 	</array>
 </dict>
