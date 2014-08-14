@@ -118,7 +118,7 @@ static NSString *const INVITE_CONTACTS_TABLE_CELL_IDENTIFIER = @"ContactTableVie
 
     NSMutableArray *indexPaths = [NSMutableArray array];
     
-    for (int i = 0; i < (NSInteger)[_newWhisperUsers count]; i++) {
+    for (int i = 0; i < (NSInteger)_newWhisperUsers.count; i++) {
         [indexPaths addObject:[NSIndexPath indexPathForRow:i inSection:FIRST_TABLE_SECTION]];
     }
     [_contactTableView deleteRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -139,9 +139,9 @@ static NSString *const INVITE_CONTACTS_TABLE_CELL_IDENTIFIER = @"ContactTableVie
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (section == FIRST_TABLE_SECTION) {
-        return _isSearching ? 0 : (NSInteger)[_newWhisperUsers count];
+        return _isSearching ? 0 : (NSInteger)_newWhisperUsers.count;
     } else {
-        return (NSInteger)[_displayedContacts count];
+        return (NSInteger)_displayedContacts.count;
     }
 }
 
@@ -187,7 +187,7 @@ static NSString *const INVITE_CONTACTS_TABLE_CELL_IDENTIFIER = @"ContactTableVie
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    if (section == FIRST_TABLE_SECTION  && !_isSearching && [_newWhisperUsers count] > 0) {
+    if (section == FIRST_TABLE_SECTION  && !_isSearching && _newWhisperUsers.count > 0) {
         return _unseenWhisperUsersHeaderView;
     } else if (section == SECOND_TABLE_SECTION) {
         return _regularContactsHeaderView;
@@ -197,7 +197,7 @@ static NSString *const INVITE_CONTACTS_TABLE_CELL_IDENTIFIER = @"ContactTableVie
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    if (_isSearching || ([_newWhisperUsers count] == 0 && section == FIRST_TABLE_SECTION)) {
+    if (_isSearching || (_newWhisperUsers.count == 0 && section == FIRST_TABLE_SECTION)) {
         return 0.0f;
     } else {
 

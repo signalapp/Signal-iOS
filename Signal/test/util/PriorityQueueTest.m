@@ -50,14 +50,14 @@ NSArray* Permutations(NSUInteger count) {
             return (NSComparisonResult)NSOrderedSame;
         }
     }];
-    test([q count] == 0);
+    test(q.count == 0);
     testThrows([q peek]);
     testThrows([q dequeue]);
     
     [q enqueue:@1];
     [q enqueue:@2];
     [q enqueue:@3];
-    test([q count] == 3);
+    test(q.count == 3);
     test([[q peek] intValue] == 1);
     test([[q dequeue] intValue] == 1);
     test([[q peek] intValue] == 2);
@@ -105,10 +105,10 @@ NSArray* Permutations(NSUInteger count) {
         
         // dequeues in order
         for (NSUInteger i = 0; i < N; i++) {
-            test([q count] == N - i);
+            test(q.count == N - i);
             test([[q dequeue] unsignedIntegerValue] == i);
         }
-        test([q count] == 0);
+        test(q.count == 0);
     }
 }
 -(void) testSortsRandomLargePermutations {
@@ -132,10 +132,10 @@ NSArray* Permutations(NSUInteger count) {
         
         // dequeues in order
         for (NSUInteger i = 0; i < Size; i++) {
-            test([q count] == Size - i);
+            test(q.count == Size - i);
             test([[q dequeue] unsignedIntegerValue] == i);
         }
-        test([q count] == 0);
+        test(q.count == 0);
     }
 }
 

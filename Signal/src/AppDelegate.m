@@ -77,11 +77,11 @@
     attrs = @{NSFileProtectionKey: NSFileProtectionComplete};
     [[NSFileManager defaultManager] setAttributes:attrs ofItemAtPath:logPath error:&error];
     
-    for (NSUInteger i = 0; i < [logsFiles count]; i++) {
+    for (NSUInteger i = 0; i < logsFiles.count; i++) {
         [pathsToExclude addObject:[logPath stringByAppendingString:logsFiles[i]]];
     }
     
-    for (NSUInteger i = 0; i < [pathsToExclude count]; i++) {
+    for (NSUInteger i = 0; i < pathsToExclude.count; i++) {
         [[NSURL fileURLWithPath:pathsToExclude[i]] setResourceValue: @YES
                                                                             forKey: NSURLIsExcludedFromBackupKey error: &error];
     }

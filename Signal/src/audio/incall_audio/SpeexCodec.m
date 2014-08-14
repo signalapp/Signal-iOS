@@ -37,12 +37,12 @@
 
 -(void) determineDecodedLength {
     NSData* encoded = [self encode:[NSMutableData dataWithLength:[self decodedFrameSizeInBytes]]];
-    cachedEncodedLength = [encoded length];
+    cachedEncodedLength = encoded.length;
 }
 
 -(NSData*)encode:(NSData*)rawData {
     require(rawData != nil);
-    require([rawData length] == FRAME_SIZE_IN_SAMPLES*DECODED_SAMPLE_SIZE_IN_BYTES);
+    require(rawData.length == FRAME_SIZE_IN_SAMPLES*DECODED_SAMPLE_SIZE_IN_BYTES);
     speex_bits_reset(&encodingBits);
     speex_encode_int(encodingState, (spx_int16_t*)[rawData bytes], &encodingBits);
     
@@ -55,7 +55,7 @@
 }
 
 -(NSData*)decode:(NSData*)potentiallyMissingEncodedData {
-    NSUInteger encodedDataLength = [potentiallyMissingEncodedData length];
+    NSUInteger encodedDataLength = potentiallyMissingEncodedData.length;
     if (potentiallyMissingEncodedData == nil) {
         encodedDataLength = [self decodedFrameSizeInBytes]; // size for infering audio data
     }
@@ -70,7 +70,7 @@
 
 -(NSUInteger) encodedDataLengthFromData:(NSData*)potentiallyMissingEncodedData{
     if (potentiallyMissingEncodedData != nil) {
-        return [potentiallyMissingEncodedData length];
+        return potentiallyMissingEncodedData.length;
     }
     return [self decodedFrameSizeInBytes];
 }

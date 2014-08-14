@@ -6,8 +6,8 @@
 #import "DiscardingLog.h"
 #import "Queue.h"
 
-#define testLoggedNothing(q) test([q->messageQueue count] == 0)
-#define testLogged(q, s) test([q->messageQueue count] > 0 && [s isEqualToString:[q->messageQueue dequeue]])
+#define testLoggedNothing(q) test(q->messageQueue.count == 0)
+#define testLogged(q, s) test(q->messageQueue.count > 0 && [s isEqualToString:[q->messageQueue dequeue]])
 #define testLoggedArrival(q, n) testLogged(q, ([NSString stringWithFormat:@"%d", n]))
 #define testLoggedBadArrival(q, sequenceNumber, arrivalType) testLogged(q, ([NSString stringWithFormat:@"bad +%d: %d", sequenceNumber, arrivalType]))
 #define testLoggedBadDequeueOfType(q, type) testLogged(q, ([NSString stringWithFormat:@"-%d", type]))
@@ -26,18 +26,18 @@
     JitterQueue* r2 = [JitterQueue jitterQueue];
     
     EncodedAudioPacket* q1 = [EncodedAudioPacket encodedAudioPacketWithAudioData:[NSData dataWithLength:1] andSequenceNumber:100];
-    test([r1 count] == 0);
+    test(r1.count == 0);
     test([r1 tryEnqueue:q1]);
-    test([r1 count] == 1);
+    test(r1.count == 1);
     test([r1 tryDequeue] == q1);
-    test([r1 count] == 0);
+    test(r1.count == 0);
 
     EncodedAudioPacket* q2 = [EncodedAudioPacket encodedAudioPacketWithAudioData:[NSData dataWithLength:1] andSequenceNumber:0xFF00];
-    test([r2 count] == 0);
+    test(r2.count == 0);
     test([r2 tryEnqueue:q2]);
-    test([r2 count] == 1);
+    test(r2.count == 1);
     test([r2 tryDequeue] == q2);
-    test([r2 count] == 0);
+    test(r2.count == 0);
 }
 -(void) testJitterAdvances {
     JitterQueue* r = [JitterQueue jitterQueue];
@@ -45,12 +45,12 @@
     for (uint16_t i = 0; i < 10; i++) {
         EncodedAudioPacket* q = [EncodedAudioPacket encodedAudioPacketWithAudioData:[NSData dataWithLength:1] andSequenceNumber:i];
         test([r tryEnqueue:q]);
-        test([r count] == i+1);
+        test(r.count == i+1);
     }
     
     for (uint16_t i = 0; i < 10; i++) {
         test([[r tryDequeue] sequenceNumber] == i);
-        test([r count] == 9-i);
+        test(r.count == 9-i);
     }
     test([r tryDequeue] == nil);
 }

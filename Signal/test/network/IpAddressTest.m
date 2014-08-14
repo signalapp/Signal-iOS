@@ -78,7 +78,7 @@
 -(void) testSockaddrDataIpv4 {
     NSData* d = [[IpAddress ipAddressFromString:@"4.5.6.7"] sockaddrDataWithPort:5];
     struct sockaddr_in s;
-    test([d length] >= sizeof(struct sockaddr_in));
+    test(d.length >= sizeof(struct sockaddr_in));
     memcpy(&s, [d bytes], sizeof(struct sockaddr_in));
     test(s.sin_port == ntohs(5));
     test(s.sin_family == AF_INET);
@@ -87,7 +87,7 @@
 -(void) testSockaddrDataIpv6 {
     NSData* d = [[IpAddress ipAddressFromString:@"2001:0db8:85a3:0000:0000:8a2e:0370:7334"] sockaddrDataWithPort:5];
     struct sockaddr_in6 s;
-    test([d length] >= sizeof(struct sockaddr_in6));
+    test(d.length >= sizeof(struct sockaddr_in6));
     memcpy(&s, [d bytes], sizeof(struct sockaddr_in6));
     test(s.sin6_port == ntohs(5));
     test(s.sin6_family == AF_INET6);

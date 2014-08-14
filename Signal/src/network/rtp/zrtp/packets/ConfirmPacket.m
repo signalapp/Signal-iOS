@@ -68,8 +68,8 @@
     require(cipherKey != nil);
     require(hashChainH0 != nil);
     require(iv != nil);
-    require([iv length] == CONFIRM_IV_LENGTH);
-    require([hashChainH0 length] == HASH_CHAIN_ITEM_LENGTH);
+    require(iv.length == CONFIRM_IV_LENGTH);
+    require(hashChainH0.length == HASH_CHAIN_ITEM_LENGTH);
     
     ConfirmPacket* p = [ConfirmPacket new];
     p->hashChainH0 = hashChainH0;

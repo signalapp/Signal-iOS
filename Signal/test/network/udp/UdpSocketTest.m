@@ -35,7 +35,7 @@
     __block bool failed = false;
     [sender startWithHandler:[PacketHandler packetHandler:^(NSData* packet) {
         // there's a length check here because when the destination is unreachable the sender sometimes gets a superfluous empty data callback... no idea why.
-        senderReceivedData |= [packet length] > 0;
+        senderReceivedData |= packet.length > 0;
     } withErrorHandler:^(id error, id relatedInfo, bool causedTermination) {
         failed = true;
     }] untilCancelled:[senderLife getToken]];
@@ -91,7 +91,7 @@
                                                                                    onPort:[receiver localPort]]];
     [sender startWithHandler:[PacketHandler packetHandler:^(NSData* packet) {
         // there's a length check here because when the destination is unreachable the sender sometimes gets a superfluous empty data callback... no idea why.
-        senderReceivedData |= [packet length] > 0;
+        senderReceivedData |= packet.length > 0;
     } withErrorHandler:^(id error, id relatedInfo, bool causedTermination) {
         failed = true;
     }] untilCancelled:[senderLife getToken]];
@@ -130,7 +130,7 @@
     UdpSocket* listener = [UdpSocket udpSocketToFirstSenderOnLocalPort:port];
     [listener startWithHandler:[PacketHandler packetHandler:^(NSData* packet) {
         listenerReceiveCount += 1;
-        listenerReceiveLength += [packet length];
+        listenerReceiveLength += packet.length;
         listenerReceivedLast = packet;
     } withErrorHandler:^(id error, id relatedInfo, bool causedTermination) {
         test(false);
@@ -140,7 +140,7 @@
     UdpSocket* client = [UdpSocket udpSocketTo:e];
     [client startWithHandler:[PacketHandler packetHandler:^(NSData* packet) {
         clientReceiveCount += 1;
-        clientReceiveLength += [packet length];
+        clientReceiveLength += packet.length;
         clientReceivedLast = packet;
     } withErrorHandler:^(id error, id relatedInfo, bool causedTermination) {
         test(false);

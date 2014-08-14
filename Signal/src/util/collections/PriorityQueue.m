@@ -12,7 +12,7 @@
 }
 
 -(void)enqueue:(id)item {
-    NSUInteger curIndex = [items count];
+    NSUInteger curIndex = items.count;
     [items addObject:item];
     while (curIndex > 0) {
         NSUInteger parentIndex = (curIndex - 1) >> 1;
@@ -26,16 +26,16 @@
 }
 
 -(id)peek {
-    requireState([items count] > 0);
+    requireState(items.count > 0);
     return items[0];
 }
 
 -(id) dequeue {
-    requireState([items count] > 0);
+    requireState(items.count > 0);
     id result = items[0];
     
     // iteratively pull up smaller child until we hit the bottom of the heap
-    NSUInteger endangeredIndex = [items count] - 1;
+    NSUInteger endangeredIndex = items.count - 1;
     id endangeredItem = items[endangeredIndex];
     NSUInteger i = 0;
     while (true) {
@@ -60,7 +60,7 @@
 }
 
 -(NSUInteger) count {
-    return [items count];
+    return items.count;
 }
 @end
 

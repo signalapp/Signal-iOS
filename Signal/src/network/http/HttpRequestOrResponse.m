@@ -45,23 +45,23 @@
     headerLength += 4; // account for \r\n\r\n
     
     NSArray* headerLines = [fullHeader componentsSeparatedByString:@"\r\n"];
-    checkOperation([headerLines count] >= 1);
+    checkOperation(headerLines.count >= 1);
     
     //      GET /index.html HTTP/1.1
     //      HTTP/1.1 200 OK
     NSString* requestOrResponseLine = headerLines[0];
     NSArray* requestOrResponseLineParts = [requestOrResponseLine componentsSeparatedByString:@" "];
-    checkOperation([requestOrResponseLineParts count] >= 3);
+    checkOperation(requestOrResponseLineParts.count >= 3);
     bool isResponse = [requestOrResponseLineParts[0] hasPrefix:@"HTTP/"];
     
     //      Host: www.example.com
     //      Content-Length: 5
     NSMutableDictionary* headers = [NSMutableDictionary dictionary];
-    for (NSUInteger i = 1; i < [headerLines count]; i++) {
+    for (NSUInteger i = 1; i < headerLines.count; i++) {
         NSString* headerLine = headerLines[i];
         
         NSArray* headerLineParts = [headerLine componentsSeparatedByString:@":"];
-        checkOperation([headerLineParts count] >= 2);
+        checkOperation(headerLineParts.count >= 2);
         NSString* headerKey = [headerLineParts[0] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         NSString* headerValue = [[headerLine substringFromIndex:[(NSString *)headerLineParts[0] length]+1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         headers[headerKey] = headerValue;
@@ -73,7 +73,7 @@
     
     bool hasContent = contentLengthParsed != nil;
     NSUInteger contentLength = [contentLengthParsed unsignedIntegerValue];
-    if (headerLength + contentLength > [data length]) return nil; // need more data
+    if (headerLength + contentLength > data.length) return nil; // need more data
     NSData* optionalBodyData = hasContent ? [data subdataWithRange:NSMakeRange(headerLength, contentLength)] : nil;
     
     *usedLengthPtr = headerLength + contentLength;
@@ -82,14 +82,14 @@
         checkOperation(statusCodeParsed != nil);
         
         NSUInteger statusCode = [statusCodeParsed unsignedIntegerValue];
-        NSString* statusText = [[requestOrResponseLineParts subarrayWithRange:NSMakeRange(2, [requestOrResponseLineParts count] - 2)] componentsJoinedByString:@" "];
+        NSString* statusText = [[requestOrResponseLineParts subarrayWithRange:NSMakeRange(2, requestOrResponseLineParts.count - 2)] componentsJoinedByString:@" "];
         HttpResponse* response = [HttpResponse httpResponseFromStatusCode:statusCode
                                                             andStatusText:statusText
                                                                andHeaders:headers
                                                       andOptionalBodyData:optionalBodyData];
         return [HttpRequestOrResponse httpRequestOrResponse:response];
     } else {
-        checkOperation([requestOrResponseLineParts count] == 3);
+        checkOperation(requestOrResponseLineParts.count == 3);
         NSString* method = requestOrResponseLineParts[0];
         NSString* location = requestOrResponseLineParts[1];
         HttpRequest* request = [HttpRequest httpRequestWithMethod:method

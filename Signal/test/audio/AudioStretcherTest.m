@@ -17,7 +17,7 @@
         
         NSData* inputData = sineWave(freq, 8000, 8000);
         NSData* outputData = [a stretchAudioData:inputData stretchFactor:stretch];
-        NSUInteger outputSampleCount = [outputData length]/sizeof(int16_t);
+        NSUInteger outputSampleCount = outputData.length/sizeof(int16_t);
         if ([s doubleValue] == 1) {
             test([inputData isEqualToData:outputData]);
         }

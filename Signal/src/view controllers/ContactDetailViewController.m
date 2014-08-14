@@ -53,7 +53,7 @@ static NSString *const FAVOURITE_FALSE_ICON_NAME = @"favourite_false_icon";
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSInteger secureNumberCount = (NSInteger)[_contact.userTextPhoneNumbers count] + (NSInteger)[_contact.emails count];
+    NSInteger secureNumberCount = (NSInteger)_contact.userTextPhoneNumbers.count + (NSInteger)_contact.emails.count;
     return _contact.notes != nil ? secureNumberCount + 1 : secureNumberCount;
 }
 
@@ -65,15 +65,15 @@ static NSString *const FAVOURITE_FALSE_ICON_NAME = @"favourite_false_icon";
                                                  reuseIdentifier:DETAIL_TABLE_CELL_IDENTIFIER];
     }
         
-    if ((NSUInteger)indexPath.row < [_contact.userTextPhoneNumbers count]) {
+    if ((NSUInteger)indexPath.row < _contact.userTextPhoneNumbers.count) {
         
         PhoneNumber *phoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:_contact.userTextPhoneNumbers[(NSUInteger)indexPath.row]];
         BOOL isSecure = [[[[Environment getCurrent] phoneDirectoryManager] getCurrentFilter] containsPhoneNumber:phoneNumber];
         [cell configureWithPhoneNumber:phoneNumber isSecure:isSecure];
         
-    } else if ((NSUInteger)indexPath.row < [_contact.userTextPhoneNumbers count] + [_contact.emails count]) {
+    } else if ((NSUInteger)indexPath.row < _contact.userTextPhoneNumbers.count + _contact.emails.count) {
         
-        NSUInteger emailIndex = (NSUInteger)indexPath.row - [_contact.userTextPhoneNumbers count];
+        NSUInteger emailIndex = (NSUInteger)indexPath.row - _contact.userTextPhoneNumbers.count;
         [cell configureWithEmailString:_contact.emails[emailIndex]];
         
     } else {
@@ -99,8 +99,8 @@ static NSString *const FAVOURITE_FALSE_ICON_NAME = @"favourite_false_icon";
             [self openPhoneAppWithPhoneNumber:number];
         }
         
-    } else if ((NSUInteger)indexPath.row < [_contact.userTextPhoneNumbers count] + [_contact.emails count]) {
-        NSUInteger emailIndex = (NSUInteger)indexPath.row - [_contact.userTextPhoneNumbers count];
+    } else if ((NSUInteger)indexPath.row < _contact.userTextPhoneNumbers.count + _contact.emails.count) {
+        NSUInteger emailIndex = (NSUInteger)indexPath.row - _contact.userTextPhoneNumbers.count;
         [self openEmailAppWithEmail:_contact.emails[emailIndex]];
     }
 }

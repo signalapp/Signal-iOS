@@ -9,7 +9,7 @@
 +(NSData*) encryptMessage:(NSData *)message usingCipher:(const EVP_CIPHER*) cipher andKey:(NSData *)key andIv:(NSData *)iv {
     [self assertKey:key andIv:iv lengthsAgainstCipher:cipher];
     
-    int messageLength       = [NumberUtil assertConvertNSUIntegerToInt:[message length]];
+    int messageLength       = [NumberUtil assertConvertNSUIntegerToInt:message.length];
     int cipherBlockSize     = EVP_CIPHER_block_size(cipher);
     int cipherTextLength    = 0;
     int paddingLength       = 0;
@@ -40,15 +40,15 @@
     int cipherKeyLength     = EVP_CIPHER_key_length(cipher);
     int cipherIvLength      = EVP_CIPHER_iv_length(cipher);
     
-    require([key length] == [NumberUtil assertConvertIntToNSUInteger:cipherKeyLength]);
-    require([iv length]  == [NumberUtil assertConvertIntToNSUInteger:cipherIvLength]);
+    require(key.length == [NumberUtil assertConvertIntToNSUInteger:cipherKeyLength]);
+    require(iv.length  == [NumberUtil assertConvertIntToNSUInteger:cipherIvLength]);
 }
 
 +(NSData*) decryptMessage:(NSData *)cipherText usingCipher:(const EVP_CIPHER*) cipher andKey:(NSData *)key andIv:(NSData *)iv {
  
     [self assertKey:key andIv:iv lengthsAgainstCipher:cipher];
     
-    int cipherTextLength    = [NumberUtil assertConvertNSUIntegerToInt:[cipherText length]];
+    int cipherTextLength    = [NumberUtil assertConvertNSUIntegerToInt:cipherText.length];
     int cipherBlockSize     = EVP_CIPHER_block_size(cipher);
     int plainTextLength     = 0;
     int paddingLength       = 0;

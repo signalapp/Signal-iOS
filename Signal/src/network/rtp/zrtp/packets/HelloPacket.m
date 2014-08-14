@@ -101,14 +101,14 @@
     require((flagsUnusedLow4 & ~FLAGS_UNUSED_LOW_MASK) == 0);
     require((flagsUnusedHigh4 & ~FLAGS_UNUSED_HIGH_MASK) == 0);
     
-    require([versionId length] == VERSION_ID_LENGTH);
-    require([clientId length] == CLIENT_ID_LENGTH);
-    require([hashChainH3 length] == HASH_CHAIN_ITEM_LENGTH);
-    require([hashIds count] <= MAX_SPEC_IDS);
-    require([cipherIds count] <= MAX_SPEC_IDS);
-    require([authIds count] <= MAX_SPEC_IDS);
-    require([agreeIds count] <= MAX_SPEC_IDS);
-    require([sasIds count] <= MAX_SPEC_IDS);
+    require(versionId.length == VERSION_ID_LENGTH);
+    require(clientId.length == CLIENT_ID_LENGTH);
+    require(hashChainH3.length == HASH_CHAIN_ITEM_LENGTH);
+    require(hashIds.count <= MAX_SPEC_IDS);
+    require(cipherIds.count <= MAX_SPEC_IDS);
+    require(authIds.count <= MAX_SPEC_IDS);
+    require(agreeIds.count <= MAX_SPEC_IDS);
+    require(sasIds.count <= MAX_SPEC_IDS);
     
     HelloPacket* p = [HelloPacket new];
     p->flagsUnusedLow4 = flagsUnusedLow4;
@@ -136,16 +136,16 @@
                                        andHighUInt4:flags0SMP]];
     
     [flags setUint8At:UNUSED_HIGH_AND_0SMP_FLAG_INDEX
-                   to:[NumberUtil uint8FromLowUInt4:(uint8_t)[hashIds count]
+                   to:[NumberUtil uint8FromLowUInt4:(uint8_t)hashIds.count
                                        andHighUInt4:flagsUnusedLow4]];
     
     [flags setUint8At:AUTH_ID_AND_CIPHER_ID_FLAG_INDEX
-                   to:[NumberUtil uint8FromLowUInt4:(uint8_t)[authIds count]
-                                       andHighUInt4:(uint8_t)[cipherIds count]]];
+                   to:[NumberUtil uint8FromLowUInt4:(uint8_t)authIds.count
+                                       andHighUInt4:(uint8_t)cipherIds.count]];
     
     [flags setUint8At:SAS_ID_AND_AGREE_ID_FLAG_INDEX
-                   to:[NumberUtil uint8FromLowUInt4:(uint8_t)[sasIds count]
-                                       andHighUInt4:(uint8_t)[agreeIds count]]];
+                   to:[NumberUtil uint8FromLowUInt4:(uint8_t)sasIds.count
+                                       andHighUInt4:(uint8_t)agreeIds.count]];
     
     return flags;
 }
@@ -179,7 +179,7 @@
     return [Zid zidWithData:[payload subdataWithRange:NSMakeRange(ZID_OFFSET, ZID_LENGTH)]];
 }
 +(NSArray*) getSpecIdsFromPayload:(NSData*)payload counts:(NSArray*)counts {
-    checkOperation([payload length] >= SPEC_IDS_OFFSET + SPEC_ID_LENGTH*[counts sumNSUInteger]);
+    checkOperation(payload.length >= SPEC_IDS_OFFSET + SPEC_ID_LENGTH*[counts sumNSUInteger]);
     
     NSMutableArray* result = [NSMutableArray array];
     NSUInteger offset = SPEC_IDS_OFFSET;
@@ -223,7 +223,7 @@
     checkOperationDescribe([[handshakePacket typeId] isEqualToData:HANDSHAKE_TYPE_HELLO], @"Not a hello packet");
     
     NSData* payload = [handshakePacket payload];
-    checkOperation([payload length] >= SPEC_IDS_OFFSET);
+    checkOperation(payload.length >= SPEC_IDS_OFFSET);
     
     HelloPacket* p = [HelloPacket new];
     

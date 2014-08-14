@@ -95,7 +95,7 @@
 }
 
 - (void)removeLastDigit {
-    NSUInteger n = [_currentNumberMutable length];
+    NSUInteger n = _currentNumberMutable.length;
     if (n > 0) {
         [_currentNumberMutable deleteCharactersInRange:NSMakeRange(n - 1, 1)];
     }
@@ -134,7 +134,7 @@
 - (PhoneNumber *)phoneNumberForCurrentInput {
     NSString *numberText = [_currentNumberMutable copy];
     
-    if ([numberText length]> 0 && [[numberText substringToIndex:1] isEqualToString:COUNTRY_CODE_PREFIX]) {
+    if (numberText.length> 0 && [[numberText substringToIndex:1] isEqualToString:COUNTRY_CODE_PREFIX]) {
         return [PhoneNumber tryParsePhoneNumberFromE164:numberText];
     } else {
         return [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:numberText];

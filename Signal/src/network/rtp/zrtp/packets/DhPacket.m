@@ -52,7 +52,7 @@
     require(sharedSecretHashes != nil);
     require(publicKeyData != nil);
     
-    require([hashChainH0 length] == HASH_CHAIN_ITEM_LENGTH);
+    require(hashChainH0.length == HASH_CHAIN_ITEM_LENGTH);
     
     DhPacket* p = [DhPacket new];
     p->isPart1 = isPart1;
@@ -93,7 +93,7 @@
     NSData* payload = [handshakePacket payload];
     
     checkOperation([[handshakePacket typeId] isEqualToData:expectedTypeIdDhPacket]);
-    checkOperation([payload length] >= MIN_DH_PKT_LENGTH);
+    checkOperation(payload.length >= MIN_DH_PKT_LENGTH);
     
     DhPacket* p = [DhPacket new];
     p->hashChainH1 = [self getHashChainH1FromPayload:payload];
@@ -105,7 +105,7 @@
 
 -(HandshakePacket*) embedIntoHandshakePacketAuthenticatedWithMacKey:(NSData*)macKey {
     require(macKey != nil);
-    requireState([hashChainH1 length] == HASH_CHAIN_ITEM_LENGTH);
+    requireState(hashChainH1.length == HASH_CHAIN_ITEM_LENGTH);
     
     NSData* typeId = isPart1 ? HANDSHAKE_TYPE_DH_1 : HANDSHAKE_TYPE_DH_2;
     

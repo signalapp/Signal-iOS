@@ -39,12 +39,12 @@
     
     FutureSource* futureWinner = [FutureSource new];
     
-    NSUInteger totalCount = [racingOperations count];
+    NSUInteger totalCount = racingOperations.count;
     NSMutableArray* failures = [NSMutableArray array];
     void(^failIfAllFailed)(id) = ^(id failure) {
         @synchronized(failures) {
             [failures addObject:failure];
-            if ([failures count] < totalCount) return;
+            if (failures.count < totalCount) return;
         }
         
         [futureWinner trySetFailure:failures];

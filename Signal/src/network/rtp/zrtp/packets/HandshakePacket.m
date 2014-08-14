@@ -27,7 +27,7 @@
 +(HandshakePacket*) handshakePacketWithTypeId:(NSData*)typeId andPayload:(NSData*)payload {
     require(typeId != nil);
     require(payload != nil);
-    require([typeId length] == HANDSHAKE_TYPE_ID_LENGTH);
+    require(typeId.length == HANDSHAKE_TYPE_ID_LENGTH);
     
     HandshakePacket* p = [HandshakePacket new];
     p->typeId = typeId;
@@ -93,7 +93,7 @@
     // The data corresponding to the rtp extension header is used when hmac-ing
     return [@[
             [NSData dataWithBigEndianBytesOfUInt16:HANDSHAKE_PACKET_EXTENSION_IDENTIFIER],
-            [NSData dataWithBigEndianBytesOfUInt16:(uint16_t)([payload length] + HEADER_FOOTER_LENGTH_WITHOUT_HMAC)],
+            [NSData dataWithBigEndianBytesOfUInt16:(uint16_t)(payload.length + HEADER_FOOTER_LENGTH_WITHOUT_HMAC)],
             typeId,
             payload
             ] concatDatas];
@@ -110,14 +110,14 @@
     // When we hmac the rtp extension header, the hmac length must be counted even though it's not appended yet
     return [@[
             [NSData dataWithBigEndianBytesOfUInt16:HANDSHAKE_PACKET_EXTENSION_IDENTIFIER],
-            [NSData dataWithBigEndianBytesOfUInt16:(uint16_t)([payload length] + HEADER_FOOTER_LENGTH_WITH_HMAC)],
+            [NSData dataWithBigEndianBytesOfUInt16:(uint16_t)(payload.length + HEADER_FOOTER_LENGTH_WITH_HMAC)],
             typeId,
             payload
             ] concatDatas];
 }
 
 -(RtpPacket*) embeddedIntoRtpPacketWithSequenceNumber:(uint16_t)sequenceNumber usingInteropOptions:(NSArray*)interopOptions {
-    requireState([typeId length] == HANDSHAKE_TYPE_ID_LENGTH);
+    requireState(typeId.length == HANDSHAKE_TYPE_ID_LENGTH);
     
     NSData* payloadExceptCrc = [self rtpExtensionPayloadExceptCrc];
     NSData* extensionDataWithZeroCrc = [(@[payloadExceptCrc, [NSData dataWithBigEndianBytesOfUInt32:0]]) concatDatas];

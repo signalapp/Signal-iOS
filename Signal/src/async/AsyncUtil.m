@@ -15,7 +15,7 @@
                       untilCancelled:(id<CancelToken>)untilCancelledToken {
     
     require(cancellableOperationStarters != nil);
-    if ([cancellableOperationStarters count] == 0) return [Future failed:@[]];
+    if (cancellableOperationStarters.count == 0) return [Future failed:@[]];
     
     NSArray* racingOperations = [AsyncUtilHelperRacingOperation racingOperationsFromCancellableOperationStarters:cancellableOperationStarters
                                                                                                   untilCancelled:untilCancelledToken];

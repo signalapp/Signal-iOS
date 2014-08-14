@@ -82,7 +82,7 @@
     
     while ([writeBuffer enqueuedLength] > 0 && [outputStream hasSpaceAvailable]) {
         NSData* data = [writeBuffer peekVolatileHeadOfData];
-        NSInteger d = [outputStream write:[data bytes] maxLength:[data length]];
+        NSInteger d = [outputStream write:[data bytes] maxLength:data.length];
         
         // reached destination buffer capacity?
         if (d == 0) break;
@@ -184,7 +184,7 @@
     if (![[futureConnectedAndWritableSource forceGetResult] isEqual:@YES]) return;
     
     while ([inputStream hasBytesAvailable]) {
-        NSInteger numRead = [inputStream read:[readBuffer mutableBytes] maxLength:[readBuffer length]];
+        NSInteger numRead = [inputStream read:[readBuffer mutableBytes] maxLength:readBuffer.length];
         
         if (numRead < 0) [self onErrorOccurred:@"Read Error"];
         if (numRead <= 0) break;

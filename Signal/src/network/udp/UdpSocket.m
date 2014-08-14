@@ -102,7 +102,7 @@ void onReceivedData(CFSocketRef socket, CFSocketCallBackType type, CFDataRef add
             checkOperation(type == kCFSocketDataCallBack);
             
             bool waitingForClient = ![self isRemoteEndPointKnown];
-            bool packetHasContent = [data length] > 0;
+            bool packetHasContent = data.length > 0;
             bool haveNotSentPacketToBeBounced = !hasSentData;
             checkOperationDescribe(packetHasContent || waitingForClient || haveNotSentPacketToBeBounced,
                                    @"Received empty UDP packet. Probably indicates destination is unreachable.");

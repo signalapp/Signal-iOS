@@ -26,7 +26,7 @@
     test([[(@[]) toUint8Data] length] == 0);
 
     NSData* d = [@[@0, @1] toUint8Data];
-    test([d length] == 2);
+    test(d.length == 2);
     test(((uint8_t*)[d bytes])[0] == 0);
     test(((uint8_t*)[d bytes])[1] == 1);
 }

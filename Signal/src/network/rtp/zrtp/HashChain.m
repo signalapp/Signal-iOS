@@ -8,7 +8,7 @@
 
 +(HashChain*) hashChainWithSeed:(NSData*)seed {
     require(seed != nil);
-    require([seed length] == HASH_CHAIN_ITEM_LENGTH);
+    require(seed.length == HASH_CHAIN_ITEM_LENGTH);
     HashChain* s = [HashChain new];
     s->h0 = seed;
     s->h1 = [s->h0 hashWithSha256];

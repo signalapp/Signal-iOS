@@ -68,12 +68,12 @@
     require(dhPart2HelloCommitment != nil);
     require(hmacKey != nil);
     
-    require([h2 length] == HASH_CHAIN_ITEM_LENGTH);
-    require([hashSpecId length] == HASH_SPEC_LENGTH);
-    require([cipherSpecId length] == CIPHER_SPEC_LENGTH);
-    require([authSpecId length] == AUTH_SPEC_LENGTH);
-    require([agreeSpecId length] == AGREE_SPEC_LENGTH);
-    require([sasSpecId length] == SAS_SPEC_LENGTH);
+    require(h2.length == HASH_CHAIN_ITEM_LENGTH);
+    require(hashSpecId.length == HASH_SPEC_LENGTH);
+    require(cipherSpecId.length == CIPHER_SPEC_LENGTH);
+    require(authSpecId.length == AUTH_SPEC_LENGTH);
+    require(agreeSpecId.length == AGREE_SPEC_LENGTH);
+    require(sasSpecId.length == SAS_SPEC_LENGTH);
     
     CommitPacket* p = [CommitPacket new];
     
@@ -93,12 +93,12 @@
 -(HandshakePacket*) embedInHandshakePacketAuthenticatedWith:(NSData*)hmacKey {
     
     require(hmacKey != nil);
-    requireState([h2 length] == HASH_CHAIN_ITEM_LENGTH);
-    requireState([hashSpecId length] == HASH_SPEC_LENGTH);
-    requireState([cipherSpecId length] == CIPHER_SPEC_LENGTH);
-    requireState([authSpecId length] == AUTH_SPEC_LENGTH);
-    requireState([agreementSpecId length] == AGREE_SPEC_LENGTH);
-    requireState([sasSpecId length] == SAS_SPEC_LENGTH);
+    requireState(h2.length == HASH_CHAIN_ITEM_LENGTH);
+    requireState(hashSpecId.length == HASH_SPEC_LENGTH);
+    requireState(cipherSpecId.length == CIPHER_SPEC_LENGTH);
+    requireState(authSpecId.length == AUTH_SPEC_LENGTH);
+    requireState(agreementSpecId.length == AGREE_SPEC_LENGTH);
+    requireState(sasSpecId.length == SAS_SPEC_LENGTH);
     
     NSData* payload = [@[
                        h2,
@@ -156,7 +156,7 @@
     require(handshakePacket != nil);
     checkOperation([[handshakePacket typeId] isEqualToData:HANDSHAKE_TYPE_COMMIT]);
     NSData* payload = [handshakePacket payload];
-    checkOperation([payload length] == COMMIT_OFFSET + COMMIT_LENGTH + HANDSHAKE_TRUNCATED_HMAC_LENGTH);
+    checkOperation(payload.length == COMMIT_OFFSET + COMMIT_LENGTH + HANDSHAKE_TRUNCATED_HMAC_LENGTH);
     
     CommitPacket* p = [CommitPacket new];
     

@@ -87,7 +87,7 @@ typedef NSComparisonResult (^CallComparator)(RecentCall*, RecentCall*);
 #pragma mark - UITableViewDelegate
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return (NSInteger)[_recents count];
+    return (NSInteger)_recents.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

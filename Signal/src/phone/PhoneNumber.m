@@ -65,7 +65,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     NBAsYouTypeFormatter* formatter = [[NBAsYouTypeFormatter alloc] initWithRegionCode:regionCode];
     
     NSString* result = input;
-    for (NSUInteger i = 0; i < [input length]; i++) {
+    for (NSUInteger i = 0; i < input.length; i++) {
         result = [formatter inputDigit:[input substringWithRange:NSMakeRange(i, 1)]];
     }
     return result;
@@ -94,9 +94,9 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 +(PhoneNumber*) tryParsePhoneNumberFromUserSpecifiedText:(NSString*)text {
     require(text != nil);
 
-    char s[[text length]+1];
+    char s[text.length+1];
     int xx = 0;
-    for (NSUInteger i = 0; i < [text length]; i++) {
+    for (NSUInteger i = 0; i < text.length; i++) {
         unichar x = [text characterAtIndex:i];
         if (x == '+' || (x >= '0' && x <= '9')) {
             s[xx++] = (char)x;

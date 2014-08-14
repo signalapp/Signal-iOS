@@ -53,7 +53,7 @@ static NSString *const CONTACT_TABLE_VIEW_CELL_IDENTIFIER = @"ContactTableViewCe
 }
 
 - (void)hideTableViewIfNoFavourites {
-    BOOL hideFavourites = [_favourites count] == 0;
+    BOOL hideFavourites = _favourites.count == 0;
     _favouriteTableView.hidden = hideFavourites;
 }
 
@@ -95,7 +95,7 @@ static NSString *const CONTACT_TABLE_VIEW_CELL_IDENTIFIER = @"ContactTableViewCe
 #pragma mark - UITableViewDelegate
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return _isSearching ? (NSInteger)[_searchFavourites count] : (NSInteger)[_favourites count];
+    return _isSearching ? (NSInteger)_searchFavourites.count : (NSInteger)_favourites.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -142,7 +142,7 @@ static NSString *const CONTACT_TABLE_VIEW_CELL_IDENTIFIER = @"ContactTableViewCe
 
 - (NSArray *)favouritesForSearchTerm:(NSString *)searchTerm {
     return [_favourites filter:^int(Contact *contact) {
-        return [searchTerm length] == 0 || [ContactsManager name:[contact fullName] matchesQuery:searchTerm];
+        return searchTerm.length == 0 || [ContactsManager name:[contact fullName] matchesQuery:searchTerm];
     }];
 }
 

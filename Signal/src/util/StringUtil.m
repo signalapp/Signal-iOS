@@ -5,9 +5,9 @@
 
 @implementation NSString (Util)
 -(NSData*) decodedAsHexString {
-    require([self length] % 2 == 0);
+    require(self.length % 2 == 0);
 
-    NSUInteger n = [self length] / 2;
+    NSUInteger n = self.length / 2;
     uint8_t result[n];
     for (NSUInteger i = 0; i < n; i++) {
         unsigned int r;
@@ -52,17 +52,17 @@
     require(regex != nil);
     require(replacement != nil);
     NSMutableString* m = [self mutableCopy];
-    [regex replaceMatchesInString:m options:0 range:NSMakeRange(0, [m length]) withTemplate:replacement];
+    [regex replaceMatchesInString:m options:0 range:NSMakeRange(0, m.length) withTemplate:replacement];
     return m;
 }
 -(bool) containsAnyMatches:(NSRegularExpression*)regex {
     require(regex != nil);
-    return [regex numberOfMatchesInString:self options:0 range:NSMakeRange(0, [self length])] > 0;
+    return [regex numberOfMatchesInString:self options:0 range:NSMakeRange(0, self.length)] > 0;
 }
 -(NSString*) withPrefixRemovedElseNull:(NSString*)prefix {
     require(prefix != nil);
-    if ([prefix length] > 0 && ![self hasPrefix:prefix]) return nil;
-    return [self substringFromIndex:[prefix length]];
+    if (prefix.length > 0 && ![self hasPrefix:prefix]) return nil;
+    return [self substringFromIndex:prefix.length];
 }
 -(NSData*) decodedAsJsonIntoData {
     NSError* jsonParseError = nil;
@@ -93,11 +93,11 @@
 
     // Determine amount of information (based on length and padding)
     NSUInteger paddingCount = 0;
-    while (paddingCount < 2 && paddingCount < [self length] - 1 && [self characterAtIndex:[self length] - paddingCount - 1] == '=') {
+    while (paddingCount < 2 && paddingCount < self.length - 1 && [self characterAtIndex:self.length - paddingCount - 1] == '=') {
         paddingCount += 1;
     }
-    NSUInteger base64WordCount = [self length] - paddingCount;
-    NSUInteger bitCount = [self length]*BitsPerBase64Word - paddingCount*BitsPerByte;
+    NSUInteger base64WordCount = self.length - paddingCount;
+    NSUInteger bitCount = self.length*BitsPerBase64Word - paddingCount*BitsPerByte;
     NSUInteger byteCount = bitCount / BitsPerByte;
     checkOperation(bitCount % BitsPerByte == 0);
     

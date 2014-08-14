@@ -18,7 +18,7 @@
 -(NSNumber*) tryGetSessionId {
     if (![self.location hasPrefix:@"/session/"]) return nil;
     
-    NSString* sessionIdText = [self.location substringFromIndex:[@"/session/" length]];
+    NSString* sessionIdText = [self.location substringFromIndex:@"/session/".length];
     sessionIdText = [sessionIdText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     NSNumber* sessionIdNumber = [sessionIdText tryParseAsDecimalNumber];
 

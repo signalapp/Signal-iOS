@@ -210,14 +210,14 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 
     if (_isSearching) {
         if (section == SEARCH_TABLE_SECTION_FEED) {
-            return (NSInteger)[_searchInboxFeed count];
+            return (NSInteger)_searchInboxFeed.count;
         } else if (section == SEARCH_TABLE_SECTION_REGISTERED) {
-            return (NSInteger)[_searchRegisteredContacts count];
+            return (NSInteger)_searchRegisteredContacts.count;
         } else {
-            return (NSInteger)[_searchUnregisteredContacts count];
+            return (NSInteger)_searchUnregisteredContacts.count;
         }
     } else {
-        NSInteger inboxFeedAndInfoCellCount = (NSInteger)[_inboxFeed count] + 1;
+        NSInteger inboxFeedAndInfoCellCount = (NSInteger)_inboxFeed.count + 1;
         return inboxFeedAndInfoCellCount;
     }
 }
@@ -243,7 +243,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
             [self showContactViewControllerWithContact:_searchUnregisteredContacts[(NSUInteger)indexPath.row]];
         }
     } else {
-        if (indexPath.row < (NSInteger)[_inboxFeed count]) {
+        if (indexPath.row < (NSInteger)_inboxFeed.count) {
             [self showRecentCallViewControllerWithRecentCall:_inboxFeed[(NSUInteger)indexPath.row]];
         }
     }
@@ -251,7 +251,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == SEARCH_TABLE_SECTION_FEED) {
-        if ((NSUInteger)indexPath.row == [_inboxFeed count]) {
+        if ((NSUInteger)indexPath.row == _inboxFeed.count) {
             return FOOTER_CELL_HEIGHT;
         } else {
             return INBOX_TABLE_VIEW_CELL_HEIGHT;
@@ -272,7 +272,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 }
 
 - (UITableViewCell *)inboxFeedCellForIndexPath:(NSIndexPath *)indexPath {
-    if (!_isSearching && (NSUInteger)[indexPath row] == [_inboxFeed count]) {
+    if (!_isSearching && (NSUInteger)[indexPath row] == _inboxFeed.count) {
         return [self inboxFeedFooterCell];
     } else {
         return [self inboxCellForIndexPath:indexPath andIsSearching:NO];
@@ -339,7 +339,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 #pragma mark - SearchBarTitleViewDelegate
 
 - (void)searchBarTitleView:(SearchBarTitleView *)view didSearchForTerm:(NSString *)term {
-    BOOL searching = [term length] > 0;
+    BOOL searching = term.length > 0;
     _isSearching = searching;
 
     if (searching) {

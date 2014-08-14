@@ -27,10 +27,10 @@
     lastWindowEnding = endOfWindowTime;
     
     NSTimeInterval startOfWindowTime = endOfWindowTime - windowDuration;
-    while([events count] > 0 && [[events peek] doubleValue] < startOfWindowTime) {
+    while(events.count > 0 && [[events peek] doubleValue] < startOfWindowTime) {
         [events dequeue];
     }
-    return [events count];
+    return events.count;
 }
 
 @end

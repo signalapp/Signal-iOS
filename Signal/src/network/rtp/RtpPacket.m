@@ -69,9 +69,9 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
     require((version & ~0x3) == 0);
     require((payloadType & ~0x7F) == 0);
     require(extensionData != nil);
-    require([extensionData length] < 0x10000);
+    require(extensionData.length < 0x10000);
     require(contributingSourceIdentifiers != nil);
-    require([contributingSourceIdentifiers count] < 0x10);
+    require(contributingSourceIdentifiers.count < 0x10);
     require(payload != nil);
     
     RtpPacket* p = [RtpPacket new];
@@ -102,7 +102,7 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
     require((version & ~0x3) == 0);
     require((payloadType & ~0x7F) == 0);
     require(contributingSourceIdentifiers != nil);
-    require([contributingSourceIdentifiers count] < 0x10);
+    require(contributingSourceIdentifiers.count < 0x10);
     require(payload != nil);
     
     RtpPacket* p = [RtpPacket new];
@@ -156,7 +156,7 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
     uint8_t contributingSourceCount = [NumberUtil lowUInt4OfUint8:[packetData uint8At:VERSION_AND_PADDING_AND_EXTENSION_AND_CCSRC_FLAG_BYTE_OFFSET]];
     
     *minSize += contributingSourceCount * CONTRIBUTING_SOURCE_ID_LENGTH;
-    checkOperationDescribe([packetData length] >= *minSize, @"Rtp packet ends before header finished.");
+    checkOperationDescribe(packetData.length >= *minSize, @"Rtp packet ends before header finished.");
 
     NSMutableArray* contributingSources = [NSMutableArray array];
     for (NSUInteger i = 0; i < contributingSourceCount; i++) {
@@ -183,7 +183,7 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
     if (!hasExtensionHeader) return;
     
     *minSize += EXTENSION_HEADER_IDENTIFIER_LENGTH + EXTENSION_HEADER_LENGTH_LENGTH;
-    checkOperationDescribe([packetData length] >= *minSize, @"Rtp packet ends before header of extension header finished.");
+    checkOperationDescribe(packetData.length >= *minSize, @"Rtp packet ends before header of extension header finished.");
 
     extensionHeaderIdentifier = [packetData bigEndianUInt16At:*offset];
     *offset += EXTENSION_HEADER_IDENTIFIER_LENGTH;
@@ -192,7 +192,7 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
     *offset += EXTENSION_HEADER_LENGTH_LENGTH;
     
     *minSize += extensionLength;
-    checkOperationDescribe([packetData length] >= *minSize, @"Rtp packet ends before payload of extension header finished.");
+    checkOperationDescribe(packetData.length >= *minSize, @"Rtp packet ends before payload of extension header finished.");
     
     extensionHeaderData = [packetData subdataWithRange:NSMakeRange(*offset, extensionLength)];
     *offset += extensionLength;
@@ -210,17 +210,17 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
     
     if (!hasPadding) return;
     
-    padding = [packetData uint8At:[packetData length] - 1];
+    padding = [packetData uint8At:packetData.length - 1];
     checkOperationDescribe(padding > 0, @"Padding length must be at least 1 because it includes the suffix byte specifying the length.");
     
     *minSize += padding;
-    checkOperationDescribe([packetData length] >= *minSize, @"Rtp packet overlaps header and padding.");
+    checkOperationDescribe(packetData.length >= *minSize, @"Rtp packet overlaps header and padding.");
 }
 +(RtpPacket*) rtpPacketParsedFromPacketData:(NSData*)packetData {
     require(packetData != nil);
     
     NSUInteger minSize = MINIMUM_RTP_HEADER_LENGTH;
-    checkOperationDescribe([packetData length] >= minSize, @"Rtp packet ends before header finished.");
+    checkOperationDescribe(packetData.length >= minSize, @"Rtp packet ends before header finished.");
     
     RtpPacket* p = [RtpPacket new];
     
@@ -235,7 +235,7 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
     [p readContributingSourcesFromPacketData:packetData trackingOffset:&offset andMinSize:&minSize];
     [p readExtensionHeaderFromPacketData:packetData trackingOffset:&offset andMinSize:&minSize];
     [p readPaddingFromPacketData:packetData andMinSize:&minSize];
-    p->payload = [packetData subdataWithRange:NSMakeRange(offset, [packetData length] - p->padding - offset)];
+    p->payload = [packetData subdataWithRange:NSMakeRange(offset, packetData.length - p->padding - offset)];
     
     p->sequenceNumber = [self getSequenceNumberFromPacketData:packetData];
     p->timeStamp = [self getTimeStampFromPacketData:packetData];
@@ -247,14 +247,14 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
 -(NSData*) generateFlags {
     requireState((version & ~0x3) == 0);
     requireState((payloadType & ~0x7F) == 0);
-    requireState([contributingSourceIdentifiers count] < 0x10);
+    requireState(contributingSourceIdentifiers.count < 0x10);
     
     NSMutableData* flags = [NSMutableData dataWithLength:2];
     
     uint8_t versionMask = (uint8_t)(version << VERSION_INDEX);
     uint8_t paddingBit = padding > 0 ? (uint8_t)(1<<HAS_PADDING_BIT_INDEX) : 0;
     uint8_t extensionBit = hasExtensionHeader ? (uint8_t)(1<<HAS_EXTENSION_HEADER_BIT_INDEX) : 0;
-    uint8_t ccsrcCount = (uint8_t)[contributingSourceIdentifiers count];
+    uint8_t ccsrcCount = (uint8_t)contributingSourceIdentifiers.count;
     [flags setUint8At:VERSION_AND_PADDING_AND_EXTENSION_AND_CCSRC_FLAG_BYTE_OFFSET
                    to:versionMask | paddingBit | extensionBit | ccsrcCount];
     
@@ -274,20 +274,20 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
     
     return [@[
             [NSData dataWithBigEndianBytesOfUInt16:extensionHeaderIdentifier],
-            [NSData dataWithBigEndianBytesOfUInt16:(uint16_t)[extensionHeaderData length]],
+            [NSData dataWithBigEndianBytesOfUInt16:(uint16_t)extensionHeaderData.length],
             extensionHeaderData
             ] concatDatas];
 }
 -(NSData*) generatePaddingData {
     NSMutableData* paddingData = [NSMutableData dataWithLength:padding];
     if (padding > 0) {
-        [paddingData setUint8At:[paddingData length] - 1 to:padding];
+        [paddingData setUint8At:paddingData.length - 1 to:padding];
     }
     return paddingData;
 }
 -(NSData*) generateSerializedPacketDataUsingInteropOptions:(NSArray*)interopOptions {
     requireState(hasExtensionHeader == (extensionHeaderData != nil));
-    requireState(extensionHeaderData == nil || [extensionHeaderData length] <= MAX_EXTENSION_HEADER_LENGTH);
+    requireState(extensionHeaderData == nil || extensionHeaderData.length <= MAX_EXTENSION_HEADER_LENGTH);
     
     NSData* shouldBeEmpty = [NSData data];
     
