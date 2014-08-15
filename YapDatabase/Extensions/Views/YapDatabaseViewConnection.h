@@ -137,6 +137,16 @@
 - (BOOL)hasChangesForNotifications:(NSArray *)notifications;
 
 /**
+ * A simple YES/NO query to see if a particular group within the view changed at all.
+**/
+- (BOOL)hasChangesForGroup:(NSString *)group inNotifications:(NSArray *)notifications;
+
+/**
+ * A simple YES/NO query to see if any of the given groups within the view changed at all.
+**/
+- (BOOL)hasChangesForAnyGroups:(NSSet *)groups inNotifications:(NSArray *)notifications;
+
+/**
  * This method provides a rough estimate of the size of the change-set.
  * 
  * There may be times when a huge change-set overloads the system.

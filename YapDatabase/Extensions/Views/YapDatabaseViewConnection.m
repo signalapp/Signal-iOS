@@ -663,6 +663,94 @@
 }
 
 /**
+ * A simple YES/NO query to see if a particular group within the view changed at all.
+**/
+- (BOOL)hasChangesForGroup:(NSString *)group inNotifications:(NSArray *)notifications
+{
+	if (group == nil) return NO;
+	
+	NSString *registeredName = self.view.registeredName;
+	
+	for (NSNotification *notification in notifications)
+	{
+		NSDictionary *changeset =
+		    [[notification.userInfo objectForKey:YapDatabaseExtensionsKey] objectForKey:registeredName];
+		
+		NSArray *changeset_changes = [changeset objectForKey:changeset_key_changes];
+		
+		for (id change in changeset_changes)
+		{
+			if ([change isKindOfClass:[YapDatabaseViewSectionChange class]])
+			{
+				__unsafe_unretained YapDatabaseViewSectionChange *sectionChange =
+				  (YapDatabaseViewSectionChange *)change;
+				
+				if ([sectionChange->group isEqualToString:group])
+				{
+					return YES;
+				}
+			}
+			else
+			{
+				__unsafe_unretained YapDatabaseViewRowChange *rowChange =
+				  (YapDatabaseViewRowChange *)change;
+				
+				if ([rowChange->originalGroup isEqualToString:group])
+				{
+					return YES;
+				}
+			}
+		}
+	}
+	
+	return NO;
+}
+
+/**
+ * A simple YES/NO query to see if any of the given groups within the view changed at all.
+**/
+- (BOOL)hasChangesForAnyGroups:(NSSet *)groups inNotifications:(NSArray *)notifications
+{
+	if ([groups count] == 0) return NO;
+	
+	NSString *registeredName = self.view.registeredName;
+	
+	for (NSNotification *notification in notifications)
+	{
+		NSDictionary *changeset =
+		    [[notification.userInfo objectForKey:YapDatabaseExtensionsKey] objectForKey:registeredName];
+		
+		NSArray *changeset_changes = [changeset objectForKey:changeset_key_changes];
+		
+		for (id change in changeset_changes)
+		{
+			if ([change isKindOfClass:[YapDatabaseViewSectionChange class]])
+			{
+				__unsafe_unretained YapDatabaseViewSectionChange *sectionChange =
+				  (YapDatabaseViewSectionChange *)change;
+				
+				if ([groups containsObject:sectionChange->group])
+				{
+					return YES;
+				}
+			}
+			else
+			{
+				__unsafe_unretained YapDatabaseViewRowChange *rowChange =
+				  (YapDatabaseViewRowChange *)change;
+				
+				if ([groups containsObject:rowChange->originalGroup])
+				{
+					return YES;
+				}
+			}
+		}
+	}
+	
+	return NO;
+}
+
+/**
  * This method provides a rough estimate of the size of the change-set.
  * See the header file for more information.
 **/
