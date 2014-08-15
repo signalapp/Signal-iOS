@@ -939,8 +939,8 @@
 	
 	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
-	if ([connection->metadataCache objectForKey:cacheKey]) return YES;
 	if ([connection->objectCache objectForKey:cacheKey]) return YES;
+	if ([connection->metadataCache objectForKey:cacheKey]) return YES;
 	
 	// The normal SQL way
 	
