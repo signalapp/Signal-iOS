@@ -32,7 +32,7 @@
     NSUInteger hashCount = [[self tryGetValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_HASH_COUNT_KEY] unsignedIntegerValue];
     NSData* data = [self tryGetValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_DATA_KEY];
     NSDate* expiration = [self tryGetValueForKey:PHONE_DIRECTORY_EXPIRATION];
-    if (hashCount == 0 || [data length] == 0 || expiration == nil) return nil;
+    if (hashCount == 0 || data.length == 0 || expiration == nil) return nil;
     BloomFilter* bloomFilter = [BloomFilter bloomFilterWithHashCount:hashCount andData:data];
     return [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterWithBloomFilter:bloomFilter
                                                                andExpirationDate:expiration];

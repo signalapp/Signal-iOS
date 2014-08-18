@@ -19,7 +19,7 @@
     require(location != nil);
     require(headers != nil);
     require((optionalBody == nil) == (headers[@"Content-Length"] == nil));
-    require(optionalBody == nil || [[@([optionalBody length]) description] isEqualToString:headers[@"Content-Length"]]);
+    require(optionalBody == nil || [[@(optionalBody.length) description] isEqualToString:headers[@"Content-Length"]]);
     
     HttpRequest* s = [HttpRequest new];
     s->_method = method;
@@ -36,7 +36,7 @@
     
     NSMutableDictionary* headers = [NSMutableDictionary dictionary];
     if (optionalBody != nil) {
-        headers[@"Content-Length"] = [@([optionalBody length]) stringValue];
+        headers[@"Content-Length"] = [@(optionalBody.length) stringValue];
     }
 
     HttpRequest* s = [HttpRequest new];
@@ -58,7 +58,7 @@
     
     NSMutableDictionary* headers = [NSMutableDictionary dictionary];
     if (optionalBody != nil) {
-        headers[@"Content-Length"] = [@([optionalBody length]) stringValue];
+        headers[@"Content-Length"] = [@(optionalBody.length) stringValue];
     }
     headers[@"Authorization"] = [HttpRequest computeBasicAuthorizationTokenForLocalNumber:localNumber andPassword:password];
     
@@ -81,7 +81,7 @@
     
     NSMutableDictionary* headers = [NSMutableDictionary dictionary];
     if (optionalBody != nil) {
-        headers[@"Content-Length"] = [@([optionalBody length]) stringValue];
+        headers[@"Content-Length"] = [@(optionalBody.length) stringValue];
     }
     headers[@"Authorization"] = [HttpRequest computeOtpAuthorizationTokenForLocalNumber:localNumber andCounterValue:counter andPassword:password];
     
@@ -97,7 +97,7 @@
     require(data != nil);
     NSUInteger requestSize;
     HttpRequestOrResponse* http = [HttpRequestOrResponse tryExtractFromPartialData:data usedLengthOut:&requestSize];
-    checkOperation([http isRequest] && requestSize == [data length]);
+    checkOperation([http isRequest] && requestSize == data.length);
     return [http request];
 }
 
@@ -156,7 +156,7 @@
             self.method,
             self.location,
             self.optionalBody == nil ? @""
-                : [self.optionalBody length] == 0 ? @" [empty body]"
+                : self.optionalBody.length == 0 ? @" [empty body]"
                 : @" [...body...]"];
 }
 

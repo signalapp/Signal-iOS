@@ -80,19 +80,19 @@
 
     [attributedString addAttribute:NSForegroundColorAttributeName
                              value:[UIColor darkGrayColor]
-                             range:NSMakeRange(0, [timeString length])];
+                             range:NSMakeRange(0, timeString.length)];
 
     [attributedString addAttribute:NSForegroundColorAttributeName
                              value:[UIUtil darkBackgroundColor]
-                             range:NSMakeRange([timeString length],[dateString length])];
+                             range:NSMakeRange(timeString.length,dateString.length)];
 
     [attributedString addAttribute:NSFontAttributeName
                              value:[UIUtil helveticaLightWithSize:TIME_LABEL_SIZE]
-                             range:NSMakeRange(0, [timeString length])];
+                             range:NSMakeRange(0, timeString.length)];
 
     [attributedString addAttribute:NSFontAttributeName
                              value:[UIUtil helveticaRegularWithSize:DATE_LABEL_SIZE]
-                             range:NSMakeRange([timeString length],[dateString length])];
+                             range:NSMakeRange(timeString.length,dateString.length)];
 
     return attributedString;
 }

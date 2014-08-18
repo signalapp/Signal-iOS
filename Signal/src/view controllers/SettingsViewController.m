@@ -51,7 +51,7 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 - (void)viewWillDisappear:(BOOL)animated {
     [self saveExpandedSectionPreferences];
     
-    if ([self.navigationController.viewControllers count] > 1) {
+    if (self.navigationController.viewControllers.count > 1) {
         [self.navigationController setNavigationBarHidden:NO animated:YES];
     }
     
@@ -85,11 +85,11 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
     
     [attributedString addAttribute:NSFontAttributeName
                              value:prefixFont
-                             range:NSMakeRange(0, [numberPrefixString length])];
+                             range:NSMakeRange(0, numberPrefixString.length)];
     
     [attributedString addAttribute:NSFontAttributeName
                              value:numberFont
-                             range:NSMakeRange([numberPrefixString length] + 1, [localNumberString length])];
+                             range:NSMakeRange(numberPrefixString.length + 1, localNumberString.length)];
     return attributedString;
 }
 
@@ -155,7 +155,7 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 
 - (NSArray *)indexPathsForCells:(NSArray *)cells forRow:(NSInteger)row {
     NSMutableArray *indexPaths = [NSMutableArray array];
-    for (NSUInteger i = 0; i < [cells count]; i++) {
+    for (NSUInteger i = 0; i < cells.count; i++) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(NSInteger)i inSection:row];
         [indexPaths addObject:indexPath];
     }
@@ -255,7 +255,7 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 #pragma mark - UITableViewDelegate
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return (NSInteger)[_sectionHeaderViews count];
+    return (NSInteger)_sectionHeaderViews.count;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -269,9 +269,9 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     UIView *headerView = _sectionHeaderViews[(NSUInteger)section];
     if (headerView == _privacyAndSecurityHeaderView) {
-        return (NSInteger)[_privacyTableViewCells count];
+        return (NSInteger)_privacyTableViewCells.count;
     } else if (headerView == _debuggingHeaderView){
-        return (NSInteger)[_debuggingTableViewCells count];
+        return (NSInteger)_debuggingTableViewCells.count;
     }else {
         return 0;
     }

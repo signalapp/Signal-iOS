@@ -69,7 +69,7 @@
 
 - (void)setPlaceholderTextColor:(UIColor *)color {
     NSAttributedString *placeholder = _phoneNumberTextField.attributedPlaceholder;
-    if ([placeholder length]) {
+    if (placeholder.length) {
         NSDictionary * attributes = [placeholder attributesAtIndex:0
                                                     effectiveRange:NULL];
         

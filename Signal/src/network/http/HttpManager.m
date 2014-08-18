@@ -120,7 +120,7 @@
                 HttpResponse* response = requestHandler([requestOrResponse request]);
                 requireState(response != nil);
                 [httpChannel send:[HttpRequestOrResponse httpRequestOrResponse:response]];
-            } else if ([eventualResponseQueue count] == 0) {
+            } else if (eventualResponseQueue.count == 0) {
                 errorHandler(@"Response when no requests queued", [requestOrResponse response], false);
             } else {
                 FutureSource* ev = [eventualResponseQueue dequeue];
@@ -137,17 +137,17 @@
 }
 -(void) clearQueue:(id)error {
     @synchronized (self) {
-        while ([eventualResponseQueue count] > 0) {
+        while (eventualResponseQueue.count > 0) {
             [[eventualResponseQueue dequeue] trySetFailure:error];
         }
     }
 }
 -(void) terminateWhenDoneCurrentWork {
     @synchronized (self) {
-        if ([eventualResponseQueue count] == 0) {
+        if (eventualResponseQueue.count == 0) {
             [self terminate];
         } else {
-            FutureSource* v = [eventualResponseQueue peekAt:[eventualResponseQueue count]-1];
+            FutureSource* v = [eventualResponseQueue peekAt:eventualResponseQueue.count-1];
             [v finallyDo:^(id _) {
                 [self terminate];
             }];

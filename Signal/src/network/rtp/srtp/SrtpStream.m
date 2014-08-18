@@ -11,7 +11,7 @@
     require(cipherKey != nil);
     require(macKey != nil);
     require(cipherIvSalt != nil);
-    require([cipherIvSalt length] == IV_SALT_LENGTH);
+    require(cipherIvSalt.length == IV_SALT_LENGTH);
 
     SrtpStream* s = [SrtpStream new];
     s->cipherIvSalt = cipherIvSalt;
@@ -42,7 +42,7 @@
     NSData* authenticatedData = [securedRtpPacket rawPacketDataUsingInteropOptions:nil];
     NSData* includedHmac = [authenticatedData takeLastVolatile:HMAC_LENGTH];
     NSData* expectedHmac = [[authenticatedData skipLastVolatile:HMAC_LENGTH] hmacWithSha1WithKey:macKey];
-    checkOperationDescribe([expectedHmac length] == HMAC_LENGTH, @"Hmac length constant is wrong");
+    checkOperationDescribe(expectedHmac.length == HMAC_LENGTH, @"Hmac length constant is wrong");
     checkOperationDescribe([includedHmac isEqualToData_TimingSafe:expectedHmac], @"Authentication failed.");
 
     NSData* iv = [self getIvForSequenceNumber:[securedRtpPacket sequenceNumber] andSynchronizationSourceIdentifier:[securedRtpPacket synchronizationSourceIdentifier]];

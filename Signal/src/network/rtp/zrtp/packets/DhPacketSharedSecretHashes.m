@@ -22,10 +22,10 @@
     require(aux != nil);
     require(pbx != nil);
     
-    require([rs1 length] == DH_RS1_LENGTH);
-    require([rs2 length] == DH_RS2_LENGTH);
-    require([aux length] == DH_AUX_LENGTH);
-    require([pbx length] == DH_PBX_LENGTH);
+    require(rs1.length == DH_RS1_LENGTH);
+    require(rs2.length == DH_RS2_LENGTH);
+    require(aux.length == DH_AUX_LENGTH);
+    require(pbx.length == DH_PBX_LENGTH);
     
     DhPacketSharedSecretHashes* h = [DhPacketSharedSecretHashes new];
     h->rs1 = rs1;

@@ -124,9 +124,9 @@
                                                            unlessCancelled:untilCancelledToken];
     
     Future* futureEndPoint = [futureDnsResult then:^(NSArray* ipAddresses) {
-        require([ipAddresses count] > 0);
+        require(ipAddresses.count > 0);
         
-        IpAddress* address = ipAddresses[arc4random_uniform((unsigned int)[ipAddresses count])];
+        IpAddress* address = ipAddresses[arc4random_uniform((unsigned int)ipAddresses.count)];
         return [IpEndPoint ipEndPointAtAddress:address
                                         onPort:sessionDescriptor.relayUdpPort];
     }];

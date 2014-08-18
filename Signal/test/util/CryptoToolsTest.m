@@ -42,9 +42,9 @@
     NSData* key =[@"2b7e151628aed2a6abf7158809cf4f3c" decodedAsHexString];
     
     NSData* cipher = [plain encryptWithAesInCipherBlockChainingModeWithPkcs7PaddingWithKey:key andIv:iv];
-    test([cipher length] % 16 == 0);
+    test(cipher.length % 16 == 0);
     NSData* replain = [cipher decryptWithAesInCipherBlockChainingModeWithPkcs7PaddingWithKey:key andIv:iv];
-    test([plain length] == [replain length]);
+    test(plain.length == replain.length);
 }
 -(void) testKnownSha256 {
     char* valText = "The quick brown fox jumps over the lazy dog";
@@ -58,7 +58,7 @@
     NSData* d2 = [CryptoTools generateSecureRandomData:8];
     
     test(5 == [[CryptoTools generateSecureRandomData:5] length]);
-    test(8 == [d length]);
+    test(8 == d.length);
     
     // extremely unlikely to fail if any reasonable amount of entropy is going into d and d2
     test(![d isEqualToData:d2]);

@@ -32,7 +32,7 @@
 -(uint32_t) hash:(NSData*)value index:(NSUInteger)index {
     NSData* key = [[@(index) stringValue] encodedAsAscii];
     NSData* hash = [value hmacWithSha1WithKey:key];
-    return [hash bigEndianUInt32At:0] % ([data length] * 8);
+    return [hash bigEndianUInt32At:0] % (data.length * 8);
 }
 
 -(bool) isBitSetAt:(uint32_t)bitIndex {

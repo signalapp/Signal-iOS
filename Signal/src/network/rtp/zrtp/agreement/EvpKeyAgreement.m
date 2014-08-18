@@ -134,7 +134,7 @@ enum KeyAgreementType {
     size_t secret_len;
     unsigned char* secret;
     
-    EVP_PKEY* peerkey = [self deserializePublicKey:[publicKey bytes] withLength:[publicKey length]];
+    EVP_PKEY* peerkey = [self deserializePublicKey:[publicKey bytes] withLength:publicKey.length];
     EVP_PKEY_CTX* ctx;
     
     
@@ -314,7 +314,7 @@ enum KeyAgreementType {
 }
 
 -(BIGNUM*) generateBignumberFor:(NSData*) data{
-    assert([data length] <= INT_MAX );
+    assert(data.length <= INT_MAX );
     return BN_bin2bn([data bytes], (int)data.length, NULL);
 }
 

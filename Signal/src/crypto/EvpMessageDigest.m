@@ -33,8 +33,8 @@
     NSUInteger digestLength = [NumberUtil assertConvertIntToNSUInteger:EVP_MD_size(md)];
     
     unsigned char* digest = HMAC(md,
-                                 [key bytes], [NumberUtil assertConvertNSUIntegerToInt:[key length]],
-                                 [data bytes], [data length],
+                                 [key bytes], [NumberUtil assertConvertNSUIntegerToInt:key.length],
+                                 [data bytes], data.length,
                                  NULL, NULL);
     
     return [NSData  dataWithBytes:digest length:digestLength];

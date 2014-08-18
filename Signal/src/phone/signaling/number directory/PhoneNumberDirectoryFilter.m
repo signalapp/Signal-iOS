@@ -44,7 +44,7 @@
     checkOperation(hashCountValue > 0);
     
     NSData* responseBody = [response getOptionalBodyData];
-    checkOperation([responseBody length] > 0);
+    checkOperation(responseBody.length > 0);
     
     BloomFilter* bloomFilter = [BloomFilter bloomFilterWithHashCount:(NSUInteger)hashCountValue
                                                              andData:responseBody];

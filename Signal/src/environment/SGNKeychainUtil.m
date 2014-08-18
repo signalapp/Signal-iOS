@@ -67,8 +67,8 @@
 
 +(Zid *)zid{
     NSData *data = [self dataForKey:ZID_KEY];
-    if ([data length] != ZID_LENGTH) {
-        DDLogError(@"ZID length is incorrect. Is %lu, should be %d", (unsigned long)[data length], ZID_LENGTH);
+    if (data.length != ZID_LENGTH) {
+        DDLogError(@"ZID length is incorrect. Is %lu, should be %d", (unsigned long)data.length, ZID_LENGTH);
     }
     Zid *zid = [Zid zidWithData:data];
     return zid;
@@ -90,8 +90,8 @@
 +(NSString *)serverAuthPassword{
     NSString *password = [self stringForKey:SAVED_PASSWORD_KEY];
     NSData *data = [password decodedAsBase64Data];
-    if ([data length] != SAVED_PASSWORD_LENGTH) {
-        DDLogError(@"The server password has incorrect length. Is %lu but should be %d", (unsigned long)[data length], SAVED_PASSWORD_LENGTH);
+    if (data.length != SAVED_PASSWORD_LENGTH) {
+        DDLogError(@"The server password has incorrect length. Is %lu but should be %d", (unsigned long)data.length, SAVED_PASSWORD_LENGTH);
     }
     return password;
 }
@@ -109,8 +109,8 @@
 +(NSData*)dataForKey:(NSString*)key andVerifyLength:(uint)length{
     NSData *data = [self dataForKey:key];
     
-    if ([data length] != length) {
-        DDLogError(@"Length of data not matching. Got %lu, expected %u", (unsigned long)[data length], length);
+    if (data.length != length) {
+        DDLogError(@"Length of data not matching. Got %lu, expected %u", (unsigned long)data.length, length);
     }
     
     return data;

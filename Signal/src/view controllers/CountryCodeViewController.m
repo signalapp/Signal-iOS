@@ -34,7 +34,7 @@ static NSString *const CONTRY_CODE_TABLE_CELL_IDENTIFIER = @"CountryCodeTableVie
 #pragma mark - UITableViewDelegate
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return (NSInteger)[_countryCodes count];
+    return (NSInteger)_countryCodes.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

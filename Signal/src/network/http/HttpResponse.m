@@ -41,7 +41,7 @@
     require(data != nil);
     NSUInteger responseSize;
     HttpRequestOrResponse* http = [HttpRequestOrResponse tryExtractFromPartialData:data usedLengthOut:&responseSize];
-    checkOperation([http isResponse] && responseSize == [data length]);
+    checkOperation([http isResponse] && responseSize == data.length);
     return [http response];
 }
 +(HttpResponse*) httpResponse200Ok {
@@ -81,7 +81,7 @@
 }
 
 -(bool) hasEmptyBody {
-    return [optionalBodyData length] == 0 && [optionalBodyText length] == 0;
+    return optionalBodyData.length == 0 && optionalBodyText.length == 0;
 }
 -(NSString*) getOptionalBodyText {
     if (optionalBodyText != nil) return optionalBodyText;
@@ -106,7 +106,7 @@
     NSString* body = [self getOptionalBodyText];
     if (body != nil) {
         [r addObject:@"Content-Length: "];
-        [r addObject:[@([body length]) stringValue]];
+        [r addObject:[@(body.length) stringValue]];
         [r addObject:@"\r\n"];
         [r addObject:body];
     } else {

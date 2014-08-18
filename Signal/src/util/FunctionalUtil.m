@@ -32,7 +32,7 @@
 -(NSArray*) map:(id (^)(id item))projection {
     require(projection != nil);
     
-    NSMutableArray* r = [NSMutableArray arrayWithCapacity:[self count]];
+    NSMutableArray* r = [NSMutableArray arrayWithCapacity:self.count];
     for (id e in self) {
         [r addObject:projection(e)];
     }
@@ -78,7 +78,7 @@
     for (id value in self) {
         result[keySelector(value)] = value;
     }
-    checkOperation([result count] == [self count]);
+    checkOperation(result.count == self.count);
 
     return result;
 }

@@ -159,9 +159,9 @@ static NSString *WHISPER_SYSTEMS_BUGREPORT_URL = @"http://support.whispersystems
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (section == FIRST_SECTION_INDEX) {
-        return (NSInteger)[_firstSectionOptions count];
+        return (NSInteger)_firstSectionOptions.count;
     } else {
-        return (NSInteger)[_secondSectionOptions count];
+        return (NSInteger)_secondSectionOptions.count;
     }
 }
 

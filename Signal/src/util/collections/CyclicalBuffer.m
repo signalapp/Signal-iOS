@@ -15,10 +15,10 @@
 
 -(void) enqueueData:(NSData*)data {
     require(data != nil);
-    if([data length] == 0) return;
+    if(data.length == 0) return;
 
-    NSUInteger incomingDataLength = [data length];
-    NSUInteger bufferCapacity = [buffer length];
+    NSUInteger incomingDataLength = data.length;
+    NSUInteger bufferCapacity = buffer.length;
     NSUInteger writeOffset = (readOffset + count) % bufferCapacity;
     NSUInteger bufferSpaceAvailable = bufferCapacity - count;
     NSUInteger writeSlack = bufferCapacity - writeOffset;
@@ -45,7 +45,7 @@
     if (incomingDataLength > writeSlack) {
         [buffer replaceBytesInRange:NSMakeRange(0, incomingDataLength - writeSlack) withBytes:(uint8_t*)[data bytes] + writeSlack];
     }
-    count += [data length];
+    count += data.length;
 }
 
 -(NSUInteger) enqueuedLength {
@@ -55,14 +55,14 @@
 -(void) discard:(NSUInteger)length {
     require(length <= count);
     count -= length;
-    readOffset = (readOffset + length)%(unsigned int)[buffer length];
+    readOffset = (readOffset + length)%(unsigned int)buffer.length;
 }
 
 -(NSData*) peekDataWithLength:(NSUInteger)length{
     require(length <= count);
     if (length == 0) return [NSData data];
     
-    NSUInteger readSlack = [buffer length] - readOffset;
+    NSUInteger readSlack = buffer.length - readOffset;
     
     NSMutableData* result = [NSMutableData dataWithLength:length];
     [result replaceBytesInRange:NSMakeRange(0, MIN(readSlack, length)) withBytes:(uint8_t*)[buffer bytes] + readOffset];
@@ -80,7 +80,7 @@
 }
 
 -(NSData*) dequeuePotentialyVolatileDataWithLength:(NSUInteger)length {
-    NSUInteger readSlack = [buffer length] - readOffset;
+    NSUInteger readSlack = buffer.length - readOffset;
     
     if (readSlack < length) return [self dequeueDataWithLength:length];
     
@@ -91,7 +91,7 @@
 }
 
 -(NSData*) peekVolatileHeadOfData {
-    NSUInteger capacity = [buffer length];
+    NSUInteger capacity = buffer.length;
     NSUInteger slack = capacity - readOffset;
     return [buffer subdataVolatileWithRange:NSMakeRange(readOffset, MIN(count, slack))];
 }

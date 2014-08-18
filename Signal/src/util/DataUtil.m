@@ -7,7 +7,7 @@
     // (also, by virtue of being const, there are no threading/entrancy issues)
     static const int SafeNonNullPointerToStaticStorageLocation[1];
 
-    if ([self length] == 0) {
+    if (self.length == 0) {
         return SafeNonNullPointerToStaticStorageLocation;
     } else {
         require([self bytes] != nil);
@@ -23,10 +23,10 @@
 }
 -(NSNumber*) tryFindIndexOf:(NSData*)subData {
     require(subData != nil);
-    if ([subData length] > [self length]) return nil;
+    if (subData.length > self.length) return nil;
     
-    NSUInteger subDataLength = [subData length];
-    NSUInteger excessLength = [self length] - subDataLength;
+    NSUInteger subDataLength = subData.length;
+    NSUInteger excessLength = self.length - subDataLength;
     
     const uint8_t* selfBytes = [self bytes];
     const uint8_t* subDataBytes = [subData bytes];
@@ -41,14 +41,14 @@
     if (![self bytes]) return @"";
     
     NSMutableString* result = [NSMutableString string];
-    for (NSUInteger i = 0; i < [self length]; ++i)
+    for (NSUInteger i = 0; i < self.length; ++i)
         [result appendString:[NSString stringWithFormat:@"%02x", [self uint8At:i]]];
     
     return result;
 }
 -(NSString*) decodedAsUtf8 {
     // workaround for empty data having nil bytes
-    if ([self length] == 0) return @"";
+    if (self.length == 0) return @"";
     
     [NSString stringWithUTF8String:[self bytes]];
     NSString* result = [[NSString alloc] initWithData:self encoding:NSUTF8StringEncoding];
@@ -57,9 +57,9 @@
 }
 -(NSString*) decodedAsAscii {
     // workaround for empty data having nil bytes
-    if ([self length] == 0) return @"";
+    if (self.length == 0) return @"";
     // workaround for initWithData not enforcing the fact that NSASCIIStringEncoding means strict 7-bit
-    for (NSUInteger i = 0; i < [self length]; i++) {
+    for (NSUInteger i = 0; i < self.length; i++) {
         checkOperationDescribe(([self uint8At:i] & 0x80) == 0, @"Invalid ascii data.");
     }
     
@@ -71,8 +71,8 @@
     const int MinPrintableChar = ' ';
     const int MaxPrintableChar = '~';
     
-    NSMutableData* d = [NSMutableData dataWithLength:[self length]];
-    for (NSUInteger i = 0; i < [self length]; i++) {
+    NSMutableData* d = [NSMutableData dataWithLength:self.length];
+    for (NSUInteger i = 0; i < self.length; i++) {
         uint8_t v = [self uint8At:i];
         if (v < MinPrintableChar || v > MaxPrintableChar) v = '.';
         [d setUint8At:i to:v];
@@ -81,24 +81,24 @@
 }
 
 -(NSData*) skip:(NSUInteger)offset {
-    require(offset <= [self length]);
-    return [self subdataWithRange:NSMakeRange(offset, [self length] - offset)];
+    require(offset <= self.length);
+    return [self subdataWithRange:NSMakeRange(offset, self.length - offset)];
 }
 -(NSData*) take:(NSUInteger)takeCount {
-    require(takeCount <= [self length]);
+    require(takeCount <= self.length);
     return [self subdataWithRange:NSMakeRange(0, takeCount)];
 }
 -(NSData*) skipLast:(NSUInteger)skipLastCount {
-    require(skipLastCount <= [self length]);
-    return [self subdataWithRange:NSMakeRange(0, [self length] - skipLastCount)];
+    require(skipLastCount <= self.length);
+    return [self subdataWithRange:NSMakeRange(0, self.length - skipLastCount)];
 }
 -(NSData*) takeLast:(NSUInteger)takeLastCount {
-    require(takeLastCount <= [self length]);
-    return [self subdataWithRange:NSMakeRange([self length] - takeLastCount, takeLastCount)];
+    require(takeLastCount <= self.length);
+    return [self subdataWithRange:NSMakeRange(self.length - takeLastCount, takeLastCount)];
 }
 
 -(NSData*) subdataVolatileWithRange:(NSRange)range {
-    NSUInteger length = [self length];
+    NSUInteger length = self.length;
     require(range.location <= length);
     require(range.length <= length);
     require(range.location + range.length <= length);
@@ -106,20 +106,20 @@
     return [NSData dataWithBytesNoCopy:(uint8_t*)[self bytes] + range.location length:range.length freeWhenDone:NO];
 }
 -(NSData*) skipVolatile:(NSUInteger)offset {
-    require(offset <= [self length]);
-    return [self subdataVolatileWithRange:NSMakeRange(offset, [self length] - offset)];
+    require(offset <= self.length);
+    return [self subdataVolatileWithRange:NSMakeRange(offset, self.length - offset)];
 }
 -(NSData*) takeVolatile:(NSUInteger)takeCount {
-    require(takeCount <= [self length]);
+    require(takeCount <= self.length);
     return [self subdataVolatileWithRange:NSMakeRange(0, takeCount)];
 }
 -(NSData*) skipLastVolatile:(NSUInteger)skipLastCount {
-    require(skipLastCount <= [self length]);
-    return [self subdataVolatileWithRange:NSMakeRange(0, [self length] - skipLastCount)];
+    require(skipLastCount <= self.length);
+    return [self subdataVolatileWithRange:NSMakeRange(0, self.length - skipLastCount)];
 }
 -(NSData*) takeLastVolatile:(NSUInteger)takeLastCount {
-    require(takeLastCount <= [self length]);
-    return [self subdataVolatileWithRange:NSMakeRange([self length] - takeLastCount, takeLastCount)];
+    require(takeLastCount <= self.length);
+    return [self subdataVolatileWithRange:NSMakeRange(self.length - takeLastCount, takeLastCount)];
 }
 
 -(uint8_t) highUint4AtByteOffset:(NSUInteger)offset {
@@ -129,7 +129,7 @@
     return [self uint8At:offset] & 0xF;
 }
 -(uint8_t) uint8At:(NSUInteger)offset {
-    require(offset < [self length]);
+    require(offset < self.length);
     return ((const uint8_t*)[self bytes])[offset];
 }
 -(const uint8_t*) constPtrToUint8At:(NSUInteger)offset {
@@ -140,7 +140,7 @@
     const NSUInteger BitsPerByte = 8;
     const uint8_t Base64Chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-    NSUInteger byteCount = [self length];
+    NSUInteger byteCount = self.length;
     NSUInteger bitCount = byteCount*BitsPerByte;
     NSUInteger base64WordCount = bitCount / BitsPerBase64Word;
     if (base64WordCount * BitsPerBase64Word < bitCount) base64WordCount += 1;
@@ -180,12 +180,12 @@
 
 @implementation NSMutableData (Util)
 -(void) setUint8At:(NSUInteger)offset to:(uint8_t)newValue {
-    require(offset < [self length]);
+    require(offset < self.length);
     ((uint8_t*)[self mutableBytes])[offset] = newValue;
 }
 -(void) replaceBytesStartingAt:(NSUInteger)offset withData:(NSData*)data {
     require(data != nil);
-    require(offset + [data length] <= [self length]);
-    [self replaceBytesInRange:NSMakeRange(offset, [data length]) withBytes:[data bytes]];
+    require(offset + data.length <= self.length);
+    [self replaceBytesInRange:NSMakeRange(offset, data.length) withBytes:[data bytes]];
 }
 @end

@@ -19,7 +19,7 @@
 -(void) log:(NSString*)category details:(id)details {
     NSNumber* index = indexDic[category];
     if (index == nil) {
-        index = @([indexDic count]);
+        index = @(indexDic.count);
         indexDic[category] = index;
     }
     NSUInteger x = [index unsignedIntegerValue];

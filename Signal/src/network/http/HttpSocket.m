@@ -68,7 +68,7 @@
         require([packet isKindOfClass:[NSData class]]);
         NSData* data = packet;
         
-        [partialDataBuffer replaceBytesInRange:NSMakeRange([partialDataBuffer length], [data length]) withBytes:[data bytes]];
+        [partialDataBuffer replaceBytesInRange:NSMakeRange(partialDataBuffer.length, data.length) withBytes:[data bytes]];
         
         while (true) {
             NSUInteger usedDataLength;

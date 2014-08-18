@@ -52,7 +52,7 @@
         NSData* decodedAudioData = [audioProcessor tryDecodeOrInferFrame];
         if (decodedAudioData == nil) break;
         [audioInterface populatePlaybackQueueWithData:decodedAudioData];
-        bytesInPlaybackBuffer += [decodedAudioData length];
+        bytesInPlaybackBuffer += decodedAudioData.length;
     }
 }
 

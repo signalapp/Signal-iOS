@@ -65,8 +65,8 @@
 }
 -(bool)isEqualToData_TimingSafe:(NSData*)other {
     if (other == nil) return false;
-    NSUInteger n = [self length];
-    if ([other length] != n) return false;
+    NSUInteger n = self.length;
+    if (other.length != n) return false;
     bool equal = true;
     for (NSUInteger i = 0; i < n; i++)
         equal &= [self uint8At:i] == [other uint8At:i];

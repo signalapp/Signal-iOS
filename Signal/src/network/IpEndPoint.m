@@ -31,7 +31,7 @@
 
 +(IpEndPoint*) ipEndPointFromSockaddrData:(NSData*)sockaddrData {
     require(sockaddrData != nil);
-    require([sockaddrData length] >= sizeof(struct sockaddr));
+    require(sockaddrData.length >= sizeof(struct sockaddr));
     
     struct sockaddr s;
     memcpy(&s, [sockaddrData bytes], sizeof(struct sockaddr));
@@ -44,7 +44,7 @@
 }
 +(IpEndPoint*) ipv4EndPointFromSockaddrData:(NSData*)sockaddrData {
     require(sockaddrData != nil);
-    require([sockaddrData length] >= sizeof(struct sockaddr_in));
+    require(sockaddrData.length >= sizeof(struct sockaddr_in));
     
     struct sockaddr_in s;
     memcpy(&s, [sockaddrData bytes], sizeof(struct sockaddr_in));
@@ -53,7 +53,7 @@
 }
 +(IpEndPoint*) ipv6EndPointFromSockaddrData:(NSData*)sockaddrData {
     require(sockaddrData != nil);
-    require([sockaddrData length] >= sizeof(struct sockaddr_in6));
+    require(sockaddrData.length >= sizeof(struct sockaddr_in6));
     
     struct sockaddr_in6 s;
     memcpy(&s, [sockaddrData bytes], sizeof(struct sockaddr_in6));

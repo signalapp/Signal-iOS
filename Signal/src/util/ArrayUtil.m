@@ -4,7 +4,7 @@
 @implementation NSArray (Util)
 
 -(NSData*) toUint8Data {
-    NSUInteger n = [self count];
+    NSUInteger n = self.count;
     uint8_t x[n];
     for (NSUInteger i = 0; i < n; i++) {
         x[i] = [(NSNumber*)self[i] unsignedCharValue];
@@ -21,8 +21,8 @@
     NSMutableData* result = [NSMutableData dataWithLength:t];
     uint8_t* dst = [result mutableBytes];
     for (NSData* d in self) {
-        memcpy(dst, [d bytes], [d length]);
-        dst += [d length];
+        memcpy(dst, [d bytes], d.length);
+        dst += d.length;
     }
     return result;
 }

@@ -36,7 +36,7 @@ static bool doesActiveInstanceExist;
     newRemoteIoInterface->playbackBufferSizeLogger = [[Environment logging] getValueLoggerForValue:@"|playback queue|" from:newRemoteIoInterface];
     newRemoteIoInterface->recordingQueueSizeLogger = [[Environment logging] getValueLoggerForValue:@"|recording queue|" from:newRemoteIoInterface];
     
-    while ([newRemoteIoInterface->unusedBuffers count] < INITIAL_NUMBER_OF_BUFFERS) {
+    while (newRemoteIoInterface->unusedBuffers.count < INITIAL_NUMBER_OF_BUFFERS) {
         [newRemoteIoInterface addUnusedBuffer];
     }
     [newRemoteIoInterface setupAudio];
@@ -236,7 +236,7 @@ static OSStatus recordingCallback(void *inRefCon,
 
 -(void)populatePlaybackQueueWithData:(NSData*)data {
     require(data != nil);
-    if ([data length] == 0) return;
+    if (data.length == 0) return;
     @synchronized(self){
         [playbackQueue enqueueData:data];
     }
@@ -258,7 +258,7 @@ static OSStatus playbackCallback(void *inRefCon,
             [instance->starveLogger markOccurrence:@(starveAmount)];
         } else {
             NSData* audioToCopyVolatile = [[instance playbackQueue] dequeuePotentialyVolatileDataWithLength:requestedByteCount];
-            memcpy(ioData->mBuffers[0].mData, [audioToCopyVolatile bytes], [audioToCopyVolatile length]);
+            memcpy(ioData->mBuffers[0].mData, [audioToCopyVolatile bytes], audioToCopyVolatile.length);
         }
     }
     

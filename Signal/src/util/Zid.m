@@ -4,7 +4,7 @@
 @implementation Zid
 +(Zid*) zidWithData:(NSData*)zidData {
     require(zidData != nil);
-    require([zidData length] == 12);
+    require(zidData.length == 12);
     Zid* s = [Zid new];
     s->data = zidData;
     return s;

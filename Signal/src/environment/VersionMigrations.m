@@ -28,7 +28,7 @@
         NSArray *entries = [dict allKeys];
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         
-        for (NSUInteger i = 0; i < [entries count]; i++) {
+        for (NSUInteger i = 0; i < entries.count; i++) {
             NSString *key = entries[i];
             [defaults setObject:dict[key] forKey:key];
         }

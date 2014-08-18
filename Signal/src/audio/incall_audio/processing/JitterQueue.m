@@ -23,7 +23,7 @@
 }
 
 -(NSUInteger) count {
-    return [resultPriorityQueue count];
+    return resultPriorityQueue.count;
 }
 
 -(bool) tryEnqueue:(EncodedAudioPacket*)audioPacket {
@@ -96,7 +96,7 @@
     }];
 }
 -(void) discardExcess {
-    if ([resultPriorityQueue count] <= MAXIMUM_JITTER_QUEUE_SIZE_BEFORE_DISCARDING) return;
+    if (resultPriorityQueue.count <= MAXIMUM_JITTER_QUEUE_SIZE_BEFORE_DISCARDING) return;
     
     EncodedAudioPacket* discarded = [resultPriorityQueue dequeue];
     uint16_t discardedSequenceNumber = [discarded sequenceNumber];
@@ -127,7 +127,7 @@
     [idsInJitterQueue removeObject:@([result sequenceNumber])];
     
     for (id<JitterQueueNotificationReceiver> e in watchers) {
-        [e notifyDequeue:[result sequenceNumber] withRemainingEnqueuedItemCount:[idsInJitterQueue count]];
+        [e notifyDequeue:[result sequenceNumber] withRemainingEnqueuedItemCount:idsInJitterQueue.count];
     }
     return result;
 }
@@ -141,7 +141,7 @@
     return isOutOfSync;
 }
 -(bool) checkReactIfEmptyForDequeue {
-    bool isEmpty = [resultPriorityQueue count] == 0;
+    bool isEmpty = resultPriorityQueue.count == 0;
     if (isEmpty) {
         readHeadSpan += 1;
         for (id<JitterQueueNotificationReceiver> watcher in watchers) {
