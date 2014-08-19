@@ -250,39 +250,41 @@ enum KeyAgreementType {
 }
 
 -(NSData*) packEcCoordinatesFromEcPoint:(const EC_POINT*) ec_point withEcGroup:(const EC_GROUP*) ec_group {
-    BIGNUM *x = BN_new();
-    BIGNUM *y = BN_new();
+    BIGNUM *x = NULL;
+    BIGNUM *y = NULL;
+    @try {
+        x = BN_new();
+        y = BN_new();
+        checkSecurityOperation(x != NULL && y != NULL, @"BN_new");
     
-    unsigned char* buf_x;  size_t bufsize_x;
-    unsigned char* buf_y;  size_t bufsize_y;
+        checkSecurityOperation(1 == EC_POINT_get_affine_coordinates_GFp(ec_group, ec_point, x, y, NULL), @"EC_POINT_get_affine_coordinates_GFp");
     
-    EC_POINT_get_affine_coordinates_GFp(ec_group, ec_point, x, y, NULL);
+        int len_x = BN_num_bytes(x);
+        int len_y = BN_num_bytes(y);
+        checkSecurityOperation(len_x >= 0 && len_x <= EC25_COORDINATE_LENGTH, @"BN_num_bytes(x)");
+        checkSecurityOperation(len_y >= 0 && len_y <= EC25_COORDINATE_LENGTH, @"BN_num_bytes(y)");
+        int unused_x = EC25_COORDINATE_LENGTH - len_x;
+        int unused_y = EC25_COORDINATE_LENGTH - len_y;
     
-    bufsize_x = [NumberUtil assertConvertIntToNSUInteger:BN_num_bytes(x)];
-    bufsize_y = [NumberUtil assertConvertIntToNSUInteger:BN_num_bytes(y)];
-    
-    checkEvpNotNull( buf_x = OPENSSL_malloc(bufsize_x), @"ec_x_buffer");
-    checkEvpNotNull( buf_y = OPENSSL_malloc(bufsize_y), @"ec_y_buffer");
-    
-    BN_bn2bin(x, buf_x);
-    BN_bn2bin(y, buf_y);
-    
-    NSMutableData* data = [NSMutableData dataWithBytes:buf_x length:bufsize_x];
-    [data appendData:[NSData dataWithBytes:buf_y length:bufsize_y]];
-    
-    OPENSSL_free(buf_x);
-    OPENSSL_free(buf_y);
-    
-    BN_free(x);
-    BN_free(y);
-    
-    return data;
+        NSMutableData* data = [NSMutableData dataWithLength:EC25_COORDINATE_LENGTH*2];
+        
+        // We offset the writes to keep things constant sized.
+        // Leading zeroes have no effect on the deserialization because BN_bn2bin outputs the bytes in big-endian order.
+        int wrote_x = BN_bn2bin(x, data.mutableBytes + unused_x);
+        int wrote_y = BN_bn2bin(y, data.mutableBytes + EC25_COORDINATE_LENGTH + unused_y);
+        checkSecurityOperation(wrote_x == len_x && wrote_y == len_y, @"BN_bn2bin");
+        
+        return data;
+    } @finally {
+        if (x != NULL) BN_free(x);
+        if (y != NULL) BN_free(y);
+    }
 }
 
 -(void) unpackEcCoordinatesFromBuffer:(const unsigned char*) buffer
-                                  ofSize:(size_t) bufsize
-                               toEcPoint:(EC_POINT*) ecp
-                             withEcGroup:(const EC_GROUP*) ecg {
+                               ofSize:(size_t) bufsize
+                            toEcPoint:(EC_POINT*) ecp
+                          withEcGroup:(const EC_GROUP*) ecg {
     
     checkOperation(2*EC25_COORDINATE_LENGTH == bufsize);
     
