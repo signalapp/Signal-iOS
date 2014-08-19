@@ -77,7 +77,7 @@
     }
     
     [futureResult finallyDo:^(Future* completed) {
-        if ([completed hasSucceeded]) {
+        if (completed.hasSucceeded) {
             [self trySet:[completed forceGetResult]
                   failed:false
               isUnwiring:true];
@@ -94,8 +94,8 @@
 -(NSString*) description {
     @synchronized(self) {
         if (isWiredToComplete) return @"Incomplete Future [Wired to Complete]";
-        if ([self isIncomplete]) return @"Incomplete Future";
-        if ([self hasSucceeded]) return [NSString stringWithFormat:@"Completed: %@", result];
+        if (self.isIncomplete) return @"Incomplete Future";
+        if (self.hasSucceeded) return [NSString stringWithFormat:@"Completed: %@", result];
         return [NSString stringWithFormat:@"Failed: %@", failure];
     }
 }

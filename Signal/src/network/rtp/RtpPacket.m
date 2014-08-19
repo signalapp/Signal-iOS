@@ -347,8 +347,8 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
     if (other == nil) return false;
     if (version != [other version]) return false;
     if (padding != [other padding]) return false;
-    if (hasExtensionHeader != [other hasExtensionHeader]) return false;
-    if (isMarkerBitSet != [other isMarkerBitSet]) return false;
+    if (hasExtensionHeader != other.hasExtensionHeader) return false;
+    if (isMarkerBitSet != other.isMarkerBitSet) return false;
     if (payloadType != [other payloadType]) return false;
     if (timeStamp != [other timeStamp]) return false;
     if (synchronizationSourceIdentifier != [other synchronizationSourceIdentifier]) return false;

@@ -26,10 +26,10 @@
     // values were retained
     test([r version] == 2);
     test([r padding] == 0);
-    test([r hasExtensionHeader] == false);
+    test(r.hasExtensionHeader == false);
     test([[r contributingSourceIdentifiers] count] == 0);
     test([r synchronizationSourceIdentifier] == 0);
-    test([r isMarkerBitSet] == false);
+    test(r.isMarkerBitSet == false);
     test([r payloadType] == 0);
     test([r sequenceNumber] == 5);
     test([r timeStamp] == 0);
@@ -64,10 +64,10 @@
     // values were retained
     test([r version] == 2);
     test([r padding] == 3);
-    test([r hasExtensionHeader] == false);
+    test(r.hasExtensionHeader == false);
     test([[r contributingSourceIdentifiers] isEqualToArray:(@[@101, @102])]);
     test([r synchronizationSourceIdentifier] == 0x45645645);
-    test([r isMarkerBitSet] == true);
+    test(r.isMarkerBitSet == true);
     test([r payloadType] == 0x77);
     test([r sequenceNumber] == 0x2122);
     test([r timeStamp] == 0xABCDEFAB);
@@ -102,12 +102,12 @@
     // values were retained
     test([r version] == 2);
     test([r padding] == 0);
-    test([r hasExtensionHeader] == true);
+    test(r.hasExtensionHeader == true);
     test([r extensionHeaderIdentifier] == 0xFEAB);
     test([[r extensionHeaderData] isEqualToData:increasingDataFrom(10, 5)]);
     test([[r contributingSourceIdentifiers] count] == 0);
     test([r synchronizationSourceIdentifier] == 0);
-    test([r isMarkerBitSet] == false);
+    test(r.isMarkerBitSet == false);
     test([r payloadType] == 0);
     test([r sequenceNumber] == 5);
     test([r timeStamp] == 0);

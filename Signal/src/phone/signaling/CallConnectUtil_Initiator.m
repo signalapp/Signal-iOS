@@ -15,7 +15,7 @@
     
     require(remoteNumber != nil);
     require(callController != nil);
-    require([callController isInitiator]);
+    require(callController.isInitiator);
     
     Future* futureInitiatorSessionDescriptor = [self asyncConnectToSignalServerAndGetInitiatorSessionDescriptorWithCallController:callController];
     
@@ -101,12 +101,12 @@
     require(callController != nil);
     
     // heart beat?
-    if ([request isKeepAlive]) {
+    if (request.isKeepAlive) {
         return [HttpResponse httpResponse200Ok];
     }
     
     // too soon?
-    if (![futureInitiatorSessionDescriptor hasSucceeded]) {
+    if (!futureInitiatorSessionDescriptor.hasSucceeded) {
         [callController terminateWithReason:CallTerminationType_BadInteractionWithServer
                             withFailureInfo:[IgnoredPacketFailure new:@"Didn't receive session id from signaling server. Not able to understand request."]
                              andRelatedInfo:request];

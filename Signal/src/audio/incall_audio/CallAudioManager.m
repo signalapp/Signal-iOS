@@ -30,7 +30,7 @@
     @synchronized(self) {
         requireState(!started);
         started = true;
-        if ([untilCancelledToken isAlreadyCancelled]) return;
+        if (untilCancelledToken.isAlreadyCancelled) return;
         audioInterface = [RemoteIOAudio remoteIOInterfaceStartedWithDelegate:self untilCancelled:untilCancelledToken];
         PacketHandlerBlock handler = ^(EncodedAudioPacket* packet) {
             [audioProcessor receivedPacket:packet];

@@ -54,7 +54,7 @@
 }
 -(NSData*) tryDecodeOrInferFrame {
     EncodedAudioFrame* frame = [self pullFrame];
-    haveReceivedDataYet |= ![frame isMissingAudioData];
+    haveReceivedDataYet |= !frame.isMissingAudioData;
     if (!haveReceivedDataYet) return nil;
     
     NSData* raw = [codec decode:[frame tryGetAudioData]];

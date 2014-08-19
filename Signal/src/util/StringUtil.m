@@ -138,7 +138,7 @@
 }
 -(NSNumber*) tryParseAsUnsignedInteger {
     NSNumber* value = [self tryParseAsDecimalNumber];
-    return [value hasUnsignedIntegerValue] ? value : nil;
+    return value.hasUnsignedIntegerValue ? value : nil;
 }
 
 @end

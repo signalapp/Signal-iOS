@@ -19,9 +19,9 @@
     CancellableOperationStarter (^makeStarter)(Future*) = ^(Future* future) {
         return ^(id<CancelToken> c) {
             [c whenCancelled:^{
-                if ([future hasFailed]) f += 1;
-                if ([future hasSucceeded]) s += 1;
-                if ([future isIncomplete]) i += 1;
+                if (future.hasFailed) f += 1;
+                if (future.hasSucceeded) s += 1;
+                if (future.isIncomplete) i += 1;
             }];
             return future;
         };
@@ -35,11 +35,11 @@
                                       untilCancelled:nil];
     
     [v2 trySetFailure:@1];
-    test([r isIncomplete]);
+    test(r.isIncomplete);
     test(f == 0 && s == 0 && i == 0);
     
     [v3 trySetResult:@2];
-    test([r hasSucceeded]);
+    test(r.hasSucceeded);
     test([[r forceGetResult] isEqual:@2]);
     test(f == 1 && s == 0 && i == 1);
     
@@ -65,7 +65,7 @@
                                       untilCancelled:[CancelledToken cancelledToken]];
     
     test(i == 3);
-    test([r hasFailed]);
+    test(r.hasFailed);
     test([(NSArray*)[r forceGetFailure] count] == 3);
 }
 -(void) testRaceCancellableOperations_Losers {
@@ -78,7 +78,7 @@
     
     Future* r = [AsyncUtil raceCancellableOperations:(@[s,s,s])
                                       untilCancelled:nil];
-    test([r hasFailed]);
+    test(r.hasFailed);
     test([[r forceGetFailure] isEqual:(@[@1,@1,@1])]);
 }
 
@@ -100,7 +100,7 @@
     Future* f = [AsyncUtil raceCancellableOperation:s
                                      againstTimeout:1.0
                                      untilCancelled:[cts getToken]];
-    test([f hasFailed]);
+    test(f.hasFailed);
     test([[f forceGetFailure] isEqual:@1]);
     test(n == 0);
 }
@@ -122,7 +122,7 @@
     Future* f = [AsyncUtil raceCancellableOperation:s
                                      againstTimeout:1.0
                                      untilCancelled:[cts getToken]];
-    test([f hasSucceeded]);
+    test(f.hasSucceeded);
     test([[f forceGetResult] isEqual:@1]);
     test(n == 0);
 }
@@ -146,7 +146,7 @@
                                      untilCancelled:[cts getToken]];
     
     test(n == 0);
-    testChurnUntil([f hasFailed], 1.0);
+    testChurnUntil(f.hasFailed, 1.0);
     test(n == 1);
     test([[f forceGetFailure] isKindOfClass:[TimeoutFailure class]]);
 }
@@ -172,7 +172,7 @@
     test(n == 0);
     [cts cancel];
     test(n == 1);
-    testChurnUntil([f hasFailed], 1.0);
+    testChurnUntil(f.hasFailed, 1.0);
     test([[f forceGetFailure] conformsToProtocol:@protocol(CancelToken)]);
 }
 
@@ -191,11 +191,11 @@
                     withBaseTimeout:0.5/8
                      andRetryFactor:2
                      untilCancelled:nil];
-    testChurnUntil(![f isIncomplete], 5.0);
+    testChurnUntil(!f.isIncomplete, 5.0);
 
     test(repeat == 3 || repeat == 4);
     test(evalCount == 1);
-    test([f hasSucceeded]);
+    test(f.hasSucceeded);
     test([[f forceGetResult] isEqual:@YES]);
 }
 -(void) testAsyncTryFail {
@@ -213,11 +213,11 @@
                     withBaseTimeout:0.5/8
                      andRetryFactor:2
                      untilCancelled:nil];
-    testChurnUntil(![f isIncomplete], 5.0);
+    testChurnUntil(!f.isIncomplete, 5.0);
     
     test(repeat >= 1);
     test(evalCount >= 1);
-    test([f hasFailed]);
+    test(f.hasFailed);
     test([[f forceGetFailure] isEqual:@13]);
 }
 -(void) testAsyncTryTimeout {
@@ -235,11 +235,11 @@
                     withBaseTimeout:0.5/8
                      andRetryFactor:2
                      untilCancelled:nil];
-    testChurnUntil(![f isIncomplete], 5.0);
+    testChurnUntil(!f.isIncomplete, 5.0);
     
     test(repeat == 2);
     test(evalCount == 0);
-    test([f hasFailed]);
+    test(f.hasFailed);
     test([[f forceGetFailure] isKindOfClass:[TimeoutFailure class]]);
 }
 -(void) testAsyncTryCancel {
@@ -262,11 +262,11 @@
                     withBaseTimeout:0.5/8
                      andRetryFactor:2
                      untilCancelled:[s getToken]];
-    testChurnUntil(![f isIncomplete], 5.0);
+    testChurnUntil(!f.isIncomplete, 5.0);
     
     test(repeat == 2);
     test(evalCount == 0);
-    test([f hasFailed]);
+    test(f.hasFailed);
     test([[f forceGetFailure] conformsToProtocol:@protocol(CancelToken)]);
 }
 

@@ -27,7 +27,7 @@
                                                                                                              andPort:80]
                                                        untilCancelled:nil];
     
-    testChurnUntil(![f isIncomplete], 5.0);
+    testChurnUntil(!f.isIncomplete, 5.0);
     
     LowLatencyCandidate* r = [f forceGetResult];
     NetworkStream* channel = [r networkStream];
@@ -58,7 +58,7 @@
                                                                                                              andPort:80]
                                                        untilCancelled:nil];
     
-    testChurnUntil(![f isIncomplete], 5.0);
+    testChurnUntil(!f.isIncomplete, 5.0);
     
     LowLatencyCandidate* r = [f forceGetResult];
     NetworkStream* channel = [r networkStream];
@@ -87,9 +87,9 @@
     Future* f = [LowLatencyConnector asyncLowLatencyConnectToEndPoint:[HostNameEndPoint hostNameEndPointWithHostName:reliableHostName andPort:80]
                                                        untilCancelled:[CancelledToken cancelledToken]];
     
-    testChurnUntil(![f isIncomplete], 5.0);
+    testChurnUntil(!f.isIncomplete, 5.0);
     
-    test([f hasFailed]);
+    test(f.hasFailed);
 }
 
 @end

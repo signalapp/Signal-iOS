@@ -37,7 +37,7 @@
 -(void) didRegisterLongPress:(UILongPressGestureRecognizer*) recognizer {
     if (recognizer.state == UIGestureRecognizerStateBegan) {
         [self becomeFirstResponder];
-        UIMenuController *menu = [UIMenuController sharedMenuController];
+        UIMenuController *menu = UIMenuController.sharedMenuController;
         [menu setTargetRect:self.frame inView:self.superview];
         [menu setMenuVisible:YES animated:YES];
 

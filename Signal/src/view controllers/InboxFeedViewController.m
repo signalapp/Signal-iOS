@@ -63,7 +63,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
     [_searchBarTitleView updateAutoCorrectionType];
     [_inboxFeedTableView reloadData];
     
-    if (![Environment isRegistered]) {
+    if (!Environment.isRegistered) {
         [Environment resetAppData];
         RegisterViewController *registerViewController = [RegisterViewController registerViewController];
         [self presentViewController:registerViewController animated:NO completion:nil];

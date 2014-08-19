@@ -46,7 +46,7 @@
     
     _scrollView.contentSize = _containerView.bounds.size;
 
-    BOOL isRegisteredAlready = [Environment isRegistered];
+    BOOL isRegisteredAlready = Environment.isRegistered;
     _registerCancelButton.hidden = !isRegisteredAlready;
 
     [self initializeKeyboardHandlers];
@@ -101,7 +101,7 @@
 - (void)populateDefaultCountryNameAndCode {
     NSLocale *locale = [NSLocale currentLocale];
     NSString *countryCode = [locale objectForKey:NSLocaleCountryCode];
-    NSNumber *cc = [[NBPhoneNumberUtil sharedInstance] getCountryCodeForRegion:countryCode];
+    NSNumber *cc = [NBPhoneNumberUtil.sharedInstance getCountryCodeForRegion:countryCode];
     
     _countryCodeLabel.text = [NSString stringWithFormat:@"%@%@",COUNTRY_CODE_PREFIX, cc];
     _countryNameLabel.text = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
@@ -202,7 +202,7 @@
     }];
     
     [futureChallengeAcceptedSource thenDo:^(id value) {
-        [[PushManager sharedManager] askForPushRegistrationWithSuccess:^{
+        [PushManager.sharedManager askForPushRegistrationWithSuccess:^{
             [Environment setRegistered:YES];
             [registered trySetResult:@YES];
             [[[Environment getCurrent] phoneDirectoryManager] forceUpdate];

@@ -91,9 +91,9 @@
     }]];
     Future* f = [s asyncConnectionCompleted];
     
-    testChurnUntil(![f isIncomplete], 5.0);
+    testChurnUntil(!f.isIncomplete, 5.0);
     
-    test([f hasSucceeded] && [[f forceGetResult] isEqual:@YES]);
+    test(f.hasSucceeded && [[f forceGetResult] isEqual:@YES]);
     
     [s terminate];
 }

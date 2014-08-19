@@ -69,7 +69,7 @@
     }
 }
 -(void) tryWriteBufferedData {
-    if (![futureConnectedAndWritableSource hasSucceeded]) return;
+    if (!futureConnectedAndWritableSource.hasSucceeded) return;
     if (![[futureConnectedAndWritableSource forceGetResult] isEqual:@YES]) return;
     NSStreamStatus status = [outputStream streamStatus];
     if (status < NSStreamStatusOpen) return;
@@ -80,7 +80,7 @@
         return;
     }
     
-    while ([writeBuffer enqueuedLength] > 0 && [outputStream hasSpaceAvailable]) {
+    while ([writeBuffer enqueuedLength] > 0 && outputStream.hasSpaceAvailable) {
         NSData* data = [writeBuffer peekVolatileHeadOfData];
         NSInteger d = [outputStream write:[data bytes] maxLength:data.length];
         
@@ -143,7 +143,7 @@
 -(void) onSpaceAvailableToWrite {
     [self tryWriteBufferedData];
     
-    if ([futureConnectedAndWritableSource isCompletedOrWiredToComplete]) return;
+    if (futureConnectedAndWritableSource.isCompletedOrWiredToComplete) return;
     
     Future* checked = [remoteEndPoint asyncHandleStreamsConnected:[StreamPair streamPairWithInput:inputStream
                                                                                         andOutput:outputStream]];
@@ -180,10 +180,10 @@
 
 -(void) onBytesAvailableToRead {
     if (rawDataHandler == nil) return;
-    if (![futureConnectedAndWritableSource hasSucceeded]) return;
+    if (!futureConnectedAndWritableSource.hasSucceeded) return;
     if (![[futureConnectedAndWritableSource forceGetResult] isEqual:@YES]) return;
     
-    while ([inputStream hasBytesAvailable]) {
+    while (inputStream.hasBytesAvailable) {
         NSInteger numRead = [inputStream read:[readBuffer mutableBytes] maxLength:readBuffer.length];
         
         if (numRead < 0) [self onErrorOccurred:@"Read Error"];
@@ -240,10 +240,10 @@
 -(NSString *)description {
     NSString* status = @"Not Started";
     if (started) status = @"Connecting";
-    if ([futureOpenedSource hasSucceeded]) status = @"Connecting (TCP Handshake Completed)";
-    if ([futureConnectedAndWritableSource hasSucceeded]) status = @"Connected";
+    if (futureOpenedSource.hasSucceeded) status = @"Connecting (TCP Handshake Completed)";
+    if (futureConnectedAndWritableSource.hasSucceeded) status = @"Connected";
     if (closedLocally) status = @"Closed";
-    if ([futureConnectedAndWritableSource hasFailed]) status = @"Failed";
+    if (futureConnectedAndWritableSource.hasFailed) status = @"Failed";
     
     return [NSString stringWithFormat:@"Status: %@, RemoteEndPoint: %@",
             status,

@@ -79,14 +79,14 @@
 }
 -(void) testResponseFromData {
     HttpResponse* h = [HttpResponse httpResponseFromData:[@"HTTP/1.1 200 OK\r\n\r\n" encodedAsUtf8]];
-    test([h isOkResponse]);
+    test(h.isOkResponse);
     test([h getStatusCode] == 200);
     test([[h getStatusText] isEqualToString: @"OK"]);
     test([h getOptionalBodyText] == nil);
     test([[h getHeaders] count] == 0);
     
     HttpResponse* h2 = [HttpResponse httpResponseFromData:[@"HTTP/1.1 404 Not Found\r\n\r\n" encodedAsUtf8]];
-    test(![h2 isOkResponse]);
+    test(!h2.isOkResponse);
     test([h2 getStatusCode] == 404);
     test([[h2 getStatusText] isEqualToString:@"Not Found"]);
     test([h2 getOptionalBodyText] == nil);
@@ -106,12 +106,12 @@
     test(h == nil);
 
     h = [HttpRequestOrResponse tryExtractFromPartialData:[@"HTTP/1.1 200 OK\r\n\r\n" encodedAsUtf8] usedLengthOut:&len];
-    test([h isResponse]);
+    test(h.isResponse);
     test([[h response] isOkResponse]);
     test(len == 19);
     
     h = [HttpRequestOrResponse tryExtractFromPartialData:[@"HTTP/1.1 200 OK\r\n\r\n*&DY*SWA(TD&(BTNGNSADN" encodedAsUtf8] usedLengthOut:&len];
-    test([h isResponse]);
+    test(h.isResponse);
     test([[h response] isOkResponse]);
     test(len == 19);
 
@@ -121,12 +121,12 @@
     test(h == nil);
     
     h = [HttpRequestOrResponse tryExtractFromPartialData:[@"GET /index.html HTTP/1.0\r\n\r\n" encodedAsUtf8] usedLengthOut:&len];
-    test([h isRequest]);
+    test(h.isRequest);
     test([[[h request] method] isEqualToString:@"GET"]);
     test(len == 28);
     
     h = [HttpRequestOrResponse tryExtractFromPartialData:[@"GET /index.html HTTP/1.0\r\n\r\nU$%#*(NYVYAY*" encodedAsUtf8] usedLengthOut:&len];
-    test([h isRequest]);
+    test(h.isRequest);
     test([[[h request] method] isEqualToString:@"GET"]);
     test(len == 28);
 

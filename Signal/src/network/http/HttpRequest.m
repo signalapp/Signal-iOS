@@ -97,7 +97,7 @@
     require(data != nil);
     NSUInteger requestSize;
     HttpRequestOrResponse* http = [HttpRequestOrResponse tryExtractFromPartialData:data usedLengthOut:&requestSize];
-    checkOperation([http isRequest] && requestSize == data.length);
+    checkOperation(http.isRequest && requestSize == data.length);
     return [http request];
 }
 

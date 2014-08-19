@@ -62,7 +62,7 @@ static NSInteger connectingFlashCounter = 0;
     [super viewWillDisappear:animated];
     [self stopRingingAnimation];
     [self stopConnectingFlashAnimation];
-    [[AppAudioManager sharedInstance] cancellAllAudio];
+    [AppAudioManager.sharedInstance cancellAllAudio];
 }
 
 - (void)dealloc {
@@ -83,7 +83,7 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 - (void)startConnectingFlashAnimation {
-    if(![_ringingAnimationTimer isValid]){
+    if(!_ringingAnimationTimer.isValid){
         _connectingFlashTimer = [NSTimer scheduledTimerWithTimeInterval:CONNECTING_FLASH_DURATION
                                                                  target:self
                                                                selector:@selector(flashConnectingIndicator)
@@ -206,7 +206,7 @@ static NSInteger connectingFlashCounter = 0;
 -(void) onCallProgressed:(CallProgress*)latestProgress {
     BOOL showAcceptRejectButtons = !_callState.initiatedLocally && [latestProgress type] <= CallProgressType_Ringing;
     [self displayAcceptRejectButtons:showAcceptRejectButtons];
-    [[AppAudioManager sharedInstance] respondToProgressChange:[latestProgress type]
+    [AppAudioManager.sharedInstance respondToProgressChange:[latestProgress type]
                                        forLocallyInitiatedCall:_callState.initiatedLocally];
     
     if ([latestProgress type] == CallProgressType_Ringing) {
@@ -216,7 +216,7 @@ static NSInteger connectingFlashCounter = 0;
     if ([latestProgress type] == CallProgressType_Terminated) {
         [[_callState futureTermination] thenDo:^(CallTermination* termination) {
             [self onCallEnded:termination];
-            [[AppAudioManager  sharedInstance] respondToTerminationType:[termination type]];
+            [AppAudioManager.sharedInstance respondToTerminationType:[termination type]];
         }];
     } else {
         _callStatusLabel.text = [latestProgress localizedDescriptionForUser];
@@ -244,7 +244,7 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 - (void)speakerButtonTapped {
-    _speakerButton.selected = [[AppAudioManager sharedInstance] toggleSpeakerPhone];
+    _speakerButton.selected = [AppAudioManager.sharedInstance toggleSpeakerPhone];
 }
 
 - (void)answerButtonTapped {
@@ -274,7 +274,7 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 -(void) dismissViewWithOptionalDelay:(BOOL) useDelay {
-    if(useDelay && UIApplicationStateActive == [[UIApplication sharedApplication] applicationState]){
+    if(useDelay && UIApplicationStateActive == [UIApplication.sharedApplication applicationState]){
         [self dismissViewControllerAfterDelay:END_CALL_CLEANUP_DELAY];
     }else{
         [self dismissViewControllerAnimated:NO completion:nil];

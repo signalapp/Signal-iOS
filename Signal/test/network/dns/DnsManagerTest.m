@@ -22,21 +22,21 @@
 -(void) testQueryAddresses_Sequential {
     Future* f1 = [DnsManager asyncQueryAddressesForDomainName:reliableHostName
                                               unlessCancelled:nil];
-    testChurnUntil([f1 hasSucceeded], 5.0);
+    testChurnUntil(f1.hasSucceeded, 5.0);
     test([(NSArray*)[f1 forceGetResult] count] > 0);
 
     Future* f2 = [DnsManager asyncQueryAddressesForDomainName:invalidHostname
                                               unlessCancelled:nil];
-    testChurnUntil([f2 hasFailed], 5.0);
+    testChurnUntil(f2.hasFailed, 5.0);
 
     Future* f3 = [DnsManager asyncQueryAddressesForDomainName:nonExistentHostname
                                               unlessCancelled:nil];
-    testChurnUntil([f3 hasFailed], 5.0);
+    testChurnUntil(f3.hasFailed, 5.0);
 
     Future* f4 = [DnsManager asyncQueryAddressesForDomainName:infrastructureTestHostName
                                               unlessCancelled:nil];
-    testChurnUntil([f4 hasSucceeded], 5.0);
-    test([f4 hasSucceeded] && [(NSArray*)[f4 forceGetResult] count] > 0);
+    testChurnUntil(f4.hasSucceeded, 5.0);
+    test(f4.hasSucceeded && [(NSArray*)[f4 forceGetResult] count] > 0);
     
 }
 
@@ -50,9 +50,9 @@
     Future* f4 = [DnsManager asyncQueryAddressesForDomainName:infrastructureTestHostName
                                               unlessCancelled:nil];
     
-    testChurnUntil([f1 hasSucceeded] && [f2 hasFailed] && [f3 hasFailed] && [f4 hasSucceeded], 5.0);
-    test([f1 hasSucceeded] && [(NSArray*)[f1 forceGetResult] count] > 0);
-    test([f4 hasSucceeded] && [(NSArray*)[f4 forceGetResult] count] > 0);
+    testChurnUntil(f1.hasSucceeded && f2.hasFailed && f3.hasFailed && f4.hasSucceeded, 5.0);
+    test(f1.hasSucceeded && [(NSArray*)[f1 forceGetResult] count] > 0);
+    test(f4.hasSucceeded && [(NSArray*)[f4 forceGetResult] count] > 0);
 }
 
 -(void) testQueryAddresses_Cancel {
@@ -67,11 +67,11 @@
                                               unlessCancelled:[c getToken]];
     [c cancel];
     
-    testChurnUntil(![f1 isIncomplete] && [f2 hasFailed] && [f3 hasFailed] && ![f4 isIncomplete], 5.0);
-    test([f1 hasSucceeded] || [[f1 forceGetFailure] conformsToProtocol:@protocol(CancelToken)]);
-    test([f2 hasFailed]);
-    test([f3 hasFailed]);
-    test([f4 hasSucceeded] || [[f4 forceGetFailure] conformsToProtocol:@protocol(CancelToken)]);
+    testChurnUntil(!f1.isIncomplete && f2.hasFailed && f3.hasFailed && !f4.isIncomplete, 5.0);
+    test(f1.hasSucceeded || [[f1 forceGetFailure] conformsToProtocol:@protocol(CancelToken)]);
+    test(f2.hasFailed);
+    test(f3.hasFailed);
+    test(f4.hasSucceeded || [[f4 forceGetFailure] conformsToProtocol:@protocol(CancelToken)]);
 }
 
 -(void)testQueryAddresses_FastCancel {
@@ -79,7 +79,7 @@
     Future* f = [DnsManager asyncQueryAddressesForDomainName:reliableHostName
                                              unlessCancelled:[c getToken]];
     [c cancel];
-    test(![f isIncomplete]);
+    test(!f.isIncomplete);
 }
 
 @end

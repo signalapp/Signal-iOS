@@ -89,7 +89,7 @@
 }
 
 -(MasterSecret*) getMasterSecret {
-    requireState([self hasHandshakeFinishedSuccessfully]);
+    requireState(self.hasHandshakeFinishedSuccessfully);
     return masterSecret;
 }
 
@@ -148,7 +148,7 @@
 }
 
 -(SrtpSocket*) useKeysToSecureRtpSocket:(RtpSocket*)rtpSocket {
-    requireState([self hasHandshakeFinishedSuccessfully]);
+    requireState(self.hasHandshakeFinishedSuccessfully);
     return [SrtpSocket srtpSocketOverRtp:rtpSocket
                     andIncomingCipherKey:[masterSecret initiatorSrtpKey]
                        andIncomingMacKey:[masterSecret initiatorMacKey]

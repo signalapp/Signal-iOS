@@ -40,9 +40,9 @@
         failed = true;
     }] untilCancelled:[senderLife getToken]];
     
-    test([receiver isLocalPortKnown]);
+    test(receiver.isLocalPortKnown);
     test([receiver localPort] == port1);
-    test([sender isLocalPortKnown]);
+    test(sender.isLocalPortKnown);
     test([sender localPort] == port2);
 
     testChurnAndConditionMustStayTrue(received == nil, 0.1);
@@ -146,9 +146,9 @@
         test(false);
     }] untilCancelled:[senderLife getToken]];
     
-    test(![listener isRemoteEndPointKnown]);
+    test(!listener.isRemoteEndPointKnown);
     testThrows([listener remoteEndPoint]);
-    test([client isRemoteEndPointKnown]);
+    test(client.isRemoteEndPointKnown);
     test([client remoteEndPoint] == e);
     test(listenerReceiveCount == 0);
     test(clientReceiveCount == 0);
@@ -156,7 +156,7 @@
     [client send:increasingData(10)];
     testChurnUntil(listenerReceiveCount > 0, 1.0);
     test(clientReceiveCount == 0);
-    test([listener isRemoteEndPointKnown]);
+    test(listener.isRemoteEndPointKnown);
     test([[[[listener remoteEndPoint] address] description] isEqualToString:@"127.0.0.1"]);
     test(listenerReceiveLength == 10);
     test([listenerReceivedLast isEqualToData:increasingData(10)]);

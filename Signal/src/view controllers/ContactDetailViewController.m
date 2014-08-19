@@ -142,13 +142,13 @@ static NSString *const FAVOURITE_FALSE_ICON_NAME = @"favourite_false_icon";
 
 - (void)openPhoneAppWithPhoneNumber:(PhoneNumber *)phoneNumber {
     if (phoneNumber) {
-        [[UIApplication sharedApplication] openURL:[phoneNumber toSystemDialerURL]];
+        [UIApplication.sharedApplication openURL:[phoneNumber toSystemDialerURL]];
     }
 }
 
 - (void)openEmailAppWithEmail:(NSString *)email {
     NSString *mailURL = [NSString stringWithFormat:@"%@%@",MAIL_URL_PREFIX, email];
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:mailURL]];
+    [UIApplication.sharedApplication openURL:[NSURL URLWithString:mailURL]];
 }
 
 - (void)startSecureCallWithNumber:(PhoneNumber *)number {

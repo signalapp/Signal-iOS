@@ -158,7 +158,7 @@
     Future* futureRelaySocket = [futureFirstResponseData then:^id(NSData* openPortResponseData) {
         HttpResponse* openPortResponse = [HttpResponse httpResponseFromData:openPortResponseData];
         [logger markOccurrence:openPortResponse];
-        if (![openPortResponse isOkResponse]) return [Future failed:openPortResponse];
+        if (!openPortResponse.isOkResponse) return [Future failed:openPortResponse];
         
         return udpSocket;
     }];

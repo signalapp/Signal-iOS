@@ -158,7 +158,7 @@ AppAudioManager*  sharedAppAudioManager;
 }
 
 -(void) requestRequiredPermissionsIfNeeded {
-    [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
+    [AVAudioSession.sharedInstance requestRecordPermission:^(BOOL granted) {
         if (!granted) {
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"") message:NSLocalizedString(@"AUDIO_PERMISSION_MESSAGE", @"") delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil, nil];
             [alertView show];
@@ -168,13 +168,13 @@ AppAudioManager*  sharedAppAudioManager;
 
 -(BOOL) changeAudioSessionCategoryTo:(NSString*) category {
     NSError* e;
-    [[AVAudioSession sharedInstance] setCategory:category error:&e];
+    [AVAudioSession.sharedInstance setCategory:category error:&e];
     return (nil != e);
 }
 
 -(BOOL) setAudioEnabled:(BOOL) enable {
     NSError* e;
-    [[AVAudioSession sharedInstance] setActive:enable error:&e];
+    [AVAudioSession.sharedInstance setActive:enable error:&e];
     [_soundPlayer awake];
     return ( nil !=e );
 }

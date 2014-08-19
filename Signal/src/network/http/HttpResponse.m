@@ -41,7 +41,7 @@
     require(data != nil);
     NSUInteger responseSize;
     HttpRequestOrResponse* http = [HttpRequestOrResponse tryExtractFromPartialData:data usedLengthOut:&responseSize];
-    checkOperation([http isResponse] && responseSize == data.length);
+    checkOperation(http.isResponse && responseSize == data.length);
     return [http response];
 }
 +(HttpResponse*) httpResponse200Ok {
@@ -123,8 +123,8 @@
     return [NSString stringWithFormat:@"%lu %@%@",
             (unsigned long)statusCode,
             statusText,
-            ![self hasBody] ? @""
-              : [self hasEmptyBody] ? @" [empty body]"
+            !self.hasBody ? @""
+              : self.hasEmptyBody ? @" [empty body]"
               : @" [...body...]"];
 }
 -(bool) hasBody {

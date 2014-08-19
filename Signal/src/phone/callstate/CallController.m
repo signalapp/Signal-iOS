@@ -144,11 +144,11 @@
 -(void) enableBackground {
     [progress watchLatestValueOnArbitraryThread:^(CallProgress* latestProgress) {
         if( CallProgressType_Connecting == latestProgress.type) {
-            backgroundtask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+            backgroundtask = [UIApplication.sharedApplication beginBackgroundTaskWithExpirationHandler:^{
                 //todo: handle premature expiration
             }];
         }else if(CallProgressType_Terminated == latestProgress.type){
-            [[UIApplication sharedApplication] endBackgroundTask:backgroundtask];
+            [UIApplication.sharedApplication endBackgroundTask:backgroundtask];
         }
     } untilCancelled:canceller.getToken];
 }

@@ -15,7 +15,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     require(text != nil);
     require(regionCode != nil);
     
-    NBPhoneNumberUtil *phoneUtil = [NBPhoneNumberUtil sharedInstance];
+    NBPhoneNumberUtil *phoneUtil = NBPhoneNumberUtil.sharedInstance;
     
     NSError* parseError = nil;
     NBPhoneNumber *number = [phoneUtil parse:text
@@ -73,7 +73,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
 
 +(NSString*) regionCodeFromCountryCodeString:(NSString*) countryCodeString {
-    NBPhoneNumberUtil* phoneUtil = [NBPhoneNumberUtil sharedInstance];
+    NBPhoneNumberUtil* phoneUtil = NBPhoneNumberUtil.sharedInstance;
     NSString* regionCode = [phoneUtil getRegionCodeForCountryCode:@([[countryCodeString substringFromIndex:1] integerValue])];
     return regionCode;
 }
@@ -136,11 +136,11 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 -(BOOL)isValid {
-    return [[NBPhoneNumberUtil sharedInstance] isValidNumber:phoneNumber];
+    return [NBPhoneNumberUtil.sharedInstance isValidNumber:phoneNumber];
 }
 
 -(NSString *)localizedDescriptionForUser {
-    NBPhoneNumberUtil *phoneUtil = [NBPhoneNumberUtil sharedInstance];
+    NBPhoneNumberUtil *phoneUtil = NBPhoneNumberUtil.sharedInstance;
 
     NSError* formatError = nil;
     NSString* pretty = [phoneUtil format:phoneNumber

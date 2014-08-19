@@ -62,7 +62,7 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
     
     [call.futureCallLocallyAcceptedOrRejected finallyDo:^(Future* interactionCompletion) {
         bool isOutgoingCall = call.initiatedLocally;
-        bool isMissedCall = [interactionCompletion hasFailed];
+        bool isMissedCall = interactionCompletion.hasFailed;
         Contact* contact = [self tryGetContactForCall:call];
         
         RPRecentCallType callType = isOutgoingCall ? RPRecentCallTypeOutgoing

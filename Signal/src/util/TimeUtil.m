@@ -114,7 +114,7 @@
     require(interval >= 0);
     require(!repeats || interval > 0);
     
-    if ([untilCancelledToken isAlreadyCancelled]) {
+    if (untilCancelledToken.isAlreadyCancelled) {
         return;
     }
     if (!repeats && interval == 0) {

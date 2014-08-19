@@ -17,7 +17,7 @@
                            untilCancelled:(id<CancelToken>)untilCancelledToken {
     
     require(callback != nil);
-    if ([untilCancelledToken isAlreadyCancelled]) return;
+    if (untilCancelledToken.isAlreadyCancelled) return;
     
     void(^callbackCopy)(id value) = [callback copy];
     [self queueRun:^{

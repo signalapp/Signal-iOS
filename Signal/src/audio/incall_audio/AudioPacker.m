@@ -21,7 +21,7 @@
 
 -(void)packFrame:(EncodedAudioFrame*)frame{
     require(frame != nil);
-    require(![frame isMissingAudioData]);
+    require(!frame.isMissingAudioData);
     [framesToSend addObject:[frame tryGetAudioData]];
 }
 

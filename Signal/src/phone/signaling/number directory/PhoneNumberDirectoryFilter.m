@@ -35,7 +35,7 @@
 +(PhoneNumberDirectoryFilter*) phoneNumberDirectoryFilterFromHttpResponse:(HttpResponse*)response {
     require(response != nil);
     
-    checkOperation([response isOkResponse]);
+    checkOperation(response.isOkResponse);
     
     NSString* hashCountHeader = [response getHeaders][HASH_COUNT_HEADER_KEY];
     checkOperation(hashCountHeader != nil);

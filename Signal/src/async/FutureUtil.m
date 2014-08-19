@@ -10,7 +10,7 @@
     void(^callbackCopy)(id result) = [callback copy];
     
     [self finallyDo:^(Future* completed){
-        if ([completed hasSucceeded]) {
+        if (completed.hasSucceeded) {
             callbackCopy([completed forceGetResult]);
         }
     }];
@@ -20,7 +20,7 @@
     void(^callbackCopy)(id result) = [catcher copy];
     
     [self finallyDo:^(Future* completed){
-        if ([completed hasFailed]) {
+        if (completed.hasFailed) {
             callbackCopy([completed forceGetFailure]);
         }
     }];
@@ -46,7 +46,7 @@
     id(^callbackCopy)(id value) = [projection copy];
     
     return [self finally:^id(Future* completed){
-        if ([completed hasFailed]) return completed;
+        if (completed.hasFailed) return completed;
         
         return callbackCopy([completed forceGetResult]);
     }];
@@ -56,7 +56,7 @@
     id(^callbackCopy)(id value) = [catcher copy];
     
     return [self finally:^id(Future* completed){
-        if ([completed hasSucceeded]) return completed;
+        if (completed.hasSucceeded) return completed;
         
         return callbackCopy([completed forceGetFailure]);
     }];

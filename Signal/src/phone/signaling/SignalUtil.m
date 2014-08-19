@@ -22,7 +22,7 @@
     sessionIdText = [sessionIdText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     NSNumber* sessionIdNumber = [sessionIdText tryParseAsDecimalNumber];
 
-    if ([sessionIdNumber hasLongLongValue]) return sessionIdNumber;
+    if (sessionIdNumber.hasLongLongValue) return sessionIdNumber;
     
     return nil;
 }

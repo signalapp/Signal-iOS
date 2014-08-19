@@ -77,7 +77,7 @@
                                            unlessCancelled:unlessCancelledToken];
     
     return [futureResponse then:^(HttpResponse* response) {
-        if (![response isOkResponse]) return [Future failed:response];
+        if (!response.isOkResponse) return [Future failed:response];
         return [Future finished:response];
     }];
 }
@@ -116,7 +116,7 @@
         require(requestOrResponse != nil);
         require([requestOrResponse isKindOfClass:[HttpRequestOrResponse class]]);
         @synchronized (self) {
-            if ([requestOrResponse isRequest]) {
+            if (requestOrResponse.isRequest) {
                 HttpResponse* response = requestHandler([requestOrResponse request]);
                 requireState(response != nil);
                 [httpChannel send:[HttpRequestOrResponse httpRequestOrResponse:response]];

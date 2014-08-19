@@ -26,7 +26,7 @@
 -(void) finallyDo:(void(^)(Future* completed))callback {
     require(callback != nil);
     @synchronized(self) {
-        if ([self isIncomplete]) {
+        if (self.isIncomplete) {
             [callbacks addObject:[callback copy]];
             return;
         }
@@ -54,14 +54,14 @@
 
 -(id) forceGetResult {
     @synchronized(self) {
-        requireState([self hasSucceeded]);
+        requireState(self.hasSucceeded);
     }
     return result;
 }
 
 -(id) forceGetFailure {
     @synchronized(self) {
-        requireState([self hasFailed]);
+        requireState(self.hasFailed);
     }
     return failure;
 }

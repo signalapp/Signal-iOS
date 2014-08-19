@@ -47,7 +47,7 @@ static bool doesActiveInstanceExist;
 }
 
 -(void)setupAudio {
-    [[AppAudioManager sharedInstance] requestRecordingPrivlege];
+    [AppAudioManager.sharedInstance requestRecordingPrivlege];
     rioAudioUnit = [self makeAudioUnit];
     [self setAudioEnabled];
     [self setAudioStreamFormat];
@@ -177,7 +177,7 @@ static bool doesActiveInstanceExist;
             state = TERMINATED;
             doesActiveInstanceExist = false;
             [self checkDone:AudioOutputUnitStop(rioAudioUnit)];
-            [[AppAudioManager sharedInstance] releaseRecordingPrivlege];
+            [AppAudioManager.sharedInstance releaseRecordingPrivlege];
             [unusedBuffers removeAllObjects];
         }
     }];
@@ -327,7 +327,7 @@ static OSStatus playbackCallback(void *inRefCon,
 }
 
 -(BOOL) toggleMute {
-	BOOL shouldBeMuted = ![self isAudioMuted];
+	BOOL shouldBeMuted = !self.isAudioMuted;
 	UInt32 newValue =  shouldBeMuted ? FLAG_MUTED : FLAG_UNMUTED;
 	
 	[self checkDone:AudioUnitSetProperty(rioAudioUnit,

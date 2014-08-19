@@ -441,7 +441,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 +(NSArray *)favouritesForAllContacts:(NSArray *)contacts {
     return [contacts filter:^int(Contact* contact) {
-        return [contact isFavourite];
+        return contact.isFavourite;
     }];
 }
 

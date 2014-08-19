@@ -48,7 +48,7 @@
     require(rtpPacket != nil);
     checkOperation([rtpPacket timeStamp] == HANDSHAKE_PACKET_TIMESTAMP_COOKIE);
     checkOperation([rtpPacket version] == 0);
-    checkOperation([rtpPacket hasExtensionHeader]);
+    checkOperation(rtpPacket.hasExtensionHeader);
     checkOperation([rtpPacket extensionHeaderIdentifier] == HANDSHAKE_PACKET_EXTENSION_IDENTIFIER);
     checkOperation([[rtpPacket extensionHeaderData] length] >= HEADER_FOOTER_LENGTH_WITHOUT_HMAC);
     

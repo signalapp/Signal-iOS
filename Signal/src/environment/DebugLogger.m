@@ -36,7 +36,7 @@ MacrosSingletonImplemention
 }
 
 - (void)enableTTYLogging{
-    [DDLog addLogger:[DDTTYLogger sharedInstance]];
+    [DDLog addLogger:DDTTYLogger.sharedInstance];
 }
 
 - (void)wipeLogs{

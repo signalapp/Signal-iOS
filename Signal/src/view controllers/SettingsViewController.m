@@ -231,10 +231,10 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
     BOOL loggingEnabled = !_disableDebugLogsButton.selected;
     
     if (!loggingEnabled) {
-        [[DebugLogger sharedInstance] disableFileLogging];
-        [[DebugLogger sharedInstance] wipeLogs];
+        [DebugLogger.sharedInstance disableFileLogging];
+        [DebugLogger.sharedInstance wipeLogs];
     } else{
-        [[DebugLogger sharedInstance] enableFileLogging];
+        [DebugLogger.sharedInstance enableFileLogging];
     }
 
     [[Environment preferences] setLoggingEnabled:loggingEnabled];
@@ -338,13 +338,13 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
     
     NSString *urlString = [NSString stringWithString: [[NSString stringWithFormat:@"mailto:%@?subject=iOS%%20Debug%%20Log&body=", emailAddress] stringByAppendingString:[[NSString stringWithFormat:@"Log URL: %@ \n Tell us about the issue: ", url]stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]]];
     
-    [[UIApplication sharedApplication] openURL: [NSURL URLWithString: urlString]];
+    [UIApplication.sharedApplication openURL: [NSURL URLWithString: urlString]];
 }
 
 - (void)pasteBoardCopy:(NSString*)url{
     UIPasteboard *pb = [UIPasteboard generalPasteboard];
     [pb setString:url];
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://github.com/WhisperSystems/Signal-iOS/issues"]];
+    [UIApplication.sharedApplication openURL:[NSURL URLWithString:@"https://github.com/WhisperSystems/Signal-iOS/issues"]];
 }
 
 - (void)findAndLocalizeLabelsForView:(UIView *)view {

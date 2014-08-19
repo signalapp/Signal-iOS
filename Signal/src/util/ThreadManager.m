@@ -29,7 +29,7 @@
 -(void) runLoopUntilCancelled {
     NSThread* curThread = [NSThread currentThread];
     NSRunLoop* curRunLoop = [NSRunLoop currentRunLoop];
-    while (![curThread isCancelled]) {
+    while (!curThread.isCancelled) {
         [curRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:5]];
     }
 }
@@ -53,24 +53,24 @@ static ThreadManager* sharedThreadManagerInternal;
 }
 
 +(NSThread*)lowLatencyThread {
-    return [self sharedThreadManager]->low.thread;
+    return self.sharedThreadManager->low.thread;
 }
 +(NSRunLoop*)lowLatencyThreadRunLoop {
-    return [self sharedThreadManager]->low.runLoop;
+    return self.sharedThreadManager->low.runLoop;
 }
 
 +(NSThread*)normalLatencyThread {
-    return [self sharedThreadManager]->normal.thread;
+    return self.sharedThreadManager->normal.thread;
 }
 +(NSRunLoop *)normalLatencyThreadRunLoop {
-    return [self sharedThreadManager]->normal.runLoop;
+    return self.sharedThreadManager->normal.runLoop;
 }
 
 +(NSThread*)highLatencyThread {
-    return [self sharedThreadManager]->high.thread;
+    return self.sharedThreadManager->high.thread;
 }
 +(NSRunLoop *)highLatencyThreadRunLoop {
-    return [self sharedThreadManager]->high.runLoop;
+    return self.sharedThreadManager->high.runLoop;
 }
 
 +(void) terminate {

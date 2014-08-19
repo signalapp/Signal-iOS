@@ -170,7 +170,7 @@ phoneDirectoryManager;
     [SGNKeychainUtil wipeKeychain];
     [[Environment preferences] clear];
     if ([[self preferences] loggingIsEnabled]) {
-        [[DebugLogger sharedInstance] wipeLogs];
+        [DebugLogger.sharedInstance wipeLogs];
     }
     [[self preferences] setAndGetCurrentVersion];
 }

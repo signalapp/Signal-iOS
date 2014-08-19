@@ -102,14 +102,14 @@
 
 #ifdef DEBUG
     loggingIsEnabled = TRUE;
-    [[DebugLogger sharedInstance] enableTTYLogging];
+    [DebugLogger.sharedInstance enableTTYLogging];
     
 #elif RELEASE
     loggingIsEnabled = [[Environment preferences] loggingIsEnabled];
 #endif
 
     if (loggingIsEnabled) {
-        [[DebugLogger sharedInstance] enableFileLogging];
+        [DebugLogger.sharedInstance enableFileLogging];
     }
     
     [self performUpdateCheck];
@@ -126,7 +126,7 @@
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
     [[Environment getCurrent].phoneDirectoryManager startUntilCancelled:nil];
     [[Environment getCurrent].contactsManager doAfterEnvironmentInitSetup];
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+    [UIApplication.sharedApplication setStatusBarStyle:UIStatusBarStyleDefault];
     
     LeftSideMenuViewController *leftSideMenuViewController = [LeftSideMenuViewController new];
     
@@ -156,11 +156,11 @@
 }
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
-    [[PushManager sharedManager] registerForPushWithToken:deviceToken];
+    [PushManager.sharedManager registerForPushWithToken:deviceToken];
 }
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error {
-    [[PushManager sharedManager]verifyPushActivated];
+    [PushManager.sharedManager verifyPushActivated];
     DDLogError(@"Failed to register for push notifications: %@", error);
 }
 
@@ -192,17 +192,17 @@
 }
 
 -(void) applicationDidBecomeActive:(UIApplication *)application {
-    [[AppAudioManager sharedInstance] awake];
+    [AppAudioManager.sharedInstance awake];
     
     // Hacky way to clear notification center after processed push
-    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:1];
-    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+    [UIApplication.sharedApplication setApplicationIconBadgeNumber:1];
+    [UIApplication.sharedApplication setApplicationIconBadgeNumber:0];
     
     [self removeScreenProtection];
     
-    if ([Environment isRegistered]) {
-        [[PushManager sharedManager] verifyPushActivated];
-        [[AppAudioManager sharedInstance] requestRequiredPermissionsIfNeeded];
+    if (Environment.isRegistered) {
+        [PushManager.sharedManager verifyPushActivated];
+        [AppAudioManager.sharedInstance requestRequiredPermissionsIfNeeded];
     }
 }
 

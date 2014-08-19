@@ -85,7 +85,7 @@
                                                 untilCancelled:untilCancelledToken];
     
     return [futureResult catch:^(id error) {
-        bool operationCancelled = [untilCancelledToken isAlreadyCancelled];
+        bool operationCancelled = untilCancelledToken.isAlreadyCancelled;
         bool operationDidNotTimeout = ![error isKindOfClass:[TimeoutFailure class]];
         if (operationCancelled || operationDidNotTimeout) {
             return [Future failed:error];

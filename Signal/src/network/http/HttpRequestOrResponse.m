@@ -9,7 +9,7 @@
     
     HttpRequestOrResponse* h = [HttpRequestOrResponse new];
     h->requestOrResponse = requestOrResponse;
-    require([h isResponse] || [h isRequest]);
+    require(h.isResponse || h.isRequest);
     return h;
 }
 -(bool) isRequest {
@@ -19,11 +19,11 @@
     return [requestOrResponse isKindOfClass:[HttpResponse class]];
 }
 -(HttpRequest*) request {
-    requireState([self isRequest]);
+    requireState(self.isRequest);
     return requestOrResponse;
 }
 -(HttpResponse*) response {
-    requireState([self isResponse]);
+    requireState(self.isResponse);
     return requestOrResponse;
 }
 -(NSData*) serialize {

@@ -14,7 +14,7 @@
     
     require(sessionDescriptor != nil);
     require(callController != nil);
-    require(![callController isInitiator]);
+    require(!callController.isInitiator);
     
     Future* futureSignalsAreGo = [self asyncConnectToSignalServerDescribedBy:sessionDescriptor
                                                           withCallController:callController];
@@ -99,7 +99,7 @@
     require(callController != nil);
     
     // heart beat?
-    if ([request isKeepAlive]) {
+    if (request.isKeepAlive) {
         return [HttpResponse httpResponse200Ok];
     }
     

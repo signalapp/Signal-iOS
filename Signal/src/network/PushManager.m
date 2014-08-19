@@ -31,7 +31,7 @@
 }
 
 - (void)verifyPushActivated{
-    UIRemoteNotificationType notificationTypes = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
+    UIRemoteNotificationType notificationTypes = [UIApplication.sharedApplication enabledRemoteNotificationTypes];
     
     BOOL needsPushSettingChangeAlert = NO;
 
@@ -70,7 +70,7 @@
 - (void)askForPushRegistration{
     
     if(SYSTEM_VERSION_LESS_THAN(_iOS_8_0)){
-        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeBadge)];
+        [UIApplication.sharedApplication registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeBadge)];
     } else{
 #if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1
         UIMutableUserNotificationAction *action_accept = [[UIMutableUserNotificationAction alloc]init];
@@ -93,8 +93,8 @@
         
         NSSet *categories = [NSSet setWithObject:callCategory];
         
-        [[UIApplication sharedApplication] registerForRemoteNotifications];
-        [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeSound) categories:categories]];
+        [UIApplication.sharedApplication registerForRemoteNotifications];
+        [UIApplication.sharedApplication registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeSound) categories:categories]];
         
 #endif
 
@@ -104,7 +104,7 @@
 }
 
 - (void)registerForPushWithToken:(NSData*)token{
-    [[CallServerRequestsManager sharedInstance] registerPushToken:token success:^(NSURLSessionDataTask *task, id responseObject) {
+    [CallServerRequestsManager.sharedInstance registerPushToken:token success:^(NSURLSessionDataTask *task, id responseObject) {
         if ([task.response isKindOfClass: [NSHTTPURLResponse class]]){
             NSInteger statusCode = [(NSHTTPURLResponse*) task.response statusCode];
             if (statusCode == 200) {

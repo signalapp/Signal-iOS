@@ -104,7 +104,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     
     _newWhisperUsers = users;
 
-    BOOL isViewVisible = [self isViewLoaded] && self.view.window;
+    BOOL isViewVisible = self.isViewLoaded && self.view.window;
     
     if (isViewVisible) {
         [self showNotificationViewAnimated:YES];

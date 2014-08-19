@@ -11,47 +11,47 @@
 
 -(void) testConstructors {
     FutureSource* inc = [FutureSource new];
-    test([inc isIncomplete]);
-    test(![inc hasSucceeded]);
-    test(![inc hasFailed]);
+    test(inc.isIncomplete);
+    test(!inc.hasSucceeded);
+    test(!inc.hasFailed);
     testThrows([inc forceGetResult]);
     testThrows([inc forceGetFailure]);
 
     FutureSource* done = [FutureSource finished:@1];
-    test(![done isIncomplete]);
-    test([done hasSucceeded]);
-    test(![done hasFailed]);
+    test(!done.isIncomplete);
+    test(done.hasSucceeded);
+    test(!done.hasFailed);
     testDoesNotThrow([done forceGetResult]);
     testThrows([done forceGetFailure]);
 
     Future* done2 = [Future finished:@2];
-    test(![done2 isIncomplete]);
-    test([done2 hasSucceeded]);
-    test(![done2 hasFailed]);
+    test(!done2.isIncomplete);
+    test(done2.hasSucceeded);
+    test(!done2.hasFailed);
     testDoesNotThrow([done2 forceGetResult]);
     testThrows([done2 forceGetFailure]);
 
     FutureSource* fail3 = [FutureSource failed:@3];
-    test(![fail3 isIncomplete]);
-    test(![fail3 hasSucceeded]);
-    test([fail3 hasFailed]);
+    test(!fail3.isIncomplete);
+    test(!fail3.hasSucceeded);
+    test(fail3.hasFailed);
     testThrows([fail3 forceGetResult]);
     testDoesNotThrow([fail3 forceGetFailure]);
 
     Future* fail4 = [Future failed:@4];
-    test(![fail4 isIncomplete]);
-    test(![fail4 hasSucceeded]);
-    test([fail4 hasFailed]);
+    test(!fail4.isIncomplete);
+    test(!fail4.hasSucceeded);
+    test(fail4.hasFailed);
     testThrows([fail4 forceGetResult]);
     testDoesNotThrow([fail4 forceGetFailure]);    
 }
 -(void) testAutoUnwrap {
     Future* f = [Future finished:[Future finished:[Future failed:@1]]];
-    test([f hasFailed]);
+    test(f.hasFailed);
     test([[f forceGetFailure] isEqual:@1]);
     
     Future* f2 = [Future finished:[Future finished:[Future finished:@2]]];
-    test([f2 hasSucceeded]);
+    test(f2.hasSucceeded);
     test([[f2 forceGetResult] isEqual:@2]);
 
     test([[[[Future finished:@1] then:^id(id value) {
@@ -72,7 +72,7 @@
     
     // set result
     test([setR trySetResult:@1]);
-    test([setR hasSucceeded]);
+    test(setR.hasSucceeded);
     test(![setR trySetResult:@0]);
     test(![setR trySetFailure:@0]);
     test(![setR trySetResult:wr]);
@@ -81,7 +81,7 @@
 
     // set fail
     test([setF trySetFailure:@2]);
-    test([setF hasFailed]);
+    test(setF.hasFailed);
     test(![setF trySetResult:@0]);
     test(![setF trySetFailure:@0]);
     test(![setF trySetResult:wr]);
@@ -90,7 +90,7 @@
 
     // wire result
     test([setWR trySetResult:wr]);
-    test([setWR isIncomplete]);
+    test(setWR.isIncomplete);
     test(![setWR trySetResult:@0]);
     test(![setWR trySetFailure:@0]);
     test(![setWR trySetResult:wf]);
@@ -98,22 +98,22 @@
     
     // wire failure
     test([setWF trySetResult:wf]);
-    test([setWF isIncomplete]);
+    test(setWF.isIncomplete);
     test(![setWF trySetResult:@0]);
     test(![setWF trySetFailure:@0]);
     test(![setWF trySetResult:wf]);
     test(![setWF trySetResult:wr]);
 
     // set result via wire
-    test([setWR isIncomplete]);
+    test(setWR.isIncomplete);
     [wr trySetResult:@3];
-    test([setWR hasSucceeded]);
+    test(setWR.hasSucceeded);
     test([[setWR forceGetResult] isEqual:@3]);
 
     // set failure via wire
-    test([setWF isIncomplete]);
+    test(setWF.isIncomplete);
     [wf trySetFailure:@4];
-    test([setWF hasFailed]);
+    test(setWF.hasFailed);
     test([[setWF forceGetFailure] isEqual:@4]);
 }
 
@@ -257,7 +257,7 @@
         test([value isEqual:@1]);
         return @2;
     }];
-    test([f2 isIncomplete]);
+    test(f2.isIncomplete);
     [f trySetResult:@1];
     test([[f2 forceGetResult] isEqual:@2]);
 
@@ -290,7 +290,7 @@
         test([value isEqual:@1]);
         return @2;
     }];
-    test([f2 isIncomplete]);
+    test(f2.isIncomplete);
     [f trySetFailure:@1];
     test([[f2 forceGetResult] isEqual:@2]);
     
@@ -323,7 +323,7 @@
         test([[completed forceGetResult] isEqual:@1]);
         return @2;
     }];
-    test([f2 isIncomplete]);
+    test(f2.isIncomplete);
     [f trySetResult:@1];
     test([[f2 forceGetResult] isEqual:@2]);
     
@@ -338,16 +338,16 @@
 -(void) completedAsCancelToken_OnSuccess {
     FutureSource* f = [FutureSource new];
     id<CancelToken> c = [f completionAsCancelToken];
-    test(![c isAlreadyCancelled]);
+    test(!c.isAlreadyCancelled);
     [f trySetResult:nil];
-    test([c isAlreadyCancelled]);
+    test(c.isAlreadyCancelled);
 }
 -(void) completedAsCancelToken_OnFailure {
     FutureSource* f = [FutureSource new];
     id<CancelToken> c = [f completionAsCancelToken];
-    test(![c isAlreadyCancelled]);
+    test(!c.isAlreadyCancelled);
     [f trySetFailure:nil];
-    test([c isAlreadyCancelled]);
+    test(c.isAlreadyCancelled);
 }
 
 @end

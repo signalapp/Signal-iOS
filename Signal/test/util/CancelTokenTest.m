@@ -74,7 +74,7 @@
         }
     }
     test(c != nil);
-    test(![c isAlreadyCancelled]);
+    test(!c.isAlreadyCancelled);
     test(dealloced);
 }
 

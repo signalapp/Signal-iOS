@@ -98,7 +98,7 @@
 }
 
 -(NSString*) description {
-    if ([self isAlreadyCancelled]) return @"Cancelled";
+    if (self.isAlreadyCancelled) return @"Cancelled";
     if (isImmortal) return @"Immortal";
     return @"Not Cancelled Yet";
 }

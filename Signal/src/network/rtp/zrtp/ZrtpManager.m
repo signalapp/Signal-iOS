@@ -23,7 +23,7 @@
     
     ZrtpHandshakeSocket* handshakeChannel = [ZrtpHandshakeSocket zrtpHandshakeSocketOverRtp:rtpSocket];
     
-    id<ZrtpRole> role = [callController isInitiator]
+    id<ZrtpRole> role = callController.isInitiator
                       ? [ZrtpInitiator zrtpInitiatorWithCallController:callController]
                       : [ZrtpResponder zrtpResponderWithCallController:callController];
     
@@ -173,7 +173,7 @@
     if (response != nil) {
         [self setAndSendPacketToTransmit:response];
     }
-    if ([zrtpRole hasHandshakeFinishedSuccessfully]) {
+    if (zrtpRole.hasHandshakeFinishedSuccessfully) {
         done = true;
         handshakeCompletedSuccesfully = true;
         

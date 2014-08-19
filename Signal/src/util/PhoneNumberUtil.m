@@ -15,13 +15,13 @@
 }
 
 + (NSString *)callingCodeFromCountryCode:(NSString *)code {
-    NSNumber *callingCode = [[NBPhoneNumberUtil sharedInstance] getCountryCodeForRegion:code];
+    NSNumber *callingCode = [NBPhoneNumberUtil.sharedInstance getCountryCodeForRegion:code];
     return [NSString stringWithFormat:@"%@%@", COUNTRY_CODE_PREFIX, callingCode];
 }
 
 + (NSArray *)countryCodesForSearchTerm:(NSString *)searchTerm {
     
-    NSArray *countryCodes = [NSLocale ISOCountryCodes];
+    NSArray *countryCodes = NSLocale.ISOCountryCodes;
     
     if (searchTerm) {
         countryCodes = [countryCodes filter:^int(NSString *code) {
@@ -33,7 +33,7 @@
 }
 
 + (NSString*) normalizePhoneNumber:(NSString *) number {
-    return [[NBPhoneNumberUtil sharedInstance] normalizePhoneNumber:number];
+    return [NBPhoneNumberUtil.sharedInstance normalizePhoneNumber:number];
 }
 
 @end

@@ -124,15 +124,15 @@ static NSString *WHISPER_SYSTEMS_BUGREPORT_URL = @"http://support.whispersystems
 }
 
 - (void)openAboutWhisperUrl {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:WHISPER_SYSTEMS_URL]];
+    [UIApplication.sharedApplication openURL:[NSURL URLWithString:WHISPER_SYSTEMS_URL]];
 }
 
 - (void)openBugReporterUrl {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:WHISPER_SYSTEMS_BUGREPORT_URL]];
+    [UIApplication.sharedApplication openURL:[NSURL URLWithString:WHISPER_SYSTEMS_BUGREPORT_URL]];
 }
 
 - (void)openBlogUrl {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:WHISPER_SYSTEMS_BLOG_URL]];
+    [UIApplication.sharedApplication openURL:[NSURL URLWithString:WHISPER_SYSTEMS_BLOG_URL]];
 }
 
 #pragma mark - UITableViewDelegate
@@ -186,7 +186,7 @@ static NSString *WHISPER_SYSTEMS_BUGREPORT_URL = @"http://support.whispersystems
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
-    if ([self isLeftSideViewOpenCompletely]) {
+    if (self.isLeftSideViewOpenCompletely) {
         NSString *menuOption;
         if (indexPath.section == FIRST_SECTION_INDEX) {
             menuOption = _firstSectionOptions[(NSUInteger)indexPath.row];
