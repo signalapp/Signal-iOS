@@ -231,7 +231,7 @@ BOOL YapCollectionKeyEqual(__unsafe_unretained YapCollectionKey *ck1, __unsafe_u
 
 - (NSString *)description
 {
-	return [NSString stringWithFormat:@"<YapCollectionKey[%p] collection(%@) key(%@)>", self, collection, key];
+	return [NSString stringWithFormat:@"<YapCollectionKey collection(%@) key(%@)>", collection, key];
 }
 
 @end

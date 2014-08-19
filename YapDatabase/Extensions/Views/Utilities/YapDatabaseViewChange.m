@@ -392,7 +392,7 @@
 	//
 	// We also may need to inject extra changes.
 	// The user may specify, as a configuration option within mappings,
-	// the the drawing of cells has an dependency upon neighboring cells.
+	// that the drawing of cells has a dependency upon neighboring cells.
 	
 	NSMutableArray *sectionChanges = [NSMutableArray arrayWithCapacity:1];
 	NSMutableArray *rowChanges = [NSMutableArray arrayWithCapacity:[changes count]];
@@ -453,21 +453,16 @@
 							}
 						}
 						
-						YapDatabaseViewRangePosition rangePosition =
-						  [originalMappings rangePositionForGroup:sectionChange->group];
-						
-						NSUInteger prevRowOffset = rangePosition.offsetFromBeginning;
-						NSUInteger prevRowCount = rangePosition.length;
-						
-						while (prevRowCount > 0)
+						NSUInteger groupCount = [originalMappings fullCountForGroup:sectionChange->group];
+						while (groupCount > 0)
 						{
 							YapDatabaseViewRowChange *rowChange =
 							  [YapDatabaseViewRowChange deleteCollectionKey:nil
 							                                        inGroup:sectionChange->group
-							                                        atIndex:(prevRowOffset+prevRowCount-1)];
+							                                        atIndex:(groupCount-1)];
 							
 							[rowChanges addObject:rowChange];
-							prevRowCount--;
+							groupCount--;
 						}
 						
 						[counts setObject:@(0) forKey:sectionChange->group];

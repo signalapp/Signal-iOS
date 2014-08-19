@@ -46,6 +46,7 @@ static NSMutableArray *changes;
 
 
 @end
+
 #pragma mark -
 #pragma mark Fixed Range Beginning
 
@@ -5021,6 +5022,102 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 4).finalIndex == 0, @"");
 }
 
+- (void)test_flexibleRange_clear1
+{
+	YapDatabaseViewRangeOptions *rangeOpts =
+	  [YapDatabaseViewRangeOptions flexibleRangeWithLength:2 offset:0 from:YapDatabaseViewEnd];
+	
+//	rangeOpts.minLength = 1;
+//	rangeOpts.maxLength = 4;
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	[mappings updateWithCounts:@{ @"":@(4) }];
+	
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 2, @"");
+	XCTAssertTrue([mappings indexForRow:0 inGroup:@""] == 2, @"");
+	
+	// Delete all items
+	
+	[changes addObject:[YapDatabaseViewSectionChange resetGroup:@""]];
+	
+	[mappings updateWithCounts:@{ @"":@(0) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 0, @"");
+	
+	YapDatabaseViewRangePosition rangePosition = [mappings rangePositionForGroup:@""];
+	
+	XCTAssertTrue(rangePosition.length == 0, @"");
+	XCTAssertTrue(rangePosition.offsetFromBeginning == 0, @"");
+	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
+}
+
+- (void)test_flexibleRange_clear2
+{
+	YapDatabaseViewRangeOptions *rangeOpts =
+	  [YapDatabaseViewRangeOptions flexibleRangeWithLength:2 offset:0 from:YapDatabaseViewEnd];
+	
+//	rangeOpts.minLength = 1;
+//	rangeOpts.maxLength = 4;
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	[mappings updateWithCounts:@{ @"":@(4) }];
+	
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 2, @"");
+	XCTAssertTrue([mappings indexForRow:0 inGroup:@""] == 2, @"");
+	
+	// Delete enough items to drop below min length
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key3") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@""]];
+	
+	[mappings updateWithCounts:@{ @"":@(0) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 0, @"");
+	
+	YapDatabaseViewRangePosition rangePosition = [mappings rangePositionForGroup:@""];
+	
+	XCTAssertTrue(rangePosition.length == 0, @"");
+	XCTAssertTrue(rangePosition.offsetFromBeginning == 0, @"");
+	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
+}
+
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6982,6 +7079,7 @@ static NSMutableArray *changes;
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
 #pragma mark Dynamic Groups
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
