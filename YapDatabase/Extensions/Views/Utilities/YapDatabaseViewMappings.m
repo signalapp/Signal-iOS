@@ -513,9 +513,11 @@
 - (void)updateRangeOptionsForGroup:(NSString *)group withNewLength:(NSUInteger)newLength newOffset:(NSUInteger)newOffset
 {
 	YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
-	rangeOpts = [rangeOpts copyWithNewLength:newLength newOffset:newOffset];
-	
-	[rangeOptions setObject:rangeOpts forKey:group];
+	if (rangeOpts)
+	{
+		rangeOpts = [rangeOpts copyWithNewLength:newLength newOffset:newOffset];
+		[rangeOptions setObject:rangeOpts forKey:group];
+	}
 }
 
 - (void)updateVisibility
@@ -559,6 +561,11 @@
 #pragma mark Internal
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+- (void)setAutoConsolidatingDisabled:(BOOL)disabled
+{
+	autoConsolidationDisabled = disabled;
+}
+
 - (NSMutableDictionary *)counts
 {
 	return [counts mutableCopy];
@@ -574,9 +581,20 @@
 	return [self numberOfItemsInGroup:group];
 }
 
-- (NSDictionary *)rangeOptions
+- (BOOL)hasRangeOptions
 {
-	return [rangeOptions copy];
+	return ([rangeOptions count] > 0);
+}
+
+- (BOOL)hasRangeOptionsForGroup:(NSString *)group
+{
+	return ([rangeOptions objectForKey:group] != nil);
+}
+
+- (YapDatabaseViewRangeOptions *)_rangeOptionsForGroup:(NSString *)group
+{
+	// Do NOT reverse the range options before returning them
+	return [[rangeOptions objectForKey:group] copy];
 }
 
 - (NSDictionary *)dependencies
@@ -587,11 +605,6 @@
 - (NSSet *)reverse
 {
 	return [reverse copy];
-}
-
-- (void)setAutoConsolidatingDisabled:(BOOL)disabled
-{
-	autoConsolidationDisabled = disabled;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

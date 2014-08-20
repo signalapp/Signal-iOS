@@ -7,9 +7,10 @@
 @interface YapDatabaseViewMappings ()
 
 /**
- * For UNIT TESTING only.
+ * During processing we need to disable the the isUsingConsolidatedGroup flag
+ * in order to access the raw mappings.
 **/
-- (void)updateWithCounts:(NSDictionary *)counts;
+- (void)setAutoConsolidatingDisabled:(BOOL)disabled;
 
 /**
  * Returns a mutable copy of the count dictionary, where:
@@ -26,30 +27,20 @@
 - (NSUInteger)visibleCountForGroup:(NSString *)group;
 
 /**
- * Returns a copy of the rangeOptions dictionary, where:
- * key = group
- * value = YapDatabaseViewMappingsRangeOptions
+ * Whether or not any groups have assigned range options.
 **/
-- (NSDictionary *)rangeOptions;
+- (BOOL)hasRangeOptions;
 
 /**
- * This method is used by YapDatabaseViewChange.
- * 
- * After processing changeset(s), the length and/or offset may change.
- * The new length and/or offsets are properly calculated,
- * and then this method is used to avoid duplicating the calculations.
- * 
- * Note: After invoking this method, be sure to invoke updateVisibility (after all groups have been updated).
+ * Returns whether or not there are any assigned range options for the given group.
 **/
-- (void)updateRangeOptionsForGroup:(NSString *)group
-                     withNewLength:(NSUInteger)newLength
-                         newOffset:(NSUInteger)newOffset;
+- (BOOL)hasRangeOptionsForGroup:(NSString *)group;
 
 /**
- * Normally this method is called automatically.
- * But needs to be called manually if you use updateRangeOptionsForGroup:withNewLength:newOffset:
+ * Returns a copy of the range options for the given group.
+ * This method does NOT reverse the range options before returning them.
 **/
-- (void)updateVisibility;
+- (YapDatabaseViewRangeOptions *)_rangeOptionsForGroup:(NSString *)group;
 
 /**
  * Returns a copy of the dependencies dictionary, where:
@@ -64,9 +55,27 @@
 - (NSSet *)reverse;
 
 /**
- * During processing we need to disable the the isUsingConsolidatedGroup flag
- * in order to access the raw mappings.
+ * This method is used by YapDatabaseViewChange.
+ *
+ * After processing changeset(s), the length and/or offset may change.
+ * The new length and/or offsets are properly calculated,
+ * and then this method is used to avoid duplicating the calculations.
+ *
+ * Note: After invoking this method, be sure to invoke updateVisibility (after all groups have been updated).
 **/
-- (void)setAutoConsolidatingDisabled:(BOOL)disabled;
+- (void)updateRangeOptionsForGroup:(NSString *)group
+                     withNewLength:(NSUInteger)newLength
+                         newOffset:(NSUInteger)newOffset;
+
+/**
+ * Normally this method is called automatically.
+ * But needs to be called manually if you use updateRangeOptionsForGroup:withNewLength:newOffset:
+**/
+- (void)updateVisibility;
+
+/**
+ * For UNIT TESTING only.
+**/
+- (void)updateWithCounts:(NSDictionary *)counts;
 
 @end

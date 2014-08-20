@@ -99,7 +99,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -130,7 +130,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -159,7 +159,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -194,7 +194,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -225,7 +225,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -256,7 +256,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -289,7 +289,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -318,7 +318,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -347,7 +347,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -381,7 +381,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -411,7 +411,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -441,7 +441,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -471,7 +471,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -506,7 +506,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -541,7 +541,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -580,7 +580,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -615,7 +615,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -650,7 +650,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -685,7 +685,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -720,7 +720,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -755,7 +755,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -796,7 +796,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -841,7 +841,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -886,7 +886,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -935,7 +935,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:
@@ -974,7 +974,7 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	
 	// Process
 	
-	[YapDatabaseViewChange processRowChanges:changes];
+	[YapDatabaseViewChange processRowChanges:changes withOriginalMappings:nil finalMappings:nil];
 	[YapDatabaseViewChange consolidateRowChanges:changes];
 	
 	// Expecting:

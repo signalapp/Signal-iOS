@@ -85,7 +85,9 @@
  * The brains behind the post-processing logic.
  * Exposed privately to be used by the unit tests.
 **/
-+ (void)processRowChanges:(NSMutableArray *)changes;
++ (void)processRowChanges:(NSMutableArray *)rowChanges
+     withOriginalMappings:(YapDatabaseViewMappings *)originalMappings
+            finalMappings:(YapDatabaseViewMappings *)finalMappings;
 + (void)consolidateRowChanges:(NSMutableArray *)changes;
 
 /**

@@ -585,7 +585,9 @@
  * This method takes a list of YapDatabaseViewRowChange objects and processes them to
  * properly calculate and set the original and/or final index of each row change.
 **/
-+ (void)processRowChanges:(NSMutableArray *)changes
++ (void)processRowChanges:(NSMutableArray *)rowChanges
+     withOriginalMappings:(YapDatabaseViewMappings *)originalMappings
+            finalMappings:(YapDatabaseViewMappings *)finalMappings
 {
 	// Each YapDatabaseViewRowChange object is one of:
 	// 
@@ -620,114 +622,397 @@
 	// Please see the UNIT TESTS for a bunch of examples that may shed additional light on the algorithm:
 	// TestViewChangeLogic.m
 	
-	NSUInteger i;
-	NSUInteger j;
+	__block NSUInteger i;
+	__block NSUInteger j;
 	
+	// STEP 1
+	//
 	// First we enumerate the items BACKWARDS,
-	// and update the ORIGINAL values.
+	// and update the ORIGINAL index values.
 	
-	NSUInteger count = [changes count];
+	NSUInteger rowChangesCount = [rowChanges count];
 	
-	__unsafe_unretained id *_changes = (__unsafe_unretained id *)malloc(sizeof(id) * count);
-	[changes getObjects:_changes range:NSMakeRange(0, count)];
+	__unsafe_unretained id *_rowChanges = (__unsafe_unretained id *)malloc(sizeof(id) * rowChangesCount);
+	[rowChanges getObjects:_rowChanges range:NSMakeRange(0, rowChangesCount)];
 	
-	for (i = count; i > 0; i--)
+	for (i = rowChangesCount; i > 0; i--)
 	{
-		__unsafe_unretained YapDatabaseViewRowChange *change = _changes[i-1];
+		__unsafe_unretained YapDatabaseViewRowChange *rowChange = _rowChanges[i-1];
 		
-		if (change->type == YapDatabaseViewChangeDelete)
+		if (rowChange->type == YapDatabaseViewChangeDelete)
 		{
 			// A DELETE operation may affect the ORIGINAL index value of operations that occurred AFTER it,
 			//  IF the later operation occurs at a greater or equal index value.  ( +1 )
 			
-			for (j = i; j < count; j++)
+			for (j = i; j < rowChangesCount; j++)
 			{
-				__unsafe_unretained YapDatabaseViewRowChange *laterChange = _changes[j];
+				__unsafe_unretained YapDatabaseViewRowChange *laterRowChange = _rowChanges[j];
 				
-				if (laterChange->type == YapDatabaseViewChangeDelete ||
-					laterChange->type == YapDatabaseViewChangeUpdate)
+				if (laterRowChange->type == YapDatabaseViewChangeDelete ||
+					laterRowChange->type == YapDatabaseViewChangeUpdate)
 				{
-					if (laterChange->originalIndex >= change->opOriginalIndex &&
-					   [laterChange->originalGroup isEqualToString:change->originalGroup])
+					if (laterRowChange->originalIndex >= rowChange->opOriginalIndex &&
+					   [laterRowChange->originalGroup isEqualToString:rowChange->originalGroup])
 					{
-						laterChange->originalIndex += 1;
+						laterRowChange->originalIndex += 1;
 					}
 				}
 			}
 		}
-		else if (change->type == YapDatabaseViewChangeInsert)
+		else if (rowChange->type == YapDatabaseViewChangeInsert)
 		{
 			// An INSERT operation may affect the ORIGINAL index value of operations that occurred AFTER it,
 			//   IF the later operation occurs at a greater or equal index value. ( -1 )
 			
-			for (j = i; j < count; j++)
+			for (j = i; j < rowChangesCount; j++)
 			{
-				__unsafe_unretained YapDatabaseViewRowChange *laterChange = _changes[j];
+				__unsafe_unretained YapDatabaseViewRowChange *laterRowChange = _rowChanges[j];
 				
-				if (laterChange->type == YapDatabaseViewChangeDelete ||
-				    laterChange->type == YapDatabaseViewChangeUpdate)
+				if (laterRowChange->type == YapDatabaseViewChangeDelete ||
+				    laterRowChange->type == YapDatabaseViewChangeUpdate)
 				{
-					if (laterChange->originalIndex >= change->opFinalIndex &&
-					   [laterChange->originalGroup isEqualToString:change->finalGroup])
+					if (laterRowChange->originalIndex >= rowChange->opFinalIndex &&
+					   [laterRowChange->originalGroup isEqualToString:rowChange->finalGroup])
 					{
-						laterChange->originalIndex -= 1;
+						laterRowChange->originalIndex -= 1;
 					}
 				}
 			}
 		}
 	}
 	
+	// STEP 2
+	//
 	// Next we enumerate the items FORWARDS,
-	// and update the FINAL values.
+	// and update the FINAL index values.
 	
-	for (i = 1; i < count; i++)
+	for (i = 1; i < rowChangesCount; i++)
 	{
-		__unsafe_unretained YapDatabaseViewRowChange *change = _changes[i];
+		__unsafe_unretained YapDatabaseViewRowChange *rowChange = _rowChanges[i];
 		
-		if (change->type == YapDatabaseViewChangeDelete)
+		if (rowChange->type == YapDatabaseViewChangeDelete)
 		{
 			// A DELETE operation may affect the FINAL index value of operations that occurred BEFORE it,
 			//  IF the earlier operation occurs at a greater (but not equal) index value. ( -1 )
 			
 			for (j = i; j > 0; j--)
 			{
-				__unsafe_unretained YapDatabaseViewRowChange *earlierChange = _changes[j-1];
+				__unsafe_unretained YapDatabaseViewRowChange *earlierRowChange = _rowChanges[j-1];
 				
-				if (earlierChange->type == YapDatabaseViewChangeInsert ||
-				    earlierChange->type == YapDatabaseViewChangeUpdate  )
+				if (earlierRowChange->type == YapDatabaseViewChangeInsert ||
+				    earlierRowChange->type == YapDatabaseViewChangeUpdate  )
 				{
-					if (earlierChange->finalIndex > change->opOriginalIndex &&
-					   [earlierChange->finalGroup isEqualToString:change->originalGroup])
+					if (earlierRowChange->finalIndex > rowChange->opOriginalIndex &&
+					   [earlierRowChange->finalGroup isEqualToString:rowChange->originalGroup])
 					{
-						earlierChange->finalIndex -= 1;
+						earlierRowChange->finalIndex -= 1;
 					}
 				}
 			}
 		}
-		else if (change->type == YapDatabaseViewChangeInsert)
+		else if (rowChange->type == YapDatabaseViewChangeInsert)
 		{
 			// An INSERT operation may affect the FINAL index value of operations that occurred BEFORE it,
 			//   IF the earlier operation occurs at a greater index value ( +1 )
 			
 			for (j = i; j > 0; j--)
 			{
-				__unsafe_unretained YapDatabaseViewRowChange *earlierChange = _changes[j-1];
+				__unsafe_unretained YapDatabaseViewRowChange *earlierRowChange = _rowChanges[j-1];
 				
-				if (earlierChange->type == YapDatabaseViewChangeInsert ||
-				    earlierChange->type == YapDatabaseViewChangeUpdate)
+				if (earlierRowChange->type == YapDatabaseViewChangeInsert ||
+				    earlierRowChange->type == YapDatabaseViewChangeUpdate)
 				{
-					if (earlierChange->finalIndex >= change->opFinalIndex &&
-					   [earlierChange->finalGroup isEqualToString:change->finalGroup])
+					if (earlierRowChange->finalIndex >= rowChange->opFinalIndex &&
+					   [earlierRowChange->finalGroup isEqualToString:rowChange->finalGroup])
 					{
-						earlierChange->finalIndex += 1;
+						earlierRowChange->finalIndex += 1;
 					}
 				}
 			}
 		}
 	}
 	
-	if (_changes) {
-		free(_changes);
+	// STEP 3
+	//
+	// The user may have various range options set for each group.
+	// Here we update the range length & offset to match the basic changes made to the group.
+	
+	__block BOOL rangeOptionsChanged = YES;
+	
+	void (^UpdateRangeOptionsForGroup)(NSString *group);
+	UpdateRangeOptionsForGroup = ^(NSString *group){
+		
+		NSUInteger originalGroupCount = [originalMappings fullCountForGroup:group];
+		NSUInteger finalGroupCount    = [finalMappings fullCountForGroup:group];
+		
+		// Note: At this point, the rangeOptions are the same between originalMappings & finalMappings.
+		YapDatabaseViewRangeOptions *originalRangeOpts = [originalMappings _rangeOptionsForGroup:group];
+		
+		YapDatabaseViewPin pin = originalRangeOpts.pin;
+		
+		NSUInteger originalRangeLength = originalRangeOpts.length;
+		NSUInteger originalRangeOffset = originalRangeOpts.offset;
+		
+		NSUInteger originalRangeMin;
+		NSUInteger originalRangeMax;
+		
+		if (pin == YapDatabaseViewBeginning)
+		{
+			originalRangeMin = originalRangeOffset;
+			originalRangeMax = originalRangeOffset + originalRangeLength;
+		}
+		else // if (pin == YapDatabaseViewEnd)
+		{
+			if (originalRangeOffset < originalGroupCount) {
+				originalRangeMax = originalGroupCount - originalRangeOffset;
+				originalRangeMin = originalRangeMax - originalRangeLength;
+			}
+			else {
+				originalRangeMax = 0;
+				originalRangeMin = 0;
+			}
+		}
+		
+		NSUInteger finalRangeLength; // calculate me
+		NSUInteger finalRangeOffset; // calculate me
+		
+		NSUInteger finalRangeMin;    // calculate me
+		NSUInteger finalRangeMax;    // calculate me
+		
+		if (originalRangeOpts.isFixedRange)
+		{
+			// FIXED Range:
+			//
+			// - The length is fixed. It only shrinks if we run out of keys.
+			// - The offset never changes.
+			//
+			// If pinned to the BEGINNING:
+			//   The offset represents how far the beginning of the range is from the beginning of the group.
+			//
+			//   Group : <---------------------------------------->
+			//   Range :                  <--------->
+			//   Offset: <--------------->                           (pin == YapDatabaseViewBeginning)
+			//
+			// If pinned to the END:
+			//   The offset represents how far the end of the range is from the end of the group.
+			//
+			//   Group : <---------------------------------------->
+			//   Range :                  <--------->
+			//   Offset:                             <------------>  (pin == YapDatabaseViewEnd)
+			
+			finalRangeOffset = originalRangeOffset;
+			
+			NSUInteger maxFinalRangeLength;
+			if (finalGroupCount > finalRangeOffset)
+				maxFinalRangeLength = finalGroupCount - finalRangeOffset;
+			else
+				maxFinalRangeLength = 0;
+			
+			finalRangeLength = MIN(originalRangeOpts.maxLength, maxFinalRangeLength);
+			
+			if (pin == YapDatabaseViewBeginning)
+			{
+				finalRangeMin = finalRangeOffset;
+				finalRangeMax = finalRangeOffset + finalRangeLength;
+			}
+			else // if (pin == YapDatabaseViewEnd)
+			{
+				if (finalRangeOffset < finalGroupCount) {
+					finalRangeMax = finalGroupCount - finalRangeOffset;
+					finalRangeMin = finalRangeMax - finalRangeLength;
+				}
+				else {
+					finalRangeMax = 0;
+					finalRangeMin = 0;
+				}
+			}
+		}
+		else // if (rangeOpts.isFlexibleRange)
+		{
+			// FLEXIBLE Range:
+			// 
+			// The length changes as items are inserted and deleted with the range boundary.
+			// The offset changes as items are inserted and deleted between the range and its pinned end.
+			
+			finalRangeMin = originalRangeMin;
+			finalRangeMax = originalRangeMax;
+			
+			BOOL finalRangeWasEmpty = ((finalRangeMax - finalRangeMin) == 0);
+			
+			YapDatabaseViewGrowOptions growOptions = originalRangeOpts.growOptions;
+			
+			for (i = 0; i < rowChangesCount; i++)
+			{
+				__unsafe_unretained YapDatabaseViewRowChange *rowChange = _rowChanges[i];
+				
+				if (rowChange->type == YapDatabaseViewChangeDelete || rowChange->type == YapDatabaseViewChangeMove)
+				{
+					if ([rowChange->originalGroup isEqualToString:group])
+					{
+						// A DELETE operation can:
+						// - decrement the location of the final range
+						// - decrease the length of the final range
+					
+						if (rowChange->opOriginalIndex < finalRangeMin)
+						{
+						//	NSLog(@"rowChange(%lu) < finalRangeMin(%lu) <= finalRangeMax(%lu)",
+						//		  (unsigned long)(rowChange->opOriginalIndex),
+						//		  (unsigned long)finalRangeMin,
+						//		  (unsigned long)finalRangeMax);
+							
+							finalRangeMin -= 1;
+						}
+						if (rowChange->opOriginalIndex < finalRangeMax)
+						{
+						//	NSLog(@"rowChange(%lu) < finalRangeMax(%lu)",
+						//		  (unsigned long)(rowChange->opOriginalIndex),
+						//		  (unsigned long)finalRangeMax);
+							
+							finalRangeMax -= 1;
+						}
+						
+					//	NSLog(@"finalRangeMin(%lu) <= finalRangeMax(%lu)",
+					//		  (unsigned long)finalRangeMin,
+					//		  (unsigned long)finalRangeMax);
+					}
+					
+				}// fi (rowChange->type == YapDatabaseViewChangeDelete || rowChange->type == YapDatabaseViewChangeMove)
+				
+				if (rowChange->type == YapDatabaseViewChangeInsert || rowChange->type == YapDatabaseViewChangeMove)
+				{
+					if ([rowChange->finalGroup isEqualToString:group])
+					{
+						// An INSERT operation can:
+						// - increment the location of the final range
+						// - increase the length of the final range
+						//
+						// How do we know if an inserted item should be included in the range?
+						// This is based upon the growOptions.
+						//
+						// Please see the documentation in the header file for the growOptions property.
+						// It has an extended discussion.
+						
+						if (pin == YapDatabaseViewBeginning)
+						{
+							if ((growOptions & YapDatabaseViewGrowPinSide) || finalRangeWasEmpty)
+							{
+								if (rowChange->opFinalIndex < finalRangeMin)
+									finalRangeMin++;
+							}
+							else
+							{
+								if (rowChange->opFinalIndex <= finalRangeMin)
+									finalRangeMin++;
+							}
+							
+							if ((growOptions & YapDatabaseViewGrowNonPinSide) || finalRangeWasEmpty)
+							{
+								if (rowChange->opFinalIndex <= finalRangeMax)
+									finalRangeMax++;
+							}
+							else
+							{
+								if (rowChange->opFinalIndex < finalRangeMax)
+									finalRangeMax++;
+							}
+						}
+						else // if (pin == YapDatabaseViewEnd)
+						{
+							if ((growOptions & YapDatabaseViewGrowNonPinSide) || finalRangeWasEmpty)
+							{
+								if (rowChange->opFinalIndex < finalRangeMin)
+									finalRangeMin++;
+							}
+							else
+							{
+								if (rowChange->opFinalIndex <= finalRangeMin)
+									finalRangeMin++;
+							}
+							
+							if ((growOptions & YapDatabaseViewGrowPinSide) || finalRangeWasEmpty)
+							{
+								if (rowChange->opFinalIndex <= finalRangeMax)
+									finalRangeMax++;
+							}
+							else
+							{
+								if (rowChange->opFinalIndex < finalRangeMax)
+									finalRangeMax++;
+							}
+						}
+					}
+					
+				}// fi (rowChange->type == YapDatabaseViewChangeInsert || rowChange->type == YapDatabaseViewChangeMove)
+				
+				// If the range ever becomes empty,
+				// then we need to effectively set the growOptions to YapDatabaseViewGrowOnBothSides.
+				//
+				// With an empty range, there is no difference between PinSide and NonPinSide.
+				//
+				// Notice that this flag, once set, remains set.
+				
+				if (!finalRangeWasEmpty) {
+					finalRangeWasEmpty = (finalRangeMax - finalRangeMin) == 0;
+				}
+				
+			} // end for (YapDatabaseViewRowChange *rowChange in rowChanges)
+			
+			// And finally,
+			// update finalLength & finalOffset
+			
+			finalRangeLength = finalRangeMax - finalRangeMin;
+			
+			if (pin == YapDatabaseViewBeginning)
+				finalRangeOffset = finalRangeMin;
+			else
+				finalRangeOffset = finalGroupCount - finalRangeMax;
+			
+		} // end else if (rangeOpts.isFlexibleRange)
+		
+		
+		if ((originalRangeLength != finalRangeLength) || (originalRangeOffset != finalRangeOffset))
+		{
+			[finalMappings updateRangeOptionsForGroup:group withNewLength:finalRangeLength newOffset:finalRangeOffset];
+			rangeOptionsChanged = YES;
+		}
+		
+	}; // end UpdateRangeOptionsForGroup
+	
+	
+	if ([originalMappings hasRangeOptions] || [finalMappings hasRangeOptions])
+	{
+		NSMutableSet *handledGroups = [NSMutableSet set];
+		
+		for (NSString *group in [originalMappings allGroups])
+		{
+			if ([originalMappings hasRangeOptionsForGroup:group])
+			{
+				UpdateRangeOptionsForGroup(group);
+				[handledGroups addObject:group];
+			}
+		}
+		
+		for (NSString *group in [finalMappings allGroups])
+		{
+			if (![handledGroups containsObject:group])
+			{
+				if ([finalMappings hasRangeOptionsForGroup:group])
+				{
+					UpdateRangeOptionsForGroup(group);
+				}
+			}
+		}
+	}
+	
+	if (rangeOptionsChanged)
+	{
+		[finalMappings updateVisibility];
+	}
+	
+	// DONE
+	
+	if (_rowChanges) {
+		free(_rowChanges);
 	}
 }
 
@@ -805,6 +1090,9 @@
 						mostRecentChangeForKey->collectionKey = laterChange->collectionKey;
 					else
 						laterChange->collectionKey = mostRecentChangeForKey->collectionKey;
+					
+					if (firstChangeForKey->collectionKey == nil)
+						firstChangeForKey->collectionKey = mostRecentChangeForKey->collectionKey;
 				}
 			}
 			
@@ -1101,30 +1389,26 @@
 	
 	__block BOOL rangeOptionsChanged = YES;
 	
-	void (^ApplyRangeOptionsForGroup)(YapDatabaseViewRangeOptions *rangeOpts, NSString *group);
-	ApplyRangeOptionsForGroup = ^(YapDatabaseViewRangeOptions *rangeOpts, NSString *group){
-		
+	void (^ApplyRangeOptionsForGroup)(NSString *group);
+	ApplyRangeOptionsForGroup = ^(NSString *group)
+	{
 		NSUInteger originalGroupCount = [originalMappings fullCountForGroup:group];
 		NSUInteger finalGroupCount    = [finalMappings fullCountForGroup:group];
 		
-		YapDatabaseViewPin pin = rangeOpts.pin;
+		YapDatabaseViewRangeOptions *originalRangeOpts = [originalMappings _rangeOptionsForGroup:group];
 		
-		//
-		// STEP 1 : Calculate the originalRange & finalRange
-		//
-		
-		NSUInteger originalRangeLength = rangeOpts.length;
-		NSUInteger originalRangeOffset = rangeOpts.offset;
+		NSUInteger originalRangeLength = originalRangeOpts.length;
+		NSUInteger originalRangeOffset = originalRangeOpts.offset;
 		
 		NSUInteger originalRangeMin;
 		NSUInteger originalRangeMax;
 		
-		if (pin == YapDatabaseViewBeginning)
+		if (originalRangeOpts.pin == YapDatabaseViewBeginning)
 		{
 			originalRangeMin = originalRangeOffset;
 			originalRangeMax = originalRangeOffset + originalRangeLength;
 		}
-		else // if (pin == YapDatabaseViewEnd)
+		else // if (originalRangeOpts.pin == YapDatabaseViewEnd)
 		{
 			if (originalRangeOffset < originalGroupCount) {
 				originalRangeMax = originalGroupCount - originalRangeOffset;
@@ -1136,185 +1420,56 @@
 			}
 		}
 		
-		NSUInteger finalRangeLength;
-		NSUInteger finalRangeOffset;
+		YapDatabaseViewRangeOptions *finalRangeOpts = [finalMappings _rangeOptionsForGroup:group];
+		
+		NSUInteger finalRangeLength = finalRangeOpts.length;
+		NSUInteger finalRangeOffset = finalRangeOpts.offset;
 		
 		NSUInteger finalRangeMin;
 		NSUInteger finalRangeMax;
+		
+		if (finalRangeOpts.pin == YapDatabaseViewBeginning)
+		{
+			finalRangeMin = finalRangeOffset;
+			finalRangeMax = finalRangeOffset + finalRangeLength;
+		}
+		else // if (finalRangeOpts.pin == YapDatabaseViewEnd)
+		{
+			if (finalRangeOffset < finalGroupCount) {
+				finalRangeMax = finalGroupCount - finalRangeOffset;
+				finalRangeMin = finalRangeMax - finalRangeLength;
+			}
+			else {
+				finalRangeMax = 0;
+				finalRangeMin = 0;
+			}
+		}
+		
+		NSAssert(originalRangeOpts.pin == finalRangeOpts.pin, @"Logic error: Pins do not match !");
+		
+		YapDatabaseViewPin pin = finalRangeOpts.pin;
 		
 		NSUInteger flexibleRangeNonPinSideDeleteDiff = 0;
 		NSUInteger flexibleRangePinSideInsertDiff = 0;
 		NSUInteger flexibleRangeNonPinSideInsertDiff = 0;
 		
-		if (rangeOpts.isFixedRange)
-		{
-			// FIXED Range:
-			//
-			// - The length is fixed. It only shrinks if we run out of keys.
-			// - The offset never changes.
-			//
-			// If pinned to the BEGINNING:
-			//   The offset represents how far the beginning of the range is from the beginning of the group.
-			//
-			//   Group : <---------------------------------------->
-			//   Range :                  <--------->
-			//   Offset: <--------------->                           (pin == YapDatabaseViewBeginning)
-			//
-			// If pinned to the END:
-			//   The offset represents how far the end of the range is from the end of the group.
-			//
-			//   Group : <---------------------------------------->
-			//   Range :                  <--------->
-			//   Offset:                             <------------>  (pin == YapDatabaseViewEnd)
-			
-			finalRangeOffset = originalRangeOffset;
-			
-			NSUInteger maxFinalRangeLength;
-			if (finalGroupCount > finalRangeOffset)
-				maxFinalRangeLength = finalGroupCount - finalRangeOffset;
-			else
-				maxFinalRangeLength = 0;
-			
-			finalRangeLength = MIN(rangeOpts.maxLength, maxFinalRangeLength);
-			
-			if (pin == YapDatabaseViewBeginning)
-			{
-				finalRangeMin = finalRangeOffset;
-				finalRangeMax = finalRangeOffset + finalRangeLength;
-			}
-			else // if (pin == YapDatabaseViewEnd)
-			{
-				if (finalRangeOffset < finalGroupCount) {
-					finalRangeMax = finalGroupCount - finalRangeOffset;
-					finalRangeMin = finalRangeMax - finalRangeLength;
-				}
-				else {
-					finalRangeMax = 0;
-					finalRangeMin = 0;
-				}
-			}
-		}
-		else // if (rangeOpts.isFlexibleRange)
+		//
+		// STEP 1 : Update flexible range if it excceeds maxLength, or falls below minLength.
+		
+		if (finalRangeOpts.isFlexibleRange)
 		{
 			// FLEXIBLE Range:
 			// 
 			// The length changes as items are inserted and deleted with the range boundary.
 			// The offset changes as items are inserted and deleted between the range and its pinned end.
 			
-			finalRangeMin = originalRangeMin;
-			finalRangeMax = originalRangeMax;
-			
-			BOOL finalRangeWasEmpty = ((finalRangeMax - finalRangeMin) == 0);
-			
-			YapDatabaseViewGrowOptions growOptions = rangeOpts.growOptions;
-			
-			for (YapDatabaseViewRowChange *rowChange in rowChanges)
-			{
-				if (rowChange->type == YapDatabaseViewChangeDelete || rowChange->type == YapDatabaseViewChangeMove)
-				{
-					if ([rowChange->originalGroup isEqualToString:group])
-					{
-						// A DELETE operation can:
-						// - decrement the location of the final range
-						// - decrease the length of the final range
-					
-						if (rowChange->opOriginalIndex < finalRangeMin)
-						{
-							finalRangeMin -= 1;
-						}
-						if (rowChange->opOriginalIndex < finalRangeMax)
-						{
-							finalRangeMax -= 1;
-						}
-					}
-					
-				}// fi (rowChange->type == YapDatabaseViewChangeDelete || rowChange->type == YapDatabaseViewChangeMove)
-				
-				if (rowChange->type == YapDatabaseViewChangeInsert || rowChange->type == YapDatabaseViewChangeMove)
-				{
-					if ([rowChange->finalGroup isEqualToString:group])
-					{
-						// An INSERT operation can:
-						// - increment the location of the final range
-						// - increase the length of the final range
-						//
-						// How do we know if an inserted item should be included in the range?
-						// This is based upon the growOptions.
-						//
-						// Please see the documentation in the header file for the growOptions property.
-						// It has an extended discussion.
-						
-						if (pin == YapDatabaseViewBeginning)
-						{
-							if ((growOptions & YapDatabaseViewGrowPinSide) || finalRangeWasEmpty)
-							{
-								if (rowChange->opFinalIndex < finalRangeMin)
-									finalRangeMin++;
-							}
-							else
-							{
-								if (rowChange->opFinalIndex <= finalRangeMin)
-									finalRangeMin++;
-							}
-							
-							if ((growOptions & YapDatabaseViewGrowNonPinSide) || finalRangeWasEmpty)
-							{
-								if (rowChange->opFinalIndex <= finalRangeMax)
-									finalRangeMax++;
-							}
-							else
-							{
-								if (rowChange->opFinalIndex < finalRangeMax)
-									finalRangeMax++;
-							}
-						}
-						else // if (pin == YapDatabaseViewEnd)
-						{
-							if ((growOptions & YapDatabaseViewGrowNonPinSide) || finalRangeWasEmpty)
-							{
-								if (rowChange->opFinalIndex < finalRangeMin)
-									finalRangeMin++;
-							}
-							else
-							{
-								if (rowChange->opFinalIndex <= finalRangeMin)
-									finalRangeMin++;
-							}
-							
-							if ((growOptions & YapDatabaseViewGrowPinSide) || finalRangeWasEmpty)
-							{
-								if (rowChange->opFinalIndex <= finalRangeMax)
-									finalRangeMax++;
-							}
-							else
-							{
-								if (rowChange->opFinalIndex < finalRangeMax)
-									finalRangeMax++;
-							}
-						}
-					}
-					
-				}// fi (rowChange->type == YapDatabaseViewChangeInsert || rowChange->type == YapDatabaseViewChangeMove)
-				
-				// If the range ever becomes empty,
-				// then we need to effectively set the growOptions to YapDatabaseViewGrowOnBothSides.
-				//
-				// With an empty range, there is no different between PinSide and NonPinSide.
-				//
-				// Notice that this flag, once set, remains set.
-				
-				finalRangeWasEmpty = finalRangeWasEmpty || ((finalRangeMax - finalRangeMin) == 0);
-				
-			} // end for (YapDatabaseViewRowChange *rowChange in rowChanges)
-			
-			
 			// Adjust if we exceed max length, or drop below min length
 			
-			finalRangeLength = finalRangeMax - finalRangeMin;
-			
-			if (finalRangeLength > rangeOpts.maxLength)
+			if (finalRangeLength > finalRangeOpts.maxLength)
 			{
-				NSUInteger diff = finalRangeLength - rangeOpts.maxLength;
+				// Range grew to exceed maxLength
+				
+				NSUInteger diff = finalRangeLength - finalRangeOpts.maxLength;
 				flexibleRangeNonPinSideDeleteDiff = diff;
 				
 				if (pin == YapDatabaseViewBeginning)
@@ -1329,9 +1484,11 @@
 				}
 				
 			}
-			else if ((finalRangeLength < rangeOpts.minLength) && (finalRangeLength < finalGroupCount))
+			else if ((finalRangeLength < finalRangeOpts.minLength) && (finalRangeLength < finalGroupCount))
 			{
-				NSUInteger diff = rangeOpts.minLength - finalRangeLength;
+				// Range shrunk to below minLength (and we can increase it)
+				
+				NSUInteger diff = finalRangeOpts.minLength - finalRangeLength;
 				
 				if (pin == YapDatabaseViewBeginning)
 				{
@@ -1388,7 +1545,7 @@
 			else
 				finalRangeOffset = finalGroupCount - finalRangeMax;
 		
-		} // END if (rangeOpts.isFlexibleRange)
+		} // END if (finalRangeOpts.isFlexibleRange)
 		
 		//
 		// STEP 2 : Filter items that are outside the range, and "map" items that are inside the range.
@@ -1557,7 +1714,7 @@
 		NSUInteger numberOfInsertOperationsToManuallyAdd = 0;
 		NSUInteger numberOfDeleteOperationsToManuallyAdd = 0;
 		
-		if (rangeOpts.isFixedRange)
+		if (finalRangeOpts.isFixedRange)
 		{
 			// FIXED Range:
 			//
@@ -1671,9 +1828,9 @@
 			
 			NSUInteger index;
 			if (pin == YapDatabaseViewBeginning)
-				index = originalRangeLength - 1;
+				index = originalRangeLength - 1; // Note: offset ignored because op's already mapped
 			else
-				index = 0;
+				index = 0;                       // Note: offset ignored because op's already mapped
 			
 			while (count < numberOfDeleteOperationsToManuallyAdd)
 			{
@@ -1740,9 +1897,9 @@
 			
 			NSUInteger index;
 			if (pin == YapDatabaseViewBeginning)
-				index = finalRangeMin;
+				index = finalRangeMin;        // Note: offset ignored because op's already mapped
 			else
-				index = finalRangeLength - 1;
+				index = finalRangeLength - 1; // Note: offset ignored because op's already mapped
 			
 			while ((count < numberOfInsertOperationsToManuallyAdd) && (i < flexibleRangePinSideInsertDiff))
 			{
@@ -1812,9 +1969,9 @@
 			
 			NSUInteger index;
 			if (pin == YapDatabaseViewBeginning)
-				index = finalRangeLength - 1;
+				index = finalRangeLength - 1; // Note: offset ignored because op's already mapped
 			else
-				index = 0;
+				index = 0;                    // Note: offset ignored because op's already mapped
 			
 			while (count < numberOfInsertOperationsToManuallyAdd)
 			{
@@ -1879,36 +2036,30 @@
 	}; // end ApplyRangeOptionsForGroup
 
 	
-	NSDictionary *rangeOptions = [finalMappings rangeOptions];
-	
-	// Note: The rangeOptions are the same between originalMappings & finalMappings.
-	
-	BOOL hasRangeOptions = [rangeOptions count] > 0;
-	if (hasRangeOptions)
+	if ([originalMappings hasRangeOptions] || [finalMappings hasRangeOptions])
 	{
-		NSMutableSet *handledGroups = [NSMutableSet setWithCapacity:[rangeOptions count]];
+		NSMutableSet *handledGroups = [NSMutableSet set];
 		
 		for (NSString *group in [originalMappings allGroups])
 		{
-			YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
-			if (rangeOpts)
+			if ([originalMappings hasRangeOptionsForGroup:group])
 			{
-				ApplyRangeOptionsForGroup(rangeOpts, group);
+				ApplyRangeOptionsForGroup(group);
 				[handledGroups addObject:group];
 			}
 		}
 		
 		for (NSString *group in [finalMappings allGroups])
 		{
-			YapDatabaseViewRangeOptions *rangeOpts = [rangeOptions objectForKey:group];
-			if (rangeOpts && ![handledGroups containsObject:group])
+			if (![handledGroups containsObject:group])
 			{
-				ApplyRangeOptionsForGroup(rangeOpts, group);
+				if ([finalMappings hasRangeOptionsForGroup:group])
+				{
+					ApplyRangeOptionsForGroup(group);
+				}
 			}
 		}
 	}
-	
-	// Step 4.B : Update finalMappings if needed (by updating visibleGroups)
 
 	if (rangeOptionsChanged)
 	{
@@ -2538,7 +2689,9 @@
 	// This is where the magic happens.
 	// Calculates original and final index of every change.
 	
-	[self processRowChanges:rowChanges];
+	[self processRowChanges:rowChanges
+	   withOriginalMappings:originalMappings
+	          finalMappings:finalMappings];
 	
 	// CONSOLIDATION
 	//

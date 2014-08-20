@@ -5073,9 +5073,6 @@ static NSMutableArray *changes;
 	YapDatabaseViewRangeOptions *rangeOpts =
 	  [YapDatabaseViewRangeOptions flexibleRangeWithLength:2 offset:0 from:YapDatabaseViewEnd];
 	
-//	rangeOpts.minLength = 1;
-//	rangeOpts.maxLength = 4;
-	
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
 	[mappings setRangeOptions:rangeOpts forGroup:@""];
@@ -5086,12 +5083,112 @@ static NSMutableArray *changes;
 	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 2, @"");
 	XCTAssertTrue([mappings indexForRow:0 inGroup:@""] == 2, @"");
 	
-	// Delete enough items to drop below min length
+	// Delete all items
 	
 	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key1") inGroup:@"" atIndex:1]];
 	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key0") inGroup:@"" atIndex:0]];
 	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key2") inGroup:@"" atIndex:0]];
 	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key3") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@""]];
+	
+	[mappings updateWithCounts:@{ @"":@(0) }];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Verify
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 0, @"");
+	
+	YapDatabaseViewRangePosition rangePosition = [mappings rangePositionForGroup:@""];
+	
+	XCTAssertTrue(rangePosition.length == 0, @"");
+	XCTAssertTrue(rangePosition.offsetFromBeginning == 0, @"");
+	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
+}
+
+- (void)test_flexibleRange_clear3
+{
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	
+	YapDatabaseViewRangeOptions *rangeOpts =
+	  [YapDatabaseViewRangeOptions flexibleRangeWithLength:50 offset:0 from:YapDatabaseViewEnd];
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	
+	[mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(54) }];
+	
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 50, @"");
+	XCTAssertTrue([mappings indexForRow:0 inGroup:@""] == 4, @"");
+	
+	// Delete all items
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"49") inGroup:@"" atIndex:49]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"48") inGroup:@"" atIndex:48]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"47") inGroup:@"" atIndex:47]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"46") inGroup:@"" atIndex:46]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"45") inGroup:@"" atIndex:45]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"44") inGroup:@"" atIndex:44]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"43") inGroup:@"" atIndex:43]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"42") inGroup:@"" atIndex:42]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"41") inGroup:@"" atIndex:41]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"40") inGroup:@"" atIndex:40]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"39") inGroup:@"" atIndex:39]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"38") inGroup:@"" atIndex:38]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"37") inGroup:@"" atIndex:37]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"36") inGroup:@"" atIndex:36]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"35") inGroup:@"" atIndex:35]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"34") inGroup:@"" atIndex:34]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"33") inGroup:@"" atIndex:33]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"32") inGroup:@"" atIndex:32]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"31") inGroup:@"" atIndex:31]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"30") inGroup:@"" atIndex:30]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"29") inGroup:@"" atIndex:29]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"28") inGroup:@"" atIndex:28]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"27") inGroup:@"" atIndex:27]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"26") inGroup:@"" atIndex:26]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"25") inGroup:@"" atIndex:25]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"24") inGroup:@"" atIndex:24]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"23") inGroup:@"" atIndex:23]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"22") inGroup:@"" atIndex:22]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"21") inGroup:@"" atIndex:21]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"20") inGroup:@"" atIndex:20]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"19") inGroup:@"" atIndex:19]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"18") inGroup:@"" atIndex:18]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"17") inGroup:@"" atIndex:17]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"16") inGroup:@"" atIndex:16]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"15") inGroup:@"" atIndex:15]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"14") inGroup:@"" atIndex:14]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"13") inGroup:@"" atIndex:13]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"12") inGroup:@"" atIndex:12]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"11") inGroup:@"" atIndex:11]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"10") inGroup:@"" atIndex:10]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil,  @"9") inGroup:@"" atIndex:9]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil,  @"8") inGroup:@"" atIndex:8]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil,  @"7") inGroup:@"" atIndex:7]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil,  @"6") inGroup:@"" atIndex:6]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil,  @"5") inGroup:@"" atIndex:5]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil,  @"4") inGroup:@"" atIndex:4]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil,  @"3") inGroup:@"" atIndex:3]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil,  @"2") inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil,  @"1") inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil,  @"0") inGroup:@"" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"53") inGroup:@"" atIndex:3]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"52") inGroup:@"" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"51") inGroup:@"" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"50") inGroup:@"" atIndex:0]];
+	
 	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@""]];
 	
 	[mappings updateWithCounts:@{ @"":@(0) }];
