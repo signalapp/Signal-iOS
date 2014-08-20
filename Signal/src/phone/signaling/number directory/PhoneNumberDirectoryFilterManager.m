@@ -18,10 +18,10 @@
 }
 
 -(id) init {
-	if (self = [super init]) {
-		phoneNumberDirectoryFilter = [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterDefault];
-	}
-	return self;
+    if (self = [super init]) {
+        phoneNumberDirectoryFilter = [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterDefault];
+    }
+    return self;
 }
 -(void) startUntilCancelled:(TOCCancelToken*)cancelToken {
     lifetimeToken = cancelToken;
@@ -61,15 +61,15 @@
 
 -(TOCFuture*) asyncQueryCurrentDirectory {
     TOCUntilOperation startAwaitDirectoryOperation = ^(TOCCancelToken* untilCancelledToken) {
-		HttpRequest* directoryRequest = [HttpRequest httpRequestForPhoneNumberDirectoryFilter];
-
+        HttpRequest* directoryRequest = [HttpRequest httpRequestForPhoneNumberDirectoryFilter];
+        
         TOCFuture* futureDirectoryResponse = [HttpManager asyncOkResponseFromMasterServer:directoryRequest
                                                                           unlessCancelled:untilCancelledToken
                                                                           andErrorHandler:[Environment errorNoter]];
         
         return [futureDirectoryResponse thenTry:^(HttpResponse* response) {
-			return [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterFromHttpResponse:response];
-		}];
+            return [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterFromHttpResponse:response];
+        }];
     };
     
     return [TOCFuture futureFromUntilOperation:[TOCFuture operationTry:startAwaitDirectoryOperation]

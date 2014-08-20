@@ -16,7 +16,7 @@
 @implementation ZrtpManager
 
 +(TOCFuture*) asyncPerformHandshakeOver:(RtpSocket*)rtpSocket
-                   andCallController:(CallController*)callController {
+                      andCallController:(CallController*)callController {
     
     require(rtpSocket != nil);
     require(callController != nil);
@@ -64,7 +64,7 @@
     return manager;
 }
 
--(TOCFuture*) asyncPerformHandshake {    
+-(TOCFuture*) asyncPerformHandshake {
     PacketHandlerBlock packetHandler = ^(id packet) {
         require(packet != nil);
         require([packet isKindOfClass:[HandshakePacket class]]);
@@ -124,7 +124,7 @@
     [TimeUtil scheduleRun:^{[self handleRetransmit];}
                afterDelay:delay
                 onRunLoop:[ThreadManager lowLatencyThreadRunLoop]
-          unlessCancelled:currentRetransmit.token];    
+          unlessCancelled:currentRetransmit.token];
 }
 
 -(void) handleRetransmit {

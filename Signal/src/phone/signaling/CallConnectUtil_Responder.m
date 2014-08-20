@@ -32,7 +32,7 @@
 }
 
 +(TOCFuture*) asyncConnectToSignalServerDescribedBy:(ResponderSessionDescriptor*)sessionDescriptor
-                              withCallController:(CallController*)callController {
+                                 withCallController:(CallController*)callController {
     require(sessionDescriptor != nil);
     require(callController != nil);
     
@@ -54,7 +54,7 @@
         
         HttpRequest* ringRequest = [HttpRequest httpRequestToRingWithSessionId:sessionDescriptor.sessionId];
         TOCFuture* futureResponseToRing = [httpManager asyncOkResponseForRequest:ringRequest
-                                                              unlessCancelled:[callController untilCancelledToken]];
+                                                                 unlessCancelled:[callController untilCancelledToken]];
         TOCFuture* futureResponseToRingWithInterpretedFailures = [futureResponseToRing catchTry:^(id error) {
             if ([error isKindOfClass:[HttpResponse class]]) {
                 HttpResponse* badResponse = error;
@@ -128,9 +128,9 @@
 }
 
 +(TOCFuture*) asyncOkResponseFor:(HttpRequest*)request
-     fromSignalingServerNamed:(NSString*)name
-              unlessCancelled:(TOCCancelToken*)unlessCancelledToken
-              andErrorHandler:(ErrorHandlerBlock)errorHandler {
+        fromSignalingServerNamed:(NSString*)name
+                 unlessCancelled:(TOCCancelToken*)unlessCancelledToken
+                 andErrorHandler:(ErrorHandlerBlock)errorHandler {
     require(request != nil);
     require(errorHandler != nil);
     require(name != nil);

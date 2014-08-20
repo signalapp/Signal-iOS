@@ -137,7 +137,7 @@
         [_registerCancelButton removeFromSuperview];
         [self startVoiceVerificationCountdownTimer];
         self->futureChallengeAcceptedSource = [TOCFutureSource new];
-        return futureChallengeAcceptedSource;
+        return futureChallengeAcceptedSource.future;
     }];
 
 }

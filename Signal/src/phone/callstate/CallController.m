@@ -67,8 +67,8 @@
         if ([accepted boolValue]) return accepted;
         
         return [TOCFuture futureWithFailure:[CallTermination callTerminationOfType:CallTerminationType_RejectedLocal
-                                                         withFailure:accepted
-                                                      andMessageInfo:nil]];
+                                                                       withFailure:accepted
+                                                                    andMessageInfo:nil]];
     }];
 }
 -(TOCFuture*)interactiveCallAcceptedOrDenied {

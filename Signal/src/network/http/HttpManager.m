@@ -60,7 +60,7 @@
                                               untilCancelled:nil];
     
     TOCFuture* result = [manager asyncOkResponseForRequest:request
-                                        unlessCancelled:unlessCancelledToken];
+                                           unlessCancelled:unlessCancelledToken];
     
     [manager terminateWhenDoneCurrentWork];
     
@@ -72,7 +72,7 @@
     require(request != nil);
     
     TOCFuture* futureResponse = [self asyncResponseForRequest:request
-                                           unlessCancelled:unlessCancelledToken];
+                                              unlessCancelled:unlessCancelledToken];
     
     return [futureResponse then:^id(HttpResponse* response) {
         if (!response.isOkResponse) return [TOCFuture futureWithFailure:response];

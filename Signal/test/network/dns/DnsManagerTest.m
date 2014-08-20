@@ -23,15 +23,15 @@
                                                  unlessCancelled:nil];
     testChurnUntil(f1.hasResult, 5.0);
     test(f1.hasResult && [(NSArray*)[f1 forceGetResult] count] > 0);
-
+    
     TOCFuture* f2 = [DnsManager asyncQueryAddressesForDomainName:invalidHostname
                                                  unlessCancelled:nil];
     testChurnUntil(f2.hasFailed, 5.0);
-
+    
     TOCFuture* f3 = [DnsManager asyncQueryAddressesForDomainName:nonExistentHostname
                                                  unlessCancelled:nil];
     testChurnUntil(f3.hasFailed, 5.0);
-
+    
     TOCFuture* f4 = [DnsManager asyncQueryAddressesForDomainName:infrastructureTestHostName
                                                  unlessCancelled:nil];
     testChurnUntil(f4.hasResult, 5.0);
@@ -41,7 +41,7 @@
 
 -(void) testQueryAddresses_Concurrent {
     TOCFuture* f1 = [DnsManager asyncQueryAddressesForDomainName:reliableHostName
-                                                    unlessCancelled:nil];
+                                                 unlessCancelled:nil];
     TOCFuture* f2 = [DnsManager asyncQueryAddressesForDomainName:invalidHostname
                                                  unlessCancelled:nil];
     TOCFuture* f3 = [DnsManager asyncQueryAddressesForDomainName:nonExistentHostname

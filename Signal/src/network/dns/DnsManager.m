@@ -42,12 +42,12 @@ void handleDnsCompleted(CFHostRef hostRef, CFHostInfoType typeInfo, const CFStre
 }
 
 +(TOCFuture*) asyncQueryAddressesForDomainName:(NSString*)domainName
-                            unlessCancelled:(TOCCancelToken*)unlessCancelledToken {
+                               unlessCancelled:(TOCCancelToken*)unlessCancelledToken {
     require(domainName != nil);
     
     CFHostRef hostRef = CFHostCreateWithName(kCFAllocatorDefault, (__bridge CFStringRef)domainName);
     checkOperation(hostRef != nil);
-
+    
     DnsManager* d = [DnsManager new];
     d->futureResultSource = [TOCFutureSource futureSourceUntil:unlessCancelledToken];
     
@@ -57,7 +57,7 @@ void handleDnsCompleted(CFHostRef hostRef, CFHostInfoType typeInfo, const CFStre
     c.release = CFRelease;
     c.retain = CFRetain;
     c.copyDescription = CFCopyDescription;
-
+    
     CFHostSetClient(hostRef, handleDnsCompleted, &c);
     CFHostScheduleWithRunLoop(hostRef,
                               [[ThreadManager normalLatencyThreadRunLoop] getCFRunLoop],
