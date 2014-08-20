@@ -1,9 +1,7 @@
 #import "IpEndPoint.h"
-#import "Util.h"
-#import "Constraints.h"
-#import "IpAddress.h"
-#import "FutureSource.h"
+
 #import "DnsManager.h"
+#import "Util.h"
 
 @implementation IpEndPoint
 
@@ -78,8 +76,8 @@
 -(void) handleStreamsOpened:(StreamPair *)streamPair {
     // no work needed
 }
--(Future*) asyncHandleStreamsConnected:(StreamPair *)streamPair {
-    return [Future finished:@YES];
+-(TOCFuture*) asyncHandleStreamsConnected:(StreamPair *)streamPair {
+    return [TOCFuture futureWithResult:@YES];
 }
 
 -(StreamPair*)createStreamPair {
@@ -90,8 +88,8 @@
                                  andOutput:(__bridge_transfer NSOutputStream*)writeStream];
 }
 
--(Future*) asyncResolveToSpecificEndPointsUnlessCancelled:(id<CancelToken>)unlessCancelledToken {
-    return [Future finished:@[self]];
+-(TOCFuture*) asyncResolveToSpecificEndPointsUnlessCancelled:(TOCCancelToken*)unlessCancelledToken {
+    return [TOCFuture futureWithResult:@[self]];
 }
 
 @end

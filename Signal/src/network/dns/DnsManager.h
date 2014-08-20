@@ -1,6 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "FutureSource.h"
-#import "CancelToken.h"
+#import "CollapsingFutures.h"
 #import "IpAddress.h"
 
 /**
@@ -11,11 +10,11 @@
 
 @interface DnsManager : NSObject {
 @private CFStreamError error;
-@public FutureSource* futureResultSource;
+@public TOCFutureSource* futureResultSource;
 }
 
 /// Result has type Future(Array(IpAddress))
-+(Future*) asyncQueryAddressesForDomainName:(NSString*)domainName
-                            unlessCancelled:(id<CancelToken>)unlessCancelledToken;
++(TOCFuture*) asyncQueryAddressesForDomainName:(NSString*)domainName
+                               unlessCancelled:(TOCCancelToken*)unlessCancelledToken;
 
 @end

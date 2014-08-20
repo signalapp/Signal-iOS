@@ -74,21 +74,21 @@
                            ([NSString stringWithFormat:@"NetworkStream: SecTrustEvaluate returned bad result: %u.", trustResult]));
 }
 
--(Future *)asyncHandleStreamsConnected:(StreamPair *)streamPair {
+-(TOCFuture*)asyncHandleStreamsConnected:(StreamPair *)streamPair {
     require(streamPair != nil);
     
     @try {
         [self authenticateSslStream:streamPair];
-        return [Future finished:@YES];
+        return [TOCFuture futureWithResult:@YES];
     } @catch (OperationFailed* ex) {
-        return [Future failed:ex];
+        return [TOCFuture futureWithFailure:ex];
     }
 }
 
--(Future*) asyncResolveToSpecificEndPointsUnlessCancelled:(id<CancelToken>)unlessCancelledToken {
-    Future* futureResolvedLocations = [hostNameEndPoint asyncResolveToSpecificEndPointsUnlessCancelled:unlessCancelledToken];
+-(TOCFuture*) asyncResolveToSpecificEndPointsUnlessCancelled:(TOCCancelToken*)unlessCancelledToken {
+    TOCFuture* futureResolvedLocations = [hostNameEndPoint asyncResolveToSpecificEndPointsUnlessCancelled:unlessCancelledToken];
     
-    return [futureResolvedLocations then:^(NSArray* specificEndPoints) {
+    return [futureResolvedLocations thenTry:^(NSArray* specificEndPoints) {
         return [specificEndPoints map:^(id<NetworkEndPoint> specificEndPoint) {
             return [SecureEndPoint secureEndPointForHost:hostNameEndPoint
                                  identifiedByCertificate:certificate

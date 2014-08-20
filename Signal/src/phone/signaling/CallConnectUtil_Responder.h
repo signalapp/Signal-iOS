@@ -17,10 +17,10 @@
 @interface CallConnectUtil_Responder : NSObject
 
 /// Result has type Future(CallConnectResult)
-+(Future*) asyncConnectToIncomingCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor
-                                         andCallController:(CallController*)callController;
++(TOCFuture*) asyncConnectToIncomingCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor
+                                            andCallController:(CallController*)callController;
 
 /// Result has type Future(HttpResponse)
-+(Future*) asyncSignalTooBusyToAnswerCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor;
++(TOCFuture*) asyncSignalTooBusyToAnswerCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor;
 
 @end

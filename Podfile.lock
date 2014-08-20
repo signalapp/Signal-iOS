@@ -41,7 +41,10 @@ PODS:
   - OpenSSL (1.0.109)
   - PastelogKit (1.1):
     - CocoaLumberjack (~> 1.9)
+  - TwistedOakCollapsingFutures (1.0.0):
+    - UnionFind (~> 1.0)
   - UICKeyChainStore (1.0.7)
+  - UnionFind (1.0.1)
 
 DEPENDENCIES:
   - AFNetworking (~> 2.3.1)
@@ -49,6 +52,7 @@ DEPENDENCIES:
   - MMDrawerController (~> 0.5.0)
   - OpenSSL (~> 1.0.109)
   - PastelogKit (~> 1.1)
+  - TwistedOakCollapsingFutures
   - UICKeyChainStore (from `Podspecs/UICKeyChainStore.podspec`)
 
 EXTERNAL SOURCES:
@@ -62,6 +66,8 @@ SPEC CHECKSUMS:
   MMDrawerController: 4bae84535ca7a5f4cb55a66a001e6035c3571677
   OpenSSL: 4810adf5c99b0e2cd20670a11a987c805e8a521c
   PastelogKit: 32836ec27e587a8876326abeaf9a1b5e2bc484ea
+  TwistedOakCollapsingFutures: 07aab84fd3958dc94d55ef705b12857d9fbe61d1
   UICKeyChainStore: eef407137f0397e95a3df32cdf05f7e2ddd99647
+  UnionFind: 45777a8b6878d3a602af3654cc3a09b87389d356
 
 COCOAPODS: 0.33.1

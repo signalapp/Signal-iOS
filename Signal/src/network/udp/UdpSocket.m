@@ -154,7 +154,7 @@ void onReceivedData(CFSocketRef socket, CFSocketCallBackType type, CFDataRef add
 }
 
 -(void) startWithHandler:(PacketHandler*)handler
-          untilCancelled:(id<CancelToken>)untilCancelledToken {
+          untilCancelled:(TOCCancelToken*)untilCancelledToken {
     
     require(handler != nil);
     
@@ -183,7 +183,7 @@ void onReceivedData(CFSocketRef socket, CFSocketCallBackType type, CFDataRef add
         NSRunLoop* runLoop = [ThreadManager lowLatencyThreadRunLoop];
         CFRunLoopAddSource([runLoop getCFRunLoop], CFSocketCreateRunLoopSource(NULL, socket, 0), kCFRunLoopCommonModes);
         
-        [untilCancelledToken whenCancelled:^{
+        [untilCancelledToken whenCancelledDo:^{
             @synchronized(self) {
                 currentHandler = nil;
                 CFSocketInvalidate(socket);

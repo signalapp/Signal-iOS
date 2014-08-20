@@ -21,8 +21,8 @@
 -(void) handleStreamsOpened:(StreamPair *)streamPair {
     // no work needed
 }
--(Future *)asyncHandleStreamsConnected:(StreamPair *)streamPair {
-    return [Future finished:@YES];
+-(TOCFuture*)asyncHandleStreamsConnected:(StreamPair *)streamPair {
+    return [TOCFuture futureWithResult:@YES];
 }
 
 -(StreamPair*)createStreamPair {
@@ -33,10 +33,10 @@
                                  andOutput:(__bridge_transfer NSOutputStream*)writeStream];
 }
 
--(Future*) asyncResolveToSpecificEndPointsUnlessCancelled:(id<CancelToken>)unlessCancelledToken {
-    Future* futureDnsResult = [DnsManager asyncQueryAddressesForDomainName:hostname
-                                                           unlessCancelled:unlessCancelledToken];
-    return [futureDnsResult then:^(NSArray* ipAddresses) {
+-(TOCFuture*) asyncResolveToSpecificEndPointsUnlessCancelled:(TOCCancelToken*)unlessCancelledToken {
+    TOCFuture* futureDnsResult = [DnsManager asyncQueryAddressesForDomainName:hostname
+                                                              unlessCancelled:unlessCancelledToken];
+    return [futureDnsResult thenTry:^(NSArray* ipAddresses) {
         return [ipAddresses map:^(IpAddress* address) {
             return [IpEndPoint ipEndPointAtAddress:address onPort:port];
         }];

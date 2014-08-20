@@ -10,7 +10,7 @@
 
 +(CallAudioManager*) callAudioManagerStartedWithAudioSocket:(AudioSocket*)audioSocket
                                             andErrorHandler:(ErrorHandlerBlock)errorHandler
-                                             untilCancelled:(id<CancelToken>)untilCancelledToken {
+                                             untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(audioSocket != nil);
     
     AudioProcessor* processor = [AudioProcessor audioProcessor];
@@ -24,7 +24,7 @@
     return newCallAudioManagerInstance;
 }
 
--(void) startWithErrorHandler:(ErrorHandlerBlock)errorHandler untilCancelled:(id<CancelToken>)untilCancelledToken {
+-(void) startWithErrorHandler:(ErrorHandlerBlock)errorHandler untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(errorHandler != nil);
     require(untilCancelledToken != nil);
     @synchronized(self) {

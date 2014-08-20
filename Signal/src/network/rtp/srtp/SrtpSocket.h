@@ -27,5 +27,5 @@
                andOutgoingMacKey:(NSData*)outgoingMacKey
                  andOutgoingSalt:(NSData*)outgoingSalt;
 -(void) secureAndSendRtpPacket:(RtpPacket *)packet;
--(void) startWithHandler:(PacketHandler*)handler untilCancelled:(id<CancelToken>)untilCancelledToken;
+-(void) startWithHandler:(PacketHandler*)handler untilCancelled:(TOCCancelToken*)untilCancelledToken;
 @end

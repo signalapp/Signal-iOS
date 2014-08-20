@@ -101,6 +101,12 @@
     BOOL loggingIsEnabled;
 
 #ifdef DEBUG
+    // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
+    // the phone directory being looked up during tests.
+    if (getenv("runningTests_dontStartApp")) {
+        return YES;
+    }
+    
     loggingIsEnabled = TRUE;
     [DebugLogger.sharedInstance enableTTYLogging];
     

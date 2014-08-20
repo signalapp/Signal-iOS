@@ -1,8 +1,7 @@
 #import <Foundation/Foundation.h>
+#import "CollapsingFutures.h"
 #import "IpEndPoint.h"
-#import "FutureSource.h"
 #import "NetworkStream.h"
-#import "CancelToken.h"
 #import "LowLatencyCandidate.h"
 
 /**
@@ -15,7 +14,7 @@
 @interface LowLatencyConnector : NSObject <NSStreamDelegate>
 
 /// Result has type Future(LowLatencyCandidate).
-+(Future*) asyncLowLatencyConnectToEndPoint:(id<NetworkEndPoint>)endPoint
-                             untilCancelled:(id<CancelToken>)untilCancelledToken;
++(TOCFuture*) asyncLowLatencyConnectToEndPoint:(id<NetworkEndPoint>)endPoint
+                                untilCancelled:(TOCCancelToken*)untilCancelledToken;
 
 @end

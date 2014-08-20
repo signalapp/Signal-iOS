@@ -23,6 +23,6 @@
 
 +(RtpSocket*) rtpSocketOverUdp:(UdpSocket*)udpSocket interopOptions:(NSArray*)interopOptions;
 -(void) send:(RtpPacket*)packet;
--(void) startWithHandler:(PacketHandler*)handler untilCancelled:(id<CancelToken>)untilCancelledToken;
+-(void) startWithHandler:(PacketHandler*)handler untilCancelled:(TOCCancelToken*)untilCancelledToken;
 
 @end

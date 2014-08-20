@@ -12,12 +12,12 @@
 @synthesize futureCallLocallyAcceptedOrRejected;
 
 +(CallState*) callStateWithObservableProgress:(ObservableValue*)observableProgress
-                         andFutureTermination:(Future*)futureTermination
-                                 andFutureSas:(Future*)futureSas
+                         andFutureTermination:(TOCFuture*)futureTermination
+                                 andFutureSas:(TOCFuture*)futureSas
                               andRemoteNumber:(PhoneNumber*)remoteNumber
                           andInitiatedLocally:(bool)initiatedLocally
                andPotentiallySpecifiedContact:(Contact*)contact
-                            andFutureAccepted:(Future*)futureCallLocallyAcceptedOrRejected {
+                            andFutureAccepted:(TOCFuture*)futureCallLocallyAcceptedOrRejected {
 
     require(observableProgress != nil);
     require(futureTermination != nil);
@@ -27,8 +27,8 @@
     
     CallState* call = [CallState new];
     call->observableProgress = observableProgress;
-    call->futureTermination = [futureTermination thenCompleteOnMainThread];
-    call->futureShortAuthenticationString = [futureSas thenCompleteOnMainThread];
+    call->futureTermination = futureTermination;
+    call->futureShortAuthenticationString = futureSas;
     call->remoteNumber = remoteNumber;
     call->initiatedLocally = initiatedLocally;
     call->potentiallySpecifiedContact = contact;

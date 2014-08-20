@@ -1,10 +1,8 @@
 #import <XCTest/XCTest.h>
 #import "ObservableValue.h"
 #import "TestUtil.h"
-#import "CancelTokenSource.h"
 
 @interface ObservableTest : XCTestCase
-
 @end
 
 @implementation ObservableTest
@@ -13,10 +11,10 @@
     ObservableValueController* s = [ObservableValueController observableValueControllerWithInitialValue:@""];
     ObservableValue* t = s;
     NSMutableArray* a = [NSMutableArray array];
-    CancelTokenSource* c = [CancelTokenSource cancelTokenSource];
+    TOCCancelTokenSource* c = [TOCCancelTokenSource new];
     
     [t watchLatestValueOnArbitraryThread:^(id value) {[a addObject:value];}
-                          untilCancelled:[c getToken]];
+                          untilCancelled:c.token];
     
     test([a isEqualToArray:@[@""]]);
     [s updateValue:@5];
@@ -31,14 +29,14 @@
     ObservableValueController* s = [ObservableValueController observableValueControllerWithInitialValue:@""];
     ObservableValue* t = s;
     NSMutableArray* a = [NSMutableArray array];
-    CancelTokenSource* c = [CancelTokenSource cancelTokenSource];
+    TOCCancelTokenSource* c = [TOCCancelTokenSource new];
     
     [t watchLatestValueOnArbitraryThread:^(id value) {[a addObject:value];}
-                          untilCancelled:[c getToken]];
+                          untilCancelled:c.token];
     [t watchLatestValueOnArbitraryThread:^(id value) {[a addObject:value];}
-                          untilCancelled:[c getToken]];
+                          untilCancelled:c.token];
     [t watchLatestValueOnArbitraryThread:^(id value) {[a addObject:value];}
-                          untilCancelled:[c getToken]];
+                          untilCancelled:c.token];
     
     test([a isEqualToArray:(@[@"", @"", @""])]);
     [s updateValue:@5];
@@ -83,7 +81,7 @@
     ObservableValueController* s = [ObservableValueController observableValueControllerWithInitialValue:@""];
     ObservableValue* t = s;
     NSMutableArray* a = [NSMutableArray array];
-    CancelTokenSource* c = [CancelTokenSource cancelTokenSource];
+    TOCCancelTokenSource* c = [TOCCancelTokenSource new];
     
     __block void(^registerSelf)() = nil;
     void(^registerSelf_builder)() = ^{
@@ -92,7 +90,7 @@
             if (!first) registerSelf();
             first = false;
             [a addObject:value];
-        } untilCancelled:[c getToken]];
+        } untilCancelled:c.token];
     };
     registerSelf = [registerSelf_builder copy];
     registerSelf();
@@ -111,7 +109,7 @@
     ObservableValueController* s = [ObservableValueController observableValueControllerWithInitialValue:@""];
     ObservableValue* t = s;
     NSMutableArray* a = [NSMutableArray array];
-    CancelTokenSource* c = [CancelTokenSource cancelTokenSource];
+    TOCCancelTokenSource* c = [TOCCancelTokenSource new];
     
     for (int i = 0; i < 3; i++) {
         __block bool first = true;
@@ -121,7 +119,7 @@
                 [a addObject:value];
             }
             first = false;
-        } untilCancelled:[c getToken]];
+        } untilCancelled:c.token];
     }
     
     // removing during a callback counts as removing after the callback

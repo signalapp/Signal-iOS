@@ -3,7 +3,6 @@
 #import "StringUtil.h"
 #import "DictionaryUtil.h"
 #import "ArrayUtil.h"
-#import "Future.h"
 
 typedef void(^Action)(void);
 typedef id(^Function)(void);
@@ -19,11 +18,6 @@ typedef id(^Function)(void);
 
 +(void) asyncRunAndWaitUntilDone:(Action)action
                         onThread:(NSThread*)thread;
-
-+(Future*) asyncEvaluate:(Function)function
-                   onThread:(NSThread*)thread;
-
-+(Future*) asyncEvaluateOnNewThread:(Function)function;
 
 +(void) asyncRunOnNewThread:(Action)action;
 

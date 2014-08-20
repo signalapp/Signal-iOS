@@ -1,9 +1,11 @@
 #import "PhoneNumberDirectoryFilterManager.h"
+
 #import "Environment.h"
+#import "NotificationManifest.h"
 #import "PreferencesUtil.h"
+#import "SignalUtil.h"
 #import "ThreadManager.h"
 #import "Util.h"
-#import "NotificationManifest.h"
 
 #define MINUTE (60.0)
 #define HOUR (MINUTE*60.0)
@@ -12,7 +14,7 @@
 #define DIRECTORY_UPDATE_RETRY_PERIOD (1.0*HOUR)
 
 @implementation PhoneNumberDirectoryFilterManager {
-@private CancelTokenSource* currentUpdateLifetime;
+@private TOCCancelTokenSource* currentUpdateLifetime;
 }
 
 -(id) init {
@@ -21,7 +23,7 @@
 	}
 	return self;
 }
--(void) startUntilCancelled:(id<CancelToken>)cancelToken {
+-(void) startUntilCancelled:(TOCCancelToken*)cancelToken {
     lifetimeToken = cancelToken;
     
     phoneNumberDirectoryFilter = [[Environment preferences] tryGetSavedPhoneNumberDirectory];
@@ -49,30 +51,30 @@
     };
     
     [currentUpdateLifetime cancel];
-    currentUpdateLifetime = [CancelTokenSource cancelTokenSource];
-    [lifetimeToken whenCancelled:^{ [currentUpdateLifetime cancel]; }];
+    currentUpdateLifetime = [TOCCancelTokenSource new];
+    [lifetimeToken whenCancelledDo:^{ [currentUpdateLifetime cancel]; }];
     [TimeUtil scheduleRun:doUpdate
                        at:date
                 onRunLoop:[ThreadManager normalLatencyThreadRunLoop]
-          unlessCancelled:currentUpdateLifetime.getToken];
+          unlessCancelled:currentUpdateLifetime.token];
 }
 
--(Future*) asyncQueryCurrentDirectory {
-    CancellableOperationStarter startAwaitDirectoryOperation = ^(id<CancelToken> untilCancelledToken) {
+-(TOCFuture*) asyncQueryCurrentDirectory {
+    TOCUntilOperation startAwaitDirectoryOperation = ^(TOCCancelToken* untilCancelledToken) {
 		HttpRequest* directoryRequest = [HttpRequest httpRequestForPhoneNumberDirectoryFilter];
 
-        Future* futureDirectoryResponse = [HttpManager asyncOkResponseFromMasterServer:directoryRequest
-                                                                       unlessCancelled:untilCancelledToken
-                                                                       andErrorHandler:[Environment errorNoter]];
+        TOCFuture* futureDirectoryResponse = [HttpManager asyncOkResponseFromMasterServer:directoryRequest
+                                                                          unlessCancelled:untilCancelledToken
+                                                                          andErrorHandler:[Environment errorNoter]];
         
-        return [futureDirectoryResponse then:^(HttpResponse* response) {
+        return [futureDirectoryResponse thenTry:^(HttpResponse* response) {
 			return [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterFromHttpResponse:response];
 		}];
     };
     
-    return [AsyncUtil raceCancellableOperation:startAwaitDirectoryOperation
-                                againstTimeout:DIRECTORY_UPDATE_TIMEOUT_PERIOD
-                                untilCancelled:lifetimeToken];
+    return [TOCFuture futureFromUntilOperation:[TOCFuture operationTry:startAwaitDirectoryOperation]
+                          withOperationTimeout:DIRECTORY_UPDATE_TIMEOUT_PERIOD
+                                         until:lifetimeToken];
 }
 
 -(PhoneNumberDirectoryFilter*) sameDirectoryWithRetryTimeout {
@@ -87,17 +89,17 @@
                       DIRECTORY_UPDATE_RETRY_PERIOD/HOUR];
     [Environment errorNoter](desc, failure, false);
 }
--(Future*) asyncQueryCurrentDirectoryWithDefaultOnFail {
-    Future* futureDirectory = [self asyncQueryCurrentDirectory];
+-(TOCFuture*) asyncQueryCurrentDirectoryWithDefaultOnFail {
+    TOCFuture* futureDirectory = [self asyncQueryCurrentDirectory];
     
-    return [futureDirectory catch:^PhoneNumberDirectoryFilter*(id error) {
+    return [futureDirectory catchTry:^PhoneNumberDirectoryFilter*(id error) {
         [self signalDirectoryQueryFailed:error];
         return [self sameDirectoryWithRetryTimeout];
     }];
 }
 
 -(void) update {
-    Future* eventualDirectory = [self asyncQueryCurrentDirectoryWithDefaultOnFail];
+    TOCFuture* eventualDirectory = [self asyncQueryCurrentDirectoryWithDefaultOnFail];
     
     [eventualDirectory thenDo:^(PhoneNumberDirectoryFilter* directory) {
         @synchronized(self) {

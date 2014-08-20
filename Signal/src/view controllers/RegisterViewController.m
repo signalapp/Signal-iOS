@@ -56,9 +56,8 @@
 
 + (RegisterViewController*)registerViewController {
     RegisterViewController *viewController = [RegisterViewController new];
-    viewController->registered = [FutureSource new];
-    viewController->life = [CancelTokenSource cancelTokenSource];
-    [[viewController->life getToken] whenCancelledTryCancel:viewController->registered];
+    viewController->life = [TOCCancelTokenSource new];
+    viewController->registered = [TOCFutureSource futureSourceUntil:viewController->life.token];
 
     return viewController;
 }
@@ -117,27 +116,27 @@
     [self presentViewController:countryCodeController animated:YES completion:nil];
 }
 
--(Future*) asyncRegister:(PhoneNumber*)phoneNumber untilCancelled:(id<CancelToken>)cancelToken {
+-(TOCFuture*) asyncRegister:(PhoneNumber*)phoneNumber untilCancelled:(TOCCancelToken*)cancelToken {
     [SGNKeychainUtil generateServerAuthPassword];
     [SGNKeychainUtil setLocalNumberTo:phoneNumber];
     
-    CancellableOperationStarter regStarter = ^Future *(id<CancelToken> internalUntilCancelledToken) {
+    TOCUntilOperation regStarter = ^TOCFuture *(TOCCancelToken* internalUntilCancelledToken) {
         HttpRequest *registerRequest = [HttpRequest httpRequestToStartRegistrationOfPhoneNumber];
        
         return [HttpManager asyncOkResponseFromMasterServer:registerRequest
                                             unlessCancelled:internalUntilCancelledToken
                                             andErrorHandler:[Environment errorNoter]];
     };
-    Future *futurePhoneRegistrationStarted = [AsyncUtil raceCancellableOperation:regStarter
-                                                                  againstTimeout:20.0
-                                                                  untilCancelled:cancelToken];
+    TOCFuture *futurePhoneRegistrationStarted = [TOCFuture futureFromUntilOperation:[TOCFuture operationTry:regStarter]
+                                                               withOperationTimeout:SERVER_TIMEOUT_SECONDS
+                                                                              until:cancelToken];
 
-    return [futurePhoneRegistrationStarted then:^(id _) {
+    return [futurePhoneRegistrationStarted thenTry:^(id _) {
         [self showViewNumber:CHALLENGE_VIEW_NUMBER];
         [self.challengeNumberLabel setText:[phoneNumber description]];
         [_registerCancelButton removeFromSuperview];
         [self startVoiceVerificationCountdownTimer];
-        self->futureChallengeAcceptedSource = [FutureSource new];
+        self->futureChallengeAcceptedSource = [TOCFutureSource new];
         return futureChallengeAcceptedSource;
     }];
 
@@ -150,7 +149,7 @@
     
     [_phoneNumberTextField resignFirstResponder];
 
-    Future* futureFinished = [self asyncRegister:localNumber untilCancelled:[life getToken]];
+    TOCFuture* futureFinished = [self asyncRegister:localNumber untilCancelled:life.token];
     [_registerActivityIndicator startAnimating];
     _registerButton.enabled = NO;
     
@@ -177,9 +176,9 @@
     [_challengeActivityIndicator startAnimating];
     
     HttpRequest *verifyRequest = [HttpRequest httpRequestToVerifyAccessToPhoneNumberWithChallenge:_challengeTextField.text];
-    Future *futureDone = [HttpManager asyncOkResponseFromMasterServer:verifyRequest
-                                                      unlessCancelled:nil
-                                                      andErrorHandler:[Environment errorNoter]];
+    TOCFuture *futureDone = [HttpManager asyncOkResponseFromMasterServer:verifyRequest
+                                                         unlessCancelled:nil
+                                                         andErrorHandler:[Environment errorNoter]];
     
     [futureDone catchDo:^(id error) {
         if ([error isKindOfClass:[HttpResponse class]]) {
@@ -201,7 +200,7 @@
         [futureChallengeAcceptedSource trySetResult:@YES];
     }];
     
-    [futureChallengeAcceptedSource thenDo:^(id value) {
+    [futureChallengeAcceptedSource.future thenDo:^(id value) {
         [PushManager.sharedManager askForPushRegistrationWithSuccess:^{
             [Environment setRegistered:YES];
             [registered trySetResult:@YES];
@@ -275,7 +274,7 @@
 
 - (void) initiateVoiceVerification{
     [self stopVoiceVerificationCountdownTimer];
-    CancellableOperationStarter callStarter = ^Future *(id<CancelToken> internalUntilCancelledToken) {
+    TOCUntilOperation callStarter = ^TOCFuture *(TOCCancelToken* internalUntilCancelledToken) {
         HttpRequest* voiceVerifyReq = [HttpRequest httpRequestToStartRegistrationOfPhoneNumberWithVoice];
         
         [self.voiceChallengeTextLabel setText:@"Calling" ];
@@ -283,15 +282,15 @@
                                             unlessCancelled:internalUntilCancelledToken
                                             andErrorHandler:[Environment errorNoter]];
     };
-    Future *futureVoiceVerificationStarted = [AsyncUtil raceCancellableOperation:callStarter
-                                                                  againstTimeout:SERVER_TIMEOUT_SECONDS
-                                                                  untilCancelled:[life getToken]];
+    TOCFuture *futureVoiceVerificationStarted = [TOCFuture futureFromUntilOperation:[TOCFuture operationTry:callStarter]
+                                                               withOperationTimeout:SERVER_TIMEOUT_SECONDS
+                                                                              until:life.token];
     [futureVoiceVerificationStarted catchDo:^(id errorId) {
         HttpResponse* error = (HttpResponse*)errorId;
        [self.voiceChallengeTextLabel setText:[error getStatusText]];
     }];
     
-    [futureVoiceVerificationStarted finally:^id(id _id) {
+    [futureVoiceVerificationStarted finallyTry:^(id _id) {
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, VOICE_VERIFICATION_COOLDOWN_SECONDS * NSEC_PER_SEC);
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             [self.voiceChallengeTextLabel setText:@"Re-Call"];

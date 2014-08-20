@@ -11,19 +11,19 @@
 @interface CallConnectUtil_Server : NSObject
 
 /// Result has type Future(HttpManager)
-+(Future*) asyncConnectToDefaultSignalingServerUntilCancelled:(id<CancelToken>)untilCancelledToken;
++(TOCFuture*) asyncConnectToDefaultSignalingServerUntilCancelled:(TOCCancelToken*)untilCancelledToken;
 
 /// Result has type Future(HttpManager)
-+(Future*) asyncConnectToSignalingServerNamed:(NSString*)name
-                               untilCancelled:(id<CancelToken>)untilCancelledToken;
++(TOCFuture*) asyncConnectToSignalingServerNamed:(NSString*)name
+                                  untilCancelled:(TOCCancelToken*)untilCancelledToken;
 
 /// Result has type Future(CallConnectResult)
-+(Future*) asyncConnectCallOverRelayDescribedInResponderSessionDescriptor:(ResponderSessionDescriptor*)session
-                                                       withCallController:(CallController*)callController;
++(TOCFuture*) asyncConnectCallOverRelayDescribedInResponderSessionDescriptor:(ResponderSessionDescriptor*)session
+                                                          withCallController:(CallController*)callController;
 
 /// Result has type Future(CallConnectResult)
-+(Future*) asyncConnectCallOverRelayDescribedInInitiatorSessionDescriptor:(InitiatorSessionDescriptor*)session
-                                                       withCallController:(CallController*)callController
-                                                        andInteropOptions:(NSArray*)interopOptions;
++(TOCFuture*) asyncConnectCallOverRelayDescribedInInitiatorSessionDescriptor:(InitiatorSessionDescriptor*)session
+                                                          withCallController:(CallController*)callController
+                                                           andInteropOptions:(NSArray*)interopOptions;
 
 @end

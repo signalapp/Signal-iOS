@@ -1,8 +1,6 @@
 #import <Foundation/Foundation.h>
 
 #import "CallController.h"
-#import "CancelTokenSource.h"
-#import "FutureSource.h"
 #import "HandshakePacket.h"
 #import "Logging.h"
 #import "NegotiationFailed.h"
@@ -23,13 +21,13 @@
 @private bool handshakeCompletedSuccesfully;
 @private bool done;
     
-@private CancelTokenSource* cancelTokenSource;
-@private CancelTokenSource* currentRetransmit;
+@private TOCCancelTokenSource* cancelTokenSource;
+@private TOCCancelTokenSource* currentRetransmit;
 @private RtpSocket* rtpSocketToSecure;
 @private ZrtpHandshakeSocket* handshakeSocket;
 @private HandshakePacket* currentPacketToRetransmit;
 @private id<ZrtpRole> zrtpRole;
-@private FutureSource* futureHandshakeResultSource;
+@private TOCFutureSource* futureHandshakeResultSource;
 @private CallController* callController;
 }
 
@@ -50,7 +48,7 @@
 /// @param callController
 /// Used to notify the outside about the progress of termination of the handshake.
 /// If callController's cancel token is cancelled before or while the handshake is running, the handshake will be promptly aborted.
-+(Future*) asyncPerformHandshakeOver:(RtpSocket*)rtpSocket
-                   andCallController:(CallController*)callController;
++(TOCFuture*) asyncPerformHandshakeOver:(RtpSocket*)rtpSocket
+                      andCallController:(CallController*)callController;
 
 @end

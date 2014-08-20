@@ -57,12 +57,12 @@
                                                                          remote:remoteNumber
                                                                 optionalContact:contact];
     [callController acceptCall]; // initiator implicitly accepts call
-    id<CancelToken> lifetime = [callController untilCancelledToken];
+    TOCCancelToken* lifetime = [callController untilCancelledToken];
         
-    Future* futureConnected = [CallConnectUtil asyncInitiateCallToRemoteNumber:remoteNumber
-                                                         andCallController:callController];
+    TOCFuture* futureConnected = [CallConnectUtil asyncInitiateCallToRemoteNumber:remoteNumber
+                                                                andCallController:callController];
     
-    Future* futureCalling = [futureConnected then:^id(CallConnectResult* connectResult) {
+    TOCFuture* futureCalling = [futureConnected thenTry:^id(CallConnectResult* connectResult) {
         [callController advanceCallProgressToConversingWithShortAuthenticationString:connectResult.shortAuthenticationString];
         CallAudioManager *cam = [CallAudioManager callAudioManagerStartedWithAudioSocket:connectResult.audioSocket
                                                  andErrorHandler:[callController errorHandler]
@@ -101,12 +101,12 @@
                                                                          remote:session.initiatorNumber
                                                                 optionalContact:callingContact];
 
-    id<CancelToken> lifetime = [callController untilCancelledToken];
+    TOCCancelToken* lifetime = [callController untilCancelledToken];
     
-    Future* futureConnected = [CallConnectUtil asyncRespondToCallWithSessionDescriptor:session
-                                                                     andCallController:callController];
+    TOCFuture* futureConnected = [CallConnectUtil asyncRespondToCallWithSessionDescriptor:session
+                                                                        andCallController:callController];
     
-    Future* futureStarted = [futureConnected then:^id(CallConnectResult* connectResult) {
+    TOCFuture* futureStarted = [futureConnected thenTry:^id(CallConnectResult* connectResult) {
         [callController advanceCallProgressToConversingWithShortAuthenticationString:connectResult.shortAuthenticationString];
         CallAudioManager* cam = [CallAudioManager callAudioManagerStartedWithAudioSocket:connectResult.audioSocket
                                                  andErrorHandler:[callController errorHandler]

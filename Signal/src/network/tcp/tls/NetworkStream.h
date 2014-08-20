@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
-#import "PacketHandler.h"
+#import "CollapsingFutures.h"
 #import "CyclicalBuffer.h"
-#import "FutureSource.h"
+#import "PacketHandler.h"
 #import "NetworkEndPoint.h"
 #import "Terminable.h"
 
@@ -23,8 +23,8 @@
 @private PacketHandler* rawDataHandler;
 @private bool closedLocally;
 @private CyclicalBuffer* writeBuffer;
-@private FutureSource* futureConnectedAndWritableSource;
-@private FutureSource* futureOpenedSource;
+@private TOCFutureSource* futureConnectedAndWritableSource;
+@private TOCFutureSource* futureOpenedSource;
 @private id<NetworkEndPoint> remoteEndPoint;
 @private NSRunLoop* runLoop;
 @private bool started;
@@ -32,9 +32,9 @@
 
 +(NetworkStream*) networkStreamToEndPoint:(id<NetworkEndPoint>)remoteEndPoint;
 
--(Future*) asyncConnectionCompleted;
+-(TOCFuture*) asyncConnectionCompleted;
 
--(Future*) asyncTcpHandshakeCompleted;
+-(TOCFuture*) asyncTcpHandshakeCompleted;
 
 -(void) send:(NSData*)data;
 

@@ -14,7 +14,7 @@
 }
 
 -(void) watchLatestValueOnArbitraryThread:(LatestValueCallback)callback
-                           untilCancelled:(id<CancelToken>)untilCancelledToken {
+                           untilCancelled:(TOCCancelToken*)untilCancelledToken {
     
     require(callback != nil);
     if (untilCancelledToken.isAlreadyCancelled) return;
@@ -24,7 +24,7 @@
         callbackCopy(self.currentValue);
         [callbacks addObject:callbackCopy];
     }];
-    [untilCancelledToken whenCancelled:^{
+    [untilCancelledToken whenCancelledDo:^{
         [self queueRun:^{
             [callbacks removeObject:callbackCopy];
         }];
@@ -32,7 +32,7 @@
 }
 -(void) watchLatestValue:(LatestValueCallback)callback
                 onThread:(NSThread*)thread
-          untilCancelled:(id<CancelToken>)untilCancelledToken {
+          untilCancelled:(TOCCancelToken*)untilCancelledToken {
     
     require(callback != nil);
     require(thread != nil);

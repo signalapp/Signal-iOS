@@ -13,7 +13,7 @@ bool _testChurnHelper(int (^condition)(), NSTimeInterval delay) {
         @synchronized(churnLock()) {
             if (condition()) return true;
         }
-        sleep(1);
+        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
     }
     @synchronized(churnLock()) {
         return condition();

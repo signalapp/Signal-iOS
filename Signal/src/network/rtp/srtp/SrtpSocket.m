@@ -36,7 +36,7 @@
     return [outgoingContext encryptAndAuthenticateNormalRtpPacket:normalRtpPacket];
 }
 
--(void) startWithHandler:(PacketHandler*)handler untilCancelled:(id<CancelToken>)untilCancelledToken {
+-(void) startWithHandler:(PacketHandler*)handler untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(handler != nil);
     requireState(!hasBeenStarted);
     hasBeenStarted = true;

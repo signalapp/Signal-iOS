@@ -23,6 +23,6 @@
 
 +(CallAudioManager*) callAudioManagerStartedWithAudioSocket:(AudioSocket*)audioSocket
                                             andErrorHandler:(ErrorHandlerBlock)errorHandler
-                                             untilCancelled:(id<CancelToken>)untilCancelledToken;
+                                             untilCancelled:(TOCCancelToken*)untilCancelledToken;
 -(BOOL) toggleMute;
 @end

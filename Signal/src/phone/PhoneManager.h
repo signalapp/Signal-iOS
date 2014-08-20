@@ -1,7 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "PhoneNumber.h"
 #import "InitiatorSessionDescriptor.h"
-#import "CancelTokenSource.h"
 #import "Environment.h"
 #import "Terminable.h"
 #import "Logging.h"

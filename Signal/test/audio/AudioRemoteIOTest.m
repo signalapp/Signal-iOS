@@ -2,7 +2,6 @@
 #import "RemoteIOAudio.h"
 #import "AnonymousAudioCallbackHandler.h"
 #import "TestUtil.h"
-#import "CancelTokenSource.h"
 
 @interface AudioRemoteIOTest : XCTestCase
 
@@ -36,10 +35,10 @@
         }
     };
     
-    CancelTokenSource* life = [CancelTokenSource cancelTokenSource];
+    TOCCancelTokenSource* life = [TOCCancelTokenSource new];
     a = [RemoteIOAudio remoteIOInterfaceStartedWithDelegate:[AnonymousAudioCallbackHandler anonymousAudioInterfaceDelegateWithRecordingCallback:countCalls
                                                                                                                     andPlaybackOccurredCallback:generateWhooOOOoooOOOOooOOOOoooSineWave]
-                                             untilCancelled:[life getToken]];
+                                             untilCancelled:life.token];
     
     // churn the run loop, to allow the audio to play and be recorded
     // YOU SHOULD HEAR A WOOOoooOOOOoooOOO TONE WHILE THIS IS HAPPENING (with the frequency going up and down)

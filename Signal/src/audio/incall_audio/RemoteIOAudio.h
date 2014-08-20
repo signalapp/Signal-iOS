@@ -45,7 +45,7 @@ enum State {
 @property (strong) CyclicalBuffer*        playbackQueue;
 @property (assign) AudioUnit              rioAudioUnit;
 
-+(RemoteIOAudio*) remoteIOInterfaceStartedWithDelegate:(id<AudioCallbackHandler>)delegateIn untilCancelled:(id<CancelToken>)untilCancelledToken;
++(RemoteIOAudio*) remoteIOInterfaceStartedWithDelegate:(id<AudioCallbackHandler>)delegateIn untilCancelled:(TOCCancelToken*)untilCancelledToken;
 -(void) populatePlaybackQueueWithData:(NSData*)data;
 -(NSUInteger)getSampleRateInHertz;
 -(BOOL) toggleMute;

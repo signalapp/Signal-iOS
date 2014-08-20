@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
+#import "CollapsingFutures.h"
 #import "IpEndPoint.h"
 #import "NetworkStream.h"
-#import "AsyncUtil.h"
 
 @interface LowLatencyCandidate : NSObject<Terminable>
 
@@ -12,8 +12,8 @@
 
 -(void) preStart;
 
--(CancellableOperationStarter) tcpHandshakeCompleter;
+-(TOCUntilOperation) tcpHandshakeCompleter;
 
--(Future*) delayedUntilAuthenticated;
+-(TOCFuture*) delayedUntilAuthenticated;
 
 @end

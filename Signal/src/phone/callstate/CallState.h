@@ -19,19 +19,19 @@
 @interface CallState : NSObject
 
 @property (nonatomic, readonly) ObservableValue* observableProgress;
-@property (nonatomic, readonly) Future* futureTermination;
-@property (nonatomic, readonly) Future* futureShortAuthenticationString;
+@property (nonatomic, readonly) TOCFuture* futureTermination;
+@property (nonatomic, readonly) TOCFuture* futureShortAuthenticationString;
 @property (nonatomic, readonly) PhoneNumber* remoteNumber;
 @property (nonatomic, readonly) bool initiatedLocally;
 @property (nonatomic, readonly) Contact* potentiallySpecifiedContact;
-@property (nonatomic, readonly) Future* futureCallLocallyAcceptedOrRejected;
+@property (nonatomic, readonly) TOCFuture* futureCallLocallyAcceptedOrRejected;
 
 +(CallState*) callStateWithObservableProgress:(ObservableValue*)observableProgress
-                         andFutureTermination:(Future*)futureTermination
-                                 andFutureSas:(Future*)futureSas
+                         andFutureTermination:(TOCFuture*)futureTermination
+                                 andFutureSas:(TOCFuture*)futureSas
                               andRemoteNumber:(PhoneNumber*)remoteNumber
                           andInitiatedLocally:(bool)initiatedLocally
                andPotentiallySpecifiedContact:(Contact*)contact
-                            andFutureAccepted:(Future*)futureCallLocallyAcceptedOrRejected;
+                            andFutureAccepted:(TOCFuture*)futureCallLocallyAcceptedOrRejected;
 
 @end

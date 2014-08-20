@@ -3,8 +3,6 @@
 #import "CallState.h"
 #import "CallProgress.h"
 #import "CallTermination.h"
-#import "CancelTokenSource.h"
-#import "FutureSource.h"
 #import "PacketHandler.h"
 
 /**
@@ -20,10 +18,10 @@
  */
 @interface CallController : NSObject {
 @private ObservableValueController* progress;
-@private FutureSource* termination;
-@private FutureSource* shortAuthenticationString;
-@private CancelTokenSource* canceller;
-@private FutureSource* interactiveCallAcceptedOrDenied;
+@private TOCFutureSource* termination;
+@private TOCFutureSource* shortAuthenticationString;
+@private TOCCancelTokenSource* canceller;
+@private TOCFutureSource* interactiveCallAcceptedOrDenied;
 @private bool initiatedLocally;
 @private PhoneNumber* remoteNumber;
 @private CallState* exposedCallState;
@@ -46,9 +44,9 @@
 -(void)terminateWithRejectionOrRemoteHangupAndFailureInfo:(id)failureInfo andRelatedInfo:(id)relatedInfo;
 -(BOOL)toggleMute;
 -(bool) isInitiator;
--(Future*)interactiveCallAccepted;
+-(TOCFuture*)interactiveCallAccepted;
 -(ErrorHandlerBlock)errorHandler;
--(id<CancelToken>)untilCancelledToken;
+-(TOCCancelToken*)untilCancelledToken;
 -(CallState*)callState;
 
 @end

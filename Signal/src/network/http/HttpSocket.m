@@ -1,9 +1,7 @@
-#import "HttpSocket.h"
-#import "Constraints.h"
 #import "HttpRequest.h"
-#import "Util.h"
 #import "HttpResponse.h"
-#import "CancelTokenSource.h"
+#import "HttpSocket.h"
+#import "Util.h"
 
 @implementation HttpSocket
 
@@ -52,16 +50,13 @@
     [self sendHttpRequestOrResponse:packet];
 }
 -(void) startWithHandler:(PacketHandler*)handler
-          untilCancelled:(id<CancelToken>)untilCancelledToken {
+          untilCancelled:(TOCCancelToken*)untilCancelledToken {
     
     require(handler != nil);
     requireState(httpSignalResponseHandler == nil);
     httpSignalResponseHandler = handler;
     
-    CancelTokenSource* lifetime = [CancelTokenSource cancelTokenSource];
-    [untilCancelledToken whenCancelled:^{
-        [lifetime cancel];
-    }];
+    TOCCancelTokenSource* lifetime = [TOCCancelTokenSource cancelTokenSourceUntil:untilCancelledToken];
     
     PacketHandler* packetHandler = [PacketHandler packetHandler:^(id packet) {
         require(packet != nil);
@@ -91,10 +86,10 @@
     
     if (rawDataChannelTcp != nil) {
         [rawDataChannelTcp startWithHandler:packetHandler];
-        [[lifetime getToken] whenCancelledTerminate:rawDataChannelTcp];
+        [lifetime.token whenCancelledTerminate:rawDataChannelTcp];
     } else {
         [rawDataChannelUdp startWithHandler:packetHandler
-                             untilCancelled:[lifetime getToken]];
+                             untilCancelled:lifetime.token];
     }
 }
 

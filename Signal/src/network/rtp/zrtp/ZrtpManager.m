@@ -15,7 +15,7 @@
 
 @implementation ZrtpManager
 
-+(Future*) asyncPerformHandshakeOver:(RtpSocket*)rtpSocket
++(TOCFuture*) asyncPerformHandshakeOver:(RtpSocket*)rtpSocket
                    andCallController:(CallController*)callController {
     
     require(rtpSocket != nil);
@@ -49,13 +49,13 @@
     
     manager->callController                 = callController;
     manager->zrtpRole                       = zrtpRole;
-    manager->futureHandshakeResultSource    = [FutureSource new];
+    manager->futureHandshakeResultSource    = [TOCFutureSource new];
     manager->rtpSocketToSecure              = rtpSocket;
     manager->handshakeSocket                = handshakeSocket;
-    manager->cancelTokenSource              = [CancelTokenSource cancelTokenSource];
+    manager->cancelTokenSource              = [TOCCancelTokenSource new];
     [[callController untilCancelledToken] whenCancelledTerminate:manager];
     
-    [manager->futureHandshakeResultSource catchDo:^(id error) {
+    [manager->futureHandshakeResultSource.future catchDo:^(id error) {
         [callController terminateWithReason:CallTerminationType_HandshakeFailed
                             withFailureInfo:error
                              andRelatedInfo:nil];
@@ -64,7 +64,7 @@
     return manager;
 }
 
--(Future*) asyncPerformHandshake {    
+-(TOCFuture*) asyncPerformHandshake {    
     PacketHandlerBlock packetHandler = ^(id packet) {
         require(packet != nil);
         require([packet isKindOfClass:[HandshakePacket class]]);
@@ -87,7 +87,7 @@
     };
     
     [handshakeSocket startWithHandler:[PacketHandler packetHandler:packetHandler withErrorHandler:errorHandler]
-                       untilCancelled:[cancelTokenSource getToken]];
+                       untilCancelled:cancelTokenSource.token];
     
     HandshakePacket* initialPacket = [zrtpRole initialPacket];
     if (initialPacket == nil) {
@@ -96,7 +96,7 @@
         [self setAndSendPacketToTransmit:initialPacket];
     }
     
-    return futureHandshakeResultSource;
+    return futureHandshakeResultSource.future;
 }
 
 -(void) setAndSendPacketToTransmit:(HandshakePacket*)packet {
@@ -119,12 +119,12 @@
     currentPacketTransmitCount += 1;
     
     [currentRetransmit cancel];
-    currentRetransmit = [CancelTokenSource cancelTokenSource];
+    currentRetransmit = [TOCCancelTokenSource new];
     
     [TimeUtil scheduleRun:^{[self handleRetransmit];}
                afterDelay:delay
                 onRunLoop:[ThreadManager lowLatencyThreadRunLoop]
-          unlessCancelled:[currentRetransmit getToken]];    
+          unlessCancelled:currentRetransmit.token];    
 }
 
 -(void) handleRetransmit {
@@ -152,11 +152,11 @@
         [futureHandshakeResultSource trySetFailure:[RecipientUnavailable recipientUnavailable]];
     };
     
-    currentRetransmit = [CancelTokenSource cancelTokenSource];
+    currentRetransmit = [TOCCancelTokenSource new];
     [TimeUtil scheduleRun:timeoutFail
                afterDelay:MAX_WAIT_FOR_RESPONDER_HELLO_SECONDS
                 onRunLoop:[ThreadManager lowLatencyThreadRunLoop]
-          unlessCancelled:[currentRetransmit getToken]];
+          unlessCancelled:currentRetransmit.token];
 }
 
 -(void) terminate {

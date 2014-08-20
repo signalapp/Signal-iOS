@@ -2,7 +2,6 @@
 #import "Util.h"
 #import "AnonymousTerminator.h"
 #import "Constraints.h"
-#import "FutureSource.h"
 
 @implementation TimeUtil
 
@@ -10,16 +9,16 @@
     return [[NSProcessInfo processInfo] systemUptime];
 }
 
-+(Future*) scheduleEvaluate:(Function)function
-                 afterDelay:(NSTimeInterval)delay
-                  onRunLoop:(NSRunLoop*)runLoop
-            unlessCancelled:(id<CancelToken>)unlessCancelledToken {
++(TOCFuture*) scheduleEvaluate:(Function)function
+                    afterDelay:(NSTimeInterval)delay
+                     onRunLoop:(NSRunLoop*)runLoop
+               unlessCancelled:(TOCCancelToken*)unlessCancelledToken {
     
     require(function != NULL);
     require(runLoop != nil);
     require(delay >= 0);
     
-    FutureSource* result = [FutureSource new];
+    TOCFutureSource* result = [TOCFutureSource futureSourceUntil:unlessCancelledToken];
     Action evaler = ^{
         [result trySetResult:function()];
     };
@@ -30,14 +29,13 @@
           untilCancelled:unlessCancelledToken
        andRunImmediately:NO];
     
-    [unlessCancelledToken whenCancelledTryCancel:result];
-    return result;
+    return result.future;
 }
 
-+(Future*) scheduleEvaluate:(Function)function
-                         at:(NSDate*)date
-                  onRunLoop:(NSRunLoop*)runLoop
-            unlessCancelled:(id<CancelToken>)unlessCancelledToken {
++(TOCFuture*) scheduleEvaluate:(Function)function
+                            at:(NSDate*)date
+                     onRunLoop:(NSRunLoop*)runLoop
+               unlessCancelled:(TOCCancelToken*)unlessCancelledToken {
     
     require(function != NULL);
     require(runLoop != nil);
@@ -53,7 +51,7 @@
 +(void) scheduleRun:(Action)action
          afterDelay:(NSTimeInterval)delay
           onRunLoop:(NSRunLoop*)runLoop
-    unlessCancelled:(id<CancelToken>)unlessCancelledToken {
+    unlessCancelled:(TOCCancelToken*)unlessCancelledToken {
     
     require(action != NULL);
     require(runLoop != nil);
@@ -71,7 +69,7 @@
 +(void) scheduleRun:(Action)action
                  at:(NSDate*)date
           onRunLoop:(NSRunLoop*)runLoop
-    unlessCancelled:(id<CancelToken>)unlessCancelledToken {
+    unlessCancelled:(TOCCancelToken*)unlessCancelledToken {
     
     require(action != NULL);
     require(runLoop != nil);
@@ -87,7 +85,7 @@
 +(void) scheduleRun:(Action)action
        periodically:(NSTimeInterval)interval
           onRunLoop:(NSRunLoop*)runLoop
-     untilCancelled:(id<CancelToken>)untilCancelledToken
+     untilCancelled:(TOCCancelToken*)untilCancelledToken
   andRunImmediately:(BOOL)shouldRunImmediately{
     
     require(action != NULL);
@@ -106,7 +104,7 @@
             withPeriod:(NSTimeInterval)interval
              onRunLoop:(NSRunLoop*)runLoop
              repeating:(bool)repeats
-        untilCancelled:(id<CancelToken>)untilCancelledToken
+        untilCancelled:(TOCCancelToken*)untilCancelledToken
      andRunImmediately:(BOOL)shouldRunImmediately{
     
     require(callback != NULL);
@@ -143,7 +141,7 @@
                                             repeats:repeats];
     [runLoop addTimer:timer forMode:NSDefaultRunLoopMode];
     
-    [untilCancelledToken whenCancelled:^{
+    [untilCancelledToken whenCancelledDo:^{
         @synchronized(cancelLock) {
             hasBeenCancelled = true;
             [timer invalidate];

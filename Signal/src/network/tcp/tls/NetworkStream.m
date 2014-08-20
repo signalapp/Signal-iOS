@@ -28,13 +28,13 @@
     s->outputStream = [streams outputStream];
     s->writeBuffer = [CyclicalBuffer new];
     s->remoteEndPoint = remoteEndPoint;
-    s->futureOpenedSource = [FutureSource new];
-    s->futureConnectedAndWritableSource = [FutureSource new];
+    s->futureOpenedSource = [TOCFutureSource new];
+    s->futureConnectedAndWritableSource = [TOCFutureSource new];
     s->runLoop = [ThreadManager normalLatencyThreadRunLoop];
     [s->inputStream scheduleInRunLoop:s->runLoop forMode:NSDefaultRunLoopMode];
     [s->outputStream scheduleInRunLoop:s->runLoop forMode:NSDefaultRunLoopMode];
     
-    [s->futureConnectedAndWritableSource catchDo:^(id error) {
+    [s->futureConnectedAndWritableSource.future catchDo:^(id error) {
         @synchronized(self) {
             [s onNetworkFailure:error];
         }
@@ -47,8 +47,8 @@
     return s;
 }
 
--(Future*) asyncConnectionCompleted { return futureConnectedAndWritableSource; }
--(Future*) asyncTcpHandshakeCompleted { return futureOpenedSource; }
+-(TOCFuture*) asyncConnectionCompleted { return futureConnectedAndWritableSource.future; }
+-(TOCFuture*) asyncTcpHandshakeCompleted { return futureOpenedSource.future; }
 
 -(void) terminate {
     @synchronized(self) {
@@ -69,8 +69,8 @@
     }
 }
 -(void) tryWriteBufferedData {
-    if (!futureConnectedAndWritableSource.hasSucceeded) return;
-    if (![[futureConnectedAndWritableSource forceGetResult] isEqual:@YES]) return;
+    if (!futureConnectedAndWritableSource.future.hasResult) return;
+    if (![[futureConnectedAndWritableSource.future forceGetResult] isEqual:@YES]) return;
     NSStreamStatus status = [outputStream streamStatus];
     if (status < NSStreamStatusOpen) return;
     if (status >= NSStreamStatusAtEnd) {
@@ -143,17 +143,17 @@
 -(void) onSpaceAvailableToWrite {
     [self tryWriteBufferedData];
     
-    if (futureConnectedAndWritableSource.isCompletedOrWiredToComplete) return;
+    if (futureConnectedAndWritableSource.future.state != TOCFutureState_AbleToBeSet) return;
     
-    Future* checked = [remoteEndPoint asyncHandleStreamsConnected:[StreamPair streamPairWithInput:inputStream
-                                                                                        andOutput:outputStream]];
+    TOCFuture* checked = [remoteEndPoint asyncHandleStreamsConnected:[StreamPair streamPairWithInput:inputStream
+                                                                                           andOutput:outputStream]];
     [futureConnectedAndWritableSource trySetResult:checked];
-    [futureConnectedAndWritableSource thenDo:^(id result) {
+    [futureConnectedAndWritableSource.future thenDo:^(id result) {
         @synchronized(self) {
             [self onSpaceAvailableToWrite];
         }
     }];
-    [futureConnectedAndWritableSource catchDo:^(id error) {
+    [futureConnectedAndWritableSource.future catchDo:^(id error) {
         @synchronized(self) {
             [self onNetworkFailure:error];
         }
@@ -180,8 +180,8 @@
 
 -(void) onBytesAvailableToRead {
     if (rawDataHandler == nil) return;
-    if (!futureConnectedAndWritableSource.hasSucceeded) return;
-    if (![[futureConnectedAndWritableSource forceGetResult] isEqual:@YES]) return;
+    if (!futureConnectedAndWritableSource.future.hasResult) return;
+    if (![futureConnectedAndWritableSource.future.forceGetResult isEqual:@YES]) return;
     
     while (inputStream.hasBytesAvailable) {
         NSInteger numRead = [inputStream read:[readBuffer mutableBytes] maxLength:readBuffer.length];
@@ -240,10 +240,10 @@
 -(NSString *)description {
     NSString* status = @"Not Started";
     if (started) status = @"Connecting";
-    if (futureOpenedSource.hasSucceeded) status = @"Connecting (TCP Handshake Completed)";
-    if (futureConnectedAndWritableSource.hasSucceeded) status = @"Connected";
+    if (futureOpenedSource.future.hasResult) status = @"Connecting (TCP Handshake Completed)";
+    if (futureConnectedAndWritableSource.future.hasResult) status = @"Connected";
     if (closedLocally) status = @"Closed";
-    if (futureConnectedAndWritableSource.hasFailed) status = @"Failed";
+    if (futureConnectedAndWritableSource.future.hasFailed) status = @"Failed";
     
     return [NSString stringWithFormat:@"Status: %@, RemoteEndPoint: %@",
             status,

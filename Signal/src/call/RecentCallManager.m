@@ -33,7 +33,7 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
     return observableRecentsController;
 }
 
--(void) watchForContactUpdatesFrom:(ContactsManager*) contactManager untillCancelled:(id<CancelToken>) cancelToken{
+-(void) watchForContactUpdatesFrom:(ContactsManager*) contactManager untillCancelled:(TOCCancelToken*) cancelToken{
     [[contactManager getObservableWhisperUsers] watchLatestValue:^(NSArray* latestUsers) {
         for (RecentCall* recentCall in _allRecents) {
             if (![contactManager latestContactWithRecordId:recentCall.contactRecordID]) {
@@ -47,7 +47,7 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
 }
 
 -(void) watchForCallsThrough:(PhoneManager*)phoneManager
-              untilCancelled:(id<CancelToken>)untilCancelledToken {
+              untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(phoneManager != nil);
 
     [[phoneManager currentCallObservable] watchLatestValue:^(CallState* latestCall) {
@@ -60,7 +60,7 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
 -(void) addCall:(CallState*)call {
     require(call != nil);
     
-    [call.futureCallLocallyAcceptedOrRejected finallyDo:^(Future* interactionCompletion) {
+    [call.futureCallLocallyAcceptedOrRejected finallyDo:^(TOCFuture* interactionCompletion) {
         bool isOutgoingCall = call.initiatedLocally;
         bool isMissedCall = interactionCompletion.hasFailed;
         Contact* contact = [self tryGetContactForCall:call];

@@ -1,5 +1,4 @@
 #import <Foundation/Foundation.h>
-#import "CancelToken.h"
 
 @interface RunningThreadRunLoopPair : NSObject
 

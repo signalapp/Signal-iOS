@@ -89,11 +89,11 @@
     } withErrorHandler:^(id error, id relatedInfo, bool causedTermination) {
         test(false);
     }]];
-    Future* f = [s asyncConnectionCompleted];
+    TOCFuture* f = [s asyncConnectionCompleted];
     
     testChurnUntil(!f.isIncomplete, 5.0);
     
-    test(f.hasSucceeded && [[f forceGetResult] isEqual:@YES]);
+    test(f.hasResult && [[f forceGetResult] isEqual:@YES]);
     
     [s terminate];
 }

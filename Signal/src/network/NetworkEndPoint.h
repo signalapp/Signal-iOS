@@ -1,7 +1,6 @@
 #import <Foundation/Foundation.h>
-#import "CancelToken.h"
+#import "CollapsingFutures.h"
 #import "StreamPair.h"
-#import "Future.h"
 
 /// Describes a location to which you can connect and communicate.
 @protocol NetworkEndPoint <NSObject>
@@ -15,11 +14,11 @@
 
 /// Invoked when a stream pair is ready for read/write.
 /// (The time to authenticate certificates of a completed SSL connection.)
--(Future*) asyncHandleStreamsConnected:(StreamPair*)streamPair;
+-(TOCFuture*) asyncHandleStreamsConnected:(StreamPair*)streamPair;
 
 /// Resolves this general end point into underlying associated specific end points.
 /// For example, a hostname+port end point resolves into one or more ip+port end points.
 /// The asynchronous result has type Future(Array(NetworkEndPoint)).
--(Future*) asyncResolveToSpecificEndPointsUnlessCancelled:(id<CancelToken>)unlessCancelledToken;
+-(TOCFuture*) asyncResolveToSpecificEndPointsUnlessCancelled:(TOCCancelToken*)unlessCancelledToken;
 
 @end

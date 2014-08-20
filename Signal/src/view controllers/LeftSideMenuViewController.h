@@ -2,7 +2,6 @@
 
 #import "ContactBrowseViewController.h"
 #import "ContactsManager.h"
-#import "FutureSource.h"
 #import "TabBarParentViewController.h"
 
 /**

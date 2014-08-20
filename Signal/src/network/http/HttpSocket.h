@@ -27,6 +27,6 @@
 -(void) sendHttpResponse:(HttpResponse*)response;
 -(void) send:(HttpRequestOrResponse*)packet;
 -(void) startWithHandler:(PacketHandler*)handler
-          untilCancelled:(id<CancelToken>)untilCancelledToken;
+          untilCancelled:(TOCCancelToken*)untilCancelledToken;
 
 @end

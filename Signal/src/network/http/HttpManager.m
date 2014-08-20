@@ -1,5 +1,4 @@
 #import "HttpManager.h"
-#import "FutureSource.h"
 #import "NetworkStream.h"
 #import "HttpSocket.h"
 #import "Util.h"
@@ -7,18 +6,18 @@
 @implementation HttpManager
 
 +(HttpManager*) httpManagerFor:(HttpSocket*)httpSocket
-                untilCancelled:(id<CancelToken>)untilCancelledToken {
+                untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(httpSocket != nil);
     
     HttpManager* m = [HttpManager new];
     m->httpChannel = httpSocket;
     m->eventualResponseQueue = [Queue new];
-    m->lifetime = [CancelTokenSource cancelTokenSource];
+    m->lifetime = [TOCCancelTokenSource new];
     [untilCancelledToken whenCancelledTerminate:m];
     return m;
 }
 +(HttpManager*) startWithEndPoint:(id<NetworkEndPoint>)endPoint
-                   untilCancelled:(id<CancelToken>)untilCancelledToken {
+                   untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(endPoint != nil);
     
     NetworkStream* dataChannel = [NetworkStream networkStreamToEndPoint:endPoint];
@@ -28,30 +27,29 @@
     return [HttpManager httpManagerFor:httpChannel
                         untilCancelled:untilCancelledToken];
 }
--(Future*) asyncResponseForRequest:(HttpRequest*)request
-                   unlessCancelled:(id<CancelToken>)unlessCancelledToken {
+-(TOCFuture*) asyncResponseForRequest:(HttpRequest*)request
+                      unlessCancelled:(TOCCancelToken*)unlessCancelledToken {
     
     require(request != nil);
     requireState(isStarted);
     
     @try {
-        FutureSource* ev = [FutureSource new];
-        [unlessCancelledToken whenCancelledTryCancel:ev];
+        TOCFutureSource* ev = [TOCFutureSource futureSourceUntil:unlessCancelledToken];
         @synchronized (self) {
-            if ([[lifetime getToken] isAlreadyCancelled]) {
-                return [Future failed:@"terminated"];
+            if ([lifetime.token isAlreadyCancelled]) {
+                return [TOCFuture futureWithFailure:@"terminated"];
             }
             [eventualResponseQueue enqueue:ev];
         }
         [httpChannel send:[HttpRequestOrResponse httpRequestOrResponse:request]];
-        return ev;
+        return ev.future;
     } @catch (OperationFailed* ex) {
-        return [Future failed:ex];
+        return [TOCFuture futureWithFailure:ex];
     }
 }
-+(Future*) asyncOkResponseFromMasterServer:(HttpRequest*)request
-                           unlessCancelled:(id<CancelToken>)unlessCancelledToken
-                           andErrorHandler:(ErrorHandlerBlock)errorHandler {
++(TOCFuture*) asyncOkResponseFromMasterServer:(HttpRequest*)request
+                              unlessCancelled:(TOCCancelToken*)unlessCancelledToken
+                              andErrorHandler:(ErrorHandlerBlock)errorHandler {
     require(request != nil);
     require(errorHandler != nil);
     
@@ -61,28 +59,28 @@
     [manager startWithRejectingRequestHandlerAndErrorHandler:errorHandler
                                               untilCancelled:nil];
     
-    Future* result = [manager asyncOkResponseForRequest:request
+    TOCFuture* result = [manager asyncOkResponseForRequest:request
                                         unlessCancelled:unlessCancelledToken];
     
     [manager terminateWhenDoneCurrentWork];
     
     return result;
 }
--(Future*) asyncOkResponseForRequest:(HttpRequest*)request
-                     unlessCancelled:(id<CancelToken>)unlessCancelledToken {
+-(TOCFuture*) asyncOkResponseForRequest:(HttpRequest*)request
+                        unlessCancelled:(TOCCancelToken*)unlessCancelledToken {
     
     require(request != nil);
     
-    Future* futureResponse = [self asyncResponseForRequest:request
+    TOCFuture* futureResponse = [self asyncResponseForRequest:request
                                            unlessCancelled:unlessCancelledToken];
     
-    return [futureResponse then:^(HttpResponse* response) {
-        if (!response.isOkResponse) return [Future failed:response];
-        return [Future finished:response];
+    return [futureResponse then:^id(HttpResponse* response) {
+        if (!response.isOkResponse) return [TOCFuture futureWithFailure:response];
+        return response;
     }];
 }
 -(void) startWithRejectingRequestHandlerAndErrorHandler:(ErrorHandlerBlock)errorHandler
-                                         untilCancelled:(id<CancelToken>)untilCancelledToken {
+                                         untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(errorHandler != nil);
     
     HttpResponse*(^requestHandler)(HttpRequest* remoteRequest) = ^(HttpRequest* remoteRequest) {
@@ -97,7 +95,7 @@
 
 -(void) startWithRequestHandler:(HttpResponse*(^)(HttpRequest* remoteRequest))requestHandler
                 andErrorHandler:(ErrorHandlerBlock)errorHandler
-                 untilCancelled:(id<CancelToken>)untilCancelledToken {
+                 untilCancelled:(TOCCancelToken*)untilCancelledToken {
     
     require(requestHandler != nil);
     require(errorHandler != nil);
@@ -123,15 +121,15 @@
             } else if (eventualResponseQueue.count == 0) {
                 errorHandler(@"Response when no requests queued", [requestOrResponse response], false);
             } else {
-                FutureSource* ev = [eventualResponseQueue dequeue];
-                [ev trySetResult:[requestOrResponse response]];
+                TOCFutureSource* ev = [eventualResponseQueue dequeue];
+                [ev trySetResult:requestOrResponse.response];
             }
         }
     };
     
     [httpChannel startWithHandler:[PacketHandler packetHandler:httpHandler
                                               withErrorHandler:clearOnSeriousError]
-                   untilCancelled:[lifetime getToken]];
+                   untilCancelled:lifetime.token];
     
     [untilCancelledToken whenCancelledTerminate:self];
 }
@@ -147,10 +145,8 @@
         if (eventualResponseQueue.count == 0) {
             [self terminate];
         } else {
-            FutureSource* v = [eventualResponseQueue peekAt:eventualResponseQueue.count-1];
-            [v finallyDo:^(id _) {
-                [self terminate];
-            }];
+            TOCFutureSource* v = [eventualResponseQueue peekAt:eventualResponseQueue.count-1];
+            [v.future.cancelledOnCompletionToken whenCancelledTerminate:self];
         }
     }
 }

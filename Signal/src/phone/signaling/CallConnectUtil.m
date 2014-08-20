@@ -6,23 +6,23 @@
 
 @implementation CallConnectUtil
 
-+(Future*) asyncInitiateCallToRemoteNumber:(PhoneNumber *)remoteNumber
-                         andCallController:(CallController*)callController {
++(TOCFuture*) asyncInitiateCallToRemoteNumber:(PhoneNumber *)remoteNumber
+                            andCallController:(CallController*)callController {
     require(remoteNumber != nil);
     require(callController != nil);
     return [CallConnectUtil_Initiator asyncConnectCallToRemoteNumber:remoteNumber
                                                   withCallController:callController];
 }
 
-+(Future*) asyncRespondToCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor
-                                 andCallController:(CallController*)callController {
++(TOCFuture*) asyncRespondToCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor
+                                    andCallController:(CallController*)callController {
     require(sessionDescriptor != nil);
     require(callController != nil);
     return [CallConnectUtil_Responder asyncConnectToIncomingCallWithSessionDescriptor:sessionDescriptor
                                                                   andCallController:callController];
 }
 
-+(Future*) asyncSignalTooBusyToAnswerCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor {
++(TOCFuture*) asyncSignalTooBusyToAnswerCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor {
     require(sessionDescriptor != nil);
     return [CallConnectUtil_Responder asyncSignalTooBusyToAnswerCallWithSessionDescriptor:sessionDescriptor];
 }

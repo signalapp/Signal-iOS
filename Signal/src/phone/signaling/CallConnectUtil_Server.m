@@ -16,26 +16,26 @@
 
 @implementation CallConnectUtil_Server
 
-+(Future*) asyncConnectToDefaultSignalingServerUntilCancelled:(id<CancelToken>)untilCancelledToken {
++(TOCFuture*) asyncConnectToDefaultSignalingServerUntilCancelled:(TOCCancelToken*)untilCancelledToken {
     return [self asyncConnectToSignalingServerAt:[Environment getSecureEndPointToDefaultRelayServer]
                                   untilCancelled:untilCancelledToken];
 }
 
-+(Future*) asyncConnectToSignalingServerNamed:(NSString*)name
-                               untilCancelled:(id<CancelToken>)untilCancelledToken {
++(TOCFuture*) asyncConnectToSignalingServerNamed:(NSString*)name
+                               untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(name != nil);
     return [self asyncConnectToSignalingServerAt:[Environment getSecureEndPointToSignalingServerNamed:name]
                                   untilCancelled:untilCancelledToken];
 }
 
-+(Future*) asyncConnectToSignalingServerAt:(SecureEndPoint*)location
-                            untilCancelled:(id<CancelToken>)untilCancelledToken {
++(TOCFuture*) asyncConnectToSignalingServerAt:(SecureEndPoint*)location
+                            untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(location != nil);
     
-    Future* futureConnection = [LowLatencyConnector asyncLowLatencyConnectToEndPoint:location
-                                                                      untilCancelled:untilCancelledToken];
+    TOCFuture* futureConnection = [LowLatencyConnector asyncLowLatencyConnectToEndPoint:location
+                                                                         untilCancelled:untilCancelledToken];
     
-    return [futureConnection then:^(LowLatencyCandidate* result) {
+    return [futureConnection thenTry:^(LowLatencyCandidate* result) {
         HttpSocket* httpSocket = [HttpSocket httpSocketOver:[result networkStream]];
         return [HttpManager httpManagerFor:httpSocket
                             untilCancelled:untilCancelledToken];
@@ -43,7 +43,7 @@
 }
 
 
-+(Future*) asyncConnectCallOverRelayDescribedInResponderSessionDescriptor:(ResponderSessionDescriptor*)session
++(TOCFuture*) asyncConnectCallOverRelayDescribedInResponderSessionDescriptor:(ResponderSessionDescriptor*)session
                                                        withCallController:(CallController*)callController {
     require(session != nil);
     require(callController != nil);
@@ -62,21 +62,21 @@
                                                               andInteropOptions:interopOptions];
 }
 
-+(Future*) asyncConnectCallOverRelayDescribedInInitiatorSessionDescriptor:(InitiatorSessionDescriptor*)session
++(TOCFuture*) asyncConnectCallOverRelayDescribedInInitiatorSessionDescriptor:(InitiatorSessionDescriptor*)session
                                                        withCallController:(CallController*)callController
                                                         andInteropOptions:(NSArray*)interopOptions {
     require(session != nil);
     require(callController != nil);
     
-    Future* futureUdpSocket = [self asyncRepeatedlyAttemptConnectToUdpRelayDescribedBy:session
-                                                                    withCallController:callController];
+    TOCFuture* futureUdpSocket = [self asyncRepeatedlyAttemptConnectToUdpRelayDescribedBy:session
+                                                                       withCallController:callController];
     
-    Future* futureZrtpHandshakeResult = [futureUdpSocket then:^(UdpSocket* udpSocket) {
+    TOCFuture* futureZrtpHandshakeResult = [futureUdpSocket thenTry:^(UdpSocket* udpSocket) {
         return [ZrtpManager asyncPerformHandshakeOver:[RtpSocket rtpSocketOverUdp:udpSocket interopOptions:interopOptions]
                                     andCallController:callController];
     }];
     
-    return [futureZrtpHandshakeResult then:^(ZrtpHandshakeResult* zrtpResult) {
+    return [futureZrtpHandshakeResult thenTry:^(ZrtpHandshakeResult* zrtpResult) {
         AudioSocket* audioSocket = [AudioSocket audioSocketOver:[zrtpResult secureRtpSocket]];
         
         NSString* sas = [[zrtpResult masterSecret] shortAuthenticationString];
@@ -86,44 +86,44 @@
     }];
 }
 
-+(Future*) asyncRepeatedlyAttemptConnectToUdpRelayDescribedBy:(InitiatorSessionDescriptor*)sessionDescriptor
++(TOCFuture*) asyncRepeatedlyAttemptConnectToUdpRelayDescribedBy:(InitiatorSessionDescriptor*)sessionDescriptor
                                            withCallController:(CallController*)callController {
     
     require(sessionDescriptor != nil);
     require(callController != nil);
     
-    CancellableOperationStarter operation = ^(id<CancelToken> internalUntilCancelledToken) {
+    TOCUntilOperation operation = ^(TOCCancelToken* internalUntilCancelledToken) {
         return [self asyncAttemptResolveThenConnectToUdpRelayDescribedBy:sessionDescriptor
                                                           untilCancelled:internalUntilCancelledToken
                                                         withErrorHandler:[callController errorHandler]];
     };
     
-    Future* futureRelayedUdpSocket = [AsyncUtil asyncTry:operation
+    TOCFuture* futureRelayedUdpSocket = [TOCFuture retry:[TOCFuture operationTry:operation]
                                               upToNTimes:MAX_TRY_COUNT
                                          withBaseTimeout:BASE_TIMEOUT_SECONDS
                                           andRetryFactor:RETRY_TIMEOUT_FACTOR
                                           untilCancelled:[callController untilCancelledToken]];
     
-    return [futureRelayedUdpSocket catch:^(id error) {
-        return [Future failed:[CallTermination callTerminationOfType:CallTerminationType_BadInteractionWithServer
-                                                         withFailure:error
-                                                      andMessageInfo:@"Timed out on all attempts to contact relay."]];
+    return [futureRelayedUdpSocket catchTry:^(id error) {
+        return [TOCFuture futureWithFailure:[CallTermination callTerminationOfType:CallTerminationType_BadInteractionWithServer
+                                                                       withFailure:error
+                                                                    andMessageInfo:@"Timed out on all attempts to contact relay."]];
     }];
 }
 
-+(Future*) asyncAttemptResolveThenConnectToUdpRelayDescribedBy:(InitiatorSessionDescriptor*)sessionDescriptor
-                                                untilCancelled:(id<CancelToken>)untilCancelledToken
-                                              withErrorHandler:(ErrorHandlerBlock)errorHandler {
++(TOCFuture*) asyncAttemptResolveThenConnectToUdpRelayDescribedBy:(InitiatorSessionDescriptor*)sessionDescriptor
+                                                   untilCancelled:(TOCCancelToken*)untilCancelledToken
+                                                 withErrorHandler:(ErrorHandlerBlock)errorHandler {
     
     require(sessionDescriptor != nil);
     require(errorHandler != nil);
     
     NSString* domain = [Environment relayServerNameToHostName:[sessionDescriptor relayServerName]];
     
-    Future* futureDnsResult = [DnsManager asyncQueryAddressesForDomainName:domain
-                                                           unlessCancelled:untilCancelledToken];
+    TOCFuture* futureDnsResult = [DnsManager asyncQueryAddressesForDomainName:domain
+                                                              unlessCancelled:untilCancelledToken];
     
-    Future* futureEndPoint = [futureDnsResult then:^(NSArray* ipAddresses) {
+    TOCFuture* futureEndPoint = [futureDnsResult thenTry:^(NSArray* ipAddresses) {
         require(ipAddresses.count > 0);
         
         IpAddress* address = ipAddresses[arc4random_uniform((unsigned int)ipAddresses.count)];
@@ -131,17 +131,17 @@
                                         onPort:sessionDescriptor.relayUdpPort];
     }];
     
-    return [futureEndPoint then:^(IpEndPoint* remote) {
+    return [futureEndPoint thenTry:^(IpEndPoint* remote) {
         return [self asyncAttemptConnectToUdpRelayDescribedBy:remote
-                                                 withSessionId:sessionDescriptor.sessionId
+                                                withSessionId:sessionDescriptor.sessionId
                                                untilCancelled:untilCancelledToken
                                              withErrorHandler:errorHandler];
     }];
 }
 
-+(Future*) asyncAttemptConnectToUdpRelayDescribedBy:(IpEndPoint*)remoteEndPoint
++(TOCFuture*) asyncAttemptConnectToUdpRelayDescribedBy:(IpEndPoint*)remoteEndPoint
                                       withSessionId:(int64_t)sessionId
-                                     untilCancelled:(id<CancelToken>)untilCancelledToken
+                                     untilCancelled:(TOCCancelToken*)untilCancelledToken
                                    withErrorHandler:(ErrorHandlerBlock)errorHandler {
     
     require(remoteEndPoint != nil);
@@ -151,14 +151,14 @@
     
     id<OccurrenceLogger> logger = [[Environment logging] getOccurrenceLoggerForSender:self withKey:@"relay setup"];
     
-    Future* futureFirstResponseData = [self asyncFirstPacketReceivedAfterStartingSocket:udpSocket
-                                                                         untilCancelled:untilCancelledToken
-                                                                       withErrorHandler:errorHandler];
+    TOCFuture* futureFirstResponseData = [self asyncFirstPacketReceivedAfterStartingSocket:udpSocket
+                                                                            untilCancelled:untilCancelledToken
+                                                                          withErrorHandler:errorHandler];
     
-    Future* futureRelaySocket = [futureFirstResponseData then:^id(NSData* openPortResponseData) {
+    TOCFuture* futureRelaySocket = [futureFirstResponseData thenTry:^id(NSData* openPortResponseData) {
         HttpResponse* openPortResponse = [HttpResponse httpResponseFromData:openPortResponseData];
         [logger markOccurrence:openPortResponse];
-        if (!openPortResponse.isOkResponse) return [Future failed:openPortResponse];
+        if (!openPortResponse.isOkResponse) return [TOCFuture futureWithFailure:openPortResponse];
         
         return udpSocket;
     }];
@@ -170,16 +170,14 @@
     return futureRelaySocket;
 }
 
-+(Future*) asyncFirstPacketReceivedAfterStartingSocket:(UdpSocket*)udpSocket
-                                        untilCancelled:(id<CancelToken>)untilCancelledToken
++(TOCFuture*) asyncFirstPacketReceivedAfterStartingSocket:(UdpSocket*)udpSocket
+                                        untilCancelled:(TOCCancelToken*)untilCancelledToken
                                       withErrorHandler:(ErrorHandlerBlock)errorHandler {
     
     require(udpSocket != nil);
     require(errorHandler != nil);
     
-    FutureSource* futureResultSource = [FutureSource new];
-    
-    [untilCancelledToken whenCancelledTryCancel:futureResultSource];
+    TOCFutureSource* futureResultSource = [TOCFutureSource futureSourceUntil:untilCancelledToken];
     
     PacketHandlerBlock packetHandler = ^(id packet) {
         if (![futureResultSource trySetResult:packet]) {;
@@ -196,7 +194,7 @@
                                             withErrorHandler:socketErrorHandler]
                  untilCancelled:untilCancelledToken];
     
-    return futureResultSource;
+    return futureResultSource.future;
 }
 
 @end

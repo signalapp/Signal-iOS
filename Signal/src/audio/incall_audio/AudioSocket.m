@@ -11,7 +11,7 @@
     return p;
 }
 
--(void) startWithHandler:(PacketHandler*)handler untilCancelled:(id<CancelToken>)untilCancelledToken {
+-(void) startWithHandler:(PacketHandler*)handler untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(handler != nil);
     requireState(!started);
     started = true;

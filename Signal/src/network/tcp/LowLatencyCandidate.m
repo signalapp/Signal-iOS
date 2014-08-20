@@ -23,24 +23,22 @@
     [networkStream startProcessingStreamEventsEvenWithoutHandler];
 }
 
--(CancellableOperationStarter) tcpHandshakeCompleter {
-    return ^(id<CancelToken> untilCancelledToken) {
+-(TOCUntilOperation) tcpHandshakeCompleter {
+    return ^(TOCCancelToken* untilCancelledToken) {
         return [self completer:untilCancelledToken];
     };
 }
 
--(Future*) completer:(id<CancelToken>)untilCancelledToken {
-    Future* tcpHandshakeCompleted = [networkStream asyncTcpHandshakeCompleted];
+-(TOCFuture*) completer:(TOCCancelToken*)untilCancelledToken {
+    TOCFuture* tcpHandshakeCompleted = [networkStream asyncTcpHandshakeCompleted];
     
     [untilCancelledToken whenCancelledTerminate:self];
     
-    return [Future delayed:self
-                untilAfter:tcpHandshakeCompleted];
+    return [tcpHandshakeCompleted thenValue:self];
 }
 
--(Future*) delayedUntilAuthenticated {
-    return [Future delayed:self
-                untilAfter:[networkStream asyncConnectionCompleted]];
+-(TOCFuture*) delayedUntilAuthenticated {
+    return [networkStream.asyncConnectionCompleted thenValue:self];
 }
 
 @end

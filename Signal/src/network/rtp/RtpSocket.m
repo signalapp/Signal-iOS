@@ -14,7 +14,7 @@
     return s;
 }
 
--(void) startWithHandler:(PacketHandler*)handler untilCancelled:(id<CancelToken>)untilCancelledToken {
+-(void) startWithHandler:(PacketHandler*)handler untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(handler != nil);
     @synchronized(self) {
         bool isFirstTime = currentHandler == nil;

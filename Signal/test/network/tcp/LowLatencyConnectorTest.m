@@ -4,12 +4,9 @@
 #import "Util.h"
 #import "HostNameEndPoint.h"
 #import "TestUtil.h"
-#import "Future.h"
-#import "CancelledToken.h"
 #import "ThreadManager.h"
 
 @interface LowLatencyConnectorTest : XCTestCase
-
 @end
 
 @implementation LowLatencyConnectorTest
@@ -23,9 +20,9 @@
 
     NSString* reliableHostName = @"example.com";
     
-    Future* f = [LowLatencyConnector asyncLowLatencyConnectToEndPoint:[HostNameEndPoint hostNameEndPointWithHostName:reliableHostName
-                                                                                                             andPort:80]
-                                                       untilCancelled:nil];
+    TOCFuture* f = [LowLatencyConnector asyncLowLatencyConnectToEndPoint:[HostNameEndPoint hostNameEndPointWithHostName:reliableHostName
+                                                                                                                andPort:80]
+                                                          untilCancelled:nil];
     
     testChurnUntil(!f.isIncomplete, 5.0);
     
@@ -54,9 +51,9 @@
     
     NSString* reliableHostNameKnownToHaveMultipleIps = @"google.com";
     
-    Future* f = [LowLatencyConnector asyncLowLatencyConnectToEndPoint:[HostNameEndPoint hostNameEndPointWithHostName:reliableHostNameKnownToHaveMultipleIps
-                                                                                                             andPort:80]
-                                                       untilCancelled:nil];
+    TOCFuture* f = [LowLatencyConnector asyncLowLatencyConnectToEndPoint:[HostNameEndPoint hostNameEndPointWithHostName:reliableHostNameKnownToHaveMultipleIps
+                                                                                                                andPort:80]
+                                                          untilCancelled:nil];
     
     testChurnUntil(!f.isIncomplete, 5.0);
     
@@ -84,8 +81,8 @@
 -(void) testCancelledLowLatencyConnect {
     NSString* reliableHostName = @"example.com";
     
-    Future* f = [LowLatencyConnector asyncLowLatencyConnectToEndPoint:[HostNameEndPoint hostNameEndPointWithHostName:reliableHostName andPort:80]
-                                                       untilCancelled:[CancelledToken cancelledToken]];
+    TOCFuture* f = [LowLatencyConnector asyncLowLatencyConnectToEndPoint:[HostNameEndPoint hostNameEndPointWithHostName:reliableHostName andPort:80]
+                                                          untilCancelled:TOCCancelToken.cancelledToken];
     
     testChurnUntil(!f.isIncomplete, 5.0);
     

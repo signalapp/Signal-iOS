@@ -1,12 +1,11 @@
-#import "CancelTokenSource.h"
-#import "Constraints.h"
 #import "DnsManager.h"
+
+#import <netdb.h>
 #import "HttpResponse.h"
 #import "IpEndPoint.h"
+#import "ThreadManager.h"
 #import "UdpSocket.h"
 #import "Util.h"
-#import <netdb.h>
-#import "ThreadManager.h"
 
 #define STRING_POINTER_FLAG 0xc0
 
@@ -42,15 +41,15 @@ void handleDnsCompleted(CFHostRef hostRef, CFHostInfoType typeInfo, const CFStre
     }
 }
 
-+(Future*) asyncQueryAddressesForDomainName:(NSString*)domainName
-                            unlessCancelled:(id<CancelToken>)unlessCancelledToken {
++(TOCFuture*) asyncQueryAddressesForDomainName:(NSString*)domainName
+                            unlessCancelled:(TOCCancelToken*)unlessCancelledToken {
     require(domainName != nil);
     
     CFHostRef hostRef = CFHostCreateWithName(kCFAllocatorDefault, (__bridge CFStringRef)domainName);
     checkOperation(hostRef != nil);
 
     DnsManager* d = [DnsManager new];
-    d->futureResultSource = [FutureSource new];
+    d->futureResultSource = [TOCFutureSource futureSourceUntil:unlessCancelledToken];
     
     CFHostClientContext c;
     c.version = 0;
@@ -70,9 +69,8 @@ void handleDnsCompleted(CFHostRef hostRef, CFHostInfoType typeInfo, const CFStre
         [d->futureResultSource trySetFailure:[OperationFailed new:[NSString stringWithFormat:@"DNS query failed to start. Error code: %d",
                                                                    (int)d->error.error]]];
     }
-    [unlessCancelledToken whenCancelledTryCancel:d->futureResultSource];
     
-    return d->futureResultSource;
+    return d->futureResultSource.future;
 }
 
 @end

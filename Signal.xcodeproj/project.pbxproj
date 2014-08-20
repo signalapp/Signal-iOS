@@ -58,24 +58,10 @@
 		76D713EB182D3E5100C9C9C8 /* PreferenceListTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76D713E9182D3E5100C9C9C8 /* PreferenceListTableViewCell.xib */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
 		76EB054118170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
-		76EB054218170B33006006FC /* AsyncUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C618170B33006006FC /* AsyncUtil.m */; };
-		76EB054318170B33006006FC /* AsyncUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C618170B33006006FC /* AsyncUtil.m */; };
-		76EB054418170B33006006FC /* AsyncUtilHelperRacingOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C818170B33006006FC /* AsyncUtilHelperRacingOperation.m */; };
-		76EB054518170B33006006FC /* AsyncUtilHelperRacingOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C818170B33006006FC /* AsyncUtilHelperRacingOperation.m */; };
-		76EB054618170B33006006FC /* CancelledToken.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03CA18170B33006006FC /* CancelledToken.m */; };
-		76EB054718170B33006006FC /* CancelledToken.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03CA18170B33006006FC /* CancelledToken.m */; };
-		76EB054818170B33006006FC /* CancelTokenSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03CC18170B33006006FC /* CancelTokenSource.m */; };
-		76EB054918170B33006006FC /* CancelTokenSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03CC18170B33006006FC /* CancelTokenSource.m */; };
-		76EB054A18170B33006006FC /* Future.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03CE18170B33006006FC /* Future.m */; };
-		76EB054B18170B33006006FC /* Future.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03CE18170B33006006FC /* Future.m */; };
-		76EB054C18170B33006006FC /* FutureSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03D018170B33006006FC /* FutureSource.m */; };
-		76EB054D18170B33006006FC /* FutureSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03D018170B33006006FC /* FutureSource.m */; };
 		76EB054E18170B33006006FC /* FutureUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03D218170B33006006FC /* FutureUtil.m */; };
 		76EB054F18170B33006006FC /* FutureUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03D218170B33006006FC /* FutureUtil.m */; };
 		76EB055018170B33006006FC /* ObservableValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03D418170B33006006FC /* ObservableValue.m */; };
 		76EB055118170B33006006FC /* ObservableValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03D418170B33006006FC /* ObservableValue.m */; };
-		76EB055218170B33006006FC /* TimeoutFailure.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03D818170B33006006FC /* TimeoutFailure.m */; };
-		76EB055318170B33006006FC /* TimeoutFailure.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03D818170B33006006FC /* TimeoutFailure.m */; };
 		76EB057218170B33006006FC /* RecentCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040018170B33006006FC /* RecentCall.m */; };
 		76EB057318170B33006006FC /* RecentCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040018170B33006006FC /* RecentCall.m */; };
 		76EB057418170B33006006FC /* RecentCallManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040218170B33006006FC /* RecentCallManager.m */; };
@@ -327,9 +313,6 @@
 		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
 		A123C14916F902EE000AE905 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A163E8AA16F3F6A90094D68B /* Security.framework */; };
-		A157075417F0CD6D007C2BD6 /* AsyncUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A15706ED17F0CD6D007C2BD6 /* AsyncUtilTest.m */; };
-		A157075517F0CD6D007C2BD6 /* FutureSourceTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A15706EF17F0CD6D007C2BD6 /* FutureSourceTest.m */; };
-		A157075617F0CD6D007C2BD6 /* ObservableTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A15706F117F0CD6D007C2BD6 /* ObservableTest.m */; };
 		A157075717F0CD6D007C2BD6 /* AudioFrameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A15706F417F0CD6D007C2BD6 /* AudioFrameTest.m */; };
 		A157075817F0CD6D007C2BD6 /* AudioRemoteIOTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A15706F617F0CD6D007C2BD6 /* AudioRemoteIOTest.m */; };
 		A157075917F0CD6D007C2BD6 /* AudioStretcherTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A15706F817F0CD6D007C2BD6 /* AudioStretcherTest.m */; };
@@ -358,7 +341,6 @@
 		A157077217F0CD6D007C2BD6 /* EventWindowTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157073817F0CD6D007C2BD6 /* EventWindowTest.m */; };
 		A157077417F0CD6D007C2BD6 /* TestUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = A157073C17F0CD6D007C2BD6 /* TestUtil.m */; };
 		A157077517F0CD6D007C2BD6 /* BloomFilterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157073F17F0CD6D007C2BD6 /* BloomFilterTest.m */; };
-		A157077617F0CD6D007C2BD6 /* CancelTokenTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157074117F0CD6D007C2BD6 /* CancelTokenTest.m */; };
 		A157077717F0CD6D007C2BD6 /* ConversionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157074317F0CD6D007C2BD6 /* ConversionsTest.m */; };
 		A157077817F0CD6D007C2BD6 /* Crc32Test.m in Sources */ = {isa = PBXBuildFile; fileRef = A157074517F0CD6D007C2BD6 /* Crc32Test.m */; };
 		A157077917F0CD6D007C2BD6 /* CryptoToolsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157074717F0CD6D007C2BD6 /* CryptoToolsTest.m */; };
@@ -450,6 +432,8 @@
 		B9EB5AC61884D370007CBB57 /* UnseenWhisperUserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B9EB5AC51884D370007CBB57 /* UnseenWhisperUserCell.m */; };
 		B9EB5AC71884D370007CBB57 /* UnseenWhisperUserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B9EB5AC51884D370007CBB57 /* UnseenWhisperUserCell.m */; };
 		B9EB5ACA1884D387007CBB57 /* UnseenWhisperUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9EB5AC81884D387007CBB57 /* UnseenWhisperUserCell.xib */; };
+		BFB074C119A4BCA400F2947C /* FutureUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074BF19A4BCA400F2947C /* FutureUtilTest.m */; };
+		BFB074C219A4BCA400F2947C /* ObservableTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074C019A4BCA400F2947C /* ObservableTest.m */; };
 		D202868116DBE0E7009068E9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		D202868216DBE0F4009068E9 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */; };
 		D202868316DBE0FC009068E9 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */; };
@@ -659,27 +643,6 @@
 			remoteGlobalIDString = A1FDCBF916DBC57D00868894;
 			remoteInfo = speex;
 		};
-		B6913FF419773C5000AE2BF5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D221A088169C9E5E00537ABF;
-			remoteInfo = Signal;
-		};
-		B6913FF619773C5100AE2BF5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D221A088169C9E5E00537ABF;
-			remoteInfo = Signal;
-		};
-		D221A0AF169C9E5F00537ABF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D221A088169C9E5E00537ABF;
-			remoteInfo = RedPhone;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -767,25 +730,10 @@
 		76D713E9182D3E5100C9C9C8 /* PreferenceListTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PreferenceListTableViewCell.xib; path = ../PreferenceListTableViewCell.xib; sourceTree = "<group>"; };
 		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		76EB03C318170B33006006FC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		76EB03C518170B33006006FC /* AsyncUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsyncUtil.h; sourceTree = "<group>"; };
-		76EB03C618170B33006006FC /* AsyncUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AsyncUtil.m; sourceTree = "<group>"; };
-		76EB03C718170B33006006FC /* AsyncUtilHelperRacingOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsyncUtilHelperRacingOperation.h; sourceTree = "<group>"; };
-		76EB03C818170B33006006FC /* AsyncUtilHelperRacingOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AsyncUtilHelperRacingOperation.m; sourceTree = "<group>"; };
-		76EB03C918170B33006006FC /* CancelledToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CancelledToken.h; sourceTree = "<group>"; };
-		76EB03CA18170B33006006FC /* CancelledToken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CancelledToken.m; sourceTree = "<group>"; };
-		76EB03CB18170B33006006FC /* CancelTokenSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CancelTokenSource.h; sourceTree = "<group>"; };
-		76EB03CC18170B33006006FC /* CancelTokenSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CancelTokenSource.m; sourceTree = "<group>"; };
-		76EB03CD18170B33006006FC /* Future.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Future.h; sourceTree = "<group>"; };
-		76EB03CE18170B33006006FC /* Future.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Future.m; sourceTree = "<group>"; };
-		76EB03CF18170B33006006FC /* FutureSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FutureSource.h; sourceTree = "<group>"; };
-		76EB03D018170B33006006FC /* FutureSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FutureSource.m; sourceTree = "<group>"; };
 		76EB03D118170B33006006FC /* FutureUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FutureUtil.h; sourceTree = "<group>"; };
 		76EB03D218170B33006006FC /* FutureUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FutureUtil.m; sourceTree = "<group>"; };
 		76EB03D318170B33006006FC /* ObservableValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObservableValue.h; sourceTree = "<group>"; };
 		76EB03D418170B33006006FC /* ObservableValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObservableValue.m; sourceTree = "<group>"; };
-		76EB03D618170B33006006FC /* CancelToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CancelToken.h; sourceTree = "<group>"; };
-		76EB03D718170B33006006FC /* TimeoutFailure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeoutFailure.h; sourceTree = "<group>"; };
-		76EB03D818170B33006006FC /* TimeoutFailure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TimeoutFailure.m; sourceTree = "<group>"; };
 		76EB03FF18170B33006006FC /* RecentCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecentCall.h; sourceTree = "<group>"; };
 		76EB040018170B33006006FC /* RecentCall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentCall.m; sourceTree = "<group>"; };
 		76EB040118170B33006006FC /* RecentCallManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecentCallManager.h; sourceTree = "<group>"; };
@@ -1048,9 +996,6 @@
 		76EB053F18170B33006006FC /* CallLogTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CallLogTableViewCell.xib; sourceTree = "<group>"; };
 		8313AE91B4954215858A5662 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		A15706ED17F0CD6D007C2BD6 /* AsyncUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AsyncUtilTest.m; sourceTree = "<group>"; };
-		A15706EF17F0CD6D007C2BD6 /* FutureSourceTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FutureSourceTest.m; sourceTree = "<group>"; };
-		A15706F117F0CD6D007C2BD6 /* ObservableTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObservableTest.m; sourceTree = "<group>"; };
 		A15706F417F0CD6D007C2BD6 /* AudioFrameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioFrameTest.m; sourceTree = "<group>"; };
 		A15706F617F0CD6D007C2BD6 /* AudioRemoteIOTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioRemoteIOTest.m; sourceTree = "<group>"; };
 		A15706F817F0CD6D007C2BD6 /* AudioStretcherTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioStretcherTest.m; sourceTree = "<group>"; };
@@ -1084,8 +1029,6 @@
 		A157073C17F0CD6D007C2BD6 /* TestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestUtil.m; sourceTree = "<group>"; };
 		A157073E17F0CD6D007C2BD6 /* BloomFilterTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BloomFilterTest.h; sourceTree = "<group>"; };
 		A157073F17F0CD6D007C2BD6 /* BloomFilterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BloomFilterTest.m; sourceTree = "<group>"; };
-		A157074017F0CD6D007C2BD6 /* CancelTokenTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CancelTokenTest.h; sourceTree = "<group>"; };
-		A157074117F0CD6D007C2BD6 /* CancelTokenTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CancelTokenTest.m; sourceTree = "<group>"; };
 		A157074217F0CD6D007C2BD6 /* ConversionsTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversionsTest.h; sourceTree = "<group>"; };
 		A157074317F0CD6D007C2BD6 /* ConversionsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversionsTest.m; sourceTree = "<group>"; };
 		A157074417F0CD6D007C2BD6 /* Crc32Test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Crc32Test.h; sourceTree = "<group>"; };
@@ -1187,6 +1130,8 @@
 		B9EB5AC41884D370007CBB57 /* UnseenWhisperUserCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnseenWhisperUserCell.h; sourceTree = "<group>"; };
 		B9EB5AC51884D370007CBB57 /* UnseenWhisperUserCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UnseenWhisperUserCell.m; sourceTree = "<group>"; };
 		B9EB5AC81884D387007CBB57 /* UnseenWhisperUserCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UnseenWhisperUserCell.xib; sourceTree = "<group>"; };
+		BFB074BF19A4BCA400F2947C /* FutureUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FutureUtilTest.m; sourceTree = "<group>"; };
+		BFB074C019A4BCA400F2947C /* ObservableTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObservableTest.m; sourceTree = "<group>"; };
 		C71793B33D9C45079F74487E /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 		D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -1646,35 +1591,12 @@
 		76EB03C418170B33006006FC /* async */ = {
 			isa = PBXGroup;
 			children = (
-				76EB03C518170B33006006FC /* AsyncUtil.h */,
-				76EB03C618170B33006006FC /* AsyncUtil.m */,
-				76EB03C718170B33006006FC /* AsyncUtilHelperRacingOperation.h */,
-				76EB03C818170B33006006FC /* AsyncUtilHelperRacingOperation.m */,
-				76EB03C918170B33006006FC /* CancelledToken.h */,
-				76EB03CA18170B33006006FC /* CancelledToken.m */,
-				76EB03CB18170B33006006FC /* CancelTokenSource.h */,
-				76EB03CC18170B33006006FC /* CancelTokenSource.m */,
-				76EB03CD18170B33006006FC /* Future.h */,
-				76EB03CE18170B33006006FC /* Future.m */,
-				76EB03CF18170B33006006FC /* FutureSource.h */,
-				76EB03D018170B33006006FC /* FutureSource.m */,
 				76EB03D118170B33006006FC /* FutureUtil.h */,
 				76EB03D218170B33006006FC /* FutureUtil.m */,
 				76EB03D318170B33006006FC /* ObservableValue.h */,
 				76EB03D418170B33006006FC /* ObservableValue.m */,
-				76EB03D518170B33006006FC /* protocols */,
-				76EB03D718170B33006006FC /* TimeoutFailure.h */,
-				76EB03D818170B33006006FC /* TimeoutFailure.m */,
 			);
 			path = async;
-			sourceTree = "<group>";
-		};
-		76EB03D518170B33006006FC /* protocols */ = {
-			isa = PBXGroup;
-			children = (
-				76EB03D618170B33006006FC /* CancelToken.h */,
-			);
-			path = protocols;
 			sourceTree = "<group>";
 		};
 		76EB03D918170B33006006FC /* audio */ = {
@@ -2269,7 +2191,6 @@
 			isa = PBXGroup;
 			children = (
 				76919BF51805D169008C664A /* contact */,
-				A15706EB17F0CD6D007C2BD6 /* async */,
 				A15706F217F0CD6D007C2BD6 /* audio */,
 				A157070017F0CD6D007C2BD6 /* network */,
 				A157072E17F0CD6D007C2BD6 /* phone */,
@@ -2280,16 +2201,6 @@
 				A157073D17F0CD6D007C2BD6 /* util */,
 			);
 			path = test;
-			sourceTree = "<group>";
-		};
-		A15706EB17F0CD6D007C2BD6 /* async */ = {
-			isa = PBXGroup;
-			children = (
-				A15706ED17F0CD6D007C2BD6 /* AsyncUtilTest.m */,
-				A15706EF17F0CD6D007C2BD6 /* FutureSourceTest.m */,
-				A15706F117F0CD6D007C2BD6 /* ObservableTest.m */,
-			);
-			path = async;
 			sourceTree = "<group>";
 		};
 		A15706F217F0CD6D007C2BD6 /* audio */ = {
@@ -2443,8 +2354,6 @@
 			children = (
 				A157073E17F0CD6D007C2BD6 /* BloomFilterTest.h */,
 				A157073F17F0CD6D007C2BD6 /* BloomFilterTest.m */,
-				A157074017F0CD6D007C2BD6 /* CancelTokenTest.h */,
-				A157074117F0CD6D007C2BD6 /* CancelTokenTest.m */,
 				A157074217F0CD6D007C2BD6 /* ConversionsTest.h */,
 				A157074317F0CD6D007C2BD6 /* ConversionsTest.m */,
 				A157074417F0CD6D007C2BD6 /* Crc32Test.h */,
@@ -2456,6 +2365,8 @@
 				A157074B17F0CD6D007C2BD6 /* ExceptionsTest.m */,
 				A157074C17F0CD6D007C2BD6 /* FunctionalUtilTest.h */,
 				A157074D17F0CD6D007C2BD6 /* FunctionalUtilTest.m */,
+				BFB074BF19A4BCA400F2947C /* FutureUtilTest.m */,
+				BFB074C019A4BCA400F2947C /* ObservableTest.m */,
 				A157074E17F0CD6D007C2BD6 /* PriorityQueueTest.h */,
 				A157074F17F0CD6D007C2BD6 /* PriorityQueueTest.m */,
 				A157075017F0CD6D007C2BD6 /* QueueTest.h */,
@@ -3079,9 +2990,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				D221A0B0169C9E5F00537ABF /* PBXTargetDependency */,
-				B6913FF519773C5000AE2BF5 /* PBXTargetDependency */,
-				B6913FF719773C5100AE2BF5 /* PBXTargetDependency */,
 			);
 			name = SignalTests;
 			productName = RedPhoneTests;
@@ -3518,7 +3426,6 @@
 				76EB061A18170B33006006FC /* DiscardingLog.m in Sources */,
 				76EB068418170B34006006FC /* ContactDetailTableViewCell.m in Sources */,
 				76EB066218170B34006006FC /* SettingsViewController.m in Sources */,
-				76EB054818170B33006006FC /* CancelTokenSource.m in Sources */,
 				76EB05AC18170B33006006FC /* SrtpSocket.m in Sources */,
 				B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */,
 				76EB062A18170B33006006FC /* BadState.m in Sources */,
@@ -3587,8 +3494,6 @@
 				E197B61E18BBEC6D00F073E5 /* AudioRouter.m in Sources */,
 				E197B60D18BBEC1A00F073E5 /* AudioSocket.m in Sources */,
 				76EB061418170B33006006FC /* AnonymousConditionLogger.m in Sources */,
-				76EB054218170B33006006FC /* AsyncUtil.m in Sources */,
-				76EB054A18170B33006006FC /* Future.m in Sources */,
 				76EB05C018170B33006006FC /* DhPacket.m in Sources */,
 				765052A1182945EF008313E1 /* LocalizableCustomFontLabel.m in Sources */,
 				7038632818F70C0700D4A43F /* EvpSymetricUtil.m in Sources */,
@@ -3599,7 +3504,6 @@
 				B9A578B1183D60EE00C17105 /* FavouriteTableViewCell.m in Sources */,
 				76EB057618170B33006006FC /* Contact.m in Sources */,
 				70B80111190C55660042E3F0 /* ExtendableMessage.m in Sources */,
-				76EB054618170B33006006FC /* CancelledToken.m in Sources */,
 				E197B61118BBEC1A00F073E5 /* AudioProcessor.m in Sources */,
 				76EB065818170B34006006FC /* LeftSideMenuViewController.m in Sources */,
 				76EB05EA18170B33006006FC /* CallProgress.m in Sources */,
@@ -3630,7 +3534,6 @@
 				76EB061C18170B33006006FC /* ArrayUtil.m in Sources */,
 				76EB05C418170B33006006FC /* HandshakePacket.m in Sources */,
 				76EB05AA18170B33006006FC /* SequenceCounter.m in Sources */,
-				76EB055218170B33006006FC /* TimeoutFailure.m in Sources */,
 				7038632718F70C0700D4A43F /* CryptoTools.m in Sources */,
 				76EB058C18170B33006006FC /* DnsManager.m in Sources */,
 				76EB059018170B33006006FC /* IgnoredPacketFailure.m in Sources */,
@@ -3656,7 +3559,6 @@
 				E197B62118BBF12700F073E5 /* AppAudioManager.m in Sources */,
 				76EB068C18170B34006006FC /* InboxFeedTableViewCell.m in Sources */,
 				76EB062018170B33006006FC /* BloomFilter.m in Sources */,
-				76EB054C18170B33006006FC /* FutureSource.m in Sources */,
 				76EB063818170B33006006FC /* DictionaryUtil.m in Sources */,
 				B9B89C54185A2B5F00A24465 /* LeftSideMenuCell.m in Sources */,
 				76EB068E18170B34006006FC /* CallLogTableViewCell.m in Sources */,
@@ -3672,7 +3574,6 @@
 				76EB05C818170B33006006FC /* HelloPacket.m in Sources */,
 				76EB059A18170B33006006FC /* HttpRequestUtil.m in Sources */,
 				76EB057218170B33006006FC /* RecentCall.m in Sources */,
-				76EB054418170B33006006FC /* AsyncUtilHelperRacingOperation.m in Sources */,
 				76EB060418170B33006006FC /* PhoneNumberDirectoryFilter.m in Sources */,
 				B97CBFA818860EA3008E0DE9 /* CountryCodeViewController.m in Sources */,
 				B6B1013C196D213F007E3930 /* SGNKeychainUtil.m in Sources */,
@@ -3719,7 +3620,6 @@
 				76EB05BD18170B33006006FC /* ConfirmAckPacket.m in Sources */,
 				76EB05DB18170B33006006FC /* LowLatencyConnector.m in Sources */,
 				76EB060F18170B33006006FC /* DecayingSampleEstimator.m in Sources */,
-				76EB055318170B33006006FC /* TimeoutFailure.m in Sources */,
 				76EB057718170B33006006FC /* Contact.m in Sources */,
 				B9EB5AC71884D370007CBB57 /* UnseenWhisperUserCell.m in Sources */,
 				76EB05FB18170B33006006FC /* CallConnectUtil_Responder.m in Sources */,
@@ -3732,15 +3632,12 @@
 				B9B89C55185A2B5F00A24465 /* LeftSideMenuCell.m in Sources */,
 				76EB05FD18170B33006006FC /* CallConnectUtil_Server.m in Sources */,
 				76EB058B18170B33006006FC /* Release.m in Sources */,
-				A157075417F0CD6D007C2BD6 /* AsyncUtilTest.m in Sources */,
-				A157075517F0CD6D007C2BD6 /* FutureSourceTest.m in Sources */,
 				76D713E8182D3E3F00C9C9C8 /* PreferenceListTableViewCell.m in Sources */,
 				76EB05D318170B33006006FC /* ZrtpInitiator.m in Sources */,
 				B9A578B2183D60EE00C17105 /* FavouriteTableViewCell.m in Sources */,
 				76EB061518170B33006006FC /* AnonymousConditionLogger.m in Sources */,
 				76EB060718170B33006006FC /* PhoneNumberDirectoryFilterManager.m in Sources */,
 				76EB05A118170B33006006FC /* IpAddress.m in Sources */,
-				A157075617F0CD6D007C2BD6 /* ObservableTest.m in Sources */,
 				762D9DD018281C7400A5E418 /* SettingsTableHeaderView.m in Sources */,
 				76EB05CD18170B33006006FC /* ShortAuthenticationStringGenerator.m in Sources */,
 				76EB05B718170B33006006FC /* MasterSecret.m in Sources */,
@@ -3749,7 +3646,6 @@
 				A157075717F0CD6D007C2BD6 /* AudioFrameTest.m in Sources */,
 				76EB063F18170B33006006FC /* Operation.m in Sources */,
 				76EB05AB18170B33006006FC /* SequenceCounter.m in Sources */,
-				76EB054B18170B33006006FC /* Future.m in Sources */,
 				76EB061D18170B33006006FC /* ArrayUtil.m in Sources */,
 				76EB064D18170B34006006FC /* ContactBrowseViewController.m in Sources */,
 				76EB05E318170B33006006FC /* SecureEndPoint.m in Sources */,
@@ -3773,11 +3669,11 @@
 				76EB05D118170B33006006FC /* ZrtpHandshakeSocket.m in Sources */,
 				A157075F17F0CD6D007C2BD6 /* IpAddressTest.m in Sources */,
 				76EB05F518170B33006006FC /* CallConnectResult.m in Sources */,
+				BFB074C219A4BCA400F2947C /* ObservableTest.m in Sources */,
 				A157076017F0CD6D007C2BD6 /* IpEndPointTest.m in Sources */,
 				765052A2182945EF008313E1 /* LocalizableCustomFontLabel.m in Sources */,
 				A157076117F0CD6D007C2BD6 /* RtpPacketTests.m in Sources */,
 				76EB05C518170B33006006FC /* HandshakePacket.m in Sources */,
-				76EB054D18170B33006006FC /* FutureSource.m in Sources */,
 				76EB058F18170B33006006FC /* HostNameEndPoint.m in Sources */,
 				76EB062118170B33006006FC /* BloomFilter.m in Sources */,
 				76EB064518170B33006006FC /* ThreadManager.m in Sources */,
@@ -3787,7 +3683,6 @@
 				A157076317F0CD6D007C2BD6 /* SequenceCounterTest.m in Sources */,
 				76EB062318170B33006006FC /* CyclicalBuffer.m in Sources */,
 				A157076517F0CD6D007C2BD6 /* HandshakePacketTest.m in Sources */,
-				76EB054918170B33006006FC /* CancelTokenSource.m in Sources */,
 				76EB066518170B34006006FC /* TabBarParentViewController.m in Sources */,
 				A157076617F0CD6D007C2BD6 /* HashChainTest.m in Sources */,
 				76EB063118170B33006006FC /* Conversions.m in Sources */,
@@ -3796,7 +3691,6 @@
 				76EB059B18170B33006006FC /* HttpRequestUtil.m in Sources */,
 				76EB05CF18170B33006006FC /* ZrtpHandshakeResult.m in Sources */,
 				76EB060518170B33006006FC /* PhoneNumberDirectoryFilter.m in Sources */,
-				76EB054718170B33006006FC /* CancelledToken.m in Sources */,
 				76EB065D18170B34006006FC /* CallLogViewController.m in Sources */,
 				A157076817F0CD6D007C2BD6 /* ShortAuthenticationStringGeneratorTest.m in Sources */,
 				76EB065718170B34006006FC /* InCallViewController.m in Sources */,
@@ -3808,7 +3702,6 @@
 				76EB05F118170B33006006FC /* PhoneManager.m in Sources */,
 				76EB05F718170B33006006FC /* CallConnectUtil.m in Sources */,
 				76EB066318170B34006006FC /* SettingsViewController.m in Sources */,
-				76EB054518170B33006006FC /* AsyncUtilHelperRacingOperation.m in Sources */,
 				76EB063318170B33006006FC /* Crc32.m in Sources */,
 				76EB054F18170B33006006FC /* FutureUtil.m in Sources */,
 				76EB062718170B33006006FC /* Queue.m in Sources */,
@@ -3836,7 +3729,6 @@
 				A157077517F0CD6D007C2BD6 /* BloomFilterTest.m in Sources */,
 				76EB05E918170B33006006FC /* CallFailedServerMessage.m in Sources */,
 				76EB058718170B33006006FC /* PreferencesUtil.m in Sources */,
-				A157077617F0CD6D007C2BD6 /* CancelTokenTest.m in Sources */,
 				76EB064118170B33006006FC /* AnonymousTerminator.m in Sources */,
 				A157077717F0CD6D007C2BD6 /* ConversionsTest.m in Sources */,
 				76EB058318170B33006006FC /* Environment.m in Sources */,
@@ -3849,6 +3741,7 @@
 				A157077917F0CD6D007C2BD6 /* CryptoToolsTest.m in Sources */,
 				76EB066118170B34006006FC /* RegisterViewController.m in Sources */,
 				76EB068D18170B34006006FC /* InboxFeedTableViewCell.m in Sources */,
+				BFB074C119A4BCA400F2947C /* FutureUtilTest.m in Sources */,
 				76EB05A918170B33006006FC /* RtpSocket.m in Sources */,
 				765052B0182AC9B5008313E1 /* DialerButtonView.m in Sources */,
 				76EB062B18170B33006006FC /* BadState.m in Sources */,
@@ -3874,7 +3767,6 @@
 				76EB057318170B33006006FC /* RecentCall.m in Sources */,
 				76EB058518170B33006006FC /* LocalizableText.m in Sources */,
 				76EB061918170B33006006FC /* AnonymousValueLogger.m in Sources */,
-				76EB054318170B33006006FC /* AsyncUtil.m in Sources */,
 				B942EB0F183A9633000887BB /* SearchBarTitleView.m in Sources */,
 				76EB058918170B33006006FC /* PropertyListPreferences.m in Sources */,
 				76EB063D18170B33006006FC /* NumberUtil.m in Sources */,
@@ -3906,21 +3798,6 @@
 			isa = PBXTargetDependency;
 			name = speex;
 			targetProxy = 70B800AD190C54870042E3F0 /* PBXContainerItemProxy */;
-		};
-		B6913FF519773C5000AE2BF5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D221A088169C9E5E00537ABF /* Signal */;
-			targetProxy = B6913FF419773C5000AE2BF5 /* PBXContainerItemProxy */;
-		};
-		B6913FF719773C5100AE2BF5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D221A088169C9E5E00537ABF /* Signal */;
-			targetProxy = B6913FF619773C5100AE2BF5 /* PBXContainerItemProxy */;
-		};
-		D221A0B0169C9E5F00537ABF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D221A088169C9E5E00537ABF /* Signal */;
-			targetProxy = D221A0AF169C9E5F00537ABF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

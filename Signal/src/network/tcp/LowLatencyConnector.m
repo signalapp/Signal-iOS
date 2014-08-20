@@ -1,33 +1,30 @@
 #import "LowLatencyConnector.h"
+
 #import "Constraints.h"
-#import "Util.h"
 #import "DnsManager.h"
 #import "IpAddress.h"
-#import "CancelToken.h"
-#import "FunctionalUtil.h"
-#import "AsyncUtil.h"
 #import "NetworkStream.h"
+#import "Util.h"
 
 @implementation LowLatencyConnector
 
-+(Future*) asyncLowLatencyConnectToEndPoint:(id<NetworkEndPoint>)endPoint
-                             untilCancelled:(id<CancelToken>)untilCancelledToken {
++(TOCFuture*) asyncLowLatencyConnectToEndPoint:(id<NetworkEndPoint>)endPoint
+                             untilCancelled:(TOCCancelToken*)untilCancelledToken {
     
     require(endPoint != nil);
     
-    Future* futureSpecificEndPoints = [endPoint asyncResolveToSpecificEndPointsUnlessCancelled:untilCancelledToken];
+    TOCFuture* futureSpecificEndPoints = [endPoint asyncResolveToSpecificEndPointsUnlessCancelled:untilCancelledToken];
     
-    return [futureSpecificEndPoints then:^(NSArray* specificEndPoints) {
+    return [futureSpecificEndPoints thenTry:^(NSArray* specificEndPoints) {
         return [LowLatencyConnector startConnectingToAll:specificEndPoints
                                           untilCancelled:untilCancelledToken];
     }];
 }
 
-+(Future*) startConnectingToAll:(NSArray*)specificEndPoints
-                 untilCancelled:(id<CancelToken>)untilCancelledToken {
++(TOCFuture*) startConnectingToAll:(NSArray*)specificEndPoints
+                 untilCancelled:(TOCCancelToken*)untilCancelledToken {
     
     require(specificEndPoints != nil);
-    
     
     NSArray* candidates = [specificEndPoints map:^id(id<NetworkEndPoint> endPoint) {
         return [LowLatencyCandidate lowLatencyCandidateToRemoteEndPoint:endPoint];
@@ -41,10 +38,9 @@
         return [candidate tcpHandshakeCompleter];
     }];
 
-    Future* futureFastestCandidate = [AsyncUtil raceCancellableOperations:candidateCompleters
-                                                           untilCancelled:untilCancelledToken];
+    TOCFuture* futureFastestCandidate = [candidateCompleters toc_raceForWinnerLastingUntil:untilCancelledToken];
     
-    return [futureFastestCandidate then:^(LowLatencyCandidate* fastestCandidate) {
+    return [futureFastestCandidate thenTry:^(LowLatencyCandidate* fastestCandidate) {
         return [fastestCandidate delayedUntilAuthenticated];
     }];
 }

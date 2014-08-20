@@ -38,6 +38,6 @@
 -(void) send:(NSData*)packet;
 
 -(void) startWithHandler:(PacketHandler*)handler
-          untilCancelled:(id<CancelToken>)untilCancelledToken;
+          untilCancelled:(TOCCancelToken*)untilCancelledToken;
 
 @end

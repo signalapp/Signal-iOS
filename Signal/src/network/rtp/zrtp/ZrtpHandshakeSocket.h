@@ -19,5 +19,5 @@
 }
 +(ZrtpHandshakeSocket*) zrtpHandshakeSocketOverRtp:(RtpSocket*)rtpSocket;
 -(void) send:(HandshakePacket*)packet;
--(void) startWithHandler:(PacketHandler*)handler untilCancelled:(id<CancelToken>)untilCancelledToken;
+-(void) startWithHandler:(PacketHandler*)handler untilCancelled:(TOCCancelToken*)untilCancelledToken;
 @end

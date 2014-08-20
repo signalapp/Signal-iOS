@@ -9,37 +9,37 @@
 
 @implementation CallConnectUtil_Responder
 
-+(Future*) asyncConnectToIncomingCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor
-                                         andCallController:(CallController*)callController {
++(TOCFuture*) asyncConnectToIncomingCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor
+                                            andCallController:(CallController*)callController {
     
     require(sessionDescriptor != nil);
     require(callController != nil);
     require(!callController.isInitiator);
     
-    Future* futureSignalsAreGo = [self asyncConnectToSignalServerDescribedBy:sessionDescriptor
-                                                          withCallController:callController];
+    TOCFuture* futureSignalsAreGo = [self asyncConnectToSignalServerDescribedBy:sessionDescriptor
+                                                             withCallController:callController];
     
-    Future* futureSignalsAreGoAndCallAccepted = [futureSignalsAreGo then:^(id _) {
+    TOCFuture* futureSignalsAreGoAndCallAccepted = [futureSignalsAreGo thenTry:^(id _) {
         [callController advanceCallProgressTo:CallProgressType_Ringing];
         
         return [callController interactiveCallAccepted];
     }];
     
-    return [futureSignalsAreGoAndCallAccepted then:^(id _) {
+    return [futureSignalsAreGoAndCallAccepted thenTry:^(id _) {
         return [CallConnectUtil_Server asyncConnectCallOverRelayDescribedInResponderSessionDescriptor:sessionDescriptor
                                                                                    withCallController:callController];
     }];
 }
 
-+(Future*) asyncConnectToSignalServerDescribedBy:(ResponderSessionDescriptor*)sessionDescriptor
++(TOCFuture*) asyncConnectToSignalServerDescribedBy:(ResponderSessionDescriptor*)sessionDescriptor
                               withCallController:(CallController*)callController {
     require(sessionDescriptor != nil);
     require(callController != nil);
     
-    Future* futureSignalConnection = [CallConnectUtil_Server asyncConnectToSignalingServerNamed:sessionDescriptor.relayServerName
-                                                                                 untilCancelled:[callController untilCancelledToken]];
+    TOCFuture* futureSignalConnection = [CallConnectUtil_Server asyncConnectToSignalingServerNamed:sessionDescriptor.relayServerName
+                                                                                    untilCancelled:[callController untilCancelledToken]];
     
-    return [futureSignalConnection then:^id(HttpManager* httpManager) {
+    return [futureSignalConnection thenTry:^id(HttpManager* httpManager) {
         require([httpManager isKindOfClass:[httpManager class]]);
         
         HttpResponse*(^serverRequestHandler)(HttpRequest*) = ^(HttpRequest* remoteRequest) {
@@ -53,21 +53,19 @@
                               untilCancelled:[callController untilCancelledToken]];
         
         HttpRequest* ringRequest = [HttpRequest httpRequestToRingWithSessionId:sessionDescriptor.sessionId];
-        Future* futureResponseToRing = [httpManager asyncOkResponseForRequest:ringRequest
+        TOCFuture* futureResponseToRing = [httpManager asyncOkResponseForRequest:ringRequest
                                                               unlessCancelled:[callController untilCancelledToken]];
-        Future* futureResponseToRingWithInterpretedFailures = [futureResponseToRing catch:^(id error) {
+        TOCFuture* futureResponseToRingWithInterpretedFailures = [futureResponseToRing catchTry:^(id error) {
             if ([error isKindOfClass:[HttpResponse class]]) {
                 HttpResponse* badResponse = error;
-                return [Future failed:[self callTerminationForBadResponse:badResponse
-                                                            toRingRequest:ringRequest]];
+                return [TOCFuture futureWithFailure:[self callTerminationForBadResponse:badResponse
+                                                                          toRingRequest:ringRequest]];
             }
             
-            return [Future failed:error];
+            return [TOCFuture futureWithFailure:error];
         }];
         
-        return [futureResponseToRingWithInterpretedFailures then:^(id _) {
-            return @YES;
-        }];
+        return [futureResponseToRingWithInterpretedFailures thenValue:@YES];
     }];
 }
 
@@ -118,7 +116,7 @@
     return [HttpResponse httpResponse501NotImplemented];
 }
 
-+(Future*) asyncSignalTooBusyToAnswerCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor {
++(TOCFuture*) asyncSignalTooBusyToAnswerCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor {
     require(sessionDescriptor != nil);
     
     HttpRequest* busyRequest = [HttpRequest httpRequestToSignalBusyWithSessionId:sessionDescriptor.sessionId];
@@ -129,9 +127,9 @@
                     andErrorHandler:[Environment errorNoter]];
 }
 
-+(Future*) asyncOkResponseFor:(HttpRequest*)request
++(TOCFuture*) asyncOkResponseFor:(HttpRequest*)request
      fromSignalingServerNamed:(NSString*)name
-              unlessCancelled:(id<CancelToken>)unlessCancelledToken
+              unlessCancelled:(TOCCancelToken*)unlessCancelledToken
               andErrorHandler:(ErrorHandlerBlock)errorHandler {
     require(request != nil);
     require(errorHandler != nil);
@@ -143,8 +141,8 @@
     [manager startWithRejectingRequestHandlerAndErrorHandler:errorHandler
                                               untilCancelled:nil];
     
-    Future* result = [manager asyncOkResponseForRequest:request
-                                        unlessCancelled:unlessCancelledToken];
+    TOCFuture* result = [manager asyncOkResponseForRequest:request
+                                           unlessCancelled:unlessCancelledToken];
     
     [manager terminateWhenDoneCurrentWork];
     

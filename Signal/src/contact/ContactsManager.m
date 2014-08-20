@@ -1,9 +1,6 @@
 #import "ContactsManager.h"
-#import "FutureSource.h"
-#import "FutureUtil.h"
 #import <AddressBook/AddressBook.h>
 #import <libPhoneNumber-iOS/NBPhoneNumber.h>
-#import "Constraints.h"
 #import "Environment.h"
 #import "NotificationManifest.h"
 #import "PhoneNumberDirectoryFilter.h"
@@ -36,7 +33,7 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL*);
         newUserNotificationsEnabled = [self knownUserStoreInitialized];
         _favouriteContactIds = [self loadFavouriteIds];
         _knownWhisperUserIds = [self loadKnownWhisperUsers];
-        life = [CancelTokenSource cancelTokenSource];
+        life = [TOCCancelTokenSource new];
         observableContactsController = [ObservableValueController observableValueControllerWithInitialValue:nil];
         observableWhisperUsersController = [ObservableValueController observableValueControllerWithInitialValue:nil];
         [self registerNotificationHandlers];
@@ -49,13 +46,13 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL*);
         @synchronized(self) {
             [self setupLatestContacts:latestContacts];
         }
-    } untilCancelled:[life getToken]];
+    } untilCancelled:life.token];
     
     [observableWhisperUsersController watchLatestValueOnArbitraryThread:^(NSArray *latestUsers) {
         @synchronized(self) {
             [self setupLatestWhisperUsers:latestUsers];
         }
-    } untilCancelled:[life getToken]];
+    } untilCancelled:life.token];
 }
 
 -(void)dealloc {
@@ -147,15 +144,15 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 #pragma mark - Address Book utils
 
-+(Future*) asyncGetAddressBook {
++(TOCFuture*) asyncGetAddressBook {
     CFErrorRef creationError = nil;
     ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, &creationError);
     assert((addressBookRef == nil) == (creationError != nil));
     if (creationError != nil) {
-        return [Future failed:(__bridge_transfer id)creationError];
+        return [TOCFuture futureWithFailure:(__bridge_transfer id)creationError];
     }
 
-    FutureSource *futureAddressBookSource = [FutureSource new];
+    TOCFutureSource *futureAddressBookSource = [TOCFutureSource new];
 
     id addressBook = (__bridge_transfer id)addressBookRef;
     ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef requestAccessError) {
@@ -168,7 +165,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         }
     });
 
-    return futureAddressBookSource;
+    return futureAddressBookSource.future;
 }
 
 -(NSArray*) getContactsFromAddressBook:(ABAddressBookRef)addressBook {

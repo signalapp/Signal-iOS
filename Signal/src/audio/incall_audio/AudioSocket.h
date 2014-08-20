@@ -14,7 +14,7 @@
 }
 
 +(AudioSocket*) audioSocketOver:(SrtpSocket*)srtpSocket;
--(void) startWithHandler:(PacketHandler*)handler untilCancelled:(id<CancelToken>)untilCancelledToken;
+-(void) startWithHandler:(PacketHandler*)handler untilCancelled:(TOCCancelToken*)untilCancelledToken;
 -(void) send:(EncodedAudioPacket*)audioPacket;
 
 @end

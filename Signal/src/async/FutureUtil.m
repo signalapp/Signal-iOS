@@ -1,75 +1,99 @@
-#import "FutureUtil.h"
-#import "FutureSource.h"
 #import "Constraints.h"
+#import "FutureUtil.h"
 #import "Operation.h"
 
-@implementation Future (FutureUtil)
+@implementation TOCCancelToken (FutureUtil)
 
--(void) thenDo:(void(^)(id result))callback {
-    require(callback != nil);
-    void(^callbackCopy)(id result) = [callback copy];
-    
-    [self finallyDo:^(Future* completed){
-        if (completed.hasSucceeded) {
-            callbackCopy([completed forceGetResult]);
-        }
-    }];
-}
--(void) catchDo:(void(^)(id error))catcher {
-    require(catcher != nil);
-    void(^callbackCopy)(id result) = [catcher copy];
-    
-    [self finallyDo:^(Future* completed){
-        if (completed.hasFailed) {
-            callbackCopy([completed forceGetFailure]);
-        }
-    }];
+-(void) whenCancelledTerminate:(id<Terminable>)terminable {
+    require(terminable != nil);
+    [self whenCancelledDo:^{ [terminable terminate]; }];
 }
 
--(Future*) finally:(id(^)(Future* completed))callback {
-    require(callback != nil);
-    id(^callbackCopy)(Future* completed) = [callback copy];
-    FutureSource* thenResult = [FutureSource new];
-    
-    [self finallyDo:^(Future* completed){
+@end
+
+@implementation TOCFuture (FutureUtil)
+
++(TOCUntilOperation) operationTry:(TOCUntilOperation)operation {
+    require(operation != nil);
+    return ^(TOCCancelToken* until) {
         @try {
-            [thenResult trySetResult:callbackCopy(completed)];
+            return operation(until);
         } @catch (id ex) {
-            [thenResult trySetFailure:ex];
+            return [TOCFuture futureWithFailure:ex];
         }
-    }];
-    
-    return thenResult;
+    };
 }
--(Future*) then:(id(^)(id value))projection {
-    require(projection != nil);
-    id(^callbackCopy)(id value) = [projection copy];
-    
-    return [self finally:^id(Future* completed){
-        if (completed.hasFailed) return completed;
-        
-        return callbackCopy([completed forceGetResult]);
-    }];
+
+-(TOCFuture*) thenValue:(id)value {
+    return [self then:^(id _) { return value; }];
 }
--(Future*) catch:(id(^)(id error))catcher {
-    require(catcher != nil);
-    id(^callbackCopy)(id value) = [catcher copy];
+
+-(TOCFuture*) finallyTry:(TOCFutureFinallyContinuation)completionContinuation {
+    require(completionContinuation != nil);
     
-    return [self finally:^id(Future* completed){
-        if (completed.hasSucceeded) return completed;
-        
-        return callbackCopy([completed forceGetFailure]);
+    return [self finally:^id(TOCFuture* completed){
+        @try {
+            return completionContinuation(completed);
+        } @catch (id ex) {
+            return [TOCFuture futureWithFailure:ex];
+        }
     }];
 }
 
--(Future*) thenCompleteOnMainThread {
-    FutureSource* onMainThreadResult = [FutureSource new];
-    [self finallyDo:^(Future *completed) {
-        [Operation asyncRun:^{
-            [onMainThreadResult trySetResult:completed];
-        } onThread:[NSThread mainThread]];
+-(TOCFuture*) thenTry:(TOCFutureThenContinuation)resultContinuation {
+    require(resultContinuation != nil);
+
+    return [self then:^id(id result){
+        @try {
+            return resultContinuation(result);
+        } @catch (id ex) {
+            return [TOCFuture futureWithFailure:ex];
+        }
     }];
-    return onMainThreadResult;
+}
+
+-(TOCFuture*) catchTry:(TOCFutureCatchContinuation)failureContinuation {
+    require(failureContinuation != nil);
+    
+    return [self catch:^id(id failure){
+        @try {
+            return failureContinuation(failure);
+        } @catch (id ex) {
+            return [TOCFuture futureWithFailure:ex];
+        }
+    }];
+}
+
++(TOCFuture*) retry:(TOCUntilOperation)operation
+         upToNTimes:(NSUInteger)maxTryCount
+    withBaseTimeout:(NSTimeInterval)baseTimeout
+     andRetryFactor:(NSTimeInterval)timeoutRetryFactor
+     untilCancelled:(TOCCancelToken*)untilCancelledToken {
+    
+    require(operation != nil);
+    require(maxTryCount >= 0);
+    require(baseTimeout >= 0);
+    require(timeoutRetryFactor >= 0);
+    
+    if (maxTryCount == 0) return TOCFuture.futureWithTimeoutFailure;
+    
+    TOCFuture* futureResult = [TOCFuture futureFromUntilOperation:operation
+                                             withOperationTimeout:baseTimeout
+                                                            until:untilCancelledToken];
+    
+    return [futureResult catchTry:^(id error) {
+        bool operationCancelled = untilCancelledToken.isAlreadyCancelled;
+        bool operationDidNotTimeout = !futureResult.hasFailedWithTimeout;
+        if (operationCancelled || operationDidNotTimeout) {
+            return [TOCFuture futureWithFailure:error];
+        }
+        
+        return [self retry:operation
+                upToNTimes:maxTryCount - 1
+           withBaseTimeout:baseTimeout * timeoutRetryFactor
+            andRetryFactor:timeoutRetryFactor
+            untilCancelled:untilCancelledToken];
+    }];
 }
 
 @end

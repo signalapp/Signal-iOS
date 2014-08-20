@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
-#import "SignalUtil.h"
-#import "CancelToken.h"
+#import "CollapsingFutures.h"
+#import "PhoneNumberDirectoryFilter.h"
 
 /**
  *
@@ -10,11 +10,11 @@
  */
 @interface PhoneNumberDirectoryFilterManager : NSObject {
 @private PhoneNumberDirectoryFilter* phoneNumberDirectoryFilter;
-@private id<CancelToken> lifetimeToken;
+@private TOCCancelToken* lifetimeToken;
 }
 
 -(void) forceUpdate;
--(void) startUntilCancelled:(id<CancelToken>)cancelToken;
+-(void) startUntilCancelled:(TOCCancelToken*)cancelToken;
 -(PhoneNumberDirectoryFilter*) getCurrentFilter;
 
 @end

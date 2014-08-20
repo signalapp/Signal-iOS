@@ -16,9 +16,9 @@
 
 - (ObservableValue *)getObservableRecentCalls;
 - (void)watchForCallsThrough:(PhoneManager*)phoneManager
-			  untilCancelled:(id<CancelToken>)untilCancelledToken;
+			  untilCancelled:(TOCCancelToken*)untilCancelledToken;
 - (void)watchForContactUpdatesFrom:(ContactsManager*) contactManager
-                   untillCancelled:(id<CancelToken>) cancelToken;
+                   untillCancelled:(TOCCancelToken*) cancelToken;
 
 - (void)addRecentCall:(RecentCall *)recentCall;
 - (void)removeRecentCall:(RecentCall *)recentCall;

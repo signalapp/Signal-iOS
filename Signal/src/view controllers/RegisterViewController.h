@@ -1,13 +1,12 @@
 #import <UIKit/UIKit.h>
 
-#import "CancelTokenSource.h"
+#import "CollapsingFutures.h"
 #import "CountryCodeViewController.h"
-#import "FutureSource.h"
 
 @interface RegisterViewController : UIViewController <CountryCodeViewControllerDelegate, UITextFieldDelegate> {
-@private FutureSource* registered;
-@private FutureSource* futureChallengeAcceptedSource;
-@private CancelTokenSource* life;
+@private TOCFutureSource* registered;
+@private TOCFutureSource* futureChallengeAcceptedSource;
+@private TOCCancelTokenSource* life;
 }
 
 @property (nonatomic, strong) IBOutlet UIButton *registerButton;

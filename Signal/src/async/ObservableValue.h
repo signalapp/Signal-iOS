@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "CancelToken.h"
+#import "CollapsingFutures.h"
 #import "Queue.h"
 
 typedef void (^LatestValueCallback)(id latestValue);
@@ -19,11 +19,11 @@ typedef void (^LatestValueCallback)(id latestValue);
 @property (readonly,atomic) id currentValue;
 
 -(void) watchLatestValueOnArbitraryThread:(LatestValueCallback)callback
-                           untilCancelled:(id<CancelToken>)untilCancelledToken;
+                           untilCancelled:(TOCCancelToken*)untilCancelledToken;
 
 -(void) watchLatestValue:(LatestValueCallback)callback
                 onThread:(NSThread*)thread
-          untilCancelled:(id<CancelToken>)untilCancelledToken;
+          untilCancelled:(TOCCancelToken*)untilCancelledToken;
 
 @end
 

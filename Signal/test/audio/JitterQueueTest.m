@@ -16,7 +16,6 @@
 #define testLoggedResync(q, oldReadHeadSequenceNumber, newReadHeadSequenceNumber) testLogged(q, ([NSString stringWithFormat:@"resync %d to %d", oldReadHeadSequenceNumber,newReadHeadSequenceNumber]))
 
 @interface JitterQueueTest : XCTestCase
-
 @end
 
 @implementation JitterQueueTest

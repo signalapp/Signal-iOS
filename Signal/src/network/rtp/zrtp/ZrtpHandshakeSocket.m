@@ -19,7 +19,7 @@
     [rtpSocket send:[packet embeddedIntoRtpPacketWithSequenceNumber:sequenceNumber
                                                 usingInteropOptions:rtpSocket->interopOptions]];
 }
--(void) startWithHandler:(PacketHandler*)handler untilCancelled:(id<CancelToken>)untilCancelledToken {
+-(void) startWithHandler:(PacketHandler*)handler untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(handler != nil);
     requireState(handshakePacketHandler == nil);
     

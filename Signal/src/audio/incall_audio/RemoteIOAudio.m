@@ -21,7 +21,7 @@
 
 static bool doesActiveInstanceExist;
 
-+(RemoteIOAudio*) remoteIOInterfaceStartedWithDelegate:(id<AudioCallbackHandler>)delegateIn untilCancelled:(id<CancelToken>)untilCancelledToken {
++(RemoteIOAudio*) remoteIOInterfaceStartedWithDelegate:(id<AudioCallbackHandler>)delegateIn untilCancelled:(TOCCancelToken*)untilCancelledToken {
     
     checkOperationDescribe(!doesActiveInstanceExist, @"Only one RemoteIOInterfance instance can exist at a time. Adding more will break previous instances.");
     doesActiveInstanceExist = true;
@@ -162,7 +162,7 @@ static bool doesActiveInstanceExist;
     [unusedBuffers addObject:buffer];
 }
 
--(void) startWithDelegate:(id<AudioCallbackHandler>)delegateIn untilCancelled:(id<CancelToken>)untilCancelledToken {
+-(void) startWithDelegate:(id<AudioCallbackHandler>)delegateIn untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(delegateIn != nil);
     @synchronized(self){
         requireState(state == NOT_STARTED);
@@ -172,7 +172,7 @@ static bool doesActiveInstanceExist;
         state = STARTED;
     }
 
-    [untilCancelledToken whenCancelled:^{
+    [untilCancelledToken whenCancelledDo:^{
         @synchronized(self) {
             state = TERMINATED;
             doesActiveInstanceExist = false;

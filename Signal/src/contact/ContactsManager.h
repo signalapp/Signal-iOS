@@ -1,8 +1,7 @@
 #import <Foundation/Foundation.h>
+#import "CollapsingFutures.h"
 #import "Contact.h"
-#import "Future.h"
 #import "ObservableValue.h"
-#import "CancelTokenSource.h"
 
 /**
  *
@@ -18,11 +17,11 @@ typedef void(^ABAccessRequestCompletionBlock)(BOOL hasAccess);
 typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 
 @interface ContactsManager : NSObject {
-@private Future* futureAddressBook;
+@private TOCFuture* futureAddressBook;
 @private ObservableValueController* observableContactsController;
 @private ObservableValueController* observableWhisperUsersController;
 @private ObservableValueController* observableFavouritesController;
-@private CancelTokenSource* life;
+@private TOCCancelTokenSource* life;
 @private NSDictionary *latestContactsById;
 @private NSDictionary *latestWhisperUsersById;
 }
