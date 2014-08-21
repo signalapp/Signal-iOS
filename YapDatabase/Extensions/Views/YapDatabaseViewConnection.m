@@ -351,7 +351,7 @@
 		hasDiskChanges = [self isPersistentView];
 	}
 	
-	if (groupingBlockChanged || sortingBlock || versionTagChanged)
+	if (groupingBlockChanged || sortingBlockChanged || versionTagChanged)
 	{
 		if (internalChangeset == nil)
 			internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
@@ -375,7 +375,7 @@
 	{
 		externalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
 		
-  		externalChangeset[changeset_key_changes] = [changes copy]; // immutable copy
+		externalChangeset[changeset_key_changes] = [changes copy]; // immutable copy
 	}
 	
 	*internalChangesetPtr = internalChangeset;
