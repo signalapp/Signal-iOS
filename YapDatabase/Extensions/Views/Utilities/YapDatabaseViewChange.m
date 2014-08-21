@@ -776,9 +776,6 @@
 		NSUInteger finalRangeLength; // calculate me
 		NSUInteger finalRangeOffset; // calculate me
 		
-		NSUInteger finalRangeMin;    // calculate me
-		NSUInteger finalRangeMax;    // calculate me
-		
 		if (originalRangeOpts.isFixedRange)
 		{
 			// FIXED Range:
@@ -809,23 +806,6 @@
 				maxFinalRangeLength = 0;
 			
 			finalRangeLength = MIN(originalRangeOpts.maxLength, maxFinalRangeLength);
-			
-			if (pin == YapDatabaseViewBeginning)
-			{
-				finalRangeMin = finalRangeOffset;
-				finalRangeMax = finalRangeOffset + finalRangeLength;
-			}
-			else // if (pin == YapDatabaseViewEnd)
-			{
-				if (finalRangeOffset < finalGroupCount) {
-					finalRangeMax = finalGroupCount - finalRangeOffset;
-					finalRangeMin = finalRangeMax - finalRangeLength;
-				}
-				else {
-					finalRangeMax = 0;
-					finalRangeMin = 0;
-				}
-			}
 		}
 		else // if (rangeOpts.isFlexibleRange)
 		{
@@ -834,8 +814,8 @@
 			// The length changes as items are inserted and deleted with the range boundary.
 			// The offset changes as items are inserted and deleted between the range and its pinned end.
 			
-			finalRangeMin = originalRangeMin;
-			finalRangeMax = originalRangeMax;
+			NSUInteger finalRangeMin = originalRangeMin;
+			NSUInteger finalRangeMax = originalRangeMax;
 			
 			BOOL finalRangeWasEmpty = ((finalRangeMax - finalRangeMin) == 0);
 			
