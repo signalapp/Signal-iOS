@@ -1008,12 +1008,12 @@
 	NSMutableIndexSet *indexesToRemove = [NSMutableIndexSet indexSet];
 	NSMutableIndexSet *indexesThatMatch = [NSMutableIndexSet indexSet];
 	
-	NSUInteger count = [changes count];
+	NSUInteger changesCount = [changes count];
 	
-	__unsafe_unretained id *_changes = (__unsafe_unretained id *)malloc(sizeof(id) * count);
-	[changes getObjects:_changes range:NSMakeRange(0, count)];
+	__unsafe_unretained id *_changes = (__unsafe_unretained id *)malloc(sizeof(id) * changesCount);
+	[changes getObjects:_changes range:NSMakeRange(0, changesCount)];
 	
-	for (i = 0; i < count; i++)
+	for (i = 0; i < changesCount; i++)
 	{
 		if ([indexesToRemove containsIndex:i]) continue;
 		
@@ -1022,8 +1022,10 @@
 		
 		// Find later operations with the same key
 		
-		for (j = i+1; j < count; j++)
+		for (j = i+1; j < changesCount; j++)
 		{
+			if ([indexesToRemove containsIndex:j]) continue;
+			
 			__unsafe_unretained YapDatabaseViewRowChange *laterChange = _changes[j];
 			BOOL changesAreForSameKey = NO;
 			
@@ -1255,7 +1257,7 @@
 			
 			[indexesThatMatch removeAllIndexes];
 			
-		} // if ([indexesThatMatch count] > 0)
+		} // fi ([indexesThatMatch count] > 0)
 		
 	} // while (i < count)
 	
@@ -1273,32 +1275,41 @@
 **/
 + (void)consolidateSectionChanges:(NSMutableArray *)changes
 {
-	NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSet];
+	NSUInteger i;
+	NSUInteger j;
 	
-	NSUInteger i = 0;
-	while (i < [changes count])
+	NSMutableIndexSet *indexesToRemove = [NSMutableIndexSet indexSet];
+	NSMutableIndexSet *indexesThatMatch = [NSMutableIndexSet indexSet];
+	
+	NSUInteger changesCount = [changes count];
+	
+	__unsafe_unretained id *_changes = (__unsafe_unretained id *)malloc(sizeof(id) * changesCount);
+	[changes getObjects:_changes range:NSMakeRange(0, changesCount)];
+	
+	for (i = 0; i < changesCount; i++)
 	{
-		YapDatabaseViewSectionChange *firstSectionChangeForGroup = [changes objectAtIndex:i];
+		if ([indexesToRemove containsIndex:i]) continue;
+		
+		__unsafe_unretained YapDatabaseViewSectionChange *firstSectionChangeForGroup = _changes[i];
 		
 		// Find later operations with the same group
 		
-		for (NSUInteger j = i+1; j < [changes count]; j++)
+		for (j = i+1; j < changesCount; j++)
 		{
-			YapDatabaseViewSectionChange *laterSectionChange = [changes objectAtIndex:j];
+			if ([indexesToRemove containsIndex:j]) continue;
+			
+			__unsafe_unretained YapDatabaseViewSectionChange *laterSectionChange = _changes[j];
 			
 			if ([laterSectionChange->group isEqualToString:firstSectionChangeForGroup->group])
 			{
-				[indexSet addIndex:j];
+				[indexesThatMatch addIndex:j];
 			}
 		}
 		
-		if ([indexSet count] == 0)
+		if ([indexesThatMatch count] > 0)
 		{
-			i++;
-		}
-		else
-		{
-			YapDatabaseViewSectionChange *lastSectionChangeForGroup = [changes objectAtIndex:[indexSet lastIndex]];
+			__unsafe_unretained YapDatabaseViewSectionChange *lastSectionChangeForGroup =
+			  _changes[[indexesThatMatch lastIndex]];
 			
 			if (firstSectionChangeForGroup->type == YapDatabaseViewChangeDelete)
 			{
@@ -1308,8 +1319,7 @@
 					//
 					// All operations except the first are no-ops
 					
-					[changes removeObjectsAtIndexes:indexSet];
-					i++;
+					[indexesToRemove addIndexes:indexesThatMatch];
 				}
 				else // if (lastSectionChangeForGroup->type == YapDatabaseViewChangeInsert)
 				{
@@ -1317,8 +1327,8 @@
 					//
 					// All operations are no-ops (& i remains the same)
 					
-					[changes removeObjectsAtIndexes:indexSet];
-					[changes removeObjectAtIndex:i];
+					[indexesToRemove addIndexes:indexesThatMatch];
+					[indexesToRemove addIndex:i];
 				}
 			}
 			else if (firstSectionChangeForGroup->type == YapDatabaseViewChangeInsert)
@@ -1329,8 +1339,8 @@
 					//
 					// All operations are no-ops (& i remains the same)
 					
-					[changes removeObjectsAtIndexes:indexSet];
-					[changes removeObjectAtIndex:i];
+					[indexesToRemove addIndexes:indexesThatMatch];
+					[indexesToRemove addIndex:i];
 				}
 				else if (lastSectionChangeForGroup->type == YapDatabaseViewChangeInsert)
 				{
@@ -1338,13 +1348,22 @@
 					//
 					// All operations except the first are no-ops.
 					
-					[changes removeObjectsAtIndexes:indexSet];
-					i++;
+					[indexesToRemove addIndexes:indexesThatMatch];
 				}
 			}
             
-            [indexSet removeAllIndexes];
-		}
+            [indexesThatMatch removeAllIndexes];
+			
+		} // fi ([indexesThatMatch count] > 0)
+		
+	} // end for (i = 0; i < changesCount; i++)
+	
+	if (_changes) {
+		free(_changes);
+	}
+	
+	if ([indexesToRemove count] > 0) {
+		[changes removeObjectsAtIndexes:indexesToRemove];
 	}
 }
 
@@ -2256,7 +2275,7 @@
 				
 				for (NSUInteger i = 0; i < beginningChangeCount; i++)
 				{
-					YapDatabaseViewRowChange *rowChange = [rowChanges objectAtIndex:i];
+					__unsafe_unretained YapDatabaseViewRowChange *rowChange = [rowChanges objectAtIndex:i];
 					
 					if (rowChange->type != YapDatabaseViewChangeInsert &&
 					    rowChange->originalSection == originalSection &&
@@ -2324,7 +2343,7 @@
 		
 		for (NSUInteger i = 0; i < beginningChangeCount; i++)
 		{
-			YapDatabaseViewRowChange *rowChange = [rowChanges objectAtIndex:i];
+			__unsafe_unretained YapDatabaseViewRowChange *rowChange = [rowChanges objectAtIndex:i];
 			
 			if (rowChange->type == YapDatabaseViewChangeInsert)
 			{
@@ -2401,7 +2420,7 @@
 				
 				for (NSUInteger i = 0; i < beginningChangeCount; i++)
 				{
-					YapDatabaseViewRowChange *rowChange = [rowChanges objectAtIndex:i];
+					__unsafe_unretained YapDatabaseViewRowChange *rowChange = [rowChanges objectAtIndex:i];
 					
 					if (rowChange->type != YapDatabaseViewChangeInsert &&
 					    rowChange->originalSection == originalSection &&
@@ -2469,7 +2488,7 @@
 		
 		for (NSUInteger i = 0; i < beginningChangeCount; i++)
 		{
-			YapDatabaseViewRowChange *rowChange = [rowChanges objectAtIndex:i];
+			__unsafe_unretained YapDatabaseViewRowChange *rowChange = [rowChanges objectAtIndex:i];
 			
 			if (rowChange->type == YapDatabaseViewChangeDelete)
 			{
@@ -2513,11 +2532,11 @@
 	// STEP 1 : Handle dynamic sections
 	//
 	
-	NSUInteger i = 0;
-	while (i < [sectionChanges count])
+	NSMutableIndexSet *indexesToRemove = [NSMutableIndexSet indexSet];
+	
+	NSUInteger sectionChangeIndex = 0;
+	for (YapDatabaseViewSectionChange *sectionChange in sectionChanges)
 	{
-		YapDatabaseViewSectionChange *sectionChange = [sectionChanges objectAtIndex:i];
-		
 		if (sectionChange->type == YapDatabaseViewChangeDelete)
 		{
 			// Although a group was deleted, the user may be allowing empty sections.
@@ -2530,12 +2549,11 @@
 			{
 				// Emit
 				sectionChange->originalSection = originalSection;
-				i++;
 			}
 			else
 			{
 				// Don't emit
-				[sectionChanges removeObjectAtIndex:i];
+				[indexesToRemove addIndex:sectionChangeIndex];
 			}
 		}
 		else // if (sectionChange->type == YapDatabaseViewChangeInsert)
@@ -2550,14 +2568,20 @@
 			{
 				// Emit
 				sectionChange->finalSection = finalSection;
-				i++;
 			}
 			else
 			{
 				// Don't emit
-				[sectionChanges removeObjectAtIndex:i];
+				[indexesToRemove addIndex:sectionChangeIndex];
 			}
 		}
+		
+		sectionChangeIndex++;
+		
+	} // end for (YapDatabaseViewSectionChange *sectionChange in sectionChanges)
+	
+	if ([indexesToRemove count] > 0) {
+		[sectionChanges removeObjectsAtIndexes:indexesToRemove];
 	}
 	
 	//
