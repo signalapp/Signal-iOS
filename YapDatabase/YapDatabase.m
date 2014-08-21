@@ -281,7 +281,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		databasePath = path;
 		options = inOptions ? [inOptions copy] : [[YapDatabaseOptions alloc] init];
 		
-		BOOL isNewDatabaseFile = ![[NSFileManager defaultManager] fileExistsAtPath:databasePath];
+		__block BOOL isNewDatabaseFile = ![[NSFileManager defaultManager] fileExistsAtPath:databasePath];
 		
 		BOOL(^openConfigCreate)(void) = ^BOOL (void) { @autoreleasepool {
 		
