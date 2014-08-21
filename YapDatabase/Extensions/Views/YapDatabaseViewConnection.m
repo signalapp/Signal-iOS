@@ -625,7 +625,15 @@
 		// Furthermore, you're simply trading this exception, which comes with documented steps on how
 		// to fix the problem, for an exception from Apple which will be even harder to diagnose.
 		
-		@throw [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
+		NSException *exception =
+		  [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
+		
+		YDBLogError(@"Throwing exception: %@\n  - FailureReason: %@\n  - RecoverySuggestion: %@",
+		            exception, failureReason, suggestion);
+		
+		// For more help, go here:
+		// https://github.com/yaptv/YapDatabase/wiki/Views#managing-mappings
+		@throw exception;
 	}
 	
 	[YapDatabaseViewChange getSectionChanges:sectionChangesPtr
