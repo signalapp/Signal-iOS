@@ -499,17 +499,30 @@ typedef NSComparisonResult (^YapDatabaseViewMappingGroupSort)(NSString *group1, 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * You have to call this method to initialize the mappings.
+ * You have to call this method at least once to initialize the mappings.
  * This method uses the given transaction to fetch and cache the counts for each group.
  * 
- * This class is designed to be used with the method getSectionChanges:rowChanges:forNotifications:withMappings:.
- * That method needs the 'before' & 'after' snapshot of the mappings in order to calculate the proper changeset.
- * In order to get this, it automatically invokes this method.
- *
- * Thus you only have to manually invoke this method once.
- * Aftewards, it should be invoked for you.
+ * Mappings are implicitly tied to a databaseConnection's longLivedReadTransaction.
+ * That is, when you invoke [databaseConnection beginLongLivedReadTransaction] you are freezing the
+ * connection on a particular commit (a snapshot of the database at that point in time).
+ * Mappings must always be on the same snapshot as its corresponding databaseConnection.
  * 
- * Please see the example code above.
+ * Eventually, you move the databaseConnection to the latest commit.
+ * You do by invoking [databaseConnection beginLongLivedReadTransaction] again.
+ * And when you do this you MUST ensure the mappings are also updated to match the databaseConnection's new snapshot.
+ *
+ * There are 2 ways to do this:
+ *
+ * - Invoke getSectionChanges:rowChanges:forNotifications:withMappings:.
+ *   That method requires the 'before' & 'after' snapshot of the mappings in order to calculate the proper changeset.
+ *   And in order to get this, it automatically invokes this method.
+ *
+ * - Invoke this method again.
+ *   And do NOT invoke getSectionChanges:rowChanges:forNotifications:withMappings:.
+ *   You might take this route if the viewController isn't visible,
+ *   and you're simply planning on doing a [tableView reloadData].
+ * 
+ * Please also see the example code above.
 **/
 - (void)updateWithTransaction:(YapDatabaseReadTransaction *)transaction;
 

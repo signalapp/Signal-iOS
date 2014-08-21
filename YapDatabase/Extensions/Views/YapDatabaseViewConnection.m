@@ -5,6 +5,7 @@
 #import "YapDatabaseViewPage.h"
 #import "YapDatabaseViewChange.h"
 #import "YapDatabaseViewChangePrivate.h"
+#import "YapDatabaseViewMappingsPrivate.h"
 #import "YapCollectionKey.h"
 #import "YapCache.h"
 #import "YapDatabaseString.h"
@@ -548,28 +549,25 @@
 	}
 	
 	YapDatabaseViewMappings *originalMappings = [mappings copy];
-	__block BOOL isLongLivedReadTransaction = NO;
 	
 	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		isLongLivedReadTransaction = transaction.connection.isInLongLivedReadTransaction;
-		[mappings updateWithTransaction:transaction];
+		// Getting an exception here about not being in a longLivedReadTransaction?
+		//
+		// The databaseConnection needs to be in a longLivedReadTransaction in order to guarantee"
+		// (A) you can provide a stable data-source for your UI thread and
+		// (B) you can get changesets which match the movement from one stable data-source state to another.
+		//
+		// If you think your databaseConnection IS in a longLivedReadTransaction,
+		// then perhaps you aborted it by accident.
+		// This generally happens when you use a databaseConnection,
+		// which is in a longLivedReadTransaction, to perform a read-write transaction.
+		// Doing so implicitly forces the connection out of the longLivedReadTransaction,
+		// and moves it to the most recent snapshot. If this is the case,
+		// be sure to use a separate connection for your read-write transaction.
+		//
+		[mappings updateWithTransaction:transaction forceUpdateRangeOptions:NO];
 	}];
-	
-	if (!isLongLivedReadTransaction)
-	{
-		YDBLogWarn(@"%@ - The databaseConnection is NOT in a longLivedReadTransaction."
-		           @" It needs to be in order to guarantee"
-				   @" (A) you can provide a stable data-source for your UI thread and"
-				   @" (B) you can get changesets which match the movement from one"
-				   @" stable data-source state to another. If you think your databaseConnection IS"
-				   @" in a longLivedReadTransaction, then perhaps you aborted it by accident."
-				   @" This generally happens when you use a databaseConnection,"
-				   @" which is in a longLivedReadTransaction, to perform a read-write transaction."
-				   @" Doing so implicitly forces the connection out of the longLivedReadTransaction,"
-				   @" and moves it to the most recent snapshot. If this is the case,"
-				   @" be sure to use a separate connection for your read-write transaction.", THIS_METHOD);
-	}
 	
 	NSDictionary *firstChangeset = [[notifications objectAtIndex:0] userInfo];
 	NSDictionary *lastChangeset = [[notifications lastObject] userInfo];
@@ -586,11 +584,9 @@
 		
 		NSString *failureReason = [NSString stringWithFormat:
 		    @"preMappings.snapshotOfLastUpdate: expected(%llu) != found(%llu), "
-			@"postMappings.snapshotOfLastUpdate: expected(%llu) != found(%llu), "
-			@"isLongLivedReadTransaction = %@",
+			@"postMappings.snapshotOfLastUpdate: expected(%llu) != found(%llu), ",
 			originalMappings.snapshotOfLastUpdate, (firstSnapshot - 1),
-			mappings.snapshotOfLastUpdate, lastSnapshot,
-			(isLongLivedReadTransaction ? @"YES" : @"NO")];
+			mappings.snapshotOfLastUpdate, lastSnapshot];
 		
 		NSString *suggestion = [NSString stringWithFormat:
 		    @"When you initialize the database, the snapshot (uint64) is set to zero."

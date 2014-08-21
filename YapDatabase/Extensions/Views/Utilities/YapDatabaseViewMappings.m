@@ -332,6 +332,12 @@
 
 - (void)updateWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+	[self updateWithTransaction:transaction forceUpdateRangeOptions:YES];
+}
+
+- (void)updateWithTransaction:(YapDatabaseReadTransaction *)transaction
+      forceUpdateRangeOptions:(BOOL)forceUpdateRangeOptions
+{
 	if (![transaction->connection isInLongLivedReadTransaction])
 	{
 		NSString *reason = @"YapDatabaseViewMappings requires the connection to be in a longLivedReadTransaction.";
@@ -391,9 +397,13 @@
 	BOOL firstUpdate = (snapshotOfLastUpdate == UINT64_MAX);
 	snapshotOfLastUpdate = [transaction->connection snapshot];
 	
-	if (firstUpdate)
-		[self initializeRangeOptsLength];
-	
+	if (firstUpdate || forceUpdateRangeOptions) {
+		[self updateRangeOptionsLength];
+	}
+	else {
+		// This method is being called via getSectionChanges:rowChanges:forNotifications:withMappings:.
+		// That code path will manually update the rangeOptions during processing.
+	}
 	[self updateVisibility];
 }
 
@@ -442,10 +452,10 @@
 }
 
 /**
- * This method is internal.
+ * For UNIT TESTING only.
  * It is only for use by the unit tests in TestViewChangeLogic.
 **/
-- (void)updateWithCounts:(NSDictionary *)newCounts
+- (void)updateWithCounts:(NSDictionary *)newCounts forceUpdateRangeOptions:(BOOL)forceUpdateRangeOptions
 {
 	if (viewGroupsAreDynamic)
 	{
@@ -467,13 +477,16 @@
 	BOOL firstUpdate = (snapshotOfLastUpdate == UINT64_MAX);
 	snapshotOfLastUpdate = 0;
 	
-	if (firstUpdate)
-		[self initializeRangeOptsLength];
-	
+	if (firstUpdate || forceUpdateRangeOptions) {
+		[self updateRangeOptionsLength];
+	}
+	else {
+		// Simulating code path: getSectionChanges:rowChanges:forNotifications:withMappings:.
+	}
 	[self updateVisibility];
 }
 
-- (void)initializeRangeOptsLength
+- (void)updateRangeOptionsLength
 {
 	NSAssert(snapshotOfLastUpdate != UINT64_MAX, @"The counts are needed to set rangeOpts.length");
 	

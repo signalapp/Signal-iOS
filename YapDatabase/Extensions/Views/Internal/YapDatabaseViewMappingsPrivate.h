@@ -7,6 +7,17 @@
 @interface YapDatabaseViewMappings ()
 
 /**
+ * The method getSectionChanges:rowChanges:forNotifications:withMappings: will call this method,
+ * and pass forceUpdateRangeOptions==NO.
+ *
+ * That way it can manually update the rangeOptions during processing.
+ * This is needed in order to properly update flexible ranges,
+ * and to inject rowChanges if needed.
+**/
+- (void)updateWithTransaction:(YapDatabaseReadTransaction *)transaction
+      forceUpdateRangeOptions:(BOOL)forceUpdateRangeOptions;
+
+/**
  * During processing we need to disable the the isUsingConsolidatedGroup flag
  * in order to access the raw mappings.
 **/
@@ -76,6 +87,6 @@
 /**
  * For UNIT TESTING only.
 **/
-- (void)updateWithCounts:(NSDictionary *)counts;
+- (void)updateWithCounts:(NSDictionary *)newCounts forceUpdateRangeOptions:(BOOL)forceUpdateRangeOptions;
 
 @end
