@@ -39,13 +39,6 @@ static NSString *const ExtKey_version_deprecated = @"version";
 #define YAP_DATABASE_VIEW_MAX_PAGE_SIZE 50
 
 /**
- * Declare that this class implements YapDatabaseExtensionTransaction_Hooks protocol.
- * This is done privately, as the protocol is internal.
-**/
-@interface YapDatabaseViewTransaction () <YapDatabaseExtensionTransaction_Hooks>
-@end
-
-/**
  * ARCHITECTURE OVERVIEW:
  *
  * A YapDatabaseView allows one to store a ordered array of collection/key tuples.
@@ -3227,7 +3220,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark YapDatabaseExtensionTransaction_Hooks
+#pragma mark Transaction Hooks
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**

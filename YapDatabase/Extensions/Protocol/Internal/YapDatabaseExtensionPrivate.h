@@ -100,41 +100,11 @@
 // See YapDatabaseExtensionTransaction.m for discussion of this method
 - (void)rollbackTransaction;
 
+#pragma mark Hooks
+
 /**
  * See YapDatabaseExtensionTransaction.m for discussion of these methods
 **/
-
-- (BOOL)getBoolValue:(BOOL *)valuePtr forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
-- (BOOL)boolValueForExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
-- (void)setBoolValue:(BOOL)value forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
-
-- (BOOL)getIntValue:(int *)valuePtr forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
-- (int)intValueForExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
-- (void)setIntValue:(int)value forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
-
-- (BOOL)getDoubleValue:(double *)valuePtr forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
-- (double)doubleValueForExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
-- (void)setDoubleValue:(double)value forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
-
-- (NSString *)stringValueForExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
-- (void)setStringValue:(NSString *)value forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
-
-- (NSData *)dataValueForExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
-- (void)setDataValue:(NSData *)value forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
-
-- (void)removeValueForExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
-
-@end
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * The YapDatabaseExtensionTransaction subclass MUST implement the methods in this protocol.
-**/
-@protocol YapDatabaseExtensionTransaction_Hooks
-@required
 
 - (void)handleInsertObject:(id)object
           forCollectionKey:(YapCollectionKey *)collectionKey
@@ -159,13 +129,34 @@
 
 - (void)handleRemoveObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid;
 
-/**
- * Note: The number of items passed to this method has the following guarantee:
- * 
- * count <= (SQLITE_LIMIT_VARIABLE_NUMBER - 1)
-**/
 - (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids;
 
 - (void)handleRemoveAllObjectsInAllCollections;
+
+#pragma mark Configuration Values
+
+/**
+ * See YapDatabaseExtensionTransaction.m for discussion of these methods
+**/
+
+- (BOOL)getBoolValue:(BOOL *)valuePtr forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+- (BOOL)boolValueForExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+- (void)setBoolValue:(BOOL)value forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+
+- (BOOL)getIntValue:(int *)valuePtr forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+- (int)intValueForExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+- (void)setIntValue:(int)value forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+
+- (BOOL)getDoubleValue:(double *)valuePtr forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+- (double)doubleValueForExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+- (void)setDoubleValue:(double)value forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+
+- (NSString *)stringValueForExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+- (void)setStringValue:(NSString *)value forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+
+- (NSData *)dataValueForExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+- (void)setDataValue:(NSData *)value forExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
+
+- (void)removeValueForExtensionKey:(NSString *)key persistent:(BOOL)inDatabaseOrMemoryTable;
 
 @end

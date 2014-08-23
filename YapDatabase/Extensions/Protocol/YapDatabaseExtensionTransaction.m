@@ -202,7 +202,115 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Persistent Values
+#pragma mark Hooks
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * YapDatabaseReadWriteTransaction Hook, invoked post-op.
+ * Corresponds to [transaction setObject:object forKey:key inCollection:collection] &
+ *                [transaction setObject:object forKey:key inCollection:collection withMetadata:metadata]
+ * where the object is being inserted (value for collection/key does NOT exist at the moment this method is called).
+**/
+- (void)handleInsertObject:(id)object
+          forCollectionKey:(YapCollectionKey *)collectionKey
+              withMetadata:(id)metadata
+                     rowid:(int64_t)rowid
+{
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
+}
+
+/**
+ * YapDatabaseReadWriteTransaction Hook, invoked post-op.
+ * Corresponds to [transaction setObject:object forKey:key inCollection:collection] &
+ *                [transaction setObject:object forKey:key inCollection:collection withMetadata:metadata]
+ * where the object is being updated (value for collection/key DOES exist, and is being updated/changed).
+**/
+- (void)handleUpdateObject:(id)object
+          forCollectionKey:(YapCollectionKey *)collectionKey
+              withMetadata:(id)metadata
+                     rowid:(int64_t)rowid
+{
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
+}
+
+/**
+ * YapDatabaseReadWriteTransaction Hook, invoked post-op.
+ * Corresponds to [transaction replaceObject:object forKey:key inCollection:collection].
+**/
+- (void)handleReplaceObject:(id)object
+           forCollectionKey:(YapCollectionKey *)collectionKey
+                  withRowid:(int64_t)rowid
+{
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
+}
+
+/**
+ * YapDatabaseReadWriteTransaction Hook, invoked post-op.
+ * Corresponds to [transaction replaceMetadata:metadata forKey:key inCollection:collection].
+**/
+- (void)handleReplaceMetadata:(id)metadata
+             forCollectionKey:(YapCollectionKey *)collectionKey
+                    withRowid:(int64_t)rowid
+{
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
+}
+
+/**
+ * YapDatabaseReadWriteTransaction Hook, invoked post-op.
+ * Corresponds to [transaction touchObjectForKey:key inCollection:collection].
+**/
+- (void)handleTouchObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+{
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
+}
+
+/**
+ * YapDatabaseReadWriteTransaction Hook, invoked post-op.
+ * Corresponds to [transaction touchMetadataForKey:key inCollection:collection].
+**/
+- (void)handleTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+{
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
+}
+
+/**
+ * YapDatabaseReadWriteTransaction Hook, invoked post-op.
+ * Corresponds to [transaction removeObjectForKey:key inCollection:collection].
+**/
+- (void)handleRemoveObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+{
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
+}
+
+/**
+ * YapDatabaseReadWriteTransaction Hook, invoked post-op.
+ * 
+ * Corresponds to [transaction removeObjectsForKeys:keys inCollection:collection] &
+ *                [transaction removeAllObjectsInCollection:collection].
+ *
+ * IMPORTANT:
+ *   The number of items passed to this method has the following guarantee:
+ *   count <= (SQLITE_LIMIT_VARIABLE_NUMBER - 1)
+ * 
+ * The YapDatabaseReadWriteTransaction will inspect the list of keys that are to be removed,
+ * and then loop over them in "chunks" which are readily processable for extensions.
+**/
+- (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
+{
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
+}
+
+/**
+ * YapDatabaseReadWriteTransaction Hook, invoked post-op.
+ * Corresponds to [transaction removeAllObjectsInAllCollections].
+**/
+- (void)handleRemoveAllObjectsInAllCollections
+{
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Configuration Values
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**

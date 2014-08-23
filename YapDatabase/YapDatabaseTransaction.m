@@ -4212,7 +4212,7 @@
 		[connection->metadataCache removeObjectForKey:cacheKey];
 		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 		
-		for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
+		for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 		{
 			[extTransaction handleRemoveObjectForCollectionKey:cacheKey withRowid:rowid];
 		}
@@ -4281,7 +4281,7 @@
 	[connection->objectCache removeObjectForKey:cacheKey];
 	[connection->objectChanges setObject:[YapNull null] forKey:cacheKey];
 	
-	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
+	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
 		[extTransaction handleRemoveObjectForCollectionKey:cacheKey withRowid:rowid];
 	}
@@ -4343,7 +4343,7 @@
 	[connection->metadataCache removeObjectForKey:cacheKey];
 	[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 	
-	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
+	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
 		[extTransaction handleReplaceMetadata:nil forCollectionKey:cacheKey withRowid:rowid];
 	}
@@ -4556,7 +4556,7 @@
 		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 	}
 	
-	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
+	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
 		if (found)
 			[extTransaction handleUpdateObject:object
@@ -4662,7 +4662,7 @@
 	[connection->objectCache setObject:object forKey:cacheKey];
 	[connection->objectChanges setObject:_object forKey:cacheKey];
 	
-	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
+	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
 		[extTransaction handleReplaceObject:object forCollectionKey:cacheKey withRowid:rowid];
 	}
@@ -4761,7 +4761,7 @@
 		[connection->metadataChanges setObject:[YapNull null] forKey:cacheKey];
 	}
 	
-	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
+	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
 		[extTransaction handleReplaceMetadata:metadata forCollectionKey:cacheKey withRowid:rowid];
 	}
@@ -4786,7 +4786,7 @@
 	if ([connection->metadataChanges objectForKey:cacheKey] == nil)
 		[connection->metadataChanges setObject:[YapTouch touch] forKey:cacheKey];
 	
-	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
+	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
 		[extTransaction handleTouchObjectForCollectionKey:cacheKey withRowid:rowid];
 	}
@@ -4804,7 +4804,7 @@
 	if ([connection->metadataChanges objectForKey:cacheKey] == nil)
 		[connection->metadataChanges setObject:[YapTouch touch] forKey:cacheKey];
 	
-	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
+	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
 		[extTransaction handleTouchMetadataForCollectionKey:cacheKey withRowid:rowid];
 	}
@@ -4855,7 +4855,7 @@
 	[connection->removedKeys addObject:cacheKey];
 	[connection->removedRowids addObject:rowidNumber];
 	
-	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
+	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
 		[extTransaction handleRemoveObjectForCollectionKey:cacheKey withRowid:rowid];
 	}
@@ -5048,7 +5048,7 @@
 				[connection->removedKeys addObject:cacheKey];
 			}
 			
-			for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
+			for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 			{
 				[extTransaction handleRemoveObjectsForKeys:foundKeys
 				                              inCollection:collection
@@ -5314,7 +5314,7 @@
 			
 			[connection->removedRowids addObjectsFromArray:foundRowids];
 			
-			for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
+			for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 			{
 				[extTransaction handleRemoveObjectsForKeys:foundKeys
 				                              inCollection:collection
@@ -5358,7 +5358,7 @@
 	[connection->removedRowids removeAllObjects];
 	connection->allKeysRemoved = YES;
 	
-	for (id <YapDatabaseExtensionTransaction_Hooks> extTransaction in [self orderedExtensions])
+	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
 		[extTransaction handleRemoveAllObjectsInAllCollections];
 	}

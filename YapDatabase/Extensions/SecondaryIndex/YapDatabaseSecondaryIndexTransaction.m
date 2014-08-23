@@ -25,13 +25,6 @@ static NSString *const ExtKey_classVersion       = @"classVersion";
 static NSString *const ExtKey_versionTag         = @"versionTag";
 static NSString *const ExtKey_version_deprecated = @"version";
 
-/**
- * Declare that this class implements YapDatabaseExtensionTransaction_Hooks protocol.
- * This is done privately, as the protocol is internal.
-**/
-@interface YapDatabaseSecondaryIndexTransaction () <YapDatabaseExtensionTransaction_Hooks>
-@end
-
 
 @implementation YapDatabaseSecondaryIndexTransaction
 
@@ -674,7 +667,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark YapDatabaseExtensionTransaction_Hooks
+#pragma mark Transaction Hooks
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
