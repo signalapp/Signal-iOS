@@ -131,8 +131,9 @@ static NSString *const ExtKey_class = @"class";
 		if (defaults.objectCacheEnabled)
 		{
 			objectCacheLimit = defaults.objectCacheLimit;
-			objectCache = [[YapCache alloc] initWithKeyClass:[YapCollectionKey class]];
-			objectCache.countLimit = objectCacheLimit;
+			objectCache = [[YapCache alloc] initWithKeyClass:[YapCollectionKey class]
+			                                    keyCallbacks:[YapCollectionKey keyCallbacks]
+			                                      countLimit:objectCacheLimit];
 			
 			if (keyCacheLimit != UNLIMITED_CACHE_LIMIT)
 			{
@@ -145,8 +146,9 @@ static NSString *const ExtKey_class = @"class";
 		if (defaults.metadataCacheEnabled)
 		{
 			metadataCacheLimit = defaults.metadataCacheLimit;
-			metadataCache = [[YapCache alloc] initWithKeyClass:[YapCollectionKey class]];
-			metadataCache.countLimit = metadataCacheLimit;
+			metadataCache = [[YapCache alloc] initWithKeyClass:[YapCollectionKey class]
+			                                      keyCallbacks:[YapCollectionKey keyCallbacks]
+		 	                                        countLimit:metadataCacheLimit];
 			
 			if (keyCacheLimit != UNLIMITED_CACHE_LIMIT)
 			{
@@ -456,8 +458,9 @@ static NSString *const ExtKey_class = @"class";
 		{
 			if (objectCache == nil)
 			{
-				objectCache = [[YapCache alloc] initWithKeyClass:[YapCollectionKey class]];
-				objectCache.countLimit = objectCacheLimit;
+				objectCache = [[YapCache alloc] initWithKeyClass:[YapCollectionKey class]
+				                                    keyCallbacks:[YapCollectionKey keyCallbacks]
+				                                      countLimit:objectCacheLimit];
 			}
 		}
 		else // Disabled
@@ -540,8 +543,9 @@ static NSString *const ExtKey_class = @"class";
 		{
 			if (metadataCache == nil)
 			{
-				metadataCache = [[YapCache alloc] initWithKeyClass:[YapCollectionKey class]];
-				metadataCache.countLimit = metadataCacheLimit;
+				metadataCache = [[YapCache alloc] initWithKeyClass:[YapCollectionKey class]
+				                                      keyCallbacks:[YapCollectionKey keyCallbacks]
+				                                        countLimit:metadataCacheLimit];
 			}
 		}
 		else // Disabled

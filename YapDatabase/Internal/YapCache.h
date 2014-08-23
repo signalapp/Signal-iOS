@@ -28,10 +28,13 @@
  * Initializes a cache.
  *
  * Since the countLimit is a common configuration, it may optionally be passed during initialization.
- * This is also used as a hint internally when initializing components (i.e. [NSMutableDictionary initWithCapacity:]).
 **/
 - (id)initWithKeyClass:(Class)keyClass;
 - (id)initWithKeyClass:(Class)keyClass countLimit:(NSUInteger)countLimit;
+
+- (id)initWithKeyClass:(Class)keyClass
+          keyCallbacks:(CFDictionaryKeyCallBacks)keyCallbacks
+            countLimit:(NSUInteger)countLimit;
 
 /**
  * The countLimit specifies the maximum number of items to keep in the cache.

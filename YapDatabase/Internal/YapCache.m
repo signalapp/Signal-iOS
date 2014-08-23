@@ -81,15 +81,28 @@
 
 - (id)init
 {
-	return [self initWithKeyClass:NULL countLimit:0];
+	return [self initWithKeyClass:NULL
+	                 keyCallbacks:kCFTypeDictionaryKeyCallBacks
+	                   countLimit:0];
 }
 
 - (id)initWithKeyClass:(Class)inKeyClass
 {
-	return [self initWithKeyClass:inKeyClass countLimit:0];
+	return [self initWithKeyClass:inKeyClass
+	                 keyCallbacks:kCFTypeDictionaryKeyCallBacks
+	                   countLimit:0];
 }
 
 - (id)initWithKeyClass:(Class)inKeyClass countLimit:(NSUInteger)inCountLimit
+{
+	return [self initWithKeyClass:inKeyClass
+	                 keyCallbacks:kCFTypeDictionaryKeyCallBacks
+	                   countLimit:inCountLimit];
+}
+
+- (id)initWithKeyClass:(Class)inKeyClass
+          keyCallbacks:(CFDictionaryKeyCallBacks)inKeyCallbacks
+            countLimit:(NSUInteger)inCountLimit
 {
 	if ((self = [super init]))
 	{
@@ -109,7 +122,7 @@
 		
 		cfdict = CFDictionaryCreateMutable(kCFAllocatorDefault,
 		                                   0,
-		                                   &kCFTypeDictionaryKeyCallBacks,
+		                                   &inKeyCallbacks,
 		                                   &kCFTypeDictionaryValueCallBacks);
 	}
 	return self;

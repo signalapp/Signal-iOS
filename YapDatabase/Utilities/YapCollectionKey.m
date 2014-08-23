@@ -140,14 +140,6 @@ YapCollectionKey* YapCollectionKeyCreate(NSString *collection, NSString *key)
 	return [[YapCollectionKey alloc] initWithCollection:collection key:key];
 }
 
-NS_INLINE NSUInteger YapCollectionKeyHash(YapCollectionKey *ck)
-{
-	// We need a fast way to combine 2 hashes without creating a new string (which is slow).
-	// To accomplish this we use the murmur hashing algorithm.
-	
-	return YDB_MurmurHash([ck->collection hash], [ck->key hash]);
-}
-
 @synthesize collection = collection;
 @synthesize key = key;
 
@@ -165,7 +157,7 @@ NS_INLINE NSUInteger YapCollectionKeyHash(YapCollectionKey *ck)
 		else
 			key = [aKey copy];               // copy == retain if aKey is immutable
 		
-		hash = YapCollectionKeyHash(self);
+		hash = YDB_MurmurHash([collection hash], [key hash]);
 	}
 	return self;
 }
@@ -177,7 +169,7 @@ NS_INLINE NSUInteger YapCollectionKeyHash(YapCollectionKey *ck)
 		collection = [decoder decodeObjectForKey:@"collection"];
 		key        = [decoder decodeObjectForKey:@"key"];
 		
-		hash = YapCollectionKeyHash(self);
+		hash = YDB_MurmurHash([collection hash], [key hash]);
 	}
 	return self;
 }
@@ -216,7 +208,8 @@ NS_INLINE NSUInteger YapCollectionKeyHash(YapCollectionKey *ck)
 	return NO;
 }
 
-BOOL YapCollectionKeyEqual(__unsafe_unretained YapCollectionKey *ck1, __unsafe_unretained YapCollectionKey *ck2)
+BOOL YapCollectionKeyEqual(const __unsafe_unretained YapCollectionKey *ck1,
+                           const __unsafe_unretained YapCollectionKey *ck2)
 {
 	if (ck1->hash != ck2->hash)
 		return NO;
@@ -229,9 +222,25 @@ BOOL YapCollectionKeyEqual(__unsafe_unretained YapCollectionKey *ck1, __unsafe_u
 	return hash;
 }
 
+CFHashCode YapCollectionKeyHash(const __unsafe_unretained YapCollectionKey *ck)
+{
+	return (CFHashCode)(ck->hash);
+}
+
 - (NSString *)description
 {
 	return [NSString stringWithFormat:@"<YapCollectionKey collection(%@) key(%@)>", collection, key];
+}
+
++ (CFDictionaryKeyCallBacks)keyCallbacks
+{
+	CFDictionaryKeyCallBacks keyCallbacks;
+	memcpy(&keyCallbacks, &kCFTypeDictionaryKeyCallBacks, sizeof(CFDictionaryKeyCallBacks));
+	
+	keyCallbacks.equal = (CFDictionaryEqualCallBack)YapCollectionKeyEqual;
+	keyCallbacks.hash = (CFDictionaryHashCallBack)YapCollectionKeyHash;
+	
+	return keyCallbacks;
 }
 
 @end

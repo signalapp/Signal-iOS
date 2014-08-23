@@ -9,8 +9,6 @@
 **/
 @interface YapCollectionKey : NSObject <NSCopying, NSCoding>
 
-YapCollectionKey* YapCollectionKeyCreate(NSString *collection, NSString *key);
-
 - (id)initWithCollection:(NSString *)collection key:(NSString *)key;
 
 @property (nonatomic, strong, readonly) NSString *collection;
@@ -22,7 +20,14 @@ YapCollectionKey* YapCollectionKeyCreate(NSString *collection, NSString *key);
 - (BOOL)isEqual:(id)anObject;
 - (NSUInteger)hash;
 
-// Super optimized:
-BOOL YapCollectionKeyEqual(__unsafe_unretained YapCollectionKey *ck1, __unsafe_unretained YapCollectionKey *ck2);
+// For optimizing usage in YapCache
++ (CFDictionaryKeyCallBacks)keyCallbacks;
+
+// Super optimized (c function call faster than obj-c method invocation):
+BOOL YapCollectionKeyEqual(const __unsafe_unretained YapCollectionKey *ck1,
+                           const __unsafe_unretained YapCollectionKey *ck2);
+
+// Lazy programmer (less typing than alloc/init)
+YapCollectionKey* YapCollectionKeyCreate(NSString *collection, NSString *key);
 
 @end
