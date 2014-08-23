@@ -643,6 +643,13 @@
 			remoteGlobalIDString = A1FDCBF916DBC57D00868894;
 			remoteInfo = speex;
 		};
+		B6AFCEBA19A93DA60098CFCB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D221A088169C9E5E00537ABF;
+			remoteInfo = Signal;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -2982,6 +2989,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				B6AFCEBB19A93DA60098CFCB /* PBXTargetDependency */,
 			);
 			name = SignalTests;
 			productName = RedPhoneTests;
@@ -3790,6 +3798,11 @@
 			isa = PBXTargetDependency;
 			name = speex;
 			targetProxy = 70B800AD190C54870042E3F0 /* PBXContainerItemProxy */;
+		};
+		B6AFCEBB19A93DA60098CFCB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D221A088169C9E5E00537ABF /* Signal */;
+			targetProxy = B6AFCEBA19A93DA60098CFCB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
