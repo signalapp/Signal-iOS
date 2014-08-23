@@ -8,11 +8,81 @@
 #warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
 #endif
 
+/**
+ * An extension transaction is where a majority of the action happens.
+ * Subclasses will list the majority of their public API within the transaction.
+ *
+ * [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
+ *
+ *     object = [[transaction ext:@"view"] objectAtIndex:index inGroup:@"sales"];
+ *     //         ^^^^^^^^^^^^^^^^^^^^^^^
+ *     //         ^ Returns a YapDatabaseExtensionTransaction subclass instance.
+ * }];
+ *
+ * An extension transaction has a reference to the database transction (and therefore to sqlite),
+ * as well as a reference to its parent extension connection. It is the same in architecture as
+ * database connections and transactions. That is, all access (read-only or read-write) goes
+ * through a transaction. Further, each connection only has a single transaction at a time.
+ * Thus transactions are optimized by storing a majority of their state within their respective connection.
+ *
+ * An extension transaction is created on-demand (or as needed) from within a database transaction.
+ *
+ * During a read-only transaction:
+ * - If the extension is not requested, then it is not created.
+ * - If the extension is requested, it is created once per transaction.
+ * - Additional requests for the same extension return the existing instance.
+ *
+ * During a read-write transaction:
+ * - If a modification to the database is initiated,
+ *   every registered extension has an associated transaction created in order to handle the associated hook calls.
+ * - If the extension is requested, it is created once per transaction.
+ * - Additional requests for the same extension return the existing instance.
+ *
+ * The extension transaction is only valid from within the database transaction.
+**/
+@implementation YapDatabaseExtensionTransaction {
+	
+// You MUST store an unretained reference to the parent.
+// You MUST store an unretained reference to the corresponding database transaction.
+//
+// Yours should be similar to the example below, but typed according to your needs.
 
-@implementation YapDatabaseExtensionTransaction
+/* Example from YapDatabaseViewTransaction
+ 
+@private
+    __unsafe_unretained YapDatabaseViewConnection *viewConnection;
+    __unsafe_unretained YapDatabaseTransaction *databaseTransaction;
+ 
+*/
+}
 
 /**
- * See YapDatabaseExtensionPrivate for discussion of this method.
+ * Subclasses MUST implement this method.
+ * 
+ * This method is called during the registration process.
+ * Subclasses should perform any tasks needed in order to setup the extension for use by other connections.
+ *
+ * This includes creating any necessary tables,
+ * as well as possibly populating the tables by enumerating over the existing rows in the database.
+ * 
+ * The method should check to see if it has already been created.
+ * That is, is this a re-registration from a subsequent app launch,
+ * or is this the first time the extension has been registered under this name?
+ * 
+ * The recommended way of accomplishing this is via the yap2 table (which was designed for this purpose).
+ * There are various convenience methods that allow you store various settings about your extension in this table.
+ * See 'intValueForExtensionKey:' and other related methods.
+ * 
+ * Note: This method is invoked on a special readWriteTransaction that is created internally
+ * within YapDatabase for the sole purpose of registering and unregistering extensions.
+ * So this method need not setup itself for regular use.
+ * It is designed only to do the prep work of creating the extension dependencies (such as tables)
+ * so that regular instances (possibly read-only) can operate normally.
+ *
+ * See YapDatabaseViewTransaction for a reference implementation.
+ * 
+ * Return YES if completed successfully, or if already created.
+ * Return NO if some kind of error occured.
 **/
 - (BOOL)createIfNeeded
 {
@@ -21,7 +91,26 @@
 }
 
 /**
- * See YapDatabaseExtensionPrivate for discussion of this method.
+ * Subclasses MUST implement this method.
+ *
+ * This method is invoked in order to prepare an extension transaction for use.
+ * Remember, transactions are short lived instances.
+ * So an extension transaction should store the vast majority of its state information within the extension connection.
+ * Thus an extension transaction instance should generally only need to prepare itself once. (*)
+ * It should store preparation info in the connection.
+ * And future invocations of this method will see that the connection has all the prepared state it needs,
+ * and then this method will return immediately.
+ *
+ * (*) an exception to this rule may occur if the user aborts a read-write transaction (via rollback),
+ *     and the extension connection must dump all its prepared state.
+ *
+ * Changes that occur on other connections should get incorporated via the changeset architecture
+ * from within the extension connection subclass.
+ *
+ * This method may be invoked on a read-only OR read-write transaction.
+ *
+ * Return YES if completed successfully, or if already prepared.
+ * Return NO if some kind of error occured.
 **/
 - (BOOL)prepareIfNeeded
 {
@@ -49,7 +138,10 @@
 
 /**
  * Subclasses may OPTIONALLY implement this method.
- * This method is called if within a readwrite transaction.
+ * This method is only called if within a readwrite transaction.
+ *
+ * Subclasses may implement it to perform any "cleanup" before the changeset is requested.
+ * Remember, the changeset is requested before the commitTransaction method is invoked.
 **/
 - (void)prepareChangeset
 {
@@ -58,6 +150,7 @@
 }
 
 /**
+ * Subclasses MUST implement this method.
  * This method is only called if within a readwrite transaction.
 **/
 - (void)commitTransaction
@@ -71,6 +164,7 @@
 }
 
 /**
+ * Subclasses MUST implement this method.
  * This method is only called if within a readwrite transaction.
 **/
 - (void)rollbackTransaction
@@ -87,12 +181,20 @@
 #pragma mark Generic Accessors
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Subclasses MUST implement these methods.
+ * They are needed by various utility methods.
+**/
 - (YapDatabaseReadTransaction *)databaseTransaction
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return nil;
 }
 
+/**
+ * Subclasses MUST implement these methods.
+ * They are needed by various utility methods.
+**/
 - (YapDatabaseExtensionConnection *)extensionConnection
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
@@ -104,8 +206,33 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * The following method are convenience methods for getting and setting persistent values for the extension.
- * The persistent values are stored in the yap2 table, which is specifically designed for this use.
+ * The following are convenience methods for getting and setting configuration values for the extension.
+ * You may choose to store configuration info either persistently (in database), or non-persistently (in memory only).
+ * 
+ * Persistent values are stored in the yap2 sqlite table.
+ * Non-persistent values are stored in a YapMemoryTable.
+ *
+ * The yap2 sqlite table is structured like this:
+ *
+ * CREATE TABLE IF NOT EXISTS "yap2" (
+ *   "extension" CHAR NOT NULL,
+ *   "key" CHAR NOT NULL,
+ *   "data" BLOB,
+ *   PRIMARY KEY ("extension", "key")
+ * );
+ *
+ * You pass the "key" and the "data" (which can be typed however you want it to be such as int, string, etc).
+ * The "extension" value is automatically set to the registeredName of the extension.
+ *
+ * Usage example:
+ *
+ *   The View extension stores a "versionTag" which is given to it during the init method by the user.
+ *   If the "versionTag" changes, this signifies that the user has changed something about the view,
+ *   such as the sortingBlock or groupingBlock. The view then knows to flush its tables and re-populate them.
+ *   It stores the "versionTag" in the yap2 table via the methods below.
+ *
+ * When an extension is unregistered, either manually or automatically (if orphaned),
+ * then the database system automatically deletes all values from the yap2 table where extension == registeredName.
 **/
 
 - (BOOL)getBoolValue:(BOOL *)valuePtr forExtensionKey:(NSString *)key persistent:(BOOL)persistent

@@ -4,6 +4,22 @@
 
 @implementation YapDatabaseExtension
 
+/**
+ * Subclasses MUST implement this method.
+ *
+ * This method is used when unregistering an extension in order to drop the related tables.
+ * 
+ * @param registeredName
+ *   The name the extension was registered using.
+ *   The extension should be able to generated the proper table name(s) using the given registered name.
+ * 
+ * @param transaction
+ *   A readWrite transaction for proper database access.
+ * 
+ * @param wasPersistent
+ *   If YES, then the extension should drop tables from sqlite.
+ *   If NO, then the extension should unregister the proper YapMemoryTable(s).
+**/
 + (void)dropTablesForRegisteredName:(NSString *)registeredName
                     withTransaction:(YapDatabaseReadWriteTransaction *)transaction
                       wasPersistent:(BOOL)wasPersistent
@@ -38,8 +54,10 @@
 }
 
 /**
- * Read-only properties.
- * Automatically set by YapDatabase instance during the registration process.
+ * After an extension has been successfully registered with a database,
+ * these properties will be set by YapDatabase instance.
+ *
+ * These properties should be considered READ-ONLY once set.
 **/
 @synthesize registeredName;
 @synthesize registeredDatabase;
