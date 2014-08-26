@@ -92,6 +92,103 @@
 	return result;
 }
 
+static const NSUInteger COUNT = 2500;
+static const NSUInteger STR_LENGTH = 2000;
+
+- (void)asyncFillDatabase:(YapDatabaseConnection *)connection after:(const NSTimeInterval)delayInSeconds
+{
+	dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	dispatch_after(when, dispatch_get_main_queue(), ^{
+	
+		[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+			
+			for (int i = 0; i < COUNT; i++)
+			{
+				NSString *key = [NSString stringWithFormat:@"%d", i];
+				
+				[transaction setObject:[self randomLetters:STR_LENGTH] forKey:key inCollection:nil];
+			}
+		}];
+	});
+}
+
+- (void)asyncFillOddIndexes:(YapDatabaseConnection *)connection after:(const NSTimeInterval)delayInSeconds
+{
+	dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	dispatch_after(when, dispatch_get_main_queue(), ^{
+		
+		[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+			
+			for (int i = 1; i < COUNT; i += 2)
+			{
+				NSString *key = [NSString stringWithFormat:@"%d", i];
+				
+				[transaction setObject:[self randomLetters:STR_LENGTH] forKey:key inCollection:nil];
+			}
+		}];
+	});
+}
+
+- (void)asyncFillEvenIndexes:(YapDatabaseConnection *)connection after:(const NSTimeInterval)delayInSeconds
+{
+	dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	dispatch_after(when, dispatch_get_main_queue(), ^{
+		
+		[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+			
+			for (int i = 0; i < COUNT; i += 2)
+			{
+				NSString *key = [NSString stringWithFormat:@"%d", i];
+				
+				[transaction setObject:[self randomLetters:STR_LENGTH] forKey:key inCollection:nil];
+			}
+		}];
+	});
+}
+
+- (void)asyncDeleteOddIndexes:(YapDatabaseConnection *)connection after:(const NSTimeInterval)delayInSeconds
+{
+	dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	dispatch_after(when, dispatch_get_main_queue(), ^{
+		
+		[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+			
+			for (int i = 1; i < COUNT; i+=2)
+			{
+				NSString *key = [NSString stringWithFormat:@"%d", i];
+				
+				[transaction removeObjectForKey:key inCollection:nil];
+			}
+		}];
+	});
+}
+
+- (void)asyncDeleteEvenIndexes:(YapDatabaseConnection *)connection after:(const NSTimeInterval)delayInSeconds
+{
+	dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	dispatch_after(when, dispatch_get_main_queue(), ^{
+		
+		[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+			
+			for (int i = 0; i < COUNT; i+=2)
+			{
+				NSString *key = [NSString stringWithFormat:@"%d", i];
+				
+				[transaction removeObjectForKey:key inCollection:nil];
+			}
+		}];
+	});
+}
+
+- (void)asyncVacuumAfter:(const NSTimeInterval)delayInSeconds
+{
+	dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	dispatch_after(when, dispatch_get_main_queue(), ^{
+	
+		[[database newConnection] asyncVacuumWithCompletionBlock:NULL];
+	});
+}
+
 - (void)debug
 {
 	NSLog(@"Starting debug...");
@@ -102,43 +199,77 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:nil];
 	
 	database = [[YapDatabase alloc] initWithPath:databasePath];
+	databaseConnection = [database newConnection];
 	
 	// Fill up the database with stuff
 	
-	[[database newConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-		
-		for (int i = 0; i < 1500; i++)
-		{
-			NSString *key = [NSString stringWithFormat:@"%d", i];
-			
-			[transaction setObject:[self randomLetters:100] forKey:key inCollection:nil];
-		}
-	}];
+	dispatch_time_t when;
 	
-	// Delete a bunch of stuff (to make more pages in the WAL)
+	NSTimeInterval after = 0.5;
 	
-	[[database newConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-		
-		for (int i = 0; i < 1000; i+=2)
-		{
-			NSString *key = [NSString stringWithFormat:@"%d", i];
-			
-			[transaction removeObjectForKey:key inCollection:nil];
-		}
-	}];
+	[self asyncFillDatabase:databaseConnection after:after];      after += 1.5;
 	
-	NSLog(@"database WAL should be fairly big now...");
+	[self asyncDeleteEvenIndexes:databaseConnection after:after]; after += 1.5;
+	[self asyncFillEvenIndexes:databaseConnection after:after];   after += 1.5;
 	
-	// This next change should reset the WAL file size (to something much smaller)
+	[self asyncDeleteOddIndexes:databaseConnection after:after];  after += 1.5;
+	[self asyncFillOddIndexes:databaseConnection after:after];    after += 1.5;
 	
-	dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC));
+	[self asyncFillEvenIndexes:databaseConnection after:after];   after += 1.5;
+	[self asyncFillOddIndexes:databaseConnection after:after];    after += 1.5;
+	
+	[self asyncDeleteEvenIndexes:databaseConnection after:after]; after += 1.5;
+	[self asyncFillEvenIndexes:databaseConnection after:after];   after += 1.5;
+	
+	[self asyncDeleteOddIndexes:databaseConnection after:after];  after += 1.5;
+	[self asyncFillOddIndexes:databaseConnection after:after];    after += 1.5;
+	
+	[self asyncFillEvenIndexes:databaseConnection after:after];   after += 1.5;
+	[self asyncFillOddIndexes:databaseConnection after:after];    after += 1.5;
+	
+	when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(after * NSEC_PER_SEC));
 	dispatch_after(when, dispatch_get_main_queue(), ^{
 		
-		NSLog(@"This change should reset the WAL file size to something much smaller...");
-		
-		[[database newConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		[databaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
 			
-			[transaction setObject:@"bar" forKey:@"foo" inCollection:nil];
+			NSLog(@"Preparing to sleep read transaction...");
+			[NSThread sleepForTimeInterval:0.25];
+			
+			NSLog(@"Fetching items...");
+			
+			for (int i = 0; i < COUNT; i++)
+			{
+				NSString *key = [NSString stringWithFormat:@"%d", i];
+				
+				(void)[transaction objectForKey:key inCollection:nil];
+			}
+			
+			NSLog(@"Preparing to sleep read transaction...");
+			[NSThread sleepForTimeInterval:2.0];
+			
+			NSLog(@"Fetching more items...");
+			
+			for (int i = 0; i < COUNT; i++)
+			{
+				NSString *key = [NSString stringWithFormat:@"%d", i];
+				
+				(void)[transaction objectForKey:key inCollection:nil];
+			}
+			
+			NSLog(@"Read transaction complete");
+		}];
+	});
+	
+	[self asyncVacuumAfter:after];
+	
+	after += 4.0;
+	
+	when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(after * NSEC_PER_SEC));
+	dispatch_after(when, dispatch_get_main_queue(), ^{
+		
+		[databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+			
+			[transaction setObject:@"quack" forKey:@"quack" inCollection:@"animals"];
 		}];
 	});
 }

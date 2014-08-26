@@ -2208,7 +2208,7 @@ static NSString *const ExtKey_class = @"class";
 	// There may be read-only transactions that have acquired "yap-level" snapshots
 	// without "sql-level" snapshots. That is, these read-only transaction may have a snapshot
 	// of the in-memory metadata dictionary at the time they started, but as for the sqlite connection
-	// the only have a "BEGIN DEFERRED TRANSACTION", and haven't actually executed
+	// they only have a "BEGIN DEFERRED TRANSACTION", and haven't actually executed
 	// any "select" statements. Thus they haven't actually invoked the sqlite machinery to
 	// acquire the "sql-level" snapshot (last valid commit record in the WAL).
 	//
@@ -2398,6 +2398,141 @@ static NSString *const ExtKey_class = @"class";
 	// Drop IsOnConnectionQueueKey flag from writeQueue since we're exiting writeQueue.
 	
 	dispatch_queue_set_specific(database->writeQueue, IsOnConnectionQueueKey, NULL, NULL);
+}
+
+/**
+ * This method executes the state transition steps required before executing a vacuum operation.
+ *
+ * This method must be invoked from within the connectionQueue.
+ * This method must be invoked from within the database.writeQueue.
+**/
+- (void)preVacuum
+{
+	// A vacuum operation is similar to a read-write transaction,
+	// in that it modifies the database, and so must block other writers (go through writeQueue).
+	//
+	// However, a vacuum operation cannot occur within a transaction.
+	// So we cannot simply use preReadWriteTransaction & postReadWriteTransaction.
+	// Instead we use a select subset of them.
+	
+	// Pre-Vacuum: Step 1 of 1
+	//
+	// Update our connection state within the state table.
+	//
+	// We are the only write transaction for this database.
+	// It is important for read-only transactions on other connections to know there's a writer.
+	
+	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
+		
+		YapDatabaseConnectionState *myState = nil;
+		
+		for (YapDatabaseConnectionState *state in database->connectionStates)
+		{
+			if (state->connection == self)
+			{
+				myState = state;
+				myState->yapLevelExclusiveWriteLock = YES;
+			}
+		}
+		
+		NSAssert(myState != nil, @"Missing state in database->connectionStates");
+		
+		myState->lastKnownSnapshot = [database snapshot];
+		needsMarkSqlLevelSharedReadLock = YES;
+		
+		YDBLogVerbose(@"YapDatabaseConnection(%p) starting vacuum operation.", self);
+	}});
+}
+
+/**
+ * This method executes the state transition steps required after executing a vacuum operation.
+ *
+ * This method must be invoked from within the connectionQueue.
+ * This method must be invoked from within the database.writeQueue.
+**/
+- (void)postVacuum
+{
+	// A vacuum operation is similar to a read-write transaction,
+	// in that it modifies the database, and so must block other writers (go through writeQueue).
+	//
+	// However, a vacuum operation cannot occur within a transaction.
+	// So we cannot simply use preReadWriteTransaction & postReadWriteTransaction.
+	// Instead we use a select subset of them.
+	
+	// Post-Vacuum: Step 1 of 4
+	//
+	// Create changeset.
+	// We're doing this in order to increment the snapshot.
+	
+	snapshot++;
+	
+	NSMutableDictionary *changeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
+	NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
+	
+	[changeset setObject:@(snapshot) forKey:YapDatabaseSnapshotKey];
+	[userInfo setObject:@(snapshot) forKey:YapDatabaseSnapshotKey];
+	
+	[userInfo setObject:self forKey:YapDatabaseConnectionKey];
+		
+	NSNotification *notification = [NSNotification notificationWithName:YapDatabaseModifiedNotification
+	                                                             object:database
+	                                                           userInfo:userInfo];
+	
+	[changeset setObject:notification forKey:YapDatabaseNotificationKey];
+	
+	__block YapDatabaseConnectionState *myState = nil;
+	__block uint64_t minSnapshot = UINT64_MAX;
+	
+	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
+		
+		// Post-Write-Transaction: Step 2 of 4
+		//
+		// Notify database of changes, and drop reference to set of changed keys.
+		
+		[database notePendingChanges:changeset fromConnection:self];
+		[database noteCommittedChanges:changeset fromConnection:self];
+		
+		// Post-Vacuum: Step 3 of 4
+		//
+		// Update our connection state within the state table.
+		//
+		// We are the only write transaction for this database.
+		// It is important for read-only transactions on other connections to know we're no longer a writer.
+		
+		for (YapDatabaseConnectionState *state in database->connectionStates)
+		{
+			if (state->connection == self)
+			{
+				myState = state;
+			}
+			else if (state->yapLevelSharedReadLock)
+			{
+				minSnapshot = MIN(state->lastKnownSnapshot, minSnapshot);
+			}
+		}
+		
+		NSAssert(myState != nil, @"Missing state in database->connectionStates");
+		
+		myState->yapLevelExclusiveWriteLock = NO;
+		myState->waitingForWriteLock = NO;
+		
+		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-write transaction.", self);
+	}});
+	
+	// Post-Vacuum: Step 4 of 4
+	//
+	// We added frames to the WAL.
+	// We can invoke a checkpoint if there are no other active connections.
+	
+	if (minSnapshot == UINT64_MAX)
+	{
+		[database asyncCheckpoint:snapshot];
+		
+		// Note: We didn't actually change anything in the database.
+		// The vacuum operation just defragments the database file.
+		//
+		// So there's no need to do anything concerning registeredMemoryTables.
+	}
 }
 
 /**
@@ -4085,6 +4220,194 @@ static NSString *const ExtKey_class = @"class";
 	// This method is INTERNAL
 	
 	[extensions removeObjectForKey:extName];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Vacuum
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Performs a VACUUM on the sqlite database.
+ *
+ * This method operates as a synchronous ReadWrite "transaction".
+ * That is, it behaves in a similar fashion, and you may treat it as if it is a ReadWrite transaction.
+ *
+ * For more infomation on the VACUUM operation, see the sqlite docs:
+ * http://sqlite.org/lang_vacuum.html
+ *
+ * Remember that YapDatabase operates in WAL mode, with "auto_vacuum=FULL" set.
+ *
+ * Upgrade Notice:
+ *   The "auto_vacuum=FULL" was not properly set until YapDatabase v2.5.
+ *   And thus if you have an app that was using YapDatabase prior to this version,
+ *   then the existing database file will continue to operate in "auto_vacuum=NONE" mode.
+ *   This means the existing database file won't be properly truncated as you delete information from the db.
+ *   That is, the data will be removed, but the pages will be moved to the freelist,
+ *   and the file itself will remain the same size on disk.
+ *   To correct this problem, you should run the vacuum operation is at least once.
+ *   After it is run, the "auto_vacuum=FULL" mode will be set,
+ *   and the database file size will automatically shrink in the future (as you delete data).
+**/
+- (void)vacuum
+{
+	dispatch_sync(connectionQueue, ^{ @autoreleasepool {
+		
+		if (longLivedReadTransaction)
+		{
+			if (throwExceptionsForImplicitlyEndingLongLivedReadTransaction)
+			{
+				@throw [self implicitlyEndingLongLivedReadTransactionException];
+			}
+			else
+			{
+				YDBLogWarn(@"Implicitly ending long-lived read transaction on connection %@, database %@",
+						   self, database);
+				
+				[self endLongLivedReadTransaction];
+			}
+		}
+		
+		__preWriteQueue(self);
+		dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
+			
+			[self preVacuum];
+			
+			int status;
+			
+			status = sqlite3_exec(db, "PRAGMA auto_vacuum = FULL;", NULL, NULL, NULL);
+			if (status != SQLITE_OK)
+			{
+				YDBLogError(@"Error setting PRAGMA auto_vacuum: %d %s", status, sqlite3_errmsg(db));
+			}
+			
+			YDBLogVerbose(@"Starting VACUUM ...");
+			
+			status = sqlite3_exec(db, "VACUUM;", NULL, NULL, NULL);
+			if (status != SQLITE_OK)
+			{
+				YDBLogError(@"Error performing VACUUM: %d %s", status, sqlite3_errmsg(db));
+			}
+			
+			YDBLogVerbose(@"VACUUM complete !");
+			
+			[self postVacuum];
+			
+		}}); // End dispatch_sync(database->writeQueue)
+		__postWriteQueue(self);
+	}});     // End dispatch_sync(connectionQueue)
+}
+
+/**
+ * Performs a VACUUM on the sqlite database.
+ *
+ * This method operates as an asynchronous readWrite "transaction".
+ * That is, it behaves in a similar fashion, and you may treat it as if it is a ReadWrite transaction.
+ *
+ * For more infomation on the VACUUM operation, see the sqlite docs:
+ * http://sqlite.org/lang_vacuum.html
+ *
+ * Remember that YapDatabase operates in WAL mode, with "auto_vacuum=FULL" set.
+ *
+ * Upgrade Notice:
+ *   The "auto_vacuum=FULL" was not properly set until YapDatabase v2.5.
+ *   And thus if you have an app that was using YapDatabase prior to this version,
+ *   then the existing database file will continue to operate in "auto_vacuum=NONE" mode.
+ *   This means the existing database file won't be properly truncated as you delete information from the db.
+ *   That is, the data will be removed, but the pages will be moved to the freelist,
+ *   and the file itself will remain the same size on disk.
+ *   To correct this problem, you should run the vacuum operation is at least once.
+ *   After it is run, the "auto_vacuum=FULL" mode will be set,
+ *   and the database file size will automatically shrink in the future (as you delete data).
+ *
+ * An optional completion block may be used.
+ * The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
+**/
+- (void)asyncVacuumWithCompletionBlock:(dispatch_block_t)completionBlock
+{
+	[self asyncVacuumWithCompletionQueue:NULL completionBlock:completionBlock];
+}
+
+/**
+ * Performs a VACUUM on the sqlite database.
+ *
+ * This method operates as an asynchronous readWrite "transaction".
+ * That is, it behaves in a similar fashion, and you may treat it as if it is a ReadWrite transaction.
+ *
+ * For more infomation on the VACUUM operation, see the sqlite docs:
+ * http://sqlite.org/lang_vacuum.html
+ *
+ * Remember that YapDatabase operates in WAL mode, with "auto_vacuum=FULL" set.
+ *
+ * Upgrade Notice:
+ *   The "auto_vacuum=FULL" was not properly set until YapDatabase v2.5.
+ *   And thus if you have an app that was using YapDatabase prior to this version,
+ *   then the existing database file will continue to operate in "auto_vacuum=NONE" mode.
+ *   This means the existing database file won't be properly truncated as you delete information from the db.
+ *   That is, the data will be removed, but the pages will be moved to the freelist,
+ *   and the file itself will remain the same size on disk.
+ *   To correct this problem, you should run the vacuum operation is at least once.
+ *   After it is run, the "auto_vacuum=FULL" mode will be set,
+ *   and the database file size will automatically shrink in the future (as you delete data).
+ *
+ * An optional completion block may be used.
+ * Additionally the dispatch_queue to invoke the completion block may also be specified.
+ * If NULL, dispatch_get_main_queue() is automatically used.
+**/
+- (void)asyncVacuumWithCompletionQueue:(dispatch_queue_t)completionQueue
+                       completionBlock:(dispatch_block_t)completionBlock
+{
+	if (completionQueue == NULL && completionBlock != NULL)
+		completionQueue = dispatch_get_main_queue();
+	
+	dispatch_async(connectionQueue, ^{ @autoreleasepool {
+		
+		if (longLivedReadTransaction)
+		{
+			if (throwExceptionsForImplicitlyEndingLongLivedReadTransaction)
+			{
+				@throw [self implicitlyEndingLongLivedReadTransactionException];
+			}
+			else
+			{
+				YDBLogWarn(@"Implicitly ending long-lived read transaction on connection %@, database %@",
+						   self, database);
+				
+				[self endLongLivedReadTransaction];
+			}
+		}
+		
+		__preWriteQueue(self);
+		dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
+			
+			[self preVacuum];
+			
+			int status;
+			
+			status = sqlite3_exec(db, "PRAGMA auto_vacuum = FULL;", NULL, NULL, NULL);
+			if (status != SQLITE_OK)
+			{
+				YDBLogError(@"Error setting PRAGMA auto_vacuum: %d %s", status, sqlite3_errmsg(db));
+			}
+			
+			YDBLogVerbose(@"Starting VACUUM ...");
+			
+			status = sqlite3_exec(db, "VACUUM;", NULL, NULL, NULL);
+			if (status != SQLITE_OK)
+			{
+				YDBLogError(@"Error performing VACUUM: %d %s", status, sqlite3_errmsg(db));
+			}
+			
+			YDBLogVerbose(@"VACUUM complete !");
+			
+			[self postVacuum];
+			
+			if (completionBlock) {
+				dispatch_async(completionQueue, completionBlock);
+			}
+			
+		}}); // End dispatch_sync(database->writeQueue)
+		__postWriteQueue(self);
+	}});     // End dispatch_async(connectionQueue)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
