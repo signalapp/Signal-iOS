@@ -413,7 +413,7 @@ static NSString *const ExtKey_class = @"class";
 	if (dispatch_get_specific(IsOnConnectionQueueKey))
 		block();
 	else
-		dispatch_sync(connectionQueue, block);
+		dispatch_async(connectionQueue, block);
 }
 
 #if TARGET_OS_IPHONE
