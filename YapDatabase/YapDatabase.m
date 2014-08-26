@@ -2365,6 +2365,8 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	__weak YapDatabase *weakSelf = self;
 	
 	dispatch_async(checkpointQueue, ^{ @autoreleasepool {
+	#pragma clang diagnostic push
+	#pragma clang diagnostic warning "-Wimplicit-retain-self"
 		
 		__strong YapDatabase *strongSelf = weakSelf;
 		if (strongSelf == nil) return;
@@ -2433,13 +2435,13 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 			// on the same snapshot. But this time the sqlite machinery will read directly from the database,
 			// and thus unlock the WAL so it can be reset.
 			
-			dispatch_async(snapshotQueue, ^{
+			dispatch_async(strongSelf->snapshotQueue, ^{
 				
-				for (YapDatabaseConnectionState *state in connectionStates)
+				for (YapDatabaseConnectionState *state in strongSelf->connectionStates)
 				{
 					if (state->yapLevelSharedReadLock &&
 					    state->longLivedReadTransaction &&
-					    state->lastKnownSnapshot == snapshot)
+					    state->lastKnownSnapshot == strongSelf->snapshot)
 					{
 						[state->connection maybeResetLongLivedReadTransaction];
 					}
@@ -2458,6 +2460,8 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 			  [NSByteCountFormatter stringFromByteCount:(long long)walFileSize
 			                                 countStyle:NSByteCountFormatterCountStyleFile]);
 		}
+		
+	#pragma clang diagnostic pop
 	}});
 }
 
