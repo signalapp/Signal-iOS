@@ -717,7 +717,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 
 + (int)pragma:(NSString *)pragmaSetting using:(sqlite3 *)db
 {
-	if (pragmaSetting == nil) return 0;
+	if (pragmaSetting == nil) return -1;
 	
 	sqlite3_stmt *statement;
 	NSString *pragma = [NSString stringWithFormat:@"PRAGMA %@;", pragmaSetting];
@@ -729,7 +729,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		return NO;
 	}
 	
-	int result = 0;
+	int result = -1;
 	
 	status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)

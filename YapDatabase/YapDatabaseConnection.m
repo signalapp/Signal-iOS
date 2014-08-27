@@ -4227,6 +4227,57 @@ static NSString *const ExtKey_class = @"class";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * Upgrade Notice:
+ *
+ * The "auto_vacuum=FULL" was not properly set until YapDatabase v2.5.
+ * And thus if you have an app that was using YapDatabase prior to this version,
+ * then the existing database file will continue to operate in "auto_vacuum=NONE" mode.
+ * This means the existing database file won't be properly truncated as you delete information from the db.
+ * That is, the data will be removed, but the pages will be moved to the freelist,
+ * and the file itself will remain the same size on disk. (I.e. the file size can grow, but not shrink.)
+ * To correct this problem, you should run the vacuum operation is at least once.
+ * After it is run, the "auto_vacuum=FULL" mode will be set,
+ * and the database file size will automatically shrink in the future (as you delete data).
+ *
+ * @returns Result from "PRAGMA auto_vacuum;" command, as a readable string:
+ *   - NONE
+ *   - FULL
+ *   - INCREMENTAL
+ *   - UNKNOWN (future proofing)
+ *
+ * If the return value is NONE, then you should run the vacuum operation at some point
+ * in order to properly reconfigure the database.
+ *
+ * Concerning Method Invocation:
+ *
+ * You can invoke this method as a standalone method on the connection:
+ *
+ *   NSString *value = [databaseConnection pragmaAutoVacuum]
+ *
+ * Or you can invoke this method within a transaction:
+ *
+ * [databaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction){
+ *     NSString *value = [databaseConnection pragmaAutoVacuum];
+ * }];
+**/
+- (NSString *)pragmaAutoVacuum
+{
+	__block int value = -1;
+	
+	dispatch_block_t block = ^{ @autoreleasepool {
+	
+		value = [YapDatabase pragma:@"auto_vacuum" using:db];
+	}};
+	
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+		block();
+	else
+		dispatch_sync(connectionQueue, block);
+	
+	return [YapDatabase pragmaValueForAutoVacuum:value];
+}
+
+/**
  * Performs a VACUUM on the sqlite database.
  *
  * This method operates as a synchronous ReadWrite "transaction".
@@ -4237,16 +4288,7 @@ static NSString *const ExtKey_class = @"class";
  *
  * Remember that YapDatabase operates in WAL mode, with "auto_vacuum=FULL" set.
  *
- * Upgrade Notice:
- *   The "auto_vacuum=FULL" was not properly set until YapDatabase v2.5.
- *   And thus if you have an app that was using YapDatabase prior to this version,
- *   then the existing database file will continue to operate in "auto_vacuum=NONE" mode.
- *   This means the existing database file won't be properly truncated as you delete information from the db.
- *   That is, the data will be removed, but the pages will be moved to the freelist,
- *   and the file itself will remain the same size on disk.
- *   To correct this problem, you should run the vacuum operation is at least once.
- *   After it is run, the "auto_vacuum=FULL" mode will be set,
- *   and the database file size will automatically shrink in the future (as you delete data).
+ * @see pragmaAutoVacuum
 **/
 - (void)vacuum
 {
@@ -4308,19 +4350,10 @@ static NSString *const ExtKey_class = @"class";
  *
  * Remember that YapDatabase operates in WAL mode, with "auto_vacuum=FULL" set.
  *
- * Upgrade Notice:
- *   The "auto_vacuum=FULL" was not properly set until YapDatabase v2.5.
- *   And thus if you have an app that was using YapDatabase prior to this version,
- *   then the existing database file will continue to operate in "auto_vacuum=NONE" mode.
- *   This means the existing database file won't be properly truncated as you delete information from the db.
- *   That is, the data will be removed, but the pages will be moved to the freelist,
- *   and the file itself will remain the same size on disk.
- *   To correct this problem, you should run the vacuum operation is at least once.
- *   After it is run, the "auto_vacuum=FULL" mode will be set,
- *   and the database file size will automatically shrink in the future (as you delete data).
- *
  * An optional completion block may be used.
  * The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
+ *
+ * @see pragmaAutoVacuum
 **/
 - (void)asyncVacuumWithCompletionBlock:(dispatch_block_t)completionBlock
 {
@@ -4338,20 +4371,11 @@ static NSString *const ExtKey_class = @"class";
  *
  * Remember that YapDatabase operates in WAL mode, with "auto_vacuum=FULL" set.
  *
- * Upgrade Notice:
- *   The "auto_vacuum=FULL" was not properly set until YapDatabase v2.5.
- *   And thus if you have an app that was using YapDatabase prior to this version,
- *   then the existing database file will continue to operate in "auto_vacuum=NONE" mode.
- *   This means the existing database file won't be properly truncated as you delete information from the db.
- *   That is, the data will be removed, but the pages will be moved to the freelist,
- *   and the file itself will remain the same size on disk.
- *   To correct this problem, you should run the vacuum operation is at least once.
- *   After it is run, the "auto_vacuum=FULL" mode will be set,
- *   and the database file size will automatically shrink in the future (as you delete data).
- *
  * An optional completion block may be used.
  * Additionally the dispatch_queue to invoke the completion block may also be specified.
  * If NULL, dispatch_get_main_queue() is automatically used.
+ * 
+ * @see pragmaAutoVacuum
 **/
 - (void)asyncVacuumWithCompletionQueue:(dispatch_queue_t)completionQueue
                        completionBlock:(dispatch_block_t)completionBlock
