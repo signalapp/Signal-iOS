@@ -140,5 +140,17 @@
     NSNumber* value = [self tryParseAsDecimalNumber];
     return value.hasUnsignedIntegerValue ? value : nil;
 }
+-(NSString*) removeAllCharactersIn:(NSCharacterSet*)characterSet {
+    require(characterSet != nil);
+    return [[self componentsSeparatedByCharactersInSet:characterSet] componentsJoinedByString:@""];
+}
+-(NSString*) digitsOnly {
+    return [self removeAllCharactersIn:[NSCharacterSet.decimalDigitCharacterSet invertedSet]];
+}
+-(NSString*) withCharactersInRange:(NSRange)range replacedBy:(NSString*)substring {
+    NSMutableString* result = self.mutableCopy;
+    [result replaceCharactersInRange:range withString:substring];
+    return result;
+}
 
 @end

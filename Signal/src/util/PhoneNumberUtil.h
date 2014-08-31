@@ -6,4 +6,10 @@
 + (NSString *)countryNameFromCountryCode:(NSString *)code;
 + (NSArray *)countryCodesForSearchTerm:(NSString *)searchTerm;
 + (NSString*) normalizePhoneNumber:(NSString *) number;
+
++(NSUInteger) translateCursorPosition:(NSUInteger)offset
+                                 from:(NSString*)source
+                                   to:(NSString*)target
+                    stickingRightward:(bool)preferHigh;
+
 @end

@@ -27,7 +27,6 @@
 #define IPHONE_BLUE [UIColor colorWithRed:22 green:173 blue:214 alpha:1]
 
 @interface RegisterViewController () {
-    NSMutableString *_enteredPhoneNumber;
     NSTimer* countdownTimer;
     NSDate *timeoutDate;
 }
@@ -51,7 +50,6 @@
 
     [self initializeKeyboardHandlers];
     [self setPlaceholderTextColor:[UIColor lightGrayColor]];
-    _enteredPhoneNumber = [NSMutableString string];
 }
 
 + (RegisterViewController*)registerViewController {
@@ -360,7 +358,16 @@
                        forCountry:(NSString *)country {
     _countryCodeLabel.text = code;
     _countryNameLabel.text = country;
-    [self updatePhoneNumberFieldWithString:code cursorposition:_enteredPhoneNumber.length];
+    
+    // Reformat phone number
+    NSString* digits = _phoneNumberTextField.text.digitsOnly;
+    NSString* reformattedNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:digits
+                                                                               withSpecifiedCountryCodeString:_countryCodeLabel.text];
+    _phoneNumberTextField.text = reformattedNumber;
+    UITextPosition *pos = _phoneNumberTextField.endOfDocument;
+    [_phoneNumberTextField setSelectedTextRange:[_phoneNumberTextField textRangeFromPosition:pos toPosition:pos]];
+    
+    // Done choosing country
     [vc dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -370,61 +377,41 @@
 
 #pragma mark - UITextFieldDelegate
 
-- (NSUInteger) calculateLocationOffset:(NSUInteger)location {
-    NSUInteger offset = 0, phonenumberposition = 0;
-    for (NSUInteger i = 0; i < location; i++) {
-        if ([_phoneNumberTextField.text characterAtIndex:i] != [_enteredPhoneNumber characterAtIndex:phonenumberposition]) {
-            offset++;
-        } else {
-            phonenumberposition++;
+-(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    NSString* textBeforeChange = textField.text;
+
+    // backspacing should skip over formatting characters
+    bool isBackspace = string.length == 0 && range.length == 1;
+    if (isBackspace) {
+        NSString* digits = _phoneNumberTextField.text.digitsOnly;
+        NSUInteger correspondingDeletePosition = [PhoneNumberUtil translateCursorPosition:range.location+range.length
+                                                                                     from:textBeforeChange
+                                                                                       to:digits
+                                                                        stickingRightward:true];
+        if (correspondingDeletePosition > 0) {
+            textBeforeChange = digits;
+            range = NSMakeRange(correspondingDeletePosition - 1, 1);
         }
     }
-    return offset;
-}
+    
+    // make the proposed change
+    NSString* textAfterChange = [textBeforeChange withCharactersInRange:range replacedBy:string];
+    NSUInteger cursorPositionAfterChange = range.location + string.length;
 
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range
-                                                       replacementString:(NSString *)string {
-    NSUInteger offset = [self calculateLocationOffset:range.location];
-    unichar currentPoschar = 0;
-    range.location -= offset;
-    BOOL handleBackspace = range.length == 1;
-    if (handleBackspace) {
-        if ((range.location + offset) <  _phoneNumberTextField.text.length) {
-            currentPoschar = [_phoneNumberTextField.text characterAtIndex:(range.location + offset)];
-        }
-        if ((currentPoschar < '0' || currentPoschar > '9') && currentPoschar != 0) {
-            range.location--;
-        }
-        NSRange backspaceRange = NSMakeRange(range.location, 1);
-        [_enteredPhoneNumber replaceCharactersInRange:backspaceRange withString:string];
-        range.location++;
-    } else {
-        NSString* sanitizedString = [[string componentsSeparatedByCharactersInSet:[[NSCharacterSet decimalDigitCharacterSet ] invertedSet]] componentsJoinedByString:@""];
-        NSMutableString* mutablePhoneNumber = [NSMutableString stringWithString:_enteredPhoneNumber];
-        [mutablePhoneNumber insertString:sanitizedString atIndex:range.location];
-        _enteredPhoneNumber = mutablePhoneNumber;
-        if ((range.location + offset + 1) <  _phoneNumberTextField.text.length) {
-            currentPoschar = [_phoneNumberTextField.text characterAtIndex:(range.location + offset + 1)];
-        }
-        if ((currentPoschar < '0' || currentPoschar > '9') && currentPoschar != 0) {
-            range.location++;
-        }
-    }
+    // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
+    bool isJustDeletion = string.length == 0;
+    NSString* textAfterReformat = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textAfterChange.digitsOnly
+                                                                               withSpecifiedCountryCodeString:_countryCodeLabel.text];
+    NSUInteger cursorPositionAfterReformat = [PhoneNumberUtil translateCursorPosition:cursorPositionAfterChange
+                                                                                 from:textAfterChange
+                                                                                   to:textAfterReformat
+                                                                    stickingRightward:isJustDeletion];
+    _phoneNumberTextField.text = textAfterReformat;
+    UITextPosition *pos = [_phoneNumberTextField positionFromPosition:_phoneNumberTextField.beginningOfDocument
+                                                               offset:(NSInteger)cursorPositionAfterReformat];
+    [_phoneNumberTextField setSelectedTextRange:[_phoneNumberTextField textRangeFromPosition:pos toPosition:pos]];
 
-    [self updatePhoneNumberFieldWithString:_enteredPhoneNumber cursorposition:range.location+offset];
-    return NO;
-}
-
--(void) updatePhoneNumberFieldWithString:(NSString*)input
-                          cursorposition:(NSUInteger)cursorpos {
-    NSString* result = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:_enteredPhoneNumber
-                                                                    withSpecifiedCountryCodeString:_countryCodeLabel.text];
-    cursorpos += result.length - _phoneNumberTextField.text.length;
-    _phoneNumberTextField.text = result;
-    UITextPosition *position = [_phoneNumberTextField positionFromPosition:[_phoneNumberTextField beginningOfDocument]
-                                                                    offset:(NSInteger)cursorpos];
-    [_phoneNumberTextField setSelectedTextRange:[_phoneNumberTextField textRangeFromPosition:position
-                                                                                  toPosition:position]];
+    return NO; // inform our caller that we took care of performing the change
 }
 
 @end

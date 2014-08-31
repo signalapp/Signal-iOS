@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 
 @interface NSString (Util)
+
 /// The utf-8 encoding of the string's text.
 -(NSData*) encodedAsUtf8;
 /// The ascii encoding of the string's text.
@@ -17,5 +18,8 @@
 -(NSData*) decodedAsBase64Data;
 -(NSNumber*) tryParseAsDecimalNumber;
 -(NSNumber*) tryParseAsUnsignedInteger;
+-(NSString*) removeAllCharactersIn:(NSCharacterSet*)characterSet;
+-(NSString*) digitsOnly;
+-(NSString*) withCharactersInRange:(NSRange)range replacedBy:(NSString*)substring;
 
 @end
