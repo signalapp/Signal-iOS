@@ -381,10 +381,13 @@
     NSString* textBeforeChange = textField.text;
 
     // backspacing should skip over formatting characters
-    bool isBackspace = string.length == 0 && range.length == 1;
+    UITextPosition *posIfBackspace = [textField positionFromPosition:textField.beginningOfDocument
+                                                              offset:(NSInteger)(range.location + range.length)];
+    UITextRange *rangeIfBackspace = [textField textRangeFromPosition:posIfBackspace toPosition:posIfBackspace];
+    bool isBackspace = string.length == 0 && range.length == 1 && [rangeIfBackspace isEqual:textField.selectedTextRange];
     if (isBackspace) {
-        NSString* digits = _phoneNumberTextField.text.digitsOnly;
-        NSUInteger correspondingDeletePosition = [PhoneNumberUtil translateCursorPosition:range.location+range.length
+        NSString* digits = textBeforeChange.digitsOnly;
+        NSUInteger correspondingDeletePosition = [PhoneNumberUtil translateCursorPosition:range.location + range.length
                                                                                      from:textBeforeChange
                                                                                        to:digits
                                                                         stickingRightward:true];
@@ -406,10 +409,10 @@
                                                                                  from:textAfterChange
                                                                                    to:textAfterReformat
                                                                     stickingRightward:isJustDeletion];
-    _phoneNumberTextField.text = textAfterReformat;
-    UITextPosition *pos = [_phoneNumberTextField positionFromPosition:_phoneNumberTextField.beginningOfDocument
-                                                               offset:(NSInteger)cursorPositionAfterReformat];
-    [_phoneNumberTextField setSelectedTextRange:[_phoneNumberTextField textRangeFromPosition:pos toPosition:pos]];
+    textField.text = textAfterReformat;
+    UITextPosition *pos = [textField positionFromPosition:textField.beginningOfDocument
+                                                   offset:(NSInteger)cursorPositionAfterReformat];
+    [textField setSelectedTextRange:[textField textRangeFromPosition:pos toPosition:pos]];
 
     return NO; // inform our caller that we took care of performing the change
 }
