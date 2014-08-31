@@ -67,6 +67,11 @@ static unsigned char DH3K_PRIME[]={
 }
 
 +(Environment*) unitTestEnvironment:(NSArray*)testingAndLegacyOptions {
+    NSArray* keyAgreementProtocols = self.supportedKeyAgreementProtocols;
+    if ([testingAndLegacyOptions containsObject:TESTING_OPTION_USE_DH_FOR_HANDSHAKE]) {
+        keyAgreementProtocols = @[[Release supportedDH3KKeyAgreementProtocol]];
+    }
+    
     return [Environment environmentWithLogging:[DiscardingLog discardingLog]
                                      andErrorNoter:^(id error, id relatedInfo, bool causedTermination) {}
                                      andServerPort:31337
@@ -75,7 +80,7 @@ static unsigned char DH3K_PRIME[]={
                       andRelayServerHostNameSuffix:@"whispersystems.org"
                                     andCertificate:[Certificate certificateFromResourcePath:@"whisperReal" ofType:@"cer"]
                andCurrentRegionCodeForPhoneNumbers:@"US"
-                 andSupportedKeyAgreementProtocols:[self supportedKeyAgreementProtocols]
+                 andSupportedKeyAgreementProtocols:keyAgreementProtocols
                                    andPhoneManager:nil
                               andRecentCallManager:nil
                         andTestingAndLegacyOptions:testingAndLegacyOptions

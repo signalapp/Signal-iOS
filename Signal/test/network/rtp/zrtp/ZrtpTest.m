@@ -1,6 +1,8 @@
-#import "ZrtpTest.h"
-#import "ZrtpHandshakeResult.h"
+#import <XCTest/XCTest.h>
 #import "TestUtil.h"
+#import "Util.h"
+#import "CallController.h"
+#import "ZrtpManager.h"
 #import "ThreadManager.h"
 #import "ZrtpHandshakeResult.h"
 #import "DiscardingLog.h"
@@ -18,6 +20,9 @@ bool pm(HandshakePacket* p1, HandshakePacket* p2) {
     && [[p1 embeddedIntoRtpPacketWithSequenceNumber:0 usingInteropOptions:@[]] isEqualToRtpPacket:[p2 embeddedIntoRtpPacketWithSequenceNumber:0 usingInteropOptions:@[]]];
 }
 #define AssertPacketsMatch(p1, p2) STAssertTrue(pm(p1, p2), @"")
+
+@interface ZrtpTest : XCTestCase
+@end
 
 @implementation ZrtpTest
 
@@ -89,6 +94,34 @@ bool pm(HandshakePacket* p1, HandshakePacket* p2) {
     
     testChurnUntil(!f1.isIncomplete, 5.0);
     test(f1.hasResult);
+    
+    [cc1 terminateWithReason:CallTerminationType_HangupLocal withFailureInfo:nil andRelatedInfo:nil];
+    [cc2 terminateWithReason:CallTerminationType_HangupLocal withFailureInfo:nil andRelatedInfo:nil];
+}
+
+-(void) testDhHandshake {
+    [Environment setCurrent:testEnvWith(TESTING_OPTION_USE_DH_FOR_HANDSHAKE)];
+
+    IpEndPoint* receiver = [IpEndPoint ipEndPointAtAddress:[IpAddress localhost]
+                                                    onPort:10000 + (in_port_t)arc4random_uniform(20000)];
+    
+    UdpSocket* u1 = [UdpSocket udpSocketToFirstSenderOnLocalPort:receiver.port];
+    CallController* cc1 = [CallController callControllerForCallInitiatedLocally:true
+                                                               withRemoteNumber:testPhoneNumber1
+                                                  andOptionallySpecifiedContact:nil];
+    TOCFuture* f1 = [ZrtpManager asyncPerformHandshakeOver:[RtpSocket rtpSocketOverUdp:u1 interopOptions:@[]]
+                                         andCallController:cc1];
+    
+    UdpSocket* u2 = [UdpSocket udpSocketTo:receiver];
+    CallController* cc2 = [CallController callControllerForCallInitiatedLocally:false
+                                                               withRemoteNumber:testPhoneNumber2
+                                                  andOptionallySpecifiedContact:nil];
+    TOCFuture* f2 = [ZrtpManager asyncPerformHandshakeOver:[RtpSocket rtpSocketOverUdp:u2 interopOptions:@[]]
+                                         andCallController:cc2];
+    
+    testChurnUntil(!f1.isIncomplete && !f2.isIncomplete, 15.0);
+    test(f1.hasResult);
+    test(f2.hasResult);
     
     [cc1 terminateWithReason:CallTerminationType_HangupLocal withFailureInfo:nil andRelatedInfo:nil];
     [cc2 terminateWithReason:CallTerminationType_HangupLocal withFailureInfo:nil andRelatedInfo:nil];
