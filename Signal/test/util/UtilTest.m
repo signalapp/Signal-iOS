@@ -378,7 +378,7 @@
     test(!@(-pow(2, 64)).hasLongLongValue);
     test(!(@0.5).hasLongLongValue);
 }
--(void) tryParseAsUnsignedInteger {
+-(void) testTryParseAsUnsignedInteger {
     test([@"" tryParseAsUnsignedInteger] == nil);
     test([@"88ffhih" tryParseAsUnsignedInteger] == nil);
     test([@"0xA" tryParseAsUnsignedInteger] == nil);
@@ -391,6 +391,47 @@
     test([[@"0" tryParseAsUnsignedInteger] isEqual:@0]);
     test([[@"1" tryParseAsUnsignedInteger] isEqual:@1]);
     test([[@"25" tryParseAsUnsignedInteger] isEqual:@25]);
-    test([[@"4294967296" tryParseAsUnsignedInteger] isEqual:@4294967296]);
+    test([[(@NSUIntegerMax).description tryParseAsUnsignedInteger] isEqual:@NSUIntegerMax]);
+    if (NSUIntegerMax == 4294967295) {
+        test([@"4294967296" tryParseAsUnsignedInteger] == nil);
+    }
 }
+-(void) testRemoveAllCharactersIn {
+    testThrows([@"" removeAllCharactersIn:nil]);
+
+    test([[@"" removeAllCharactersIn:NSCharacterSet.letterCharacterSet] isEqual:@""]);
+    test([[@"1" removeAllCharactersIn:NSCharacterSet.letterCharacterSet] isEqual:@"1"]);
+    test([[@"a" removeAllCharactersIn:NSCharacterSet.letterCharacterSet] isEqual:@""]);
+    test([[@"A" removeAllCharactersIn:NSCharacterSet.letterCharacterSet] isEqual:@""]);
+    test([[@"abc123%^&" removeAllCharactersIn:NSCharacterSet.letterCharacterSet] isEqual:@"123%^&"]);
+
+    test([[@"" removeAllCharactersIn:NSCharacterSet.decimalDigitCharacterSet] isEqual:@""]);
+    test([[@"1" removeAllCharactersIn:NSCharacterSet.decimalDigitCharacterSet] isEqual:@""]);
+    test([[@"a" removeAllCharactersIn:NSCharacterSet.decimalDigitCharacterSet] isEqual:@"a"]);
+    test([[@"A" removeAllCharactersIn:NSCharacterSet.decimalDigitCharacterSet] isEqual:@"A"]);
+    test([[@"abc123%^&" removeAllCharactersIn:NSCharacterSet.decimalDigitCharacterSet] isEqual:@"abc%^&"]);
+}
+-(void) testDigitsOnly {
+    test([@"".digitsOnly isEqual:@""]);
+    test([@"1".digitsOnly isEqual:@"1"]);
+    test([@"a".digitsOnly isEqual:@""]);
+    test([@"(555) 235-7111".digitsOnly isEqual:@"5552357111"]);
+}
+-(void) testWithCharactersInRangeReplacedBy {
+    testThrows([@"" withCharactersInRange:NSMakeRange(0, 0) replacedBy:nil]);
+    testThrows([@"" withCharactersInRange:NSMakeRange(0, 1) replacedBy:@""]);
+    testThrows([@"" withCharactersInRange:NSMakeRange(1, 0) replacedBy:@""]);
+    testThrows([@"" withCharactersInRange:NSMakeRange(1, 1) replacedBy:@""]);
+    testThrows([@"abc" withCharactersInRange:NSMakeRange(4, 0) replacedBy:@""]);
+    testThrows([@"abc" withCharactersInRange:NSMakeRange(3, 1) replacedBy:@""]);
+    testThrows([@"abc" withCharactersInRange:NSMakeRange(4, NSUIntegerMax) replacedBy:@""]);
+    
+    test([[@"" withCharactersInRange:NSMakeRange(0, 0) replacedBy:@""] isEqual:@""]);
+    test([[@"" withCharactersInRange:NSMakeRange(0, 0) replacedBy:@"abc"] isEqual:@"abc"]);
+    test([[@"abc" withCharactersInRange:NSMakeRange(0, 0) replacedBy:@"123"] isEqual:@"123abc"]);
+    test([[@"abc" withCharactersInRange:NSMakeRange(3, 0) replacedBy:@"123"] isEqual:@"abc123"]);
+    test([[@"abc" withCharactersInRange:NSMakeRange(2, 0) replacedBy:@"123"] isEqual:@"ab123c"]);
+    test([[@"abcdef" withCharactersInRange:NSMakeRange(1, 2) replacedBy:@"1234"] isEqual:@"a1234def"]);
+}
+
 @end
