@@ -1017,7 +1017,6 @@
 		A157071D17F0CD6D007C2BD6 /* ShortAuthenticationStringGeneratorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShortAuthenticationStringGeneratorTest.m; sourceTree = "<group>"; };
 		A157071F17F0CD6D007C2BD6 /* PregeneratedKeyAgreementParticipantProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PregeneratedKeyAgreementParticipantProtocol.h; sourceTree = "<group>"; };
 		A157072017F0CD6D007C2BD6 /* PregeneratedKeyAgreementParticipantProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PregeneratedKeyAgreementParticipantProtocol.m; sourceTree = "<group>"; };
-		A157072117F0CD6D007C2BD6 /* ZrtpTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZrtpTest.h; sourceTree = "<group>"; };
 		A157072217F0CD6D007C2BD6 /* ZrtpTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZrtpTest.m; sourceTree = "<group>"; };
 		A157072517F0CD6D007C2BD6 /* LowLatencyConnectorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LowLatencyConnectorTest.m; sourceTree = "<group>"; };
 		A157072817F0CD6D007C2BD6 /* NetworkStreamTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkStreamTest.m; sourceTree = "<group>"; };
@@ -2271,7 +2270,6 @@
 				A157071B17F0CD6D007C2BD6 /* MasterSecretTest.m */,
 				A157071D17F0CD6D007C2BD6 /* ShortAuthenticationStringGeneratorTest.m */,
 				A157071E17F0CD6D007C2BD6 /* utilities */,
-				A157072117F0CD6D007C2BD6 /* ZrtpTest.h */,
 				A157072217F0CD6D007C2BD6 /* ZrtpTest.m */,
 				E16E5BF818AAF02100B7C403 /* EC25AgreerTest.m */,
 			);
