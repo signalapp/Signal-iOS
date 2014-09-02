@@ -275,7 +275,7 @@
     TOCUntilOperation callStarter = ^TOCFuture *(TOCCancelToken* internalUntilCancelledToken) {
         HttpRequest* voiceVerifyReq = [HttpRequest httpRequestToStartRegistrationOfPhoneNumberWithVoice];
         
-        [self.voiceChallengeTextLabel setText:@"Calling" ];
+        [self.voiceChallengeTextLabel setText:NSLocalizedString(@"REGISTER_CALL_CALLING", @"")];
         return [HttpManager asyncOkResponseFromMasterServer:voiceVerifyReq
                                             unlessCancelled:internalUntilCancelledToken
                                             andErrorHandler:[Environment errorNoter]];
@@ -291,13 +291,11 @@
     [futureVoiceVerificationStarted finallyTry:^(id _id) {
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, VOICE_VERIFICATION_COOLDOWN_SECONDS * NSEC_PER_SEC);
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            [self.voiceChallengeTextLabel setText:@"Re-Call"];
+            [self.voiceChallengeTextLabel setText:NSLocalizedString(@"REGISTER_CALL_RECALL", @"")];
         });
         
         return _id;
     }];
-    
-    
 }
 
 - (IBAction)initiateVoiceVerificationButtonHandler {

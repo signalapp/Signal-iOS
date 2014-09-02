@@ -91,6 +91,8 @@
 "RECENT_CALLS_SORTING_TITLE" = "Sorting Method";
 "RECENT_NAV_BAR_TITLE" = "Call Log";
 "REGISTER_BUTTON_TITLE" = "REGISTER";
+"REGISTER_CALL_CALLING" = "Calling";
+"REGISTER_CALL_RECALL" = "Re-Call";
 "REGISTER_CC_ERR_ALERT_VIEW_MESSAGE" = "Please enter a valid country code";
 "REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "Country Code Error";
 "REGISTER_CHALLENGE_TEXTBLOCK_PART1" = "Let’s make sure you’re real. We've sent you a SMS with a six digit code to:";
