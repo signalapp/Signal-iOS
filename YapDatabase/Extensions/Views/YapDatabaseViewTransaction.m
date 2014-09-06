@@ -3945,6 +3945,28 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	return count;
 }
 
+/**
+ * Returns YES if the group is empty (has zero items).
+ * Shorthand for: [[transaction ext:viewName] numberOfItemsInGroup:group] == 0
+**/
+- (BOOL)isEmptyGroup:(NSString *)group
+{
+	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
+	
+	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
+	{
+		if (pageMetadata->count > 0) {
+			return NO;
+		}
+	}
+	
+	return YES;
+}
+
+/**
+ * Returns YES if the view is empty (has zero groups).
+ * Shorthand for: [[transaction ext:viewName] numberOfItemsInAllGroups] == 0
+**/
 - (BOOL)isEmpty
 {
 	__block BOOL result = YES;

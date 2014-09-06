@@ -70,7 +70,14 @@
 - (NSUInteger)numberOfItemsInAllGroups;
 
 /**
+ * Returns YES if the group is empty (has zero items).
+ * Shorthand for: [[transaction ext:viewName] numberOfItemsInGroup:group] == 0
+**/
+- (BOOL)isEmptyGroup:(NSString *)group;
+
+/**
  * Returns YES if the view is empty (has zero groups).
+ * Shorthand for: [[transaction ext:viewName] numberOfItemsInAllGroups] == 0
 **/
 - (BOOL)isEmpty;
 
