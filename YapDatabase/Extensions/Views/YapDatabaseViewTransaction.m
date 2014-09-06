@@ -751,12 +751,17 @@ static NSString *const ExtKey_version_deprecated = @"version";
 				}
 			};
 			
-			NSSet *allowedCollections = viewConnection->view->options.allowedCollections;
+			YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
 			if (allowedCollections)
 			{
-				[databaseTransaction _enumerateRowsInCollections:[allowedCollections allObjects] usingBlock:block];
+				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *outerStop) {
+					
+					if ([allowedCollections isAllowed:collection]) {
+						[databaseTransaction _enumerateRowsInCollections:@[ collection ] usingBlock:block];
+					}
+				}];
 			}
-			else
+			else // if (!allowedCollections)
 			{
 				[databaseTransaction _enumerateRowsInAllCollectionsUsingBlock:block];
 			}
@@ -787,14 +792,20 @@ static NSString *const ExtKey_version_deprecated = @"version";
 				          inGroup:group withChanges:flags isNew:YES];
 			};
 			
-			NSSet *allowedCollections = viewConnection->view->options.allowedCollections;
+			YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
 			if (allowedCollections)
 			{
-				[databaseTransaction _enumerateRowsInCollections:[allowedCollections allObjects]
-				                                      usingBlock:block
-				                                      withFilter:filter];
+				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+					
+					if ([allowedCollections isAllowed:collection])
+					{
+						[databaseTransaction _enumerateRowsInCollections:@[ collection ]
+						                                      usingBlock:block
+						                                      withFilter:filter];
+					}
+				}];
 			}
-			else
+			else // if (!allowedCollections)
 			{
 				[databaseTransaction _enumerateRowsInAllCollectionsUsingBlock:block withFilter:filter];
 			}
@@ -820,13 +831,19 @@ static NSString *const ExtKey_version_deprecated = @"version";
 				}
 			};
 			
-			NSSet *allowedCollections = viewConnection->view->options.allowedCollections;
+			YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
 			if (allowedCollections)
 			{
-				[databaseTransaction _enumerateKeysAndObjectsInCollections:[allowedCollections allObjects]
-				                                                usingBlock:block];
+				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+					
+					if ([allowedCollections isAllowed:collection])
+					{
+						[databaseTransaction _enumerateKeysAndObjectsInCollections:@[ collection ]
+						                                                usingBlock:block];
+					}
+				}];
 			}
-			else
+			else // if (!allowedCollections)
 			{
 				[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:block];
 			}
@@ -857,14 +874,20 @@ static NSString *const ExtKey_version_deprecated = @"version";
 				        inGroup:group withChanges:flags isNew:YES];
 			};
 			
-			NSSet *allowedCollections = viewConnection->view->options.allowedCollections;
+			YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
 			if (allowedCollections)
 			{
-				[databaseTransaction _enumerateKeysAndObjectsInCollections:[allowedCollections allObjects]
-				                                                usingBlock:block
-				                                                withFilter:filter];
+				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+					
+					if ([allowedCollections isAllowed:collection])
+					{
+						[databaseTransaction _enumerateKeysAndObjectsInCollections:@[ collection ]
+						                                                usingBlock:block
+						                                                withFilter:filter];
+					}
+				}];
 			}
-			else
+			else // if (!allowedCollections)
 			{
 				[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:block withFilter:filter];
 			}
@@ -891,13 +914,19 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			};
 			
 			
-			NSSet *allowedCollections = viewConnection->view->options.allowedCollections;
+			YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
 			if (allowedCollections)
 			{
-				[databaseTransaction _enumerateKeysAndMetadataInCollections:[allowedCollections allObjects]
-				                                                 usingBlock:block];
+				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+					
+					if ([allowedCollections isAllowed:collection])
+					{
+						[databaseTransaction _enumerateKeysAndMetadataInCollections:@[ collection ]
+						                                                 usingBlock:block];
+					}
+				}];
 			}
-			else
+			else  // if (!allowedCollections)
 			{
 				[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:block];
 			}
@@ -928,14 +957,20 @@ static NSString *const ExtKey_version_deprecated = @"version";
 				          inGroup:group withChanges:flags isNew:YES];
 			};
 			
-			NSSet *allowedCollections = viewConnection->view->options.allowedCollections;
+			YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
 			if (allowedCollections)
 			{
-				[databaseTransaction _enumerateKeysAndMetadataInCollections:[allowedCollections allObjects]
-				                                                 usingBlock:block
-				                                                 withFilter:filter];
+				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+					
+					if ([allowedCollections isAllowed:collection])
+					{
+						[databaseTransaction _enumerateKeysAndMetadataInCollections:@[ collection ]
+						                                                 usingBlock:block
+						                                                 withFilter:filter];
+					}
+				}];
 			}
-			else
+			else  // if (!allowedCollections)
 			{
 				[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:block withFilter:filter];
 			}
@@ -959,12 +994,18 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			}
 		};
 		
-		NSSet *allowedCollections = viewConnection->view->options.allowedCollections;
+		YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
 		if (allowedCollections)
 		{
-			[databaseTransaction _enumerateKeysInCollections:[allowedCollections allObjects] usingBlock:block];
+			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+				
+				if ([allowedCollections isAllowed:collection])
+				{
+					[databaseTransaction _enumerateKeysInCollections:@[ collection ] usingBlock:block];
+				}
+			}];
 		}
-		else
+		else  // if (!allowedCollections)
 		{
 			[databaseTransaction _enumerateKeysInAllCollectionsUsingBlock:block];
 		}
@@ -3242,9 +3283,9 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	// Invoke the grouping block to find out if the object should be included in the view.
 	
 	NSString *group = nil;
-	NSSet *allowedCollections = view->options.allowedCollections;
+	YapWhitelistBlacklist *allowedCollections = view->options.allowedCollections;
 	
-	if (!allowedCollections || [allowedCollections containsObject:collection])
+	if (!allowedCollections || [allowedCollections isAllowed:collection])
 	{
 		YapDatabaseViewGroupingBlock groupingBlock_generic;
 		YapDatabaseViewBlockType     groupingBlockType;
@@ -3322,9 +3363,9 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	// Invoke the grouping block to find out if the object should be included in the view.
 	
 	NSString *group = nil;
-	NSSet *allowedCollections = view->options.allowedCollections;
+	YapWhitelistBlacklist *allowedCollections = view->options.allowedCollections;
 	
-	if (!allowedCollections || [allowedCollections containsObject:collection])
+	if (!allowedCollections || [allowedCollections isAllowed:collection])
 	{
 		YapDatabaseViewGroupingBlock groupingBlock_generic;
 		YapDatabaseViewBlockType     groupingBlockType;
@@ -3470,9 +3511,9 @@ static NSString *const ExtKey_version_deprecated = @"version";
 		__unsafe_unretained NSString *collection = collectionKey.collection;
 		__unsafe_unretained NSString *key = collectionKey.key;
 		
-		NSSet *allowedCollections = view->options.allowedCollections;
+		YapWhitelistBlacklist *allowedCollections = view->options.allowedCollections;
 		
-		if (!allowedCollections || [allowedCollections containsObject:collection])
+		if (!allowedCollections || [allowedCollections isAllowed:collection])
 		{
 			if (groupingBlockType == YapDatabaseViewBlockTypeWithObject)
 			{
@@ -3633,9 +3674,9 @@ static NSString *const ExtKey_version_deprecated = @"version";
 		__unsafe_unretained NSString *collection = collectionKey.collection;
 		__unsafe_unretained NSString *key = collectionKey.key;
 		
-		NSSet *allowedCollections = view->options.allowedCollections;
+		YapWhitelistBlacklist *allowedCollections = view->options.allowedCollections;
 		
-		if (!allowedCollections || [allowedCollections containsObject:collection])
+		if (!allowedCollections || [allowedCollections isAllowed:collection])
 		{
 			if (groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
 			{

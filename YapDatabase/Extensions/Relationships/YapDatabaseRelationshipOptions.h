@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import "YapWhitelistBlacklist.h"
 
 /**
  * Welcome to YapDatabase!
@@ -56,7 +57,7 @@ typedef id (^YapDatabaseRelationshipFilePathDecryptor)(NSData *data);
  *
  * The default value is nil.
 **/
-@property (nonatomic, copy, readwrite) NSSet *allowedCollections;
+@property (nonatomic, strong, readwrite) YapWhitelistBlacklist *allowedCollections;
 
 /**
  * The relationship extension allows you to create relationships between objects in the database & files on disk.

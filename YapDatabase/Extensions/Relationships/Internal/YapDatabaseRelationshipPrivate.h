@@ -48,7 +48,7 @@
 @public
 	
 	BOOL disableYapDatabaseRelationshipNodeProtocol;
-	NSSet *allowedCollections;
+	YapWhitelistBlacklist *allowedCollections;
 }
 
 @end

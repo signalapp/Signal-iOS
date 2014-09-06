@@ -40,6 +40,7 @@
 		DC3D2F3E1675657100DFAFAA /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC3D2F3D1675657100DFAFAA /* libsqlite3.dylib */; };
 		DC3D2F3F1675657C00DFAFAA /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC3D2F3D1675657100DFAFAA /* libsqlite3.dylib */; };
 		DC3D2F4016756E9C00DFAFAA /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCAE51EE1673FE2600395076 /* CoreGraphics.framework */; };
+		DC43439319BB8886000DE27A /* YapWhitelistBlacklist.m in Sources */ = {isa = PBXBuildFile; fileRef = DC43439219BB8886000DE27A /* YapWhitelistBlacklist.m */; };
 		DC49735417E90C2F00489267 /* TestYapDatabaseFullTextSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = DC49735317E90C2F00489267 /* TestYapDatabaseFullTextSearch.m */; };
 		DC5BB35D194BDAAE001A59A0 /* DDASLLogCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = DC5BB35B194BDAAE001A59A0 /* DDASLLogCapture.m */; };
 		DC5BB369194BDAC0001A59A0 /* CLIColor.m in Sources */ = {isa = PBXBuildFile; fileRef = DC5BB360194BDAC0001A59A0 /* CLIColor.m */; };
@@ -235,6 +236,8 @@
 		DC3D2F2E1674001600DFAFAA /* BenchmarkYapCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BenchmarkYapCache.h; path = ../Benchmarking/BenchmarkYapCache.h; sourceTree = "<group>"; };
 		DC3D2F2F1674001600DFAFAA /* BenchmarkYapCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BenchmarkYapCache.m; path = ../Benchmarking/BenchmarkYapCache.m; sourceTree = "<group>"; };
 		DC3D2F3D1675657100DFAFAA /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		DC43439119BB8886000DE27A /* YapWhitelistBlacklist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YapWhitelistBlacklist.h; path = Utilities/YapWhitelistBlacklist.h; sourceTree = "<group>"; };
+		DC43439219BB8886000DE27A /* YapWhitelistBlacklist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YapWhitelistBlacklist.m; path = Utilities/YapWhitelistBlacklist.m; sourceTree = "<group>"; };
 		DC49735317E90C2F00489267 /* TestYapDatabaseFullTextSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseFullTextSearch.m; path = ../../UnitTesting/TestYapDatabaseFullTextSearch.m; sourceTree = "<group>"; };
 		DC5BB35A194BDAAE001A59A0 /* DDASLLogCapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDASLLogCapture.h; sourceTree = "<group>"; };
 		DC5BB35B194BDAAE001A59A0 /* DDASLLogCapture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDASLLogCapture.m; sourceTree = "<group>"; };
@@ -402,6 +405,8 @@
 				DCAC1F11176B9A52005CD448 /* YapSet.m */,
 				DC7179F318144F0400D6E6C8 /* YapDatabaseQuery.h */,
 				DC7179F418144F0400D6E6C8 /* YapDatabaseQuery.m */,
+				DC43439119BB8886000DE27A /* YapWhitelistBlacklist.h */,
+				DC43439219BB8886000DE27A /* YapWhitelistBlacklist.m */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -1034,6 +1039,7 @@
 				DC3D2EBB1673FF6800DFAFAA /* DDAbstractDatabaseLogger.m in Sources */,
 				DC7179F818145EAA00D6E6C8 /* YapDatabaseStatement.m in Sources */,
 				DC9B0FE0184B143800174B0F /* YapDatabaseFullTextSearchTransaction.m in Sources */,
+				DC43439319BB8886000DE27A /* YapWhitelistBlacklist.m in Sources */,
 				DC3D2EBD1673FF6800DFAFAA /* DDASLLogger.m in Sources */,
 				DC9B0FBB184B12C000174B0F /* YapDatabaseExtensionConnection.m in Sources */,
 				DC3D2EBF1673FF6800DFAFAA /* DDFileLogger.m in Sources */,

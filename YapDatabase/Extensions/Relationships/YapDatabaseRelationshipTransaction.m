@@ -312,18 +312,22 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		}
 	};
 	
-	__unsafe_unretained NSSet *allowedCollections = relationshipConnection->relationship->options->allowedCollections;
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections =
+	    relationshipConnection->relationship->options->allowedCollections;
 	
 	if (allowedCollections)
 	{
-		for (NSString *collection in allowedCollections)
-		{
-			[databaseTransaction _enumerateKeysAndObjectsInCollection:collection usingBlock:
-			    ^(int64_t rowid, NSString *key, id object, BOOL *stop)
+		[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *outerStop) {
+			
+			if ([allowedCollections isAllowed:collection])
 			{
-				ProcessRow(rowid, collection, key, object);
-			}];
-		}
+				[databaseTransaction _enumerateKeysAndObjectsInCollection:collection usingBlock:
+				    ^(int64_t rowid, NSString *key, id object, BOOL *innerStop)
+				{
+					ProcessRow(rowid, collection, key, object);
+				}];
+			}
+		}];
 	}
 	else
 	{
@@ -2983,7 +2987,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	if (options->disableYapDatabaseRelationshipNodeProtocol) {
 		return;
 	}
-	if (options->allowedCollections && ![options->allowedCollections containsObject:collectionKey.collection]) {
+	if (options->allowedCollections && ![options->allowedCollections isAllowed:collectionKey.collection]) {
 		return;
 	}
 	
@@ -3086,7 +3090,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	if (options->disableYapDatabaseRelationshipNodeProtocol) {
 		return;
 	}
-	if (options->allowedCollections && ![options->allowedCollections containsObject:collectionKey.collection]) {
+	if (options->allowedCollections && ![options->allowedCollections isAllowed:collectionKey.collection]) {
 		return;
 	}
 	
@@ -3144,7 +3148,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	if (options->disableYapDatabaseRelationshipNodeProtocol) {
 		return;
 	}
-	if (options->allowedCollections && ![options->allowedCollections containsObject:collectionKey.collection]) {
+	if (options->allowedCollections && ![options->allowedCollections isAllowed:collectionKey.collection]) {
 		return;
 	}
 	

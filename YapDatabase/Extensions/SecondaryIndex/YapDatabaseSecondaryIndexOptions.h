@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import "YapWhitelistBlacklist.h"
 
 /**
  * Welcome to YapDatabase!
@@ -35,6 +36,6 @@
  *
  * The default value is nil.
 **/
-@property (nonatomic, copy, readwrite) NSSet *allowedCollections;
+@property (nonatomic, strong, readwrite) YapWhitelistBlacklist *allowedCollections;
 
 @end

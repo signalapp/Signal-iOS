@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 
 #import "YapDatabaseViewOptions.h"
+#import "YapWhitelistBlacklist.h"
 #import "YapDatabaseFullTextSearchSnippetOptions.h"
 
 
@@ -28,7 +29,7 @@
  *
  * The default value is nil.
 **/
-@property (nonatomic, copy, readwrite) NSSet *allowedGroups;
+@property (nonatomic, strong, readwrite) YapWhitelistBlacklist *allowedGroups;
 
 /**
  * Set this option to include snippets with the search results.

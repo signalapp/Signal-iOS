@@ -278,7 +278,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	
 	__unsafe_unretained YapDatabaseSecondaryIndex *secondaryIndex = secondaryIndexConnection->secondaryIndex;
 	
-	__unsafe_unretained NSSet *allowedCollections = secondaryIndex->options.allowedCollections;
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = secondaryIndex->options.allowedCollections;
 	
 	if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithKey)
 	{
@@ -297,10 +297,18 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			}
 		};
 		
-		if (allowedCollections) {
-			[databaseTransaction _enumerateKeysInCollections:[allowedCollections allObjects] usingBlock:enumBlock];
+		if (allowedCollections)
+		{
+			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+				
+				if ([allowedCollections isAllowed:collection])
+				{
+					[databaseTransaction _enumerateKeysInCollections:@[ collection ] usingBlock:enumBlock];
+				}
+			}];
 		}
-		else {
+		else // if (!allowedCollections)
+		{
 			[databaseTransaction _enumerateKeysInAllCollectionsUsingBlock:enumBlock];
 		}
 	}
@@ -321,11 +329,19 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			}
 		};
 		
-		if (allowedCollections) {
-			[databaseTransaction _enumerateKeysAndObjectsInCollections:[allowedCollections allObjects]
-			                                                usingBlock:enumBlock];
+		if (allowedCollections)
+		{
+			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+				
+				if ([allowedCollections isAllowed:collection])
+				{
+					[databaseTransaction _enumerateKeysAndObjectsInCollections:@[ collection ]
+					                                                usingBlock:enumBlock];
+				}
+			}];
 		}
-		else {
+		else // if (!allowedCollections)
+		{
 			[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:enumBlock];
 		}
 	}
@@ -346,11 +362,19 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			}
 		};
 		
-		if (allowedCollections) {
-			[databaseTransaction _enumerateKeysAndMetadataInCollections:[allowedCollections allObjects]
-			                                                 usingBlock:enumBlock];
+		if (allowedCollections)
+		{
+			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+				
+				if ([allowedCollections isAllowed:collection])
+				{
+					[databaseTransaction _enumerateKeysAndMetadataInCollections:@[ collection ]
+					                                                 usingBlock:enumBlock];
+				}
+			}];
 		}
-		else {
+		else // if (!allowedCollections)
+		{
 			[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:enumBlock];
 		}
 	}
@@ -371,10 +395,18 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			}
 		};
 		
-		if (allowedCollections) {
-			[databaseTransaction _enumerateRowsInCollections:[allowedCollections allObjects] usingBlock:enumBlock];
+		if (allowedCollections)
+		{
+			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+				
+				if ([allowedCollections isAllowed:collection])
+				{
+					[databaseTransaction _enumerateRowsInCollections:@[ collection ] usingBlock:enumBlock];
+				}
+			}];
 		}
-		else {
+		else // if (!allowedCollections)
+		{
 			[databaseTransaction _enumerateRowsInAllCollectionsUsingBlock:enumBlock];
 		}
 	}
@@ -686,8 +718,8 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	__unsafe_unretained NSString *collection = collectionKey.collection;
 	__unsafe_unretained NSString *key = collectionKey.key;
 	
-	__unsafe_unretained NSSet *allowedCollections = secondaryIndex->options.allowedCollections;
-	if (allowedCollections && ![allowedCollections containsObject:collection])
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = secondaryIndex->options.allowedCollections;
+	if (allowedCollections && ![allowedCollections isAllowed:collection])
 	{
 		return;
 	}
@@ -753,8 +785,8 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	__unsafe_unretained NSString *collection = collectionKey.collection;
 	__unsafe_unretained NSString *key = collectionKey.key;
 	
-	__unsafe_unretained NSSet *allowedCollections = secondaryIndex->options.allowedCollections;
-	if (allowedCollections && ![allowedCollections containsObject:collection])
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = secondaryIndex->options.allowedCollections;
+	if (allowedCollections && ![allowedCollections isAllowed:collection])
 	{
 		return;
 	}
@@ -820,8 +852,8 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	__unsafe_unretained NSString *collection = collectionKey.collection;
 	__unsafe_unretained NSString *key = collectionKey.key;
 	
-	__unsafe_unretained NSSet *allowedCollections = secondaryIndex->options.allowedCollections;
-	if (allowedCollections && ![allowedCollections containsObject:collection])
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = secondaryIndex->options.allowedCollections;
+	if (allowedCollections && ![allowedCollections isAllowed:collection])
 	{
 		return;
 	}
@@ -890,8 +922,8 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	__unsafe_unretained NSString *collection = collectionKey.collection;
 	__unsafe_unretained NSString *key = collectionKey.key;
 	
-	__unsafe_unretained NSSet *allowedCollections = secondaryIndex->options.allowedCollections;
-	if (allowedCollections && ![allowedCollections containsObject:collection])
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = secondaryIndex->options.allowedCollections;
+	if (allowedCollections && ![allowedCollections isAllowed:collection])
 	{
 		return;
 	}
@@ -975,8 +1007,8 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	
 	__unsafe_unretained YapDatabaseSecondaryIndex *secondaryIndex = secondaryIndexConnection->secondaryIndex;
 	
-	__unsafe_unretained NSSet *allowedCollections = secondaryIndex->options.allowedCollections;
-	if (allowedCollections && ![allowedCollections containsObject:collectionKey.collection])
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = secondaryIndex->options.allowedCollections;
+	if (allowedCollections && ![allowedCollections isAllowed:collectionKey.collection])
 	{
 		return;
 	}
@@ -994,8 +1026,8 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	
 	__unsafe_unretained YapDatabaseSecondaryIndex *secondaryIndex = secondaryIndexConnection->secondaryIndex;
 	
-	__unsafe_unretained NSSet *allowedCollections = secondaryIndex->options.allowedCollections;
-	if (allowedCollections && ![allowedCollections containsObject:collection])
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = secondaryIndex->options.allowedCollections;
+	if (allowedCollections && ![allowedCollections isAllowed:collection])
 	{
 		return;
 	}
