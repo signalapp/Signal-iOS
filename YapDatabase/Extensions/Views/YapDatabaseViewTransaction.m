@@ -3198,7 +3198,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 
 - (void)rollbackTransaction
 {
-	if ([self isPersistentView])
+	if (![self isPersistentView])
 	{
 		[mapTableTransaction rollback];
 		[pageTableTransaction rollback];
