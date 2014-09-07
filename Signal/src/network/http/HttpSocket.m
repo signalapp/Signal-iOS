@@ -11,8 +11,8 @@
     HttpSocket* h = [HttpSocket new];
     h->rawDataChannelTcp = rawDataChannel;
     h->partialDataBuffer = [NSMutableData data];
-    h->sentPacketsLogger = [[Environment logging] getOccurrenceLoggerForSender:self withKey:@"sent"];
-    h->receivedPacketsLogger = [[Environment logging] getOccurrenceLoggerForSender:self withKey:@"received"];
+    h->sentPacketsLogger = [Environment.logging getOccurrenceLoggerForSender:self withKey:@"sent"];
+    h->receivedPacketsLogger = [Environment.logging getOccurrenceLoggerForSender:self withKey:@"received"];
     return h;
 }
 +(HttpSocket*) httpSocketOverUdp:(UdpSocket*)rawDataChannel {
@@ -21,8 +21,8 @@
     HttpSocket* h = [HttpSocket new];
     h->rawDataChannelUdp = rawDataChannel;
     h->partialDataBuffer = [NSMutableData data];
-    h->sentPacketsLogger = [[Environment logging] getOccurrenceLoggerForSender:self withKey:@"sent"];
-    h->receivedPacketsLogger = [[Environment logging] getOccurrenceLoggerForSender:self withKey:@"received"];
+    h->sentPacketsLogger = [Environment.logging getOccurrenceLoggerForSender:self withKey:@"sent"];
+    h->receivedPacketsLogger = [Environment.logging getOccurrenceLoggerForSender:self withKey:@"received"];
     return h;
 }
 
@@ -60,7 +60,7 @@
     
     PacketHandler* packetHandler = [PacketHandler packetHandler:^(id packet) {
         require(packet != nil);
-        require([packet isKindOfClass:[NSData class]]);
+        require([packet isKindOfClass:NSData.class]);
         NSData* data = packet;
         
         [partialDataBuffer replaceBytesInRange:NSMakeRange(partialDataBuffer.length, data.length) withBytes:[data bytes]];
@@ -82,7 +82,7 @@
             [receivedPacketsLogger markOccurrence:s];
             [handler handlePacket:s];
         }
-    } withErrorHandler:[handler errorHandler]];
+    } withErrorHandler:handler.errorHandler];
     
     if (rawDataChannelTcp != nil) {
         [rawDataChannelTcp startWithHandler:packetHandler];

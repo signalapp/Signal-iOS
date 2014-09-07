@@ -17,7 +17,7 @@
     
     NSTimeInterval audioDurationPerPacket = (NSTimeInterval)(AUDIO_FRAMES_PER_PACKET*[SpeexCodec frameSizeInSamples])
                                           / SAMPLE_RATE;
-    double initialDesiredBufferDepth = [[Environment preferences] getCachedOrDefaultDesiredBufferDepth];
+    double initialDesiredBufferDepth = Environment.preferences.getCachedOrDefaultDesiredBufferDepth;
     
     DropoutTracker* dropoutTracker = [DropoutTracker dropoutTrackerWithAudioDurationPerPacket:audioDurationPerPacket];
 
@@ -28,16 +28,16 @@
     DesiredBufferDepthController* result = [DesiredBufferDepthController new];
     result->dropoutTracker = dropoutTracker;
     result->decayingDesiredBufferDepth = decayingDesiredBufferDepth;
-    result->desiredDelayLogger = [[Environment logging] getValueLoggerForValue:@"desired buffer depth" from:self];
+    result->desiredDelayLogger = [Environment.logging getValueLoggerForValue:@"desired buffer depth" from:self];
     
     [jitterQueue registerWatcher:result];
     return result;
 }
 
 -(double) getAndUpdateDesiredBufferDepth {
-    double r = [decayingDesiredBufferDepth currentEstimate];
+    double r = decayingDesiredBufferDepth.currentEstimate;
     [decayingDesiredBufferDepth updateWithNextSample:[dropoutTracker getDepthForThreshold:DROPOUT_THRESHOLD]];
-    [decayingDesiredBufferDepth forceEstimateTo:[NumberUtil clamp:[decayingDesiredBufferDepth currentEstimate]
+    [decayingDesiredBufferDepth forceEstimateTo:[NumberUtil clamp:decayingDesiredBufferDepth.currentEstimate
                                                             toMin:MIN_DESIRED_FRAME_DELAY
                                                            andMax:MAX_DESIRED_FRAME_DELAY]];
     [desiredDelayLogger logValue:r];
@@ -59,7 +59,7 @@
 }
 
 -(void) terminate {
-    [[Environment preferences] setCachedDesiredBufferDepth:[decayingDesiredBufferDepth currentEstimate]];
+    [Environment.preferences setCachedDesiredBufferDepth:decayingDesiredBufferDepth.currentEstimate];
 }
 
 @end

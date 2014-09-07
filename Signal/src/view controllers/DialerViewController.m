@@ -111,9 +111,9 @@
 }
 
 - (void)callButtonTapped {
-    PhoneNumber *phoneNumber = [self phoneNumberForCurrentInput];
+    PhoneNumber *phoneNumber = self.phoneNumberForCurrentInput;
 
-    BOOL shouldTryCall = [[[[Environment getCurrent] phoneDirectoryManager] getCurrentFilter] containsPhoneNumber:phoneNumber] || [[Environment getCurrent].recentCallManager isPhoneNumberPresentInRecentCalls:phoneNumber];
+    BOOL shouldTryCall = [Environment.getCurrent.phoneDirectoryManager.getCurrentFilter containsPhoneNumber:phoneNumber] || [Environment.getCurrent.recentCallManager isPhoneNumberPresentInRecentCalls:phoneNumber];
     
     if( shouldTryCall){
         [self initiateCallToPhoneNumber:phoneNumber];
@@ -124,10 +124,10 @@
 
 -(void) initiateCallToPhoneNumber:(PhoneNumber*) phoneNumber {
     if (_contact) {
-        [[Environment phoneManager] initiateOutgoingCallToContact:_contact
+        [Environment.phoneManager initiateOutgoingCallToContact:_contact
                                                    atRemoteNumber:phoneNumber];
     } else {
-        [[Environment phoneManager] initiateOutgoingCallToRemoteNumber:phoneNumber];
+        [Environment.phoneManager initiateOutgoingCallToRemoteNumber:phoneNumber];
     }
 }
 
@@ -150,7 +150,7 @@
 
 - (void)tryUpdateContactForNumber:(PhoneNumber *)number {
     if (number) {
-        _contact = [[[Environment getCurrent] contactsManager] latestContactForPhoneNumber:number];
+        _contact = [Environment.getCurrent.contactsManager latestContactForPhoneNumber:number];
     } else {
         _contact = nil;
     }

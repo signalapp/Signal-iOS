@@ -15,8 +15,8 @@
     id<KeyAgreementParticipant> ec2 = [protocol generateParticipantWithNewKeys];
     id<KeyAgreementParticipant> ec3 = [protocol generateParticipantWithNewKeys];
     
-    NSData* pub_1 = [ec1 getPublicKeyData];
-    NSData* pub_2 = [ec2 getPublicKeyData];
+    NSData* pub_1 = ec1.getPublicKeyData;
+    NSData* pub_2 = ec2.getPublicKeyData;
     
     NSData* shared_1 = [ec1 calculateKeyAgreementAgainstRemotePublicKey:pub_2];
     NSData* shared_2 = [ec2 calculateKeyAgreementAgainstRemotePublicKey:pub_1];
@@ -34,8 +34,8 @@
         id<KeyAgreementParticipant> ec1 = [protocol generateParticipantWithNewKeys];
         id<KeyAgreementParticipant> ec2 = [protocol generateParticipantWithNewKeys];
 
-        NSData* pub_1 = [ec1 getPublicKeyData];
-        NSData* pub_2 = [ec2 getPublicKeyData];
+        NSData* pub_1 = ec1.getPublicKeyData;
+        NSData* pub_2 = ec2.getPublicKeyData;
     
         NSData* shared_1 = [ec1 calculateKeyAgreementAgainstRemotePublicKey:pub_2];
         NSData* shared_2 = [ec2 calculateKeyAgreementAgainstRemotePublicKey:pub_1];

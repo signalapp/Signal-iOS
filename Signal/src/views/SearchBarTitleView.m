@@ -65,7 +65,7 @@
 }
 
 - (void)updateAutoCorrectionType {
-    BOOL autoCorrectEnabled = [[Environment preferences] getAutocorrectEnabled];
+    BOOL autoCorrectEnabled = Environment.preferences.getAutocorrectEnabled;
     _searchTextField.autocorrectionType = autoCorrectEnabled ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo;
 }
 

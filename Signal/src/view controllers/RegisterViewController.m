@@ -96,7 +96,7 @@
 }
 
 - (void)populateDefaultCountryNameAndCode {
-    NSLocale *locale = [NSLocale currentLocale];
+    NSLocale *locale = NSLocale.currentLocale;
     NSString *countryCode = [locale objectForKey:NSLocaleCountryCode];
     NSNumber *cc = [NBPhoneNumberUtil.sharedInstance getCountryCodeForRegion:countryCode];
     
@@ -123,7 +123,7 @@
        
         return [HttpManager asyncOkResponseFromMasterServer:registerRequest
                                             unlessCancelled:internalUntilCancelledToken
-                                            andErrorHandler:[Environment errorNoter]];
+                                            andErrorHandler:Environment.errorNoter];
     };
     TOCFuture *futurePhoneRegistrationStarted = [TOCFuture futureFromUntilOperation:[TOCFuture operationTry:regStarter]
                                                                withOperationTimeout:SERVER_TIMEOUT_SECONDS
@@ -176,12 +176,12 @@
     HttpRequest *verifyRequest = [HttpRequest httpRequestToVerifyAccessToPhoneNumberWithChallenge:_challengeTextField.text];
     TOCFuture *futureDone = [HttpManager asyncOkResponseFromMasterServer:verifyRequest
                                                          unlessCancelled:nil
-                                                         andErrorHandler:[Environment errorNoter]];
+                                                         andErrorHandler:Environment.errorNoter];
     
     [futureDone catchDo:^(id error) {
-        if ([error isKindOfClass:[HttpResponse class]]) {
+        if ([error isKindOfClass:HttpResponse.class]) {
             HttpResponse* badResponse = error;
-            if ([badResponse getStatusCode] == 401) {
+            if (badResponse.getStatusCode == 401) {
                 UIAlertView *incorrectChallengeCodeAV = [[UIAlertView alloc]initWithTitle:REGISTER_CHALLENGE_ALERT_VIEW_TITLE message:REGISTER_CHALLENGE_ALERT_VIEW_BODY delegate:nil cancelButtonTitle:REGISTER_CHALLENGE_ALERT_DISMISS otherButtonTitles:nil, nil];
                 [incorrectChallengeCodeAV show];
                 _challengeButton.enabled = YES;
@@ -191,7 +191,7 @@
         }
         _challengeButton.enabled = YES;
         [_challengeActivityIndicator stopAnimating];
-        [Environment errorNoter](error, @"While Verifying Challenge.", NO);
+        Environment.errorNoter(error, @"While Verifying Challenge.", NO);
     }];
 
     [futureDone thenDo:^(id result) {
@@ -202,7 +202,7 @@
         [PushManager.sharedManager askForPushRegistrationWithSuccess:^{
             [Environment setRegistered:YES];
             [registered trySetResult:@YES];
-            [[[Environment getCurrent] phoneDirectoryManager] forceUpdate];
+            [Environment.getCurrent.phoneDirectoryManager forceUpdate];
             [self dismissView];
         } failure:^{
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:REGISTER_ERROR_ALERT_VIEW_TITLE message:REGISTER_ERROR_ALERT_VIEW_BODY delegate:nil cancelButtonTitle:REGISTER_ERROR_ALERT_VIEW_DISMISS otherButtonTitles:nil, nil];
@@ -241,7 +241,7 @@
     
     NSTimeInterval smsTimeoutTimeInterval = SMS_VERIFICATION_TIMEOUT_SECONDS;
     
-    NSDate *now = [[NSDate alloc] init];
+    NSDate *now = [NSDate new];
     timeoutDate = [[NSDate alloc] initWithTimeInterval:smsTimeoutTimeInterval sinceDate:now];
 
     countdownTimer = [NSTimer scheduledTimerWithTimeInterval:1
@@ -255,9 +255,9 @@
 }
 
 - (void) countdowntimerFired {
-    NSDate *now = [[NSDate alloc] init];
+    NSDate *now = [NSDate new];
     
-    NSCalendar *sysCalendar = [NSCalendar currentCalendar];
+    NSCalendar *sysCalendar = NSCalendar.currentCalendar;
     unsigned int unitFlags = NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit;
     NSDateComponents *conversionInfo = [sysCalendar components:unitFlags fromDate:now  toDate:timeoutDate  options:0];
     NSString* timeLeft = [NSString stringWithFormat:@"%ld:%02ld",(long)[conversionInfo minute],(long)[conversionInfo second]];
@@ -278,14 +278,14 @@
         [self.voiceChallengeTextLabel setText:NSLocalizedString(@"REGISTER_CALL_CALLING", @"")];
         return [HttpManager asyncOkResponseFromMasterServer:voiceVerifyReq
                                             unlessCancelled:internalUntilCancelledToken
-                                            andErrorHandler:[Environment errorNoter]];
+                                            andErrorHandler:Environment.errorNoter];
     };
     TOCFuture *futureVoiceVerificationStarted = [TOCFuture futureFromUntilOperation:[TOCFuture operationTry:callStarter]
                                                                withOperationTimeout:SERVER_TIMEOUT_SECONDS
                                                                               until:life.token];
     [futureVoiceVerificationStarted catchDo:^(id errorId) {
         HttpResponse* error = (HttpResponse*)errorId;
-       [self.voiceChallengeTextLabel setText:[error getStatusText]];
+       [self.voiceChallengeTextLabel setText:error.getStatusText];
     }];
     
     [futureVoiceVerificationStarted finallyTry:^(id _id) {

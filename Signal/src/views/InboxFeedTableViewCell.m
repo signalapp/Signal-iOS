@@ -13,7 +13,7 @@
 @implementation InboxFeedTableViewCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
-    self = [[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class])
+    self = [NSBundle.mainBundle loadNibNamed:NSStringFromClass(self.class)
                                           owner:self
                                         options:nil][0];
 
@@ -33,11 +33,11 @@
 }
 
 - (NSString *)reuseIdentifier {
-    return NSStringFromClass([self class]);
+    return NSStringFromClass(self.class);
 }
 
 - (void)configureWithRecentCall:(RecentCall *)recentCall {
-    Contact *contact = [[[Environment getCurrent] contactsManager] latestContactWithRecordId:recentCall.contactRecordID];
+    Contact *contact = [Environment.getCurrent.contactsManager latestContactWithRecordId:recentCall.contactRecordID];
 
     if (contact) {
         _nameLabel.text = contact.fullName;
@@ -115,7 +115,7 @@
                                               _archiveImageView.bounds.origin.y,
                                               (CGFloat)newWidth,
                                               _archiveImageView.bounds.size.height);
-        _archiveImageView.tintColor = [UIColor whiteColor];
+        _archiveImageView.tintColor = UIColor.whiteColor;
 
     }
 
@@ -134,7 +134,7 @@
                                              _deleteImageView.bounds.origin.y,
                                              (CGFloat)newWidth,
                                              _deleteImageView.bounds.size.height);
-        _deleteImageView.tintColor = [UIColor whiteColor];
+        _deleteImageView.tintColor = UIColor.whiteColor;
     }
 }
 

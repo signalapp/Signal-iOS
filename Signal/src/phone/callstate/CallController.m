@@ -44,7 +44,7 @@
 -(ErrorHandlerBlock) errorHandler {
     return ^(id error, id relatedInfo, bool causedTermination) {
         if (causedTermination) {
-            if ([error isKindOfClass:[CallTermination class]]) {
+            if ([error isKindOfClass:CallTermination.class]) {
                 CallTermination* t = error;
                 [self terminateWithReason:t.type
                           withFailureInfo:t.failure
@@ -56,7 +56,7 @@
             }
         }
         
-        [Environment errorNoter](error, relatedInfo, causedTermination);
+        Environment.errorNoter(error, relatedInfo, causedTermination);
     };
 }
 -(TOCCancelToken*) untilCancelledToken {
@@ -111,7 +111,7 @@
 }
 
 -(void)terminateWithRejectionOrRemoteHangupAndFailureInfo:(id)failureInfo andRelatedInfo:(id)relatedInfo {
-    enum CallProgressType progressType = ((CallProgress*)[progress currentValue]).type;
+    enum CallProgressType progressType = ((CallProgress*)progress.currentValue).type;
     bool hasAcceptedAlready = progressType > CallProgressType_Ringing;
     enum CallTerminationType terminationType = hasAcceptedAlready
                                              ? CallTerminationType_HangupRemote

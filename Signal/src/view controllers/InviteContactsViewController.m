@@ -71,17 +71,17 @@ static NSString *const INVITE_CONTACTS_TABLE_CELL_IDENTIFIER = @"ContactTableVie
 }
 
 - (void)setupContacts {
-    ObservableValue *observableContacts = [[[Environment getCurrent] contactsManager] getObservableContacts];
+    ObservableValue *observableContacts = Environment.getCurrent.contactsManager.getObservableContacts;
     
     [observableContacts watchLatestValue:^(NSArray *latestContacts) {
         _latestContacts = [self getUnregisteredUsersFromAllUsers:latestContacts searchTerm:nil];
         _displayedContacts = _latestContacts;
         [_contactTableView reloadData];
-    } onThread:[NSThread mainThread] untilCancelled:nil];
+    } onThread:NSThread.mainThread untilCancelled:nil];
 }
 
 - (NSArray *)getUnregisteredUsersFromAllUsers:(NSArray *)users searchTerm:(NSString *)searchTerm {
-    ContactsManager *contactsManager = [[Environment getCurrent] contactsManager];
+    ContactsManager *contactsManager = Environment.getCurrent.contactsManager;
     
     return [users filter:^int(Contact *contact) {
     

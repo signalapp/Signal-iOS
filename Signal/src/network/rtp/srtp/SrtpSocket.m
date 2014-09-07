@@ -23,7 +23,7 @@
     s->incomingContext = [SrtpStream srtpStreamWithCipherKey:incomingCipherKey andMacKey:incomingMacKey andCipherIvSalt:incomingSalt];
     s->outgoingContext = [SrtpStream srtpStreamWithCipherKey:outgoingCipherKey andMacKey:outgoingMacKey andCipherIvSalt:outgoingSalt];
     s->rtpSocket = rtpSocket;
-    s->badPacketLogger = [[Environment logging] getOccurrenceLoggerForSender:self withKey:@"Bad Packet"];
+    s->badPacketLogger = [Environment.logging getOccurrenceLoggerForSender:self withKey:@"Bad Packet"];
     return s;
 }
 
@@ -43,7 +43,7 @@
     
     PacketHandlerBlock packetHandler = ^(id packet) {
         require(packet != nil);
-        require([packet isKindOfClass:[RtpPacket class]]);
+        require([packet isKindOfClass:RtpPacket.class]);
         
         RtpPacket* decryptedPacket;
         @try {

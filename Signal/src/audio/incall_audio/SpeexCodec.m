@@ -15,7 +15,7 @@
 
 +(SpeexCodec*) speexCodec {
     SpeexCodec* c = [SpeexCodec new];
-    c->logging = [[Environment logging] getConditionLoggerForSender:self];
+    c->logging = [Environment.logging getConditionLoggerForSender:self];
     [c openSpeex];
     return c;
 }

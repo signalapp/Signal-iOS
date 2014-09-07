@@ -25,7 +25,7 @@
     static PushManager *sharedManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedManager = [[self alloc] init];
+        sharedManager = [self new];
     });
     return sharedManager;
 }
@@ -50,11 +50,11 @@
     }
     
     if (needsPushSettingChangeAlert) {
-        [[Environment preferences] setRevokedPushPermission:YES];
+        [Environment.preferences setRevokedPushPermission:YES];
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")  message:NSLocalizedString(@"PUSH_SETTINGS_MESSAGE", @"") delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil, nil];
         [alertView show];
     } else if (!needsPushSettingChangeAlert){
-        if ([[Environment preferences] encounteredRevokedPushPermission]) {
+        if (Environment.preferences.encounteredRevokedPushPermission) {
             [self askForPushRegistration];
         }
     }
@@ -73,21 +73,21 @@
         [UIApplication.sharedApplication registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeBadge)];
     } else{
 #if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1
-        UIMutableUserNotificationAction *action_accept = [[UIMutableUserNotificationAction alloc]init];
+        UIMutableUserNotificationAction *action_accept = [UIMutableUserNotificationAction new];
         action_accept.identifier = @"Signal_Call_Accept";
         action_accept.title      = @"Pick up";
         action_accept.activationMode = UIUserNotificationActivationModeForeground;
         action_accept.destructive    = YES;
         action_accept.authenticationRequired = NO;
         
-        UIMutableUserNotificationAction *action_decline = [[UIMutableUserNotificationAction alloc]init];
+        UIMutableUserNotificationAction *action_decline = [UIMutableUserNotificationAction new];
         action_decline.identifier = @"Signal_Call_Decline";
         action_decline.title      = @"Pick up";
         action_decline.activationMode = UIUserNotificationActivationModeForeground;
         action_decline.destructive    = YES;
         action_decline.authenticationRequired = NO;
         
-        UIMutableUserNotificationCategory *callCategory = [[UIMutableUserNotificationCategory alloc] init];
+        UIMutableUserNotificationCategory *callCategory = [UIMutableUserNotificationCategory new];
         callCategory.identifier = @"Signal_IncomingCall";
         [callCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextDefault];
         
@@ -105,11 +105,11 @@
 
 - (void)registerForPushWithToken:(NSData*)token{
     [CallServerRequestsManager.sharedInstance registerPushToken:token success:^(NSURLSessionDataTask *task, id responseObject) {
-        if ([task.response isKindOfClass: [NSHTTPURLResponse class]]){
+        if ([task.response isKindOfClass: NSHTTPURLResponse.class]){
             NSInteger statusCode = [(NSHTTPURLResponse*) task.response statusCode];
             if (statusCode == 200) {
                 DDLogInfo(@"Device sent push ID to server");
-                [[Environment preferences] setRevokedPushPermission:NO];
+                [Environment.preferences setRevokedPushPermission:NO];
                 if (self.PushRegisteringSuccessBlock) {
                     self.PushRegisteringSuccessBlock();
                     self.PushRegisteringSuccessBlock = nil;
@@ -139,7 +139,7 @@
             self.PushRegisteringFailureBlock();
             self.PushRegisteringFailureBlock = nil;
         }
-        [[Environment preferences] setRevokedPushPermission:YES];
+        [Environment.preferences setRevokedPushPermission:YES];
     }
 }
 

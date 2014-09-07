@@ -17,7 +17,7 @@
 }
 
 -(BOOL)isEqual:(id)object {
-    return [object isKindOfClass:[CallTermination class]] && ((CallTermination*)object).type == type;
+    return [object isKindOfClass:CallTermination.class] && ((CallTermination*)object).type == type;
 }
 -(NSUInteger)hash {
     return type;

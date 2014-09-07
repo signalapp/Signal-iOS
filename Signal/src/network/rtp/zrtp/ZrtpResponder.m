@@ -25,9 +25,9 @@
     
     s->confirmIv = [CryptoTools generateSecureRandomData:IV_LENGTH];
     s->dhSharedSecretHashes = [DhPacketSharedSecretHashes dhPacketSharedSecretHashesRandomized];
-    s->allowedKeyAgreementProtocols = [[Environment getCurrent] keyAgreementProtocolsInDescendingPriority];
+    s->allowedKeyAgreementProtocols = Environment.getCurrent.keyAgreementProtocolsInDescendingPriority;
     s->hashChain = [HashChain hashChainWithSecureGeneratedData];
-    s->badPacketLogger = [[Environment logging] getOccurrenceLoggerForSender:self withKey:@"Bad Packet"];
+    s->badPacketLogger = [Environment.logging getOccurrenceLoggerForSender:self withKey:@"Bad Packet"];
     
     s->localHello = [HelloPacket helloPacketWithDefaultsAndHashChain:s->hashChain
                                                               andZid:[SGNKeychainUtil zid]
@@ -140,7 +140,7 @@
 
 -(id<KeyAgreementParticipant>) retrieveKeyAgreementParticipant{
     id<KeyAgreementProtocol> matchingKeyAgreeProtocol = [allowedKeyAgreementProtocols firstMatchingElseNil:^int(id<KeyAgreementProtocol> a) {
-        return [[foreignCommit agreementSpecId] isEqualToData:[a getId]];
+        return [[foreignCommit agreementSpecId] isEqualToData:a.getId];
     }];
     
     checkOperation(matchingKeyAgreeProtocol != nil);

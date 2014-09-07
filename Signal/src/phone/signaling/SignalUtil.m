@@ -19,7 +19,7 @@
     if (![self.location hasPrefix:@"/session/"]) return nil;
     
     NSString* sessionIdText = [self.location substringFromIndex:@"/session/".length];
-    sessionIdText = [sessionIdText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    sessionIdText = [sessionIdText stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
     NSNumber* sessionIdNumber = [sessionIdText tryParseAsDecimalNumber];
 
     if (sessionIdNumber.hasLongLongValue) return sessionIdNumber;
@@ -32,15 +32,15 @@
 }
 
 -(bool) isRingingForSession:(int64_t)targetSessionId {
-    return [self.method isEqualToString:@"RING"] && [@(targetSessionId) isEqualToNumber:[self tryGetSessionId]];
+    return [self.method isEqualToString:@"RING"] && [@(targetSessionId) isEqualToNumber:self.tryGetSessionId];
 }
 
 -(bool) isHangupForSession:(int64_t)targetSessionId {
-    return [self.method isEqualToString:@"DELETE"] && [@(targetSessionId) isEqualToNumber:[self tryGetSessionId]];
+    return [self.method isEqualToString:@"DELETE"] && [@(targetSessionId) isEqualToNumber:self.tryGetSessionId];
 }
 
 -(bool) isBusyForSession:(int64_t)targetSessionId {
-    return [self.method isEqualToString:@"BUSY"] && [@(targetSessionId) isEqualToNumber:[self tryGetSessionId]];
+    return [self.method isEqualToString:@"BUSY"] && [@(targetSessionId) isEqualToNumber:self.tryGetSessionId];
 }
 
 +(HttpRequest*) httpRequestToOpenPortWithSessionId:(int64_t)sessionId {
@@ -84,11 +84,11 @@
     NSString* query = [NSString stringWithFormat:@"/users/verification/%@", localPhoneNumber.toE164];
     [SGNKeychainUtil generateSignaling];
     
-    NSData* signalingCipherKey = [SGNKeychainUtil signalingCipherKey];
-    NSData* signalingMacKey = [SGNKeychainUtil signalingMacKey];
-    NSData* signalingExtraKeyData = [SGNKeychainUtil signalingCipherKey];
-    NSString* encodedSignalingKey = [[@[signalingCipherKey, signalingMacKey, signalingExtraKeyData] concatDatas] encodedAsBase64];
-    NSString* body = [@{@"key" : encodedSignalingKey, @"challenge" : challenge} encodedAsJson];
+    NSData* signalingCipherKey = SGNKeychainUtil.signalingCipherKey;
+    NSData* signalingMacKey = SGNKeychainUtil.signalingMacKey;
+    NSData* signalingExtraKeyData = SGNKeychainUtil.signalingCipherKey;
+    NSString* encodedSignalingKey = @[signalingCipherKey, signalingMacKey, signalingExtraKeyData].concatDatas.encodedAsBase64;
+    NSString* body = @{@"key" : encodedSignalingKey, @"challenge" : challenge}.encodedAsJson;
     
     return [HttpRequest httpRequestWithBasicAuthenticationAndMethod:@"PUT"
                                                         andLocation:query

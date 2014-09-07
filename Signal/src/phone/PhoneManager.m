@@ -16,8 +16,8 @@
     m->currentCallStateObservable = [ObservableValueController observableValueControllerWithInitialValue:nil];
 
     [m->currentCallControllerObservable watchLatestValue:^(CallController* latestValue) {
-        [m->currentCallStateObservable updateValue:[latestValue callState]];
-    } onThread:[NSThread currentThread] untilCancelled:nil];
+        [m->currentCallStateObservable updateValue:latestValue.callState];
+    } onThread:NSThread.currentThread untilCancelled:nil];
     
     return m;
 }
@@ -65,14 +65,14 @@
     TOCFuture* futureCalling = [futureConnected thenTry:^id(CallConnectResult* connectResult) {
         [callController advanceCallProgressToConversingWithShortAuthenticationString:connectResult.shortAuthenticationString];
         CallAudioManager *cam = [CallAudioManager callAudioManagerStartedWithAudioSocket:connectResult.audioSocket
-                                                 andErrorHandler:[callController errorHandler]
+                                                 andErrorHandler:callController.errorHandler
                                                   untilCancelled:lifetime];
 		[callController setCallAudioManager:cam];
         return nil;
     }];
     
     [futureCalling catchDo:^(id error) {
-        [callController errorHandler](error, nil, true);
+        callController.errorHandler(error, nil, true);
     }];
 }
 
@@ -82,21 +82,21 @@
     int64_t prevSession = lastIncomingSessionId;
     lastIncomingSessionId = session.sessionId;
 
-    if ([[[[currentCallControllerObservable currentValue] callState] futureTermination] isIncomplete]) {
+    if (currentCallControllerObservable.currentValue.callState.futureTermination.isIncomplete) {
         if (session.sessionId == prevSession) {
-            [Environment errorNoter](@"Ignoring duplicate incoming call signal.", session, false);
+            Environment.errorNoter(@"Ignoring duplicate incoming call signal.", session, false);
             return;
         }
 
-        [[[Environment getCurrent] recentCallManager] addMissedCallDueToBusy:session];
+        [Environment.getCurrent.recentCallManager addMissedCallDueToBusy:session];
         
         [[CallConnectUtil asyncSignalTooBusyToAnswerCallWithSessionDescriptor:session] catchDo:^(id error) {
-            [Environment errorNoter](error, @"Failed to signal busy.", false);
+            Environment.errorNoter(error, @"Failed to signal busy.", false);
         }];
         return;
     }
     
-    Contact* callingContact = [[[Environment getCurrent] contactsManager] latestContactForPhoneNumber:session.initiatorNumber];
+    Contact* callingContact = [Environment.getCurrent.contactsManager latestContactForPhoneNumber:session.initiatorNumber];
     CallController* callController = [self cancelExistingCallAndInitNewCallWork:false
                                                                          remote:session.initiatorNumber
                                                                 optionalContact:callingContact];
@@ -109,18 +109,18 @@
     TOCFuture* futureStarted = [futureConnected thenTry:^id(CallConnectResult* connectResult) {
         [callController advanceCallProgressToConversingWithShortAuthenticationString:connectResult.shortAuthenticationString];
         CallAudioManager* cam = [CallAudioManager callAudioManagerStartedWithAudioSocket:connectResult.audioSocket
-                                                 andErrorHandler:[callController errorHandler]
+                                                 andErrorHandler:callController.errorHandler
                                                   untilCancelled:lifetime];
 		[callController setCallAudioManager:cam];
         return nil;
     }];
     
     [futureStarted catchDo:^(id error) {
-        [callController errorHandler](error, nil, true);
+        callController.errorHandler(error, nil, true);
     }];
 }
 -(CallController*) curCallController {
-    return [currentCallControllerObservable currentValue];
+    return currentCallControllerObservable.currentValue;
 }
 -(void) answerCall {
     [[self curCallController] acceptCall];

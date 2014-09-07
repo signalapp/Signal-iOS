@@ -55,11 +55,11 @@ typedef NSComparisonResult (^CallComparator)(RecentCall*, RecentCall*);
 }
 
 - (void)observeRecentCalls {
-    ObservableValue *observableRecents = [[[Environment getCurrent] recentCallManager] getObservableRecentCalls];
+    ObservableValue *observableRecents = Environment.getCurrent.recentCallManager.getObservableRecentCalls;
 
     [observableRecents watchLatestValue:^(NSArray *latestRecents) {
         if (_searchTerm) {
-            _recents = [[[Environment getCurrent] recentCallManager] recentsForSearchString:_searchTerm
+            _recents = [Environment.getCurrent.recentCallManager recentsForSearchString:_searchTerm
                                                                          andExcludeArchived:NO];
         } else {
             _recents = latestRecents;
@@ -68,7 +68,7 @@ typedef NSComparisonResult (^CallComparator)(RecentCall*, RecentCall*);
         if (!_tableViewContentMutating) {
             [_recentCallsTableView reloadData];
         }
-    } onThread:[NSThread mainThread] untilCancelled:nil];
+    } onThread:NSThread.mainThread untilCancelled:nil];
 }
 
 - (void)deleteRecentCallAtIndexPath:(NSIndexPath *)indexPath {
@@ -79,7 +79,7 @@ typedef NSComparisonResult (^CallComparator)(RecentCall*, RecentCall*);
     RecentCall *recent;
 
 
-    [[[Environment getCurrent] recentCallManager] removeRecentCall:recent];
+    [Environment.getCurrent.recentCallManager removeRecentCall:recent];
 
     [_recentCallsTableView endUpdates];
 }
@@ -118,7 +118,7 @@ typedef NSComparisonResult (^CallComparator)(RecentCall*, RecentCall*);
                                  withRowAnimation:UITableViewRowAnimationLeft];
 
     RecentCall *recent = _recents[(NSUInteger)indexPath.row];
-    [[[Environment getCurrent] recentCallManager] removeRecentCall:recent];
+    [Environment.getCurrent.recentCallManager removeRecentCall:recent];
 
     [_recentCallsTableView endUpdates];
     _tableViewContentMutating = NO;
@@ -134,7 +134,7 @@ typedef NSComparisonResult (^CallComparator)(RecentCall*, RecentCall*);
 
 - (void)searchBarTitleView:(SearchBarTitleView *)view didSearchForTerm:(NSString *)term {
     _searchTerm = term;
-    _recents = [[[Environment getCurrent] recentCallManager] recentsForSearchString:term
+    _recents = [Environment.getCurrent.recentCallManager recentsForSearchString:term
                                                                  andExcludeArchived:NO];
     [_recentCallsTableView reloadData];
 }
@@ -147,7 +147,7 @@ typedef NSComparisonResult (^CallComparator)(RecentCall*, RecentCall*);
 
 - (void)searchBarTitleViewDidEndSearching:(SearchBarTitleView *)view {
     _searchTerm = nil;
-    _recents = [[[Environment getCurrent] recentCallManager] recentsForSearchString:nil
+    _recents = [Environment.getCurrent.recentCallManager recentsForSearchString:nil
                                                                  andExcludeArchived:NO];
     [_recentCallsTableView reloadData];
 }

@@ -38,7 +38,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     require(text != nil);
     
     return [PhoneNumber phoneNumberFromText:text
-                                  andRegion:[Environment currentRegionCodeForPhoneNumbers]];
+                                  andRegion:Environment.currentRegionCodeForPhoneNumbers];
 }
 
 +(PhoneNumber*) phoneNumberFromE164:(NSString*)text {
@@ -53,7 +53,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
 +(NSString*) bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString*)input {
     return [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:input
-                                                               withSpecifiedRegionCode:[Environment currentRegionCodeForPhoneNumbers]];
+                                                               withSpecifiedRegionCode:Environment.currentRegionCodeForPhoneNumbers];
 }
 
 +(NSString*) bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString*)input withSpecifiedCountryCodeString:(NSString *)countryCodeString{

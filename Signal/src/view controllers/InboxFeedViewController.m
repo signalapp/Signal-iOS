@@ -79,14 +79,14 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 }
 
 - (void)observeRecentCalls {
-    ObservableValue *observableContacts = [[[Environment getCurrent] contactsManager] getObservableContacts];
+    ObservableValue *observableContacts = Environment.getCurrent.contactsManager.getObservableContacts;
 
     [observableContacts watchLatestValue:^(id latestValue) {
 
-        ObservableValue *observableRecents = [[[Environment getCurrent] recentCallManager] getObservableRecentCalls];
+        ObservableValue *observableRecents = Environment.getCurrent.recentCallManager.getObservableRecentCalls;
         
         [observableRecents watchLatestValue:^(NSArray *latestRecents) {
-            _inboxFeed = [[[Environment getCurrent] recentCallManager] recentsForSearchString:nil
+            _inboxFeed = [Environment.getCurrent.recentCallManager recentsForSearchString:nil
                                                                            andExcludeArchived:YES];
             [self updateTutorialVisibility];
             if (!_tableViewContentMutating) {
@@ -97,10 +97,10 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
                  shouldChangeCharactersInRange:NSMakeRange(0, 0)
                              replacementString:SEARCH_BAR_DEFAULT_EMPTY_STRING];
             }
-        } onThread:[NSThread mainThread] untilCancelled:nil];
+        } onThread:NSThread.mainThread untilCancelled:nil];
 
         
-    } onThread:[NSThread mainThread] untilCancelled:nil];
+    } onThread:NSThread.mainThread untilCancelled:nil];
 }
 
 - (void)observeKeyboardNotifications {
@@ -132,7 +132,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
         }
     }
     if (needsSave) {
-        [[[Environment getCurrent] recentCallManager] saveContactsToDefaults];
+        [Environment.getCurrent.recentCallManager saveContactsToDefaults];
         [(TabBarParentViewController *)self.mm_drawerController.centerViewController updateMissedCallCountLabel];
         [_inboxFeedTableView reloadData];
     }
@@ -169,10 +169,10 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 
     if (delete) {
         animation = UITableViewRowAnimationLeft;
-        [[[Environment getCurrent] recentCallManager] removeRecentCall:recent];
+        [Environment.getCurrent.recentCallManager removeRecentCall:recent];
     } else {
         animation = UITableViewRowAnimationRight;
-        [[[Environment getCurrent] recentCallManager] archiveRecentCall:recent];
+        [Environment.getCurrent.recentCallManager archiveRecentCall:recent];
     }
 
     [_inboxFeedTableView deleteRowsAtIndexPaths:@[indexPath]
@@ -183,7 +183,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 }
 
 - (void)updateTutorialVisibility {
-    _freshInboxView.hidden = ![[Environment preferences] getFreshInstallTutorialsEnabled];
+    _freshInboxView.hidden = !Environment.preferences.getFreshInstallTutorialsEnabled;
     _inboxFeedTableView.hidden = !_freshInboxView.hidden;
 }
 
@@ -346,7 +346,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
     if (searching) {
         _freshInboxView.hidden = YES;
         _inboxFeedTableView.hidden = NO;
-        _searchInboxFeed = [[[Environment getCurrent] recentCallManager] recentsForSearchString:term
+        _searchInboxFeed = [Environment.getCurrent.recentCallManager recentsForSearchString:term
                                                                              andExcludeArchived:YES];
         
         [self reloadSearchContactsForTerm:term];
@@ -372,7 +372,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 
 - (void)reloadSearchContactsForTerm:(NSString *)term {
 	
-    NSArray *contacts = [[[Environment getCurrent] contactsManager] latestContactsWithSearchString:term];
+    NSArray *contacts = [Environment.getCurrent.contactsManager latestContactsWithSearchString:term];
 
     NSMutableArray *registeredContacts = [NSMutableArray array];
     NSMutableArray *unregisteredContacts = [NSMutableArray array];
@@ -381,7 +381,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
         BOOL registeredContact = NO;
 
         for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-            if ([[[[Environment getCurrent] phoneDirectoryManager] getCurrentFilter] containsPhoneNumber:phoneNumber]) {
+            if ([Environment.getCurrent.phoneDirectoryManager.getCurrentFilter containsPhoneNumber:phoneNumber]) {
                 registeredContact = YES;
             }
         }

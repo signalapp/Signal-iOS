@@ -11,7 +11,7 @@
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
 
-    self = [[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class])
+    self = [NSBundle.mainBundle loadNibNamed:NSStringFromClass(self.class)
                                           owner:self
                                         options:nil][0];
     if (self) {
@@ -23,7 +23,7 @@
 }
 
 - (NSString *)reuseIdentifier {
-    return NSStringFromClass([self class]);
+    return NSStringFromClass(self.class);
 }
 
 - (void)prepareForReuse {
@@ -32,7 +32,7 @@
 }
 
 - (void)configureWithRecentCall:(RecentCall *)recentCall {
-    Contact *contact = [[[Environment getCurrent] contactsManager] latestContactWithRecordId:recentCall.contactRecordID];
+    Contact *contact = [Environment.getCurrent.contactsManager latestContactWithRecordId:recentCall.contactRecordID];
     if (contact) {
         _contactNameLabel.text = contact.fullName;
     } else {
@@ -74,7 +74,7 @@
                                              _deleteImageView.bounds.origin.y,
                                              (CGFloat)newWidth,
                                              _deleteImageView.bounds.size.height);
-        _deleteImageView.tintColor = [UIColor whiteColor];
+        _deleteImageView.tintColor = UIColor.whiteColor;
     }
 }
 

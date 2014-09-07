@@ -7,8 +7,8 @@
     
     ZrtpHandshakeSocket* z = [ZrtpHandshakeSocket new];
     z->rtpSocket = rtpSocket;
-    z->sentPacketsLogger = [[Environment logging] getOccurrenceLoggerForSender:self withKey:@"sent"];
-    z->receivedPacketsLogger = [[Environment logging] getOccurrenceLoggerForSender:self withKey:@"received"];
+    z->sentPacketsLogger = [Environment.logging getOccurrenceLoggerForSender:self withKey:@"sent"];
+    z->receivedPacketsLogger = [Environment.logging getOccurrenceLoggerForSender:self withKey:@"received"];
     return z;
 }
 -(void) send:(HandshakePacket*)packet {
@@ -27,7 +27,7 @@
     
     PacketHandlerBlock packetHandler = ^(id packet) {
         require(packet != nil);
-        require([packet isKindOfClass:[RtpPacket class]]);
+        require([packet isKindOfClass:RtpPacket.class]);
         RtpPacket* rtpPacket = packet;
         
         HandshakePacket* handshakePacket = nil;
@@ -43,7 +43,7 @@
     };
     
     [rtpSocket startWithHandler:[PacketHandler packetHandler:packetHandler
-                                            withErrorHandler:[handler errorHandler]]
+                                            withErrorHandler:handler.errorHandler]
                  untilCancelled:untilCancelledToken];
 }
 

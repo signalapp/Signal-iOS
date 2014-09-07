@@ -22,12 +22,12 @@
     
     ZrtpInitiator* s = [ZrtpInitiator new];
     
-    s->allowedKeyAgreementProtocols = [[Environment getCurrent] keyAgreementProtocolsInDescendingPriority];
+    s->allowedKeyAgreementProtocols = Environment.getCurrent.keyAgreementProtocolsInDescendingPriority;
     s->dhSharedSecretHashes = [DhPacketSharedSecretHashes dhPacketSharedSecretHashesRandomized];
     s->zid = [SGNKeychainUtil zid];
     s->confirmIv = [CryptoTools generateSecureRandomData:IV_LENGTH];
     s->hashChain = [HashChain hashChainWithSecureGeneratedData];
-    s->badPacketLogger = [[Environment logging] getOccurrenceLoggerForSender:self withKey:@"Bad Packet"];
+    s->badPacketLogger = [Environment.logging getOccurrenceLoggerForSender:self withKey:@"Bad Packet"];
     s->packetExpectation = EXPECTING_HELLO;
     s->callController = callController;
     
@@ -89,7 +89,7 @@
                          andSharedSecretHashes:dhSharedSecretHashes
                                   andKeyAgreer:keyAgreementParticipant];
     
-    commitPacket = [CommitPacket commitPacketWithDefaultSpecsAndKeyAgreementProtocol:[keyAgreementParticipant getProtocol]
+    commitPacket = [CommitPacket commitPacketWithDefaultSpecsAndKeyAgreementProtocol:keyAgreementParticipant.getProtocol
                                                                         andHashChain:hashChain
                                                                               andZid:zid
                                                                 andCommitmentToHello:foreignHello
@@ -141,7 +141,7 @@
 
 -(bool) isAuthenticatedAudioDataImplyingConf2Ack:(id)packet {
     if (packetExpectation != EXPECTING_CONFIRM_ACK) return false;
-    if (![packet isKindOfClass:[RtpPacket class]]) return false;
+    if (![packet isKindOfClass:RtpPacket.class]) return false;
     
     @try {
         SrtpStream* incomingContext = [SrtpStream srtpStreamWithCipherKey:[masterSecret responderSrtpKey]
@@ -158,7 +158,7 @@
     NSArray* idsOfProtocolsAllowedByPeer = [foreignHello agreeIdsIncludingImplied];
 
     id<KeyAgreementProtocol> bestCommonKeyAgreementProtocol = [allowedKeyAgreementProtocols firstMatchingElseNil:^int(id<KeyAgreementProtocol> locallyAllowedProtocol) {
-        return [idsOfProtocolsAllowedByPeer containsObject:[locallyAllowedProtocol getId]];
+        return [idsOfProtocolsAllowedByPeer containsObject:locallyAllowedProtocol.getId];
     }];
     
     // Note: should never fail to find a common protocol because DH3k support is required and implied

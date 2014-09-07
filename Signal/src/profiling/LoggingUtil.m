@@ -63,7 +63,7 @@
     id<ValueLogger> norm = [logging getValueLoggerForValue:valueIdentity from:sender];
     return [AnonymousValueLogger anonymousValueLogger:^(double value) {
         [estimator updateWithNextSample:value];
-        [norm logValue:[estimator currentEstimate]];
+        [norm logValue:estimator.currentEstimate];
     }];
 }
 +(id<ValueLogger>) getMagnitudeDecayingToZeroValueLoggerTo:(id<Logging>)logging named:(id)valueIdentity from:(id)sender withDecayFactor:(double)decayFactorPerSample {

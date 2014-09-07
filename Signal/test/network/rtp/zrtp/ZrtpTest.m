@@ -16,7 +16,7 @@ bool pm(HandshakePacket* p1, HandshakePacket* p2);
 bool pm(HandshakePacket* p1, HandshakePacket* p2) {
     return p1 != nil
     && p2 != nil
-    && [p1 class] == [p2 class]
+    && p1.class == p2.class
     && [[p1 embeddedIntoRtpPacketWithSequenceNumber:0 usingInteropOptions:@[]] isEqualToRtpPacket:[p2 embeddedIntoRtpPacketWithSequenceNumber:0 usingInteropOptions:@[]]];
 }
 #define AssertPacketsMatch(p1, p2) STAssertTrue(pm(p1, p2), @"")

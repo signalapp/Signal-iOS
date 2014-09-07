@@ -18,7 +18,7 @@
     
     PacketHandlerBlock valueHandler = ^(RtpPacket* rtpPacket) {
         require(rtpPacket != nil);
-        require([rtpPacket isKindOfClass:[RtpPacket class]]);
+        require([rtpPacket isKindOfClass:RtpPacket.class]);
         [handler handlePacket:[EncodedAudioPacket encodedAudioPacketWithAudioData:rtpPacket.payload
                                                                      andTimeStamp:rtpPacket.timeStamp
                                                                 andSequenceNumber:rtpPacket.sequenceNumber]];

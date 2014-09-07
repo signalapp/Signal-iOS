@@ -21,7 +21,7 @@
                 wave[i] = (int16_t)(sin(t)*INT16_MAX);
                 double curFrequency = (sin(t/400)+1)/2*500+200;
                 @synchronized(a) {
-                    t += 2*3.14159*curFrequency/[a getSampleRateInHertz];
+                    t += 2*3.14159*curFrequency/a.getSampleRateInHertz;
                 }
             }
             [a populatePlaybackQueueWithData:[NSData dataWithBytesNoCopy:wave length:sizeof(wave) freeWhenDone:NO]];

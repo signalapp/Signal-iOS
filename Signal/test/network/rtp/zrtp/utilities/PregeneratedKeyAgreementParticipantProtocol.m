@@ -12,7 +12,7 @@
     return participant;
 }
 -(NSData*) getId {
-    return [[participant getProtocol] getId];
+    return participant.getProtocol.getId;
 }
 
 @end

@@ -27,14 +27,14 @@ static bool doesActiveInstanceExist;
     doesActiveInstanceExist = true;
     
     RemoteIOAudio* newRemoteIoInterface = [RemoteIOAudio new];
-    newRemoteIoInterface->starveLogger = [[Environment logging] getOccurrenceLoggerForSender:newRemoteIoInterface withKey:@"starve"];
-    newRemoteIoInterface->conditionLogger = [[Environment logging] getConditionLoggerForSender:newRemoteIoInterface];
+    newRemoteIoInterface->starveLogger = [Environment.logging getOccurrenceLoggerForSender:newRemoteIoInterface withKey:@"starve"];
+    newRemoteIoInterface->conditionLogger = [Environment.logging getConditionLoggerForSender:newRemoteIoInterface];
     newRemoteIoInterface->recordingQueue = [CyclicalBuffer new];
     newRemoteIoInterface->playbackQueue =  [CyclicalBuffer new];
     newRemoteIoInterface->unusedBuffers = [NSMutableSet set];
     newRemoteIoInterface->state = NOT_STARTED;
-    newRemoteIoInterface->playbackBufferSizeLogger = [[Environment logging] getValueLoggerForValue:@"|playback queue|" from:newRemoteIoInterface];
-    newRemoteIoInterface->recordingQueueSizeLogger = [[Environment logging] getValueLoggerForValue:@"|recording queue|" from:newRemoteIoInterface];
+    newRemoteIoInterface->playbackBufferSizeLogger = [Environment.logging getValueLoggerForValue:@"|playback queue|" from:newRemoteIoInterface];
+    newRemoteIoInterface->recordingQueueSizeLogger = [Environment.logging getValueLoggerForValue:@"|recording queue|" from:newRemoteIoInterface];
     
     while (newRemoteIoInterface->unusedBuffers.count < INITIAL_NUMBER_OF_BUFFERS) {
         [newRemoteIoInterface addUnusedBuffer];

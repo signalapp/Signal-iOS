@@ -38,7 +38,7 @@
 
 +(NSURL*) urlToFile:(NSString*) file {
     return [NSURL fileURLWithPath:
-            [NSString stringWithFormat:@"%@/%@", [[NSBundle mainBundle] resourcePath],file]];
+            [NSString stringWithFormat:@"%@/%@", NSBundle.mainBundle.resourcePath,file]];
 }
 
 +(AVAudioPlayer*) createAudioPlayerForFile:(NSString*) audioFile {

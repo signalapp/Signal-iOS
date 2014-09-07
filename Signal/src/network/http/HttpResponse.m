@@ -103,7 +103,7 @@
     [r addObject:statusText];
     [r addObject:@"\r\n"];
     
-    NSString* body = [self getOptionalBodyText];
+    NSString* body = self.getOptionalBodyText;
     if (body != nil) {
         [r addObject:@"Content-Length: "];
         [r addObject:[@(body.length) stringValue]];

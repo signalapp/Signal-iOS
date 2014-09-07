@@ -45,7 +45,7 @@
     
     NSData* data = [[phoneNumberDirectoryFilter bloomFilter] data];
     NSNumber* hashCount = @([[phoneNumberDirectoryFilter bloomFilter] hashCount]);
-    NSDate* expiry = [phoneNumberDirectoryFilter getExpirationDate];
+    NSDate* expiry = phoneNumberDirectoryFilter.getExpirationDate;
     [self setValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_DATA_KEY toValue:data];
     [self setValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_HASH_COUNT_KEY toValue:hashCount];
     [self setValueForKey:PHONE_DIRECTORY_EXPIRATION toValue:expiry];
@@ -147,14 +147,15 @@
 }
 
 -(NSString*)lastRanVersion{
-    return [[NSUserDefaults standardUserDefaults] objectForKey:kSignalVersionKey];
+    return [NSUserDefaults.standardUserDefaults objectForKey:kSignalVersionKey];
 }
 
 -(NSString*)setAndGetCurrentVersion{
     NSString *lastVersion = self.lastRanVersion;
     
-    [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%@", [[NSBundle mainBundle] infoDictionary][@"CFBundleVersion"]] forKey:kSignalVersionKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [NSUserDefaults.standardUserDefaults setObject:[NSString stringWithFormat:@"%@", NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"]]
+                                            forKey:kSignalVersionKey];
+    [NSUserDefaults.standardUserDefaults synchronize];
     return lastVersion;
 }
 

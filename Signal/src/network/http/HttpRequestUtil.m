@@ -19,7 +19,7 @@
                                                         andLocation:location
                                                     andOptionalBody:optionalBody
                                                      andLocalNumber:SGNKeychainUtil.localNumber
-                                                        andPassword:[SGNKeychainUtil serverAuthPassword]];
+                                                        andPassword:SGNKeychainUtil.serverAuthPassword];
 }
 +(HttpRequest*)httpRequestWithOtpAuthenticationAndMethod:(NSString*)method
                                              andLocation:(NSString*)location {
@@ -34,7 +34,7 @@
                                                       andLocation:location
                                                   andOptionalBody:optionalBody
                                                    andLocalNumber:SGNKeychainUtil.localNumber
-                                                      andPassword:[SGNKeychainUtil serverAuthPassword]
+                                                      andPassword:SGNKeychainUtil.serverAuthPassword
                                                        andCounter:[SGNKeychainUtil getAndIncrementOneTimeCounter]];
 }
 +(HttpRequest*)httpRequestUnauthenticatedWithMethod:(NSString*)method

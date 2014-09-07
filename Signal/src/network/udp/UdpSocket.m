@@ -181,7 +181,7 @@ void onReceivedData(CFSocketRef socket, CFSocketCallBackType type, CFDataRef add
         [self setupRemoteEndPoint];
         
         NSRunLoop* runLoop = [ThreadManager lowLatencyThreadRunLoop];
-        CFRunLoopAddSource([runLoop getCFRunLoop], CFSocketCreateRunLoopSource(NULL, socket, 0), kCFRunLoopCommonModes);
+        CFRunLoopAddSource(runLoop.getCFRunLoop, CFSocketCreateRunLoopSource(NULL, socket, 0), kCFRunLoopCommonModes);
         
         [untilCancelledToken whenCancelledDo:^{
             @synchronized(self) {

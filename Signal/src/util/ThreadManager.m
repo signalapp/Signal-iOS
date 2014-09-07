@@ -18,7 +18,7 @@
     [instance->thread start];
     
     [Operation asyncRunAndWaitUntilDone:^{
-        instance->runLoop = [NSRunLoop currentRunLoop];
+        instance->runLoop = NSRunLoop.currentRunLoop;
     } onThread:instance->thread];
     
     return instance;
@@ -27,8 +27,8 @@
     [thread cancel];
 }
 -(void) runLoopUntilCancelled {
-    NSThread* curThread = [NSThread currentThread];
-    NSRunLoop* curRunLoop = [NSRunLoop currentRunLoop];
+    NSThread* curThread = NSThread.currentThread;
+    NSRunLoop* curRunLoop = NSRunLoop.currentRunLoop;
     while (!curThread.isCancelled) {
         [curRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:5]];
     }

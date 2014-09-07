@@ -60,7 +60,7 @@
         @try {
             action();
         } @catch (id ex) {
-            [[[Environment logging] getConditionLoggerForSender:self]
+            [[Environment.logging getConditionLoggerForSender:self]
              logError:@"A queued action failed and may have stalled an ObservableValue."];
             @synchronized(self) {
                 isRunningActions = false;

@@ -26,7 +26,7 @@ AppAudioManager*  sharedAppAudioManager;
 +(AppAudioManager*) sharedInstance {
     @synchronized(self){
         if( nil == sharedAppAudioManager){
-            sharedAppAudioManager = [[AppAudioManager alloc] init];
+            sharedAppAudioManager = [AppAudioManager new];
             sharedAppAudioManager.soundPlayer = [SoundPlayer new];
             [sharedAppAudioManager setAudioEnabled:YES];
         }

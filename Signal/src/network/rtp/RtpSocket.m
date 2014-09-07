@@ -24,7 +24,7 @@
     
     PacketHandlerBlock valueHandler = ^(id packet) {
         require(packet != nil);
-        require([packet isKindOfClass:[NSData class]]);
+        require([packet isKindOfClass:NSData.class]);
         NSData* data = packet;
         RtpPacket* rtpPacket = [RtpPacket rtpPacketParsedFromPacketData:data];
 
@@ -51,7 +51,7 @@
 }
 -(void) handleRtpPacket:(RtpPacket*)rtpPacket {
     @synchronized(self) {
-        if ([ThreadManager lowLatencyThread] == [NSThread currentThread]) {
+        if ([ThreadManager lowLatencyThread] == NSThread.currentThread) {
             [currentHandler handlePacket:rtpPacket];
             return;
         }

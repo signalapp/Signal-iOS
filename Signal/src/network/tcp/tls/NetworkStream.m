@@ -16,7 +16,7 @@
     require(remoteEndPoint != nil);
     
     // all connections must be secure, unless testing
-    bool isSecureEndPoint = [remoteEndPoint isKindOfClass:[SecureEndPoint class]];
+    bool isSecureEndPoint = [remoteEndPoint isKindOfClass:SecureEndPoint.class];
     bool allowTestNonSecure = [Environment hasEnabledTestingOrLegacyOption:ENVIRONMENT_TESTING_OPTION_ALLOW_NETWORK_STREAM_TO_NON_SECURE_END_POINTS];
     require(allowTestNonSecure || isSecureEndPoint);
     

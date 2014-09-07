@@ -6,21 +6,21 @@
 
 -(void) clear {
     @synchronized(self) {
-        NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
-        [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
+        NSString *appDomain = NSBundle.mainBundle.bundleIdentifier;
+        [NSUserDefaults.standardUserDefaults removePersistentDomainForName:appDomain];
     }
 }
 
 -(id) tryGetValueForKey:(NSString *)key {
     require(key != nil);
     @synchronized(self) {
-        return [[NSUserDefaults standardUserDefaults] objectForKey:key];
+        return [NSUserDefaults.standardUserDefaults objectForKey:key];
     }
 }
 -(void) setValueForKey:(NSString *)key toValue:(id)value {
     require(key != nil);
     @synchronized(self) {
-        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
         [userDefaults setObject:value forKey:key];
         [userDefaults synchronize];
     }
@@ -45,9 +45,9 @@
             [UICKeyChainStore removeItemForKey:key];
             DDLogWarn(@"Removing object for key: %@", key);
         } else {
-            if ([value isKindOfClass:[NSData class]]) {
+            if ([value isKindOfClass:NSData.class]) {
                 [UICKeyChainStore setData:value forKey:key];
-            } else if ([value isKindOfClass:[NSString class]]){
+            } else if ([value isKindOfClass:NSString.class]){
                 [UICKeyChainStore setString:value forKey:key];
             } else{
                 DDLogError(@"Unexpected class stored in the Keychain.");

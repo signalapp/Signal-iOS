@@ -109,12 +109,12 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
         [button setImage:[UIImage imageNamed:CHECKBOX_CHECKMARK_IMAGE_NAME]
                 forState:UIControlStateSelected];
     }
-    PropertyListPreferences *prefs       = [Environment preferences];
-    _hideContactImagesButton.selected    = ![prefs getContactImagesEnabled];
-    _enableScreenSecurityButton.selected = [prefs screenSecurityIsEnabled];
-    _disableAutocorrectButton.selected   = ![prefs getAutocorrectEnabled];
-    _disableHistoryButton.selected       = ![prefs getHistoryLogEnabled];
-    _disableLogsCell.selected            = ![prefs loggingIsEnabled];
+    PropertyListPreferences *prefs       = Environment.preferences;
+    _hideContactImagesButton.selected    = !prefs.getContactImagesEnabled;
+    _enableScreenSecurityButton.selected = prefs.screenSecurityIsEnabled;
+    _disableAutocorrectButton.selected   = !prefs.getAutocorrectEnabled;
+    _disableHistoryButton.selected       = !prefs.getHistoryLogEnabled;
+    _disableLogsCell.selected            = !prefs.loggingIsEnabled;
 }
 
 - (void)configureAllCells {
@@ -146,7 +146,7 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
     
     NSMutableArray *cells = [@[_disableLogsCell] mutableCopy];
     
-    if ([[Environment preferences] loggingIsEnabled]) {
+    if (Environment.preferences.loggingIsEnabled) {
         [cells addObject:_sendDebugLog];
     }
     
@@ -207,22 +207,22 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 
 - (IBAction)hideContactImagesButtonTapped {
     _hideContactImagesButton.selected = !_hideContactImagesButton.selected;
-    [[Environment preferences] setContactImagesEnabled:!_hideContactImagesButton.selected];
+    [Environment.preferences setContactImagesEnabled:!_hideContactImagesButton.selected];
 }
 
 - (IBAction)disableAutocorrectButtonTapped {
     _disableAutocorrectButton.selected = !_disableAutocorrectButton.selected;
-    [[Environment preferences] setAutocorrectEnabled:!_disableAutocorrectButton.selected];
+    [Environment.preferences setAutocorrectEnabled:!_disableAutocorrectButton.selected];
 }
 
 - (IBAction)disableHistoryButtonTapped {
     _disableHistoryButton.selected = !_disableHistoryButton.selected;
-    [[Environment preferences] setHistoryLogEnabled:!_disableHistoryButton.selected];
+    [Environment.preferences setHistoryLogEnabled:!_disableHistoryButton.selected];
 }
 
 - (IBAction)enableScreenSecurityTapped:(id)sender{
     _enableScreenSecurityButton.selected = !_enableScreenSecurityButton.selected;
-    [[Environment preferences] setScreenSecurity:_enableScreenSecurityButton.selected];
+    [Environment.preferences setScreenSecurity:_enableScreenSecurityButton.selected];
 }
 
 - (IBAction)disableLogTapped:(id)sender{
@@ -237,13 +237,13 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
         [DebugLogger.sharedInstance enableFileLogging];
     }
 
-    [[Environment preferences] setLoggingEnabled:loggingEnabled];
+    [Environment.preferences setLoggingEnabled:loggingEnabled];
     _debuggingTableViewCells = [self debugCells];
     [_settingsTableView reloadData];
 }
 
 - (void)clearHistory {
-    [[[Environment getCurrent] recentCallManager] clearRecentCalls];
+    [Environment.getCurrent.recentCallManager clearRecentCalls];
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SETTINGS_LOG_CLEAR_TITLE
                                                         message:SETTINGS_LOG_CLEAR_MESSAGE
                                                        delegate:nil

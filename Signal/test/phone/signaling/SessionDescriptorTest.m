@@ -17,19 +17,19 @@
                                                                                            andRelayPort:6];
     test([d sessionId] == 5);
     test([d relayUdpPort] == 6);
-    test([[d relayServerName] isEqualToString:@"example.com"]);
+    test([d.relayServerName isEqualToString:@"example.com"]);
     
     // roundtrip
     InitiatorSessionDescriptor* d2 = [InitiatorSessionDescriptor initiatorSessionDescriptorFromJson:d.toJson];
     test([d2 sessionId] == 5);
     test([d2 relayUdpPort] == 6);
-    test([[d2 relayServerName] isEqualToString:@"example.com"]);
+    test([d2.relayServerName isEqualToString:@"example.com"]);
     
     // constant
     InitiatorSessionDescriptor* d3 = [InitiatorSessionDescriptor initiatorSessionDescriptorFromJson:@"{\"sessionId\":5,\"serverName\":\"example.com\",\"relayPort\":6}"];
     test([d3 sessionId] == 5);
     test([d3 relayUdpPort] == 6);
-    test([[d3 relayServerName] isEqualToString:@"example.com"]);
+    test([d3.relayServerName isEqualToString:@"example.com"]);
 }
 
 -(void) testResponderSessionDescriptorFromEncryptedRemoteNotification2 {

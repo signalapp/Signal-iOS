@@ -29,13 +29,13 @@ MacrosSingletonImplemention
     self = [super init];
     
     if (self) {
-        HostNameEndPoint *endpoint = [[[Environment getCurrent]masterServerSecureEndPoint] hostNameEndPoint];
+        HostNameEndPoint *endpoint = Environment.getCurrent.masterServerSecureEndPoint.hostNameEndPoint;
         NSURL *endPointURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@:%hu", endpoint.hostname, endpoint.port]];
-        NSURLSessionConfiguration *sessionConf = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+        NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
         self.operationManager = [[AFHTTPSessionManager alloc] initWithBaseURL:endPointURL sessionConfiguration:sessionConf];
         self.operationManager.responseSerializer                      = [AFJSONResponseSerializer serializer];
         self.operationManager.securityPolicy.allowInvalidCertificates = YES;
-        NSString *certPath = [[NSBundle mainBundle] pathForResource:@"whisperReal" ofType:@"cer"];
+        NSString *certPath = [NSBundle.mainBundle pathForResource:@"whisperReal" ofType:@"cer"];
         NSData *certData = [NSData dataWithContentsOfFile:certPath];
         SecCertificateRef cert = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certData));
         self.operationManager.securityPolicy.pinnedCertificates = @[(__bridge_transfer NSData *)SecCertificateCopyData(cert)];
