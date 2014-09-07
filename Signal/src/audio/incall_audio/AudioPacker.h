@@ -20,6 +20,7 @@
 @interface AudioPacker : NSObject {
 @private NSMutableArray* framesToSend;
 @private uint16_t nextSequenceNumber;
+@private uint32_t nextTimeStamp;
 @private Queue* audioFrameToReceiveQueue;
 }
 

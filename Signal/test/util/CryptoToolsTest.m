@@ -75,6 +75,17 @@
     test (!same);
 }
 
+-(void) testGenerateSecureRandomUInt32_varies {
+    NSMutableSet* s = [NSMutableSet new];
+    
+    for (uint i = 0; i < 10; i++) {
+        [s addObject:@([CryptoTools generateSecureRandomUInt32])];
+    }
+    
+    // Note: expected false negative rate is approximately once per hundred million runs
+    test(s.count == 10);
+}
+
 -(void) testKnownAesCipherFeedback {
     NSData* iv = [@"000102030405060708090a0b0c0d0e0f" decodedAsHexString];
     NSData* plain =[@"6bc1bee22e409f96e93d7e117393172a" decodedAsHexString];

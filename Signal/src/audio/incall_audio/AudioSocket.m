@@ -19,19 +19,21 @@
     PacketHandlerBlock valueHandler = ^(RtpPacket* rtpPacket) {
         require(rtpPacket != nil);
         require([rtpPacket isKindOfClass:[RtpPacket class]]);
-        [handler handlePacket:[EncodedAudioPacket encodedAudioPacketWithAudioData:[rtpPacket payload]
-                                                                andSequenceNumber:[rtpPacket sequenceNumber]]];
+        [handler handlePacket:[EncodedAudioPacket encodedAudioPacketWithAudioData:rtpPacket.payload
+                                                                     andTimeStamp:rtpPacket.timeStamp
+                                                                andSequenceNumber:rtpPacket.sequenceNumber]];
     };
     
     [srtpSocket startWithHandler:[PacketHandler packetHandler:valueHandler
-                                             withErrorHandler:[handler errorHandler]]
+                                             withErrorHandler:handler.errorHandler]
                   untilCancelled:untilCancelledToken];
 }
 -(void) send:(EncodedAudioPacket*)audioPacket {
     require(audioPacket != nil);
     
-    RtpPacket* rtpPacket = [RtpPacket rtpPacketWithDefaultsAndSequenceNumber:[audioPacket sequenceNumber]
-                                                                  andPayload:[audioPacket audioData]];
+    RtpPacket* rtpPacket = [RtpPacket rtpPacketWithDefaultsAndSequenceNumber:audioPacket.sequenceNumber
+                                                                andTimeStamp:audioPacket.timeStamp
+                                                                  andPayload:audioPacket.audioData];
     [srtpSocket secureAndSendRtpPacket:rtpPacket];
 }
 
