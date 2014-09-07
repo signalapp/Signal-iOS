@@ -1,14 +1,8 @@
-//
-//  PushManager.m
-//  Signal
-//
-//  Created by Frederic Jacobs on 31/07/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 #import "PreferencesUtil.h"
 #import "PushManager.h"
 #import "Environment.h"
 #import "CallServerRequestsManager.h"
+#import "DDLog.h"
 
 @interface PushManager ()
 
@@ -25,38 +19,30 @@
     static PushManager *sharedManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedManager = [[self alloc] init];
+        sharedManager = [self new];
     });
     return sharedManager;
 }
 
-- (void)verifyPushActivated{
-    UIRemoteNotificationType notificationTypes = [UIApplication.sharedApplication enabledRemoteNotificationTypes];
-    
-    BOOL needsPushSettingChangeAlert = NO;
+-(UIRemoteNotificationType) desiredNotificationTypeMask {
+    return UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound;
+}
 
-    if (notificationTypes == UIRemoteNotificationTypeNone) {
-        needsPushSettingChangeAlert = YES;
-    } else if (notificationTypes == UIRemoteNotificationTypeBadge) {
-        needsPushSettingChangeAlert = YES;
-    } else if (notificationTypes == UIRemoteNotificationTypeAlert) {
-        needsPushSettingChangeAlert = YES;
-    } else if (notificationTypes == UIRemoteNotificationTypeSound) {
-        needsPushSettingChangeAlert = YES;
-    } else if (notificationTypes == (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert)) {
-        needsPushSettingChangeAlert = YES;
-    } else if (notificationTypes == (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)) {
-        needsPushSettingChangeAlert = YES;
-    }
+- (void)verifyPushActivated{
+    UIRemoteNotificationType notificationTypes = UIApplication.sharedApplication.enabledRemoteNotificationTypes;
+    
+    BOOL needsPushSettingChangeAlert = (self.desiredNotificationTypeMask & notificationTypes) != self.desiredNotificationTypeMask;
     
     if (needsPushSettingChangeAlert) {
-        [[Environment preferences] setRevokedPushPermission:YES];
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")  message:NSLocalizedString(@"PUSH_SETTINGS_MESSAGE", @"") delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil, nil];
+        Environment.preferences.revokedPushPermission = YES;
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
+                                                            message:NSLocalizedString(@"PUSH_SETTINGS_MESSAGE", @"")
+                                                           delegate:nil
+                                                  cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                                                  otherButtonTitles:nil, nil];
         [alertView show];
-    } else if (!needsPushSettingChangeAlert){
-        if ([[Environment preferences] encounteredRevokedPushPermission]) {
-            [self askForPushRegistration];
-        }
+    } else if (!needsPushSettingChangeAlert && Environment.preferences.encounteredRevokedPushPermission) {
+        [self askForPushRegistration];
     }
     
 }
