@@ -33,7 +33,7 @@ bool pm(HandshakePacket* p1, HandshakePacket* p2) {
 }
 
 -(void) testPerturbedZrtpHandshake {
-    IpEndPoint* receiver = [IpEndPoint ipEndPointAtAddress:[IpAddress localhost]
+    IpEndPoint* receiver = [IpEndPoint ipEndPointAtAddress:IpAddress.localhost
                                                     onPort:10000 + (in_port_t)arc4random_uniform(20000)];
     
     UdpSocket* u1 = [UdpSocket udpSocketToFirstSenderOnLocalPort:receiver.port];
@@ -59,7 +59,7 @@ bool pm(HandshakePacket* p1, HandshakePacket* p2) {
 }
 
 -(void) testPerturbedZrtpHandshakeWithoutConfAck {
-    IpEndPoint* receiver = [IpEndPoint ipEndPointAtAddress:[IpAddress localhost]
+    IpEndPoint* receiver = [IpEndPoint ipEndPointAtAddress:IpAddress.localhost
                                                     onPort:10000 + (in_port_t)arc4random_uniform(20000)];
     [Environment setCurrent:testEnvWith(ENVIRONMENT_TESTING_OPTION_LOSE_CONF_ACK_ON_PURPOSE)];
     
@@ -103,7 +103,7 @@ bool pm(HandshakePacket* p1, HandshakePacket* p2) {
 -(void) testDhHandshake {
     [Environment setCurrent:testEnvWith(TESTING_OPTION_USE_DH_FOR_HANDSHAKE)];
 
-    IpEndPoint* receiver = [IpEndPoint ipEndPointAtAddress:[IpAddress localhost]
+    IpEndPoint* receiver = [IpEndPoint ipEndPointAtAddress:IpAddress.localhost
                                                     onPort:10000 + (in_port_t)arc4random_uniform(20000)];
     
     UdpSocket* u1 = [UdpSocket udpSocketToFirstSenderOnLocalPort:receiver.port];

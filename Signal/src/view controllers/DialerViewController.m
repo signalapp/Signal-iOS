@@ -44,7 +44,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if (_phoneNumber) {
-        _currentNumberMutable = [[_phoneNumber toE164] mutableCopy];
+        _currentNumberMutable = _phoneNumber.toE164.mutableCopy;
         [self updateNumberLabel];
     }
 }
@@ -168,7 +168,7 @@
             [self removeContactImage];
         }
         
-        [_addContactButton setTitle:[_contact fullName] forState:UIControlStateNormal];
+        [_addContactButton setTitle:_contact.fullName forState:UIControlStateNormal];
         
     } else {
         [_addContactButton setTitle:@"" forState:UIControlStateNormal];

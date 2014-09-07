@@ -10,7 +10,7 @@
     
     RtpSocket* s = [RtpSocket new];
     s->udpSocket = udpSocket;
-    s->interopOptions = [interopOptions mutableCopy];
+    s->interopOptions = interopOptions.mutableCopy;
     return s;
 }
 

@@ -6,11 +6,11 @@
 #import "RecentCallManager.h"
 #import "PhoneNumberDirectoryFilterManager.h"
 
-#define RELEASE_ZRTP_CLIENT_ID [@"Whisper 000     " encodedAsAscii]
-#define RELEASE_ZRTP_VERSION_ID [@"1.10" encodedAsAscii]
+#define RELEASE_ZRTP_CLIENT_ID @"Whisper 000     ".encodedAsAscii
+#define RELEASE_ZRTP_VERSION_ID @"1.10".encodedAsAscii
 
-#define TESTING_ZRTP_CLIENT_ID [@"RedPhone 019    " encodedAsAscii]
-#define TESTING_ZRTP_VERSION_ID [@"1.10" encodedAsAscii]
+#define TESTING_ZRTP_CLIENT_ID @"RedPhone 019    ".encodedAsAscii
+#define TESTING_ZRTP_VERSION_ID @"1.10".encodedAsAscii
 
 static unsigned char DH3K_PRIME[]={
     0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xC9,0x0F,0xDA,0xA2,0x21,0x68,0xC2,

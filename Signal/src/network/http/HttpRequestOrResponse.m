@@ -34,11 +34,11 @@
     require(data != nil);
 
     // first line should contain HTTP
-    checkOperation([data tryFindIndexOf:[@"\r\n" encodedAsAscii]] == nil || [data tryFindIndexOf:[@"HTTP" encodedAsAscii]] != nil);
+    checkOperation([data tryFindIndexOf:@"\r\n".encodedAsAscii] == nil || [data tryFindIndexOf:@"HTTP".encodedAsAscii] != nil);
     // expecting \r\n line endings
-    checkOperation(([data tryFindIndexOf:[@"\n" encodedAsAscii]] == nil) == ([data tryFindIndexOf:[@"\r\n" encodedAsAscii]] == nil));
+    checkOperation(([data tryFindIndexOf:@"\n".encodedAsAscii] == nil) == ([data tryFindIndexOf:@"\r\n".encodedAsAscii] == nil));
     
-    NSNumber* tryHeaderLength = [data tryFindIndexOf:[@"\r\n\r\n" encodedAsUtf8]];
+    NSNumber* tryHeaderLength = [data tryFindIndexOf:@"\r\n\r\n".encodedAsUtf8];
     if (tryHeaderLength == nil) return nil;
     NSUInteger headerLength = [tryHeaderLength unsignedIntegerValue];
     NSString* fullHeader = [[data take:headerLength] decodedAsUtf8];

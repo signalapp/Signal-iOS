@@ -78,7 +78,7 @@
                     
                     counter,
                     dhResult,
-                    [@"ZRTP-HMAC-KDF" encodedAsUtf8],
+                    @"ZRTP-HMAC-KDF".encodedAsUtf8,
                     [initiatorZid getData],
                     [responderZid getData],
                     totalHash,
@@ -147,7 +147,7 @@
     NSData* input = [@[
                      
                      counter,
-                     [label encodedAsUtf8],
+                     label.encodedAsUtf8,
                      [@[@0] toUint8Data],
                      [initiatorZid getData],
                      [responderZid getData],

@@ -23,7 +23,7 @@
                                          INFO_DISPLAY_LABEL_DEFAULT_WIDTH,
                                          CGRectGetHeight(_infoDisplayLabel.frame));
 
-    _infoDisplayLabel.text = [phoneNumber localizedDescriptionForUser];
+    _infoDisplayLabel.text = phoneNumber.localizedDescriptionForUser;
         
     if (isSecure) {
         _infoTypeLabel.text = CONTACT_DETAIL_COMM_TYPE_SECURE;

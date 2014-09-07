@@ -34,7 +34,7 @@ static NSString *const DEFAULTS_KEY_DATE = @"DefaultsKeyDate";
 		}
 	}
 
-	contact->parsedPhoneNumbers = [parsedPhoneNumbers copy];
+	contact->parsedPhoneNumbers = parsedPhoneNumbers.copy;
 
 	return contact;
 }

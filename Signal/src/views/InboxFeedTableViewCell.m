@@ -40,7 +40,7 @@
     Contact *contact = [[[Environment getCurrent] contactsManager] latestContactWithRecordId:recentCall.contactRecordID];
 
     if (contact) {
-        _nameLabel.text = [contact fullName];
+        _nameLabel.text = contact.fullName;
         if (contact.image) {
             _contactPictureView.image = contact.image;
         } else {
@@ -58,7 +58,7 @@
     }
 
     _missedCallView.hidden = recentCall.userNotified;
-    _numberLabel.text = [recentCall.phoneNumber localizedDescriptionForUser];
+    _numberLabel.text = recentCall.phoneNumber.localizedDescriptionForUser;
     _timeLabel.attributedText = [self dateArrributedString:[recentCall date]];
 }
 

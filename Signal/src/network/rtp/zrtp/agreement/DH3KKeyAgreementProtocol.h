@@ -2,7 +2,7 @@
 #import "KeyAgreementProtocol.h"
 #import "CryptoTools.h"
 
-#define DH3k_KEY_AGREEMENT_ID [@"DH3k" encodedAsUtf8]
+#define DH3k_KEY_AGREEMENT_ID @"DH3k".encodedAsUtf8
 
 /**
  *

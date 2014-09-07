@@ -142,7 +142,7 @@ static NSString *const CONTACT_TABLE_VIEW_CELL_IDENTIFIER = @"ContactTableViewCe
 
 - (NSArray *)favouritesForSearchTerm:(NSString *)searchTerm {
     return [_favourites filter:^int(Contact *contact) {
-        return searchTerm.length == 0 || [ContactsManager name:[contact fullName] matchesQuery:searchTerm];
+        return searchTerm.length == 0 || [ContactsManager name:contact.fullName matchesQuery:searchTerm];
     }];
 }
 

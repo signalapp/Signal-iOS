@@ -65,7 +65,7 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 #pragma mark - Local number
 
 - (void)configureLocalNumber {
-    PhoneNumber *localNumber = [SGNKeychainUtil localNumber];
+    PhoneNumber *localNumber = SGNKeychainUtil.localNumber;
     if (localNumber) {
         _phoneNumberLabel.attributedText = [self localNumberAttributedStringForNumber:localNumber];
     } else {
@@ -75,7 +75,7 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 
 - (NSAttributedString *)localNumberAttributedStringForNumber:(PhoneNumber *)number {
     NSString *numberPrefixString = SETTINGS_NUMBER_PREFIX;
-    NSString *localNumberString = [number toE164];
+    NSString *localNumberString = number.toE164;
     
     NSString *displayString = [NSString stringWithFormat:@"%@ %@", numberPrefixString, localNumberString];
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:displayString];

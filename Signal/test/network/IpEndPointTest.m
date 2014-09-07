@@ -9,7 +9,7 @@
 
 @implementation IpEndPointTest
 -(void) testTrivial {
-    IpAddress* a = [IpAddress localhost];
+    IpAddress* a = IpAddress.localhost;
     IpEndPoint* p = [IpEndPoint ipEndPointAtAddress:a onPort:2];
     test([p address] == a);
     test([p port] == 2);

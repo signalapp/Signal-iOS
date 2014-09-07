@@ -58,7 +58,7 @@
 +(HttpRequest*) httpRequestToInitiateToRemoteNumber:(PhoneNumber*)remoteNumber {
     require(remoteNumber != nil);
     
-    NSString* formattedRemoteNumber = [remoteNumber toE164];
+    NSString* formattedRemoteNumber = remoteNumber.toE164;
     NSString* interopVersionInsert = CLAIMED_INTEROP_VERSION_IN_INITIATE_SIGNAL == 0
                                    ? @""
                                    : [NSString stringWithFormat:@"/%d", CLAIMED_INTEROP_VERSION_IN_INITIATE_SIGNAL];
@@ -80,8 +80,8 @@
 +(HttpRequest*) httpRequestToVerifyAccessToPhoneNumberWithChallenge:(NSString*)challenge {
     require(challenge != nil);
     
-    PhoneNumber* localPhoneNumber = [SGNKeychainUtil localNumber];
-    NSString* query = [NSString stringWithFormat:@"/users/verification/%@", [localPhoneNumber toE164]];
+    PhoneNumber* localPhoneNumber = SGNKeychainUtil.localNumber;
+    NSString* query = [NSString stringWithFormat:@"/users/verification/%@", localPhoneNumber.toE164];
     [SGNKeychainUtil generateSignaling];
     
     NSData* signalingCipherKey = [SGNKeychainUtil signalingCipherKey];
@@ -97,7 +97,7 @@
 +(HttpRequest*) httpRequestToRegisterForApnSignalingWithDeviceToken:(NSData*)deviceToken {
     require(deviceToken != nil);
     
-    NSString* query = [NSString stringWithFormat:@"/apn/%@", [deviceToken encodedAsHexString]];
+    NSString* query = [NSString stringWithFormat:@"/apn/%@", deviceToken.encodedAsHexString];
     
     return [HttpRequest httpRequestWithBasicAuthenticationAndMethod:@"PUT"
                                                         andLocation:query];

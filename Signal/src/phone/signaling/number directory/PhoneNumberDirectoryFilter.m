@@ -59,7 +59,7 @@
 
 -(bool) containsPhoneNumber:(PhoneNumber*)phoneNumber {
     if (phoneNumber == nil) return false;
-    return [bloomFilter contains:[phoneNumber toE164]];
+    return [bloomFilter contains:phoneNumber.toE164];
 }
 
 @end

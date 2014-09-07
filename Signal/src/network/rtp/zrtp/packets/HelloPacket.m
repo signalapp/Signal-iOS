@@ -242,7 +242,7 @@
     return embedding;
 }
 -(NSArray*) agreeIdsIncludingImplied {
-    NSMutableArray* a = [agreeIds mutableCopy];
+    NSMutableArray* a = agreeIds.mutableCopy;
     [a addObject:COMMIT_DEFAULT_AGREE_SPEC_ID];
     return a;
 }

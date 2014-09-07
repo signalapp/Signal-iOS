@@ -13,7 +13,7 @@
     require(port > 0);
     
     HostNameEndPoint* h = [HostNameEndPoint new];
-    h->hostname = [hostname copy]; // avoid mutability
+    h->hostname = hostname.copy; // avoid mutability
     h->port = port;
     return h;
 }

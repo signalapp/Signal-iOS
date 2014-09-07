@@ -36,7 +36,7 @@
 }
 
 - (NSAttributedString *)attributedStringForContact:(Contact *)contact {
-    NSMutableAttributedString *fullNameAttributedString = [[NSMutableAttributedString alloc] initWithString:[contact fullName]];
+    NSMutableAttributedString *fullNameAttributedString = [[NSMutableAttributedString alloc] initWithString:contact.fullName];
 
     UIFont *firstNameFont;
     UIFont *lastNameFont;
@@ -48,10 +48,10 @@
         firstNameFont = [UIFont systemFontOfSize:_nameLabel.font.pointSize];
         lastNameFont  = [UIFont boldSystemFontOfSize:_nameLabel.font.pointSize];
     }
-    [fullNameAttributedString addAttribute:NSFontAttributeName value:firstNameFont range:NSMakeRange(0, [[contact firstName] length])];
-    [fullNameAttributedString addAttribute:NSFontAttributeName value:lastNameFont range:NSMakeRange([[contact firstName] length] + 1, [[contact lastName] length])];
+    [fullNameAttributedString addAttribute:NSFontAttributeName value:firstNameFont range:NSMakeRange(0, contact.firstName.length)];
+    [fullNameAttributedString addAttribute:NSFontAttributeName value:lastNameFont range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
     
-    [fullNameAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0, [[contact fullName] length])];
+    [fullNameAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0, contact.fullName.length)];
     return fullNameAttributedString;
 }
 
