@@ -82,7 +82,7 @@
     int64_t prevSession = lastIncomingSessionId;
     lastIncomingSessionId = session.sessionId;
 
-    if (currentCallControllerObservable.currentValue.callState.futureTermination.isIncomplete) {
+    if ([currentCallControllerObservable.currentValue callState].futureTermination.isIncomplete) {
         if (session.sessionId == prevSession) {
             Environment.errorNoter(@"Ignoring duplicate incoming call signal.", session, false);
             return;
