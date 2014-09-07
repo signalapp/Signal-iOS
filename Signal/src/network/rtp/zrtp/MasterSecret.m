@@ -79,8 +79,8 @@
                     counter,
                     dhResult,
                     @"ZRTP-HMAC-KDF".encodedAsUtf8,
-                    [initiatorZid getData],
-                    [responderZid getData],
+                    initiatorZid.getData,
+                    responderZid.getData,
                     totalHash,
                     s1Length,
                     s2Length,
@@ -144,17 +144,17 @@
 }
 
 -(NSData*) deriveKeyWithLabel:(NSString*)label andTruncatedLength:(uint16_t)truncatedLength {
-    NSData* input = [@[
+    NSData* input = @[
                      
                      counter,
                      label.encodedAsUtf8,
                      [@[@0] toUint8Data],
-                     [initiatorZid getData],
-                     [responderZid getData],
+                     initiatorZid.getData,
+                     responderZid.getData,
                      totalHash,
                      [NSData dataWithBigEndianBytesOfUInt32:truncatedLength]
                      
-                     ] concatDatas];
+                     ].concatDatas;
     
     NSData* digest = [input hmacWithSha256WithKey:sharedSecret];
     

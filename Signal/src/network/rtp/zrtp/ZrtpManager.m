@@ -67,7 +67,7 @@
 -(TOCFuture*) asyncPerformHandshake {
     PacketHandlerBlock packetHandler = ^(id packet) {
         require(packet != nil);
-        require([packet isKindOfClass:[HandshakePacket class]]);
+        require([packet isKindOfClass:HandshakePacket.class]);
         [self handleHandshakePacket:(HandshakePacket*)packet];
     };
     
@@ -178,7 +178,7 @@
         handshakeCompletedSuccesfully = true;
         
         SrtpSocket* secureChannel = [zrtpRole useKeysToSecureRtpSocket:rtpSocketToSecure];
-        MasterSecret* masterSecret          = [zrtpRole getMasterSecret];
+        MasterSecret* masterSecret          = zrtpRole.getMasterSecret;
         
         ZrtpHandshakeResult* result = [ZrtpHandshakeResult zrtpHandshakeResultWithSecureChannel:secureChannel andMasterSecret:masterSecret];
         

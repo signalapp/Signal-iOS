@@ -42,10 +42,10 @@
     bool hasDH3k = false;
     
     for (id<KeyAgreementProtocol> e in keyAgreementProtocols) {
-        if ([[e getId] isEqualToData:COMMIT_DEFAULT_AGREE_SPEC_ID]) {
+        if ([e.getId isEqualToData:COMMIT_DEFAULT_AGREE_SPEC_ID]) {
             hasDH3k = true;
         } else {
-            [agreeSpecIds addObject:[e getId]];
+            [agreeSpecIds addObject:e.getId];
         }
     }
     
@@ -60,8 +60,8 @@
     require(zid != nil);
     require(keyAgreementProtocols != nil);
     
-    return [HelloPacket helloPacketWithVersion:[Environment getCurrent].zrtpVersionId
-                                   andClientId:[Environment getCurrent].zrtpClientId
+    return [HelloPacket helloPacketWithVersion:Environment.getCurrent.zrtpVersionId
+                                   andClientId:Environment.getCurrent.zrtpClientId
                                 andHashChainH3:[hashChain h3]
                                         andZid:zid
                                   andFlags0SMP:0
@@ -155,7 +155,7 @@
             versionId,
             clientId,
             hashChainH3,
-            [zid getData],
+            zid.getData,
             [self generateFlags],
             [[@[hashIds, cipherIds, authIds, agreeIds, sasIds] concatArrays] concatDatas]
             

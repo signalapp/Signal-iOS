@@ -40,7 +40,7 @@
                                                                                     untilCancelled:[callController untilCancelledToken]];
     
     return [futureSignalConnection thenTry:^id(HttpManager* httpManager) {
-        require([httpManager isKindOfClass:[httpManager class]]);
+        require([httpManager isKindOfClass:httpManager.class]);
         
         HttpResponse*(^serverRequestHandler)(HttpRequest*) = ^(HttpRequest* remoteRequest) {
             return [self respondToServerRequest:remoteRequest
@@ -49,14 +49,14 @@
         };
         
         [httpManager startWithRequestHandler:serverRequestHandler
-                             andErrorHandler:[Environment errorNoter]
+                             andErrorHandler:Environment.errorNoter
                               untilCancelled:[callController untilCancelledToken]];
         
         HttpRequest* ringRequest = [HttpRequest httpRequestToRingWithSessionId:sessionDescriptor.sessionId];
         TOCFuture* futureResponseToRing = [httpManager asyncOkResponseForRequest:ringRequest
                                                                  unlessCancelled:[callController untilCancelledToken]];
         TOCFuture* futureResponseToRingWithInterpretedFailures = [futureResponseToRing catchTry:^(id error) {
-            if ([error isKindOfClass:[HttpResponse class]]) {
+            if ([error isKindOfClass:HttpResponse.class]) {
                 HttpResponse* badResponse = error;
                 return [TOCFuture futureWithFailure:[self callTerminationForBadResponse:badResponse
                                                                           toRingRequest:ringRequest]];
@@ -74,7 +74,7 @@
     require(badResponse != nil);
     require(ringRequest != nil);
     
-    switch ([badResponse getStatusCode]) {
+    switch (badResponse.getStatusCode) {
         case SIGNAL_STATUS_CODE_STALE_SESSION:
             return [CallTermination callTerminationOfType:CallTerminationType_StaleSession
                                               withFailure:badResponse
@@ -124,7 +124,7 @@
     return [self asyncOkResponseFor:busyRequest
            fromSignalingServerNamed:sessionDescriptor.relayServerName
                     unlessCancelled:nil
-                    andErrorHandler:[Environment errorNoter]];
+                    andErrorHandler:Environment.errorNoter];
 }
 
 +(TOCFuture*) asyncOkResponseFor:(HttpRequest*)request

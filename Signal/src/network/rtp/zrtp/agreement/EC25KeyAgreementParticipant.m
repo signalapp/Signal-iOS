@@ -20,7 +20,7 @@
 }
 
 -(NSData*) getPublicKeyData{
-    return  [evpKeyAgreement getPublicKey];
+    return  evpKeyAgreement.getPublicKey;
 }
 
 -(NSData*) calculateKeyAgreementAgainstRemotePublicKey:(NSData*)remotePublicKey{

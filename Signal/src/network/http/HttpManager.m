@@ -36,7 +36,7 @@
     @try {
         TOCFutureSource* ev = [TOCFutureSource futureSourceUntil:unlessCancelledToken];
         @synchronized (self) {
-            if ([lifetime.token isAlreadyCancelled]) {
+            if (lifetime.token.isAlreadyCancelled) {
                 return [TOCFuture futureWithFailure:@"terminated"];
             }
             [eventualResponseQueue enqueue:ev];
@@ -53,7 +53,7 @@
     require(request != nil);
     require(errorHandler != nil);
     
-    HttpManager* manager = [HttpManager startWithEndPoint:[Environment getMasterServerSecureEndPoint]
+    HttpManager* manager = [HttpManager startWithEndPoint:Environment.getMasterServerSecureEndPoint
                                            untilCancelled:unlessCancelledToken];
     
     [manager startWithRejectingRequestHandlerAndErrorHandler:errorHandler
@@ -112,7 +112,7 @@
     
     PacketHandlerBlock httpHandler = ^(HttpRequestOrResponse* requestOrResponse) {
         require(requestOrResponse != nil);
-        require([requestOrResponse isKindOfClass:[HttpRequestOrResponse class]]);
+        require([requestOrResponse isKindOfClass:HttpRequestOrResponse.class]);
         @synchronized (self) {
             if (requestOrResponse.isRequest) {
                 HttpResponse* response = requestHandler([requestOrResponse request]);

@@ -101,7 +101,7 @@
 -(void) testAuthenticationFail_WrongCert {
     [Environment setCurrent:testEnv];
     
-    NSString *certPath = [[[NSBundle bundleForClass:[NetworkStream class]] resourcePath] stringByAppendingPathComponent:@"whisperFake.cer"];
+    NSString *certPath = [[[NSBundle bundleForClass:NetworkStream.class] resourcePath] stringByAppendingPathComponent:@"whisperFake.cer"];
     NSData *certData = [[NSData alloc] initWithContentsOfFile:certPath];
     checkOperation(certData != nil);
     

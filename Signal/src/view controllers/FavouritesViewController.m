@@ -43,13 +43,13 @@ static NSString *const CONTACT_TABLE_VIEW_CELL_IDENTIFIER = @"ContactTableViewCe
 }
 
 - (void)observeLatestFavourites {
-    ObservableValue *observableFavourites = [[[Environment getCurrent] contactsManager] getObservableFavourites];
+    ObservableValue *observableFavourites = Environment.getCurrent.contactsManager.getObservableFavourites;
 
     [observableFavourites watchLatestValue:^(NSArray *latestFavourites) {
         _favourites = latestFavourites;
         [_favouriteTableView reloadData];
         [self hideTableViewIfNoFavourites];
-    } onThread:[NSThread mainThread] untilCancelled:nil];
+    } onThread:NSThread.mainThread untilCancelled:nil];
 }
 
 - (void)hideTableViewIfNoFavourites {
@@ -80,7 +80,7 @@ static NSString *const CONTACT_TABLE_VIEW_CELL_IDENTIFIER = @"ContactTableViewCe
 
 - (void)favouriteTapped:(Contact *)contact {
 
-    PhoneNumberDirectoryFilter *filter = [[[Environment getCurrent] phoneDirectoryManager] getCurrentFilter];
+    PhoneNumberDirectoryFilter *filter = Environment.getCurrent.phoneDirectoryManager.getCurrentFilter;
 
     for (PhoneNumber *number in contact.parsedPhoneNumbers) {
         if ([filter containsPhoneNumber:number]) {

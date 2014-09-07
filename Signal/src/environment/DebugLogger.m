@@ -24,7 +24,7 @@
 MacrosSingletonImplemention
 
 - (void)enableFileLogging{
-    self.fileLogger = [[DDFileLogger alloc] init]; //Logging to file, because it's in the Cache folder, they are not uploaded in iTunes/iCloud backups.
+    self.fileLogger = [DDFileLogger new]; //Logging to file, because it's in the Cache folder, they are not uploaded in iTunes/iCloud backups.
     self.fileLogger.rollingFrequency = 60 * 60 * 24; // 24 hour rolling.
     self.fileLogger.logFileManager.maximumNumberOfLogFiles = 3; // Keep three days of logs.
     [DDLog addLogger:self.fileLogger];

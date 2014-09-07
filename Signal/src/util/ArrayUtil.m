@@ -14,7 +14,7 @@
 -(NSData*) concatDatas {
     NSUInteger t = 0;
     for (id d in self) {
-        require([d isKindOfClass:[NSData class]]);
+        require([d isKindOfClass:NSData.class]);
         t += [(NSData*)d length];
     }
     
@@ -29,7 +29,7 @@
 -(NSArray*) concatArrays {
     NSMutableArray* r = [NSMutableArray array];
     for (id e in self) {
-        require([e isKindOfClass:[NSArray class]]);
+        require([e isKindOfClass:NSArray.class]);
         [r addObjectsFromArray:e];
     }
     return r;

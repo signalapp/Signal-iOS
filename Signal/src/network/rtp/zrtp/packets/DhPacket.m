@@ -25,7 +25,7 @@
     
     return [self dhPacketWithHashChainH0:[hashChain h0]
                    andSharedSecretHashes:sharedSecretHashes
-                        andPublicKeyData:[agreer getPublicKeyData]
+                        andPublicKeyData:agreer.getPublicKeyData
                               andIsPart1:true];
 }
 
@@ -39,7 +39,7 @@
     
     return [self dhPacketWithHashChainH0:[hashChain h0]
                    andSharedSecretHashes:sharedSecretHashes
-                        andPublicKeyData:[agreer getPublicKeyData]
+                        andPublicKeyData:agreer.getPublicKeyData
                               andIsPart1:false];
 }
 

@@ -32,7 +32,7 @@
     TOCFuture* futureSignalConnection = [CallConnectUtil_Server asyncConnectToDefaultSignalingServerUntilCancelled:callController.untilCancelledToken];
     
     return [futureSignalConnection thenTry:^(HttpManager* httpManager) {
-        requireState([httpManager isKindOfClass:[HttpManager class]]);
+        requireState([httpManager isKindOfClass:HttpManager.class]);
         
         TOCFutureSource* predeclaredFutureSession = [TOCFutureSource new];
         
@@ -43,14 +43,14 @@
         };
         
         [httpManager startWithRequestHandler:serverRequestHandler
-                             andErrorHandler:[callController errorHandler]
+                             andErrorHandler:callController.errorHandler
                               untilCancelled:[callController untilCancelledToken]];
         
-        HttpRequest* initiateRequest = [HttpRequest httpRequestToInitiateToRemoteNumber:[callController callState].remoteNumber];
+        HttpRequest* initiateRequest = [HttpRequest httpRequestToInitiateToRemoteNumber:callController.callState.remoteNumber];
         TOCFuture* futureResponseToInitiate = [httpManager asyncOkResponseForRequest:initiateRequest
                                                                      unlessCancelled:[callController untilCancelledToken]];
         TOCFuture* futureResponseToInitiateWithInterpretedFailures = [futureResponseToInitiate catchTry:^(id error) {
-            if ([error isKindOfClass:[HttpResponse class]]) {
+            if ([error isKindOfClass:HttpResponse.class]) {
                 HttpResponse* badResponse = error;
                 return [TOCFuture futureWithFailure:[self callTerminationForBadResponse:badResponse
                                                                       toInitiateRequest:initiateRequest]];
@@ -60,7 +60,7 @@
         }];
         
         TOCFuture* futureSession = [futureResponseToInitiateWithInterpretedFailures thenTry:^(HttpResponse* response) {
-            return [InitiatorSessionDescriptor initiatorSessionDescriptorFromJson:[response getOptionalBodyText]];
+            return [InitiatorSessionDescriptor initiatorSessionDescriptorFromJson:response.getOptionalBodyText];
         }];
         [predeclaredFutureSession trySetResult:futureSession];
         
@@ -73,7 +73,7 @@
     require(badResponse != nil);
     require(initiateRequest != nil);
     
-    switch ([badResponse getStatusCode]) {
+    switch (badResponse.getStatusCode) {
         case SIGNAL_STATUS_CODE_NO_SUCH_USER:
             return [CallTermination callTerminationOfType:CallTerminationType_NoSuchUser
                                               withFailure:badResponse
@@ -81,7 +81,7 @@
         case SIGNAL_STATUS_CODE_SERVER_MESSAGE:
             return [CallTermination callTerminationOfType:CallTerminationType_ServerMessage
                                               withFailure:badResponse
-                                           andMessageInfo:[badResponse getOptionalBodyText]];
+                                           andMessageInfo:badResponse.getOptionalBodyText];
         case SIGNAL_STATUS_CODE_LOGIN_FAILED:
             return [CallTermination callTerminationOfType:CallTerminationType_LoginFailed
                                               withFailure:badResponse

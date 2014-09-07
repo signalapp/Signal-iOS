@@ -26,7 +26,7 @@
         NSDictionary *dict = [NSPropertyListSerialization propertyListWithData:plistData options:NSPropertyListImmutable format:&format error:&error];
         
         NSArray *entries = [dict allKeys];
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
         
         for (NSUInteger i = 0; i < entries.count; i++) {
             NSString *key = entries[i];

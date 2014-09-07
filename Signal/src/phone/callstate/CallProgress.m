@@ -12,7 +12,7 @@
 }
 
 -(BOOL)isEqual:(id)object {
-    return [object isKindOfClass:[CallProgress class]] && ((CallProgress*)object).type == type;
+    return [object isKindOfClass:CallProgress.class] && ((CallProgress*)object).type == type;
 }
 -(NSUInteger)hash {
     return type;

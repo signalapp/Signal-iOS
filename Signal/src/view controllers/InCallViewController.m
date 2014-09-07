@@ -50,7 +50,7 @@ static NSInteger connectingFlashCounter = 0;
     [self pauseMusicIfPlaying];
     [self setupButtonBorders];
     [self localizeButtons];
-    [[UIDevice currentDevice] setProximityMonitoringEnabled:YES];
+    [UIDevice.currentDevice setProximityMonitoringEnabled:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -66,7 +66,7 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 - (void)dealloc {
-    [[UIDevice currentDevice] setProximityMonitoringEnabled:NO];
+    [UIDevice.currentDevice setProximityMonitoringEnabled:NO];
 }
 
 -(void) showCallState {
@@ -192,7 +192,7 @@ static NSInteger connectingFlashCounter = 0;
     }
 }
 -(void) handleIncomingDetails {
-    [[_callState futureShortAuthenticationString] thenDo:^(NSString* sas) {
+    [_callState.futureShortAuthenticationString thenDo:^(NSString* sas) {
         _authenicationStringLabel.hidden = NO;
         _authenicationStringLabel.text = sas;
         [self performCallInSessionAnimation];
@@ -200,7 +200,7 @@ static NSInteger connectingFlashCounter = 0;
 
     [[_callState observableProgress] watchLatestValue:^(CallProgress* latestProgress) {
         [self onCallProgressed:latestProgress];
-    } onThread:[NSThread mainThread] untilCancelled:nil];
+    } onThread:NSThread.mainThread untilCancelled:nil];
 }
 
 -(void) onCallProgressed:(CallProgress*)latestProgress {
@@ -214,7 +214,7 @@ static NSInteger connectingFlashCounter = 0;
     }
     
     if ([latestProgress type] == CallProgressType_Terminated) {
-        [[_callState futureTermination] thenDo:^(CallTermination* termination) {
+        [_callState.futureTermination thenDo:^(CallTermination* termination) {
             [self onCallEnded:termination];
             [AppAudioManager.sharedInstance respondToTerminationType:[termination type]];
         }];
@@ -225,7 +225,7 @@ static NSInteger connectingFlashCounter = 0;
 
 -(void) onCallEnded:(CallTermination*)termination {
     [self updateViewForTermination:termination];
-    [[Environment phoneManager] hangupOrDenyCall];
+    [Environment.phoneManager hangupOrDenyCall];
     
     [self dismissViewWithOptionalDelay: [termination type] != CallTerminationType_ReplacedByNext ];
     
@@ -235,12 +235,12 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 - (void)endCallTapped {
-    [[Environment phoneManager] hangupOrDenyCall];
+    [Environment.phoneManager hangupOrDenyCall];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)muteButtonTapped {
-	_muteButton.selected = [[Environment phoneManager] toggleMute];
+	_muteButton.selected = [Environment.phoneManager toggleMute];
 }
 
 - (void)speakerButtonTapped {
@@ -249,12 +249,12 @@ static NSInteger connectingFlashCounter = 0;
 
 - (void)answerButtonTapped {
     [self displayAcceptRejectButtons:NO];
-    [[Environment phoneManager] answerCall];
+    [Environment.phoneManager answerCall];
 }
 
 - (void)rejectButtonTapped {
     [self displayAcceptRejectButtons:NO];
-    [[Environment phoneManager] hangupOrDenyCall];
+    [Environment.phoneManager hangupOrDenyCall];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

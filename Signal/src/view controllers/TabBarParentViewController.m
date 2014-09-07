@@ -55,10 +55,10 @@
     }
     _whisperUserUpdateImageView.hidden = [self hideUserUpdateNotification];
     
-    ObservableValue *recentCallObservable = [[[Environment getCurrent] recentCallManager] getObservableRecentCalls];
+    ObservableValue *recentCallObservable = Environment.getCurrent.recentCallManager.getObservableRecentCalls;
     [recentCallObservable watchLatestValue:^(NSArray *latestRecents) {
         [self updateMissedCallCountLabel];		
-    } onThread:[NSThread mainThread] untilCancelled:nil];
+    } onThread:NSThread.mainThread untilCancelled:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(newUsersDetected:)
@@ -166,7 +166,7 @@
 }
 
 - (void)updateMissedCallCountLabel {
-    NSUInteger missedCallCount = [[[Environment getCurrent] recentCallManager] missedCallCount];
+    NSUInteger missedCallCount = Environment.getCurrent.recentCallManager.missedCallCount;
     if (missedCallCount > 0) {
         _tabBarInboxButton.frame = CGRectMake(CGRectGetMinX(_tabBarInboxButton.frame),
                                               CGRectGetMinY(_tabBarInboxButton.frame),
@@ -199,12 +199,12 @@
 }
 
 - (void)setNewWhisperUsersAsSeen:(NSArray *)users {
-    [[[Environment getCurrent] contactsManager] addContactsToKnownWhisperUsers:users];
+    [Environment.getCurrent.contactsManager addContactsToKnownWhisperUsers:users];
     [_contactsViewController showNotificationForNewWhisperUsers:nil];
     _whisperUserUpdateImageView.hidden = [self hideUserUpdateNotification];
   }
 
 -(BOOL) hideUserUpdateNotification {
-    return (0 == [[[Environment getCurrent] contactsManager] getNumberOfUnacknowledgedCurrentUsers]);
+    return (0 == Environment.getCurrent.contactsManager.getNumberOfUnacknowledgedCurrentUsers);
 }
 @end

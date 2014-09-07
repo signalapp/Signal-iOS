@@ -23,7 +23,7 @@
 -(void)packFrame:(EncodedAudioFrame*)frame{
     require(frame != nil);
     require(!frame.isMissingAudioData);
-    [framesToSend addObject:[frame tryGetAudioData]];
+    [framesToSend addObject:frame.tryGetAudioData];
 }
 
 -(EncodedAudioPacket*) tryGetFinishedAudioPacket{

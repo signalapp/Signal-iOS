@@ -19,16 +19,16 @@
 
 -(id) init {
     if (self = [super init]) {
-        phoneNumberDirectoryFilter = [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterDefault];
+        phoneNumberDirectoryFilter = PhoneNumberDirectoryFilter.phoneNumberDirectoryFilterDefault;
     }
     return self;
 }
 -(void) startUntilCancelled:(TOCCancelToken*)cancelToken {
     lifetimeToken = cancelToken;
     
-    phoneNumberDirectoryFilter = [[Environment preferences] tryGetSavedPhoneNumberDirectory];
+    phoneNumberDirectoryFilter = [Environment.preferences tryGetSavedPhoneNumberDirectory];
     if (phoneNumberDirectoryFilter == nil) {
-        phoneNumberDirectoryFilter = [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterDefault];
+        phoneNumberDirectoryFilter = PhoneNumberDirectoryFilter.phoneNumberDirectoryFilterDefault;
     }
     
     [self scheduleUpdate];
@@ -65,7 +65,7 @@
         
         TOCFuture* futureDirectoryResponse = [HttpManager asyncOkResponseFromMasterServer:directoryRequest
                                                                           unlessCancelled:untilCancelledToken
-                                                                          andErrorHandler:[Environment errorNoter]];
+                                                                          andErrorHandler:Environment.errorNoter];
         
         return [futureDirectoryResponse thenTry:^(HttpResponse* response) {
             return [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterFromHttpResponse:response];
@@ -87,7 +87,7 @@
 -(void) signalDirectoryQueryFailed:(id)failure {
     NSString* desc = [NSString stringWithFormat:@"Failed to retrieve directory. Retrying in %f hours.",
                       DIRECTORY_UPDATE_RETRY_PERIOD/HOUR];
-    [Environment errorNoter](desc, failure, false);
+    Environment.errorNoter(desc, failure, false);
 }
 -(TOCFuture*) asyncQueryCurrentDirectoryWithDefaultOnFail {
     TOCFuture* futureDirectory = [self asyncQueryCurrentDirectory];
@@ -105,7 +105,7 @@
         @synchronized(self) {
             phoneNumberDirectoryFilter = directory;
         }
-        [[Environment preferences] setSavedPhoneNumberDirectory:directory];
+        [Environment.preferences setSavedPhoneNumberDirectory:directory];
         [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
         [self scheduleUpdate];
     }];

@@ -17,7 +17,7 @@
 @implementation CallConnectUtil_Server
 
 +(TOCFuture*) asyncConnectToDefaultSignalingServerUntilCancelled:(TOCCancelToken*)untilCancelledToken {
-    return [self asyncConnectToSignalingServerAt:[Environment getSecureEndPointToDefaultRelayServer]
+    return [self asyncConnectToSignalingServerAt:Environment.getSecureEndPointToDefaultRelayServer
                                   untilCancelled:untilCancelledToken];
 }
 
@@ -55,7 +55,7 @@
     NSArray* interopOptions = session.interopVersion == 0
                             ? @[ENVIRONMENT_LEGACY_OPTION_RTP_PADDING_BIT_IMPLIES_EXTENSION_BIT_AND_TWELVE_EXTRA_ZERO_BYTES_IN_HEADER]
                             : @[];
-    if (session.interopVersion > 1) [Environment errorNoter](@"Newer-than-code interop version specified.", session, false);
+    if (session.interopVersion > 1) Environment.errorNoter(@"Newer-than-code interop version specified.", session, false);
     
     return [self asyncConnectCallOverRelayDescribedInInitiatorSessionDescriptor:equivalentSession
                                                              withCallController:callController
@@ -95,7 +95,7 @@
     TOCUntilOperation operation = ^(TOCCancelToken* internalUntilCancelledToken) {
         return [self asyncAttemptResolveThenConnectToUdpRelayDescribedBy:sessionDescriptor
                                                           untilCancelled:internalUntilCancelledToken
-                                                        withErrorHandler:[callController errorHandler]];
+                                                        withErrorHandler:callController.errorHandler];
     };
     
     TOCFuture* futureRelayedUdpSocket = [TOCFuture retry:[TOCFuture operationTry:operation]
@@ -118,7 +118,7 @@
     require(sessionDescriptor != nil);
     require(errorHandler != nil);
     
-    NSString* domain = [Environment relayServerNameToHostName:[sessionDescriptor relayServerName]];
+    NSString* domain = [Environment relayServerNameToHostName:sessionDescriptor.relayServerName];
     
     TOCFuture* futureDnsResult = [DnsManager asyncQueryAddressesForDomainName:domain
                                                               unlessCancelled:untilCancelledToken];
@@ -149,7 +149,7 @@
     
     UdpSocket* udpSocket = [UdpSocket udpSocketTo:remoteEndPoint];
     
-    id<OccurrenceLogger> logger = [[Environment logging] getOccurrenceLoggerForSender:self withKey:@"relay setup"];
+    id<OccurrenceLogger> logger = [Environment.logging getOccurrenceLoggerForSender:self withKey:@"relay setup"];
     
     TOCFuture* futureFirstResponseData = [self asyncFirstPacketReceivedAfterStartingSocket:udpSocket
                                                                             untilCancelled:untilCancelledToken

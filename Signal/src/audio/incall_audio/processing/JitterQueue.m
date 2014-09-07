@@ -13,7 +13,7 @@
     JitterQueue* q = [JitterQueue new];
     q->readHeadSpan = READ_HEAD_BAD_SPAN_THRESHOLD+1;
     q->watchers = [NSMutableArray array];
-    [q registerWatcher:[[Environment logging] jitterQueueNotificationReceiver]];
+    [q registerWatcher:Environment.logging.jitterQueueNotificationReceiver];
     return q;
 }
 

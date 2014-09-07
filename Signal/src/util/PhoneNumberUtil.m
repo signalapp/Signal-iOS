@@ -9,7 +9,7 @@
 + (NSString *)countryNameFromCountryCode:(NSString *)code {
     NSDictionary *countryCodeComponent = @{NSLocaleCountryCode: code};
     NSString *identifier = [NSLocale localeIdentifierFromComponents:countryCodeComponent];
-    NSString *country = [[NSLocale currentLocale] displayNameForKey:NSLocaleIdentifier
+    NSString *country = [NSLocale.currentLocale displayNameForKey:NSLocaleIdentifier
                                                               value:identifier];
     return country;
 }

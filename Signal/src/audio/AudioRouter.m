@@ -24,7 +24,7 @@
 
 +(BOOL) isOutputRoutedToSpeaker{
     AVAudioSession* session = AVAudioSession.sharedInstance;
-    AVAudioSessionRouteDescription* routeDesc = [session currentRoute];
+    AVAudioSessionRouteDescription* routeDesc = session.currentRoute;
     
     for( AVAudioSessionPortDescription* portDesc in routeDesc.outputs){
         if (AVAudioSessionPortBuiltInSpeaker == [portDesc portType]){
@@ -36,7 +36,7 @@
 
 +(BOOL) isOutputRoutedToReciever{
     AVAudioSession* session = AVAudioSession.sharedInstance;
-    AVAudioSessionRouteDescription* routeDesc = [session currentRoute];
+    AVAudioSessionRouteDescription* routeDesc = session.currentRoute;
     
     for( AVAudioSessionPortDescription* portDesc in routeDesc.outputs){
         if (AVAudioSessionPortBuiltInReceiver == [portDesc portType]){

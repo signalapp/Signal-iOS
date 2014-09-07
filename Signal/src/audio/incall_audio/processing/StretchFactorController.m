@@ -27,17 +27,17 @@ static double STRETCH_MODE_FACTORS[] = {1/0.95, 1, 1/1.05, 0.5};
     p->currentStretchMode = STRETCH_MODE_NORMAL;
     p->bufferDepthMeasure = jitterQueue;
     p->decayingBufferDepthMeasure = [DecayingSampleEstimator decayingSampleEstimatorWithInitialEstimate:0 andDecayPerUnitSample:BUFFER_DEPTH_DECAYING_FACTOR];
-    p->stretchModeChangeLogger = [[Environment logging] getValueLoggerForValue:@"stretch factor" from:self];
+    p->stretchModeChangeLogger = [Environment.logging getValueLoggerForValue:@"stretch factor" from:self];
     return p;
 }
 
 -(int) reconsiderStretchMode {
-    int16_t currentBufferDepth = [bufferDepthMeasure currentBufferDepth];
+    int16_t currentBufferDepth = bufferDepthMeasure.currentBufferDepth;
     [decayingBufferDepthMeasure updateWithNextSample:currentBufferDepth];
-    double desiredBufferDepth = [desiredBufferDepthController getAndUpdateDesiredBufferDepth];
+    double desiredBufferDepth = desiredBufferDepthController.getAndUpdateDesiredBufferDepth;
     
     double currentBufferDepthDelta = currentBufferDepth - desiredBufferDepth;
-    double decayingBufferDepthDelta = [decayingBufferDepthMeasure currentEstimate] - desiredBufferDepth;
+    double decayingBufferDepthDelta = decayingBufferDepthMeasure.currentEstimate - desiredBufferDepth;
     
     bool shouldStartSuperShrink = currentBufferDepthDelta > SUPER_SHRINK_THRESHOLD;
     bool shouldMaintainSuperShrink = currentBufferDepthDelta > 0 && currentStretchMode == STRETCH_MODE_SUPER_SHRINK;

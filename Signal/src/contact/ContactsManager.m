@@ -365,7 +365,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 +(BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString {
-    NSCharacterSet *whitespaceSet = [NSCharacterSet whitespaceCharacterSet];
+    NSCharacterSet *whitespaceSet = NSCharacterSet.whitespaceCharacterSet;
     NSArray *queryStrings = [queryString componentsSeparatedByCharactersInSet:whitespaceSet];
     NSArray *nameStrings = [nameString componentsSeparatedByCharactersInSet:whitespaceSet];
 
@@ -402,14 +402,14 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 #pragma mark - Favourites
 
 -(NSMutableArray *)loadFavouriteIds {
-    NSArray *favourites = [[NSUserDefaults standardUserDefaults] objectForKey:FAVOURITES_DEFAULT_KEY];
+    NSArray *favourites = [NSUserDefaults.standardUserDefaults objectForKey:FAVOURITES_DEFAULT_KEY];
     return favourites == nil ? [NSMutableArray array] : favourites.mutableCopy;
 }
 
 -(void)saveFavouriteIds {
-    [[NSUserDefaults standardUserDefaults] setObject:[_favouriteContactIds copy]
+    [NSUserDefaults.standardUserDefaults setObject:[_favouriteContactIds copy]
                                               forKey:FAVOURITES_DEFAULT_KEY];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [NSUserDefaults.standardUserDefaults synchronize];
     [observableFavouritesController updateValue:[self contactsForContactIds:_favouriteContactIds]];
 }
 
@@ -484,7 +484,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 	NSSet *oldSet = [NSSet setWithArray:oldArray];
 	
 	[newSet minusSet:oldSet];
-	return [newSet allObjects];
+	return newSet.allObjects;
 }
 
 - (BOOL)isContactRegisteredWithWhisper:(Contact*) contact {
@@ -497,7 +497,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 - (BOOL)isPhoneNumberRegisteredWithWhisper:(PhoneNumber *)phoneNumber {
-	PhoneNumberDirectoryFilter* directory = [[[Environment getCurrent] phoneDirectoryManager] getCurrentFilter];
+	PhoneNumberDirectoryFilter* directory = Environment.getCurrent.phoneDirectoryManager.getCurrentFilter;
 	return phoneNumber != nil && [directory containsPhoneNumber:phoneNumber];
 }
 
@@ -508,29 +508,29 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     NSMutableSet *users = [NSMutableSet setWithArray:latestWhisperUsersById.allValues];
     [users addObjectsFromArray:contacts];
     
-    [observableWhisperUsersController updateValue:[users allObjects]];
+    [observableWhisperUsersController updateValue:users.allObjects];
     [self saveKnownWhisperUsers];
 }
 
 -(BOOL) knownUserStoreInitialized{
-    NSUserDefaults *d = [[NSUserDefaults standardUserDefaults] objectForKey:KNOWN_USERS_DEFAULT_KEY];
+    NSUserDefaults *d = [NSUserDefaults.standardUserDefaults objectForKey:KNOWN_USERS_DEFAULT_KEY];
     return  (Nil != d);
 }
 
 -(NSMutableArray*) loadKnownWhisperUsers{
-    NSArray *knownUsers = [[NSUserDefaults standardUserDefaults] objectForKey:KNOWN_USERS_DEFAULT_KEY];
+    NSArray *knownUsers = [NSUserDefaults.standardUserDefaults objectForKey:KNOWN_USERS_DEFAULT_KEY];
     return knownUsers == nil ? [NSMutableArray array] : knownUsers.mutableCopy;
 }
 
 -(void) saveKnownWhisperUsers{
     _knownWhisperUserIds = [NSMutableArray arrayWithArray:[latestWhisperUsersById allKeys]];
-    [[NSUserDefaults standardUserDefaults] setObject:[_knownWhisperUserIds copy] forKey:KNOWN_USERS_DEFAULT_KEY];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [NSUserDefaults.standardUserDefaults setObject:[_knownWhisperUserIds copy] forKey:KNOWN_USERS_DEFAULT_KEY];
+    [NSUserDefaults.standardUserDefaults synchronize];
 }
 
 -(void) clearKnownWhisUsers{
-    [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:KNOWN_USERS_DEFAULT_KEY];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [NSUserDefaults.standardUserDefaults setObject:@[] forKey:KNOWN_USERS_DEFAULT_KEY];
+    [NSUserDefaults.standardUserDefaults synchronize];
 }
 
 @end

@@ -8,7 +8,7 @@
     DH3KKeyAgreementParticipant* participant = [DH3KKeyAgreementParticipant new];
     
     participant->protocol = protocol;
-    participant->evpKeyAgreement = [EvpKeyAgreement evpDh3kKeyAgreementWithModulus:[protocol getModulus] andGenerator:[protocol getGenerator]];
+    participant->evpKeyAgreement = [EvpKeyAgreement evpDh3kKeyAgreementWithModulus:protocol.getModulus andGenerator:protocol.getGenerator];
     return participant;
 }
 
@@ -17,7 +17,7 @@
 }
 
 -(NSData*) getPublicKeyData{
-    return [self->evpKeyAgreement getPublicKey];
+    return self->evpKeyAgreement.getPublicKey;
 }
 
 -(NSData*) calculateKeyAgreementAgainstRemotePublicKey:(NSData*)remotePublicKey{

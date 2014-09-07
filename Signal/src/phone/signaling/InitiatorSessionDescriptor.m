@@ -28,9 +28,9 @@
     id jsonSessionId = fields[SessionIdKey];
     id jsonRelayPort = fields[RelayPortKey];
     id jsonRelayName = fields[RelayHostKey];
-    checkOperationDescribe([jsonSessionId isKindOfClass:[NSNumber class]], @"Unexpected json data");
-    checkOperationDescribe([jsonRelayPort isKindOfClass:[NSNumber class]], @"Unexpected json data");
-    checkOperationDescribe([jsonRelayName isKindOfClass:[NSString class]], @"Unexpected json data");
+    checkOperationDescribe([jsonSessionId isKindOfClass:NSNumber.class], @"Unexpected json data");
+    checkOperationDescribe([jsonRelayPort isKindOfClass:NSNumber.class], @"Unexpected json data");
+    checkOperationDescribe([jsonRelayName isKindOfClass:NSString.class], @"Unexpected json data");
     checkOperationDescribe([jsonRelayPort unsignedShortValue] > 0, @"Unexpected json data");
     
     int64_t sessionId = [[jsonSessionId description] longLongValue]; // workaround: asking for longLongValue directly causes rounding-through-double

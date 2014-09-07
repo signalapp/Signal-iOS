@@ -30,7 +30,7 @@ void handleDnsCompleted(CFHostRef hostRef, CFHostInfoType typeInfo, const CFStre
         checkOperationDescribe(addressDatas != nil, @"No addresses for host");
         
         NSArray* ips = [addressDatas map:^(id addressData) {
-            checkOperation([addressData isKindOfClass:[NSData class]]);
+            checkOperation([addressData isKindOfClass:NSData.class]);
             
             return [[IpEndPoint ipEndPointFromSockaddrData:addressData] address];
         }];

@@ -40,8 +40,8 @@
 
 - (void)performUpdateCheck{
     // We check if NSUserDefaults key for version exists.
-    NSString *previousVersion = [[Environment preferences] lastRanVersion];
-    NSString *currentVersion  = [[Environment preferences] setAndGetCurrentVersion];
+    NSString *previousVersion = Environment.preferences.lastRanVersion;
+    NSString *currentVersion  = [Environment.preferences setAndGetCurrentVersion];
     
     if (!previousVersion) {
         DDLogError(@"No previous version found. Possibly first launch since install.");
@@ -69,7 +69,7 @@
     NSDictionary *attrs = @{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication};
     [[NSFileManager defaultManager] setAttributes:attrs ofItemAtPath:preferencesPath error:&error];
     
-    [pathsToExclude addObject:[[preferencesPath stringByAppendingString:[[NSBundle mainBundle] bundleIdentifier]] stringByAppendingString:@".plist"]];
+    [pathsToExclude addObject:[[preferencesPath stringByAppendingString:NSBundle.mainBundle.bundleIdentifier] stringByAppendingString:@".plist"]];
     
     NSString *logPath    = [NSHomeDirectory() stringByAppendingString:@"/Library/Caches/Logs/"];
     NSArray  *logsFiles  = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:logPath error:&error];
@@ -111,7 +111,7 @@
     [DebugLogger.sharedInstance enableTTYLogging];
     
 #elif RELEASE
-    loggingIsEnabled = [[Environment preferences] loggingIsEnabled];
+    loggingIsEnabled = Environment.preferences.loggingIsEnabled;
 #endif
 
     if (loggingIsEnabled) {
@@ -121,7 +121,7 @@
     [self performUpdateCheck];
     [self protectPreferenceFiles];
     
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
     
     [self prepareScreenshotProtection];
     
@@ -130,8 +130,8 @@
     CategorizingLogger* logger = [CategorizingLogger categorizingLogger];
     [logger addLoggingCallback:^(NSString *category, id details, NSUInteger index) {}];
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
-    [[Environment getCurrent].phoneDirectoryManager startUntilCancelled:nil];
-    [[Environment getCurrent].contactsManager doAfterEnvironmentInitSetup];
+    [Environment.getCurrent.phoneDirectoryManager startUntilCancelled:nil];
+    [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
     [UIApplication.sharedApplication setStatusBarStyle:UIStatusBarStyleDefault];
     
     LeftSideMenuViewController *leftSideMenuViewController = [LeftSideMenuViewController new];
@@ -147,15 +147,15 @@
         [self application:application didReceiveRemoteNotification:remoteNotif];
     }
     
-    [[[Environment phoneManager] currentCallObservable] watchLatestValue:^(CallState* latestCall) {
+    [Environment.phoneManager.currentCallObservable watchLatestValue:^(CallState* latestCall) {
         if (latestCall == nil){
             return;
         }
         
         InCallViewController *callViewController = [InCallViewController inCallViewControllerWithCallState:latestCall
-                                                                                 andOptionallyKnownContact:[latestCall potentiallySpecifiedContact]];
+                                                                                 andOptionallyKnownContact:latestCall.potentiallySpecifiedContact];
         [_drawerController.centerViewController presentViewController:callViewController animated:YES completion:nil];
-    } onThread:[NSThread mainThread] untilCancelled:nil];
+    } onThread:NSThread.mainThread untilCancelled:nil];
     
     
     return YES;
@@ -185,7 +185,7 @@
         return;
     }
     
-    [[Environment phoneManager] incomingCallWithSession:call];
+    [Environment.phoneManager incomingCallWithSession:call];
 }
 
 -(void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
@@ -228,8 +228,8 @@
 }
 
 - (void)protectScreen{
-    if ([[Environment preferences] screenSecurityIsEnabled]) {
-        self.blankWindow.rootViewController = [[UIViewController alloc] init];
+    if (Environment.preferences.screenSecurityIsEnabled) {
+        self.blankWindow.rootViewController = [UIViewController new];
         UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.blankWindow.bounds];
         if (self.blankWindow.bounds.size.height == 568) {
             imageView.image = [UIImage imageNamed:@"Default-568h"];
@@ -243,7 +243,7 @@
 }
 
 - (void)removeScreenProtection{
-    if ([[Environment preferences] screenSecurityIsEnabled]) {
+    if (Environment.preferences.screenSecurityIsEnabled) {
         self.blankWindow.rootViewController = nil;
         self.blankWindow.hidden = YES;
     }

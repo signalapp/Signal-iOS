@@ -20,7 +20,7 @@
 //    [Environment setCurrent:testEnv];
 //    [SGNKeychainUtil setLocalNumberTo:[PhoneNumber phoneNumberFromE164:@"+12211231235"]];
 //    [UICKeyChainStore setString:@"shall_not_password" forKey:@"Password"];
-//    [[Environment preferences] setValueForKey:@"PasswordCounter" toValue:@2357];
+//    [Environment.preferences setValueForKey:@"PasswordCounter" toValue:@2357];
 //    HttpRequest* h = [HttpRequest httpRequestToInitiateToRemoteNumber:[PhoneNumber phoneNumberFromE164:@"+19023334444"]];
 //    test([[h method] isEqualToString:@"GET"]);
 //    test([[h location] isEqualToString:@"/session/1/+19023334444"]);
@@ -73,24 +73,24 @@
 }
 -(void) testResponseOk {
     HttpResponse* h = [HttpResponse httpResponse200Ok];
-    test([h getStatusCode] == 200);
-    test([h getOptionalBodyText] == nil);
-    test([[h getHeaders] count] == 0);
+    test(h.getStatusCode == 200);
+    test(h.getOptionalBodyText == nil);
+    test([h.getHeaders count] == 0);
 }
 -(void) testResponseFromData {
     HttpResponse* h = [HttpResponse httpResponseFromData:@"HTTP/1.1 200 OK\r\n\r\n".encodedAsUtf8];
     test(h.isOkResponse);
-    test([h getStatusCode] == 200);
-    test([[h getStatusText] isEqualToString: @"OK"]);
-    test([h getOptionalBodyText] == nil);
-    test([[h getHeaders] count] == 0);
+    test(h.getStatusCode == 200);
+    test([h.getStatusText isEqualToString: @"OK"]);
+    test(h.getOptionalBodyText == nil);
+    test([h.getHeaders count] == 0);
     
     HttpResponse* h2 = [HttpResponse httpResponseFromData:@"HTTP/1.1 404 Not Found\r\n\r\n".encodedAsUtf8];
     test(!h2.isOkResponse);
-    test([h2 getStatusCode] == 404);
-    test([[h2 getStatusText] isEqualToString:@"Not Found"]);
-    test([h2 getOptionalBodyText] == nil);
-    test([[h2 getHeaders] count] == 0);
+    test(h2.getStatusCode == 404);
+    test([h2.getStatusText isEqualToString:@"Not Found"]);
+    test(h2.getOptionalBodyText == nil);
+    test([h2.getHeaders count] == 0);
 
     testThrows([HttpResponse httpResponseFromData:@"HTTP/1.1 200 OK\r\n".encodedAsUtf8]);
     testThrows([HttpResponse httpResponseFromData:@"HTTP/1.1 200\r\n\r\n".encodedAsUtf8]);

@@ -224,27 +224,27 @@
     [q tryEnqueue:[EncodedAudioPacket encodedAudioPacketWithAudioData:increasingData(20)
                                                          andTimeStamp:1*TICK
                                                     andSequenceNumber:1]];
-    test([q currentBufferDepth] == 0);
+    test(q.currentBufferDepth == 0);
     [q tryEnqueue:[EncodedAudioPacket encodedAudioPacketWithAudioData:increasingData(20)
                                                          andTimeStamp:2*TICK
                                                     andSequenceNumber:2]];
-    test([q currentBufferDepth] == 1);
+    test(q.currentBufferDepth == 1);
     [q tryEnqueue:[EncodedAudioPacket encodedAudioPacketWithAudioData:increasingData(20)
                                                          andTimeStamp:4*TICK
                                                     andSequenceNumber:4]];
-    test([q currentBufferDepth] == 3);
+    test(q.currentBufferDepth == 3);
     [q tryDequeue];
-    test([q currentBufferDepth] == 2);
+    test(q.currentBufferDepth == 2);
     [q tryDequeue];
-    test([q currentBufferDepth] == 1);
+    test(q.currentBufferDepth == 1);
     [q tryDequeue];
-    test([q currentBufferDepth] == 0);
+    test(q.currentBufferDepth == 0);
     [q tryDequeue];
-    test([q currentBufferDepth] == -1);
+    test(q.currentBufferDepth == -1);
     [q tryEnqueue:[EncodedAudioPacket encodedAudioPacketWithAudioData:increasingData(20)
                                                          andTimeStamp:8*TICK
                                                     andSequenceNumber:8]];
-    test([q currentBufferDepth] == 3);
+    test(q.currentBufferDepth == 3);
     
     // resyncs to 0
     for (int i = 0; i < 500; i++) {
@@ -253,6 +253,6 @@
     [q tryEnqueue:[EncodedAudioPacket encodedAudioPacketWithAudioData:increasingData(20)
                                                          andTimeStamp:9000*TICK
                                                     andSequenceNumber:9000]];
-    test([q currentBufferDepth] == 0);
+    test(q.currentBufferDepth == 0);
 }
 @end

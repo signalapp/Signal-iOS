@@ -13,10 +13,10 @@
     return h;
 }
 -(bool) isRequest {
-    return [requestOrResponse isKindOfClass:[HttpRequest class]];
+    return [requestOrResponse isKindOfClass:HttpRequest.class];
 }
 -(bool) isResponse {
-    return [requestOrResponse isKindOfClass:[HttpResponse class]];
+    return [requestOrResponse isKindOfClass:HttpResponse.class];
 }
 -(HttpRequest*) request {
     requireState(self.isRequest);
@@ -62,8 +62,8 @@
         
         NSArray* headerLineParts = [headerLine componentsSeparatedByString:@":"];
         checkOperation(headerLineParts.count >= 2);
-        NSString* headerKey = [headerLineParts[0] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        NSString* headerValue = [[headerLine substringFromIndex:[(NSString *)headerLineParts[0] length]+1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString* headerKey = [headerLineParts[0] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+        NSString* headerValue = [[headerLine substringFromIndex:[(NSString *)headerLineParts[0] length]+1] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
         headers[headerKey] = headerValue;
     }
     
