@@ -151,7 +151,7 @@
 }
 
 -(NSString*)setAndGetCurrentVersion{
-    NSString *lastVersion = [self lastRanVersion];
+    NSString *lastVersion = self.lastRanVersion;
     
     [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%@", [[NSBundle mainBundle] infoDictionary][@"CFBundleVersion"]] forKey:kSignalVersionKey];
     [[NSUserDefaults standardUserDefaults] synchronize];

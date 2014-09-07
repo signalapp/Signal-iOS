@@ -11,8 +11,8 @@
 #import "ConfirmAckPacket.h"
 #import "HelloAckPacket.h"
 
-#define HANDSHAKE_PACKET_EXTENSION_IDENTIFIER [[@"PZ" encodedAsAscii] bigEndianUInt16At:0]
-#define HANDSHAKE_PACKET_TIMESTAMP_COOKIE [[@"ZRTP" encodedAsAscii] bigEndianUInt32At:0]
+#define HANDSHAKE_PACKET_EXTENSION_IDENTIFIER [@"PZ".encodedAsAscii bigEndianUInt16At:0]
+#define HANDSHAKE_PACKET_TIMESTAMP_COOKIE [@"ZRTP".encodedAsAscii bigEndianUInt32At:0]
 
 #define HANDSHAKE_TYPE_ID_LENGTH 8
 #define HANDSHAKE_CRC_LENGTH 4

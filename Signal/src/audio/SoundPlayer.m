@@ -50,7 +50,7 @@ NSMutableDictionary* currentActiveAudioPlayers;
 }
 
 -(void) stopAllAudio{
-    for( SoundInstance* sound in [currentActiveAudioPlayers allValues]){
+    for( SoundInstance* sound in currentActiveAudioPlayers.allValues){
         [self stopSound:sound];
     }
 }
@@ -60,7 +60,7 @@ NSMutableDictionary* currentActiveAudioPlayers;
 }
 
 -(void) awake {
-    for( SoundInstance* sound in [currentActiveAudioPlayers allValues]){
+    for( SoundInstance* sound in currentActiveAudioPlayers.allValues){
         [sound play];
     }
 }

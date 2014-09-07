@@ -17,7 +17,7 @@
         NSString *inviteMessage = INVITE_USERS_MESSAGE;
         
         messageController.body = [inviteMessage stringByAppendingString:@" https://itunes.apple.com/app/id874139669"];
-        messageController.recipients = @[[number toE164]];
+        messageController.recipients = @[number.toE164];
         messageController.messageComposeDelegate = self;
         
         [parent presentViewController:messageController

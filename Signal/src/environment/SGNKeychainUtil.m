@@ -52,9 +52,9 @@
 
 + (void)setLocalNumberTo:(PhoneNumber *)localNumber{
     require(localNumber != nil);
-    require([localNumber toE164]!= nil);
+    require(localNumber.toE164!= nil);
     
-    NSString *e164 = [localNumber toE164];
+    NSString *e164 = localNumber.toE164;
     [self storeString:e164 forKey:LOCAL_NUMBER_KEY];
 }
 

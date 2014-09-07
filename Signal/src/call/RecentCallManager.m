@@ -95,20 +95,20 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
 
 -(void) updateRecentCall:(RecentCall*) recentCall withContactId:(ABRecordID) contactId {
     [recentCall updateRecentCallWithContactId:contactId];
-    [observableRecentsController updateValue:[_allRecents copy]];
+    [observableRecentsController updateValue:_allRecents.copy];
     [self saveContactsToDefaults];
 }
 
 - (void)addRecentCall:(RecentCall *)recentCall {
     [_allRecents insertObject:recentCall atIndex:0];
     [[Environment preferences] setFreshInstallTutorialsEnabled:NO];
-    [observableRecentsController updateValue:[_allRecents copy]];
+    [observableRecentsController updateValue:_allRecents.copy];
     [self saveContactsToDefaults];
 }
 
 - (void)removeRecentCall:(RecentCall *)recentCall {
     [_allRecents removeObject:recentCall];
-    [observableRecentsController updateValue:[_allRecents copy]];
+    [observableRecentsController updateValue:_allRecents.copy];
     [self saveContactsToDefaults];
 }
 
@@ -117,18 +117,18 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
     recentCall.isArchived = YES;
     _allRecents[indexOfRecent] = recentCall;
     [self saveContactsToDefaults];
-    [observableRecentsController updateValue:[_allRecents copy]];
+    [observableRecentsController updateValue:_allRecents.copy];
 }
 
 - (void)clearRecentCalls {
     [_allRecents removeAllObjects];
-    [observableRecentsController updateValue:[_allRecents copy]];
+    [observableRecentsController updateValue:_allRecents.copy];
     [self saveContactsToDefaults];
 }
 
 - (void)saveContactsToDefaults {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSData *saveData = [NSKeyedArchiver archivedDataWithRootObject:[_allRecents copy]];
+    NSData *saveData = [NSKeyedArchiver archivedDataWithRootObject:_allRecents.copy];
 
     [defaults setObject:saveData forKey:RECENT_CALLS_DEFAULT_KEY];
     [defaults synchronize];

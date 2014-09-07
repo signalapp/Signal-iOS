@@ -17,8 +17,8 @@
 -(void) testHelloPacket {
     [Environment setCurrent:testEnv];
     HashChain* h = [HashChain hashChainWithSeed:[NSData dataWithLength:32]];
-    HelloPacket* p = [HelloPacket helloPacketWithVersion:[@"1.10" encodedAsUtf8]
-                                             andClientId:[@"RedPhone 019    " encodedAsAscii]
+    HelloPacket* p = [HelloPacket helloPacketWithVersion:@"1.10".encodedAsUtf8
+                                             andClientId:@"RedPhone 019    ".encodedAsAscii
                                           andHashChainH3:[h h3]
                                                   andZid:[Zid zidWithData:increasingData(12)]
                                             andFlags0SMP:0
@@ -77,7 +77,7 @@
     [p verifyMacWithHashChainH2:h.h2];
     test(rtp.wasAdjustedDueToInteropIssues);
     test([p.hashChainH3 isEqual:h.h3]);
-    test([p.clientId isEqual:[@"RedPhone 019    " encodedAsAscii]]);
+    test([p.clientId isEqual:@"RedPhone 019    ".encodedAsAscii]);
 }
 -(void) testHandshakeMacAuthenticationSucceeds{
     NSData* type = [@"0f0f0f0f0f0f0f0f" decodedAsHexString];

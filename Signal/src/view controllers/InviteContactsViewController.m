@@ -88,7 +88,7 @@ static NSString *const INVITE_CONTACTS_TABLE_CELL_IDENTIFIER = @"ContactTableVie
         BOOL matchesSearchQuery = YES;
      
         if (searchTerm != nil) {
-            matchesSearchQuery = [ContactsManager name:[contact fullName] matchesQuery:searchTerm];
+            matchesSearchQuery = [ContactsManager name:contact.fullName matchesQuery:searchTerm];
         }
      
         return ![contactsManager isContactRegisteredWithWhisper:contact] && matchesSearchQuery;
@@ -104,7 +104,7 @@ static NSString *const INVITE_CONTACTS_TABLE_CELL_IDENTIFIER = @"ContactTableVie
     actionSheet.title = INVITE_USERS_ACTION_SHEET_TITLE;
     
     for (PhoneNumber *number in _selectedContactNumbers) {
-        [actionSheet addButtonWithTitle:[number localizedDescriptionForUser]];
+        [actionSheet addButtonWithTitle:number.localizedDescriptionForUser];
     }
     actionSheet.cancelButtonIndex = [actionSheet addButtonWithTitle:TXT_CANCEL_TITLE];
     

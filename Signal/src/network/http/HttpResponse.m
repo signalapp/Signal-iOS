@@ -90,7 +90,7 @@
 }
 -(NSData*) getOptionalBodyData {
     if (optionalBodyData != nil) return optionalBodyData;
-    if (optionalBodyText != nil) return [optionalBodyText encodedAsUtf8];
+    if (optionalBodyText != nil) return optionalBodyText.encodedAsUtf8;
     return nil;
 }
 
@@ -116,7 +116,7 @@
     return [r componentsJoinedByString:@""];
 }
 -(NSData*) serialize {
-    return [[self toHttp] encodedAsUtf8];
+    return self.toHttp.encodedAsUtf8;
 }
 
 -(NSString*) description {

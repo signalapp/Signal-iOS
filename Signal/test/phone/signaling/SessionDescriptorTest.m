@@ -20,7 +20,7 @@
     test([[d relayServerName] isEqualToString:@"example.com"]);
     
     // roundtrip
-    InitiatorSessionDescriptor* d2 = [InitiatorSessionDescriptor initiatorSessionDescriptorFromJson:[d toJson]];
+    InitiatorSessionDescriptor* d2 = [InitiatorSessionDescriptor initiatorSessionDescriptorFromJson:d.toJson];
     test([d2 sessionId] == 5);
     test([d2 relayUdpPort] == 6);
     test([[d2 relayServerName] isEqualToString:@"example.com"]);
@@ -53,7 +53,7 @@
 //    test(d.relayUdpPort == 11235);
 //    test(d.sessionId == 2357);
 //    test([d.relayServerName isEqualToString:@"Test"]);
-//    test([[d.initiatorNumber toE164] isEqualToString:@"+19027777777"]);
+//    test([d.initiatorNumber.toE164 isEqualToString:@"+19027777777"]);
 }
 
 @end

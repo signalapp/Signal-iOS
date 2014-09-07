@@ -31,7 +31,7 @@ static NSString *const FAVOURITE_FALSE_ICON_NAME = @"favourite_false_icon";
         self.navigationController.navigationBar.barTintColor = [UIUtil darkBackgroundColor];
         self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
         self.navigationController.navigationBar.translucent = NO;
-        _contactNameLabel.text = [_contact fullName];
+        _contactNameLabel.text = _contact.fullName;
         if (_contact.image) {
             _contactImageView.image = _contact.image;
         }
@@ -142,7 +142,7 @@ static NSString *const FAVOURITE_FALSE_ICON_NAME = @"favourite_false_icon";
 
 - (void)openPhoneAppWithPhoneNumber:(PhoneNumber *)phoneNumber {
     if (phoneNumber) {
-        [UIApplication.sharedApplication openURL:[phoneNumber toSystemDialerURL]];
+        [UIApplication.sharedApplication openURL:phoneNumber.toSystemDialerURL];
     }
 }
 

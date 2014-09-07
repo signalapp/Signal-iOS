@@ -108,16 +108,16 @@
     require(password != nil);
     
     NSString* rawToken = [NSString stringWithFormat:@"%@:%@:%lld",
-                          [localNumber toE164],
+                          localNumber.toE164,
                           [CryptoTools computeOtpWithPassword:password andCounter:counterValue],
                           counterValue];
-    return [@"OTP " stringByAppendingString:[[rawToken encodedAsUtf8] encodedAsBase64]];
+    return [@"OTP " stringByAppendingString:rawToken.encodedAsUtf8.encodedAsBase64];
 }
 +(NSString*) computeBasicAuthorizationTokenForLocalNumber:(PhoneNumber*)localNumber andPassword:(NSString*)password {
     NSString* rawToken = [NSString stringWithFormat:@"%@:%@",
-                          [localNumber toE164],
+                          localNumber.toE164,
                           password];
-    return [@"Basic " stringByAppendingString:[[rawToken encodedAsUtf8] encodedAsBase64]];
+    return [@"Basic " stringByAppendingString:rawToken.encodedAsUtf8.encodedAsBase64];
 }
 
 -(NSString*) toHttp {
@@ -141,10 +141,10 @@
     return [r componentsJoinedByString:@""];
 }
 -(NSData*) serialize {
-    return [[self toHttp] encodedAsUtf8];
+    return self.toHttp.encodedAsUtf8;
 }
 -(bool) isEqualToHttpRequest:(HttpRequest *)other {
-    return [[self toHttp] isEqualToString:[other toHttp]]
+    return [self.toHttp isEqualToString:other.toHttp]
         && [self.method isEqualToString:other.method]
         && [self.location isEqualToString:other.location]
         && (self.optionalBody == other.optionalBody || [self.optionalBody isEqualToString:[other optionalBody]])

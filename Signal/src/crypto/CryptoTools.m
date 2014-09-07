@@ -28,8 +28,8 @@
     require(password != nil);
     
     NSData* d = [[@(counter) stringValue] encodedAsUtf8];
-    NSData* h = [d hmacWithSha1WithKey:[password encodedAsUtf8]];
-    return [h encodedAsBase64];
+    NSData* h = [d hmacWithSha1WithKey:password.encodedAsUtf8];
+    return h.encodedAsBase64;
 }
 
 @end

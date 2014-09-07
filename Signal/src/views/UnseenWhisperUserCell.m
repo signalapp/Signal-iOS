@@ -15,7 +15,7 @@
 }
 
 - (void)configureWithContact:(Contact *)contact {
-    _nameLabel.text = [contact fullName];
+    _nameLabel.text = contact.fullName;
     
     PhoneNumberDirectoryFilter *filter = [[[Environment getCurrent] phoneDirectoryManager] getCurrentFilter];
     BOOL foundPhoneNumber = NO;
@@ -23,7 +23,7 @@
     for (PhoneNumber *number in contact.parsedPhoneNumbers) {
         if ([filter containsPhoneNumber:number]) {
             foundPhoneNumber = YES;
-            _numberLabel.text = [number localizedDescriptionForUser];
+            _numberLabel.text = number.localizedDescriptionForUser;
         }
     }
 }

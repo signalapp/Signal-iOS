@@ -165,7 +165,7 @@ static NSInteger connectingFlashCounter = 0;
             [UIUtil applyRoundedBorderToImageView:&_contactImageView];
         }
         
-        _nameLabel.text = [_potentiallyKnownContact fullName];
+        _nameLabel.text = _potentiallyKnownContact.fullName;
     } else {
         _nameLabel.text = UNKNOWN_CONTACT_NAME;
     }
@@ -182,10 +182,10 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 -(void) populateImmediateDetails {
-    _phoneNumberLabel.text = [_callState.remoteNumber localizedDescriptionForUser];
+    _phoneNumberLabel.text = _callState.remoteNumber.localizedDescriptionForUser;
 
     if (_potentiallyKnownContact) {
-        _nameLabel.text = [_potentiallyKnownContact fullName];
+        _nameLabel.text = _potentiallyKnownContact.fullName;
         if (_potentiallyKnownContact.image) {
             _contactImageView.image = _potentiallyKnownContact.image;
         }
@@ -219,7 +219,7 @@ static NSInteger connectingFlashCounter = 0;
             [AppAudioManager.sharedInstance respondToTerminationType:[termination type]];
         }];
     } else {
-        _callStatusLabel.text = [latestProgress localizedDescriptionForUser];
+        _callStatusLabel.text = latestProgress.localizedDescriptionForUser;
     }
 }
 
@@ -259,7 +259,7 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 -(void) updateViewForTermination:(CallTermination*) termination{
-    NSString* message = [termination localizedDescriptionForUser];
+    NSString* message = termination.localizedDescriptionForUser;
     
     if ([termination type] == CallTerminationType_ServerMessage) {
         CallFailedServerMessage* serverMessage = [termination messageInfo];

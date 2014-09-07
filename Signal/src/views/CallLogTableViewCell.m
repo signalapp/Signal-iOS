@@ -34,7 +34,7 @@
 - (void)configureWithRecentCall:(RecentCall *)recentCall {
     Contact *contact = [[[Environment getCurrent] contactsManager] latestContactWithRecordId:recentCall.contactRecordID];
     if (contact) {
-        _contactNameLabel.text = [contact fullName];
+        _contactNameLabel.text = contact.fullName;
     } else {
         _contactNameLabel.text = UNKNOWN_CONTACT_NAME;
     }
@@ -45,7 +45,7 @@
         _callTypeImageView.image = [UIImage imageNamed:CALL_TYPE_IMAGE_NAME_INCOMING];
     }
 
-    _contactNumberLabel.text = [recentCall.phoneNumber localizedDescriptionForUser];
+    _contactNumberLabel.text = recentCall.phoneNumber.localizedDescriptionForUser;
 
     if ([DateUtil dateIsOlderThanOneWeek:[recentCall date]]) {
         _timeLabel.text = [[DateUtil dateFormatter] stringFromDate:[recentCall date]];

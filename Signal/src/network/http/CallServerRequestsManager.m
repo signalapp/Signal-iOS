@@ -48,12 +48,14 @@ MacrosSingletonImplemention
 failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure{
     self.operationManager.requestSerializer = [self basicAuthenticationSerializer];
     
-    [self.operationManager PUT:[NSString stringWithFormat:@"/apn/%@",[deviceToken encodedAsHexString]] parameters:@{} success:success failure:failure];
+    [self.operationManager PUT:[NSString stringWithFormat:@"/apn/%@",deviceToken.encodedAsHexString] parameters:@{} success:success failure:failure];
 }
 
 - (AFHTTPRequestSerializer*)basicAuthenticationSerializer{
     AFHTTPRequestSerializer *serializer = [AFHTTPRequestSerializer serializer];
-    [serializer setValue:[HttpRequest computeBasicAuthorizationTokenForLocalNumber:[SGNKeychainUtil localNumber]andPassword:[SGNKeychainUtil serverAuthPassword]] forHTTPHeaderField:@"Authorization"];
+    [serializer setValue:[HttpRequest computeBasicAuthorizationTokenForLocalNumber:SGNKeychainUtil.localNumber
+                                                                       andPassword:SGNKeychainUtil.serverAuthPassword]
+      forHTTPHeaderField:@"Authorization"];
     return serializer;
 }
 

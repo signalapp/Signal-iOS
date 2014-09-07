@@ -51,7 +51,7 @@
 -(NSString*) withMatchesAgainst:(NSRegularExpression*)regex replacedBy:(NSString*)replacement {
     require(regex != nil);
     require(replacement != nil);
-    NSMutableString* m = [self mutableCopy];
+    NSMutableString* m = self.mutableCopy;
     [regex replaceMatchesInString:m options:0 range:NSMakeRange(0, m.length) withTemplate:replacement];
     return m;
 }
@@ -66,14 +66,14 @@
 }
 -(NSData*) decodedAsJsonIntoData {
     NSError* jsonParseError = nil;
-    id parsedJson = [NSJSONSerialization dataWithJSONObject:[self encodedAsUtf8] options:0 error:&jsonParseError];
+    id parsedJson = [NSJSONSerialization dataWithJSONObject:self.encodedAsUtf8 options:0 error:&jsonParseError];
     checkOperationDescribe(jsonParseError == nil, ([NSString stringWithFormat:@"Invalid json: %@", self]));
     checkOperationDescribe([parsedJson isKindOfClass:[NSData class]], @"Unexpected json data");
     return parsedJson;
 }
 -(NSDictionary*) decodedAsJsonIntoDictionary {
     NSError* jsonParseError = nil;
-    id parsedJson = [NSJSONSerialization JSONObjectWithData:[self encodedAsUtf8] options:0 error:&jsonParseError];
+    id parsedJson = [NSJSONSerialization JSONObjectWithData:self.encodedAsUtf8 options:0 error:&jsonParseError];
     checkOperationDescribe(jsonParseError == nil, ([NSString stringWithFormat:@"Json parse error: %@, on json: %@", jsonParseError, self]));
     checkOperationDescribe([parsedJson isKindOfClass:[NSDictionary class]], @"Unexpected json data");
     return parsedJson;
@@ -102,7 +102,7 @@
     checkOperation(bitCount % BitsPerByte == 0);
     
     // ASCII to base 64
-    NSData* asciiData = [self encodedAsAscii];
+    NSData* asciiData = self.encodedAsAscii;
     uint8_t base64Words[base64WordCount];
     for (NSUInteger i = 0; i < base64WordCount; i++) {
         base64Words[i] = CharToValueMap[[asciiData uint8At:i]];

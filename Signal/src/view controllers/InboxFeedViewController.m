@@ -393,8 +393,8 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
         }
     }
 
-    _searchRegisteredContacts = [registeredContacts copy];
-    _searchUnregisteredContacts = [unregisteredContacts copy];
+    _searchRegisteredContacts = registeredContacts.copy;
+    _searchUnregisteredContacts = unregisteredContacts.copy;
 }
 
 #pragma mark - Keyboard

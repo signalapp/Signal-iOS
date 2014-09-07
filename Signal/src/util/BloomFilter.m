@@ -43,7 +43,7 @@
 
 -(bool) contains:(NSString*)entity {
     require(entity != nil);
-    NSData* value = [entity encodedAsUtf8];
+    NSData* value = entity.encodedAsUtf8;
     for (NSUInteger i = 0; i < hashCount; i++) {
         uint32_t bitIndex = [self hash:value index:i];
         if (![self isBitSetAt:bitIndex]) {
