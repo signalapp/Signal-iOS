@@ -12,8 +12,11 @@
 @interface EncodedAudioPacket : NSObject
 
 @property (readonly,nonatomic) NSData* audioData;
+@property (readonly,nonatomic) uint32_t timeStamp;
 @property (readonly,nonatomic) uint16_t sequenceNumber;
 
-+(EncodedAudioPacket*) encodedAudioPacketWithAudioData:(NSData*)audioData andSequenceNumber:(uint16_t)sequenceNumber;
++(EncodedAudioPacket*) encodedAudioPacketWithAudioData:(NSData*)audioData
+                                          andTimeStamp:(uint32_t)timeStamp
+                                     andSequenceNumber:(uint16_t)sequenceNumber;
 
 @end

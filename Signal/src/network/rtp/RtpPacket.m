@@ -42,7 +42,9 @@ const uint8_t PACKET_VERSION = 2;
 @synthesize version;
 @synthesize wasAdjustedDueToInteropIssues;
 
-+(RtpPacket*) rtpPacketWithDefaultsAndSequenceNumber:(uint16_t)sequenceNumber andPayload:(NSData *)payload {
++(RtpPacket*) rtpPacketWithDefaultsAndSequenceNumber:(uint16_t)sequenceNumber
+                                        andTimeStamp:(uint32_t)timeStamp
+                                          andPayload:(NSData *)payload {
     require(payload != nil);
     return [RtpPacket rtpPacketWithVersion:PACKET_VERSION
                                 andPadding:0
@@ -51,7 +53,7 @@ const uint8_t PACKET_VERSION = 2;
                               andMarkerBit:false
                             andPayloadtype:0
                          andSequenceNumber:sequenceNumber
-                              andTimeStamp:0
+                              andTimeStamp:timeStamp
                                 andPayload:payload];
 }
 +(RtpPacket*) rtpPacketWithVersion:(uint8_t)version
@@ -340,7 +342,9 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
     return extensionHeaderData;
 }
 -(NSData*) rawPacketDataUsingInteropOptions:(NSArray*)interopOptions {
-    if (rawPacketData == nil) rawPacketData = [self generateSerializedPacketDataUsingInteropOptions:interopOptions];
+    if (rawPacketData == nil) {
+        rawPacketData = [self generateSerializedPacketDataUsingInteropOptions:interopOptions];
+    }
     return rawPacketData;
 }
 -(bool) isEqualToRtpPacket:(RtpPacket*)other {

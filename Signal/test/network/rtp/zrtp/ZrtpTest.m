@@ -88,9 +88,10 @@ bool pm(HandshakePacket* p1, HandshakePacket* p2) {
         [socket startWithHandler:[PacketHandler packetHandler:^(id packet) { test(false); }
                                              withErrorHandler:^(id error, id relatedInfo, bool causedTermination) { test(!causedTermination); }]
                   untilCancelled:[cc1 untilCancelledToken]];
-        [socket secureAndSendRtpPacket:[RtpPacket rtpPacketWithDefaultsAndSequenceNumber:1 andPayload:[NSData data]]];
+        [socket secureAndSendRtpPacket:[RtpPacket rtpPacketWithDefaultsAndSequenceNumber:1
+                                                                            andTimeStamp:320
+                                                                              andPayload:[NSData data]]];
     }
-    
     
     testChurnUntil(!f1.isIncomplete, 5.0);
     test(f1.hasResult);

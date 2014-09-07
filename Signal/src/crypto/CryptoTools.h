@@ -8,6 +8,9 @@
 /// Returns a secure random 16-bit unsigned integer.
 +(uint16_t)generateSecureRandomUInt16;
 
+/// Returns a secure random 32-bit unsigned integer.
++(uint32_t)generateSecureRandomUInt32;
+
 /// Returns data composed of 'length' cryptographically unpredictable bytes sampled uniformly from [0, 256).
 +(NSData*)generateSecureRandomData:(NSUInteger)length;
 

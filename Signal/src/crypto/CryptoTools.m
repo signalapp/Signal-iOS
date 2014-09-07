@@ -20,6 +20,10 @@
     return [[self generateSecureRandomData:sizeof(uint16_t)] bigEndianUInt16At:0];
 }
 
++(uint32_t)generateSecureRandomUInt32 {
+    return [[self generateSecureRandomData:sizeof(uint32_t)] bigEndianUInt32At:0];
+}
+
 +(NSString*) computeOtpWithPassword:(NSString*)password andCounter:(int64_t)counter {
     require(password != nil);
     
