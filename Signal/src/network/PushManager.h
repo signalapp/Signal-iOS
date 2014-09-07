@@ -1,24 +1,22 @@
-//
-//  PushManager.h
-//  Signal
-//
-//  Created by Frederic Jacobs on 31/07/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
+#import "CollapsingFutures.h"
 
+/**
+ *
+ * The push manager is used to trigger (and react to) registration of push notifications.
+ *
+ */
 @interface PushManager : NSObject
 
-+ (instancetype)sharedManager;
++(instancetype)sharedManager;
 
-- (void)verifyPushActivated;
+-(void)verifyPushActivated;
 
-- (void)askForPushRegistration;
+-(TOCFuture*)askForPushRegistration;
 
-- (void)askForPushRegistrationWithSuccess:(void (^)())success failure:(void (^)())failure;
+-(void)didRegisterForPushNotificationsToDevice:(NSData*)deviceToken;
 
-- (void)registerForPushWithToken:(NSData*)token;
+-(void)didFailToRegisterForPushNotificationsWithError:(NSError*)error;
 
 @end
 

@@ -49,10 +49,14 @@
  */
 -(TOCFuture*) catchTry:(TOCFutureCatchContinuation)catcher;
 
-+(TOCFuture*) retry:(TOCUntilOperation)operation
-         upToNTimes:(NSUInteger)maxTryCount
-    withBaseTimeout:(NSTimeInterval)baseTimeout
-     andRetryFactor:(NSTimeInterval)timeoutRetryFactor
-     untilCancelled:(TOCCancelToken*)untilCancelledToken;
++(TOCFuture*) attempt:(TOCUntilOperation)operation
+           upToNTimes:(NSUInteger)maxTryCount
+      withBaseTimeout:(NSTimeInterval)baseTimeout
+andRetryTimeoutFactor:(NSTimeInterval)timeoutRetryFactor
+       untilCancelled:(TOCCancelToken*)untilCancelledToken;
+
++(TOCFuture*) attempt:(TOCUntilOperation)operation
+           upToNTimes:(NSUInteger)maxTryCount
+       untilCancelled:(TOCCancelToken*)untilCancelledToken;
 
 @end

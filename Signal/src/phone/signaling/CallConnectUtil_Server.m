@@ -98,11 +98,11 @@
                                                         withErrorHandler:[callController errorHandler]];
     };
     
-    TOCFuture* futureRelayedUdpSocket = [TOCFuture retry:[TOCFuture operationTry:operation]
-                                              upToNTimes:MAX_TRY_COUNT
-                                         withBaseTimeout:BASE_TIMEOUT_SECONDS
-                                          andRetryFactor:RETRY_TIMEOUT_FACTOR
-                                          untilCancelled:[callController untilCancelledToken]];
+    TOCFuture* futureRelayedUdpSocket = [TOCFuture attempt:operation
+                                                upToNTimes:MAX_TRY_COUNT
+                                           withBaseTimeout:BASE_TIMEOUT_SECONDS
+                                     andRetryTimeoutFactor:RETRY_TIMEOUT_FACTOR
+                                            untilCancelled:[callController untilCancelledToken]];
     
     return [futureRelayedUdpSocket catchTry:^(id error) {
         return [TOCFuture futureWithFailure:[CallTermination callTerminationOfType:CallTerminationType_BadInteractionWithServer

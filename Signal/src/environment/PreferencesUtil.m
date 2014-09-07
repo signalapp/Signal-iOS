@@ -20,7 +20,7 @@
 #define CONTACT_IMAGES_ENABLED_KEY @"Contact Images Enabled Key"
 #define AUTOCORRECT_ENABLED_KEY @"Autocorrect Enabled Key"
 #define HISTORY_LOG_ENABLED_KEY @"History Log Enabled Key"
-#define PUSH_REVOKED_KEY @"Push Revoked Key"
+#define HAVE_RECEIVED_PUSH_NOTIFICATIONS_INVERSE_KEY @"Push Revoked Key"
 #define SCREEN_SECURITY_KEY @"Screen Security Key"
 #define DEBUG_IS_ENABLED_KEY @"Debugging Log Enabled Key"
 
@@ -135,11 +135,11 @@
     [self setValueForKey:HISTORY_LOG_ENABLED_KEY toValue:@(enabled)];
 }
 
--(BOOL) encounteredRevokedPushPermission{
-    return [[self tryGetValueForKey:PUSH_REVOKED_KEY] boolValue];
+-(BOOL) haveReceivedPushNotifications {
+    return ![[self tryGetValueForKey:HAVE_RECEIVED_PUSH_NOTIFICATIONS_INVERSE_KEY] boolValue];
 }
--(void) setRevokedPushPermission:(BOOL)revoked{
-    [self setValueForKey:PUSH_REVOKED_KEY toValue:@(revoked)];
+-(void) setHaveReceivedPushNotifications:(BOOL)newValue {
+    [self setValueForKey:HAVE_RECEIVED_PUSH_NOTIFICATIONS_INVERSE_KEY toValue:@(!newValue)];
 }
 
 -(void) setLoggingEnabled:(BOOL)flag{

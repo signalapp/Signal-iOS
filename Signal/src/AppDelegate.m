@@ -162,12 +162,11 @@
 }
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
-    [PushManager.sharedManager registerForPushWithToken:deviceToken];
+    [PushManager.sharedManager didRegisterForPushNotificationsToDevice:deviceToken];
 }
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error {
-    [PushManager.sharedManager verifyPushActivated];
-    DDLogError(@"Failed to register for push notifications: %@", error);
+    [PushManager.sharedManager didFailToRegisterForPushNotificationsWithError:error];
 }
 
 -(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {

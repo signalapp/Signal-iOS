@@ -64,11 +64,11 @@
     }];
 }
 
-+(TOCFuture*) retry:(TOCUntilOperation)operation
-         upToNTimes:(NSUInteger)maxTryCount
-    withBaseTimeout:(NSTimeInterval)baseTimeout
-     andRetryFactor:(NSTimeInterval)timeoutRetryFactor
-     untilCancelled:(TOCCancelToken*)untilCancelledToken {
++(TOCFuture*) attempt:(TOCUntilOperation)operation
+           upToNTimes:(NSUInteger)maxTryCount
+      withBaseTimeout:(NSTimeInterval)baseTimeout
+andRetryTimeoutFactor:(NSTimeInterval)timeoutRetryFactor
+       untilCancelled:(TOCCancelToken*)untilCancelledToken {
     
     require(operation != nil);
     require(maxTryCount >= 0);
@@ -77,7 +77,7 @@
     
     if (maxTryCount == 0) return TOCFuture.futureWithTimeoutFailure;
     
-    TOCFuture* futureResult = [TOCFuture futureFromUntilOperation:operation
+    TOCFuture* futureResult = [TOCFuture futureFromUntilOperation:[TOCFuture operationTry:operation]
                                              withOperationTimeout:baseTimeout
                                                             until:untilCancelledToken];
     
@@ -88,12 +88,22 @@
             return [TOCFuture futureWithFailure:error];
         }
         
-        return [self retry:operation
-                upToNTimes:maxTryCount - 1
-           withBaseTimeout:baseTimeout * timeoutRetryFactor
-            andRetryFactor:timeoutRetryFactor
-            untilCancelled:untilCancelledToken];
+        return [self attempt:operation
+                  upToNTimes:maxTryCount - 1
+             withBaseTimeout:baseTimeout * timeoutRetryFactor
+       andRetryTimeoutFactor:timeoutRetryFactor
+              untilCancelled:untilCancelledToken];
     }];
+}
+
++(TOCFuture*) attempt:(TOCUntilOperation)operation
+           upToNTimes:(NSUInteger)maxTryCount
+       untilCancelled:(TOCCancelToken*)untilCancelledToken {
+    return [self attempt:operation
+              upToNTimes:maxTryCount
+         withBaseTimeout:INFINITY
+   andRetryTimeoutFactor:1
+          untilCancelled:untilCancelledToken];
 }
 
 @end

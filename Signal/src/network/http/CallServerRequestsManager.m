@@ -1,10 +1,3 @@
-//
-//  CallServerRequests.m
-//  Signal
-//
-//  Created by Frederic Jacobs on 31/07/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 #import "HttpRequest.h"
 #import "CallServerRequestsManager.h"
 #import "DataUtil.h"
@@ -44,11 +37,15 @@ MacrosSingletonImplemention
     return self;
 }
 
-- (void)registerPushToken:(NSData*)deviceToken success:(void (^)(NSURLSessionDataTask *task, id responseObject))success
-failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure{
+-(TOCFuture*)asyncRequestPushNotificationToDevice:(NSData*)deviceToken {
     self.operationManager.requestSerializer = [self basicAuthenticationSerializer];
     
-    [self.operationManager PUT:[NSString stringWithFormat:@"/apn/%@",[deviceToken encodedAsHexString]] parameters:@{} success:success failure:failure];
+    TOCFutureSource* result = [TOCFutureSource new];
+    [self.operationManager PUT:[NSString stringWithFormat:@"/apn/%@", deviceToken.encodedAsHexString]
+                    parameters:@{}
+                       success:^(NSURLSessionDataTask *task, id responseObject) { [result trySetResult:task.response]; }
+                       failure:^(NSURLSessionDataTask *task, NSError *error) { [result trySetFailure:error]; }];
+    return result.future;
 }
 
 - (AFHTTPRequestSerializer*)basicAuthenticationSerializer{

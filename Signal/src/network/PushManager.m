@@ -2,14 +2,14 @@
 #import "PushManager.h"
 #import "Environment.h"
 #import "CallServerRequestsManager.h"
+#import "Util.h"
 #import "DDLog.h"
+
+#define REQUEST_PUSH_NOTIFICATION_ATTEMPTS 3
 
 @interface PushManager ()
 
-@property (nonatomic, copy) void (^PushRegisteringSuccessBlock)();
-@property (nonatomic, copy) void (^PushRegisteringFailureBlock)();
-
-@property int retries;
+@property (nonatomic, copy) TOCFutureSource* pushRegistrationResult;
 
 @end
 
@@ -34,101 +34,100 @@
     BOOL needsPushSettingChangeAlert = (self.desiredNotificationTypeMask & notificationTypes) != self.desiredNotificationTypeMask;
     
     if (needsPushSettingChangeAlert) {
-        Environment.preferences.revokedPushPermission = YES;
+        Environment.preferences.haveReceivedPushNotifications = NO;
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
                                                             message:NSLocalizedString(@"PUSH_SETTINGS_MESSAGE", @"")
                                                            delegate:nil
                                                   cancelButtonTitle:NSLocalizedString(@"OK", @"")
                                                   otherButtonTitles:nil, nil];
         [alertView show];
-    } else if (!needsPushSettingChangeAlert && Environment.preferences.encounteredRevokedPushPermission) {
-        [self askForPushRegistration];
+    } else if (!needsPushSettingChangeAlert && !Environment.preferences.haveReceivedPushNotifications) {
+        [self askForPushRegistrationWithoutSettingFuture];
     }
     
 }
 
-- (void)askForPushRegistrationWithSuccess:(void (^)())success failure:(void (^)())failure{
-    self.PushRegisteringSuccessBlock  = success;
-    self.PushRegisteringFailureBlock = failure;
-    [self askForPushRegistration];
+-(TOCFuture*) askForPushRegistration {
+    [self.pushRegistrationResult trySetFailedWithCancel];
+    self.pushRegistrationResult = [TOCFutureSource new];
+    [self askForPushRegistrationWithoutSettingFuture];
+    return self.pushRegistrationResult.future;
 }
 
-- (void)askForPushRegistration{
-    
-    if(SYSTEM_VERSION_LESS_THAN(_iOS_8_0)){
-        [UIApplication.sharedApplication registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeBadge)];
-    } else{
+-(void) askForPushRegistrationWithoutSettingFuture {
+    // This should result in didRegisterForPushNotificationsToDevice or didFailToRegisterForPushNotificationsWithError being invoked
+    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
+        [UIApplication.sharedApplication registerForRemoteNotificationTypes:self.desiredNotificationTypeMask];
+    } else {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1
-        UIMutableUserNotificationAction *action_accept = [[UIMutableUserNotificationAction alloc]init];
+        UIMutableUserNotificationAction *action_accept = [UIMutableUserNotificationAction new];
         action_accept.identifier = @"Signal_Call_Accept";
         action_accept.title      = @"Pick up";
         action_accept.activationMode = UIUserNotificationActivationModeForeground;
         action_accept.destructive    = YES;
         action_accept.authenticationRequired = NO;
         
-        UIMutableUserNotificationAction *action_decline = [[UIMutableUserNotificationAction alloc]init];
+        UIMutableUserNotificationAction *action_decline = [UIMutableUserNotificationAction new];
         action_decline.identifier = @"Signal_Call_Decline";
         action_decline.title      = @"Pick up";
         action_decline.activationMode = UIUserNotificationActivationModeForeground;
         action_decline.destructive    = YES;
         action_decline.authenticationRequired = NO;
         
-        UIMutableUserNotificationCategory *callCategory = [[UIMutableUserNotificationCategory alloc] init];
+        UIMutableUserNotificationCategory *callCategory = [UIMutableUserNotificationCategory new];
         callCategory.identifier = @"Signal_IncomingCall";
         [callCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextDefault];
         
-        NSSet *categories = [NSSet setWithObject:callCategory];
+        NSSet *categories = @{callCategory};
         
         [UIApplication.sharedApplication registerForRemoteNotifications];
-        [UIApplication.sharedApplication registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeSound) categories:categories]];
-        
+        [UIApplication.sharedApplication registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:self.desiredNotificationTypeMask
+                                                                                                            categories:categories]];
 #endif
-
     }
-    
-    self.retries = 3;
 }
 
-- (void)registerForPushWithToken:(NSData*)token{
-    [CallServerRequestsManager.sharedInstance registerPushToken:token success:^(NSURLSessionDataTask *task, id responseObject) {
-        if ([task.response isKindOfClass: [NSHTTPURLResponse class]]){
-            NSInteger statusCode = [(NSHTTPURLResponse*) task.response statusCode];
-            if (statusCode == 200) {
-                DDLogInfo(@"Device sent push ID to server");
-                [[Environment preferences] setRevokedPushPermission:NO];
-                if (self.PushRegisteringSuccessBlock) {
-                    self.PushRegisteringSuccessBlock();
-                    self.PushRegisteringSuccessBlock = nil;
-                }
-            } else{
-                [self registerFailureWithToken:token];
+-(void)didFailToRegisterForPushNotificationsWithError:(NSError *)error {
+    DDLogError(@"Failed to register for push notifications: %@", error);
+    [self verifyPushActivated];
+}
+
+-(void)didRegisterForPushNotificationsToDevice:(NSData*)deviceToken {
+    [self tellServerDeviceToken:deviceToken];
+}
+
+-(void)tellServerDeviceToken:(NSData*)deviceToken {
+
+    TOCUntilOperation attemptPushRequestOperation = ^(TOCCancelToken* operationUntil) {
+        TOCFuture* futureResponse = [CallServerRequestsManager.sharedInstance asyncRequestPushNotificationToDevice:deviceToken];
+        
+        return [futureResponse then:^id(NSHTTPURLResponse *response) {
+            if (![response isKindOfClass:NSHTTPURLResponse.class]) {
+                return [TOCFuture futureWithFailure:response];
             }
-        }
-    } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        [self registerFailureWithToken:token];
+            
+            if (response.statusCode != 200) {
+                return [TOCFuture futureWithFailure:response];
+            }
+            
+            return @YES;
+        }];
+    };
+    
+    TOCFuture* futureRequestedPush = [TOCFuture attempt:attemptPushRequestOperation
+                                             upToNTimes:REQUEST_PUSH_NOTIFICATION_ATTEMPTS
+                                         untilCancelled:nil];
+    
+    [futureRequestedPush thenDo:^(id _) {
+        DDLogInfo(@"Device sent push ID to server");
+        Environment.preferences.haveReceivedPushNotifications = YES;
+        [self.pushRegistrationResult trySetResult:nil];
+    }];
+     
+    [futureRequestedPush catchDo:^(id error) {
+        DDLogInfo(([NSString stringWithFormat:@"Failed to send device token to server. Error: %@", error]));
+        [self.pushRegistrationResult trySetFailure:nil];
     }];
 }
-
-
-/**
- *  Token was not sucessfully register. Try again / deal with failure
- *
- *  @param token Token to register
- */
-
-- (void)registerFailureWithToken:(NSData*)token{
-    if (self.retries > 0) {
-        [self registerForPushWithToken:token];
-        self.retries--;
-    } else{
-        if (self.PushRegisteringFailureBlock) {
-            self.PushRegisteringFailureBlock();
-            self.PushRegisteringFailureBlock = nil;
-        }
-        [[Environment preferences] setRevokedPushPermission:YES];
-    }
-}
-
-
 
 @end

@@ -199,13 +199,21 @@
     }];
     
     [futureChallengeAcceptedSource.future thenDo:^(id value) {
-        [PushManager.sharedManager askForPushRegistrationWithSuccess:^{
+        TOCFuture* futureGotPushRegistration = [PushManager.sharedManager askForPushRegistration];
+        
+        [futureGotPushRegistration thenDo:^(id _) {
             [Environment setRegistered:YES];
             [registered trySetResult:@YES];
             [[[Environment getCurrent] phoneDirectoryManager] forceUpdate];
             [self dismissView];
-        } failure:^{
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:REGISTER_ERROR_ALERT_VIEW_TITLE message:REGISTER_ERROR_ALERT_VIEW_BODY delegate:nil cancelButtonTitle:REGISTER_ERROR_ALERT_VIEW_DISMISS otherButtonTitles:nil, nil];
+        }];
+        
+        [futureGotPushRegistration catchDo:^(id failure) {
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:REGISTER_ERROR_ALERT_VIEW_TITLE
+                                                                message:REGISTER_ERROR_ALERT_VIEW_BODY
+                                                               delegate:nil
+                                                      cancelButtonTitle:REGISTER_ERROR_ALERT_VIEW_DISMISS
+                                                      otherButtonTitles:nil, nil];
             [alertView show];
             _challengeButton.enabled = YES;
             [_challengeActivityIndicator stopAnimating];

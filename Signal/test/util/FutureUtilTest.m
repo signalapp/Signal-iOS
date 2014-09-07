@@ -57,11 +57,11 @@
                                 onRunLoop:[ThreadManager normalLatencyThreadRunLoop]
                           unlessCancelled:c];
     };
-    TOCFuture* f = [TOCFuture retry:op
-                         upToNTimes:4
-                    withBaseTimeout:0.5/8
-                     andRetryFactor:2
-                     untilCancelled:nil];
+    TOCFuture* f = [TOCFuture attempt:op
+                           upToNTimes:4
+                      withBaseTimeout:0.5/8
+                andRetryTimeoutFactor:2
+                       untilCancelled:nil];
     testChurnUntil(!f.isIncomplete, 500.0);
     
     test(repeat == 3 || repeat == 4);
@@ -79,11 +79,11 @@
                                 onRunLoop:[ThreadManager normalLatencyThreadRunLoop]
                           unlessCancelled:c];
     };
-    TOCFuture* f = [TOCFuture retry:op
-                         upToNTimes:4
-                    withBaseTimeout:0.5/8
-                     andRetryFactor:2
-                     untilCancelled:nil];
+    TOCFuture* f = [TOCFuture attempt:op
+                           upToNTimes:4
+                      withBaseTimeout:0.5/8
+                andRetryTimeoutFactor:2
+                       untilCancelled:nil];
     testChurnUntil(!f.isIncomplete, 5.0);
     
     test(repeat >= 1);
@@ -101,11 +101,11 @@
                                 onRunLoop:[ThreadManager normalLatencyThreadRunLoop]
                           unlessCancelled:c];
     };
-    TOCFuture* f = [TOCFuture retry:op
-                         upToNTimes:2
-                    withBaseTimeout:0.5/8
-                     andRetryFactor:2
-                     untilCancelled:nil];
+    TOCFuture* f = [TOCFuture attempt:op
+                           upToNTimes:2
+                      withBaseTimeout:0.5/8
+                andRetryTimeoutFactor:2
+                       untilCancelled:nil];
     testChurnUntil(!f.isIncomplete, 5.0);
     
     test(repeat == 2);
@@ -127,11 +127,11 @@
                                 onRunLoop:[ThreadManager normalLatencyThreadRunLoop]
                           unlessCancelled:c];
     };
-    TOCFuture* f = [TOCFuture retry:op
-                         upToNTimes:2
-                    withBaseTimeout:0.5/8
-                     andRetryFactor:2
-                     untilCancelled:s.token];
+    TOCFuture* f = [TOCFuture attempt:op
+                           upToNTimes:2
+                      withBaseTimeout:0.5/8
+                andRetryTimeoutFactor:2
+                       untilCancelled:s.token];
     testChurnUntil(!f.isIncomplete, 5.0);
     
     test(repeat == 2);
