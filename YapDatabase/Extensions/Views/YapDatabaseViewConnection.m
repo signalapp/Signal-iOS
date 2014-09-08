@@ -585,8 +585,8 @@
 		NSString *failureReason = [NSString stringWithFormat:
 		    @"preMappings.snapshotOfLastUpdate: expected(%llu) != found(%llu), "
 			@"postMappings.snapshotOfLastUpdate: expected(%llu) != found(%llu), ",
-			originalMappings.snapshotOfLastUpdate, (firstSnapshot - 1),
-			mappings.snapshotOfLastUpdate, lastSnapshot];
+			(firstSnapshot - 1), originalMappings.snapshotOfLastUpdate,
+			lastSnapshot, mappings.snapshotOfLastUpdate];
 		
 		NSString *suggestion = [NSString stringWithFormat:
 		    @"When you initialize the database, the snapshot (uint64) is set to zero."
