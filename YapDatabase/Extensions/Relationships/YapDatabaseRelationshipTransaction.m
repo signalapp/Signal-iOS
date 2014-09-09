@@ -2378,7 +2378,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 								[databaseRwTransaction replaceObject:updatedDestinationNode
 								                              forKey:edge->destinationKey
 								                        inCollection:edge->destinationCollection
-								                           withRowid:edge->destinationRowid];
+								                           withRowid:edge->destinationRowid
+								                    serializedObject:nil];
 							}
 						}
 					}
@@ -2437,7 +2438,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 								[databaseRwTransaction replaceObject:updatedSourceNode
 								                              forKey:edge->sourceKey
 								                        inCollection:edge->sourceCollection
-								                           withRowid:edge->sourceRowid];
+								                           withRowid:edge->sourceRowid
+								                    serializedObject:nil];
 							}
 						}
 					}
@@ -2753,7 +2755,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 								[databaseRwTransaction replaceObject:updatedDstNode
 								                              forKey:edge->destinationKey
 								                        inCollection:edge->destinationCollection
-								                           withRowid:edge->destinationRowid];
+								                           withRowid:edge->destinationRowid
+								                    serializedObject:nil];
 							}
 						}
 					}
@@ -2839,7 +2842,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 							[databaseRwTransaction replaceObject:updatedSrcNode
 							                              forKey:edge->sourceKey
 							                        inCollection:edge->sourceCollection
-							                           withRowid:edge->sourceRowid];
+							                           withRowid:edge->sourceRowid
+							                    serializedObject:nil];
 						}
 					}
 				}

@@ -93,24 +93,6 @@
 **/
 - (NSArray *)allKeysInCollection:(NSString *)collection;
 
-#pragma mark Primitive
-
-/**
- * Primitive access.
- *
- * These are available for in-case you store irregular data
- * that shouldn't go through configured serializer/deserializer.
- *
- * @see objectForKey:inCollection:
- * @see metadataForKey:inCollection:
-**/
-- (NSData *)primitiveDataForKey:(NSString *)key inCollection:(NSString *)collection;
-- (NSData *)primitiveMetadataForKey:(NSString *)key inCollection:(NSString *)collection;
-- (BOOL)getPrimitiveData:(NSData **)dataPtr
-       primitiveMetadata:(NSData **)primitiveMetadataPtr
-                  forKey:(NSString *)key
-            inCollection:(NSString *)collection;
-
 #pragma mark Object & Metadata
 
 /**
@@ -136,6 +118,44 @@
  * This fetches directly from the metadata dictionary stored in memory, and thus never hits the disk.
 **/
 - (id)metadataForKey:(NSString *)key inCollection:(NSString *)collection;
+
+#pragma mark Primitive
+
+/**
+ * Primitive access.
+ * This method is available in-case you have a need to fetch the raw serializedObject from the database.
+ * 
+ * This method is slower than objectForKey:inCollection:, since that method makes use of the objectCache.
+ * In contrast, this method always fetches the raw data from disk.
+ * 
+ * @see objectForKey:inCollection:
+**/
+- (NSData *)serializedObjectForKey:(NSString *)key inCollection:(NSString *)collection;
+
+/**
+ * Primitive access.
+ * This method is available in-case you have a need to fetch the raw serializedMetadata from the database.
+ * 
+ * This method is slower than metadataForKey:inCollection:, since that method makes use of the metadataCache.
+ * In contrast, this method always fetches the raw data from disk.
+ *
+ * @see metadataForKey:inCollection:
+**/
+- (NSData *)serializedMetadataForKey:(NSString *)key inCollection:(NSString *)collection;
+
+/**
+ * Primitive access.
+ * This method is available in-case you have a need to fetch the raw serialized forms from the database.
+ *
+ * This method is slower than getObject:metadata:forKey:inCollection:, since that method makes use of the caches.
+ * In contrast, this method always fetches the raw data from disk.
+ *
+ * @see getObject:metadata:forKey:inCollection:
+**/
+- (BOOL)getSerializedObject:(NSData **)serializedObjectPtr
+         serializedMetadata:(NSData **)serializedMetadataPtr
+                     forKey:(NSString *)key
+               inCollection:(NSString *)collection;
 
 #pragma mark Enumerate
 
@@ -442,140 +462,227 @@
 **/
 @property (nonatomic, strong, readwrite) id yapDatabaseModifiedNotificationCustomObject;
 
-#pragma mark Primitive
-
-/**
- * Primitive access.
- * This method is available in case you need to store irregular data that
- * shouldn't go through the configured serializer/deserializer.
- *
- * Primitive data is stored into the database, but doesn't get routed through any of the extensions.
- *
- * Remember that if you place primitive data into the database via this method,
- * you are responsible for accessing it via the appropriate primitive accessor (such as
- * primitiveDataForKey:inCollection:). If you attempt to access it via the object accessor
- * (objectForKey:inCollection), then the system will attempt to deserialize the primitive data via the
- * configured deserializer, which may or may not work depending on the primitive data you're storing.
- * 
- * This method is the primitive version of setObject:forKey:inCollection:.
- * For more information see the documentation for setObject:forKey:inCollection:.
- *
- * @see setObject:forKey:inCollection:
- * @see primitiveDataForKey:inCollection:
-**/
-- (void)setPrimitiveData:(NSData *)primitiveData forKey:(NSString *)key inCollection:(NSString *)collection;
-
-/**
- * Primitive access.
- * This method is available in case you need to store irregular data that
- * shouldn't go through the configured serializer/deserializer.
- *
- * Primitive data is stored into the database, but doesn't get routed through any of the extensions.
- *
- * Remember that if you place primitive data into the database via this method,
- * you are responsible for accessing it via the appropriate primitive accessor (such as
- * primitiveDataForKey:inCollection:). If you attempt to access it via the object accessor
- * (objectForKey:inCollection), then the system will attempt to deserialize the primitive data via the
- * configured deserializer, which may or may not work depending on the primitive data you're storing.
- * 
- * This method is the primitive version of setObject:forKey:inCollection:withMetadata:.
- * For more information see the documentation for setObject:forKey:inCollection:withMetadata:.
- *
- * @see setObject:forKey:inCollection:withMetadata:
- * @see primitiveDataForKey:inCollection:
- * @see primitiveMetadataForKey:inCollection:
-**/
-- (void)setPrimitiveData:(NSData *)primitiveData
-                  forKey:(NSString *)key
-            inCollection:(NSString *)collection
-   withPrimitiveMetadata:(NSData *)primitiveMetadata;
-
-/**
- * Primitive access.
- * This method is available in case you need to store irregular data that
- * shouldn't go through the configured serializer/deserializer.
- *
- * Primitive data is stored into the database, but doesn't get routed through any of the extensions.
- *
- * Remember that if you place primitive data into the database via this method,
- * you are responsible for accessing it via the appropriate primitive accessor (such as
- * primitiveDataForKey:inCollection:). If you attempt to access it via the object accessor
- * (objectForKey:inCollection), then the system will attempt to deserialize the primitive data via the
- * configured deserializer, which may or may not work depending on the primitive data you're storing.
- *
- * This method is the primitive version of replaceObject:forKey:inCollection:.
- * For more information see the documentation for replaceObject:forKey:inCollection:.
- *
- * @see replaceObject:forKey:inCollection:
- * @see primitiveDataForKey:inCollection:
-**/
-- (void)replacePrimitiveData:(NSData *)primitiveData forKey:(NSString *)key inCollection:(NSString *)collection;
-
-/**
- * Primitive access.
- * This method is available in case you need to store irregular data that
- * shouldn't go through the configured serializer/deserializer.
- * 
- * Primitive data is stored into the database, but doesn't get routed through any of the extensions.
- * 
- * Remember that if you place primitive data into the database via this method,
- * you are responsible for accessing it via the appropriate primitive accessor (such as
- * primitiveMetadataForKey:inCollection:). If you attempt to access it via the object accessor
- * (metadataForKey:inCollection), then the system will attempt to deserialize the primitive data via the
- * configured deserializer, which may or may not work depending on the primitive data you're storing.
- *
- * This method is the primitive version of replaceMetadata:forKey:inCollection:.
- * For more information see the documentation for replaceMetadata:forKey:inCollection:.
- *
- * @see replaceMetadata:forKey:inCollection:
- * @see primitiveMetadataForKey:inCollection:
-**/
-- (void)replacePrimitiveMetadata:(NSData *)primitiveMetadata forKey:(NSString *)key inCollection:(NSString *)collection;
-
 #pragma mark Object & Metadata
 
 /**
  * Sets the object for the given key/collection.
  * The object is automatically serialized using the database's configured objectSerializer.
- * 
- * If you pass nil for the object, then this method will remove the row from the database (if it exists).
  *
+ * If you pass nil for the object, then this method will remove the row from the database (if it exists).
  * This method implicitly sets the associated metadata to nil.
+ * 
+ * @param object
+ *   The object to store in the database.
+ *   This object is automatically serialized using the database's configured objectSerializer.
+ * 
+ * @param key
+ *   The lookup key.
+ *   The <collection, key> tuple is used to uniquely identify the row in the database.
+ *   This value should not be nil. If a nil key is passed, then this method does nothing.
+ * 
+ * @param collection
+ *   The lookup collection.
+ *   The <collection, key> tuple is used to uniquely identify the row in the database.
+ *   If a nil collection is passed, then the collection is implicitly the empty string (@"").
 **/
 - (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection;
 
 /**
  * Sets the object & metadata for the given key/collection.
- * 
- * The object is automatically serialized using the database's configured objectSerializer.
- * The metadata is automatically serialized using the database's configured metadataSerializer.
- * 
- * The metadata is optional. You can pass nil for the metadata is unneeded.
- * If non-nil then the metadata is also written to the database (metadata is also persistent).
  *
  * If you pass nil for the object, then this method will remove the row from the database (if it exists).
+ * 
+ * @param object
+ *   The object to store in the database.
+ *   This object is automatically serialized using the database's configured objectSerializer.
+ * 
+ * @param key
+ *   The lookup key.
+ *   The <collection, key> tuple is used to uniquely identify the row in the database.
+ *   This value should not be nil. If a nil key is passed, then this method does nothing.
+ * 
+ * @param collection
+ *   The lookup collection.
+ *   The <collection, key> tuple is used to uniquely identify the row in the database.
+ *   If a nil collection is passed, then the collection is implicitly the empty string (@"").
+ * 
+ * @param metadata
+ *   The metadata to store in the database.
+ *   This metadata is automatically serialized using the database's configured metadataSerializer.
+ *   The metadata is optional. You can pass nil for the metadata is unneeded.
+ *   If non-nil then the metadata is also written to the database (metadata is also persistent).
 **/
 - (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection withMetadata:(id)metadata;
 
 /**
- * If a row with the given key/collection exists, then replaces the object for that row with the new value.
- * It only replaces the object. The metadata for the row doesn't change.
+ * Sets the object & metadata for the given key/collection.
  * 
+ * If you pass nil for the object, then this method will remove the row from the database (if it exists).
+ *
+ * This method allows for a bit of optimization if you happen to already have a serialized version of
+ * the object and/or metadata. For example, if you downloaded an object in serialized form,
+ * and you still have the raw serialized NSData, then you can use this method to skip the serialization step
+ * when storing the object to the database.
+ *
+ * @param object
+ *   The object to store in the database.
+ *   This object is automatically serialized using the database's configured objectSerializer.
+ *
+ * @param key
+ *   The lookup key.
+ *   The <collection, key> tuple is used to uniquely identify the row in the database.
+ *   This value should not be nil. If a nil key is passed, then this method does nothing.
+ *
+ * @param collection
+ *   The lookup collection.
+ *   The <collection, key> tuple is used to uniquely identify the row in the database.
+ *   If a nil collection is passed, then the collection is implicitly the empty string (@"").
+ *
+ * @param metadata
+ *   The metadata to store in the database.
+ *   This metadata is automatically serialized using the database's configured metadataSerializer.
+ *   The metadata is optional. You can pass nil for the metadata is unneeded.
+ *   If non-nil then the metadata is also written to the database (metadata is also persistent).
+ * 
+ * @param preSerializedObject
+ *   This value is optional.
+ *   If non-nil then the object serialization step is skipped, and this value is used instead.
+ *   It is assumed that preSerializedObject is equal to what we would get if we ran the object through
+ *   the database's configured objectSerializer.
+ * 
+ * @param preSerializedMetadata
+ *   This value is optional.
+ *   If non-nil then the metadata serialization step is skipped, and this value is used instead.
+ *   It is assumed that preSerializedMetadata is equal to what we would get if we ran the metadata through
+ *   the database's configured metadataSerializer.
+ *
+ * The preSerializedObject is only used if object is non-nil.
+ * The preSerializedMetadata is only used if metadata is non-nil.
+**/
+- (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection
+                                                    withMetadata:(id)metadata
+                                                serializedObject:(NSData *)preSerializedObject
+                                              serializedMetadata:(NSData *)preSerializedMetadata;
+
+/**
+ * If a row with the given key/collection exists, then replaces the object for that row with the new value.
+ * 
+ * It only replaces the object. The metadata for the row doesn't change.
  * If there is no row in the database for the given key/collection then this method does nothing.
  * 
- * If you pass nil for the object, then this method will remove
+ * If you pass nil for the object, then this method will remove the row from the database (if it exists).
+ * 
+ * @param object
+ *   The object to store in the database.
+ *   This object is automatically serialized using the database's configured objectSerializer.
+ * 
+ * @param key
+ *   The lookup key.
+ *   The <collection, key> tuple is used to uniquely identify the row in the database.
+ *   This value should not be nil. If a nil key is passed, then this method does nothing.
+ * 
+ * @param collection
+ *   The lookup collection.
+ *   The <collection, key> tuple is used to uniquely identify the row in the database.
+ *   If a nil collection is passed, then the collection is implicitly the empty string (@"").
 **/
 - (void)replaceObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection;
 
 /**
- * If a row with the given key/collection exists, then replaces the metadata for that row with the new value.
- * It only replaces the metadata. The object for the row doesn't change.
+ * If a row with the given key/collection exists, then replaces the object for that row with the new value.
  *
+ * It only replaces the object. The metadata for the row doesn't change.
+ * If there is no row in the database for the given key/collection then this method does nothing.
+ *
+ * If you pass nil for the object, then this method will remove the row from the database (if it exists).
+ * 
+ * This method allows for a bit of optimization if you happen to already have a serialized version of
+ * the object and/or metadata. For example, if you downloaded an object in serialized form,
+ * and you still have the raw serialized NSData, then you can use this method to skip the serialization step
+ * when storing the object to the database.
+ *
+ * @param object
+ *   The object to store in the database.
+ *   This object is automatically serialized using the database's configured objectSerializer.
+ *
+ * @param key
+ *   The lookup key.
+ *   The <collection, key> tuple is used to uniquely identify the row in the database.
+ *   This value should not be nil. If a nil key is passed, then this method does nothing.
+ *
+ * @param collection
+ *   The lookup collection.
+ *   The <collection, key> tuple is used to uniquely identify the row in the database.
+ *   If a nil collection is passed, then the collection is implicitly the empty string (@"").
+ *
+ * @param preSerializedObject
+ *   This value is optional.
+ *   If non-nil then the object serialization step is skipped, and this value is used instead.
+ *   It is assumed that preSerializedObject is equal to what we would get if we ran the object through
+ *   the database's configured objectSerializer.
+**/
+- (void)replaceObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection
+                                                withSerializedObject:(NSData *)preSerializedObject;
+
+/**
+ * If a row with the given key/collection exists, then replaces the metadata for that row with the new value.
+ * 
+ * It only replaces the metadata. The object for the row doesn't change.
  * If there is no row in the database for the given key/collection then this method does nothing.
  * 
  * If you pass nil for the metadata, any metadata previously associated with the key/collection is removed.
+ * 
+ * @param metadata
+ *   The metadata to store in the database.
+ *   This metadata is automatically serialized using the database's configured metadataSerializer.
+ *
+ * @param key
+ *   The lookup key.
+ *   The <collection, key> tuple is used to uniquely identify the row in the database.
+ *   This value should not be nil. If a nil key is passed, then this method does nothing.
+ * 
+ * @param collection
+ *   The lookup collection.
+ *   The <collection, key> tuple is used to uniquely identify the row in the database.
+ *   If a nil collection is passed, then the collection is implicitly the empty string (@"").
 **/
 - (void)replaceMetadata:(id)metadata forKey:(NSString *)key inCollection:(NSString *)collection;
+
+/**
+ * If a row with the given key/collection exists, then replaces the metadata for that row with the new value.
+ *
+ * It only replaces the metadata. The object for the row doesn't change.
+ * If there is no row in the database for the given key/collection then this method does nothing.
+ *
+ * If you pass nil for the metadata, any metadata previously associated with the key/collection is removed.
+ *
+ * This method allows for a bit of optimization if you happen to already have a serialized version of
+ * the object and/or metadata. For example, if you downloaded an object in serialized form,
+ * and you still have the raw serialized NSData, then you can use this method to skip the serialization step
+ * when storing the object to the database.
+ * 
+ * @param metadata
+ *   The metadata to store in the database.
+ *   This metadata is automatically serialized using the database's configured metadataSerializer.
+ *
+ * @param key
+ *   The lookup key.
+ *   The <collection, key> tuple is used to uniquely identify the row in the database.
+ *   This value should not be nil. If a nil key is passed, then this method does nothing.
+ *
+ * @param collection
+ *   The lookup collection.
+ *   The <collection, key> tuple is used to uniquely identify the row in the database.
+ *   If a nil collection is passed, then the collection is implicitly the empty string (@"").
+ * 
+ * @param preSerializedMetadata
+ *   This value is optional.
+ *   If non-nil then the metadata serialization step is skipped, and this value is used instead.
+ *   It is assumed that preSerializedMetadata is equal to what we would get if we ran the metadata through
+ *   the database's configured metadataSerializer.
+**/
+- (void)replaceMetadata:(id)metadata forKey:(NSString *)key inCollection:(NSString *)collection
+                                                  withSerializedMetadata:(NSData *)preSerializedMetadata;
 
 #pragma mark Touch
 
@@ -618,8 +725,9 @@
 
 /**
  * Deletes the database row with the given key/collection.
+ *
  * This method is automatically called if you invoke
- * setObject:forKey:collection: or setPrimitiveData:forKey:collection: and pass nil object/data.
+ * setObject:forKey:collection: and pass a nil object.
 **/
 - (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection;
 

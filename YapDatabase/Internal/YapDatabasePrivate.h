@@ -439,11 +439,17 @@ extern NSString *const YapDatabaseNotificationKey;
 	id customObjectForNotification;
 }
 
-- (void)replaceObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
+- (void)replaceObject:(id)object
+               forKey:(NSString *)key
+         inCollection:(NSString *)collection
+            withRowid:(int64_t)rowid
+     serializedObject:(NSData *)preSerializedObject;
+
 - (void)replaceMetadata:(id)metadata
                  forKey:(NSString *)key
            inCollection:(NSString *)collection
-              withRowid:(int64_t)rowid;
+              withRowid:(int64_t)rowid
+     serializedMetadata:(NSData *)preSerializedMetadata;
 
 - (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
 

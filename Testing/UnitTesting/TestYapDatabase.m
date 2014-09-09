@@ -69,7 +69,7 @@
 		XCTAssertTrue([transaction numberOfKeysInCollection:nil] == 0, @"Expected zero key count");
 		
 		XCTAssertNil([transaction objectForKey:@"non-existant" inCollection:nil], @"Expected nil object");
-		XCTAssertNil([transaction primitiveDataForKey:@"non-existant" inCollection:nil], @"Expected nil data");
+		XCTAssertNil([transaction serializedObjectForKey:@"non-existant" inCollection:nil], @"Expected nil data");
 		
 		XCTAssertFalse([transaction hasObjectForKey:@"non-existant" inCollection:nil], @"Expected NO object for key");
 		
@@ -125,7 +125,7 @@
 		XCTAssertTrue([[transaction allKeysInCollection:@""] count] == 1, @"Expected 1 key");
 		
 		XCTAssertNotNil([transaction objectForKey:key1 inCollection:nil], @"Expected non-nil object");
-		XCTAssertNotNil([transaction primitiveDataForKey:key1 inCollection:nil], @"Expected non-nil data");
+		XCTAssertNotNil([transaction serializedObjectForKey:key1 inCollection:nil], @"Expected non-nil data");
 		
 		XCTAssertTrue([transaction hasObjectForKey:key1 inCollection:nil], @"Expected YES");
 		
@@ -166,7 +166,7 @@
 		XCTAssertTrue([[transaction allKeysInCollection:nil] count] == 0, @"Expected 0 keys");
 		
 		XCTAssertNil([transaction objectForKey:key1 inCollection:nil], @"Expected nil object");
-		XCTAssertNil([transaction primitiveDataForKey:key1 inCollection:nil], @"Expected nil data");
+		XCTAssertNil([transaction serializedObjectForKey:key1 inCollection:nil], @"Expected nil data");
 		
 		XCTAssertFalse([transaction hasObjectForKey:key1 inCollection:nil], @"Expected NO");
 	}];
@@ -181,7 +181,7 @@
 		XCTAssertTrue([[transaction allKeysInCollection:nil] count] == 1, @"Expected 1 key");
 		
 		XCTAssertNotNil([transaction objectForKey:key1 inCollection:nil], @"Expected non-nil object");
-		XCTAssertNotNil([transaction primitiveDataForKey:key1 inCollection:nil], @"Expected non-nil data");
+		XCTAssertNotNil([transaction serializedObjectForKey:key1 inCollection:nil], @"Expected non-nil data");
 		
 		XCTAssertTrue([transaction hasObjectForKey:key1 inCollection:nil], @"Expected YES");
 		
