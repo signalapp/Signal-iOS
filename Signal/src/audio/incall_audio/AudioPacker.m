@@ -9,7 +9,6 @@
     AudioPacker* newAudioPackerInstance = [AudioPacker new];
     newAudioPackerInstance->audioFrameToReceiveQueue = [Queue new];
     newAudioPackerInstance->framesToSend = [NSMutableArray array];
-    newAudioPackerInstance->nextTimeStamp = [CryptoTools generateSecureRandomUInt32];
     newAudioPackerInstance->nextSequenceNumber = [CryptoTools generateSecureRandomUInt16];
     
     // interop fix:
@@ -30,13 +29,10 @@
     if (framesToSend.count < AUDIO_FRAMES_PER_PACKET) return nil;
     
     uint16_t sequenceNumber = nextSequenceNumber++;
-    uint32_t timeStamp = nextTimeStamp;
-    NSData* payload = framesToSend.concatDatas;
-    nextTimeStamp += payload.length;
+    NSData* payload = [framesToSend concatDatas];
     
     [framesToSend removeAllObjects];
     return [EncodedAudioPacket encodedAudioPacketWithAudioData:payload
-                                                  andTimeStamp:timeStamp
                                              andSequenceNumber:sequenceNumber];
 }
 

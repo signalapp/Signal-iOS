@@ -20,7 +20,7 @@
                                       andMarkerBit:false
                                     andPayloadtype:0
                                  andSequenceNumber:5
-                                      andTimeStamp:0x23571113
+                                      andTimeStamp:0
                                         andPayload:increasingData(5)];
     
     // values were retained
@@ -32,27 +32,23 @@
     test(r.isMarkerBitSet == false);
     test([r payloadType] == 0);
     test([r sequenceNumber] == 5);
-    test([r timeStamp] == 0x23571113);
+    test([r timeStamp] == 0);
     test([[r payload] isEqualToData:increasingData(5)]);
 
     // equivalent to simplified constructor
-    test([r isEqualToRtpPacket:[RtpPacket rtpPacketWithDefaultsAndSequenceNumber:5
-                                                                    andTimeStamp:0x23571113
-                                                                      andPayload:increasingData(5)]]);
+    test([r isEqualToRtpPacket:[RtpPacket rtpPacketWithDefaultsAndSequenceNumber:5 andPayload:increasingData(5)]]);
 
     // packed correctly
     NSData* expectedData = [@[
                             @0x80,@0,@0,@5,
-                            @0x23,@0x57,@0x11,@0x13,
+                            @0,@0,@0,@0,
                             @0,@0,@0,@0,
                             @0,@1,@2,@3,@4] toUint8Data];
     test([[r rawPacketDataUsingInteropOptions:@[]] isEqualToData:expectedData]);
 
     // reparsing packed data gives same packet
     test([r isEqualToRtpPacket:[RtpPacket rtpPacketParsedFromPacketData:expectedData]]);
-    test(![r isEqualToRtpPacket:[RtpPacket rtpPacketWithDefaultsAndSequenceNumber:0
-                                                                     andTimeStamp:0
-                                                                       andPayload:[NSData data]]]);
+    test(![r isEqualToRtpPacket:[RtpPacket rtpPacketWithDefaultsAndSequenceNumber:0 andPayload:[NSData data]]]);
 }
 -(void) testRawData {
     RtpPacket* r = [RtpPacket rtpPacketWithVersion:2
@@ -88,9 +84,7 @@
     
     test([[r rawPacketDataUsingInteropOptions:@[]] isEqualToData:expectedData]);
     test([r isEqualToRtpPacket:[RtpPacket rtpPacketParsedFromPacketData:expectedData]]);
-    test(![r isEqualToRtpPacket:[RtpPacket rtpPacketWithDefaultsAndSequenceNumber:90
-                                                                     andTimeStamp:0
-                                                                       andPayload:[NSData data]]]);
+    test(![r isEqualToRtpPacket:[RtpPacket rtpPacketWithDefaultsAndSequenceNumber:90 andPayload:[NSData data]]]);
 }
 -(void) testExtendedData {
     RtpPacket* r = [RtpPacket rtpPacketWithVersion:2
@@ -129,9 +123,7 @@
                             @0,@1,@2,@3,@4] toUint8Data];
     test([[r rawPacketDataUsingInteropOptions:@[]] isEqualToData:expectedData]);
     test([r isEqualToRtpPacket:[RtpPacket rtpPacketParsedFromPacketData:expectedData]]);
-    test(![r isEqualToRtpPacket:[RtpPacket rtpPacketWithDefaultsAndSequenceNumber:0
-                                                                     andTimeStamp:0
-                                                                       andPayload:[NSData data]]]);
+    test(![r isEqualToRtpPacket:[RtpPacket rtpPacketWithDefaultsAndSequenceNumber:0 andPayload:[NSData data]]]);
 }
 
 @end

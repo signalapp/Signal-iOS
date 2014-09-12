@@ -26,9 +26,7 @@
 @property (nonatomic,readonly) uint32_t synchronizationSourceIdentifier;
 @property (nonatomic,readonly) NSData* payload;
 
-+(RtpPacket*) rtpPacketWithDefaultsAndSequenceNumber:(uint16_t)sequenceNumber
-                                        andTimeStamp:(uint32_t)timeStamp
-                                          andPayload:(NSData *)payload;
++(RtpPacket*) rtpPacketWithDefaultsAndSequenceNumber:(uint16_t)sequenceNumber andPayload:(NSData*)payload;
 
 +(RtpPacket*) rtpPacketWithVersion:(uint8_t)version
                         andPadding:(uint8_t)padding
