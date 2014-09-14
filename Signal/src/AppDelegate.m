@@ -32,6 +32,8 @@
 @property (nonatomic, strong) MMDrawerController  *drawerController;
 @property (nonatomic, strong) NotificationTracker *notificationTracker;
 
+@property (nonatomic) TOCFutureSource *callPickUpFuture;
+
 @end
 
 @implementation AppDelegate
@@ -154,7 +156,18 @@
         
         InCallViewController *callViewController = [InCallViewController inCallViewControllerWithCallState:latestCall
                                                                                  andOptionallyKnownContact:latestCall.potentiallySpecifiedContact];
+        
+        if (latestCall.initiatedLocally == false){
+            [self.callPickUpFuture.future thenDo:^(NSNumber *accept) {
+                if ([accept isEqualToNumber:@YES]) {
+                    [callViewController answerButtonTapped];
+                } else if ([accept isEqualToNumber:@NO]){
+                    [callViewController rejectButtonTapped];
+                }
+            }];
+        }
         [_drawerController.centerViewController presentViewController:callViewController animated:YES completion:nil];
+        
     } onThread:NSThread.mainThread untilCancelled:nil];
     
     
@@ -162,12 +175,15 @@
 }
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
-    [PushManager.sharedManager registerForPushWithToken:deviceToken];
+    [[PushManager sharedManager].pushNotificationFutureSource trySetResult:deviceToken];
 }
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error {
-    [PushManager.sharedManager verifyPushActivated];
-    DDLogError(@"Failed to register for push notifications: %@", error);
+    [[PushManager sharedManager].pushNotificationFutureSource trySetFailure:error];
+}
+
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings{
+    [[PushManager sharedManager].userNotificationFutureSource trySetResult:notificationSettings];
 }
 
 -(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
@@ -184,7 +200,7 @@
         DDLogError(@"Decryption of session descriptor failed");
         return;
     }
-    
+    self.callPickUpFuture = [TOCFutureSource new];
     [Environment.phoneManager incomingCallWithSession:call];
 }
 
@@ -207,9 +223,18 @@
     [self removeScreenProtection];
     
     if (Environment.isRegistered) {
-        [PushManager.sharedManager verifyPushActivated];
+        [PushManager.sharedManager verifyPushPermissions];
         [AppAudioManager.sharedInstance requestRequiredPermissionsIfNeeded];
     }
+}
+
+- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void (^)())completionHandler{
+    if ([identifier isEqualToString:Signal_Accept_Identifier]) {
+        [self.callPickUpFuture trySetResult:@YES];
+    } else if ([identifier isEqualToString:Signal_Decline_Identifier]){
+        [self.callPickUpFuture trySetResult:@NO];
+    }
+    completionHandler();
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application{

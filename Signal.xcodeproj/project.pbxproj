@@ -396,6 +396,7 @@
 		B6416FD4199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416FAB199A0478003C5699 /* Localizable.strings */; };
 		B67ADDC41989FF8700E1A773 /* CallServerRequestsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B67ADDC31989FF8700E1A773 /* CallServerRequestsManager.m */; };
 		B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B67EBF5C19194AC60084CCFD /* Settings.bundle */; };
+		B684A46D19C3446200B11029 /* PushManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B684A46C19C3446200B11029 /* PushManagerTest.m */; };
 		B6850E5A1995A4710068E715 /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6850E591995A4710068E715 /* whisperFake.cer */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
 		B6B1013C196D213F007E3930 /* SGNKeychainUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SGNKeychainUtil.m */; };
@@ -1098,6 +1099,7 @@
 		B67ADDC21989FF8700E1A773 /* CallServerRequestsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallServerRequestsManager.h; sourceTree = "<group>"; };
 		B67ADDC31989FF8700E1A773 /* CallServerRequestsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallServerRequestsManager.m; sourceTree = "<group>"; };
 		B67EBF5C19194AC60084CCFD /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = SettingsBundle/Settings.bundle; sourceTree = SOURCE_ROOT; };
+		B684A46C19C3446200B11029 /* PushManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PushManagerTest.m; path = Signal/test/push/PushManagerTest.m; sourceTree = SOURCE_ROOT; };
 		B6850E591995A4710068E715 /* whisperFake.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperFake.cer; sourceTree = "<group>"; };
 		B69CD25019773E79005CE69A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		B6B1013A196D213F007E3930 /* SGNKeychainUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGNKeychainUtil.h; sourceTree = "<group>"; };
@@ -2196,6 +2198,7 @@
 				A157073917F0CD6D007C2BD6 /* Supporting Files */,
 				A157073B17F0CD6D007C2BD6 /* TestUtil.h */,
 				A157073C17F0CD6D007C2BD6 /* TestUtil.m */,
+				B684A46C19C3446200B11029 /* PushManagerTest.m */,
 				A157073D17F0CD6D007C2BD6 /* util */,
 			);
 			path = test;
@@ -3007,10 +3010,16 @@
 					D221A088169C9E5E00537ABF = {
 						DevelopmentTeam = U68MSDN6DR;
 						SystemCapabilities = {
+							com.apple.DataProtection = {
+								enabled = 1;
+							};
 							com.apple.InAppPurchase = {
 								enabled = 0;
 							};
 							com.apple.InterAppAudio = {
+								enabled = 0;
+							};
+							com.apple.VPNLite = {
 								enabled = 0;
 							};
 						};
@@ -3739,6 +3748,7 @@
 				76EB066118170B34006006FC /* RegisterViewController.m in Sources */,
 				76EB068D18170B34006006FC /* InboxFeedTableViewCell.m in Sources */,
 				BFB074C119A4BCA400F2947C /* FutureUtilTest.m in Sources */,
+				B684A46D19C3446200B11029 /* PushManagerTest.m in Sources */,
 				76EB05A918170B33006006FC /* RtpSocket.m in Sources */,
 				765052B0182AC9B5008313E1 /* DialerButtonView.m in Sources */,
 				76EB062B18170B33006006FC /* BadState.m in Sources */,
@@ -4194,8 +4204,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C71793B33D9C45079F74487E /* Pods.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4234,7 +4244,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = Signal;
-				PROVISIONING_PROFILE = "036480DA-A21D-4CC6-BF48-98E8AE1EE981";
+				PROVISIONING_PROFILE = "4aa31d4f-187c-470a-add6-8e949fc2cfd1";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_AFTER_BUILD = YES;
@@ -4483,8 +4493,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C71793B33D9C45079F74487E /* Pods.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4521,7 +4531,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = Signal;
-				PROVISIONING_PROFILE = "7214A823-1F7A-4460-82D8-D89CA511CEA6";
+				PROVISIONING_PROFILE = "4434E074-1111-40F0-A7B6-CEA8437ACFE1";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_AFTER_BUILD = YES;

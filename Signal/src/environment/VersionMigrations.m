@@ -43,7 +43,11 @@
         
         // Some users push IDs were not correctly registered, by precaution, we are going to re-register all of them
         
-        [PushManager.sharedManager askForPushRegistration];
+        [PushManager.sharedManager registrationWithSuccess:^{
+            
+        } failure:^{
+            DDLogError(@"Error re-registering on migration from 1.0.2");
+        }];
         
         [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
         
