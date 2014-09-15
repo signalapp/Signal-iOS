@@ -4922,32 +4922,18 @@ static NSString *const ExtKey_version_deprecated = @"version";
 }
 
 /**
- * This method allows you to change the groupingBlock and/or sortingBlock on-the-fly.
+ * This method allows you to change the grouping and/or sorting on-the-fly.
  * 
  * Note: You must pass a different versionTag, or this method does nothing.
 **/
-- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)newGroupingBlock
-       groupingBlockType:(YapDatabaseViewBlockType)newGroupingBlockType
-            sortingBlock:(YapDatabaseViewSortingBlock)newSortingBlock
-        sortingBlockType:(YapDatabaseViewBlockType)newSortingBlockType
-              versionTag:(NSString *)inVersionTag
+- (void)setGrouping:(YapDatabaseViewGrouping *)grouping
+            sorting:(YapDatabaseViewSorting *)sorting
+         versionTag:(NSString *)inVersionTag
 {
 	YDBLogAutoTrace();
 	
-	NSAssert(newGroupingBlock != NULL, @"Invalid grouping block");
-	NSAssert(newSortingBlock != NULL, @"Invalid grouping block");
-	
-	NSAssert(newGroupingBlockType == YapDatabaseViewBlockTypeWithKey ||
-	         newGroupingBlockType == YapDatabaseViewBlockTypeWithObject ||
-	         newGroupingBlockType == YapDatabaseViewBlockTypeWithMetadata ||
-	         newGroupingBlockType == YapDatabaseViewBlockTypeWithRow,
-	         @"Invalid grouping block type");
-	
-	NSAssert(newSortingBlockType == YapDatabaseViewBlockTypeWithKey ||
-	         newSortingBlockType == YapDatabaseViewBlockTypeWithObject ||
-	         newSortingBlockType == YapDatabaseViewBlockTypeWithMetadata ||
-	         newSortingBlockType == YapDatabaseViewBlockTypeWithRow,
-	         @"Invalid sorting block type");
+	NSAssert(grouping != nil, @"Invalid parameter: grouping == nil");
+	NSAssert(sorting != nil, @"Invalid parameter: sorting == nil");
 	
 	if (!databaseTransaction->isReadWriteTransaction)
 	{
@@ -4963,10 +4949,10 @@ static NSString *const ExtKey_version_deprecated = @"version";
 		return;
 	}
 	
-	[viewConnection setGroupingBlock:newGroupingBlock
-	               groupingBlockType:newGroupingBlockType
-	                    sortingBlock:newSortingBlock
-	                sortingBlockType:newSortingBlockType
+	[viewConnection setGroupingBlock:grouping.groupingBlock
+	               groupingBlockType:grouping.groupingBlockType
+	                    sortingBlock:sorting.sortingBlock
+	                sortingBlockType:sorting.sortingBlockType
 	                      versionTag:newVersionTag];
 	
 	[self repopulateView];
@@ -4996,6 +4982,22 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			}
 		}
 	}];
+}
+
+/**
+ * DEPRECATED
+ * Use method setGrouping:sorting:versionTag: instead.
+**/
+- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)grpBlock
+       groupingBlockType:(YapDatabaseViewBlockType)grpBlockType
+            sortingBlock:(YapDatabaseViewSortingBlock)srtBlock
+        sortingBlockType:(YapDatabaseViewBlockType)srtBlockType
+              versionTag:(NSString *)inVersionTag
+{
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withBlock:grpBlock blockType:grpBlockType];
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withBlock:srtBlock blockType:srtBlockType];
+	
+	[self setGrouping:grouping sorting:sorting versionTag:inVersionTag];
 }
 
 @end

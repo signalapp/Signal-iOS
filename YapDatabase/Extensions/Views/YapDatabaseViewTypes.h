@@ -2,9 +2,19 @@
 
 
 /**
+ * Corresponds to the different type of blocks supported by YapDatabaseView.
+**/
+typedef NS_ENUM(NSInteger, YapDatabaseViewBlockType) {
+	YapDatabaseViewBlockTypeWithKey       = 1,
+	YapDatabaseViewBlockTypeWithObject    = 2,
+	YapDatabaseViewBlockTypeWithMetadata  = 3,
+	YapDatabaseViewBlockTypeWithRow       = 4
+};
+
+/**
  * The grouping block handles both filtering and grouping.
  * 
- * When you add or update rows in the databse the grouping block is invoked.
+ * When you add or update rows in the database the grouping block is invoked.
  * Your grouping block can inspect the row and determine if it should be a part of the view.
  * If not, your grouping block simply returns 'nil' and the object is excluded from the view (removing it if needed).
  * Otherwise your grouping block returns a group, which can be any string you want.
@@ -14,6 +24,8 @@
  * You should choose a block type that takes the minimum number of required parameters.
  * The view can make various optimizations based on required parameters of the block.
 **/
+@interface YapDatabaseViewGrouping : NSObject
+
 typedef id YapDatabaseViewGroupingBlock; // One of the YapDatabaseViewGroupingX types below.
 
 typedef NSString* (^YapDatabaseViewGroupingWithKeyBlock)(NSString *collection, NSString *key);
@@ -21,6 +33,15 @@ typedef NSString* (^YapDatabaseViewGroupingWithObjectBlock)(NSString *collection
 typedef NSString* (^YapDatabaseViewGroupingWithMetadataBlock)(NSString *collection, NSString *key, id metadata);
 typedef NSString* (^YapDatabaseViewGroupingWithRowBlock)(NSString *collection, NSString *key, id object, id metadata);
 
++ (instancetype)withKeyBlock:(YapDatabaseViewGroupingWithKeyBlock)groupingBlock;
++ (instancetype)withObjectBlock:(YapDatabaseViewGroupingWithObjectBlock)groupingBlock;
++ (instancetype)withMetadataBlock:(YapDatabaseViewGroupingWithMetadataBlock)groupingBlock;
++ (instancetype)withRowBlock:(YapDatabaseViewGroupingWithRowBlock)groupingBlock;
+
+@property (nonatomic, strong, readonly) YapDatabaseViewGroupingBlock groupingBlock;
+@property (nonatomic, assign, readonly) YapDatabaseViewBlockType groupingBlockType;
+
+@end
 
 /**
  * The sorting block handles sorting of objects within their group.
@@ -54,8 +75,7 @@ typedef NSString* (^YapDatabaseViewGroupingWithRowBlock)(NSString *collection, N
  * For example, adding objects to a view that are sorted by timestamp of when they arrived.
  *
  * The optimizations are not always performed.
- * That is, if the row is added to a group it didn't previously belong,
- * or if the last change didn't place an item at the beginning or end of the view.
+ * For example, if the last change didn't place an item at the beginning or end of the view.
  *
  * If optimizations fail, or are skipped, then the view uses a binary search algorithm.
  * 
@@ -64,10 +84,13 @@ typedef NSString* (^YapDatabaseViewGroupingWithRowBlock)(NSString *collection, N
  * 
  * Another common pattern is to fetch a number of objects in a batch, and then insert them into the database.
  * Now imagine a situation in which the view is sorting posts based on timestamp,
- * and you just fetched the most recent 10 posts. You can enumerate these 10 posts in forwards or backwards
+ * and you just fetched the most recent 10 posts. You can enumerate these 10 posts either forwards or backwards
  * while adding them to the database. One direction will hit the optimization every time. The other will cause
- * the view to perform a binary search every time. These little one-liner optimzations are easy.
+ * the view to perform a binary search every time.
+ * These little one-liner optimzations are easy (given this internal information is known).
 **/
+@interface YapDatabaseViewSorting : NSObject
+
 typedef id YapDatabaseViewSortingBlock; // One of the YapDatabaseViewSortingX types below.
 
 typedef NSComparisonResult (^YapDatabaseViewSortingWithKeyBlock) \
@@ -83,17 +106,12 @@ typedef NSComparisonResult (^YapDatabaseViewSortingWithRowBlock) \
                  (NSString *group, NSString *collection1, NSString *key1, id object1, id metadata1, \
                                    NSString *collection2, NSString *key2, id object2, id metadata2);
 
++ (instancetype)withKeyBlock:(YapDatabaseViewSortingWithKeyBlock)sortingBlock;
++ (instancetype)withObjectBlock:(YapDatabaseViewSortingWithObjectBlock)sortingBlock;
++ (instancetype)withMetadataBlock:(YapDatabaseViewSortingWithMetadataBlock)sortingBlock;
++ (instancetype)withRowBlock:(YapDatabaseViewSortingWithRowBlock)sortingBlock;
 
-/**
- * I wish there was a way to inspect a given block and see what kind of parameters it takes.
- * Sadly this does not appear to be possible (at least not in any kind of standard legal way).
- * 
- * Thus you will have to specify what kind of block you're passing.
-**/
-typedef NS_ENUM(NSInteger, YapDatabaseViewBlockType) {
-	YapDatabaseViewBlockTypeWithKey       = 1,
-	YapDatabaseViewBlockTypeWithObject    = 2,
-	YapDatabaseViewBlockTypeWithMetadata  = 3,
-	YapDatabaseViewBlockTypeWithRow       = 4
-};
+@property (nonatomic, strong, readonly) YapDatabaseViewSortingBlock sortingBlock;
+@property (nonatomic, assign, readonly) YapDatabaseViewBlockType sortingBlockType;
 
+@end

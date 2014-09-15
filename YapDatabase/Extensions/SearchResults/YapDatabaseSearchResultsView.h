@@ -69,17 +69,9 @@
  *   The groupingBlock is used to place search results into proper sections.
  *   The block may also be used to perform secondary filtering.
  * 
- * @param groupingBlockType
- * 
- *   Must match the groupingBlock.
- * 
  * @param sortingBlock
  * 
  *   The sortingBlock is used to sort search results within their respective sections.
- * 
- * @param sortingBlockType
- * 
- *   Must match the sortingBlock.
  * 
  * @param versionTag
  * 
@@ -94,12 +86,20 @@
  * please see the documentation in YapDatabaseView.h.
 **/
 - (id)initWithFullTextSearchName:(NSString *)fullTextSearchName
+                        grouping:(YapDatabaseViewGrouping *)grouping
+                         sorting:(YapDatabaseViewSorting *)sorting
+                      versionTag:(NSString *)versionTag
+                         options:(YapDatabaseSearchResultsViewOptions *)options;
+
+
+- (id)initWithFullTextSearchName:(NSString *)fullTextSearchName
                    groupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
                groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
                     sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
                 sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
                       versionTag:(NSString *)versionTag
-                         options:(YapDatabaseSearchResultsViewOptions *)options;
+                         options:(YapDatabaseSearchResultsViewOptions *)options
+__attribute((deprecated("Use method initWithFullTextSearchName:grouping:sorting:versionTag:options: instead")));
 
 
 @property (nonatomic, strong, readonly) NSString *fullTextSearchName;

@@ -38,6 +38,42 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Bad Init
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test_badInit
+{
+	dispatch_block_t exceptionBlock = ^{
+		
+		YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+		    ^NSString *(NSString *collection, NSString *key)
+		{
+			if ([key isEqualToString:@"keyX"]) // Exclude keyX from view
+				return nil;
+			else
+				return @"";
+		}];
+		
+		YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+		    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+		                       NSString *collection2, NSString *key2, id obj2)
+		{
+			__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
+			__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
+			
+			return [number1 compare:number2];
+		}];
+		
+		(void)[[YapDatabaseSearchResultsView alloc] initWithGrouping:grouping
+		                                                     sorting:sorting
+		                                                  versionTag:@"xyz"
+		                                                     options:nil];
+	};
+	
+	XCTAssertThrows(exceptionBlock(), @"Should have thrown an exception");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark With ParentView
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -99,38 +135,30 @@
 	
 	// Setup ParentView
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
-	
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-	
-	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key)
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+	    ^NSString *(NSString *collection, NSString *key)
 	{
 		return @"";
-	};
+	}];
 	
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                                  NSString *collection2, NSString *key2, id obj2)
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2)
 	{
 		__unsafe_unretained NSString *str1 = (NSString *)obj1;
 		__unsafe_unretained NSString *str2 = (NSString *)obj2;
 		
 		return [str1 compare:str2 options:NSLiteralSearch];
-	};
+	}];
 	
 	YapDatabaseViewOptions *viewOptions = [[YapDatabaseViewOptions alloc] init];
 	viewOptions.isPersistent = NO;
 	
 	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"1"
-	                                         options:viewOptions];
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting
+	                                 versionTag:@"1"
+	                                    options:viewOptions];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
@@ -333,34 +361,26 @@
 	
 	// Setup SearchResultsView
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
-	
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-	
-	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key)
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+	    ^NSString *(NSString *collection, NSString *key)
 	{
 		return @"";
-	};
+	}];
 	
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-					 NSString *collection2, NSString *key2, id obj2)
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2)
 	{
 		__unsafe_unretained NSString *str1 = (NSString *)obj1;
 		__unsafe_unretained NSString *str2 = (NSString *)obj2;
 		
 		return [str1 compare:str2 options:NSLiteralSearch];
-	};
+	}];
 	
 	YapDatabaseSearchResultsView *searchResultsView =
 	  [[YapDatabaseSearchResultsView alloc] initWithFullTextSearchName:@"fts"
-	                                                     groupingBlock:groupingBlock
-	                                                 groupingBlockType:groupingBlockType
-	                                                      sortingBlock:sortingBlock
-	                                                  sortingBlockType:sortingBlockType
+	                                                          grouping:grouping
+	                                                           sorting:sorting
 	                                                        versionTag:@"1"
 	                                                           options:searchViewOptions];
 	

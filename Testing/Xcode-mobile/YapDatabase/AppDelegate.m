@@ -317,31 +317,23 @@ static const NSUInteger STR_LENGTH = 2000;
 - (void)registerMainView
 {
 	NSLog(@"Registering mainView....");
-	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithObjectBlock groupingBlock;
 
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-
-	groupingBlockType = YapDatabaseViewBlockTypeWithObject;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key, id object){
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withObjectBlock:
+	    ^NSString *(NSString *collection, NSString *key, id object){
 		
 		return @"";
-	};
-
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                                  NSString *collection2, NSString *key2, id obj2){
+	}];
+	
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2){
 		
 		return [obj1 compare:obj2];
-	};
+	}];
 
 	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType];
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting];
 	
 	if ([database registerExtension:databaseView withName:@"main"])
 		NSLog(@"Registered mainView");
@@ -352,31 +344,23 @@ static const NSUInteger STR_LENGTH = 2000;
 - (void)registerOnTheFlyView
 {
 	NSLog(@"Registering onTheFlyView....");
-	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithObjectBlock groupingBlock;
 
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-
-	groupingBlockType = YapDatabaseViewBlockTypeWithObject;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key, id object){
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withObjectBlock:
+	    ^NSString *(NSString *collection, NSString *key, id object){
 		
 		return @"";
-	};
+	}];
 
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection, NSString *key1, id obj1,
-	                                  NSString *collection2, NSString *key2, id obj2){
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2){
 		
 		return [obj1 compare:obj2];
-	};
+	}];
 
 	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType];
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting];
 	
 	if ([database registerExtension:databaseView withName:@"on-the-fly"])
 		NSLog(@"Registered onTheFlyView");

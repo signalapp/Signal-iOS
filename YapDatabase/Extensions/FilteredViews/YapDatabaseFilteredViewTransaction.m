@@ -1363,11 +1363,9 @@ static NSString *const ExtKey_versionTag     = @"versionTag";
 
 @implementation YapDatabaseFilteredViewTransaction (ReadWrite)
 
-- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
-       groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
-            sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
-        sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
-              versionTag:(NSString *)versionTag
+- (void)setGrouping:(YapDatabaseViewGrouping *)grouping
+            sorting:(YapDatabaseViewSorting *)sorting
+         versionTag:(NSString *)versionTag
 {
 	NSString *reason = @"This method is not available for YapDatabaseFilteredView.";
 	
@@ -1378,20 +1376,13 @@ static NSString *const ExtKey_versionTag     = @"versionTag";
 	@throw [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
 }
 
-- (void)setFilteringBlock:(YapDatabaseViewFilteringBlock)newFilteringBlock
-       filteringBlockType:(YapDatabaseViewBlockType)newFilteringBlockType
-               versionTag:(NSString *)inVersionTag
+- (void)setFiltering:(YapDatabaseViewFiltering *)filtering
+          versionTag:(NSString *)inVersionTag
 
 {
 	YDBLogAutoTrace();
 	
-	NSAssert(newFilteringBlock != NULL, @"Invalid filteringBlock");
-	
-	NSAssert(newFilteringBlockType == YapDatabaseViewBlockTypeWithKey ||
-	         newFilteringBlockType == YapDatabaseViewBlockTypeWithObject ||
-	         newFilteringBlockType == YapDatabaseViewBlockTypeWithMetadata ||
-	         newFilteringBlockType == YapDatabaseViewBlockTypeWithRow,
-	         @"Invalid filteringBlockType");
+	NSAssert(filtering != nil, @"Invalid parameter: filtering == nil");
 	
 	if (!databaseTransaction->isReadWriteTransaction)
 	{
@@ -1410,8 +1401,8 @@ static NSString *const ExtKey_versionTag     = @"versionTag";
 	__unsafe_unretained YapDatabaseFilteredViewConnection *filteredViewConnection =
 	  (YapDatabaseFilteredViewConnection *)viewConnection;
 	
-	[filteredViewConnection setFilteringBlock:newFilteringBlock
-	                       filteringBlockType:newFilteringBlockType
+	[filteredViewConnection setFilteringBlock:filtering.filteringBlock
+	                       filteringBlockType:filtering.filteringBlockType
 	                               versionTag:newVersionTag];
 	
 	[self repopulateViewDueToFilteringBlockChange];
@@ -1441,6 +1432,19 @@ static NSString *const ExtKey_versionTag     = @"versionTag";
 			}
 		}
 	}];
+}
+
+/**
+ * DEPRECATED
+ * Use method setFiltering:versionTag: instead.
+**/
+- (void)setFilteringBlock:(YapDatabaseViewFilteringBlock)inBlock
+       filteringBlockType:(YapDatabaseViewBlockType)inBlockType
+               versionTag:(NSString *)inVersionTag
+{
+	YapDatabaseViewFiltering *filtering = [YapDatabaseViewFiltering withBlock:inBlock blockType:inBlockType];
+	
+	[self setFiltering:filtering versionTag:inVersionTag];
 }
 
 @end

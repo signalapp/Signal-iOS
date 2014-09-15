@@ -38,29 +38,19 @@
  * See the wiki for an example of how to initialize a view:
  * https://github.com/yaptv/YapDatabase/wiki/Views#wiki-initializing_a_view
  *
- * @param groupingBlock
+ * @param grouping
  * 
  *   The grouping block handles both filtering and grouping.
+ *   There are multiple groupingBlock types that are supported.
  *   
- *   @see YapDatabaseViewTypes.h for block type definition(s).
+ *   @see YapDatabaseViewTypes.h for block type definitions.
  * 
- * @param groupingBlockType
- * 
- *   Specify the type of groupingBlock that is being passed.
- *   
- *   @see YapDatabaseViewTypes.h for block type definition(s).
- * 
- * @param sortingBlock
+ * @param sorting
  * 
  *   The sorting block handles sorting of objects within their group.
+ *   There are multiple sortingBlock types that are supported.
  *   
- *   @see YapDatabaseViewTypes.h for block type definition(s).
- * 
- * @param sortingBlockType
- * 
- *   Specify the type of sortingBlock that is being passed.
- *   
- *   @see YapDatabaseViewTypes.h for block type definition(s).
+ *   @see YapDatabaseViewTypes.h for block type definitions.
  *
  * @param versionTag
  *
@@ -73,23 +63,38 @@
  *   The options allow you to specify things like creating an in-memory-only view (non persistent).
 **/
 
-- (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
-          groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
-               sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
-           sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType;
+- (instancetype)initWithGrouping:(YapDatabaseViewGrouping *)grouping
+                         sorting:(YapDatabaseViewSorting *)sorting;
+
+- (instancetype)initWithGrouping:(YapDatabaseViewGrouping *)grouping
+                         sorting:(YapDatabaseViewSorting *)sorting
+                      versionTag:(NSString *)versionTag;
+
+- (instancetype)initWithGrouping:(YapDatabaseViewGrouping *)grouping
+                         sorting:(YapDatabaseViewSorting *)sorting
+                      versionTag:(NSString *)versionTag
+                         options:(YapDatabaseViewOptions *)options;
 
 - (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
           groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
                sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
            sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
-                 versionTag:(NSString *)versionTag;
+__attribute((deprecated("Use method initWithGrouping:sorting: instead")));
 
 - (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
           groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
                sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
            sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
                  versionTag:(NSString *)versionTag
-                    options:(YapDatabaseViewOptions *)options;
+__attribute((deprecated("Use method initWithGrouping:sorting:versionTag: instead")));
+
+- (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
+          groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
+               sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
+           sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
+                 versionTag:(NSString *)versionTag
+                    options:(YapDatabaseViewOptions *)options
+__attribute((deprecated("Use method initWithGrouping:sorting:versionTag:options: instead")));
 
 @property (nonatomic, strong, readonly) YapDatabaseViewGroupingBlock groupingBlock;
 @property (nonatomic, strong, readonly) YapDatabaseViewSortingBlock sortingBlock;

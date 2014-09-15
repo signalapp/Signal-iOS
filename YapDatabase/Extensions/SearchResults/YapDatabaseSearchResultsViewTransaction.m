@@ -1,6 +1,7 @@
 #import "YapDatabaseSearchResultsViewTransaction.h"
 #import "YapDatabaseSearchResultsViewPrivate.h"
 #import "YapDatabaseViewChangePrivate.h"
+#import "YapDatabaseViewPrivate.h"
 #import "YapDatabaseFullTextSearchPrivate.h"
 #import "YapDatabaseExtensionPrivate.h"
 #import "YapDatabasePrivate.h"
@@ -1890,11 +1891,9 @@ static NSString *const ExtKey_query             = @"query";
 #pragma mark ReadWrite
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)inGroupingBlock
-       groupingBlockType:(YapDatabaseViewBlockType)inGroupingBlockType
-            sortingBlock:(YapDatabaseViewSortingBlock)inSortingBlock
-        sortingBlockType:(YapDatabaseViewBlockType)inSortingBlockType
-              versionTag:(NSString *)inVersionTag
+- (void)setGrouping:(YapDatabaseViewGrouping *)inGrouping
+            sorting:(YapDatabaseViewSorting *)inSorting
+         versionTag:(NSString *)inVersionTag
 {
 	YDBLogAutoTrace();
 	
@@ -1915,12 +1914,26 @@ static NSString *const ExtKey_query             = @"query";
 	}
 	else
 	{
-		[super setGroupingBlock:inGroupingBlock
-		      groupingBlockType:inGroupingBlockType
-		           sortingBlock:inSortingBlock
-		       sortingBlockType:inSortingBlockType
-		             versionTag:inVersionTag];
+		[super setGrouping:inGrouping
+		           sorting:inSorting
+		        versionTag:inVersionTag];
 	}
+}
+
+/**
+ * DEPRECATED
+ * Use method setGrouping:sorting:versionTag: instead.
+**/
+- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)grpBlock
+       groupingBlockType:(YapDatabaseViewBlockType)grpBlockType
+            sortingBlock:(YapDatabaseViewSortingBlock)srtBlock
+        sortingBlockType:(YapDatabaseViewBlockType)srtBlockType
+              versionTag:(NSString *)inVersionTag
+{
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withBlock:grpBlock blockType:grpBlockType];
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withBlock:srtBlock blockType:srtBlockType];
+	
+	[self setGrouping:grouping sorting:sorting versionTag:inVersionTag];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

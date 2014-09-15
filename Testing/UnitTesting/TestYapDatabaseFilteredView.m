@@ -39,6 +39,42 @@
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+- (void)test_badInit
+{
+	dispatch_block_t exceptionBlock = ^{
+		
+		YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+		    ^NSString *(NSString *collection, NSString *key)
+		{
+			if ([key isEqualToString:@"keyX"]) // Exclude keyX from view
+				return nil;
+			else
+				return @"";
+		}];
+		
+		YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+		    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+		                       NSString *collection2, NSString *key2, id obj2)
+		{
+			__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
+			__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
+			
+			return [number1 compare:number2];
+		}];
+		
+		(void)[[YapDatabaseFilteredView alloc] initWithGrouping:grouping
+		                                                sorting:sorting
+		                                             versionTag:@"xyz"
+		                                                options:nil];
+	};
+	
+	XCTAssertThrows(exceptionBlock(), @"Should have thrown an exception");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 - (void)test_persistent
 {
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
@@ -69,40 +105,32 @@
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
-	
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-	
-	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key)
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+	    ^NSString *(NSString *collection, NSString *key)
 	{
 		if ([key isEqualToString:@"keyX"]) // Exclude keyX from view
 			return nil;
 		else
 			return @"";
-	};
+	}];
 	
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                                  NSString *collection2, NSString *key2, id obj2)
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2)
 	{
 		__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
 		__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
 		
 		return [number1 compare:number2];
-	};
+	}];
 	
 	NSString *order_initialVersionTag = @"1";
 	
 	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType
-	                                      versionTag:order_initialVersionTag
-	                                         options:options];
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting
+	                                 versionTag:order_initialVersionTag
+	                                    options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
@@ -113,11 +141,8 @@
 		XCTAssert([versionTag isEqualToString:order_initialVersionTag], @"Bad versionTag");
 	}];
 	
-	YapDatabaseViewBlockType filteringBlockType;
-	YapDatabaseViewFilteringBlock filteringBlock;
-	
-	filteringBlockType = YapDatabaseViewBlockTypeWithObject;
-	filteringBlock = ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
+	YapDatabaseViewFiltering *filtering = [YapDatabaseViewFiltering withObjectBlock:
+	    ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
 	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)object;
 		
@@ -125,14 +150,13 @@
 			return YES; // even
 		else
 			return NO;  // odd
-	};
+	}];
 	
 	NSString *filter_initialVersionTag = @"1";
 	
 	YapDatabaseFilteredView *filteredView =
 	  [[YapDatabaseFilteredView alloc] initWithParentViewName:@"order"
-	                                           filteringBlock:filteringBlock
-	                                       filteringBlockType:filteringBlockType
+	                                                filtering:filtering
 	                                               versionTag:filter_initialVersionTag];
 	
 	BOOL registerResult2 = [database registerExtension:filteredView withName:@"filter"];
@@ -214,38 +238,30 @@
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
-	
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-	
-	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key)
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+	    ^NSString *(NSString *collection, NSString *key)
 	{
 		if ([key isEqualToString:@"keyX"]) // Exclude keyX from view
 			return nil;
 		else
 			return @"";
-	};
+	}];
 	
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                                  NSString *collection2, NSString *key2, id obj2)
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2)
 	{
 		__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
 		__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
 		
 		return [number1 compare:number2];
-	};
+	}];
 	
 	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"1"
-	                                         options:options];
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting
+	                                 versionTag:@"1"
+	                                    options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
@@ -269,11 +285,8 @@
 		XCTAssertTrue(orderCount == 100, @"Bad count in view. Expected 100, got %d", (int)orderCount);
 	}];
 	
-	YapDatabaseViewBlockType filteringBlockType;
-	YapDatabaseViewFilteringBlock filteringBlock;
-	
-	filteringBlockType = YapDatabaseViewBlockTypeWithObject;
-	filteringBlock = ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
+	YapDatabaseViewFiltering *filtering = [YapDatabaseViewFiltering withObjectBlock:
+	    ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
 	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)object;
 		
@@ -281,12 +294,11 @@
 			return YES; // even
 		else
 			return NO;  // odd
-	};
+	}];
 	
 	YapDatabaseFilteredView *filteredView =
 	  [[YapDatabaseFilteredView alloc] initWithParentViewName:@"order"
-	                                           filteringBlock:filteringBlock
-	                                       filteringBlockType:filteringBlockType];
+	                                                filtering:filtering];
 	
 	BOOL registerResult2 = [database registerExtension:filteredView withName:@"filter"];
 	XCTAssertTrue(registerResult2, @"Failure registering filteredView extension");
@@ -341,60 +353,48 @@
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
-	
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-	
-	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key){
-		
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+	    ^NSString *(NSString *collection, NSString *key)
+	{
 		if ([key isEqualToString:@"keyX"]) // Exclude keyX from view
 			return nil;
 		else
 			return @"";
-	};
+	}];
 	
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                                  NSString *collection2, NSString *key2, id obj2){
-		
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2)
+	{
 		__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
 		__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
 		
 		return [number1 compare:number2];
-	};
+	}];
 	
 	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"1"
-	                                         options:options];
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting
+	                                 versionTag:@"1"
+	                                    options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
 	
-	YapDatabaseViewBlockType filteringBlockType;
-	YapDatabaseViewFilteringBlock filteringBlock;
-	
-	filteringBlockType = YapDatabaseViewBlockTypeWithObject;
-	filteringBlock = ^BOOL (NSString *group, NSString *collection, NSString *key, id object){
-		
+	YapDatabaseViewFiltering *filtering = [YapDatabaseViewFiltering withObjectBlock:
+	    ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
+	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)object;
 		
 		if ([number intValue] % 2 == 0)
 			return YES; // even
 		else
 			return NO;  // odd
-	};
+	}];
 	
 	YapDatabaseFilteredView *filteredView =
 	  [[YapDatabaseFilteredView alloc] initWithParentViewName:@"order"
-	                                           filteringBlock:filteringBlock
-	                                       filteringBlockType:filteringBlockType
+	                                                filtering:filtering
 	                                               versionTag:@"even"];
 	
 	BOOL registerResult2 = [database registerExtension:filteredView withName:@"filter"];
@@ -436,22 +436,21 @@
 	// Now update the filterBlock
 	//
 	
-	filteringBlockType = YapDatabaseViewBlockTypeWithObject;
-	filteringBlock = ^BOOL (NSString *group, NSString *collection, NSString *key, id object){
-		
+	filtering = [YapDatabaseViewFiltering withObjectBlock:
+	    ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
+	{
 		int num = [(NSNumber *)object intValue];
 		
 		if ((num % 2 == 0) || (num % 5 == 0))
 			return YES; // even OR divisable by 5
 		else
 			return NO;  // odd
-	};
+	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[[transaction ext:@"filter"] setFilteringBlock:filteringBlock
-		                            filteringBlockType:filteringBlockType
-		                                    versionTag:@"even+5"];
+		[[transaction ext:@"filter"] setFiltering:filtering
+		                               versionTag:@"even+5"];
 		
 		NSUInteger orderCount = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
 		NSUInteger filterCount = [[transaction ext:@"filter"] numberOfItemsInGroup:@""];
@@ -506,47 +505,36 @@
 	
 	YapDatabaseConnection *connection = [database newConnection];
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
-	
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-	
-	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key)
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+	    ^NSString *(NSString *collection, NSString *key)
 	{
 		if ([key isEqualToString:@"keyX"]) // Exclude keyX from view
 			return nil;
 		else
 			return @"";
-	};
+	}];
 	
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                                  NSString *collection2, NSString *key2, id obj2)
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2)
 	{
 		__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
 		__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
 		
 		return [number1 compare:number2];
-	};
+	}];
 	
 	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"1"
-	                                         options:options];
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting
+	                                 versionTag:@"1"
+	                                    options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
 	
-	YapDatabaseViewBlockType filteringBlockType;
-	YapDatabaseViewFilteringBlock filteringBlock;
-	
-	filteringBlockType = YapDatabaseViewBlockTypeWithObject;
-	filteringBlock = ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
+	YapDatabaseViewFiltering *filtering = [YapDatabaseViewFiltering withObjectBlock:
+	    ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
 	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)object;
 		
@@ -554,12 +542,11 @@
 			return YES; // even
 		else
 			return NO;  // odd
-	};
+	}];
 	
 	YapDatabaseFilteredView *filteredView =
 	  [[YapDatabaseFilteredView alloc] initWithParentViewName:@"order"
-	                                           filteringBlock:filteringBlock
-	                                       filteringBlockType:filteringBlockType];
+	                                                filtering:filtering];
 	
 	BOOL registerResult2 = [database registerExtension:filteredView withName:@"filter"];
 	XCTAssertTrue(registerResult2, @"Failure registering filteredView extension");
@@ -616,47 +603,36 @@
 	
 	YapDatabaseConnection *connection = [database newConnection];
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
-	
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-	
-	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key)
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+	    ^NSString *(NSString *collection, NSString *key)
 	{
 		if ([key isEqualToString:@"keyX"]) // Exclude keyX from view
 			return nil;
 		else
 			return @"";
-	};
+	}];
 	
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                                  NSString *collection2, NSString *key2, id obj2)
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2)
 	{
 		__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
 		__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
 		
 		return [number1 compare:number2];
-	};
+	}];
 	
 	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"1"
-	                                         options:options];
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting
+	                                 versionTag:@"1"
+	                                    options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
 	
-	YapDatabaseViewBlockType filteringBlockType1;
-	YapDatabaseViewFilteringBlock filteringBlock1;
-	
-	filteringBlockType1 = YapDatabaseViewBlockTypeWithObject;
-	filteringBlock1 = ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
+	YapDatabaseViewFiltering *filtering1 = [YapDatabaseViewFiltering withObjectBlock:
+	    ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
 	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)object;
 		
@@ -664,21 +640,17 @@
 			return YES; // even
 		else
 			return NO;  // odd
-	};
+	}];
 	
 	YapDatabaseFilteredView *filteredView1 =
 	  [[YapDatabaseFilteredView alloc] initWithParentViewName:@"order"
-	                                           filteringBlock:filteringBlock1
-	                                       filteringBlockType:filteringBlockType1];
+	                                                filtering:filtering1];
 	
 	BOOL registerResult2 = [database registerExtension:filteredView1 withName:@"filter1"];
 	XCTAssertTrue(registerResult2, @"Failure registering filteredView1 extension");
 	
-	YapDatabaseViewBlockType filteringBlockType2;
-	YapDatabaseViewFilteringBlock filteringBlock2;
-	
-	filteringBlockType2 = YapDatabaseViewBlockTypeWithObject;
-	filteringBlock2 = ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
+	YapDatabaseViewFiltering *filtering2 = [YapDatabaseViewFiltering withObjectBlock:
+	    ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
 	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)object;
 		
@@ -686,12 +658,11 @@
 			return YES; // even && within range
 		else
 			return NO;  // odd || out of range
-	};
+	}];
 	
 	YapDatabaseFilteredView *filteredView2 =
 	  [[YapDatabaseFilteredView alloc] initWithParentViewName:@"filter1"
-	                                           filteringBlock:filteringBlock2
-	                                       filteringBlockType:filteringBlockType2];
+	                                                filtering:filtering2];
 	
 	BOOL registerResult3 = [database registerExtension:filteredView2 withName:@"filter2"];
 	XCTAssertTrue(registerResult3, @"Failure registering filteredView2 extension");
@@ -752,44 +723,33 @@
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
-	
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-	
-	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key)
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+	    ^NSString *(NSString *collection, NSString *key)
 	{
 		return @"";
-	};
+	}];
 	
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                                  NSString *collection2, NSString *key2, id obj2)
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2)
 	{
 		__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
 		__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
 		
 		return [number1 compare:number2];
-	};
+	}];
 	
 	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"1"
-	                                         options:options];
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting
+	                                 versionTag:@"1"
+	                                    options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
 	
-	YapDatabaseViewBlockType filteringBlockType1;
-	YapDatabaseViewFilteringBlock filteringBlock1;
-	
-	filteringBlockType1 = YapDatabaseViewBlockTypeWithObject;
-	filteringBlock1 = ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
+	YapDatabaseViewFiltering *filtering1 = [YapDatabaseViewFiltering withObjectBlock:
+	    ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
 	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)object;
 		
@@ -797,22 +757,18 @@
 			return YES; // even
 		else
 			return NO;  // odd
-	};
+	}];
 	
 	YapDatabaseFilteredView *filteredView1 =
 	  [[YapDatabaseFilteredView alloc] initWithParentViewName:@"order"
-	                                           filteringBlock:filteringBlock1
-	                                       filteringBlockType:filteringBlockType1
+	                                                filtering:filtering1
 	                                               versionTag:@"1"];
 	
 	BOOL registerResult2 = [database registerExtension:filteredView1 withName:@"filter1"];
 	XCTAssertTrue(registerResult2, @"Failure registering filteredView1 extension");
 	
-	YapDatabaseViewBlockType filteringBlockType2;
-	YapDatabaseViewFilteringBlock filteringBlock2;
-	
-	filteringBlockType2 = YapDatabaseViewBlockTypeWithObject;
-	filteringBlock2 = ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
+	YapDatabaseViewFiltering *filtering2 = [YapDatabaseViewFiltering withObjectBlock:
+	    ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
 	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)object;
 		
@@ -820,12 +776,11 @@
 			return YES; // within range
 		else
 			return NO;  // out of range
-	};
+	}];
 	
 	YapDatabaseFilteredView *filteredView2 =
 	  [[YapDatabaseFilteredView alloc] initWithParentViewName:@"filter1"
-	                                           filteringBlock:filteringBlock2
-	                                       filteringBlockType:filteringBlockType2
+	                                                filtering:filtering2
 	                                               versionTag:@"1"];
 	
 	BOOL registerResult3 = [database registerExtension:filteredView2 withName:@"filter2"];
@@ -885,7 +840,8 @@
 	
 	// Now update the filteringBlock, and make sure the dependent filteredView is also updated properly
 	
-	filteringBlock1 = ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
+	filtering1 = [YapDatabaseViewFiltering withObjectBlock:
+	    ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
 	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)object;
 		
@@ -893,13 +849,11 @@
 			return YES; // even
 		else
 			return YES; // odd <<---- changed
-	};
+	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[[transaction ext:@"filter1"] setFilteringBlock:filteringBlock1
-									 filteringBlockType:filteringBlockType1
-											 versionTag:@"2"];
+		[[transaction ext:@"filter1"] setFiltering:filtering1 versionTag:@"2"];
 		
 		NSUInteger count;
 		
@@ -929,7 +883,8 @@
 	
 	// Now update the filteringBlock (again), and make sure the dependent filteredView is also updated properly
 	
-	filteringBlock1 = ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
+	filtering1 = [YapDatabaseViewFiltering withObjectBlock:
+	    ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
 	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)object;
 		
@@ -937,13 +892,11 @@
 			return NO;  // even <<---- changed
 		else
 			return YES; // odd
-	};
+	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[[transaction ext:@"filter1"] setFilteringBlock:filteringBlock1
-									 filteringBlockType:filteringBlockType1
-											 versionTag:@"3"];
+		[[transaction ext:@"filter1"] setFiltering:filtering1 versionTag:@"3"];
 		
 		NSUInteger count;
 		
@@ -1008,14 +961,8 @@
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithObjectBlock groupingBlock;
-	
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-	
-	groupingBlockType = YapDatabaseViewBlockTypeWithObject;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key, id object)
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withObjectBlock:
+	    ^NSString *(NSString *collection, NSString *key, id object)
 	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)object;
 		
@@ -1023,34 +970,29 @@
 			return @""; // even
 		else
 			return nil; // odd
-	};
+	}];
 	
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                                  NSString *collection2, NSString *key2, id obj2)
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2)
 	{
 		__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
 		__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
 		
 		return [number1 compare:number2];
-	};
+	}];
 	
 	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"1"
-	                                         options:options];
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting
+	                                 versionTag:@"1"
+	                                    options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
 	
-	YapDatabaseViewBlockType filteringBlockType1;
-	YapDatabaseViewFilteringBlock filteringBlock1;
-	
-	filteringBlockType1 = YapDatabaseViewBlockTypeWithObject;
-	filteringBlock1 = ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
+	YapDatabaseViewFiltering *filtering1 = [YapDatabaseViewFiltering withObjectBlock:
+	    ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
 	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)object;
 		
@@ -1058,22 +1000,18 @@
 			return YES; // within range
 		else
 			return NO;  // out of range
-	};
+	}];
 	
 	YapDatabaseFilteredView *filteredView1 =
 	  [[YapDatabaseFilteredView alloc] initWithParentViewName:@"order"
-	                                           filteringBlock:filteringBlock1
-	                                       filteringBlockType:filteringBlockType1
+	                                                filtering:filtering1
 	                                               versionTag:@"1"];
 	
 	BOOL registerResult2 = [database registerExtension:filteredView1 withName:@"filter1"];
 	XCTAssertTrue(registerResult2, @"Failure registering filteredView1 extension");
 	
-	YapDatabaseViewBlockType filteringBlockType2;
-	YapDatabaseViewFilteringBlock filteringBlock2;
-	
-	filteringBlockType2 = YapDatabaseViewBlockTypeWithObject;
-	filteringBlock2 = ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
+	YapDatabaseViewFiltering *filtering2 = [YapDatabaseViewFiltering withObjectBlock:
+	    ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
 	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)object;
 		
@@ -1081,12 +1019,11 @@
 			return YES; // within range
 		else
 			return NO;  // out of range
-	};
+	}];
 	
 	YapDatabaseFilteredView *filteredView2 =
 	  [[YapDatabaseFilteredView alloc] initWithParentViewName:@"filter1"
-	                                           filteringBlock:filteringBlock2
-	                                       filteringBlockType:filteringBlockType2
+	                                                filtering:filtering2
 	                                               versionTag:@"1"];
 	
 	BOOL registerResult3 = [database registerExtension:filteredView2 withName:@"filter2"];
@@ -1160,7 +1097,8 @@
 	
 	// Now update the groupingBlock, and make sure the dependent filteredView's are also updated properly
 	
-	groupingBlock = ^NSString *(NSString *collection, NSString *key, id object)
+	grouping = [YapDatabaseViewGrouping withObjectBlock:
+	    ^NSString *(NSString *collection, NSString *key, id object)
 	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)object;
 		
@@ -1168,15 +1106,13 @@
 			return @""; // even
 		else
 			return @""; // odd <<----- changed
-	};
+	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[[transaction ext:@"order"] setGroupingBlock:groupingBlock
-		                           groupingBlockType:groupingBlockType
-		                                sortingBlock:sortingBlock
-		                            sortingBlockType:sortingBlockType
-		                                  versionTag:@"2"];
+		[[transaction ext:@"order"] setGrouping:grouping
+		                                sorting:sorting
+		                             versionTag:@"2"];
 		
 		NSUInteger count;
 		
@@ -1220,7 +1156,8 @@
 	
 	// Now update the groupingBlock (again), and make sure the dependent filteredView's are also updated properly
 	
-	groupingBlock = ^NSString *(NSString *collection, NSString *key, id object)
+	grouping = [YapDatabaseViewGrouping withObjectBlock:
+	    ^NSString *(NSString *collection, NSString *key, id object)
 	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)object;
 		
@@ -1228,15 +1165,13 @@
 			return nil; // even <<----- changed
 		else
 			return @""; // odd
-	};
+	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[[transaction ext:@"order"] setGroupingBlock:groupingBlock
-		                           groupingBlockType:groupingBlockType
-		                                sortingBlock:sortingBlock
-		                            sortingBlockType:sortingBlockType
-											 versionTag:@"3"];
+		[[transaction ext:@"order"] setGrouping:grouping
+		                                sorting:sorting
+		                             versionTag:@"3"];
 		
 		NSUInteger count;
 		
@@ -1313,47 +1248,36 @@
     YapDatabaseConnection *connection2 = [database newConnection];
     YapDatabaseConnection *connection3 = [database newConnection];
 
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
-
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-
-	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key)
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+	    ^NSString *(NSString *collection, NSString *key)
 	{
 		if ([key isEqualToString:@"keyX"]) // Exclude keyX from view
 			return nil;
 		else
 			return @"";
-	};
+	}];
 
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-                     NSString *collection2, NSString *key2, id obj2)
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+                           NSString *collection2, NSString *key2, id obj2)
 	{
 		__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
 		__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
 
 		return [number1 compare:number2];
-	};
+	}];
 
 	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"0"
-	                                         options:options];
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting
+	                                 versionTag:@"0"
+	                                    options:options];
 
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
 
-	YapDatabaseViewBlockType filteringBlockType1;
-	YapDatabaseViewFilteringBlock filteringBlock1;
-
-	filteringBlockType1 = YapDatabaseViewBlockTypeWithObject;
-	filteringBlock1 = ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
+	YapDatabaseViewFiltering *filtering1 = [YapDatabaseViewFiltering withObjectBlock:
+	    ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
 	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)object;
 
@@ -1361,12 +1285,11 @@
 			return YES; // even
 		else
 			return NO;  // odd
-	};
+	}];
 
 	YapDatabaseFilteredView *filteredView =
 	  [[YapDatabaseFilteredView alloc] initWithParentViewName:@"order"
-	                                           filteringBlock:filteringBlock1
-	                                       filteringBlockType:filteringBlockType1
+	                                                filtering:filtering1
 	                                               versionTag:@"0"];
 
 	BOOL registerResult2 = [database registerExtension:filteredView withName:@"filter"];
@@ -1410,9 +1333,7 @@
 	
 	[connection3 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[[transaction extension:@"filter"] setFilteringBlock:filteringBlock1
-		                                  filteringBlockType:filteringBlockType1
-		                                          versionTag:@"1"];
+		[[transaction extension:@"filter"] setFiltering:filtering1 versionTag:@"1"];
 	}];
 	
 	notificationCount = 0;
@@ -1461,9 +1382,7 @@
 
     [connection3 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[[transaction extension:@"filter"] setFilteringBlock:filteringBlock1
-		                                  filteringBlockType:filteringBlockType1
-		                                          versionTag:@"3"];
+		[[transaction extension:@"filter"] setFiltering:filtering1 versionTag:@"3"];
 	}];
 
 	notificationCount = 0;

@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-
+#import "YapDatabaseViewTypes.h"
 
 /**
  * The filtering block removes items from this view that are in the parent view.
@@ -19,6 +19,8 @@
  * You should choose a block type that takes the minimum number of required parameters.
  * The filterView can make various optimizations based on required parameters of the block.
 **/
+@interface YapDatabaseViewFiltering : NSObject
+
 typedef id YapDatabaseViewFilteringBlock; // One of the YapDatabaseViewGroupingX types below.
 
 typedef BOOL (^YapDatabaseViewFilteringWithKeyBlock)     \
@@ -30,3 +32,12 @@ typedef BOOL (^YapDatabaseViewFilteringWithMetadataBlock)\
 typedef BOOL (^YapDatabaseViewFilteringWithRowBlock)     \
                                         (NSString *group, NSString *collection, NSString *key, id object, id metadata);
 
++ (instancetype)withKeyBlock:(YapDatabaseViewFilteringWithKeyBlock)filteringBlock;
++ (instancetype)withObjectBlock:(YapDatabaseViewFilteringWithObjectBlock)filteringBlock;
++ (instancetype)withMetadataBlock:(YapDatabaseViewFilteringWithMetadataBlock)filteringBlock;
++ (instancetype)withRowBlock:(YapDatabaseViewFilteringWithRowBlock)filteringBlock;
+
+@property (nonatomic, strong, readonly) YapDatabaseViewFilteringBlock filteringBlock;
+@property (nonatomic, assign, readonly) YapDatabaseViewBlockType filteringBlockType;
+
+@end

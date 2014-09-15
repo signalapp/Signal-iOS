@@ -68,40 +68,32 @@
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
-	
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-	
-	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key){
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+	    ^NSString *(NSString *collection, NSString *key){
 		
 		if ([key isEqualToString:@"keyX"]) // Exclude keyX from view
 			return nil;
 		else
 			return @"";
-	};
+	}];
 	
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                                  NSString *collection2, NSString *key2, id obj2){
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2){
 		
 		NSString *object1 = (NSString *)obj1;
 		NSString *object2 = (NSString *)obj2;
 		
 		return [object1 compare:object2 options:NSNumericSearch];
-	};
+	}];
 	
 	NSString *initialVersionTag = @"1";
 	
 	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType
-	                                      versionTag:initialVersionTag
-	                                         options:options];
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting
+	                                 versionTag:initialVersionTag
+	                                    options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -1278,35 +1270,27 @@
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
-	
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-	
-	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key){
-		
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+	    ^NSString *(NSString *collection, NSString *key)
+	{
 		return @"";
-	};
+	}];
 	
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                                  NSString *collection2, NSString *key2, id obj2){
-		
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2)
+	{
 		NSString *object1 = (NSString *)obj1;
 		NSString *object2 = (NSString *)obj2;
 		
 		return [object1 compare:object2 options:NSNumericSearch];
-	};
+	}];
 	
 	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"1"
-	                                         options:options];
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting
+	                                 versionTag:@"1"
+	                                    options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -1991,35 +1975,27 @@
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
-	
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-	
-	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key){
-		
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+	    ^NSString *(NSString *collection, NSString *key)
+	{
 		return @"";
-	};
+	}];
 	
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                                  NSString *collection2, NSString *key2, id obj2){
-		
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2)
+	{
 		NSString *object1 = (NSString *)obj1;
 		NSString *object2 = (NSString *)obj2;
 		
 		return [object1 compare:object2 options:NSNumericSearch];
-	};
+	}];
 	
 	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"1"
-	                                         options:options];
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting
+	                                 versionTag:@"1"
+	                                    options:options];
 	
 	// Without registering the view,
 	// add a bunch of keys to the database.
@@ -2104,38 +2080,30 @@
 	
 	YapDatabaseConnection *connection = [database newConnection];
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
-	
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-	
-	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key){
-		
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+	    ^NSString *(NSString *collection, NSString *key)
+	{
 		if ([key hasPrefix:@"key"])
 			return @"default-group";
 		else
 			return @"different-group";
-	};
+	}];
 	
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                                  NSString *collection2, NSString *key2, id obj2){
-		
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2)
+	{
 		NSString *object1 = (NSString *)obj1;
 		NSString *object2 = (NSString *)obj2;
 		
 		return [object1 compare:object2 options:NSNumericSearch];
-	};
+	}];
 	
 	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"1"
-	                                         options:options];
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting
+	                                 versionTag:@"1"
+	                                    options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -2467,35 +2435,27 @@
 	
 	YapDatabaseConnection *connection = [database newConnection];
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
-	
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-	
-	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key){
-		
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+	    ^NSString *(NSString *collection, NSString *key)
+	{
 		return @"";
-	};
+	}];
 	
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                                  NSString *collection2, NSString *key2, id obj2) {
-		
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2)
+	{
 		NSString *object1 = (NSString *)obj1;
 		NSString *object2 = (NSString *)obj2;
 		
 		return [object1 compare:object2 options:NSNumericSearch];
-	};
+	}];
 	
 	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"1"
-	                                         options:options];
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting
+	                                 versionTag:@"1"
+	                                    options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -2568,35 +2528,27 @@
 	
 	YapDatabaseConnection *connection = [database newConnection];
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
-	
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-	
-	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key){
-		
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+	    ^NSString *(NSString *collection, NSString *key)
+	{
 		return @"";
-	};
+	}];
 	
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                                  NSString *collection2, NSString *key2, id obj2){
-		
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2)
+	{
 		NSNumber *number1 = (NSNumber *)obj1;
 		NSNumber *number2 = (NSNumber *)obj2;
 		
 		return [number1 compare:number2];
-	};
+	}];
 	
 	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"1"
-	                                         options:options];
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting
+	                                 versionTag:@"1"
+	                                    options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -2769,40 +2721,32 @@
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithObjectBlock groupingBlock;
-	
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-	
-	groupingBlockType = YapDatabaseViewBlockTypeWithObject;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key, id obj){
-		
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withObjectBlock:
+	    ^NSString *(NSString *collection, NSString *key, id obj)
+	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)obj;
 		
 		if ([number intValue] % 2 == 0)
 			return @"";
 		else
 			return nil;
-	};
+	}];
 	
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                                  NSString *collection2, NSString *key2, id obj2){
-		
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2)
+	{
 		__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
 		__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
 		
 		return [number1 compare:number2];
-	};
+	}];
 	
 	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"1"
-	                                         options:options];
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting
+	                                 versionTag:@"1"
+	                                    options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -2840,22 +2784,21 @@
 		[mappings updateWithTransaction:transaction];
 	}];
 	
-	groupingBlock = ^NSString *(NSString *collection, NSString *key, id obj){
-		
+	YapDatabaseViewGrouping *newGrouping = [YapDatabaseViewGrouping withObjectBlock:
+	    ^NSString *(NSString *collection, NSString *key, id obj)
+	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)obj;
 		
 		if ([number intValue] % 2 == 0)
 			return @"";
 		else
 			return @""; // <<-- Allow odd numbers now too
-	};
+	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[[transaction ext:@"order"] setGroupingBlock:groupingBlock
-		                           groupingBlockType:groupingBlockType
-		                                sortingBlock:sortingBlock
-		                            sortingBlockType:sortingBlockType
+		[[transaction ext:@"order"] setGrouping:newGrouping
+		                                sorting:sorting
 		                                  versionTag:@"2"];
 	}];
 	

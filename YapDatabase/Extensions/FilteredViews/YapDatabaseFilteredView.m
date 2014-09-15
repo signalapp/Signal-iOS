@@ -28,12 +28,10 @@
 
 #pragma mark Invalid
 
-- (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)inGroupingBlock
-          groupingBlockType:(YapDatabaseViewBlockType)inGroupingBlockType
-               sortingBlock:(YapDatabaseViewSortingBlock)inSortingBlock
-           sortingBlockType:(YapDatabaseViewBlockType)inSortingBlockType
-                 versionTag:(NSString *)inVersionTag
-                    options:(YapDatabaseViewOptions *)inOptions
+- (instancetype)initWithGrouping:(YapDatabaseViewGrouping *)grouping
+                         sorting:(YapDatabaseViewSorting *)sorting
+                      versionTag:(NSString *)inVersionTag
+                         options:(YapDatabaseViewOptions *)inOptions
 {
 	NSString *reason = @"You must use the init method(s) specific to YapDatabaseFilteredView.";
 	
@@ -52,55 +50,89 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (id)initWithParentViewName:(NSString *)inParentViewName
-              filteringBlock:(YapDatabaseViewFilteringBlock)inFilteringBlock
-          filteringBlockType:(YapDatabaseViewBlockType)inFilteringBlockType
+                   filtering:(YapDatabaseViewFiltering *)filtering
 {
-	return [self initWithParentViewName:inParentViewName
-	                     filteringBlock:inFilteringBlock
-	                 filteringBlockType:inFilteringBlockType
-	                         versionTag:nil
-	                            options:nil];
+	return [self initWithParentViewName:inParentViewName filtering:filtering versionTag:nil options:nil];
 }
 
 - (id)initWithParentViewName:(NSString *)inParentViewName
-              filteringBlock:(YapDatabaseViewFilteringBlock)inFilteringBlock
-          filteringBlockType:(YapDatabaseViewBlockType)inFilteringBlockType
+                   filtering:(YapDatabaseViewFiltering *)filtering
                   versionTag:(NSString *)inVersionTag
 {
-	return [self initWithParentViewName:inParentViewName
-	                     filteringBlock:inFilteringBlock
-	                 filteringBlockType:inFilteringBlockType
-	                         versionTag:inVersionTag
-	                            options:nil];
+	return [self initWithParentViewName:inParentViewName filtering:filtering versionTag:inVersionTag options:nil];
 }
 
 - (id)initWithParentViewName:(NSString *)inParentViewName
-              filteringBlock:(YapDatabaseViewFilteringBlock)inFilteringBlock
-          filteringBlockType:(YapDatabaseViewBlockType)inFilteringBlockType
+                   filtering:(YapDatabaseViewFiltering *)filtering
                   versionTag:(NSString *)inVersionTag
                      options:(YapDatabaseViewOptions *)inOptions
 {
-	NSAssert(inParentViewName != nil, @"Invalid parentViewName");
-	NSAssert(inFilteringBlock != NULL, @"Invalid filteringBlock");
-	
-	NSAssert(inFilteringBlockType == YapDatabaseViewBlockTypeWithKey ||
-	         inFilteringBlockType == YapDatabaseViewBlockTypeWithObject ||
-	         inFilteringBlockType == YapDatabaseViewBlockTypeWithMetadata ||
-	         inFilteringBlockType == YapDatabaseViewBlockTypeWithRow,
-	         @"Invalid filteringBlockType");
+	NSAssert(inParentViewName != nil, @"Invalid parameter: parentViewName == nil");
+	NSAssert(filtering != nil, @"Invalid parameter: filtering == nil");
 	
 	if ((self = [super init]))
 	{
 		parentViewName = [inParentViewName copy];
 		
-		filteringBlock = inFilteringBlock;
-		filteringBlockType = inFilteringBlockType;
+		filteringBlock = filtering.filteringBlock;
+		filteringBlockType = filtering.filteringBlockType;
 		
 		versionTag = inVersionTag ? [inVersionTag copy] : @"";
 		
 		options = inOptions ? [inOptions copy] : [[YapDatabaseViewOptions alloc] init];
 	}
 	return self;
+}
+
+/**
+ * DEPRECATED
+ * Use method initWithParentViewName:filtering: instead.
+**/
+- (id)initWithParentViewName:(NSString *)inParentViewName
+              filteringBlock:(YapDatabaseViewFilteringBlock)inBlock
+          filteringBlockType:(YapDatabaseViewBlockType)inBlockType
+{
+	YapDatabaseViewFiltering *filtering = [YapDatabaseViewFiltering withBlock:inBlock blockType:inBlockType];
+	
+	return [self initWithParentViewName:inParentViewName
+	                          filtering:filtering
+	                         versionTag:nil
+	                            options:nil];
+}
+
+/**
+ * DEPRECATED
+ * Use method initWithParentViewName:filtering:versionTag: instead.
+**/
+- (id)initWithParentViewName:(NSString *)inParentViewName
+              filteringBlock:(YapDatabaseViewFilteringBlock)inBlock
+          filteringBlockType:(YapDatabaseViewBlockType)inBlockType
+                  versionTag:(NSString *)inVersionTag
+{
+	YapDatabaseViewFiltering *filtering = [YapDatabaseViewFiltering withBlock:inBlock blockType:inBlockType];
+	
+	return [self initWithParentViewName:inParentViewName
+	                          filtering:filtering
+	                         versionTag:inVersionTag
+	                            options:nil];
+}
+
+/**
+ * DEPRECATED
+ * Use method initWithParentViewName:filtering:versionTag:options: instead.
+**/
+- (id)initWithParentViewName:(NSString *)inParentViewName
+              filteringBlock:(YapDatabaseViewFilteringBlock)inBlock
+          filteringBlockType:(YapDatabaseViewBlockType)inBlockType
+                  versionTag:(NSString *)inVersionTag
+                     options:(YapDatabaseViewOptions *)inOptions
+{
+	YapDatabaseViewFiltering *filtering = [YapDatabaseViewFiltering withBlock:inBlock blockType:inBlockType];
+	
+	return [self initWithParentViewName:inParentViewName
+	                          filtering:filtering
+	                         versionTag:inVersionTag
+	                            options:inOptions];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
