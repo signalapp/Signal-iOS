@@ -3024,6 +3024,7 @@
 						};
 					};
 					D221A0A9169C9E5F00537ABF = {
+						DevelopmentTeam = AWR2FBJU75;
 						TestTargetID = D221A088169C9E5E00537ABF;
 					};
 				};
@@ -4149,8 +4150,7 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN__ARC_BRIDGE_CAST_NONARC = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -4192,8 +4192,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-fobjc-arc-exceptions";
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -4203,6 +4201,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C71793B33D9C45079F74487E /* Pods.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4317,7 +4316,6 @@
 				CLANG_WARN__ARC_BRIDGE_CAST_NONARC = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -4359,8 +4357,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-fobjc-arc-exceptions";
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -4386,8 +4382,7 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN__ARC_BRIDGE_CAST_NONARC = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
@@ -4426,8 +4421,6 @@
 					"-DNS_BLOCK_ASSERTIONS=1",
 					"-fobjc-arc-exceptions",
 				);
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -4437,6 +4430,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C71793B33D9C45079F74487E /* Pods.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4486,6 +4480,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C71793B33D9C45079F74487E /* Pods.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
