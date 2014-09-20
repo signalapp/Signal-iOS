@@ -26,7 +26,7 @@ NSString *const CALL_TYPE_IMAGE_NAME_OUTGOING = @"outgoing_call_icon";
     recentCall->callType = type;
     recentCall->date = [NSDate date];
     recentCall->phoneNumber = number;
-    recentCall->userNotified = RPRecentCallTypeMissed ? false : true;
+    recentCall->userNotified = type == RPRecentCallTypeMissed ? false : true;
     return recentCall;
 }
 -(void)updateRecentCallWithContactId:(ABRecordID)contactID{

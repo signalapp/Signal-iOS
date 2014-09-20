@@ -429,6 +429,7 @@
 		B9EB5AC61884D370007CBB57 /* UnseenWhisperUserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B9EB5AC51884D370007CBB57 /* UnseenWhisperUserCell.m */; };
 		B9EB5AC71884D370007CBB57 /* UnseenWhisperUserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B9EB5AC51884D370007CBB57 /* UnseenWhisperUserCell.m */; };
 		B9EB5ACA1884D387007CBB57 /* UnseenWhisperUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9EB5AC81884D387007CBB57 /* UnseenWhisperUserCell.xib */; };
+		BF8C3D8319CE3B6A008F644C /* RecentCallTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8C3D8219CE3B6A008F644C /* RecentCallTest.m */; };
 		BFB074C119A4BCA400F2947C /* FutureUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074BF19A4BCA400F2947C /* FutureUtilTest.m */; };
 		BFB074C219A4BCA400F2947C /* ObservableTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074C019A4BCA400F2947C /* ObservableTest.m */; };
 		BFB074C719A5611000F2947C /* FutureUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074C419A5611000F2947C /* FutureUtil.m */; };
@@ -1134,6 +1135,7 @@
 		B9EB5AC41884D370007CBB57 /* UnseenWhisperUserCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnseenWhisperUserCell.h; sourceTree = "<group>"; };
 		B9EB5AC51884D370007CBB57 /* UnseenWhisperUserCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UnseenWhisperUserCell.m; sourceTree = "<group>"; };
 		B9EB5AC81884D387007CBB57 /* UnseenWhisperUserCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UnseenWhisperUserCell.xib; sourceTree = "<group>"; };
+		BF8C3D8219CE3B6A008F644C /* RecentCallTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentCallTest.m; sourceTree = "<group>"; };
 		BFB074BF19A4BCA400F2947C /* FutureUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FutureUtilTest.m; sourceTree = "<group>"; };
 		BFB074C019A4BCA400F2947C /* ObservableTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObservableTest.m; sourceTree = "<group>"; };
 		BFB074C319A5611000F2947C /* FutureUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FutureUtil.h; sourceTree = "<group>"; };
@@ -2190,16 +2192,17 @@
 		A15706EA17F0CD6D007C2BD6 /* test */ = {
 			isa = PBXGroup;
 			children = (
-				76919BF51805D169008C664A /* contact */,
 				A15706F217F0CD6D007C2BD6 /* audio */,
+				BF8C3D8119CE3B6A008F644C /* call */,
+				76919BF51805D169008C664A /* contact */,
 				A157070017F0CD6D007C2BD6 /* network */,
 				A157072E17F0CD6D007C2BD6 /* phone */,
 				A157073417F0CD6D007C2BD6 /* profiling */,
 				A157073917F0CD6D007C2BD6 /* Supporting Files */,
+				A157073D17F0CD6D007C2BD6 /* util */,
+				B684A46C19C3446200B11029 /* PushManagerTest.m */,
 				A157073B17F0CD6D007C2BD6 /* TestUtil.h */,
 				A157073C17F0CD6D007C2BD6 /* TestUtil.m */,
-				B684A46C19C3446200B11029 /* PushManagerTest.m */,
-				A157073D17F0CD6D007C2BD6 /* util */,
 			);
 			path = test;
 			sourceTree = "<group>";
@@ -2772,6 +2775,14 @@
 				B6416FAA199A0478003C5699 /* zh_TW.lproj */,
 			);
 			name = Translations;
+			sourceTree = "<group>";
+		};
+		BF8C3D8119CE3B6A008F644C /* call */ = {
+			isa = PBXGroup;
+			children = (
+				BF8C3D8219CE3B6A008F644C /* RecentCallTest.m */,
+			);
+			path = call;
 			sourceTree = "<group>";
 		};
 		D221A07E169C9E5E00537ABF = {
@@ -3720,6 +3731,7 @@
 				A157076D17F0CD6D007C2BD6 /* SecureEndPointTest.m in Sources */,
 				A157076E17F0CD6D007C2BD6 /* UdpSocketTest.m in Sources */,
 				76EB05C318170B33006006FC /* DhPacketSharedSecretHashes.m in Sources */,
+				BF8C3D8319CE3B6A008F644C /* RecentCallTest.m in Sources */,
 				76EB05C718170B33006006FC /* HelloAckPacket.m in Sources */,
 				76EB059918170B33006006FC /* HttpRequestOrResponse.m in Sources */,
 				A157076F17F0CD6D007C2BD6 /* PhoneNumberTest.m in Sources */,
