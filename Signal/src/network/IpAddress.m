@@ -94,13 +94,13 @@
         struct sockaddr_in s = ipv4Data;
         s.sin_port = htons(port);
         NSMutableData* d = [NSMutableData dataWithLength:sizeof(struct sockaddr_in)];
-        memcpy([d mutableBytes], &s, sizeof(struct sockaddr_in));
+        memcpy(d.mutableBytes, &s, sizeof(struct sockaddr_in));
         return d;
     } else {
         struct sockaddr_in6 s = ipv6Data;
         s.sin6_port = htons(port);
         NSMutableData* d = [NSMutableData dataWithLength:sizeof(struct sockaddr_in6)];
-        memcpy([d mutableBytes], &s, sizeof(struct sockaddr_in6));
+        memcpy(d.mutableBytes, &s, sizeof(struct sockaddr_in6));
         return d;
     }
 }

@@ -67,7 +67,7 @@
     test(repeat == 3 || repeat == 4);
     test(evalCount == 1);
     test(f.hasResult);
-    test([[f forceGetResult] isEqual:@YES]);
+    test([f.forceGetResult isEqual:@YES]);
 }
 -(void) testRetry_fail {
     __block NSUInteger repeat = 0;

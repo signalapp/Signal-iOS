@@ -349,16 +349,16 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
     if (padding != [other padding]) return false;
     if (hasExtensionHeader != other.hasExtensionHeader) return false;
     if (isMarkerBitSet != other.isMarkerBitSet) return false;
-    if (payloadType != [other payloadType]) return false;
+    if (payloadType != other.payloadType) return false;
     if (timeStamp != [other timeStamp]) return false;
     if (synchronizationSourceIdentifier != [other synchronizationSourceIdentifier]) return false;
     if (sequenceNumber != [other sequenceNumber]) return false;
     
-    if (![payload isEqualToData:[other payload]]) return false;
+    if (![payload isEqualToData:other.payload]) return false;
     if (![contributingSourceIdentifiers isEqualToArray:[other contributingSourceIdentifiers]]) return false;
     if (hasExtensionHeader) {
-        if (extensionHeaderIdentifier != [other extensionHeaderIdentifier]) return false;
-        if (![extensionHeaderData isEqualToData:[other extensionHeaderData]]) return false;
+        if (extensionHeaderIdentifier != other.extensionHeaderIdentifier) return false;
+        if (![extensionHeaderData isEqualToData:other.extensionHeaderData]) return false;
     }
     
     if (![[self rawPacketDataUsingInteropOptions:@[]] isEqualToData:[other rawPacketDataUsingInteropOptions:@[]]]) return false;

@@ -28,7 +28,7 @@
     int16_t* input = (int16_t*)[audioData bytes];
     
     NSMutableData* d = [NSMutableData dataWithLength:(NSUInteger)maxOutputSampleCount*sizeof(int16_t)];
-    int outputSampleCount = time_scale(&timeScaleState, [d mutableBytes], input, inputSampleCount);
+    int outputSampleCount = time_scale(&timeScaleState, d.mutableBytes, input, inputSampleCount);
     checkOperationDescribe(outputSampleCount >= 0 && outputSampleCount <= maxOutputSampleCount, @"Scaling audio");
     
     return [d take:(NSUInteger)outputSampleCount*sizeof(int16_t)];

@@ -106,7 +106,7 @@
             phoneNumberDirectoryFilter = directory;
         }
         [Environment.preferences setSavedPhoneNumberDirectory:directory];
-        [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
+        [NSNotificationCenter.defaultCenter postNotificationName:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
         [self scheduleUpdate];
     }];
 }

@@ -12,7 +12,7 @@
 
 +(NSData*)generateSecureRandomData:(NSUInteger)length {
     NSMutableData* d = [NSMutableData dataWithLength:length];
-    SecRandomCopyBytes(kSecRandomDefault, length, [d mutableBytes]);
+    SecRandomCopyBytes(kSecRandomDefault, length, d.mutableBytes);
     return d;
 }
 

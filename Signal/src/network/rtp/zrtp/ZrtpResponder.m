@@ -26,7 +26,7 @@
     s->confirmIv = [CryptoTools generateSecureRandomData:IV_LENGTH];
     s->dhSharedSecretHashes = [DhPacketSharedSecretHashes dhPacketSharedSecretHashesRandomized];
     s->allowedKeyAgreementProtocols = Environment.getCurrent.keyAgreementProtocolsInDescendingPriority;
-    s->hashChain = [HashChain hashChainWithSecureGeneratedData];
+    s->hashChain = HashChain.hashChainWithSecureGeneratedData;
     s->badPacketLogger = [Environment.logging getOccurrenceLoggerForSender:self withKey:@"Bad Packet"];
     
     s->localHello = [HelloPacket helloPacketWithDefaultsAndHashChain:s->hashChain
@@ -40,7 +40,7 @@
 -(HandshakePacket*) initialPacket {    
     [callController advanceCallProgressTo:CallProgressType_Securing];
 
-    return [localHello embeddedIntoHandshakePacket];
+    return localHello.embeddedIntoHandshakePacket;
 }
 -(bool) hasHandshakeFinishedSuccessfully {
     return packetExpectation == EXPECTING_NOTHING;
@@ -63,16 +63,16 @@
 }
 
 -(HandshakePacket*) handleHello:(HandshakePacket*)packet {
-    foreignHello = [packet parsedAsHello];
+    foreignHello = packet.parsedAsHello;
     
     packetExpectation = EXPECTING_COMMIT;
     
-    return [[HelloAckPacket helloAckPacket] embeddedIntoHandshakePacket];
+    return HelloAckPacket.helloAckPacket.embeddedIntoHandshakePacket;
 }
 
 
 -(HandshakePacket*) handleCommit:(HandshakePacket*)packet {
-    CommitPacket* cp = [packet parsedAsCommitPacket];
+    CommitPacket* cp = packet.parsedAsCommitPacket;
     [foreignHello verifyMacWithHashChainH2:[cp h2]];
     
     foreignCommit = cp;
@@ -85,7 +85,7 @@
     
     packetExpectation = EXPECTING_DH;
     
-    return [localDH embeddedIntoHandshakePacket];
+    return localDH.embeddedIntoHandshakePacket;
 }
 
 -(MasterSecret*) getMasterSecret {
@@ -94,13 +94,13 @@
 }
 
 -(HandshakePacket*) handleDH:(HandshakePacket*)packet {
-    foreignDH = [packet parsedAsDh2];
+    foreignDH = packet.parsedAsDh2;
     
-    [foreignCommit verifyMacWithHashChainH1:[foreignDH hashChainH1]];
+    [foreignCommit verifyMacWithHashChainH1:foreignDH.hashChainH1];
     [foreignCommit verifyCommitmentAgainstHello:localHello
                                      andDhPart2:foreignDH];
     
-    NSData* dhResult = [keyAgreementParticipant calculateKeyAgreementAgainstRemotePublicKey:[foreignDH publicKeyData]];
+    NSData* dhResult = [keyAgreementParticipant calculateKeyAgreementAgainstRemotePublicKey:foreignDH.publicKeyData];
     
     masterSecret = [MasterSecret masterSecretFromDhResult:dhResult
                                         andInitiatorHello:foreignHello
@@ -112,18 +112,18 @@
     packetExpectation = EXPECTING_CONFIRM;
     
     ConfirmPacket* confirm2Packet = [ConfirmPacket confirm1PacketWithHashChain:hashChain
-                                                                     andMacKey:[masterSecret responderMacKey]
-                                                                  andCipherKey:[masterSecret responderZrtpKey]
+                                                                     andMacKey:masterSecret.responderMacKey
+                                                                  andCipherKey:masterSecret.responderZrtpKey
                                                                          andIv:confirmIv];
     
-    return [confirm2Packet embeddedIntoHandshakePacket];
+    return confirm2Packet.embeddedIntoHandshakePacket;
 }
 
 
 -(HandshakePacket*) handleConfirmTwo:(HandshakePacket*)packet {
-    ConfirmPacket* confirmPacket = [packet parsedAsConfirm2AuthenticatedWithMacKey:[masterSecret initiatorMacKey] andCipherKey:[masterSecret initiatorZrtpKey]];
+    ConfirmPacket* confirmPacket = [packet parsedAsConfirm2AuthenticatedWithMacKey:masterSecret.initiatorMacKey andCipherKey:masterSecret.initiatorZrtpKey];
     
-    [foreignDH verifyMacWithHashChainH0:[confirmPacket hashChainH0]];
+    [foreignDH verifyMacWithHashChainH0:confirmPacket.hashChainH0];
     
     packetExpectation = EXPECTING_NOTHING;
     
@@ -131,7 +131,7 @@
         return nil;
     }
     
-    return [[ConfirmAckPacket confirmAckPacket] embeddedIntoHandshakePacket];
+    return ConfirmAckPacket.confirmAckPacket.embeddedIntoHandshakePacket;
 }
 
 -(bool) isAuthenticatedAudioDataImplyingConf2Ack:(id)packet {
@@ -150,12 +150,12 @@
 -(SrtpSocket*) useKeysToSecureRtpSocket:(RtpSocket*)rtpSocket {
     requireState(self.hasHandshakeFinishedSuccessfully);
     return [SrtpSocket srtpSocketOverRtp:rtpSocket
-                    andIncomingCipherKey:[masterSecret initiatorSrtpKey]
-                       andIncomingMacKey:[masterSecret initiatorMacKey]
-                         andIncomingSalt:[masterSecret initiatorSrtpSalt]
-                    andOutgoingCipherKey:[masterSecret responderSrtpKey]
-                       andOutgoingMacKey:[masterSecret responderMacKey]
-                         andOutgoingSalt:[masterSecret responderSrtpSalt]];
+                    andIncomingCipherKey:masterSecret.initiatorSrtpKey
+                       andIncomingMacKey:masterSecret.initiatorMacKey
+                         andIncomingSalt:masterSecret.initiatorSrtpSalt
+                    andOutgoingCipherKey:masterSecret.responderSrtpKey
+                       andOutgoingMacKey:masterSecret.responderMacKey
+                         andOutgoingSalt:masterSecret.responderSrtpSalt];
 }
 
 @end

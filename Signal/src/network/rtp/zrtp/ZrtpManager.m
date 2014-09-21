@@ -53,7 +53,7 @@
     manager->rtpSocketToSecure              = rtpSocket;
     manager->handshakeSocket                = handshakeSocket;
     manager->cancelTokenSource              = [TOCCancelTokenSource new];
-    [[callController untilCancelledToken] whenCancelledTerminate:manager];
+    [callController.untilCancelledToken whenCancelledTerminate:manager];
     
     [manager->futureHandshakeResultSource.future catchDo:^(id error) {
         [callController terminateWithReason:CallTerminationType_HandshakeFailed
@@ -82,7 +82,7 @@
         // (the RFC says to treat this as implying a Conf2Ack)
         if ([zrtpRole isAuthenticatedAudioDataImplyingConf2Ack:relatedInfo]) {
             // low-priority todo: Can we cache this bit of audio data, so that when the srtp socket is started the data comes out?
-            [self handleHandshakePacket:[[ConfirmAckPacket confirmAckPacket] embeddedIntoHandshakePacket]];
+            [self handleHandshakePacket:ConfirmAckPacket.confirmAckPacket.embeddedIntoHandshakePacket];
         }
     };
     

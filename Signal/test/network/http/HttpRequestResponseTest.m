@@ -50,21 +50,21 @@
     HttpRequest* h0 = [HttpRequest httpRequestFromData:[@"GET /index.html HTTP/1.0\r\nContent-Length: 0\r\n\r\n" encodedAsUtf8]];
     test([[h0 method] isEqualToString:@"GET"]);
     test([[h0 location] isEqualToString:@"/index.html"]);
-    test([[h0 headers] count] == 1);
+    test([h0 headers].count == 1);
     test([[h0 headers][@"Content-Length"] isEqualToString:@"0"]);
     test([[h0 optionalBody] isEqualToString:@""]);
 
     HttpRequest* h1 = [HttpRequest httpRequestFromData:[@"GET /index.html HTTP/1.0\r\nContent-Length: 10\r\n\r\nabcdefghij" encodedAsUtf8]];
     test([[h1 method] isEqualToString:@"GET"]);
     test([[h1 location] isEqualToString:@"/index.html"]);
-    test([[h1 headers] count] == 1);
+    test([h1 headers].count == 1);
     test([[h1 headers][@"Content-Length"] isEqualToString:@"10"]);
     test([[h1 optionalBody] isEqualToString:@"abcdefghij"]);
     
     HttpRequest* h = [HttpRequest httpRequestFromData:@"GET /index.html HTTP/1.0\r\n\r\n".encodedAsUtf8];
     test([[h method] isEqualToString:@"GET"]);
     test([[h location] isEqualToString:@"/index.html"]);
-    test([[h headers] count] == 0);
+    test([h headers].count == 0);
     test([h optionalBody] == nil);
     
     testThrows([HttpRequest httpRequestFromData:@"GET /index.html HTTP/1.0\r\n".encodedAsUtf8]);
@@ -75,7 +75,7 @@
     HttpResponse* h = [HttpResponse httpResponse200Ok];
     test(h.getStatusCode == 200);
     test(h.getOptionalBodyText == nil);
-    test([h.getHeaders count] == 0);
+    test(h.getHeaders.count == 0);
 }
 -(void) testResponseFromData {
     HttpResponse* h = [HttpResponse httpResponseFromData:@"HTTP/1.1 200 OK\r\n\r\n".encodedAsUtf8];
@@ -83,14 +83,14 @@
     test(h.getStatusCode == 200);
     test([h.getStatusText isEqualToString: @"OK"]);
     test(h.getOptionalBodyText == nil);
-    test([h.getHeaders count] == 0);
+    test(h.getHeaders.count == 0);
     
     HttpResponse* h2 = [HttpResponse httpResponseFromData:@"HTTP/1.1 404 Not Found\r\n\r\n".encodedAsUtf8];
     test(!h2.isOkResponse);
     test(h2.getStatusCode == 404);
     test([h2.getStatusText isEqualToString:@"Not Found"]);
     test(h2.getOptionalBodyText == nil);
-    test([h2.getHeaders count] == 0);
+    test(h2.getHeaders.count == 0);
 
     testThrows([HttpResponse httpResponseFromData:@"HTTP/1.1 200 OK\r\n".encodedAsUtf8]);
     testThrows([HttpResponse httpResponseFromData:@"HTTP/1.1 200\r\n\r\n".encodedAsUtf8]);

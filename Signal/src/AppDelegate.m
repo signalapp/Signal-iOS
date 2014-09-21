@@ -69,15 +69,15 @@
     NSError *error;
     
     NSDictionary *attrs = @{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication};
-    [[NSFileManager defaultManager] setAttributes:attrs ofItemAtPath:preferencesPath error:&error];
+    [NSFileManager.defaultManager setAttributes:attrs ofItemAtPath:preferencesPath error:&error];
     
     [pathsToExclude addObject:[[preferencesPath stringByAppendingString:NSBundle.mainBundle.bundleIdentifier] stringByAppendingString:@".plist"]];
     
     NSString *logPath    = [NSHomeDirectory() stringByAppendingString:@"/Library/Caches/Logs/"];
-    NSArray  *logsFiles  = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:logPath error:&error];
+    NSArray  *logsFiles  = [NSFileManager.defaultManager contentsOfDirectoryAtPath:logPath error:&error];
     
     attrs = @{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication};
-    [[NSFileManager defaultManager] setAttributes:attrs ofItemAtPath:logPath error:&error];
+    [NSFileManager.defaultManager setAttributes:attrs ofItemAtPath:logPath error:&error];
     
     for (NSUInteger i = 0; i < logsFiles.count; i++) {
         [pathsToExclude addObject:[logPath stringByAppendingString:logsFiles[i]]];

@@ -36,21 +36,21 @@
 }
 
 +(NSData*) getHandshakeTypeIdFromRtp:(RtpPacket*)rtpPacket {
-    return [[rtpPacket extensionHeaderData] take:HANDSHAKE_TYPE_ID_LENGTH];
+    return [rtpPacket.extensionHeaderData take:HANDSHAKE_TYPE_ID_LENGTH];
 }
 +(NSData*) getHandshakePayloadFromRtp:(RtpPacket*)rtpPacket {
-    return [[[rtpPacket extensionHeaderData] skip:HANDSHAKE_TYPE_ID_LENGTH] skipLast:HANDSHAKE_CRC_LENGTH];
+    return [[rtpPacket.extensionHeaderData skip:HANDSHAKE_TYPE_ID_LENGTH] skipLast:HANDSHAKE_CRC_LENGTH];
 }
 +(uint32_t) getIncludedHandshakeCrcFromRtp:(RtpPacket*)rtpPacket {
-    return [[[rtpPacket extensionHeaderData] takeLast:HANDSHAKE_CRC_LENGTH] bigEndianUInt32At:0];
+    return [[rtpPacket.extensionHeaderData takeLast:HANDSHAKE_CRC_LENGTH] bigEndianUInt32At:0];
 }
 +(HandshakePacket*) handshakePacketParsedFromRtpPacket:(RtpPacket*)rtpPacket {
     require(rtpPacket != nil);
     checkOperation([rtpPacket timeStamp] == HANDSHAKE_PACKET_TIMESTAMP_COOKIE);
     checkOperation([rtpPacket version] == 0);
     checkOperation(rtpPacket.hasExtensionHeader);
-    checkOperation([rtpPacket extensionHeaderIdentifier] == HANDSHAKE_PACKET_EXTENSION_IDENTIFIER);
-    checkOperation([[rtpPacket extensionHeaderData] length] >= HEADER_FOOTER_LENGTH_WITHOUT_HMAC);
+    checkOperation(rtpPacket.extensionHeaderIdentifier == HANDSHAKE_PACKET_EXTENSION_IDENTIFIER);
+    checkOperation([rtpPacket.extensionHeaderData length] >= HEADER_FOOTER_LENGTH_WITHOUT_HMAC);
     
     NSData* handshakeTypeId = [self getHandshakeTypeIdFromRtp:rtpPacket];
     NSData* handshakePayload = [self getHandshakePayloadFromRtp:rtpPacket];

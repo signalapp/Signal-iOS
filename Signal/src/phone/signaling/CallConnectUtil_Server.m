@@ -102,7 +102,7 @@
                                               upToNTimes:MAX_TRY_COUNT
                                          withBaseTimeout:BASE_TIMEOUT_SECONDS
                                           andRetryFactor:RETRY_TIMEOUT_FACTOR
-                                          untilCancelled:[callController untilCancelledToken]];
+                                          untilCancelled:callController.untilCancelledToken];
     
     return [futureRelayedUdpSocket catchTry:^(id error) {
         return [TOCFuture futureWithFailure:[CallTermination callTerminationOfType:CallTerminationType_BadInteractionWithServer

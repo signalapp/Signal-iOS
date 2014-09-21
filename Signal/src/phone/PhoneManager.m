@@ -57,7 +57,7 @@
                                                                          remote:remoteNumber
                                                                 optionalContact:contact];
     [callController acceptCall]; // initiator implicitly accepts call
-    TOCCancelToken* lifetime = [callController untilCancelledToken];
+    TOCCancelToken* lifetime = callController.untilCancelledToken;
         
     TOCFuture* futureConnected = [CallConnectUtil asyncInitiateCallToRemoteNumber:remoteNumber
                                                                 andCallController:callController];
@@ -82,7 +82,7 @@
     int64_t prevSession = lastIncomingSessionId;
     lastIncomingSessionId = session.sessionId;
 
-    if ([currentCallControllerObservable.currentValue callState].futureTermination.isIncomplete) {
+    if (((CallController*)currentCallControllerObservable.currentValue).callState.futureTermination.isIncomplete) {
         if (session.sessionId == prevSession) {
             Environment.errorNoter(@"Ignoring duplicate incoming call signal.", session, false);
             return;
@@ -101,7 +101,7 @@
                                                                          remote:session.initiatorNumber
                                                                 optionalContact:callingContact];
 
-    TOCCancelToken* lifetime = [callController untilCancelledToken];
+    TOCCancelToken* lifetime = callController.untilCancelledToken;
     
     TOCFuture* futureConnected = [CallConnectUtil asyncRespondToCallWithSessionDescriptor:session
                                                                         andCallController:callController];

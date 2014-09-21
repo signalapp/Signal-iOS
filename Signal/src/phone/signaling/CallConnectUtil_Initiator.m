@@ -44,11 +44,11 @@
         
         [httpManager startWithRequestHandler:serverRequestHandler
                              andErrorHandler:callController.errorHandler
-                              untilCancelled:[callController untilCancelledToken]];
+                              untilCancelled:callController.untilCancelledToken];
         
         HttpRequest* initiateRequest = [HttpRequest httpRequestToInitiateToRemoteNumber:callController.callState.remoteNumber];
         TOCFuture* futureResponseToInitiate = [httpManager asyncOkResponseForRequest:initiateRequest
-                                                                     unlessCancelled:[callController untilCancelledToken]];
+                                                                     unlessCancelled:callController.untilCancelledToken];
         TOCFuture* futureResponseToInitiateWithInterpretedFailures = [futureResponseToInitiate catchTry:^(id error) {
             if ([error isKindOfClass:HttpResponse.class]) {
                 HttpResponse* badResponse = error;
@@ -112,7 +112,8 @@
                              andRelatedInfo:request];
         return [HttpResponse httpResponse500InternalServerError];
     }
-    int64_t sessionId = [[futureInitiatorSessionDescriptor forceGetResult] sessionId];
+
+    int64_t sessionId = ((InitiatorSessionDescriptor*)futureInitiatorSessionDescriptor.forceGetResult).sessionId;
     
     // hangup?
     if ([request isHangupForSession:sessionId]) {

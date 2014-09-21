@@ -181,7 +181,7 @@
 @implementation NSMutableData (Util)
 -(void) setUint8At:(NSUInteger)offset to:(uint8_t)newValue {
     require(offset < self.length);
-    ((uint8_t*)[self mutableBytes])[offset] = newValue;
+    ((uint8_t*)self.mutableBytes)[offset] = newValue;
 }
 -(void) replaceBytesStartingAt:(NSUInteger)offset withData:(NSData*)data {
     require(data != nil);

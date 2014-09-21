@@ -30,13 +30,13 @@
     // the expected data here was obtained from the android redphone implementation
     MasterSecret* m = [MasterSecret masterSecretFromSharedSecret:sharedSecret andTotalHash:totalHash andInitiatorZid:initiatorZid andResponderZid:responderZid];
     test([[m shortAuthenticationStringData] isEqualToData:[(@[@241,@140,@246,@102]) toUint8Data]]);
-    test([[m initiatorSrtpKey] isEqualToData:[(@[@202,@139,@183,@119,@244,@164,@247,@11,@232,@161,@199,@120,@229,@49,@239,@141]) toUint8Data]]);
-    test([[m responderSrtpKey] isEqualToData:[(@[@35,@126,@130,@159,@156,@218,@64,@6,@59,@170,@139,@77,@250,@103,@84,@152]) toUint8Data]]);
-    test([[m initiatorSrtpSalt] isEqualToData:[(@[@92,@22,@129,@225,@169,@155,@6,@157,@34,@49,@76,@15,@196,@180]) toUint8Data]]);
-    test([[m responderSrtpSalt] isEqualToData:[(@[@151,@124,@181,@201,@203,@218,@192,@141,@244,@247,@249,@144,@213,@133]) toUint8Data]]);
-    test([[m initiatorMacKey] isEqualToData:[(@[@215,@167,@226,@196,@14,@124,@137,@75,@48,@110,@159,@47,@243,@238,@171,@213,@103,@181,@70,@206]) toUint8Data]]);
-    test([[m responderMacKey] isEqualToData:[(@[@215,@225,@180,@37,@18,@248,@122,@2,@24,@12,@149,@241,@8,@193,@103,@102,@117,@50,@27,@138]) toUint8Data]]);
-    test([[m initiatorZrtpKey] isEqualToData:[(@[@182,@239,@29,@23,@42,@7,@231,@48,@45,@244,@177,@84,@77,@62,@56,@48]) toUint8Data]]);
-    test([[m responderZrtpKey] isEqualToData:[(@[@59,@57,@33,@50,@121,@161,@218,@19,@255,@246,@98,@228,@68,@142,@50,@175]) toUint8Data]]);
+    test([m.initiatorSrtpKey isEqualToData:[(@[@202,@139,@183,@119,@244,@164,@247,@11,@232,@161,@199,@120,@229,@49,@239,@141]) toUint8Data]]);
+    test([m.responderSrtpKey isEqualToData:[(@[@35,@126,@130,@159,@156,@218,@64,@6,@59,@170,@139,@77,@250,@103,@84,@152]) toUint8Data]]);
+    test([m.initiatorSrtpSalt isEqualToData:[(@[@92,@22,@129,@225,@169,@155,@6,@157,@34,@49,@76,@15,@196,@180]) toUint8Data]]);
+    test([m.responderSrtpSalt isEqualToData:[(@[@151,@124,@181,@201,@203,@218,@192,@141,@244,@247,@249,@144,@213,@133]) toUint8Data]]);
+    test([m.initiatorMacKey isEqualToData:[(@[@215,@167,@226,@196,@14,@124,@137,@75,@48,@110,@159,@47,@243,@238,@171,@213,@103,@181,@70,@206]) toUint8Data]]);
+    test([m.responderMacKey isEqualToData:[(@[@215,@225,@180,@37,@18,@248,@122,@2,@24,@12,@149,@241,@8,@193,@103,@102,@117,@50,@27,@138]) toUint8Data]]);
+    test([m.initiatorZrtpKey isEqualToData:[(@[@182,@239,@29,@23,@42,@7,@231,@48,@45,@244,@177,@84,@77,@62,@56,@48]) toUint8Data]]);
+    test([m.responderZrtpKey isEqualToData:[(@[@59,@57,@33,@50,@121,@161,@218,@19,@255,@246,@98,@228,@68,@142,@50,@175]) toUint8Data]]);
 }
 @end

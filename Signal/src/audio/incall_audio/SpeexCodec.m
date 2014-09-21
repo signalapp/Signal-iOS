@@ -47,7 +47,7 @@
     speex_encode_int(encodingState, (spx_int16_t*)[rawData bytes], &encodingBits);
     
     NSMutableData* outputBuffer = [NSMutableData dataWithLength:encodingBufferSizeInBytes];
-    int outputSizeInBytes = speex_bits_write(&encodingBits, [outputBuffer mutableBytes], (int)encodingBufferSizeInBytes);
+    int outputSizeInBytes = speex_bits_write(&encodingBits, outputBuffer.mutableBytes, (int)encodingBufferSizeInBytes);
     checkOperation(outputSizeInBytes > 0);
     [outputBuffer setLength:(NSUInteger)outputSizeInBytes];
     

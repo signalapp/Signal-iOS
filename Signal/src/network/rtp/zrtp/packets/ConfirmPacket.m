@@ -45,16 +45,16 @@
     require(cipherKey != nil);
     NSData* expectedConfirmTypeId = isPart1 ? HANDSHAKE_TYPE_CONFIRM_1 : HANDSHAKE_TYPE_CONFIRM_2;
     
-    checkOperation([[handshakePacket typeId] isEqualToData:expectedConfirmTypeId]);
-    checkOperation([[handshakePacket payload] length] == TRUNCATED_HMAC_LENGTH + CONFIRM_IV_LENGTH + HASH_CHAIN_ITEM_LENGTH + WORD_LENGTH + WORD_LENGTH);
-    NSData* decryptedData = [self getDecryptedDataFromPayload:[handshakePacket payload] withMacKey:macKey andCipherKey:cipherKey];
+    checkOperation([handshakePacket.typeId isEqualToData:expectedConfirmTypeId]);
+    checkOperation(handshakePacket.payload.length == TRUNCATED_HMAC_LENGTH + CONFIRM_IV_LENGTH + HASH_CHAIN_ITEM_LENGTH + WORD_LENGTH + WORD_LENGTH);
+    NSData* decryptedData = [self getDecryptedDataFromPayload:handshakePacket.payload withMacKey:macKey andCipherKey:cipherKey];
     
     return [ConfirmPacket confirmPacketParsedFrom:handshakePacket
                                   withHashChainH0:[self getHashChainH0FromDecryptedData:decryptedData]
               andUnusedAndSignatureLengthAndFlags:[self getUnusedAndSignatureLengthAndFlagsFromDecryptedData:decryptedData]
                        andCacheExpirationInterval:[self getCacheExpirationIntervalFromDecryptedData:decryptedData]
-                                  andIncludedHmac:[self getIncludedHmacFromPayload:[handshakePacket payload]]
-                                            andIv:[self getIvFromPayload:[handshakePacket payload]]
+                                  andIncludedHmac:[self getIncludedHmacFromPayload:handshakePacket.payload]
+                                            andIv:[self getIvFromPayload:handshakePacket.payload]
                                        andIsPart1:isPart1];
 }
 +(ConfirmPacket*) confirmPacketWithHashChainH0:(NSData*)hashChainH0

@@ -11,9 +11,9 @@
     require(seed.length == HASH_CHAIN_ITEM_LENGTH);
     HashChain* s = [HashChain new];
     s->h0 = seed;
-    s->h1 = [s->h0 hashWithSha256];
-    s->h2 = [s->h1 hashWithSha256];
-    s->h3 = [s->h2 hashWithSha256];
+    s->h1 = s->h0.hashWithSha256;
+    s->h2 = s->h1.hashWithSha256;
+    s->h3 = s->h2.hashWithSha256;
     return s;
 }
 +(HashChain*) hashChainWithSecureGeneratedData {

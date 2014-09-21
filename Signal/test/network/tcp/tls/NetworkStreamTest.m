@@ -93,7 +93,7 @@
     
     testChurnUntil(!f.isIncomplete, 5.0);
     
-    test(f.hasResult && [[f forceGetResult] isEqual:@YES]);
+    test(f.hasResult && [f.forceGetResult isEqual:@YES]);
     
     [s terminate];
 }

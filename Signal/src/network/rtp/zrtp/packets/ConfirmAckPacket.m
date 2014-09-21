@@ -9,8 +9,8 @@
 }
 
 +(ConfirmAckPacket*)confirmAckPacketParsedFromHandshakePacket:(HandshakePacket*)handshakePacket {
-    checkOperation([[handshakePacket typeId] isEqualToData:HANDSHAKE_TYPE_CONFIRM_ACK]);
-    checkOperation([[handshakePacket payload] length] == 0);
+    checkOperation([handshakePacket.typeId isEqualToData:HANDSHAKE_TYPE_CONFIRM_ACK]);
+    checkOperation(handshakePacket.payload.length == 0);
     
     ConfirmAckPacket* h = [ConfirmAckPacket new];
     h->embedding = handshakePacket;

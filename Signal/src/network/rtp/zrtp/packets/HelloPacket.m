@@ -163,7 +163,7 @@
 }
 
 -(void) verifyMacWithHashChainH2:(NSData*)hashChainH2 {
-    checkOperationDescribe([[hashChainH2 hashWithSha256] isEqualToData_TimingSafe:hashChainH3], @"Invalid preimage");
+    checkOperationDescribe([hashChainH2.hashWithSha256 isEqualToData_TimingSafe:hashChainH3], @"Invalid preimage");
     [embedding withHmacVerifiedAndRemoved:hashChainH2];
 }
 +(NSData*) getVersionIdFromPayload:(NSData*)payload {
@@ -222,7 +222,7 @@
     require(handshakePacket != nil);
     checkOperationDescribe([[handshakePacket typeId] isEqualToData:HANDSHAKE_TYPE_HELLO], @"Not a hello packet");
     
-    NSData* payload = [handshakePacket payload];
+    NSData* payload = handshakePacket.payload;
     checkOperation(payload.length >= SPEC_IDS_OFFSET);
     
     HelloPacket* p = [HelloPacket new];

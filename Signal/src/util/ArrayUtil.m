@@ -15,11 +15,11 @@
     NSUInteger t = 0;
     for (id d in self) {
         require([d isKindOfClass:NSData.class]);
-        t += [(NSData*)d length];
+        t += ((NSData*)d).length;
     }
     
     NSMutableData* result = [NSMutableData dataWithLength:t];
-    uint8_t* dst = [result mutableBytes];
+    uint8_t* dst = result.mutableBytes;
     for (NSData* d in self) {
         memcpy(dst, [d bytes], d.length);
         dst += d.length;

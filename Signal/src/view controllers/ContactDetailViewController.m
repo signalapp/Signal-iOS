@@ -87,7 +87,7 @@ static NSString *const FAVOURITE_FALSE_ICON_NAME = @"favourite_false_icon";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
-    if (indexPath.row < (NSInteger)[[_contact userTextPhoneNumbers] count]) {
+    if (indexPath.row < (NSInteger)[_contact userTextPhoneNumbers].count) {
 
         NSString *numberString = _contact.userTextPhoneNumbers[(NSUInteger)indexPath.row];
         PhoneNumber *number = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:numberString];
@@ -107,7 +107,7 @@ static NSString *const FAVOURITE_FALSE_ICON_NAME = @"favourite_false_icon";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 
-    BOOL cellNeedsHeightForText = indexPath.row == (NSInteger)[[_contact userTextPhoneNumbers] count] + (NSInteger)[[_contact emails] count];
+    BOOL cellNeedsHeightForText = indexPath.row == (NSInteger)(_contact.userTextPhoneNumbers.count + _contact.emails.count);
 
     if (cellNeedsHeightForText) {
         CGSize size = [_contact.notes sizeWithAttributes:@{NSFontAttributeName:[UIUtil helveticaRegularWithSize:17]}];

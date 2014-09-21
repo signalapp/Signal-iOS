@@ -60,7 +60,7 @@
         [self updateMissedCallCountLabel];		
     } onThread:NSThread.mainThread untilCancelled:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
+    [NSNotificationCenter.defaultCenter addObserver:self
                                              selector:@selector(newUsersDetected:)
                                                  name:NOTIFICATION_NEW_USERS_AVAILABLE
                                                object:nil];
