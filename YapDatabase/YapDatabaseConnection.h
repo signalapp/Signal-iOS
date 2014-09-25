@@ -29,6 +29,31 @@
  * But for conncurrent access between multiple threads you must use multiple connections.
 **/
 
+typedef NS_ENUM(NSInteger, YapDatabasePolicy) {
+	YapDatabasePolicyContainment = 0,
+	YapDatabasePolicyShare       = 1,
+	YapDatabasePolicyCopy        = 2,
+};
+
+typedef NS_OPTIONS(NSUInteger, YapDatabasePermittedTransactions) {
+	
+	YDB_SyncReadTransaction       = 1 << 0,                                                         // 000001
+	YDB_AsyncReadTransaction      = 1 << 1,                                                         // 000010
+	
+	YDB_SyncReadWriteTransaction  = 1 << 2,                                                         // 000100
+	YDB_AsyncReadWriteTransaction = 1 << 3,                                                         // 001000
+	
+	YDB_AnyReadTransaction        = (YDB_SyncReadTransaction | YDB_AsyncReadTransaction),           // 000011
+	YDB_AnyReadWriteTransaction   = (YDB_SyncReadWriteTransaction | YDB_AsyncReadWriteTransaction), // 001100
+	
+	YDB_AnySyncTransaction        = (YDB_SyncReadTransaction | YDB_SyncReadWriteTransaction),       // 000101
+	YDB_AnyAsyncTransaction       = (YDB_AsyncReadTransaction | YDB_AsyncReadWriteTransaction),     // 001010
+	
+	YDB_AnyTransaction            = (YDB_AnyReadTransaction | YDB_AnyReadWriteTransaction),         // 001111
+	
+	YDB_MainThreadOnly            = 1 << 4,                                                         // 010000
+};
+
 typedef NS_OPTIONS(NSUInteger, YapDatabaseConnectionFlushMemoryFlags) {
     YapDatabaseConnectionFlushMemoryFlags_None       = 0,
     YapDatabaseConnectionFlushMemoryFlags_Caches     = 1 << 0,
@@ -37,11 +62,7 @@ typedef NS_OPTIONS(NSUInteger, YapDatabaseConnectionFlushMemoryFlags) {
                                                         YapDatabaseConnectionFlushMemoryFlags_Statements),
 };
 
-typedef NS_ENUM(NSInteger, YapDatabasePolicy) {
-	YapDatabasePolicyContainment = 0,
-	YapDatabasePolicyShare       = 1,
-	YapDatabasePolicyCopy        = 2,
-};
+
 
 @interface YapDatabaseConnection : NSObject
 
@@ -131,6 +152,55 @@ typedef NS_ENUM(NSInteger, YapDatabasePolicy) {
 **/
 @property (atomic, assign, readwrite) YapDatabasePolicy objectPolicy;
 @property (atomic, assign, readwrite) YapDatabasePolicy metadataPolicy;
+
+/**
+ * When architecting your application, you will likely create a few dedicated connections for particular uses.
+ * This property allows you to enforce only allowed transaction types for your dedicated connections.
+ *
+ * --- Example 1: ---
+ *
+ * You have a connection designed for use on the main thread which uses a longLivedReadTransaction.
+ * Ideally this connection has the following constraints:
+ * - May only be used on the main thread
+ * - Can only be used for synchronous read transactions
+ * 
+ * The idea is to ensure that a read transaction on the main thread never blocks.
+ * Thus you don't want background threads potentially tying up the connection.
+ * Remember: transactions go through a serial per-connection queue.
+ * And similarly, you don't want asynchronous operations of any kind. As that would be the equivalent of
+ * using the connection on a background thread.
+ * 
+ * To enforce this, you can do something like this within your app:
+ *
+ * uiDatabaseConnection.permittedTransactions = YDB_SyncReadTransaction | YDB_MainThreadOnly;
+ * [uiDatabaseConnection beginLongLivedReadTransaction];
+ * 
+ * --- Example 2: ---
+ * 
+ * You have a dedicated connection designed for read-only operations in background tasks.
+ * And you want to make sure that no read-write transactions are accidentally invoked on this connection,
+ * as that would slow your background tasks (which are designed to asynchronous, but generally very fast).
+ * 
+ * To enforce this, you can do something like this within your app:
+ * 
+ * roDatabaseConnection.permittedTransactions = YDB_AnyReadTransaction;
+ * 
+ * --- Example 3: ---
+ * 
+ * You have an internal databaseConnection within some highly asynchronous manager class.
+ * You've designed just about every method to be asynchronous,
+ * and you want to make sure you always remember to use asynchronous transactions.
+ * 
+ * So, for debugging purposes, you do something like this:
+ * 
+ * #if DEBUG
+ * databaseConnection.permittedTransactions = YBD_AnyAsyncTransaction;
+ * #endif
+ *
+ * 
+ * The default value is YDB_AnyTransaction.
+**/
+@property (atomic, assign, readwrite) YapDatabasePermittedTransactions permittedTransactions;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark State

@@ -34,6 +34,14 @@ static NSUInteger const MIN_KEY_CACHE_LIMIT   = 500;
 
 static NSString *const ExtKey_class = @"class";
 
+typedef BOOL (*IMP_NSThread_isMainThread)(id, SEL);
+static IMP_NSThread_isMainThread ydb_NSThread_isMainThread;
+static Class ydb_NSThread_Class;
+
+NS_INLINE BOOL YDBIsMainThread()
+{
+	return ydb_NSThread_isMainThread(ydb_NSThread_Class, @selector(isMainThread));
+}
 
 @implementation YapDatabaseConnection {
 @private
@@ -96,6 +104,14 @@ static NSString *const ExtKey_class = @"class";
 		
 		method_setImplementation(extMethod, extensionIMP);
 		loaded = YES;
+		
+		// Optimized invocation of [NSThread isMainThread].
+		// Benchmarks seem to indicate:
+		// - ~30% performance improvement on the main thread
+		// - ~50% performance improvement on background thread(s)
+		
+		ydb_NSThread_isMainThread = (IMP_NSThread_isMainThread)[NSThread methodForSelector:@selector(isMainThread)];
+		ydb_NSThread_Class = [NSThread class];
 	}
 }
 
@@ -161,6 +177,8 @@ static NSString *const ExtKey_class = @"class";
 		
 		objectPolicy = defaults.objectPolicy;
 		metadataPolicy = defaults.metadataPolicy;
+		
+		self.permittedTransactions = YDB_AnyTransaction;
 		
 		keyCache = [[YapCache alloc] initWithKeyClass:[NSNumber class] countLimit:keyCacheLimit];
 		
@@ -429,6 +447,8 @@ static NSString *const ExtKey_class = @"class";
 
 @synthesize database = database;
 @synthesize name = _name;
+
+@synthesize permittedTransactions = _mustUseAtomicProperty_permittedTransactions;
 
 #if TARGET_OS_IPHONE
 @synthesize autoFlushMemoryFlags;
@@ -1399,6 +1419,16 @@ static NSString *const ExtKey_class = @"class";
 **/
 - (void)readWithBlock:(void (^)(YapDatabaseReadTransaction *))block
 {
+	YapDatabasePermittedTransactions flags = self.permittedTransactions;
+	if ((flags & YDB_MainThreadOnly) && !YDBIsMainThread())
+	{
+		@throw [self nonMainThreadException];
+	}
+	if (!(flags & YDB_SyncReadTransaction))
+	{
+		@throw [self unpermittedTransactionException:YDB_SyncReadTransaction];
+	}
+	
 	dispatch_sync(connectionQueue, ^{ @autoreleasepool {
 		
 		if (longLivedReadTransaction)
@@ -1426,6 +1456,16 @@ static NSString *const ExtKey_class = @"class";
 **/
 - (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
 {
+	YapDatabasePermittedTransactions flags = self.permittedTransactions;
+	if ((flags & YDB_MainThreadOnly) && !YDBIsMainThread())
+	{
+		@throw [self nonMainThreadException];
+	}
+	if (!(flags & YDB_SyncReadWriteTransaction))
+	{
+		@throw [self unpermittedTransactionException:YDB_SyncReadWriteTransaction];
+	}
+	
 	// Order matters.
 	// First go through the serial connection queue.
 	// Then go through serial write queue for the database.
@@ -1510,6 +1550,16 @@ static NSString *const ExtKey_class = @"class";
            completionQueue:(dispatch_queue_t)completionQueue
            completionBlock:(dispatch_block_t)completionBlock
 {
+	YapDatabasePermittedTransactions flags = self.permittedTransactions;
+	if ((flags & YDB_MainThreadOnly) && !YDBIsMainThread())
+	{
+		@throw [self nonMainThreadException];
+	}
+	if (!(flags & YDB_AsyncReadTransaction))
+	{
+		@throw [self unpermittedTransactionException:YDB_AsyncReadTransaction];
+	}
+	
 	if (completionQueue == NULL && completionBlock != NULL)
 		completionQueue = dispatch_get_main_queue();
 	
@@ -1613,6 +1663,16 @@ static NSString *const ExtKey_class = @"class";
                 completionQueue:(dispatch_queue_t)completionQueue
                 completionBlock:(dispatch_block_t)completionBlock
 {
+	YapDatabasePermittedTransactions flags = self.permittedTransactions;
+	if ((flags & YDB_MainThreadOnly) && !YDBIsMainThread())
+	{
+		@throw [self nonMainThreadException];
+	}
+	if (!(flags & YDB_AsyncReadWriteTransaction))
+	{
+		@throw [self unpermittedTransactionException:YDB_AsyncReadWriteTransaction];
+	}
+	
 	if (completionQueue == NULL && completionBlock != NULL)
 		completionQueue = dispatch_get_main_queue();
 	
@@ -4570,6 +4630,65 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Exceptions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSException *)nonMainThreadException
+{
+	NSString *connectionName = self.name;
+	NSString *nameInfo = ([connectionName length] > 0) ? [NSString stringWithFormat:@" <%@>", connectionName] : @"";
+	
+	NSString *reason = [NSString stringWithFormat:
+	    @"YapDatabaseConnection[%p]%@ - unpermitted attempt to execute transaction on nom-main thread",
+	    self, nameInfo];
+	
+	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
+		@"This connection was configured (via the permittedTransactions property) to only allow transactions"
+		@" to be executed from the main-thread. Presumably this connection is dedicated to UI tasks, and thus"
+		@" its use on background threads is being discouraged in order to guarantee the connection never blocks."
+		@" Perhaps you're using the wrong dedicated connection."
+		@" Or you need to create a temporary connection via [database newConnection]."};
+	
+	return [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
+}
+
+- (NSException *)unpermittedTransactionException:(NSUInteger)transactionFlag
+{
+	NSUInteger flags = self.permittedTransactions;
+	
+	NSString *connectionName = self.name;
+	NSString *nameInfo = ([connectionName length] > 0) ? [NSString stringWithFormat:@" <%@>", connectionName] : @"";
+	
+	NSString *unpermittedTransaction = @"unknownTransaction";
+	if (transactionFlag == YDB_SyncReadTransaction)
+		unpermittedTransaction = @"(sync)readTransaction";
+	if (transactionFlag == YDB_AsyncReadTransaction)
+		unpermittedTransaction = @"asyncReadTransaction";
+	if (transactionFlag == YDB_SyncReadWriteTransaction)
+		unpermittedTransaction = @"(sync)readWriteTransaction";
+	if (transactionFlag == YDB_AsyncReadWriteTransaction)
+		unpermittedTransaction = @"asyncReadWriteTransaction";
+	
+	NSString *reason = [NSString stringWithFormat:
+	    @"YapDatabaseConnection[%p]%@ - unpermitted attempt to execute %@", self, nameInfo, unpermittedTransaction];
+	
+	NSMutableArray *permittedComponents = [NSMutableArray arrayWithCapacity:4];
+	if (flags & YDB_SyncReadTransaction)
+		[permittedComponents addObject:@"(sync)readTransaction"];
+	if (flags & YDB_AsyncReadTransaction)
+		[permittedComponents addObject:@"asyncReadTransaction"];
+	if (flags & YDB_SyncReadWriteTransaction)
+		[permittedComponents addObject:@"(sync)readWriteTransaction"];
+	if (flags & YDB_AsyncReadWriteTransaction)
+		[permittedComponents addObject:@"asyncReadWriteTransaction"];
+	
+	NSString *suggestion = [NSString stringWithFormat:
+	    @"This connection was configured (via the permittedTransactions property) to only allow"
+	    @" certain types of transactions. The permittedTransactions are: %@",
+	    [permittedComponents componentsJoinedByString:@", "]];
+	
+	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey: suggestion };
+	
+	return [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
+}
 
 - (NSException *)implicitlyEndingLongLivedReadTransactionException
 {

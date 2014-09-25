@@ -833,4 +833,166 @@
 	}];
 }
 
+- (void)testPermittedTransactions
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	XCTAssertNotNil(database, @"Oops");
+	
+	// Ensure enumeration protects against mutation
+	
+	YapDatabaseConnection *connection = [database newConnection];
+	
+	{// IMPLICIT YDB_AnyTransaction;
+		
+		XCTAssertNoThrow(
+			[connection readWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+		XCTAssertNoThrow(
+			[connection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+		XCTAssertNoThrow(
+			[connection readWriteWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+		XCTAssertNoThrow(
+			[connection asyncReadWriteWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+	}
+	
+	{ connection.permittedTransactions = YDB_AnyReadTransaction;
+		
+		XCTAssertNoThrow(
+			[connection readWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+		XCTAssertNoThrow(
+			[connection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+		XCTAssertThrows(
+			[connection readWriteWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+		XCTAssertThrows(
+			[connection asyncReadWriteWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+	}
+	
+	{ connection.permittedTransactions = YDB_AnyReadWriteTransaction;
+		
+		XCTAssertThrows(
+			[connection readWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+		XCTAssertThrows(
+			[connection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+		XCTAssertNoThrow(
+			[connection readWriteWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+		XCTAssertNoThrow(
+			[connection asyncReadWriteWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+	}
+	
+	{ connection.permittedTransactions = YDB_AnySyncTransaction;
+		
+		XCTAssertNoThrow(
+			[connection readWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+		XCTAssertThrows(
+			[connection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+		XCTAssertNoThrow(
+			[connection readWriteWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+		XCTAssertThrows(
+			[connection asyncReadWriteWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+	}
+	
+	{ connection.permittedTransactions = YDB_AnyAsyncTransaction;
+		
+		XCTAssertThrows(
+			[connection readWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+		XCTAssertNoThrow(
+			[connection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+		XCTAssertThrows(
+			[connection readWriteWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+		XCTAssertNoThrow(
+			[connection asyncReadWriteWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+	}
+	
+	{ connection.permittedTransactions = YDB_AnyTransaction | YDB_MainThreadOnly;
+		
+		XCTAssertNoThrow(
+			[connection readWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+		XCTAssertNoThrow(
+			[connection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+		XCTAssertNoThrow(
+			[connection readWriteWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+		XCTAssertNoThrow(
+			[connection asyncReadWriteWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+			@"Should throw exception"
+		);
+	}
+	
+	{ connection.permittedTransactions = YDB_AnyTransaction | YDB_MainThreadOnly;
+		
+		dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			
+			XCTAssertThrows(
+				[connection readWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+				@"Should throw exception"
+			);
+			XCTAssertThrows(
+				[connection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+				@"Should throw exception"
+			);
+			XCTAssertThrows(
+				[connection readWriteWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+				@"Should throw exception"
+			);
+			XCTAssertThrows(
+				[connection asyncReadWriteWithBlock:^(YapDatabaseReadTransaction *transaction){}],
+				@"Should throw exception"
+			);
+			
+			dispatch_semaphore_signal(semaphore);
+		});
+		
+		dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+	}
+}
+
 @end
