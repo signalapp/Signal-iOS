@@ -129,15 +129,6 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 	return self;
 }
 
-/**
- * Subclasses must implement this method.
- * This method is called during the view registration process to enusre the extension supports the database config.
-**/
-- (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions
-{
-	return YES;
-}
-
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
 	return [[YapDatabaseFullTextSearchConnection alloc] initWithFTS:self databaseConnection:databaseConnection];

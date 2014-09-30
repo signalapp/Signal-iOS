@@ -349,16 +349,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Subclasses must implement this method.
- * This method is called during the view registration process to enusre the extension supports
- * the database configuration.
-**/
-- (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions
-{
-	return YES;
-}
-
-/**
  * Subclasses MUST implement this method IF they are non-persistent (in-memory only).
  * By doing so, they allow various optimizations, such as not persisting extension info in the yap2 table.
 **/

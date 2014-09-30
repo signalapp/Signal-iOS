@@ -63,15 +63,20 @@
 @synthesize registeredDatabase;
 
 /**
- * Subclasses MUST implement this method.
- * This method is called during the view registration process to enusre the extension supports the database type.
+ * Subclasses may OPTIONALLY implement this method.
+ * This method is called during the extension registration process to enusre the extension (as configured)
+ * will support the given database configuration. This is primarily for extensions with dependecies.
+ * 
+ * For example, the YapDatabaseFilteredView is configured with the registered name of a parent View instance.
+ * So that class should implement this method to ensure:
+ * - The parentView actually exists
+ * - The parentView is actually a YapDatabaseView class/subclass
  * 
  * Return YES if the class/instance supports the database configuration.
 **/
 - (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions
 {
-	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
-	return NO;
+	return YES;
 }
 
 /**
