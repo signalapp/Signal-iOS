@@ -120,6 +120,51 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 }
 
 /**
+ * DEPRECATED
+ * Use method initWithColumnNames:handler: instead.
+**/
+- (id)initWithColumnNames:(NSArray *)inColumnNames
+                    block:(YapDatabaseFullTextSearchBlock)inBlock
+                blockType:(YapDatabaseFullTextSearchBlockType)inBlockType
+{
+	YapDatabaseFullTextSearchHandler *handler =
+	  [YapDatabaseFullTextSearchHandler withBlock:inBlock blockType:inBlockType];
+	
+	return [self initWithColumnNames:inColumnNames handler:handler];
+}
+
+/**
+ * DEPRECATED
+ * Use method initWithColumnNames:handler:versionTag: instead.
+**/
+- (id)initWithColumnNames:(NSArray *)inColumnNames
+                    block:(YapDatabaseFullTextSearchBlock)inBlock
+                blockType:(YapDatabaseFullTextSearchBlockType)inBlockType
+                versionTag:(NSString *)inVersionTag
+{
+	YapDatabaseFullTextSearchHandler *handler =
+	  [YapDatabaseFullTextSearchHandler withBlock:inBlock blockType:inBlockType];
+	
+	return [self initWithColumnNames:inColumnNames handler:handler versionTag:inVersionTag];
+}
+
+/**
+ * DEPRECATED
+ * Use method initWithColumnNames:options:handler:versionTag: instead.
+**/
+- (id)initWithColumnNames:(NSArray *)inColumnNames
+                  options:(NSDictionary *)inOptions
+                    block:(YapDatabaseFullTextSearchBlock)inBlock
+                blockType:(YapDatabaseFullTextSearchBlockType)inBlockType
+                versionTag:(NSString *)inVersionTag
+{
+	YapDatabaseFullTextSearchHandler *handler =
+	  [YapDatabaseFullTextSearchHandler withBlock:inBlock blockType:inBlockType];
+	
+	return [self initWithColumnNames:inColumnNames options:inOptions handler:handler versionTag:inVersionTag];
+}
+
+/**
  * Subclasses must implement this method.
  * This method is called during the view registration process to enusre the extension supports the database config.
 **/

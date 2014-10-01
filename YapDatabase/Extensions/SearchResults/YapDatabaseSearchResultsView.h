@@ -50,8 +50,8 @@
 **/
 - (id)initWithFullTextSearchName:(NSString *)fullTextSearchName
                   parentViewName:(NSString *)parentViewName
-                  versionTag:(NSString *)versionTag
-                     options:(YapDatabaseSearchResultsViewOptions *)options;
+                      versionTag:(NSString *)versionTag
+                         options:(YapDatabaseSearchResultsViewOptions *)options;
 
 /**
  * In this configuration, you want to pipe search results directly into a new YapDatabaseView.

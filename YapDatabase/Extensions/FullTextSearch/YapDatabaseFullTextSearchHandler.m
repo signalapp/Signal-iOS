@@ -1,4 +1,4 @@
-#import "YapDatabaseFullTextSearchTypes.h"
+#import "YapDatabaseFullTextSearchHandler.h"
 
 
 @implementation YapDatabaseFullTextSearchHandler
@@ -46,6 +46,21 @@
 	YapDatabaseFullTextSearchHandler *handler = [[YapDatabaseFullTextSearchHandler alloc] init];
 	handler->block = block;
 	handler->blockType = YapDatabaseFullTextSearchBlockTypeWithRow;
+	
+	return handler;
+}
+
+/**
+ * Helper method for supporting deprecated methods.
+ * This method will disappear in the future.
+**/
++ (instancetype)withBlock:(YapDatabaseFullTextSearchBlock)block blockType:(YapDatabaseFullTextSearchBlockType)blockType
+{
+	if (block == NULL) return nil;
+	
+	YapDatabaseFullTextSearchHandler *handler = [[YapDatabaseFullTextSearchHandler alloc] init];
+	handler->block = block;
+	handler->blockType = blockType;
 	
 	return handler;
 }
