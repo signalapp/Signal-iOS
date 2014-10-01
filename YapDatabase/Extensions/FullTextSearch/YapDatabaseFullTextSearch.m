@@ -60,28 +60,24 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 @synthesize versionTag = versionTag;
 
 - (id)initWithColumnNames:(NSArray *)inColumnNames
-                    block:(YapDatabaseFullTextSearchBlock)inBlock
-                blockType:(YapDatabaseFullTextSearchBlockType)inBlockType
+                  handler:(YapDatabaseFullTextSearchHandler *)inHandler
 {
-	return [self initWithColumnNames:inColumnNames options:nil block:inBlock blockType:inBlockType versionTag:nil];
+	return [self initWithColumnNames:inColumnNames options:nil handler:inHandler versionTag:nil];
 }
 
 - (id)initWithColumnNames:(NSArray *)inColumnNames
-                    block:(YapDatabaseFullTextSearchBlock)inBlock
-                blockType:(YapDatabaseFullTextSearchBlockType)inBlockType
+                    handler:(YapDatabaseFullTextSearchHandler *)inHandler
                versionTag:(NSString *)inVersionTag
 {
 	return [self initWithColumnNames:inColumnNames
 	                         options:nil
-	                           block:inBlock
-	                       blockType:inBlockType
+	                         handler:inHandler
 	                      versionTag:inVersionTag];
 }
 
 - (id)initWithColumnNames:(NSArray *)inColumnNames
                   options:(NSDictionary *)inOptions
-                    block:(YapDatabaseFullTextSearchBlock)inBlock
-                blockType:(YapDatabaseFullTextSearchBlockType)inBlockType
+                  handler:(YapDatabaseFullTextSearchHandler *)inHandler
                versionTag:(NSString *)inVersionTag
 {
 	if ([inColumnNames count] == 0)
@@ -106,13 +102,7 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 		}
 	}
 	
-	NSAssert(inBlock != NULL, @"Null block");
-	
-	NSAssert(inBlockType == YapDatabaseFullTextSearchBlockTypeWithKey ||
-	         inBlockType == YapDatabaseFullTextSearchBlockTypeWithObject ||
-	         inBlockType == YapDatabaseFullTextSearchBlockTypeWithMetadata ||
-	         inBlockType == YapDatabaseFullTextSearchBlockTypeWithRow,
-	         @"Invalid block type");
+	NSAssert(inHandler != NULL, @"Null handler");
 	
 	if ((self = [super init]))
 	{
@@ -121,8 +111,8 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 		
 		options = [inOptions copy];
 		
-		block = inBlock;
-		blockType = inBlockType;
+		block = inHandler.block;
+		blockType = inHandler.blockType;
 		
 		versionTag = inVersionTag ? [inVersionTag copy] : @"";
 	}
