@@ -239,7 +239,7 @@
 	[changes removeAllObjects];
 	
 	// Don't keep cached blocks in memory.
-	// These are loaded on-demand withing readwrite transactions.
+	// These are loaded on-demand within readwrite transactions.
 	groupingBlock = NULL;
 	groupingBlockType = 0;
 	sortingBlock = NULL;
