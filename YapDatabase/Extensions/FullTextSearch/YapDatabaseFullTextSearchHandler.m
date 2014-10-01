@@ -3,8 +3,8 @@
 
 @implementation YapDatabaseFullTextSearchHandler
 
-@synthesize block;
-@synthesize blockType;
+@synthesize block = block;
+@synthesize blockType = blockType;
 
 + (instancetype)withKeyBlock:(YapDatabaseFullTextSearchWithKeyBlock)block
 {
