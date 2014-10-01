@@ -1159,7 +1159,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	pageKey = [viewConnection->dirtyMaps objectForKey:rowidNumber];
 	if (pageKey)
 	{
-		if ((__bridge void *)pageKey == (__bridge void *)[NSNull null])
+		if ((id)pageKey == (id)[NSNull null])
 			return nil;
 		else
 			return pageKey;
@@ -1168,7 +1168,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	pageKey = [viewConnection->mapCache objectForKey:rowidNumber];
 	if (pageKey)
 	{
-		if ((__bridge void *)pageKey == (__bridge void *)[NSNull null])
+		if ((id)pageKey == (id)[NSNull null])
 			return nil;
 		else
 			return pageKey;
@@ -2823,8 +2823,9 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			if ((id)page == (id)[NSNull null])
 			{
 				sqlite3_stmt *statement = [viewConnection pageTable_removeForPageKeyStatement];
-				if (statement == NULL) {
-					*stop = YES;
+				if (statement == NULL)
+				{
+					NSAssert(NO, @"Cannot get proper statement! View will become corrupt!");
 					return;//from block
 				}
 				
@@ -2851,8 +2852,9 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			else if (needsInsert)
 			{
 				sqlite3_stmt *statement = [viewConnection pageTable_insertForPageKeyStatement];
-				if (statement == NULL) {
-					*stop = YES;
+				if (statement == NULL)
+				{
+					NSAssert(NO, @"Cannot get proper statement! View will become corrupt!");
 					return;//from block
 				}
 				
@@ -2900,8 +2902,9 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			else if (hasDirtyLink)
 			{
 				sqlite3_stmt *statement = [viewConnection pageTable_updateAllForPageKeyStatement];
-				if (statement == NULL) {
-					*stop = YES;
+				if (statement == NULL)
+				{
+					NSAssert(NO, @"Cannot get proper statement! View will become corrupt!");
 					return;//from block
 				}
 				
@@ -2942,8 +2945,9 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			else
 			{
 				sqlite3_stmt *statement = [viewConnection pageTable_updatePageForPageKeyStatement];
-				if (statement == NULL) {
-					*stop = YES;
+				if (statement == NULL)
+				{
+					NSAssert(NO, @"Cannot get proper statement! View will become corrupt!");
 					return;//from block
 				}
 			
