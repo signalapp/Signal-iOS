@@ -5306,6 +5306,7 @@
 	connection->hasDiskChanges = YES;
 	isMutated = YES;  // mutation during enumeration protection
 	
+	[connection->keyCache removeAllObjects];
 	[connection->objectCache removeAllObjects];
 	[connection->metadataCache removeAllObjects];
 	

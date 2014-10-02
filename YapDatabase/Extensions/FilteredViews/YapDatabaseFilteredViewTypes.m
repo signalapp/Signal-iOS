@@ -49,30 +49,17 @@
 	return filtering;
 }
 
-// Helper method for supporting deprecated methods.
-// This method will disappear in the future.
+/**
+ * Helper method for supporting deprecated methods.
+ * This method will disappear in the future.
+**/
 + (instancetype)withBlock:(YapDatabaseViewFilteringBlock)block blockType:(YapDatabaseViewBlockType)blockType
 {
-	YapDatabaseViewFiltering *filtering = nil;
-	switch (blockType)
-	{
-		case YapDatabaseViewBlockTypeWithKey      : {
-			filtering = [YapDatabaseViewFiltering withKeyBlock:(YapDatabaseViewFilteringWithKeyBlock)block];
-			break;
-		}
-		case YapDatabaseViewBlockTypeWithObject   : {
-			filtering = [YapDatabaseViewFiltering withObjectBlock:(YapDatabaseViewFilteringWithObjectBlock)block];
-			break;
-		}
-		case YapDatabaseViewBlockTypeWithMetadata : {
-			filtering = [YapDatabaseViewFiltering withMetadataBlock:(YapDatabaseViewFilteringWithMetadataBlock)block];
-			break;
-		}
-		case YapDatabaseViewBlockTypeWithRow      : {
-			filtering = [YapDatabaseViewFiltering withRowBlock:(YapDatabaseViewFilteringWithRowBlock)block];
-			break;
-		}
-	}
+	if (block == NULL) return nil;
+	
+	YapDatabaseViewFiltering *filtering = [[YapDatabaseViewFiltering alloc] init];
+	filtering->filteringBlock = block;
+	filtering->filteringBlockType = blockType;
 	
 	return filtering;
 }

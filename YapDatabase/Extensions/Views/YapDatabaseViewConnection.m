@@ -239,7 +239,7 @@
 	[changes removeAllObjects];
 	
 	// Don't keep cached blocks in memory.
-	// These are loaded on-demand withing readwrite transactions.
+	// These are loaded on-demand within readwrite transactions.
 	groupingBlock = NULL;
 	groupingBlockType = 0;
 	sortingBlock = NULL;
@@ -407,10 +407,10 @@
 	}
 	else if ([changeset_dirtyMaps count] > 0)
 	{
-		NSUInteger removeCapacity = [mapCache count];
+		NSUInteger removeCapacity = changeset_reset ? [mapCache count] : 0;
 		NSUInteger updateCapacity = MIN([mapCache count], [changeset_dirtyMaps count]);
 		
-		NSMutableArray *keysToRemove = [NSMutableArray arrayWithCapacity:removeCapacity];
+		NSMutableArray *keysToRemove = changeset_reset ? [NSMutableArray arrayWithCapacity:removeCapacity] : nil;
 		NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
 		
 		[mapCache enumerateKeysWithBlock:^(id key, BOOL *stop) {
@@ -450,10 +450,10 @@
 	}
 	else if ([changeset_dirtyPages count])
 	{
-		NSUInteger removeCapacity = [pageCache count];
+		NSUInteger removeCapacity = changeset_reset ? [pageCache count] : 0;
 		NSUInteger updateCapacity = MIN([pageCache count], [changeset_dirtyPages count]);
 		
-		NSMutableArray *keysToRemove = [NSMutableArray arrayWithCapacity:removeCapacity];
+		NSMutableArray *keysToRemove = changeset_reset ? [NSMutableArray arrayWithCapacity:removeCapacity] : nil;
 		NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
 		
 		[pageCache enumerateKeysWithBlock:^(id key, BOOL *stop) {

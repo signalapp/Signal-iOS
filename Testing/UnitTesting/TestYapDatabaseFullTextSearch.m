@@ -49,17 +49,15 @@
 	
 	YapDatabaseConnection *connection = [database newConnection];
 	
-	YapDatabaseFullTextSearchBlockType blockType = YapDatabaseFullTextSearchBlockTypeWithObject;
-	YapDatabaseFullTextSearchWithObjectBlock block =
-	^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object){
+	YapDatabaseFullTextSearchHandler *handler = [YapDatabaseFullTextSearchHandler withObjectBlock:
+	    ^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object){
 		
 		[dict setObject:object forKey:@"content"];
-	};
+	}];
 	
 	YapDatabaseFullTextSearch *fts =
 	  [[YapDatabaseFullTextSearch alloc] initWithColumnNames:@[@"content"]
-	                                                   block:block
-	                                               blockType:blockType];
+	                                                 handler:handler];
 	
 	[database registerExtension:fts withName:@"fts"];
 	
@@ -170,17 +168,15 @@
 	
 	YapDatabaseConnection *connection = [database newConnection];
 	
-	YapDatabaseFullTextSearchBlockType blockType = YapDatabaseFullTextSearchBlockTypeWithObject;
-	YapDatabaseFullTextSearchWithObjectBlock block =
-	^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object){
+	YapDatabaseFullTextSearchHandler *handler = [YapDatabaseFullTextSearchHandler withObjectBlock:
+	    ^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object){
 		
 		[dict setObject:object forKey:@"content"];
-	};
+	}];
 	
 	YapDatabaseFullTextSearch *fts =
 	  [[YapDatabaseFullTextSearch alloc] initWithColumnNames:@[@"content"]
-	                                                   block:block
-	                                               blockType:blockType];
+	                                                 handler:handler];
 	
 	[database registerExtension:fts withName:@"fts"];
 	

@@ -1159,7 +1159,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	pageKey = [viewConnection->dirtyMaps objectForKey:rowidNumber];
 	if (pageKey)
 	{
-		if ((__bridge void *)pageKey == (__bridge void *)[NSNull null])
+		if ((id)pageKey == (id)[NSNull null])
 			return nil;
 		else
 			return pageKey;
@@ -1168,7 +1168,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	pageKey = [viewConnection->mapCache objectForKey:rowidNumber];
 	if (pageKey)
 	{
-		if ((__bridge void *)pageKey == (__bridge void *)[NSNull null])
+		if ((id)pageKey == (id)[NSNull null])
 			return nil;
 		else
 			return pageKey;
@@ -1235,17 +1235,67 @@ static NSString *const ExtKey_version_deprecated = @"version";
 **/
 - (NSDictionary *)pageKeysForRowids:(NSArray **)rowidsPtr withKeyMappings:(NSDictionary *)keyMappings
 {
-	NSArray *rowids = *rowidsPtr;
-	NSMutableArray *outRowids = [NSMutableArray arrayWithCapacity:[rowids count]];
-	
-	NSUInteger count = [rowids count];
-	if (count == 0)
+	if ([*rowidsPtr count] == 0)
 	{
-		*rowidsPtr = outRowids;
+		*rowidsPtr = [NSArray array];
 		return [NSDictionary dictionary];
 	}
 	
-	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:count];
+	NSMutableArray *inRowids =  [*rowidsPtr mutableCopy];
+	NSMutableArray *outRowids = [NSMutableArray arrayWithCapacity:[inRowids count]];
+	
+	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[inRowids count]];
+	
+	// Step 1 of 2:
+	//
+	// Check for any (rowid, pageKey) information we already have in memory.
+	//
+	// This is actually a requirement if the information is in dirtyMaps.
+	// If the info is in mapCache, then its just an optimization.
+	
+	for (NSUInteger iPlusOne = [inRowids count]; iPlusOne > 0; iPlusOne--)
+	{
+		NSUInteger i = iPlusOne - 1;
+		NSNumber *rowidNumber = [inRowids objectAtIndex:i];
+		
+		NSString *pageKey = nil;
+		
+		pageKey = [viewConnection->dirtyMaps objectForKey:rowidNumber];
+		if (pageKey == nil)
+		{
+			pageKey = [viewConnection->mapCache objectForKey:rowidNumber];
+		}
+		
+		if (pageKey)
+		{
+			// Add to result dictionary
+			
+			NSMutableDictionary *subKeyMappings = [result objectForKey:pageKey];
+			if (subKeyMappings == nil)
+			{
+				subKeyMappings = [NSMutableDictionary dictionaryWithCapacity:1];
+				[result setObject:subKeyMappings forKey:pageKey];
+			}
+			
+			YapCollectionKey *collectionKey = [keyMappings objectForKey:rowidNumber];
+			[subKeyMappings setObject:collectionKey forKey:rowidNumber];
+			
+			// Add to outRowids
+			
+			[outRowids addObject:rowidNumber];
+			
+			// Remove from inRowids
+			
+			[inRowids removeObjectAtIndex:i];
+		}
+		
+	}
+	
+	// Step 2 of 2:
+	//
+	// Fetch any pageKey information we're still missing from the database.
+	
+	NSUInteger count = [inRowids count];
 	
 	if ([self isPersistentView])
 	{
@@ -1291,7 +1341,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 		
 		for (NSUInteger i = 0; i < count; i++)
 		{
-			int64_t rowid = [[rowids objectAtIndex:i] longLongValue];
+			int64_t rowid = [[inRowids objectAtIndex:i] longLongValue];
 			
 			sqlite3_bind_int64(statement, (int)(i + 1), rowid);
 		}
@@ -1339,7 +1389,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	{
 		[mapTableTransaction accessWithBlock:^{ @autoreleasepool {
 			
-			for (NSNumber *rowidNumber in rowids)
+			for (NSNumber *rowidNumber in inRowids)
 			{
 				NSString *pageKey = [mapTableTransaction objectForKey:rowidNumber];
 				if (pageKey)
@@ -2823,8 +2873,9 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			if ((id)page == (id)[NSNull null])
 			{
 				sqlite3_stmt *statement = [viewConnection pageTable_removeForPageKeyStatement];
-				if (statement == NULL) {
-					*stop = YES;
+				if (statement == NULL)
+				{
+					NSAssert(NO, @"Cannot get proper statement! View will become corrupt!");
 					return;//from block
 				}
 				
@@ -2851,8 +2902,9 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			else if (needsInsert)
 			{
 				sqlite3_stmt *statement = [viewConnection pageTable_insertForPageKeyStatement];
-				if (statement == NULL) {
-					*stop = YES;
+				if (statement == NULL)
+				{
+					NSAssert(NO, @"Cannot get proper statement! View will become corrupt!");
 					return;//from block
 				}
 				
@@ -2900,8 +2952,9 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			else if (hasDirtyLink)
 			{
 				sqlite3_stmt *statement = [viewConnection pageTable_updateAllForPageKeyStatement];
-				if (statement == NULL) {
-					*stop = YES;
+				if (statement == NULL)
+				{
+					NSAssert(NO, @"Cannot get proper statement! View will become corrupt!");
 					return;//from block
 				}
 				
@@ -2942,8 +2995,9 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			else
 			{
 				sqlite3_stmt *statement = [viewConnection pageTable_updatePageForPageKeyStatement];
-				if (statement == NULL) {
-					*stop = YES;
+				if (statement == NULL)
+				{
+					NSAssert(NO, @"Cannot get proper statement! View will become corrupt!");
 					return;//from block
 				}
 			

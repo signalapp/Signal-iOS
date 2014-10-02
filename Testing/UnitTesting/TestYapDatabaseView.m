@@ -2816,4 +2816,95 @@
 	XCTAssertTrue([rowChanges count] == 10, @"Bad count");
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)testInsertAndDelete_persistent
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = YES;
+	
+	[self _testInsertAndDelete_withPath:databasePath options:options];
+}
+
+- (void)testInsertAndDelete_nonPersistent
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = NO;
+	
+	[self _testInsertAndDelete_withPath:databasePath options:options];
+}
+
+- (void)_testInsertAndDelete_withPath:(NSString *)databasePath options:(YapDatabaseViewOptions *)options
+{
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	XCTAssertNotNil(database, @"Oops");
+	
+	YapDatabaseConnection *connection1 = [database newConnection];
+	YapDatabaseConnection *connection2 = [database newConnection];
+	
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withObjectBlock:
+	    ^NSString *(NSString *collection, NSString *key, id obj)
+	{
+		return @"";
+	}];
+	
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2)
+	{
+		__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
+		__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
+		
+		return [number1 compare:number2];
+	}];
+	
+	YapDatabaseView *databaseView =
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting
+	                                 versionTag:@"1"
+	                                    options:options];
+	
+	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
+	
+	XCTAssertTrue(registerResult, @"Failure registering extension");
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		NSUInteger count = 10;
+		
+		NSMutableArray *keys = [NSMutableArray arrayWithCapacity:count];
+		
+		for (int i = 0; i < count; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key-%d", i];
+			NSNumber *num = [NSNumber numberWithInt:i];
+			
+			[transaction setObject:num forKey:key inCollection:nil];
+			[keys addObject:key];
+		}
+		
+		[transaction removeObjectsForKeys:keys inCollection:nil];
+		
+		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == 0, @"Oops");
+	}];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == 0, @"Oops");
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == 0, @"Oops");
+	}];
+}
+
 @end

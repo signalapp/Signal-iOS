@@ -53,8 +53,7 @@
 	[setup addColumn:@"someDate" withType:YapDatabaseSecondaryIndexTypeReal];
 	[setup addColumn:@"someInt" withType:YapDatabaseSecondaryIndexTypeInteger];
 	
-	YapDatabaseSecondaryIndexBlockType blockType = YapDatabaseSecondaryIndexBlockTypeWithObject;
-	YapDatabaseSecondaryIndexWithObjectBlock block =
+	YapDatabaseSecondaryIndexHandler *handler = [YapDatabaseSecondaryIndexHandler withObjectBlock:
 	    ^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object){
 		
 		// If we're storing other types of objects in our database,
@@ -68,10 +67,10 @@
 			
 			[dict setObject:@(testObject.someInt) forKey:@"someInt"];
 		}
-	};
+	}];
 	
 	YapDatabaseSecondaryIndex *secondaryIndex =
-	  [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup block:block blockType:blockType];
+	  [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler];
 	
 	[database registerExtension:secondaryIndex withName:@"idx"];
 	
@@ -279,9 +278,8 @@
 	YapDatabaseSecondaryIndexSetup *setup = [[YapDatabaseSecondaryIndexSetup alloc] init];
 	[setup addColumn:@"str" withType:YapDatabaseSecondaryIndexTypeText];
 	
-	YapDatabaseSecondaryIndexBlockType blockType = YapDatabaseSecondaryIndexBlockTypeWithObject;
-	YapDatabaseSecondaryIndexWithObjectBlock block =
-	^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object){
+	YapDatabaseSecondaryIndexHandler *handler = [YapDatabaseSecondaryIndexHandler withObjectBlock:
+	    ^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object){
 		
 		// If we're storing other types of objects in our database,
 		// then we should check the object before presuming we can cast it.
@@ -293,10 +291,10 @@
 				[dict setObject:str forKey:@"str"];
 			}
 		}
-	};
+	}];
 	
 	YapDatabaseSecondaryIndex *secondaryIndex =
-	[[YapDatabaseSecondaryIndex alloc] initWithSetup:setup block:block blockType:blockType];
+	  [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler];
 	
 	[database registerExtension:secondaryIndex withName:@"idx"];
 	

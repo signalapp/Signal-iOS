@@ -63,23 +63,20 @@
 }
 
 - (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)inSetup
-              block:(YapDatabaseSecondaryIndexBlock)inBlock
-          blockType:(YapDatabaseSecondaryIndexBlockType)inBlockType
+            handler:(YapDatabaseSecondaryIndexHandler *)inHandler
 {
-	return [self initWithSetup:inSetup block:inBlock blockType:inBlockType versionTag:nil options:nil];
+	return [self initWithSetup:inSetup handler:inHandler versionTag:nil options:nil];
 }
 
 - (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)inSetup
-              block:(YapDatabaseSecondaryIndexBlock)inBlock
-          blockType:(YapDatabaseSecondaryIndexBlockType)inBlockType
+            handler:(YapDatabaseSecondaryIndexHandler *)inHandler
          versionTag:(NSString *)inVersionTag
 {
-	return [self initWithSetup:inSetup block:inBlock blockType:inBlockType versionTag:inVersionTag options:nil];
+	return [self initWithSetup:inSetup handler:inHandler versionTag:inVersionTag options:nil];
 }
 
 - (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)inSetup
-              block:(YapDatabaseSecondaryIndexBlock)inBlock
-          blockType:(YapDatabaseSecondaryIndexBlockType)inBlockType
+            handler:(YapDatabaseSecondaryIndexHandler *)inHandler
          versionTag:(NSString *)inVersionTag
             options:(YapDatabaseSecondaryIndexOptions *)inOptions
 {
@@ -101,22 +98,11 @@
 		return nil;
 	}
 	
-	if (inBlock == NULL)
+	if (inHandler == NULL)
 	{
-		NSAssert(NO, @"Invalid block: NULL");
+		NSAssert(NO, @"Invalid handler: NULL");
 		
-		YDBLogError(@"%@: Invalid block: NULL", THIS_METHOD);
-		return nil;
-	}
-	
-	if (inBlockType != YapDatabaseSecondaryIndexBlockTypeWithKey      &&
-	    inBlockType != YapDatabaseSecondaryIndexBlockTypeWithObject   &&
-	    inBlockType != YapDatabaseSecondaryIndexBlockTypeWithMetadata &&
-	    inBlockType != YapDatabaseSecondaryIndexBlockTypeWithRow       )
-	{
-		NSAssert(NO, @"Invalid blockType");
-		
-		YDBLogError(@"%@: Invalid blockType", THIS_METHOD);
+		YDBLogError(@"%@: Invalid handler: NULL", THIS_METHOD);
 		return nil;
 	}
 	
@@ -126,8 +112,8 @@
 	{
 		setup = [inSetup copy];
 		
-		block = inBlock;
-		blockType = inBlockType;
+		block = inHandler.block;
+		blockType = inHandler.blockType;
 		
 		columnNamesSharedKeySet = [NSDictionary sharedKeySetForKeys:[setup columnNames]];
 		
@@ -136,6 +122,51 @@
 		options = inOptions ? [inOptions copy] : [[YapDatabaseSecondaryIndexOptions alloc] init];
 	}
 	return self;
+}
+
+/**
+ * DEPRECATED
+ * Use method initWithSetup:handler: instead.
+**/
+- (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)inSetup
+              block:(YapDatabaseSecondaryIndexBlock)inBlock
+          blockType:(YapDatabaseSecondaryIndexBlockType)inBlockType
+{
+	YapDatabaseSecondaryIndexHandler *handler =
+	  [YapDatabaseSecondaryIndexHandler withBlock:inBlock blockType:inBlockType];
+	
+	return [self initWithSetup:inSetup handler:handler];
+}
+
+/**
+ * DEPRECATED
+ * Use method initWithSetup:handler:versionTag: instead.
+**/
+- (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)inSetup
+              block:(YapDatabaseSecondaryIndexBlock)inBlock
+          blockType:(YapDatabaseSecondaryIndexBlockType)inBlockType
+         versionTag:(NSString *)inVersionTag
+{
+	YapDatabaseSecondaryIndexHandler *handler =
+	  [YapDatabaseSecondaryIndexHandler withBlock:inBlock blockType:inBlockType];
+	
+	return [self initWithSetup:inSetup handler:handler versionTag:inVersionTag];
+}
+
+/**
+ * DEPRECATED
+ * Use method initWithSetup:handler:versionTag:options: instead.
+**/
+- (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)inSetup
+              block:(YapDatabaseSecondaryIndexBlock)inBlock
+          blockType:(YapDatabaseSecondaryIndexBlockType)inBlockType
+         versionTag:(NSString *)inVersionTag
+            options:(YapDatabaseSecondaryIndexOptions *)inOptions
+{
+	YapDatabaseSecondaryIndexHandler *handler =
+	  [YapDatabaseSecondaryIndexHandler withBlock:inBlock blockType:inBlockType];
+	
+	return [self initWithSetup:inSetup handler:handler versionTag:inVersionTag options:inOptions];
 }
 
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
