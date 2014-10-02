@@ -1268,25 +1268,38 @@ static NSString *const ExtKey_version_deprecated = @"version";
 		
 		if (pageKey)
 		{
-			// Add to result dictionary
-			
-			NSMutableDictionary *subKeyMappings = [result objectForKey:pageKey];
-			if (subKeyMappings == nil)
+			if ((id)pageKey == (id)[NSNull null])
 			{
-				subKeyMappings = [NSMutableDictionary dictionaryWithCapacity:1];
-				[result setObject:subKeyMappings forKey:pageKey];
+				// This rowid has already been removed from the view,
+				// and is marked for deletion from the mapTable.
+				//
+				// However, it has not been deleted yet, as that will occur during commitTransaction.
+				// So we need to remove it from inRowids, as the mapTable will still contain the rowid.
+				
+				[inRowids removeObjectAtIndex:i];
 			}
-			
-			YapCollectionKey *collectionKey = [keyMappings objectForKey:rowidNumber];
-			[subKeyMappings setObject:collectionKey forKey:rowidNumber];
-			
-			// Add to outRowids
-			
-			[outRowids addObject:rowidNumber];
-			
-			// Remove from inRowids
-			
-			[inRowids removeObjectAtIndex:i];
+			else
+			{
+				// Add to result dictionary
+				
+				NSMutableDictionary *subKeyMappings = [result objectForKey:pageKey];
+				if (subKeyMappings == nil)
+				{
+					subKeyMappings = [NSMutableDictionary dictionaryWithCapacity:1];
+					[result setObject:subKeyMappings forKey:pageKey];
+				}
+				
+				YapCollectionKey *collectionKey = [keyMappings objectForKey:rowidNumber];
+				[subKeyMappings setObject:collectionKey forKey:rowidNumber];
+				
+				// Add to outRowids
+				
+				[outRowids addObject:rowidNumber];
+				
+				// Remove from inRowids
+				
+				[inRowids removeObjectAtIndex:i];
+			}
 		}
 		
 	}
@@ -1296,122 +1309,124 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	// Fetch any pageKey information we're still missing from the database.
 	
 	NSUInteger count = [inRowids count];
-	
-	if ([self isPersistentView])
+	if (count > 0)
 	{
-		sqlite3 *db = databaseTransaction->connection->db;
-		
-		// Note:
-		// The handleRemoveObjectsForKeys:inCollection:withRowids: has the following guarantee:
-		//     count <= (SQLITE_LIMIT_VARIABLE_NUMBER - 1)
-		//
-		// So we don't have to worry about sqlite's upper bound on host parameters.
-		
-		// SELECT "rowid", "pageKey" FROM "mapTableName" WHERE "rowid" IN (?, ?, ...);
-		
-		NSUInteger capacity = 50 + (count * 3);
-		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
-		
-		[query appendFormat:@"SELECT \"rowid\", \"pageKey\" FROM \"%@\" WHERE \"rowid\" IN (", [self mapTableName]];
-		
-		for (NSUInteger i = 0; i < count; i++)
+		if ([self isPersistentView])
 		{
-			if (i == 0)
-				[query appendFormat:@"?"];
-			else
-				[query appendFormat:@", ?"];
-		}
-		
-		[query appendString:@");"];
-		
-		sqlite3_stmt *statement;
-		int status;
-		
-		status = sqlite3_prepare_v2(db, [query UTF8String], -1, &statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@ (%@): Error creating statement\n"
-			            @" - status(%d), errmsg: %s\n"
-			            @" - query: %@",
-			            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db), query);
+			sqlite3 *db = databaseTransaction->connection->db;
 			
-			*rowidsPtr = nil;
-			return nil;
-		}
-		
-		for (NSUInteger i = 0; i < count; i++)
-		{
-			int64_t rowid = [[inRowids objectAtIndex:i] longLongValue];
+			// Note:
+			// The handleRemoveObjectsForKeys:inCollection:withRowids: has the following guarantee:
+			//     count <= (SQLITE_LIMIT_VARIABLE_NUMBER - 1)
+			//
+			// So we don't have to worry about sqlite's upper bound on host parameters.
 			
-			sqlite3_bind_int64(statement, (int)(i + 1), rowid);
-		}
-		
-		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
-		{
-			// Extract rowid & pageKey from row
+			// SELECT "rowid", "pageKey" FROM "mapTableName" WHERE "rowid" IN (?, ?, ...);
 			
-			int64_t rowid = sqlite3_column_int64(statement, 0);
+			NSUInteger capacity = 50 + (count * 3);
+			NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 			
-			const unsigned char *text = sqlite3_column_text(statement, 1);
-			int textSize = sqlite3_column_bytes(statement, 1);
+			[query appendFormat:@"SELECT \"rowid\", \"pageKey\" FROM \"%@\" WHERE \"rowid\" IN (", [self mapTableName]];
 			
-			NSNumber *rowidNumber = @(rowid);
-			NSString *pageKey = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-			
-			// Add to result dictionary
-			
-			NSMutableDictionary *subKeyMappings = [result objectForKey:pageKey];
-			if (subKeyMappings == nil)
+			for (NSUInteger i = 0; i < count; i++)
 			{
-				subKeyMappings = [NSMutableDictionary dictionaryWithCapacity:1];
-				[result setObject:subKeyMappings forKey:pageKey];
+				if (i == 0)
+					[query appendFormat:@"?"];
+				else
+					[query appendFormat:@", ?"];
 			}
 			
-			YapCollectionKey *collectionKey = [keyMappings objectForKey:rowidNumber];
-			[subKeyMappings setObject:collectionKey forKey:rowidNumber];
+			[query appendString:@");"];
 			
-			// Add to outRowids
+			sqlite3_stmt *statement;
+			int status;
 			
-			[outRowids addObject:rowidNumber];
-		}
-		
-		if (status != SQLITE_DONE)
-		{
-			YDBLogError(@"%@ (%@): Error executing statement: %d %s",
-			            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db));
-			
-			*rowidsPtr = nil;
-			return nil;
-		}
-	
-	}
-	else // if (isNonPersistentView)
-	{
-		[mapTableTransaction accessWithBlock:^{ @autoreleasepool {
-			
-			for (NSNumber *rowidNumber in inRowids)
+			status = sqlite3_prepare_v2(db, [query UTF8String], -1, &statement, NULL);
+			if (status != SQLITE_OK)
 			{
-				NSString *pageKey = [mapTableTransaction objectForKey:rowidNumber];
-				if (pageKey)
+				YDBLogError(@"%@ (%@): Error creating statement\n"
+				            @" - status(%d), errmsg: %s\n"
+				            @" - query: %@",
+				            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db), query);
+				
+				*rowidsPtr = nil;
+				return nil;
+			}
+			
+			for (NSUInteger i = 0; i < count; i++)
+			{
+				int64_t rowid = [[inRowids objectAtIndex:i] longLongValue];
+				
+				sqlite3_bind_int64(statement, (int)(i + 1), rowid);
+			}
+			
+			while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+			{
+				// Extract rowid & pageKey from row
+				
+				int64_t rowid = sqlite3_column_int64(statement, 0);
+				
+				const unsigned char *text = sqlite3_column_text(statement, 1);
+				int textSize = sqlite3_column_bytes(statement, 1);
+				
+				NSNumber *rowidNumber = @(rowid);
+				NSString *pageKey = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+				
+				// Add to result dictionary
+				
+				NSMutableDictionary *subKeyMappings = [result objectForKey:pageKey];
+				if (subKeyMappings == nil)
 				{
-					// Add to result dictionary
-					
-					NSMutableDictionary *subKeyMappings = [result objectForKey:pageKey];
-					if (subKeyMappings == nil)
-					{
-						subKeyMappings = [NSMutableDictionary dictionaryWithCapacity:1];
-						[result setObject:subKeyMappings forKey:pageKey];
-					}
-					
-					NSString *key = [keyMappings objectForKey:rowidNumber];
-					[subKeyMappings setObject:key forKey:rowidNumber];
-					
-					// Add to outRowids
-					
-					[outRowids addObject:rowidNumber];
+					subKeyMappings = [NSMutableDictionary dictionaryWithCapacity:1];
+					[result setObject:subKeyMappings forKey:pageKey];
 				}
+				
+				YapCollectionKey *collectionKey = [keyMappings objectForKey:rowidNumber];
+				[subKeyMappings setObject:collectionKey forKey:rowidNumber];
+				
+				// Add to outRowids
+				
+				[outRowids addObject:rowidNumber];
 			}
-		}}];
+			
+			if (status != SQLITE_DONE)
+			{
+				YDBLogError(@"%@ (%@): Error executing statement: %d %s",
+				            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db));
+				
+				*rowidsPtr = nil;
+				return nil;
+			}
+		
+		}
+		else // if (isNonPersistentView)
+		{
+			[mapTableTransaction accessWithBlock:^{ @autoreleasepool {
+				
+				for (NSNumber *rowidNumber in inRowids)
+				{
+					NSString *pageKey = [mapTableTransaction objectForKey:rowidNumber];
+					if (pageKey)
+					{
+						// Add to result dictionary
+						
+						NSMutableDictionary *subKeyMappings = [result objectForKey:pageKey];
+						if (subKeyMappings == nil)
+						{
+							subKeyMappings = [NSMutableDictionary dictionaryWithCapacity:1];
+							[result setObject:subKeyMappings forKey:pageKey];
+						}
+						
+						NSString *key = [keyMappings objectForKey:rowidNumber];
+						[subKeyMappings setObject:key forKey:rowidNumber];
+						
+						// Add to outRowids
+						
+						[outRowids addObject:rowidNumber];
+					}
+				}
+			}}];
+		}
 	}
 	
 	*rowidsPtr = outRowids;
@@ -2295,10 +2310,10 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	if (count == 0) return;
 	if (count == 1)
 	{
-		for (NSNumber *number in keyMappings)
+		for (NSNumber *rowidNumber in keyMappings)
 		{
-			int64_t rowid = [number longLongValue];
-			YapCollectionKey *collectionKey = [keyMappings objectForKey:number];
+			int64_t rowid = [rowidNumber longLongValue];
+			YapCollectionKey *collectionKey = [keyMappings objectForKey:rowidNumber];
 			
 			[self removeRowid:rowid collectionKey:collectionKey
 			                          withPageKey:pageKey
@@ -2381,10 +2396,10 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	
 	// Mark rowid mappings for deletion
 	
-	for (NSNumber *number in keyMappings)
+	for (NSNumber *rowidNumber in keyMappings)
 	{
-		[viewConnection->dirtyMaps setObject:[NSNull null] forKey:number];
-		[viewConnection->mapCache removeObjectForKey:number];
+		[viewConnection->dirtyMaps setObject:[NSNull null] forKey:rowidNumber];
+		[viewConnection->mapCache removeObjectForKey:rowidNumber];
 	}
 }
 
@@ -3914,6 +3929,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 		__unsafe_unretained NSDictionary *keyMappingsForPage = (NSDictionary *)dictObj;
 		
 		NSString *group = [viewConnection->state groupForPageKey:pageKey];
+		NSAssert(group != nil, @"Unknown group for pageKey: %@", pageKey);
 		
 		[self removeRowidsWithKeyMappings:keyMappingsForPage pageKey:pageKey inGroup:group];
 	}];

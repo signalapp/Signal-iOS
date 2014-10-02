@@ -2878,6 +2878,28 @@
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
+		NSString *key = @"someKey";
+		NSString *value = @"someValue";
+		
+		[transaction setObject:value forKey:key inCollection:nil];
+		
+		[transaction removeObjectForKey:key inCollection:nil];
+		
+		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == 0, @"Oops");
+	}];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == 0, @"Oops");
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == 0, @"Oops");
+	}];
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
 		NSUInteger count = 10;
 		
 		NSMutableArray *keys = [NSMutableArray arrayWithCapacity:count];
@@ -2892,6 +2914,168 @@
 		}
 		
 		[transaction removeObjectsForKeys:keys inCollection:nil];
+		
+		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == 0, @"Oops");
+	}];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == 0, @"Oops");
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == 0, @"Oops");
+	}];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)testDoubleDelete_persistent
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = YES;
+	
+	[self _testDoubleDelete_withPath:databasePath options:options];
+}
+
+- (void)testDoubleDelete_nonPersistent
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+	options.isPersistent = NO;
+	
+	[self _testDoubleDelete_withPath:databasePath options:options];
+}
+
+- (void)_testDoubleDelete_withPath:(NSString *)databasePath options:(YapDatabaseViewOptions *)options
+{
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	XCTAssertNotNil(database, @"Oops");
+	
+	YapDatabaseConnection *connection1 = [database newConnection];
+	YapDatabaseConnection *connection2 = [database newConnection];
+	
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withObjectBlock:
+	    ^NSString *(NSString *collection, NSString *key, id obj)
+	{
+		if ([obj isKindOfClass:[NSString class]])
+			return @"";
+		else
+			return nil;
+	}];
+	
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	                       NSString *collection2, NSString *key2, id obj2)
+	{
+		__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
+		__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
+		
+		return [number1 compare:number2];
+	}];
+	
+	YapDatabaseView *databaseView =
+	  [[YapDatabaseView alloc] initWithGrouping:grouping
+	                                    sorting:sorting
+	                                 versionTag:@"1"
+	                                    options:options];
+	
+	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
+	
+	XCTAssertTrue(registerResult, @"Failure registering extension");
+	
+	NSUInteger count = 10;
+	NSMutableArray *keys = [NSMutableArray arrayWithCapacity:count];
+	
+	for (int i = 0; i < count; i++)
+	{
+		[keys addObject:[NSString stringWithFormat:@"key-%d", i]];
+	}
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		for (int i = 0; i < count; i++)
+		{
+			[transaction setObject:@"someValue" forKey:keys[i] inCollection:nil];
+		}
+	}];
+	
+	// Test #1
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction removeObjectForKey:keys[0] inCollection:nil]; // remove 1
+		[transaction removeObjectForKey:keys[0] inCollection:nil]; // remove it again
+		
+		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == (count - 1), @"Oops");
+	}];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == (count - 1), @"Oops");
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == (count - 1), @"Oops");
+	}];
+	
+	// Test #2
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction setObject:@(0) forKey:keys[1] inCollection:nil]; // remove from view
+		[transaction removeObjectForKey:keys[1] inCollection:nil];    // and then remove from database
+		
+		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == (count - 2), @"Oops");
+	}];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == (count - 2), @"Oops");
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == (count - 2), @"Oops");
+	}];
+	
+	// Test #3
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		NSArray *keysToRemove = @[ keys[2], keys[3], keys[4] ];
+		
+		[transaction setObject:@(0) forKey:keys[2] inCollection:nil];     // remove from view
+		[transaction removeObjectsForKeys:keysToRemove inCollection:nil]; // and then remove from database
+		
+		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == (count - 5), @"Oops");
+	}];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == (count - 5), @"Oops");
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == (count - 5), @"Oops");
+	}];
+	
+	// Test #4
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction removeObjectForKey:keys[5] inCollection:nil]; // remove single item
+		[transaction removeObjectsForKeys:keys inCollection:nil];  // and then remove all
 		
 		XCTAssert([[transaction ext:@"order"] numberOfItemsInGroup:@""] == 0, @"Oops");
 	}];
