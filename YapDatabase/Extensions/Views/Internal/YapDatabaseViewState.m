@@ -186,9 +186,14 @@
 - (void)removeGroup:(NSString *)group
 {
 	AssertIsMutable();
-	NSAssert([[group_pagesMetadata_dict objectForKey:group] count] == 0, @"Attempting to remove non-empty group");
 	
-	[group_pagesMetadata_dict removeObjectForKey:group];
+	NSUInteger count = [[group_pagesMetadata_dict objectForKey:group] count];
+	NSAssert(count == 0, @"Attempting to remove non-empty group");
+	
+	if (count == 0)
+	{
+		[group_pagesMetadata_dict removeObjectForKey:group];
+	}
 }
 
 - (void)removeAllGroups
