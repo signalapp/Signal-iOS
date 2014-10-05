@@ -174,11 +174,11 @@
     [_challengeActivityIndicator startAnimating];
     
     HttpRequest *verifyRequest = [HttpRequest httpRequestToVerifyAccessToPhoneNumberWithChallenge:_challengeTextField.text];
-    TOCFuture *futureDone = [HttpManager asyncOkResponseFromMasterServer:verifyRequest
-                                                         unlessCancelled:nil
-                                                         andErrorHandler:Environment.errorNoter];
+    TOCFuture *serverVerified = [HttpManager asyncOkResponseFromMasterServer:verifyRequest
+                                                             unlessCancelled:nil
+                                                             andErrorHandler:Environment.errorNoter];
     
-    [futureDone catchDo:^(id error) {
+    [serverVerified catchDo:^(id error) {
         if ([error isKindOfClass:HttpResponse.class]) {
             HttpResponse* badResponse = error;
             if (badResponse.getStatusCode == 401) {
@@ -194,20 +194,21 @@
         Environment.errorNoter(error, @"While Verifying Challenge.", NO);
     }];
 
-    [futureDone thenDo:^(id result) {
+    [serverVerified thenDo:^(id result) {
         [futureChallengeAcceptedSource trySetResult:@YES];
+        [Environment setRegistered:YES];
+        [registered trySetResult:@YES];
+        [Environment.getCurrent.phoneDirectoryManager forceUpdate];
+        [self dismissView];
     }];
     
+    [serverVerified catchDo:^(id failure) {
+        _challengeButton.enabled = YES;
+        [_challengeActivityIndicator stopAnimating];
+    }];
+
     [futureChallengeAcceptedSource.future thenDo:^(id value) {
-        [PushManager.sharedManager registrationWithSuccess:^{
-            [Environment setRegistered:YES];
-            [registered trySetResult:@YES];
-            [Environment.getCurrent.phoneDirectoryManager forceUpdate];
-            [self dismissView];
-        } failure:^{
-            _challengeButton.enabled = YES;
-            [_challengeActivityIndicator stopAnimating];
-        }];
+        [PushManager.sharedManager asyncRegisterForPushAndUserNotificationsWithAlertsOnFailure];
     }];
 }
 
