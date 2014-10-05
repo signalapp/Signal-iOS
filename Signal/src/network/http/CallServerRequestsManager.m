@@ -39,7 +39,7 @@ MacrosSingletonImplemention
         NSData *certData = [NSData dataWithContentsOfFile:certPath];
         SecCertificateRef cert = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certData));
         self.operationManager.securityPolicy.pinnedCertificates = @[(__bridge_transfer NSData *)SecCertificateCopyData(cert)];
-        self.operationManager.securityPolicy.SSLPinningMode     = AFSSLPinningModePublicKey;
+        self.operationManager.securityPolicy.SSLPinningMode     = AFSSLPinningModeCertificate;
     }
     return self;
 }

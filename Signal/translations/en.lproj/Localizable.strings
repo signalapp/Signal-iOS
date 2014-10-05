@@ -37,6 +37,8 @@
 "DIALER_NUMBER_PLUS" = "+";
 "DIALER_NUMBER_POUND" = "#";
 "DISABLING_BACKUP_FAILED" = "We encountered an issue while disabling the backup of your call log. Call logs might leak in your iTunes/iCloud backups.";
+"ERROR_WAS_DETECTED_TITLE" = "Bummer!";
+"ERROR_WAS_DETECTED_SUBMIT" = "An bug was detected. Help us make Signal better by reporting this incident.";
 "END_CALL_BAD_INTERACTION_WITH_SERVER" = "Server Failed!";
 "END_CALL_BUTTON_TITLE" = "End";
 "END_CALL_HANDSHAKE_FAILED" = "Handshake Failed!";
@@ -100,8 +102,10 @@
 "REGISTER_CHALLENGE_VOICECALL_TEXT" = "If you are unable to receive an SMS, we will call you in";
 "REGISTER_CHALLENGE_ALERT_VIEW_TITLE" = "Incorrect code";
 "REGISTER_CHALLENGE_ALERT_VIEW_BODY" = "Please verify the code and try again";
+"REGISTER_CHALLENGE_UNKNOWN_ERROR"= "An unknown error occured while trying to verify you. Would you like to report it?";
 "REGISTER_ENTER_COUNTRY_CODE" = "Your number's country code";
 "REGISTER_ENTER_NUMBER" = "Your phone number";
+"REGISTER_RATE_LIMITING_BODY" = "The server is currently rate-limiting signups, please try again later.";
 "REGISTER_SUCCESS_TEXTBLOCK" = "Congratulations! Your registration was successful. You may start using Signal to make secure phone calls.";
 "REGISTER_TEXTBLOCK" = "To get started making secure calls, please confirm your country code and enter your device's phone number.";
 "REGISTER_VALIDATION_ENTER_CODE" = "Validation Code";
@@ -110,6 +114,7 @@
 "REGISTRATION_ERROR" = "Registration Error";
 "REGISTRATION_BODY" = "We couldn't reach the Signal server. Please try again.";
 "REJECT_CALL_BUTTON_TITLE" = "Reject";
+"SERVER_CODE" = "The server replied with status code: ";
 "SETTINGS_CLEAR_HISTORY_LOG" = "Clear History Log";
 "SETTINGS_DISABLE_AUTOCORRECT" = "Disable Autocorrect";
 "SETTINGS_DISABLE_HISTORY_LOG" = "Disable History Log";
@@ -124,13 +129,7 @@
 "SETTINGS_DEBUGGING" = "Debugging";
 "SETTINGS_DISABLE_LOGS" = "Disable debugging logs";
 "SETTINGS_SCREEN_SECURITY" = "Enable Screen Security";
-"SETTINGS_SENDLOG" = "Submit Debug Log"; 
-"SETTINGS_SENDLOGS_WAITING" = "Sending log file\n Please wait...";
-"SETTINGS_SENDLOG_ALERT_BODY" = "Bugs can be reported by email or by copying the log in a GitHub Issue (advanced).";
-"SETTINGS_SENDLOG_ALERT_PASTE" = "Email";
-"SETTINGS_SENDLOG_ALERT_EMAIL" = "GitHub Issue";
-"SETTINGS_SENDLOG_FAILED_TITLE" = "Failed to submit debug log";
-"SETTINGS_SENDLOG_FAILED_BODY" = "The debug log could not be submitted. Please try again.";
+"SETTINGS_SENDLOG" = "Submit Debug Log";
 "SETTINGS_VIBRATE_ON_RING" = "Vibrate on Ring";
 "SETTINGS_VIBRATE_ON_SILENT" = "Vibrate on Silent";
 "SPEAKER_BUTTON_TITLE" = "Speaker";

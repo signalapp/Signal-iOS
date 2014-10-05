@@ -26,6 +26,10 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1.0.6</string>
+	<key>LOGS_EMAIL</key>
+	<string>fred@whispersystems.org</string>
+	<key>LOGS_URL</key>
+	<string>https://github.com/WhisperSystems/Signal-iOS/issues</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.social-networking</string>
 	<key>LSRequiresIPhoneOS</key>

@@ -13,7 +13,7 @@
 #import "ThreadManager.h"
 #import "Util.h"
 
-
+#import <Pastelog.h>
 
 #define REGISTER_VIEW_NUMBER 0
 #define CHALLENGE_VIEW_NUMBER 1
@@ -179,19 +179,25 @@
                                                          andErrorHandler:Environment.errorNoter];
     
     [futureDone catchDo:^(id error) {
+        NSString *alertTitle = NSLocalizedString(@"REGISTRATION_ERROR", @"");
+        
         if ([error isKindOfClass:HttpResponse.class]) {
             HttpResponse* badResponse = error;
             if (badResponse.getStatusCode == 401) {
-                UIAlertView *incorrectChallengeCodeAV = [[UIAlertView alloc]initWithTitle:REGISTER_CHALLENGE_ALERT_VIEW_TITLE message:REGISTER_CHALLENGE_ALERT_VIEW_BODY delegate:nil cancelButtonTitle:REGISTER_CHALLENGE_ALERT_DISMISS otherButtonTitles:nil, nil];
-                [incorrectChallengeCodeAV show];
-                _challengeButton.enabled = YES;
-                [_challengeActivityIndicator stopAnimating];
-                return;
+                SignalAlertView(alertTitle, REGISTER_CHALLENGE_ALERT_VIEW_BODY);
+            } else if (badResponse.getStatusCode == 401){
+                SignalAlertView(alertTitle, NSLocalizedString(@"REGISTER_RATE_LIMITING_BODY", @""));
+            } else {
+                NSString *alertBodyString =  [NSString stringWithFormat:@"%@ %lu", NSLocalizedString(@"SERVER_CODE", @""),(unsigned long)badResponse.getStatusCode];
+                SignalAlertView (alertTitle, alertBodyString);
             }
+        } else{
+            Environment.errorNoter(error, @"While Verifying Challenge.", NO);
+            SignalReportError
         }
+        
         _challengeButton.enabled = YES;
         [_challengeActivityIndicator stopAnimating];
-        Environment.errorNoter(error, @"While Verifying Challenge.", NO);
     }];
 
     [futureDone thenDo:^(id result) {

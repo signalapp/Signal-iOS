@@ -299,53 +299,10 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
     }
     
     if (cell == _sendDebugLog) {
-        
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:SETTINGS_SENDLOG_WAITING
-                                                        message:nil delegate:self cancelButtonTitle:nil otherButtonTitles: nil];
-        [alert show];
-        
-        [Pastelog submitLogsWithCompletion:^(NSError *error, NSString *urlString) {
-            [alert dismissWithClickedButtonIndex:0 animated:YES];
-            if (!error) {
-                gistURL = urlString;
-                UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:SETTINGS_SENDLOG_ALERT_TITLE message:SETTINGS_SENDLOG_ALERT_BODY delegate:self cancelButtonTitle:SETTINGS_SENDLOG_ALERT_PASTE otherButtonTitles:SETTINGS_SENDLOG_ALERT_EMAIL, nil];
-                [alertView show];
-                
-            } else{
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SETTINGS_SENDLOG_FAILED_TITLE message:SETTINGS_SENDLOG_FAILED_BODY delegate:nil cancelButtonTitle:SETTINGS_SENDLOG_FAILED_DISMISS otherButtonTitles:nil, nil];
-                [alertView show];
-            }
-        }];
+        [Pastelog submitLogs];
     }
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if (buttonIndex == 0) {
-        [self submitEmail:gistURL];
-    } else{
-        [self pasteBoardCopy:gistURL];
-    }
-}
-
-- (void)submitEmail:(NSString*)url{
-    NSString *emailAddress;
-    
-#ifdef ADHOC
-    emailAddress = @"signal-beta@fredericjacobs.com";
-#else
-    emailAddress = @"support@whispersystems.org";
-#endif
-    
-    NSString *urlString = [NSString stringWithString: [[NSString stringWithFormat:@"mailto:%@?subject=iOS%%20Debug%%20Log&body=", emailAddress] stringByAppendingString:[[NSString stringWithFormat:@"Log URL: %@ \n Tell us about the issue: ", url]stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]]];
-    
-    [UIApplication.sharedApplication openURL: [NSURL URLWithString: urlString]];
-}
-
-- (void)pasteBoardCopy:(NSString*)url{
-    UIPasteboard *pb = [UIPasteboard generalPasteboard];
-    [pb setString:url];
-    [UIApplication.sharedApplication openURL:[NSURL URLWithString:@"https://github.com/WhisperSystems/Signal-iOS/issues"]];
-}
 
 - (void)findAndLocalizeLabelsForView:(UIView *)view {
     for (UIView *subview in view.subviews) {
