@@ -61,7 +61,7 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL*);
 
 #pragma mark - Notification Handlers
 -(void) registerNotificationHandlers{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedDirectoryHandler:) name:NOTIFICATION_DIRECTORY_UPDATE object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(updatedDirectoryHandler:) name:NOTIFICATION_DIRECTORY_UPDATE object:nil];
 }
 
 -(void) updatedDirectoryHandler:(NSNotification*) notification {
@@ -457,7 +457,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
             [self addContactsToKnownWhisperUsers:unacknowledgedUsers];
         }else{
             NSDictionary *payload = @{NOTIFICATION_DATAKEY_NEW_USERS: unacknowledgedUsers};
-            [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_NEW_USERS_AVAILABLE object:self userInfo:payload];
+            [NSNotificationCenter.defaultCenter postNotificationName:NOTIFICATION_NEW_USERS_AVAILABLE object:self userInfo:payload];
         }
     }
     return newUsers.count;
@@ -470,7 +470,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 -(NSUInteger) getNumberOfUnacknowledgedCurrentUsers{
     NSArray *currentUsers = [self getWhisperUsersFromContactsArray:latestContactsById.allValues];
-    return [[self getUnacknowledgedUsersFrom:currentUsers] count];
+    return [self getUnacknowledgedUsersFrom:currentUsers].count;
 }
 
 -(NSArray*) getWhisperUsersFromContactsArray:(NSArray*) contacts {

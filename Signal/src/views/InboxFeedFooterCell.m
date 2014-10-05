@@ -9,7 +9,7 @@
     if (self) {
         ObservableValue *recentCallObserver = Environment.getCurrent.recentCallManager.getObservableRecentCalls;
         [recentCallObserver watchLatestValue:^(id latestValue) {
-            NSUInteger inboxCount = [[Environment.getCurrent.recentCallManager recentsForSearchString:nil andExcludeArchived:YES] count];
+            NSUInteger inboxCount = [Environment.getCurrent.recentCallManager recentsForSearchString:nil andExcludeArchived:YES].count;
             if (inboxCount == 0) {
                 _inboxCountLabel.text = @"";
                 _inboxMessageLabelFirst.text = HOME_FOOTER_FIRST_MESSAGE_CALLS_NIL;

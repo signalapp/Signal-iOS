@@ -174,7 +174,7 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
         return !recentCall.userNotified;
     };
 
-    return [[_allRecents indexesOfObjectsPassingTest:missedCallBlock] count];
+    return [_allRecents indexesOfObjectsPassingTest:missedCallBlock].count;
 }
 
 -(BOOL) isPhoneNumberPresentInRecentCalls:(PhoneNumber*) phoneNumber {

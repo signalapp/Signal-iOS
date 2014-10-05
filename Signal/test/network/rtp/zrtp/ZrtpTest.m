@@ -83,11 +83,11 @@ bool pm(HandshakePacket* p1, HandshakePacket* p2) {
     
     // send authenticated data to signal end of handshake
     if (f2.hasResult) {
-        ZrtpHandshakeResult* result = [f2 forceGetResult];
+        ZrtpHandshakeResult* result = f2.forceGetResult;
         SrtpSocket* socket = [result secureRtpSocket];
         [socket startWithHandler:[PacketHandler packetHandler:^(id packet) { test(false); }
                                              withErrorHandler:^(id error, id relatedInfo, bool causedTermination) { test(!causedTermination); }]
-                  untilCancelled:[cc1 untilCancelledToken]];
+                  untilCancelled:cc1.untilCancelledToken];
         [socket secureAndSendRtpPacket:[RtpPacket rtpPacketWithDefaultsAndSequenceNumber:1 andPayload:[NSData data]]];
     }
     

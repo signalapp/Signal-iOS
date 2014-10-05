@@ -53,7 +53,7 @@
 }
 
 -(void) sendDirectoryUpdateNotification{
-    [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_UPDATE object:nil];
+    [NSNotificationCenter.defaultCenter postNotificationName:NOTIFICATION_DIRECTORY_UPDATE object:nil];
 }
 
 -(NSTimeInterval) getCachedOrDefaultDesiredBufferDepth {

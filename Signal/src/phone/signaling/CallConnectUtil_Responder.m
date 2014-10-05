@@ -37,7 +37,7 @@
     require(callController != nil);
     
     TOCFuture* futureSignalConnection = [CallConnectUtil_Server asyncConnectToSignalingServerNamed:sessionDescriptor.relayServerName
-                                                                                    untilCancelled:[callController untilCancelledToken]];
+                                                                                    untilCancelled:callController.untilCancelledToken];
     
     return [futureSignalConnection thenTry:^id(HttpManager* httpManager) {
         require([httpManager isKindOfClass:httpManager.class]);
@@ -50,11 +50,11 @@
         
         [httpManager startWithRequestHandler:serverRequestHandler
                              andErrorHandler:Environment.errorNoter
-                              untilCancelled:[callController untilCancelledToken]];
+                              untilCancelled:callController.untilCancelledToken];
         
         HttpRequest* ringRequest = [HttpRequest httpRequestToRingWithSessionId:sessionDescriptor.sessionId];
         TOCFuture* futureResponseToRing = [httpManager asyncOkResponseForRequest:ringRequest
-                                                                 unlessCancelled:[callController untilCancelledToken]];
+                                                                 unlessCancelled:callController.untilCancelledToken];
         TOCFuture* futureResponseToRingWithInterpretedFailures = [futureResponseToRing catchTry:^(id error) {
             if ([error isKindOfClass:HttpResponse.class]) {
                 HttpResponse* badResponse = error;

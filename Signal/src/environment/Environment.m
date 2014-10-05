@@ -159,7 +159,7 @@ phoneDirectoryManager;
 }
 
 +(void)setRegistered:(BOOL)status{
-    [NSUserDefaults.standardUserDefaults setObject:status?@YES:@NO forKey:isRegisteredUserDefaultString];
+    [NSUserDefaults.standardUserDefaults setObject:@(status) forKey:isRegisteredUserDefaultString];
 }
 
 +(PropertyListPreferences*)preferences{

@@ -88,7 +88,7 @@
                     
                     ] concatDatas];
     
-    return [data hashWithSha256];
+    return data.hashWithSha256;
 }
 
 +(NSData*) calculateTotalHashFromResponderHello:(HelloPacket*)responderHello
@@ -100,16 +100,16 @@
     require(dhPart1 != nil);
     require(dhPart2 != nil);
     
-    NSData* data = [@[
+    NSData* data = @[
                     
-                    [[responderHello embeddedIntoHandshakePacket] dataUsedForAuthentication],
-                    [[commit embeddedIntoHandshakePacket] dataUsedForAuthentication],
-                    [[dhPart1 embeddedIntoHandshakePacket] dataUsedForAuthentication],
-                    [[dhPart2 embeddedIntoHandshakePacket] dataUsedForAuthentication]
+                    responderHello.embeddedIntoHandshakePacket.dataUsedForAuthentication,
+                    commit.embeddedIntoHandshakePacket.dataUsedForAuthentication,
+                    dhPart1.embeddedIntoHandshakePacket.dataUsedForAuthentication,
+                    dhPart2.embeddedIntoHandshakePacket.dataUsedForAuthentication
                     
-                    ] concatDatas];
+                    ].concatDatas;
     
-    return [data hashWithSha256];
+    return data.hashWithSha256;
     
 }
 

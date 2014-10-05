@@ -56,7 +56,7 @@
     
     DhPacket* p = [DhPacket new];
     p->isPart1 = isPart1;
-    p->hashChainH1 = [hashChainH0 hashWithSha256];
+    p->hashChainH1 = hashChainH0.hashWithSha256;
     p->sharedSecretHashes = sharedSecretHashes;
     p->publicKeyData = publicKeyData;
     p->embedding = [p embedIntoHandshakePacketAuthenticatedWithMacKey:hashChainH0];
@@ -64,7 +64,7 @@
 }
 
 -(void) verifyMacWithHashChainH0:(NSData*)hashChainH0 {
-    checkOperation([[hashChainH0 hashWithSha256] isEqualToData_TimingSafe:hashChainH1]);
+    checkOperation([hashChainH0.hashWithSha256 isEqualToData_TimingSafe:hashChainH1]);
     [embedding withHmacVerifiedAndRemoved:hashChainH0];
 }
 
@@ -90,7 +90,7 @@
     
     require(handshakePacket != nil);
     NSData* expectedTypeIdDhPacket = isPart1 ? HANDSHAKE_TYPE_DH_1 : HANDSHAKE_TYPE_DH_2;
-    NSData* payload = [handshakePacket payload];
+    NSData* payload = handshakePacket.payload;
     
     checkOperation([[handshakePacket typeId] isEqualToData:expectedTypeIdDhPacket]);
     checkOperation(payload.length >= MIN_DH_PKT_LENGTH);

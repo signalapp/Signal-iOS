@@ -50,14 +50,14 @@
     char* valText = "The quick brown fox jumps over the lazy dog";
     NSData* val = [NSMutableData dataWithBytes:valText length:strlen(valText)];
     NSData* expected = [@"d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592" decodedAsHexString];
-    NSData* actual = [val hashWithSha256];
+    NSData* actual = val.hashWithSha256;
     test([actual isEqualToData:expected]);
 }
 -(void) testRandomForVariance {
     NSData* d = [CryptoTools generateSecureRandomData:8];
     NSData* d2 = [CryptoTools generateSecureRandomData:8];
     
-    test(5 == [[CryptoTools generateSecureRandomData:5] length]);
+    test(5 == [CryptoTools generateSecureRandomData:5].length);
     test(8 == d.length);
     
     // extremely unlikely to fail if any reasonable amount of entropy is going into d and d2

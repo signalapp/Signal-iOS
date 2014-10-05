@@ -23,7 +23,7 @@
 
 -(RtpPacket*) encryptAndAuthenticateNormalRtpPacket:(RtpPacket*)normalRtpPacket {
     require(normalRtpPacket != nil);
-    NSData* payload = [normalRtpPacket payload];
+    NSData* payload = normalRtpPacket.payload;
 
     NSData* iv = [self getIvForSequenceNumber:[normalRtpPacket sequenceNumber] andSynchronizationSourceIdentifier:[normalRtpPacket synchronizationSourceIdentifier]];
     NSData* encryptedPayload = [payload encryptWithAesInCounterModeWithKey:cipherKey andIv:iv];
@@ -37,7 +37,7 @@
 
 -(RtpPacket*) verifyAuthenticationAndDecryptSecuredRtpPacket:(RtpPacket*)securedRtpPacket {
     require(securedRtpPacket != nil);
-    checkOperationDescribe([[securedRtpPacket payload] length] >= HMAC_LENGTH, @"Payload not long enough to include hmac");
+    checkOperationDescribe(securedRtpPacket.payload.length >= HMAC_LENGTH, @"Payload not long enough to include hmac");
 
     NSData* authenticatedData = [securedRtpPacket rawPacketDataUsingInteropOptions:nil];
     NSData* includedHmac = [authenticatedData takeLastVolatile:HMAC_LENGTH];
@@ -46,7 +46,7 @@
     checkOperationDescribe([includedHmac isEqualToData_TimingSafe:expectedHmac], @"Authentication failed.");
 
     NSData* iv = [self getIvForSequenceNumber:[securedRtpPacket sequenceNumber] andSynchronizationSourceIdentifier:[securedRtpPacket synchronizationSourceIdentifier]];
-    NSData* encryptedPayload = [[securedRtpPacket payload] skipLastVolatile:HMAC_LENGTH];
+    NSData* encryptedPayload = [securedRtpPacket.payload skipLastVolatile:HMAC_LENGTH];
     NSData* decryptedPayload = [encryptedPayload decryptWithAesInCounterModeWithKey:cipherKey andIv:iv];
 
     return [securedRtpPacket withPayload:decryptedPayload];

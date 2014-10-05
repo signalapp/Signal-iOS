@@ -35,8 +35,8 @@
     require(hello != nil);
     require(dhPart2 != nil);
     
-    NSData* dhPart2Data = [[dhPart2 embeddedIntoHandshakePacket] dataUsedForAuthentication];
-    NSData* helloData = [[hello embeddedIntoHandshakePacket] dataUsedForAuthentication];
+    NSData* dhPart2Data = dhPart2.embeddedIntoHandshakePacket.dataUsedForAuthentication;
+    NSData* helloData = hello.embeddedIntoHandshakePacket.dataUsedForAuthentication;
     return [CommitPacket commitPacketWithHashChainH2:hashChain.h2
                                               andZid:zid
                                        andHashSpecId:COMMIT_DEFAULT_HASH_SPEC_ID
@@ -118,13 +118,13 @@
     require(dhPart2 != nil);
     
     NSData* expected = [[@[
-                         [[dhPart2 embeddedIntoHandshakePacket] dataUsedForAuthentication],
-                         [[hello embeddedIntoHandshakePacket] dataUsedForAuthentication]]
+                         dhPart2.embeddedIntoHandshakePacket.dataUsedForAuthentication,
+                         hello.embeddedIntoHandshakePacket.dataUsedForAuthentication]
                          concatDatas] hashWithSha256];
     checkOperation([dhPart2HelloCommitment isEqualToData_TimingSafe:expected]);
 }
 -(void) verifyMacWithHashChainH1:(NSData*)hashChainH1 {
-    checkOperation([[hashChainH1 hashWithSha256] isEqualToData_TimingSafe:h2]);
+    checkOperation([hashChainH1.hashWithSha256 isEqualToData_TimingSafe:h2]);
     [embedding withHmacVerifiedAndRemoved:hashChainH1];
 }
 
@@ -155,7 +155,7 @@
 +(CommitPacket*) commitPacketParsedFromHandshakePacket:(HandshakePacket*)handshakePacket {
     require(handshakePacket != nil);
     checkOperation([[handshakePacket typeId] isEqualToData:HANDSHAKE_TYPE_COMMIT]);
-    NSData* payload = [handshakePacket payload];
+    NSData* payload = handshakePacket.payload;
     checkOperation(payload.length == COMMIT_OFFSET + COMMIT_LENGTH + HANDSHAKE_TRUNCATED_HMAC_LENGTH);
     
     CommitPacket* p = [CommitPacket new];

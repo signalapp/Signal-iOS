@@ -26,7 +26,7 @@
     
     testChurnUntil(!f.isIncomplete, 5.0);
     
-    LowLatencyCandidate* r = [f forceGetResult];
+    LowLatencyCandidate* r = f.forceGetResult;
     NetworkStream* channel = [r networkStream];
     
     // --- attempt to actually use the streams ---
@@ -57,7 +57,7 @@
     
     testChurnUntil(!f.isIncomplete, 5.0);
     
-    LowLatencyCandidate* r = [f forceGetResult];
+    LowLatencyCandidate* r = f.forceGetResult;
     NetworkStream* channel = [r networkStream];
     
     // --- attempt to actually use the streams ---

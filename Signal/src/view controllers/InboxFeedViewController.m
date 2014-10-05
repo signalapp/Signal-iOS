@@ -71,7 +71,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -104,12 +104,12 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 }
 
 - (void)observeKeyboardNotifications {
-    [[NSNotificationCenter defaultCenter] addObserver:self
+    [NSNotificationCenter.defaultCenter addObserver:self
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
                                                object:nil];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
+    [NSNotificationCenter.defaultCenter addObserver:self
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];

@@ -192,7 +192,7 @@ static InitiateSignal* defaultInitiateSignalInstance = nil;
   return [InitiateSignal builderWithPrototype:result];
 }
 - (InitiateSignal*) defaultInstance {
-  return [InitiateSignal defaultInstance];
+  return InitiateSignal.defaultInstance;
 }
 - (InitiateSignal*) build {
   [self checkInitialized];
@@ -204,7 +204,7 @@ static InitiateSignal* defaultInitiateSignalInstance = nil;
   return returnMe;
 }
 - (InitiateSignal_Builder*) mergeFrom:(InitiateSignal*) other {
-  if (other == [InitiateSignal defaultInstance]) {
+  if (other == InitiateSignal.defaultInstance) {
     return self;
   }
   if (other.hasInitiator) {

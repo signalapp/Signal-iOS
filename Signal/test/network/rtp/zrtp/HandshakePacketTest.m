@@ -30,7 +30,7 @@
                                          andAgreeSpecIds:@[]
                                            andSasSpecIds:@[]
                                 authenticatedWithHmacKey:[h h2]];
-    NSData* data = [[[p embeddedIntoHandshakePacket] embeddedIntoRtpPacketWithSequenceNumber:0x25 usingInteropOptions:@[]] rawPacketDataUsingInteropOptions:@[]];
+    NSData* data = [[p.embeddedIntoHandshakePacket embeddedIntoRtpPacketWithSequenceNumber:0x25 usingInteropOptions:@[]] rawPacketDataUsingInteropOptions:@[]];
     uint8_t expectedData[] = {
         0x10,0x0,
         0x00,0x25, // sequence number
@@ -91,10 +91,10 @@
     HandshakePacket* withHMAC = [p withHmacAppended:key];
     HandshakePacket* strippedOfValidHMAC = [withHMAC withHmacVerifiedAndRemoved:key];
     
-    test([[p payload] isEqualToData:[strippedOfValidHMAC payload]]);
+    test([p.payload isEqualToData:strippedOfValidHMAC.payload]);
     
-    test([untouchedPayload isEqualToData:[p payload]]);
-    test([untouchedPayload isEqualToData:[strippedOfValidHMAC payload]]);
+    test([untouchedPayload isEqualToData:p.payload]);
+    test([untouchedPayload isEqualToData:strippedOfValidHMAC.payload]);
 }
 -(void) testHandshakeMacAuthenticationFails{
     NSData* type = [@"0f0f0f0f0f0f0f0f" decodedAsHexString];
@@ -114,10 +114,10 @@
     
     HandshakePacket* strippedOfValidHMAC = [withHMAC withHmacVerifiedAndRemoved:key];
     
-    test([[p payload] isEqualToData:[strippedOfValidHMAC payload]]);
+    test([p.payload isEqualToData:strippedOfValidHMAC.payload]);
     
-    test([untouchedPayload isEqualToData:[p payload]]);
-    test([untouchedPayload isEqualToData:[strippedOfValidHMAC payload]]);
+    test([untouchedPayload isEqualToData:p.payload]);
+    test([untouchedPayload isEqualToData:strippedOfValidHMAC.payload]);
     
 }
 @end

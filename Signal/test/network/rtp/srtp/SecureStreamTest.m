@@ -43,7 +43,7 @@
     // authenticated then bit flip
     RtpPacket* r = [RtpPacket rtpPacketWithDefaultsAndSequenceNumber:5 andPayload:generatePseudoRandomData(40)];
     RtpPacket* s = [ss encryptAndAuthenticateNormalRtpPacket:r];
-    NSMutableData* m = [[s payload] mutableCopy];
+    NSMutableData* m = s.payload.mutableCopy;
     [m setUint8At:0 to:[m uint8At:0]^1];
     RtpPacket* sm = [r withPayload:m];
     testThrows([ss verifyAuthenticationAndDecryptSecuredRtpPacket:sm]);

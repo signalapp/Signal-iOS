@@ -70,7 +70,7 @@
 }
 -(void) tryWriteBufferedData {
     if (!futureConnectedAndWritableSource.future.hasResult) return;
-    if (![[futureConnectedAndWritableSource.future forceGetResult] isEqual:@YES]) return;
+    if (![futureConnectedAndWritableSource.future.forceGetResult isEqual:@YES]) return;
     NSStreamStatus status = [outputStream streamStatus];
     if (status < NSStreamStatusOpen) return;
     if (status >= NSStreamStatusAtEnd) {
@@ -184,7 +184,7 @@
     if (![futureConnectedAndWritableSource.future.forceGetResult isEqual:@YES]) return;
     
     while (inputStream.hasBytesAvailable) {
-        NSInteger numRead = [inputStream read:[readBuffer mutableBytes] maxLength:readBuffer.length];
+        NSInteger numRead = [inputStream read:readBuffer.mutableBytes maxLength:readBuffer.length];
         
         if (numRead < 0) [self onErrorOccurred:@"Read Error"];
         if (numRead <= 0) break;

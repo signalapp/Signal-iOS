@@ -41,7 +41,7 @@ NSData* sineWave(double frequency, double sampleRate, NSUInteger sampleCount) {
 NSData* generatePseudoRandomData(NSUInteger length) {
     NSMutableData* r = [NSMutableData dataWithLength:length];
     for (int i = 0; i < 16; i++) {
-        ((uint8_t*)[r mutableBytes])[i] = (uint8_t)arc4random_uniform(256);
+        ((uint8_t*)r.mutableBytes)[i] = (uint8_t)arc4random_uniform(256);
     }
     return r;
 }
