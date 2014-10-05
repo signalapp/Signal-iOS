@@ -26,16 +26,13 @@
  *  Therefore, we check on startup if mandatory permissions are granted.
  */
 
-- (void)verifyPushPermissions;
+- (void) checkAndTryToFixNotificationPermissionsWithAlertsOnFailure;
 
 /**
- *  Push notification registration method
- *
- *  @param success Block to execute after succesful push notification registration
- *  @param failure Block to executre if push notification registration fails
+ *  Push notification registration method.
  */
 
-- (void)registrationWithSuccess:(void (^)())success failure:(void (^)())failure;
+- (TOCFuture*) asyncRegisterForPushAndUserNotificationsWithAlertsOnFailure;
 
 /**
  *  The pushNotification and userNotificationFutureSource are accessed by the App Delegate after requested permissions.

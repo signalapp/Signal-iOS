@@ -18,7 +18,7 @@
     NSString* documentsDirectory = [NSHomeDirectory() stringByAppendingPathComponent:@"/Documents/"];
     NSString *path = [NSString stringWithFormat:@"%@/%@.plist", documentsDirectory, @"RedPhone-Data"];
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+    if ([NSFileManager.defaultManager fileExistsAtPath:path]) {
         NSData *plistData = [NSData dataWithContentsOfFile:path];
         
         NSError *error;
@@ -35,7 +35,7 @@
         
         [defaults synchronize];
         
-        [[NSFileManager defaultManager]removeItemAtPath:path error:&error];
+        [NSFileManager.defaultManager removeItemAtPath:path error:&error];
         
         if (error) {
             DDLogError(@"Error while migrating data: %@", error.description);
@@ -43,13 +43,11 @@
         
         // Some users push IDs were not correctly registered, by precaution, we are going to re-register all of them
         
-        [PushManager.sharedManager registrationWithSuccess:^{
-            
-        } failure:^{
+        [[PushManager.sharedManager asyncRegisterForPushAndUserNotificationsWithAlertsOnFailure] catchDo:^(id failure) {
             DDLogError(@"Error re-registering on migration from 1.0.2");
         }];
         
-        [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
+        [NSFileManager.defaultManager removeItemAtPath:path error:&error];
         
         if (error) {
             DDLogError(@"Error upgrading from 1.0.2 : %@", error.description);

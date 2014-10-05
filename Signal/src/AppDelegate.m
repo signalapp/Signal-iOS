@@ -79,14 +79,14 @@
     attrs = @{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication};
     [[NSFileManager defaultManager] setAttributes:attrs ofItemAtPath:logPath error:&error];
     
-    for (NSUInteger i = 0; i < logsFiles.count; i++) {
-        [pathsToExclude addObject:[logPath stringByAppendingString:logsFiles[i]]];
+    for (NSString* logsFile in logsFiles) {
+        [pathsToExclude addObject:[logPath stringByAppendingString:logsFile]];
     }
     
-    for (NSUInteger i = 0; i < pathsToExclude.count; i++) {
-        [[NSURL fileURLWithPath:pathsToExclude[i]] setResourceValue:@YES
-                                                             forKey:NSURLIsExcludedFromBackupKey
-                                                              error:&error];
+    for (NSString* pathToExclude in pathsToExclude) {
+        [[NSURL fileURLWithPath:pathToExclude] setResourceValue:@YES
+                                                         forKey:NSURLIsExcludedFromBackupKey
+                                                          error:&error];
     }
     
     if (error) {
@@ -175,15 +175,15 @@
 }
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
-    [[PushManager sharedManager].pushNotificationFutureSource trySetResult:deviceToken];
+    [PushManager.sharedManager.pushNotificationFutureSource trySetResult:deviceToken];
 }
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error {
-    [[PushManager sharedManager].pushNotificationFutureSource trySetFailure:error];
+    [PushManager.sharedManager.pushNotificationFutureSource trySetFailure:error];
 }
 
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings{
-    [[PushManager sharedManager].userNotificationFutureSource trySetResult:notificationSettings];
+    [PushManager.sharedManager.userNotificationFutureSource trySetResult:notificationSettings];
 }
 
 -(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
@@ -223,7 +223,7 @@
     [self removeScreenProtection];
     
     if (Environment.isRegistered) {
-        [PushManager.sharedManager verifyPushPermissions];
+        [PushManager.sharedManager checkAndTryToFixNotificationPermissionsWithAlertsOnFailure];
         [AppAudioManager.sharedInstance requestRequiredPermissionsIfNeeded];
     }
 }

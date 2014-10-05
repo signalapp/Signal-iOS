@@ -44,8 +44,9 @@ MacrosSingletonImplemention
     return self;
 }
 
-- (void)registerPushToken:(NSData*)deviceToken success:(void (^)(NSURLSessionDataTask *task, id responseObject))success
-failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure{
+- (void)registerPushToken:(NSData*)deviceToken
+                  success:(void (^)(NSURLSessionDataTask *task, id responseObject))success
+                  failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure{
     self.operationManager.requestSerializer = [self basicAuthenticationSerializer];
     
     [self.operationManager PUT:[NSString stringWithFormat:@"/apn/%@",deviceToken.encodedAsHexString] parameters:@{} success:success failure:failure];
