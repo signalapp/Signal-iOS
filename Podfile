@@ -7,6 +7,6 @@ pod 'UICKeyChainStore',           :podspec => 'Podspecs/UICKeyChainStore.podspec
 pod 'OpenSSL',		          '~> 1.0.109'
 pod 'MMDrawerController',         '~> 0.5.7'
 pod 'libPhoneNumber-iOS',         '~> 0.7'
-pod 'PastelogKit',                '~> 1.1'
+pod 'PastelogKit',                '~> 1.2'
 pod 'AFNetworking',               '~> 2.4.1'
 pod 'TwistedOakCollapsingFutures','~> 1.0'

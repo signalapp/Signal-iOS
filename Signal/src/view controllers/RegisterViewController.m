@@ -1,3 +1,4 @@
+#import "RPServerRequestsManager.h"
 #import "Environment.h"
 #import "HttpManager.h"
 #import "LocalizableText.h"
@@ -8,6 +9,7 @@
 #import "PreferencesUtil.h"
 #import "PushManager.h"
 #import "RegisterViewController.h"
+#import "RPServerRequestsManager.h"
 #import "SignalUtil.h"
 #import "SGNKeychainUtil.h"
 #import "ThreadManager.h"
@@ -114,32 +116,6 @@
     [self presentViewController:countryCodeController animated:YES completion:nil];
 }
 
--(TOCFuture*) asyncRegister:(PhoneNumber*)phoneNumber untilCancelled:(TOCCancelToken*)cancelToken {
-    [SGNKeychainUtil generateServerAuthPassword];
-    [SGNKeychainUtil setLocalNumberTo:phoneNumber];
-    
-    TOCUntilOperation regStarter = ^TOCFuture *(TOCCancelToken* internalUntilCancelledToken) {
-        HttpRequest *registerRequest = [HttpRequest httpRequestToStartRegistrationOfPhoneNumber];
-       
-        return [HttpManager asyncOkResponseFromMasterServer:registerRequest
-                                            unlessCancelled:internalUntilCancelledToken
-                                            andErrorHandler:Environment.errorNoter];
-    };
-    TOCFuture *futurePhoneRegistrationStarted = [TOCFuture futureFromUntilOperation:[TOCFuture operationTry:regStarter]
-                                                               withOperationTimeout:SERVER_TIMEOUT_SECONDS
-                                                                              until:cancelToken];
-
-    return [futurePhoneRegistrationStarted thenTry:^(id _) {
-        [self showViewNumber:CHALLENGE_VIEW_NUMBER];
-        [self.challengeNumberLabel setText:[phoneNumber description]];
-        [_registerCancelButton removeFromSuperview];
-        [self startVoiceVerificationCountdownTimer];
-        self->futureChallengeAcceptedSource = [TOCFutureSource new];
-        return futureChallengeAcceptedSource.future;
-    }];
-
-}
-
 - (void)registerPhoneNumberTapped {
     NSString *phoneNumber = [NSString stringWithFormat:@"%@%@", _countryCodeLabel.text, _phoneNumberTextField.text];
     PhoneNumber* localNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
@@ -147,16 +123,21 @@
     
     [_phoneNumberTextField resignFirstResponder];
 
-    TOCFuture* futureFinished = [self asyncRegister:localNumber untilCancelled:life.token];
     [_registerActivityIndicator startAnimating];
     _registerButton.enabled = NO;
     
-    [futureFinished catchDo:^(id error) {
-        NSError *err = ((NSError*)error);
+    [SGNKeychainUtil setLocalNumberTo:localNumber];
+    
+    [[RPServerRequestsManager sharedInstance]performRequest:[RPAPICall requestVerificationCode] success:^(NSURLSessionDataTask *task, id responseObject) {
+        [self showViewNumber:CHALLENGE_VIEW_NUMBER];
+        [self.challengeNumberLabel setText:[phoneNumber description]];
+        [_registerCancelButton removeFromSuperview];
+        [self startVoiceVerificationCountdownTimer];
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
         [_registerActivityIndicator stopAnimating];
         _registerButton.enabled = YES;
         
-        DDLogError(@"Registration failed with information %@", err.description);
+        DDLogError(@"Registration failed with information %@", error.description);
         
         UIAlertView *registrationErrorAV = [[UIAlertView alloc]initWithTitle:REGISTER_ERROR_ALERT_VIEW_TITLE message:REGISTER_ERROR_ALERT_VIEW_BODY delegate:nil cancelButtonTitle:REGISTER_ERROR_ALERT_VIEW_DISMISS otherButtonTitles:nil, nil];
         
@@ -173,22 +154,30 @@
     _challengeButton.enabled = NO;
     [_challengeActivityIndicator startAnimating];
     
-    HttpRequest *verifyRequest = [HttpRequest httpRequestToVerifyAccessToPhoneNumberWithChallenge:_challengeTextField.text];
-    TOCFuture *futureDone = [HttpManager asyncOkResponseFromMasterServer:verifyRequest
-                                                         unlessCancelled:nil
-                                                         andErrorHandler:Environment.errorNoter];
-    
-    [futureDone catchDo:^(id error) {
+    [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall verifyVerificationCode:_challengeTextField.text] success:^(NSURLSessionDataTask *task, id responseObject) {
+        
+        [PushManager.sharedManager registrationWithSuccess:^{
+            [futureChallengeAcceptedSource trySetResult:@YES];
+            [Environment setRegistered:YES];
+            [registered trySetResult:@YES];
+            [Environment.getCurrent.phoneDirectoryManager forceUpdate];
+            [self dismissView];
+        } failure:^{
+            _challengeButton.enabled = YES;
+            [_challengeActivityIndicator stopAnimating];
+        }];
+        
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
         NSString *alertTitle = NSLocalizedString(@"REGISTRATION_ERROR", @"");
         
         if ([error isKindOfClass:HttpResponse.class]) {
-            HttpResponse* badResponse = error;
-            if (badResponse.getStatusCode == 401) {
+            NSHTTPURLResponse* badResponse = (NSHTTPURLResponse*)task.response;
+            if (badResponse.statusCode == 401) {
                 SignalAlertView(alertTitle, REGISTER_CHALLENGE_ALERT_VIEW_BODY);
-            } else if (badResponse.getStatusCode == 401){
+            } else if (badResponse.statusCode == 401){
                 SignalAlertView(alertTitle, NSLocalizedString(@"REGISTER_RATE_LIMITING_BODY", @""));
             } else {
-                NSString *alertBodyString =  [NSString stringWithFormat:@"%@ %lu", NSLocalizedString(@"SERVER_CODE", @""),(unsigned long)badResponse.getStatusCode];
+                NSString *alertBodyString =  [NSString stringWithFormat:@"%@ %lu", NSLocalizedString(@"SERVER_CODE", @""),(unsigned long)badResponse.statusCode];
                 SignalAlertView (alertTitle, alertBodyString);
             }
         } else{
@@ -198,22 +187,6 @@
         
         _challengeButton.enabled = YES;
         [_challengeActivityIndicator stopAnimating];
-    }];
-
-    [futureDone thenDo:^(id result) {
-        [futureChallengeAcceptedSource trySetResult:@YES];
-    }];
-    
-    [futureChallengeAcceptedSource.future thenDo:^(id value) {
-        [PushManager.sharedManager registrationWithSuccess:^{
-            [Environment setRegistered:YES];
-            [registered trySetResult:@YES];
-            [Environment.getCurrent.phoneDirectoryManager forceUpdate];
-            [self dismissView];
-        } failure:^{
-            _challengeButton.enabled = YES;
-            [_challengeActivityIndicator stopAnimating];
-        }];
     }];
 }
 
@@ -275,29 +248,17 @@
 
 - (void) initiateVoiceVerification{
     [self stopVoiceVerificationCountdownTimer];
-    TOCUntilOperation callStarter = ^TOCFuture *(TOCCancelToken* internalUntilCancelledToken) {
-        HttpRequest* voiceVerifyReq = [HttpRequest httpRequestToStartRegistrationOfPhoneNumberWithVoice];
-        
-        [self.voiceChallengeTextLabel setText:NSLocalizedString(@"REGISTER_CALL_CALLING", @"")];
-        return [HttpManager asyncOkResponseFromMasterServer:voiceVerifyReq
-                                            unlessCancelled:internalUntilCancelledToken
-                                            andErrorHandler:Environment.errorNoter];
-    };
-    TOCFuture *futureVoiceVerificationStarted = [TOCFuture futureFromUntilOperation:[TOCFuture operationTry:callStarter]
-                                                               withOperationTimeout:SERVER_TIMEOUT_SECONDS
-                                                                              until:life.token];
-    [futureVoiceVerificationStarted catchDo:^(id errorId) {
-        HttpResponse* error = (HttpResponse*)errorId;
-       [self.voiceChallengeTextLabel setText:error.getStatusText];
-    }];
+    [self.voiceChallengeTextLabel setText:NSLocalizedString(@"REGISTER_CALL_CALLING", @"")];
     
-    [futureVoiceVerificationStarted finallyTry:^(id _id) {
+    [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall requestVerificationCodeWithVoice] success:^(NSURLSessionDataTask *task, id responseObject) {
+        
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, VOICE_VERIFICATION_COOLDOWN_SECONDS * NSEC_PER_SEC);
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             [self.voiceChallengeTextLabel setText:NSLocalizedString(@"REGISTER_CALL_RECALL", @"")];
         });
         
-        return _id;
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        [self.voiceChallengeTextLabel setText:error.description];
     }];
 }
 

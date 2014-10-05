@@ -39,7 +39,7 @@ PODS:
   - MMDrawerController/Subclass (0.5.7):
     - MMDrawerController/Core
   - OpenSSL (1.0.109)
-  - PastelogKit (1.1):
+  - PastelogKit (1.2):
     - CocoaLumberjack (~> 1.9)
   - TwistedOakCollapsingFutures (1.0.0):
     - UnionFind (~> 1.0)
@@ -51,7 +51,7 @@ DEPENDENCIES:
   - libPhoneNumber-iOS (~> 0.7)
   - MMDrawerController (~> 0.5.7)
   - OpenSSL (~> 1.0.109)
-  - PastelogKit (~> 1.1)
+  - PastelogKit (~> 1.2)
   - TwistedOakCollapsingFutures (~> 1.0)
   - UICKeyChainStore (from `Podspecs/UICKeyChainStore.podspec`)
 
@@ -65,7 +65,7 @@ SPEC CHECKSUMS:
   libPhoneNumber-iOS: 98fc07d70c8fdb5e6a8e3442c37e97353065c20e
   MMDrawerController: c3ab7a318ddc7e2bcd133139c3161af08c6e1197
   OpenSSL: 4810adf5c99b0e2cd20670a11a987c805e8a521c
-  PastelogKit: 32836ec27e587a8876326abeaf9a1b5e2bc484ea
+  PastelogKit: 8bab71b1d187617a83e7124cffe9eb1a600e6695
   TwistedOakCollapsingFutures: 07aab84fd3958dc94d55ef705b12857d9fbe61d1
   UICKeyChainStore: eef407137f0397e95a3df32cdf05f7e2ddd99647
   UnionFind: 45777a8b6878d3a602af3654cc3a09b87389d356

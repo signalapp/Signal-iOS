@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import <TwistedOakCollapsingFutures/CollapsingFutures.h>
+#import <CollapsingFutures.h>
 #import <Foundation/Foundation.h>
 
 

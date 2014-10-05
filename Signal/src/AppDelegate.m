@@ -60,6 +60,7 @@
         DDLogError(@"No previous version found. Possibly first launch since install.");
         [Environment resetAppData]; // We clean previous keychain entries in case their are some entries remaining.
     } else if ([currentVersion compare:previousVersion options:NSNumericSearch] == NSOrderedDescending){
+        [Environment resetAppData];
         // Application was updated, let's see if we have a migration scheme for it.
         if ([previousVersion isEqualToString:@"1.0.2"]) {
             // Migrate from custom preferences to NSUserDefaults

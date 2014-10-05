@@ -8,7 +8,7 @@
 #import "PreferencesUtil.h"
 #import "PushManager.h"
 #import "Environment.h"
-#import "CallServerRequestsManager.h"
+#import "RPServerRequestsManager.h"
 #import "FutureUtil.h"
 
 @interface PushManager ()
@@ -104,7 +104,7 @@
 -(TOCFuture*)registerForPushFutureWithToken:(NSData*)token{
     self.registerWithServerFutureSource = [TOCFutureSource new];
     
-    [CallServerRequestsManager.sharedInstance registerPushToken:token success:^(NSURLSessionDataTask *task, id responseObject) {
+    [RPServerRequestsManager.sharedInstance performRequest:[RPAPICall registerPushNotificationWithPushToken:token] success:^(NSURLSessionDataTask *task, id responseObject) {
         if ([task.response isKindOfClass: NSHTTPURLResponse.class]){
             NSInteger statusCode = [(NSHTTPURLResponse*) task.response statusCode];
             if (statusCode == 200) {
@@ -116,10 +116,11 @@
         } else{
             [self.registerWithServerFutureSource trySetFailure:@NO];
         }
+
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         [self.registerWithServerFutureSource trySetFailure:@NO];
     }];
-    
+
     return self.registerWithServerFutureSource.future;
 }
 

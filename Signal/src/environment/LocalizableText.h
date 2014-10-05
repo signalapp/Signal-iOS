@@ -141,7 +141,7 @@
 
 #pragma mark - Contact Intersection
 
-#define TIMEOUT                         NSLocalizedString(@"TIMEOUT",@"")
+#define TIMEOUT                         NSLocalizedString(@"ERROR_WAS_DETECTED_TITLE",@"")
 #define TIMEOUT_CONTACTS_DETAIL         NSLocalizedString(@"TIMEOUT_CONTACTS_DETAIL", @"")
 
 NSDictionary* makeCallProgressLocalizedTextDictionary(void);

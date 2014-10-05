@@ -34,6 +34,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 - (void)viewDidLoad {
     [super viewDidLoad];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contactsDidRefresh) name:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contactRefreshFailed) name:NOTIFICATION_DIRECTORY_FAILED object:nil];
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc]
                                         init];
     [refreshControl addTarget:self action:@selector(refreshContacts) forControlEvents:UIControlEventValueChanged];
@@ -252,17 +253,15 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 
 - (void)refreshContacts{
     [Environment.getCurrent.phoneDirectoryManager forceUpdate];
-    self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:REFRESH_TIMEOUT target:self selector:@selector(contactRefreshDidTimeout) userInfo:nil repeats:NO];
 }
 
-- (void)contactRefreshDidTimeout{
+- (void)contactRefreshFailed{
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:TIMEOUT message:TIMEOUT_CONTACTS_DETAIL delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil];
     [alert show];
     [self.refreshControl endRefreshing];
 }
 
 - (void)contactsDidRefresh{
-    [self.refreshTimer invalidate];
     [self.refreshControl endRefreshing];
 }
 

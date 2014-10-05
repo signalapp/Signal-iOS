@@ -1,7 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "NetworkEndPoint.h"
 #import "Logging.h"
-#import "HttpRequestOrResponse.h"
 #import "Terminable.h"
 #import "Queue.h"
 #import "PacketHandler.h"
