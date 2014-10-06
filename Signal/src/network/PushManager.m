@@ -9,7 +9,6 @@
 #import "PushManager.h"
 #import "Environment.h"
 #import "RPServerRequestsManager.h"
-#import "FutureUtil.h"
 
 @interface PushManager ()
 
@@ -26,7 +25,11 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedManager = [self new];
-        sharedManager.missingPermissionsAlertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")  message:NSLocalizedString(@"PUSH_SETTINGS_MESSAGE", @"") delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil, nil];
+        sharedManager.missingPermissionsAlertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
+                                                                               message:NSLocalizedString(@"PUSH_SETTINGS_MESSAGE", @"")
+                                                                              delegate:nil
+                                                                     cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                                                                     otherButtonTitles:nil, nil];
     });
     return sharedManager;
 }
