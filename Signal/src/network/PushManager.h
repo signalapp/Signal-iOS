@@ -19,7 +19,7 @@
 
 @interface PushManager : NSObject
 
-+ (instancetype)sharedManager;
++ (PushManager*)sharedManager;
 
 /**
  *  Push notification token is always registered during signup. User can however revoke notifications.

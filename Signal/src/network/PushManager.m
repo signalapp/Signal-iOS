@@ -34,55 +34,26 @@
     return sharedManager;
 }
 
+
 - (void)verifyPushPermissions{
-    
-    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
-        
-        // Displaying notifications and ringing
-        
-        if ([self isMissingMandatoryNotificationTypes:[UIApplication.sharedApplication enabledRemoteNotificationTypes]]) {
-            
-            [self registrationWithSuccess:^{
-                DDLogInfo(@"Push notifications were succesfully re-enabled");
-            } failure:^{
-                [self.missingPermissionsAlertView show];
-            }];
-        }
-        
-    } else{
-        
-        // UIUserNotificationsSettings
-        UIUserNotificationSettings *settings = [UIApplication.sharedApplication currentUserNotificationSettings];
-        
-        // To use Signal, it is required to have sound notifications and alert types.
-        
-        if ([self isMissingMandatoryNotificationTypes:settings.types]) {
-            
-            [self registrationForUserNotificationWithSuccess:^{
-                DDLogInfo(@"User notifications were succesfully re-enabled");
-            } failure:^{
-                [self.missingPermissionsAlertView show];
-            }];
-            
-        }
-        
-        // Remote Notifications
-        if (![UIApplication.sharedApplication isRegisteredForRemoteNotifications]) {
-            
-            [self registrationForPushWithSuccess:^{
-                DDLogInfo(@"Push notification were succesfully re-enabled");
-            } failure:^{
-                DDLogError(@"The phone could not be re-registered for push notifications."); // Push tokens are not changing on the same phone, just user notification changes so it's not very important.
-            }];
-            
-        }
+    if (self.isMissingMandatoryNotificationTypes || self.needToRegisterForRemoteNotifications){
+        [self registrationWithSuccess:^{
+            DDLogError(@"Re-enabled push succesfully");
+        } failure:^{
+            DDLogError(@"Failed to re-enable push.");
+        }];
     }
 }
 
 - (void)registrationWithSuccess:(void (^)())success failure:(void (^)())failure{
     
+    if (!self.wantRemoteNotifications) {
+        success();
+        return;
+    }
+    
     if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
-
+        
         // On iOS7, we just need to register for Push Notifications (user notifications are enabled with them)
         [self registrationForPushWithSuccess:success failure:failure];
         
@@ -114,30 +85,29 @@
                 [self.registerWithServerFutureSource trySetResult:@YES];
             } else{
                 DDLogError(@"The server returned %@ instead of a 200 status code", task.response);
-                [self.registerWithServerFutureSource trySetFailure:@NO];
+                [self.registerWithServerFutureSource trySetFailure:nil];
             }
         } else{
-            [self.registerWithServerFutureSource trySetFailure:@NO];
+            [self.registerWithServerFutureSource trySetFailure:task.response];
         }
-
+        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        [self.registerWithServerFutureSource trySetFailure:@NO];
+        [self.registerWithServerFutureSource trySetFailure:error];
     }];
-
+    
     return self.registerWithServerFutureSource.future;
 }
 
 #pragma mark Register device for Push Notification locally
 
--(TOCFuture*)registeriOS7PushNotificationFuture{
-    self.pushNotificationFutureSource = [TOCFutureSource new];
-    [UIApplication.sharedApplication registerForRemoteNotificationTypes:(UIRemoteNotificationType)[self mandatoryNotificationTypes]];
-    return self.pushNotificationFutureSource.future;
-}
-
 -(TOCFuture*)registerPushNotificationFuture{
     self.pushNotificationFutureSource = [TOCFutureSource new];
-    [[UIApplication sharedApplication] registerForRemoteNotifications];
+    
+    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
+        [UIApplication.sharedApplication registerForRemoteNotificationTypes:(UIRemoteNotificationType)self.mandatoryNotificationTypes];
+    } else {
+        [UIApplication.sharedApplication registerForRemoteNotifications];
+    }
     return self.pushNotificationFutureSource.future;
 }
 
@@ -148,28 +118,23 @@
 }
 
 - (void)registrationForPushWithSuccess:(void (^)())success failure:(void (^)())failure{
-    TOCFuture       *requestPushTokenFuture;
-    
-    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
-        requestPushTokenFuture = [self registeriOS7PushNotificationFuture];
-    } else{
-        requestPushTokenFuture = [self registerPushNotificationFuture];
-    }
+    TOCFuture       *requestPushTokenFuture = [self registerPushNotificationFuture];
     
     [requestPushTokenFuture catchDo:^(id failureObj) {
         failure();
-        if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
-            [self.missingPermissionsAlertView show];
-        } else{
-            DDLogError(@"This should not happen on iOS8. No push token was provided");
-        }
+        [self.missingPermissionsAlertView show];
+        DDLogError(@"This should not happen on iOS8. No push token was provided");
     }];
     
     [requestPushTokenFuture thenDo:^(NSData* pushToken) {
         TOCFuture *registerPushTokenFuture = [self registerForPushFutureWithToken:pushToken];
         
         [registerPushTokenFuture catchDo:^(id failureObj) {
-            UIAlertView *failureToRegisterWithServerAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"REGISTRATION_ERROR", @"") message:NSLocalizedString(@"REGISTRATION_BODY", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles:nil, nil];
+            UIAlertView *failureToRegisterWithServerAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"REGISTRATION_ERROR", @"")
+                                                                                       message:NSLocalizedString(@"REGISTRATION_BODY", nil)
+                                                                                      delegate:nil
+                                                                             cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                                                             otherButtonTitles:nil, nil];
             [failureToRegisterWithServerAlert show];
             failure();
         }];
@@ -189,7 +154,7 @@
     }];
     
     [registrerUserNotificationFuture thenDo:^(id types) {
-        if ([self isMissingMandatoryNotificationTypes:[UIApplication.sharedApplication currentUserNotificationSettings].types]) {
+        if (self.isMissingMandatoryNotificationTypes) {
             [self.missingPermissionsAlertView show];
             failure();
         } else{
@@ -198,6 +163,20 @@
     }];
 }
 
+-(BOOL) needToRegisterForRemoteNotifications {
+    return self.wantRemoteNotifications && !UIApplication.sharedApplication.isRegisteredForRemoteNotifications;
+}
+
+-(BOOL) wantRemoteNotifications {
+    BOOL isSimulator = [UIDevice.currentDevice.model.lowercaseString rangeOfString:@"simulator"].location != NSNotFound;
+    
+    if (isSimulator) {
+        // Simulator is used for debugging but can't receive push notifications, so don't bother trying to get them
+        return NO;
+    }
+    
+    return YES;
+}
 
 -(UIUserNotificationCategory*)userNotificationsCallCategory{
     UIMutableUserNotificationAction *action_accept = [UIMutableUserNotificationAction new];
@@ -222,17 +201,23 @@
     return callCategory;
 }
 
--(BOOL)isMissingMandatoryNotificationTypes:(int)notificationTypes{
-    int mandatoryTypes = [self mandatoryNotificationTypes];
-    return ((mandatoryTypes & notificationTypes) == mandatoryTypes)?NO:YES;
+-(BOOL)isMissingMandatoryNotificationTypes {
+    int mandatoryTypes = self.mandatoryNotificationTypes;
+    int currentTypes;
+    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
+        currentTypes = UIApplication.sharedApplication.enabledRemoteNotificationTypes;
+    } else {
+        currentTypes = UIApplication.sharedApplication.currentUserNotificationSettings.types;
+    }
+    return (mandatoryTypes & currentTypes) != mandatoryTypes;
 }
 
 -(int)allNotificationTypes{
-    return (UIUserNotificationTypeAlert | UIUserNotificationTypeSound | UIUserNotificationTypeBadge);
+    return UIUserNotificationTypeAlert | UIUserNotificationTypeSound | UIUserNotificationTypeBadge;
 }
 
 -(int)mandatoryNotificationTypes{
-    return (UIUserNotificationTypeAlert | UIUserNotificationTypeSound);
+    return UIUserNotificationTypeAlert | UIUserNotificationTypeSound;
 }
 
 @end
