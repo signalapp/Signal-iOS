@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import <TwistedOakCollapsingFutures/CollapsingFutures.h>
+#import <CollapsingFutures.h>
 #import <Foundation/Foundation.h>
 
 
@@ -19,7 +19,7 @@
 
 @interface PushManager : NSObject
 
-+ (instancetype)sharedManager;
++ (PushManager*)sharedManager;
 
 /**
  *  Push notification token is always registered during signup. User can however revoke notifications.

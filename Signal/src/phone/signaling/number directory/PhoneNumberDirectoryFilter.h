@@ -1,7 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "BloomFilter.h"
 #import "PhoneNumber.h"
-#import "HttpResponse.h"
 
 /**
  *
@@ -18,7 +17,7 @@
 +(PhoneNumberDirectoryFilter*) phoneNumberDirectoryFilterDefault;
 +(PhoneNumberDirectoryFilter*) phoneNumberDirectoryFilterWithBloomFilter:(BloomFilter*)bloomFilter
                                                        andExpirationDate:(NSDate*)expirationDate;
-+(PhoneNumberDirectoryFilter*) phoneNumberDirectoryFilterFromHttpResponse:(HttpResponse*)response;
++(PhoneNumberDirectoryFilter*) phoneNumberDirectoryFilterFromURLResponse:(NSHTTPURLResponse*)response body:(NSData*)data;
 
 -(bool) containsPhoneNumber:(PhoneNumber*)phoneNumber;
 -(NSDate*) getExpirationDate;

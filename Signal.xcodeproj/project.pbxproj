@@ -86,14 +86,6 @@
 		76EB059318170B33006006FC /* UnrecognizedRequestFailure.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042718170B33006006FC /* UnrecognizedRequestFailure.m */; };
 		76EB059418170B33006006FC /* HttpManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042A18170B33006006FC /* HttpManager.m */; };
 		76EB059518170B33006006FC /* HttpManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042A18170B33006006FC /* HttpManager.m */; };
-		76EB059618170B33006006FC /* HttpRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042C18170B33006006FC /* HttpRequest.m */; };
-		76EB059718170B33006006FC /* HttpRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042C18170B33006006FC /* HttpRequest.m */; };
-		76EB059818170B33006006FC /* HttpRequestOrResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042E18170B33006006FC /* HttpRequestOrResponse.m */; };
-		76EB059918170B33006006FC /* HttpRequestOrResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042E18170B33006006FC /* HttpRequestOrResponse.m */; };
-		76EB059A18170B33006006FC /* HttpRequestUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043018170B33006006FC /* HttpRequestUtil.m */; };
-		76EB059B18170B33006006FC /* HttpRequestUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043018170B33006006FC /* HttpRequestUtil.m */; };
-		76EB059C18170B33006006FC /* HttpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043218170B33006006FC /* HttpResponse.m */; };
-		76EB059D18170B33006006FC /* HttpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043218170B33006006FC /* HttpResponse.m */; };
 		76EB059E18170B33006006FC /* HttpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043418170B33006006FC /* HttpSocket.m */; };
 		76EB059F18170B33006006FC /* HttpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043418170B33006006FC /* HttpSocket.m */; };
 		76EB05A018170B33006006FC /* IpAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043618170B33006006FC /* IpAddress.m */; };
@@ -355,6 +347,11 @@
 		A1C32D5117A06544000A904E /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4D17A0652C000A904E /* AddressBook.framework */; };
 		AA0C8E498E2046B0B81EEE6E /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
 		B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */ = {isa = PBXBuildFile; fileRef = B60C16641988999D00E97A6C /* VersionMigrations.m */; };
+		B63761E319E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E219E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m */; };
+		B63761EC19E1FBE8005735D1 /* HttpRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E519E1FBE8005735D1 /* HttpRequest.m */; };
+		B63761ED19E1FBE8005735D1 /* HttpRequestOrResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E719E1FBE8005735D1 /* HttpRequestOrResponse.m */; };
+		B63761EE19E1FBE8005735D1 /* HttpRequestUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E919E1FBE8005735D1 /* HttpRequestUtil.m */; };
+		B63761EF19E1FBE8005735D1 /* HttpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761EB19E1FBE8005735D1 /* HttpResponse.m */; };
 		B6416FAD199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F36199A0478003C5699 /* Localizable.strings */; };
 		B6416FAE199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F39199A0478003C5699 /* Localizable.strings */; };
 		B6416FAF199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F3C199A0478003C5699 /* Localizable.strings */; };
@@ -394,7 +391,9 @@
 		B6416FD1199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416FA2199A0478003C5699 /* Localizable.strings */; };
 		B6416FD2199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416FA5199A0478003C5699 /* Localizable.strings */; };
 		B6416FD4199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416FAB199A0478003C5699 /* Localizable.strings */; };
-		B67ADDC41989FF8700E1A773 /* CallServerRequestsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B67ADDC31989FF8700E1A773 /* CallServerRequestsManager.m */; };
+		B65EDA1219E1BE6400AAA7CB /* RPAPICall.m in Sources */ = {isa = PBXBuildFile; fileRef = B65EDA1119E1BE6400AAA7CB /* RPAPICall.m */; };
+		B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
+		B67ADDC41989FF8700E1A773 /* RPServerRequestsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B67ADDC31989FF8700E1A773 /* RPServerRequestsManager.m */; };
 		B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B67EBF5C19194AC60084CCFD /* Settings.bundle */; };
 		B684A46D19C3446200B11029 /* PushManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B684A46C19C3446200B11029 /* PushManagerTest.m */; };
 		B6850E5A1995A4710068E715 /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6850E591995A4710068E715 /* whisperFake.cer */; };
@@ -655,6 +654,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		14DDBCE302E19644A773D119 /* Pods.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods.app store release.xcconfig"; path = "Pods/Target Support Files/Pods/Pods.app store release.xcconfig"; sourceTree = "<group>"; };
 		701231B318ECAA4500D456C4 /* EvpMessageDigest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpMessageDigest.h; sourceTree = "<group>"; };
 		701231B418ECAA4500D456C4 /* EvpMessageDigest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EvpMessageDigest.m; sourceTree = "<group>"; };
 		70377AA71916BA0500CAF501 /* InteractiveLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InteractiveLabel.h; sourceTree = "<group>"; };
@@ -767,14 +767,6 @@
 		76EB042718170B33006006FC /* UnrecognizedRequestFailure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UnrecognizedRequestFailure.m; sourceTree = "<group>"; };
 		76EB042918170B33006006FC /* HttpManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpManager.h; sourceTree = "<group>"; };
 		76EB042A18170B33006006FC /* HttpManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpManager.m; sourceTree = "<group>"; };
-		76EB042B18170B33006006FC /* HttpRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequest.h; sourceTree = "<group>"; };
-		76EB042C18170B33006006FC /* HttpRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequest.m; sourceTree = "<group>"; };
-		76EB042D18170B33006006FC /* HttpRequestOrResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequestOrResponse.h; sourceTree = "<group>"; };
-		76EB042E18170B33006006FC /* HttpRequestOrResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequestOrResponse.m; sourceTree = "<group>"; };
-		76EB042F18170B33006006FC /* HttpRequestUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequestUtil.h; sourceTree = "<group>"; };
-		76EB043018170B33006006FC /* HttpRequestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequestUtil.m; sourceTree = "<group>"; };
-		76EB043118170B33006006FC /* HttpResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpResponse.h; sourceTree = "<group>"; };
-		76EB043218170B33006006FC /* HttpResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpResponse.m; sourceTree = "<group>"; };
 		76EB043318170B33006006FC /* HttpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpSocket.h; sourceTree = "<group>"; };
 		76EB043418170B33006006FC /* HttpSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpSocket.m; sourceTree = "<group>"; };
 		76EB043518170B33006006FC /* IpAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IpAddress.h; sourceTree = "<group>"; };
@@ -1000,6 +992,8 @@
 		76EB053C18170B33006006FC /* InboxFeedTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InboxFeedTableViewCell.xib; sourceTree = "<group>"; };
 		76EB053F18170B33006006FC /* CallLogTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CallLogTableViewCell.xib; sourceTree = "<group>"; };
 		8313AE91B4954215858A5662 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		91E46203423941C0C94D90E9 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		9CC6C6BD3B51923FD6317C94 /* Pods.ad-hoc distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods.ad-hoc distribution.xcconfig"; path = "Pods/Target Support Files/Pods/Pods.ad-hoc distribution.xcconfig"; sourceTree = "<group>"; };
 		A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A15706F417F0CD6D007C2BD6 /* AudioFrameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioFrameTest.m; sourceTree = "<group>"; };
 		A15706F617F0CD6D007C2BD6 /* AudioRemoteIOTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioRemoteIOTest.m; sourceTree = "<group>"; };
@@ -1056,6 +1050,16 @@
 		A1FDCBEE16DAA6C300868894 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B60C16631988999D00E97A6C /* VersionMigrations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionMigrations.h; sourceTree = "<group>"; };
 		B60C16641988999D00E97A6C /* VersionMigrations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VersionMigrations.m; sourceTree = "<group>"; };
+		B63761E119E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AFHTTPSessionManager+SignalMethods.h"; sourceTree = "<group>"; };
+		B63761E219E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AFHTTPSessionManager+SignalMethods.m"; sourceTree = "<group>"; };
+		B63761E419E1FBE8005735D1 /* HttpRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequest.h; sourceTree = "<group>"; };
+		B63761E519E1FBE8005735D1 /* HttpRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequest.m; sourceTree = "<group>"; };
+		B63761E619E1FBE8005735D1 /* HttpRequestOrResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequestOrResponse.h; sourceTree = "<group>"; };
+		B63761E719E1FBE8005735D1 /* HttpRequestOrResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequestOrResponse.m; sourceTree = "<group>"; };
+		B63761E819E1FBE8005735D1 /* HttpRequestUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequestUtil.h; sourceTree = "<group>"; };
+		B63761E919E1FBE8005735D1 /* HttpRequestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequestUtil.m; sourceTree = "<group>"; };
+		B63761EA19E1FBE8005735D1 /* HttpResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpResponse.h; sourceTree = "<group>"; };
+		B63761EB19E1FBE8005735D1 /* HttpResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpResponse.m; sourceTree = "<group>"; };
 		B6416F37199A0478003C5699 /* an */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = an; path = Localizable.strings; sourceTree = "<group>"; };
 		B6416F3A199A0478003C5699 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = Localizable.strings; sourceTree = "<group>"; };
 		B6416F3D199A0478003C5699 /* be */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = be; path = Localizable.strings; sourceTree = "<group>"; };
@@ -1096,9 +1100,12 @@
 		B6416FA6199A0478003C5699 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = Localizable.strings; sourceTree = "<group>"; };
 		B6416FAC199A0478003C5699 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = Localizable.strings; sourceTree = "<group>"; };
 		B657DDC91911A40500F45B0C /* Signal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Signal.entitlements; sourceTree = "<group>"; };
+		B65EDA1019E1BE6400AAA7CB /* RPAPICall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPAPICall.h; sourceTree = "<group>"; };
+		B65EDA1119E1BE6400AAA7CB /* RPAPICall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPAPICall.m; sourceTree = "<group>"; };
 		B661C211198EE2EA00548CA1 /* iOSVersions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iOSVersions.h; path = src/environment/iOSVersions.h; sourceTree = "<group>"; };
-		B67ADDC21989FF8700E1A773 /* CallServerRequestsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallServerRequestsManager.h; sourceTree = "<group>"; };
-		B67ADDC31989FF8700E1A773 /* CallServerRequestsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallServerRequestsManager.m; sourceTree = "<group>"; };
+		B66DBF4919D5BBC8006EA940 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		B67ADDC21989FF8700E1A773 /* RPServerRequestsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPServerRequestsManager.h; sourceTree = "<group>"; };
+		B67ADDC31989FF8700E1A773 /* RPServerRequestsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPServerRequestsManager.m; sourceTree = "<group>"; };
 		B67EBF5C19194AC60084CCFD /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = SettingsBundle/Settings.bundle; sourceTree = SOURCE_ROOT; };
 		B684A46C19C3446200B11029 /* PushManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PushManagerTest.m; path = Signal/test/push/PushManagerTest.m; sourceTree = SOURCE_ROOT; };
 		B6850E591995A4710068E715 /* whisperFake.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperFake.cer; sourceTree = "<group>"; };
@@ -1142,7 +1149,6 @@
 		BFB074C419A5611000F2947C /* FutureUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FutureUtil.m; sourceTree = "<group>"; };
 		BFB074C519A5611000F2947C /* ObservableValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObservableValue.h; sourceTree = "<group>"; };
 		BFB074C619A5611000F2947C /* ObservableValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObservableValue.m; sourceTree = "<group>"; };
-		C71793B33D9C45079F74487E /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 		D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		D221A089169C9E5E00537ABF /* Signal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Signal.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1156,7 +1162,6 @@
 		D221A0E7169DFFC500537ABF /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = ../../../../../../System/Library/Frameworks/AVFoundation.framework; sourceTree = "<group>"; };
 		D24B5BD4169F568C00681372 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = ../../../../../../System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<group>"; };
 		D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
-		E108ED12187E34FD0045AEA3 /* iTunesArtwork.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = iTunesArtwork.png; sourceTree = "<group>"; };
 		E108ED13187E34FD0045AEA3 /* iTunesArtwork@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iTunesArtwork@2x.png"; sourceTree = "<group>"; };
 		E1370B3018A0660300826894 /* archive_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = archive_icon.png; sourceTree = "<group>"; };
 		E1370B3118A0660300826894 /* archive_icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "archive_icon@2x.png"; sourceTree = "<group>"; };
@@ -1373,6 +1378,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		420DEC7C09ED549B971FBF67 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				91E46203423941C0C94D90E9 /* Pods.debug.xcconfig */,
+				9CC6C6BD3B51923FD6317C94 /* Pods.ad-hoc distribution.xcconfig */,
+				14DDBCE302E19644A773D119 /* Pods.app store release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		70B8009F190C529C0042E3F0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1707,18 +1722,21 @@
 		76EB042818170B33006006FC /* http */ = {
 			isa = PBXGroup;
 			children = (
-				B67ADDC21989FF8700E1A773 /* CallServerRequestsManager.h */,
-				B67ADDC31989FF8700E1A773 /* CallServerRequestsManager.m */,
+				B65EDA0F19E1BE2200AAA7CB /* Requests */,
+				B67ADDC21989FF8700E1A773 /* RPServerRequestsManager.h */,
+				B67ADDC31989FF8700E1A773 /* RPServerRequestsManager.m */,
+				B63761E119E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.h */,
+				B63761E219E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m */,
+				B63761E419E1FBE8005735D1 /* HttpRequest.h */,
+				B63761E519E1FBE8005735D1 /* HttpRequest.m */,
+				B63761E619E1FBE8005735D1 /* HttpRequestOrResponse.h */,
+				B63761E719E1FBE8005735D1 /* HttpRequestOrResponse.m */,
+				B63761E819E1FBE8005735D1 /* HttpRequestUtil.h */,
+				B63761E919E1FBE8005735D1 /* HttpRequestUtil.m */,
+				B63761EA19E1FBE8005735D1 /* HttpResponse.h */,
+				B63761EB19E1FBE8005735D1 /* HttpResponse.m */,
 				76EB042918170B33006006FC /* HttpManager.h */,
 				76EB042A18170B33006006FC /* HttpManager.m */,
-				76EB042B18170B33006006FC /* HttpRequest.h */,
-				76EB042C18170B33006006FC /* HttpRequest.m */,
-				76EB042D18170B33006006FC /* HttpRequestOrResponse.h */,
-				76EB042E18170B33006006FC /* HttpRequestOrResponse.m */,
-				76EB042F18170B33006006FC /* HttpRequestUtil.h */,
-				76EB043018170B33006006FC /* HttpRequestUtil.m */,
-				76EB043118170B33006006FC /* HttpResponse.h */,
-				76EB043218170B33006006FC /* HttpResponse.m */,
 				76EB043318170B33006006FC /* HttpSocket.h */,
 				76EB043418170B33006006FC /* HttpSocket.m */,
 			);
@@ -2731,6 +2749,15 @@
 			path = translations/zh_TW.lproj;
 			sourceTree = "<group>";
 		};
+		B65EDA0F19E1BE2200AAA7CB /* Requests */ = {
+			isa = PBXGroup;
+			children = (
+				B65EDA1019E1BE6400AAA7CB /* RPAPICall.h */,
+				B65EDA1119E1BE6400AAA7CB /* RPAPICall.m */,
+			);
+			name = Requests;
+			sourceTree = "<group>";
+		};
 		B6B6C3C419193F5B00C0B76B /* Translations */ = {
 			isa = PBXGroup;
 			children = (
@@ -2789,12 +2816,12 @@
 			isa = PBXGroup;
 			children = (
 				D221A093169C9E5E00537ABF /* Signal */,
-				C71793B33D9C45079F74487E /* Pods.xcconfig */,
 				70B800C8190C55320042E3F0 /* Libraries */,
 				D221A08C169C9E5E00537ABF /* Frameworks */,
 				D221A08A169C9E5E00537ABF /* Products */,
 				70B8009E190C529C0042E3F0 /* spandsp.xcodeproj */,
 				70B800A7190C54790042E3F0 /* speex.xcodeproj */,
+				420DEC7C09ED549B971FBF67 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2844,6 +2871,7 @@
 				76EB03C118170B33006006FC /* src */,
 				D221A094169C9E5E00537ABF /* Supporting Files */,
 				A15706EA17F0CD6D007C2BD6 /* test */,
+				B66DBF4919D5BBC8006EA940 /* Images.xcassets */,
 			);
 			path = Signal;
 			sourceTree = "<group>";
@@ -2857,7 +2885,6 @@
 				E1370BDB18A066F600826894 /* Default.png */,
 				E1370BDC18A066F600826894 /* Default@2x.png */,
 				E18AB3F318A05734001A532A /* Icons */,
-				E108ED12187E34FD0045AEA3 /* iTunesArtwork.png */,
 				E108ED13187E34FD0045AEA3 /* iTunesArtwork@2x.png */,
 				D221A099169C9E5E00537ABF /* main.m */,
 				D221A095169C9E5E00537ABF /* Signal-Info.plist */,
@@ -3019,6 +3046,7 @@
 				ORGANIZATIONNAME = "Open Whisper Systems";
 				TargetAttributes = {
 					D221A088169C9E5E00537ABF = {
+						DevelopmentTeam = U68MSDN6DR;
 						SystemCapabilities = {
 							com.apple.DataProtection = {
 								enabled = 1;
@@ -3253,6 +3281,7 @@
 				E14874E118A06930002CC4F3 /* spinner_error.png in Resources */,
 				B6416FBF199A0478003C5699 /* Localizable.strings in Resources */,
 				B6416FB7199A0478003C5699 /* Localizable.strings in Resources */,
+				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
 				E14874E218A06930002CC4F3 /* spinner_error@2x.png in Resources */,
 				E14874E318A06930002CC4F3 /* spinner_ringing.png in Resources */,
 				E14874E418A06930002CC4F3 /* spinner_ringing@2x.png in Resources */,
@@ -3378,7 +3407,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		D221A0A8169C9E5F00537ABF /* ShellScript */ = {
@@ -3406,7 +3435,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		EE182B0CAFB74DD9A2D39FD3 /* Check Pods Manifest.lock */ = {
@@ -3440,7 +3469,6 @@
 				76EB060218170B33006006FC /* InitiatorSessionDescriptor.m in Sources */,
 				76EB05FC18170B33006006FC /* CallConnectUtil_Server.m in Sources */,
 				76EB062418170B33006006FC /* PriorityQueue.m in Sources */,
-				76EB059818170B33006006FC /* HttpRequestOrResponse.m in Sources */,
 				76EB061A18170B33006006FC /* DiscardingLog.m in Sources */,
 				76EB068418170B34006006FC /* ContactDetailTableViewCell.m in Sources */,
 				76EB066218170B34006006FC /* SettingsViewController.m in Sources */,
@@ -3454,7 +3482,7 @@
 				70B80119190C55660042E3F0 /* TextFormat.m in Sources */,
 				E197B61818BBEC1A00F073E5 /* RemoteIOAudio.m in Sources */,
 				70B8011C190C55660042E3F0 /* Utilities.m in Sources */,
-				B67ADDC41989FF8700E1A773 /* CallServerRequestsManager.m in Sources */,
+				B67ADDC41989FF8700E1A773 /* RPServerRequestsManager.m in Sources */,
 				76EB059418170B33006006FC /* HttpManager.m in Sources */,
 				76EB05EC18170B33006006FC /* CallState.m in Sources */,
 				76EB05D218170B33006006FC /* ZrtpInitiator.m in Sources */,
@@ -3517,6 +3545,7 @@
 				7038632818F70C0700D4A43F /* EvpSymetricUtil.m in Sources */,
 				76EB066418170B34006006FC /* TabBarParentViewController.m in Sources */,
 				76EB068618170B34006006FC /* ContactTableViewCell.m in Sources */,
+				B63761ED19E1FBE8005735D1 /* HttpRequestOrResponse.m in Sources */,
 				76EB05A018170B33006006FC /* IpAddress.m in Sources */,
 				70B8011B190C55660042E3F0 /* UnknownFieldSet_Builder.m in Sources */,
 				B9A578B1183D60EE00C17105 /* FavouriteTableViewCell.m in Sources */,
@@ -3532,7 +3561,6 @@
 				E197B61018BBEC1A00F073E5 /* EncodedAudioPacket.m in Sources */,
 				76C87F13181EE11C00C4ACAB /* InboxFeedFooterCell.m in Sources */,
 				76EB063618170B33006006FC /* DataUtil.m in Sources */,
-				76EB059C18170B33006006FC /* HttpResponse.m in Sources */,
 				E197B60C18BBEC1A00F073E5 /* AudioPacker.m in Sources */,
 				E197B61218BBEC1A00F073E5 /* AudioStretcher.m in Sources */,
 				76EB05A218170B33006006FC /* IpEndPoint.m in Sources */,
@@ -3566,11 +3594,11 @@
 				E16E5BF018AAC40200B7C403 /* EvpKeyAgreement.m in Sources */,
 				70B80113190C55660042E3F0 /* ExtensionRegistry.m in Sources */,
 				B9EB5AC61884D370007CBB57 /* UnseenWhisperUserCell.m in Sources */,
+				B65EDA1219E1BE6400AAA7CB /* RPAPICall.m in Sources */,
 				76EB05DC18170B33006006FC /* StreamPair.m in Sources */,
 				70377AA91916BA0500CAF501 /* InteractiveLabel.m in Sources */,
 				76EB064618170B33006006FC /* TimeUtil.m in Sources */,
 				70BAFD5D190584BE00FA5E0B /* NotificationTracker.m in Sources */,
-				76EB059618170B33006006FC /* HttpRequest.m in Sources */,
 				76EB05A418170B33006006FC /* PacketHandler.m in Sources */,
 				E197B62118BBF12700F073E5 /* AppAudioManager.m in Sources */,
 				76EB068C18170B34006006FC /* InboxFeedTableViewCell.m in Sources */,
@@ -3579,6 +3607,7 @@
 				B9B89C54185A2B5F00A24465 /* LeftSideMenuCell.m in Sources */,
 				76EB068E18170B34006006FC /* CallLogTableViewCell.m in Sources */,
 				76EB05CE18170B33006006FC /* ZrtpHandshakeResult.m in Sources */,
+				B63761EE19E1FBE8005735D1 /* HttpRequestUtil.m in Sources */,
 				76EB05B618170B33006006FC /* MasterSecret.m in Sources */,
 				76EB05F418170B33006006FC /* CallConnectResult.m in Sources */,
 				76EB059E18170B33006006FC /* HttpSocket.m in Sources */,
@@ -3586,10 +3615,10 @@
 				76EB065418170B34006006FC /* InboxFeedViewController.m in Sources */,
 				76EB054018170B33006006FC /* AppDelegate.m in Sources */,
 				76EB05D018170B33006006FC /* ZrtpHandshakeSocket.m in Sources */,
+				B63761EF19E1FBE8005735D1 /* HttpResponse.m in Sources */,
 				E197B61518BBEC1A00F073E5 /* JitterQueue.m in Sources */,
 				BFB074C919A5611000F2947C /* ObservableValue.m in Sources */,
 				76EB05C818170B33006006FC /* HelloPacket.m in Sources */,
-				76EB059A18170B33006006FC /* HttpRequestUtil.m in Sources */,
 				BFB074C719A5611000F2947C /* FutureUtil.m in Sources */,
 				76EB057218170B33006006FC /* RecentCall.m in Sources */,
 				76EB060418170B33006006FC /* PhoneNumberDirectoryFilter.m in Sources */,
@@ -3598,6 +3627,7 @@
 				76EB059218170B33006006FC /* UnrecognizedRequestFailure.m in Sources */,
 				76EB05F818170B33006006FC /* CallConnectUtil_Initiator.m in Sources */,
 				B97CBFAE1886100E008E0DE9 /* CountryCodeTableViewCell.m in Sources */,
+				B63761E319E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m in Sources */,
 				76EB05CC18170B33006006FC /* ShortAuthenticationStringGenerator.m in Sources */,
 				E16E5BEF18AAC40200B7C403 /* EC25KeyAgreementProtocol.m in Sources */,
 				76EB064018170B33006006FC /* AnonymousTerminator.m in Sources */,
@@ -3606,6 +3636,7 @@
 				76EB05B218170B33006006FC /* DH3KKeyAgreementProtocol.m in Sources */,
 				76EB066018170B34006006FC /* RegisterViewController.m in Sources */,
 				76EB060618170B33006006FC /* PhoneNumberDirectoryFilterManager.m in Sources */,
+				B63761EC19E1FBE8005735D1 /* HttpRequest.m in Sources */,
 				76EB060818170B33006006FC /* ResponderSessionDescriptor.m in Sources */,
 				B90418E6183E9DD40038554A /* DateUtil.m in Sources */,
 				76EB05C618170B33006006FC /* HelloAckPacket.m in Sources */,
@@ -3642,7 +3673,6 @@
 				B9EB5AC71884D370007CBB57 /* UnseenWhisperUserCell.m in Sources */,
 				76EB05FB18170B33006006FC /* CallConnectUtil_Responder.m in Sources */,
 				76EB063718170B33006006FC /* DataUtil.m in Sources */,
-				76EB059718170B33006006FC /* HttpRequest.m in Sources */,
 				76EB05C918170B33006006FC /* HelloPacket.m in Sources */,
 				B90418E7183E9DD40038554A /* DateUtil.m in Sources */,
 				76EB05CB18170B33006006FC /* RecipientUnavailable.m in Sources */,
@@ -3678,7 +3708,6 @@
 				76EB05B918170B33006006FC /* NegotiationFailed.m in Sources */,
 				A157075A17F0CD6D007C2BD6 /* JitterQueueTest.m in Sources */,
 				76EB060318170B33006006FC /* InitiatorSessionDescriptor.m in Sources */,
-				76EB059D18170B33006006FC /* HttpResponse.m in Sources */,
 				A157075B17F0CD6D007C2BD6 /* SpeexCodecTest.m in Sources */,
 				A157075D17F0CD6D007C2BD6 /* DnsManagerTest.m in Sources */,
 				76EB068518170B34006006FC /* ContactDetailTableViewCell.m in Sources */,
@@ -3706,7 +3735,6 @@
 				76EB063118170B33006006FC /* Conversions.m in Sources */,
 				76EB05F918170B33006006FC /* CallConnectUtil_Initiator.m in Sources */,
 				A157076717F0CD6D007C2BD6 /* MasterSecretTest.m in Sources */,
-				76EB059B18170B33006006FC /* HttpRequestUtil.m in Sources */,
 				76EB05CF18170B33006006FC /* ZrtpHandshakeResult.m in Sources */,
 				76EB060518170B33006006FC /* PhoneNumberDirectoryFilter.m in Sources */,
 				76EB065D18170B34006006FC /* CallLogViewController.m in Sources */,
@@ -3733,7 +3761,6 @@
 				76EB05C318170B33006006FC /* DhPacketSharedSecretHashes.m in Sources */,
 				BF8C3D8319CE3B6A008F644C /* RecentCallTest.m in Sources */,
 				76EB05C718170B33006006FC /* HelloAckPacket.m in Sources */,
-				76EB059918170B33006006FC /* HttpRequestOrResponse.m in Sources */,
 				A157076F17F0CD6D007C2BD6 /* PhoneNumberTest.m in Sources */,
 				76EB05B518170B33006006FC /* HashChain.m in Sources */,
 				76C87F14181EE11C00C4ACAB /* InboxFeedFooterCell.m in Sources */,
@@ -4211,15 +4238,17 @@
 		};
 		B6B9EB4E196190F5009024F0 /* Ad-Hoc Distribution */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C71793B33D9C45079F74487E /* Pods.xcconfig */;
+			baseConfigurationReference = 9CC6C6BD3B51923FD6317C94 /* Pods.ad-hoc distribution.xcconfig */;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
-				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Signal/Signal-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -4252,6 +4281,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = Signal;
+				PROVISIONING_PROFILE = "901bceda-ae06-4214-89c0-2aeeea7190cc";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_AFTER_BUILD = YES;
@@ -4262,7 +4292,7 @@
 		};
 		B6B9EB4F196190F5009024F0 /* Ad-Hoc Distribution */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C71793B33D9C45079F74487E /* Pods.xcconfig */;
+			baseConfigurationReference = 9CC6C6BD3B51923FD6317C94 /* Pods.ad-hoc distribution.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Signal.app/Signal";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -4440,8 +4470,10 @@
 		};
 		D221A0BD169C9E5F00537ABF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C71793B33D9C45079F74487E /* Pods.xcconfig */;
+			baseConfigurationReference = 91E46203423941C0C94D90E9 /* Pods.debug.xcconfig */;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -4480,6 +4512,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = Signal;
+				PROVISIONING_PROFILE = "f9cba3ff-5957-491b-acd0-c669df5988d9";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_AFTER_BUILD = YES;
@@ -4490,18 +4523,21 @@
 		};
 		D221A0BE169C9E5F00537ABF /* App Store Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C71793B33D9C45079F74487E /* Pods.xcconfig */;
+			baseConfigurationReference = 14DDBCE302E19644A773D119 /* Pods.app store release.xcconfig */;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
-				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Signal/Signal-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
 					HAVE_CONFIG_H,
 					"RELEASE=1",
 				);
@@ -4529,6 +4565,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = Signal;
+				PROVISIONING_PROFILE = "e732b249-8e64-430a-aca8-e0fccc388be5";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_AFTER_BUILD = YES;
@@ -4539,7 +4576,7 @@
 		};
 		D221A0C0169C9E5F00537ABF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C71793B33D9C45079F74487E /* Pods.xcconfig */;
+			baseConfigurationReference = 91E46203423941C0C94D90E9 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Signal.app/Signal";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -4586,7 +4623,7 @@
 		};
 		D221A0C1169C9E5F00537ABF /* App Store Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C71793B33D9C45079F74487E /* Pods.xcconfig */;
+			baseConfigurationReference = 14DDBCE302E19644A773D119 /* Pods.app store release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Signal.app/Signal";
 				FRAMEWORK_SEARCH_PATHS = (

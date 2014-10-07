@@ -14,7 +14,6 @@
 @property (nonatomic, strong) IBOutlet SearchBarTitleView *searchBarTitleView;
 @property (nonatomic, strong) IBOutlet UIView *notificationView;
 @property (nonatomic, retain) UIRefreshControl *refreshControl;
-@property (nonatomic) NSTimer *refreshTimer;
 
 - (IBAction)notificationViewTapped:(id)sender;
 - (void)showNotificationForNewWhisperUsers:(NSArray *)users;

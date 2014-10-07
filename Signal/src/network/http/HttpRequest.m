@@ -38,7 +38,7 @@
     if (optionalBody != nil) {
         headers[@"Content-Length"] = [@(optionalBody.length) stringValue];
     }
-
+    
     HttpRequest* s = [HttpRequest new];
     s->_method = method;
     s->_location = location;
@@ -145,10 +145,10 @@
 }
 -(bool) isEqualToHttpRequest:(HttpRequest *)other {
     return [self.toHttp isEqualToString:other.toHttp]
-        && [self.method isEqualToString:other.method]
-        && [self.location isEqualToString:other.location]
-        && (self.optionalBody == other.optionalBody || [self.optionalBody isEqualToString:[other optionalBody]])
-        && [self.headers isEqualToDictionary:other.headers];
+    && [self.method isEqualToString:other.method]
+    && [self.location isEqualToString:other.location]
+    && (self.optionalBody == other.optionalBody || [self.optionalBody isEqualToString:[other optionalBody]])
+    && [self.headers isEqualToDictionary:other.headers];
 }
 
 -(NSString*) description {
@@ -156,8 +156,9 @@
             self.method,
             self.location,
             self.optionalBody == nil ? @""
-                : self.optionalBody.length == 0 ? @" [empty body]"
-                : @" [...body...]"];
+                                     : self.optionalBody.length == 0 ? @" [empty body]"
+                                     : @" [...body...]"];
 }
+
 
 @end

@@ -105,13 +105,6 @@
 
 #define SETTINGS_SENDLOG_WAITING NSLocalizedString(@"SETTINGS_SENDLOGS_WAITING", @"")
 #define SETTINGS_SENDLOG_ALERT_TITLE NSLocalizedString(@"SETTINGS_SENDLOG", @"")
-#define SETTINGS_SENDLOG_ALERT_BODY NSLocalizedString(@"SETTINGS_SENDLOG_ALERT_BODY",@"")
-#define SETTINGS_SENDLOG_ALERT_PASTE NSLocalizedString(@"SETTINGS_SENDLOG_ALERT_PASTE", @"")
-#define SETTINGS_SENDLOG_ALERT_EMAIL NSLocalizedString(@"SETTINGS_SENDLOG_ALERT_EMAIL", @"")
-#define SETTINGS_SENDLOG_FAILED_TITLE NSLocalizedString(@"SETTINGS_SENDLOG_FAILED_TITLE", @"")
-#define SETTINGS_SENDLOG_FAILED_BODY NSLocalizedString(@"SETTINGS_SENDLOG_FAILED_BODY", @"")
-#define SETTINGS_SENDLOG_FAILED_DISMISS NSLocalizedString(@"OK", @"")
-
 
 #pragma mark - Registration
 
@@ -134,8 +127,6 @@
 #define REGISTER_CHALLENGE_ALERT_VIEW_TITLE NSLocalizedString(@"REGISTER_CHALLENGE_ALERT_VIEW_TITLE", @"")
 #define REGISTER_CHALLENGE_ALERT_VIEW_BODY NSLocalizedString(@"REGISTER_CHALLENGE_ALERT_VIEW_BODY", @"")
 
-#define REGISTER_CHALLENGE_ALERT_DISMISS NSLocalizedString(@"OK", @"")
-
 #pragma mark - Invite Users
 
 #define INVITE_USERS_ACTION_SHEET_TITLE NSLocalizedString(@"INVITE_USERS_ACTION_SHEET_TITLE", @"");
@@ -150,7 +141,7 @@
 
 #pragma mark - Contact Intersection
 
-#define TIMEOUT                         NSLocalizedString(@"TIMEOUT",@"")
+#define TIMEOUT                         NSLocalizedString(@"ERROR_WAS_DETECTED_TITLE",@"")
 #define TIMEOUT_CONTACTS_DETAIL         NSLocalizedString(@"TIMEOUT_CONTACTS_DETAIL", @"")
 
 NSDictionary* makeCallProgressLocalizedTextDictionary(void);
