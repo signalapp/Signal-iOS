@@ -383,18 +383,25 @@
     test([@"88ffhih" tryParseAsUnsignedInteger] == nil);
     test([@"0xA" tryParseAsUnsignedInteger] == nil);
     test([@"A" tryParseAsUnsignedInteger] == nil);
-    test([@"4294967297" tryParseAsUnsignedInteger] == nil);
-    test([@"123456789123456789123456789123456789" tryParseAsUnsignedInteger] == nil);
     test([@"-1" tryParseAsUnsignedInteger] == nil);
     test([@"-" tryParseAsUnsignedInteger] == nil);
 
     test([[@"0" tryParseAsUnsignedInteger] isEqual:@0]);
+    test([[@"00" tryParseAsUnsignedInteger] isEqual:@0]);
     test([[@"1" tryParseAsUnsignedInteger] isEqual:@1]);
+    test([[@"01" tryParseAsUnsignedInteger] isEqual:@1]);
     test([[@"25" tryParseAsUnsignedInteger] isEqual:@25]);
     test([[(@NSUIntegerMax).description tryParseAsUnsignedInteger] isEqual:@NSUIntegerMax]);
-    if (NSUIntegerMax == 4294967295) {
+    if (NSUIntegerMax == 4294967295UL) {
         test([@"4294967296" tryParseAsUnsignedInteger] == nil);
     }
+    if (NSUIntegerMax == 18446744073709551615ULL) {
+        test([@"18446744073709551616" tryParseAsUnsignedInteger] == nil);
+    }
+
+    NSString* max = (@NSUIntegerMax).description;
+    NSString* farTooLarge = [max stringByAppendingString:max];
+    test([farTooLarge tryParseAsUnsignedInteger] == nil);
 }
 -(void) testRemoveAllCharactersIn {
     testThrows([@"" removeAllCharactersIn:nil]);

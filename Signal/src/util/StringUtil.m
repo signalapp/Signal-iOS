@@ -134,7 +134,14 @@
 -(NSNumber*) tryParseAsDecimalNumber {
     NSNumberFormatter* formatter = [NSNumberFormatter new];
     [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
-    return [formatter numberFromString:self];
+
+    // NSNumberFormatter.numberFromString is good at noticing bad inputs, but loses precision for large values
+    // NSDecimalNumber.decimalNumberWithString has perfect precision, but lets bad inputs through sometimes (e.g. "88ffhih" -> 88)
+    // We use both to get both accuracy and detection of bad inputs
+    if ([formatter numberFromString:self] == nil) {
+        return nil;
+    }
+    return [NSDecimalNumber decimalNumberWithString:self];
 }
 -(NSNumber*) tryParseAsUnsignedInteger {
     NSNumber* value = [self tryParseAsDecimalNumber];
