@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5EC2813F19E378D20036CC87 /* TestYapDatabaseQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EC2813E19E378D20036CC87 /* TestYapDatabaseQuery.m */; };
 		DC005BC11774C666002E57DE /* TestViewChangeLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = DC005BC01774C666002E57DE /* TestViewChangeLogic.m */; };
 		DC00E87C19DC6D3400905481 /* YapDatabaseFullTextSearchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = DC00E87B19DC6D3400905481 /* YapDatabaseFullTextSearchHandler.m */; };
 		DC00E87F19DC8ECC00905481 /* YapDatabaseSecondaryIndexHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = DC00E87E19DC8ECC00905481 /* YapDatabaseSecondaryIndexHandler.m */; };
@@ -176,6 +177,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5EC2813E19E378D20036CC87 /* TestYapDatabaseQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseQuery.m; path = ../../UnitTesting/TestYapDatabaseQuery.m; sourceTree = "<group>"; };
 		DC005BC01774C666002E57DE /* TestViewChangeLogic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestViewChangeLogic.m; path = ../../UnitTesting/TestViewChangeLogic.m; sourceTree = "<group>"; };
 		DC00E87A19DC6D3400905481 /* YapDatabaseFullTextSearchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseFullTextSearchHandler.h; sourceTree = "<group>"; };
 		DC00E87B19DC6D3400905481 /* YapDatabaseFullTextSearchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseFullTextSearchHandler.m; sourceTree = "<group>"; };
@@ -396,6 +398,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5EC2813D19E376680036CC87 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				5EC2813E19E378D20036CC87 /* TestYapDatabaseQuery.m */,
+			);
+			name = Utilities;
+			sourceTree = "<group>";
+		};
 		DC059BB818EF864C0088574E /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
@@ -835,6 +845,7 @@
 			children = (
 				DC3D2F251673FFEC00DFAFAA /* TestObject.h */,
 				DC3D2F261673FFEC00DFAFAA /* TestObject.m */,
+				5EC2813D19E376680036CC87 /* Utilities */,
 				DC5BAD8A174E75B000DF9465 /* Database */,
 				DC5BAD8B174E75C500DF9465 /* Views */,
 				DC49734117E7ED0000489267 /* FullTextSearch */,
@@ -1132,6 +1143,7 @@
 				DC005BC11774C666002E57DE /* TestViewChangeLogic.m in Sources */,
 				DCEE835017AAC7F3009BF81D /* TestViewMappingsLogic.m in Sources */,
 				DC8E6043183F0A3D0091633D /* TestYapDatabaseFilteredView.m in Sources */,
+				5EC2813F19E378D20036CC87 /* TestYapDatabaseQuery.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
