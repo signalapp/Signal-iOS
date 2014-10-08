@@ -1,3 +1,4 @@
+
 #import "YapDatabaseConnection.h"
 #import "YapDatabaseConnectionState.h"
 #import "YapDatabasePrivate.h"
@@ -14,6 +15,10 @@
 
 #import <objc/runtime.h>
 #import <libkern/OSAtomic.h>
+
+#if TARGET_OS_IPHONE
+#import <UIKit/UIKit.h>
+#endif
 
 #if ! __has_feature(objc_arc)
 #warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
@@ -178,7 +183,9 @@ NS_INLINE BOOL YDBIsMainThread()
 		objectPolicy = defaults.objectPolicy;
 		metadataPolicy = defaults.metadataPolicy;
 		
+	#if YapDatabaseEnforcePermittedTransactions
 		self.permittedTransactions = YDB_AnyTransaction;
+	#endif
 		
 		keyCache = [[YapCache alloc] initWithKeyClass:[NSNumber class] countLimit:keyCacheLimit];
 		
@@ -448,7 +455,9 @@ NS_INLINE BOOL YDBIsMainThread()
 @synthesize database = database;
 @synthesize name = _name;
 
+#if YapDatabaseEnforcePermittedTransactions
 @synthesize permittedTransactions = _mustUseAtomicProperty_permittedTransactions;
+#endif
 
 #if TARGET_OS_IPHONE
 @synthesize autoFlushMemoryFlags;
@@ -1419,6 +1428,7 @@ NS_INLINE BOOL YDBIsMainThread()
 **/
 - (void)readWithBlock:(void (^)(YapDatabaseReadTransaction *))block
 {
+#if YapDatabaseEnforcePermittedTransactions
 	YapDatabasePermittedTransactions flags = self.permittedTransactions;
 	if ((flags & YDB_MainThreadOnly) && !YDBIsMainThread())
 	{
@@ -1428,6 +1438,7 @@ NS_INLINE BOOL YDBIsMainThread()
 	{
 		@throw [self unpermittedTransactionException:YDB_SyncReadTransaction];
 	}
+#endif
 	
 	dispatch_sync(connectionQueue, ^{ @autoreleasepool {
 		
@@ -1456,6 +1467,7 @@ NS_INLINE BOOL YDBIsMainThread()
 **/
 - (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
 {
+#if YapDatabaseEnforcePermittedTransactions
 	YapDatabasePermittedTransactions flags = self.permittedTransactions;
 	if ((flags & YDB_MainThreadOnly) && !YDBIsMainThread())
 	{
@@ -1465,6 +1477,7 @@ NS_INLINE BOOL YDBIsMainThread()
 	{
 		@throw [self unpermittedTransactionException:YDB_SyncReadWriteTransaction];
 	}
+#endif
 	
 	// Order matters.
 	// First go through the serial connection queue.
@@ -1550,6 +1563,7 @@ NS_INLINE BOOL YDBIsMainThread()
            completionQueue:(dispatch_queue_t)completionQueue
            completionBlock:(dispatch_block_t)completionBlock
 {
+#if YapDatabaseEnforcePermittedTransactions
 	YapDatabasePermittedTransactions flags = self.permittedTransactions;
 	if ((flags & YDB_MainThreadOnly) && !YDBIsMainThread())
 	{
@@ -1559,6 +1573,7 @@ NS_INLINE BOOL YDBIsMainThread()
 	{
 		@throw [self unpermittedTransactionException:YDB_AsyncReadTransaction];
 	}
+#endif
 	
 	if (completionQueue == NULL && completionBlock != NULL)
 		completionQueue = dispatch_get_main_queue();
@@ -1663,6 +1678,7 @@ NS_INLINE BOOL YDBIsMainThread()
                 completionQueue:(dispatch_queue_t)completionQueue
                 completionBlock:(dispatch_block_t)completionBlock
 {
+#if YapDatabaseEnforcePermittedTransactions
 	YapDatabasePermittedTransactions flags = self.permittedTransactions;
 	if ((flags & YDB_MainThreadOnly) && !YDBIsMainThread())
 	{
@@ -1672,6 +1688,7 @@ NS_INLINE BOOL YDBIsMainThread()
 	{
 		@throw [self unpermittedTransactionException:YDB_AsyncReadWriteTransaction];
 	}
+#endif
 	
 	if (completionQueue == NULL && completionBlock != NULL)
 		completionQueue = dispatch_get_main_queue();
@@ -4650,6 +4667,7 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	return [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
 }
 
+#if YapDatabaseEnforcePermittedTransactions
 - (NSException *)unpermittedTransactionException:(NSUInteger)transactionFlag
 {
 	NSUInteger flags = self.permittedTransactions;
@@ -4689,6 +4707,7 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	
 	return [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
 }
+#endif
 
 - (NSException *)implicitlyEndingLongLivedReadTransactionException
 {

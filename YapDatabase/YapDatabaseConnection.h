@@ -35,6 +35,14 @@ typedef NS_ENUM(NSInteger, YapDatabasePolicy) {
 	YapDatabasePolicyCopy        = 2,
 };
 
+#ifndef YapDatabaseEnforcePermittedTransactions
+  #if DEBUG
+    #define YapDatabaseEnforcePermittedTransactions 1
+  #else
+    #define YapDatabaseEnforcePermittedTransactions 0
+  #endif
+#endif
+#if YapDatabaseEnforcePermittedTransactions
 typedef NS_OPTIONS(NSUInteger, YapDatabasePermittedTransactions) {
 	
 	YDB_SyncReadTransaction       = 1 << 0,                                                         // 000001
@@ -53,6 +61,7 @@ typedef NS_OPTIONS(NSUInteger, YapDatabasePermittedTransactions) {
 	
 	YDB_MainThreadOnly            = 1 << 4,                                                         // 010000
 };
+#endif
 
 typedef NS_OPTIONS(NSUInteger, YapDatabaseConnectionFlushMemoryFlags) {
     YapDatabaseConnectionFlushMemoryFlags_None       = 0,
@@ -200,7 +209,9 @@ typedef NS_OPTIONS(NSUInteger, YapDatabaseConnectionFlushMemoryFlags) {
  * 
  * The default value is YDB_AnyTransaction.
 **/
+#if YapDatabaseEnforcePermittedTransactions
 @property (atomic, assign, readwrite) YapDatabasePermittedTransactions permittedTransactions;
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark State
