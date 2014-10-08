@@ -833,6 +833,7 @@
 	}];
 }
 
+#if DEBUG
 - (void)testPermittedTransactions
 {
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
@@ -994,5 +995,6 @@
 		dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 	}
 }
+#endif
 
 @end
