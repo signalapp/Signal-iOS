@@ -175,8 +175,12 @@ static NSMutableArray *keys;
 		  (unsigned long)loopCount, elapsed, (elapsed / loopCount), hitPercentage);
 }
 
-+ (void)readTransactionOverhead:(NSUInteger)loopCount
++ (void)readTransactionOverhead:(NSUInteger)loopCount withLongLivedReadTransaction:(BOOL)useLongLivedReadTransaction
 {
+	if (useLongLivedReadTransaction) {
+		[connection beginLongLivedReadTransaction];
+	}
+	
 	NSDate *start = [NSDate date];
 	
 	for (NSUInteger i = 0; i < loopCount; i++)
@@ -188,7 +192,14 @@ static NSMutableArray *keys;
 	}
 	
 	NSTimeInterval elapsed = [start timeIntervalSinceNow] * -1.0;
-	NSLog(@"ReadOnly transaction overhead : %.8f", (elapsed / loopCount));
+	if (useLongLivedReadTransaction)
+		NSLog(@"ReadOnly transaction overhead : %.8f  (using longLivedReadTransaction)", (elapsed / loopCount));
+	else
+		NSLog(@"ReadOnly transaction overhead : %.8f", (elapsed / loopCount));
+	
+	if (useLongLivedReadTransaction) {
+		[connection endLongLivedReadTransaction];
+	}
 }
 
 + (void)readWriteTransactionOverhead:(NSUInteger)loopCount
@@ -285,7 +296,8 @@ static NSMutableArray *keys;
 		
 		NSLog(@"TRANSACTION OVERHEAD");
 		
-		[self readTransactionOverhead:1000];
+		[self readTransactionOverhead:1000 withLongLivedReadTransaction:YES];
+		[self readTransactionOverhead:1000 withLongLivedReadTransaction:NO];
 		[self readWriteTransactionOverhead:1000];
 		
 		NSLog(@"====================================================");
