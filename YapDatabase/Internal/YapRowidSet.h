@@ -2,6 +2,8 @@
  * Wrapper for C++ code (std::unordered_set<int64_t>)
 **/
 
+#import <Foundation/Foundation.h>
+
 #ifndef YapDatabase_YapRowidSet_h
 #define YapDatabase_YapRowidSet_h
 

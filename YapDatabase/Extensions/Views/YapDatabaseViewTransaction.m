@@ -11,6 +11,10 @@
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
 
+#if TARGET_OS_IPHONE
+#import <UIKit/UIKit.h>
+#endif
+
 #if ! __has_feature(objc_arc)
 #warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
 #endif
