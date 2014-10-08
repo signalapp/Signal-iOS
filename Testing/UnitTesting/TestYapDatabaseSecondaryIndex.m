@@ -152,6 +152,17 @@
 		}];
 		
 		XCTAssertTrue(count == 4, @"Incorrect count: %lu", (unsigned long)count);
+		
+		count = 0;
+		query = [YapDatabaseQuery queryWithFormat:@"WHERE someInt IN (?)",
+																															@[@(2), @(4), @(5.5), @(9)]];
+		[[transaction ext:@"idx"] enumerateKeysMatchingQuery:query
+																							usingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
+																								
+			count++;
+		}];
+		
+		XCTAssertTrue(count == 3, @"Incorrect count: %lu", (unsigned long)count);
 	}];
 	
 	//
