@@ -1397,11 +1397,10 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			{
 				YDBLogError(@"%@ (%@): Error executing statement: %d %s",
 				            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db));
-				
-				*rowidsPtr = nil;
-				return nil;
 			}
 		
+			sqlite3_finalize(statement);
+			
 		}
 		else // if (isNonPersistentView)
 		{
