@@ -164,7 +164,13 @@
 }
 
 -(BOOL) needToRegisterForRemoteNotifications {
-    return self.wantRemoteNotifications && !UIApplication.sharedApplication.isRegisteredForRemoteNotifications;
+    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
+        return self.wantRemoteNotifications;
+    } else{
+        return self.wantRemoteNotifications && (!UIApplication.sharedApplication.isRegisteredForRemoteNotifications);
+    }
+    
+    
 }
 
 -(BOOL) wantRemoteNotifications {
@@ -213,11 +219,19 @@
 }
 
 -(int)allNotificationTypes{
-    return UIUserNotificationTypeAlert | UIUserNotificationTypeSound | UIUserNotificationTypeBadge;
+    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
+        return UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeBadge;
+    } else {
+        return UIUserNotificationTypeAlert | UIUserNotificationTypeSound | UIUserNotificationTypeBadge;
+    }
 }
 
 -(int)mandatoryNotificationTypes{
-    return UIUserNotificationTypeAlert | UIUserNotificationTypeSound;
+    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
+        return UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound;
+    } else {
+        return UIUserNotificationTypeAlert | UIUserNotificationTypeSound;
+    }
 }
 
 @end
