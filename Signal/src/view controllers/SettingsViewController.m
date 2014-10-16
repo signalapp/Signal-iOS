@@ -114,7 +114,7 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
     _enableScreenSecurityButton.selected = prefs.screenSecurityIsEnabled;
     _disableAutocorrectButton.selected   = !prefs.getAutocorrectEnabled;
     _disableHistoryButton.selected       = !prefs.getHistoryLogEnabled;
-    _disableLogsCell.selected            = !prefs.loggingIsEnabled;
+    _disableDebugLogsButton.selected     = !prefs.loggingIsEnabled;
 }
 
 - (void)configureAllCells {
