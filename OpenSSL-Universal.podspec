@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "OpenSSL-Universal"
-  s.version      = "1.0.1.i"
+  s.version      = "1.0.1.j"
   s.summary      = "OpenSSL for iOS and OS X"
   s.description  = "OpenSSL is an SSL/TLS and Crypto toolkit. Deprecated in Mac OS and gone in iOS, this spec gives your project non-deprecated OpenSSL support. Supports OSX and iOS including Simulator (armv7,armv7s,arm64,i386,x86_64)."
   s.homepage     = "http://www.openssl.org/"
@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
   s.ios.vendored_libraries  = 'lib-ios/libcrypto.a', 'lib-ios/libssl.a'
 
   s.osx.platform          = :osx, '10.9'
-  s.osx.deployment_target = '10.7'
+  s.osx.deployment_target = '10.8'
   s.osx.source_files        = 'include-osx/openssl/**/*.h'
   s.osx.public_header_files = 'include-osx/openssl/**/*.h'
   s.osx.header_dir          = 'openssl'
