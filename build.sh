@@ -7,7 +7,7 @@ set -x
 
 # Setup paths to stuff we need
 
-OPENSSL_VERSION="1.0.1i"
+OPENSSL_VERSION="1.0.1j"
 
 DEVELOPER=$(xcode-select --print-path)
 

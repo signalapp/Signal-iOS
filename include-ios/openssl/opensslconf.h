@@ -1,9 +1,12 @@
 /* opensslconf.h */
 /* WARNING: Generated automatically from opensslconf.h.in by Configure. */
 
+#ifdef  __cplusplus
+extern "C" {
+#endif
 /* OpenSSL was configured with the following options: */
-#ifndef OPENSSL_SYSNAME_iOS
-# define OPENSSL_SYSNAME_iOS
+#ifndef OPENSSL_SYSNAME_MACOSX
+# define OPENSSL_SYSNAME_MACOSX
 #endif
 #ifndef OPENSSL_DOING_MAKEDEPEND
 
@@ -85,6 +88,8 @@
 # endif
 #endif
 
+#define OPENSSL_CPUID_OBJ
+
 /* crypto/opensslconf.h.in */
 
 /* Generate 80386 code? */
@@ -92,8 +97,8 @@
 
 #if !(defined(VMS) || defined(__VMS)) /* VMS uses logical names instead */
 #if defined(HEADER_CRYPTLIB_H) && !defined(OPENSSLDIR)
-#define ENGINESDIR "/tmp/openssl-1.0.1i-i386/lib/engines"
-#define OPENSSLDIR "/tmp/openssl-1.0.1i-i386"
+#define ENGINESDIR "/tmp/openssl-1.0.1j-i386/lib/engines"
+#define OPENSSLDIR "/tmp/openssl-1.0.1j-i386"
 #endif
 #endif
 
@@ -124,7 +129,7 @@
  * - Intel P6 because partial register stalls are very expensive;
  * - elder Alpha because it lacks byte load/store instructions;
  */
-#define RC4_INT unsigned char
+#define RC4_INT unsigned int
 #endif
 #if !defined(RC4_CHUNK)
 /*
@@ -239,3 +244,6 @@ YOU SHOULD NOT HAVE BOTH DES_RISC1 AND DES_RISC2 DEFINED!!!!!
 
 #endif /* DES_DEFAULT_OPTIONS */
 #endif /* HEADER_DES_LOCL_H */
+#ifdef  __cplusplus
+}
+#endif
