@@ -142,6 +142,8 @@ static NSString *const changeset_key_changes           = @"changes";
 - (NSArray *)internalChangesetKeys;
 - (NSArray *)externalChangesetKeys;
 
+- (void)prepareStatement:(sqlite3_stmt **)statement withString:(NSString *)stmtString caller:(SEL)caller_cmd;
+
 - (sqlite3_stmt *)mapTable_getPageKeyForRowidStatement;
 - (sqlite3_stmt *)mapTable_setPageKeyForRowidStatement;
 - (sqlite3_stmt *)mapTable_removeForRowidStatement;

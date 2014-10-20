@@ -2340,7 +2340,7 @@ NS_INLINE BOOL YDBIsMainThread()
 				//
 				// This two step process means we have an edge case,
 				// where another connection could come around and begin its yap level transaction
-				// before this connections yap level commit, but after this connections sqlite level commit.
+				// before this connection's yap level commit, but after this connection's sqlite level commit.
 				//
 				// By registering the pending changeset in advance,
 				// we provide a near seamless workaround for the edge case.

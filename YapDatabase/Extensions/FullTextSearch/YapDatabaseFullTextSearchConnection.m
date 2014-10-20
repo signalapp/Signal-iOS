@@ -266,10 +266,8 @@
 	sqlite3_stmt **statement = &queryStatement;
 	if (*statement == NULL)
 	{
-		NSString *tableName = [fts tableName];
-		
 		NSString *string = [NSString stringWithFormat:
-		    @"SELECT \"rowid\" FROM \"%1$@\" WHERE \"%1$@\" MATCH ?;", tableName];
+		  @"SELECT \"rowid\" FROM \"%1$@\" WHERE \"%1$@\" MATCH ?;", [fts tableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
@@ -288,10 +286,9 @@
 	sqlite3_stmt **statement = &querySnippetStatement;
 	if (*statement == NULL)
 	{
-		NSString *tableName = [fts tableName];
-		
 		NSString *string = [NSString stringWithFormat:
-		    @"SELECT \"rowid\", snippet(\"%1$@\", ?, ?, ?, ?, ?) FROM \"%1$@\" WHERE \"%1$@\" MATCH ?;", tableName];
+		  @"SELECT \"rowid\", snippet(\"%1$@\", ?, ?, ?, ?, ?) FROM \"%1$@\" WHERE \"%1$@\" MATCH ?;",
+		  [fts tableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
@@ -310,10 +307,8 @@
 	sqlite3_stmt **statement = &rowidQueryStatement;
 	if (*statement == NULL)
 	{
-		NSString *tableName = [fts tableName];
-		
 		NSString *string = [NSString stringWithFormat:
-		    @"SELECT \"rowid\" FROM \"%1$@\" WHERE \"rowid\" = ? AND \"%1$@\" MATCH ?;", tableName];
+		  @"SELECT \"rowid\" FROM \"%1$@\" WHERE \"rowid\" = ? AND \"%1$@\" MATCH ?;", [fts tableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
@@ -332,11 +327,9 @@
 	sqlite3_stmt **statement = &rowidQuerySnippetStatement;
 	if (*statement == NULL)
 	{
-		NSString *tableName = [fts tableName];
-		
 		NSString *string = [NSString stringWithFormat:
 		  @"SELECT \"rowid\", snippet(\"%1$@\", ?, ?, ?, ?, ?) FROM \"%1$@\" WHERE \"rowid\" = ? AND \"%1$@\" MATCH ?;",
-		  tableName];
+		  [fts tableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		

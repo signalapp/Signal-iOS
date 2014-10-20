@@ -9,7 +9,7 @@
 
 #if defined(__cplusplus)
 extern "C" {
-#endif /* defined(__cplusplus) */
+#endif
 
 typedef struct _YapRowidSet YapRowidSet;
 
@@ -31,6 +31,6 @@ void YapRowidSetEnumerate(YapRowidSet *set, void (^block)(int64_t rowid, BOOL *s
 
 #if defined(__cplusplus)
 }
-#endif /* defined(__cplusplus) */
+#endif
 
 #endif

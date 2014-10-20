@@ -230,28 +230,32 @@
 #pragma mark Statements
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+- (void)prepareStatement:(sqlite3_stmt **)statement withString:(NSString *)stmtString caller:(SEL)caller_cmd
+{
+	sqlite3 *db = databaseConnection->db;
+	YapDatabaseString stmt; MakeYapDatabaseString(&stmt, stmtString);
+	
+	int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@: Error creating prepared statement: %d %s",
+					NSStringFromSelector(caller_cmd), status, sqlite3_errmsg(db));
+	}
+	
+	FreeYapDatabaseString(&stmt);
+}
+
 - (sqlite3_stmt *)findManualEdgeStatement
 {
 	sqlite3_stmt **statement = &findManualEdgeStatement;
 	if (*statement == NULL)
 	{
-		NSString *tableName = [relationship tableName];
-		
 		NSString *string = [NSString stringWithFormat:
 		  @"SELECT \"rowid\", \"rules\" FROM \"%@\" "
 		  @" WHERE \"src\" = ? AND \"dst\" = ? AND \"name\" = ? AND \"manual\" = 1 LIMIT 1;",
-		  tableName];
+		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -266,16 +270,7 @@
 		  @"INSERT INTO \"%@\" (\"name\", \"src\", \"dst\", \"rules\", \"manual\") VALUES (?, ?, ?, ?, ?);",
 		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -289,16 +284,7 @@
 		NSString *string = [NSString stringWithFormat:
 		  @"UPDATE \"%@\" SET \"rules\" = ? WHERE \"rowid\" = ?;", [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -312,16 +298,7 @@
 		NSString *string = [NSString stringWithFormat:
 		  @"DELETE FROM \"%@\" WHERE \"rowid\" = ?;", [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -335,16 +312,7 @@
 		NSString *string = [NSString stringWithFormat:
 		  @"DELETE FROM \"%@\" WHERE \"src\" = ? OR \"dst\" = ?;", [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -371,16 +339,7 @@
 		  @"SELECT \"dst\" FROM \"%@\" WHERE \"dst\" > ?;",
 		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	if (*statement)
@@ -403,16 +362,7 @@
 		  @"SELECT \"rowid\", \"name\", \"dst\", \"rules\", \"manual\" FROM \"%@\" WHERE \"src\" = ?;",
 		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -427,16 +377,7 @@
 		  @"SELECT \"rowid\", \"name\", \"src\", \"rules\", \"manual\" FROM \"%@\" WHERE \"dst\" = ?;",
 		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -451,16 +392,7 @@
 		  @"SELECT \"rowid\", \"dst\", \"rules\", \"manual\" FROM \"%@\" WHERE \"src\" = ? AND \"name\" = ?;",
 		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -475,16 +407,7 @@
 		  @"SELECT \"rowid\", \"src\", \"rules\", \"manual\" FROM \"%@\" WHERE \"dst\" = ? AND \"name\" = ?;",
 		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -499,16 +422,7 @@
 		  @"SELECT \"rowid\", \"src\", \"dst\", \"rules\", \"manual\" FROM \"%@\" WHERE \"name\" = ?;",
 		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -523,16 +437,7 @@
 		  @"SELECT \"rowid\", \"name\", \"rules\", \"manual\" FROM \"%@\" WHERE \"src\" = ? AND \"dst\" = ?;",
 		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -547,16 +452,7 @@
 		  @"SELECT \"rowid\", \"rules\", \"manual\" FROM \"%@\" WHERE \"src\" = ? AND \"dst\" = ? AND \"name\" = ?;",
 		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -571,16 +467,7 @@
 		  @"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" WHERE \"src\" = ? AND \"dst\" != ? AND \"name\" = ?;",
 		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -595,16 +482,7 @@
 		  @"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" WHERE \"dst\" = ? AND \"src\" != ? AND \"name\" = ?;",
 		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -619,16 +497,7 @@
 		  @"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" WHERE \"name\" = ?;",
 		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -643,16 +512,7 @@
 		  @"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" WHERE \"src\" = ?;",
 		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -667,16 +527,7 @@
 		  @"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" WHERE \"src\" = ? AND \"name\" = ?;",
 		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -691,16 +542,7 @@
 		  @"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" WHERE \"dst\" = ?;",
 		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -715,16 +557,7 @@
 		  @"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" WHERE \"dst\" = ? AND \"name\" = ?;",
 		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -739,16 +572,7 @@
 		  @"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" WHERE \"src\" = ? AND \"dst\" = ?;",
 		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -763,16 +587,7 @@
 		  @"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" WHERE \"src\" = ? AND \"dst\" = ? AND \"name\" = ?;",
 		  [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -785,16 +600,7 @@
 	{
 		NSString *string = [NSString stringWithFormat:@"DELETE FROM \"%@\";", [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
@@ -808,16 +614,7 @@
 		NSString *string = [NSString stringWithFormat:
 		  @"DELETE FROM \"%@\" WHERE \"manual\" = 0;", [relationship tableName]];
 		
-		sqlite3 *db = databaseConnection->db;
-		YapDatabaseString stmt; MakeYapDatabaseString(&stmt, string);
-		
-		int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		FreeYapDatabaseString(&stmt);
+		[self prepareStatement:statement withString:string caller:_cmd];
 	}
 	
 	return *statement;
