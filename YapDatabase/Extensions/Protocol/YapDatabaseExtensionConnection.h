@@ -5,7 +5,7 @@
 
 /**
  * This class is abstract and has no public API.
- * See concrete implementations such as YapDatabaseViewConnection.
+ * See concrete implementations such as YapDatabaseViewConnection, YapDatabaseSecondaryIndexConnection, etc.
 **/
 
 @end

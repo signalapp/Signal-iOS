@@ -673,7 +673,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 /**
  * Required override method from YapDatabaseExtension
 **/
-- (void)commitTransaction
+- (void)didCommitTransaction
 {
 	// An extensionTransaction is only valid within the scope of its encompassing databaseTransaction.
 	// I imagine this may occasionally be misunderstood, and developers may attempt to store the extension in an ivar,
@@ -687,7 +687,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 /**
  * Required override method from YapDatabaseExtension
 **/
-- (void)rollbackTransaction
+- (void)didRollbackTransaction
 {
 	// An extensionTransaction is only valid within the scope of its encompassing databaseTransaction.
 	// I imagine this may occasionally be misunderstood, and developers may attempt to store the extension in an ivar,

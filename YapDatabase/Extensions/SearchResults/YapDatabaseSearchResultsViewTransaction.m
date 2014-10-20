@@ -951,7 +951,7 @@ static NSString *const ExtKey_query             = @"query";
 #pragma mark Cleanup & Commit
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)commitTransaction
+- (void)flushPendingChangesToExtensionTables
 {
 	YDBLogAutoTrace();
 	
@@ -975,10 +975,10 @@ static NSString *const ExtKey_query             = @"query";
 	}
 	
 	// This must be done LAST.
-	[super commitTransaction];
+	[super flushPendingChangesToExtensionTables];
 }
 
-- (void)rollbackTransaction
+- (void)didRollbackTransaction
 {
 	YDBLogAutoTrace();
 	
@@ -988,7 +988,7 @@ static NSString *const ExtKey_query             = @"query";
 	}
 	
 	// This must be done LAST.
-	[super rollbackTransaction];
+	[super didRollbackTransaction];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

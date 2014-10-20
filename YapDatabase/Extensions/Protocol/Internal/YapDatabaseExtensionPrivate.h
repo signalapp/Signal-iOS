@@ -92,13 +92,13 @@
 - (BOOL)flushPendingChangesToMainDatabaseTable;
 
 // See YapDatabaseExtensionTransaction.m for discussion of this method
-- (void)prepareChangeset;
+- (void)flushPendingChangesToExtensionTables;
 
 // See YapDatabaseExtensionTransaction.m for discussion of this method
-- (void)commitTransaction;
+- (void)didCommitTransaction;
 
 // See YapDatabaseExtensionTransaction.m for discussion of this method
-- (void)rollbackTransaction;
+- (void)didRollbackTransaction;
 
 #pragma mark Hooks
 

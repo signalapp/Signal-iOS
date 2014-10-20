@@ -82,7 +82,7 @@
 
 /**
  * This should be done AFTER the pendingQueue has been written to disk,
- * at the end of the commitTransaction method.
+ * at the end of the flushPendingChangesToExtensionTables method.
 **/
 - (void)mergePendingQueue:(YDBCKChangeQueue *)pendingQueue;
 

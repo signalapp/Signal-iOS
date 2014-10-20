@@ -56,6 +56,8 @@
 */
 }
 
+#pragma mark Creation
+
 /**
  * Subclasses MUST implement this method.
  * 
@@ -118,6 +120,10 @@
 	return NO;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Commit & Rollback
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Subclasses may OPTIONALLY implement this method.
  * This method is only called if within a readwrite transaction.
@@ -133,6 +139,7 @@
 **/
 - (BOOL)flushPendingChangesToMainDatabaseTable
 {
+	// Override me if needed
 	return NO;
 }
 
@@ -140,40 +147,49 @@
  * Subclasses may OPTIONALLY implement this method.
  * This method is only called if within a readwrite transaction.
  *
- * Subclasses may implement it to perform any "cleanup" before the changeset is requested.
- * Remember, the changeset is requested before the commitTransaction method is invoked.
+ * Subclasses should write any last changes to their database table(s) if needed,
+ * and should perform any needed cleanup before the changeset is requested.
+ * 
+ * Remember, the changeset is requested immediately after this method is invoked.
 **/
-- (void)prepareChangeset
+- (void)flushPendingChangesToExtensionTables
 {
-	// Subclasses may optionally override this method to perform any "cleanup" before the changesets are requested.
-	// Remember, the changesets are requested before the commitTransaction method is invoked.
+	// Override me if needed
 }
 
 /**
  * Subclasses MUST implement this method.
  * This method is only called if within a readwrite transaction.
+ * 
+ * Remember, the transaction cannot make any changes to the database at this point,
+ * as this method is called after the transaction has completed.
+ * This method is primarily for cleanup & related tasks.
 **/
-- (void)commitTransaction
+- (void)didCommitTransaction
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	
-	// Subclasses should include the code similar to the following at the end of their implementation:
+	// Subclasses MUST include the code similar to the following at the end of their implementation:
 	//
-	// viewConnection = nil;
+	// extConnection = nil;
 	// databaseTransaction = nil;
 }
 
 /**
  * Subclasses MUST implement this method.
  * This method is only called if within a readwrite transaction.
+ * 
+ * Remember, the transaction cannot make any changes to the database at this point,
+ * as this method is called after the transaction has aborted.
+ * This method is primarily for cleanup & related tasks.
 **/
-- (void)rollbackTransaction
+- (void)didRollbackTransaction
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	
-	// Subclasses should include the code similar to the following at the end of their implementation:
+	// Subclasses MUST include the code similar to the following at the end of their implementation:
 	//
-	// viewConnection = nil;
+	// extConnection = nil;
 	// databaseTransaction = nil;
 }
 

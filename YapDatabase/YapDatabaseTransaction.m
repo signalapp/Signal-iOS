@@ -82,7 +82,7 @@
 	//
 	// Allow extensions to flush changes to the main database table.
 	// This is different from flushing changes to their own private tables.
-	// We're referring here to the main collection/key/value table that's public.
+	// We're referring here to the main collection/key/value table (database2) that's public.
 	
 	__block BOOL restart;
 	__block BOOL prevExtModifiesMainDatabaseTable;
@@ -123,27 +123,19 @@
 	
 	// Step 2:
 	//
-	// Allow extensions to perform any "cleanup" code needed before the changesets are requested,
-	// and before the commit is executed.
+	// Allow extensions to flush changes to their own tables,
+	// and perform any needed "cleanup" code needed before the changeset is requested.
 	
 	[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
 		
-		[(YapDatabaseExtensionTransaction *)extTransactionObj prepareChangeset];
+		[(YapDatabaseExtensionTransaction *)extTransactionObj flushPendingChangesToExtensionTables];
 	}];
+	
+	[yapMemoryTableTransaction commit];
 }
 
 - (void)commitTransaction
 {
-	if (isReadWriteTransaction)
-	{
-		[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
-			
-			[(YapDatabaseExtensionTransaction *)extTransactionObj commitTransaction];
-		}];
-		
-		[yapMemoryTableTransaction commit];
-	}
-	
 	sqlite3_stmt *statement = [connection commitTransactionStatement];
 	if (statement)
 	{
@@ -157,15 +149,18 @@
 		
 		sqlite3_reset(statement);
 	}
+	
+	if (isReadWriteTransaction)
+	{
+		[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
+			
+			[(YapDatabaseExtensionTransaction *)extTransactionObj didCommitTransaction];
+		}];
+	}
 }
 
 - (void)rollbackTransaction
 {
-	[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
-		
-		[(YapDatabaseExtensionTransaction *)extTransactionObj rollbackTransaction];
-	}];
-	
 	[yapMemoryTableTransaction rollback];
 	
 	sqlite3_stmt *statement = [connection rollbackTransactionStatement];
@@ -181,6 +176,11 @@
 		
 		sqlite3_reset(statement);
 	}
+	
+	[extensions enumerateKeysAndObjectsUsingBlock:^(id extNameObj, id extTransactionObj, BOOL *stop) {
+		
+		[(YapDatabaseExtensionTransaction *)extTransactionObj didRollbackTransaction];
+	}];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

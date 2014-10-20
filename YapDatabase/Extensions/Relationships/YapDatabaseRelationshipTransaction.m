@@ -2903,7 +2903,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 /**
  * This method is only called if within a readwrite transaction.
 **/
-- (void)commitTransaction
+- (void)didCommitTransaction
 {
 	YDBLogAutoTrace();
 	
@@ -2951,7 +2951,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 /**
  * This method is only called if within a readwrite transaction.
 **/
-- (void)rollbackTransaction
+- (void)didRollbackTransaction
 {
 	YDBLogAutoTrace();
 	

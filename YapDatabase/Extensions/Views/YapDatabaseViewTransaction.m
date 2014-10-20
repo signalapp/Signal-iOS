@@ -1277,7 +1277,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 				// This rowid has already been removed from the view,
 				// and is marked for deletion from the mapTable.
 				//
-				// However, it has not been deleted yet, as that will occur during commitTransaction.
+				// However, it has not been deleted yet, as that will occur during flushPendingChangesToExtensionTables.
 				// So we need to remove it from inRowids, as the mapTable will still contain the rowid.
 				
 				[inRowids removeObjectAtIndex:i];
@@ -2780,12 +2780,13 @@ static NSString *const ExtKey_version_deprecated = @"version";
 }
 
 /**
- * This method is only called if within a readwrite transaction.
- *
- * Extensions may implement it to perform any "cleanup" before the changeset is requested.
- * Remember, the changeset is requested before the commitTransaction method is invoked.
+ * This method performs the appropriate actions in order to keep the pages of an appropriate size.
+ * Specifically it does the following:
+ * 
+ * - Splits oversized pages to hit our target max_page_size
+ * - Drops empty pages to reduce disk usage
 **/
-- (void)prepareChangeset
+- (void)cleanupPages
 {
 	YDBLogAutoTrace();
 	
@@ -2835,9 +2836,22 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	}
 }
 
-- (void)commitTransaction
+/**
+ * Subclasses MUST implement this method.
+ * This method is only called if within a readwrite transaction.
+ *
+ * Subclasses should write any last changes to their database table(s) if needed,
+ * and should perform any needed cleanup before the changeset is requested.
+ *
+ * Remember, the changeset is requested immediately after this method is invoked.
+**/
+- (void)flushPendingChangesToExtensionTables
 {
 	YDBLogAutoTrace();
+	
+	// Cleanup pages (as needed)
+	
+	[self cleanupPages];
 	
 	// During the transaction we stored all changes in the "dirty" dictionaries.
 	// This allows the view to make multiple changes to a page, yet only write it once.
@@ -3294,6 +3308,11 @@ static NSString *const ExtKey_version_deprecated = @"version";
 		[pageTableTransaction commit];
 		[pageMetadataTableTransaction commit];
 	}
+}
+
+- (void)didCommitTransaction
+{
+	YDBLogAutoTrace();
 	
 	// Commit is complete.
 	// Forward to connection for further cleanup.
@@ -3309,8 +3328,10 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	databaseTransaction = nil; // Do not remove !
 }
 
-- (void)rollbackTransaction
+- (void)didRollbackTransaction
 {
+	YDBLogAutoTrace();
+	
 	if (![self isPersistentView])
 	{
 		[mapTableTransaction rollback];

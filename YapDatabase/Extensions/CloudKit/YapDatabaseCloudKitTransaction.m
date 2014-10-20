@@ -728,7 +728,7 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 }
 
 /**
- * This method is invoked from commitTransaction.
+ * This method is invoked from flushPendingChangesToExtensionTables.
  * The given rowids are an summation of all the rowids that have been deleted throughout this tranaction.
 **/
 - (void)removeRecordsForRowids:(NSArray *)rowids
@@ -813,7 +813,7 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 }
 
 /**
- * This method is invoked from commitTransaction.
+ * This method is invoked from flushPendingChangesToExtensionTables.
  * It is only invoked if the user cleared the entire database at some point during this tranaction.
  * (And thus our handleRemoveAllObjectsInAllCollections method was invoked).
 **/
@@ -1160,13 +1160,15 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Subclasses may OPTIONALLY implement this method.
+ * Subclasses MUST implement this method.
  * This method is only called if within a readwrite transaction.
  *
- * Subclasses may implement it to perform any "cleanup" before the changeset is requested.
- * Remember, the changeset is requested before the commitTransaction method is invoked.
+ * Subclasses should write any last changes to their database table(s) if needed,
+ * and should perform any needed cleanup before the changeset is requested.
+ *
+ * Remember, the changeset is requested immediately after this method is invoked.
 **/
-- (void)prepareChangeset
+- (void)flushPendingChangesToExtensionTables
 {
 	YDBLogAutoTrace();
 	
@@ -1359,7 +1361,7 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 /**
  * Required override method from YapDatabaseExtensionTransaction.
 **/
-- (void)commitTransaction
+- (void)didCommitTransaction
 {
 	YDBLogAutoTrace();
 	
@@ -1379,7 +1381,7 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 /**
  * Required override method from YapDatabaseExtensionTransaction.
 **/
-- (void)rollbackTransaction
+- (void)didRollbackTransaction
 {
 	YDBLogAutoTrace();
 	
