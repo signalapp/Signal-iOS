@@ -6,6 +6,8 @@ Signal allows you to make private phone calls and we are working on bringing sec
 
 ## Building
 
+While you can build Signal from this repo it will not be possible to use it without your code being signed using the Whisper Systems certificate (which is only available to core devs). The reason for this is that the (currently) required push notifications can only be sent to apps which have been signed by the key owned by the sender. There is currently no workaround. If you want to use rather than study Signal then please download from the App Store.
+
 1) Clone the repo to a working directory
 
 2) [CocoaPods](http://cocoapods.org) is used to manage dependencies. Pods are setup easily and are distributed via a ruby gem. Follow the simple instructions on the website to setup. After setup, run the following command from the toplevel directory of Signal-iOS to download the dependencies for Signal-iOS:
