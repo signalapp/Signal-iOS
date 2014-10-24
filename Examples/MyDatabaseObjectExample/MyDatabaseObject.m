@@ -265,7 +265,7 @@
 	//
 	// @see [MyDatabaseObject immutableProperties]
 	//
-	[changedProperties unionSet:[[self class] immutableProperties]];
+	[changedProperties intersectSet:[[self class] immutableProperties]];
 	
 	// And return immutable NSSet
 	return [changedProperties copy];
