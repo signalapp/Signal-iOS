@@ -18,7 +18,7 @@ extern DatabaseManager *MyDatabaseManager;
  * E.g.: [transaction objectForKey:todoId inCollection:Collection_Todos]
 **/
 extern NSString *const Collection_Todos;
-extern NSString *const Collection_Prefs;
+extern NSString *const Collection_CloudKit;
 
 /**
  * The following constants are the database extension names.
@@ -48,8 +48,22 @@ extern NSString *const CloudKitZoneName;
 + (NSString *)databasePath;
 
 /**
- * The root database class.
+ * The root database class, and extension(s)
 **/
 @property (nonatomic, strong, readonly) YapDatabase *database;
+@property (nonatomic, strong, readonly) YapDatabaseCloudKit *cloudKitExtension;
+
+/**
+ * The databaseConnection for the main thread.
+ * Will throw an exception if:
+ * - you attempt to use it on a background thread (as that would block a read on the main thread)
+ * - you attempt an async transaction (as that could also block a later read on the main thread)
+**/
+@property (nonatomic, strong, readonly) YapDatabaseConnection *uiDatabaseConnection;
+
+/**
+ * A generic databaseConnection for other asynchronous & background stuff.
+**/
+@property (nonatomic, strong, readonly) YapDatabaseConnection *bgDatabaseConnection;
 
 @end

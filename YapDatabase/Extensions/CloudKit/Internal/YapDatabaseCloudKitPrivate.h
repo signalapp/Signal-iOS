@@ -30,6 +30,15 @@ static NSString *const changeset_key_deletedRowids    = @"deletedRowids";    // 
 static NSString *const changeset_key_modifiedRecords  = @"modifiedRecords";  // Dict : @(rowid) -> sanitized CKRecord
 static NSString *const changeset_key_reset            = @"reset";
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@interface YDBCKRecordInfo ()
+
+@property (nonatomic, strong, readwrite) NSArray *changedKeysToRestore;
+
+@end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
@@ -119,10 +128,6 @@ static NSString *const changeset_key_reset            = @"reset";
 	__unsafe_unretained YapDatabaseReadTransaction *databaseTransaction;
 	
 	NSMutableDictionary *databaseCache;
-	
-@public
-	
-	
 }
 
 - (id)initWithParentConnection:(YapDatabaseCloudKitConnection *)parentConnection

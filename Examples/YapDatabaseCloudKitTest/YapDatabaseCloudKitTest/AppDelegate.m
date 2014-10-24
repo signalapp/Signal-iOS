@@ -1,5 +1,6 @@
 #import "AppDelegate.h"
 #import "DatabaseManager.h"
+#import "CloudKitManager.h"
 
 #import "MyTodo.h"
 
@@ -25,6 +26,11 @@
 	
 	[DDLog addLogger:[DDTTYLogger sharedInstance]];
 	
+	// Start database & cloudKit (in that order)
+	
+	[DatabaseManager initialize];
+	[CloudKitManager initialize];
+	
 	// Register for push notifications
 	
 	UIUserNotificationSettings *notificationSettings =
@@ -32,12 +38,8 @@
 
 	[application registerUserNotificationSettings:notificationSettings];
 	
-	// Start database
-	
-	[DatabaseManager initialize];
-	
 	// Start test
-	
+ 
 	dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC));
 	dispatch_after(delay, dispatch_get_main_queue(), ^{
 		
@@ -87,6 +89,9 @@
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
 	DDLogVerbose(@"Registered for Push notifications with token: %@", deviceToken);
+	
+	// Decrement suspend count
+	[MyDatabaseManager.cloudKitExtension resume];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
@@ -94,18 +99,13 @@
 	DDLogVerbose(@"Push subscription failed: %@", error);
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)info
+- (void)application:(UIApplication *)application
+       didReceiveRemoteNotification:(NSDictionary *)userInfo
+             fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
 {
-	DDLogVerbose(@"Push received with alert body: %@", info[@"aps"][@"alert"]);
-}
-
-- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier
-                                                      forRemoteNotification:(NSDictionary *)userInfo
-                                                          completionHandler:(void (^)())completionHandler
-{
-	DDLogVerbose(@"application:handleActionWithIdentifier:forRemoteNotification:completionHandler:");
+	DDLogVerbose(@"Push received: %@", userInfo);
 	
-	completionHandler();
+	completionHandler(UIBackgroundFetchResultNoData);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

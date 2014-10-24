@@ -154,7 +154,6 @@
 	
 	dirtyRecordInfo = nil;
 	pendingQueue = nil;
-	
 	deletedRowids = nil;
 	modifiedRecords = nil;
 }
@@ -170,7 +169,6 @@
 	
 	dirtyRecordInfo = nil;
 	pendingQueue = nil;
-	
 	deletedRowids = nil;
 	modifiedRecords = nil;
 }

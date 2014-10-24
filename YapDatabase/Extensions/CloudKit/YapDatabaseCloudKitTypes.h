@@ -114,7 +114,9 @@ typedef CKDatabase* (^YapDatabaseCloudKitDatabaseBlock)(NSString *databaseIdenti
 **/
 @property (nonatomic, copy, readwrite) NSString *databaseIdentifier;
 
-
-// We may need to add changedKeys property here...
+/**
+ * 
+**/
+@property (nonatomic, strong, readonly) NSArray *changedKeysToRestore;
 
 @end

@@ -15,8 +15,8 @@
 
 DatabaseManager *MyDatabaseManager;
 
-NSString *const Collection_Todos = @"todos";
-NSString *const Collection_Prefs = @"prefs";
+NSString *const Collection_Todos    = @"todos";
+NSString *const Collection_CloudKit = @"cloudKit";
 
 NSString *const Ext_View_Order = @"order";
 NSString *const Ext_CloudKit   = @"ck";
@@ -60,6 +60,10 @@ NSString *const CloudKitZoneName = @"zone1";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @synthesize database = database;
+@synthesize cloudKitExtension = cloudKitExtension;
+
+@synthesize uiDatabaseConnection = uiDatabaseConnection;
+@synthesize bgDatabaseConnection = bgDatabaseConnection;
 
 - (id)init
 {
@@ -151,8 +155,24 @@ NSString *const CloudKitZoneName = @"zone1";
 	//
 	// ^^^ FOR ADVANCED USERS ONLY ^^^
 	
+	// Setup the extensions
+	
 	[self setupOrderView];
 	[self setupCloudKit];
+	
+	// Setup database connection(s)
+	
+	uiDatabaseConnection = [database newConnection];
+	uiDatabaseConnection.objectCacheLimit = 400;
+	uiDatabaseConnection.metadataCacheEnabled = NO;
+	
+	#if YapDatabaseEnforcePermittedTransactions
+	uiDatabaseConnection.permittedTransactions = YDB_SyncReadTransaction | YDB_MainThreadOnly;
+	#endif
+	
+	bgDatabaseConnection = [database newConnection];
+	uiDatabaseConnection.objectCacheLimit = 400;
+	uiDatabaseConnection.metadataCacheEnabled = NO;
 }
 
 - (void)setupOrderView
@@ -218,7 +238,7 @@ NSString *const CloudKitZoneName = @"zone1";
 		  NSString *collection, NSString *key, MyTodo *todo)
 	{
 		NSSet *changedProperties = todo.changedProperties;
-		if (changedProperties.count == 0)
+		if ((changedProperties.count == 0) && (recordInfo.changedKeysToRestore == nil))
 		{
 			return; // from block
 		}
@@ -250,11 +270,21 @@ NSString *const CloudKitZoneName = @"zone1";
 			*inOutRecordPtr = record;
 		}
 		
-		for (NSString *changedPropertyName in changedProperties)
+		if (recordInfo.changedKeysToRestore)
 		{
-			id value = [todo valueForKey:changedPropertyName];
-			
-			[record setValue:value forKey:changedPropertyName];
+			for (NSString *changedPropertyName in recordInfo.changedKeysToRestore)
+			{
+				id value = [todo valueForKey:changedPropertyName];
+				[record setValue:value forKey:changedPropertyName];
+			}
+		}
+		else
+		{
+			for (NSString *changedPropertyName in changedProperties)
+			{
+				id value = [todo valueForKey:changedPropertyName];
+				[record setValue:value forKey:changedPropertyName];
+			}
 		}
 	}];
 	
@@ -298,46 +328,21 @@ NSString *const CloudKitZoneName = @"zone1";
 	YapDatabaseCloudKitOptions *options = [[YapDatabaseCloudKitOptions alloc] init];
 	options.allowedCollections = whitelist;
 	
-	YapDatabaseCloudKit *cloudKitExtension =
-	  [[YapDatabaseCloudKit alloc] initWithRecordHandler:recordHandler
-	                                          mergeBlock:mergeBlock
-	                                       conflictBlock:conflictBlock
-	                                          versionTag:@"1"
-	                                             options:options];
+	cloudKitExtension = [[YapDatabaseCloudKit alloc] initWithRecordHandler:recordHandler
+	                                                            mergeBlock:mergeBlock
+	                                                         conflictBlock:conflictBlock
+	                                                            versionTag:@"1"
+	                                                               options:options];
 	
-	cloudKitExtension.paused = YES;
+	[cloudKitExtension suspend]; // Push registration
+	[cloudKitExtension suspend]; // Create zone(s)
+	[cloudKitExtension suspend]; // Create subscription(s)
 	
 	[database asyncRegisterExtension:cloudKitExtension withName:Ext_CloudKit completionBlock:^(BOOL ready) {
 		if (!ready) {
 			DDLogError(@"Error registering %@ !!!", Ext_CloudKit);
 		}
 	}];
-	
-	// Create our custom Zone in CloudKit (if needed)
-	
-	CKRecordZone *recordZone = [[CKRecordZone alloc] initWithZoneName:CloudKitZoneName];
-	
-	CKModifyRecordZonesOperation *operation =
-	[[CKModifyRecordZonesOperation alloc] initWithRecordZonesToSave:@[ recordZone ]
-											  recordZoneIDsToDelete:nil];
-	
-	operation.modifyRecordZonesCompletionBlock =
-	^(NSArray *savedRecordZones, NSArray *deletedRecordZoneIDs, NSError *operationError)
-	{
-		if (operationError)
-		{
-			NSLog(@"operationError: %@", operationError);
-		}
-		else
-		{
-			NSLog(@"Successfully created Zones: %@", savedRecordZones);
-			
-			// Tell the cloudKit extension that we're ready to ROCK !
-			cloudKitExtension.paused = NO;
-		}
-	};
-	
-	[[[CKContainer defaultContainer] privateCloudDatabase] addOperation:operation];
 }
 
 @end

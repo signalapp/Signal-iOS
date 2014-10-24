@@ -52,11 +52,19 @@
 
 - (instancetype)initMasterQueue
 {
+	return [self initMasterQueueWithChangeSets:nil];
+}
+
+- (instancetype)initMasterQueueWithChangeSets:(NSMutableArray *)inChangeSets
+{
 	if ((self = [super init]))
 	{
 		isMasterQueue = YES;
 		
-		oldChangeSets = [[NSMutableArray alloc] init];
+		if (inChangeSets)
+			oldChangeSets = inChangeSets;
+		else
+			oldChangeSets = [[NSMutableArray alloc] init];
 	}
 	return self;
 }

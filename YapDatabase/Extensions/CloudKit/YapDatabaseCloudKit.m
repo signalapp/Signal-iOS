@@ -2,12 +2,14 @@
 #import "YapDatabasePrivate.h"
 #import "YapDatabaseLogging.h"
 
+#import <libkern/OSAtomic.h>
+
 /**
  * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
  * See YapDatabaseLogging.h for more information.
 **/
 #if DEBUG
-  static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
+  static const int ydbLogLevel = YDB_LOG_LEVEL_INFO;
 #else
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
@@ -15,6 +17,10 @@
 
 
 @implementation YapDatabaseCloudKit
+{
+	OSSpinLock lock;
+	NSUInteger suspendCount;
+}
 
 /**
  * Subclasses MUST implement this method.
@@ -84,7 +90,7 @@
 @synthesize versionTag = versionTag;
 
 @dynamic options;
-@dynamic paused;
+@dynamic isSuspended;
 
 - (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)recordHandler
                            mergeBlock:(YapDatabaseCloudKitMergeBlock)inMergeBlock
@@ -149,6 +155,8 @@
 		
 		masterOperationQueue = [[NSOperationQueue alloc] init];
 		masterOperationQueue.maxConcurrentOperationCount = 1;
+		
+		lock = OS_SPINLOCK_INIT;
 	}
 	return self;
 }
@@ -162,14 +170,85 @@
 	return [options copy]; // Our copy must remain immutable
 }
 
-- (BOOL)isPaused
+- (BOOL)isSuspended
 {
-	return masterOperationQueue.suspended;
+	BOOL isSuspended = NO;
+	
+	OSSpinLockLock(&lock);
+	{
+		isSuspended = (suspendCount > 0);
+	}
+	OSSpinLockUnlock(&lock);
+	
+	return isSuspended;
 }
 
-- (void)setPaused:(BOOL)flag
+- (NSUInteger)suspend
 {
-	masterOperationQueue.suspended = flag;
+	BOOL overflow = NO;
+	NSUInteger newSuspendCount = 0;
+	
+	OSSpinLockLock(&lock);
+	{
+		if (suspendCount < NSUIntegerMax)
+			suspendCount++;
+		else
+			overflow = YES;
+		
+		newSuspendCount = suspendCount;
+	}
+	OSSpinLockUnlock(&lock);
+	
+	if (overflow) {
+		YDBLogWarn(@"%@ - The suspendCount has reached NSUIntegerMax!", THIS_METHOD);
+	}
+	
+	if (newSuspendCount == 1) {
+		masterOperationQueue.suspended = YES;
+	}
+	
+	if (YDB_LOG_INFO) {
+		if (newSuspendCount == 1)
+			YDBLogInfo(@"=> SUSPENDED");
+		else
+			YDBLogInfo(@"=> SUSPENDED : suspendCount++ => %lu", (unsigned long)newSuspendCount);
+	}
+	
+	return newSuspendCount;
+}
+
+- (NSUInteger)resume
+{
+	BOOL underflow = 0;
+	NSUInteger newSuspendCount = 0;
+	
+	OSSpinLockLock(&lock);
+	{
+		if (suspendCount > 0)
+			suspendCount--;
+		else
+			underflow = YES;
+		
+		newSuspendCount = suspendCount;
+	}
+	OSSpinLockUnlock(&lock);
+	
+	if (underflow) {
+		YDBLogWarn(@"%@ - Attempting to resume with suspendCount already at zero.", THIS_METHOD);
+	}
+	
+	if (newSuspendCount == 0 && !underflow) {
+		masterOperationQueue.suspended = NO;
+	}
+	
+	if (YDB_LOG_INFO) {
+		if (newSuspendCount == 0)
+			YDBLogInfo(@"=> RESUMED");
+		else
+			YDBLogInfo(@"=> SUSPENDED : suspendCount-- => %lu", (unsigned long)newSuspendCount);
+	}
+	
+	return newSuspendCount;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

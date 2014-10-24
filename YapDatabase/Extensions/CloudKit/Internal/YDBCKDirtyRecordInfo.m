@@ -3,11 +3,11 @@
 
 @implementation YDBCKDirtyRecordInfo
 
-@synthesize clean_databaseIdentifier = clean_databaseIdentifier;
 @synthesize clean_recordID = clean_recordID;
+@synthesize clean_databaseIdentifier = clean_databaseIdentifier;
 
-@synthesize dirty_databaseIdentifier = dirty_databaseIdentifier;
 @synthesize dirty_record = dirty_record;
+@synthesize dirty_databaseIdentifier = dirty_databaseIdentifier;
 
 - (BOOL)wasInserted
 {

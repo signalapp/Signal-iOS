@@ -104,12 +104,14 @@
 
 - (NSSet *)changedProperties
 {
+	if ([changedProperties count] == 0) return nil;
+	
 	// We may have tracked changes to properties that are excluded from the list.
 	// For example, temp properties used for caching transformed values.
 	//
 	// @see [MyDatabaseObject immutableProperties]
 	//
-	[changedProperties unionSet:[[self class] immutableProperties]];
+	[changedProperties intersectSet:[[self class] immutableProperties]];
 	
 	// And return immutable NSSet
 	return [changedProperties copy];

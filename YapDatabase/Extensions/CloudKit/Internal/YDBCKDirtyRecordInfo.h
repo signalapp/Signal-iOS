@@ -12,11 +12,11 @@
 **/
 @interface YDBCKDirtyRecordInfo : NSObject
 
-@property (nonatomic, copy, readwrite) NSString *clean_databaseIdentifier;  // represents what's on disk
 @property (nonatomic, strong, readwrite) CKRecordID *clean_recordID;        // represents what's on disk
+@property (nonatomic, copy, readwrite) NSString *clean_databaseIdentifier;  // represents what's on disk
 
-@property (nonatomic, copy, readwrite) NSString *dirty_databaseIdentifier;  // represents new value (this transaction)
 @property (nonatomic, strong, readwrite) CKRecord *dirty_record;            // represents new value (this transaction)
+@property (nonatomic, copy, readwrite) NSString *dirty_databaseIdentifier;  // represents new value (this transaction)
 
 @property (nonatomic, assign, readwrite) BOOL detached;
 

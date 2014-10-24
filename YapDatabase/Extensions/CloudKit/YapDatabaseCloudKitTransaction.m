@@ -51,43 +51,62 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 {
 	YDBLogAutoTrace();
 	
+	// Capture NEW values
+	//
+	// classVersion - the internal version number of YapDatabaseView implementation
+	// versionTag - user specified versionTag, used to force upgrade mechanisms
+	
 	int classVersion = YAP_DATABASE_CLOUD_KIT_CLASS_VERSION;
 	
-//	NSString *versionTag = parentConnection->parent->versionTag;
+	NSString *versionTag = parentConnection->parent->versionTag;
 	
-	// Figure out what steps we need to take in order to register the view
-	
-	BOOL needsCreateTables = NO;
-	BOOL needsPopulateTables = NO;
-	
-	// Check classVersion (the internal version number of YapDatabaseView implementation)
+	// Fetch OLD values
+	//
+	// - hasOldClassVersion - will be YES if the extension exists from a previous run of the app
 	
 	int oldClassVersion = 0;
-	BOOL hasOldClassVersion = [self getIntValue:&oldClassVersion
-	                            forExtensionKey:ExtKey_classVersion persistent:YES];
+	BOOL hasOldClassVersion = [self getIntValue:&oldClassVersion forExtensionKey:ExtKey_classVersion persistent:YES];
+	
+	NSString *oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag persistent:YES];
 	
 	if (!hasOldClassVersion)
 	{
 		// First time registration
 		
-		needsCreateTables = YES;
-		needsPopulateTables = YES;
+		if (![self createTables]) return NO;
+		if (![self createNewMasterChangeQueue]) return NO;
+		if (![self populateTables]) return NO;
+		
+		[self setIntValue:classVersion forExtensionKey:ExtKey_classVersion persistent:YES];
+		[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:YES];
 	}
 	else if (oldClassVersion != classVersion)
 	{
 		// Upgrading from older codebase
+		//
+		// Reserved for potential future use.
+		// Code would likely need to do something similar to the following:
+		//
+		// - restoreMasterChangeQueue
+		// - migrate table(s)
+		// - repopulateTables
 		
-		[self dropTablesForOldClassVersion:oldClassVersion];
-		
-		needsCreateTables = YES;
-		needsPopulateTables = YES;
+		NSAssert(NO, @"Attempting invalid upgrade path !");
 	}
-	
-	// Create the database tables (if needed)
-	
-	if (needsCreateTables)
+	else if (![versionTag isEqualToString:oldVersionTag])
 	{
-		if (![self createTables]) return NO;
+		// Todo: Figure out how exactly to handle versionTag changes...
+		
+		if (![self restoreMasterChangeQueue]) return NO;
+		if (![self repopulateTables]) return NO;
+		
+		[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:YES];
+	}
+	else
+	{
+		// Restoring an up-to-date extension from a previous run.
+		
+		if (![self restoreMasterChangeQueue]) return NO;
 	}
 	
 	return YES;
@@ -106,14 +125,9 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 {
 	YDBLogAutoTrace();
 	
-	// Todo...
+	// Nothing to do here for this extension.
 	
 	return YES;
-}
-
-- (void)dropTablesForOldClassVersion:(int)oldClassVersion
-{
-	// Reserved for future use (when upgrading this class)
 }
 
 - (BOOL)createTables
@@ -164,7 +178,7 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	
 	// Queue Table
 	//
-	// | uuid | prev | deletedRecordIDs | modifiedRecordKeys | modifiedRecords |
+	// | uuid | prev | deletedRecordIDs | modifiedRecords |
 	
 	YDBLogVerbose(@"Creating cloudKit table for registeredName(%@): %@", [self registeredName], queueTableName);
 	
@@ -172,8 +186,8 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	    @"CREATE TABLE IF NOT EXISTS \"%@\""
 	    @" (\"uuid\" TEXT PRIMARY KEY NOT NULL,"
 	    @"  \"prev\" TEXT,"
+		@"  \"databaseIdentifier\" TEXT,"
 	    @"  \"deletedRecordIDs\" BLOB,"
-	    @"  \"modifiedRecordKeys\" BLOB,"
 		@"  \"modifiedRecords\" BLOB"
 	    @" );", queueTableName];
 	
@@ -197,6 +211,283 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		            THIS_METHOD, queueTableName, status, sqlite3_errmsg(db));
 		return NO;
 	}
+	
+	return YES;
+}
+
+/**
+ * Shortcut when creating an extension for the first time.
+ * (No need to restore the masterChangeQueue when we know it doesn't exist.)
+**/
+- (BOOL)createNewMasterChangeQueue
+{
+	parentConnection->parent->masterQueue = [[YDBCKChangeQueue alloc] initMasterQueue];
+	
+	return YES;
+}
+
+/**
+ * This method restores the masterChangeQueue from a previous app run.
+ * This allows us to pick up where we left off, and ensure all requested changes make it up to the cloud.
+**/
+- (BOOL)restoreMasterChangeQueue
+{
+	YDBLogAutoTrace();
+	
+	// Enumerate the rows in the queue table,
+	// and extract the row information into YDBCKChangeSet objects.
+	
+	sqlite3 *db = databaseTransaction->connection->db;
+	sqlite3_stmt *statement;
+	int status;
+	
+	NSMutableDictionary *changeSetsDict = [NSMutableDictionary dictionaryWithCapacity:1];
+	YDBCKChangeSet *lastChangeSetFromEnumeration = nil;
+	
+	NSString *enumerate = [NSString stringWithFormat:
+	  @"SELECT \"uuid\", \"prev\", \"databaseIdentifier\", \"deletedRecordIDs\", \"modifiedRecords\" FROM \"%@\";",
+	  [self queueTableName]];
+	
+	status = sqlite3_prepare_v2(db, [enumerate UTF8String], -1, &statement, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@: Error creating prepared statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		
+		return NO;
+	}
+	
+	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+	{
+		const unsigned char *_uuid = sqlite3_column_text(statement, 0);
+		int _uuidLen = sqlite3_column_bytes(statement, 0);
+		
+		const unsigned char *_prev = sqlite3_column_text(statement, 1);
+		int _prevLen = sqlite3_column_bytes(statement, 1);
+		
+		const unsigned char *_dbid = sqlite3_column_text(statement, 2);
+		int _dbidLen = sqlite3_column_bytes(statement, 2);
+		
+		const void *_blob1 = sqlite3_column_blob(statement, 3);
+		int _blob1Len = sqlite3_column_bytes(statement, 3);
+		
+		const void *_blob2 = sqlite3_column_blob(statement, 4);
+		int _blob2Len = sqlite3_column_bytes(statement, 4);
+		
+		NSString *uuid = [[NSString alloc] initWithBytes:_uuid length:_uuidLen encoding:NSUTF8StringEncoding];
+		NSString *prev = [[NSString alloc] initWithBytes:_prev length:_prevLen encoding:NSUTF8StringEncoding];
+		NSString *dbid = [[NSString alloc] initWithBytes:_dbid length:_dbidLen encoding:NSUTF8StringEncoding];
+		
+		NSData *blob1 = [NSData dataWithBytesNoCopy:(void *)_blob1 length:_blob1Len freeWhenDone:NO];
+		NSData *blob2 = [NSData dataWithBytesNoCopy:(void *)_blob2 length:_blob2Len freeWhenDone:NO];
+		
+		YDBCKChangeSet *changeSet = [[YDBCKChangeSet alloc] initWithUUID:uuid
+		                                                            prev:prev
+		                                              databaseIdentifier:dbid
+		                                                deletedRecordIDs:blob1
+		                                                 modifiedRecords:blob2];
+		
+		[changeSetsDict setObject:changeSet forKey:uuid];
+		lastChangeSetFromEnumeration = changeSet;
+	}
+	
+	if (status != SQLITE_DONE)
+	{
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
+					status, sqlite3_errmsg(databaseTransaction->connection->db));
+	}
+	
+	sqlite3_finalize(statement);
+	statement = NULL;
+	
+	// Put the changeSets into the correct order.
+	//
+	// We have a reverse linked-list, where every element points to the previous one.
+	// The first item in the linked-list will point to an item that no longer exists.
+	// That is, when an item is removed from the front of the linked list,
+	// we don't attempt to set next.prev = nil. (That would be unnecessary disk IO.)
+	//
+	// Also note that it's highly likely that the changeSets were enumerated in-order by sqlite.
+	// This is because sqlite likely enumerated the rows by rowid,
+	// and its very very likely the the highest rowid is the most recently inserted changeSet.
+	//
+	// So here's our algorithm:
+	//
+	// - Start with the lastChangeSetFromEnumeration.
+	// - Add it to the array.
+	// - Work backwards, looping, and adding prevChangeSet to the front of the array.
+	// - At this point we have an array that contains the range [firstChangeSet, lastChangeSetFromEnumeration].
+	// - If lastChangeSetFromEnumeration was indeed the lastChangeSet, then we're done.
+	// - Otherwise we grab another changeSet from the dictionary,
+	// - add it to the end of the array, and then begin working backwards again.
+	
+	NSMutableArray *orderedChangeSets = [NSMutableArray arrayWithCapacity:[changeSetsDict count]];
+	
+	YDBCKChangeSet *changeSet = lastChangeSetFromEnumeration;
+	NSUInteger offset = 0;
+	
+	while (changeSet != nil)
+	{
+		// Add the changeSet to the end of the ordered array (and remove from dictionary)
+		[orderedChangeSets addObject:changeSet];
+		[changeSetsDict removeObjectForKey:changeSet.uuid];
+		
+		// Work backwards, filling in all previous changeSets
+		do
+		{
+			changeSet = [changeSetsDict objectForKey:changeSet.prev];
+			if (changeSet)
+			{
+				[orderedChangeSets insertObject:changeSet atIndex:offset];
+				[changeSetsDict removeObjectForKey:changeSet.uuid];
+			}
+			
+		} while (changeSet != nil);
+		
+		// Check to see if there are more in the dictionary,
+		// and keep going if needed.
+		
+		__block YDBCKChangeSet *remainingChangeSet = nil;
+		[changeSetsDict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+			
+			remainingChangeSet = (YDBCKChangeSet *)obj;
+			*stop = YES;
+		}];
+		
+		changeSet = remainingChangeSet;
+		offset = [orderedChangeSets count];
+	}
+	
+	// Sanity check 1: Did we drain the changeSetsDict?
+	
+	if ([changeSetsDict count] != 0)
+	{
+		YDBLogError(@"Error restoring masterChangeQueue: Reverse-linked list corruption ! (A)");
+		return NO;
+	}
+	
+	// Sanity check 2: The changeSets are all in order
+	
+	NSString *prevUuid = [[orderedChangeSets firstObject] uuid];
+	
+	for (NSUInteger i = 1; i < [orderedChangeSets count]; i++)
+	{
+		YDBCKChangeSet *changeSet = [orderedChangeSets objectAtIndex:i];
+		if (![changeSet.prev isEqualToString:prevUuid])
+		{
+			YDBLogError(@"Error restoring masterChangeQueue: Reverse-linked-list corruption ! (B)");
+			return NO;
+		}
+		
+		prevUuid = changeSet.uuid;
+	}
+	
+	// Restore CKRecords as needed
+	
+	void (^RestoreRecordBlock)(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo);
+	
+	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
+	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithKey)
+	{
+		__unsafe_unretained YapDatabaseCloudKitRecordWithKeyBlock recordBlock =
+		  (YapDatabaseCloudKitRecordWithKeyBlock)parentConnection->parent->recordBlock;
+		
+		RestoreRecordBlock = ^(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo) {
+			
+			YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
+			if (ck)
+			{
+				recordBlock(inOutRecord, recordInfo, ck.collection, ck.key);
+			}
+		};
+	}
+	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithObject)
+	{
+		__unsafe_unretained YapDatabaseCloudKitRecordWithObjectBlock recordBlock =
+		  (YapDatabaseCloudKitRecordWithObjectBlock)parentConnection->parent->recordBlock;
+		
+		RestoreRecordBlock = ^(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo) {
+			
+			YapCollectionKey *ck = nil;
+			id object = nil;
+			
+			if ([databaseTransaction getCollectionKey:&ck object:&object forRowid:rowid])
+			{
+				recordBlock(inOutRecord, recordInfo, ck.collection, ck.key, object);
+			}
+		};
+	}
+	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithMetadata)
+	{
+		__unsafe_unretained YapDatabaseCloudKitRecordWithMetadataBlock recordBlock =
+		  (YapDatabaseCloudKitRecordWithMetadataBlock)parentConnection->parent->recordBlock;
+		
+		RestoreRecordBlock = ^(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo) {
+			
+			YapCollectionKey *ck = nil;
+			id metadata = nil;
+			
+			if ([databaseTransaction getCollectionKey:&ck metadata:&metadata forRowid:rowid])
+			{
+				recordBlock(inOutRecord, recordInfo, ck.collection, ck.key, metadata);
+			}
+		};
+	}
+	else // if (recordBlockType == YapDatabaseCloudKitBlockTypeWithRow)
+	{
+		__unsafe_unretained YapDatabaseCloudKitRecordWithRowBlock recordBlock =
+		  (YapDatabaseCloudKitRecordWithRowBlock)parentConnection->parent->recordBlock;
+		
+		RestoreRecordBlock = ^(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo) {
+			
+			YapCollectionKey *ck = nil;
+			id object = nil;
+			id metadata = nil;
+			
+			if ([databaseTransaction getCollectionKey:&ck object:&object metadata:&metadata forRowid:rowid])
+			{
+				recordBlock(inOutRecord, recordInfo, ck.collection, ck.key, object, metadata);
+			}
+		};
+	}
+	
+	YDBCKRecordInfo *recordInfo = [[YDBCKRecordInfo alloc] init];
+	
+	[orderedChangeSets enumerateObjectsUsingBlock:^(YDBCKChangeSet *changeSet, NSUInteger idx, BOOL *stop) {
+		
+		recordInfo.databaseIdentifier = changeSet.databaseIdentifier;
+		[changeSet enumerateMissingRecordsWithBlock:^CKRecord *(int64_t rowid, NSArray *changedKeys) {
+			
+			recordInfo.changedKeysToRestore = changedKeys;
+			
+			YDBCKCleanRecordInfo *cleanRecordInfo = [self recordInfoForRowid:rowid cacheResult:NO];
+			CKRecord *record = cleanRecordInfo.record;
+			
+			RestoreRecordBlock(rowid, &record, recordInfo);
+			
+			return record;
+		}];
+	}];
+	
+	// Restart the uploads
+	
+	[self queueOperationsForChangeSets:orderedChangeSets];
+	
+	// Done!
+	
+	parentConnection->parent->masterQueue = [[YDBCKChangeQueue alloc] initMasterQueueWithChangeSets:orderedChangeSets];
+	return YES;
+}
+
+- (BOOL)populateTables
+{
+	// Todo...
+	
+	return YES;
+}
+
+- (BOOL)repopulateTables
+{
+	// Todo...
 	
 	return YES;
 }
@@ -840,6 +1131,57 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	sqlite3_reset(statement);
 }
 
+/**
+ *
+**/
+- (BOOL)getRowid:(int64_t *)rowidPtr forRecordID:(CKRecordID *)recordID
+                              databaseIdentifier:(NSString *)databaseIdentifier
+{
+	if (recordID == nil) {
+		if (rowidPtr) *rowidPtr = 0;
+		return NO;
+	}
+	
+	sqlite3_stmt *statement = [parentConnection recordTable_getRowidForRecordStatement];
+	if (statement == NULL) {
+		if (rowidPtr) *rowidPtr = 0;
+		return NO;
+	}
+	
+	BOOL result = NO;
+	int64_t rowid = 0;
+	
+	// SELECT "rowid" FROM "recordTableName" WHERE "recordIDHash" = ? AND "databaseIdentifier" = ?;
+	
+	int64_t recordHash = [self hashRecordID:recordID];
+	sqlite3_bind_int64(statement, 1, recordHash);
+	
+	YapDatabaseString _dbid; MakeYapDatabaseString(&_dbid, databaseIdentifier);
+	if (databaseIdentifier)
+		sqlite3_bind_text(statement, 2, _dbid.str, _dbid.length, SQLITE_STATIC);
+	else
+		sqlite3_bind_null(statement, 2);
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		rowid = sqlite3_column_int64(statement, 0);
+		result = YES;
+	}
+	else if (status != SQLITE_DONE)
+	{
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
+					status, sqlite3_errmsg(databaseTransaction->connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_dbid);
+	
+	if (rowidPtr) *rowidPtr = rowid;
+	return result;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Utilities - QueueTable
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1005,35 +1347,11 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	
 	if (rowidNumber == nil)
 	{
-		sqlite3_stmt *statement = [parentConnection recordTable_getRowidForRecordStatement];
-		if (statement == NULL) {
-			return;
-		}
-		
-		// SELECT "rowid" FROM "recordTableName" WHERE "recordIDHash" = ? AND "databaseIdentifier" = ?;
-		
-		int64_t recordHash = [self hashRecordID:record.recordID];
-		sqlite3_bind_int64(statement, 1, recordHash);
-		
-		YapDatabaseString _dbid; MakeYapDatabaseString(&_dbid, databaseIdentifier);
-		sqlite3_bind_text(statement, 2, _dbid.str, _dbid.length, SQLITE_STATIC);
-		
-		int status = sqlite3_step(statement);
-		if (status == SQLITE_ROW)
+		int64_t rowid = 0;
+		if ([self getRowid:&rowid forRecordID:record.recordID databaseIdentifier:databaseIdentifier])
 		{
-			int64_t rowid = sqlite3_column_int64(statement, 0);
-			
 			rowidNumber = @(rowid);
 		}
-		else if (status != SQLITE_DONE)
-		{
-			YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
-			            status, sqlite3_errmsg(databaseTransaction->connection->db));
-		}
-		
-		sqlite3_clear_bindings(statement);
-		sqlite3_reset(statement);
-		FreeYapDatabaseString(&_dbid);
 	}
 	
 	if (rowidNumber)
@@ -1193,6 +1511,8 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	YDBCKChangeQueue *masterQueue = parentConnection->parent->masterQueue;
 	YDBCKChangeQueue *pendingQueue = [masterQueue newPendingQueue];
 	
+	parentConnection->pendingQueue = pendingQueue;
+	
 	[parentConnection->dirtyRecordInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 		
 		__unsafe_unretained NSNumber *rowidNumber = (NSNumber *)key;
@@ -1347,15 +1667,6 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	{
 		[self insertRowWithChangeSet:newChangeSet];
 	}
-	
-	// Step 4 of 4:
-	//
-	// Create the NSOperation with all the changes, and add it to the operationQueue.
-	
-	[self queueOperationsForChangeSets:pendingQueue.newChangeSets];
-	
-	// Todo: We really want to queue the operations AFTER the commit has succeeded.
-	// Otherwise we have an edge case...
 }
 
 /**
@@ -1364,6 +1675,11 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 - (void)didCommitTransaction
 {
 	YDBLogAutoTrace();
+	
+	// Now that the commit has hit the disk,
+	// we can create all the NSOperation(s) with all the changes, and hand them to CloudKit.
+	
+	[self queueOperationsForChangeSets:parentConnection->pendingQueue.newChangeSets];
 	
 	// Forward to connection for further cleanup.
 	
@@ -1951,6 +2267,220 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Public API
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * This method is designed to assist in the migration process when switching to YapDatabaseCloudKit.
+ * In particular, for the following situation:
+ * 
+ * - You have an existing object in the database that is associated with a CKRecord
+ * - You've been handling CloudKit manually (not via YapDatabaseCloudKit)
+ * - You have an existing CKRecord that is up-to-date
+ * - And you know want YapDatabaseCloudKit to manage the CKRecord for you
+ * 
+ * Thus, this methods works as a simple "hand-off" of the CKRecord to the YapDatabaseCloudKit extension.
+ *
+ * In other words, YapDatbaseCloudKit will write the system fields of the given CKRecord to its internal table,
+ * and associate it with the given collection/key tuple.
+ * 
+ * @param record
+ *   The CKRecord to associate with the collection/key tuple.
+ * 
+ * @param databaseIdentifer
+ *   The identifying string for the CKDatabase.
+ *   @see YapDatabaseCloudKitDatabaseBlock.
+ *
+ * @param key
+ *   The key of the row to associaed the record with.
+ * 
+ * @param collection
+ *   The collection of the row to associate the record with.
+ * 
+ * @param shouldUpload
+ *   If NO, then the record is simply associated with the collection/key,
+ *     and YapDatabaseCloudKit doesn't attempt to push the record to the cloud.
+ *   If YES, then the record is associated with the collection/key ,
+ *     and YapDatabaseCloutKit assumes the given record is dirty and attempts to push the record to the cloud.
+ * 
+ * @return
+ *   YES if the record was associated with the given collection/key.
+ *   NO if one of the following errors occurred.
+ * 
+ * The following errors will prevent this method from succeeding:
+ * - The given record is nil.
+ * - The given collection/key doesn't exist.
+ * - The given collection/key is already associated with another record.
+ * - The recordID/databaseIdentifier is already associated with another collection/key.
+**/
+- (BOOL)attachRecord:(CKRecord *)record
+  databaseIdentifier:(NSString *)databaseIdentifier
+              forKey:(NSString *)key
+        inCollection:(NSString *)collection
+     andUploadRecord:(BOOL)shouldUpload
+{
+	YDBLogAutoTrace();
+	
+	// Proper API usage check
+	
+	if (!databaseTransaction->isReadWriteTransaction)
+	{
+		@throw [self requiresReadWriteTransactionException:NSStringFromSelector(_cmd)];
+		return NO;
+	}
+	
+	// Sanity checks
+	
+	if (record == nil) {
+		return NO;
+	}
+	if (key == nil) {
+		return NO;
+	}
+	
+	int64_t rowid = 0;
+	if (![databaseTransaction getRowid:&rowid forKey:key inCollection:collection])
+	{
+		return NO;
+	}
+	
+	YDBCKDirtyRecordInfo *dirtyRecordInfo = nil;
+	
+	id existingRecordInfo = [self recordInfoForRowid:rowid cacheResult:YES];
+	BOOL isAssociatedWithAnotherRecord = NO;
+	
+	if (existingRecordInfo)
+	{
+		if ([existingRecordInfo isKindOfClass:[YDBCKCleanRecordInfo class]])
+		{
+			isAssociatedWithAnotherRecord = YES;
+		}
+		else
+		{
+			dirtyRecordInfo = (YDBCKDirtyRecordInfo *)existingRecordInfo;
+			if (dirtyRecordInfo.dirty_record)
+			{
+				isAssociatedWithAnotherRecord = YES;
+			}
+		}
+	}
+	
+	if (isAssociatedWithAnotherRecord)
+	{
+		// The collection/key is already associated with an existing record.
+		// You must detach it first.
+		return NO;
+	}
+	
+	// Make the association
+	
+	if (dirtyRecordInfo == nil)
+	{
+		dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
+	}
+	
+	dirtyRecordInfo.dirty_record = record;
+	dirtyRecordInfo.dirty_databaseIdentifier = databaseIdentifier;
+	
+	// Todo: Need some kind of mechanism/ability to obey (shouldUpload == NO).
+	
+	[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:@(rowid)];
+	
+	return YES;
+}
+
+/**
+ * This method is designed to assist in various migrations, such as version migrations.
+ * In particular, this method allows you to un-associate a row in the database with its current CKRecord,
+ * while simultaneously telling YapDatabaseCloudKit NOT to push a delete of the record to the cloud.
+ * 
+ * For example, in version 2 of your app, you need to move a few CKRecords into a new zone.
+ * So you might run this method first in order to drop the associated with the previous record.
+ * And then you'd touch the objects in order to create the new CKRecords,
+ * and have YapDatabaseCloudKit upload the new records.
+**/
+- (void)detachRecordForKey:(NSString *)key inCollection:(NSString *)collection
+{
+	YDBLogAutoTrace();
+	
+	int64_t rowid;
+	if (![databaseTransaction getRowid:&rowid forKey:key inCollection:collection])
+	{
+		YDBLogWarn(@"%@ - No row in database with given collection/key: %@, %@", THIS_METHOD, collection, key);
+		return;
+	}
+	
+	id recordInfo = [self recordInfoForRowid:rowid cacheResult:NO];
+	if (recordInfo)
+	{
+		if ([recordInfo isKindOfClass:[YDBCKCleanRecordInfo class]])
+		{
+			YDBCKCleanRecordInfo *cleanRecordInfo = (YDBCKCleanRecordInfo *)recordInfo;
+			
+			YDBCKDirtyRecordInfo *dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
+			dirtyRecordInfo.clean_recordID = cleanRecordInfo.record.recordID;
+			dirtyRecordInfo.clean_databaseIdentifier = cleanRecordInfo.databaseIdentifier;
+			dirtyRecordInfo.dirty_record = nil;
+			dirtyRecordInfo.dirty_databaseIdentifier = cleanRecordInfo.databaseIdentifier;
+			dirtyRecordInfo.detached = YES;
+			
+			[parentConnection->cleanRecordInfo removeObjectForKey:@(rowid)];
+			[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:@(rowid)];
+		}
+		else
+		{
+			YDBCKDirtyRecordInfo *dirtyRecordInfo = (YDBCKDirtyRecordInfo *)recordInfo;
+			
+			dirtyRecordInfo.dirty_record = nil;
+			dirtyRecordInfo.detached = YES;
+		}
+	}
+}
+
+/**
+ * If the given recordID & databaseIdentifier are associated with row in the database,
+ * then this method will return YES, and set the collectionPtr/keyPtr with the collection/key of the associated row.
+ * 
+ * @param keyPtr (optional)
+ *   If non-null, and this method returns YES, then the keyPtr will be set to the associated row's key.
+ * 
+ * @param collectionPtr (optional)
+ *   If non-null, and this method returns YES, then the collectionPtr will be set to the associated row's collection.
+ * 
+ * @param recordID
+ *   The CKRecordID to look for.
+ * 
+ * @param databaseIdentifier
+ *   The identifying string for the CKDatabase.
+ *   @see YapDatabaseCloudKitDatabaseBlock.
+ * 
+ * @return
+ *   YES if the given recordID & databaseIdentifier are associated with a row in the database.
+ *   NO otherwise.
+**/
+- (BOOL)getKey:(NSString **)keyPtr collection:(NSString **)collectionPtr
+                                  forRecordID:(CKRecordID *)recordID
+                           databaseIdentifier:(NSString *)databaseIdentifier
+{
+	NSString *key = nil;
+	NSString *collection = nil;
+	BOOL result = NO;
+	
+	int64_t rowid = 0;
+	if ([self getRowid:&rowid forRecordID:recordID databaseIdentifier:databaseIdentifier])
+	{
+		YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
+		key = ck.key;
+		collection = ck.collection;
+		result = (ck != nil);
+	}
+	
+	if (keyPtr) *keyPtr = key;
+	if (collectionPtr) *collectionPtr = collection;
+	return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Exceptions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1971,6 +2501,14 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	NSString *reason = [NSString stringWithFormat:
 	  @"The databaseBlock (YapDatabaseCloudKitDatabaseBlock) returned a nil database"
 	  @" for the databaseIdentifier: \"%@\"", databaseIdentifier];
+	
+	return [NSException exceptionWithName:@"YapDatabaseCloudKit" reason:reason userInfo:nil];
+}
+
+- (NSException *)requiresReadWriteTransactionException:(NSString *)methodName
+{
+	NSString *reason = [NSString stringWithFormat:
+	  @"The method [YapDatabaseCloudKitTransaction %@] can only be used within a readWriteTransaction.", methodName];
 	
 	return [NSException exceptionWithName:@"YapDatabaseCloudKit" reason:reason userInfo:nil];
 }

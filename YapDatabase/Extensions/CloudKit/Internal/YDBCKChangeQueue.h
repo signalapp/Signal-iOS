@@ -12,6 +12,7 @@
  * as well as the corresponding information that we need to save to persistent storage.
 **/
 - (instancetype)initMasterQueue;
+- (instancetype)initMasterQueueWithChangeSets:(NSMutableArray *)changeSets;
 
 /**
  * Invoke this method from 'prepareForReadWriteTransaction' in order to fetch a 'pendingQueue' object.

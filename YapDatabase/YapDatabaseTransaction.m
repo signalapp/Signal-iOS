@@ -161,8 +161,6 @@
 
 - (void)rollbackTransaction
 {
-	[yapMemoryTableTransaction rollback];
-	
 	sqlite3_stmt *statement = [connection rollbackTransactionStatement];
 	if (statement)
 	{
@@ -181,6 +179,8 @@
 		
 		[(YapDatabaseExtensionTransaction *)extTransactionObj didRollbackTransaction];
 	}];
+	
+	[yapMemoryTableTransaction rollback];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

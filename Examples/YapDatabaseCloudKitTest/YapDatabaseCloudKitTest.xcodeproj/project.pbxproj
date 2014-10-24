@@ -89,6 +89,7 @@
 		DC6043A519E64688007DEC53 /* YapMurmurHash.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6043A419E64688007DEC53 /* YapMurmurHash.m */; };
 		DC6043A819E65709007DEC53 /* YapDatabaseCKRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6043A719E65709007DEC53 /* YapDatabaseCKRecord.m */; };
 		DC6043AE19E74F56007DEC53 /* YDBCKChangeQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6043AD19E74F56007DEC53 /* YDBCKChangeQueue.m */; };
+		DC6F7A0619F76E4B00372050 /* CloudKitManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6F7A0519F76E4B00372050 /* CloudKitManager.m */; };
 		DCCAD7A719E36A4300F914D5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DCCAD7A619E36A4300F914D5 /* main.m */; };
 		DCCAD7AA19E36A4300F914D5 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DCCAD7A919E36A4300F914D5 /* AppDelegate.m */; };
 		DCCAD7AD19E36A4300F914D5 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCCAD7AC19E36A4300F914D5 /* ViewController.m */; };
@@ -290,6 +291,8 @@
 		DC6043A719E65709007DEC53 /* YapDatabaseCKRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseCKRecord.m; sourceTree = "<group>"; };
 		DC6043AC19E74F56007DEC53 /* YDBCKChangeQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBCKChangeQueue.h; sourceTree = "<group>"; };
 		DC6043AD19E74F56007DEC53 /* YDBCKChangeQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKChangeQueue.m; sourceTree = "<group>"; };
+		DC6F7A0419F76E4B00372050 /* CloudKitManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloudKitManager.h; sourceTree = "<group>"; };
+		DC6F7A0519F76E4B00372050 /* CloudKitManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CloudKitManager.m; sourceTree = "<group>"; };
 		DCCAD7A119E36A4300F914D5 /* YapDatabaseCloudKitTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YapDatabaseCloudKitTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCCAD7A519E36A4300F914D5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DCCAD7A619E36A4300F914D5 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -732,6 +735,8 @@
 				DCCAD7A919E36A4300F914D5 /* AppDelegate.m */,
 				DC007BC519E4C48600A5E9EF /* DatabaseManager.h */,
 				DC007BC619E4C48600A5E9EF /* DatabaseManager.m */,
+				DC6F7A0419F76E4B00372050 /* CloudKitManager.h */,
+				DC6F7A0519F76E4B00372050 /* CloudKitManager.m */,
 				DCCAD7AB19E36A4300F914D5 /* ViewController.h */,
 				DCCAD7AC19E36A4300F914D5 /* ViewController.m */,
 				DCCAD7AE19E36A4300F914D5 /* Main.storyboard */,
@@ -953,6 +958,7 @@
 				DC007B9319E4C2D500A5E9EF /* YapDatabaseExtensionConnection.m in Sources */,
 				DC007AD519E4C2AD00A5E9EF /* DDAbstractDatabaseLogger.m in Sources */,
 				DC007BBD19E4C2D500A5E9EF /* YapDatabaseQuery.m in Sources */,
+				DC6F7A0619F76E4B00372050 /* CloudKitManager.m in Sources */,
 				DC007B9D19E4C2D500A5E9EF /* YapDatabaseSearchResultsViewOptions.m in Sources */,
 				DC007BB719E4C2D500A5E9EF /* YapMemoryTable.m in Sources */,
 				DC007BAF19E4C2D500A5E9EF /* YapDatabaseViewTypes.m in Sources */,

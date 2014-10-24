@@ -12,7 +12,7 @@
 **/
 @interface YDBCKCleanRecordInfo : NSObject
 
-@property (nonatomic, copy, readwrite) NSString *databaseIdentifier;
 @property (nonatomic, strong, readwrite) CKRecord *record;
+@property (nonatomic, copy, readwrite) NSString *databaseIdentifier;
 
 @end
