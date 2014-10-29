@@ -613,6 +613,13 @@
 		E197B62718BBF63B00F073E5 /* SoundBoard.m in Sources */ = {isa = PBXBuildFile; fileRef = E197B62618BBF63B00F073E5 /* SoundBoard.m */; };
 		E1CD329618BCFF9900B1A496 /* SoundInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CD329518BCFF9900B1A496 /* SoundInstance.m */; };
 		F995AC2FFD6D4442B012604A /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
+		FCAC963519FEF4E20046DFC5 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */; };
+		FCAC963C19FEF9280046DFC5 /* SignalsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */; };
+		FCAC964019FEF99A0046DFC5 /* TableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963E19FEF99A0046DFC5 /* TableViewCell.m */; };
+		FCAC964119FEF99A0046DFC5 /* TableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FCAC963F19FEF99A0046DFC5 /* TableViewCell.xib */; };
+		FCAC964419FEFD8B0046DFC5 /* DemoDataFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC964319FEFD8B0046DFC5 /* DemoDataFactory.m */; };
+		FCAC964719FEFE1A0046DFC5 /* DemoDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC964619FEFE1A0046DFC5 /* DemoDataModel.m */; };
+		FCAC965119FF0A6E0046DFC5 /* MessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC965019FF0A6E0046DFC5 /* MessagesViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1324,6 +1331,18 @@
 		E1C407C117F0C246007BEE65 /* whisperReal.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperReal.cer; sourceTree = "<group>"; };
 		E1CD329418BCFF9900B1A496 /* SoundInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundInstance.h; sourceTree = "<group>"; };
 		E1CD329518BCFF9900B1A496 /* SoundInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundInstance.m; sourceTree = "<group>"; };
+		FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Storyboard.storyboard; path = Signal/src/Storyboard/Storyboard.storyboard; sourceTree = SOURCE_ROOT; };
+		FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignalsViewController.h; path = UITests/SignalsViewController.h; sourceTree = "<group>"; };
+		FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalsViewController.m; path = UITests/SignalsViewController.m; sourceTree = "<group>"; };
+		FCAC963D19FEF99A0046DFC5 /* TableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewCell.h; sourceTree = "<group>"; };
+		FCAC963E19FEF99A0046DFC5 /* TableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewCell.m; sourceTree = "<group>"; };
+		FCAC963F19FEF99A0046DFC5 /* TableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TableViewCell.xib; sourceTree = "<group>"; };
+		FCAC964219FEFD8B0046DFC5 /* DemoDataFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoDataFactory.h; sourceTree = "<group>"; };
+		FCAC964319FEFD8B0046DFC5 /* DemoDataFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoDataFactory.m; sourceTree = "<group>"; };
+		FCAC964519FEFE1A0046DFC5 /* DemoDataModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoDataModel.h; sourceTree = "<group>"; };
+		FCAC964619FEFE1A0046DFC5 /* DemoDataModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoDataModel.m; sourceTree = "<group>"; };
+		FCAC964F19FF0A6E0046DFC5 /* MessagesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessagesViewController.h; sourceTree = "<group>"; };
+		FCAC965019FF0A6E0046DFC5 /* MessagesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessagesViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1592,6 +1611,8 @@
 		76EB03C118170B33006006FC /* src */ = {
 			isa = PBXGroup;
 			children = (
+				FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */,
+				FCAC963919FEF8A00046DFC5 /* UI Tests */,
 				76EB03C218170B33006006FC /* AppDelegate.h */,
 				76EB03C318170B33006006FC /* AppDelegate.m */,
 				76EB03D918170B33006006FC /* audio */,
@@ -2990,6 +3011,49 @@
 			path = utilities;
 			sourceTree = "<group>";
 		};
+		FCAC963919FEF8A00046DFC5 /* UI Tests */ = {
+			isa = PBXGroup;
+			children = (
+				FCAC964819FEFE210046DFC5 /* DemoData */,
+				FCAC964E19FF061C0046DFC5 /* ViewControllers */,
+				FCAC964D19FF06110046DFC5 /* Views */,
+			);
+			name = "UI Tests";
+			path = "view controllers";
+			sourceTree = "<group>";
+		};
+		FCAC964819FEFE210046DFC5 /* DemoData */ = {
+			isa = PBXGroup;
+			children = (
+				FCAC964219FEFD8B0046DFC5 /* DemoDataFactory.h */,
+				FCAC964319FEFD8B0046DFC5 /* DemoDataFactory.m */,
+				FCAC964519FEFE1A0046DFC5 /* DemoDataModel.h */,
+				FCAC964619FEFE1A0046DFC5 /* DemoDataModel.m */,
+			);
+			name = DemoData;
+			sourceTree = "<group>";
+		};
+		FCAC964D19FF06110046DFC5 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FCAC963D19FEF99A0046DFC5 /* TableViewCell.h */,
+				FCAC963E19FEF99A0046DFC5 /* TableViewCell.m */,
+				FCAC963F19FEF99A0046DFC5 /* TableViewCell.xib */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		FCAC964E19FF061C0046DFC5 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */,
+				FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */,
+				FCAC964F19FF0A6E0046DFC5 /* MessagesViewController.h */,
+				FCAC965019FF0A6E0046DFC5 /* MessagesViewController.m */,
+			);
+			name = ViewControllers;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -3046,7 +3110,7 @@
 				ORGANIZATIONNAME = "Open Whisper Systems";
 				TargetAttributes = {
 					D221A088169C9E5E00537ABF = {
-						DevelopmentTeam = U68MSDN6DR;
+						DevelopmentTeam = DRXTS3ZU8M;
 						SystemCapabilities = {
 							com.apple.DataProtection = {
 								enabled = 1;
@@ -3279,6 +3343,7 @@
 				B6416FBC199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874E018A06930002CC4F3 /* spinner_connecting@2x.png in Resources */,
 				E14874E118A06930002CC4F3 /* spinner_error.png in Resources */,
+				FCAC964119FEF99A0046DFC5 /* TableViewCell.xib in Resources */,
 				B6416FBF199A0478003C5699 /* Localizable.strings in Resources */,
 				B6416FB7199A0478003C5699 /* Localizable.strings in Resources */,
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
@@ -3326,6 +3391,7 @@
 				E1370BE218A0686C00826894 /* failure.mp3 in Resources */,
 				E1370BE318A0686C00826894 /* handshake.mp3 in Resources */,
 				B6416FCA199A0478003C5699 /* Localizable.strings in Resources */,
+				FCAC963519FEF4E20046DFC5 /* Storyboard.storyboard in Resources */,
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
 				E1370BE418A0686C00826894 /* outring.mp3 in Resources */,
 				E1370BE518A0686C00826894 /* r.caf in Resources */,
@@ -3527,6 +3593,7 @@
 				70B80115190C55660042E3F0 /* GeneratedMessage.m in Sources */,
 				E197B61418BBEC1A00F073E5 /* DropoutTracker.m in Sources */,
 				76EB062C18170B33006006FC /* OperationFailed.m in Sources */,
+				FCAC963C19FEF9280046DFC5 /* SignalsViewController.m in Sources */,
 				707E549218FF26E800C8649D /* SmsInvite.m in Sources */,
 				76EB05DA18170B33006006FC /* LowLatencyConnector.m in Sources */,
 				76EB05EE18170B33006006FC /* CallTermination.m in Sources */,
@@ -3549,10 +3616,13 @@
 				76EB05A018170B33006006FC /* IpAddress.m in Sources */,
 				70B8011B190C55660042E3F0 /* UnknownFieldSet_Builder.m in Sources */,
 				B9A578B1183D60EE00C17105 /* FavouriteTableViewCell.m in Sources */,
+				FCAC965119FF0A6E0046DFC5 /* MessagesViewController.m in Sources */,
 				76EB057618170B33006006FC /* Contact.m in Sources */,
 				70B80111190C55660042E3F0 /* ExtendableMessage.m in Sources */,
+				FCAC964719FEFE1A0046DFC5 /* DemoDataModel.m in Sources */,
 				E197B61118BBEC1A00F073E5 /* AudioProcessor.m in Sources */,
 				76EB065818170B34006006FC /* LeftSideMenuViewController.m in Sources */,
+				FCAC964019FEF99A0046DFC5 /* TableViewCell.m in Sources */,
 				76EB05EA18170B33006006FC /* CallProgress.m in Sources */,
 				76EB05C218170B33006006FC /* DhPacketSharedSecretHashes.m in Sources */,
 				B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */,
@@ -3585,6 +3655,7 @@
 				B942EB0E183A9633000887BB /* SearchBarTitleView.m in Sources */,
 				765052AF182AC9B5008313E1 /* DialerButtonView.m in Sources */,
 				70B80110190C55660042E3F0 /* ConcreteExtensionField.m in Sources */,
+				FCAC964419FEFD8B0046DFC5 /* DemoDataFactory.m in Sources */,
 				70B80112190C55660042E3F0 /* ExtendableMessage_Builder.m in Sources */,
 				76EB05D418170B33006006FC /* ZrtpManager.m in Sources */,
 				76EB058E18170B33006006FC /* HostNameEndPoint.m in Sources */,
