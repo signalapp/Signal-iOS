@@ -18,6 +18,10 @@
 @property (readonly,nonatomic) UIImage* image;
 @property (readonly,nonatomic) NSString *notes;
 @property (readonly,nonatomic) ABRecordID recordID;
+
+@property (nonatomic, assign) BOOL isTextSecureContact;
+@property (nonatomic, assign) BOOL isRedPhoneContact;
+
 @property (nonatomic, assign) BOOL isFavourite;
 
 + (Contact*)contactWithFirstName:(NSString*)firstName

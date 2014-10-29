@@ -21,7 +21,7 @@ static NSString *const CONTRY_CODE_TABLE_CELL_IDENTIFIER = @"CountryCodeTableVie
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
-    return UIStatusBarStyleLightContent;
+    return UIStatusBarStyleDefault;
 }
 
 #pragma mark - Actions
@@ -64,11 +64,19 @@ static NSString *const CONTRY_CODE_TABLE_CELL_IDENTIFIER = @"CountryCodeTableVie
                               forCountry:countryName];
 }
 
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 44.0f;
+}
+
 #pragma mark - UISearchBarDelegate
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
     _countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:searchText];
     [_countryCodeTableView reloadData];
 }
+
+
+
 
 @end

@@ -248,10 +248,15 @@ static NSInteger connectingFlashCounter = 0;
 
 - (void)muteButtonTapped {
 	_muteButton.selected = [Environment.phoneManager toggleMute];
+    
+    NSString* newImageName = _muteButton.selected ? @"mute_on" : @"mute_off";
+    [_muteButton.imageView setImage:[UIImage imageNamed:newImageName]];
 }
 
 - (void)speakerButtonTapped {
     _speakerButton.selected = [AppAudioManager.sharedInstance toggleSpeakerPhone];
+    NSString* newImageName = _speakerButton.selected ? @"speaker_on" : @"speaker_off";
+    [_speakerButton.imageView setImage:[UIImage imageNamed:newImageName]];
 }
 
 - (void)answerButtonTapped {
@@ -295,6 +300,9 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 -(void) displayAcceptRejectButtons:(BOOL) enable{
+    
+    //TODO: if NO, animate reject button -> end call button
+    
     _answerButton.hidden = !enable;
     _rejectButton.hidden = !enable;
     _endButton.hidden = enable;

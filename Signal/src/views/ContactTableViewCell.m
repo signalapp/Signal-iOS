@@ -2,6 +2,12 @@
 
 #define CONTACT_TABLE_CELL_BORDER_WIDTH 1.0f
 
+@interface ContactTableViewCell() {
+    
+}
+@property(strong,nonatomic) Contact* associatedContact;
+@end
+
 @implementation ContactTableViewCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
@@ -17,6 +23,8 @@
 
 - (void)configureWithContact:(Contact *)contact {
 	
+    _associatedContact = contact;
+    
     _nameLabel.attributedText = [self attributedStringForContact:contact];
 
     UIImage *image = contact.image;
@@ -27,6 +35,21 @@
         _contactPictureView.image = image;
     } else {
         _contactPictureView.image = nil;
+        [_contactPictureView addConstraint:[NSLayoutConstraint constraintWithItem:_contactPictureView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0f constant:0]];
+    }
+    
+    if (contact.isRedPhoneContact)
+    {
+        _callButton.imageView.image = [UIImage imageNamed:@"call_dark"];
+    } else {
+        [_callButton addConstraint:[NSLayoutConstraint constraintWithItem:_callButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0f constant:0]];
+    }
+    
+    if (contact.isTextSecureContact)
+    {
+        _messageButton.imageView.image = [UIImage imageNamed:@"signal"];
+    } else {
+        [_messageButton addConstraint:[NSLayoutConstraint constraintWithItem:_messageButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0f constant:0]];
     }
 }
 
@@ -42,17 +65,27 @@
     UIFont *lastNameFont;
     
     if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
-        firstNameFont = [UIFont boldSystemFontOfSize:_nameLabel.font.pointSize];
+        firstNameFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:_nameLabel.font.pointSize];
         lastNameFont  = [UIFont systemFontOfSize:_nameLabel.font.pointSize];
     } else{
-        firstNameFont = [UIFont systemFontOfSize:_nameLabel.font.pointSize];
-        lastNameFont  = [UIFont boldSystemFontOfSize:_nameLabel.font.pointSize];
+        firstNameFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:_nameLabel.font.pointSize];
+        lastNameFont  = [UIFont systemFontOfSize:_nameLabel.font.pointSize];
     }
     [fullNameAttributedString addAttribute:NSFontAttributeName value:firstNameFont range:NSMakeRange(0, contact.firstName.length)];
     [fullNameAttributedString addAttribute:NSFontAttributeName value:lastNameFont range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
     
     [fullNameAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0, contact.fullName.length)];
     return fullNameAttributedString;
+}
+
+-(IBAction)callContact:(id)sender
+{
+    //Initiate Call to _associatedContact
+}
+
+-(IBAction)messageContact:(id)sender
+{
+    //Load messages to _associatedContact
 }
 
 @end

@@ -36,13 +36,20 @@
     [self setupPasteBehaviour];
     self.title = KEYPAD_NAV_BAR_TITLE;
     _currentNumberMutable = [NSMutableString string];
-    [self updateNumberLabel];
+    //[self updateNumberLabel];
     [self.navigationController setNavigationBarHidden:YES animated:NO];
     [_callButton setTitle:CALL_BUTTON_TITLE forState:UIControlStateNormal];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    UIBlurEffect * effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+    UIVisualEffectView * viewWithBlurredBackground =
+    [[UIVisualEffectView alloc] initWithEffect:effect];
+    viewWithBlurredBackground.frame = self.view.frame;
+    
+    [self.view insertSubview:viewWithBlurredBackground atIndex:0];
+    
     if (_phoneNumber) {
         _currentNumberMutable = _phoneNumber.toE164.mutableCopy;
         [self updateNumberLabel];
@@ -111,6 +118,7 @@
 }
 
 - (void)callButtonTapped {
+    
     PhoneNumber *phoneNumber = self.phoneNumberForCurrentInput;
 
     BOOL shouldTryCall = [Environment.getCurrent.phoneDirectoryManager.getCurrentFilter containsPhoneNumber:phoneNumber] || [Environment.getCurrent.recentCallManager isPhoneNumberPresentInRecentCalls:phoneNumber];
@@ -120,6 +128,12 @@
     }else if(phoneNumber.isValid){
         [self promptToInvitePhoneNumber:phoneNumber];
     }
+}
+
+
+-(IBAction)cancelButtonTapped:(id)sender
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 -(void) initiateCallToPhoneNumber:(PhoneNumber*) phoneNumber {
@@ -142,7 +156,9 @@
 }
 
 - (void)updateNumberLabel {
+    //DEBUG!!!
     NSString* numberText = [_currentNumberMutable copy];
+    
     _numberLabel.text = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:numberText];
     PhoneNumber* number = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:numberText];	
     [self tryUpdateContactForNumber:number];

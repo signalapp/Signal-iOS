@@ -126,7 +126,7 @@
     [self performUpdateCheck];
     [self protectPreferenceFiles];
     
-    self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
+    //self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
     
     [self prepareScreenshotProtection];
     
@@ -142,8 +142,8 @@
     LeftSideMenuViewController *leftSideMenuViewController = [LeftSideMenuViewController new];
     
     self.drawerController = [[MMDrawerController alloc] initWithCenterViewController:leftSideMenuViewController.centerTabBarViewController leftDrawerViewController:leftSideMenuViewController];
-    self.window.rootViewController = _drawerController;
-    [self.window makeKeyAndVisible];
+    //self.window.rootViewController = _drawerController;
+    //[self.window makeKeyAndVisible];
     
     //Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];

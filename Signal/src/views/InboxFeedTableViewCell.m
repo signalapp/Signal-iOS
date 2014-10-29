@@ -3,6 +3,7 @@
 #import "Environment.h"
 #import "Util.h"
 
+
 #define ARCHIVE_IMAGE_VIEW_WIDTH 22.0f
 #define DELETE_IMAGE_VIEW_WIDTH 19.0f
 #define TIME_LABEL_SIZE 10
@@ -34,6 +35,18 @@
 
 - (NSString *)reuseIdentifier {
     return NSStringFromClass(self.class);
+}
+
+-(void)configureWithTestMessage:(DemoDataModel*)testMessage {
+    _nameLabel.text = testMessage._sender;
+    _contactPictureView.image = nil;
+    
+    _callTypeImageView.image = [UIImage imageNamed:CALL_TYPE_IMAGE_NAME_OUTGOING];
+    
+    _missedCallView.hidden = NO;
+    _numberLabel.text = @"123-456-7890";
+    _timeLabel.attributedText = [[NSAttributedString alloc] initWithString:@"21:58"];
+    
 }
 
 - (void)configureWithRecentCall:(RecentCall *)recentCall {
