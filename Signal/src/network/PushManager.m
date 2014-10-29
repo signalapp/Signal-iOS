@@ -25,15 +25,21 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedManager = [self new];
-        sharedManager.missingPermissionsAlertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
-                                                                               message:NSLocalizedString(@"PUSH_SETTINGS_MESSAGE", @"")
-                                                                              delegate:nil
-                                                                     cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                                                     otherButtonTitles:nil, nil];
     });
     return sharedManager;
 }
 
+- (instancetype)init{
+    self = [super init];
+    if (self) {
+        self.missingPermissionsAlertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
+                                                                      message:NSLocalizedString(@"PUSH_SETTINGS_MESSAGE", @"")
+                                                                     delegate:nil
+                                                            cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                                                            otherButtonTitles:nil, nil];
+    }
+    return self;
+}
 
 - (void)verifyPushPermissions{
     if (self.isMissingMandatoryNotificationTypes || self.needToRegisterForRemoteNotifications){
