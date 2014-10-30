@@ -111,6 +111,9 @@
     
     if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
         [UIApplication.sharedApplication registerForRemoteNotificationTypes:(UIRemoteNotificationType)self.mandatoryNotificationTypes];
+        if ([self isMissingMandatoryNotificationTypes]) {
+            [self.pushNotificationFutureSource trySetFailure:@"Missing Types"];
+        }
     } else {
         [UIApplication.sharedApplication registerForRemoteNotifications];
     }
@@ -175,8 +178,6 @@
     } else{
         return self.wantRemoteNotifications && (!UIApplication.sharedApplication.isRegisteredForRemoteNotifications);
     }
-    
-    
 }
 
 -(BOOL) wantRemoteNotifications {
