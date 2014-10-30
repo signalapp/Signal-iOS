@@ -12,5 +12,5 @@
 @interface DemoDataFactory : NSObject
 
 +(NSArray*)data;
-
++(NSArray*)makeFakeContacts;
 @end

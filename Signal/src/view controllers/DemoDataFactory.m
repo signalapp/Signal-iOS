@@ -19,4 +19,13 @@
     return (NSArray*)_mutableArray;
 }
 
++(NSArray*)makeFakeContacts
+{
+    NSMutableArray* _mutableArray = [[NSMutableArray alloc]init];
+    
+    for (NSUInteger i=0;i<5;i++)
+        [_mutableArray addObject:[DemoDataModel initFakeContacts:i]];
+    
+    return (NSArray*)_mutableArray;
+}
 @end

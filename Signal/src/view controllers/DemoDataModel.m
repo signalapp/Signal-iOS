@@ -7,6 +7,7 @@
 //
 
 #import "DemoDataModel.h"
+#import "Contact.h"
 
 enum {kDemoDataModelCase0, kDemoDataModelCase1,kDemoDataModelCase2, kDemoDataModelCase3, kDemoDataModelCase4};
 
@@ -67,7 +68,6 @@ enum {kDemoDataModelCase0, kDemoDataModelCase1,kDemoDataModelCase2, kDemoDataMod
 {
     DemoDataModel * _demoModel = [[DemoDataModel alloc] init];
     
-    
     switch (modelNumber) {
         case kDemoDataModelCase0:
             _demoModel._sender = @"Dylan Bourgeois";
@@ -96,6 +96,32 @@ enum {kDemoDataModelCase0, kDemoDataModelCase1,kDemoDataModelCase2, kDemoDataMod
     
     
     return _demoModel;
+}
+
++(Contact*)initFakeContacts:(NSUInteger)modelNumber
+{
+    Contact * _demoContact;
+    
+    switch (modelNumber) {
+        case kDemoDataModelCase0:
+            _demoContact = [Contact contactWithFirstName:@"Dylan" andLastName:@"Bourgeois" andUserTextPhoneNumbers:nil andEmails:nil andContactID:0];
+            break;
+        case kDemoDataModelCase1:
+            _demoContact = [Contact contactWithFirstName:@"Frederic" andLastName:@"Jacobs" andUserTextPhoneNumbers:nil andEmails:nil andContactID:0];
+            break;
+        case kDemoDataModelCase2:
+            _demoContact = [Contact contactWithFirstName:@"Romain" andLastName:@"Ruetschi" andUserTextPhoneNumbers:nil andEmails:nil andContactID:0];
+            break;
+        case kDemoDataModelCase3:
+            _demoContact = [Contact contactWithFirstName:@"Stephen" andLastName:@"Colbert" andUserTextPhoneNumbers:nil andEmails:nil andContactID:0];
+            break;
+        case kDemoDataModelCase4:
+            _demoContact = [Contact contactWithFirstName:@"Johnny" andLastName:@"Ramone" andUserTextPhoneNumbers:nil andEmails:nil andContactID:0];
+            break;
+        default:
+            break;
+    }
+    return _demoContact;
 }
 
 @end

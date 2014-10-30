@@ -12,6 +12,7 @@
 #import <CoreLocation/CoreLocation.h>
 
 #import "JSQMessages.h"
+#import "Contact.h"
 
 static NSString * const kJSQDemoAvatarDisplayNameDylan = @"Dylan Bourgeois";
 static NSString * const kJSQDemoAvatarDisplayNameFred = @"Frederic Jacobs";
@@ -37,6 +38,8 @@ static NSString * const kJSQDemoAvatarIdMoxie = @"707-8956784-57";
 @property(nonatomic, strong) NSString * _snippet ;
 
 +(DemoDataModel*)initModel:(NSUInteger)modelNumber;
++(Contact*)initFakeContacts:(NSUInteger)modelNumber;
+
 
 
 @end

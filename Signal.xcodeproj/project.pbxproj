@@ -620,6 +620,8 @@
 		FCAC964419FEFD8B0046DFC5 /* DemoDataFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC964319FEFD8B0046DFC5 /* DemoDataFactory.m */; };
 		FCAC964719FEFE1A0046DFC5 /* DemoDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC964619FEFE1A0046DFC5 /* DemoDataModel.m */; };
 		FCAC965119FF0A6E0046DFC5 /* MessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC965019FF0A6E0046DFC5 /* MessagesViewController.m */; };
+		FCF72A081A01A765006BC849 /* ContactsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A071A01A765006BC849 /* ContactsTableViewController.m */; };
+		FCF72A0D1A02B468006BC849 /* ContactDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A0C1A02B468006BC849 /* ContactDetailTableViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1343,6 +1345,10 @@
 		FCAC964619FEFE1A0046DFC5 /* DemoDataModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoDataModel.m; sourceTree = "<group>"; };
 		FCAC964F19FF0A6E0046DFC5 /* MessagesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessagesViewController.h; sourceTree = "<group>"; };
 		FCAC965019FF0A6E0046DFC5 /* MessagesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessagesViewController.m; sourceTree = "<group>"; };
+		FCF72A061A01A765006BC849 /* ContactsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsTableViewController.h; sourceTree = "<group>"; };
+		FCF72A071A01A765006BC849 /* ContactsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsTableViewController.m; sourceTree = "<group>"; };
+		FCF72A0B1A02B468006BC849 /* ContactDetailTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContactDetailTableViewController.h; path = ../ContactDetailTableViewController.h; sourceTree = "<group>"; };
+		FCF72A0C1A02B468006BC849 /* ContactDetailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactDetailTableViewController.m; path = ../ContactDetailTableViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3046,6 +3052,10 @@
 		FCAC964E19FF061C0046DFC5 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				FCF72A0B1A02B468006BC849 /* ContactDetailTableViewController.h */,
+				FCF72A0C1A02B468006BC849 /* ContactDetailTableViewController.m */,
+				FCF72A061A01A765006BC849 /* ContactsTableViewController.h */,
+				FCF72A071A01A765006BC849 /* ContactsTableViewController.m */,
 				FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */,
 				FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */,
 				FCAC964F19FF0A6E0046DFC5 /* MessagesViewController.h */,
@@ -3545,6 +3555,7 @@
 				76EB05BE18170B33006006FC /* ConfirmPacket.m in Sources */,
 				76EB058618170B33006006FC /* PreferencesUtil.m in Sources */,
 				76EB05A818170B33006006FC /* RtpSocket.m in Sources */,
+				FCF72A0D1A02B468006BC849 /* ContactDetailTableViewController.m in Sources */,
 				70B80119190C55660042E3F0 /* TextFormat.m in Sources */,
 				E197B61818BBEC1A00F073E5 /* RemoteIOAudio.m in Sources */,
 				70B8011C190C55660042E3F0 /* Utilities.m in Sources */,
@@ -3606,6 +3617,7 @@
 				70B80114190C55660042E3F0 /* Field.m in Sources */,
 				E197B61E18BBEC6D00F073E5 /* AudioRouter.m in Sources */,
 				E197B60D18BBEC1A00F073E5 /* AudioSocket.m in Sources */,
+				FCF72A081A01A765006BC849 /* ContactsTableViewController.m in Sources */,
 				76EB061418170B33006006FC /* AnonymousConditionLogger.m in Sources */,
 				76EB05C018170B33006006FC /* DhPacket.m in Sources */,
 				765052A1182945EF008313E1 /* LocalizableCustomFontLabel.m in Sources */,
