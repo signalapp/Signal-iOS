@@ -18,10 +18,22 @@
 @property (nonatomic, strong, readwrite) CKRecord *dirty_record;            // represents new value (this transaction)
 @property (nonatomic, copy, readwrite) NSString *dirty_databaseIdentifier;  // represents new value (this transaction)
 
-@property (nonatomic, assign, readwrite) BOOL detached;
+@property (nonatomic, assign, readwrite) BOOL skipUploadRecord;
+@property (nonatomic, assign, readwrite) BOOL skipUploadDeletion;
+@property (nonatomic, assign, readwrite) BOOL remoteDeletion;
+@property (nonatomic, assign, readwrite) BOOL remoteMerge;
 
+/**
+ * Returns YES if there wasn't a record previously associated with this item.
+ * In other words, if clean_recordID is nil.
+**/
 - (BOOL)wasInserted;
 
+/**
+ * Returns YES if the recordID/databaseIdentifier has changed.
+ * In other words, it compares clean_recordID vs dirty_recordID,
+ * and clean_databaseIdentifier vs dirty_databaseIdentifier.
+**/
 - (BOOL)databaseIdentifierOrRecordIDChanged;
 
 @end

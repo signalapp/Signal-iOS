@@ -14,6 +14,8 @@
 - (instancetype)initMasterQueue;
 - (instancetype)initMasterQueueWithChangeSets:(NSMutableArray *)changeSets;
 
+#pragma mark PendingQueue Lifecycle
+
 /**
  * Invoke this method from 'prepareForReadWriteTransaction' in order to fetch a 'pendingQueue' object.
  *
@@ -23,7 +25,16 @@
 - (YDBCKChangeQueue *)newPendingQueue;
 
 /**
- * Sanity checks
+ * This should be done AFTER the pendingQueue has been written to disk,
+ * at the end of the flushPendingChangesToExtensionTables method.
+**/
+- (void)mergePendingQueue:(YDBCKChangeQueue *)pendingQueue;
+
+#pragma mark Properties
+
+/**
+ * Determining queue type.
+ * Primarily used for sanity checks.
 **/
 @property (nonatomic, readonly) BOOL isMasterQueue;
 @property (nonatomic, readonly) BOOL isPendingQueue;
@@ -36,13 +47,28 @@
  *
  * Thus a changeSet encompasses all the relavent CloudKit related changes per database, per commit.
  * 
- * The oldChangeSets array is the list of changeSets from previous commits.
- * The newChangeSets array is the list of changeSets from the current commit (only available for the pendingQueue).
- * 
- * The changeSet at index 0 of the oldChangeSets is the next (or in-progress) changeSet.
+ * inFlightChangeSets   : the changeSets that have been handled over to CloudKit via CKModifyRecordsOperation's.
+ * pendingChangeSetsXXX : the changeSets that are pending (not yet in-flight).
 **/
-@property (nonatomic, strong, readonly) NSArray *oldChangeSets;
-@property (nonatomic, strong, readonly) NSArray *newChangeSets;
+@property (nonatomic, strong, readonly) NSArray *inFlightChangeSets;
+@property (nonatomic, strong, readonly) NSArray *pendingChangeSetsFromPreviousCommits;
+@property (nonatomic, strong, readonly) NSArray *pendingChangeSetsFromCurrentCommit;
+
+#pragma mark Merge Handling
+
+/**
+ * This method enumerates pendingChangeSetsFromPreviousCommits, from oldest commit to newest commit,
+ * and merges the changedKeys & values into the given record.
+ * Thus, if the value for a particular key has been changed multiple times,
+ * then the given record will end up with the most recent value for that key.
+ * 
+ * The given record is expected to be a sanitized record.
+ * 
+ * Returns YES if there were any pending records in the pendingChangeSetsFromPreviousCommits.
+**/
+- (BOOL)mergeChangesForRowid:(NSNumber *)rowidNumber intoRecord:(CKRecord *)record;
+
+#pragma mark Transaction Handling
 
 /**
  * This method updates the current changeSet of the pendingQueue
@@ -82,10 +108,22 @@
         databaseIdentifier:(NSString *)databaseIdentifier;
 
 /**
- * This should be done AFTER the pendingQueue has been written to disk,
- * at the end of the flushPendingChangesToExtensionTables method.
+ * This method properly updates the pendingQueue,
+ * and updates any previous queued changeSets that include modifications for this item.
 **/
-- (void)mergePendingQueue:(YDBCKChangeQueue *)pendingQueue;
+- (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
+           withMergedRowid:(NSNumber *)rowidNumber
+                    record:(CKRecord *)mergedRecord
+        databaseIdentifier:(NSString *)databaseIdentifier;
+
+/**
+ * This method properly updates the pendingQueue,
+ * and updates any previously queued changeSets that include modifications for this item.
+**/
+- (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
+    withRemoteDeletedRowid:(NSNumber *)rowidNumber
+                  recordID:(CKRecordID *)recordID
+        databaseIdentifier:(NSString *)databaseIdentifier;
 
 @end
 
@@ -121,7 +159,8 @@ databaseIdentifier:(NSString *)databaseIdentifier
 @property (nonatomic, readonly) NSArray *recordIDsToDelete; // Array of CKRecordID's for CKModifyRecordsOperation
 @property (nonatomic, readonly) NSArray *recordsToSave;     // Array of CKRecord's for CKModifyRecordsOperation
 
-@property (nonatomic, readonly) BOOL hasChanges; // Wheter changeSet needs 'modifiedRecords' column to be updated
+@property (nonatomic, readonly) BOOL hasChangesToDeletedRecordIDs;
+@property (nonatomic, readonly) BOOL hasChangesToModifiedRecords;
 
 - (NSData *)serializeDeletedRecordIDs; // Blob to go in 'deletedRecordIDs' column of database row
 - (NSData *)serializeModifiedRecords;  // Blob to go in 'modifiedRecords' column of database row

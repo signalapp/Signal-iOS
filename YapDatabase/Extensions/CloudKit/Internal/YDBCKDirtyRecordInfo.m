@@ -9,6 +9,10 @@
 @synthesize dirty_record = dirty_record;
 @synthesize dirty_databaseIdentifier = dirty_databaseIdentifier;
 
+@synthesize skipUploadRecord = skipUploadRecord;
+@synthesize skipUploadDeletion = skipUploadDeletion;
+@synthesize remoteDeletion = remoteDeletion;
+
 - (BOOL)wasInserted
 {
 	return (clean_recordID == nil);

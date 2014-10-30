@@ -157,8 +157,8 @@ NSString *const CloudKitZoneName = @"zone1";
 	
 	// Setup the extensions
 	
-	[self setupOrderView];
-	[self setupCloudKit];
+	[self setupOrderViewExtension];
+	[self setupCloudKitExtension];
 	
 	// Setup database connection(s)
 	
@@ -175,7 +175,7 @@ NSString *const CloudKitZoneName = @"zone1";
 	uiDatabaseConnection.metadataCacheEnabled = NO;
 }
 
-- (void)setupOrderView
+- (void)setupOrderViewExtension
 {
 	//
 	// What is a YapDatabaseView ?
@@ -231,7 +231,7 @@ NSString *const CloudKitZoneName = @"zone1";
 	}];
 }
 
-- (void)setupCloudKit
+- (void)setupCloudKitExtension
 {
 	YapDatabaseCloudKitRecordHandler *recordHandler = [YapDatabaseCloudKitRecordHandler withObjectBlock:
 	    ^(CKRecord *__autoreleasing *inOutRecordPtr, YDBCKRecordInfo *recordInfo,
@@ -289,29 +289,33 @@ NSString *const CloudKitZoneName = @"zone1";
 	}];
 	
 	YapDatabaseCloudKitMergeBlock mergeBlock =
-	  ^(YapDatabaseReadWriteTransaction *transaction, CKRecord *record, NSString *collection, NSString *key)
+	^(YapDatabaseReadWriteTransaction *transaction, NSString *collection, NSString *key,
+	  CKRecord *remoteRecord, CKRecord *pendingLocalRecord, CKRecord *newLocalRecord)
 	{
-		if ([record.recordType isEqualToString:@"todo"])
+		if ([remoteRecord.recordType isEqualToString:@"todo"])
 		{
 			if (collection == nil)
 				collection = Collection_Todos;
 			
 			if (key == nil)
-				key = record.recordID.recordName;
+				key = remoteRecord.recordID.recordName;
 			
 			MyTodo *todo = [transaction objectForKey:key inCollection:collection];
-			if (todo == nil)
-			{
-				todo = [[MyTodo alloc] initWithUUID:key];
-			}
 			
-			for (NSString *propertyName in [record allKeys])
+			NSSet *remoteChangedKeys = [NSSet setWithArray:remoteRecord.changedKeys];
+			NSMutableSet *localChangedKeys = [NSMutableSet setWithArray:pendingLocalRecord.changedKeys];
+			
+			for (NSString *remoteChangedKey in remoteChangedKeys)
 			{
-				id value = [record objectForKey:propertyName];
+				id remoteChangedValue = [remoteRecord valueForKey:remoteChangedKey];
 				
-				[todo setValue:value forKey:propertyName];
-				
-				// Todo: What about values that have been deleted ?
+				[todo setValue:remoteChangedValue forKey:remoteChangedKey];
+				[localChangedKeys removeObject:remoteChangedKey];
+			}
+			for (NSString *localChangedKey in localChangedKeys)
+			{
+				id localChangedValue = [pendingLocalRecord valueForKey:localChangedKey];
+				[newLocalRecord setValue:localChangedValue forKey:localChangedKey];
 			}
 		}
 	};

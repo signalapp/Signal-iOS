@@ -1,5 +1,6 @@
 #import "CloudKitManager.h"
 #import "DatabaseManager.h"
+#import "MyTodo.h"
 #import "DDLog.h"
 
 #import <CloudKit/CloudKit.h>
@@ -241,7 +242,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 			
 			[databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 				
-				// Remove the stuff that was deleted
+				// Remove the items that were deleted (by another device)
 				for (CKRecordID *recordID in deletedRecordIDs)
 				{
 					NSString *key = nil;
@@ -252,19 +253,57 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 					                                         forRecordID:recordID
 					                                  databaseIdentifier:nil];
 					
-					if (exists) {
+					if (exists)
+					{
+						// This MUST go FIRST
+						[[transaction ext:Ext_CloudKit] detachRecordForKey:key
+						                                      inCollection:collection
+						                                 wasRemoteDeletion:YES
+						                              shouldUploadDeletion:NO];
+						
+						// This MUST go SECOND
 						[transaction removeObjectForKey:key inCollection:collection];
 					}
 				}
 				
-				// Update the stuff that was changed
+				// Update the items that were modified (by another device)
 				for (CKRecord *record in changedRecords)
 				{
-					// Todo...
+					NSString *key = nil;
+					NSString *collection = nil;
+					
+					BOOL exists = [[transaction ext:Ext_CloudKit] getKey:&key
+					                                          collection:&collection
+					                                         forRecordID:record.recordID
+					                                  databaseIdentifier:nil];
+					
+					if (exists)
+					{
+						
+					}
+					else
+					{
+						MyTodo *newTodo = [CloudKitManager todoFromRecord:record];
+						
+						NSString *key = newTodo.uuid;
+						NSString *collection = Collection_Todos;
+						
+						// This MUST go FIRST
+						[[transaction ext:Ext_CloudKit] attachRecord:record
+						                          databaseIdentifier:nil
+						                                      forKey:key
+						                                inCollection:collection
+						                          shouldUploadRecord:NO];
+						
+						// This MUST go SECOND
+						[transaction setObject:newTodo forKey:newTodo.uuid inCollection:Collection_Todos];
+					}
 				}
 				
-				// And save the serverChangeToken. (In the same atomic transaction, FTW!)
-				[transaction setObject:serverChangeToken forKey:Key_ServerChangeToken inCollection:Collection_CloudKit];
+				// And save the serverChangeToken. (in the same atomic transaction)
+				[transaction setObject:serverChangeToken
+				                forKey:Key_ServerChangeToken
+				          inCollection:Collection_CloudKit];
 				
 			} completionBlock:^{
 				
@@ -285,6 +324,31 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 			}
 		}
 	};
+	
+	[[[CKContainer defaultContainer] privateCloudDatabase] addOperation:operation];
+}
+
++ (MyTodo *)todoFromRecord:(CKRecord *)record
+{
+	if (![record.recordType isEqualToString:@"todo"])
+	{
+		NSAssert(NO, @"Attempting to create todo from non-todo record"); // For debug builds
+		return nil;                                                      // For release builds
+	}
+	
+	NSString *uuid = record.recordID.recordName;
+	
+	MyTodo *newTodo = [[MyTodo alloc] initWithUUID:uuid];
+	
+	newTodo.title = [record valueForKey:@"title"];
+	newTodo.notes = [record valueForKey:@"notes"];
+	
+	newTodo.isDone = [[record valueForKey:@"isDone"] boolValue];
+	
+	newTodo.created = [record valueForKey:@"created"];
+	newTodo.lastModified = [record valueForKey:@"lastModified"];
+	
+	return newTodo;
 }
 
 @end

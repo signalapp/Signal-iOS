@@ -91,6 +91,8 @@ static NSString *const changeset_key_reset            = @"reset";
 	BOOL reset;
 	BOOL isUploadCompletionTransaction;
 	
+	NSMutableDictionary *pendingAttachRequests;
+	
 	YDBCKChangeQueue *pendingQueue;
 	
 	NSMutableSet *deletedRowids;
@@ -111,7 +113,9 @@ static NSString *const changeset_key_reset            = @"reset";
 - (sqlite3_stmt *)recordTable_removeAllStatement;
 
 - (sqlite3_stmt *)queueTable_insertStatement;
-- (sqlite3_stmt *)queueTable_updateStatement;
+- (sqlite3_stmt *)queueTable_updateDeletedRecordIDsStatement;
+- (sqlite3_stmt *)queueTable_updateModifiedRecordsStatement;
+- (sqlite3_stmt *)queueTable_updateBothStatement;
 - (sqlite3_stmt *)queueTable_removeForUuidStatement;
 - (sqlite3_stmt *)queueTable_removeAllStatement;
 

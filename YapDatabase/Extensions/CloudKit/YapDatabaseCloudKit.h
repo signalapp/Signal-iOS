@@ -54,18 +54,29 @@
 @property (atomic, readonly) BOOL isSuspended;
 
 /**
- * Before the CloudKit stack is ready to use, often times there are configurations that must happen first.
- * For example:
+ * Before the CloudKit stack can begin pushing changes to the cloud, there are generally several steps that
+ * must be taken first. These include general configuration steps, as well as querying the server to
+ * pull down changes from other devices that occurred while the app was offline.
+ *
+ * Some example steps that may need to be performed prior to taking the extension "online":
  * - registering for push notifications
  * - creating the needed CKRecordZone's (if needed)
  * - creating the zone subscriptions (if needed)
+ * - pulling changes via CKFetchRecordChangesOperation
  * 
  * It's important that all these tasks get completed before the YapDatabaseCloudKit extension begins attempting
- * to push data to the cloud. For that reason, there is a flexible mechanism to "suspend" the upload process.
+ * to push data to the cloud. For example, if the proper CKRecordZone's haven't been created yet, then attempting
+ * to insert objects into those missing zones will fail. And if, after after being offline, we begin pushing our
+ * changes to the server before we pull others' changes, then we'll likely just get a bunch of failures & conflicts.
+ * Not to mention waste a lot of bandwidth in the process.
+ * 
+ * For this reason, there is a flexible mechanism to "suspend" the upload process.
  *
- * That is, if YapDatabaseCloudKit is "suspended", it still remains fully functional (listening for changes
- * in the database, and invoking the recordHandler block to track changes to CKRecord's, etc).
- * However it only QUEUES its CKModifyRecords operations. (It suspends its internal master operationQueue.)
+ * That is, if YapDatabaseCloudKit is "suspended", it still remains fully functional.
+ * That is, it's still "listening" for changes in the database, and invoking the recordHandler block to track
+ * changes to CKRecord's, etc. However, while suspended, it operates in a slightly different mode, wherein it
+ * it only QUEUES its CKModifyRecords operations. (It suspends its internal master operationQueue.) And where it
+ * may dynamically modify its pending queue in response to merges and continued changes to the database.
  * 
  * You MUST match every call to suspend with a matching call to resume.
  * For example, if you invoke suspend 3 times, then the extension won't resume until you've invoked resume 3 times.
@@ -85,6 +96,16 @@
  *   and you just incremented the suspend count.
 **/
 - (NSUInteger)suspend;
+
+/**
+ * This method operates the same as invoking the suspend method the given number of times.
+ * That is, it increments the suspend count by the given number.
+ * 
+ * You can invoke this method with a zero parameter in order to obtain the current suspend count, without modifying it.
+ * 
+ * @see suspend
+**/
+- (NSUInteger)suspendWithCount:(NSUInteger)suspendCountIncrement;
 
 /**
  * See the suspend method for a description of the suspend/resume architecture.

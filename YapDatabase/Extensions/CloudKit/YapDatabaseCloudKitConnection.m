@@ -26,7 +26,9 @@
 	sqlite3_stmt *recordTable_removeAllStatement;
 	
 	sqlite3_stmt *queueTable_insertStatement;
-	sqlite3_stmt *queueTable_updateStatement;
+	sqlite3_stmt *queueTable_updateDeletedRecordIDsStatement;
+	sqlite3_stmt *queueTable_updateModifiedRecordsStatement;
+	sqlite3_stmt *queueTable_updateBothStatement;
 	sqlite3_stmt *queueTable_removeForUuidStatement;
 	sqlite3_stmt *queueTable_removeAllStatement;
 }
@@ -63,7 +65,9 @@
 	sqlite_finalize_null(&recordTable_removeAllStatement);
 	
 	sqlite_finalize_null(&queueTable_insertStatement);
-	sqlite_finalize_null(&queueTable_updateStatement);
+	sqlite_finalize_null(&queueTable_updateDeletedRecordIDsStatement);
+	sqlite_finalize_null(&queueTable_updateModifiedRecordsStatement);
+	sqlite_finalize_null(&queueTable_updateBothStatement);
 	sqlite_finalize_null(&queueTable_removeForUuidStatement);
 	sqlite_finalize_null(&queueTable_removeAllStatement);
 }
@@ -153,6 +157,7 @@
 	YDBLogAutoTrace();
 	
 	dirtyRecordInfo = nil;
+	pendingAttachRequests = nil;
 	pendingQueue = nil;
 	deletedRowids = nil;
 	modifiedRecords = nil;
@@ -168,6 +173,7 @@
 	[cleanRecordInfo removeAllObjects];
 	
 	dirtyRecordInfo = nil;
+	pendingAttachRequests = nil;
 	pendingQueue = nil;
 	deletedRowids = nil;
 	modifiedRecords = nil;
@@ -440,9 +446,39 @@
 	return *statement;
 }
 
-- (sqlite3_stmt *)queueTable_updateStatement
+- (sqlite3_stmt *)queueTable_updateDeletedRecordIDsStatement
 {
-	sqlite3_stmt **statement = &queueTable_updateStatement;
+	sqlite3_stmt **statement = &queueTable_updateDeletedRecordIDsStatement;
+	if (*statement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"UPDATE \"%@\" SET \"deletedRecordIDs\" = ? WHERE \"uuid\" = ?;",
+		  [parent queueTableName]];
+		
+		[self prepareStatement:statement withString:string caller:_cmd];
+	}
+	
+	return *statement;
+}
+
+- (sqlite3_stmt *)queueTable_updateBothStatement
+{
+	sqlite3_stmt **statement = &queueTable_updateBothStatement;
+	if (*statement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"UPDATE \"%@\" SET \"deletedRecordIDs\" = ?, \"modifiedRecords\" = ? WHERE \"uuid\" = ?;",
+		  [parent queueTableName]];
+		
+		[self prepareStatement:statement withString:string caller:_cmd];
+	}
+	
+	return *statement;
+}
+
+- (sqlite3_stmt *)queueTable_updateModifiedRecordsStatement
+{
+	sqlite3_stmt **statement = &queueTable_updateModifiedRecordsStatement;
 	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:

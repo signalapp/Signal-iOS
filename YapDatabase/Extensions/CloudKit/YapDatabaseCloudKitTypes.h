@@ -54,7 +54,8 @@ typedef void (^YapDatabaseCloudKitRecordWithRowBlock)
  * "Clean" merge.
 **/
 typedef void (^YapDatabaseCloudKitMergeBlock)
-       (YapDatabaseReadWriteTransaction *transaction, CKRecord *record, NSString *collection, NSString *key);
+    (YapDatabaseReadWriteTransaction *transaction, NSString *collection, NSString *key,
+	 CKRecord *remoteRecord, CKRecord *pendingLocalRecord, CKRecord *newLocalRecord);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
