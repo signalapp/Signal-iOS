@@ -42,14 +42,14 @@
     [self localizeButtonText];
     
     DDLogInfo(@"Opened Registration View");
-
+    
     [self populateDefaultCountryNameAndCode];
     
     _scrollView.contentSize = _containerView.bounds.size;
-
+    
     BOOL isRegisteredAlready = Environment.isRegistered;
     _registerCancelButton.hidden = !isRegisteredAlready;
-
+    
     [self initializeKeyboardHandlers];
     [self setPlaceholderTextColor:[UIColor lightGrayColor]];
 }
@@ -58,7 +58,7 @@
     RegisterViewController *viewController = [RegisterViewController new];
     viewController->life = [TOCCancelTokenSource new];
     viewController->registered = [TOCFutureSource futureSourceUntil:viewController->life.token];
-
+    
     return viewController;
 }
 
@@ -122,7 +122,7 @@
     if(localNumber==nil){ return; }
     
     [_phoneNumberTextField resignFirstResponder];
-
+    
     [_registerActivityIndicator startAnimating];
     _registerButton.enabled = NO;
     
@@ -170,28 +170,23 @@
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         NSString *alertTitle = NSLocalizedString(@"REGISTRATION_ERROR", @"");
         
-        if ([error isKindOfClass:HttpResponse.class]) {
-            NSHTTPURLResponse* badResponse = (NSHTTPURLResponse*)task.response;
-            if (badResponse.statusCode == 401) {
-                SignalAlertView(alertTitle, REGISTER_CHALLENGE_ALERT_VIEW_BODY);
-            } else if (badResponse.statusCode == 401){
-                SignalAlertView(alertTitle, NSLocalizedString(@"REGISTER_RATE_LIMITING_BODY", @""));
-            } else {
-                NSString *alertBodyString =  [NSString stringWithFormat:@"%@ %lu", NSLocalizedString(@"SERVER_CODE", @""),(unsigned long)badResponse.statusCode];
-                SignalAlertView (alertTitle, alertBodyString);
-            }
-        } else{
-            Environment.errorNoter(error, @"While Verifying Challenge.", NO);
-            SignalReportError
+        NSHTTPURLResponse* badResponse = (NSHTTPURLResponse*)task.response;
+        if (badResponse.statusCode == 401) {
+            SignalAlertView(alertTitle, REGISTER_CHALLENGE_ALERT_VIEW_BODY);
+        } else if (badResponse.statusCode == 401){
+            SignalAlertView(alertTitle, NSLocalizedString(@"REGISTER_RATE_LIMITING_BODY", @""));
+        } else {
+            NSString *alertBodyString      = [NSString stringWithFormat:@"%@ %lu", NSLocalizedString(@"SERVER_CODE", @""),(unsigned long)badResponse.statusCode];
+            SignalAlertView (alertTitle, alertBodyString);
         }
         
-        _challengeButton.enabled = YES;
+        _challengeButton.enabled       = YES;
         [_challengeActivityIndicator stopAnimating];
     }];
 }
 
 - (void)showViewNumber:(NSInteger)viewNumber {
-
+    
     if (viewNumber == REGISTER_VIEW_NUMBER) {
         [_registerActivityIndicator stopAnimating];
         _registerButton.enabled = YES;
@@ -219,7 +214,7 @@
     
     NSDate *now = [NSDate new];
     timeoutDate = [[NSDate alloc] initWithTimeInterval:smsTimeoutTimeInterval sinceDate:now];
-
+    
     countdownTimer = [NSTimer scheduledTimerWithTimeInterval:1
                                                       target:self
                                                     selector:@selector(countdowntimerFired)
@@ -237,9 +232,9 @@
     unsigned int unitFlags = NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit;
     NSDateComponents *conversionInfo = [sysCalendar components:unitFlags fromDate:now  toDate:timeoutDate  options:0];
     NSString* timeLeft = [NSString stringWithFormat:@"%ld:%02ld",(long)[conversionInfo minute],(long)[conversionInfo second]];
-
+    
     [self.voiceChallengeTextLabel setText:timeLeft];
-
+    
     if (0 <= [now  compare:timeoutDate]) {
         [self initiateVoiceVerification];
     }
@@ -271,7 +266,7 @@
 - (void)initializeKeyboardHandlers{
     UITapGestureRecognizer *outsideTabRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboardFromAppropriateSubView)];
     [self.view addGestureRecognizer:outsideTabRecognizer];
-
+    
     [self observeKeyboardNotifications];
     
 }
@@ -285,7 +280,7 @@
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
                                                object:nil];
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
@@ -341,7 +336,7 @@
 
 -(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
     NSString* textBeforeChange = textField.text;
-
+    
     // backspacing should skip over formatting characters
     UITextPosition *posIfBackspace = [textField positionFromPosition:textField.beginningOfDocument
                                                               offset:(NSInteger)(range.location + range.length)];
@@ -362,7 +357,7 @@
     // make the proposed change
     NSString* textAfterChange = [textBeforeChange withCharactersInRange:range replacedBy:string];
     NSUInteger cursorPositionAfterChange = range.location + string.length;
-
+    
     // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
     bool isJustDeletion = string.length == 0;
     NSString* textAfterReformat = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textAfterChange.digitsOnly
@@ -375,7 +370,7 @@
     UITextPosition *pos = [textField positionFromPosition:textField.beginningOfDocument
                                                    offset:(NSInteger)cursorPositionAfterReformat];
     [textField setSelectedTextRange:[textField textRangeFromPosition:pos toPosition:pos]];
-
+    
     return NO; // inform our caller that we took care of performing the change
 }
 

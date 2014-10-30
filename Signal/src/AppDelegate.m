@@ -20,16 +20,7 @@
 #import "Util.h"
 #import "VersionMigrations.h"
 
-
-
-
-
-
 #import <PastelogKit/Pastelog.h>
-
-
-
-
 
 #define kSignalVersionKey @"SignalUpdateVersionKey"
 
