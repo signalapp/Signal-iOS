@@ -178,7 +178,7 @@
                             <textInputTraits key="textInputTraits" enablesReturnKeyAutomatically="YES"/>
                         </searchBar>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="ContactTableViewCell" textLabel="iJB-rT-aDU" style="IBUITableViewCellStyleDefault" id="lmY-dm-qT2">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="ContactTableViewCell" textLabel="iJB-rT-aDU" style="IBUITableViewCellStyleDefault" id="lmY-dm-qT2" customClass="ContactTableViewCell">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="lmY-dm-qT2" id="H16-Uc-U3o">
                                     <autoresizingMask key="autoresizingMask"/>
@@ -195,7 +195,8 @@
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="ZD1-dh-4mi" kind="show" id="D0f-Wv-DzJ"/>
+                                    <outlet property="nameLabel" destination="iJB-rT-aDU" id="NgJ-0O-pHs"/>
+                                    <segue destination="ZD1-dh-4mi" kind="show" identifier="DetailSegue" id="D0f-Wv-DzJ"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -222,7 +223,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <inset key="separatorInset" minX="8" minY="0.0" maxX="0.0" maxY="0.0"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="NameMainNumberCell" rowHeight="100" id="OSv-Jn-AhT">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="NameMainNumberCell" rowHeight="100" id="OSv-Jn-AhT" customClass="ContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="OSv-Jn-AhT" id="RgS-OV-Uje">
                                     <autoresizingMask key="autoresizingMask"/>
@@ -431,8 +432,16 @@
                                         </mask>
                                     </variation>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="contactCallButton" destination="k5h-gf-Ror" id="9eo-sN-Xhp"/>
+                                    <outlet property="contactFavoriteImageView" destination="sva-fm-h21" id="wWg-hz-6ig"/>
+                                    <outlet property="contactImageView" destination="wrg-Eh-0S4" id="PMI-bQ-A0w"/>
+                                    <outlet property="contactName" destination="2ru-fa-2d7" id="6Hk-vP-uSt"/>
+                                    <outlet property="contactPhoneNumber" destination="Afd-LC-dts" id="0hI-LH-NLa"/>
+                                    <outlet property="contactTextButton" destination="03b-ZP-xx0" id="Uid-9K-J3R"/>
+                                </connections>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="NotesCell" rowHeight="90" id="wNr-MI-H8s">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="NotesCell" rowHeight="90" id="wNr-MI-H8s" customClass="ContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="wNr-MI-H8s" id="wlV-MJ-yc0">
                                     <autoresizingMask key="autoresizingMask"/>
@@ -493,6 +502,9 @@
                                         </mask>
                                     </variation>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="contactNotesTextView" destination="oXc-og-p19" id="eie-A9-FfI"/>
+                                </connections>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="SendMessageCell" rowHeight="44" id="pgC-RA-DLu">
                                 <autoresizingMask key="autoresizingMask"/>

@@ -7,6 +7,7 @@
 //
 
 #import "ContactDetailTableViewController.h"
+#import "ContactDetailCell.h"
 
 typedef enum {
     kNameMainNumberCellIndexPath = 0,
@@ -24,7 +25,7 @@ typedef enum {
     kBlockUserCellHeight      = 110,
 } kCellHeight;
 
-static NSString* const kNameMainNumberCell = @"MainNumberCell";
+static NSString* const kNameMainNumberCell = @"NameMainNumberCell";
 static NSString* const kNotesCell          = @"NotesCell";
 static NSString* const kSendMessageCell    = @"SendMessageCell";
 static NSString* const kShareContactCell   = @"ShareContactCell";
@@ -43,6 +44,8 @@ static NSString* const kBlockUserCell      = @"BlockUserCell";
     
     //self.tableView.separatorInset = UIEdgeInsetsMake(0, 8, 0, 0);
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
+    
+    NSLog(@"contact : %@", _contact);
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -72,11 +75,12 @@ static NSString* const kBlockUserCell      = @"BlockUserCell";
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell;
+    ContactDetailCell *cell;
     
     switch (indexPath.row) {
         case kNameMainNumberCellIndexPath:
             cell = [tableView dequeueReusableCellWithIdentifier:kNameMainNumberCell forIndexPath:indexPath];
+            [self setUpNameMainUserCell:cell];
             break;
         case kNotesCellIndexPath:
             cell = [tableView dequeueReusableCellWithIdentifier:kNotesCell forIndexPath:indexPath];
@@ -96,6 +100,18 @@ static NSString* const kBlockUserCell      = @"BlockUserCell";
     }
     
     return cell;
+}
+
+-(void)setUpNameMainUserCell:(ContactDetailCell*)cell
+{
+    Contact* c = self.contact;
+    
+    cell.contactName.text = [c fullName];
+    cell.contactPhoneNumber.text = [c.userTextPhoneNumbers firstObject];
+    if (c.image) {
+        cell.contactImageView.image = c.image;
+    }
+    
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -123,6 +139,7 @@ static NSString* const kBlockUserCell      = @"BlockUserCell";
     }
     return cellHeight;
 }
+
 
 /*
 // Override to support conditional editing of the table view.

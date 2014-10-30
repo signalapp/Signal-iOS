@@ -7,6 +7,9 @@
 //
 
 #import "ContactsTableViewController.h"
+#import "ContactDetailTableViewController.h"
+
+#import "ContactTableViewCell.h"
 
 #import "Environment.h"
 #import "Contact.h"
@@ -86,6 +89,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     return [_latestAlphabeticalContacts valueForKey:_latestSortedAlphabeticalContactKeys[index]];
 }
 
+
 -(NSMutableDictionary*)alphabetDictionaryInit
 {
     NSDictionary * dic;
@@ -145,20 +149,37 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CONTACT_BROWSE_TABLE_CELL_IDENTIFIER];
+    ContactTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CONTACT_BROWSE_TABLE_CELL_IDENTIFIER];
     
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+        cell = [[ContactTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                       reuseIdentifier:CONTACT_BROWSE_TABLE_CELL_IDENTIFIER];
     }
     
     NSArray *contactSection = [self contactsForSectionIndex:(NSUInteger)indexPath.section];
     Contact *contact = contactSection[(NSUInteger)indexPath.row];
     
-    //TODO: real setup of custom cell
-    cell.textLabel.text = contact.firstName;
+
+    [cell configureWithContact:contact];
     
     return cell;
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"DetailSegue"])
+    {
+        ContactDetailTableViewController * detailvc = [segue destinationViewController];
+        NSIndexPath * indexPath = [self.tableView indexPathForSelectedRow];
+        NSArray *contactSection = [self contactsForSectionIndex:(NSUInteger)indexPath.section];
+        Contact *contact = contactSection[(NSUInteger)indexPath.row];
+        detailvc.contact = contact;
+    }
 }
 
 @end

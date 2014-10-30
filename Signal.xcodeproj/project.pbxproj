@@ -621,7 +621,8 @@
 		FCAC964719FEFE1A0046DFC5 /* DemoDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC964619FEFE1A0046DFC5 /* DemoDataModel.m */; };
 		FCAC965119FF0A6E0046DFC5 /* MessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC965019FF0A6E0046DFC5 /* MessagesViewController.m */; };
 		FCF72A081A01A765006BC849 /* ContactsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A071A01A765006BC849 /* ContactsTableViewController.m */; };
-		FCF72A0D1A02B468006BC849 /* ContactDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A0C1A02B468006BC849 /* ContactDetailTableViewController.m */; };
+		FCF72A131A02D27F006BC849 /* ContactDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */; };
+		FCF72A161A02D2BB006BC849 /* ContactDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A151A02D2BB006BC849 /* ContactDetailCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1347,8 +1348,10 @@
 		FCAC965019FF0A6E0046DFC5 /* MessagesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessagesViewController.m; sourceTree = "<group>"; };
 		FCF72A061A01A765006BC849 /* ContactsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsTableViewController.h; sourceTree = "<group>"; };
 		FCF72A071A01A765006BC849 /* ContactsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsTableViewController.m; sourceTree = "<group>"; };
-		FCF72A0B1A02B468006BC849 /* ContactDetailTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContactDetailTableViewController.h; path = ../ContactDetailTableViewController.h; sourceTree = "<group>"; };
-		FCF72A0C1A02B468006BC849 /* ContactDetailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactDetailTableViewController.m; path = ../ContactDetailTableViewController.m; sourceTree = "<group>"; };
+		FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailTableViewController.m; sourceTree = "<group>"; };
+		FCF72A121A02D27F006BC849 /* ContactDetailTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailTableViewController.h; sourceTree = "<group>"; };
+		FCF72A141A02D2BB006BC849 /* ContactDetailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailCell.h; sourceTree = "<group>"; };
+		FCF72A151A02D2BB006BC849 /* ContactDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3042,6 +3045,8 @@
 		FCAC964D19FF06110046DFC5 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				FCF72A141A02D2BB006BC849 /* ContactDetailCell.h */,
+				FCF72A151A02D2BB006BC849 /* ContactDetailCell.m */,
 				FCAC963D19FEF99A0046DFC5 /* TableViewCell.h */,
 				FCAC963E19FEF99A0046DFC5 /* TableViewCell.m */,
 				FCAC963F19FEF99A0046DFC5 /* TableViewCell.xib */,
@@ -3052,8 +3057,8 @@
 		FCAC964E19FF061C0046DFC5 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				FCF72A0B1A02B468006BC849 /* ContactDetailTableViewController.h */,
-				FCF72A0C1A02B468006BC849 /* ContactDetailTableViewController.m */,
+				FCF72A121A02D27F006BC849 /* ContactDetailTableViewController.h */,
+				FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */,
 				FCF72A061A01A765006BC849 /* ContactsTableViewController.h */,
 				FCF72A071A01A765006BC849 /* ContactsTableViewController.m */,
 				FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */,
@@ -3555,7 +3560,6 @@
 				76EB05BE18170B33006006FC /* ConfirmPacket.m in Sources */,
 				76EB058618170B33006006FC /* PreferencesUtil.m in Sources */,
 				76EB05A818170B33006006FC /* RtpSocket.m in Sources */,
-				FCF72A0D1A02B468006BC849 /* ContactDetailTableViewController.m in Sources */,
 				70B80119190C55660042E3F0 /* TextFormat.m in Sources */,
 				E197B61818BBEC1A00F073E5 /* RemoteIOAudio.m in Sources */,
 				70B8011C190C55660042E3F0 /* Utilities.m in Sources */,
@@ -3619,6 +3623,7 @@
 				E197B60D18BBEC1A00F073E5 /* AudioSocket.m in Sources */,
 				FCF72A081A01A765006BC849 /* ContactsTableViewController.m in Sources */,
 				76EB061418170B33006006FC /* AnonymousConditionLogger.m in Sources */,
+				FCF72A161A02D2BB006BC849 /* ContactDetailCell.m in Sources */,
 				76EB05C018170B33006006FC /* DhPacket.m in Sources */,
 				765052A1182945EF008313E1 /* LocalizableCustomFontLabel.m in Sources */,
 				7038632818F70C0700D4A43F /* EvpSymetricUtil.m in Sources */,
@@ -3676,6 +3681,7 @@
 				76EB065218170B34006006FC /* FavouritesViewController.m in Sources */,
 				E16E5BF018AAC40200B7C403 /* EvpKeyAgreement.m in Sources */,
 				70B80113190C55660042E3F0 /* ExtensionRegistry.m in Sources */,
+				FCF72A131A02D27F006BC849 /* ContactDetailTableViewController.m in Sources */,
 				B9EB5AC61884D370007CBB57 /* UnseenWhisperUserCell.m in Sources */,
 				B65EDA1219E1BE6400AAA7CB /* RPAPICall.m in Sources */,
 				76EB05DC18170B33006006FC /* StreamPair.m in Sources */,
