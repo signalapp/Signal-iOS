@@ -2,6 +2,7 @@
 
 #import "CallProgress.h"
 #import "CallTermination.h"
+#import "SoundPlayer.h"
 
 /**
  *  The AppAudioManager is a Singleton object used to control audio settings / updates
@@ -13,7 +14,7 @@
  *  which speaker to use or if all sounds should be muted.
  **/
 
-@interface AppAudioManager : NSObject
+@interface AppAudioManager : NSObject <SoundPlayerDelegate>
 
 enum AudioProfile {
     AudioProfile_Default,
@@ -37,4 +38,7 @@ enum AudioProfile {
 
 -(BOOL) setAudioEnabled:(BOOL) enable;
 -(void) awake;
+
+- (void)didCompleteSoundInstanceOfType:(SoundInstanceType)instanceType;
+
 @end
