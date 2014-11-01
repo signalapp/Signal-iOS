@@ -7,8 +7,6 @@
 #import "CallAudioManager.h"
 #import "PhoneManager.h"
 
-#import <MediaPlayer/MPMusicPlayerController.h>
-
 #define BUTTON_BORDER_WIDTH 1.0f
 #define CONTACT_IMAGE_BORDER_WIDTH 2.0f
 #define RINGING_ROTATION_DURATION 0.375f
@@ -24,7 +22,6 @@ static NSInteger connectingFlashCounter = 0;
 
 
 @interface InCallViewController () {
-    BOOL _isMusicPaused;
     CallAudioManager *_callAudioManager;
     NSTimer *_connectingFlashTimer;
     NSTimer *_ringingAnimationTimer;
@@ -47,7 +44,6 @@ static NSInteger connectingFlashCounter = 0;
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self showCallState];
-    [self pauseMusicIfPlaying];
     [self setupButtonBorders];
     [self localizeButtons];
     [UIDevice.currentDevice setProximityMonitoringEnabled:YES];
@@ -73,13 +69,6 @@ static NSInteger connectingFlashCounter = 0;
     [self clearDetails];
     [self populateImmediateDetails];
     [self handleIncomingDetails];
-}
-
-- (void)pauseMusicIfPlaying {
-    if ([[MPMusicPlayerController iPodMusicPlayer] playbackState] == MPMusicPlaybackStatePlaying) {
-        _isMusicPaused = YES;
-        [[MPMusicPlayerController iPodMusicPlayer] pause];
-    }
 }
 
 - (void)startConnectingFlashAnimation {
@@ -207,7 +196,7 @@ static NSInteger connectingFlashCounter = 0;
     BOOL showAcceptRejectButtons = !_callState.initiatedLocally && [latestProgress type] <= CallProgressType_Ringing;
     [self displayAcceptRejectButtons:showAcceptRejectButtons];
     [AppAudioManager.sharedInstance respondToProgressChange:[latestProgress type]
-                                       forLocallyInitiatedCall:_callState.initiatedLocally];
+                                    forLocallyInitiatedCall:_callState.initiatedLocally];
     
     if ([latestProgress type] == CallProgressType_Ringing) {
         [self startRingingAnimation];
@@ -228,10 +217,6 @@ static NSInteger connectingFlashCounter = 0;
     [Environment.phoneManager hangupOrDenyCall];
     
     [self dismissViewWithOptionalDelay: [termination type] != CallTerminationType_ReplacedByNext ];
-    
-    if (_isMusicPaused) {
-        [[MPMusicPlayerController iPodMusicPlayer] play];
-    }
 }
 
 - (void)endCallTapped {

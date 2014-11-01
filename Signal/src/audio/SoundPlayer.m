@@ -22,6 +22,9 @@ NSMutableDictionary* currentActiveAudioPlayers;
     @synchronized(currentActiveAudioPlayers){
         [sound setCompeletionBlock:^(SoundInstance* soundInst)  {
             [self removeSoundFromManifest:soundInst];
+            if (self.delegate) {
+                [self.delegate didCompleteSoundInstanceOfType:soundInst.instanceType];
+            }
         }];
         [currentActiveAudioPlayers setValue:sound forKey:sound.getId];
     }
