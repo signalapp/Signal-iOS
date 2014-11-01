@@ -53,7 +53,7 @@ AppAudioManager*  sharedAppAudioManager;
                 [AudioRouter routeAllAudioToExternalSpeaker];
                 break;
             default:
-                NSLog(@"Unhandled AudioProfile");
+                DDLogError(@"Unhandled AudioProfile");
         }
     }
 }
@@ -108,10 +108,10 @@ AppAudioManager*  sharedAppAudioManager;
 
 -(BOOL) shouldErrorSoundBePlayedForCallTerminationType:(enum CallTerminationType) type{
     [_soundPlayer stopAllAudio];
-    if (type == CallTerminationType_RejectedLocal ||
+    if (type == CallTerminationType_RejectedLocal  ||
         type == CallTerminationType_RejectedRemote ||
-        type == CallTerminationType_HangupLocal ||
-        type == CallTerminationType_HangupRemote ||
+        type == CallTerminationType_HangupLocal    ||
+        type == CallTerminationType_HangupRemote   ||
         type == CallTerminationType_RecipientUnavailable) {
         return NO;
     }
@@ -180,8 +180,7 @@ AppAudioManager*  sharedAppAudioManager;
     if (enable) {
         [[AVAudioSession sharedInstance] setActive:enable error:&e];
         [_soundPlayer awake];
-    }
-    else {
+    } else {
         [[AVAudioSession sharedInstance] setActive:enable
                                        withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation
                                              error:&e];

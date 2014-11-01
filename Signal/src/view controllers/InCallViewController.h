@@ -27,6 +27,14 @@
 @property (nonatomic, readonly) CallState *callState;
 @property (nonatomic, readonly) Contact *potentiallyKnownContact;
 
+typedef NS_ENUM(NSInteger, PushAcceptState){
+    PushDidAcceptState,
+    PushDidDeclineState,
+    PushNotSetState
+};
+
+@property (nonatomic, readonly) PushAcceptState callPushState;
+
 +(InCallViewController*) inCallViewControllerWithCallState:(CallState*)callState
                                  andOptionallyKnownContact:(Contact*)contact;
 
