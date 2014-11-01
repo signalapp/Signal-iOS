@@ -5,6 +5,7 @@
 }
 @property (retain) AVAudioPlayer *audioPlayer;
 
+
 @end
 
 @implementation SoundInstance
@@ -26,6 +27,7 @@
 
 -(void) stop {
     [self.audioPlayer stop];
+    [self audioPlayerDidFinishPlaying:self.audioPlayer successfully:YES];
 }
 
 -(void) setAudioToLoopIndefinitely {
@@ -34,6 +36,13 @@
 
 -(void) setAudioLoopCount:(NSInteger) loopCount {
     self.audioPlayer.numberOfLoops = loopCount;
+}
+
+- (SoundInstanceType)instanceType {
+    if (!_instanceType) {
+        _instanceType = SoundInstanceTypeNothing;
+    }
+    return _instanceType;
 }
 
 +(NSURL*) urlToFile:(NSString*) file {
@@ -49,7 +58,6 @@
     if (nil == audioPlayer){ NSLog(@" %@",[error description]);}
     return audioPlayer;
 }
-
 
 -(void) setCompeletionBlock:(void (^)(SoundInstance* )) block {
     completionBlock = block;
