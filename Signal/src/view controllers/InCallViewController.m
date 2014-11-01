@@ -7,11 +7,12 @@
 #import "CallAudioManager.h"
 #import "PhoneManager.h"
 
-#import <MediaPlayer/MPMusicPlayerController.h>
+#import <AudioToolbox/AudioServices.h>
 
 #define BUTTON_BORDER_WIDTH 1.0f
 #define CONTACT_IMAGE_BORDER_WIDTH 2.0f
 #define RINGING_ROTATION_DURATION 0.375f
+#define VIBRATE_TIMER_DURATION 1.6
 #define CONNECTING_FLASH_DURATION 0.5f
 #define END_CALL_CLEANUP_DELAY (int)(3.1f * NSEC_PER_SEC)
 
@@ -24,11 +25,12 @@ static NSInteger connectingFlashCounter = 0;
 
 
 @interface InCallViewController () {
-    BOOL _isMusicPaused;
     CallAudioManager *_callAudioManager;
     NSTimer *_connectingFlashTimer;
     NSTimer *_ringingAnimationTimer;
 }
+
+@property NSTimer *vibrateTimer;
 
 @end
 
@@ -41,13 +43,13 @@ static NSInteger connectingFlashCounter = 0;
     InCallViewController* controller = [InCallViewController new];
     controller->_potentiallyKnownContact = contact;
     controller->_callState = callState;
+    controller->_callPushState = PushNotSetState;
     return controller;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self showCallState];
-    [self pauseMusicIfPlaying];
     [self setupButtonBorders];
     [self localizeButtons];
     [UIDevice.currentDevice setProximityMonitoringEnabled:YES];
@@ -73,13 +75,6 @@ static NSInteger connectingFlashCounter = 0;
     [self clearDetails];
     [self populateImmediateDetails];
     [self handleIncomingDetails];
-}
-
-- (void)pauseMusicIfPlaying {
-    if ([[MPMusicPlayerController iPodMusicPlayer] playbackState] == MPMusicPlaybackStatePlaying) {
-        _isMusicPaused = YES;
-        [[MPMusicPlayerController iPodMusicPlayer] pause];
-    }
 }
 
 - (void)startConnectingFlashAnimation {
@@ -113,7 +108,20 @@ static NSInteger connectingFlashCounter = 0;
                                                             selector:@selector(rotateConnectingIndicator)
                                                             userInfo:nil
                                                              repeats:YES];
+    
+    if (!_answerButton.hidden) {
+        _vibrateTimer = [NSTimer scheduledTimerWithTimeInterval:VIBRATE_TIMER_DURATION
+                                                         target:self
+                                                       selector:@selector(vibrate)
+                                                       userInfo:nil
+                                                        repeats:YES];
+    }
+    
     [_ringingAnimationTimer fire];
+}
+
+- (void)vibrate {
+    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
 }
 
 - (void)rotateConnectingIndicator {
@@ -132,6 +140,9 @@ static NSInteger connectingFlashCounter = 0;
 - (void)stopRingingAnimation {
     if (_ringingAnimationTimer) {
         [_ringingAnimationTimer invalidate];
+    }
+    if (_vibrateTimer) {
+        [_vibrateTimer invalidate];
     }
 }
 
@@ -207,7 +218,7 @@ static NSInteger connectingFlashCounter = 0;
     BOOL showAcceptRejectButtons = !_callState.initiatedLocally && [latestProgress type] <= CallProgressType_Ringing;
     [self displayAcceptRejectButtons:showAcceptRejectButtons];
     [AppAudioManager.sharedInstance respondToProgressChange:[latestProgress type]
-                                       forLocallyInitiatedCall:_callState.initiatedLocally];
+                                    forLocallyInitiatedCall:_callState.initiatedLocally];
     
     if ([latestProgress type] == CallProgressType_Ringing) {
         [self startRingingAnimation];
@@ -228,10 +239,6 @@ static NSInteger connectingFlashCounter = 0;
     [Environment.phoneManager hangupOrDenyCall];
     
     [self dismissViewWithOptionalDelay: [termination type] != CallTerminationType_ReplacedByNext ];
-    
-    if (_isMusicPaused) {
-        [[MPMusicPlayerController iPodMusicPlayer] play];
-    }
 }
 
 - (void)endCallTapped {
@@ -291,13 +298,9 @@ static NSInteger connectingFlashCounter = 0;
     _answerButton.hidden = !enable;
     _rejectButton.hidden = !enable;
     _endButton.hidden = enable;
-    
+    if (_vibrateTimer && enable == false) {
+        [_vibrateTimer invalidate];
+    }
 }
-
-
-
-
-
-
 
 @end

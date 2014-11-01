@@ -7,12 +7,23 @@
  *  sound is ignored. Multiple different sound instances can be played concurrently.
  */
 
+@protocol SoundPlayerDelegate;
+
 @interface SoundPlayer : NSObject
+
+@property (strong, nonatomic) id<SoundPlayerDelegate> delegate;
 
 -(void) playSound:(SoundInstance*) player;
 -(void) stopSound:(SoundInstance*) player;
 
 -(void) stopAllAudio;
 -(void) awake;
+
 @end
 
+@protocol SoundPlayerDelegate <NSObject>
+
+@optional
+- (void)didCompleteSoundInstanceOfType:(SoundInstanceType)instanceType;
+
+@end

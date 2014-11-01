@@ -28,7 +28,7 @@ AppAudioManager*  sharedAppAudioManager;
         if( nil == sharedAppAudioManager){
             sharedAppAudioManager = [AppAudioManager new];
             sharedAppAudioManager.soundPlayer = [SoundPlayer new];
-            [sharedAppAudioManager setAudioEnabled:YES];
+            [[sharedAppAudioManager soundPlayer] setDelegate:sharedAppAudioManager];
         }
     }
     return sharedAppAudioManager;
@@ -53,7 +53,7 @@ AppAudioManager*  sharedAppAudioManager;
                 [AudioRouter routeAllAudioToExternalSpeaker];
                 break;
             default:
-                NSLog(@"Unhandled AudioProfile");
+                DDLogError(@"Unhandled AudioProfile");
         }
     }
 }
@@ -74,9 +74,11 @@ AppAudioManager*  sharedAppAudioManager;
 }
 
 #pragma mark AudioControl;
--(void) respondToProgressChange:(enum CallProgressType) progressType forLocallyInitiatedCall:(BOOL) initiatedLocally {
+-(void) respondToProgressChange:(enum CallProgressType) progressType
+        forLocallyInitiatedCall:(BOOL) initiatedLocally {
     switch (progressType){
         case CallProgressType_Connecting:
+            [sharedAppAudioManager setAudioEnabled:YES];
             [_soundPlayer stopAllAudio];
         case CallProgressType_Ringing:
             (initiatedLocally) ? [self handleOutboundRing] : [self handleInboundRing];
@@ -106,12 +108,13 @@ AppAudioManager*  sharedAppAudioManager;
 
 -(BOOL) shouldErrorSoundBePlayedForCallTerminationType:(enum CallTerminationType) type{
     [_soundPlayer stopAllAudio];
-    if      (CallTerminationType_RejectedLocal)         {return NO;}
-    else if (CallTerminationType_RejectedRemote)        {return NO;}
-    else if (CallTerminationType_HangupLocal)           {return NO;}
-    else if (CallTerminationType_HangupRemote)          {return NO;}
-    else if (CallTerminationType_RecipientUnavailable)  {return NO;}
-    
+    if (type == CallTerminationType_RejectedLocal  ||
+        type == CallTerminationType_RejectedRemote ||
+        type == CallTerminationType_HangupLocal    ||
+        type == CallTerminationType_HangupRemote   ||
+        type == CallTerminationType_RecipientUnavailable) {
+        return NO;
+    }
     return YES;
 }
 
@@ -174,13 +177,29 @@ AppAudioManager*  sharedAppAudioManager;
 
 -(BOOL) setAudioEnabled:(BOOL) enable {
     NSError* e;
-    [AVAudioSession.sharedInstance setActive:enable error:&e];
-    [_soundPlayer awake];
+    if (enable) {
+        [[AVAudioSession sharedInstance] setActive:enable error:&e];
+        [_soundPlayer awake];
+    } else {
+        [[AVAudioSession sharedInstance] setActive:enable
+                                       withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation
+                                             error:&e];
+    }
     return ( nil !=e );
 }
 
 -(void) awake {
     [_soundPlayer awake];
+}
+
+#pragma mark Sound Player Delegate
+
+- (void)didCompleteSoundInstanceOfType:(SoundInstanceType)instanceType {
+    if (instanceType == SoundInstanceTypeBusySound ||
+        instanceType == SoundInstanceTypeErrorAlert ||
+        instanceType == SoundInstanceTypeAlert) {
+        [sharedAppAudioManager setAudioEnabled:NO];
+    }
 }
     
 

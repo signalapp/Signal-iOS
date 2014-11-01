@@ -347,50 +347,13 @@
 		A1C32D5117A06544000A904E /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4D17A0652C000A904E /* AddressBook.framework */; };
 		AA0C8E498E2046B0B81EEE6E /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
 		B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */ = {isa = PBXBuildFile; fileRef = B60C16641988999D00E97A6C /* VersionMigrations.m */; };
+		B60EDE041A05A01700D73516 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60EDE031A05A01700D73516 /* AudioToolbox.framework */; };
 		B63761E319E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E219E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m */; };
 		B63761EC19E1FBE8005735D1 /* HttpRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E519E1FBE8005735D1 /* HttpRequest.m */; };
 		B63761ED19E1FBE8005735D1 /* HttpRequestOrResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E719E1FBE8005735D1 /* HttpRequestOrResponse.m */; };
 		B63761EE19E1FBE8005735D1 /* HttpRequestUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E919E1FBE8005735D1 /* HttpRequestUtil.m */; };
 		B63761EF19E1FBE8005735D1 /* HttpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761EB19E1FBE8005735D1 /* HttpResponse.m */; };
-		B6416FAD199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F36199A0478003C5699 /* Localizable.strings */; };
-		B6416FAE199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F39199A0478003C5699 /* Localizable.strings */; };
-		B6416FAF199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F3C199A0478003C5699 /* Localizable.strings */; };
-		B6416FB0199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F3F199A0478003C5699 /* Localizable.strings */; };
-		B6416FB1199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F42199A0478003C5699 /* Localizable.strings */; };
-		B6416FB2199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F45199A0478003C5699 /* Localizable.strings */; };
-		B6416FB3199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F48199A0478003C5699 /* Localizable.strings */; };
-		B6416FB4199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F4B199A0478003C5699 /* Localizable.strings */; };
-		B6416FB5199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F4E199A0478003C5699 /* Localizable.strings */; };
-		B6416FB6199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F51199A0478003C5699 /* Localizable.strings */; };
-		B6416FB7199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F54199A0478003C5699 /* Localizable.strings */; };
 		B6416FB8199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F57199A0478003C5699 /* Localizable.strings */; };
-		B6416FB9199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F5A199A0478003C5699 /* Localizable.strings */; };
-		B6416FBA199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F5D199A0478003C5699 /* Localizable.strings */; };
-		B6416FBB199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F60199A0478003C5699 /* Localizable.strings */; };
-		B6416FBC199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F63199A0478003C5699 /* Localizable.strings */; };
-		B6416FBD199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F66199A0478003C5699 /* Localizable.strings */; };
-		B6416FBE199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F69199A0478003C5699 /* Localizable.strings */; };
-		B6416FBF199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F6C199A0478003C5699 /* Localizable.strings */; };
-		B6416FC0199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F6F199A0478003C5699 /* Localizable.strings */; };
-		B6416FC1199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F72199A0478003C5699 /* Localizable.strings */; };
-		B6416FC2199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F75199A0478003C5699 /* Localizable.strings */; };
-		B6416FC3199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F78199A0478003C5699 /* Localizable.strings */; };
-		B6416FC4199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F7B199A0478003C5699 /* Localizable.strings */; };
-		B6416FC5199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F7E199A0478003C5699 /* Localizable.strings */; };
-		B6416FC6199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F81199A0478003C5699 /* Localizable.strings */; };
-		B6416FC7199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F84199A0478003C5699 /* Localizable.strings */; };
-		B6416FC8199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F87199A0478003C5699 /* Localizable.strings */; };
-		B6416FC9199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F8A199A0478003C5699 /* Localizable.strings */; };
-		B6416FCA199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F8D199A0478003C5699 /* Localizable.strings */; };
-		B6416FCB199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F90199A0478003C5699 /* Localizable.strings */; };
-		B6416FCC199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F93199A0478003C5699 /* Localizable.strings */; };
-		B6416FCD199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F96199A0478003C5699 /* Localizable.strings */; };
-		B6416FCE199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F99199A0478003C5699 /* Localizable.strings */; };
-		B6416FCF199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F9C199A0478003C5699 /* Localizable.strings */; };
-		B6416FD0199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F9F199A0478003C5699 /* Localizable.strings */; };
-		B6416FD1199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416FA2199A0478003C5699 /* Localizable.strings */; };
-		B6416FD2199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416FA5199A0478003C5699 /* Localizable.strings */; };
-		B6416FD4199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416FAB199A0478003C5699 /* Localizable.strings */; };
 		B65EDA1219E1BE6400AAA7CB /* RPAPICall.m in Sources */ = {isa = PBXBuildFile; fileRef = B65EDA1119E1BE6400AAA7CB /* RPAPICall.m */; };
 		B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
 		B67ADDC41989FF8700E1A773 /* RPServerRequestsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B67ADDC31989FF8700E1A773 /* RPServerRequestsManager.m */; };
@@ -1050,6 +1013,7 @@
 		A1FDCBEE16DAA6C300868894 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B60C16631988999D00E97A6C /* VersionMigrations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionMigrations.h; sourceTree = "<group>"; };
 		B60C16641988999D00E97A6C /* VersionMigrations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VersionMigrations.m; sourceTree = "<group>"; };
+		B60EDE031A05A01700D73516 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		B63761E119E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AFHTTPSessionManager+SignalMethods.h"; sourceTree = "<group>"; };
 		B63761E219E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AFHTTPSessionManager+SignalMethods.m"; sourceTree = "<group>"; };
 		B63761E419E1FBE8005735D1 /* HttpRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequest.h; sourceTree = "<group>"; };
@@ -1357,6 +1321,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B60EDE041A05A01700D73516 /* AudioToolbox.framework in Frameworks */,
 				B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */,
 				E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */,
 				A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */,
@@ -2837,6 +2802,7 @@
 		D221A08C169C9E5E00537ABF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B60EDE031A05A01700D73516 /* AudioToolbox.framework */,
 				B69CD25019773E79005CE69A /* XCTest.framework */,
 				70377AAA1918450100CAF501 /* MobileCoreServices.framework */,
 				B9EB5ABC1884C002007CBB57 /* MessageUI.framework */,
@@ -3159,7 +3125,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E148750018A06966002CC4F3 /* CallAudioManagerDemo.xib in Resources */,
-				B6416FAF199A0478003C5699 /* Localizable.strings in Resources */,
 				E148750118A06966002CC4F3 /* CallLogViewController.xib in Resources */,
 				E148750218A06966002CC4F3 /* ContactBrowseViewController.xib in Resources */,
 				E148750318A06966002CC4F3 /* ContactDetailTableViewCell.xib in Resources */,
@@ -3168,17 +3133,12 @@
 				E148750618A06966002CC4F3 /* DialerViewController.xib in Resources */,
 				E148750818A06966002CC4F3 /* FavouritesViewController.xib in Resources */,
 				E148750918A06966002CC4F3 /* InboxFeedViewController.xib in Resources */,
-				B6416FD1199A0478003C5699 /* Localizable.strings in Resources */,
-				B6416FB5199A0478003C5699 /* Localizable.strings in Resources */,
 				E148750A18A06966002CC4F3 /* InCallViewController.xib in Resources */,
-				B6416FD2199A0478003C5699 /* Localizable.strings in Resources */,
 				E148750B18A06966002CC4F3 /* InviteContactsViewController.xib in Resources */,
 				E148750C18A06966002CC4F3 /* LeftSideMenuViewController.xib in Resources */,
-				B6416FB2199A0478003C5699 /* Localizable.strings in Resources */,
 				E148750D18A06966002CC4F3 /* PreferenceListViewController.xib in Resources */,
 				E148750E18A06966002CC4F3 /* RegisterViewController.xib in Resources */,
 				E148750F18A06966002CC4F3 /* SettingsViewController.xib in Resources */,
-				B6416FB9199A0478003C5699 /* Localizable.strings in Resources */,
 				E148751018A06966002CC4F3 /* TabBarParentViewController.xib in Resources */,
 				E14874F718A06951002CC4F3 /* CallLogTableViewCell.xib in Resources */,
 				E14874F818A06951002CC4F3 /* ContactTableViewCell.xib in Resources */,
@@ -3198,89 +3158,63 @@
 				E14874A818A0692F002CC4F3 /* checkbox_empty.png in Resources */,
 				E14874A918A0692F002CC4F3 /* checkbox_empty@2x.png in Resources */,
 				E14874AA18A0692F002CC4F3 /* contact_default_feed.png in Resources */,
-				B6416FB1199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874AB18A0692F002CC4F3 /* contacts_arrow.png in Resources */,
 				E14874AC18A0692F002CC4F3 /* contacts_arrow@2x.png in Resources */,
 				E14874AD18A0692F002CC4F3 /* DefaultContactImage.png in Resources */,
 				E14874AE18A0692F002CC4F3 /* dismiss_notification_icon.png in Resources */,
 				E14874AF18A0692F002CC4F3 /* dismiss_notification_icon@2x.png in Resources */,
 				E14874B018A0692F002CC4F3 /* drop_down_arrow_icon.png in Resources */,
-				B6416FC2199A0478003C5699 /* Localizable.strings in Resources */,
-				B6416FB0199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874B118A0692F002CC4F3 /* drop_down_arrow_icon@2x.png in Resources */,
-				B6416FCB199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874B218A0692F002CC4F3 /* expanded_cell_icon.png in Resources */,
 				E14874B318A0692F002CC4F3 /* expanded_cell_icon@2x.png in Resources */,
 				E14874B418A0692F002CC4F3 /* favourite_false_icon.png in Resources */,
 				E14874B518A0692F002CC4F3 /* favourite_false_icon@2x.png in Resources */,
-				B6416FAE199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874B618A0692F002CC4F3 /* favourite_true_icon.png in Resources */,
 				E14874B718A0692F002CC4F3 /* favourite_true_icon@2x.png in Resources */,
 				E14874B818A0692F002CC4F3 /* forward_button.png in Resources */,
-				B6416FD4199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874B918A0692F002CC4F3 /* forward_button@2x.png in Resources */,
 				E14874BA18A0692F002CC4F3 /* home_icon.png in Resources */,
 				E14874BB18A0692F002CC4F3 /* icon_contacts.png in Resources */,
 				E14874BC18A0692F002CC4F3 /* icon_favourites.png in Resources */,
 				E14874BD18A0692F002CC4F3 /* icon_keypad.png in Resources */,
 				E14874BE18A0692F002CC4F3 /* icon_recents.png in Resources */,
-				B6416FBE199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874BF18A0692F002CC4F3 /* in_call_phone_icon.png in Resources */,
-				B6416FC0199A0478003C5699 /* Localizable.strings in Resources */,
-				B6416FB6199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874C018A0692F002CC4F3 /* in_call_phone_icon@2x.png in Resources */,
 				E14874C118A0692F002CC4F3 /* in_call_phrase_icon.png in Resources */,
 				E16E5C1518AEDB5A00B7C403 /* phone_icon.png in Resources */,
 				E14874C218A0692F002CC4F3 /* in_call_phrase_icon@2x.png in Resources */,
 				E14874C318A0692F002CC4F3 /* incoming_call_icon.png in Resources */,
-				B6416FC1199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874C418A0692F002CC4F3 /* incoming_call_icon@2x.png in Resources */,
-				B6416FC6199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874C518A0692F002CC4F3 /* menu_icon.png in Resources */,
 				E14874C618A0692F002CC4F3 /* menu_icon@2x.png in Resources */,
-				B6416FC9199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874C718A0692F002CC4F3 /* message_bubble.png in Resources */,
-				B6416FB4199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874C818A0692F002CC4F3 /* message_bubble@2x.png in Resources */,
 				E14874C918A0692F002CC4F3 /* mute_icon_selected.png in Resources */,
-				B6416FAD199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874CA18A0692F002CC4F3 /* mute_icon_selected@2x.png in Resources */,
 				E14874CB18A0692F002CC4F3 /* mute_icon.png in Resources */,
-				B6416FCC199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874CC18A0692F002CC4F3 /* mute_icon@2x.png in Resources */,
 				E14874CD18A0692F002CC4F3 /* notification_detail_icon.png in Resources */,
 				E14874CE18A0692F002CC4F3 /* notification_detail_icon@2x.png in Resources */,
-				B6416FC5199A0478003C5699 /* Localizable.strings in Resources */,
-				B6416FC4199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874CF18A0692F002CC4F3 /* notification_mini_icon.png in Resources */,
 				E14874D018A0692F002CC4F3 /* notification_mini_icon@2x.png in Resources */,
 				E14874D118A0692F002CC4F3 /* outgoing_call_icon.png in Resources */,
-				B6416FB3199A0478003C5699 /* Localizable.strings in Resources */,
-				B6416FBB199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874D218A0692F002CC4F3 /* outgoing_call_icon@2x.png in Resources */,
 				B6416FB8199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874D318A0692F002CC4F3 /* search_cancel.png in Resources */,
 				E14874D418A0692F002CC4F3 /* search_cancel@2x.png in Resources */,
-				B6416FC3199A0478003C5699 /* Localizable.strings in Resources */,
-				B6416FCF199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874D518A0692F002CC4F3 /* search_icon.png in Resources */,
 				E14874D618A0692F002CC4F3 /* search_icon@2x.png in Resources */,
 				E14874D718A0692F002CC4F3 /* send_code_icon.png in Resources */,
-				B6416FC8199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874D818A0692F002CC4F3 /* send_code_icon@2x.png in Resources */,
 				E14874D918A0692F002CC4F3 /* speaker_icon_selected.png in Resources */,
 				E14874DA18A0692F002CC4F3 /* speaker_icon_selected@2x.png in Resources */,
-				B6416FD0199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874DB18A0692F002CC4F3 /* speaker_icon.png in Resources */,
 				E14874DC18A0692F002CC4F3 /* speaker_icon@2x.png in Resources */,
 				E14874DD18A0692F002CC4F3 /* spinner_connecting_flash.png in Resources */,
 				E14874DE18A0692F002CC4F3 /* spinner_connecting_flash@2x.png in Resources */,
 				E14874DF18A06930002CC4F3 /* spinner_connecting.png in Resources */,
-				B6416FBC199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874E018A06930002CC4F3 /* spinner_connecting@2x.png in Resources */,
 				E14874E118A06930002CC4F3 /* spinner_error.png in Resources */,
-				B6416FBF199A0478003C5699 /* Localizable.strings in Resources */,
-				B6416FB7199A0478003C5699 /* Localizable.strings in Resources */,
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
 				E14874E218A06930002CC4F3 /* spinner_error@2x.png in Resources */,
 				E14874E318A06930002CC4F3 /* spinner_ringing.png in Resources */,
@@ -3294,14 +3228,12 @@
 				E14874EB18A06930002CC4F3 /* tab_icon_keypad.png in Resources */,
 				E14874EC18A06930002CC4F3 /* tab_icon_keypad@2x.png in Resources */,
 				E14874ED18A06930002CC4F3 /* tab_icon_menu.png in Resources */,
-				B6416FCD199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874EE18A06930002CC4F3 /* tab_icon_menu@2x.png in Resources */,
 				E14874EF18A06930002CC4F3 /* trash_icon.png in Resources */,
 				E14874F018A06930002CC4F3 /* trash_icon@2x.png in Resources */,
 				E14874F118A06930002CC4F3 /* volume_high.png in Resources */,
 				E14874F218A06930002CC4F3 /* volume_high@2x.png in Resources */,
 				70B8FEE21909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav in Resources */,
-				B6416FCE199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874F318A06930002CC4F3 /* volume_low.png in Resources */,
 				E14874F418A06930002CC4F3 /* volume_low@2x.png in Resources */,
 				E14874F518A06930002CC4F3 /* whisper_notification_icon.png in Resources */,
@@ -3315,17 +3247,14 @@
 				E1370BEF18A0689000826894 /* AppIcon60x60.png in Resources */,
 				E1370BF018A0689000826894 /* AppIcon60x60@2x.png in Resources */,
 				E1370BF118A0689000826894 /* AppIcon76x76.png in Resources */,
-				B6416FC7199A0478003C5699 /* Localizable.strings in Resources */,
 				E1370BF218A0689000826894 /* AppIcon76x76@2x.png in Resources */,
 				E1370BE718A0688300826894 /* Default-568h@2x.png in Resources */,
 				E1370BE818A0688300826894 /* Default.png in Resources */,
 				E1370BE918A0688300826894 /* Default@2x.png in Resources */,
-				B6416FBD199A0478003C5699 /* Localizable.strings in Resources */,
 				E1370BE018A0686600826894 /* busy.mp3 in Resources */,
 				E1370BE118A0686C00826894 /* completed.mp3 in Resources */,
 				E1370BE218A0686C00826894 /* failure.mp3 in Resources */,
 				E1370BE318A0686C00826894 /* handshake.mp3 in Resources */,
-				B6416FCA199A0478003C5699 /* Localizable.strings in Resources */,
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
 				E1370BE418A0686C00826894 /* outring.mp3 in Resources */,
 				E1370BE518A0686C00826894 /* r.caf in Resources */,
@@ -3333,7 +3262,6 @@
 				E148751218A06AFD002CC4F3 /* HelveticaNeueLTStd-Bd.otf in Resources */,
 				E148751318A06AFD002CC4F3 /* HelveticaNeueLTStd-Th.otf in Resources */,
 				E148751418A06AFD002CC4F3 /* HelveticaNeueLTStd-Lt.otf in Resources */,
-				B6416FBA199A0478003C5699 /* Localizable.strings in Resources */,
 				E148751518A06AFD002CC4F3 /* HelveticaNeueLTStd-Md.otf in Resources */,
 				E1370BF618A068A600826894 /* whisperReal.cer in Resources */,
 			);
