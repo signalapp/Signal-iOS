@@ -324,7 +324,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }];
 
     return [matchingContacts groupBy:^id(Contact *contact) {
-        NSString *nameToUse = @"";
+        NSString *nameToUse = @" ";
     
         BOOL firstNameOrdering = ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst?YES:NO;
         
