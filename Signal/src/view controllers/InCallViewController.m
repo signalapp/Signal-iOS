@@ -7,9 +7,12 @@
 #import "CallAudioManager.h"
 #import "PhoneManager.h"
 
+#import <AudioToolbox/AudioServices.h>
+
 #define BUTTON_BORDER_WIDTH 1.0f
 #define CONTACT_IMAGE_BORDER_WIDTH 2.0f
 #define RINGING_ROTATION_DURATION 0.375f
+#define VIBRATE_TIMER_DURATION 1.6
 #define CONNECTING_FLASH_DURATION 0.5f
 #define END_CALL_CLEANUP_DELAY (int)(3.1f * NSEC_PER_SEC)
 
@@ -27,6 +30,8 @@ static NSInteger connectingFlashCounter = 0;
     NSTimer *_ringingAnimationTimer;
 }
 
+@property NSTimer *vibrateTimer;
+
 @end
 
 @implementation InCallViewController
@@ -38,6 +43,7 @@ static NSInteger connectingFlashCounter = 0;
     InCallViewController* controller = [InCallViewController new];
     controller->_potentiallyKnownContact = contact;
     controller->_callState = callState;
+    controller->_callPushState = PushNotSetState;
     return controller;
 }
 
@@ -102,7 +108,20 @@ static NSInteger connectingFlashCounter = 0;
                                                             selector:@selector(rotateConnectingIndicator)
                                                             userInfo:nil
                                                              repeats:YES];
+    
+    if (!_answerButton.hidden) {
+        _vibrateTimer = [NSTimer scheduledTimerWithTimeInterval:VIBRATE_TIMER_DURATION
+                                                         target:self
+                                                       selector:@selector(vibrate)
+                                                       userInfo:nil
+                                                        repeats:YES];
+    }
+    
     [_ringingAnimationTimer fire];
+}
+
+- (void)vibrate {
+    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
 }
 
 - (void)rotateConnectingIndicator {
@@ -121,6 +140,9 @@ static NSInteger connectingFlashCounter = 0;
 - (void)stopRingingAnimation {
     if (_ringingAnimationTimer) {
         [_ringingAnimationTimer invalidate];
+    }
+    if (_vibrateTimer) {
+        [_vibrateTimer invalidate];
     }
 }
 
@@ -276,13 +298,9 @@ static NSInteger connectingFlashCounter = 0;
     _answerButton.hidden = !enable;
     _rejectButton.hidden = !enable;
     _endButton.hidden = enable;
-    
+    if (_vibrateTimer && enable == false) {
+        [_vibrateTimer invalidate];
+    }
 }
-
-
-
-
-
-
 
 @end

@@ -20,7 +20,7 @@ static NSString* SoundFile_Ringtone  =@"r.caf";
 +(SoundInstance*) instanceOfOutboundRingtone {
     SoundInstance* soundInstance = [SoundInstance soundInstanceForFile:SoundFile_Outbound];
     [soundInstance setAudioToLoopIndefinitely];
-    [soundInstance setInstanceType:SoundInstanceTypeBusySound];
+    [soundInstance setInstanceType:SoundInstanceTypeOutboundRingtone];
     return soundInstance;
 }
 
