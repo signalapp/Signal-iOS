@@ -180,12 +180,7 @@ AppAudioManager*  sharedAppAudioManager;
     if (enable) {
         [[AVAudioSession sharedInstance] setActive:enable error:&e];
         [_soundPlayer awake];
-<<<<<<< HEAD
-    }
-    else {
-=======
     } else {
->>>>>>> upstream/master
         [[AVAudioSession sharedInstance] setActive:enable
                                        withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation
                                              error:&e];
