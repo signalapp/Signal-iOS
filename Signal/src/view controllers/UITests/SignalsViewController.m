@@ -11,10 +11,14 @@
 #import "TableViewCell.h"
 #import "MessagesViewController.h"
 
+
 #define CELL_NIB_NAME @"TableViewCell"
 #define CELL_HEIGHT 76.0f
 
 #define SEGUE_IDENTIFIER @"showSegue"
+
+static NSString *const TABLE_VIEW_CELL_IDENTIFIER = @"TableViewCell";
+
 
 @interface SignalsViewController () {
     NSArray * _dataArray;
@@ -67,23 +71,50 @@
 }
 
  - (TableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-     TableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CELL_NIB_NAME];
-     if (cell == nil) {
-         NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:CELL_NIB_NAME owner:self options:nil];
-         cell = [topLevelObjects objectAtIndex:0];
-     }
+//     TableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CELL_NIB_NAME];
+//     if (cell == nil) {
+//         NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:CELL_NIB_NAME owner:self options:nil];
+//         cell = [topLevelObjects objectAtIndex:0];
+//     }
+//     
+//     
+//     cell._senderLabel.text = ((DemoDataModel*)_dataArray[(NSUInteger)indexPath.row])._sender;
+//     cell._snippetLabel.text = ((DemoDataModel*)_dataArray[(NSUInteger)indexPath.row])._snippet;
+//     cell._timeLabel.text = @"21:58";
+//     return cell;
      
-     
-     cell._senderLabel.text = ((DemoDataModel*)_dataArray[(NSUInteger)indexPath.row])._sender;
-     cell._snippetLabel.text = ((DemoDataModel*)_dataArray[(NSUInteger)indexPath.row])._snippet;
-     cell._timeLabel.text = @"21:58";
-     
- return cell;
+     return [self inboxFeedCellForIndexPath:indexPath];
  }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return CELL_HEIGHT;
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 71.0f;
+}
+
+-(TableViewCell*)inboxFeedCellForIndexPath:(NSIndexPath *)indexPath {
+    
+    TableViewCell *cell = [self._tableView dequeueReusableCellWithIdentifier:TABLE_VIEW_CELL_IDENTIFIER];
+    
+    
+    if (!cell) {
+        cell = [[TableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                    reuseIdentifier:TABLE_VIEW_CELL_IDENTIFIER];
+        cell.delegate = self;
+    }
+    
+    DemoDataModel *recent = _dataArray[(NSUInteger)indexPath.row];
+    [cell configureWithTestMessage:recent];
+    return cell;
+
+}
+
+#pragma mark - HomeFeedTableViewCellDelegate
+
+- (void)tableViewCellTappedDelete:(TableViewCell *)cell {
+    NSLog(@"Delete");
+}
+
+- (void)tableViewCellTappedArchive:(TableViewCell *)cell {
+    NSLog(@"Archive");
 }
 
 

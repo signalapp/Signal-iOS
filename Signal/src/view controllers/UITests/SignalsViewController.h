@@ -6,9 +6,10 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
+#include "TableViewCell.h"
 #import <UIKit/UIKit.h>
 
-@interface SignalsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+@interface SignalsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, TableViewCellDelegate>
 
 @property(nonatomic,strong) IBOutlet UITableView* _tableView;
 

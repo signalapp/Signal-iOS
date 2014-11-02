@@ -24,6 +24,16 @@
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark - Action
+-(IBAction)closeButtonAction:(id)sender
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(IBAction)infoButtonAction:(id)sender {
+    //Present an infographic about fingerprints and how to verify contact's identity
+}
+
 /*
 #pragma mark - Navigation
 

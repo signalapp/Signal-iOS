@@ -209,6 +209,9 @@
                                             <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
                                                 <rect key="frame" x="8" y="26" width="22" height="22"/>
                                             </variation>
+                                            <connections>
+                                                <action selector="infoButtonAction:" destination="4UP-54-6NL" eventType="touchUpInside" id="7Yv-Of-kkw"/>
+                                            </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ctt-K8-O2D">
                                             <rect key="frame" x="-23" y="-15" width="46" height="30"/>
@@ -218,6 +221,9 @@
                                             <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
                                                 <rect key="frame" x="346" y="22" width="46" height="30"/>
                                             </variation>
+                                            <connections>
+                                                <action selector="closeButtonAction:" destination="4UP-54-6NL" eventType="touchUpInside" id="6tp-Kl-hCh"/>
+                                            </connections>
                                         </button>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Contact's fingerprint" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CxJ-2W-pyK">
                                             <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
@@ -926,7 +932,13 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                             <outlet property="delegate" destination="Qga-41-bw2" id="vfF-Gh-noL"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="New Message" id="D6A-aV-gEq"/>
+                    <navigationItem key="navigationItem" title="New Message" id="D6A-aV-gEq">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="bP2-Tc-byJ">
+                            <connections>
+                                <action selector="closeAction:" destination="Qga-41-bw2" id="i8h-aS-Y3o"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="searchBar" destination="Hku-Jy-Hze" id="KHN-Bl-jL5"/>
                         <outlet property="searchDisplayController" destination="f1M-Dk-nMv" id="G2D-Qe-dJJ"/>

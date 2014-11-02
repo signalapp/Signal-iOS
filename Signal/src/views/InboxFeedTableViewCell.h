@@ -2,6 +2,7 @@
 #import "RecentCall.h"
 #import "ContactsManager.h"
 #import "NextResponderScrollView.h"
+#import "DemoDataModel.h"
 
 /**
  *
@@ -34,6 +35,7 @@
 @property (nonatomic, strong) IBOutlet UIImageView *archiveImageView;
 @property (nonatomic, assign) id<InboxFeedTableViewCellDelegate> delegate;
 
-- (void)configureWithRecentCall:(RecentCall *)recentCall;
+-(void)configureWithRecentCall:(RecentCall *)recentCall;
+-(void)configureWithTestMessage:(DemoDataModel*)testMessage;
 
 @end
