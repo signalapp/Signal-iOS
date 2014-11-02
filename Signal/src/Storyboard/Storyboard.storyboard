@@ -47,7 +47,7 @@
             </objects>
             <point key="canvasLocation" x="1372.5" y="1102.5"/>
         </scene>
-        <!--Messages-->
+        <!--Signals-->
         <scene sceneID="82U-Xj-21R">
             <objects>
                 <viewController id="MY2-bB-USa" customClass="SignalsViewController" sceneMemberID="viewController">
@@ -65,10 +65,33 @@
                                 <color key="separatorColor" white="0.66666666666666663" alpha="0.5" colorSpace="calibratedWhite"/>
                                 <inset key="separatorInset" minX="20" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="v6h-OJ-UY2">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="HeaderCell" id="v6h-OJ-UY2">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="v6h-OJ-UY2" id="t6X-fN-cSu">
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="K4n-hj-FmJ">
+                                                    <rect key="frame" x="-61" y="-14" width="123" height="29"/>
+                                                    <segments>
+                                                        <segment title="Inbox"/>
+                                                        <segment title="Archive"/>
+                                                    </segments>
+                                                    <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                                        <rect key="frame" x="100" y="8" width="200" height="29"/>
+                                                    </variation>
+                                                </segmentedControl>
+                                            </subviews>
+                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <variation key="default">
+                                                <mask key="subviews">
+                                                    <exclude reference="K4n-hj-FmJ"/>
+                                                </mask>
+                                            </variation>
+                                            <variation key="heightClass=regular-widthClass=compact">
+                                                <mask key="subviews">
+                                                    <include reference="K4n-hj-FmJ"/>
+                                                </mask>
+                                            </variation>
                                         </tableViewCellContentView>
                                         <connections>
                                             <segue destination="DtA-8O-wrT" kind="show" identifier="showSegue" id="zQ3-PY-vww"/>
@@ -115,8 +138,12 @@
                             </mask>
                         </variation>
                     </view>
-                    <navigationItem key="navigationItem" title="Messages" id="Um0-0y-8lr">
-                        <barButtonItem key="rightBarButtonItem" systemItem="compose" id="Oft-fU-tf5"/>
+                    <navigationItem key="navigationItem" title="Signals" id="Um0-0y-8lr">
+                        <barButtonItem key="rightBarButtonItem" systemItem="compose" id="Oft-fU-tf5">
+                            <connections>
+                                <segue destination="cZ7-de-SUi" kind="presentation" id="Ea3-ew-jtL"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="_tableView" destination="PaA-ol-uQT" id="XGR-5F-9H0"/>
@@ -142,7 +169,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yXZ-iE-5va" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2236.5" y="-261"/>
+            <point key="canvasLocation" x="2236.5" y="-195"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="dB1-7w-8YS">
@@ -206,7 +233,8 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Contacts" id="oYb-E2-R06">
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="BN6-QX-2Pe"/>
+                        <barButtonItem key="leftBarButtonItem" systemItem="add" id="Mla-gX-7ae"/>
+                        <barButtonItem key="rightBarButtonItem" image="tab_icon_keypad.png" id="BN6-QX-2Pe"/>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xQP-wB-KqH" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -384,22 +412,22 @@
                                             <exclude reference="k5h-gf-Ror"/>
                                         </mask>
                                         <mask key="constraints">
-                                            <exclude reference="sso-yG-OE2"/>
-                                            <exclude reference="wfT-MC-6hS"/>
-                                            <exclude reference="foB-z8-ARe"/>
-                                            <exclude reference="nC1-qg-lK3"/>
                                             <exclude reference="4yT-GW-MiF"/>
                                             <exclude reference="BpK-h2-mQh"/>
                                             <exclude reference="O0G-cx-PXE"/>
                                             <exclude reference="hNJ-Kg-kV8"/>
                                             <exclude reference="woY-89-9og"/>
-                                            <exclude reference="CGI-MF-pE5"/>
-                                            <exclude reference="qJY-NP-rnb"/>
+                                            <exclude reference="foB-z8-ARe"/>
+                                            <exclude reference="nC1-qg-lK3"/>
                                             <exclude reference="00c-Ys-l5X"/>
                                             <exclude reference="04j-UA-ht4"/>
                                             <exclude reference="Srr-qD-ESs"/>
                                             <exclude reference="bgb-0d-4u5"/>
                                             <exclude reference="fc0-Oi-HPh"/>
+                                            <exclude reference="CGI-MF-pE5"/>
+                                            <exclude reference="qJY-NP-rnb"/>
+                                            <exclude reference="sso-yG-OE2"/>
+                                            <exclude reference="wfT-MC-6hS"/>
                                         </mask>
                                     </variation>
                                     <variation key="heightClass=regular-widthClass=compact">
@@ -413,22 +441,22 @@
                                             <include reference="k5h-gf-Ror"/>
                                         </mask>
                                         <mask key="constraints">
-                                            <include reference="sso-yG-OE2"/>
-                                            <include reference="wfT-MC-6hS"/>
-                                            <include reference="foB-z8-ARe"/>
-                                            <include reference="nC1-qg-lK3"/>
                                             <include reference="4yT-GW-MiF"/>
                                             <include reference="BpK-h2-mQh"/>
                                             <include reference="O0G-cx-PXE"/>
                                             <include reference="hNJ-Kg-kV8"/>
                                             <include reference="woY-89-9og"/>
-                                            <include reference="CGI-MF-pE5"/>
-                                            <include reference="qJY-NP-rnb"/>
+                                            <include reference="foB-z8-ARe"/>
+                                            <include reference="nC1-qg-lK3"/>
                                             <include reference="00c-Ys-l5X"/>
                                             <include reference="04j-UA-ht4"/>
                                             <include reference="Srr-qD-ESs"/>
                                             <include reference="bgb-0d-4u5"/>
                                             <include reference="fc0-Oi-HPh"/>
+                                            <include reference="CGI-MF-pE5"/>
+                                            <include reference="qJY-NP-rnb"/>
+                                            <include reference="sso-yG-OE2"/>
+                                            <include reference="wfT-MC-6hS"/>
                                         </mask>
                                     </variation>
                                 </tableViewCellContentView>
@@ -658,6 +686,82 @@
             </objects>
             <point key="canvasLocation" x="454.5" y="1102.5"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="aWR-d3-s5V">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="cZ7-de-SUi" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="gzw-fh-en2">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="Qga-41-bw2" kind="relationship" relationship="rootViewController" id="gt8-cl-Yhf"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="b1E-7L-eKw" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2236.5" y="-906.75"/>
+        </scene>
+        <!--New Message-->
+        <scene sceneID="qez-9r-EDt">
+            <objects>
+                <tableViewController id="Qga-41-bw2" customClass="MessageComposeTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="X9S-Pa-EbX">
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <searchBar key="tableHeaderView" contentMode="redraw" id="Hku-Jy-Hze">
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <textInputTraits key="textInputTraits"/>
+                            <connections>
+                                <outlet property="delegate" destination="Qga-41-bw2" id="36X-SG-PM7"/>
+                            </connections>
+                        </searchBar>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="SearchCell" textLabel="jnW-y1-ab8" style="IBUITableViewCellStyleDefault" id="CFr-aj-EJR">
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="CFr-aj-EJR" id="ImH-ro-04A">
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="jnW-y1-ab8">
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                            <variation key="heightClass=regular-widthClass=compact">
+                                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            </variation>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="Qga-41-bw2" id="dUq-5d-dub"/>
+                            <outlet property="delegate" destination="Qga-41-bw2" id="vfF-Gh-noL"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="New Message" id="D6A-aV-gEq"/>
+                    <connections>
+                        <outlet property="searchBar" destination="Hku-Jy-Hze" id="KHN-Bl-jL5"/>
+                        <outlet property="searchDisplayController" destination="f1M-Dk-nMv" id="G2D-Qe-dJJ"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fUD-iU-Cax" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <searchDisplayController id="f1M-Dk-nMv">
+                    <connections>
+                        <outlet property="delegate" destination="Qga-41-bw2" id="5oe-hp-BTj"/>
+                        <outlet property="searchBar" destination="Hku-Jy-Hze" id="kEh-ch-BZV"/>
+                        <outlet property="searchContentsController" destination="Qga-41-bw2" id="E7W-8J-scd"/>
+                        <outlet property="searchResultsDataSource" destination="Qga-41-bw2" id="xch-aW-alI"/>
+                        <outlet property="searchResultsDelegate" destination="Qga-41-bw2" id="8gC-lI-HA7"/>
+                    </connections>
+                </searchDisplayController>
+            </objects>
+            <point key="canvasLocation" x="3082.5" y="-906.75"/>
+        </scene>
     </scenes>
     <resources>
         <image name="AppIcon76x76.png" width="76" height="76"/>
@@ -665,5 +769,6 @@
         <image name="favourite_false_icon.png" width="26" height="25"/>
         <image name="message_icon.png" width="66" height="66"/>
         <image name="phone_icon.png" width="66" height="66"/>
+        <image name="tab_icon_keypad.png" width="24" height="24"/>
     </resources>
 </document>

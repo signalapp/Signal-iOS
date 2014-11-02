@@ -54,6 +54,17 @@
     return 5;
 }
 
+-(UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"HeaderCell"];
+    
+    return cell;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 44.0f;
+}
 
  - (TableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
      TableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CELL_NIB_NAME];
@@ -75,11 +86,12 @@
     return CELL_HEIGHT;
 }
 
+
+
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self performSegueWithIdentifier:SEGUE_IDENTIFIER sender:self];
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
-
 }
 
 

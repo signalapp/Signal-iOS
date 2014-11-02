@@ -13,4 +13,7 @@
 
 +(NSArray*)data;
 +(NSArray*)makeFakeContacts;
++(NSArray*)makeFakeCalls;
+
+
 @end

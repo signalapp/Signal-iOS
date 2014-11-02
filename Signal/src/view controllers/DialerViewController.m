@@ -142,7 +142,9 @@
 }
 
 - (void)updateNumberLabel {
+    //DEBUG!!!
     NSString* numberText = [_currentNumberMutable copy];
+    
     _numberLabel.text = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:numberText];
     PhoneNumber* number = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:numberText];	
     [self tryUpdateContactForNumber:number];

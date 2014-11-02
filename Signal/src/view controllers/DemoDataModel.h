@@ -13,6 +13,7 @@
 
 #import "JSQMessages.h"
 #import "Contact.h"
+#import "RecentCall.h"
 
 static NSString * const kJSQDemoAvatarDisplayNameDylan = @"Dylan Bourgeois";
 static NSString * const kJSQDemoAvatarDisplayNameFred = @"Frederic Jacobs";
@@ -39,6 +40,7 @@ static NSString * const kJSQDemoAvatarIdMoxie = @"707-8956784-57";
 
 +(DemoDataModel*)initModel:(NSUInteger)modelNumber;
 +(Contact*)initFakeContacts:(NSUInteger)modelNumber;
++(RecentCall*)initRecentCall:(NSUInteger)modelNumber;
 
 
 

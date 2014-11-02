@@ -8,6 +8,8 @@
 
 #import "DemoDataModel.h"
 #import "Contact.h"
+#import "RecentCall.h"
+#import "PhoneNumber.h"
 
 enum {kDemoDataModelCase0, kDemoDataModelCase1,kDemoDataModelCase2, kDemoDataModelCase3, kDemoDataModelCase4};
 
@@ -124,4 +126,31 @@ enum {kDemoDataModelCase0, kDemoDataModelCase1,kDemoDataModelCase2, kDemoDataMod
     return _demoContact;
 }
 
++(RecentCall*)initRecentCall:(NSUInteger)modelNumber
+{
+    RecentCall * _demoCall;
+    
+    switch (modelNumber) {
+        case kDemoDataModelCase0:
+            _demoCall = [RecentCall recentCallWithContactID:0 andNumber:[PhoneNumber phoneNumberFromUserSpecifiedText:@"954-394-9043"] andCallType:RPRecentCallTypeMissed];
+            break;
+        case kDemoDataModelCase1:
+            _demoCall = [RecentCall recentCallWithContactID:0 andNumber:[PhoneNumber phoneNumberFromUserSpecifiedText:@"954-304-9043"] andCallType:RPRecentCallTypeIncoming];
+            break;
+        case kDemoDataModelCase2:
+            _demoCall = [RecentCall recentCallWithContactID:0 andNumber:[PhoneNumber phoneNumberFromUserSpecifiedText:@"954-124-9043"] andCallType:RPRecentCallTypeOutgoing];
+            break;
+        case kDemoDataModelCase3:
+            _demoCall = [RecentCall recentCallWithContactID:0 andNumber:[PhoneNumber phoneNumberFromUserSpecifiedText:@"954-454-9043"] andCallType:RPRecentCallTypeIncoming];
+            break;
+        case kDemoDataModelCase4:
+            _demoCall = [RecentCall recentCallWithContactID:0 andNumber:[PhoneNumber phoneNumberFromUserSpecifiedText:@"954-394-9043"] andCallType:RPRecentCallTypeIncoming];
+            break;
+            
+        default:
+            break;
+    }
+    
+    return _demoCall;
+}
 @end

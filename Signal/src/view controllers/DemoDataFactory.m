@@ -28,4 +28,14 @@
     
     return (NSArray*)_mutableArray;
 }
+
++(NSArray*)makeFakeCalls
+{
+    NSMutableArray* _mutableArray = [[NSMutableArray alloc]init];
+    
+    for (NSUInteger i=0;i<5;i++)
+        [_mutableArray addObject:[DemoDataModel initRecentCall:i]];
+    
+    return (NSArray*)_mutableArray;
+}
 @end

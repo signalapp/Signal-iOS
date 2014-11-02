@@ -30,8 +30,6 @@
     self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
     self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
     
-    [self scrollToBottomAnimated:YES];
-    
 }
 
 #pragma mark - JSQMessagesViewController method overrides
