@@ -18,6 +18,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Fingerprint" style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
     self.title = self._senderTitleString;
 
     self.senderId = kJSQDemoAvatarIdDylan;
@@ -30,6 +31,20 @@
     self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
     self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
     
+}
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Fingerprints
+
+-(void)showFingerprint
+{
+    [self performSegueWithIdentifier:@"fingerprintSegue" sender:self];
+    NSLog(@"Fingerprint");
 }
 
 #pragma mark - JSQMessagesViewController method overrides
@@ -212,11 +227,6 @@
 
 
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 
 #pragma mark - Navigation
 
@@ -225,6 +235,8 @@
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
 }
+
+
 
 
 @end
