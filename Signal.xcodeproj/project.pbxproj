@@ -615,6 +615,7 @@
 		F995AC2FFD6D4442B012604A /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
 		FC31962A1A067D8F0094C78E /* MessageComposeTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */; };
 		FC31962D1A06A2190094C78E /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC31962C1A06A2190094C78E /* FingerprintViewController.m */; };
+		FC3196301A0814130094C78E /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC31962F1A0814130094C78E /* SettingsTableViewController.m */; };
 		FCAC963519FEF4E20046DFC5 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */; };
 		FCAC963C19FEF9280046DFC5 /* SignalsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */; };
 		FCAC964019FEF99A0046DFC5 /* TableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963E19FEF99A0046DFC5 /* TableViewCell.m */; };
@@ -1340,6 +1341,8 @@
 		FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageComposeTableViewController.m; sourceTree = "<group>"; };
 		FC31962B1A06A2190094C78E /* FingerprintViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FingerprintViewController.h; sourceTree = "<group>"; };
 		FC31962C1A06A2190094C78E /* FingerprintViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FingerprintViewController.m; sourceTree = "<group>"; };
+		FC31962E1A0814130094C78E /* SettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsTableViewController.h; sourceTree = "<group>"; };
+		FC31962F1A0814130094C78E /* SettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsTableViewController.m; sourceTree = "<group>"; };
 		FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Storyboard.storyboard; path = Signal/src/Storyboard/Storyboard.storyboard; sourceTree = SOURCE_ROOT; };
 		FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignalsViewController.h; path = UITests/SignalsViewController.h; sourceTree = "<group>"; };
 		FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalsViewController.m; path = UITests/SignalsViewController.m; sourceTree = "<group>"; };
@@ -3026,6 +3029,41 @@
 			path = utilities;
 			sourceTree = "<group>";
 		};
+		FC3196311A08141D0094C78E /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				FC31962E1A0814130094C78E /* SettingsTableViewController.h */,
+				FC31962F1A0814130094C78E /* SettingsTableViewController.m */,
+			);
+			name = Settings;
+			sourceTree = "<group>";
+		};
+		FC3196321A08142D0094C78E /* Signals */ = {
+			isa = PBXGroup;
+			children = (
+				FC3196281A067D8F0094C78E /* MessageComposeTableViewController.h */,
+				FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */,
+				FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */,
+				FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */,
+				FCAC964F19FF0A6E0046DFC5 /* MessagesViewController.h */,
+				FCAC965019FF0A6E0046DFC5 /* MessagesViewController.m */,
+				FC31962B1A06A2190094C78E /* FingerprintViewController.h */,
+				FC31962C1A06A2190094C78E /* FingerprintViewController.m */,
+			);
+			name = Signals;
+			sourceTree = "<group>";
+		};
+		FC3196331A0814360094C78E /* Contacts */ = {
+			isa = PBXGroup;
+			children = (
+				FCF72A121A02D27F006BC849 /* ContactDetailTableViewController.h */,
+				FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */,
+				FCF72A061A01A765006BC849 /* ContactsTableViewController.h */,
+				FCF72A071A01A765006BC849 /* ContactsTableViewController.m */,
+			);
+			name = Contacts;
+			sourceTree = "<group>";
+		};
 		FCAC963919FEF8A00046DFC5 /* UI Tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -3063,18 +3101,9 @@
 		FCAC964E19FF061C0046DFC5 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				FC3196281A067D8F0094C78E /* MessageComposeTableViewController.h */,
-				FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */,
-				FCF72A121A02D27F006BC849 /* ContactDetailTableViewController.h */,
-				FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */,
-				FCF72A061A01A765006BC849 /* ContactsTableViewController.h */,
-				FCF72A071A01A765006BC849 /* ContactsTableViewController.m */,
-				FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */,
-				FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */,
-				FCAC964F19FF0A6E0046DFC5 /* MessagesViewController.h */,
-				FCAC965019FF0A6E0046DFC5 /* MessagesViewController.m */,
-				FC31962B1A06A2190094C78E /* FingerprintViewController.h */,
-				FC31962C1A06A2190094C78E /* FingerprintViewController.m */,
+				FC3196321A08142D0094C78E /* Signals */,
+				FC3196331A0814360094C78E /* Contacts */,
+				FC3196311A08141D0094C78E /* Settings */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -3637,6 +3666,7 @@
 				FCF72A161A02D2BB006BC849 /* ContactDetailCell.m in Sources */,
 				76EB05C018170B33006006FC /* DhPacket.m in Sources */,
 				765052A1182945EF008313E1 /* LocalizableCustomFontLabel.m in Sources */,
+				FC3196301A0814130094C78E /* SettingsTableViewController.m in Sources */,
 				7038632818F70C0700D4A43F /* EvpSymetricUtil.m in Sources */,
 				76EB066418170B34006006FC /* TabBarParentViewController.m in Sources */,
 				76EB068618170B34006006FC /* ContactTableViewCell.m in Sources */,
