@@ -324,7 +324,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }];
 
     return [matchingContacts groupBy:^id(Contact *contact) {
-        NSString *nameToUse = @" ";
+        NSString *nameToUse = @"";
     
         BOOL firstNameOrdering = ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst?YES:NO;
         
@@ -342,7 +342,11 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
             nameToUse = contact.lastName;
         }
         
-        return [[[nameToUse substringToIndex:1] uppercaseString] decomposedStringWithCompatibilityMapping];
+        if (nameToUse.length >= 1) {
+            return [[[nameToUse substringToIndex:1] uppercaseString] decomposedStringWithCompatibilityMapping];
+        } else{
+            return @" ";
+        }
     }];
 }
 
