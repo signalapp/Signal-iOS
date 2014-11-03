@@ -173,7 +173,7 @@
         NSHTTPURLResponse* badResponse = (NSHTTPURLResponse*)task.response;
         if (badResponse.statusCode == 401) {
             SignalAlertView(alertTitle, REGISTER_CHALLENGE_ALERT_VIEW_BODY);
-        } else if (badResponse.statusCode == 401){
+        } else if (badResponse.statusCode == 413){
             SignalAlertView(alertTitle, NSLocalizedString(@"REGISTER_RATE_LIMITING_BODY", @""));
         } else {
             NSString *alertBodyString      = [NSString stringWithFormat:@"%@ %lu", NSLocalizedString(@"SERVER_CODE", @""),(unsigned long)badResponse.statusCode];

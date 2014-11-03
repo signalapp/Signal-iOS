@@ -32,14 +32,14 @@
 }
 
 /// Starts a zrtp handshake over the given RtpSocket.
-/// The given role type determines if we play the initiator role or the responder role,
+/// The CallController's isInitiator state determines if we play the zrtp initiator or responder role,
 /// All cryptographic keys and settings are either generated on the fly or pulled from the Environment.
 ///
 /// @return
 /// The asynchronous result has type Future(ZrtpHandshakeResult).
 /// If the handshake completes succesfully, the resulting ZrtpHandshakeResult contains the SrtpSocket to be used for sending audio.
-/// If the handshake timeout or otherwise fails to complete, the result will contain a failure.
-/// If the handshake is cancelled, the result will contain a failure containing the cancellation token.
+/// If the handshake times out, fails to complete, or is cancelled (via the call controller's untilCancelledToken),
+/// the returned future will be given a failure.
 ///
 /// @param rtpSocket
 /// The socket to perform the handshake over.
