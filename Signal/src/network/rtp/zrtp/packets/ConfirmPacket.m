@@ -1,6 +1,6 @@
 #import "ConfirmPacket.h"
 #import "Util.h"
-#import "Conversions.h"
+#import "NSData+Conversions.h"
 
 @implementation ConfirmPacket
 

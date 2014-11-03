@@ -8,7 +8,7 @@
     
     EventWindow* w = [EventWindow new];
     w->windowDuration = windowDuration;
-    w->events = [PriorityQueue priorityQueueAscendingWithComparator:^NSComparisonResult(id obj1, id obj2) {
+    w->events = [[PriorityQueue alloc] initAscendingWithComparator:^NSComparisonResult(id obj1, id obj2) {
         return [(NSNumber*)obj1 compare:(NSNumber*)obj2];
     }];
     w->lastWindowEnding = -INFINITY;

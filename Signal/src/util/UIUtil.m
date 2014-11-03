@@ -10,23 +10,23 @@ static NSString *const HELVETICA_LIGHT_NAME = @"Helvetica-Light";
 
 @implementation UIUtil
 
-+ (UIFont *)helveticaNeueLTStdLightFontWithSize:(CGFloat)size {
++ (UIFont*)helveticaNeueLTStdLightFontWithSize:(CGFloat)size {
     return [UIFont fontWithName:HELVETICA_NEUE_LTSTD_LIGHT_NAME size:size];
 }
 
-+ (UIFont *)helveticaNeueLTStdBoldFontWithSize:(CGFloat)size {
++ (UIFont*)helveticaNeueLTStdBoldFontWithSize:(CGFloat)size {
     return [UIFont fontWithName:HELVETICA_NEUE_LTSTD_BOLD_NAME size:size];
 }
 
-+ (UIFont *)helveticaNeueLTStdMediumFontWithSize:(CGFloat)size {
++ (UIFont*)helveticaNeueLTStdMediumFontWithSize:(CGFloat)size {
     return [UIFont fontWithName:HELVETICA_NEUE_LTSTD_MEDIUM_NAME size:size];
 }
 
-+ (UIFont *)helveticaRegularWithSize:(CGFloat)size {
++ (UIFont*)helveticaRegularWithSize:(CGFloat)size {
     return [UIFont fontWithName:HELVETICA_REGULAR_NAME size:size];
 }
 
-+ (UIFont *)helveticaLightWithSize:(CGFloat)size {
++ (UIFont*)helveticaLightWithSize:(CGFloat)size {
     return [UIFont fontWithName:HELVETICA_LIGHT_NAME size:size];
 }
 
@@ -58,14 +58,14 @@ static NSString *const HELVETICA_LIGHT_NAME = @"Helvetica-Light";
     return [UIColor colorWithRed:0.5f green:0.5f blue:0.5f alpha:0.7f];
 }
 
-+ (void)applyRoundedBorderToImageView:(UIImageView *__strong*)imageView {
++ (void)applyRoundedBorderToImageView:(UIImageView* __strong*)imageView {
     [[*imageView layer] setBorderWidth:CONTACT_PICTURE_VIEW_BORDER_WIDTH];
     [[*imageView layer] setBorderColor:[[UIColor lightGrayColor] CGColor]];
     [[*imageView layer] setCornerRadius:CGRectGetWidth([*imageView frame])/2];
     [[*imageView layer] setMasksToBounds:YES];
 }
 
-+ (void)removeRoundedBorderToImageView:(UIImageView *__strong*)imageView {
++ (void)removeRoundedBorderToImageView:(UIImageView* __strong*)imageView {
     [[*imageView layer] setBorderWidth:0];
     [[*imageView layer] setCornerRadius:0];
 }

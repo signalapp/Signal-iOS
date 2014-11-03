@@ -88,7 +88,7 @@
     return true;
 }
 +(PriorityQueue*) makeCyclingPacketPriorityQueue {
-    return [PriorityQueue priorityQueueAscendingWithComparator:^NSComparisonResult(EncodedAudioPacket* obj1, EncodedAudioPacket* obj2) {
+    return [[PriorityQueue alloc] initAscendingWithComparator:^NSComparisonResult(EncodedAudioPacket* obj1, EncodedAudioPacket* obj2) {
         int16_t d = [NumberUtil congruentDifferenceMod2ToThe16From:[obj2 sequenceNumber]
                                                                 to:[obj1 sequenceNumber]];
         requireState(abs(d) <= TRANSITIVE_SAFETY_RANGE);

@@ -2,7 +2,7 @@
 #import "ConfirmPacket.h"
 #import "DH3KKeyAgreementProtocol.h"
 #import "PreferencesUtil.h"
-#import "FunctionalUtil.h"
+#import "NSArray+FunctionalUtil.h"
 #import "MasterSecret.h"
 #import "Util.h"
 #import "ZrtpResponder.h"

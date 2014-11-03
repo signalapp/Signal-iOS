@@ -1,8 +1,10 @@
-#import "DataUtil.h"
+#import "NSData+Util.h"
+#import "NSMutableData+Util.h"
 #import "Constraints.h"
 
 @implementation NSData (Util)
--(const void*) bytesNotNull {
+
+- (const void*)bytesNotNull {
     // note: this storage location is static, not auto, so its lifetime does not end
     // (also, by virtue of being const, there are no threading/entrancy issues)
     static const int SafeNonNullPointerToStaticStorageLocation[1];
@@ -14,14 +16,16 @@
         return [self bytes];
     }
 }
-+(NSData*) dataWithLength:(NSUInteger)length {
+
++ (NSData*)dataWithLength:(NSUInteger)length {
     return [NSMutableData dataWithLength:length];
 }
 
-+(NSData*) dataWithSingleByte:(uint8_t)value{
++ (NSData*)dataWithSingleByte:(uint8_t)value {
     return [NSData dataWithBytes:&value length:sizeof(value)];
 }
--(NSNumber*) tryFindIndexOf:(NSData*)subData {
+
+- (NSNumber*)tryFindIndexOf:(NSData*)subData {
     require(subData != nil);
     if (subData.length > self.length) return nil;
     
@@ -37,16 +41,18 @@
     }
     return nil;
 }
--(NSString*) encodedAsHexString {
+
+- (NSString*)encodedAsHexString {
     if (![self bytes]) return @"";
     
-    NSMutableString* result = [NSMutableString string];
+    NSMutableString* result = [[NSMutableString alloc] init];
     for (NSUInteger i = 0; i < self.length; ++i)
         [result appendString:[NSString stringWithFormat:@"%02x", [self uint8At:i]]];
     
     return result;
 }
--(NSString*) decodedAsUtf8 {
+
+- (NSString*)decodedAsUtf8 {
     // workaround for empty data having nil bytes
     if (self.length == 0) return @"";
     
@@ -55,7 +61,8 @@
     checkOperationDescribe(result != nil, @"Invalid UTF8 data.");
     return result;
 }
--(NSString*) decodedAsAscii {
+
+- (NSString*)decodedAsAscii {
     // workaround for empty data having nil bytes
     if (self.length == 0) return @"";
     // workaround for initWithData not enforcing the fact that NSASCIIStringEncoding means strict 7-bit
@@ -67,7 +74,8 @@
     checkOperationDescribe(result != nil, @"Invalid ascii data.");
     return result;
 }
--(NSString*) decodedAsAsciiReplacingErrorsWithDots {
+
+- (NSString*)decodedAsAsciiReplacingErrorsWithDots {
     const int MinPrintableChar = ' ';
     const int MaxPrintableChar = '~';
     
@@ -80,24 +88,27 @@
     return [d decodedAsAscii];
 }
 
--(NSData*) skip:(NSUInteger)offset {
+- (NSData*)skip:(NSUInteger)offset {
     require(offset <= self.length);
     return [self subdataWithRange:NSMakeRange(offset, self.length - offset)];
 }
--(NSData*) take:(NSUInteger)takeCount {
+
+- (NSData*)take:(NSUInteger)takeCount {
     require(takeCount <= self.length);
     return [self subdataWithRange:NSMakeRange(0, takeCount)];
 }
--(NSData*) skipLast:(NSUInteger)skipLastCount {
+
+- (NSData*)skipLast:(NSUInteger)skipLastCount {
     require(skipLastCount <= self.length);
     return [self subdataWithRange:NSMakeRange(0, self.length - skipLastCount)];
 }
--(NSData*) takeLast:(NSUInteger)takeLastCount {
+
+- (NSData*)takeLast:(NSUInteger)takeLastCount {
     require(takeLastCount <= self.length);
     return [self subdataWithRange:NSMakeRange(self.length - takeLastCount, takeLastCount)];
 }
 
--(NSData*) subdataVolatileWithRange:(NSRange)range {
+- (NSData*)subdataVolatileWithRange:(NSRange)range {
     NSUInteger length = self.length;
     require(range.location <= length);
     require(range.length <= length);
@@ -105,37 +116,45 @@
     
     return [NSData dataWithBytesNoCopy:(uint8_t*)[self bytes] + range.location length:range.length freeWhenDone:NO];
 }
--(NSData*) skipVolatile:(NSUInteger)offset {
+
+- (NSData*)skipVolatile:(NSUInteger)offset {
     require(offset <= self.length);
     return [self subdataVolatileWithRange:NSMakeRange(offset, self.length - offset)];
 }
--(NSData*) takeVolatile:(NSUInteger)takeCount {
+
+- (NSData*)takeVolatile:(NSUInteger)takeCount {
     require(takeCount <= self.length);
     return [self subdataVolatileWithRange:NSMakeRange(0, takeCount)];
 }
--(NSData*) skipLastVolatile:(NSUInteger)skipLastCount {
+
+- (NSData*)skipLastVolatile:(NSUInteger)skipLastCount {
     require(skipLastCount <= self.length);
     return [self subdataVolatileWithRange:NSMakeRange(0, self.length - skipLastCount)];
 }
--(NSData*) takeLastVolatile:(NSUInteger)takeLastCount {
+
+- (NSData*)takeLastVolatile:(NSUInteger)takeLastCount {
     require(takeLastCount <= self.length);
     return [self subdataVolatileWithRange:NSMakeRange(self.length - takeLastCount, takeLastCount)];
 }
 
--(uint8_t) highUint4AtByteOffset:(NSUInteger)offset {
+- (uint8_t)highUint4AtByteOffset:(NSUInteger)offset {
     return [self uint8At:offset] >> 4;
 }
--(uint8_t) lowUint4AtByteOffset:(NSUInteger)offset {
+
+- (uint8_t)lowUint4AtByteOffset:(NSUInteger)offset {
     return [self uint8At:offset] & 0xF;
 }
--(uint8_t) uint8At:(NSUInteger)offset {
+
+- (uint8_t)uint8At:(NSUInteger)offset {
     require(offset < self.length);
     return ((const uint8_t*)[self bytes])[offset];
 }
--(const uint8_t*) constPtrToUint8At:(NSUInteger)offset {
+
+- (const uint8_t*)constPtrToUint8At:(NSUInteger)offset {
     return ((uint8_t*)[self bytes]) + offset;
 }
--(NSString*) encodedAsBase64 {
+
+- (NSString*)encodedAsBase64 {
     const NSUInteger BitsPerBase64Word = 6;
     const NSUInteger BitsPerByte = 8;
     const uint8_t Base64Chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -176,16 +195,5 @@
     
     return [asciiData decodedAsAscii];
 }
-@end
 
-@implementation NSMutableData (Util)
--(void) setUint8At:(NSUInteger)offset to:(uint8_t)newValue {
-    require(offset < self.length);
-    ((uint8_t*)[self mutableBytes])[offset] = newValue;
-}
--(void) replaceBytesStartingAt:(NSUInteger)offset withData:(NSData*)data {
-    require(data != nil);
-    require(offset + data.length <= self.length);
-    [self replaceBytesInRange:NSMakeRange(offset, data.length) withBytes:[data bytes]];
-}
 @end

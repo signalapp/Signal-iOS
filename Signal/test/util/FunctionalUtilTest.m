@@ -1,5 +1,5 @@
 #import "FunctionalUtilTest.h"
-#import "FunctionalUtil.h"
+#import "NSArray+FunctionalUtil.h"
 #import "TestUtil.h"
 
 @implementation FunctionalUtilTest

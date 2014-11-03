@@ -102,7 +102,7 @@
     
     NSData* payload = @[
                        h2,
-                       zid.getData,
+                       zid.data,
                        hashSpecId,
                        cipherSpecId,
                        authSpecId,
@@ -132,7 +132,7 @@
     return [payload subdataWithRange:NSMakeRange(0, HASH_CHAIN_ITEM_LENGTH)];
 }
 +(Zid*) getZidFromPayload:(NSData*)payload {
-    return [Zid zidWithData:[payload subdataWithRange:NSMakeRange(HASH_CHAIN_ITEM_LENGTH, ZID_LENGTH)]];
+    return [[Zid alloc] initWithData:[payload subdataWithRange:NSMakeRange(HASH_CHAIN_ITEM_LENGTH, ZID_LENGTH)]];
 }
 +(NSData*) getHashSpecIdFromPayload:(NSData*)payload {
     return [payload subdataWithRange:NSMakeRange(HASH_SPEC_OFFSET, HASH_SPEC_LENGTH)];

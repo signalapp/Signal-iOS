@@ -12,37 +12,33 @@
  * reference may have been overwritten.
  *
  */
-@interface CyclicalBuffer : NSObject {
-@private NSMutableData* buffer;
-@private uint32_t readOffset;
-@private uint32_t count;
-}
+@interface CyclicalBuffer : NSObject
 
 /// Adds data to the buffer. The buffer will be resized if necessary.
--(void) enqueueData:(NSData*)data;
+- (void)enqueueData:(NSData*) data;
 
 /// The number of bytes in the buffer.
--(NSUInteger) enqueuedLength;
+- (NSUInteger)enqueuedLength;
 
 /// Returns a view of the given length of bytes from the buffer.
 /// Fails if there isn't enough enqueued data to satisfy the request.
--(NSData*) peekDataWithLength:(NSUInteger)length;
+- (NSData*)peekDataWithLength:(NSUInteger)length;
 
 /// Extracts the given length of bytes from the buffer.
 /// Fails if there isn't enough enqueued data to satisfy the request.
--(NSData*) dequeueDataWithLength:(NSUInteger)length;
+- (NSData*)dequeueDataWithLength:(NSUInteger)length;
 
 /// Dequeues the given length of bytes from the buffer, without returning them.
 /// Fails if there isn't enough enqueued data to satisfy the request.
--(void) discard:(NSUInteger)length;
+- (void)discard:(NSUInteger)length;
 
 /// Extracts the given length of bytes from the buffer, POTENTIALLY WITHOUT COPYING.
 /// Fails if there isn't enough enqueued data to satisfy the request.
 /// Consider result as invalid if more data is enqueued, because its contents may be overwritten.
--(NSData*) dequeuePotentialyVolatileDataWithLength:(NSUInteger)length;
+- (NSData*)dequeuePotentialyVolatileDataWithLength:(NSUInteger)length;
 
 /// Returns a volatile view of as much upcoming data-to-be-dequeued as possible, WITHOUT COPYING.
 /// Consider result as invalid if more data is enqueued, because its contents may be overwritten.
--(NSData*) peekVolatileHeadOfData;
+- (NSData*)peekVolatileHeadOfData;
 
 @end

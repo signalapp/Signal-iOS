@@ -8,11 +8,11 @@
 
 @interface UIUtil : NSObject
 
-+ (UIFont *)helveticaNeueLTStdLightFontWithSize:(CGFloat)size;
-+ (UIFont *)helveticaNeueLTStdBoldFontWithSize:(CGFloat)size;
-+ (UIFont *)helveticaNeueLTStdMediumFontWithSize:(CGFloat)size;
-+ (UIFont *)helveticaRegularWithSize:(CGFloat)size;
-+ (UIFont *)helveticaLightWithSize:(CGFloat)size;
++ (UIFont*)helveticaNeueLTStdLightFontWithSize:(CGFloat)size;
++ (UIFont*)helveticaNeueLTStdBoldFontWithSize:(CGFloat)size;
++ (UIFont*)helveticaNeueLTStdMediumFontWithSize:(CGFloat)size;
++ (UIFont*)helveticaRegularWithSize:(CGFloat)size;
++ (UIFont*)helveticaLightWithSize:(CGFloat)size;
 + (UIColor*)darkBackgroundColor;
 + (UIColor*)blueColor;
 + (UIColor*)yellowColor;
@@ -20,7 +20,7 @@
 + (UIColor*)greenColor;
 + (UIColor*)whiteColor;
 + (UIColor*)transparentLightGrayColor;
-+ (void)applyRoundedBorderToImageView:(UIImageView *__strong*)imageView;
-+ (void)removeRoundedBorderToImageView:(UIImageView *__strong*)imageView;
++ (void)applyRoundedBorderToImageView:(UIImageView* __strong*)imageView;
++ (void)removeRoundedBorderToImageView:(UIImageView* __strong*)imageView;
 
 @end

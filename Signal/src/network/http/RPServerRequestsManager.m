@@ -9,7 +9,7 @@
 #import "RPServerRequestsManager.h"
 #import "Constraints.h"
 #import "CryptoTools.h"
-#import "DataUtil.h"
+#import "NSData+Util.h"
 #import "Environment.h"
 #import "HostNameEndPoint.h"
 #import "SGNKeychainUtil.h"

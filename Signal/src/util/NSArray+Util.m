@@ -1,9 +1,9 @@
-#import "ArrayUtil.h"
+#import "NSArray+Util.h"
 #import "Constraints.h"
 
 @implementation NSArray (Util)
 
--(NSData*) toUint8Data {
+- (NSData*)toUint8Data {
     NSUInteger n = self.count;
     uint8_t x[n];
     for (NSUInteger i = 0; i < n; i++) {
@@ -11,10 +11,11 @@
     }
     return [NSData dataWithBytes:x length:n];
 }
--(NSData*) concatDatas {
+
+- (NSData*)concatDatas {
     NSUInteger t = 0;
     for (id d in self) {
-        require([d isKindOfClass:NSData.class]);
+        require([d isKindOfClass:[NSData class]]);
         t += [(NSData*)d length];
     }
     
@@ -26,10 +27,11 @@
     }
     return result;
 }
--(NSArray*) concatArrays {
-    NSMutableArray* r = [NSMutableArray array];
+
+- (NSArray*)concatArrays {
+    NSMutableArray* r = [[NSMutableArray alloc] init];
     for (id e in self) {
-        require([e isKindOfClass:NSArray.class]);
+        require([e isKindOfClass:[NSArray class]]);
         [r addObjectsFromArray:e];
     }
     return r;

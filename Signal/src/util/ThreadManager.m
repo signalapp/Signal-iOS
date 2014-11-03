@@ -5,34 +5,11 @@
 #define NORMAL_THREAD_NAME @"Background Thread"
 #define HIGH_THREAD_NAME @"Blocking Working Thread"
 
-@implementation RunningThreadRunLoopPair
+@interface ThreadManager ()
 
-@synthesize runLoop, thread;
-
-+(RunningThreadRunLoopPair*) startNewWithThreadName:(NSString*)name {
-    require(name != nil);
-    
-    RunningThreadRunLoopPair* instance = [RunningThreadRunLoopPair new];
-    instance->thread = [[NSThread alloc] initWithTarget:instance selector:@selector(runLoopUntilCancelled) object:nil];
-    [instance->thread setName:name];
-    [instance->thread start];
-    
-    [Operation asyncRunAndWaitUntilDone:^{
-        instance->runLoop = NSRunLoop.currentRunLoop;
-    } onThread:instance->thread];
-    
-    return instance;
-}
--(void) terminate {
-    [thread cancel];
-}
--(void) runLoopUntilCancelled {
-    NSThread* curThread = NSThread.currentThread;
-    NSRunLoop* curRunLoop = NSRunLoop.currentRunLoop;
-    while (!curThread.isCancelled) {
-        [curRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:5]];
-    }
-}
+@property (strong, nonatomic) RunningThreadRunLoopPair* low;
+@property (strong, nonatomic) RunningThreadRunLoopPair* normal;
+@property (strong, nonatomic) RunningThreadRunLoopPair* high;
 
 @end
 
@@ -40,45 +17,49 @@
 
 static ThreadManager* sharedThreadManagerInternal;
 
-+(ThreadManager*)sharedThreadManager {
++ (ThreadManager*)sharedThreadManager {
     @synchronized(self) {
-        if (sharedThreadManagerInternal == nil){
-            sharedThreadManagerInternal = [ThreadManager new];
-            sharedThreadManagerInternal->low = [RunningThreadRunLoopPair startNewWithThreadName:LOW_THREAD_NAME];
-            sharedThreadManagerInternal->normal = [RunningThreadRunLoopPair startNewWithThreadName:NORMAL_THREAD_NAME];
-            sharedThreadManagerInternal->high = [RunningThreadRunLoopPair startNewWithThreadName:HIGH_THREAD_NAME];
+        if (sharedThreadManagerInternal == nil) {
+            sharedThreadManagerInternal = [[ThreadManager alloc] init];
+            sharedThreadManagerInternal.low = [[RunningThreadRunLoopPair alloc] initWithThreadName:LOW_THREAD_NAME];
+            sharedThreadManagerInternal.normal = [[RunningThreadRunLoopPair alloc] initWithThreadName:NORMAL_THREAD_NAME];
+            sharedThreadManagerInternal.high = [[RunningThreadRunLoopPair alloc] initWithThreadName:HIGH_THREAD_NAME];
         }
     }
+    
     return sharedThreadManagerInternal;
 }
 
-+(NSThread*)lowLatencyThread {
-    return self.sharedThreadManager->low.thread;
-}
-+(NSRunLoop*)lowLatencyThreadRunLoop {
-    return self.sharedThreadManager->low.runLoop;
++ (NSThread*)lowLatencyThread {
+    return [self sharedThreadManager].low.thread;
 }
 
-+(NSThread*)normalLatencyThread {
-    return self.sharedThreadManager->normal.thread;
-}
-+(NSRunLoop *)normalLatencyThreadRunLoop {
-    return self.sharedThreadManager->normal.runLoop;
++ (NSRunLoop*)lowLatencyThreadRunLoop {
+    return [self sharedThreadManager].low.runLoop;
 }
 
-+(NSThread*)highLatencyThread {
-    return self.sharedThreadManager->high.thread;
-}
-+(NSRunLoop *)highLatencyThreadRunLoop {
-    return self.sharedThreadManager->high.runLoop;
++ (NSThread*)normalLatencyThread {
+    return [self sharedThreadManager].normal.thread;
 }
 
-+(void) terminate {
++ (NSRunLoop*)normalLatencyThreadRunLoop {
+    return [self sharedThreadManager].normal.runLoop;
+}
+
++ (NSThread*)highLatencyThread {
+    return [self sharedThreadManager].high.thread;
+}
+
++ (NSRunLoop*)highLatencyThreadRunLoop {
+    return [self sharedThreadManager].high.runLoop;
+}
+
++ (void)terminate {
     @synchronized(self) {
         if (sharedThreadManagerInternal == nil) return;
-        [sharedThreadManagerInternal->low terminate];
-        [sharedThreadManagerInternal->normal terminate];
-        [sharedThreadManagerInternal->high terminate];
+        [sharedThreadManagerInternal.low terminate];
+        [sharedThreadManagerInternal.normal terminate];
+        [sharedThreadManagerInternal.high terminate];
         sharedThreadManagerInternal = nil;
     }
 }

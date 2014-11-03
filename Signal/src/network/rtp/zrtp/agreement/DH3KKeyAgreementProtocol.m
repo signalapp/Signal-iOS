@@ -3,7 +3,7 @@
 #import "Constraints.h"
 #import "CryptoTools.h"
 #import "Util.h"
-#import "Conversions.h"
+#import "NSData+Conversions.h"
 
 #import "EvpKeyAgreement.h"
 

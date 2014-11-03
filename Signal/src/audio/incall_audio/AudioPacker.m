@@ -1,6 +1,6 @@
 #import "AudioPacker.h"
 #import "CryptoTools.h"
-#import "Conversions.h"
+#import "NSData+Conversions.h"
 #import "Util.h"
 
 @implementation AudioPacker

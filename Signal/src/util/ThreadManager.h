@@ -1,14 +1,5 @@
 #import <Foundation/Foundation.h>
-
-@interface RunningThreadRunLoopPair : NSObject
-
-@property (nonatomic,readonly) NSThread* thread;
-@property (nonatomic,readonly) NSRunLoop* runLoop;
-
-+(RunningThreadRunLoopPair*) startNewWithThreadName:(NSString*)name;
--(void) terminate;
-
-@end
+#import "RunningThreadRunLoopPair.h"
 
 /**
  *
@@ -29,21 +20,17 @@
  *
  */
 
-@interface ThreadManager : NSObject{
-@private RunningThreadRunLoopPair* low;
-@private RunningThreadRunLoopPair* normal;
-@private RunningThreadRunLoopPair* high;
-}
+@interface ThreadManager : NSObject
 
-+(NSThread*)lowLatencyThread;
-+(NSRunLoop*)lowLatencyThreadRunLoop;
++ (NSThread*)lowLatencyThread;
++ (NSRunLoop*)lowLatencyThreadRunLoop;
 
-+(NSThread*)normalLatencyThread;
-+(NSRunLoop*)normalLatencyThreadRunLoop;
++ (NSThread*)normalLatencyThread;
++ (NSRunLoop*)normalLatencyThreadRunLoop;
 
-+(NSThread*)highLatencyThread;
-+(NSRunLoop*)highLatencyThreadRunLoop;
++ (NSThread*)highLatencyThread;
++ (NSRunLoop*)highLatencyThreadRunLoop;
 
-+(void) terminate;
++ (void)terminate;
 
 @end

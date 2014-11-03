@@ -1,8 +1,9 @@
-#import "FunctionalUtil.h"
+#import "NSArray+FunctionalUtil.h"
 #import "Constraints.h"
 
 @implementation NSArray (FunctionalUtil)
--(bool) any:(int (^)(id item))predicate {
+
+- (bool)any:(int (^)(id item))predicate {
     require(predicate != nil);
     for (id e in self) {
         if (predicate(e)) {
@@ -11,7 +12,8 @@
     }
     return false;
 }
--(bool) all:(int (^)(id item))predicate {
+
+- (bool)all:(int (^)(id item))predicate {
     require(predicate != nil);
     for (id e in self) {
         if (!predicate(e)) {
@@ -20,7 +22,8 @@
     }
     return true;
 }
--(id) firstMatchingElseNil:(int (^)(id item))predicate {
+
+- (id)firstMatchingElseNil:(int (^)(id item))predicate {
     require(predicate != nil);
     for (id e in self) {
         if (predicate(e)) {
@@ -29,7 +32,8 @@
     }
     return nil;
 }
--(NSArray*) map:(id (^)(id item))projection {
+
+- (NSArray*)map:(id (^)(id item))projection {
     require(projection != nil);
     
     NSMutableArray* r = [NSMutableArray arrayWithCapacity:self.count];
@@ -38,10 +42,11 @@
     }
     return r;
 }
--(NSArray*) filter:(int (^)(id item))predicate {
+
+- (NSArray*)filter:(int (^)(id item))predicate {
     require(predicate != nil);
     
-    NSMutableArray* r = [NSMutableArray array];
+    NSMutableArray* r = [[NSMutableArray alloc] init];
     for (id e in self) {
         if (predicate(e)) {
             [r addObject:e];
@@ -49,31 +54,35 @@
     }
     return r;
 }
--(double) sumDouble {
+
+- (double)sumDouble {
     double s = 0.0;
     for (NSNumber* e in self) {
         s += [e doubleValue];
     }
     return s;
 }
--(NSUInteger) sumNSUInteger {
+
+- (NSUInteger)sumNSUInteger {
     NSUInteger s = 0;
     for (NSNumber* e in self) {
         s += [e unsignedIntegerValue];
     }
     return s;
 }
--(NSInteger) sumNSInteger {
+
+- (NSInteger)sumNSInteger {
     NSInteger s = 0;
     for (NSNumber* e in self) {
         s += [e integerValue];
     }
     return s;
 }
--(NSDictionary *)keyedBy:(id(^)(id value))keySelector {
+
+- (NSDictionary*)keyedBy:(id(^)(id value))keySelector {
     require(keySelector != nil);
 
-    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
 
     for (id value in self) {
         result[keySelector(value)] = value;
@@ -82,17 +91,18 @@
 
     return result;
 }
--(NSDictionary *)groupBy:(id(^)(id value))keySelector {
+
+- (NSDictionary*)groupBy:(id(^)(id value))keySelector {
     require(keySelector != nil);
 
-    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
 
     for (id item in self) {
         id key = keySelector(item);
         
         NSMutableArray* group = result[key];
         if (group == nil) {
-            group = [NSMutableArray array];
+            group = [[NSMutableArray alloc] init];
             result[key] = group;
         }
         [group addObject:item];
@@ -100,4 +110,5 @@
 
     return result;
 }
+
 @end

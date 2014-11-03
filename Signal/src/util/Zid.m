@@ -1,15 +1,22 @@
 #import "Zid.h"
 #import "Constraints.h"
 
+@interface Zid ()
+
+@property (strong, nonatomic, readwrite) NSData* data;
+
+@end
+
 @implementation Zid
-+(Zid*) zidWithData:(NSData*)zidData {
-    require(zidData != nil);
-    require(zidData.length == 12);
-    Zid* s = [Zid new];
-    s->data = zidData;
-    return s;
+
+- (instancetype)initWithData:(NSData*)zidData {
+    if (self = [super init]) {
+        require(zidData != nil);
+        require(zidData.length == 12);
+        self.data = zidData;
+    }
+    
+    return self;
 }
--(NSData*) getData {
-    return data;
-}
+
 @end

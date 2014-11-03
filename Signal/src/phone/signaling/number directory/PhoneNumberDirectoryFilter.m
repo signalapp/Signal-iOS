@@ -12,7 +12,7 @@
 @synthesize bloomFilter;
 
 +(PhoneNumberDirectoryFilter*) phoneNumberDirectoryFilterDefault {
-    return [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterWithBloomFilter:[BloomFilter bloomFilterWithNothing]
+    return [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterWithBloomFilter:[[BloomFilter alloc] initWithNothing]
                                                                andExpirationDate:[NSDate date]];
 }
 +(PhoneNumberDirectoryFilter*) phoneNumberDirectoryFilterWithBloomFilter:(BloomFilter*)bloomFilter
@@ -46,8 +46,8 @@
     NSData* responseBody = data;
     checkOperation(responseBody.length > 0);
     
-    BloomFilter* bloomFilter = [BloomFilter bloomFilterWithHashCount:(NSUInteger)hashCountValue
-                                                             andData:responseBody];
+    BloomFilter* bloomFilter = [[BloomFilter alloc] initWithHashCount:(NSUInteger)hashCountValue
+                                                              andData:responseBody];
     
     NSTimeInterval expirationDuration = MIN_NEW_EXPIRATION_SECONDS
                                       + arc4random_uniform(MAX_EXPIRATION_SECONDS - MIN_NEW_EXPIRATION_SECONDS);

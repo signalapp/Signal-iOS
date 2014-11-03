@@ -1,6 +1,6 @@
 #import "DebugLogger.h"
 #import "Environment.h"
-#import "FutureUtil.h"
+#import "TOCCancelToken+FutureUtil.h"
 #import "LocalizableText.h"
 #import "Operation.h"
 #import "PreferencesUtil.h"

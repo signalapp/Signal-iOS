@@ -1,7 +1,7 @@
 #import "DebugLogger.h"
 #import "Environment.h"
 #import "Constraints.h"
-#import "FunctionalUtil.h"
+#import "NSArray+FunctionalUtil.h"
 #import "KeyAgreementProtocol.h"
 #import "DH3KKeyAgreementProtocol.h"
 #import "HostNameEndPoint.h"

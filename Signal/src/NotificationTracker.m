@@ -1,6 +1,6 @@
 #import "NotificationTracker.h"
 #import "CryptoTools.h"
-#import "FunctionalUtil.h"
+#import "NSArray+FunctionalUtil.h"
 
 #define MAX_NOTIFICATIONS_TO_TRACK 100
 #define NOTIFICATION_PAYLOAD_KEY @"m"

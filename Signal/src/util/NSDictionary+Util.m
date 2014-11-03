@@ -1,10 +1,10 @@
-#import "DataUtil.h"
-#import "DictionaryUtil.h"
+#import "NSData+Util.h"
+#import "NSDictionary+Util.h"
 #import "Constraints.h"
 
 @implementation NSDictionary (Util)
 
--(NSString*) encodedAsJson {
+- (NSString*)encodedAsJson {
     NSError* jsonSerializeError = nil;
     NSData* data = [NSJSONSerialization dataWithJSONObject:self
                                                    options:0

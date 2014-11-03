@@ -2,6 +2,6 @@
 
 @interface NSDictionary (Util)
 
--(NSString*) encodedAsJson;
+- (NSString*)encodedAsJson;
 
 @end

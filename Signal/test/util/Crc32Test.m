@@ -1,5 +1,5 @@
 #import "Crc32Test.h"
-#import "Crc32.h"
+#import "NSData+CRC.h"
 #import "TestUtil.h"
 
 @implementation Crc32Test

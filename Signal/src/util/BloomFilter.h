@@ -12,14 +12,14 @@
  */
 @interface BloomFilter : NSObject
 
-@property (nonatomic,readonly) NSUInteger hashCount;
-@property (nonatomic,readonly) NSData* data;
+@property (nonatomic, readonly) NSUInteger hashCount;
+@property (nonatomic, readonly) NSData* data;
 
-+(BloomFilter*) bloomFilterWithHashCount:(NSUInteger)hashCount
-                                 andData:(NSData*)data;
-+(BloomFilter*) bloomFilterWithNothing;
-+(BloomFilter*) bloomFilterWithEverything;
+- (instancetype)initWithHashCount:(NSUInteger)hashCount
+                          andData:(NSData*)data;
+- (instancetype)initWithNothing;
+- (instancetype)initWithEverything;
 
--(bool) contains:(NSString*)entity;
+- (bool)contains:(NSString*)entity;
 
 @end

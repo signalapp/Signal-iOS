@@ -11,8 +11,8 @@
 -(void) testKnownCalculateSharedSecret {
     NSData* dhResult = [NSMutableData dataWithLength:384];
     NSData* totalHash = [NSMutableData dataWithLength:32];
-    Zid* initiatorZid = [Zid zidWithData:[NSMutableData dataWithLength:12]];
-    Zid* responderZid = [Zid zidWithData:[NSMutableData dataWithLength:12]];
+    Zid* initiatorZid = [[Zid alloc] initWithData:[NSMutableData dataWithLength:12]];
+    Zid* responderZid = [[Zid alloc] initWithData:[NSMutableData dataWithLength:12]];
     NSData* sharedSecret = [MasterSecret calculateSharedSecretFromDhResult:dhResult
                                                               andTotalHash:totalHash
                                                            andInitiatorZid:initiatorZid
@@ -24,8 +24,8 @@
 -(void) testKnownMasterSecret {
     NSData* sharedSecret = [NSMutableData dataWithLength:32];
     NSData* totalHash = [NSMutableData dataWithLength:32];
-    Zid* initiatorZid = [Zid zidWithData:[NSMutableData dataWithLength:12]];
-    Zid* responderZid = [Zid zidWithData:[NSMutableData dataWithLength:12]];
+    Zid* initiatorZid = [[Zid alloc] initWithData:[NSMutableData dataWithLength:12]];
+    Zid* responderZid = [[Zid alloc] initWithData:[NSMutableData dataWithLength:12]];
     
     // the expected data here was obtained from the android redphone implementation
     MasterSecret* m = [MasterSecret masterSecretFromSharedSecret:sharedSecret andTotalHash:totalHash andInitiatorZid:initiatorZid andResponderZid:responderZid];

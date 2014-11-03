@@ -2,7 +2,7 @@
 #import "HelloPacket.h"
 #import "TestUtil.h"
 #import "Util.h"
-#import "Crc32.h"
+#import "NSData+CRC.h"
 
 @interface HandshakePacketTest : XCTestCase
 
@@ -20,7 +20,7 @@
     HelloPacket* p = [HelloPacket helloPacketWithVersion:@"1.10".encodedAsUtf8
                                              andClientId:@"RedPhone 019    ".encodedAsAscii
                                           andHashChainH3:[h h3]
-                                                  andZid:[Zid zidWithData:increasingData(12)]
+                                                  andZid:[[Zid alloc] initWithData:increasingData(12)]
                                             andFlags0SMP:0
                                       andFlagsUnusedLow4:0
                                      andFlagsUnusedHigh4:0

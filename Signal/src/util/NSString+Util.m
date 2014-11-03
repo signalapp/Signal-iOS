@@ -1,10 +1,12 @@
-#import "StringUtil.h"
-#import "DataUtil.h"
+#import "NSString+Util.h"
+#import "NSData+Util.h"
 #import "Constraints.h"
 #import "NumberUtil.h"
+#import "NSNumber+NumberUtil.h"
 
 @implementation NSString (Util)
--(NSData*) decodedAsHexString {
+
+- (NSData*)decodedAsHexString {
     require(self.length % 2 == 0);
 
     NSUInteger n = self.length / 2;
@@ -16,12 +18,14 @@
         checkOperation(r < 256);
         result[i] = (uint8_t)r;
     }
+    
     return [NSData dataWithBytes:result length:sizeof(result)];
 }
--(NSData*) decodedAsSpaceSeparatedHexString{
+
+- (NSData*)decodedAsSpaceSeparatedHexString {
     NSArray* hexComponents = [self componentsSeparatedByString:@" "];
     
-    NSMutableData* result = [NSMutableData new];
+    NSMutableData* result = [[NSMutableData alloc] init];
     for (NSString* component in hexComponents) {
         unsigned int r;
         NSScanner* scanner = [NSScanner scannerWithString:component];
@@ -32,53 +36,63 @@
     
     return result;
 }
--(NSData*) encodedAsUtf8 {
+
+- (NSData*)encodedAsUtf8 {
     NSData* result = [self dataUsingEncoding:NSUTF8StringEncoding];
     checkOperationDescribe(result != nil, @"Not a UTF8 string.");
     return result;
 }
--(NSData*) encodedAsAscii {
+
+- (NSData*)encodedAsAscii {
     NSData* result = [self dataUsingEncoding:NSASCIIStringEncoding];
     checkOperationDescribe(result != nil, @"Not an ascii string.");
     return result;
 }
--(NSRegularExpression*) toRegularExpression {
+
+- (NSRegularExpression*)toRegularExpression {
     NSError *regexInitError = NULL;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:self options:0 error:&regexInitError];
     checkOperation(regex != nil && regexInitError == NULL);
     return regex;
 }
--(NSString*) withMatchesAgainst:(NSRegularExpression*)regex replacedBy:(NSString*)replacement {
+
+- (NSString*)withMatchesAgainst:(NSRegularExpression*)regex
+                     replacedBy:(NSString*)replacement {
     require(regex != nil);
     require(replacement != nil);
     NSMutableString* m = self.mutableCopy;
     [regex replaceMatchesInString:m options:0 range:NSMakeRange(0, m.length) withTemplate:replacement];
     return m;
 }
--(bool) containsAnyMatches:(NSRegularExpression*)regex {
+
+- (bool)containsAnyMatches:(NSRegularExpression*)regex {
     require(regex != nil);
     return [regex numberOfMatchesInString:self options:0 range:NSMakeRange(0, self.length)] > 0;
 }
--(NSString*) withPrefixRemovedElseNull:(NSString*)prefix {
+
+- (NSString*)withPrefixRemovedElseNull:(NSString*)prefix {
     require(prefix != nil);
     if (prefix.length > 0 && ![self hasPrefix:prefix]) return nil;
     return [self substringFromIndex:prefix.length];
 }
--(NSData*) decodedAsJsonIntoData {
+
+- (NSData*)decodedAsJsonIntoData {
     NSError* jsonParseError = nil;
     id parsedJson = [NSJSONSerialization dataWithJSONObject:self.encodedAsUtf8 options:0 error:&jsonParseError];
     checkOperationDescribe(jsonParseError == nil, ([NSString stringWithFormat:@"Invalid json: %@", self]));
     checkOperationDescribe([parsedJson isKindOfClass:NSData.class], @"Unexpected json data");
     return parsedJson;
 }
--(NSDictionary*) decodedAsJsonIntoDictionary {
+
+- (NSDictionary*)decodedAsJsonIntoDictionary {
     NSError* jsonParseError = nil;
     id parsedJson = [NSJSONSerialization JSONObjectWithData:self.encodedAsUtf8 options:0 error:&jsonParseError];
     checkOperationDescribe(jsonParseError == nil, ([NSString stringWithFormat:@"Json parse error: %@, on json: %@", jsonParseError, self]));
     checkOperationDescribe([parsedJson isKindOfClass:NSDictionary.class], @"Unexpected json data");
     return parsedJson;
 }
--(NSData*) decodedAsBase64Data {
+
+- (NSData*)decodedAsBase64Data {
     const NSUInteger BitsPerBase64Word = 6;
     const NSUInteger BitsPerByte = 8;
     const uint8_t Base64Chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -131,8 +145,9 @@
 
     return [NSData dataWithBytes:bytes length:sizeof(bytes)];
 }
--(NSNumber*) tryParseAsDecimalNumber {
-    NSNumberFormatter* formatter = [NSNumberFormatter new];
+
+- (NSNumber*)tryParseAsDecimalNumber {
+    NSNumberFormatter* formatter = [[NSNumberFormatter alloc] init];
     [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
 
     // NSNumberFormatter.numberFromString is good at noticing bad inputs, but loses precision for large values
@@ -141,20 +156,26 @@
     if ([formatter numberFromString:self] == nil) {
         return nil;
     }
+    
     return [NSDecimalNumber decimalNumberWithString:self];
 }
--(NSNumber*) tryParseAsUnsignedInteger {
+
+- (NSNumber*)tryParseAsUnsignedInteger {
     NSNumber* value = [self tryParseAsDecimalNumber];
     return value.hasUnsignedIntegerValue ? value : nil;
 }
--(NSString*) removeAllCharactersIn:(NSCharacterSet*)characterSet {
+
+- (NSString*)removeAllCharactersIn:(NSCharacterSet*)characterSet {
     require(characterSet != nil);
     return [[self componentsSeparatedByCharactersInSet:characterSet] componentsJoinedByString:@""];
 }
--(NSString*) digitsOnly {
+
+- (NSString*)digitsOnly {
     return [self removeAllCharactersIn:[NSCharacterSet.decimalDigitCharacterSet invertedSet]];
 }
--(NSString*) withCharactersInRange:(NSRange)range replacedBy:(NSString*)substring {
+
+- (NSString*)withCharactersInRange:(NSRange)range
+                        replacedBy:(NSString*)substring {
     NSMutableString* result = self.mutableCopy;
     [result replaceCharactersInRange:range withString:substring];
     return result;

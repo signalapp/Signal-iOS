@@ -1,19 +1,18 @@
+//
+//  TOCFuture+FutureUtil.m
+//  Signal
+//
+//  Created by Gil Azaria on 3/11/2014.
+//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+
 #import "Constraints.h"
-#import "FutureUtil.h"
+#import "TOCFuture+FutureUtil.h"
 #import "Operation.h"
-
-@implementation TOCCancelToken (FutureUtil)
-
--(void) whenCancelledTerminate:(id<Terminable>)terminable {
-    require(terminable != nil);
-    [self whenCancelledDo:^{ [terminable terminate]; }];
-}
-
-@end
 
 @implementation TOCFuture (FutureUtil)
 
-+(TOCUntilOperation) operationTry:(TOCUntilOperation)operation {
++ (TOCUntilOperation)operationTry:(TOCUntilOperation)operation {
     require(operation != nil);
     return ^(TOCCancelToken* until) {
         @try {
@@ -24,11 +23,11 @@
     };
 }
 
--(TOCFuture*) thenValue:(id)value {
+- (TOCFuture*)thenValue:(id)value {
     return [self then:^(id _) { return value; }];
 }
 
--(TOCFuture*) finallyTry:(TOCFutureFinallyContinuation)completionContinuation {
+- (TOCFuture*)finallyTry:(TOCFutureFinallyContinuation)completionContinuation {
     require(completionContinuation != nil);
     
     return [self finally:^id(TOCFuture* completed){
@@ -40,9 +39,9 @@
     }];
 }
 
--(TOCFuture*) thenTry:(TOCFutureThenContinuation)resultContinuation {
+- (TOCFuture*)thenTry:(TOCFutureThenContinuation)resultContinuation {
     require(resultContinuation != nil);
-
+    
     return [self then:^id(id result){
         @try {
             return resultContinuation(result);
@@ -52,7 +51,7 @@
     }];
 }
 
--(TOCFuture*) catchTry:(TOCFutureCatchContinuation)failureContinuation {
+- (TOCFuture*)catchTry:(TOCFutureCatchContinuation)failureContinuation {
     require(failureContinuation != nil);
     
     return [self catch:^id(id failure){
@@ -64,7 +63,7 @@
     }];
 }
 
-+(TOCFuture*) retry:(TOCUntilOperation)operation
++ (TOCFuture*)retry:(TOCUntilOperation)operation
          upToNTimes:(NSUInteger)maxTryCount
     withBaseTimeout:(NSTimeInterval)baseTimeout
      andRetryFactor:(NSTimeInterval)timeoutRetryFactor

@@ -1,6 +1,6 @@
 #import "RecentCallManager.h"
 #import "ContactsManager.h"
-#import "FunctionalUtil.h"
+#import "NSArray+FunctionalUtil.h"
 #import "ObservableValue.h"
 #import "PreferencesUtil.h"
 

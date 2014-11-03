@@ -2,7 +2,7 @@
 #import "CryptoTools.h"
 #import "DH3KKeyAgreementProtocol.h"
 #import "Constraints.h"
-#import "FunctionalUtil.h"
+#import "NSArray+FunctionalUtil.h"
 #import "MasterSecret.h"
 #import "Util.h"
 #import "ZrtpInitiator.h"

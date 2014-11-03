@@ -70,7 +70,7 @@
     if (data.length != ZID_LENGTH) {
         DDLogError(@"ZID length is incorrect. Is %lu, should be %d", (unsigned long)data.length, ZID_LENGTH);
     }
-    Zid *zid = [Zid zidWithData:data];
+    Zid *zid = [[Zid alloc] initWithData:data];
     return zid;
 }
 

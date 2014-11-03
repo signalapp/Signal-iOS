@@ -3,7 +3,7 @@
 #import <openssl/hmac.h>
 
 #import "Constraints.h"
-#import "Conversions.h"
+#import "NSData+Conversions.h"
 #import "EvpMessageDigest.h"
 #import "EvpSymetricUtil.h"
 #import "Util.h"

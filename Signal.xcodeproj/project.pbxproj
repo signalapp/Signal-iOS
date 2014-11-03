@@ -209,8 +209,8 @@
 		76EB061918170B33006006FC /* AnonymousValueLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04C418170B33006006FC /* AnonymousValueLogger.m */; };
 		76EB061A18170B33006006FC /* DiscardingLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04C618170B33006006FC /* DiscardingLog.m */; };
 		76EB061B18170B33006006FC /* DiscardingLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04C618170B33006006FC /* DiscardingLog.m */; };
-		76EB061C18170B33006006FC /* ArrayUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04CA18170B33006006FC /* ArrayUtil.m */; };
-		76EB061D18170B33006006FC /* ArrayUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04CA18170B33006006FC /* ArrayUtil.m */; };
+		76EB061C18170B33006006FC /* NSArray+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04CA18170B33006006FC /* NSArray+Util.m */; };
+		76EB061D18170B33006006FC /* NSArray+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04CA18170B33006006FC /* NSArray+Util.m */; };
 		76EB062018170B33006006FC /* BloomFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04CE18170B33006006FC /* BloomFilter.m */; };
 		76EB062118170B33006006FC /* BloomFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04CE18170B33006006FC /* BloomFilter.m */; };
 		76EB062218170B33006006FC /* CyclicalBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04D118170B33006006FC /* CyclicalBuffer.m */; };
@@ -227,24 +227,24 @@
 		76EB062D18170B33006006FC /* OperationFailed.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04DD18170B33006006FC /* OperationFailed.m */; };
 		76EB062E18170B33006006FC /* SecurityFailure.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04DF18170B33006006FC /* SecurityFailure.m */; };
 		76EB062F18170B33006006FC /* SecurityFailure.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04DF18170B33006006FC /* SecurityFailure.m */; };
-		76EB063018170B33006006FC /* Conversions.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E118170B33006006FC /* Conversions.m */; };
-		76EB063118170B33006006FC /* Conversions.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E118170B33006006FC /* Conversions.m */; };
-		76EB063218170B33006006FC /* Crc32.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E318170B33006006FC /* Crc32.m */; };
-		76EB063318170B33006006FC /* Crc32.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E318170B33006006FC /* Crc32.m */; };
-		76EB063618170B33006006FC /* DataUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E718170B33006006FC /* DataUtil.m */; };
-		76EB063718170B33006006FC /* DataUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E718170B33006006FC /* DataUtil.m */; };
-		76EB063818170B33006006FC /* DictionaryUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E918170B33006006FC /* DictionaryUtil.m */; };
-		76EB063918170B33006006FC /* DictionaryUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E918170B33006006FC /* DictionaryUtil.m */; };
-		76EB063A18170B33006006FC /* FunctionalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04EB18170B33006006FC /* FunctionalUtil.m */; };
-		76EB063B18170B33006006FC /* FunctionalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04EB18170B33006006FC /* FunctionalUtil.m */; };
+		76EB063018170B33006006FC /* NSData+Conversions.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E118170B33006006FC /* NSData+Conversions.m */; };
+		76EB063118170B33006006FC /* NSData+Conversions.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E118170B33006006FC /* NSData+Conversions.m */; };
+		76EB063218170B33006006FC /* NSData+CRC.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E318170B33006006FC /* NSData+CRC.m */; };
+		76EB063318170B33006006FC /* NSData+CRC.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E318170B33006006FC /* NSData+CRC.m */; };
+		76EB063618170B33006006FC /* NSData+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E718170B33006006FC /* NSData+Util.m */; };
+		76EB063718170B33006006FC /* NSData+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E718170B33006006FC /* NSData+Util.m */; };
+		76EB063818170B33006006FC /* NSDictionary+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E918170B33006006FC /* NSDictionary+Util.m */; };
+		76EB063918170B33006006FC /* NSDictionary+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E918170B33006006FC /* NSDictionary+Util.m */; };
+		76EB063A18170B33006006FC /* NSArray+FunctionalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04EB18170B33006006FC /* NSArray+FunctionalUtil.m */; };
+		76EB063B18170B33006006FC /* NSArray+FunctionalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04EB18170B33006006FC /* NSArray+FunctionalUtil.m */; };
 		76EB063C18170B33006006FC /* NumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04ED18170B33006006FC /* NumberUtil.m */; };
 		76EB063D18170B33006006FC /* NumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04ED18170B33006006FC /* NumberUtil.m */; };
 		76EB063E18170B33006006FC /* Operation.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04EF18170B33006006FC /* Operation.m */; };
 		76EB063F18170B33006006FC /* Operation.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04EF18170B33006006FC /* Operation.m */; };
 		76EB064018170B33006006FC /* AnonymousTerminator.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04F418170B33006006FC /* AnonymousTerminator.m */; };
 		76EB064118170B33006006FC /* AnonymousTerminator.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04F418170B33006006FC /* AnonymousTerminator.m */; };
-		76EB064218170B33006006FC /* StringUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04F618170B33006006FC /* StringUtil.m */; };
-		76EB064318170B33006006FC /* StringUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04F618170B33006006FC /* StringUtil.m */; };
+		76EB064218170B33006006FC /* NSString+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04F618170B33006006FC /* NSString+Util.m */; };
+		76EB064318170B33006006FC /* NSString+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04F618170B33006006FC /* NSString+Util.m */; };
 		76EB064418170B33006006FC /* ThreadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04F818170B33006006FC /* ThreadManager.m */; };
 		76EB064518170B33006006FC /* ThreadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04F818170B33006006FC /* ThreadManager.m */; };
 		76EB064618170B33006006FC /* TimeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04FA18170B33006006FC /* TimeUtil.m */; };
@@ -394,8 +394,8 @@
 		BF8C3D8319CE3B6A008F644C /* RecentCallTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8C3D8219CE3B6A008F644C /* RecentCallTest.m */; };
 		BFB074C119A4BCA400F2947C /* FutureUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074BF19A4BCA400F2947C /* FutureUtilTest.m */; };
 		BFB074C219A4BCA400F2947C /* ObservableTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074C019A4BCA400F2947C /* ObservableTest.m */; };
-		BFB074C719A5611000F2947C /* FutureUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074C419A5611000F2947C /* FutureUtil.m */; };
-		BFB074C819A5611000F2947C /* FutureUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074C419A5611000F2947C /* FutureUtil.m */; };
+		BFB074C719A5611000F2947C /* TOCCancelToken+FutureUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074C419A5611000F2947C /* TOCCancelToken+FutureUtil.m */; };
+		BFB074C819A5611000F2947C /* TOCCancelToken+FutureUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074C419A5611000F2947C /* TOCCancelToken+FutureUtil.m */; };
 		BFB074C919A5611000F2947C /* ObservableValue.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074C619A5611000F2947C /* ObservableValue.m */; };
 		BFB074CA19A5611000F2947C /* ObservableValue.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074C619A5611000F2947C /* ObservableValue.m */; };
 		D202868116DBE0E7009068E9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
@@ -413,6 +413,10 @@
 		D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A0E7169DFFC500537ABF /* AVFoundation.framework */; };
 		D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D24B5BD4169F568C00681372 /* AudioToolbox.framework */; };
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
+		DBD04A0A1A06F6D2004FE592 /* NSMutableData+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = DBD04A091A06F6D2004FE592 /* NSMutableData+Util.m */; };
+		DBD04A0D1A06FE59004FE592 /* TOCFuture+FutureUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = DBD04A0C1A06FE59004FE592 /* TOCFuture+FutureUtil.m */; };
+		DBD04A101A06FFA4004FE592 /* NSNumber+NumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = DBD04A0F1A06FFA4004FE592 /* NSNumber+NumberUtil.m */; };
+		DBD04A151A071A23004FE592 /* RunningThreadRunLoopPair.m in Sources */ = {isa = PBXBuildFile; fileRef = DBD04A141A071A23004FE592 /* RunningThreadRunLoopPair.m */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E1370BE018A0686600826894 /* busy.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40718A05754001A532A /* busy.mp3 */; };
 		E1370BE118A0686C00826894 /* completed.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40818A05754001A532A /* completed.mp3 */; };
@@ -861,8 +865,8 @@
 		76EB04C518170B33006006FC /* DiscardingLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscardingLog.h; sourceTree = "<group>"; };
 		76EB04C618170B33006006FC /* DiscardingLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscardingLog.m; sourceTree = "<group>"; };
 		76EB04C718170B33006006FC /* ValueLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ValueLogger.h; sourceTree = "<group>"; };
-		76EB04C918170B33006006FC /* ArrayUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArrayUtil.h; sourceTree = "<group>"; };
-		76EB04CA18170B33006006FC /* ArrayUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArrayUtil.m; sourceTree = "<group>"; };
+		76EB04C918170B33006006FC /* NSArray+Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Util.h"; sourceTree = "<group>"; };
+		76EB04CA18170B33006006FC /* NSArray+Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Util.m"; sourceTree = "<group>"; };
 		76EB04CD18170B33006006FC /* BloomFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BloomFilter.h; sourceTree = "<group>"; };
 		76EB04CE18170B33006006FC /* BloomFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BloomFilter.m; sourceTree = "<group>"; };
 		76EB04D018170B33006006FC /* CyclicalBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CyclicalBuffer.h; sourceTree = "<group>"; };
@@ -880,16 +884,16 @@
 		76EB04DD18170B33006006FC /* OperationFailed.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OperationFailed.m; sourceTree = "<group>"; };
 		76EB04DE18170B33006006FC /* SecurityFailure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecurityFailure.h; sourceTree = "<group>"; };
 		76EB04DF18170B33006006FC /* SecurityFailure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecurityFailure.m; sourceTree = "<group>"; };
-		76EB04E018170B33006006FC /* Conversions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Conversions.h; sourceTree = "<group>"; };
-		76EB04E118170B33006006FC /* Conversions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Conversions.m; sourceTree = "<group>"; };
-		76EB04E218170B33006006FC /* Crc32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Crc32.h; sourceTree = "<group>"; };
-		76EB04E318170B33006006FC /* Crc32.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Crc32.m; sourceTree = "<group>"; };
-		76EB04E618170B33006006FC /* DataUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataUtil.h; sourceTree = "<group>"; };
-		76EB04E718170B33006006FC /* DataUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataUtil.m; sourceTree = "<group>"; };
-		76EB04E818170B33006006FC /* DictionaryUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DictionaryUtil.h; sourceTree = "<group>"; };
-		76EB04E918170B33006006FC /* DictionaryUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DictionaryUtil.m; sourceTree = "<group>"; };
-		76EB04EA18170B33006006FC /* FunctionalUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionalUtil.h; sourceTree = "<group>"; };
-		76EB04EB18170B33006006FC /* FunctionalUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionalUtil.m; sourceTree = "<group>"; };
+		76EB04E018170B33006006FC /* NSData+Conversions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Conversions.h"; sourceTree = "<group>"; };
+		76EB04E118170B33006006FC /* NSData+Conversions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Conversions.m"; sourceTree = "<group>"; };
+		76EB04E218170B33006006FC /* NSData+CRC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+CRC.h"; sourceTree = "<group>"; };
+		76EB04E318170B33006006FC /* NSData+CRC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+CRC.m"; sourceTree = "<group>"; };
+		76EB04E618170B33006006FC /* NSData+Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Util.h"; sourceTree = "<group>"; };
+		76EB04E718170B33006006FC /* NSData+Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Util.m"; sourceTree = "<group>"; };
+		76EB04E818170B33006006FC /* NSDictionary+Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+Util.h"; sourceTree = "<group>"; };
+		76EB04E918170B33006006FC /* NSDictionary+Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+Util.m"; sourceTree = "<group>"; };
+		76EB04EA18170B33006006FC /* NSArray+FunctionalUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+FunctionalUtil.h"; sourceTree = "<group>"; };
+		76EB04EB18170B33006006FC /* NSArray+FunctionalUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+FunctionalUtil.m"; sourceTree = "<group>"; };
 		76EB04EC18170B33006006FC /* NumberUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NumberUtil.h; sourceTree = "<group>"; };
 		76EB04ED18170B33006006FC /* NumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NumberUtil.m; sourceTree = "<group>"; };
 		76EB04EE18170B33006006FC /* Operation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Operation.h; sourceTree = "<group>"; };
@@ -897,8 +901,8 @@
 		76EB04F118170B33006006FC /* Terminable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Terminable.h; sourceTree = "<group>"; };
 		76EB04F318170B33006006FC /* AnonymousTerminator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnonymousTerminator.h; sourceTree = "<group>"; };
 		76EB04F418170B33006006FC /* AnonymousTerminator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnonymousTerminator.m; sourceTree = "<group>"; };
-		76EB04F518170B33006006FC /* StringUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringUtil.h; sourceTree = "<group>"; };
-		76EB04F618170B33006006FC /* StringUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StringUtil.m; sourceTree = "<group>"; };
+		76EB04F518170B33006006FC /* NSString+Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Util.h"; sourceTree = "<group>"; };
+		76EB04F618170B33006006FC /* NSString+Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Util.m"; sourceTree = "<group>"; };
 		76EB04F718170B33006006FC /* ThreadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadManager.h; sourceTree = "<group>"; };
 		76EB04F818170B33006006FC /* ThreadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadManager.m; sourceTree = "<group>"; };
 		76EB04F918170B33006006FC /* TimeUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeUtil.h; sourceTree = "<group>"; };
@@ -1109,8 +1113,8 @@
 		BF8C3D8219CE3B6A008F644C /* RecentCallTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentCallTest.m; sourceTree = "<group>"; };
 		BFB074BF19A4BCA400F2947C /* FutureUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FutureUtilTest.m; sourceTree = "<group>"; };
 		BFB074C019A4BCA400F2947C /* ObservableTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObservableTest.m; sourceTree = "<group>"; };
-		BFB074C319A5611000F2947C /* FutureUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FutureUtil.h; sourceTree = "<group>"; };
-		BFB074C419A5611000F2947C /* FutureUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FutureUtil.m; sourceTree = "<group>"; };
+		BFB074C319A5611000F2947C /* TOCCancelToken+FutureUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TOCCancelToken+FutureUtil.h"; sourceTree = "<group>"; };
+		BFB074C419A5611000F2947C /* TOCCancelToken+FutureUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TOCCancelToken+FutureUtil.m"; sourceTree = "<group>"; };
 		BFB074C519A5611000F2947C /* ObservableValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObservableValue.h; sourceTree = "<group>"; };
 		BFB074C619A5611000F2947C /* ObservableValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObservableValue.m; sourceTree = "<group>"; };
 		D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
@@ -1126,6 +1130,14 @@
 		D221A0E7169DFFC500537ABF /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = ../../../../../../System/Library/Frameworks/AVFoundation.framework; sourceTree = "<group>"; };
 		D24B5BD4169F568C00681372 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = ../../../../../../System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<group>"; };
 		D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		DBD04A081A06F6D2004FE592 /* NSMutableData+Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableData+Util.h"; sourceTree = "<group>"; };
+		DBD04A091A06F6D2004FE592 /* NSMutableData+Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableData+Util.m"; sourceTree = "<group>"; };
+		DBD04A0B1A06FE59004FE592 /* TOCFuture+FutureUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TOCFuture+FutureUtil.h"; sourceTree = "<group>"; };
+		DBD04A0C1A06FE59004FE592 /* TOCFuture+FutureUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TOCFuture+FutureUtil.m"; sourceTree = "<group>"; };
+		DBD04A0E1A06FFA4004FE592 /* NSNumber+NumberUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNumber+NumberUtil.h"; sourceTree = "<group>"; };
+		DBD04A0F1A06FFA4004FE592 /* NSNumber+NumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNumber+NumberUtil.m"; sourceTree = "<group>"; };
+		DBD04A131A071A23004FE592 /* RunningThreadRunLoopPair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RunningThreadRunLoopPair.h; sourceTree = "<group>"; };
+		DBD04A141A071A23004FE592 /* RunningThreadRunLoopPair.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RunningThreadRunLoopPair.m; sourceTree = "<group>"; };
 		E108ED13187E34FD0045AEA3 /* iTunesArtwork@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iTunesArtwork@2x.png"; sourceTree = "<group>"; };
 		E1370B3018A0660300826894 /* archive_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = archive_icon.png; sourceTree = "<group>"; };
 		E1370B3118A0660300826894 /* archive_icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "archive_icon@2x.png"; sourceTree = "<group>"; };
@@ -1964,28 +1976,34 @@
 		76EB04C818170B33006006FC /* util */ = {
 			isa = PBXGroup;
 			children = (
-				76EB04C918170B33006006FC /* ArrayUtil.h */,
-				76EB04CA18170B33006006FC /* ArrayUtil.m */,
+				76EB04C918170B33006006FC /* NSArray+Util.h */,
+				76EB04CA18170B33006006FC /* NSArray+Util.m */,
 				76EB04CD18170B33006006FC /* BloomFilter.h */,
 				76EB04CE18170B33006006FC /* BloomFilter.m */,
 				76EB04CF18170B33006006FC /* collections */,
 				76EB04D618170B33006006FC /* constraints */,
-				76EB04E018170B33006006FC /* Conversions.h */,
-				76EB04E118170B33006006FC /* Conversions.m */,
-				76EB04E218170B33006006FC /* Crc32.h */,
-				76EB04E318170B33006006FC /* Crc32.m */,
-				76EB04E618170B33006006FC /* DataUtil.h */,
-				76EB04E718170B33006006FC /* DataUtil.m */,
+				76EB04E018170B33006006FC /* NSData+Conversions.h */,
+				76EB04E118170B33006006FC /* NSData+Conversions.m */,
+				76EB04E218170B33006006FC /* NSData+CRC.h */,
+				76EB04E318170B33006006FC /* NSData+CRC.m */,
+				76EB04E618170B33006006FC /* NSData+Util.h */,
+				76EB04E718170B33006006FC /* NSData+Util.m */,
+				DBD04A081A06F6D2004FE592 /* NSMutableData+Util.h */,
+				DBD04A091A06F6D2004FE592 /* NSMutableData+Util.m */,
 				B90418E4183E9DD40038554A /* DateUtil.h */,
 				B90418E5183E9DD40038554A /* DateUtil.m */,
-				76EB04E818170B33006006FC /* DictionaryUtil.h */,
-				76EB04E918170B33006006FC /* DictionaryUtil.m */,
-				76EB04EA18170B33006006FC /* FunctionalUtil.h */,
-				76EB04EB18170B33006006FC /* FunctionalUtil.m */,
-				BFB074C319A5611000F2947C /* FutureUtil.h */,
-				BFB074C419A5611000F2947C /* FutureUtil.m */,
+				76EB04E818170B33006006FC /* NSDictionary+Util.h */,
+				76EB04E918170B33006006FC /* NSDictionary+Util.m */,
+				76EB04EA18170B33006006FC /* NSArray+FunctionalUtil.h */,
+				76EB04EB18170B33006006FC /* NSArray+FunctionalUtil.m */,
+				BFB074C319A5611000F2947C /* TOCCancelToken+FutureUtil.h */,
+				BFB074C419A5611000F2947C /* TOCCancelToken+FutureUtil.m */,
+				DBD04A0B1A06FE59004FE592 /* TOCFuture+FutureUtil.h */,
+				DBD04A0C1A06FE59004FE592 /* TOCFuture+FutureUtil.m */,
 				76EB04EC18170B33006006FC /* NumberUtil.h */,
 				76EB04ED18170B33006006FC /* NumberUtil.m */,
+				DBD04A0E1A06FFA4004FE592 /* NSNumber+NumberUtil.h */,
+				DBD04A0F1A06FFA4004FE592 /* NSNumber+NumberUtil.m */,
 				BFB074C519A5611000F2947C /* ObservableValue.h */,
 				BFB074C619A5611000F2947C /* ObservableValue.m */,
 				76EB04EE18170B33006006FC /* Operation.h */,
@@ -1995,10 +2013,12 @@
 				76EB04F018170B33006006FC /* protocols */,
 				707E549018FF26E800C8649D /* SmsInvite.h */,
 				707E549118FF26E800C8649D /* SmsInvite.m */,
-				76EB04F518170B33006006FC /* StringUtil.h */,
-				76EB04F618170B33006006FC /* StringUtil.m */,
+				76EB04F518170B33006006FC /* NSString+Util.h */,
+				76EB04F618170B33006006FC /* NSString+Util.m */,
 				76EB04F718170B33006006FC /* ThreadManager.h */,
 				76EB04F818170B33006006FC /* ThreadManager.m */,
+				DBD04A131A071A23004FE592 /* RunningThreadRunLoopPair.h */,
+				DBD04A141A071A23004FE592 /* RunningThreadRunLoopPair.m */,
 				76EB04F918170B33006006FC /* TimeUtil.h */,
 				76EB04FA18170B33006006FC /* TimeUtil.m */,
 				B97940251832BD2400BD66CB /* UIUtil.h */,
@@ -3389,6 +3409,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				76EB064E18170B34006006FC /* ContactDetailViewController.m in Sources */,
+				DBD04A0D1A06FE59004FE592 /* TOCFuture+FutureUtil.m in Sources */,
 				76EB063E18170B33006006FC /* Operation.m in Sources */,
 				76EB05F618170B33006006FC /* CallConnectUtil.m in Sources */,
 				76EB061218170B33006006FC /* LoggingUtil.m in Sources */,
@@ -3426,7 +3447,7 @@
 				701231B518ECAA4500D456C4 /* EvpMessageDigest.m in Sources */,
 				76EB062218170B33006006FC /* CyclicalBuffer.m in Sources */,
 				76EB063C18170B33006006FC /* NumberUtil.m in Sources */,
-				76EB063A18170B33006006FC /* FunctionalUtil.m in Sources */,
+				76EB063A18170B33006006FC /* NSArray+FunctionalUtil.m in Sources */,
 				70B80117190C55660042E3F0 /* MutableExtensionRegistry.m in Sources */,
 				76EB060A18170B33006006FC /* SignalUtil.m in Sources */,
 				76EB062818170B33006006FC /* BadArgument.m in Sources */,
@@ -3442,12 +3463,12 @@
 				76EB057A18170B33006006FC /* ContactsManager.m in Sources */,
 				E197B61918BBEC1A00F073E5 /* RemoteIOBufferListWrapper.m in Sources */,
 				76EB05A618170B33006006FC /* RtpPacket.m in Sources */,
-				76EB064218170B33006006FC /* StringUtil.m in Sources */,
+				76EB064218170B33006006FC /* NSString+Util.m in Sources */,
 				76EB065A18170B34006006FC /* NextResponderScrollView.m in Sources */,
 				76EB062618170B33006006FC /* Queue.m in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
 				76EB061618170B33006006FC /* AnonymousOccurrenceLogger.m in Sources */,
-				76EB063018170B33006006FC /* Conversions.m in Sources */,
+				76EB063018170B33006006FC /* NSData+Conversions.m in Sources */,
 				76EB065618170B34006006FC /* InCallViewController.m in Sources */,
 				76EB05FE18170B33006006FC /* InitiateSignal.pb.m in Sources */,
 				76EB064C18170B34006006FC /* ContactBrowseViewController.m in Sources */,
@@ -3481,14 +3502,15 @@
 				70B80111190C55660042E3F0 /* ExtendableMessage.m in Sources */,
 				E197B61118BBEC1A00F073E5 /* AudioProcessor.m in Sources */,
 				76EB065818170B34006006FC /* LeftSideMenuViewController.m in Sources */,
+				DBD04A0A1A06F6D2004FE592 /* NSMutableData+Util.m in Sources */,
 				76EB05EA18170B33006006FC /* CallProgress.m in Sources */,
 				76EB05C218170B33006006FC /* DhPacketSharedSecretHashes.m in Sources */,
 				B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */,
-				76EB063218170B33006006FC /* Crc32.m in Sources */,
+				76EB063218170B33006006FC /* NSData+CRC.m in Sources */,
 				E197B62418BBF5BB00F073E5 /* SoundPlayer.m in Sources */,
 				E197B61018BBEC1A00F073E5 /* EncodedAudioPacket.m in Sources */,
 				76C87F13181EE11C00C4ACAB /* InboxFeedFooterCell.m in Sources */,
-				76EB063618170B33006006FC /* DataUtil.m in Sources */,
+				76EB063618170B33006006FC /* NSData+Util.m in Sources */,
 				E197B60C18BBEC1A00F073E5 /* AudioPacker.m in Sources */,
 				E197B61218BBEC1A00F073E5 /* AudioStretcher.m in Sources */,
 				76EB05A218170B33006006FC /* IpEndPoint.m in Sources */,
@@ -3498,13 +3520,15 @@
 				762D9DCF18281C7400A5E418 /* SettingsTableHeaderView.m in Sources */,
 				76EB05F018170B33006006FC /* PhoneManager.m in Sources */,
 				E197B60F18BBEC1A00F073E5 /* EncodedAudioFrame.m in Sources */,
+				DBD04A101A06FFA4004FE592 /* NSNumber+NumberUtil.m in Sources */,
 				70B8011D190C55660042E3F0 /* WireFormat.m in Sources */,
 				76D713E7182D3E3F00C9C9C8 /* PreferenceListTableViewCell.m in Sources */,
 				76EB061818170B33006006FC /* AnonymousValueLogger.m in Sources */,
 				76EB05E618170B33006006FC /* CallController.m in Sources */,
 				E16E5BEE18AAC40200B7C403 /* EC25KeyAgreementParticipant.m in Sources */,
 				76EB057418170B33006006FC /* RecentCallManager.m in Sources */,
-				76EB061C18170B33006006FC /* ArrayUtil.m in Sources */,
+				DBD04A151A071A23004FE592 /* RunningThreadRunLoopPair.m in Sources */,
+				76EB061C18170B33006006FC /* NSArray+Util.m in Sources */,
 				76EB05C418170B33006006FC /* HandshakePacket.m in Sources */,
 				76EB05AA18170B33006006FC /* SequenceCounter.m in Sources */,
 				7038632718F70C0700D4A43F /* CryptoTools.m in Sources */,
@@ -3531,7 +3555,7 @@
 				E197B62118BBF12700F073E5 /* AppAudioManager.m in Sources */,
 				76EB068C18170B34006006FC /* InboxFeedTableViewCell.m in Sources */,
 				76EB062018170B33006006FC /* BloomFilter.m in Sources */,
-				76EB063818170B33006006FC /* DictionaryUtil.m in Sources */,
+				76EB063818170B33006006FC /* NSDictionary+Util.m in Sources */,
 				B9B89C54185A2B5F00A24465 /* LeftSideMenuCell.m in Sources */,
 				76EB068E18170B34006006FC /* CallLogTableViewCell.m in Sources */,
 				76EB05CE18170B33006006FC /* ZrtpHandshakeResult.m in Sources */,
@@ -3547,7 +3571,7 @@
 				E197B61518BBEC1A00F073E5 /* JitterQueue.m in Sources */,
 				BFB074C919A5611000F2947C /* ObservableValue.m in Sources */,
 				76EB05C818170B33006006FC /* HelloPacket.m in Sources */,
-				BFB074C719A5611000F2947C /* FutureUtil.m in Sources */,
+				BFB074C719A5611000F2947C /* TOCCancelToken+FutureUtil.m in Sources */,
 				76EB057218170B33006006FC /* RecentCall.m in Sources */,
 				76EB060418170B33006006FC /* PhoneNumberDirectoryFilter.m in Sources */,
 				B97CBFA818860EA3008E0DE9 /* CountryCodeViewController.m in Sources */,
@@ -3600,7 +3624,7 @@
 				76EB057718170B33006006FC /* Contact.m in Sources */,
 				B9EB5AC71884D370007CBB57 /* UnseenWhisperUserCell.m in Sources */,
 				76EB05FB18170B33006006FC /* CallConnectUtil_Responder.m in Sources */,
-				76EB063718170B33006006FC /* DataUtil.m in Sources */,
+				76EB063718170B33006006FC /* NSData+Util.m in Sources */,
 				76EB05C918170B33006006FC /* HelloPacket.m in Sources */,
 				B90418E7183E9DD40038554A /* DateUtil.m in Sources */,
 				76EB05CB18170B33006006FC /* RecipientUnavailable.m in Sources */,
@@ -3622,7 +3646,7 @@
 				A157075717F0CD6D007C2BD6 /* AudioFrameTest.m in Sources */,
 				76EB063F18170B33006006FC /* Operation.m in Sources */,
 				76EB05AB18170B33006006FC /* SequenceCounter.m in Sources */,
-				76EB061D18170B33006006FC /* ArrayUtil.m in Sources */,
+				76EB061D18170B33006006FC /* NSArray+Util.m in Sources */,
 				76EB064D18170B34006006FC /* ContactBrowseViewController.m in Sources */,
 				76EB05E318170B33006006FC /* SecureEndPoint.m in Sources */,
 				76EB060D18170B33006006FC /* CategorizingLogger.m in Sources */,
@@ -3653,14 +3677,14 @@
 				76EB062118170B33006006FC /* BloomFilter.m in Sources */,
 				76EB064518170B33006006FC /* ThreadManager.m in Sources */,
 				76EB068718170B34006006FC /* ContactTableViewCell.m in Sources */,
-				76EB063B18170B33006006FC /* FunctionalUtil.m in Sources */,
+				76EB063B18170B33006006FC /* NSArray+FunctionalUtil.m in Sources */,
 				A157076217F0CD6D007C2BD6 /* SecureStreamTest.m in Sources */,
 				A157076317F0CD6D007C2BD6 /* SequenceCounterTest.m in Sources */,
 				76EB062318170B33006006FC /* CyclicalBuffer.m in Sources */,
 				A157076517F0CD6D007C2BD6 /* HandshakePacketTest.m in Sources */,
 				76EB066518170B34006006FC /* TabBarParentViewController.m in Sources */,
 				A157076617F0CD6D007C2BD6 /* HashChainTest.m in Sources */,
-				76EB063118170B33006006FC /* Conversions.m in Sources */,
+				76EB063118170B33006006FC /* NSData+Conversions.m in Sources */,
 				76EB05F918170B33006006FC /* CallConnectUtil_Initiator.m in Sources */,
 				A157076717F0CD6D007C2BD6 /* MasterSecretTest.m in Sources */,
 				76EB05CF18170B33006006FC /* ZrtpHandshakeResult.m in Sources */,
@@ -3676,8 +3700,8 @@
 				76EB05F118170B33006006FC /* PhoneManager.m in Sources */,
 				76EB05F718170B33006006FC /* CallConnectUtil.m in Sources */,
 				76EB066318170B34006006FC /* SettingsViewController.m in Sources */,
-				76EB063318170B33006006FC /* Crc32.m in Sources */,
-				BFB074C819A5611000F2947C /* FutureUtil.m in Sources */,
+				76EB063318170B33006006FC /* NSData+CRC.m in Sources */,
+				BFB074C819A5611000F2947C /* TOCCancelToken+FutureUtil.m in Sources */,
 				76EB062718170B33006006FC /* Queue.m in Sources */,
 				76EB05C118170B33006006FC /* DhPacket.m in Sources */,
 				76EB060B18170B33006006FC /* SignalUtil.m in Sources */,
@@ -3720,7 +3744,7 @@
 				765052B0182AC9B5008313E1 /* DialerButtonView.m in Sources */,
 				76EB062B18170B33006006FC /* BadState.m in Sources */,
 				76EB062F18170B33006006FC /* SecurityFailure.m in Sources */,
-				76EB064318170B33006006FC /* StringUtil.m in Sources */,
+				76EB064318170B33006006FC /* NSString+Util.m in Sources */,
 				76EB057B18170B33006006FC /* ContactsManager.m in Sources */,
 				76EB05E718170B33006006FC /* CallController.m in Sources */,
 				76EB05A518170B33006006FC /* PacketHandler.m in Sources */,
@@ -3734,7 +3758,7 @@
 				76EB068F18170B34006006FC /* CallLogTableViewCell.m in Sources */,
 				B9CA51BB18809ACA007E204E /* InviteContactsViewController.m in Sources */,
 				76EB05EB18170B33006006FC /* CallProgress.m in Sources */,
-				76EB063918170B33006006FC /* DictionaryUtil.m in Sources */,
+				76EB063918170B33006006FC /* NSDictionary+Util.m in Sources */,
 				76EB059118170B33006006FC /* IgnoredPacketFailure.m in Sources */,
 				76EB05F318170B33006006FC /* PhoneNumber.m in Sources */,
 				A157077B17F0CD6D007C2BD6 /* ExceptionsTest.m in Sources */,

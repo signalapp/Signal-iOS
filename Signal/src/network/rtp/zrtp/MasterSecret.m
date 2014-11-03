@@ -1,5 +1,5 @@
 #import "MasterSecret.h"
-#import "Conversions.h"
+#import "NSData+Conversions.h"
 #import "CryptoTools.h"
 #import "ShortAuthenticationStringGenerator.h"
 #import "Util.h"
@@ -79,8 +79,8 @@
                     counter,
                     dhResult,
                     @"ZRTP-HMAC-KDF".encodedAsUtf8,
-                    initiatorZid.getData,
-                    responderZid.getData,
+                    initiatorZid.data,
+                    responderZid.data,
                     totalHash,
                     s1Length,
                     s2Length,
@@ -149,8 +149,8 @@
                      counter,
                      label.encodedAsUtf8,
                      [@[@0] toUint8Data],
-                     initiatorZid.getData,
-                     responderZid.getData,
+                     initiatorZid.data,
+                     responderZid.data,
                      totalHash,
                      [NSData dataWithBigEndianBytesOfUInt32:truncatedLength]
                      

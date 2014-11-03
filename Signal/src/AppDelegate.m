@@ -169,7 +169,7 @@
                 }
             }];
         }
-        [_drawerController.centerViewController presentViewController:callViewController animated:YES completion:nil];
+        [self.drawerController.centerViewController presentViewController:callViewController animated:YES completion:nil];
         
     } onThread:NSThread.mainThread untilCancelled:nil];
     

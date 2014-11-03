@@ -5,7 +5,7 @@
 #import "ContactsManager.h"
 #import "ContactTableViewCell.h"
 #import "Environment.h"
-#import "FunctionalUtil.h"
+#import "NSArray+FunctionalUtil.h"
 #import "LocalizableText.h"
 #import "ObservableValue.h"
 #import "SmsInvite.h"

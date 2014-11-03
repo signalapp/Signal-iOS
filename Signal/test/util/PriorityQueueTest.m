@@ -40,7 +40,7 @@ NSArray* Permutations(NSUInteger count) {
 @implementation PriorityQueueTest
 
 -(void) testTrivialPrioritizing {
-    PriorityQueue* q = [PriorityQueue priorityQueueAscendingWithComparator:^(id obj1, id obj2){
+    PriorityQueue* q = [[PriorityQueue alloc] initAscendingWithComparator:^(id obj1, id obj2){
         int diff =[obj2 intValue] - [obj1 intValue];
         if (diff > 0 ) {
             return (NSComparisonResult)NSOrderedAscending;
@@ -68,7 +68,7 @@ NSArray* Permutations(NSUInteger count) {
     testThrows([q dequeue]);
 }
 -(void) testOrdersByComparatorInverse {
-    PriorityQueue* q = [PriorityQueue priorityQueueAscendingWithComparator:^(NSNumber* obj1, NSNumber* obj2){
+    PriorityQueue* q = [[PriorityQueue alloc] initAscendingWithComparator:^(NSNumber* obj1, NSNumber* obj2){
         int diff =[obj1 intValue] - [obj2 intValue];
         if (diff > 0) {
             return (NSComparisonResult)NSOrderedAscending;
@@ -89,7 +89,7 @@ NSArray* Permutations(NSUInteger count) {
 -(void) testSortsAllSmallPermutations {
     const NSUInteger N = 7;
     for (NSArray* permutation in Permutations(N)) {
-        PriorityQueue* q = [PriorityQueue priorityQueueAscendingWithComparator:^(id obj1, id obj2){
+        PriorityQueue* q = [[PriorityQueue alloc] initAscendingWithComparator:^(id obj1, id obj2){
             int diff =[obj2 intValue] - [obj1 intValue];
             if (diff > 0 ) {
                 return (NSComparisonResult)NSOrderedAscending;
@@ -115,7 +115,7 @@ NSArray* Permutations(NSUInteger count) {
     const NSUInteger Size = 500;
     const NSUInteger Repetitions = 50;
     for (NSUInteger repeat = 0; repeat < Repetitions; repeat++) {
-        PriorityQueue* q = [PriorityQueue priorityQueueAscendingWithComparator:^(id obj1, id obj2){
+        PriorityQueue* q = [[PriorityQueue alloc] initAscendingWithComparator:^(id obj1, id obj2){
             int diff =[obj2 intValue] - [obj1 intValue];
             if (diff > 0 ) {
                 return (NSComparisonResult)NSOrderedAscending;

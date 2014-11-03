@@ -1,7 +1,7 @@
 #import "HelloPacket.h"
 #import "Util.h"
 #import "DH3KKeyAgreementProtocol.h"
-#import "FunctionalUtil.h"
+#import "NSArray+FunctionalUtil.h"
 #import "Environment.h"
 
 @implementation HelloPacket
@@ -155,7 +155,7 @@
             versionId,
             clientId,
             hashChainH3,
-            zid.getData,
+            zid.data,
             [self generateFlags],
             [[@[hashIds, cipherIds, authIds, agreeIds, sasIds] concatArrays] concatDatas]
             
@@ -176,7 +176,7 @@
     return [payload subdataWithRange:NSMakeRange(HASH_CHAIN_H3_OFFSET, HASH_CHAIN_ITEM_LENGTH)];
 }
 +(Zid*) getZidFromPayload:(NSData*)payload {
-    return [Zid zidWithData:[payload subdataWithRange:NSMakeRange(ZID_OFFSET, ZID_LENGTH)]];
+    return [[Zid alloc] initWithData:[payload subdataWithRange:NSMakeRange(ZID_OFFSET, ZID_LENGTH)]];
 }
 +(NSArray*) getSpecIdsFromPayload:(NSData*)payload counts:(NSArray*)counts {
     checkOperation(payload.length >= SPEC_IDS_OFFSET + SPEC_ID_LENGTH*[counts sumNSUInteger]);

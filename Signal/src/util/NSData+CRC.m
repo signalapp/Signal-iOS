@@ -1,4 +1,4 @@
-#import "Crc32.h"
+#import "NSData+CRC.h"
 
 #define DEFAULT_POLYNOMIAL 0xEDB88320L
 #define DEFAULT_SEED       0xFFFFFFFFL
@@ -21,16 +21,17 @@ void generateCRC32Table(uint32_t *pTable, uint32_t poly) {
     }
 }
 
--(uint32_t)crc32 {
+- (uint32_t)crc32 {
     return [self crc32WithSeed:DEFAULT_SEED usingPolynomial:DEFAULT_POLYNOMIAL];
 }
 
--(uint32_t)crc32WithSeed:(uint32_t)seed usingPolynomial:(uint32_t)poly {
-    uint32_t *pTable = malloc(sizeof(uint32_t) * 256);
+- (uint32_t)crc32WithSeed:(uint32_t)seed
+          usingPolynomial:(uint32_t)poly {
+    uint32_t* pTable = malloc(sizeof(uint32_t) * 256);
     generateCRC32Table(pTable, poly);
     
     uint32_t crc    = seed;
-    uint8_t *pBytes = (uint8_t *)[self bytes];
+    uint8_t* pBytes = (uint8_t*)[self bytes];
     NSUInteger length = self.length;
     
     while (length--) {

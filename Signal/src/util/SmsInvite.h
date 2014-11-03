@@ -2,12 +2,13 @@
 #import <MessageUI/MessageUI.h>
 #import "PhoneNumber.h"
 
-@interface SmsInvite : NSObject<MFMessageComposeViewControllerDelegate> {
-    UIViewController* parent;
-}
+@interface SmsInvite : NSObject <MFMessageComposeViewControllerDelegate>
 
-+(SmsInvite*) smsInviteWithParent:(UIViewController*) parent;
+@property (strong, nonatomic, readonly) UIViewController* parent;
 
--(void)sendSMSInviteToNumber:(PhoneNumber *)number;
++ (SmsInvite*)smsInviteWithParent:(UIViewController*)parent; //Deprecated in favour of initWithParent
+
+- (instancetype)initWithParent:(UIViewController*)parent;
+- (void)sendSMSInviteToNumber:(PhoneNumber*)number;
 
 @end

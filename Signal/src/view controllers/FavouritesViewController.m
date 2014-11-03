@@ -3,7 +3,7 @@
 #import "ContactDetailViewController.h"
 #import "ContactsManager.h"
 #import "LocalizableText.h"
-#import "FunctionalUtil.h"
+#import "NSArray+FunctionalUtil.h"
 #import "PreferencesUtil.h"
 #import "TabBarParentViewController.h"
 

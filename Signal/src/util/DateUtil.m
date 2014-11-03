@@ -10,25 +10,25 @@ static NSString *const DATE_FORMAT_HOUR_MINUTE = @"h:mm a   ";
 
 @implementation DateUtil
 
-+ (NSDateFormatter *)dateFormatter {
-    NSDateFormatter *formatter = [NSDateFormatter new];
++ (NSDateFormatter*)dateFormatter {
+    NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
     [formatter setTimeStyle:NSDateFormatterShortStyle];
     return formatter;
 }
 
-+ (NSDateFormatter *)weekdayFormatter {
-    NSDateFormatter *formatter = [NSDateFormatter new];
++ (NSDateFormatter*)weekdayFormatter {
+    NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:DATE_FORMAT_WEEKDAY];
     return formatter;
 }
 
-+ (NSDateFormatter *)timeFormatter {
-    NSDateFormatter *formatter = [NSDateFormatter new];
++ (NSDateFormatter*)timeFormatter {
+    NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:DATE_FORMAT_HOUR_MINUTE];
     return formatter;
 }
 
-+ (BOOL)dateIsOlderThanOneDay:(NSDate *)date {
++ (BOOL)dateIsOlderThanOneDay:(NSDate*)date {
     return [[NSDate date] timeIntervalSinceDate:date] > ONE_DAY_TIME_INTERVAL;
 }
 

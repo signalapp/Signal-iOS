@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "Conversions.h"
+#import "NSData+Conversions.h"
 
 /**
  *
