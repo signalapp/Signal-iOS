@@ -212,7 +212,7 @@ static NSString *const INVITE_CONTACTS_TABLE_CELL_IDENTIFIER = @"ContactTableVie
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (buttonIndex != actionSheet.cancelButtonIndex) {
-        smsInvite = [SmsInvite smsInviteWithParent:self];
+        smsInvite = [[SmsInvite alloc] initWithParent:self];
         [smsInvite sendSMSInviteToNumber:_selectedContactNumbers[(NSUInteger)buttonIndex]];
     }
 }

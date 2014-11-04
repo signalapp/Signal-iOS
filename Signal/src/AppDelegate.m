@@ -132,7 +132,7 @@
     
     self.notificationTracker = [NotificationTracker notificationTracker];
     
-    CategorizingLogger* logger = [CategorizingLogger categorizingLogger];
+    CategorizingLogger* logger = [[CategorizingLogger alloc] init];
     [logger addLoggingCallback:^(NSString *category, id details, NSUInteger index) {}];
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
     [Environment.getCurrent.phoneDirectoryManager startUntilCancelled:nil];

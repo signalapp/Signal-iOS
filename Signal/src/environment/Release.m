@@ -72,7 +72,7 @@ static unsigned char DH3K_PRIME[]={
         keyAgreementProtocols = @[[Release supportedDH3KKeyAgreementProtocol]];
     }
     
-    return [Environment environmentWithLogging:[DiscardingLog discardingLog]
+    return [Environment environmentWithLogging:[[DiscardingLog alloc] init]
                                      andErrorNoter:^(id error, id relatedInfo, bool causedTermination) {}
                                      andServerPort:31337
                            andMasterServerHostName:@"master.whispersystems.org"

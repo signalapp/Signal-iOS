@@ -1952,8 +1952,8 @@
 				76EB04BB18170B33006006FC /* ConditionLogger.h */,
 				76EB04BC18170B33006006FC /* Logging.h */,
 				76EB04BD18170B33006006FC /* OccurrenceLogger.h */,
-				76EB04BE18170B33006006FC /* utilities */,
 				76EB04C718170B33006006FC /* ValueLogger.h */,
+				76EB04BE18170B33006006FC /* utilities */,
 			);
 			path = protocols;
 			sourceTree = "<group>";

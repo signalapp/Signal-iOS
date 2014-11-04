@@ -10,11 +10,18 @@ enum JitterBadDequeueType {
     JitterBadDequeueType_Empty = 1, // for when there's no data anywhere in the jitter queue
     JitterBadDequeueType_NoDataUnderReadHead = 2 // for when there's data in the jitter queue, but it's ahead of the read head
 };
+
 @protocol JitterQueueNotificationReceiver <NSObject>
--(void) notifyArrival:(uint16_t)sequenceNumber;
--(void) notifyDequeue:(uint16_t)sequenceNumber withRemainingEnqueuedItemCount:(NSUInteger)remainingCount;
--(void) notifyBadArrival:(uint16_t)sequenceNumber ofType:(enum JitterBadArrivalType)arrivalType;
--(void) notifyBadDequeueOfType:(enum JitterBadDequeueType)type;
--(void) notifyResyncFrom:(uint16_t)oldReadHeadSequenceNumber to:(uint16_t)newReadHeadSequenceNumber;
--(void) notifyDiscardOverflow:(uint16_t)discardedSequenceNumber resyncingFrom:(uint16_t)oldReadHeadSequenceNumber to:(uint16_t)newReadHeadSequenceNumber;
+
+- (void)notifyArrival:(uint16_t)sequenceNumber;
+- (void)notifyDequeue:(uint16_t)sequenceNumber withRemainingEnqueuedItemCount:(NSUInteger)remainingCount;
+- (void)notifyBadArrival:(uint16_t)sequenceNumber
+                  ofType:(enum JitterBadArrivalType)arrivalType;
+- (void)notifyBadDequeueOfType:(enum JitterBadDequeueType)type;
+- (void)notifyResyncFrom:(uint16_t)oldReadHeadSequenceNumber
+                      to:(uint16_t)newReadHeadSequenceNumber;
+- (void)notifyDiscardOverflow:(uint16_t)discardedSequenceNumber
+                resyncingFrom:(uint16_t)oldReadHeadSequenceNumber
+                           to:(uint16_t)newReadHeadSequenceNumber;
+
 @end

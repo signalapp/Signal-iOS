@@ -1,14 +1,10 @@
 #import <Foundation/Foundation.h>
 #import "PriorityQueue.h"
 
-@interface EventWindow : NSObject {
-@private NSTimeInterval windowDuration;
-@private PriorityQueue* events;
-@private NSTimeInterval lastWindowEnding;
-}
+@interface EventWindow : NSObject
 
-+(EventWindow*) eventWindowWithWindowDuration:(NSTimeInterval)windowDuration;
--(void) addEventAtTime:(NSTimeInterval)eventTime;
--(NSUInteger) countAfterRemovingEventsBeforeWindowEndingAt:(NSTimeInterval)endOfWindowTime;
+- (instancetype)initWithWindowDuration:(NSTimeInterval)windowDuration;
+- (void)addEventAtTime:(NSTimeInterval)eventTime;
+- (NSUInteger)countAfterRemovingEventsBeforeWindowEndingAt:(NSTimeInterval)endOfWindowTime;
 
 @end

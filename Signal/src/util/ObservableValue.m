@@ -15,8 +15,11 @@
 
 @implementation ObservableValue
 
-- (ObservableValue*)initWithValue:(id)value {
-    self.currentValue = value;
+- (instancetype)initWithValue:(id)value {
+    if (self = [super init]) {
+        self.currentValue = value;
+    }
+    
     return self;
 }
 
@@ -100,7 +103,7 @@
     }
 }
 
--(void)updateValue:(id)value {
+- (void)updateValue:(id)value {
     [self queueRun:^{
         if (value == self.currentValue) return;
         requireState(!self.sealed);
@@ -111,7 +114,8 @@
         }
     }];
 }
--(void)adjustValue:(id(^)(id))adjustment {
+
+- (void)adjustValue:(id(^)(id))adjustment {
     require(adjustment != nil);
     [self queueRun:^{
         id oldValue = self.currentValue;
@@ -130,16 +134,22 @@
 
 @implementation ObservableValueController
 
-+ (ObservableValueController*)observableValueControllerWithInitialValue:(id)value {
-    return [[ObservableValueController alloc] initWithValue:value];
+- (instancetype)initWithInitialValue:(id)value {
+    if (self = [super initWithValue:value]) {
+        
+    }
+    
+    return self;
 }
 
 - (void)updateValue:(id)value {
     [super updateValue:value];
 }
+
 - (void)adjustValue:(id(^)(id))adjustment {
     [super adjustValue:adjustment];
 }
+
 - (void)sealValue {
     [self queueRun:^{
         self.sealed = true;

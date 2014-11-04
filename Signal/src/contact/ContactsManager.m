@@ -34,8 +34,8 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL*);
         _favouriteContactIds = [self loadFavouriteIds];
         _knownWhisperUserIds = [self loadKnownWhisperUsers];
         life = [TOCCancelTokenSource new];
-        observableContactsController = [ObservableValueController observableValueControllerWithInitialValue:nil];
-        observableWhisperUsersController = [ObservableValueController observableValueControllerWithInitialValue:nil];
+        observableContactsController = [[ObservableValueController alloc] initWithInitialValue:nil];
+        observableWhisperUsersController = [[ObservableValueController alloc] initWithInitialValue:nil];
         [self registerNotificationHandlers];
     }
     return self;
@@ -122,7 +122,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         
         if (!observableFavouritesController) {
             NSArray *favourites = [self contactsForContactIds:_favouriteContactIds];
-            observableFavouritesController = [ObservableValueController observableValueControllerWithInitialValue:favourites];
+            observableFavouritesController = [[ObservableValueController alloc] initWithInitialValue:favourites];
         }
 
     }

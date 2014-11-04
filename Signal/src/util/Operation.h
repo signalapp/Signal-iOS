@@ -11,7 +11,7 @@ typedef id(^Function)(void);
 
 @property (nonatomic, readonly, copy) Action callback;
 
-+ (Operation*)operation:(Action)block;
+- (instancetype)initWithAction:(Action)block;
 
 + (void)asyncRun:(Action)action
         onThread:(NSThread*)thread;

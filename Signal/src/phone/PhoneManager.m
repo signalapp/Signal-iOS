@@ -12,8 +12,8 @@
 +(PhoneManager*) phoneManagerWithErrorHandler:(ErrorHandlerBlock)errorHandler {
     PhoneManager* m = [PhoneManager new];
     m->_errorHandler = errorHandler;
-    m->currentCallControllerObservable = [ObservableValueController observableValueControllerWithInitialValue:nil];
-    m->currentCallStateObservable = [ObservableValueController observableValueControllerWithInitialValue:nil];
+    m->currentCallControllerObservable = [[ObservableValueController alloc] initWithInitialValue:nil];
+    m->currentCallStateObservable = [[ObservableValueController alloc] initWithInitialValue:nil];
 
     [m->currentCallControllerObservable watchLatestValue:^(CallController* latestValue) {
         [m->currentCallStateObservable updateValue:latestValue.callState];

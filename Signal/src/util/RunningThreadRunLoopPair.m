@@ -18,10 +18,6 @@
 
 @implementation RunningThreadRunLoopPair
 
-+ (RunningThreadRunLoopPair*)startNewWithThreadName:(NSString*)name {
-    return [[RunningThreadRunLoopPair alloc] initWithThreadName:name];
-}
-
 - (instancetype)initWithThreadName:(NSString*)name {
     if (self = [super init]) {
         require(name != nil);

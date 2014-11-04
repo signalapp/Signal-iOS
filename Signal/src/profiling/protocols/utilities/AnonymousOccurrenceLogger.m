@@ -1,17 +1,27 @@
 #import "AnonymousOccurrenceLogger.h"
 #import "Constraints.h"
 
+@interface AnonymousOccurrenceLogger ()
+
+@property (nonatomic, readwrite, copy) void (^marker)(id details);
+
+@end
+
 @implementation AnonymousOccurrenceLogger
 
-+(AnonymousOccurrenceLogger*) anonymousOccurencyLoggerWithMarker:(void(^)(id details))marker {
-    require(marker != nil);
-    AnonymousOccurrenceLogger* a = [AnonymousOccurrenceLogger new];
-    a->_marker = marker;
-    return a;
+- (instancetype)initWithMarker:(void(^)(id details))marker {
+    if (self = [super init]) {
+        require(marker != nil);
+        self.marker = marker;
+    }
+    
+    return self;
 }
 
--(void) markOccurrence:(id)details {
-    _marker(details);
+#pragma mark OccurrenceLogger
+
+- (void)markOccurrence:(id)details {
+    self.marker(details);
 }
 
 @end

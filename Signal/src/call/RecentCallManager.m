@@ -26,7 +26,7 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
 
 -(void) initRecentCallsObservable {
     _allRecents = [self loadContactsFromDefaults];
-    observableRecentsController = [ObservableValueController observableValueControllerWithInitialValue:_allRecents];
+    observableRecentsController = [[ObservableValueController alloc] initWithInitialValue:_allRecents];
 }
 
 - (ObservableValue *)getObservableRecentCalls {

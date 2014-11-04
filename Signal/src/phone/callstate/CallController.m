@@ -14,7 +14,7 @@
 
     CallController* instance = [CallController new];
     CallProgress* initialProgress = [CallProgress callProgressWithType:CallProgressType_Connecting];
-    instance->progress = [ObservableValueController observableValueControllerWithInitialValue:initialProgress];
+    instance->progress = [[ObservableValueController alloc] initWithInitialValue:initialProgress];
     instance->termination = [TOCFutureSource new];
     instance->shortAuthenticationString = [TOCFutureSource new];
     instance->canceller = [TOCCancelTokenSource new];

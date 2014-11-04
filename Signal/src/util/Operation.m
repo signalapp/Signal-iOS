@@ -9,11 +9,13 @@
 
 @implementation Operation
 
- +(Operation*)operation:(Action)block {
-    require(block != NULL);
-    Operation* operation = [[Operation alloc] init];
-    operation.callback = block;
-    return operation;
+- (instancetype)initWithAction:(Action)block {
+    if (self = [super init]) {
+        require(block != NULL);
+        self.callback = block;
+    }
+    
+    return self;
 }
 
 + (void)asyncRun:(Action)action
@@ -22,7 +24,7 @@
     require(action != nil);
     require(thread != nil);
     
-    [[Operation operation:action] performOnThread:thread];
+    [[[Operation alloc] initWithAction:action] performOnThread:thread];
 }
 
 + (void)asyncRunAndWaitUntilDone:(Action)action
@@ -31,12 +33,12 @@
     require(action != nil);
     require(thread != nil);
     
-    [[Operation operation:action] performOnThreadAndWaitUntilDone:thread];
+    [[[Operation alloc] initWithAction:action] performOnThreadAndWaitUntilDone:thread];
 }
 
 + (void)asyncRunOnNewThread:(Action)action {
     require(action != nil);
-    [[Operation operation:action] performOnNewThread];
+    [[[Operation alloc] initWithAction:action] performOnNewThread];
 }
 
 - (SEL)selectorToRun {

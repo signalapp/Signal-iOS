@@ -1,10 +1,13 @@
 #import <Foundation/Foundation.h>
 #import "ValueLogger.h"
 
-@interface AnonymousValueLogger : NSObject<ValueLogger>
+@interface AnonymousValueLogger : NSObject <ValueLogger>
 
-@property (nonatomic,readonly,copy) void (^logValueBlock)(double value);
+@property (nonatomic, readonly, copy) void (^logValueBlock)(double value);
 
-+(AnonymousValueLogger*) anonymousValueLogger:(void(^)(double value))logValue;
+- (instancetype)initWithLogValue:(void(^)(double value))logValue;
+
+// Conform to ValueLogger
+- (void)logValue:(double)value;
 
 @end

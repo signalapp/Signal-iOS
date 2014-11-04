@@ -3,8 +3,11 @@
 
 @interface AnonymousTerminator : NSObject <Terminable>
 
-@property (readonly,nonatomic,copy) void (^terminateBlock)(void);
+@property (nonatomic, readonly, copy) void (^terminateBlock)(void);
 
-+ (AnonymousTerminator*)cancellerWithCancel:(void (^)(void))terminate;
+- (instancetype)initWithTerminator:(void (^)(void))terminate;
+
+// Conform to Terminable
+- (void)terminate;
 
 @end

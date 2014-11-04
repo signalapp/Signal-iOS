@@ -4,18 +4,22 @@
 @interface AnonymousTerminator ()
 
 @property BOOL alreadyCalled;
-@property (readwrite,nonatomic,copy) void (^terminateBlock)(void);
+@property (nonatomic, readwrite, copy) void (^terminateBlock)(void);
 
 @end
 
 @implementation AnonymousTerminator
 
-+ (AnonymousTerminator*)cancellerWithCancel:(void (^)(void))terminate {
-    require(terminate != nil);
-    AnonymousTerminator* anonTerminator = [[AnonymousTerminator alloc] init];
-    anonTerminator.terminateBlock = terminate;
-    return anonTerminator;
+- (instancetype)initWithTerminator:(void (^)(void))terminate {
+    if (self = [super init]) {
+        require(terminate != nil);
+        self.terminateBlock = terminate;
+    }
+    
+    return self;
 }
+
+#pragma mark Terminable
 
 - (void)terminate {
     if (self.alreadyCalled) return;

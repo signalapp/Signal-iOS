@@ -31,7 +31,7 @@
 
 -(void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if(INVITE_BUTTON_INDEX == buttonIndex){
-        smsInvite = [SmsInvite smsInviteWithParent:parent];
+        smsInvite = [[SmsInvite alloc] initWithParent:parent];
         [smsInvite sendSMSInviteToNumber:phoneNumber];
     }
 }

@@ -24,7 +24,7 @@ typedef void (^LatestValueCallback)(id latestValue);
 
 @interface ObservableValueController : ObservableValue
 
-+ (ObservableValueController *)observableValueControllerWithInitialValue:(id)value;
+- (instancetype)initWithInitialValue:(id)value;
 - (void)updateValue:(id)value;
 - (void)adjustValue:(id(^)(id))adjustment;
 - (void)sealValue;

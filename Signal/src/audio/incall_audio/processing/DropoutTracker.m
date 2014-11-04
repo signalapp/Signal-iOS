@@ -25,7 +25,7 @@
         [d->priorLatenesses enqueue:@0.0];
     }
     for (NSUInteger i = 0; i < LATE_BINS_LENGTH; i++) {
-        [d->lateBins addObject:[EventWindow eventWindowWithWindowDuration:LATE_BIN_WINDOW_IN_SECONDS]];
+        [d->lateBins addObject:[[EventWindow alloc] initWithWindowDuration:LATE_BIN_WINDOW_IN_SECONDS]];
     }
     
     return d;

@@ -127,7 +127,7 @@
     __block bool hasBeenCancelled = false;
     __block NSObject* cancelLock = [[NSObject alloc] init];
     
-    Operation* callbackUnlessCancelled = [Operation operation:^{
+    Operation* callbackUnlessCancelled = [[Operation alloc] initWithAction:^{
         @synchronized(cancelLock) {
             if (hasBeenCancelled) return;
             callback();

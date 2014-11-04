@@ -26,7 +26,8 @@ static double STRETCH_MODE_FACTORS[] = {1/0.95, 1, 1/1.05, 0.5};
     p->desiredBufferDepthController = desiredBufferDepthController;
     p->currentStretchMode = STRETCH_MODE_NORMAL;
     p->bufferDepthMeasure = jitterQueue;
-    p->decayingBufferDepthMeasure = [DecayingSampleEstimator decayingSampleEstimatorWithInitialEstimate:0 andDecayPerUnitSample:BUFFER_DEPTH_DECAYING_FACTOR];
+    p->decayingBufferDepthMeasure = [[DecayingSampleEstimator alloc] initWithInitialEstimate:0
+                                                                       andDecayPerUnitSample:BUFFER_DEPTH_DECAYING_FACTOR];
     p->stretchModeChangeLogger = [Environment.logging getValueLoggerForValue:@"stretch factor" from:self];
     return p;
 }

@@ -22,8 +22,8 @@
     DropoutTracker* dropoutTracker = [DropoutTracker dropoutTrackerWithAudioDurationPerPacket:audioDurationPerPacket];
 
     DecayingSampleEstimator* decayingDesiredBufferDepth =
-        [DecayingSampleEstimator decayingSampleEstimatorWithInitialEstimate:initialDesiredBufferDepth
-                                                      andDecayPerUnitSample:DESIRED_BUFFER_DEPTH_DECAY_RATE];
+        [[DecayingSampleEstimator alloc] initWithInitialEstimate:initialDesiredBufferDepth
+                                           andDecayPerUnitSample:DESIRED_BUFFER_DEPTH_DECAY_RATE];
     
     DesiredBufferDepthController* result = [DesiredBufferDepthController new];
     result->dropoutTracker = dropoutTracker;

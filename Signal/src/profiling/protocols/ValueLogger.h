@@ -2,6 +2,6 @@
 
 @protocol ValueLogger <NSObject>
 
--(void) logValue:(double)value;
+- (void)logValue:(double)value;
 
 @end

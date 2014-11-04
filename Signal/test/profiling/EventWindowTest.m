@@ -8,7 +8,7 @@
 
 @implementation EventWindowTest
 -(void) testEventWindow {
-    EventWindow* w = [EventWindow eventWindowWithWindowDuration:5];
+    EventWindow* w = [[EventWindow alloc] initWithWindowDuration:5];
     test([w countAfterRemovingEventsBeforeWindowEndingAt:0] == 0);
     [w addEventAtTime:4];
     [w addEventAtTime:6];
