@@ -16,41 +16,33 @@
 typedef void(^ABAccessRequestCompletionBlock)(BOOL hasAccess);
 typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 
-@interface ContactsManager : NSObject {
-@private TOCFuture* futureAddressBook;
-@private ObservableValueController* observableContactsController;
-@private ObservableValueController* observableWhisperUsersController;
-@private ObservableValueController* observableFavouritesController;
-@private TOCCancelTokenSource* life;
-@private NSDictionary *latestContactsById;
-@private NSDictionary *latestWhisperUsersById;
-}
+@interface ContactsManager : NSObject
 
--(ObservableValue *) getObservableContacts;
--(ObservableValue *) getObservableWhisperUsers;
--(ObservableValue *) getObservableFavourites;
+- (ObservableValue*)getObservableContacts;
+- (ObservableValue*)getObservableWhisperUsers;
+- (ObservableValue*)getObservableFavourites;
 
--(NSArray*) getContactsFromAddressBook:(ABAddressBookRef)addressBook;
--(Contact*) latestContactWithRecordId:(ABRecordID)recordId;
--(Contact*) latestContactForPhoneNumber:(PhoneNumber *)phoneNumber;
--(NSArray*) latestContactsWithSearchString:(NSString *)searchString;
+- (NSArray*)getContactsFromAddressBook:(ABAddressBookRef)addressBook;
+- (Contact*)latestContactWithRecordId:(ABRecordID)recordId;
+- (Contact*)latestContactForPhoneNumber:(PhoneNumber *)phoneNumber;
+- (NSArray*)latestContactsWithSearchString:(NSString *)searchString;
 
--(void) toggleFavourite:(Contact *)contact;
--(NSArray*) contactsForContactIds:(NSArray *)favouriteIds;
-+(NSArray *)favouritesForAllContacts:(NSArray *)contacts;
+- (void)toggleFavourite:(Contact *)contact;
+- (NSArray*)contactsForContactIds:(NSArray*)favouriteIds;
++ (NSArray*)favouritesForAllContacts:(NSArray*)contacts;
 
--(void) addContactsToKnownWhisperUsers:(NSArray*) contacts;
+- (void)addContactsToKnownWhisperUsers:(NSArray*)contacts;
 
-+(NSDictionary *)groupContactsByFirstLetter:(NSArray *)contacts matchingSearchString:(NSString *)optionalSearchString;
++ (NSDictionary*)groupContactsByFirstLetter:(NSArray*)contacts
+                       matchingSearchString:(NSString*)optionalSearchString;
 
-+(BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString;
-+(BOOL)phoneNumber:(PhoneNumber *)phoneNumber matchesQuery:(NSString *)queryString;
--(BOOL)isContactRegisteredWithWhisper:(Contact*) contact;
++ (BOOL)name:(NSString*)nameString matchesQuery:(NSString*)queryString;
++ (BOOL)phoneNumber:(PhoneNumber*)phoneNumber matchesQuery:(NSString*)queryString;
+- (BOOL)isContactRegisteredWithWhisper:(Contact*)contact;
 
--(void) doAfterEnvironmentInitSetup;
+- (void)doAfterEnvironmentInitSetup;
 
--(void) enableNewUserNotifications;
--(NSUInteger) getNumberOfUnacknowledgedCurrentUsers;
-
+- (void)enableNewUserNotifications;
+- (NSUInteger)getNumberOfUnacknowledgedCurrentUsers;
 
 @end
