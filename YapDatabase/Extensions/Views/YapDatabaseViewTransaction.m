@@ -213,7 +213,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 				}
 			}
 			
-			if (![oldVersionTag isEqualToString:versionTag])
+			if (![oldVersionTag isEqualToString:versionTag]  && !viewConnection->view->options.skipInitialViewPopulation)
 			{
 				needsPopulateView = YES;
 			}

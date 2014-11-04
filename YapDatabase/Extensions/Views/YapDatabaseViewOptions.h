@@ -61,4 +61,6 @@
 **/
 @property (nonatomic, strong, readwrite) YapWhitelistBlacklist *allowedCollections;
 
+@property (nonatomic, assign, readwrite) BOOL skipInitialViewPopulation;
+
 @end
