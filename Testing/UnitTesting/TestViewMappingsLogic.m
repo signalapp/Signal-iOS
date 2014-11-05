@@ -2996,7 +2996,7 @@ static NSMutableArray *changes;
 #pragma mark Flexible Range: Insert
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_flexibleRange_beginning_1A
+- (void)test_flexibleRange_1A_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3035,7 +3035,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 2, @"");
 }
 
-- (void)test_flexibleRange_beginning_1B
+- (void)test_flexibleRange_1B_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3074,7 +3074,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 0, @"");
 }
 
-- (void)test_flexibleRange_beginning_1C
+- (void)test_flexibleRange_1C_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3113,7 +3113,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 19, @"");
 }
 
-- (void)test_flexibleRange_beginning_1D
+- (void)test_flexibleRange_1D_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3148,7 +3148,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue([rowChanges count] == 0, @"");
 }
 
-- (void)test_flexibleRange_end_1A
+- (void)test_flexibleRange_1A_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3187,7 +3187,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 10, @"");
 }
 
-- (void)test_flexibleRange_end_1B
+- (void)test_flexibleRange_1B_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3226,7 +3226,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 20, @"");
 }
 
-- (void)test_flexibleRange_end_1C
+- (void)test_flexibleRange_1C_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3265,7 +3265,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 1, @"");
 }
 
-- (void)test_flexibleRange_end_1D
+- (void)test_flexibleRange_1D_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3304,7 +3304,7 @@ static NSMutableArray *changes;
 #pragma mark Flexible Range: Delete
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_flexibleRange_beginning_2A
+- (void)test_flexibleRange_2A_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3343,7 +3343,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 2, @"");
 }
 
-- (void)test_flexibleRange_beginning_2B
+- (void)test_flexibleRange_2B_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3382,7 +3382,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 0, @"");
 }
 
-- (void)test_flexibleRange_beginning_2C
+- (void)test_flexibleRange_2C_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3421,7 +3421,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 19, @"");
 }
 
-- (void)test_flexibleRange_beginning_2D
+- (void)test_flexibleRange_2D_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3456,7 +3456,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue([rowChanges count] == 0, @"");
 }
 
-- (void)test_flexibleRange_end_2A
+- (void)test_flexibleRange_2A_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3495,7 +3495,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 2, @"");
 }
 
-- (void)test_flexibleRange_end_2B
+- (void)test_flexibleRange_2B_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3534,7 +3534,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 19, @"");
 }
 
-- (void)test_flexibleRange_end_2C
+- (void)test_flexibleRange_2C_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3573,7 +3573,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 0, @"");
 }
 
-- (void)test_flexibleRange_end_2D
+- (void)test_flexibleRange_2D_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3612,7 +3612,7 @@ static NSMutableArray *changes;
 #pragma mark Flexible Range: Insert, Insert, ...
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_flexibleRange_beginning_3A
+- (void)test_flexibleRange_3A_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3656,7 +3656,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 10, @"");
 }
 
-- (void)test_flexibleRange_beginning_3B
+- (void)test_flexibleRange_3B_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3700,7 +3700,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 0, @"");
 }
 
-- (void)test_flexibleRange_beginning_3C
+- (void)test_flexibleRange_3C_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3744,7 +3744,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 18, @"");
 }
 
-- (void)test_flexibleRange_beginning_3D
+- (void)test_flexibleRange_3D_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3790,7 +3790,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 19, @"");
 }
 
-- (void)test_flexibleRange_end_3A
+- (void)test_flexibleRange_3A_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3834,7 +3834,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 11, @"");
 }
 
-- (void)test_flexibleRange_end_3B
+- (void)test_flexibleRange_3B_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3876,7 +3876,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 21, @"");
 }
 
-- (void)test_flexibleRange_end_3C
+- (void)test_flexibleRange_3C_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3918,7 +3918,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 1, @"");
 }
 
-- (void)test_flexibleRange_end_3D
+- (void)test_flexibleRange_3D_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -3966,7 +3966,7 @@ static NSMutableArray *changes;
 #pragma mark Flexible Range: Delete, Delete, ...
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_flexibleRange_beginning_4A
+- (void)test_flexibleRange_4A_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4010,7 +4010,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 11, @"");
 }
 
-- (void)test_flexibleRange_beginning_4B
+- (void)test_flexibleRange_4B_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4054,7 +4054,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 1, @"");
 }
 
-- (void)test_flexibleRange_beginning_4C
+- (void)test_flexibleRange_4C_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4098,7 +4098,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 18, @"");
 }
 
-- (void)test_flexibleRange_beginning_4D
+- (void)test_flexibleRange_4D_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4142,7 +4142,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 19, @"");
 }
 
-- (void)test_flexibleRange_end_4A
+- (void)test_flexibleRange_4A_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4186,7 +4186,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 11, @"");
 }
 
-- (void)test_flexibleRange_end_4B
+- (void)test_flexibleRange_4B_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4230,7 +4230,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 18, @"");
 }
 
-- (void)test_flexibleRange_end_4C
+- (void)test_flexibleRange_4C_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4274,7 +4274,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 1, @"");
 }
 
-- (void)test_flexibleRange_end_4D
+- (void)test_flexibleRange_4D_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4324,7 +4324,7 @@ static NSMutableArray *changes;
 #pragma mark Flexible Range: Move
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_flexibleRange_beginning_5A
+- (void)test_flexibleRange_5A_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4364,7 +4364,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 0, @"");
 }
 
-- (void)test_flexibleRange_beginning_5B
+- (void)test_flexibleRange_5B_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4404,7 +4404,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 1, @"");
 }
 
-- (void)test_flexibleRange_beginning_5C
+- (void)test_flexibleRange_5C_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4442,7 +4442,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 0, @"");
 }
 
-- (void)test_flexibleRange_beginning_5D
+- (void)test_flexibleRange_5D_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4480,7 +4480,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 0, @"");
 }
 
-- (void)test_flexibleRange_end_5A
+- (void)test_flexibleRange_5A_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4522,7 +4522,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 19, @"");
 }
 
-- (void)test_flexibleRange_end_5B
+- (void)test_flexibleRange_5B_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4564,7 +4564,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 18, @"");
 }
 
-- (void)test_flexibleRange_end_5C
+- (void)test_flexibleRange_5C_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4602,7 +4602,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 19, @"");
 }
 
-- (void)test_flexibleRange_end_5D
+- (void)test_flexibleRange_5D_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4644,7 +4644,7 @@ static NSMutableArray *changes;
 #pragma mark Flexible Range: Changing Length
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_flexibleRange_beginning_6A
+- (void)test_flexibleRange_6A_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4688,7 +4688,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 1, @"");
 }
 
-- (void)test_flexibleRange_beginning_6B
+- (void)test_flexibleRange_6B_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4728,7 +4728,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 0, @"");
 }
 
-- (void)test_flexibleRange_beginning_6C
+- (void)test_flexibleRange_6C_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4768,7 +4768,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 0, @"");
 }
 
-- (void)test_flexibleRange_end_6A
+- (void)test_flexibleRange_6A_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4812,7 +4812,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 1, @"");
 }
 
-- (void)test_flexibleRange_end_6B
+- (void)test_flexibleRange_6B_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4852,7 +4852,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 0).finalIndex == 10, @"");
 }
 
-- (void)test_flexibleRange_end_6C
+- (void)test_flexibleRange_6C_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4896,7 +4896,7 @@ static NSMutableArray *changes;
 #pragma mark Flexible Range: Reset
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_flexibleRange_beginning_7A
+- (void)test_flexibleRange_7A_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4939,7 +4939,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
 }
 
-- (void)test_flexibleRange_beginning_7B
+- (void)test_flexibleRange_7B_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -4987,7 +4987,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 2).finalIndex == 0, @"");
 }
 
-- (void)test_flexibleRange_beginning_7C
+- (void)test_flexibleRange_7C_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -5036,7 +5036,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 2).finalIndex == 0, @"");
 }
 
-- (void)test_flexibleRange_end_7A
+- (void)test_flexibleRange_7A_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -5079,7 +5079,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 0, @"");
 }
 
-- (void)test_flexibleRange_end_7B
+- (void)test_flexibleRange_7B_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -5127,7 +5127,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 2).finalIndex == 0, @"");
 }
 
-- (void)test_flexibleRange_end_7C
+- (void)test_flexibleRange_7C_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -5180,7 +5180,7 @@ static NSMutableArray *changes;
 #pragma mark Flexible Range: Max & Min Length
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_flexibleRange_beginning_8A
+- (void)test_flexibleRange_8A_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -5234,7 +5234,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 3).originalIndex == 7, @"");
 }
 
-- (void)test_flexibleRange_beginning_8B
+- (void)test_flexibleRange_8B_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -5283,7 +5283,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 2).finalIndex == 4, @"");
 }
 
-- (void)test_flexibleRange_beginning_8C
+- (void)test_flexibleRange_8C_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -5345,7 +5345,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 4).finalIndex == 4, @"");
 }
 
-- (void)test_flexibleRange_end_8A
+- (void)test_flexibleRange_8A_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -5399,7 +5399,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 3).originalIndex == 0, @"");
 }
 
-- (void)test_flexibleRange_end_8B
+- (void)test_flexibleRange_8B_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -5448,7 +5448,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(RowOp(rowChanges, 2).finalIndex == 0, @"");
 }
 
-- (void)test_flexibleRange_end_8C
+- (void)test_flexibleRange_8C_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -5514,7 +5514,7 @@ static NSMutableArray *changes;
 #pragma mark Flexible Range: Clear
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_flexibleRange_beginning_9A
+- (void)test_flexibleRange_9A_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -5555,7 +5555,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
 }
 
-- (void)test_flexibleRange_beginning_9B
+- (void)test_flexibleRange_9B_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -5600,7 +5600,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
 }
 
-- (void)test_flexibleRange_beginning_9C
+- (void)test_flexibleRange_9C_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -5698,7 +5698,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
 }
 
-- (void)test_flexibleRange_end_9A
+- (void)test_flexibleRange_9A_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -5739,7 +5739,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
 }
 
-- (void)test_flexibleRange_end_9B
+- (void)test_flexibleRange_9B_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -5784,7 +5784,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
 }
 
-- (void)test_flexibleRange_end_9C
+- (void)test_flexibleRange_9C_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -5886,7 +5886,7 @@ static NSMutableArray *changes;
 #pragma mark Flexible Range: Clear + UpdateWithTransaction
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)test_flexibleRange_beginning_10A
+- (void)test_flexibleRange_10A_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -5919,7 +5919,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
 }
 
-- (void)test_flexibleRange_beginning_10B
+- (void)test_flexibleRange_10B_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -5956,7 +5956,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
 }
 
-- (void)test_flexibleRange_beginning_10C
+- (void)test_flexibleRange_10C_beginning
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -6046,7 +6046,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
 }
 
-- (void)test_flexibleRange_end_10A
+- (void)test_flexibleRange_10A_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -6079,7 +6079,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
 }
 
-- (void)test_flexibleRange_end_10B
+- (void)test_flexibleRange_10B_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -6116,7 +6116,7 @@ static NSMutableArray *changes;
 	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
 }
 
-- (void)test_flexibleRange_end_10C
+- (void)test_flexibleRange_10C_end
 {
 	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
 	
@@ -6202,6 +6202,334 @@ static NSMutableArray *changes;
 	YapDatabaseViewRangePosition rangePosition = [mappings rangePositionForGroup:@""];
 	
 	XCTAssertTrue(rangePosition.length == 0, @"");
+	XCTAssertTrue(rangePosition.offsetFromBeginning == 0, @"");
+	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Flexible Range: GrowOptions
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)test_flexibleRange_11A_beginning
+{
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	
+	YapDatabaseViewRangeOptions *rangeOpts =
+	  [YapDatabaseViewRangeOptions flexibleRangeWithLength:3 offset:0 from:YapDatabaseViewBeginning];
+	rangeOpts.minLength = 3;
+	rangeOpts.growOptions = YapDatabaseViewGrowOnBothSides;
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(4) } forceUpdateRangeOptions:NO];
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 3, @"");
+	XCTAssertTrue([mappings indexForRow:0 inGroup:@""] == 0, @"");
+	
+	// Delete item at the beginning of the range
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:0]];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[mappings updateWithCounts:@{ @"":@(3) } forceUpdateRangeOptions:NO];
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+								  rowChanges:&rowChanges
+						withOriginalMappings:originalMappings
+							   finalMappings:mappings
+								 fromChanges:changes];
+	
+	// Verify
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 3, @"");
+	
+	XCTAssertTrue([sectionChanges count] == 0, @"");
+	XCTAssertTrue([rowChanges count] == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 0, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 2, @"");
+	
+	YapDatabaseViewRangePosition rangePosition = [mappings rangePositionForGroup:@""];
+	
+	XCTAssertTrue(rangePosition.length == 3, @"");
+	XCTAssertTrue(rangePosition.offsetFromBeginning == 0, @"");
+	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
+}
+
+- (void)test_flexibleRange_11B_beginning
+{
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	
+	YapDatabaseViewRangeOptions *rangeOpts =
+	  [YapDatabaseViewRangeOptions flexibleRangeWithLength:3 offset:0 from:YapDatabaseViewBeginning];
+	rangeOpts.minLength = 3;
+	rangeOpts.growOptions = YapDatabaseViewGrowOnBothSides;
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(4) } forceUpdateRangeOptions:NO];
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 3, @"");
+	XCTAssertTrue([mappings indexForRow:0 inGroup:@""] == 0, @"");
+	
+	// Delete item at the end of the range
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:2]];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[mappings updateWithCounts:@{ @"":@(3) } forceUpdateRangeOptions:NO];
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+								  rowChanges:&rowChanges
+						withOriginalMappings:originalMappings
+							   finalMappings:mappings
+								 fromChanges:changes];
+	
+	// Verify
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 3, @"");
+	
+	XCTAssertTrue([sectionChanges count] == 0, @"");
+	XCTAssertTrue([rowChanges count] == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 2, @"");
+	
+	YapDatabaseViewRangePosition rangePosition = [mappings rangePositionForGroup:@""];
+	
+	XCTAssertTrue(rangePosition.length == 3, @"");
+	XCTAssertTrue(rangePosition.offsetFromBeginning == 0, @"");
+	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
+}
+
+- (void)test_flexibleRange_11C_beginning
+{
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	
+	YapDatabaseViewRangeOptions *rangeOpts =
+	  [YapDatabaseViewRangeOptions flexibleRangeWithLength:3 offset:0 from:YapDatabaseViewBeginning];
+	rangeOpts.minLength = 3;
+	rangeOpts.growOptions = YapDatabaseViewGrowOnBothSides;
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(4) } forceUpdateRangeOptions:NO];
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 3, @"");
+	XCTAssertTrue([mappings indexForRow:0 inGroup:@""] == 0, @"");
+	
+	// Delete item in the middle of the range
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:1]];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[mappings updateWithCounts:@{ @"":@(3) } forceUpdateRangeOptions:NO];
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+								  rowChanges:&rowChanges
+						withOriginalMappings:originalMappings
+							   finalMappings:mappings
+								 fromChanges:changes];
+	
+	// Verify
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 3, @"");
+	
+	XCTAssertTrue([sectionChanges count] == 0, @"");
+	XCTAssertTrue([rowChanges count] == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 1, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 2, @"");
+	
+	YapDatabaseViewRangePosition rangePosition = [mappings rangePositionForGroup:@""];
+	
+	XCTAssertTrue(rangePosition.length == 3, @"");
+	XCTAssertTrue(rangePosition.offsetFromBeginning == 0, @"");
+	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
+}
+
+- (void)test_flexibleRange_11A_end
+{
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	
+	YapDatabaseViewRangeOptions *rangeOpts =
+	  [YapDatabaseViewRangeOptions flexibleRangeWithLength:3 offset:0 from:YapDatabaseViewEnd];
+	rangeOpts.minLength = 3;
+	rangeOpts.growOptions = YapDatabaseViewGrowOnBothSides;
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(4) } forceUpdateRangeOptions:NO];
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 3, @"");
+	XCTAssertTrue([mappings indexForRow:0 inGroup:@""] == 1, @"");
+	
+	// Delete item at the beginning of the range
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:1]];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[mappings updateWithCounts:@{ @"":@(3) } forceUpdateRangeOptions:NO];
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+								  rowChanges:&rowChanges
+						withOriginalMappings:originalMappings
+							   finalMappings:mappings
+								 fromChanges:changes];
+	
+	// Verify
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 3, @"");
+	
+	XCTAssertTrue([sectionChanges count] == 0, @"");
+	XCTAssertTrue([rowChanges count] == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 0, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 0, @"");
+	
+	YapDatabaseViewRangePosition rangePosition = [mappings rangePositionForGroup:@""];
+	
+	XCTAssertTrue(rangePosition.length == 3, @"");
+	XCTAssertTrue(rangePosition.offsetFromBeginning == 0, @"");
+	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
+}
+
+- (void)test_flexibleRange_11B_end
+{
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	
+	YapDatabaseViewRangeOptions *rangeOpts =
+	  [YapDatabaseViewRangeOptions flexibleRangeWithLength:3 offset:0 from:YapDatabaseViewEnd];
+	rangeOpts.minLength = 3;
+	rangeOpts.growOptions = YapDatabaseViewGrowOnBothSides;
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(4) } forceUpdateRangeOptions:NO];
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 3, @"");
+	XCTAssertTrue([mappings indexForRow:0 inGroup:@""] == 1, @"");
+	
+	// Delete item at the end of the range
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:3]];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[mappings updateWithCounts:@{ @"":@(3) } forceUpdateRangeOptions:NO];
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+								  rowChanges:&rowChanges
+						withOriginalMappings:originalMappings
+							   finalMappings:mappings
+								 fromChanges:changes];
+	
+	// Verify
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 3, @"");
+	
+	XCTAssertTrue([sectionChanges count] == 0, @"");
+	XCTAssertTrue([rowChanges count] == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 0, @"");
+	
+	YapDatabaseViewRangePosition rangePosition = [mappings rangePositionForGroup:@""];
+	
+	XCTAssertTrue(rangePosition.length == 3, @"");
+	XCTAssertTrue(rangePosition.offsetFromBeginning == 0, @"");
+	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
+}
+
+- (void)test_flexibleRange_11C_end
+{
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@""] view:@"view"];
+	
+	YapDatabaseViewRangeOptions *rangeOpts =
+	  [YapDatabaseViewRangeOptions flexibleRangeWithLength:3 offset:0 from:YapDatabaseViewEnd];
+	rangeOpts.minLength = 3;
+	rangeOpts.growOptions = YapDatabaseViewGrowOnBothSides;
+	[mappings setRangeOptions:rangeOpts forGroup:@""];
+	
+	[mappings updateWithCounts:@{ @"":@(4) } forceUpdateRangeOptions:NO];
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 3, @"");
+	XCTAssertTrue([mappings indexForRow:0 inGroup:@""] == 1, @"");
+	
+	// Delete item in the middle of the range
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(nil, @"key") inGroup:@"" atIndex:2]];
+	
+	// Fetch changeset
+	
+	NSArray *sectionChanges = nil;
+	NSArray *rowChanges = nil;
+	
+	[mappings updateWithCounts:@{ @"":@(3) } forceUpdateRangeOptions:NO];
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+								  rowChanges:&rowChanges
+						withOriginalMappings:originalMappings
+							   finalMappings:mappings
+								 fromChanges:changes];
+	
+	// Verify
+	
+	XCTAssertTrue([mappings numberOfItemsInGroup:@""] == 3, @"");
+	
+	XCTAssertTrue([sectionChanges count] == 0, @"");
+	XCTAssertTrue([rowChanges count] == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 1, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeInsert, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).finalIndex == 0, @"");
+	
+	YapDatabaseViewRangePosition rangePosition = [mappings rangePositionForGroup:@""];
+	
+	XCTAssertTrue(rangePosition.length == 3, @"");
 	XCTAssertTrue(rangePosition.offsetFromBeginning == 0, @"");
 	XCTAssertTrue(rangePosition.offsetFromEnd == 0, @"");
 }
