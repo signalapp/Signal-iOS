@@ -1,10 +1,7 @@
-#import <XCTest/XCTest.h>
+#import "FutureUtilTest.h"
 #import "TestUtil.h"
 #import "ThreadManager.h"
 #import "Util.h"
-
-@interface FutureUtilTest:XCTestCase
-@end
 
 @implementation FutureUtilTest
 

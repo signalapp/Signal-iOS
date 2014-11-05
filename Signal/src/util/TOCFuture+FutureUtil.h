@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "CollapsingFutures.h"
-#import "Terminable.h"
 
 @interface TOCFuture (FutureUtil)
 
