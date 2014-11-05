@@ -5,11 +5,12 @@
 @interface ObservableValue ()
 
 @property (readwrite, atomic) id currentValue;
+
 @property (strong, nonatomic) Queue* queuedActionsToRun;
 @property (nonatomic) bool isRunningActions;
 
-@property (strong, nonatomic) NSMutableSet* callbacks;
 @property (nonatomic) bool sealed;
+@property (strong, nonatomic) NSMutableSet* callbacks;
 
 @end
 
@@ -23,18 +24,14 @@
     return self;
 }
 
-- (Queue*)queuedActionsToRun {
-    if (_queuedActionsToRun) {
-        _queuedActionsToRun = [[Queue alloc] init];
-    }
-    return _queuedActionsToRun;
+- (NSMutableSet*)callbacks {
+    if (!_callbacks) _callbacks = [[NSMutableSet alloc] init];
+    return _callbacks;
 }
 
-- (NSMutableSet*)callbacks {
-    if (!_callbacks) {
-        _callbacks = [[NSMutableSet alloc] init];
-    }
-    return _callbacks;
+- (Queue*)queuedActionsToRun {
+    if (!_queuedActionsToRun) _queuedActionsToRun = [[Queue alloc] init];
+    return _queuedActionsToRun;
 }
 
 - (void)watchLatestValueOnArbitraryThread:(LatestValueCallback)callback
@@ -125,7 +122,7 @@
         
         self.currentValue = newValue;
         for (void(^callback)(id value) in self.callbacks) {
-            callback(newValue);
+            callback(self.currentValue);
         }
     }];
 }
@@ -135,11 +132,7 @@
 @implementation ObservableValueController
 
 - (instancetype)initWithInitialValue:(id)value {
-    if (self = [super initWithValue:value]) {
-        
-    }
-    
-    return self;
+    return [self initWithValue:value];
 }
 
 - (void)updateValue:(id)value {
@@ -150,7 +143,7 @@
     [super adjustValue:adjustment];
 }
 
-- (void)sealValue {
+-( void) sealValue {
     [self queueRun:^{
         self.sealed = true;
         self.callbacks = nil;
