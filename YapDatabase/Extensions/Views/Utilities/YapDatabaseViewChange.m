@@ -2030,7 +2030,7 @@
 		//
 		// STEP 4.A : Update finalMappings if needed (by updating rangeOpts.length & rangeOpts.offset)
 		
-		if ((originalRangeLength != finalRangeLength) || (originalRangeOffset != finalRangeOffset))
+		if ((finalRangeLength != finalRangeOpts.length) || (finalRangeOffset != finalRangeOpts.offset))
 		{
 			[finalMappings updateRangeOptionsForGroup:group withNewLength:finalRangeLength newOffset:finalRangeOffset];
 			rangeOptionsChanged = YES;
