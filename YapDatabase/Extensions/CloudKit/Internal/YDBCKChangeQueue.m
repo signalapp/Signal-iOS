@@ -2,6 +2,12 @@
 #import "YapDatabaseCKRecord.h"
 
 
+@interface YDBCKChangeQueue ()
+
+@property (atomic, readwrite, strong) NSString *lockUUID;
+
+@end
+
 @interface YDBCKChangeSet () {
 @public
 	
@@ -11,12 +17,15 @@
 
 - (instancetype)initWithDatabaseIdentifier:(NSString *)databaseIdentifier;
 - (instancetype)emptyCopy;
+- (instancetype)fullCopy;
 
 @property (nonatomic, readwrite) NSString *uuid;
 @property (nonatomic, readwrite) NSString *prev;
 
 @property (nonatomic, readwrite) BOOL hasChangesToDeletedRecordIDs;
 @property (nonatomic, readwrite) BOOL hasChangesToModifiedRecords;
+
+@property (nonatomic, readonly) NSString *lockUUID;
 
 @end
 
@@ -41,8 +50,9 @@
 @implementation YDBCKChangeQueue
 {
 	BOOL isMasterQueue;
+	NSLock *masterQueueLock;
 	
-	NSMutableArray *inFlightChangeSets;
+	BOOL hasInFlightChangeSet;
 	NSMutableArray *oldChangeSets;
 	
 	NSArray *newChangeSets;
@@ -52,30 +62,81 @@
 @dynamic isMasterQueue;
 @dynamic isPendingQueue;
 
-@dynamic inFlightChangeSets;
-@dynamic pendingChangeSetsFromPreviousCommits;
-@dynamic pendingChangeSetsFromCurrentCommit;
+@dynamic changeSetsFromPreviousCommits;
+@dynamic changeSetsFromCurrentCommit;
+
+@synthesize lockUUID;
 
 - (instancetype)initMasterQueue
-{
-	return [self initMasterQueueWithChangeSets:nil];
-}
-
-- (instancetype)initMasterQueueWithChangeSets:(NSMutableArray *)inChangeSets
 {
 	if ((self = [super init]))
 	{
 		isMasterQueue = YES;
+		masterQueueLock = [[NSLock alloc] init];
 		
-		if (inChangeSets)
-			oldChangeSets = inChangeSets;
-		else
-			oldChangeSets = [[NSMutableArray alloc] init];
+		oldChangeSets = [[NSMutableArray alloc] init];
 	}
 	return self;
 }
 
-#pragma mark PendingQueue Lifecycle
+#pragma mark Lifecycle
+
+/**
+ * This method is used during extension registration
+ * after the old changeSets, from previous app run(s), have been restored.
+**/
+- (void)restoreOldChangeSets:(NSArray *)inOldChangeSets
+{
+	NSAssert(self.isMasterQueue, @"Method can only be invoked on masterQueue");
+	
+	// Get lock for access to 'oldChangeSets'
+	[masterQueueLock lock];
+	{
+		[oldChangeSets addObjectsFromArray:inOldChangeSets];
+	}
+	[masterQueueLock unlock];
+}
+
+/**
+ * If there is NOT already an in-flight changeSet, then this method sets the appropriate flag(s),
+ * and returns the next changeSet ready for upload.
+**/
+- (YDBCKChangeSet *)makeInFlightChangeSet
+{
+	YDBCKChangeSet *inFlightChangeSet = nil;
+	
+	// Get lock for access to 'oldChangeSets'
+	[masterQueueLock lock];
+	{
+		if (!hasInFlightChangeSet && (oldChangeSets.count > 0))
+		{
+			inFlightChangeSet = [[oldChangeSets objectAtIndex:0] fullCopy];
+			hasInFlightChangeSet = YES;
+		}
+	}
+	[masterQueueLock unlock];
+	
+	return inFlightChangeSet;
+}
+
+/**
+ * ???
+**/
+- (void)dropInFlightChangeSet
+{
+	// Get lock for access to 'oldChangeSets'
+	[masterQueueLock lock];
+	{
+		if (hasInFlightChangeSet)
+		{
+			NSAssert(oldChangeSets.count > 0, @"Logic error");
+			
+			[oldChangeSets removeObjectAtIndex:0];
+			hasInFlightChangeSet = NO;
+		}
+	}
+	[masterQueueLock unlock];
+}
 
 /**
  * Invoke this method from 'prepareForReadWriteTransaction' in order to fetch a 'pendingQueue' object.
@@ -85,6 +146,8 @@
 **/
 - (YDBCKChangeQueue *)newPendingQueue
 {
+	NSAssert(self.isMasterQueue, @"Method can only be invoked on masterQueue");
+	
 	NSUInteger capacity = [oldChangeSets count] + 1;
 	
 	YDBCKChangeQueue *pendingQueue = [[YDBCKChangeQueue alloc] init];
@@ -98,6 +161,9 @@
 	
 	pendingQueue->newChangeSetsDict = [[NSMutableDictionary alloc] initWithCapacity:1];
 	
+	[masterQueueLock lock];
+	self.lockUUID = pendingQueue.lockUUID;
+	
 	return pendingQueue;
 }
 
@@ -109,32 +175,36 @@
 {
 	NSAssert(self.isMasterQueue, @"Method can only be invoked on masterQueue");
 	NSAssert(pendingQueue.isPendingQueue, @"Bad parameter: 'pendingQueue' is not a pendingQueue");
+	NSAssert([self.lockUUID isEqualToString:pendingQueue.lockUUID], @"Bad state: Not locked for pendingQueue");
 	
 	NSUInteger count = [oldChangeSets count];
 	
 	for (NSUInteger index = 0; index < count; index++)
 	{
-		YDBCKChangeSet *pendingChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
-		if (pendingChangeSet.hasChangesToDeletedRecordIDs || pendingChangeSet.hasChangesToModifiedRecords)
+		YDBCKChangeSet *pending_oldChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
+		if (pending_oldChangeSet.hasChangesToDeletedRecordIDs || pending_oldChangeSet.hasChangesToModifiedRecords)
 		{
-			YDBCKChangeSet *masterChangeSet = [oldChangeSets objectAtIndex:index];
+			YDBCKChangeSet *master_oldChangeSet = [self->oldChangeSets objectAtIndex:index];
 			
-			if (pendingChangeSet.hasChangesToDeletedRecordIDs)
-				masterChangeSet->deletedRecordIDs = pendingChangeSet->deletedRecordIDs;
+			if (pending_oldChangeSet.hasChangesToDeletedRecordIDs)
+				master_oldChangeSet->deletedRecordIDs = pending_oldChangeSet->deletedRecordIDs;
 			
-			if (pendingChangeSet.hasChangesToModifiedRecords)
-				masterChangeSet->modifiedRecords = pendingChangeSet->modifiedRecords;
+			if (pending_oldChangeSet.hasChangesToModifiedRecords)
+				master_oldChangeSet->modifiedRecords = pending_oldChangeSet->modifiedRecords;
 		}
 	}
 	
-	NSArray *pendingNewChangeSets = pendingQueue.pendingChangeSetsFromCurrentCommit;
-	for (YDBCKChangeSet *pendingChangeSet in pendingNewChangeSets)
+	NSArray *pending_newChangeSets = pendingQueue.changeSetsFromCurrentCommit;
+	for (YDBCKChangeSet *pending_newChangeSet in pending_newChangeSets)
 	{
-		pendingChangeSet.hasChangesToDeletedRecordIDs = NO;
-		pendingChangeSet.hasChangesToModifiedRecords = NO;
+		pending_newChangeSet.hasChangesToDeletedRecordIDs = NO;
+		pending_newChangeSet.hasChangesToModifiedRecords = NO;
 		
-		[oldChangeSets addObject:pendingChangeSet];
+		[oldChangeSets addObject:pending_newChangeSet];
 	}
+	
+	self.lockUUID = nil;
+	[masterQueueLock unlock];
 }
 
 #pragma mark Properties
@@ -157,20 +227,17 @@
  * So a single commit may possibly generate multiple changeSets.
  *
  * Thus a changeSet encompasses all the relavent CloudKit related changes per database, per commit.
- *
- * inFlightChangeSets   : the changeSets that have been handled over to CloudKit via CKModifyRecordsOperation's.
- * pendingChangeSetsXXX : the changeSets that are pending (not yet in-flight).
 **/
-- (NSArray *)inFlightChangeSets
+- (NSArray *)changeSetsFromPreviousCommits
 {
-	return [inFlightChangeSets copy];
-}
-- (NSArray *)pendingChangeSetsFromPreviousCommits
-{
+	NSAssert(self.isPendingQueue, @"Method can only be invoked on pendingQueue");
+	
 	return [oldChangeSets copy];
 }
-- (NSArray *)pendingChangeSetsFromCurrentCommit
+- (NSArray *)changeSetsFromCurrentCommit
 {
+	NSAssert(self.isPendingQueue, @"Method can only be invoked on pendingQueue");
+	
 	if ((newChangeSets == nil) && ([newChangeSetsDict count] > 0))
 	{
 		NSMutableArray *orderedChangeSets = [NSMutableArray arrayWithCapacity:[newChangeSetsDict count]];
@@ -221,22 +288,27 @@
 {
 	BOOL hasPendingChanges = NO;
 	
-	for (YDBCKChangeSet *prevChangeSet in oldChangeSets)
+	// Get lock for access to 'oldChangeSets'
+	[masterQueueLock lock];
 	{
-		YDBCKChangeRecord *prevRecord = [prevChangeSet->modifiedRecords objectForKey:rowidNumber];
-		if (prevRecord)
+		for (YDBCKChangeSet *prevChangeSet in oldChangeSets)
 		{
-			for (NSString *changedKey in prevRecord.record.changedKeys)
+			YDBCKChangeRecord *prevRecord = [prevChangeSet->modifiedRecords objectForKey:rowidNumber];
+			if (prevRecord)
 			{
-				id value = [prevRecord.record valueForKey:changedKey];
-				if (value) {
-					[record setValue:value forKey:changedKey];
+				for (NSString *changedKey in prevRecord.record.changedKeys)
+				{
+					id value = [prevRecord.record valueForKey:changedKey];
+					if (value) {
+						[record setValue:value forKey:changedKey];
+					}
 				}
+				
+				hasPendingChanges = YES;
 			}
-			
-			hasPendingChanges = YES;
 		}
 	}
+	[masterQueueLock unlock];
 	
 	return hasPendingChanges;
 }
@@ -255,6 +327,7 @@
 	NSAssert(self.isMasterQueue, @"Method can only be invoked on masterQueue");
 	NSAssert(pendingQueue.isPendingQueue, @"Bad parameter: 'pendingQueue' is not a pendingQueue");
 	NSAssert(pendingQueue->newChangeSets == nil, @"Cannot modify pendingQueue after newChangeSets has been fetched");
+	NSAssert([self.lockUUID isEqualToString:pendingQueue.lockUUID], @"Bad state: Not locked for pendingQueue");
 	
 	YDBCKChangeRecord *currentRecord = [[YDBCKChangeRecord alloc] initWithRecord:record];
 	currentRecord.canStoreOnlyChangedKeys = YES;
@@ -289,6 +362,7 @@
 	NSAssert(self.isMasterQueue, @"Method can only be invoked on masterQueue");
 	NSAssert(pendingQueue.isPendingQueue, @"Bad parameter: 'pendingQueue' is not a pendingQueue");
 	NSAssert(pendingQueue->newChangeSets == nil, @"Cannot modify pendingQueue after newChangeSets has been fetched");
+	NSAssert([self.lockUUID isEqualToString:pendingQueue.lockUUID], @"Bad state: Not locked for pendingQueue");
 	
 	YDBCKChangeRecord *currentRecord = [[YDBCKChangeRecord alloc] initWithRecord:record];
 	currentRecord.canStoreOnlyChangedKeys = YES;
@@ -364,6 +438,7 @@
 	NSAssert(self.isMasterQueue, @"Method can only be invoked on masterQueue");
 	NSAssert(pendingQueue.isPendingQueue, @"Bad parameter: 'pendingQueue' is not a pendingQueue");
 	NSAssert(pendingQueue->newChangeSets == nil, @"Cannot modify pendingQueue after newChangeSets has been fetched");
+	NSAssert([self.lockUUID isEqualToString:pendingQueue.lockUUID], @"Bad state: Not locked for pendingQueue");
 	
 	// Update previous changeSets (if needed)
 	
@@ -418,6 +493,7 @@
 	NSAssert(self.isMasterQueue, @"Method can only be invoked on masterQueue");
 	NSAssert(pendingQueue.isPendingQueue, @"Bad parameter: 'pendingQueue' is not a pendingQueue");
 	NSAssert(pendingQueue->newChangeSets == nil, @"Cannot modify pendingQueue after newChangeSets has been fetched");
+	NSAssert([self.lockUUID isEqualToString:pendingQueue.lockUUID], @"Bad state: Not locked for pendingQueue");
 	
 	// Update previous changeSets (if needed)
 	
@@ -493,6 +569,7 @@
 	NSAssert(self.isMasterQueue, @"Method can only be invoked on masterQueue");
 	NSAssert(pendingQueue.isPendingQueue, @"Bad parameter: 'pendingQueue' is not a pendingQueue");
 	NSAssert(pendingQueue->newChangeSets == nil, @"Cannot modify pendingQueue after newChangeSets has been fetched");
+	NSAssert([self.lockUUID isEqualToString:pendingQueue.lockUUID], @"Bad state: Not locked for pendingQueue");
 	
 	// Update previous changeSets (if needed)
 	
@@ -634,6 +711,7 @@
 	NSAssert(self.isMasterQueue, @"Method can only be invoked on masterQueue");
 	NSAssert(pendingQueue.isPendingQueue, @"Bad parameter: 'pendingQueue' is not a pendingQueue");
 	NSAssert(pendingQueue->newChangeSets == nil, @"Cannot modify pendingQueue after newChangeSets has been fetched");
+	NSAssert([self.lockUUID isEqualToString:pendingQueue.lockUUID], @"Bad state: Not locked for pendingQueue");
 	
 	// Update previous changeSets (if needed)
 	
@@ -694,6 +772,8 @@
 @synthesize hasChangesToDeletedRecordIDs;
 @synthesize hasChangesToModifiedRecords;
 
+@synthesize lockUUID = lockUUID;
+
 - (id)initWithUUID:(NSString *)inUuid
               prev:(NSString *)inPrev
 databaseIdentifier:(NSString *)inDatabaseIdentifier
@@ -721,6 +801,8 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 		
 		uuid = nil; // Will be set later when the changeSets are ordered
 		prev = nil; // Will be set later when the changeSets are ordered
+		
+		lockUUID = [[NSUUID UUID] UUIDString];
 	}
 	return self;
 }
@@ -731,8 +813,18 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 	emptyCopy->uuid = uuid;
 	emptyCopy->prev = prev;
 	emptyCopy->databaseIdentifier = databaseIdentifier;
+	emptyCopy->lockUUID = lockUUID;
 	
 	return emptyCopy;
+}
+
+- (instancetype)fullCopy
+{
+	YDBCKChangeSet *fullCopy = [self emptyCopy];
+	fullCopy->deletedRecordIDs = [deletedRecordIDs mutableCopy];
+	fullCopy->modifiedRecords = [modifiedRecords mutableCopy];
+	
+	return fullCopy;
 }
 
 - (NSArray *)recordIDsToDelete

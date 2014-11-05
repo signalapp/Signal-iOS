@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import <CloudKit/CloudKit.h>
 
+@class YDBCKChangeSet;
+
 
 @interface YDBCKChangeQueue : NSObject
 
@@ -12,21 +14,49 @@
  * as well as the corresponding information that we need to save to persistent storage.
 **/
 - (instancetype)initMasterQueue;
-- (instancetype)initMasterQueueWithChangeSets:(NSMutableArray *)changeSets;
 
-#pragma mark PendingQueue Lifecycle
+#pragma mark Lifecycle
+
+/**
+ * This method is used during extension registration
+ * after the old changeSets, from previous app run(s), have been restored.
+ * 
+ * This method MUST be called from within the readWriteTransaction that registers the extension.
+**/
+- (void)restoreOldChangeSets:(NSArray *)oldChangeSets;
+
+/**
+ * If there is NOT already an in-flight changeSet, then this method sets the appropriate flag(s),
+ * and returns the next changeSet ready for upload.
+**/
+- (YDBCKChangeSet *)makeInFlightChangeSet;
+
+/**
+ * ???
+**/
+- (void)dropInFlightChangeSet;
 
 /**
  * Invoke this method from 'prepareForReadWriteTransaction' in order to fetch a 'pendingQueue' object.
  *
  * This pendingQueue object will then be used to keep track of all the changes
  * that need to be written to the changesTable.
+ *
+ * This method MUST be called from within a readWriteTransaction.
+ *
+ * Keep in mind that the creation of a pendingQueue locks the masterQueue until
+ * that pendingQueue is merged via mergePendingQueue.
 **/
 - (YDBCKChangeQueue *)newPendingQueue;
 
 /**
  * This should be done AFTER the pendingQueue has been written to disk,
  * at the end of the flushPendingChangesToExtensionTables method.
+ * 
+ * This method MUST be called from within a readWriteTransaction.
+ * 
+ * Keep in mind that the creation of a pendingQueue locks the masterQueue until
+ * that pendingQueue is merged via mergePendingQueue.
 **/
 - (void)mergePendingQueue:(YDBCKChangeQueue *)pendingQueue;
 
@@ -46,13 +76,9 @@
  * So a single commit may possibly generate multiple changeSets.
  *
  * Thus a changeSet encompasses all the relavent CloudKit related changes per database, per commit.
- * 
- * inFlightChangeSets   : the changeSets that have been handled over to CloudKit via CKModifyRecordsOperation's.
- * pendingChangeSetsXXX : the changeSets that are pending (not yet in-flight).
 **/
-@property (nonatomic, strong, readonly) NSArray *inFlightChangeSets;
-@property (nonatomic, strong, readonly) NSArray *pendingChangeSetsFromPreviousCommits;
-@property (nonatomic, strong, readonly) NSArray *pendingChangeSetsFromCurrentCommit;
+@property (nonatomic, strong, readonly) NSArray *changeSetsFromPreviousCommits;
+@property (nonatomic, strong, readonly) NSArray *changeSetsFromCurrentCommit;
 
 #pragma mark Merge Handling
 

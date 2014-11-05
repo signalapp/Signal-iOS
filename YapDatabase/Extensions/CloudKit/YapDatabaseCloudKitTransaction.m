@@ -474,7 +474,7 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	
 	// Done!
 	
-	parentConnection->parent->masterQueue = [[YDBCKChangeQueue alloc] initMasterQueueWithChangeSets:orderedChangeSets];
+	[parentConnection->parent->masterQueue restoreOldChangeSets:orderedChangeSets];
 	return YES;
 }
 
@@ -1547,15 +1547,20 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		return;
 	}
 	
-	// Step 1 of 3:
+	// Step 1 of 5:
 	//
-	// Use YDBCKChangeQueue tools to generate a list of updates for the queue table.
-	// Also, make a list of the deletedRowids.
+	// Create a pendingQueue,
+	// and lock the masterQueue so we can make changes to it.
 	
 	YDBCKChangeQueue *masterQueue = parentConnection->parent->masterQueue;
 	YDBCKChangeQueue *pendingQueue = [masterQueue newPendingQueue];
 	
 	parentConnection->pendingQueue = pendingQueue;
+	
+	// Step 1 of 4:
+	//
+	// Use YDBCKChangeQueue tools to generate a list of updates for the queue table.
+	// Also, make a list of the deletedRowids.
 	
 	[parentConnection->dirtyRecordInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 		
@@ -1678,7 +1683,7 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		}
 	}];
 	
-	// Step 2 of 3:
+	// Step 2 of 4:
 	//
 	// Update record table.
 	// This includes deleting removed rowids, as well as inserting new records & updating modified records.
@@ -1734,12 +1739,12 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		}
 	}];
 	
-	// Step 3 of 3:
+	// Step 3 of 4:
 	//
 	// Update queue table.
 	// This includes any changes the pendingQueue table gives us.
 	
-	for (YDBCKChangeSet *oldChangeSet in pendingQueue.pendingChangeSetsFromPreviousCommits)
+	for (YDBCKChangeSet *oldChangeSet in pendingQueue.changeSetsFromPreviousCommits)
 	{
 		if (oldChangeSet.hasChangesToDeletedRecordIDs || oldChangeSet.hasChangesToModifiedRecords)
 		{
@@ -1747,10 +1752,17 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		}
 	}
 	
-	for (YDBCKChangeSet *newChangeSet in pendingQueue.pendingChangeSetsFromCurrentCommit)
+	for (YDBCKChangeSet *newChangeSet in pendingQueue.changeSetsFromCurrentCommit)
 	{
 		[self insertRowWithChangeSet:newChangeSet];
 	}
+	
+	// Step 4 of 4:
+	//
+	// Update the masterQueue,
+	// and unlock it so the next operation can be dispatched.
+	
+	[masterQueue mergePendingQueue:pendingQueue];
 }
 
 /**
