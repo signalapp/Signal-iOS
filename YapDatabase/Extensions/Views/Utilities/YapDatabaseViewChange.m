@@ -811,7 +811,7 @@
 			
 			finalRangeLength = MIN(originalRangeOpts.maxLength, maxFinalRangeLength);
 		}
-		else // if (rangeOpts.isFlexibleRange)
+		else // if (originalRangeOpts.isFlexibleRange)
 		{
 			// FLEXIBLE Range:
 			// 
@@ -954,7 +954,9 @@
 		} // end else if (rangeOpts.isFlexibleRange)
 		
 		
-		if ((originalRangeLength != finalRangeLength) || (originalRangeOffset != finalRangeOffset))
+		YapDatabaseViewRangeOptions *finalRangeOpts = [finalMappings _rangeOptionsForGroup:group];
+		
+		if ((finalRangeLength != finalRangeOpts.length) || (finalRangeOffset != finalRangeOpts.offset))
 		{
 			[finalMappings updateRangeOptionsForGroup:group withNewLength:finalRangeLength newOffset:finalRangeOffset];
 			rangeOptionsChanged = YES;
