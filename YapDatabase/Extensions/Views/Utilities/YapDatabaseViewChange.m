@@ -666,7 +666,7 @@
 		else if (rowChange->type == YapDatabaseViewChangeInsert)
 		{
 			// An INSERT operation may affect the ORIGINAL index value of operations that occurred AFTER it,
-			//   IF the later operation occurs at a greater or equal index value. ( -1 )
+			//   IF the later operation occurs at a greater (but not equal) index value.  ( -1 )
 			
 			for (j = i; j < rowChangesCount; j++)
 			{
@@ -675,7 +675,7 @@
 				if (laterRowChange->type == YapDatabaseViewChangeDelete ||
 				    laterRowChange->type == YapDatabaseViewChangeUpdate)
 				{
-					if (laterRowChange->originalIndex >= rowChange->opFinalIndex &&
+					if (laterRowChange->originalIndex > rowChange->opFinalIndex &&
 					   [laterRowChange->originalGroup isEqualToString:rowChange->finalGroup])
 					{
 						laterRowChange->originalIndex -= 1;
