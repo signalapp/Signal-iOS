@@ -95,7 +95,7 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	}
 	else if (![versionTag isEqualToString:oldVersionTag])
 	{
-		// Todo: Figure out how exactly to handle versionTag changes...
+		// Handle user-indicated change
 		
 		if (![self restoreMasterChangeQueue]) return NO;
 		if (![self repopulateTables]) return NO;
@@ -258,27 +258,54 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	
 	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
+		NSString *uuid = nil;
+		NSString *prev = nil;
+		NSString *dbid = nil;
+		NSData *blob1 = nil;
+		NSData *blob2 = nil;
+		
 		const unsigned char *_uuid = sqlite3_column_text(statement, 0);
 		int _uuidLen = sqlite3_column_bytes(statement, 0);
 		
-		const unsigned char *_prev = sqlite3_column_text(statement, 1);
-		int _prevLen = sqlite3_column_bytes(statement, 1);
+		uuid = [[NSString alloc] initWithBytes:_uuid length:_uuidLen encoding:NSUTF8StringEncoding];
 		
-		const unsigned char *_dbid = sqlite3_column_text(statement, 2);
-		int _dbidLen = sqlite3_column_bytes(statement, 2);
+		int column_type;
 		
-		const void *_blob1 = sqlite3_column_blob(statement, 3);
-		int _blob1Len = sqlite3_column_bytes(statement, 3);
+		column_type = sqlite3_column_type(statement, 1);
+		if (column_type != SQLITE_NULL)
+		{
+			const unsigned char *_prev = sqlite3_column_text(statement, 1);
+			int _prevLen = sqlite3_column_bytes(statement, 1);
+			
+			prev = [[NSString alloc] initWithBytes:_prev length:_prevLen encoding:NSUTF8StringEncoding];
+		}
 		
-		const void *_blob2 = sqlite3_column_blob(statement, 4);
-		int _blob2Len = sqlite3_column_bytes(statement, 4);
+		column_type = sqlite3_column_type(statement, 2);
+		if (column_type != SQLITE_NULL)
+		{
+			const unsigned char *_dbid = sqlite3_column_text(statement, 2);
+			int _dbidLen = sqlite3_column_bytes(statement, 2);
+			
+			dbid = [[NSString alloc] initWithBytes:_dbid length:_dbidLen encoding:NSUTF8StringEncoding];
+		}
 		
-		NSString *uuid = [[NSString alloc] initWithBytes:_uuid length:_uuidLen encoding:NSUTF8StringEncoding];
-		NSString *prev = [[NSString alloc] initWithBytes:_prev length:_prevLen encoding:NSUTF8StringEncoding];
-		NSString *dbid = [[NSString alloc] initWithBytes:_dbid length:_dbidLen encoding:NSUTF8StringEncoding];
+		column_type = sqlite3_column_type(statement, 3);
+		if (column_type != SQLITE_NULL)
+		{
+			const void *_blob1 = sqlite3_column_blob(statement, 3);
+			int _blob1Len = sqlite3_column_bytes(statement, 3);
+			
+			blob1 = [NSData dataWithBytesNoCopy:(void *)_blob1 length:_blob1Len freeWhenDone:NO];
+		}
 		
-		NSData *blob1 = [NSData dataWithBytesNoCopy:(void *)_blob1 length:_blob1Len freeWhenDone:NO];
-		NSData *blob2 = [NSData dataWithBytesNoCopy:(void *)_blob2 length:_blob2Len freeWhenDone:NO];
+		column_type = sqlite3_column_type(statement, 4);
+		if (column_type != SQLITE_NULL)
+		{
+			const void *_blob2 = sqlite3_column_blob(statement, 4);
+			int _blob2Len = sqlite3_column_bytes(statement, 4);
+			
+			blob2 = [NSData dataWithBytesNoCopy:(void *)_blob2 length:_blob2Len freeWhenDone:NO];
+		}
 		
 		YDBCKChangeSet *changeSet = [[YDBCKChangeSet alloc] initWithUUID:uuid
 		                                                            prev:prev
@@ -468,26 +495,28 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		}];
 	}];
 	
-	// Restart the uploads
-	
-	[self queueOperationsForChangeSets:orderedChangeSets];
-	
-	// Done!
+	// Restore the changeSets (set them as the oldChangeSets in the masterQueue)
 	
 	[parentConnection->parent->masterQueue restoreOldChangeSets:orderedChangeSets];
+	
+	// Restart the uploads (if needed)
+	
+	[parentConnection->parent asyncMaybeDispatchNextOperation];
+	
+	// Done!
 	return YES;
 }
 
 - (BOOL)populateTables
 {
-	// Todo...
+	// Todo: Implement populateTables method
 	
 	return YES;
 }
 
 - (BOOL)repopulateTables
 {
-	// Todo...
+	// Todo: Figure out how exactly to handle versionTag changes...
 	
 	return YES;
 }
@@ -555,7 +584,7 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	len += [str2 lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
 	len += [str3 lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
 	
-	void *buffer = malloc((size_t)len); // Todo: Use the stack if not too big (like YapDatabaseString)
+	void *buffer = malloc((size_t)len);
 	
 	NSUInteger available = len;
 	NSUInteger totalUsed = 0;
@@ -1331,6 +1360,13 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 {
 	YDBLogAutoTrace();
 	
+	// Proper API usage check
+	if (!databaseTransaction->isReadWriteTransaction)
+	{
+		@throw [self requiresReadWriteTransactionException:NSStringFromSelector(_cmd)];
+		return;
+	}
+	
 	// Mark this transaction as an uploadCompletionTransaction.
 	// This is handled a little differently from a regular (user-initiated) transaction.
 	
@@ -1364,6 +1400,13 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
                                                 potentialRowid:(NSNumber *)rowidNumber
 {
 	YDBLogAutoTrace();
+	
+	// Proper API usage check
+	if (!databaseTransaction->isReadWriteTransaction)
+	{
+		@throw [self requiresReadWriteTransactionException:NSStringFromSelector(_cmd)];
+		return;
+	}
 	
 	// Plan of action:
 	// - For each record, check to see what the original rowid is
@@ -1431,89 +1474,6 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		CKRecord *sanitizedRecord = [YapDatabaseCKRecord deserializeRecord:recordBlob];
 		
 		[parentConnection->modifiedRecords setObject:sanitizedRecord forKey:rowidNumber];
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark CKOperations
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (CKDatabase *)databaseForIdentifier:(id)dbID
-{
-	if (dbID == nil || dbID == [NSNull null])
-	{
-		return [[CKContainer defaultContainer] privateCloudDatabase];
-	}
-	else
-	{
-		NSAssert([dbID isKindOfClass:[NSString class]], @"Invalid databaseIdentifier");
-		
-		NSString *databaseIdentifier = (NSString *)dbID;
-		
-		CKDatabase *database = [databaseCache objectForKey:databaseIdentifier];
-		if (database == nil)
-		{
-			YapDatabaseCloudKitDatabaseBlock databaseBlock = parentConnection->parent->databaseBlock;
-			if (databaseBlock == nil) {
-				@throw [self misingDatabaseBlockException:databaseIdentifier];
-			}
-			
-			database = databaseBlock(databaseIdentifier);
-			if (database == nil) {
-				@throw [self missingDatabaseException:databaseIdentifier];
-			}
-			
-			if (databaseCache == nil)
-				databaseCache = [[NSMutableDictionary alloc] initWithCapacity:1];
-			
-			[databaseCache setObject:database forKey:databaseIdentifier];
-		}
-		
-		return database;
-	}
-}
-
-- (void)queueOperationsForChangeSets:(NSArray *)changeSets
-{
-	YDBLogAutoTrace();
-	
-	__weak YapDatabaseCloudKit *weakParent = parentConnection->parent;
-	NSOperationQueue *masterOperationQueue = parentConnection->parent->masterOperationQueue;
-	
-	for (YDBCKChangeSet *changeSet in changeSets)
-	{
-		CKDatabase *database = [self databaseForIdentifier:changeSet.databaseIdentifier];
-		
-		NSArray *recordsToSave = changeSet.recordsToSave;
-		NSArray *recordIDsToDelete = changeSet.recordIDsToDelete;
-		
-		CKModifyRecordsOperation *modifyRecordsOperation =
-		  [[CKModifyRecordsOperation alloc] initWithRecordsToSave:recordsToSave recordIDsToDelete:recordIDsToDelete];
-		modifyRecordsOperation.database = database;
-		
-		modifyRecordsOperation.modifyRecordsCompletionBlock =
-		    ^(NSArray *savedRecords, NSArray *deletedRecordIDs, NSError *operationError)
-		{
-			__strong YapDatabaseCloudKit *strongParent = weakParent;
-			if (strongParent)
-			{
-				if (operationError)
-				{
-					YDBLogError(@"Failed upload for (%@): %@", changeSet.databaseIdentifier, operationError);
-					
-					[strongParent handleFailedOperation:changeSet withError:operationError];
-				}
-				else
-				{
-					YDBLogVerbose(@"Finished upload for (%@):\n  savedRecords: %@\n  deletedRecordIDs: %@",
-					              changeSet.databaseIdentifier, savedRecords, deletedRecordIDs);
-					
-					[strongParent handleCompletedOperation:changeSet withSavedRecords:savedRecords];
-				}
-			}
-		};
-		
-		[masterOperationQueue addOperation:modifyRecordsOperation];
 	}
 }
 
@@ -1771,11 +1731,6 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 - (void)didCommitTransaction
 {
 	YDBLogAutoTrace();
-	
-	// Now that the commit has hit the disk,
-	// we can create all the NSOperation(s) with all the changes, and hand them to CloudKit.
-	
-	[self queueOperationsForChangeSets:parentConnection->pendingQueue.newChangeSets];
 	
 	// Forward to connection for further cleanup.
 	
@@ -2890,18 +2845,6 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Exceptions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (NSException *)misingDatabaseBlockException:(NSString *)databaseIdentifier
-{
-	NSString *reason = [NSString stringWithFormat:
-	  @"The YapDatabaseCloudKit instance was not configured with a databaseBlock (YapDatabaseCloudKitDatabaseBlock)."
-	  @" However, we encountered an object with a databaseIdentifier (%@)."
-	  @" The databaseBlock is required in order to discover the proper CKDatabase for the databaseIdentifier."
-	  @" Without the CKDatabase, we don't know where to send the corresponding CKRecord/CKRecordID.",
-	  databaseIdentifier];
-	
-	return [NSException exceptionWithName:@"YapDatabaseCloudKit" reason:reason userInfo:nil];
-}
 
 - (NSException *)missingDatabaseException:(NSString *)databaseIdentifier
 {

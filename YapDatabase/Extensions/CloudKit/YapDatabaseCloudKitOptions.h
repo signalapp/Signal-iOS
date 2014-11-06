@@ -4,9 +4,6 @@
 
 @interface YapDatabaseCloudKitOptions : NSObject <NSCopying>
 
-// Todo:
-// Maybe need something here to specify default value of recordInfo.recordStoredInRow
-
 /**
  * You can configure the extension to pre-filter all but a subset of collections.
  *
@@ -28,5 +25,8 @@
  * The default value is nil.
 **/
 @property (nonatomic, strong, readwrite) YapWhitelistBlacklist *allowedCollections;
+
+
+// Todo: Need ability to set default options for CKModifyRecordsOperation
 
 @end

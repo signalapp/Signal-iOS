@@ -1,4 +1,5 @@
 #import "YapDatabaseCloudKitTypes.h"
+#import "YapDatabaseCloudKitPrivate.h"
 
 
 @implementation YapDatabaseCloudKitRecordHandler

@@ -9,7 +9,7 @@
  * See YapDatabaseLogging.h for more information.
 **/
 #if DEBUG
-  static const int ydbLogLevel = YDB_LOG_LEVEL_INFO;
+  static const int ydbLogLevel = YDB_LOG_LEVEL_VERBOSE | YDB_LOG_FLAG_TRACE;
 #else
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
@@ -18,8 +18,15 @@
 
 @implementation YapDatabaseCloudKit
 {
-	OSSpinLock lock;
 	NSUInteger suspendCount;
+	OSSpinLock suspendCountLock;
+	
+	NSOperationQueue *masterOperationQueue;
+	
+	dispatch_queue_t dispatchOperationQueue;
+	
+	YapDatabaseConnection *completionDatabaseConnection;
+	YapCache *databaseCache;
 }
 
 /**
@@ -156,7 +163,9 @@
 		masterOperationQueue = [[NSOperationQueue alloc] init];
 		masterOperationQueue.maxConcurrentOperationCount = 1;
 		
-		lock = OS_SPINLOCK_INIT;
+		suspendCountLock = OS_SPINLOCK_INIT;
+		
+		dispatchOperationQueue = dispatch_queue_create("YapDatabaseCloudKit_dispatchOperation", DISPATCH_QUEUE_SERIAL);
 	}
 	return self;
 }
@@ -174,11 +183,11 @@
 {
 	BOOL isSuspended = NO;
 	
-	OSSpinLockLock(&lock);
+	OSSpinLockLock(&suspendCountLock);
 	{
 		isSuspended = (suspendCount > 0);
 	}
-	OSSpinLockUnlock(&lock);
+	OSSpinLockUnlock(&suspendCountLock);
 	
 	return isSuspended;
 }
@@ -248,7 +257,7 @@
 	NSUInteger oldSuspendCount = 0;
 	NSUInteger newSuspendCount = 0;
 	
-	OSSpinLockLock(&lock);
+	OSSpinLockLock(&suspendCountLock);
 	{
 		oldSuspendCount = suspendCount;
 		
@@ -261,14 +270,10 @@
 		
 		newSuspendCount = suspendCount;
 	}
-	OSSpinLockUnlock(&lock);
+	OSSpinLockUnlock(&suspendCountLock);
 	
 	if (overflow) {
 		YDBLogWarn(@"%@ - The suspendCount has reached NSUIntegerMax!", THIS_METHOD);
-	}
-	
-	if ((oldSuspendCount == 0) && (suspendCountIncrement > 0)) {
-		masterOperationQueue.suspended = YES;
 	}
 	
 	if (YDB_LOG_INFO && (suspendCountIncrement > 0)) {
@@ -286,7 +291,7 @@
 	BOOL underflow = 0;
 	NSUInteger newSuspendCount = 0;
 	
-	OSSpinLockLock(&lock);
+	OSSpinLockLock(&suspendCountLock);
 	{
 		if (suspendCount > 0)
 			suspendCount--;
@@ -295,14 +300,10 @@
 		
 		newSuspendCount = suspendCount;
 	}
-	OSSpinLockUnlock(&lock);
+	OSSpinLockUnlock(&suspendCountLock);
 	
 	if (underflow) {
 		YDBLogWarn(@"%@ - Attempting to resume with suspendCount already at zero.", THIS_METHOD);
-	}
-	
-	if (newSuspendCount == 0 && !underflow) {
-		masterOperationQueue.suspended = NO;
 	}
 	
 	if (YDB_LOG_INFO) {
@@ -310,6 +311,10 @@
 			YDBLogInfo(@"=> RESUMED");
 		else
 			YDBLogInfo(@"=> SUSPENDED : suspendCount-- => %lu", (unsigned long)newSuspendCount);
+	}
+	
+	if (newSuspendCount == 0 && !underflow) {
+		[self asyncMaybeDispatchNextOperation];
 	}
 	
 	return newSuspendCount;
@@ -346,9 +351,34 @@
 #pragma mark Private API
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+- (void)asyncMaybeDispatchNextOperation
+{
+	YDBLogAutoTrace();
+	
+	dispatch_async(dispatchOperationQueue, ^{ @autoreleasepool {
+		
+		if (self.isSuspended)
+		{
+			YDBLogVerbose(@"Skipping dispatch operation - suspended");
+			return;
+		}
+		
+		YDBCKChangeSet *nextChangeSet = [masterQueue makeInFlightChangeSet];
+		if (nextChangeSet == nil)
+		{
+			YDBLogVerbose(@"Skipping dispatch operation - upload in progress || nothing to upload");
+			return;
+		}
+		
+		YDBLogVerbose(@"Queueing operation: %@", nextChangeSet);
+		[self queueOperationsForChangeSets:@[ nextChangeSet ]];
+	}});
+}
+
+
 - (YapDatabaseConnection *)completionDatabaseConnection
 {
-	// Todo: Figure out better solution for this...
+	// Todo: Maybe figure out better solution for this ?
 	
 	if (completionDatabaseConnection == nil)
 	{
@@ -360,18 +390,106 @@
 	return completionDatabaseConnection;
 }
 
+- (CKDatabase *)databaseForIdentifier:(id)dbID
+{
+	if (dbID == nil || dbID == [NSNull null])
+	{
+		return [[CKContainer defaultContainer] privateCloudDatabase];
+	}
+	else
+	{
+		NSAssert([dbID isKindOfClass:[NSString class]], @"Invalid databaseIdentifier");
+		
+		NSString *databaseIdentifier = (NSString *)dbID;
+		
+		CKDatabase *database = [databaseCache objectForKey:databaseIdentifier];
+		if (database == nil)
+		{
+			if (databaseBlock == nil) {
+				@throw [self missingDatabaseBlockException:databaseIdentifier];
+			}
+			
+			database = databaseBlock(databaseIdentifier);
+			if (database == nil) {
+				@throw [self missingDatabaseBlockException:databaseIdentifier];
+			}
+			
+			if (databaseCache == nil)
+				databaseCache = [[YapCache alloc] initWithKeyClass:[NSString class] countLimit:4];
+			
+			[databaseCache setObject:database forKey:databaseIdentifier];
+		}
+		
+		return database;
+	}
+}
+
+- (void)queueOperationsForChangeSets:(NSArray *)changeSets
+{
+	YDBLogAutoTrace();
+	
+	__weak YapDatabaseCloudKit *weakSelf = self;
+	
+	for (YDBCKChangeSet *changeSet in changeSets)
+	{
+		CKDatabase *database = [self databaseForIdentifier:changeSet.databaseIdentifier];
+		
+		NSArray *recordsToSave = changeSet.recordsToSave;
+		NSArray *recordIDsToDelete = changeSet.recordIDsToDelete;
+		
+		CKModifyRecordsOperation *modifyRecordsOperation =
+		  [[CKModifyRecordsOperation alloc] initWithRecordsToSave:recordsToSave recordIDsToDelete:recordIDsToDelete];
+		modifyRecordsOperation.database = database;
+		
+		modifyRecordsOperation.modifyRecordsCompletionBlock =
+		    ^(NSArray *savedRecords, NSArray *deletedRecordIDs, NSError *operationError)
+		{
+			__strong YapDatabaseCloudKit *strongSelf = weakSelf;
+			if (strongSelf)
+			{
+				if (operationError)
+				{
+					YDBLogError(@"Failed upload for (%@): %@", changeSet.databaseIdentifier, operationError);
+					
+					// I've seen:
+					//
+					// - CKErrorPartialFailure
+					//   And operationError.userInfo returns a dictionary with a key of CKPartialErrorsByItemIDKey.
+					//   key = CKRecordID
+					//   value = CKError (with error code 14 = CKErrorServerRecordChanged)
+					
+					[strongSelf handleFailedOperation:changeSet withError:operationError];
+				}
+				else
+				{
+					YDBLogVerbose(@"Finished upload for (%@):\n  savedRecords: %@\n  deletedRecordIDs: %@",
+					              changeSet.databaseIdentifier, savedRecords, deletedRecordIDs);
+					
+					[strongSelf handleCompletedOperation:changeSet withSavedRecords:savedRecords];
+				}
+			}
+		};
+		
+		[masterOperationQueue addOperation:modifyRecordsOperation];
+	}
+}
+
 - (void)handleFailedOperation:(YDBCKChangeSet *)changeSet withError:(NSError *)error
 {
-	// Todo...
+	YDBLogAutoTrace();
+	
+	// Todo: How to handle failed operations...
 	
 	masterOperationQueue.suspended = YES;
 }
 
 - (void)handleCompletedOperation:(YDBCKChangeSet *)changeSet withSavedRecords:(NSArray *)savedRecords
 {
+	YDBLogAutoTrace();
+	
 	NSString *extName = self.registeredName;
 	
-	[[self completionDatabaseConnection] asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	[[self completionDatabaseConnection] asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
 		YapDatabaseCloudKitTransaction *ckTransaction = [transaction ext:extName];
 		
@@ -391,6 +509,22 @@
 			                                           potentialRowid:rowidNumber];
 		}
 	}];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Exceptions
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSException *)missingDatabaseBlockException:(NSString *)databaseIdentifier
+{
+	NSString *reason = [NSString stringWithFormat:
+	  @"The YapDatabaseCloudKit instance was not configured with a databaseBlock (YapDatabaseCloudKitDatabaseBlock)."
+	  @" However, we encountered an object with a databaseIdentifier (%@)."
+	  @" The databaseBlock is required in order to discover the proper CKDatabase for the databaseIdentifier."
+	  @" Without the CKDatabase, we don't know where to send the corresponding CKRecord/CKRecordID.",
+	  databaseIdentifier];
+	
+	return [NSException exceptionWithName:@"YapDatabaseCloudKit" reason:reason userInfo:nil];
 }
 
 @end

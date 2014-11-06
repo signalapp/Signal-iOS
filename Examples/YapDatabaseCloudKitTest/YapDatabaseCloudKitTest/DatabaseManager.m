@@ -340,7 +340,7 @@ NSString *const CloudKitZoneName = @"zone1";
 	
 	[cloudKitExtension suspend]; // Push registration
 	[cloudKitExtension suspend]; // Create zone(s)
-	[cloudKitExtension suspend]; // Create subscription(s)
+	[cloudKitExtension suspend]; // Create zone subscription(s)
 	
 	[database asyncRegisterExtension:cloudKitExtension withName:Ext_CloudKit completionBlock:^(BOOL ready) {
 		if (!ready) {

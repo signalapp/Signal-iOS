@@ -25,8 +25,6 @@
 @property (nonatomic, readwrite) BOOL hasChangesToDeletedRecordIDs;
 @property (nonatomic, readwrite) BOOL hasChangesToModifiedRecords;
 
-@property (nonatomic, readonly) NSString *lockUUID;
-
 @end
 
 
@@ -120,9 +118,10 @@
 }
 
 /**
- * ???
+ * If there is an in-flight changeSet,
+ * then this method removes it to make room for new in-flight changeSets.
 **/
-- (void)dropInFlightChangeSet
+- (void)removeCompletedInFlightChangeSet
 {
 	// Get lock for access to 'oldChangeSets'
 	[masterQueueLock lock];
@@ -162,7 +161,7 @@
 	pendingQueue->newChangeSetsDict = [[NSMutableDictionary alloc] initWithCapacity:1];
 	
 	[masterQueueLock lock];
-	self.lockUUID = pendingQueue.lockUUID;
+	self.lockUUID = pendingQueue.lockUUID = [[NSUUID UUID] UUIDString];
 	
 	return pendingQueue;
 }
@@ -772,8 +771,6 @@
 @synthesize hasChangesToDeletedRecordIDs;
 @synthesize hasChangesToModifiedRecords;
 
-@synthesize lockUUID = lockUUID;
-
 - (id)initWithUUID:(NSString *)inUuid
               prev:(NSString *)inPrev
 databaseIdentifier:(NSString *)inDatabaseIdentifier
@@ -790,7 +787,7 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 		[self deserializeDeletedRecordIDs:serializedDeletedRecordIDs];
 		[self deserializeModifiedRecords:serializedModifiedRecords];
 	}
-	return nil;
+	return self;
 }
 
 - (instancetype)initWithDatabaseIdentifier:(NSString *)inDatabaseIdentifier
@@ -801,8 +798,6 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 		
 		uuid = nil; // Will be set later when the changeSets are ordered
 		prev = nil; // Will be set later when the changeSets are ordered
-		
-		lockUUID = [[NSUUID UUID] UUIDString];
 	}
 	return self;
 }
@@ -813,7 +808,6 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 	emptyCopy->uuid = uuid;
 	emptyCopy->prev = prev;
 	emptyCopy->databaseIdentifier = databaseIdentifier;
-	emptyCopy->lockUUID = lockUUID;
 	
 	return emptyCopy;
 }

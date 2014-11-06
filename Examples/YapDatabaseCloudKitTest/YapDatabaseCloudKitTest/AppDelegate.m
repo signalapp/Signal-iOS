@@ -51,27 +51,27 @@
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {
-	
+	DDLogVerbose(@"applicationWillResignActive:");
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-	
+	DDLogVerbose(@"applicationDidEnterBackground:");
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-	
+	DDLogVerbose(@"applicationWillEnterForeground:");
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-	
+	DDLogVerbose(@"applicationDidBecomeActive:");
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-	
+	DDLogVerbose(@"applicationWillTerminate:");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +90,8 @@
 {
 	DDLogVerbose(@"Registered for Push notifications with token: %@", deviceToken);
 	
-	// Decrement suspend count
+	// Push registration complete.
+	// Decrement suspend count.
 	[MyDatabaseManager.cloudKitExtension resume];
 }
 
@@ -115,10 +116,12 @@
 - (void)startTest
 {
 	MyTodo *todo = [[MyTodo alloc] init];
-	todo.title = @"Mow the lawn";
+	todo.title = @"Send invoice";
 	
 	YapDatabaseConnection *databaseConnection = [MyDatabaseManager.database newConnection];
 	[databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		DDLogVerbose(@"Adding new todo...");
 		
 		[transaction setObject:todo forKey:todo.uuid inCollection:Collection_Todos];
 	}];

@@ -58,13 +58,12 @@ static NSString *const changeset_key_reset            = @"reset";
 	YapDatabaseCloudKitOptions *options;
 	
 	YDBCKChangeQueue *masterQueue;
-	NSOperationQueue *masterOperationQueue;
-	
-	YapDatabaseConnection *completionDatabaseConnection;
 }
 
 - (NSString *)recordTableName;
 - (NSString *)queueTableName;
+
+- (void)asyncMaybeDispatchNextOperation;
 
 - (void)handleFailedOperation:(YDBCKChangeSet *)changeSet withError:(NSError *)error;
 - (void)handleCompletedOperation:(YDBCKChangeSet *)changeSet withSavedRecords:(NSArray *)savedRecords;
@@ -130,8 +129,6 @@ static NSString *const changeset_key_reset            = @"reset";
 
 	__unsafe_unretained YapDatabaseCloudKitConnection *parentConnection;
 	__unsafe_unretained YapDatabaseReadTransaction *databaseTransaction;
-	
-	NSMutableDictionary *databaseCache;
 }
 
 - (id)initWithParentConnection:(YapDatabaseCloudKitConnection *)parentConnection

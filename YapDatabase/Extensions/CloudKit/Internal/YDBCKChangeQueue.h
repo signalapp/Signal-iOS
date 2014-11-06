@@ -32,9 +32,10 @@
 - (YDBCKChangeSet *)makeInFlightChangeSet;
 
 /**
- * ???
+ * If there is an in-flight changeSet,
+ * then this method removes it to make room for new in-flight changeSets.
 **/
-- (void)dropInFlightChangeSet;
+- (void)removeCompletedInFlightChangeSet;
 
 /**
  * Invoke this method from 'prepareForReadWriteTransaction' in order to fetch a 'pendingQueue' object.

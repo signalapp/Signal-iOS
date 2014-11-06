@@ -74,7 +74,8 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 	
 	void (^ContinueAfterCreateZone)(BOOL updateDatabase) = ^(BOOL updateDatabase){
 		
-		// Decrement suspend count
+		// Create zone complete.
+		// Decrement suspend count.
 		[MyDatabaseManager.cloudKitExtension resume];
 		
 		if (updateDatabase)
@@ -89,7 +90,8 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 	
 	void (^ContinueAfterCreateZoneSubscription)(BOOL updateDatabase) = ^(BOOL updateDatabase) {
 		
-		// Decrement suspend count
+		// Create zone subscription complete.
+		// Decrement suspend count.
 		[MyDatabaseManager.cloudKitExtension resume];
 		
 		if (updateDatabase)
@@ -234,11 +236,23 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		
 		if (operationError)
 		{
-			completionHandler(UIBackgroundFetchResultFailed);
+			// I've seen:
+			//
+			// - CKErrorNotAuthenticated - "CloudKit access was denied by user settings"; Retry after 3.0 seconds
+			
+			DDLogError(@"operationError: %@", operationError);
+			
+			if (completionHandler) {
+				completionHandler(UIBackgroundFetchResultFailed);
+			}
 		}
 		else
 		{
 			BOOL moreComing = weakOperation.moreComing;
+			
+			DDLogVerbose(@"fetchRecordChangesCompletionBlock:");
+			DDLogVerbose(@"deletedRecordIDs: %@", deletedRecordIDs);
+			DDLogVerbose(@"changedRecords: %@", changedRecords);
 			
 			[databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 				
@@ -269,6 +283,13 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 				// Update the items that were modified (by another device)
 				for (CKRecord *record in changedRecords)
 				{
+					if (![record.recordType isEqualToString:@"todo"])
+					{
+						// Ignore unknown record types.
+						// These are probably from a future version that this version doesn't support.
+						continue;
+					}
+					
 					NSString *key = nil;
 					NSString *collection = nil;
 					
@@ -279,7 +300,10 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 					
 					if (exists)
 					{
-						
+						[[transaction ext:Ext_CloudKit] mergeRecord:record
+												 databaseIdentifier:nil
+															 forKey:key
+													   inCollection:collection];
 					}
 					else
 					{
@@ -307,7 +331,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 				
 			} completionBlock:^{
 				
-				if (!moreComing)
+				if (!moreComing && completionHandler)
 				{
 					if (([deletedRecordIDs count] > 0) || ([changedRecords count] > 0)) {
 						completionHandler(UIBackgroundFetchResultNewData);

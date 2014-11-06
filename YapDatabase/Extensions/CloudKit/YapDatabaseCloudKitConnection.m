@@ -8,7 +8,7 @@
  * See YapDatabaseLogging.h for more information.
 **/
 #if DEBUG
-  static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
+  static const int ydbLogLevel = YDB_LOG_LEVEL_VERBOSE | YDB_LOG_FLAG_TRACE;
 #else
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
@@ -144,9 +144,6 @@
 {
 	if (dirtyRecordInfo == nil)
 		dirtyRecordInfo = [[NSMutableDictionary alloc] init];
-	
-	reset = NO;
-	isUploadCompletionTransaction = NO;
 }
 
 /**
@@ -156,11 +153,27 @@
 {
 	YDBLogAutoTrace();
 	
+	// Now that the commit has hit the disk,
+	// we can create all the NSOperation(s) with all the changes, and hand them to CloudKit.
+	
+	if (isUploadCompletionTransaction)
+	{
+		[parent->masterQueue removeCompletedInFlightChangeSet];
+		[parent asyncMaybeDispatchNextOperation];
+	}
+	else if ([deletedRowids count] > 0 || [modifiedRecords count] > 0 || reset)
+	{
+		[parent asyncMaybeDispatchNextOperation];
+	}
+	
 	dirtyRecordInfo = nil;
 	pendingAttachRequests = nil;
 	pendingQueue = nil;
 	deletedRowids = nil;
 	modifiedRecords = nil;
+	
+	reset = NO;
+	isUploadCompletionTransaction = NO;
 }
 
 /**
@@ -177,6 +190,9 @@
 	pendingQueue = nil;
 	deletedRowids = nil;
 	modifiedRecords = nil;
+	
+	reset = NO;
+	isUploadCompletionTransaction = NO;
 }
 
 - (NSArray *)internalChangesetKeys
