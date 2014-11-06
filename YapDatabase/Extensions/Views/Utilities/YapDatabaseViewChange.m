@@ -741,7 +741,7 @@
 	// The user may have various range options set for each group.
 	// Here we update the range length & offset to match the basic changes made to the group.
 	
-	__block BOOL rangeOptionsChanged = YES;
+	__block BOOL rangeOptionsChanged = NO;
 	
 	void (^UpdateRangeOptionsForGroup)(NSString *group);
 	UpdateRangeOptionsForGroup = ^(NSString *group){
@@ -1390,7 +1390,7 @@
 	// The user has a hard range on group "fiction" in the "bookSalesRank" view in order to display the top 20.
 	// So any items outside of that range must be filtered.
 	
-	__block BOOL rangeOptionsChanged = YES;
+	__block BOOL rangeOptionsChanged = NO;
 	
 	void (^ApplyRangeOptionsForGroup)(NSString *group);
 	ApplyRangeOptionsForGroup = ^(NSString *group)
