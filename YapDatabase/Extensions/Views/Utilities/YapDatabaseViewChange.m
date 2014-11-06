@@ -666,7 +666,7 @@
 		else if (rowChange->type == YapDatabaseViewChangeInsert)
 		{
 			// An INSERT operation may affect the ORIGINAL index value of operations that occurred AFTER it,
-			//   IF the later operation occurs at a greater or equal index value. ( -1 )
+			//   IF the later operation occurs at a greater (but not equal) index value.  ( -1 )
 			
 			for (j = i; j < rowChangesCount; j++)
 			{
@@ -675,7 +675,7 @@
 				if (laterRowChange->type == YapDatabaseViewChangeDelete ||
 				    laterRowChange->type == YapDatabaseViewChangeUpdate)
 				{
-					if (laterRowChange->originalIndex >= rowChange->opFinalIndex &&
+					if (laterRowChange->originalIndex > rowChange->opFinalIndex &&
 					   [laterRowChange->originalGroup isEqualToString:rowChange->finalGroup])
 					{
 						laterRowChange->originalIndex -= 1;
@@ -741,7 +741,7 @@
 	// The user may have various range options set for each group.
 	// Here we update the range length & offset to match the basic changes made to the group.
 	
-	__block BOOL rangeOptionsChanged = YES;
+	__block BOOL rangeOptionsChanged = NO;
 	
 	void (^UpdateRangeOptionsForGroup)(NSString *group);
 	UpdateRangeOptionsForGroup = ^(NSString *group){
@@ -811,7 +811,7 @@
 			
 			finalRangeLength = MIN(originalRangeOpts.maxLength, maxFinalRangeLength);
 		}
-		else // if (rangeOpts.isFlexibleRange)
+		else // if (originalRangeOpts.isFlexibleRange)
 		{
 			// FLEXIBLE Range:
 			// 
@@ -954,7 +954,9 @@
 		} // end else if (rangeOpts.isFlexibleRange)
 		
 		
-		if ((originalRangeLength != finalRangeLength) || (originalRangeOffset != finalRangeOffset))
+		YapDatabaseViewRangeOptions *finalRangeOpts = [finalMappings _rangeOptionsForGroup:group];
+		
+		if ((finalRangeLength != finalRangeOpts.length) || (finalRangeOffset != finalRangeOpts.offset))
 		{
 			[finalMappings updateRangeOptionsForGroup:group withNewLength:finalRangeLength newOffset:finalRangeOffset];
 			rangeOptionsChanged = YES;
@@ -1390,7 +1392,7 @@
 	// The user has a hard range on group "fiction" in the "bookSalesRank" view in order to display the top 20.
 	// So any items outside of that range must be filtered.
 	
-	__block BOOL rangeOptionsChanged = YES;
+	__block BOOL rangeOptionsChanged = NO;
 	
 	void (^ApplyRangeOptionsForGroup)(NSString *group);
 	ApplyRangeOptionsForGroup = ^(NSString *group)
