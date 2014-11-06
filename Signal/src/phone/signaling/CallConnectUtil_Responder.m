@@ -40,7 +40,7 @@
                                                                                     untilCancelled:[callController untilCancelledToken]];
     
     return [futureSignalConnection thenTry:^id(HttpManager* httpManager) {
-        require([httpManager isKindOfClass:httpManager.class]);
+        require([httpManager isKindOfClass:HttpManager.class]);
         
         HttpResponse*(^serverRequestHandler)(HttpRequest*) = ^(HttpRequest* remoteRequest) {
             return [self respondToServerRequest:remoteRequest

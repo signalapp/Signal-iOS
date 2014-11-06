@@ -81,8 +81,11 @@
         BloomFilter* filter = [phoneNumberDirectoryFilter bloomFilter];
         NSDate* retryDate = [NSDate dateWithTimeInterval:DIRECTORY_UPDATE_RETRY_PERIOD
                                                sinceDate:[NSDate date]];
-        [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterWithBloomFilter:filter
-                                                                   andExpirationDate:retryDate];
+        @synchronized(self) {
+            phoneNumberDirectoryFilter = [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterWithBloomFilter:filter
+                                                                                            andExpirationDate:retryDate];
+        }
+        
         [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_FAILED object:nil];
     }];
 }
