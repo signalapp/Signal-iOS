@@ -1,12 +1,12 @@
 #import "CallConnectUtil.h"
 #import "CallConnectUtil_Initiator.h"
 #import "CallConnectUtil_Responder.h"
-#import "SignalUtil.h"
+#import "HttpRequest+SignalUtil.h"
 #import "Util.h"
 
 @implementation CallConnectUtil
 
-+(TOCFuture*) asyncInitiateCallToRemoteNumber:(PhoneNumber *)remoteNumber
++ (TOCFuture*)asyncInitiateCallToRemoteNumber:(PhoneNumber*)remoteNumber
                             andCallController:(CallController*)callController {
     require(remoteNumber != nil);
     require(callController != nil);
@@ -14,7 +14,7 @@
                                                   withCallController:callController];
 }
 
-+(TOCFuture*) asyncRespondToCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor
++ (TOCFuture*)asyncRespondToCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor
                                     andCallController:(CallController*)callController {
     require(sessionDescriptor != nil);
     require(callController != nil);
@@ -22,7 +22,7 @@
                                                                   andCallController:callController];
 }
 
-+(TOCFuture*) asyncSignalTooBusyToAnswerCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor {
++ (TOCFuture*)asyncSignalTooBusyToAnswerCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor {
     require(sessionDescriptor != nil);
     return [CallConnectUtil_Responder asyncSignalTooBusyToAnswerCallWithSessionDescriptor:sessionDescriptor];
 }

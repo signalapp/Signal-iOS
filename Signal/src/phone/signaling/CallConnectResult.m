@@ -1,18 +1,25 @@
 #import "CallConnectResult.h"
 
+@interface CallConnectResult ()
+
+@property (nonatomic, readwrite) NSString* shortAuthenticationString;
+@property (nonatomic, readwrite) AudioSocket* audioSocket;
+
+@end
+
 @implementation CallConnectResult
 
-@synthesize audioSocket, shortAuthenticationString;
-
-+(CallConnectResult*) callConnectResultWithShortAuthenticationString:(NSString*)shortAuthenticationString
-                                                      andAudioSocket:(AudioSocket*)audioSocket {
-    require(shortAuthenticationString != nil);
-    require(audioSocket != nil);
+- (instancetype)initWithShortAuthenticationString:(NSString*)shortAuthenticationString
+                                   andAudioSocket:(AudioSocket*)audioSocket {
+    if (self = [super init]) {
+        require(shortAuthenticationString != nil);
+        require(audioSocket != nil);
+        
+        self.shortAuthenticationString = shortAuthenticationString;
+        self.audioSocket = audioSocket;
+    }
     
-    CallConnectResult* result = [CallConnectResult new];
-    result->shortAuthenticationString = shortAuthenticationString;
-    result->audioSocket = audioSocket;
-    return result;
+    return self;
 }
 
 @end

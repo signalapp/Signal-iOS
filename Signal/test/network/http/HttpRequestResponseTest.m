@@ -4,7 +4,7 @@
 #import "HttpSocket.h"
 #import "HttpRequestUtil.h"
 #import "PreferencesUtil.h"
-#import "SignalUtil.h"
+#import "HttpRequest+SignalUtil.h"
 #import "SGNKeychainUtil.h"
 #import <UICKeyChainStore/UICKeyChainStore.h>
 
@@ -18,10 +18,10 @@
 
 //-(void) testRequestToInitiate {
 //    [Environment setCurrent:testEnv];
-//    [SGNKeychainUtil setLocalNumberTo:[PhoneNumber phoneNumberFromE164:@"+12211231235"]];
+//    [SGNKeychainUtil setLocalNumberTo:[[PhoneNumber alloc] initFromE164:@"+12211231235"]];
 //    [UICKeyChainStore setString:@"shall_not_password" forKey:@"Password"];
 //    [Environment.preferences setValueForKey:@"PasswordCounter" toValue:@2357];
-//    HttpRequest* h = [HttpRequest httpRequestToInitiateToRemoteNumber:[PhoneNumber phoneNumberFromE164:@"+19023334444"]];
+//    HttpRequest* h = [HttpRequest httpRequestToInitiateToRemoteNumber:[[PhoneNumber alloc] initFromE164:@"+19023334444"]];
 //    test([[h method] isEqualToString:@"GET"]);
 //    test([[h location] isEqualToString:@"/session/1/+19023334444"]);
 //    NSLog(@"HTTP rep: %@", h.toHttp);
@@ -37,7 +37,7 @@
 }
 //-(void) testRequestToRing {
 //    [Environment setCurrent:testEnv];
-//    [SGNKeychainUtil setLocalNumberTo:[PhoneNumber phoneNumberFromE164:@"+19025555555"]];
+//    [SGNKeychainUtil setLocalNumberTo:[[PhoneNumber alloc] initFromE164:@"+19025555555"]];
 //    [UICKeyChainStore setString:@"shall_not_password" forKey:@"Password"];
 //    [UICKeyChainStore setString:[@0 stringValue] forKey:@"PasswordCounter"];
 //    HttpRequest* h = [HttpRequest httpRequestToRingWithSessionId:458847238];

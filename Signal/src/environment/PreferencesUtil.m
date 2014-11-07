@@ -34,8 +34,7 @@
     NSDate* expiration = [self tryGetValueForKey:PHONE_DIRECTORY_EXPIRATION];
     if (hashCount == 0 || data.length == 0 || expiration == nil) return nil;
     BloomFilter* bloomFilter = [[BloomFilter alloc] initWithHashCount:hashCount andData:data];
-    return [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterWithBloomFilter:bloomFilter
-                                                               andExpirationDate:expiration];
+    return [[PhoneNumberDirectoryFilter alloc] initWithBloomFilter:bloomFilter andExpirationDate:expiration];
 }
 -(void) setSavedPhoneNumberDirectory:(PhoneNumberDirectoryFilter*)phoneNumberDirectoryFilter {
     [self setValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_DATA_KEY toValue:nil];

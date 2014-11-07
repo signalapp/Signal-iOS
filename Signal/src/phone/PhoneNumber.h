@@ -9,31 +9,32 @@
  * Everything that expects a valid phone number should take a PhoneNumber, not a string, to avoid stringly typing.
  *
  */
-@interface PhoneNumber : NSObject {
-@private NBPhoneNumber* phoneNumber;
-@private NSString* e164;
-}
+@interface PhoneNumber : NSObject
 
-+(PhoneNumber*) phoneNumberFromText:(NSString*)text andRegion:(NSString*)regionCode;
-+(PhoneNumber*) phoneNumberFromUserSpecifiedText:(NSString*)text;
-+(PhoneNumber*) phoneNumberFromE164:(NSString*)text;
+- (instancetype)initFromText:(NSString*)text andRegion:(NSString*)regionCode;
+- (instancetype)initFromUserSpecifiedText:(NSString*)text;
+- (instancetype)initFromE164:(NSString*)text;
 
-+(PhoneNumber*) tryParsePhoneNumberFromText:(NSString*)text fromRegion:(NSString*)regionCode;
-+(PhoneNumber*) tryParsePhoneNumberFromUserSpecifiedText:(NSString*)text;
-+(PhoneNumber*) tryParsePhoneNumberFromE164:(NSString*)text;
++ (PhoneNumber*)phoneNumberFromText:(NSString*)text andRegion:(NSString*)regionCode;
++ (PhoneNumber*)phoneNumberFromUserSpecifiedText:(NSString*)text;
++ (PhoneNumber*)phoneNumberFromE164:(NSString*)text;
+
++ (PhoneNumber*)tryParsePhoneNumberFromText:(NSString*)text fromRegion:(NSString*)regionCode;
++ (PhoneNumber*)tryParsePhoneNumberFromUserSpecifiedText:(NSString*)text;
++ (PhoneNumber*)tryParsePhoneNumberFromE164:(NSString*)text;
 
 
-+(NSString*) bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString*)input;
-+(NSString*) bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString*)input
-                                             withSpecifiedCountryCodeString:(NSString*) countryCodeString;
++ (NSString*)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString*)input;
++ (NSString*)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString*)input
+                                             withSpecifiedCountryCodeString:(NSString*)countryCodeString;
 
-+(NSString*) regionCodeFromCountryCodeString:(NSString*) countryCodeString;
++ (NSString*)regionCodeFromCountryCodeString:(NSString*)countryCodeString;
 
--(NSURL*) toSystemDialerURL;
--(NSString *)toE164;
--(NSString *)localizedDescriptionForUser;
--(NSNumber*)getCountryCode;
--(BOOL)isValid;
--(BOOL)resolvesInternationallyTo:(PhoneNumber*) otherPhoneNumber;
+- (NSURL*)toSystemDialerURL;
+- (NSString*)toE164;
+- (NSString*)localizedDescriptionForUser;
+- (NSNumber*)getCountryCode;
+- (BOOL)isValid;
+- (BOOL)resolvesInternationallyTo:(PhoneNumber*)otherPhoneNumber;
 
 @end

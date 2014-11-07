@@ -192,7 +192,7 @@
 -(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     ResponderSessionDescriptor* call;
     @try {
-        call = [ResponderSessionDescriptor responderSessionDescriptorFromEncryptedRemoteNotification:userInfo];
+        call = [[ResponderSessionDescriptor alloc] initFromEncryptedRemoteNotification:userInfo];
         DDLogDebug(@"Received remote notification. Parsed session descriptor: %@.", call);
     } @catch (OperationFailed* ex) {
         DDLogError(@"Error parsing remote notification. Error: %@.", ex);

@@ -10,7 +10,7 @@
 #import "PushManager.h"
 #import "RegisterViewController.h"
 #import "RPServerRequestsManager.h"
-#import "SignalUtil.h"
+#import "HttpRequest+SignalUtil.h"
 #import "SGNKeychainUtil.h"
 #import "ThreadManager.h"
 #import "Util.h"

@@ -9,10 +9,10 @@
  */
 @interface CallConnectResult : NSObject
 
-@property (nonatomic,readonly) NSString* shortAuthenticationString;
-@property (nonatomic,readonly) AudioSocket* audioSocket;
+@property (nonatomic, readonly) NSString* shortAuthenticationString;
+@property (nonatomic, readonly) AudioSocket* audioSocket;
 
-+(CallConnectResult*) callConnectResultWithShortAuthenticationString:(NSString*)shortAuthenticationString
-                                                      andAudioSocket:(AudioSocket*)audioSocket;
+- (instancetype)initWithShortAuthenticationString:(NSString*)shortAuthenticationString
+                                   andAudioSocket:(AudioSocket*)audioSocket;
 
 @end

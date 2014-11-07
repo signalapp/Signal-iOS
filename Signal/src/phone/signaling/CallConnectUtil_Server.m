@@ -1,11 +1,10 @@
 #import "CallConnectUtil_Server.h"
-
 #import "AudioSocket.h"
 #import "CallConnectResult.h"
 #import "DnsManager.h"
 #import "IgnoredPacketFailure.h"
 #import "LowLatencyConnector.h"
-#import "SignalUtil.h"
+#import "HttpRequest+SignalUtil.h"
 #import "UdpSocket.h"
 #import "Util.h"
 #import "ZrtpManager.h"
@@ -16,19 +15,19 @@
 
 @implementation CallConnectUtil_Server
 
-+(TOCFuture*) asyncConnectToDefaultSignalingServerUntilCancelled:(TOCCancelToken*)untilCancelledToken {
++ (TOCFuture*)asyncConnectToDefaultSignalingServerUntilCancelled:(TOCCancelToken*)untilCancelledToken {
     return [self asyncConnectToSignalingServerAt:Environment.getSecureEndPointToDefaultRelayServer
                                   untilCancelled:untilCancelledToken];
 }
 
-+(TOCFuture*) asyncConnectToSignalingServerNamed:(NSString*)name
++ (TOCFuture*)asyncConnectToSignalingServerNamed:(NSString*)name
                                   untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(name != nil);
     return [self asyncConnectToSignalingServerAt:[Environment getSecureEndPointToSignalingServerNamed:name]
                                   untilCancelled:untilCancelledToken];
 }
 
-+(TOCFuture*) asyncConnectToSignalingServerAt:(SecureEndPoint*)location
++ (TOCFuture*)asyncConnectToSignalingServerAt:(SecureEndPoint*)location
                                untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(location != nil);
     
@@ -43,14 +42,14 @@
 }
 
 
-+(TOCFuture*) asyncConnectCallOverRelayDescribedInResponderSessionDescriptor:(ResponderSessionDescriptor*)session
++ (TOCFuture*)asyncConnectCallOverRelayDescribedInResponderSessionDescriptor:(ResponderSessionDescriptor*)session
                                                           withCallController:(CallController*)callController {
     require(session != nil);
     require(callController != nil);
     
-    InitiatorSessionDescriptor* equivalentSession = [InitiatorSessionDescriptor initiatorSessionDescriptorWithSessionId:session.sessionId
-                                                                                                     andRelayServerName:session.relayServerName
-                                                                                                           andRelayPort:session.relayUdpPort];
+    InitiatorSessionDescriptor* equivalentSession = [[InitiatorSessionDescriptor alloc] initWithSessionId:session.sessionId
+                                                                                       andRelayServerName:session.relayServerName
+                                                                                             andRelayPort:session.relayUdpPort];
     
     NSArray* interopOptions = session.interopVersion == 0
                             ? @[ENVIRONMENT_LEGACY_OPTION_RTP_PADDING_BIT_IMPLIES_EXTENSION_BIT_AND_TWELVE_EXTRA_ZERO_BYTES_IN_HEADER]
@@ -62,7 +61,7 @@
                                                               andInteropOptions:interopOptions];
 }
 
-+(TOCFuture*) asyncConnectCallOverRelayDescribedInInitiatorSessionDescriptor:(InitiatorSessionDescriptor*)session
++ (TOCFuture*)asyncConnectCallOverRelayDescribedInInitiatorSessionDescriptor:(InitiatorSessionDescriptor*)session
                                                           withCallController:(CallController*)callController
                                                            andInteropOptions:(NSArray*)interopOptions {
     require(session != nil);
@@ -81,12 +80,12 @@
         
         NSString* sas = [[zrtpResult masterSecret] shortAuthenticationString];
         
-        return [CallConnectResult callConnectResultWithShortAuthenticationString:sas
-                                                                  andAudioSocket:audioSocket];
+        return [[CallConnectResult alloc] initWithShortAuthenticationString:sas
+                                                             andAudioSocket:audioSocket];
     }];
 }
 
-+(TOCFuture*) asyncRepeatedlyAttemptConnectToUdpRelayDescribedBy:(InitiatorSessionDescriptor*)sessionDescriptor
++ (TOCFuture*)asyncRepeatedlyAttemptConnectToUdpRelayDescribedBy:(InitiatorSessionDescriptor*)sessionDescriptor
                                               withCallController:(CallController*)callController {
     
     require(sessionDescriptor != nil);
@@ -105,13 +104,13 @@
                                           untilCancelled:[callController untilCancelledToken]];
     
     return [futureRelayedUdpSocket catchTry:^(id error) {
-        return [TOCFuture futureWithFailure:[CallTermination callTerminationOfType:CallTerminationType_BadInteractionWithServer
-                                                                       withFailure:error
-                                                                    andMessageInfo:@"Timed out on all attempts to contact relay."]];
+        return [TOCFuture futureWithFailure:[[CallTermination alloc] initWithType:CallTerminationTypeBadInteractionWithServer
+                                                                       andFailure:error
+                                                                   andMessageInfo:@"Timed out on all attempts to contact relay."]];
     }];
 }
 
-+(TOCFuture*) asyncAttemptResolveThenConnectToUdpRelayDescribedBy:(InitiatorSessionDescriptor*)sessionDescriptor
++ (TOCFuture*)asyncAttemptResolveThenConnectToUdpRelayDescribedBy:(InitiatorSessionDescriptor*)sessionDescriptor
                                                    untilCancelled:(TOCCancelToken*)untilCancelledToken
                                                  withErrorHandler:(ErrorHandlerBlock)errorHandler {
     
@@ -139,7 +138,7 @@
     }];
 }
 
-+(TOCFuture*) asyncAttemptConnectToUdpRelayDescribedBy:(IpEndPoint*)remoteEndPoint
++ (TOCFuture*)asyncAttemptConnectToUdpRelayDescribedBy:(IpEndPoint*)remoteEndPoint
                                          withSessionId:(int64_t)sessionId
                                         untilCancelled:(TOCCancelToken*)untilCancelledToken
                                       withErrorHandler:(ErrorHandlerBlock)errorHandler {
@@ -170,7 +169,7 @@
     return futureRelaySocket;
 }
 
-+(TOCFuture*) asyncFirstPacketReceivedAfterStartingSocket:(UdpSocket*)udpSocket
++ (TOCFuture*)asyncFirstPacketReceivedAfterStartingSocket:(UdpSocket*)udpSocket
                                            untilCancelled:(TOCCancelToken*)untilCancelledToken
                                          withErrorHandler:(ErrorHandlerBlock)errorHandler {
     

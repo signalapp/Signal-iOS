@@ -26,8 +26,8 @@ enum AudioProfile {
 -(void) setAudioProfile:(enum AudioProfile) profile;
 -(enum AudioProfile) getCurrentAudioProfile;
 
--(void) respondToProgressChange:(enum CallProgressType) progressType forLocallyInitiatedCall:(BOOL) initiatedLocally;
--(void) respondToTerminationType:(enum CallTerminationType) terminationType;
+-(void) respondToProgressChange:(CallProgressType) progressType forLocallyInitiatedCall:(BOOL) initiatedLocally;
+-(void) respondToTerminationType:(CallTerminationType) terminationType;
 
 -(BOOL) toggleSpeakerPhone;
 -(void) cancellAllAudio;

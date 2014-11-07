@@ -4,7 +4,7 @@
 
 @implementation NSDictionary (Util)
 
-- (NSString*)encodedAsJson {
+- (NSString*)encodedAsJSON {
     NSError* jsonSerializeError = nil;
     NSData* data = [NSJSONSerialization dataWithJSONObject:self
                                                    options:0

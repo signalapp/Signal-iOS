@@ -8,18 +8,15 @@
  * The bloom filter expires periodically, and must be updated from the whispersystem servers.
  *
  */
-@interface PhoneNumberDirectoryFilter : NSObject {
-@private NSDate* expirationDate;
-}
+@interface PhoneNumberDirectoryFilter : NSObject
 
-@property (nonatomic,readonly) BloomFilter* bloomFilter;
+@property (strong, nonatomic, readonly, getter=getExpirationDate) NSDate* expirationDate;
+@property (nonatomic, readonly) BloomFilter* bloomFilter;
 
-+(PhoneNumberDirectoryFilter*) phoneNumberDirectoryFilterDefault;
-+(PhoneNumberDirectoryFilter*) phoneNumberDirectoryFilterWithBloomFilter:(BloomFilter*)bloomFilter
-                                                       andExpirationDate:(NSDate*)expirationDate;
-+(PhoneNumberDirectoryFilter*) phoneNumberDirectoryFilterFromURLResponse:(NSHTTPURLResponse*)response body:(NSData*)data;
+- (instancetype)initDefault;
+- (instancetype)initWithBloomFilter:(BloomFilter*)bloomFilter andExpirationDate:(NSDate*)expirationDate;
+- (instancetype)initFromURLResponse:(NSHTTPURLResponse*)response body:(NSData*)data;
 
--(bool) containsPhoneNumber:(PhoneNumber*)phoneNumber;
--(NSDate*) getExpirationDate;
+- (bool)containsPhoneNumber:(PhoneNumber*)phoneNumber;
 
 @end

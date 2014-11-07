@@ -215,16 +215,16 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 -(void) onCallProgressed:(CallProgress*)latestProgress {
-    BOOL showAcceptRejectButtons = !_callState.initiatedLocally && [latestProgress type] <= CallProgressType_Ringing;
+    BOOL showAcceptRejectButtons = !_callState.initiatedLocally && [latestProgress type] <= CallProgressTypeRinging;
     [self displayAcceptRejectButtons:showAcceptRejectButtons];
     [AppAudioManager.sharedInstance respondToProgressChange:[latestProgress type]
                                     forLocallyInitiatedCall:_callState.initiatedLocally];
     
-    if ([latestProgress type] == CallProgressType_Ringing) {
+    if ([latestProgress type] == CallProgressTypeRinging) {
         [self startRingingAnimation];
     }
     
-    if ([latestProgress type] == CallProgressType_Terminated) {
+    if ([latestProgress type] == CallProgressTypeTerminated) {
         [_callState.futureTermination thenDo:^(CallTermination* termination) {
             [self onCallEnded:termination];
             [AppAudioManager.sharedInstance respondToTerminationType:[termination type]];
@@ -238,7 +238,7 @@ static NSInteger connectingFlashCounter = 0;
     [self updateViewForTermination:termination];
     [Environment.phoneManager hangupOrDenyCall];
     
-    [self dismissViewWithOptionalDelay: [termination type] != CallTerminationType_ReplacedByNext ];
+    [self dismissViewWithOptionalDelay: [termination type] != CallTerminationTypeReplacedByNext ];
 }
 
 - (void)endCallTapped {
@@ -268,7 +268,7 @@ static NSInteger connectingFlashCounter = 0;
 -(void) updateViewForTermination:(CallTermination*) termination{
     NSString* message = termination.localizedDescriptionForUser;
     
-    if ([termination type] == CallTerminationType_ServerMessage) {
+    if ([termination type] == CallTerminationTypeServerMessage) {
         CallFailedServerMessage* serverMessage = [termination messageInfo];
         message = [message stringByAppendingString:[serverMessage text]];
     }

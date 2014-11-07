@@ -56,7 +56,7 @@
         else return nil;
     
     }@catch (SecurityFailure *exception) {
-        [callController terminateWithReason:CallTerminationType_HandshakeFailed withFailureInfo:exception andRelatedInfo:packet];
+        [callController terminateWithReason:CallTerminationTypeHandshakeFailed withFailureInfo:exception andRelatedInfo:packet];
         return nil;
     } @catch (OperationFailed* ex) {
         [badPacketLogger markOccurrence:ex];
@@ -67,7 +67,7 @@
 -(HandshakePacket*) handleHello:(HandshakePacket*) packet {
     foreignHello = [packet parsedAsHello];
     
-    [callController advanceCallProgressTo:CallProgressType_Securing];
+    [callController advanceCallProgressTo:CallProgressTypeSecuring];
 
     keyAgreementParticipant = [self retrieveKeyAgreementParticpant];
     

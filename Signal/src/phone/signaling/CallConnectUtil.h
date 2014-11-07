@@ -16,14 +16,14 @@
 @interface CallConnectUtil : NSObject
 
 /// Result has type Future(CallConnectResult)
-+(TOCFuture*) asyncInitiateCallToRemoteNumber:(PhoneNumber*)remoteNumber
++ (TOCFuture*)asyncInitiateCallToRemoteNumber:(PhoneNumber*)remoteNumber
                             andCallController:(CallController*)callController;
 
 /// Result has type Future(CallConnectResult)
-+(TOCFuture*) asyncRespondToCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor
++ (TOCFuture*)asyncRespondToCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor
                                     andCallController:(CallController*)callController;
 
 /// Result has type Future(HttpResponse)
-+(TOCFuture*) asyncSignalTooBusyToAnswerCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor;
++ (TOCFuture*)asyncSignalTooBusyToAnswerCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor;
 
 @end

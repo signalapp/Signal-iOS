@@ -10,7 +10,7 @@
 #import "CryptoTools.h"
 #import "PhoneNumber.h"
 #import "RPAPICall.h"
-#import "SignalUtil.h"
+#import "HttpRequest+SignalUtil.h"
 #import "SGNKeychainUtil.h"
 #import "Util.h"
 

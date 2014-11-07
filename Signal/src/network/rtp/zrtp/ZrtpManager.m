@@ -56,7 +56,7 @@
     [[callController untilCancelledToken] whenCancelledTerminate:manager];
     
     [manager->futureHandshakeResultSource.future catchDo:^(id error) {
-        [callController terminateWithReason:CallTerminationType_HandshakeFailed
+        [callController terminateWithReason:CallTerminationTypeHandshakeFailed
                             withFailureInfo:error
                              andRelatedInfo:nil];
     }];
@@ -133,7 +133,7 @@
     if (currentPacketTransmitCount > MAX_RETRANSMIT_COUNT) {
         done = true;
         if (currentPacketToRetransmit == nil) {
-            [callController terminateWithReason:CallTerminationType_RecipientUnavailable
+            [callController terminateWithReason:CallTerminationTypeRecipientUnavailable
                                 withFailureInfo:nil
                                  andRelatedInfo:@"retransmit threshold exceeded"];
         } else {
@@ -146,7 +146,7 @@
 }
 -(void) scheduleTimeoutIfNoHello {
     void (^timeoutFail)(void) = ^{
-        [callController terminateWithReason:CallTerminationType_RecipientUnavailable
+        [callController terminateWithReason:CallTerminationTypeRecipientUnavailable
                             withFailureInfo:nil
                              andRelatedInfo:nil];
         [futureHandshakeResultSource trySetFailure:[RecipientUnavailable recipientUnavailable]];

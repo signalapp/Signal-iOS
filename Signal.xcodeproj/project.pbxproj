@@ -191,8 +191,8 @@
 		76EB060718170B33006006FC /* PhoneNumberDirectoryFilterManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04AC18170B33006006FC /* PhoneNumberDirectoryFilterManager.m */; };
 		76EB060818170B33006006FC /* ResponderSessionDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04AE18170B33006006FC /* ResponderSessionDescriptor.m */; };
 		76EB060918170B33006006FC /* ResponderSessionDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04AE18170B33006006FC /* ResponderSessionDescriptor.m */; };
-		76EB060A18170B33006006FC /* SignalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04B018170B33006006FC /* SignalUtil.m */; };
-		76EB060B18170B33006006FC /* SignalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04B018170B33006006FC /* SignalUtil.m */; };
+		76EB060A18170B33006006FC /* HttpRequest+SignalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04B018170B33006006FC /* HttpRequest+SignalUtil.m */; };
+		76EB060B18170B33006006FC /* HttpRequest+SignalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04B018170B33006006FC /* HttpRequest+SignalUtil.m */; };
 		76EB060C18170B33006006FC /* CategorizingLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04B318170B33006006FC /* CategorizingLogger.m */; };
 		76EB060D18170B33006006FC /* CategorizingLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04B318170B33006006FC /* CategorizingLogger.m */; };
 		76EB060E18170B33006006FC /* DecayingSampleEstimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04B518170B33006006FC /* DecayingSampleEstimator.m */; };
@@ -844,8 +844,8 @@
 		76EB04AC18170B33006006FC /* PhoneNumberDirectoryFilterManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberDirectoryFilterManager.m; sourceTree = "<group>"; };
 		76EB04AD18170B33006006FC /* ResponderSessionDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResponderSessionDescriptor.h; sourceTree = "<group>"; };
 		76EB04AE18170B33006006FC /* ResponderSessionDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResponderSessionDescriptor.m; sourceTree = "<group>"; };
-		76EB04AF18170B33006006FC /* SignalUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalUtil.h; sourceTree = "<group>"; };
-		76EB04B018170B33006006FC /* SignalUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalUtil.m; sourceTree = "<group>"; };
+		76EB04AF18170B33006006FC /* HttpRequest+SignalUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "HttpRequest+SignalUtil.h"; sourceTree = "<group>"; };
+		76EB04B018170B33006006FC /* HttpRequest+SignalUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "HttpRequest+SignalUtil.m"; sourceTree = "<group>"; };
 		76EB04B218170B33006006FC /* CategorizingLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CategorizingLogger.h; sourceTree = "<group>"; };
 		76EB04B318170B33006006FC /* CategorizingLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CategorizingLogger.m; sourceTree = "<group>"; };
 		76EB04B418170B33006006FC /* DecayingSampleEstimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DecayingSampleEstimator.h; sourceTree = "<group>"; };
@@ -1915,8 +1915,8 @@
 				76EB04A818170B33006006FC /* number directory */,
 				76EB04AD18170B33006006FC /* ResponderSessionDescriptor.h */,
 				76EB04AE18170B33006006FC /* ResponderSessionDescriptor.m */,
-				76EB04AF18170B33006006FC /* SignalUtil.h */,
-				76EB04B018170B33006006FC /* SignalUtil.m */,
+				76EB04AF18170B33006006FC /* HttpRequest+SignalUtil.h */,
+				76EB04B018170B33006006FC /* HttpRequest+SignalUtil.m */,
 			);
 			path = signaling;
 			sourceTree = "<group>";
@@ -3451,7 +3451,7 @@
 				76EB063C18170B33006006FC /* NumberUtil.m in Sources */,
 				76EB063A18170B33006006FC /* NSArray+FunctionalUtil.m in Sources */,
 				70B80117190C55660042E3F0 /* MutableExtensionRegistry.m in Sources */,
-				76EB060A18170B33006006FC /* SignalUtil.m in Sources */,
+				76EB060A18170B33006006FC /* HttpRequest+SignalUtil.m in Sources */,
 				76EB062818170B33006006FC /* BadArgument.m in Sources */,
 				76EB062E18170B33006006FC /* SecurityFailure.m in Sources */,
 				76EB05F218170B33006006FC /* PhoneNumber.m in Sources */,
@@ -3708,7 +3708,7 @@
 				BFB074C819A5611000F2947C /* TOCCancelToken+FutureUtil.m in Sources */,
 				76EB062718170B33006006FC /* Queue.m in Sources */,
 				76EB05C118170B33006006FC /* DhPacket.m in Sources */,
-				76EB060B18170B33006006FC /* SignalUtil.m in Sources */,
+				76EB060B18170B33006006FC /* HttpRequest+SignalUtil.m in Sources */,
 				A157076C17F0CD6D007C2BD6 /* NetworkStreamTest.m in Sources */,
 				76EB065B18170B34006006FC /* NextResponderScrollView.m in Sources */,
 				76EB05BB18170B33006006FC /* CommitPacket.m in Sources */,

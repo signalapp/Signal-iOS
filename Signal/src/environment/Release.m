@@ -57,7 +57,7 @@ static unsigned char DH3K_PRIME[]={
                                     andCertificate:[Certificate certificateFromResourcePath:@"whisperReal" ofType:@"cer"]
                andCurrentRegionCodeForPhoneNumbers:[(NSLocale*)NSLocale.currentLocale objectForKey:NSLocaleCountryCode]
                  andSupportedKeyAgreementProtocols:[self supportedKeyAgreementProtocols]
-                                   andPhoneManager:[PhoneManager phoneManagerWithErrorHandler:errorNoter]
+                                   andPhoneManager:[[PhoneManager alloc] initWithErrorHandler:errorNoter]
                               andRecentCallManager:[RecentCallManager new]
                         andTestingAndLegacyOptions:@[ENVIRONMENT_LEGACY_OPTION_RTP_PADDING_BIT_IMPLIES_EXTENSION_BIT_AND_TWELVE_EXTRA_ZERO_BYTES_IN_HEADER]
                                    andZrtpClientId:RELEASE_ZRTP_CLIENT_ID

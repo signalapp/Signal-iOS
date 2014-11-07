@@ -316,23 +316,23 @@
     test([@"test" withPrefixRemovedElseNull:@"a"] == nil);
     testThrows([@"test" withPrefixRemovedElseNull:nil]);
 }
--(void) testToJson {
-    test([@{}.encodedAsJson isEqualToString:@"{}"]);
-    test([[@{@"a":@"b"} encodedAsJson] isEqualToString:@"{\"a\":\"b\"}"]);
-    test([[@{@"c":@5} encodedAsJson] isEqualToString:@"{\"c\":5}"]);
-    test([[(@{@"a":@5,@"b":@YES}) encodedAsJson] isEqualToString:@"{\"a\":5,\"b\":true}"]);
+-(void) testToJSON {
+    test([@{}.encodedAsJSON isEqualToString:@"{}"]);
+    test([[@{@"a":@"b"} encodedAsJSON] isEqualToString:@"{\"a\":\"b\"}"]);
+    test([[@{@"c":@5} encodedAsJSON] isEqualToString:@"{\"c\":5}"]);
+    test([[(@{@"a":@5,@"b":@YES}) encodedAsJSON] isEqualToString:@"{\"a\":5,\"b\":true}"]);
     
-    testThrows([@{@"ev": @"a+b".toRegularExpression} encodedAsJson]);
+    testThrows([@{@"ev": @"a+b".toRegularExpression} encodedAsJSON]);
 }
--(void) testFromJson {
-    test([[@"{}" decodedAsJsonIntoDictionary] isEqualToDictionary:@{}]);
-    test([[@"{\"a\":\"b\"}" decodedAsJsonIntoDictionary] isEqualToDictionary:@{@"a":@"b"}]);
-    test([[@"{\"c\":5}" decodedAsJsonIntoDictionary] isEqualToDictionary:@{@"c":@5}]);
-    test([[@"{\"a\":5,\"b\":true}" decodedAsJsonIntoDictionary] isEqualToDictionary:(@{@"a":@5,@"b":@YES})]);
+-(void) testFromJSON {
+    test([[@"{}" decodedAsJSONIntoDictionary] isEqualToDictionary:@{}]);
+    test([[@"{\"a\":\"b\"}" decodedAsJSONIntoDictionary] isEqualToDictionary:@{@"a":@"b"}]);
+    test([[@"{\"c\":5}" decodedAsJSONIntoDictionary] isEqualToDictionary:@{@"c":@5}]);
+    test([[@"{\"a\":5,\"b\":true}" decodedAsJSONIntoDictionary] isEqualToDictionary:(@{@"a":@5,@"b":@YES})]);
     
-    testThrows([@"" decodedAsJsonIntoDictionary]);
-    testThrows([@"}" decodedAsJsonIntoDictionary]);
-    testThrows([@"{{}" decodedAsJsonIntoDictionary]);
+    testThrows([@"" decodedAsJSONIntoDictionary]);
+    testThrows([@"}" decodedAsJSONIntoDictionary]);
+    testThrows([@"{{}" decodedAsJSONIntoDictionary]);
 }
 -(void) testRepresentedAsHexString {
     test([[[NSData data] encodedAsHexString] isEqualToString:@""]);

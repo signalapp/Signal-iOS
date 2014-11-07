@@ -4,6 +4,6 @@
 
 @property (readonly, nonatomic) NSString* text;
 
-+(CallFailedServerMessage*) callFailedServerMessageWithText:(NSString*)text;
+- (instancetype)initWithText:(NSString*)text;
 
 @end

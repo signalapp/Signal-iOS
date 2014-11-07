@@ -8,13 +8,10 @@
  * bloom filter containing phone numbers considered to have RedPhone support.
  *
  */
-@interface PhoneNumberDirectoryFilterManager : NSObject {
-@private PhoneNumberDirectoryFilter* phoneNumberDirectoryFilter;
-@private TOCCancelToken* lifetimeToken;
-}
+@interface PhoneNumberDirectoryFilterManager : NSObject
 
--(void) forceUpdate;
--(void) startUntilCancelled:(TOCCancelToken*)cancelToken;
--(PhoneNumberDirectoryFilter*) getCurrentFilter;
+- (void)forceUpdate;
+- (void)startUntilCancelled:(TOCCancelToken*)cancelToken;
+- (PhoneNumberDirectoryFilter*)getCurrentFilter;
 
 @end

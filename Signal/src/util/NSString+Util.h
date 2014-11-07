@@ -12,8 +12,8 @@
                      replacedBy:(NSString*)replacement;
 - (bool)containsAnyMatches:(NSRegularExpression*)regex;
 - (NSString*)withPrefixRemovedElseNull:(NSString*)prefix;
-- (NSData*)decodedAsJsonIntoData;
-- (NSDictionary*)decodedAsJsonIntoDictionary;
+- (NSData*)decodedAsJSONIntoData;
+- (NSDictionary*)decodedAsJSONIntoDictionary;
 - (NSData*)decodedAsHexString;
 - (NSData*)decodedAsSpaceSeparatedHexString;
 - (NSData*)decodedAsBase64Data;

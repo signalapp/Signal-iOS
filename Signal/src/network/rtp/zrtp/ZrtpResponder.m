@@ -38,7 +38,7 @@
 }
 
 -(HandshakePacket*) initialPacket {    
-    [callController advanceCallProgressTo:CallProgressType_Securing];
+    [callController advanceCallProgressTo:CallProgressTypeSecuring];
 
     return [localHello embeddedIntoHandshakePacket];
 }
@@ -54,7 +54,7 @@
         else if (packetExpectation == EXPECTING_CONFIRM)    { return [self handleConfirmTwo:packet];}
         else {return nil;}
     } @catch (SecurityFailure* ex) {
-        [callController terminateWithReason:CallTerminationType_HandshakeFailed withFailureInfo:ex andRelatedInfo:packet];
+        [callController terminateWithReason:CallTerminationTypeHandshakeFailed withFailureInfo:ex andRelatedInfo:packet];
         return nil;
     } @catch (OperationFailed* ex) {
         [badPacketLogger markOccurrence:ex];

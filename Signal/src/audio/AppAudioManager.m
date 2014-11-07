@@ -74,28 +74,28 @@ AppAudioManager*  sharedAppAudioManager;
 }
 
 #pragma mark AudioControl;
--(void) respondToProgressChange:(enum CallProgressType) progressType
+-(void) respondToProgressChange:(CallProgressType) progressType
         forLocallyInitiatedCall:(BOOL) initiatedLocally {
     switch (progressType){
-        case CallProgressType_Connecting:
+        case CallProgressTypeConnecting:
             [sharedAppAudioManager setAudioEnabled:YES];
             [_soundPlayer stopAllAudio];
-        case CallProgressType_Ringing:
+        case CallProgressTypeRinging:
             (initiatedLocally) ? [self handleOutboundRing] : [self handleInboundRing];
             break;
-        case CallProgressType_Terminated:
+        case CallProgressTypeTerminated:
             break;
-        case CallProgressType_Securing:
+        case CallProgressTypeSecuring:
             [self handleSecuring];
             break;
-        case CallProgressType_Talking:
+        case CallProgressTypeTalking:
             [self handleCallEstablished];
             break;
     }
 }
 
--(void) respondToTerminationType:(enum CallTerminationType) terminationType {
-    if(terminationType == CallTerminationType_ResponderIsBusy) {
+-(void) respondToTerminationType:(CallTerminationType) terminationType {
+    if(terminationType == CallTerminationTypeResponderIsBusy) {
         [_soundPlayer playSound:[SoundBoard instanceOfBusySound]];
     }
     else if([self shouldErrorSoundBePlayedForCallTerminationType:terminationType]){
@@ -106,13 +106,13 @@ AppAudioManager*  sharedAppAudioManager;
     }
 }
 
--(BOOL) shouldErrorSoundBePlayedForCallTerminationType:(enum CallTerminationType) type{
+-(BOOL) shouldErrorSoundBePlayedForCallTerminationType:(CallTerminationType) type{
     [_soundPlayer stopAllAudio];
-    if (type == CallTerminationType_RejectedLocal  ||
-        type == CallTerminationType_RejectedRemote ||
-        type == CallTerminationType_HangupLocal    ||
-        type == CallTerminationType_HangupRemote   ||
-        type == CallTerminationType_RecipientUnavailable) {
+    if (type == CallTerminationTypeRejectedLocal  ||
+        type == CallTerminationTypeRejectedRemote ||
+        type == CallTerminationTypeHangupLocal    ||
+        type == CallTerminationTypeHangupRemote   ||
+        type == CallTerminationTypeRecipientUnavailable) {
         return NO;
     }
     return YES;
