@@ -90,6 +90,7 @@
         @synchronized(self) {
             self.phoneNumberDirectoryFilter = [[PhoneNumberDirectoryFilter alloc] initWithBloomFilter:filter andExpirationDate:retryDate];
         }
+        
         [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_FAILED object:nil];
     }];
 }
