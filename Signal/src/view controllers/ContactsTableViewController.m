@@ -8,6 +8,7 @@
 
 #import "ContactsTableViewController.h"
 #import "ContactDetailTableViewController.h"
+#import "DialerViewController.h"
 
 #import "ContactTableViewCell.h"
 
@@ -28,7 +29,6 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     NSArray *_latestSortedAlphabeticalContactKeys;
     NSArray *_latestContacts;
 }
-
 @end
 
 @implementation ContactsTableViewController
@@ -37,21 +37,15 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     [super viewDidLoad];
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    //Hide search bar
+    self.tableView.contentOffset = CGPointMake(0, 44);
     
     [self setupContacts];
     [self.tableView reloadData];
-    
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Contact functions
@@ -145,6 +139,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
 {
+    tableView.sectionIndexBackgroundColor = [UIColor clearColor];
     return _latestSortedAlphabeticalContactKeys;
 }
 
@@ -159,9 +154,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     NSArray *contactSection = [self contactsForSectionIndex:(NSUInteger)indexPath.section];
     Contact *contact = contactSection[(NSUInteger)indexPath.row];
     
-
     [cell configureWithContact:contact];
-    
     return cell;
 }
 
@@ -169,6 +162,8 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
+
+#pragma mark - Segue
 
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
@@ -180,6 +175,22 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
         Contact *contact = contactSection[(NSUInteger)indexPath.row];
         detailvc.contact = contact;
     }
+}
+
+#pragma mark - IBAction
+
+-(IBAction)presentDialer:(id)sender
+{
+    
+    DialerViewController * dialer = [DialerViewController new];
+    
+    UINavigationController *navigationController = [[UINavigationController alloc]
+                                                   initWithRootViewController:dialer];
+    navigationController.tabBarController.hidesBottomBarWhenPushed = NO;
+    
+    dialer.phoneNumber = nil;
+    
+    [self presentViewController:navigationController animated:NO completion:nil];
 }
 
 @end

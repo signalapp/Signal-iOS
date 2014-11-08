@@ -30,8 +30,8 @@
         [UIUtil applyRoundedBorderToImageView:&_contactPictureView];
 
         _scrollView.contentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
-        _deleteImageView.image    = [_deleteImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _archiveImageView.image   = [_archiveImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        _deleteImageView.image    = [_deleteImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        _archiveImageView.image   = [_archiveImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     }
     return self;
 }
@@ -45,40 +45,48 @@
     _snippetLabel.text        = testMessage._snippet;
     _contactPictureView.image = nil;
     _timeLabel.attributedText = [self dateArrributedString:[NSDate date]];
+    self.separatorInset = UIEdgeInsetsMake(0,_contactPictureView.frame.size.width*1.5, 0, 0);
+
+    [self setUpLastAction:testMessage.lastActionString];
     
+}
+
+-(void)setUpLastAction:(NSString*)lastAction {
+    if ([lastAction isEqualToString:@"read"]) {
+        _lastActionImageView.image = [UIImage imageNamed:@"checkmark"];
+    } else if ([lastAction isEqualToString:@"replied"]) {
+        _lastActionImageView.image = [UIImage imageNamed:@"reply"];
+    } else if ([lastAction isEqualToString:@"missedCall"]) {
+        _lastActionImageView.image = [UIImage imageNamed:@"missed"];
+    } else if ([lastAction isEqualToString:@"outgoingCall"]) {
+        _lastActionImageView.image = [UIImage imageNamed:@"received"];
+    } else if ([lastAction isEqualToString:@"unread"]) {
+        _lastActionImageView.image = nil;
+        _snippetLabel.textColor = [UIColor blackColor];
+        _nameLabel.font = [UIFont boldSystemFontOfSize:15];
+        _timeLabel.textColor = [UIColor colorWithRed:0 green:91/255.f blue:1.0f alpha:1.0f];
+    }
+
 }
 
 #pragma mark - Date formatting
 
 - (NSAttributedString *)dateArrributedString:(NSDate *)date {
     
-    NSString *dateString;
     NSString *timeString = [[DateUtil timeFormatter] stringFromDate:date];
     
-    
-    if ([DateUtil dateIsOlderThanOneWeek:date]) {
-        dateString = [[DateUtil dateFormatter] stringFromDate:date];
-    } else {
-        dateString = [[DateUtil weekdayFormatter] stringFromDate:date];
-    }
-    
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:[timeString stringByAppendingString:dateString]];
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:timeString];
     
     [attributedString addAttribute:NSForegroundColorAttributeName
                              value:[UIColor darkGrayColor]
                              range:NSMakeRange(0, timeString.length)];
     
-    [attributedString addAttribute:NSForegroundColorAttributeName
-                             value:[UIUtil darkBackgroundColor]
-                             range:NSMakeRange(timeString.length,dateString.length)];
+
     
     [attributedString addAttribute:NSFontAttributeName
                              value:[UIUtil helveticaLightWithSize:TIME_LABEL_SIZE]
                              range:NSMakeRange(0, timeString.length)];
-    
-    [attributedString addAttribute:NSFontAttributeName
-                             value:[UIUtil helveticaRegularWithSize:DATE_LABEL_SIZE]
-                             range:NSMakeRange(timeString.length,dateString.length)];
+
     
     return attributedString;
 }
@@ -88,7 +96,7 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     
     if (_scrollView.contentOffset.x < 0) {
-        _archiveImageView.tintColor = [UIUtil redColor];
+        _archiveImageView.image = [UIImage imageNamed:@"blue-archive"];
         _archiveImageView.bounds = CGRectMake(_archiveImageView.bounds.origin.x,
                                               _archiveImageView.bounds.origin.y,
                                               ARCHIVE_IMAGE_VIEW_WIDTH,
@@ -106,7 +114,7 @@
     }
     
     if (scrollView.contentOffset.x > CGRectGetWidth(_archiveView.frame)*2) {
-        _deleteImageView.tintColor = [UIUtil redColor];
+        _deleteImageView.image = [UIImage imageNamed:@"red-delete"];
         _deleteImageView.bounds = CGRectMake(_deleteImageView.bounds.origin.x,
                                              _deleteImageView.bounds.origin.y,
                                              DELETE_IMAGE_VIEW_WIDTH,
@@ -141,7 +149,14 @@
     }
 }
 
+#pragma mark - Animation
 
+-(void)animateDisappear
+{
+    [UIView animateWithDuration:1.0f animations:^(){
+        self.alpha = 0;
+    }];
+}
 
 
 @end

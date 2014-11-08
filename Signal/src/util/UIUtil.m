@@ -6,7 +6,7 @@ static NSString *const HELVETICA_NEUE_LTSTD_MEDIUM_NAME = @"HelveticaNeueLTStd-M
 static NSString *const HELVETICA_REGULAR_NAME = @"Helvetica";
 static NSString *const HELVETICA_LIGHT_NAME = @"Helvetica-Light";
 
-#define CONTACT_PICTURE_VIEW_BORDER_WIDTH 2.0f
+#define CONTACT_PICTURE_VIEW_BORDER_WIDTH 0.5f
 
 @implementation UIUtil
 

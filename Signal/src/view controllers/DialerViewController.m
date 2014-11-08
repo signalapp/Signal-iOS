@@ -36,7 +36,7 @@
     [self setupPasteBehaviour];
     self.title = KEYPAD_NAV_BAR_TITLE;
     _currentNumberMutable = [NSMutableString string];
-    [self updateNumberLabel];
+    //[self updateNumberLabel];
     [self.navigationController setNavigationBarHidden:YES animated:NO];
     [_callButton setTitle:CALL_BUTTON_TITLE forState:UIControlStateNormal];
 }

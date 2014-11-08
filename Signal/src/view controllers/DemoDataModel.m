@@ -74,22 +74,27 @@ enum {kDemoDataModelCase0, kDemoDataModelCase1,kDemoDataModelCase2, kDemoDataMod
         case kDemoDataModelCase0:
             _demoModel._sender = @"Dylan Bourgeois";
             _demoModel._snippet = @"OpenSSL takes forever to build dude.";
+            _demoModel.lastActionString = @"unread";
             break;
         case kDemoDataModelCase1:
             _demoModel._sender = @"Frederic Jacobs";
             _demoModel._snippet = @"Bro, you're such an artist.";
+            _demoModel.lastActionString = @"replied";
             break;
         case kDemoDataModelCase2:
             _demoModel._sender = @"Romain Ruetschi";
-            _demoModel._snippet = @"Let's have a f x = f ( f ( x ) ) beers";
+            _demoModel._snippet = @"Missed Call";
+            _demoModel.lastActionString = @"missedCall";
             break;
         case kDemoDataModelCase3:
             _demoModel._sender = @"Stephen Colbert";
-            _demoModel._snippet = @"I should run for president again. What do you think ?";
+            _demoModel._snippet = @"Outgoing Call";
+            _demoModel.lastActionString = @"outgoingCall";
             break;
         case kDemoDataModelCase4:
             _demoModel._sender = @"Johnny Ramone";
             _demoModel._snippet = @"Rock on...";
+            _demoModel.lastActionString = @"read";
             break;
             
         default:

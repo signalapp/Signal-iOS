@@ -8,28 +8,37 @@
 
 #import "ContactDetailTableViewController.h"
 #import "ContactDetailCell.h"
+#import "UIUtil.h"
 
 typedef enum {
-    kNameMainNumberCellIndexPath = 0,
-    kNotesCellIndexPath          = 1,
-    kSendMessageCellIndexPath    = 2,
-    kShareContactCellIndexPath   = 3,
-    kBlockUserCellIndexPath      = 4,
+    kNameMainNumberCellIndexPath   = 0,
+    kActionCellIndexPath           = 1,
+    kShareCellIndexPath            = 2,
+    kEmailCellIndexPath            = 3,
+    kAnnexPhoneNumberCellIndexPath = 4,
+    kNotesCellIndexPath            = 5,
 } kCellIndexPath;
 
 typedef enum {
-    kNameMainNumberCellHeight = 100,
-    kNotesCellHeight          = 90,
-    kSendMessageCellHeight    = 44,
-    kShareContactCellHeight   = 44,
-    kBlockUserCellHeight      = 110,
+    kNameMainNumberCellHeight      = 180,
+    kActionCellHeight              = 60,
+    kShareCellHeight               = 60,
+    kEmailCellHeight               = 60,
+    kAnnexPhoneNumberCellHeight    = 60,
+    kNotesCellHeight               = 165,
 } kCellHeight;
 
 static NSString* const kNameMainNumberCell = @"NameMainNumberCell";
-static NSString* const kNotesCell          = @"NotesCell";
-static NSString* const kSendMessageCell    = @"SendMessageCell";
-static NSString* const kShareContactCell   = @"ShareContactCell";
-static NSString* const kBlockUserCell      = @"BlockUserCell";
+static NSString* const kActionCell         = @"ActionCell";
+
+//Deprecated
+static NSString* const kShareCell    = @"ShareCell";
+static NSString* const kEmailCell   = @"EmailCell";
+static NSString* const kAnnexPhoneNumberCell      = @"AnnexPhoneNumberCell";
+static NSString *const kNotesCell = @"NotesCell";
+//
+
+static NSString *const kContactDetailSegue = @"DetailSegue";
 
 
 
@@ -42,35 +51,21 @@ static NSString* const kBlockUserCell      = @"BlockUserCell";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //self.tableView.separatorInset = UIEdgeInsetsMake(0, 8, 0, 0);
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
-    
-    NSLog(@"contact : %@", _contact);
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-
-    // Return the number of sections.
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-
-    // Return the number of rows in the section.
-    return 5;
+    return 6;
 }
 
 
@@ -82,17 +77,20 @@ static NSString* const kBlockUserCell      = @"BlockUserCell";
             cell = [tableView dequeueReusableCellWithIdentifier:kNameMainNumberCell forIndexPath:indexPath];
             [self setUpNameMainUserCell:cell];
             break;
+        case kActionCellIndexPath:
+            cell = [tableView dequeueReusableCellWithIdentifier:kActionCell forIndexPath:indexPath];
+            break;
+        case kShareCellIndexPath:
+            cell = [tableView dequeueReusableCellWithIdentifier:kShareCell forIndexPath:indexPath];
+            break;
+        case kEmailCellIndexPath:
+            cell = [tableView dequeueReusableCellWithIdentifier:kEmailCell forIndexPath:indexPath];
+            break;
+        case kAnnexPhoneNumberCellIndexPath:
+            cell = [tableView dequeueReusableCellWithIdentifier:kAnnexPhoneNumberCell forIndexPath:indexPath];
+            break;
         case kNotesCellIndexPath:
             cell = [tableView dequeueReusableCellWithIdentifier:kNotesCell forIndexPath:indexPath];
-            break;
-        case kSendMessageCellIndexPath:
-            cell = [tableView dequeueReusableCellWithIdentifier:kSendMessageCell forIndexPath:indexPath];
-            break;
-        case kShareContactCellIndexPath:
-            cell = [tableView dequeueReusableCellWithIdentifier:kShareContactCell forIndexPath:indexPath];
-            break;
-        case kBlockUserCellIndexPath:
-            cell = [tableView dequeueReusableCellWithIdentifier:kBlockUserCell forIndexPath:indexPath];
             break;
             
         default:
@@ -102,15 +100,21 @@ static NSString* const kBlockUserCell      = @"BlockUserCell";
     return cell;
 }
 
+
 -(void)setUpNameMainUserCell:(ContactDetailCell*)cell
 {
     Contact* c = self.contact;
     
     cell.contactName.text = [c fullName];
+    
     cell.contactPhoneNumber.text = [c.userTextPhoneNumbers firstObject];
+    
     if (c.image) {
         cell.contactImageView.image = c.image;
     }
+    [cell.contactImageView.layer setCornerRadius:50.0f];
+    [cell.contactImageView.layer setMasksToBounds:YES];
+
     
 }
 
@@ -122,17 +126,20 @@ static NSString* const kBlockUserCell      = @"BlockUserCell";
         case kNameMainNumberCellIndexPath:
             cellHeight = kNameMainNumberCellHeight;
             break;
+        case kActionCellIndexPath:
+            cellHeight = kActionCellHeight;
+            break;
+        case kShareCellIndexPath:
+            cellHeight = kShareCellHeight;
+            break;
+        case kEmailCellIndexPath:
+            cellHeight = kEmailCellHeight;
+            break;
+        case kAnnexPhoneNumberCellIndexPath:
+            cellHeight = kAnnexPhoneNumberCellHeight;
+            break;
         case kNotesCellIndexPath:
             cellHeight = kNotesCellHeight;
-            break;
-        case kSendMessageCellIndexPath:
-            cellHeight = kSendMessageCellHeight;
-            break;
-        case kShareContactCellIndexPath:
-            cellHeight = kShareContactCellHeight;
-            break;
-        case kBlockUserCellIndexPath:
-            cellHeight = kBlockUserCellHeight;
             break;
         default:
             break;
@@ -140,49 +147,5 @@ static NSString* const kBlockUserCell      = @"BlockUserCell";
     return cellHeight;
 }
 
-
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

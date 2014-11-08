@@ -16,20 +16,20 @@
                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3rD-4i-EKG" userLabel="Delete View">
                         <rect key="frame" x="267" y="0.0" width="102" height="71"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="trash_icon.png" translatesAutoresizingMaskIntoConstraints="NO" id="TBw-ud-Ysk">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="delete.png" translatesAutoresizingMaskIntoConstraints="NO" id="TBw-ud-Ysk">
                                 <rect key="frame" x="50" y="23" width="19" height="25"/>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="0.13725490200000001" green="0.1215686275" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yBY-TS-2tI" userLabel="Archive View">
                         <rect key="frame" x="0.0" y="0.0" width="102" height="71"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="archive_icon.png" translatesAutoresizingMaskIntoConstraints="NO" id="WyX-Hb-Mpn">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="archive.png" translatesAutoresizingMaskIntoConstraints="NO" id="WyX-Hb-Mpn">
                                 <rect key="frame" x="40" y="25" width="22" height="22"/>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="0.13725490200000001" green="0.1215686275" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceHorizontal="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bG5-iK-ql3" customClass="NextResponderScrollView">
                         <rect key="frame" x="-1" y="0.0" width="410" height="72"/>
@@ -45,25 +45,28 @@
                                         <rect key="frame" x="115" y="10" width="52" height="53"/>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qgj-EY-BWC">
-                                        <rect key="frame" x="180" y="27" width="200" height="40"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                        <rect key="frame" x="180" y="28" width="200" height="40"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="Name Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gWV-cB-qZe">
-                                        <rect key="frame" x="180" y="6" width="180" height="30"/>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                        <rect key="frame" x="180" y="8" width="180" height="30"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <color key="textColor" red="0.13725490200000001" green="0.1215686275" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
                                         <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </label>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="Thursday" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bp6-EC-9eP">
-                                        <rect key="frame" x="360" y="49" width="100" height="19"/>
+                                        <rect key="frame" x="410" y="14" width="50" height="19"/>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="14"/>
                                         <color key="textColor" red="0.13725490200000001" green="0.1215686275" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
                                         <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </label>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="reply.png" translatesAutoresizingMaskIntoConstraints="NO" id="BV6-Tp-SmZ">
+                                        <rect key="frame" x="440" y="35" width="20" height="20"/>
+                                    </imageView>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dGa-iy-WtH" userLabel="Archive View">
-                                        <rect key="frame" x="0.0" y="0.0" width="102" height="71"/>
+                                        <rect key="frame" x="-1" y="-2" width="102" height="75"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </view>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HWq-U9-n0t" userLabel="Delete View">
@@ -79,7 +82,7 @@
                         </connections>
                     </scrollView>
                 </subviews>
-                <color key="backgroundColor" red="0.14117647059999999" green="0.1215686275" blue="0.1215686275" alpha="1" colorSpace="calibratedRGB"/>
+                <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
             </tableViewCellContentView>
             <connections>
                 <outlet property="archiveImageView" destination="WyX-Hb-Mpn" id="99i-j3-F49"/>
@@ -88,6 +91,7 @@
                 <outlet property="contentContainerView" destination="kq8-RD-txC" id="yaJ-z3-8sC"/>
                 <outlet property="deleteImageView" destination="TBw-ud-Ysk" id="a1T-GR-0cx"/>
                 <outlet property="deleteView" destination="3rD-4i-EKG" id="oak-Hh-6CC"/>
+                <outlet property="lastActionImageView" destination="BV6-Tp-SmZ" id="UvX-Wb-tWS"/>
                 <outlet property="nameLabel" destination="gWV-cB-qZe" id="drr-G2-EB6"/>
                 <outlet property="scrollView" destination="bG5-iK-ql3" id="wEp-AH-Pdu"/>
                 <outlet property="snippetLabel" destination="Qgj-EY-BWC" id="EIb-je-Cw5"/>
@@ -96,8 +100,9 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="archive_icon.png" width="23" height="23"/>
+        <image name="archive.png" width="18" height="18"/>
         <image name="contact_default_feed.png" width="242" height="242"/>
-        <image name="trash_icon.png" width="19" height="25"/>
+        <image name="delete.png" width="22" height="22"/>
+        <image name="reply.png" width="100" height="100"/>
     </resources>
 </document>

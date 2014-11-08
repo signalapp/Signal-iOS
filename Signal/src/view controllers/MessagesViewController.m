@@ -36,7 +36,6 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Fingerprints
@@ -44,7 +43,6 @@
 -(void)showFingerprint
 {
     [self performSegueWithIdentifier:@"fingerprintSegue" sender:self];
-    NSLog(@"Fingerprint");
 }
 
 #pragma mark - JSQMessagesViewController method overrides
@@ -55,13 +53,6 @@
          senderDisplayName:(NSString *)senderDisplayName
                       date:(NSDate *)date
 {
-    /**
-     *  Sending a message. Your implementation of this method should do *at least* the following:
-     *
-     *  1. Play sound (optional)
-     *  2. Add new id<JSQMessageData> object to your data source
-     *  3. Call `finishSendingMessage`
-     */
     [JSQSystemSoundPlayer jsq_playMessageSentSound];
     
     JSQTextMessage *message = [[JSQTextMessage alloc] initWithSenderId:senderId
@@ -230,10 +221,7 @@
 
 #pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
 }
 
 

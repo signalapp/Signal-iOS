@@ -12,16 +12,17 @@
 #import "MessagesViewController.h"
 
 
-#define CELL_NIB_NAME @"TableViewCell"
-#define CELL_HEIGHT 76.0f
+#define CELL_HEIGHT 71.0f
+#define HEADER_HEIGHT 44.0f
 
-#define SEGUE_IDENTIFIER @"showSegue"
 
-static NSString *const TABLE_VIEW_CELL_IDENTIFIER = @"TableViewCell";
+static NSString *const kCellNibName = @"TableViewCell";
+static NSString *const kSegueIndentifier = @"showSegue";
 
 
 @interface SignalsViewController () {
     NSArray * _dataArray;
+    NSUInteger numberOfCells;
 }
 @property (strong, nonatomic) DemoDataModel *demoData;
 
@@ -31,21 +32,19 @@ static NSString *const TABLE_VIEW_CELL_IDENTIFIER = @"TableViewCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     _dataArray = [DemoDataFactory data];
+    numberOfCells = _dataArray.count;
     [self tableViewSetUp];
     
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 -(void)tableViewSetUp
 {
     self._tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-
 }
 
 #pragma mark - Table view data source
@@ -55,49 +54,25 @@ static NSString *const TABLE_VIEW_CELL_IDENTIFIER = @"TableViewCell";
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 5;
-}
-
--(UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-{
-    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"HeaderCell"];
-    
-    return cell;
-}
-
--(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    return 44.0f;
+    return (NSInteger)numberOfCells;
 }
 
  - (TableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-//     TableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CELL_NIB_NAME];
-//     if (cell == nil) {
-//         NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:CELL_NIB_NAME owner:self options:nil];
-//         cell = [topLevelObjects objectAtIndex:0];
-//     }
-//     
-//     
-//     cell._senderLabel.text = ((DemoDataModel*)_dataArray[(NSUInteger)indexPath.row])._sender;
-//     cell._snippetLabel.text = ((DemoDataModel*)_dataArray[(NSUInteger)indexPath.row])._snippet;
-//     cell._timeLabel.text = @"21:58";
-//     return cell;
-     
      return [self inboxFeedCellForIndexPath:indexPath];
  }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 71.0f;
+    return CELL_HEIGHT;
 }
 
 -(TableViewCell*)inboxFeedCellForIndexPath:(NSIndexPath *)indexPath {
     
-    TableViewCell *cell = [self._tableView dequeueReusableCellWithIdentifier:TABLE_VIEW_CELL_IDENTIFIER];
+    TableViewCell *cell = [self._tableView dequeueReusableCellWithIdentifier:kCellNibName];
     
     
     if (!cell) {
         cell = [[TableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                    reuseIdentifier:TABLE_VIEW_CELL_IDENTIFIER];
+                                    reuseIdentifier:kCellNibName];
         cell.delegate = self;
     }
     
@@ -117,11 +92,9 @@ static NSString *const TABLE_VIEW_CELL_IDENTIFIER = @"TableViewCell";
     NSLog(@"Archive");
 }
 
-
-
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self performSegueWithIdentifier:SEGUE_IDENTIFIER sender:self];
+    [self performSegueWithIdentifier:kSegueIndentifier sender:self];
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
@@ -134,7 +107,7 @@ static NSString *const TABLE_VIEW_CELL_IDENTIFIER = @"TableViewCell";
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
     
-    if ([segue.identifier isEqualToString:SEGUE_IDENTIFIER])
+    if ([segue.identifier isEqualToString:kSegueIndentifier])
     {
         MessagesViewController * vc = [segue destinationViewController];
         NSIndexPath *selectedIndexPath = [self._tableView indexPathForSelectedRow];
@@ -142,5 +115,21 @@ static NSString *const TABLE_VIEW_CELL_IDENTIFIER = @"TableViewCell";
     }
 }
 
+#pragma mark - IBAction
 
+-(IBAction)segmentDidChange:(id)sender
+{
+    switch (_segmentedControl.selectedSegmentIndex) {
+        case 0:
+            numberOfCells=5;
+            [self._tableView reloadData];
+            break;
+            
+        case 1:
+            numberOfCells=3;
+            [self._tableView reloadData];
+            break;
+            
+    }
+}
 @end

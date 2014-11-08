@@ -23,12 +23,7 @@
     contacts = [DemoDataFactory makeFakeContacts];
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+
 }
 
 - (void)didReceiveMemoryWarning {
@@ -59,7 +54,6 @@
     
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"SearchCell"];
-        cell.editingAccessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     
     NSUInteger row = (NSUInteger)indexPath.row;
@@ -80,6 +74,31 @@
 }
 
 #pragma mark - Table View delegate
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
+    cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    if ([tableView indexPathsForSelectedRows].count == 1)
+    {
+        //Present compose text view
+        //Set destination to selected person or group
+        
+    }
+    else if ([tableView indexPathsForSelectedRows].count > 1)
+    {
+        /*
+         *  //Create a group with these people in it & send destination to group
+         */
+    }
+}
+
+-(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
+    cell.accessoryType = UITableViewCellAccessoryNone;
+}
 
 
 #pragma mark - Search 
@@ -90,7 +109,7 @@
     searchResults = [contacts filteredArrayUsingPredicate:resultPredicate];
 }
 
--(BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
+-(BOOL)searchDisplayController:(UISearchController *)controller shouldReloadTableForSearchString:(NSString *)searchString
 {
     [self filterContentForSearchText:searchString
                                scope:[[self.searchDisplayController.searchBar scopeButtonTitles]
@@ -99,7 +118,6 @@
     
     return YES;
 }
-
 
 
 #pragma mark - Navigation
@@ -123,7 +141,7 @@
     MessagesViewController * dest = [segue destinationViewController];
     dest._senderTitleString = contact.fullName;
     
-    [self presentViewController:dest animated:YES completion:^(){searchResults = nil;}];
+    [self.navigationController presentViewController:dest animated:YES completion:^(){searchResults = nil;}];
     
 }
 

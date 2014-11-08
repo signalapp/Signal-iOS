@@ -13,4 +13,6 @@
 
 @property(nonatomic,strong) IBOutlet UITableView* _tableView;
 
+@property (strong, nonatomic) IBOutlet UISegmentedControl * segmentedControl;
+
 @end

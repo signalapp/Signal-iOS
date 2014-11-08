@@ -34,9 +34,10 @@ static NSString * const kJSQDemoAvatarIdMoxie = @"707-8956784-57";
 @property (strong, nonatomic) NSDictionary *users;
 
 
-@property(nonatomic, strong) NSString * _sender ;
-@property(nonatomic, strong) NSString * _snippet ;
-@property(nonatomic, strong) NSArray * _conversation;
+@property (nonatomic, strong) NSString * _sender ;
+@property (nonatomic, strong) NSString * _snippet ;
+@property (nonatomic, strong) NSArray * _conversation;
+@property (nonatomic, strong) NSString * lastActionString;
 
 +(DemoDataModel*)initModel:(NSUInteger)modelNumber;
 +(Contact*)initFakeContacts:(NSUInteger)modelNumber;

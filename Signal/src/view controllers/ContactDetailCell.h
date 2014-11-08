@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "Contact.h"
+#import "UIUtil.h"
 
 @interface ContactDetailCell : UITableViewCell
 

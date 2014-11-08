@@ -21,8 +21,7 @@
 @interface TableViewCell : UITableViewCell  <UIScrollViewDelegate>
 
 
-
-//v2
+@property (nonatomic, strong) IBOutlet UIImageView* lastActionImageView;
 @property (nonatomic, strong) IBOutlet UILabel *nameLabel;
 @property (nonatomic, strong) IBOutlet UILabel * snippetLabel;
 @property (nonatomic, strong) IBOutlet UIImageView *contactPictureView;
@@ -37,5 +36,6 @@
 @property (nonatomic, assign) id<TableViewCellDelegate> delegate;
 
 -(void)configureWithTestMessage:(DemoDataModel*)testMessage;
+-(void)animateDisappear;
 
 @end
