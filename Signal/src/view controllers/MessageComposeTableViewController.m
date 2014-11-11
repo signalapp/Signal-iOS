@@ -12,6 +12,7 @@
 @interface MessageComposeTableViewController () {
     NSArray* contacts;
     NSArray* searchResults;
+    
 }
 
 @end
@@ -21,8 +22,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     contacts = [DemoDataFactory makeFakeContacts];
-    
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+
+    self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
 
 }
 
@@ -79,17 +80,19 @@
     UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    
+
     if ([tableView indexPathsForSelectedRows].count == 1)
     {
         //Present compose text view
         //Set destination to selected person or group
         
+        
+        
     }
     else if ([tableView indexPathsForSelectedRows].count > 1)
     {
         /*
-         *  //Create a group with these people in it & send destination to group
+         *  //Create a group with these people in it & set send destination to group
          */
     }
 }

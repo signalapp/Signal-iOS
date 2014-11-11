@@ -645,6 +645,8 @@
 		FCAFC3301A0D5E3000AE5136 /* share@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCAFC32F1A0D5E3000AE5136 /* share@2x.png */; };
 		FCAFC3341A0D656100AE5136 /* contacts_tab@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCAFC3331A0D656100AE5136 /* contacts_tab@2x.png */; };
 		FCAFC3361A0D680100AE5136 /* keypad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCAFC3351A0D680100AE5136 /* keypad@2x.png */; };
+		FCAFC33C1A0E8F8000AE5136 /* fingerprint@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCAFC33B1A0E8F8000AE5136 /* fingerprint@2x.png */; };
+		FCAFC33F1A0F948F00AE5136 /* ActionContactDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAFC33E1A0F948F00AE5136 /* ActionContactDetailCell.m */; };
 		FCF72A081A01A765006BC849 /* ContactsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A071A01A765006BC849 /* ContactsTableViewController.m */; };
 		FCF72A131A02D27F006BC849 /* ContactDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */; };
 		FCF72A161A02D2BB006BC849 /* ContactDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A151A02D2BB006BC849 /* ContactDetailCell.m */; };
@@ -1399,6 +1401,9 @@
 		FCAFC32F1A0D5E3000AE5136 /* share@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "share@2x.png"; sourceTree = "<group>"; };
 		FCAFC3331A0D656100AE5136 /* contacts_tab@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "contacts_tab@2x.png"; sourceTree = "<group>"; };
 		FCAFC3351A0D680100AE5136 /* keypad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "keypad@2x.png"; sourceTree = "<group>"; };
+		FCAFC33B1A0E8F8000AE5136 /* fingerprint@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fingerprint@2x.png"; sourceTree = "<group>"; };
+		FCAFC33D1A0F948F00AE5136 /* ActionContactDetailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionContactDetailCell.h; sourceTree = "<group>"; };
+		FCAFC33E1A0F948F00AE5136 /* ActionContactDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionContactDetailCell.m; sourceTree = "<group>"; };
 		FCF72A061A01A765006BC849 /* ContactsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsTableViewController.h; sourceTree = "<group>"; };
 		FCF72A071A01A765006BC849 /* ContactsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsTableViewController.m; sourceTree = "<group>"; };
 		FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailTableViewController.m; sourceTree = "<group>"; };
@@ -3139,6 +3144,8 @@
 				FCAC963D19FEF99A0046DFC5 /* TableViewCell.h */,
 				FCAC963E19FEF99A0046DFC5 /* TableViewCell.m */,
 				FCAC963F19FEF99A0046DFC5 /* TableViewCell.xib */,
+				FCAFC33D1A0F948F00AE5136 /* ActionContactDetailCell.h */,
+				FCAFC33E1A0F948F00AE5136 /* ActionContactDetailCell.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -3156,6 +3163,7 @@
 		FCAFC2F91A0C4E1700AE5136 /* icons8 */ = {
 			isa = PBXGroup;
 			children = (
+				FCAFC33B1A0E8F8000AE5136 /* fingerprint@2x.png */,
 				FCAFC3351A0D680100AE5136 /* keypad@2x.png */,
 				FCAFC3331A0D656100AE5136 /* contacts_tab@2x.png */,
 				FCAFC32F1A0D5E3000AE5136 /* share@2x.png */,
@@ -3531,6 +3539,7 @@
 				E1370BED18A0689000826894 /* AppIcon40x40.png in Resources */,
 				E1370BEE18A0689000826894 /* AppIcon40x40@2x.png in Resources */,
 				E16E5C1418AEDB5A00B7C403 /* message_icon.png in Resources */,
+				FCAFC33C1A0E8F8000AE5136 /* fingerprint@2x.png in Resources */,
 				E1370BEF18A0689000826894 /* AppIcon60x60.png in Resources */,
 				E1370BF018A0689000826894 /* AppIcon60x60@2x.png in Resources */,
 				E1370BF118A0689000826894 /* AppIcon76x76.png in Resources */,
@@ -3744,6 +3753,7 @@
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
 				76EB061618170B33006006FC /* AnonymousOccurrenceLogger.m in Sources */,
 				76EB063018170B33006006FC /* Conversions.m in Sources */,
+				FCAFC33F1A0F948F00AE5136 /* ActionContactDetailCell.m in Sources */,
 				76EB065618170B34006006FC /* InCallViewController.m in Sources */,
 				76EB05FE18170B33006006FC /* InitiateSignal.pb.m in Sources */,
 				76EB064C18170B34006006FC /* ContactBrowseViewController.m in Sources */,

@@ -8,7 +8,10 @@
 
 #import "ContactDetailTableViewController.h"
 #import "ContactDetailCell.h"
+#import "ActionContactDetailCell.h"
 #import "UIUtil.h"
+#import "DJWActionSheet.h"
+
 
 typedef enum {
     kNameMainNumberCellIndexPath   = 0,
@@ -70,15 +73,15 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    ContactDetailCell *cell;
+    UITableViewCell * cell;
     
     switch (indexPath.row) {
         case kNameMainNumberCellIndexPath:
-            cell = [tableView dequeueReusableCellWithIdentifier:kNameMainNumberCell forIndexPath:indexPath];
-            [self setUpNameMainUserCell:cell];
+            cell = (ContactDetailCell*)[tableView dequeueReusableCellWithIdentifier:kNameMainNumberCell forIndexPath:indexPath];
+            [self setUpNameMainUserCell:(ContactDetailCell*)cell];
             break;
         case kActionCellIndexPath:
-            cell = [tableView dequeueReusableCellWithIdentifier:kActionCell forIndexPath:indexPath];
+            cell = (ActionContactDetailCell*)[tableView dequeueReusableCellWithIdentifier:kActionCell forIndexPath:indexPath];
             break;
         case kShareCellIndexPath:
             cell = [tableView dequeueReusableCellWithIdentifier:kShareCell forIndexPath:indexPath];
@@ -147,5 +150,30 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
     return cellHeight;
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    switch (indexPath.row) {
+        case kShareCellIndexPath:
+            [DJWActionSheet showInView:self.tabBarController.view
+                             withTitle:nil
+                     cancelButtonTitle:@"Cancel"
+                destructiveButtonTitle:nil
+                     otherButtonTitles:@[@"Mail", @"Message", @"Airdrop", @"Other"]
+                              tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+                                  [tableView deselectRowAtIndexPath:indexPath animated:YES];
+                                  if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
+                                      NSLog(@"User Cancelled");
+
+                                  } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
+                                      NSLog(@"Destructive button tapped");
+                                  }else {
+                                      NSLog(@"The user tapped button at index: %li", (long)tappedButtonIndex);
+                                  }
+                              }];
+
+            break;
+            
+    }
+}
 
 @end

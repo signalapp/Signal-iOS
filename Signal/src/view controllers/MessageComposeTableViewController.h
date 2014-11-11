@@ -11,6 +11,13 @@
 #import "DemoDataFactory.h"
 #import "Contact.h"
 
+#import "JSQMessagesToolbarContentView.h"
+#import "JSQMessagesInputToolbar.h"
+#import "JSQMessagesComposerTextView.h"
+
+#import "JSQMessagesKeyboardController.h"
+
+
 @interface MessageComposeTableViewController : UITableViewController <UISearchBarDelegate>
 
 @property (nonatomic, strong) IBOutlet UISearchBar * searchBar;

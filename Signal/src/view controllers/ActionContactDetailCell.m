@@ -1,15 +1,15 @@
 //
-//  ContactDetailCell.m
+//  ActionContactDetailCell.m
 //  Signal
 //
-//  Created by Dylan Bourgeois on 30/10/14.
+//  Created by Dylan Bourgeois on 09/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "ContactDetailCell.h"
 #import "DJWActionSheet.h"
+#import "ActionContactDetailCell.h"
 
-@implementation ContactDetailCell
+@implementation ActionContactDetailCell
 
 - (void)awakeFromNib {
     // Initialization code
@@ -20,6 +20,9 @@
 
     // Configure the view for the selected state
 }
+
+
+    
 
 
 @end

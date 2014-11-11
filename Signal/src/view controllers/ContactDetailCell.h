@@ -17,8 +17,6 @@
 @property (strong, nonatomic) IBOutlet UIImageView *contactImageView;
 @property (strong, nonatomic) IBOutlet UIImageView *contactFavoriteImageView;
 @property (strong, nonatomic) IBOutlet UILabel *contactPhoneNumber;
-@property (strong, nonatomic) IBOutlet UIButton *contactTextButton;
-@property (strong, nonatomic) IBOutlet UIButton *contactCallButton;
 @property (strong, nonatomic) IBOutlet UITextView *contactNotesTextView;
 
 

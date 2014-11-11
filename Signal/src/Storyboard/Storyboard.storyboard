@@ -341,7 +341,7 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" text="" placeholder="Search" scopeBarBackgroundImage="contact_search" id="7QA-tO-WHo">
+                        <searchBar key="tableHeaderView" contentMode="redraw" searchBarStyle="minimal" text="" placeholder="Search" id="7QA-tO-WHo">
                             <rect key="frame" x="0.0" y="64" width="600" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <color key="barTintColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
@@ -382,6 +382,9 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="searchBar" destination="7QA-tO-WHo" id="a3c-hU-oJT"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xQP-wB-KqH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -391,7 +394,7 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
         <scene sceneID="cYN-Tc-52p">
             <objects>
                 <tableViewController id="0XE-hu-8cu" customClass="ContactDetailTableViewController" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="150" sectionHeaderHeight="22" sectionFooterHeight="22" id="RoU-YO-d5P">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="150" sectionHeaderHeight="22" sectionFooterHeight="22" id="RoU-YO-d5P">
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
@@ -510,33 +513,11 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                                     <outlet property="contactPhoneNumber" destination="wdW-CI-EaW" id="l6w-Gz-uDU"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ActionCell" rowHeight="60" id="Oss-Ve-Ae2" customClass="ContactDetailCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ActionCell" rowHeight="60" id="Oss-Ve-Ae2" customClass="ActionContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Oss-Ve-Ae2" id="vmu-lW-Eyq">
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jiU-kH-HN5">
-                                            <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="25" id="c0a-tJ-6DT"/>
-                                                <constraint firstAttribute="height" constant="25" id="fLA-UY-IXG"/>
-                                            </constraints>
-                                            <state key="normal" image="delete_history.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                            </state>
-                                            <variation key="default">
-                                                <mask key="constraints">
-                                                    <exclude reference="c0a-tJ-6DT"/>
-                                                    <exclude reference="fLA-UY-IXG"/>
-                                                </mask>
-                                            </variation>
-                                            <variation key="heightClass=regular-widthClass=compact">
-                                                <mask key="constraints">
-                                                    <include reference="c0a-tJ-6DT"/>
-                                                    <include reference="fLA-UY-IXG"/>
-                                                </mask>
-                                            </variation>
-                                        </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pl1-ya-pMh">
                                             <rect key="frame" x="-23" y="-15" width="46" height="30"/>
                                             <constraints>
@@ -690,6 +671,28 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                                                 </mask>
                                             </variation>
                                         </label>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jiU-kH-HN5">
+                                            <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="25" id="c0a-tJ-6DT"/>
+                                                <constraint firstAttribute="height" constant="25" id="fLA-UY-IXG"/>
+                                            </constraints>
+                                            <state key="normal" image="delete_history.png">
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <variation key="default">
+                                                <mask key="constraints">
+                                                    <exclude reference="c0a-tJ-6DT"/>
+                                                    <exclude reference="fLA-UY-IXG"/>
+                                                </mask>
+                                            </variation>
+                                            <variation key="heightClass=regular-widthClass=compact">
+                                                <mask key="constraints">
+                                                    <include reference="c0a-tJ-6DT"/>
+                                                    <include reference="fLA-UY-IXG"/>
+                                                </mask>
+                                            </variation>
+                                        </button>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="AmV-hc-XHU" firstAttribute="leading" secondItem="vmu-lW-Eyq" secondAttribute="leadingMargin" constant="2" id="21j-rl-WRG"/>
@@ -719,7 +722,6 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                                     </constraints>
                                     <variation key="default">
                                         <mask key="subviews">
-                                            <exclude reference="jiU-kH-HN5"/>
                                             <exclude reference="pl1-ya-pMh"/>
                                             <exclude reference="cfo-cG-hLC"/>
                                             <exclude reference="yd5-y1-zqu"/>
@@ -727,6 +729,7 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                                             <exclude reference="Njs-kS-m25"/>
                                             <exclude reference="0Yf-x5-28z"/>
                                             <exclude reference="QPr-r4-cKa"/>
+                                            <exclude reference="jiU-kH-HN5"/>
                                         </mask>
                                         <mask key="constraints">
                                             <exclude reference="21j-rl-WRG"/>
@@ -753,7 +756,6 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                                     </variation>
                                     <variation key="heightClass=regular-widthClass=compact">
                                         <mask key="subviews">
-                                            <include reference="jiU-kH-HN5"/>
                                             <include reference="pl1-ya-pMh"/>
                                             <include reference="cfo-cG-hLC"/>
                                             <include reference="yd5-y1-zqu"/>
@@ -761,6 +763,7 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                                             <include reference="Njs-kS-m25"/>
                                             <include reference="0Yf-x5-28z"/>
                                             <include reference="QPr-r4-cKa"/>
+                                            <include reference="jiU-kH-HN5"/>
                                         </mask>
                                         <mask key="constraints">
                                             <include reference="21j-rl-WRG"/>
@@ -793,28 +796,6 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="hSC-7F-dj5" id="lvR-BE-4Mx">
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KaB-RD-vYE">
-                                            <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="99" id="BBc-Sp-825"/>
-                                                <constraint firstAttribute="height" constant="30" id="rTz-ph-Pcu"/>
-                                            </constraints>
-                                            <state key="normal" title="Share Contact">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                            </state>
-                                            <variation key="default">
-                                                <mask key="constraints">
-                                                    <exclude reference="BBc-Sp-825"/>
-                                                    <exclude reference="rTz-ph-Pcu"/>
-                                                </mask>
-                                            </variation>
-                                            <variation key="heightClass=regular-widthClass=compact">
-                                                <mask key="constraints">
-                                                    <include reference="BBc-Sp-825"/>
-                                                    <include reference="rTz-ph-Pcu"/>
-                                                </mask>
-                                            </variation>
-                                        </button>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="share.png" translatesAutoresizingMaskIntoConstraints="NO" id="aSe-xF-b09">
                                             <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                                             <constraints>
@@ -834,33 +815,55 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                                                 </mask>
                                             </variation>
                                         </imageView>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Share Contact" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YNM-Jz-XEj">
+                                            <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="21" id="3DG-5I-upG"/>
+                                                <constraint firstAttribute="width" constant="111" id="xEg-aq-ZX9"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                            <variation key="default">
+                                                <mask key="constraints">
+                                                    <exclude reference="3DG-5I-upG"/>
+                                                    <exclude reference="xEg-aq-ZX9"/>
+                                                </mask>
+                                            </variation>
+                                            <variation key="heightClass=regular-widthClass=compact">
+                                                <mask key="constraints">
+                                                    <include reference="3DG-5I-upG"/>
+                                                    <include reference="xEg-aq-ZX9"/>
+                                                </mask>
+                                            </variation>
+                                        </label>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="KaB-RD-vYE" firstAttribute="leading" secondItem="lvR-BE-4Mx" secondAttribute="leadingMargin" constant="15" id="F68-Qv-nrT"/>
+                                        <constraint firstItem="YNM-Jz-XEj" firstAttribute="leading" secondItem="lvR-BE-4Mx" secondAttribute="leadingMargin" constant="15" id="4se-Xh-1PH"/>
                                         <constraint firstItem="aSe-xF-b09" firstAttribute="top" secondItem="lvR-BE-4Mx" secondAttribute="topMargin" constant="9" id="NO6-s6-3y9"/>
-                                        <constraint firstItem="KaB-RD-vYE" firstAttribute="top" secondItem="lvR-BE-4Mx" secondAttribute="topMargin" constant="7" id="ZDX-qu-Y6Z"/>
+                                        <constraint firstItem="YNM-Jz-XEj" firstAttribute="top" secondItem="lvR-BE-4Mx" secondAttribute="topMargin" constant="11" id="h7u-8P-pkI"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="aSe-xF-b09" secondAttribute="trailing" constant="23" id="vxa-Nc-UvT"/>
                                     </constraints>
                                     <variation key="default">
                                         <mask key="subviews">
-                                            <exclude reference="KaB-RD-vYE"/>
                                             <exclude reference="aSe-xF-b09"/>
+                                            <exclude reference="YNM-Jz-XEj"/>
                                         </mask>
                                         <mask key="constraints">
-                                            <exclude reference="F68-Qv-nrT"/>
-                                            <exclude reference="ZDX-qu-Y6Z"/>
+                                            <exclude reference="4se-Xh-1PH"/>
+                                            <exclude reference="h7u-8P-pkI"/>
                                             <exclude reference="NO6-s6-3y9"/>
                                             <exclude reference="vxa-Nc-UvT"/>
                                         </mask>
                                     </variation>
                                     <variation key="heightClass=regular-widthClass=compact">
                                         <mask key="subviews">
-                                            <include reference="KaB-RD-vYE"/>
                                             <include reference="aSe-xF-b09"/>
+                                            <include reference="YNM-Jz-XEj"/>
                                         </mask>
                                         <mask key="constraints">
-                                            <include reference="F68-Qv-nrT"/>
-                                            <include reference="ZDX-qu-Y6Z"/>
+                                            <include reference="4se-Xh-1PH"/>
+                                            <include reference="h7u-8P-pkI"/>
                                             <include reference="NO6-s6-3y9"/>
                                             <include reference="vxa-Nc-UvT"/>
                                         </mask>
@@ -1615,7 +1618,7 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" id="Hku-Jy-Hze">
+                        <searchBar key="tableHeaderView" contentMode="redraw" searchBarStyle="minimal" id="Hku-Jy-Hze">
                             <rect key="frame" x="0.0" y="64" width="600" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <textInputTraits key="textInputTraits"/>
@@ -1677,7 +1680,6 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
         <image name="DefaultContactImage.png" width="505" height="314"/>
         <image name="call_dark.png" width="50" height="50"/>
         <image name="contact_default_feed.png" width="242" height="242"/>
-        <image name="contact_search" width="19" height="25"/>
         <image name="contacts_tab.png" width="24" height="24"/>
         <image name="delete_history.png" width="50" height="50"/>
         <image name="favourite.png" width="100" height="100"/>

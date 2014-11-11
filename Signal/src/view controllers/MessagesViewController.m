@@ -7,6 +7,7 @@
 //
 
 #import "MessagesViewController.h"
+#import "DJWActionSheet.h"
 
 @interface MessagesViewController ()
 
@@ -18,7 +19,9 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Fingerprint" style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"fingerprint@2x.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
+
+    
     self.title = self._senderTitleString;
 
     self.senderId = kJSQDemoAvatarIdDylan;
@@ -63,6 +66,7 @@
     [self.demoData.messages addObject:message];
     [self finishSendingMessage];
 }
+
 
 #pragma mark - JSQMessages CollectionView DataSource
 
@@ -216,6 +220,25 @@
 }
 
 
+#pragma mark - Actions
+
+-(void)didPressAccessoryButton:(UIButton *)sender
+{
+    [DJWActionSheet showInView:self.navigationController.view
+                     withTitle:nil
+             cancelButtonTitle:@"Cancel"
+        destructiveButtonTitle:nil
+             otherButtonTitles:@[@"Take Photo or Video", @"Choose existing Photo", @"Choose existing Video", @"Send file"]
+                      tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+                          if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
+                              NSLog(@"User Cancelled");
+                          } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
+                              NSLog(@"Destructive button tapped");
+                          }else {
+                              NSLog(@"The user tapped button at index: %li", (long)tappedButtonIndex);
+                          }
+                      }];
+}
 
 
 
