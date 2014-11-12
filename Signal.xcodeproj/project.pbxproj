@@ -647,6 +647,11 @@
 		FCAFC3361A0D680100AE5136 /* keypad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCAFC3351A0D680100AE5136 /* keypad@2x.png */; };
 		FCAFC33C1A0E8F8000AE5136 /* fingerprint@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCAFC33B1A0E8F8000AE5136 /* fingerprint@2x.png */; };
 		FCAFC33F1A0F948F00AE5136 /* ActionContactDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAFC33E1A0F948F00AE5136 /* ActionContactDetailCell.m */; };
+		FCB11D8A1A1284BB002F93FB /* SettingsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCB11D891A1284BB002F93FB /* SettingsTableViewCell.m */; };
+		FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB11D8B1A129A76002F93FB /* CoreMedia.framework */; };
+		FCB11D8F1A12A388002F93FB /* savephoto@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCB11D8D1A12A388002F93FB /* savephoto@2x.png */; };
+		FCB11D901A12A388002F93FB /* quit@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCB11D8E1A12A388002F93FB /* quit@2x.png */; };
+		FCB11D931A12A4AA002F93FB /* FullImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCB11D921A12A4AA002F93FB /* FullImageViewController.m */; };
 		FCF72A081A01A765006BC849 /* ContactsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A071A01A765006BC849 /* ContactsTableViewController.m */; };
 		FCF72A131A02D27F006BC849 /* ContactDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */; };
 		FCF72A161A02D2BB006BC849 /* ContactDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A151A02D2BB006BC849 /* ContactDetailCell.m */; };
@@ -1404,6 +1409,13 @@
 		FCAFC33B1A0E8F8000AE5136 /* fingerprint@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fingerprint@2x.png"; sourceTree = "<group>"; };
 		FCAFC33D1A0F948F00AE5136 /* ActionContactDetailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionContactDetailCell.h; sourceTree = "<group>"; };
 		FCAFC33E1A0F948F00AE5136 /* ActionContactDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionContactDetailCell.m; sourceTree = "<group>"; };
+		FCB11D881A1284BB002F93FB /* SettingsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsTableViewCell.h; sourceTree = "<group>"; };
+		FCB11D891A1284BB002F93FB /* SettingsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsTableViewCell.m; sourceTree = "<group>"; };
+		FCB11D8B1A129A76002F93FB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		FCB11D8D1A12A388002F93FB /* savephoto@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "savephoto@2x.png"; sourceTree = "<group>"; };
+		FCB11D8E1A12A388002F93FB /* quit@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "quit@2x.png"; sourceTree = "<group>"; };
+		FCB11D911A12A4AA002F93FB /* FullImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FullImageViewController.h; sourceTree = "<group>"; };
+		FCB11D921A12A4AA002F93FB /* FullImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FullImageViewController.m; sourceTree = "<group>"; };
 		FCF72A061A01A765006BC849 /* ContactsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsTableViewController.h; sourceTree = "<group>"; };
 		FCF72A071A01A765006BC849 /* ContactsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsTableViewController.m; sourceTree = "<group>"; };
 		FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailTableViewController.m; sourceTree = "<group>"; };
@@ -1417,6 +1429,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */,
 				70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */,
 				70B800AF190C548D0042E3F0 /* libspeex.a in Frameworks */,
 				70B800A6190C53180042E3F0 /* libspandsp.a in Frameworks */,
@@ -2925,6 +2938,7 @@
 		D221A08C169C9E5E00537ABF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FCB11D8B1A129A76002F93FB /* CoreMedia.framework */,
 				B69CD25019773E79005CE69A /* XCTest.framework */,
 				70377AAA1918450100CAF501 /* MobileCoreServices.framework */,
 				B9EB5ABC1884C002007CBB57 /* MessageUI.framework */,
@@ -3099,6 +3113,8 @@
 				FCAC965019FF0A6E0046DFC5 /* MessagesViewController.m */,
 				FC31962B1A06A2190094C78E /* FingerprintViewController.h */,
 				FC31962C1A06A2190094C78E /* FingerprintViewController.m */,
+				FCB11D911A12A4AA002F93FB /* FullImageViewController.h */,
+				FCB11D921A12A4AA002F93FB /* FullImageViewController.m */,
 			);
 			name = Signals;
 			sourceTree = "<group>";
@@ -3146,6 +3162,8 @@
 				FCAC963F19FEF99A0046DFC5 /* TableViewCell.xib */,
 				FCAFC33D1A0F948F00AE5136 /* ActionContactDetailCell.h */,
 				FCAFC33E1A0F948F00AE5136 /* ActionContactDetailCell.m */,
+				FCB11D881A1284BB002F93FB /* SettingsTableViewCell.h */,
+				FCB11D891A1284BB002F93FB /* SettingsTableViewCell.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -3163,6 +3181,8 @@
 		FCAFC2F91A0C4E1700AE5136 /* icons8 */ = {
 			isa = PBXGroup;
 			children = (
+				FCB11D8D1A12A388002F93FB /* savephoto@2x.png */,
+				FCB11D8E1A12A388002F93FB /* quit@2x.png */,
 				FCAFC33B1A0E8F8000AE5136 /* fingerprint@2x.png */,
 				FCAFC3351A0D680100AE5136 /* keypad@2x.png */,
 				FCAFC3331A0D656100AE5136 /* contacts_tab@2x.png */,
@@ -3384,6 +3404,7 @@
 				FCAFC32E1A0D46D500AE5136 /* settings_dark@2x.png in Resources */,
 				B6416FD2199A0478003C5699 /* Localizable.strings in Resources */,
 				E148750B18A06966002CC4F3 /* InviteContactsViewController.xib in Resources */,
+				FCB11D901A12A388002F93FB /* quit@2x.png in Resources */,
 				E148750C18A06966002CC4F3 /* LeftSideMenuViewController.xib in Resources */,
 				B6416FB2199A0478003C5699 /* Localizable.strings in Resources */,
 				E148750D18A06966002CC4F3 /* PreferenceListViewController.xib in Resources */,
@@ -3560,6 +3581,7 @@
 				FCAC963519FEF4E20046DFC5 /* Storyboard.storyboard in Resources */,
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
 				E1370BE418A0686C00826894 /* outring.mp3 in Resources */,
+				FCB11D8F1A12A388002F93FB /* savephoto@2x.png in Resources */,
 				E1370BE518A0686C00826894 /* r.caf in Resources */,
 				FCAFC3171A0C627100AE5136 /* contact_search.png in Resources */,
 				E1370BE618A0686C00826894 /* sonarping.mp3 in Resources */,
@@ -3706,6 +3728,7 @@
 				76EB068418170B34006006FC /* ContactDetailTableViewCell.m in Sources */,
 				76EB066218170B34006006FC /* SettingsViewController.m in Sources */,
 				76EB05AC18170B33006006FC /* SrtpSocket.m in Sources */,
+				FCB11D931A12A4AA002F93FB /* FullImageViewController.m in Sources */,
 				B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */,
 				76EB062A18170B33006006FC /* BadState.m in Sources */,
 				B97940271832BD2400BD66CB /* UIUtil.m in Sources */,
@@ -3863,6 +3886,7 @@
 				B63761EF19E1FBE8005735D1 /* HttpResponse.m in Sources */,
 				E197B61518BBEC1A00F073E5 /* JitterQueue.m in Sources */,
 				BFB074C919A5611000F2947C /* ObservableValue.m in Sources */,
+				FCB11D8A1A1284BB002F93FB /* SettingsTableViewCell.m in Sources */,
 				76EB05C818170B33006006FC /* HelloPacket.m in Sources */,
 				BFB074C719A5611000F2947C /* FutureUtil.m in Sources */,
 				76EB057218170B33006006FC /* RecentCall.m in Sources */,

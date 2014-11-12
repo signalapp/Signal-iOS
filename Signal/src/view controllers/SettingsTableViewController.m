@@ -7,23 +7,25 @@
 //
 
 #import "SettingsTableViewController.h"
+#import "DJWActionSheet.h"
 
-#define kProfileCellHeight  100.0f
-#define kStandardCellHeight 44.0f
+#define kProfileCellHeight  180.0f
+#define kStandardCellHeight 60.0f
 
-#define kNumberOfSections   3
+#define kNumberOfSections   2
+
+#define kClearHistoryLogCellRow 4
+#define kSendDebugLogCellRow 6
 
 
 typedef enum {
     kProfileRows  = 1,
-    kSecurityRows = 5,
-    kDebugRows    = 2,
+    kSecurityRows = 7,
 } kRowsForSection;
 
 typedef enum {
     kProfileSection,
     kSecuritySection,
-    kDebugSection
 } kSection;
 
 @interface SettingsTableViewController ()
@@ -57,9 +59,6 @@ typedef enum {
         case kSecuritySection:
             return kSecurityRows;
             break;
-        case kDebugSection:
-            return kDebugRows;
-            break;
         default:
             return 0;
             break;
@@ -77,5 +76,44 @@ typedef enum {
             break;
     }
 }
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section==kSecuritySection)
+    {
+        switch (indexPath.row) {
+            case kClearHistoryLogCellRow:
+            {
+                //Present more info
+                [DJWActionSheet showInView:self.tabBarController.view
+                                 withTitle:@"Are you sure you want to delete all your history ? This action cannot be reverted."
+                         cancelButtonTitle:@"Cancel"
+                    destructiveButtonTitle:nil
+                         otherButtonTitles:@[@"I'm sure."]
+                                  tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+                                      [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+                                      if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
+                                          NSLog(@"User Cancelled");
+                                          
+                                      } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
+                                          NSLog(@"Destructive button tapped");
+                                      }else {
+                                          NSLog(@"The user tapped button at index: %li", (long)tappedButtonIndex);
+                                      }
+                                  }];
+
+                break;
+            }
+                
+            case kSendDebugLogCellRow:
+                //Send debug Log
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+
 
 @end
