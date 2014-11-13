@@ -655,6 +655,9 @@
 		FCF72A081A01A765006BC849 /* ContactsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A071A01A765006BC849 /* ContactsTableViewController.m */; };
 		FCF72A131A02D27F006BC849 /* ContactDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */; };
 		FCF72A161A02D2BB006BC849 /* ContactDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A151A02D2BB006BC849 /* ContactDetailCell.m */; };
+		FCFD256F1A151BCB00F4C644 /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFD256E1A151BCB00F4C644 /* NewGroupViewController.m */; };
+		FCFD25721A1524DB00F4C644 /* GroupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFD25711A1524DB00F4C644 /* GroupModel.m */; };
+		FCFD25761A15295D00F4C644 /* photo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCFD25751A15295D00F4C644 /* photo@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1422,6 +1425,11 @@
 		FCF72A121A02D27F006BC849 /* ContactDetailTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailTableViewController.h; sourceTree = "<group>"; };
 		FCF72A141A02D2BB006BC849 /* ContactDetailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailCell.h; sourceTree = "<group>"; };
 		FCF72A151A02D2BB006BC849 /* ContactDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailCell.m; sourceTree = "<group>"; };
+		FCFD256D1A151BCB00F4C644 /* NewGroupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGroupViewController.h; sourceTree = "<group>"; };
+		FCFD256E1A151BCB00F4C644 /* NewGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGroupViewController.m; sourceTree = "<group>"; };
+		FCFD25701A1524DB00F4C644 /* GroupModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupModel.h; sourceTree = "<group>"; };
+		FCFD25711A1524DB00F4C644 /* GroupModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GroupModel.m; sourceTree = "<group>"; };
+		FCFD25751A15295D00F4C644 /* photo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "photo@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3115,6 +3123,8 @@
 				FC31962C1A06A2190094C78E /* FingerprintViewController.m */,
 				FCB11D911A12A4AA002F93FB /* FullImageViewController.h */,
 				FCB11D921A12A4AA002F93FB /* FullImageViewController.m */,
+				FCFD256D1A151BCB00F4C644 /* NewGroupViewController.h */,
+				FCFD256E1A151BCB00F4C644 /* NewGroupViewController.m */,
 			);
 			name = Signals;
 			sourceTree = "<group>";
@@ -3148,6 +3158,8 @@
 				FCAC964319FEFD8B0046DFC5 /* DemoDataFactory.m */,
 				FCAC964519FEFE1A0046DFC5 /* DemoDataModel.h */,
 				FCAC964619FEFE1A0046DFC5 /* DemoDataModel.m */,
+				FCFD25701A1524DB00F4C644 /* GroupModel.h */,
+				FCFD25711A1524DB00F4C644 /* GroupModel.m */,
 			);
 			name = DemoData;
 			sourceTree = "<group>";
@@ -3181,6 +3193,7 @@
 		FCAFC2F91A0C4E1700AE5136 /* icons8 */ = {
 			isa = PBXGroup;
 			children = (
+				FCFD25751A15295D00F4C644 /* photo@2x.png */,
 				FCB11D8D1A12A388002F93FB /* savephoto@2x.png */,
 				FCB11D8E1A12A388002F93FB /* quit@2x.png */,
 				FCAFC33B1A0E8F8000AE5136 /* fingerprint@2x.png */,
@@ -3451,6 +3464,7 @@
 				E14874B318A0692F002CC4F3 /* expanded_cell_icon@2x.png in Resources */,
 				E14874B418A0692F002CC4F3 /* favourite_false_icon.png in Resources */,
 				E14874B518A0692F002CC4F3 /* favourite_false_icon@2x.png in Resources */,
+				FCFD25761A15295D00F4C644 /* photo@2x.png in Resources */,
 				B6416FAE199A0478003C5699 /* Localizable.strings in Resources */,
 				E14874B618A0692F002CC4F3 /* favourite_true_icon.png in Resources */,
 				E14874B718A0692F002CC4F3 /* favourite_true_icon@2x.png in Resources */,
@@ -3830,6 +3844,7 @@
 				E197B61218BBEC1A00F073E5 /* AudioStretcher.m in Sources */,
 				76EB05A218170B33006006FC /* IpEndPoint.m in Sources */,
 				70B8010D190C55660042E3F0 /* AbstractMessage_Builder.m in Sources */,
+				FCFD25721A1524DB00F4C644 /* GroupModel.m in Sources */,
 				E197B61A18BBEC1A00F073E5 /* SpeexCodec.m in Sources */,
 				70B80118190C55660042E3F0 /* MutableField.m in Sources */,
 				762D9DCF18281C7400A5E418 /* SettingsTableHeaderView.m in Sources */,
@@ -3878,6 +3893,7 @@
 				B63761EE19E1FBE8005735D1 /* HttpRequestUtil.m in Sources */,
 				76EB05B618170B33006006FC /* MasterSecret.m in Sources */,
 				76EB05F418170B33006006FC /* CallConnectResult.m in Sources */,
+				FCFD256F1A151BCB00F4C644 /* NewGroupViewController.m in Sources */,
 				76EB059E18170B33006006FC /* HttpSocket.m in Sources */,
 				E197B60E18BBEC1A00F073E5 /* CallAudioManager.m in Sources */,
 				76EB065418170B34006006FC /* InboxFeedViewController.m in Sources */,

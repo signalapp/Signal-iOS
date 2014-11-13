@@ -58,6 +58,10 @@ static NSString *const kSegueIndentifier = @"showSegue";
 -(void)tableViewSetUp
 {
     self._tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+//    
+//    CGRect headerFrame           = self._tableView.tableHeaderView.frame;
+//    headerFrame.size.height      = 1.0f;
+//    self._tableView.tableHeaderView.frame = headerFrame;
 }
 
 #pragma mark - Table view data source
@@ -91,9 +95,11 @@ static NSString *const kSegueIndentifier = @"showSegue";
     
     DemoDataModel *recent = _dataArray[(NSUInteger)indexPath.row];
     [cell configureWithTestMessage:recent];
+    [cell configureForState:_segmentedControl.selectedSegmentIndex == 0 ? kInboxState : kArchiveState];
     return cell;
 
 }
+
 
 #pragma mark - HomeFeedTableViewCellDelegate
 
@@ -128,6 +134,10 @@ static NSString *const kSegueIndentifier = @"showSegue";
             vc._senderTitleString =  ((DemoDataModel*)_dataArray[(NSUInteger)selectedIndexPath.row])._sender;
         } else if (_contactFromCompose) {
             vc._senderTitleString = _contactFromCompose.fullName;
+        } else if (_groupFromCompose) {
+            vc._senderTitleString = _groupFromCompose.groupName;
+            NSLog(@"%@",_groupFromCompose.groupMembers);
+
         }
 
     }

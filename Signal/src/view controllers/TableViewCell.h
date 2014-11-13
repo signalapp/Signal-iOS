@@ -10,6 +10,11 @@
 #import "DemoDataModel.h"
 #import "NextResponderScrollView.h"
 
+typedef enum : NSUInteger {
+    kArchiveState,
+    kInboxState,
+} CellState;
+
 @class TableViewCell;
 @protocol TableViewCellDelegate <NSObject>
 
@@ -36,6 +41,7 @@
 @property (nonatomic, assign) id<TableViewCellDelegate> delegate;
 
 -(void)configureWithTestMessage:(DemoDataModel*)testMessage;
+-(void)configureForState:(CellState)state;
 -(void)animateDisappear;
 
 @end

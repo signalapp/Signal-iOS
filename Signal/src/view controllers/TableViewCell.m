@@ -51,6 +51,21 @@
     
 }
 
+-(void)configureForState:(CellState)state
+{
+    switch (state) {
+        case kArchiveState:
+            _scrollView.userInteractionEnabled=NO;
+            break;
+        case kInboxState:
+            _scrollView.userInteractionEnabled=YES;
+            break;
+            
+        default:
+            break;
+    }
+}
+
 -(void)setUpLastAction:(NSString*)lastAction {
     if ([lastAction isEqualToString:@"read"]) {
         _lastActionImageView.image = [UIImage imageNamed:@"checkmark"];
