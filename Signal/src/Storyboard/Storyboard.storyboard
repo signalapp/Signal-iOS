@@ -570,8 +570,11 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                                 <state key="normal">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="changeCountryCodeTapped" destination="sL4-Zw-2Og" eventType="touchUpInside" id="Ufe-Un-ybV"/>
+                                </connections>
                             </button>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="912-920-9021" placeholder="Your phone number" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tTJ-pq-Z9L">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Your phone number" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tTJ-pq-Z9L">
                                 <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="RP7-Cs-dgQ"/>
@@ -791,8 +794,8 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                     </view>
                     <connections>
                         <outlet property="countryCodeButton" destination="ngV-Kv-6Ax" id="2Hi-eD-y6U"/>
-                        <outlet property="countryCodeLabel" destination="4o4-Xj-5JG" id="eSk-u7-5M4"/>
-                        <outlet property="countryNameLabel" destination="TiF-CF-7WU" id="PEz-Kg-ekF"/>
+                        <outlet property="countryCodeLabel" destination="TiF-CF-7WU" id="a8o-pE-QzV"/>
+                        <outlet property="countryNameLabel" destination="4o4-Xj-5JG" id="dFh-dM-mgC"/>
                         <outlet property="phoneNumberTextField" destination="tTJ-pq-Z9L" id="gPX-pu-twz"/>
                     </connections>
                 </viewController>
@@ -885,7 +888,7 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                                     </mask>
                                 </variation>
                                 <connections>
-                                    <action selector="verifyAction:" destination="3Uo-Ow-qOD" eventType="touchUpInside" id="6C3-SY-5QQ"/>
+                                    <action selector="verifyChallengeAction:" destination="3Uo-Ow-qOD" eventType="touchUpInside" id="KLK-9J-Slf"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -962,7 +965,7 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                         </variation>
                     </view>
                     <connections>
-                        <outlet property="codeTextField" destination="yK6-ad-ihc" id="FzT-UI-Evc"/>
+                        <outlet property="challengeTextField" destination="yK6-ad-ihc" id="cnh-li-Z6O"/>
                         <segue destination="QKN-cj-wuH" kind="show" identifier="verifiedSegue" id="Wd2-mW-FfR"/>
                     </connections>
                 </viewController>

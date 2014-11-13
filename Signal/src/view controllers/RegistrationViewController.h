@@ -7,8 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CountryCodeViewController.h"
 
-@interface RegistrationViewController : UIViewController
+
+@interface RegistrationViewController : UIViewController<CountryCodeViewControllerDelegate, UITextFieldDelegate>
 
 // Country code
 @property(nonatomic, strong) IBOutlet UIButton* countryCodeButton;

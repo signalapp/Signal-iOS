@@ -17,6 +17,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    [self initializeKeyboardHandlers];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -25,10 +27,27 @@
 }
 
 
-- (IBAction)verifyAction:(id)sender {
+- (IBAction)verifyChallengeAction:(id)sender {
+    
+    [_challengeTextField resignFirstResponder];
+    
+    //Perform verification
     
     [self performSegueWithIdentifier:@"verifiedSegue" sender:self];
 }
+
+#pragma mark - Keyboard notifications
+
+- (void)initializeKeyboardHandlers{
+    UITapGestureRecognizer *outsideTabRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboardFromAppropriateSubView)];
+    [self.view addGestureRecognizer:outsideTabRecognizer];
+        
+}
+
+-(void) dismissKeyboardFromAppropriateSubView {
+    [self.view endEditing:NO];
+}
+
 
 /*
 #pragma mark - Navigation

@@ -10,6 +10,6 @@
 
 @interface CodeVerificationViewController : UIViewController
 
-@property(nonatomic, strong) IBOutlet UITextField* codeTextField;
+@property(nonatomic, strong) IBOutlet UITextField* challengeTextField;
 
 @end

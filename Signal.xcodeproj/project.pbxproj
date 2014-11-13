@@ -659,7 +659,6 @@
 		FCFD25721A1524DB00F4C644 /* GroupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFD25711A1524DB00F4C644 /* GroupModel.m */; };
 		FCFD25761A15295D00F4C644 /* photo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCFD25751A15295D00F4C644 /* photo@2x.png */; };
 		FCFD25781A15436C00F4C644 /* 1-signal-launch.png in Resources */ = {isa = PBXBuildFile; fileRef = FCFD25771A15436C00F4C644 /* 1-signal-launch.png */; };
-		FCFD257C1A1543F700F4C644 /* InitalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFD257B1A1543F700F4C644 /* InitalViewController.m */; };
 		FCFD257F1A154B2C00F4C644 /* RegistrationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFD257E1A154B2C00F4C644 /* RegistrationViewController.m */; };
 		FCFD25821A154B3800F4C644 /* CodeVerificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFD25811A154B3800F4C644 /* CodeVerificationViewController.m */; };
 /* End PBXBuildFile section */
@@ -1435,8 +1434,6 @@
 		FCFD25711A1524DB00F4C644 /* GroupModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GroupModel.m; sourceTree = "<group>"; };
 		FCFD25751A15295D00F4C644 /* photo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "photo@2x.png"; sourceTree = "<group>"; };
 		FCFD25771A15436C00F4C644 /* 1-signal-launch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "1-signal-launch.png"; sourceTree = "<group>"; };
-		FCFD257A1A1543F700F4C644 /* InitalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InitalViewController.h; sourceTree = "<group>"; };
-		FCFD257B1A1543F700F4C644 /* InitalViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InitalViewController.m; sourceTree = "<group>"; };
 		FCFD257D1A154B2C00F4C644 /* RegistrationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegistrationViewController.h; sourceTree = "<group>"; };
 		FCFD257E1A154B2C00F4C644 /* RegistrationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegistrationViewController.m; sourceTree = "<group>"; };
 		FCFD25801A154B3800F4C644 /* CodeVerificationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CodeVerificationViewController.h; sourceTree = "<group>"; };
@@ -3247,8 +3244,6 @@
 		FCFD25791A1543D500F4C644 /* Signup */ = {
 			isa = PBXGroup;
 			children = (
-				FCFD257A1A1543F700F4C644 /* InitalViewController.h */,
-				FCFD257B1A1543F700F4C644 /* InitalViewController.m */,
 				FCFD257D1A154B2C00F4C644 /* RegistrationViewController.h */,
 				FCFD257E1A154B2C00F4C644 /* RegistrationViewController.m */,
 				FCFD25801A154B3800F4C644 /* CodeVerificationViewController.h */,
@@ -3757,7 +3752,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				76EB064E18170B34006006FC /* ContactDetailViewController.m in Sources */,
-				FCFD257C1A1543F700F4C644 /* InitalViewController.m in Sources */,
 				76EB063E18170B33006006FC /* Operation.m in Sources */,
 				76EB05F618170B33006006FC /* CallConnectUtil.m in Sources */,
 				76EB061218170B33006006FC /* LoggingUtil.m in Sources */,
