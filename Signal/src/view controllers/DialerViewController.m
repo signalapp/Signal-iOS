@@ -36,7 +36,7 @@
     [self setupPasteBehaviour];
     self.title = KEYPAD_NAV_BAR_TITLE;
     _currentNumberMutable = [NSMutableString string];
-    [self updateNumberLabel];
+    //[self updateNumberLabel];
     [self.navigationController setNavigationBarHidden:YES animated:NO];
     [_callButton setTitle:CALL_BUTTON_TITLE forState:UIControlStateNormal];
 }
@@ -111,6 +111,7 @@
 }
 
 - (void)callButtonTapped {
+    
     PhoneNumber *phoneNumber = self.phoneNumberForCurrentInput;
 
     BOOL shouldTryCall = [Environment.getCurrent.phoneDirectoryManager.getCurrentFilter containsPhoneNumber:phoneNumber] || [Environment.getCurrent.recentCallManager isPhoneNumberPresentInRecentCalls:phoneNumber];
@@ -142,7 +143,9 @@
 }
 
 - (void)updateNumberLabel {
+    //DEBUG!!!
     NSString* numberText = [_currentNumberMutable copy];
+    
     _numberLabel.text = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:numberText];
     PhoneNumber* number = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:numberText];	
     [self tryUpdateContactForNumber:number];

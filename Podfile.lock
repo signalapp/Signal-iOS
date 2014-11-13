@@ -25,6 +25,10 @@ PODS:
   - CocoaLumberjack/Core (1.9.2)
   - CocoaLumberjack/Extensions (1.9.2):
     - CocoaLumberjack/Core
+  - DJWActionSheet (1.0.4)
+  - JSQMessagesViewController (6.0-beta6):
+    - JSQSystemSoundPlayer (~> 2.0.0)
+  - JSQSystemSoundPlayer (2.0.0)
   - libPhoneNumber-iOS (0.7.3)
   - MMDrawerController (0.5.7):
     - MMDrawerController/Core
@@ -48,6 +52,8 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (~> 2.4.1)
+  - DJWActionSheet
+  - JSQMessagesViewController (from `https://github.com/dtsbourg/JSQMessagesViewController`, branch `JSignalQ`)
   - libPhoneNumber-iOS (~> 0.7)
   - MMDrawerController (~> 0.5.7)
   - OpenSSL (~> 1.0.109)
@@ -56,12 +62,18 @@ DEPENDENCIES:
   - UICKeyChainStore (from `Podspecs/UICKeyChainStore.podspec`)
 
 EXTERNAL SOURCES:
+  JSQMessagesViewController:
+    :branch: JSignalQ
+    :git: https://github.com/dtsbourg/JSQMessagesViewController
   UICKeyChainStore:
     :podspec: Podspecs/UICKeyChainStore.podspec
 
 SPEC CHECKSUMS:
   AFNetworking: 0aabc6fae66d6e5d039eeb21c315843c7aae51ab
   CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
+  DJWActionSheet: d88b302d7c29523e1e9fb9b62cfac46f59bb90d9
+  JSQMessagesViewController: 960a09d11978bea52d1a676e97980838f8d98652
+  JSQSystemSoundPlayer: c98443b1cbb3b45db09d0d3d6c2355cf78294981
   libPhoneNumber-iOS: 98fc07d70c8fdb5e6a8e3442c37e97353065c20e
   MMDrawerController: c3ab7a318ddc7e2bcd133139c3161af08c6e1197
   OpenSSL: 4810adf5c99b0e2cd20670a11a987c805e8a521c
