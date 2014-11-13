@@ -143,37 +143,40 @@
                                     <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Compare your Fingerprints" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xZd-tO-8Yr">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="zolo" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NsO-hv-Q6f">
                                             <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
-                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
-                                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                             <variation key="heightClass=regular-widthClass=compact" ambiguous="YES">
-                                                <rect key="frame" x="19" y="70" width="211" height="20.5"/>
+                                                <rect key="frame" x="194" y="133" width="32" height="21"/>
                                             </variation>
                                         </label>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstAttribute="trailing" secondItem="xZd-tO-8Yr" secondAttribute="trailing" constant="18" id="BBX-gb-epd"/>
-                                        <constraint firstItem="xZd-tO-8Yr" firstAttribute="leading" secondItem="kEV-0h-NsX" secondAttribute="leading" constant="19" id="mFC-DA-uDS"/>
+                                        <constraint firstItem="NsO-hv-Q6f" firstAttribute="top" secondItem="kEV-0h-NsX" secondAttribute="top" constant="133" id="3Pp-kq-wNC"/>
+                                        <constraint firstAttribute="trailing" secondItem="NsO-hv-Q6f" secondAttribute="trailing" constant="174" id="Aod-Nh-ZFJ"/>
+                                        <constraint firstItem="NsO-hv-Q6f" firstAttribute="leading" secondItem="kEV-0h-NsX" secondAttribute="leading" constant="194" id="Apw-xX-9ZT"/>
                                     </constraints>
                                     <variation key="default">
                                         <mask key="subviews">
-                                            <exclude reference="xZd-tO-8Yr"/>
+                                            <exclude reference="NsO-hv-Q6f"/>
                                         </mask>
                                         <mask key="constraints">
-                                            <exclude reference="BBX-gb-epd"/>
-                                            <exclude reference="mFC-DA-uDS"/>
+                                            <exclude reference="3Pp-kq-wNC"/>
+                                            <exclude reference="Aod-Nh-ZFJ"/>
+                                            <exclude reference="Apw-xX-9ZT"/>
                                         </mask>
                                     </variation>
                                     <variation key="heightClass=regular-widthClass=compact" ambiguous="YES">
                                         <rect key="frame" x="0.0" y="0.0" width="400" height="800"/>
                                         <mask key="subviews">
-                                            <include reference="xZd-tO-8Yr"/>
+                                            <include reference="NsO-hv-Q6f"/>
                                         </mask>
                                         <mask key="constraints">
-                                            <include reference="BBX-gb-epd"/>
-                                            <include reference="mFC-DA-uDS"/>
+                                            <include reference="3Pp-kq-wNC"/>
+                                            <include reference="Aod-Nh-ZFJ"/>
+                                            <include reference="Apw-xX-9ZT"/>
                                         </mask>
                                     </variation>
                                 </view>
@@ -183,23 +186,14 @@
                                 </variation>
                             </visualEffectView>
                         </subviews>
-                        <constraints>
-                            <constraint firstItem="xZd-tO-8Yr" firstAttribute="top" secondItem="8Oc-YZ-y0M" secondAttribute="bottom" constant="50" id="n6w-VU-3Xa"/>
-                        </constraints>
                         <variation key="default">
                             <mask key="subviews">
                                 <exclude reference="VCu-vN-Pjg"/>
-                            </mask>
-                            <mask key="constraints">
-                                <exclude reference="n6w-VU-3Xa"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
                             <mask key="subviews">
                                 <include reference="VCu-vN-Pjg"/>
-                            </mask>
-                            <mask key="constraints">
-                                <include reference="n6w-VU-3Xa"/>
                             </mask>
                         </variation>
                     </view>
@@ -2034,6 +2028,11 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="bP2-Tc-byJ">
                             <connections>
                                 <action selector="closeAction:" destination="Qga-41-bw2" id="i8h-aS-Y3o"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Create" id="Xmt-s8-mRN">
+                            <connections>
+                                <action selector="createMessage:" destination="Qga-41-bw2" id="maW-mn-AjM"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>

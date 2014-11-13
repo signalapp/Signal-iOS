@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
+#import "AppDelegate.h"
+
 #import "MessagesViewController.h"
 #import "FullImageViewController.h"
 
@@ -13,9 +15,6 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <AVFoundation/AVFoundation.h>
 #import <CoreMedia/CoreMedia.h>
-
-
-
 
 typedef enum : NSUInteger {
     kMediaTypePicture,
@@ -51,9 +50,22 @@ typedef enum : NSUInteger {
     
 }
 
+- (void)didPressBack{
+    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+    [self dismissViewControllerAnimated:YES completion:^{
+        [self.navigationController.parentViewController.presentingViewController.navigationController pushViewController:self animated:NO];
+    }];
+}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+-(void)initWithGroup:(NSArray *)group
+{
+    //Search for an existing group to set self.title & fetch messages for this identifier
+    //If none found, instantiate new group
 }
 
 #pragma mark - Fingerprints

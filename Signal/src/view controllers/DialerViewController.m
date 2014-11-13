@@ -111,6 +111,7 @@
 }
 
 - (void)callButtonTapped {
+    
     PhoneNumber *phoneNumber = self.phoneNumberForCurrentInput;
 
     BOOL shouldTryCall = [Environment.getCurrent.phoneDirectoryManager.getCurrentFilter containsPhoneNumber:phoneNumber] || [Environment.getCurrent.recentCallManager isPhoneNumberPresentInRecentCalls:phoneNumber];

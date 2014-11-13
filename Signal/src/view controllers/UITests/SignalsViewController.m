@@ -6,10 +6,12 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "SignalsViewController.h"
+#import "AppDelegate.h"
 #import "DemoDataFactory.h"
 #import "TableViewCell.h"
+
 #import "MessagesViewController.h"
+#import "SignalsViewController.h"
 
 
 #define CELL_HEIGHT 71.0f
@@ -29,6 +31,17 @@ static NSString *const kSegueIndentifier = @"showSegue";
 @end
 
 @implementation SignalsViewController
+
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    
+    if (self) {
+        AppDelegate *delegate = [[UIApplication sharedApplication] delegate];
+        delegate.signalVC = self;
+    }
+    
+    return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -111,7 +124,12 @@ static NSString *const kSegueIndentifier = @"showSegue";
     {
         MessagesViewController * vc = [segue destinationViewController];
         NSIndexPath *selectedIndexPath = [self._tableView indexPathForSelectedRow];
-        vc._senderTitleString =  ((DemoDataModel*)_dataArray[(NSUInteger)selectedIndexPath.row])._sender;
+        if (selectedIndexPath) {
+            vc._senderTitleString =  ((DemoDataModel*)_dataArray[(NSUInteger)selectedIndexPath.row])._sender;
+        } else if (_contactFromCompose) {
+            vc._senderTitleString = _contactFromCompose.fullName;
+        }
+
     }
 }
 

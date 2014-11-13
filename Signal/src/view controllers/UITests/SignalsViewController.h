@@ -11,7 +11,8 @@
 
 @interface SignalsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, TableViewCellDelegate>
 
-@property(nonatomic,strong) IBOutlet UITableView* _tableView;
+@property (nonatomic) Contact* contactFromCompose;
+@property (nonatomic,strong) IBOutlet UITableView* _tableView;
 
 @property (strong, nonatomic) IBOutlet UISegmentedControl * segmentedControl;
 

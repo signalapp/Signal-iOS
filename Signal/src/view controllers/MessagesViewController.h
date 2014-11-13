@@ -16,4 +16,8 @@
 @property (strong, nonatomic) DemoDataModel *demoData;
 
 @property (strong, nonatomic) NSString* _senderTitleString;
+
+-(void)initWithGroup:(NSArray*)group;
+
+
 @end

@@ -9,6 +9,8 @@
 #import "MessageComposeTableViewController.h"
 #import "MessagesViewController.h"
 
+#import "SignalsViewController.h"
+
 @interface MessageComposeTableViewController () {
     NSArray* contacts;
     NSArray* searchResults;
@@ -19,12 +21,13 @@
 
 @implementation MessageComposeTableViewController
 
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     contacts = [DemoDataFactory makeFakeContacts];
 
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
-
 }
 
 - (void)didReceiveMemoryWarning {
@@ -42,7 +45,6 @@
     
     if (tableView == self.searchDisplayController.searchResultsTableView) {
         return (NSInteger)[searchResults count];
-        
     } else {
         return (NSInteger)[contacts count];
     }
@@ -80,22 +82,8 @@
     UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
-    if ([tableView indexPathsForSelectedRows].count == 1)
-    {
-        //Present compose text view
-        //Set destination to selected person or group
-        
-        
-        
-    }
-    else if ([tableView indexPathsForSelectedRows].count > 1)
-    {
-        /*
-         *  //Create a group with these people in it & set send destination to group
-         */
-    }
 }
+    
 
 -(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -127,11 +115,21 @@
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    
+  
+}
+
+-(IBAction)closeAction:(id)sender
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(IBAction)createMessage:(id)sender
+{
     NSIndexPath *indexPath = nil;
     Contact *contact = nil;
     
-    if ([segue.identifier isEqualToString:@"ConversationSegue"]) {
+    if ([self.tableView indexPathsForSelectedRows].count == 1)
+    {
         if (self.searchDisplayController.active) {
             indexPath = [self.searchDisplayController.searchResultsTableView indexPathForSelectedRow];
             contact = [searchResults objectAtIndex:(NSUInteger)indexPath.row];
@@ -140,17 +138,27 @@
             contact = [contacts objectAtIndex:(NSUInteger)indexPath.row];
         }
     }
-    
-    MessagesViewController * dest = [segue destinationViewController];
-    dest._senderTitleString = contact.fullName;
-    
-    [self.navigationController presentViewController:dest animated:YES completion:^(){searchResults = nil;}];
-    
-}
+    else if ([self.tableView indexPathsForSelectedRows].count > 1)
+    {
+        /*
+         *  //Create a group with these people in it & set send destination to group
+         */
+        NSMutableArray* recipients = [[NSMutableArray alloc]init];
 
--(IBAction)closeAction:(id)sender
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
+        for (id obj in [self.tableView indexPathsForSelectedRows]) {
+            [recipients addObject:obj];
+        }
+    }
+    
+    //HACK: This is horrible due to the view hierarchy, but gets the job done. Gets a reference to the SignalsVC so we can present the conversation from it.
+
+    SignalsViewController* s = (SignalsViewController*)((UINavigationController*)[((UITabBarController*)self.parentViewController.presentingViewController).childViewControllers objectAtIndex:1]).topViewController;
+     s.contactFromCompose = contact;
+    
+    [self dismissViewControllerAnimated:YES completion:^(){
+        
+        [s performSegueWithIdentifier:@"showSegue" sender:nil];
+    }];
 }
 
 @end
