@@ -578,6 +578,7 @@
 		FC31962D1A06A2190094C78E /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC31962C1A06A2190094C78E /* FingerprintViewController.m */; };
 		FC3196301A0814130094C78E /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC31962F1A0814130094C78E /* SettingsTableViewController.m */; };
 		FC4F9FE51A16258C00DA100A /* logo_intro@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4F9FE41A16258C00DA100A /* logo_intro@2x.png */; };
+		FC4F9FED1A1658EE00DA100A /* call@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4F9FEC1A1658EE00DA100A /* call@2x.png */; };
 		FCAC963519FEF4E20046DFC5 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */; };
 		FCAC963C19FEF9280046DFC5 /* SignalsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */; };
 		FCAC964019FEF99A0046DFC5 /* TableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963E19FEF99A0046DFC5 /* TableViewCell.m */; };
@@ -1341,6 +1342,7 @@
 		FC31962E1A0814130094C78E /* SettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsTableViewController.h; sourceTree = "<group>"; };
 		FC31962F1A0814130094C78E /* SettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsTableViewController.m; sourceTree = "<group>"; };
 		FC4F9FE41A16258C00DA100A /* logo_intro@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo_intro@2x.png"; sourceTree = "<group>"; };
+		FC4F9FEC1A1658EE00DA100A /* call@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "call@2x.png"; sourceTree = "<group>"; };
 		FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Storyboard.storyboard; path = Signal/src/Storyboard/Storyboard.storyboard; sourceTree = SOURCE_ROOT; };
 		FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignalsViewController.h; path = UITests/SignalsViewController.h; sourceTree = "<group>"; };
 		FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalsViewController.m; path = UITests/SignalsViewController.m; sourceTree = "<group>"; };
@@ -3166,6 +3168,7 @@
 		FCAFC2F91A0C4E1700AE5136 /* icons8 */ = {
 			isa = PBXGroup;
 			children = (
+				FC4F9FEC1A1658EE00DA100A /* call@2x.png */,
 				FC4F9FE41A16258C00DA100A /* logo_intro@2x.png */,
 				FCFD25751A15295D00F4C644 /* photo@2x.png */,
 				FCB11D8D1A12A388002F93FB /* savephoto@2x.png */,
@@ -3526,6 +3529,7 @@
 				E16E5C1418AEDB5A00B7C403 /* message_icon.png in Resources */,
 				FCAFC33C1A0E8F8000AE5136 /* fingerprint@2x.png in Resources */,
 				E1370BEF18A0689000826894 /* AppIcon60x60.png in Resources */,
+				FC4F9FED1A1658EE00DA100A /* call@2x.png in Resources */,
 				E1370BF018A0689000826894 /* AppIcon60x60@2x.png in Resources */,
 				E1370BF118A0689000826894 /* AppIcon76x76.png in Resources */,
 				E1370BF218A0689000826894 /* AppIcon76x76@2x.png in Resources */,

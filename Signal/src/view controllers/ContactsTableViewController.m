@@ -190,7 +190,15 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     
     dialer.phoneNumber = nil;
     
-    [self presentViewController:navigationController animated:NO completion:nil];
+    self.tabBarController.providesPresentationContextTransitionStyle = YES;
+    self.tabBarController.definesPresentationContext = YES;
+    [navigationController setModalPresentationStyle:UIModalPresentationOverCurrentContext];
+    navigationController.hidesBottomBarWhenPushed = YES;
+    navigationController.navigationBarHidden=YES;
+    
+    [self.tabBarController presentViewController:navigationController animated:YES completion:^(){
+        
+    }];
 }
 
 @end

@@ -43,6 +43,13 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    UIBlurEffect * effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+    UIVisualEffectView * viewWithBlurredBackground =
+    [[UIVisualEffectView alloc] initWithEffect:effect];
+    viewWithBlurredBackground.frame = self.view.frame;
+    
+    [self.view insertSubview:viewWithBlurredBackground atIndex:0];
+    
     if (_phoneNumber) {
         _currentNumberMutable = _phoneNumber.toE164.mutableCopy;
         [self updateNumberLabel];
