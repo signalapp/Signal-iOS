@@ -579,6 +579,11 @@
 		FC3196301A0814130094C78E /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC31962F1A0814130094C78E /* SettingsTableViewController.m */; };
 		FC4F9FE51A16258C00DA100A /* logo_intro@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4F9FE41A16258C00DA100A /* logo_intro@2x.png */; };
 		FC4F9FED1A1658EE00DA100A /* call@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4F9FEC1A1658EE00DA100A /* call@2x.png */; };
+		FC4F9FF31A1664EA00DA100A /* mute_off@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4F9FEE1A1664EA00DA100A /* mute_off@2x.png */; };
+		FC4F9FF41A1664EA00DA100A /* speaker_off@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4F9FEF1A1664EA00DA100A /* speaker_off@2x.png */; };
+		FC4F9FF51A1664EA00DA100A /* speaker_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4F9FF01A1664EA00DA100A /* speaker_on@2x.png */; };
+		FC4F9FF61A1664EA00DA100A /* mute_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4F9FF11A1664EA00DA100A /* mute_on@2x.png */; };
+		FC4F9FF71A1664EA00DA100A /* endcall@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4F9FF21A1664EA00DA100A /* endcall@2x.png */; };
 		FCAC963519FEF4E20046DFC5 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */; };
 		FCAC963C19FEF9280046DFC5 /* SignalsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */; };
 		FCAC964019FEF99A0046DFC5 /* TableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963E19FEF99A0046DFC5 /* TableViewCell.m */; };
@@ -1343,6 +1348,11 @@
 		FC31962F1A0814130094C78E /* SettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsTableViewController.m; sourceTree = "<group>"; };
 		FC4F9FE41A16258C00DA100A /* logo_intro@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo_intro@2x.png"; sourceTree = "<group>"; };
 		FC4F9FEC1A1658EE00DA100A /* call@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "call@2x.png"; sourceTree = "<group>"; };
+		FC4F9FEE1A1664EA00DA100A /* mute_off@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mute_off@2x.png"; sourceTree = "<group>"; };
+		FC4F9FEF1A1664EA00DA100A /* speaker_off@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "speaker_off@2x.png"; sourceTree = "<group>"; };
+		FC4F9FF01A1664EA00DA100A /* speaker_on@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "speaker_on@2x.png"; sourceTree = "<group>"; };
+		FC4F9FF11A1664EA00DA100A /* mute_on@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mute_on@2x.png"; sourceTree = "<group>"; };
+		FC4F9FF21A1664EA00DA100A /* endcall@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "endcall@2x.png"; sourceTree = "<group>"; };
 		FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Storyboard.storyboard; path = Signal/src/Storyboard/Storyboard.storyboard; sourceTree = SOURCE_ROOT; };
 		FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignalsViewController.h; path = UITests/SignalsViewController.h; sourceTree = "<group>"; };
 		FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalsViewController.m; path = UITests/SignalsViewController.m; sourceTree = "<group>"; };
@@ -3168,6 +3178,11 @@
 		FCAFC2F91A0C4E1700AE5136 /* icons8 */ = {
 			isa = PBXGroup;
 			children = (
+				FC4F9FEE1A1664EA00DA100A /* mute_off@2x.png */,
+				FC4F9FEF1A1664EA00DA100A /* speaker_off@2x.png */,
+				FC4F9FF01A1664EA00DA100A /* speaker_on@2x.png */,
+				FC4F9FF11A1664EA00DA100A /* mute_on@2x.png */,
+				FC4F9FF21A1664EA00DA100A /* endcall@2x.png */,
 				FC4F9FEC1A1658EE00DA100A /* call@2x.png */,
 				FC4F9FE41A16258C00DA100A /* logo_intro@2x.png */,
 				FCFD25751A15295D00F4C644 /* photo@2x.png */,
@@ -3437,7 +3452,9 @@
 				E14874AE18A0692F002CC4F3 /* dismiss_notification_icon.png in Resources */,
 				E14874AF18A0692F002CC4F3 /* dismiss_notification_icon@2x.png in Resources */,
 				E14874B018A0692F002CC4F3 /* drop_down_arrow_icon.png in Resources */,
+				FC4F9FF61A1664EA00DA100A /* mute_on@2x.png in Resources */,
 				FCAFC2F21A0C4ACF00AE5136 /* missed.png in Resources */,
+				FC4F9FF31A1664EA00DA100A /* mute_off@2x.png in Resources */,
 				E14874B118A0692F002CC4F3 /* drop_down_arrow_icon@2x.png in Resources */,
 				E14874B218A0692F002CC4F3 /* expanded_cell_icon.png in Resources */,
 				E14874B318A0692F002CC4F3 /* expanded_cell_icon@2x.png in Resources */,
@@ -3462,6 +3479,7 @@
 				E16E5C1518AEDB5A00B7C403 /* phone_icon.png in Resources */,
 				E14874C218A0692F002CC4F3 /* in_call_phrase_icon@2x.png in Resources */,
 				E14874C318A0692F002CC4F3 /* incoming_call_icon.png in Resources */,
+				FC4F9FF51A1664EA00DA100A /* speaker_on@2x.png in Resources */,
 				E14874C418A0692F002CC4F3 /* incoming_call_icon@2x.png in Resources */,
 				E14874C518A0692F002CC4F3 /* menu_icon.png in Resources */,
 				E14874C618A0692F002CC4F3 /* menu_icon@2x.png in Resources */,
@@ -3517,6 +3535,7 @@
 				E14874F118A06930002CC4F3 /* volume_high.png in Resources */,
 				E14874F218A06930002CC4F3 /* volume_high@2x.png in Resources */,
 				70B8FEE21909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav in Resources */,
+				FC4F9FF71A1664EA00DA100A /* endcall@2x.png in Resources */,
 				E14874F318A06930002CC4F3 /* volume_low.png in Resources */,
 				E14874F418A06930002CC4F3 /* volume_low@2x.png in Resources */,
 				E14874F518A06930002CC4F3 /* whisper_notification_icon.png in Resources */,
@@ -3546,6 +3565,7 @@
 				FCAC963519FEF4E20046DFC5 /* Storyboard.storyboard in Resources */,
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
 				E1370BE418A0686C00826894 /* outring.mp3 in Resources */,
+				FC4F9FF41A1664EA00DA100A /* speaker_off@2x.png in Resources */,
 				FCB11D8F1A12A388002F93FB /* savephoto@2x.png in Resources */,
 				E1370BE518A0686C00826894 /* r.caf in Resources */,
 				FCAFC3171A0C627100AE5136 /* contact_search.png in Resources */,
