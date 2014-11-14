@@ -577,6 +577,7 @@
 		FC31962A1A067D8F0094C78E /* MessageComposeTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */; };
 		FC31962D1A06A2190094C78E /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC31962C1A06A2190094C78E /* FingerprintViewController.m */; };
 		FC3196301A0814130094C78E /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC31962F1A0814130094C78E /* SettingsTableViewController.m */; };
+		FC4F9FE51A16258C00DA100A /* logo_intro@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4F9FE41A16258C00DA100A /* logo_intro@2x.png */; };
 		FCAC963519FEF4E20046DFC5 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */; };
 		FCAC963C19FEF9280046DFC5 /* SignalsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */; };
 		FCAC964019FEF99A0046DFC5 /* TableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963E19FEF99A0046DFC5 /* TableViewCell.m */; };
@@ -619,7 +620,6 @@
 		FCFD256F1A151BCB00F4C644 /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFD256E1A151BCB00F4C644 /* NewGroupViewController.m */; };
 		FCFD25721A1524DB00F4C644 /* GroupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFD25711A1524DB00F4C644 /* GroupModel.m */; };
 		FCFD25761A15295D00F4C644 /* photo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCFD25751A15295D00F4C644 /* photo@2x.png */; };
-		FCFD25781A15436C00F4C644 /* 1-signal-launch.png in Resources */ = {isa = PBXBuildFile; fileRef = FCFD25771A15436C00F4C644 /* 1-signal-launch.png */; };
 		FCFD257F1A154B2C00F4C644 /* RegistrationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFD257E1A154B2C00F4C644 /* RegistrationViewController.m */; };
 		FCFD25821A154B3800F4C644 /* CodeVerificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFD25811A154B3800F4C644 /* CodeVerificationViewController.m */; };
 /* End PBXBuildFile section */
@@ -1340,6 +1340,7 @@
 		FC31962C1A06A2190094C78E /* FingerprintViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FingerprintViewController.m; sourceTree = "<group>"; };
 		FC31962E1A0814130094C78E /* SettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsTableViewController.h; sourceTree = "<group>"; };
 		FC31962F1A0814130094C78E /* SettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsTableViewController.m; sourceTree = "<group>"; };
+		FC4F9FE41A16258C00DA100A /* logo_intro@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo_intro@2x.png"; sourceTree = "<group>"; };
 		FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Storyboard.storyboard; path = Signal/src/Storyboard/Storyboard.storyboard; sourceTree = SOURCE_ROOT; };
 		FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignalsViewController.h; path = UITests/SignalsViewController.h; sourceTree = "<group>"; };
 		FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalsViewController.m; path = UITests/SignalsViewController.m; sourceTree = "<group>"; };
@@ -1395,7 +1396,6 @@
 		FCFD25701A1524DB00F4C644 /* GroupModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupModel.h; sourceTree = "<group>"; };
 		FCFD25711A1524DB00F4C644 /* GroupModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GroupModel.m; sourceTree = "<group>"; };
 		FCFD25751A15295D00F4C644 /* photo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "photo@2x.png"; sourceTree = "<group>"; };
-		FCFD25771A15436C00F4C644 /* 1-signal-launch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "1-signal-launch.png"; sourceTree = "<group>"; };
 		FCFD257D1A154B2C00F4C644 /* RegistrationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegistrationViewController.h; sourceTree = "<group>"; };
 		FCFD257E1A154B2C00F4C644 /* RegistrationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegistrationViewController.m; sourceTree = "<group>"; };
 		FCFD25801A154B3800F4C644 /* CodeVerificationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CodeVerificationViewController.h; sourceTree = "<group>"; };
@@ -3166,7 +3166,7 @@
 		FCAFC2F91A0C4E1700AE5136 /* icons8 */ = {
 			isa = PBXGroup;
 			children = (
-				FCFD25771A15436C00F4C644 /* 1-signal-launch.png */,
+				FC4F9FE41A16258C00DA100A /* logo_intro@2x.png */,
 				FCFD25751A15295D00F4C644 /* photo@2x.png */,
 				FCB11D8D1A12A388002F93FB /* savephoto@2x.png */,
 				FCB11D8E1A12A388002F93FB /* quit@2x.png */,
@@ -3402,8 +3402,8 @@
 				E148750C18A06966002CC4F3 /* LeftSideMenuViewController.xib in Resources */,
 				E148750D18A06966002CC4F3 /* PreferenceListViewController.xib in Resources */,
 				FCAFC3301A0D5E3000AE5136 /* share@2x.png in Resources */,
+				FC4F9FE51A16258C00DA100A /* logo_intro@2x.png in Resources */,
 				E148750E18A06966002CC4F3 /* RegisterViewController.xib in Resources */,
-				FCFD25781A15436C00F4C644 /* 1-signal-launch.png in Resources */,
 				E148750F18A06966002CC4F3 /* SettingsViewController.xib in Resources */,
 				E148751018A06966002CC4F3 /* TabBarParentViewController.xib in Resources */,
 				E14874F718A06951002CC4F3 /* CallLogTableViewCell.xib in Resources */,

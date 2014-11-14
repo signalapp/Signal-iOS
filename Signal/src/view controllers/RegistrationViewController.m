@@ -25,7 +25,7 @@
 
 #import <Pastelog.h>
 
-
+#define kKeyboardPadding 10.0f
 
 
 @interface RegistrationViewController ()
@@ -96,13 +96,48 @@
     UITapGestureRecognizer *outsideTabRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboardFromAppropriateSubView)];
     [self.view addGestureRecognizer:outsideTabRecognizer];
     
-    //[self observeKeyboardNotifications];
+    [self observeKeyboardNotifications];
     
 }
 
 -(void) dismissKeyboardFromAppropriateSubView {
     [self.view endEditing:NO];
 }
+
+- (void)observeKeyboardNotifications {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillHide:)
+                                                 name:UIKeyboardWillHideNotification
+                                               object:nil];
+}
+
+- (void)keyboardWillShow:(NSNotification *)notification {
+    double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    [UIView animateWithDuration:duration animations:^{
+        CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+        self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
+                                       CGRectGetMinY(self.view.frame)-keyboardSize.height+kKeyboardPadding,
+                                       CGRectGetWidth(self.view.frame),
+                                       CGRectGetHeight(self.view.frame));
+    }];
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification {
+    double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    [UIView animateWithDuration:duration animations:^{
+        CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+        self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
+                                       CGRectGetMinY(self.view.frame)+keyboardSize.height-kKeyboardPadding,
+                                       CGRectGetWidth(self.view.frame),
+                                       CGRectGetHeight(self.view.frame));
+    }];
+}
+
 
 
 #pragma mark - CountryCodeViewControllerDelegate
