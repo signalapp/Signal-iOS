@@ -1343,7 +1343,7 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                         <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="NameMainNumberCell" rowHeight="180" id="s9K-XI-hyH" customClass="ContactDetailCell">
+                            <tableViewCell userInteractionEnabled="NO" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="NameMainNumberCell" rowHeight="180" id="s9K-XI-hyH" customClass="ContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" tableViewCell="s9K-XI-hyH" id="wU0-a0-5eX">
                                     <autoresizingMask key="autoresizingMask"/>
@@ -1457,7 +1457,7 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                                     <outlet property="contactPhoneNumber" destination="wdW-CI-EaW" id="l6w-Gz-uDU"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ActionCell" rowHeight="60" id="Oss-Ve-Ae2" customClass="ActionContactDetailCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="ActionCell" rowHeight="60" id="Oss-Ve-Ae2" customClass="ActionContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Oss-Ve-Ae2" id="vmu-lW-Eyq">
                                     <autoresizingMask key="autoresizingMask"/>
@@ -1878,7 +1878,7 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ShareCell" rowHeight="60" id="hSC-7F-dj5" customClass="ContactDetailCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="ShareCell" rowHeight="60" id="hSC-7F-dj5" customClass="ContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="hSC-7F-dj5" id="lvR-BE-4Mx">
                                     <autoresizingMask key="autoresizingMask"/>
@@ -1958,7 +1958,7 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="EmailCell" rowHeight="60" id="fWm-EM-av7" customClass="ContactDetailCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="EmailCell" rowHeight="60" id="fWm-EM-av7" customClass="ContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="fWm-EM-av7" id="yVD-4a-A9L">
                                     <autoresizingMask key="autoresizingMask"/>
@@ -1997,7 +1997,7 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="AnnexPhoneNumberCell" rowHeight="60" id="gGz-wn-6Ah" customClass="ContactDetailCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="AnnexPhoneNumberCell" rowHeight="60" id="gGz-wn-6Ah" customClass="ContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="gGz-wn-6Ah" id="GZI-HN-czN">
                                     <autoresizingMask key="autoresizingMask"/>
@@ -2036,7 +2036,7 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="NotesCell" rowHeight="165" id="hWy-FH-ik2" customClass="ContactDetailCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="NotesCell" rowHeight="165" id="hWy-FH-ik2" customClass="ContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="hWy-FH-ik2" id="ep9-kD-7xS">
                                     <autoresizingMask key="autoresizingMask"/>
