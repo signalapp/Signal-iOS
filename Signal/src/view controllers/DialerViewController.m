@@ -130,6 +130,7 @@
     }
 }
 
+
 -(void) initiateCallToPhoneNumber:(PhoneNumber*) phoneNumber {
     if (_contact) {
         [Environment.phoneManager initiateOutgoingCallToContact:_contact

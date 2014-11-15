@@ -31,6 +31,21 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="12D-9Y-JL6">
+                    <rect key="frame" x="129" y="427" width="62" height="62"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="62" id="84G-AQ-WCL"/>
+                        <constraint firstAttribute="height" constant="62" id="zlk-J0-B2K"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="29"/>
+                    <state key="normal" image="call.png">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="callButtonTapped" destination="-1" eventType="touchUpInside" id="0FU-nG-1Al"/>
+                    </connections>
+                </button>
                 <view contentMode="scaleToFill" verticalHuggingPriority="334" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="46v-6I-Vd1" userLabel="Number Container View">
                     <rect key="frame" x="0.0" y="27" width="320" height="47"/>
                     <subviews>
@@ -772,19 +787,19 @@
                         <constraint firstAttribute="height" relation="lessThanOrEqual" priority="1" constant="19" id="Nr1-Ta-njj"/>
                     </constraints>
                 </view>
-                <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="12D-9Y-JL6">
-                    <rect key="frame" x="129" y="427" width="62" height="62"/>
+                <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FpR-tb-TXN">
+                    <rect key="frame" x="46" y="427" width="62" height="62"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="62" id="84G-AQ-WCL"/>
-                        <constraint firstAttribute="height" constant="62" id="zlk-J0-B2K"/>
+                        <constraint firstAttribute="height" constant="62" id="AAK-9x-lwy"/>
+                        <constraint firstAttribute="width" constant="62" id="KCM-r5-f4x"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="29"/>
-                    <state key="normal" image="call.png">
+                    <state key="normal" image="quit.png">
                         <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                     <connections>
-                        <action selector="callButtonTapped" destination="-1" eventType="touchUpInside" id="0FU-nG-1Al"/>
+                        <action selector="callButtonTapped" destination="-1" eventType="touchUpInside" id="gf3-h4-p0f"/>
                     </connections>
                 </button>
             </subviews>
@@ -817,6 +832,7 @@
                 <constraint firstItem="97j-3K-zxA" firstAttribute="bottom" secondItem="4UG-he-mMF" secondAttribute="bottom" id="IC1-5N-7AZ"/>
                 <constraint firstItem="UNK-zX-eBo" firstAttribute="leading" secondItem="jeX-1I-jvh" secondAttribute="leading" id="IaW-ZJ-qgI"/>
                 <constraint firstItem="dAV-fN-l7c" firstAttribute="leading" secondItem="m52-xI-oom" secondAttribute="leading" id="Ji7-e9-Lpf"/>
+                <constraint firstItem="12D-9Y-JL6" firstAttribute="leading" secondItem="FpR-tb-TXN" secondAttribute="trailing" constant="21" id="K8N-w4-UhD"/>
                 <constraint firstItem="dAV-fN-l7c" firstAttribute="trailing" secondItem="46v-6I-Vd1" secondAttribute="trailing" id="KDP-6u-aQB"/>
                 <constraint firstItem="gJH-91-Zx5" firstAttribute="top" secondItem="4UG-he-mMF" secondAttribute="bottom" constant="-1" id="KWT-2q-z4A"/>
                 <constraint firstItem="4UG-he-mMF" firstAttribute="leading" secondItem="JIp-WY-zIN" secondAttribute="leading" id="LJd-rl-BrU"/>
@@ -825,6 +841,7 @@
                 <constraint firstItem="JIp-WY-zIN" firstAttribute="top" secondItem="DOT-fb-PK3" secondAttribute="bottom" constant="-1" id="LvO-7b-zy8"/>
                 <constraint firstItem="4UG-he-mMF" firstAttribute="trailing" secondItem="JIp-WY-zIN" secondAttribute="trailing" id="MIJ-qZ-ULP"/>
                 <constraint firstItem="gJH-91-Zx5" firstAttribute="centerX" secondItem="12D-9Y-JL6" secondAttribute="centerX" id="PCg-yr-AP3"/>
+                <constraint firstItem="FpR-tb-TXN" firstAttribute="centerY" secondItem="12D-9Y-JL6" secondAttribute="centerY" id="Pfo-lK-cyB"/>
                 <constraint firstItem="J4P-Go-2yG" firstAttribute="bottom" secondItem="jeX-1I-jvh" secondAttribute="bottom" id="QYh-jJ-4ad"/>
                 <constraint firstItem="82K-Nd-cmI" firstAttribute="leading" secondItem="UNK-zX-eBo" secondAttribute="trailing" constant="15" id="RX8-pD-0PC"/>
                 <constraint firstItem="46v-6I-Vd1" firstAttribute="leading" secondItem="dAV-fN-l7c" secondAttribute="leading" id="T2w-uo-12M"/>
@@ -877,6 +894,7 @@
     <resources>
         <image name="backspace.png" width="27" height="22"/>
         <image name="call.png" width="100" height="100"/>
+        <image name="quit.png" width="50" height="50"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
