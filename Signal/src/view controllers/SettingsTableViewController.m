@@ -8,6 +8,7 @@
 
 #import "SettingsTableViewController.h"
 #import "DJWActionSheet.h"
+#import "SettingsTableViewCell.h"
 
 #define kProfileCellHeight  180.0f
 #define kStandardCellHeight 60.0f
@@ -43,6 +44,7 @@ typedef enum {
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
+
 
 #pragma mark - Table view data source
 
@@ -111,6 +113,16 @@ typedef enum {
             default:
                 break;
         }
+    }
+    
+    else if (indexPath.section==kProfileSection)
+    {
+        //FIXME: self is to nil after this call o_x so can't show button
+        SettingsTableViewCell* profileCell = (SettingsTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath];
+        profileCell.changeProfileImageViewButton.hidden = !profileCell.changeProfileImageViewButton.hidden;
+        profileCell.changeProfileImageViewButton.userInteractionEnabled = !profileCell.changeProfileImageViewButton.userInteractionEnabled;
+        NSLog(@"hello");
+
     }
 }
 

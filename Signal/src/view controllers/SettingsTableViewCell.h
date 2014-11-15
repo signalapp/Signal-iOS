@@ -16,4 +16,6 @@
 
 //Header cell
 @property(nonatomic, strong) IBOutlet UIImageView* profileImageView;
+@property(nonatomic, strong) IBOutlet UIButton * changeProfileImageViewButton;
+
 @end
