@@ -1337,7 +1337,7 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
         <scene sceneID="cYN-Tc-52p">
             <objects>
                 <tableViewController id="0XE-hu-8cu" customClass="ContactDetailTableViewController" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="150" sectionHeaderHeight="22" sectionFooterHeight="22" id="RoU-YO-d5P">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="150" sectionHeaderHeight="22" sectionFooterHeight="22" id="RoU-YO-d5P">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
