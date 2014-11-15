@@ -800,6 +800,7 @@
                     </state>
                     <connections>
                         <action selector="callButtonTapped" destination="-1" eventType="touchUpInside" id="gf3-h4-p0f"/>
+                        <action selector="cancelButtonTapped:" destination="-1" eventType="touchUpInside" id="gn3-TB-hhv"/>
                     </connections>
                 </button>
             </subviews>
