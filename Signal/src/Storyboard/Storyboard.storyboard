@@ -3099,7 +3099,7 @@ Licensed under the GPLv3</string>
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" searchBarStyle="minimal" id="Hku-Jy-Hze">
+                        <searchBar key="tableHeaderView" contentMode="redraw" searchBarStyle="minimal" placeholder="Search Contacts &amp; Groups" id="Hku-Jy-Hze">
                             <rect key="frame" x="0.0" y="64" width="600" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <textInputTraits key="textInputTraits"/>
@@ -3369,7 +3369,7 @@ Licensed under the GPLv3</string>
         <image name="favourite.png" width="100" height="100"/>
         <image name="keypad.png" width="25" height="25"/>
         <image name="logo_intro.png" width="291" height="255"/>
-        <image name="photo.png" width="82" height="82"/>
+        <image name="photo.png" width="200" height="200"/>
         <image name="quit.png" width="50" height="50"/>
         <image name="savephoto.png" width="50" height="50"/>
         <image name="settings.png" width="24" height="24"/>
