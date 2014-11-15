@@ -51,7 +51,6 @@ typedef enum : NSUInteger {
 }
 
 - (void)didPressBack{
-    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
     [self dismissViewControllerAnimated:YES completion:^{
         [self.navigationController.parentViewController.presentingViewController.navigationController pushViewController:self animated:NO];
     }];
@@ -78,6 +77,7 @@ typedef enum : NSUInteger {
 #pragma mark - JSQMessage custom methods
 
 -(void)updateMessageStatus:(JSQMessage*)message {
+    if ([message.senderId isEqualToString:self.senderId])
     message.status = kMessageReceived;
 }
 
