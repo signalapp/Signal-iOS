@@ -584,6 +584,7 @@
 		FC4F9FF51A1664EA00DA100A /* speaker_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4F9FF01A1664EA00DA100A /* speaker_on@2x.png */; };
 		FC4F9FF61A1664EA00DA100A /* mute_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4F9FF11A1664EA00DA100A /* mute_on@2x.png */; };
 		FC4F9FF71A1664EA00DA100A /* endcall@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4F9FF21A1664EA00DA100A /* endcall@2x.png */; };
+		FC4F9FFD1A179FCF00DA100A /* lock@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4F9FFC1A179FCF00DA100A /* lock@2x.png */; };
 		FCAC963519FEF4E20046DFC5 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */; };
 		FCAC963C19FEF9280046DFC5 /* SignalsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */; };
 		FCAC964019FEF99A0046DFC5 /* TableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963E19FEF99A0046DFC5 /* TableViewCell.m */; };
@@ -613,7 +614,6 @@
 		FCAFC3301A0D5E3000AE5136 /* share@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCAFC32F1A0D5E3000AE5136 /* share@2x.png */; };
 		FCAFC3341A0D656100AE5136 /* contacts_tab@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCAFC3331A0D656100AE5136 /* contacts_tab@2x.png */; };
 		FCAFC3361A0D680100AE5136 /* keypad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCAFC3351A0D680100AE5136 /* keypad@2x.png */; };
-		FCAFC33C1A0E8F8000AE5136 /* fingerprint@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCAFC33B1A0E8F8000AE5136 /* fingerprint@2x.png */; };
 		FCAFC33F1A0F948F00AE5136 /* ActionContactDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAFC33E1A0F948F00AE5136 /* ActionContactDetailCell.m */; };
 		FCB11D8A1A1284BB002F93FB /* SettingsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCB11D891A1284BB002F93FB /* SettingsTableViewCell.m */; };
 		FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB11D8B1A129A76002F93FB /* CoreMedia.framework */; };
@@ -1353,6 +1353,7 @@
 		FC4F9FF01A1664EA00DA100A /* speaker_on@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "speaker_on@2x.png"; sourceTree = "<group>"; };
 		FC4F9FF11A1664EA00DA100A /* mute_on@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mute_on@2x.png"; sourceTree = "<group>"; };
 		FC4F9FF21A1664EA00DA100A /* endcall@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "endcall@2x.png"; sourceTree = "<group>"; };
+		FC4F9FFC1A179FCF00DA100A /* lock@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lock@2x.png"; sourceTree = "<group>"; };
 		FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Storyboard.storyboard; path = Signal/src/Storyboard/Storyboard.storyboard; sourceTree = SOURCE_ROOT; };
 		FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignalsViewController.h; path = UITests/SignalsViewController.h; sourceTree = "<group>"; };
 		FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalsViewController.m; path = UITests/SignalsViewController.m; sourceTree = "<group>"; };
@@ -1387,7 +1388,6 @@
 		FCAFC32F1A0D5E3000AE5136 /* share@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "share@2x.png"; sourceTree = "<group>"; };
 		FCAFC3331A0D656100AE5136 /* contacts_tab@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "contacts_tab@2x.png"; sourceTree = "<group>"; };
 		FCAFC3351A0D680100AE5136 /* keypad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "keypad@2x.png"; sourceTree = "<group>"; };
-		FCAFC33B1A0E8F8000AE5136 /* fingerprint@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fingerprint@2x.png"; sourceTree = "<group>"; };
 		FCAFC33D1A0F948F00AE5136 /* ActionContactDetailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionContactDetailCell.h; sourceTree = "<group>"; };
 		FCAFC33E1A0F948F00AE5136 /* ActionContactDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionContactDetailCell.m; sourceTree = "<group>"; };
 		FCB11D881A1284BB002F93FB /* SettingsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsTableViewCell.h; sourceTree = "<group>"; };
@@ -3178,6 +3178,7 @@
 		FCAFC2F91A0C4E1700AE5136 /* icons8 */ = {
 			isa = PBXGroup;
 			children = (
+				FC4F9FFC1A179FCF00DA100A /* lock@2x.png */,
 				FC4F9FEE1A1664EA00DA100A /* mute_off@2x.png */,
 				FC4F9FEF1A1664EA00DA100A /* speaker_off@2x.png */,
 				FC4F9FF01A1664EA00DA100A /* speaker_on@2x.png */,
@@ -3188,7 +3189,6 @@
 				FCFD25751A15295D00F4C644 /* photo@2x.png */,
 				FCB11D8D1A12A388002F93FB /* savephoto@2x.png */,
 				FCB11D8E1A12A388002F93FB /* quit@2x.png */,
-				FCAFC33B1A0E8F8000AE5136 /* fingerprint@2x.png */,
 				FCAFC3351A0D680100AE5136 /* keypad@2x.png */,
 				FCAFC3331A0D656100AE5136 /* contacts_tab@2x.png */,
 				FCAFC32F1A0D5E3000AE5136 /* share@2x.png */,
@@ -3500,6 +3500,7 @@
 				E14874D318A0692F002CC4F3 /* search_cancel.png in Resources */,
 				E14874D418A0692F002CC4F3 /* search_cancel@2x.png in Resources */,
 				E14874D518A0692F002CC4F3 /* search_icon.png in Resources */,
+				FC4F9FFD1A179FCF00DA100A /* lock@2x.png in Resources */,
 				E14874D618A0692F002CC4F3 /* search_icon@2x.png in Resources */,
 				E14874D718A0692F002CC4F3 /* send_code_icon.png in Resources */,
 				FCAFC3361A0D680100AE5136 /* keypad@2x.png in Resources */,
@@ -3546,7 +3547,6 @@
 				E1370BED18A0689000826894 /* AppIcon40x40.png in Resources */,
 				E1370BEE18A0689000826894 /* AppIcon40x40@2x.png in Resources */,
 				E16E5C1418AEDB5A00B7C403 /* message_icon.png in Resources */,
-				FCAFC33C1A0E8F8000AE5136 /* fingerprint@2x.png in Resources */,
 				E1370BEF18A0689000826894 /* AppIcon60x60.png in Resources */,
 				FC4F9FED1A1658EE00DA100A /* call@2x.png in Resources */,
 				E1370BF018A0689000826894 /* AppIcon60x60@2x.png in Resources */,
