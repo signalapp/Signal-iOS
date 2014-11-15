@@ -79,9 +79,29 @@
 #pragma mark - Table View delegate
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
-    cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    //cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    Contact *contact = nil;
+    
+    if ([self.tableView indexPathsForSelectedRows].count == 1)
+    {
+        if (self.searchDisplayController.active) {
+            indexPath = [self.searchDisplayController.searchResultsTableView indexPathForSelectedRow];
+            contact = [searchResults objectAtIndex:(NSUInteger)indexPath.row];
+        } else {
+            indexPath = [self.tableView indexPathForSelectedRow];
+            contact = [contacts objectAtIndex:(NSUInteger)indexPath.row];
+        }
+    }
+    
+    //HACK: This is horrible due to the view hierarchy, but gets the job done. Gets a reference to the SignalsVC so we can present the conversation from it.
+    
+    UITabBarController * tb = (UITabBarController*)self.parentViewController.presentingViewController;
+    UINavigationController* nav = (UINavigationController*)[tb.childViewControllers objectAtIndex:1];
+    SignalsViewController* s = (SignalsViewController*)nav.topViewController;
+    s.contactFromCompose = contact;
+    
+    [self dismissViewControllerAnimated:YES completion:^(){
+        [s performSegueWithIdentifier:@"showSegue" sender:nil];
+    }];
 }
     
 
@@ -123,41 +143,5 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
--(IBAction)createMessage:(id)sender
-{
-    NSIndexPath *indexPath = nil;
-    Contact *contact = nil;
-    
-    if ([self.tableView indexPathsForSelectedRows].count == 1)
-    {
-        if (self.searchDisplayController.active) {
-            indexPath = [self.searchDisplayController.searchResultsTableView indexPathForSelectedRow];
-            contact = [searchResults objectAtIndex:(NSUInteger)indexPath.row];
-        } else {
-            indexPath = [self.tableView indexPathForSelectedRow];
-            contact = [contacts objectAtIndex:(NSUInteger)indexPath.row];
-        }
-    }
-//    else if ([self.tableView indexPathsForSelectedRows].count > 1)
-//    {
-//        /*
-//         *  //Create a group with these people in it & set send destination to group
-//         */
-//        NSMutableArray* recipients = [[NSMutableArray alloc]init];
-//
-//        for (id obj in [self.tableView indexPathsForSelectedRows]) {
-//            [recipients addObject:obj];
-//        }
-//    }
-    
-    //HACK: This is horrible due to the view hierarchy, but gets the job done. Gets a reference to the SignalsVC so we can present the conversation from it.
-
-    SignalsViewController* s = (SignalsViewController*)((UINavigationController*)[((UITabBarController*)self.parentViewController.presentingViewController).childViewControllers objectAtIndex:1]).topViewController;
-    s.contactFromCompose = contact;
-    
-    [self dismissViewControllerAnimated:YES completion:^(){
-        [s performSegueWithIdentifier:@"showSegue" sender:nil];
-    }];
-}
 
 @end
