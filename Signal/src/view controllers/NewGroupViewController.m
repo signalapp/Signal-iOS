@@ -28,20 +28,32 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Create" style:UIBarButtonItemStylePlain target:self action:@selector(createGroup)];
     self.navigationItem.title = @"New Group";
     
     contacts = [DemoDataFactory makeFakeContacts];
     
-    self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
-    
+    [self initializeDelegates];
+    [self initializeTableView];
     [self initializeKeyboardHandlers];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Initializers
+
+-(void)initializeDelegates
+{
+    self.nameGroupTextField.delegate = self;
+}
+
+-(void)initializeTableView
+{
+    self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
 }
 
 #pragma mark - Keyboard notifications
@@ -52,7 +64,6 @@
 }
 
 -(void) dismissKeyboardFromAppropriateSubView {
-//    [self.view endEditing:NO];
     [self.nameGroupTextField resignFirstResponder];
 }
 
@@ -218,6 +229,12 @@
     cell.accessoryType = UITableViewCellAccessoryNone;
 }
 
+#pragma mark - Text Field Delegate
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField{
+    [self.nameGroupTextField resignFirstResponder];
+    return NO;
+}
 
 
 /*

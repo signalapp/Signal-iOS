@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface NewGroupViewController : UIViewController <UITableViewDelegate, UITabBarDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@interface NewGroupViewController : UIViewController <UITableViewDelegate, UITabBarDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate>
 
 @property(nonatomic, strong) IBOutlet UITableView* tableView;
 
