@@ -1342,6 +1342,61 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        <view key="tableFooterView" contentMode="scaleToFill" id="8iU-6E-Bb3">
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3Dc-Qh-nGs">
+                                    <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="40" id="hoq-AO-V6E"/>
+                                    </constraints>
+                                    <string key="text">Copyright © OpenWhisperSystems
+ Licensed under the GPLv3</string>
+                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                    <nil key="highlightedColor"/>
+                                    <variation key="default">
+                                        <mask key="constraints">
+                                            <exclude reference="hoq-AO-V6E"/>
+                                        </mask>
+                                    </variation>
+                                    <variation key="heightClass=regular-widthClass=compact">
+                                        <mask key="constraints">
+                                            <include reference="hoq-AO-V6E"/>
+                                        </mask>
+                                    </variation>
+                                </label>
+                            </subviews>
+                            <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
+                            <constraints>
+                                <constraint firstItem="3Dc-Qh-nGs" firstAttribute="leading" secondItem="8iU-6E-Bb3" secondAttribute="leading" constant="23" id="NTO-0m-VNF"/>
+                                <constraint firstAttribute="trailing" secondItem="3Dc-Qh-nGs" secondAttribute="trailing" constant="8" id="XWJ-n4-vR3"/>
+                                <constraint firstItem="3Dc-Qh-nGs" firstAttribute="top" secondItem="8iU-6E-Bb3" secondAttribute="top" constant="11" id="eQH-WX-MWy">
+                                    <variation key="heightClass=regular-widthClass=compact" constant="8"/>
+                                </constraint>
+                            </constraints>
+                            <variation key="default">
+                                <mask key="subviews">
+                                    <exclude reference="3Dc-Qh-nGs"/>
+                                </mask>
+                                <mask key="constraints">
+                                    <exclude reference="NTO-0m-VNF"/>
+                                    <exclude reference="XWJ-n4-vR3"/>
+                                    <exclude reference="eQH-WX-MWy"/>
+                                </mask>
+                            </variation>
+                            <variation key="heightClass=regular-widthClass=compact">
+                                <mask key="subviews">
+                                    <include reference="3Dc-Qh-nGs"/>
+                                </mask>
+                                <mask key="constraints">
+                                    <include reference="NTO-0m-VNF"/>
+                                    <include reference="XWJ-n4-vR3"/>
+                                    <include reference="eQH-WX-MWy"/>
+                                </mask>
+                            </variation>
+                        </view>
                         <prototypes>
                             <tableViewCell userInteractionEnabled="NO" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="NameMainNumberCell" rowHeight="180" id="s9K-XI-hyH" customClass="ContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>
