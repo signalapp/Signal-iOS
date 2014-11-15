@@ -3207,7 +3207,7 @@ Licensed under the GPLv3</string>
                                             <constraint firstAttribute="height" constant="30" id="bKM-dc-IsP"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
+                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                         <variation key="default">
                                             <mask key="constraints">
                                                 <exclude reference="bKM-dc-IsP"/>
@@ -3262,7 +3262,7 @@ Licensed under the GPLv3</string>
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="HeaderCell" textLabel="mNF-jo-r7O" style="IBUITableViewCellStyleDefault" id="axa-iP-3In">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="HeaderCell" textLabel="mNF-jo-r7O" style="IBUITableViewCellStyleDefault" id="axa-iP-3In">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="axa-iP-3In" id="C0O-2z-zUu">
                                             <autoresizingMask key="autoresizingMask"/>
@@ -3279,7 +3279,7 @@ Licensed under the GPLv3</string>
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="GroupSearchCell" textLabel="a4j-OQ-ala" style="IBUITableViewCellStyleDefault" id="yfF-Jl-bZ1">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="GroupSearchCell" textLabel="a4j-OQ-ala" style="IBUITableViewCellStyleDefault" id="yfF-Jl-bZ1">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="yfF-Jl-bZ1" id="f0v-od-N9K">
                                             <autoresizingMask key="autoresizingMask"/>
@@ -3354,6 +3354,7 @@ Licensed under the GPLv3</string>
                         <outlet property="groupImageButton" destination="Ul8-NY-i4c" id="4Hl-dP-0tV"/>
                         <outlet property="nameGroupTextField" destination="gbm-B5-gCc" id="XC8-Ci-sl2"/>
                         <outlet property="tableView" destination="cFo-AT-Srf" id="NqG-W1-Vhy"/>
+                        <outlet property="tapToDismissView" destination="Ukg-om-VX3" id="nyq-IV-JDV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GsM-dR-L7j" userLabel="First Responder" sceneMemberID="firstResponder"/>

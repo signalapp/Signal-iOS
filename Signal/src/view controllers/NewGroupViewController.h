@@ -14,5 +14,6 @@
 
 @property(nonatomic, strong) IBOutlet UITextField* nameGroupTextField;
 @property(nonatomic, strong) IBOutlet UIButton* groupImageButton;
+@property(nonatomic, strong) IBOutlet UIView* tapToDismissView;
 
 @end

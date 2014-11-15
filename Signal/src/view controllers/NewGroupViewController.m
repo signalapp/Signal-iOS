@@ -35,12 +35,27 @@
     contacts = [DemoDataFactory makeFakeContacts];
     
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
+    
+    [self initializeKeyboardHandlers];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+#pragma mark - Keyboard notifications
+
+- (void)initializeKeyboardHandlers{
+    UITapGestureRecognizer *outsideTabRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboardFromAppropriateSubView)];
+    [self.tapToDismissView addGestureRecognizer:outsideTabRecognizer];
+}
+
+-(void) dismissKeyboardFromAppropriateSubView {
+//    [self.view endEditing:NO];
+    [self.nameGroupTextField resignFirstResponder];
+}
+
 
 
 #pragma mark - Actions
@@ -193,7 +208,7 @@
 {
     UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    //cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
 }
 
 
