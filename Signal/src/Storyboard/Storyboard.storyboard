@@ -212,6 +212,9 @@
                                                     <include reference="vOK-AZ-s3O"/>
                                                 </mask>
                                             </variation>
+                                            <connections>
+                                                <action selector="shredAndDelete:" destination="urv-62-RsD" eventType="touchUpInside" id="MVo-Ji-K0l"/>
+                                            </connections>
                                         </button>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="HyV-ht-MrM">
                                             <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
