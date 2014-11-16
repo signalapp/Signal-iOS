@@ -1,4 +1,5 @@
 #import "DatabaseManager.h"
+#import "CloudKitManager.h"
 
 #import "MyDatabaseObject.h"
 #import "MyTodo.h"
@@ -320,10 +321,24 @@ NSString *const CloudKitZoneName = @"zone1";
 		}
 	};
 	
-	YapDatabaseCloudKitConflictBlock conflictBlock =
-	  ^(YapDatabaseReadWriteTransaction *transaction /* ??? */)
+	YapDatabaseCloudKitOperationErrorBlock opErrorBlock =
+	  ^(NSString *databaseIdentifier, NSError *operationError)
 	{
-		// Todo...
+		NSInteger ckErrorCode = operationError.code;
+		
+		if (ckErrorCode == CKErrorPartialFailure)
+		{
+			[MyCloudKitManager fetchRecordChangesWithCompletionHandler:NULL];
+		}
+		else if (ckErrorCode == CKErrorNetworkUnavailable ||
+		         ckErrorCode == CKErrorNetworkFailure)
+		{
+			// Todo: Network monitoring...
+		}
+		else
+		{
+			// Todo: Better error handling !
+		}
 	};
 	
 	NSSet *todos = [NSSet setWithObject:Collection_Todos];
@@ -334,8 +349,9 @@ NSString *const CloudKitZoneName = @"zone1";
 	
 	cloudKitExtension = [[YapDatabaseCloudKit alloc] initWithRecordHandler:recordHandler
 	                                                            mergeBlock:mergeBlock
-	                                                         conflictBlock:conflictBlock
+	                                                   operationErrorBlock:opErrorBlock
 	                                                            versionTag:@"1"
+	                                                           versionInfo:nil
 	                                                               options:options];
 	
 	[cloudKitExtension suspend]; // Push registration

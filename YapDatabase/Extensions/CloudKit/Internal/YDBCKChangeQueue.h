@@ -38,6 +38,12 @@
 - (void)removeCompletedInFlightChangeSet;
 
 /**
+ * If there is an in-flight changeSet,
+ * then this method "resets" it so it can be restarted again (when ready).
+**/
+- (void)resetFailedInFlightChangeSet;
+
+/**
  * Invoke this method from 'prepareForReadWriteTransaction' in order to fetch a 'pendingQueue' object.
  *
  * This pendingQueue object will then be used to keep track of all the changes
@@ -98,8 +104,12 @@
 #pragma mark Transaction Handling
 
 /**
- * This method updates the current changeSet of the pendingQueue
- * so that the required CloudKit related information can be restored from disk in the event the app is quit.
+ * This method:
+ * - creates a changeSet for the given databaseIdentifier for the current commit (if needed)
+ * - adds the record to the changeSet
+ * 
+ * The following may be modified:
+ * - pendingQueue.changeSetsFromCurrentCommit
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
          withInsertedRowid:(NSNumber *)rowidNumber
@@ -107,9 +117,14 @@
         databaseIdentifier:(NSString *)databaseIdentifier;
 
 /**
- * This method properly updates the pendingQueue,
- * including the current changeSet and any previous changeSets (for previous commits) if needed,
- * so that the required CloudKit related information can be restored from disk in the event the app is quit.
+ * This method:
+ * - creates a changeSet for the given databaseIdentifier for the current commit (if needed)
+ * - adds the record to the changeSet
+ * - modifies the changeSets from previous commits that also modified the same rowid (if needed)
+ *
+ * The following may be modified:
+ * - pendingQueue.changeSetsFromPreviousCommits
+ * - pendingQueue.changeSetsFromCurrentCommit
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
          withModifiedRowid:(NSNumber *)rowidNumber
@@ -117,17 +132,24 @@
         databaseIdentifier:(NSString *)databaseIdentifier;
 
 /**
- * This method properly updates the pendingQueue,
- * including any previous changeSets (for previous commits) if needed,
- * so that the required CloudKit related information can be restored from disk in the event the app is quit.
+ * This method:
+ * - modifies the changeSets from previous commits that also modified the same rowid (if needed)
+ *
+ * The following may be modified:
+ * - pendingQueue.changeSetsFromPreviousCommits
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
          withDetachedRowid:(NSNumber *)rowidNumber;
 
 /**
- * This method properly updates the pendingQueue,
- * including the current changeSet and any previous changeSets (for previous commits) if needed,
- * so that the required CloudKit related information can be restored from disk in the event the app is quit.
+ * This method:
+ * - creates a changeSet for the given databaseIdentifier for the current commit (if needed)
+ * - adds the deleted recordID to the changeSet
+ * - modifies the changeSets from previous commits that also modified the same rowid (if needed)
+ *
+ * The following may be modified:
+ * - pendingQueue.changeSetsFromPreviousCommits
+ * - pendingQueue.changeSetsFromCurrentCommit
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
           withDeletedRowid:(NSNumber *)rowidNumber
@@ -135,8 +157,16 @@
         databaseIdentifier:(NSString *)databaseIdentifier;
 
 /**
- * This method properly updates the pendingQueue,
- * and updates any previous queued changeSets that include modifications for this item.
+ * This method:
+ * - modifies the changeSets from previous commits that also modified the same rowid (if needed),
+ *   if the mergedRecord disagrees with the pending record.
+ * - If the mergedRecord contains values that aren're represending in previous commits,
+ *   then it creates a changeSet for the given databaseIdentifier for the current commit,
+ *   and adds a record with the missing values.
+ *
+ * The following may be modified:
+ * - pendingQueue.changeSetsFromPreviousCommits
+ * - pendingQueue.changeSetsFromCurrentCommit
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
            withMergedRowid:(NSNumber *)rowidNumber
@@ -144,11 +174,35 @@
         databaseIdentifier:(NSString *)databaseIdentifier;
 
 /**
- * This method properly updates the pendingQueue,
- * and updates any previously queued changeSets that include modifications for this item.
+ * This method:
+ * - modifies the changeSets from previous commits that also modified the same rowid (if needed)
+ *
+ * The following may be modified:
+ * - pendingQueue.changeSetsFromPreviousCommits
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
     withRemoteDeletedRowid:(NSNumber *)rowidNumber
+                  recordID:(CKRecordID *)recordID
+        databaseIdentifier:(NSString *)databaseIdentifier;
+
+/**
+ *
+**/
+- (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
+            withSavedRowid:(NSNumber *)rowidNumber
+                    record:(CKRecord *)record
+        databaseIdentifier:(NSString *)databaseIdentifier
+     isOpPartialCompletion:(BOOL)isOpPartialCompletion;
+
+/**
+ * This method:
+ * - modifies the inFlightChangeSet by removing the given recordID from the deletedRecordIDs
+ * 
+ * The following may be modified:
+ * - pendingQueue.changeSetsFromPreviousCommits
+**/
+- (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
+     withSavedDeletedRowid:(NSNumber *)rowidNumber
                   recordID:(CKRecordID *)recordID
         databaseIdentifier:(NSString *)databaseIdentifier;
 

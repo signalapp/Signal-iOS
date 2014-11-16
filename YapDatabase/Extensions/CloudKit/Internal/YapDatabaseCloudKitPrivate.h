@@ -37,6 +37,7 @@ static NSString *const changeset_key_reset            = @"reset";
 @interface YDBCKRecordInfo ()
 
 @property (nonatomic, strong, readwrite) NSArray *changedKeysToRestore;
+@property (nonatomic, strong, readwrite) id versionInfo;
 
 @end
 
@@ -51,10 +52,12 @@ static NSString *const changeset_key_reset            = @"reset";
 	YapDatabaseCloudKitBlockType recordBlockType;
 	
 	YapDatabaseCloudKitMergeBlock mergeBlock;
-	YapDatabaseCloudKitConflictBlock conflictBlock;
+	YapDatabaseCloudKitOperationErrorBlock opErrorBlock;
 	YapDatabaseCloudKitDatabaseBlock databaseBlock;
 	
 	NSString *versionTag;
+	id versionInfo;
+	
 	YapDatabaseCloudKitOptions *options;
 	
 	YDBCKChangeQueue *masterQueue;
@@ -64,9 +67,6 @@ static NSString *const changeset_key_reset            = @"reset";
 - (NSString *)queueTableName;
 
 - (void)asyncMaybeDispatchNextOperation;
-
-- (void)handleFailedOperation:(YDBCKChangeSet *)changeSet withError:(NSError *)error;
-- (void)handleCompletedOperation:(YDBCKChangeSet *)changeSet withSavedRecords:(NSArray *)savedRecords;
 
 @end
 
@@ -88,11 +88,10 @@ static NSString *const changeset_key_reset            = @"reset";
 	
 	NSMutableDictionary *dirtyRecordInfo;
 	BOOL reset;
-	BOOL isUploadCompletionTransaction;
+	BOOL isOperationCompletionTransaction;
+	BOOL isOperationPartialCompletionTransaction;
 	
 	NSMutableDictionary *pendingAttachRequests;
-	
-	YDBCKChangeQueue *pendingQueue;
 	
 	NSMutableSet *deletedRowids;
 	NSMutableDictionary *modifiedRecords;
@@ -134,8 +133,12 @@ static NSString *const changeset_key_reset            = @"reset";
 - (id)initWithParentConnection:(YapDatabaseCloudKitConnection *)parentConnection
 		   databaseTransaction:(YapDatabaseReadTransaction *)databaseTransaction;
 
-- (void)removeQueueRowWithUUID:(NSString *)uuid;
-- (void)updateRecord:(CKRecord *)record withDatabaseIdentifier:(NSString *)databaseIdentifier
-                                                potentialRowid:(NSNumber *)rowidNumber;
+- (void)handlePartiallyCompletedOperationWithChangeSet:(YDBCKChangeSet *)changeSet
+                                          savedRecords:(NSDictionary *)savedRecords
+                                      deletedRecordIDs:(NSSet *)deletedRecordIDs;
+
+- (void)handleCompletedOperationWithChangeSet:(YDBCKChangeSet *)changeSet
+                                 savedRecords:(NSArray *)savedRecords
+                             deletedRecordIDs:(NSArray *)deletedRecordIDs;
 
 @end

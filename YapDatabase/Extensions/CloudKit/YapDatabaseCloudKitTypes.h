@@ -62,12 +62,12 @@ typedef void (^YapDatabaseCloudKitMergeBlock)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Conflict Block.
+ * OperationError Block.
  * 
  * ...
 **/
-typedef void (^YapDatabaseCloudKitConflictBlock)
-       (YapDatabaseReadWriteTransaction *transaction /* ??? */);
+typedef void (^YapDatabaseCloudKitOperationErrorBlock)
+       (NSString *databaseIdentifier, NSError *operationError);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
@@ -114,6 +114,31 @@ typedef CKDatabase* (^YapDatabaseCloudKitDatabaseBlock)(NSString *databaseIdenti
  * you must also configure the YapDatabaseCloudKit instance with a Database(ForIdentifier) block.
 **/
 @property (nonatomic, copy, readwrite) NSString *databaseIdentifier;
+
+/**
+ * This property comes directly from the [YapDatabaseCloudKit init...] method.
+ * 
+ * As your application evolves, there may be times that you need to change the CKRecord format.
+ * And there are a couple ways in which you can achieve this.
+ * 
+ * 1. Simply wait until the corresponding object(s) are naturally updated,
+ *    and then push the new fields to the cloud at that time.
+ * 2. Push all the updated fields for all the objects right away.
+ * 
+ * The versionInfo is useful in achieving option #2.
+ * Here's how it works:
+ * 
+ * You initialize YapDatabaseCloudKit with an bumped/incremented/changed versionTag,
+ * and you also supply versionInfo that relays information you can use within the recordHandler.
+ * 
+ * When YapDatabaseCloudKit is initialized for the first time (first launch, not subsequent launch),
+ * or its versionTag is changed, it will enumerate the objects in the database and invoke the recordHandler.
+ * During this enumeration (and only this enumeration) the recordHandler will be passed the versionInfo
+ * from the init method. Thus the recordHandler can discern between the initial population/repopulation,
+ * and a normal user-initiated readWriteTransaction that's modifying an object in the database.
+ * And it can then use the versionInfo to create the proper CKRecord.
+**/
+@property (nonatomic, strong, readonly) id versionInfo;
 
 /**
  * 

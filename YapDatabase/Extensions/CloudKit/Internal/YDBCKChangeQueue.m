@@ -138,6 +138,25 @@
 }
 
 /**
+ * If there is an in-flight changeSet,
+ * then this method "resets" it so it can be restarted again (when ready).
+**/
+- (void)resetFailedInFlightChangeSet
+{
+	// Get lock for access to 'oldChangeSets'
+	[masterQueueLock lock];
+	{
+		if (hasInFlightChangeSet)
+		{
+			NSAssert(oldChangeSets.count > 0, @"Logic error");
+			
+			hasInFlightChangeSet = NO;
+		}
+	}
+	[masterQueueLock unlock];
+}
+
+/**
  * Invoke this method from 'prepareForReadWriteTransaction' in order to fetch a 'pendingQueue' object.
  *
  * This pendingQueue object will then be used to keep track of all the changes
@@ -315,8 +334,12 @@
 #pragma mark Transaction Handling
 
 /**
- * This method updates the current changeSet of the pendingQueue
- * so that the required CloudKit related information can be restored from disk in the event the app is quit.
+ * This method:
+ * - creates a changeSet for the given databaseIdentifier for the current commit (if needed)
+ * - adds the record to the changeSet
+ *
+ * The following may be modified:
+ * - pendingQueue.changeSetsFromCurrentCommit
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
          withInsertedRowid:(NSNumber *)rowidNumber
@@ -349,9 +372,14 @@
 }
 
 /**
- * This method properly updates the pendingQueue,
- * including the current changeSet and any previous changeSets (for previous commits) if needed,
- * so that the required CloudKit related information can be restored from disk in the event the app is quit.
+ * This method:
+ * - creates a changeSet for the given databaseIdentifier for the current commit (if needed)
+ * - adds the record to the changeSet
+ * - modifies the changeSets from previous commits that also modified the same rowid (if needed)
+ *
+ * The following may be modified:
+ * - pendingQueue.changeSetsFromPreviousCommits
+ * - pendingQueue.changeSetsFromCurrentCommit
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
 		 withModifiedRowid:(NSNumber *)rowidNumber
@@ -363,19 +391,21 @@
 	NSAssert(pendingQueue->newChangeSets == nil, @"Cannot modify pendingQueue after newChangeSets has been fetched");
 	NSAssert([self.lockUUID isEqualToString:pendingQueue.lockUUID], @"Bad state: Not locked for pendingQueue");
 	
+	__unsafe_unretained typeof(self) masterQueue = self;
+	
 	YDBCKChangeRecord *currentRecord = [[YDBCKChangeRecord alloc] initWithRecord:record];
 	currentRecord.canStoreOnlyChangedKeys = YES;
 	
 	// Update previous changeSets (if needed)
 	
 	NSUInteger index = 0;
-	for (YDBCKChangeSet *prevChangeSet in oldChangeSets)
+	for (YDBCKChangeSet *mqPrevChangeSet in masterQueue->oldChangeSets)
 	{
-		YDBCKChangeRecord *prevRecord = [prevChangeSet->modifiedRecords objectForKey:rowidNumber];
-		if (prevRecord)
+		YDBCKChangeRecord *mqPrevRecord = [mqPrevChangeSet->modifiedRecords objectForKey:rowidNumber];
+		if (mqPrevRecord)
 		{
-			if (prevRecord.canStoreOnlyChangedKeys &&
-			    [prevRecord.changedKeysSet intersectsSet:currentRecord.changedKeysSet])
+			if (mqPrevRecord.canStoreOnlyChangedKeys &&
+			    [mqPrevRecord.changedKeysSet intersectsSet:currentRecord.changedKeysSet])
 			{
 				// The prevRecord is configured to only store the changedKeys array to disk.
 				//
@@ -390,24 +420,22 @@
 				// the previous commit so that it stores the previous CKRecord in full,
 				// as opposed to just the changedKeys.
 				
-				YDBCKChangeSet *pendingPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
-				if (pendingPrevChangeSet->modifiedRecords == nil)
+				YDBCKChangeSet *pqPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
+				if (pqPrevChangeSet->modifiedRecords == nil)
 				{
-					pendingPrevChangeSet->modifiedRecords =
-					  [[NSMutableDictionary alloc] initWithDictionary:prevChangeSet->modifiedRecords copyItems:YES];
+					pqPrevChangeSet->modifiedRecords =
+					  [[NSMutableDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords copyItems:YES];
 					
-					pendingPrevChangeSet.hasChangesToModifiedRecords = YES;
+					pqPrevChangeSet.hasChangesToModifiedRecords = YES;
 				}
 				
-				YDBCKChangeRecord *pendingPrevRecord =
-				  [pendingPrevChangeSet->modifiedRecords objectForKey:rowidNumber];
-				
-				pendingPrevRecord.canStoreOnlyChangedKeys = NO;
+				YDBCKChangeRecord *pqPrevRecord = [pqPrevChangeSet->modifiedRecords objectForKey:rowidNumber];
+				pqPrevRecord.canStoreOnlyChangedKeys = NO;
 			}
 		}
 		
 		index++;
-	} // end for (YDBCKChangeSet *prevChangeSet in changeSets)
+	} // end for (YDBCKChangeSet *mqPrevChangeSet in changeSets)
 	
 	// Update current changeSet
 	
@@ -427,9 +455,11 @@
 }
 
 /**
- * This method properly updates the pendingQueue,
- * including any previous changeSets (for previous commits) if needed,
- * so that the required CloudKit related information can be restored from disk in the event the app is quit.
+ * This method:
+ * - modifies the changeSets from previous commits that also modified the same rowid (if needed)
+ *
+ * The following may be modified:
+ * - pendingQueue.changeSetsFromPreviousCommits
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
          withDetachedRowid:(NSNumber *)rowidNumber
@@ -439,17 +469,19 @@
 	NSAssert(pendingQueue->newChangeSets == nil, @"Cannot modify pendingQueue after newChangeSets has been fetched");
 	NSAssert([self.lockUUID isEqualToString:pendingQueue.lockUUID], @"Bad state: Not locked for pendingQueue");
 	
+	__unsafe_unretained typeof(self) masterQueue = self;
+	
 	// Update previous changeSets (if needed)
 	
 	NSUInteger index = 0;
-	for (YDBCKChangeSet *prevChangeSet in oldChangeSets)
+	for (YDBCKChangeSet *mqPrevChangeSet in masterQueue->oldChangeSets)
 	{
-		YDBCKChangeRecord *prevRecord = [prevChangeSet->modifiedRecords objectForKey:rowidNumber];
-		if (prevRecord)
+		YDBCKChangeRecord *mqPrevRecord = [mqPrevChangeSet->modifiedRecords objectForKey:rowidNumber];
+		if (mqPrevRecord)
 		{
-			if (prevRecord.canStoreOnlyChangedKeys)
+			if (mqPrevRecord.canStoreOnlyChangedKeys)
 			{
-				// The prevRecord is configured to only store the changedKeys array to disk.
+				// The masterPrevRecord is configured to only store the changedKeys array to disk.
 				//
 				// However, we're now detaching the rowid from the CKRecord.
 				//
@@ -459,30 +491,33 @@
 				// the previous commit so that it stores the previous CKRecord in full,
 				// as opposed to just the changedKeys.
 				
-				YDBCKChangeSet *pendingPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
-				if (pendingPrevChangeSet->modifiedRecords == nil)
+				YDBCKChangeSet *pqPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
+				if (pqPrevChangeSet->modifiedRecords == nil)
 				{
-					pendingPrevChangeSet->modifiedRecords =
-					  [[NSMutableDictionary alloc] initWithDictionary:prevChangeSet->modifiedRecords copyItems:YES];
+					pqPrevChangeSet->modifiedRecords =
+					  [[NSMutableDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords copyItems:YES];
 					
-					pendingPrevChangeSet.hasChangesToModifiedRecords = YES;
+					pqPrevChangeSet.hasChangesToModifiedRecords = YES;
 				}
 				
-				YDBCKChangeRecord *pendingPrevRecord =
-				  [pendingPrevChangeSet->modifiedRecords objectForKey:rowidNumber];
-				
-				pendingPrevRecord.canStoreOnlyChangedKeys = NO;
+				YDBCKChangeRecord *pqPrevRecord = [pqPrevChangeSet->modifiedRecords objectForKey:rowidNumber];
+				pqPrevRecord.canStoreOnlyChangedKeys = NO;
 			}
 		}
 		
 		index++;
-	} // end for (YDBCKChangeSet *prevChangeSet in changeSets)
+	} // end for (YDBCKChangeSet *mqPrevChangeSet in changeSets)
 }
 
 /**
- * This method properly updates the pendingQueue,
- * including the current changeSet and any previous changeSets (for previous commits) if needed,
- * so that the required CloudKit related information can be restored from disk in the event the app is quit.
+ * This method:
+ * - creates a changeSet for the given databaseIdentifier for the current commit (if needed)
+ * - adds the deleted recordID to the changeSet
+ * - modifies the changeSets from previous commits that also modified the same rowid (if needed)
+ *
+ * The following may be modified:
+ * - pendingQueue.changeSetsFromPreviousCommits
+ * - pendingQueue.changeSetsFromCurrentCommit
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
           withDeletedRowid:(NSNumber *)rowidNumber
@@ -494,17 +529,19 @@
 	NSAssert(pendingQueue->newChangeSets == nil, @"Cannot modify pendingQueue after newChangeSets has been fetched");
 	NSAssert([self.lockUUID isEqualToString:pendingQueue.lockUUID], @"Bad state: Not locked for pendingQueue");
 	
+	__unsafe_unretained typeof(self) masterQueue = self;
+	
 	// Update previous changeSets (if needed)
 	
 	NSUInteger index = 0;
-	for (YDBCKChangeSet *prevChangeSet in oldChangeSets)
+	for (YDBCKChangeSet *mqPrevChangeSet in masterQueue->oldChangeSets)
 	{
-		YDBCKChangeRecord *prevRecord = [prevChangeSet->modifiedRecords objectForKey:rowidNumber];
-		if (prevRecord)
+		YDBCKChangeRecord *mqPrevRecord = [mqPrevChangeSet->modifiedRecords objectForKey:rowidNumber];
+		if (mqPrevRecord)
 		{
-			if (prevRecord.canStoreOnlyChangedKeys)
+			if (mqPrevRecord.canStoreOnlyChangedKeys)
 			{
-				// The prevRecord is configured to only store the changedKeys array to disk.
+				// The mqPrevRecord is configured to only store the changedKeys array to disk.
 				//
 				// However, we're now seeing conflicting changes to the same CKRecord.
 				// For example:
@@ -517,24 +554,22 @@
 				// the previous commit so that it stores the previous CKRecord in full,
 				// as opposed to just the changedKeys.
 				
-				YDBCKChangeSet *pendingPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
-				if (pendingPrevChangeSet->modifiedRecords == nil)
+				YDBCKChangeSet *pqPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
+				if (pqPrevChangeSet->modifiedRecords == nil)
 				{
-					pendingPrevChangeSet->modifiedRecords =
-					  [[NSMutableDictionary alloc] initWithDictionary:prevChangeSet->modifiedRecords copyItems:YES];
+					pqPrevChangeSet->modifiedRecords =
+					  [[NSMutableDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords copyItems:YES];
 					
-					pendingPrevChangeSet.hasChangesToModifiedRecords = YES;
+					pqPrevChangeSet.hasChangesToModifiedRecords = YES;
 				}
 				
-				YDBCKChangeRecord *pendingPrevRecord =
-				  [pendingPrevChangeSet->modifiedRecords objectForKey:rowidNumber];
-				
-				pendingPrevRecord.canStoreOnlyChangedKeys = NO;
+				YDBCKChangeRecord *pqPrevRecord = [pqPrevChangeSet->modifiedRecords objectForKey:rowidNumber];
+				pqPrevRecord.canStoreOnlyChangedKeys = NO;
 			}
 		}
 		
 		index++;
-	} // end for (YDBCKChangeSet *prevChangeSet in changeSets)
+	} // end for (YDBCKChangeSet *mqPrevChangeSet in masterQueue->oldChangeSets)
 	
 	// Update current changeSet
 	
@@ -557,8 +592,16 @@
 }
 
 /**
- * This method properly updates the pendingQueue,
- * and updates any previous queued changeSets that include
+ * This method:
+ * - modifies the changeSets from previous commits that also modified the same rowid (if needed),
+ *   if the mergedRecord disagrees with the pending record.
+ * - If the mergedRecord contains values that aren're represending in previous commits,
+ *   then it creates a changeSet for the given databaseIdentifier for the current commit,
+ *   and adds a record with the missing values.
+ *
+ * The following may be modified:
+ * - pendingQueue.changeSetsFromPreviousCommits
+ * - pendingQueue.changeSetsFromCurrentCommit
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
            withMergedRowid:(NSNumber *)rowidNumber
@@ -570,6 +613,8 @@
 	NSAssert(pendingQueue->newChangeSets == nil, @"Cannot modify pendingQueue after newChangeSets has been fetched");
 	NSAssert([self.lockUUID isEqualToString:pendingQueue.lockUUID], @"Bad state: Not locked for pendingQueue");
 	
+	__unsafe_unretained typeof(self) masterQueue = self;
+	
 	// Update previous changeSets (if needed)
 	
 	NSSet *mergedRecordChangedKeysSet = [NSSet setWithArray:mergedRecord.changedKeys];
@@ -579,25 +624,25 @@
 	NSMutableSet *keysToCompare = nil;
 	
 	NSUInteger index = 0;
-	for (YDBCKChangeSet *prevChangeSet in oldChangeSets)
+	for (YDBCKChangeSet *mqPrevChangeSet in masterQueue->oldChangeSets)
 	{
-		YDBCKChangeRecord *prevRecord = [prevChangeSet->modifiedRecords objectForKey:rowidNumber];
-		if (prevRecord)
+		YDBCKChangeRecord *mqPrevRecord = [mqPrevChangeSet->modifiedRecords objectForKey:rowidNumber];
+		if (mqPrevRecord)
 		{
-			CKRecord *pendingLocalRecord = prevRecord.record;
-			NSSet *pendingLocalRecordChangedKeysSet = prevRecord.changedKeysSet;
+			CKRecord *localRecord = mqPrevRecord.record;
+			NSSet *localRecordChangedKeysSet = mqPrevRecord.changedKeysSet;
 			
 			if (keysToRemove == nil)
-				keysToRemove = [NSMutableSet setWithCapacity:pendingLocalRecordChangedKeysSet.count];
+				keysToRemove = [NSMutableSet setWithCapacity:localRecordChangedKeysSet.count];
 			else
 				[keysToRemove removeAllObjects];
 			
 			if (keysToCompare == nil)
-				keysToCompare = [NSMutableSet setWithCapacity:pendingLocalRecordChangedKeysSet.count];
+				keysToCompare = [NSMutableSet setWithCapacity:localRecordChangedKeysSet.count];
 			else
 				[keysToCompare removeAllObjects];
 			
-			for (NSString *key in pendingLocalRecordChangedKeysSet)
+			for (NSString *key in localRecordChangedKeysSet)
 			{
 				if ([mergedRecordChangedKeysSet containsObject:key])
 					[keysToCompare addObject:key];
@@ -609,10 +654,10 @@
 			{
 				for (NSString *key in keysToCompare)
 				{
-					id pendingValue = [pendingLocalRecord valueForKey:key];
+					id localValue = [localRecord valueForKey:key];
 					id mergedValue = [mergedRecord valueForKey:key];
 					
-					if ([pendingValue isEqual:mergedValue])
+					if ([localValue isEqual:mergedValue])
 					{
 						[mergedRecordHandledKeys addObject:key];
 					}
@@ -625,38 +670,36 @@
 			
 			if (keysToRemove.count > 0)
 			{
-				CKRecord *newPendingLocalRecord = [YapDatabaseCKRecord sanitizedRecord:pendingLocalRecord];
+				CKRecord *newLocalRecord = [YapDatabaseCKRecord sanitizedRecord:localRecord];
 				
-				for (NSString *key in pendingLocalRecord.changedKeys)
+				for (NSString *key in localRecord.changedKeys)
 				{
 					if (![keysToRemove containsObject:key])
 					{
-						id value = [pendingLocalRecord valueForKey:key];
+						id value = [localRecord valueForKey:key];
 						if (value) {
-							[newPendingLocalRecord setValue:value forKey:key];
+							[newLocalRecord setValue:value forKey:key];
 						}
 					}
 				}
 				
-				YDBCKChangeSet *pendingPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
-				if (pendingPrevChangeSet->modifiedRecords == nil)
+				YDBCKChangeSet *pqPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
+				if (pqPrevChangeSet->modifiedRecords == nil)
 				{
-					pendingPrevChangeSet->modifiedRecords =
-					  [[NSMutableDictionary alloc] initWithDictionary:prevChangeSet->modifiedRecords copyItems:YES];
+					pqPrevChangeSet->modifiedRecords =
+					  [[NSMutableDictionary alloc] initWithDictionary:pqPrevChangeSet->modifiedRecords copyItems:YES];
 					
-					pendingPrevChangeSet.hasChangesToModifiedRecords = YES;
+					pqPrevChangeSet.hasChangesToModifiedRecords = YES;
 				}
 				
-				YDBCKChangeRecord *pendingPrevRecord =
-				  [pendingPrevChangeSet->modifiedRecords objectForKey:rowidNumber];
-				
-				pendingPrevRecord.record = newPendingLocalRecord;
+				YDBCKChangeRecord *pqPrevRecord = [pqPrevChangeSet->modifiedRecords objectForKey:rowidNumber];
+				pqPrevRecord.record = newLocalRecord;
 			}
 		
 		} // end if (prevRecord)
 		
 		index++;
-	} // end for (YDBCKChangeSet *prevChangeSet in changeSets)
+	} // end for (YDBCKChangeSet *mqPrevChangeSet in masterQueue->oldChangeSets)
 	
 	if (mergedRecordChangedKeysSet.count != mergedRecordHandledKeys.count)
 	{
@@ -699,8 +742,11 @@
 }
 
 /**
- * This method properly updates the pendingQueue,
- * and updates any previously queued changeSets that include modifications for this item.
+ * This method:
+ * - modifies the changeSets from previous commits that also modified the same rowid (if needed)
+ *
+ * The following may be modified:
+ * - pendingQueue.changeSetsFromPreviousCommits
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
     withRemoteDeletedRowid:(NSNumber *)rowidNumber
@@ -712,44 +758,178 @@
 	NSAssert(pendingQueue->newChangeSets == nil, @"Cannot modify pendingQueue after newChangeSets has been fetched");
 	NSAssert([self.lockUUID isEqualToString:pendingQueue.lockUUID], @"Bad state: Not locked for pendingQueue");
 	
+	__unsafe_unretained typeof(self) masterQueue = self;
+	
 	// Update previous changeSets (if needed)
 	
 	NSUInteger index = 0;
-	for (YDBCKChangeSet *prevChangeSet in oldChangeSets)
+	for (YDBCKChangeSet *mqPrevChangeSet in masterQueue->oldChangeSets)
 	{
 		// Check to see if we have queued modifications to push for this item
 		
-		YDBCKChangeRecord *prevRecord = [prevChangeSet->modifiedRecords objectForKey:rowidNumber];
-		if (prevRecord)
+		YDBCKChangeRecord *mqPrevRecord = [mqPrevChangeSet->modifiedRecords objectForKey:rowidNumber];
+		if (mqPrevRecord)
 		{
-			YDBCKChangeSet *pendingPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
-			if (pendingPrevChangeSet->modifiedRecords == nil)
+			YDBCKChangeSet *pqPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
+			if (pqPrevChangeSet->modifiedRecords == nil)
 			{
-				pendingPrevChangeSet->modifiedRecords =
-				  [[NSMutableDictionary alloc] initWithDictionary:prevChangeSet->modifiedRecords copyItems:YES];
+				pqPrevChangeSet->modifiedRecords =
+				  [[NSMutableDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords copyItems:YES];
 				
-				pendingPrevChangeSet.hasChangesToModifiedRecords = YES;
+				pqPrevChangeSet.hasChangesToModifiedRecords = YES;
 			}
 			
-			[pendingPrevChangeSet->modifiedRecords removeObjectForKey:rowidNumber];
+			[pqPrevChangeSet->modifiedRecords removeObjectForKey:rowidNumber];
 		}
 		
 		// Check to see if we have queued deletion for this item
 		
-		if ([prevChangeSet->deletedRecordIDs containsObject:recordID])
+		if ([mqPrevChangeSet->deletedRecordIDs containsObject:recordID])
 		{
-			YDBCKChangeSet *pendingPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
-			if (pendingPrevChangeSet->deletedRecordIDs == nil)
+			YDBCKChangeSet *pqPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
+			if (pqPrevChangeSet->deletedRecordIDs == nil)
 			{
-				pendingPrevChangeSet->deletedRecordIDs = [prevChangeSet->deletedRecordIDs copy];
-				pendingPrevChangeSet.hasChangesToDeletedRecordIDs = YES;
+				pqPrevChangeSet->deletedRecordIDs = [mqPrevChangeSet->deletedRecordIDs copy];
+				pqPrevChangeSet.hasChangesToDeletedRecordIDs = YES;
 			}
 			
-			[pendingPrevChangeSet->deletedRecordIDs removeObject:recordID];
+			[pqPrevChangeSet->deletedRecordIDs removeObject:recordID];
 		}
 		
 		index++;
-	} // end for (YDBCKChangeSet *prevChangeSet in changeSets)
+	} // end for (YDBCKChangeSet *mqPrevChangeSet in masterQueue->oldChangeSets)
+}
+
+- (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
+            withSavedRowid:(NSNumber *)rowidNumber
+                    record:(CKRecord *)record
+        databaseIdentifier:(NSString *)databaseIdentifier
+     isOpPartialCompletion:(BOOL)isOpPartialCompletion
+{
+	NSAssert(self.isMasterQueue, @"Method can only be invoked on masterQueue");
+	NSAssert(pendingQueue.isPendingQueue, @"Bad parameter: 'pendingQueue' is not a pendingQueue");
+	NSAssert(pendingQueue->newChangeSets == nil, @"Cannot modify pendingQueue after newChangeSets has been fetched");
+	NSAssert([self.lockUUID isEqualToString:pendingQueue.lockUUID], @"Bad state: Not locked for pendingQueue");
+	NSAssert(hasInFlightChangeSet, @"Bad state: hasInFlightChangeSet == NO");
+	
+	__unsafe_unretained typeof(self) masterQueue = self;
+	
+	// Update inFlight changeSet of pendingQueue (if needed)
+	
+	if (isOpPartialCompletion)
+	{
+		YDBCKChangeSet *pqInFlightChangeSet = [pendingQueue->oldChangeSets firstObject];
+		
+		if (pqInFlightChangeSet->modifiedRecords == nil)
+		{
+			YDBCKChangeSet *mqInFlightChangeSet = [masterQueue->oldChangeSets firstObject];
+			
+			pqInFlightChangeSet->modifiedRecords =
+			  [[NSMutableDictionary alloc] initWithDictionary:mqInFlightChangeSet->modifiedRecords copyItems:YES];
+			
+			pqInFlightChangeSet.hasChangesToModifiedRecords = YES;
+		}
+		
+		[pqInFlightChangeSet->modifiedRecords removeObjectForKey:rowidNumber];
+	}
+	
+	// Update previous changeSets (if needed)
+	
+	CKRecord *sanitizedRecord = nil;
+	
+	NSUInteger i = 0;
+	for (YDBCKChangeSet *mqPrevChangeSet in masterQueue->oldChangeSets)
+	{
+		// Skip inFlight changeSet
+		if (i == 0) {
+			i++;
+			continue;
+		}
+		
+		// Process other previous changeSets
+
+		if ([mqPrevChangeSet->modifiedRecords objectForKey:rowidNumber])
+		{
+			YDBCKChangeSet *pqPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:i];
+			
+			if (pqPrevChangeSet->modifiedRecords == nil)
+			{
+				pqPrevChangeSet->modifiedRecords =
+				  [[NSMutableDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords copyItems:YES];
+				
+				pqPrevChangeSet.hasChangesToModifiedRecords = YES;
+			}
+			
+			if (sanitizedRecord == nil)
+			{
+				sanitizedRecord = [YapDatabaseCKRecord sanitizedRecord:record];
+			}
+			
+			YDBCKChangeRecord *pqChangeRecord = [pqPrevChangeSet->modifiedRecords objectForKey:rowidNumber];
+			
+			CKRecord *originalRecord = pqChangeRecord.record;
+			CKRecord *mergedRecord = [sanitizedRecord copy];
+			
+			// The 'originalRecord' contains all the values we need to sync to the cloud.
+			// But the 'sanitizedRecord' contains the proper system fields within the CKRecord internals
+			// that reflect the proper sync state we have with the server.
+			//
+			// Because the internal sync-state stuff is private, we cannot access it.
+			// So we copy the needed values from the originalRecord into a new CKRecord container
+			// that already has the updated sync-state fields.
+			
+			for (NSString *changedKey in [originalRecord changedKeys])
+			{
+				id value = [originalRecord objectForKey:changedKey];
+				if (value) {
+					[mergedRecord setObject:value forKey:changedKey];
+				}
+			}
+			
+			pqChangeRecord.record = mergedRecord;
+		}
+		
+		i++;
+	} // end for (YDBCKChangeSet *mqPrevChangeSet in masterQueue->oldChangeSets)
+}
+
+/**
+ * This method:
+ * - modifies the inFlightChangeSet by removing the given recordID from the deletedRecordIDs
+ *
+ * The following may be modified:
+ * - pendingQueue.changeSetsFromPreviousCommits
+**/
+- (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
+     withSavedDeletedRowid:(NSNumber *)rowidNumber
+                  recordID:(CKRecordID *)recordID
+        databaseIdentifier:(NSString *)databaseIdentifier
+{
+	NSAssert(self.isMasterQueue, @"Method can only be invoked on masterQueue");
+	NSAssert(pendingQueue.isPendingQueue, @"Bad parameter: 'pendingQueue' is not a pendingQueue");
+	NSAssert(pendingQueue->newChangeSets == nil, @"Cannot modify pendingQueue after newChangeSets has been fetched");
+	NSAssert([self.lockUUID isEqualToString:pendingQueue.lockUUID], @"Bad state: Not locked for pendingQueue");
+	NSAssert(hasInFlightChangeSet, @"Bad state: hasInFlightChangeSet == NO");
+	
+	__unsafe_unretained typeof(self) masterQueue = self;
+	
+	// Update inFlight changeSet of pendingQueue
+	
+	YDBCKChangeSet *pqInFlightChangeSet = [pendingQueue->oldChangeSets firstObject];
+	
+	if (pqInFlightChangeSet->deletedRecordIDs == nil)
+	{
+		YDBCKChangeSet *mqInFlightChangeSet = [masterQueue->oldChangeSets firstObject];
+		
+		pqInFlightChangeSet->deletedRecordIDs = [mqInFlightChangeSet->deletedRecordIDs copy];
+	}
+	
+	NSUInteger index = [pqInFlightChangeSet->deletedRecordIDs indexOfObject:recordID];
+	if (index != NSNotFound)
+	{
+		[pqInFlightChangeSet->deletedRecordIDs removeObjectAtIndex:index];
+		pqInFlightChangeSet.hasChangesToDeletedRecordIDs = YES;
+	}
 }
 
 @end

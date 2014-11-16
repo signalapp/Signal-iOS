@@ -509,14 +509,339 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 
 - (BOOL)populateTables
 {
-	// Todo: Implement populateTables method
+	YDBLogAutoTrace();
+	
+	void (^InsertRecord)(NSString*, CKRecord*, int64_t rowid);
+	InsertRecord = ^(NSString *databaseIdentifier, CKRecord *record, int64_t rowid) {
+		
+		YDBCKDirtyRecordInfo *dirtyRecordInfo;
+		
+		dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
+		dirtyRecordInfo.clean_databaseIdentifier = nil;
+		dirtyRecordInfo.clean_recordID = nil;
+		dirtyRecordInfo.dirty_databaseIdentifier = databaseIdentifier;
+		dirtyRecordInfo.dirty_record = record;
+		
+		[parentConnection->cleanRecordInfo removeObjectForKey:@(rowid)];
+		[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:@(rowid)];
+	};
+	
+	YDBCKRecordInfo *recordInfo = [[YDBCKRecordInfo alloc] init];
+	recordInfo.versionInfo = parentConnection->parent->versionInfo;
+	
+	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
+	YapWhitelistBlacklist *allowedCollections = parentConnection->parent->options.allowedCollections;
+	
+	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithKey)
+	{
+		__unsafe_unretained YapDatabaseCloudKitRecordWithKeyBlock recordBlock =
+		  (YapDatabaseCloudKitRecordWithKeyBlock)parentConnection->parent->recordBlock;
+		
+		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, BOOL *stop);
+		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, BOOL *stop) {
+			
+			CKRecord *record = nil;
+			recordInfo.databaseIdentifier = nil;
+			
+			recordBlock(&record, recordInfo, collection, key);
+			
+			if (record) {
+				InsertRecord(recordInfo.databaseIdentifier, record, rowid);
+			}
+		};
+		
+		if (allowedCollections)
+		{
+			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+				
+				if ([allowedCollections isAllowed:collection])
+				{
+					[databaseTransaction _enumerateKeysInCollections:@[ collection ] usingBlock:enumBlock];
+				}
+			}];
+		}
+		else
+		{
+			[databaseTransaction _enumerateKeysInAllCollectionsUsingBlock:enumBlock];
+		}
+	}
+	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithObject)
+	{
+		__unsafe_unretained YapDatabaseCloudKitRecordWithObjectBlock recordBlock =
+		  (YapDatabaseCloudKitRecordWithObjectBlock)parentConnection->parent->recordBlock;
+		
+		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop);
+		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop) {
+			
+			CKRecord *record = nil;
+			recordInfo.databaseIdentifier = nil;
+			
+			recordBlock(&record, recordInfo, collection, key, object);
+			
+			if (record) {
+				InsertRecord(recordInfo.databaseIdentifier, record, rowid);
+			}
+		};
+		
+		if (allowedCollections)
+		{
+			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+				
+				if ([allowedCollections isAllowed:collection])
+				{
+					[databaseTransaction _enumerateKeysAndObjectsInCollections:@[ collection ] usingBlock:enumBlock];
+				}
+			}];
+		}
+		else
+		{
+			[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:enumBlock];
+		}
+	}
+	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithMetadata)
+	{
+		__unsafe_unretained YapDatabaseCloudKitRecordWithMetadataBlock recordBlock =
+		  (YapDatabaseCloudKitRecordWithMetadataBlock)parentConnection->parent->recordBlock;
+		
+		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop);
+		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop) {
+			
+			CKRecord *record = nil;
+			recordInfo.databaseIdentifier = nil;
+			
+			recordBlock(&record, recordInfo, collection, key, metadata);
+			
+			if (record) {
+				InsertRecord(recordInfo.databaseIdentifier, record, rowid);
+			}
+		};
+		
+		if (allowedCollections)
+		{
+			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+				
+				if ([allowedCollections isAllowed:collection])
+				{
+					[databaseTransaction _enumerateKeysAndMetadataInCollections:@[ collection ] usingBlock:enumBlock];
+				}
+			}];
+		}
+		else
+		{
+			[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:enumBlock];
+		}
+	}
+	else // if (recordBlockType == YapDatabaseCloudKitBlockTypeWithRow)
+	{
+		__unsafe_unretained YapDatabaseCloudKitRecordWithRowBlock recordBlock =
+		  (YapDatabaseCloudKitRecordWithRowBlock)parentConnection->parent->recordBlock;
+		
+		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop);
+		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop) {
+			
+			CKRecord *record = nil;
+			recordInfo.databaseIdentifier = nil;
+			
+			recordBlock(&record, recordInfo, collection, key, object, metadata);
+			
+			if (record) {
+				InsertRecord(recordInfo.databaseIdentifier, record, rowid);
+			}
+		};
+		
+		if (allowedCollections)
+		{
+			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+				
+				if ([allowedCollections isAllowed:collection])
+				{
+					[databaseTransaction _enumerateRowsInCollections:@[ collection ] usingBlock:enumBlock];
+				}
+			}];
+		}
+		else
+		{
+			[databaseTransaction _enumerateRowsInAllCollectionsUsingBlock:enumBlock];
+		}
+	}
 	
 	return YES;
 }
 
 - (BOOL)repopulateTables
 {
-	// Todo: Figure out how exactly to handle versionTag changes...
+	YDBLogAutoTrace();
+
+	void (^UpdateRecord)(NSString*, CKRecordID*, NSString*, CKRecord*, int64_t);
+	UpdateRecord = ^(NSString *cleanDatabaseIdentifier, CKRecordID *cleanRecordID,
+	                 NSString *dirtyDatabaseIdentifier, CKRecord *dirtyRecord, int64_t rowid)
+	{
+		YDBCKDirtyRecordInfo *dirtyRecordInfo;
+		
+		dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
+		dirtyRecordInfo.clean_databaseIdentifier = cleanDatabaseIdentifier;
+		dirtyRecordInfo.clean_recordID = cleanRecordID;
+		dirtyRecordInfo.dirty_databaseIdentifier = dirtyDatabaseIdentifier;
+		dirtyRecordInfo.dirty_record = dirtyRecord;
+		
+		[parentConnection->cleanRecordInfo removeObjectForKey:@(rowid)];
+		[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:@(rowid)];
+	};
+	
+	YDBCKRecordInfo *recordInfo = [[YDBCKRecordInfo alloc] init];
+	recordInfo.versionInfo = parentConnection->parent->versionInfo;
+	
+	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
+	YapWhitelistBlacklist *allowedCollections = parentConnection->parent->options.allowedCollections;
+	
+	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithKey)
+	{
+		__unsafe_unretained YapDatabaseCloudKitRecordWithKeyBlock recordBlock =
+		  (YapDatabaseCloudKitRecordWithKeyBlock)parentConnection->parent->recordBlock;
+		
+		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, BOOL *stop);
+		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, BOOL *stop) {
+			
+			YDBCKCleanRecordInfo *cleanRecordInfo = [self recordInfoForRowid:rowid cacheResult:NO];
+			CKRecordID *cleanRecordID = cleanRecordInfo.record.recordID;
+			
+			CKRecord *record = cleanRecordInfo.record;
+			recordInfo.databaseIdentifier = cleanRecordInfo.databaseIdentifier;
+			
+			recordBlock(&record, recordInfo, collection, key);
+			
+			if (record) {
+				UpdateRecord(cleanRecordInfo.databaseIdentifier, cleanRecordID,
+				             recordInfo.databaseIdentifier, record, rowid);
+			}
+		};
+		
+		if (allowedCollections)
+		{
+			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+				
+				if ([allowedCollections isAllowed:collection])
+				{
+					[databaseTransaction _enumerateKeysInCollections:@[ collection ] usingBlock:enumBlock];
+				}
+			}];
+		}
+		else
+		{
+			[databaseTransaction _enumerateKeysInAllCollectionsUsingBlock:enumBlock];
+		}
+	}
+	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithObject)
+	{
+		__unsafe_unretained YapDatabaseCloudKitRecordWithObjectBlock recordBlock =
+		  (YapDatabaseCloudKitRecordWithObjectBlock)parentConnection->parent->recordBlock;
+		
+		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop);
+		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop) {
+			
+			YDBCKCleanRecordInfo *cleanRecordInfo = [self recordInfoForRowid:rowid cacheResult:NO];
+			CKRecordID *cleanRecordID = cleanRecordInfo.record.recordID;
+			
+			CKRecord *record = cleanRecordInfo.record;
+			recordInfo.databaseIdentifier = cleanRecordInfo.databaseIdentifier;
+			
+			recordBlock(&record, recordInfo, collection, key, object);
+			
+			if (record) {
+				UpdateRecord(cleanRecordInfo.databaseIdentifier, cleanRecordID,
+							 recordInfo.databaseIdentifier, record, rowid);
+			}
+		};
+		
+		if (allowedCollections)
+		{
+			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+				
+				if ([allowedCollections isAllowed:collection])
+				{
+					[databaseTransaction _enumerateKeysAndObjectsInCollections:@[ collection ] usingBlock:enumBlock];
+				}
+			}];
+		}
+		else
+		{
+			[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:enumBlock];
+		}
+	}
+	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithMetadata)
+	{
+		__unsafe_unretained YapDatabaseCloudKitRecordWithMetadataBlock recordBlock =
+		  (YapDatabaseCloudKitRecordWithMetadataBlock)parentConnection->parent->recordBlock;
+		
+		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop);
+		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop) {
+			
+			YDBCKCleanRecordInfo *cleanRecordInfo = [self recordInfoForRowid:rowid cacheResult:NO];
+			CKRecordID *cleanRecordID = cleanRecordInfo.record.recordID;
+			
+			CKRecord *record = cleanRecordInfo.record;
+			recordInfo.databaseIdentifier = cleanRecordInfo.databaseIdentifier;
+			
+			recordBlock(&record, recordInfo, collection, key, metadata);
+			
+			if (record) {
+				UpdateRecord(cleanRecordInfo.databaseIdentifier, cleanRecordID,
+							 recordInfo.databaseIdentifier, record, rowid);
+			}
+		};
+		
+		if (allowedCollections)
+		{
+			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+				
+				if ([allowedCollections isAllowed:collection])
+				{
+					[databaseTransaction _enumerateKeysAndMetadataInCollections:@[ collection ] usingBlock:enumBlock];
+				}
+			}];
+		}
+		else
+		{
+			[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:enumBlock];
+		}
+	}
+	else // if (recordBlockType == YapDatabaseCloudKitBlockTypeWithRow)
+	{
+		__unsafe_unretained YapDatabaseCloudKitRecordWithRowBlock recordBlock =
+		  (YapDatabaseCloudKitRecordWithRowBlock)parentConnection->parent->recordBlock;
+		
+		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop);
+		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop) {
+			
+			YDBCKCleanRecordInfo *cleanRecordInfo = [self recordInfoForRowid:rowid cacheResult:NO];
+			CKRecordID *cleanRecordID = cleanRecordInfo.record.recordID;
+			
+			CKRecord *record = cleanRecordInfo.record;
+			recordInfo.databaseIdentifier = cleanRecordInfo.databaseIdentifier;
+			
+			recordBlock(&record, recordInfo, collection, key, object, metadata);
+			
+			if (record) {
+				UpdateRecord(cleanRecordInfo.databaseIdentifier, cleanRecordID,
+							 recordInfo.databaseIdentifier, record, rowid);
+			}
+		};
+		
+		if (allowedCollections)
+		{
+			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+				
+				if ([allowedCollections isAllowed:collection])
+				{
+					[databaseTransaction _enumerateRowsInCollections:@[ collection ] usingBlock:enumBlock];
+				}
+			}];
+		}
+		else
+		{
+			[databaseTransaction _enumerateRowsInAllCollectionsUsingBlock:enumBlock];
+		}
+	}
 	
 	return YES;
 }
@@ -1353,10 +1678,9 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 #pragma mark Completion
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * This method is invoked by [YapDatabaseCloudKit handleCompletedOperation:withSavedRecords:].
-**/
-- (void)removeQueueRowWithUUID:(NSString *)uuid
+- (void)handlePartiallyCompletedOperationWithChangeSet:(YDBCKChangeSet *)changeSet
+                                          savedRecords:(NSDictionary *)savedRecords
+                                      deletedRecordIDs:(NSSet *)deletedRecordIDs
 {
 	YDBLogAutoTrace();
 	
@@ -1367,10 +1691,139 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		return;
 	}
 	
-	// Mark this transaction as an uploadCompletionTransaction.
+	// Mark this transaction as an operationPartialCompletionTransaction.
 	// This is handled a little differently from a regular (user-initiated) transaction.
 	
-	parentConnection->isUploadCompletionTransaction = YES;
+	parentConnection->isOperationPartialCompletionTransaction = YES;
+	
+	// Update any records that were saved.
+	// We need to store the new system fields of the CKRecord.
+	
+	NSDictionary *mapping = [changeSet recordIDToRowidMapping];
+	for (CKRecord *record in savedRecords)
+	{
+		NSNumber *rowidNumber = [mapping objectForKey:record.recordID];
+		
+		[self updateRecord:record withDatabaseIdentifier:changeSet.databaseIdentifier
+			potentialRowid:rowidNumber];
+	}
+	
+	// Update other changeSets (if needed)
+	
+	YDBCKChangeQueue *masterQueue = parentConnection->parent->masterQueue;
+	YDBCKChangeQueue *pendingQueue = [masterQueue newPendingQueue];
+	
+	for (CKRecord *savedRecord in [savedRecords objectEnumerator])
+	{
+		NSNumber *rowidNumber = [mapping objectForKey:savedRecord.recordID];
+		
+		[masterQueue updatePendingQueue:pendingQueue
+						 withSavedRowid:rowidNumber
+								 record:savedRecord
+					 databaseIdentifier:changeSet.databaseIdentifier
+				  isOpPartialCompletion:NO];
+	}
+	
+	for (CKRecordID *deletedRecordID in deletedRecordIDs)
+	{
+		NSNumber *rowidNumber = [mapping objectForKey:deletedRecordID];
+		
+		[masterQueue updatePendingQueue:pendingQueue
+				  withSavedDeletedRowid:rowidNumber
+							   recordID:deletedRecordID
+					 databaseIdentifier:changeSet.databaseIdentifier];
+	}
+	
+	for (YDBCKChangeSet *oldChangeSet in pendingQueue.changeSetsFromPreviousCommits)
+	{
+		if (oldChangeSet.hasChangesToDeletedRecordIDs || oldChangeSet.hasChangesToModifiedRecords)
+		{
+			[self updateRowWithChangeSet:oldChangeSet];
+		}
+	}
+	
+	[masterQueue mergePendingQueue:pendingQueue];
+}
+
+- (void)handleCompletedOperationWithChangeSet:(YDBCKChangeSet *)changeSet
+                                 savedRecords:(NSArray *)savedRecords
+                             deletedRecordIDs:(NSArray *)deletedRecordIDs
+{
+	YDBLogAutoTrace();
+	
+	// Proper API usage check
+	if (!databaseTransaction->isReadWriteTransaction)
+	{
+		@throw [self requiresReadWriteTransactionException:NSStringFromSelector(_cmd)];
+		return;
+	}
+	
+	// Mark this transaction as an operationCompletionTransaction.
+	// This is handled a little differently from a regular (user-initiated) transaction.
+	
+	parentConnection->isOperationCompletionTransaction = YES;
+	
+	// Drop the row in the queue table that was storing all the information for this changeSet.
+	
+	[self removeQueueRowWithUUID:changeSet.uuid];
+	
+	// Update any records that were saved.
+	// We need to store the new system fields of the CKRecord.
+	
+	NSDictionary *mapping = [changeSet recordIDToRowidMapping];
+	for (CKRecord *record in savedRecords)
+	{
+		NSNumber *rowidNumber = [mapping objectForKey:record.recordID];
+		
+		[self updateRecord:record withDatabaseIdentifier:changeSet.databaseIdentifier
+		                                  potentialRowid:rowidNumber];
+	}
+	
+	// Update other changeSets (if needed)
+	
+	YDBCKChangeQueue *masterQueue = parentConnection->parent->masterQueue;
+	YDBCKChangeQueue *pendingQueue = [masterQueue newPendingQueue];
+	
+	for (CKRecord *savedRecord in savedRecords)
+	{
+		NSNumber *rowidNumber = [mapping objectForKey:savedRecord.recordID];
+		
+		[masterQueue updatePendingQueue:pendingQueue
+		                 withSavedRowid:rowidNumber
+		                         record:savedRecord
+		             databaseIdentifier:changeSet.databaseIdentifier
+		          isOpPartialCompletion:NO];
+	}
+	
+	for (CKRecordID *deletedRecordID in deletedRecordIDs)
+	{
+		NSNumber *rowidNumber = [mapping objectForKey:deletedRecordID];
+		
+		[masterQueue updatePendingQueue:pendingQueue
+		          withSavedDeletedRowid:rowidNumber
+		                       recordID:deletedRecordID
+		             databaseIdentifier:changeSet.databaseIdentifier];
+	}
+	
+	for (YDBCKChangeSet *oldChangeSet in pendingQueue.changeSetsFromPreviousCommits)
+	{
+		if (oldChangeSet.hasChangesToDeletedRecordIDs || oldChangeSet.hasChangesToModifiedRecords)
+		{
+			NSAssert(![oldChangeSet.uuid isEqualToString:changeSet.uuid], @"Logic error");
+			
+			[self updateRowWithChangeSet:oldChangeSet];
+		}
+	}
+	
+	[masterQueue mergePendingQueue:pendingQueue];
+}
+
+/**
+ * This method is invoked by [YapDatabaseCloudKit handleCompletedOperation:withSavedRecords:].
+**/
+- (void)removeQueueRowWithUUID:(NSString *)uuid
+{
+	YDBLogAutoTrace();
 	
 	// Execute that sqlite statement.
 	
@@ -1400,13 +1853,6 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
                                                 potentialRowid:(NSNumber *)rowidNumber
 {
 	YDBLogAutoTrace();
-	
-	// Proper API usage check
-	if (!databaseTransaction->isReadWriteTransaction)
-	{
-		@throw [self requiresReadWriteTransactionException:NSStringFromSelector(_cmd)];
-		return;
-	}
 	
 	// Plan of action:
 	// - For each record, check to see what the original rowid is
@@ -1494,10 +1940,18 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 {
 	YDBLogAutoTrace();
 	
-	if (parentConnection->isUploadCompletionTransaction)
+	if (parentConnection->isOperationCompletionTransaction)
 	{
 		// Nothing to do here.
-		// We already handled everything in 'updateRecord:withRowid:'.
+		// We already handled everything in
+		//   'handleCompletedOperationWithChangeSet:savedRecords:'.
+		return;
+	}
+	if (parentConnection->isOperationPartialCompletionTransaction)
+	{
+		// Nothing to do here.
+		// We already handled everything in
+		//   'handlePartiallyCompletedOperationWithChangeSet:savedRecords:deletedRecordIDs:'
 		return;
 	}
 	
@@ -1514,8 +1968,6 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	
 	YDBCKChangeQueue *masterQueue = parentConnection->parent->masterQueue;
 	YDBCKChangeQueue *pendingQueue = [masterQueue newPendingQueue];
-	
-	parentConnection->pendingQueue = pendingQueue;
 	
 	// Step 1 of 4:
 	//

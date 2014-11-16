@@ -15,31 +15,34 @@
 **/
 - (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)recordHandler
                            mergeBlock:(YapDatabaseCloudKitMergeBlock)mergeBlock
-                        conflictBlock:(YapDatabaseCloudKitConflictBlock)conflictBlock;
+                  operationErrorBlock:(YapDatabaseCloudKitOperationErrorBlock)opErrorBlock;
 
 - (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)recordHandler
                            mergeBlock:(YapDatabaseCloudKitMergeBlock)mergeBlock
-                        conflictBlock:(YapDatabaseCloudKitConflictBlock)conflictBlock
-                           versionTag:(NSString *)versionTag;
-
-- (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)recordHandler
-                           mergeBlock:(YapDatabaseCloudKitMergeBlock)mergeBlock
-                        conflictBlock:(YapDatabaseCloudKitConflictBlock)conflictBlock
+                  operationErrorBlock:(YapDatabaseCloudKitOperationErrorBlock)opErrorBlock
                            versionTag:(NSString *)versionTag
+                          versionInfo:(id)versionInfo;
+
+- (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)recordHandler
+                           mergeBlock:(YapDatabaseCloudKitMergeBlock)mergeBlock
+                  operationErrorBlock:(YapDatabaseCloudKitOperationErrorBlock)opErrorBlock
+                           versionTag:(NSString *)versionTag
+                          versionInfo:(id)versionInfo
                               options:(YapDatabaseCloudKitOptions *)options;
 
 - (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)recordHandler
                            mergeBlock:(YapDatabaseCloudKitMergeBlock)mergeBlock
-                        conflictBlock:(YapDatabaseCloudKitConflictBlock)conflictBlock
+                  operationErrorBlock:(YapDatabaseCloudKitOperationErrorBlock)opErrorBlock
                         databaseBlock:(YapDatabaseCloudKitDatabaseBlock)databaseBlock
                            versionTag:(NSString *)versionTag
+                          versionInfo:(id)versionInfo
                               options:(YapDatabaseCloudKitOptions *)options;
 
 @property (nonatomic, strong, readonly) YapDatabaseCloudKitRecordBlock recordBlock;
 @property (nonatomic, assign, readonly) YapDatabaseCloudKitBlockType recordBlockType;
 
 @property (nonatomic, strong, readonly) YapDatabaseCloudKitMergeBlock mergeBlock;
-@property (nonatomic, strong, readonly) YapDatabaseCloudKitConflictBlock conflictBlock;
+@property (nonatomic, strong, readonly) YapDatabaseCloudKitOperationErrorBlock operationErrorBlock;
 
 @property (nonatomic, copy, readonly) NSString *versionTag;
 

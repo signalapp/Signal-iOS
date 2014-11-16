@@ -156,9 +156,14 @@
 	// Now that the commit has hit the disk,
 	// we can create all the NSOperation(s) with all the changes, and hand them to CloudKit.
 	
-	if (isUploadCompletionTransaction)
+	if (isOperationCompletionTransaction)
 	{
 		[parent->masterQueue removeCompletedInFlightChangeSet];
+		[parent asyncMaybeDispatchNextOperation];
+	}
+	else if (isOperationPartialCompletionTransaction)
+	{
+		[parent->masterQueue resetFailedInFlightChangeSet];
 		[parent asyncMaybeDispatchNextOperation];
 	}
 	else if ([deletedRowids count] > 0 || [modifiedRecords count] > 0 || reset)
@@ -168,12 +173,12 @@
 	
 	dirtyRecordInfo = nil;
 	pendingAttachRequests = nil;
-	pendingQueue = nil;
 	deletedRowids = nil;
 	modifiedRecords = nil;
 	
 	reset = NO;
-	isUploadCompletionTransaction = NO;
+	isOperationCompletionTransaction = NO;
+	isOperationPartialCompletionTransaction = NO;
 }
 
 /**
@@ -187,12 +192,12 @@
 	
 	dirtyRecordInfo = nil;
 	pendingAttachRequests = nil;
-	pendingQueue = nil;
 	deletedRowids = nil;
 	modifiedRecords = nil;
 	
 	reset = NO;
-	isUploadCompletionTransaction = NO;
+	isOperationCompletionTransaction = NO;
+	isOperationPartialCompletionTransaction = NO;
 }
 
 - (NSArray *)internalChangesetKeys
@@ -214,7 +219,7 @@
 	NSMutableDictionary *internalChangeset = nil;
 	BOOL hasDiskChanges = NO;
 	
-	if (isUploadCompletionTransaction)
+	if (isOperationCompletionTransaction || isOperationPartialCompletionTransaction)
 		hasDiskChanges = YES;
 	
 	if (([deletedRowids count] > 0) || ([modifiedRecords count] > 0) || reset)

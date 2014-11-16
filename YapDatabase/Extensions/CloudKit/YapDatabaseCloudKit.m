@@ -92,7 +92,7 @@
 @synthesize recordBlockType = recordBlockType;
 
 @synthesize mergeBlock = mergeBlock;
-@synthesize conflictBlock = conflictBlock;
+@synthesize operationErrorBlock = opErrorBlock;
 
 @synthesize versionTag = versionTag;
 
@@ -101,48 +101,54 @@
 
 - (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)recordHandler
                            mergeBlock:(YapDatabaseCloudKitMergeBlock)inMergeBlock
-                        conflictBlock:(YapDatabaseCloudKitConflictBlock)inConflictBlock
+                  operationErrorBlock:(YapDatabaseCloudKitOperationErrorBlock)inOpErrorBlock
 {
 	return [self initWithRecordHandler:recordHandler
 	                        mergeBlock:inMergeBlock
-	                     conflictBlock:inConflictBlock
+	               operationErrorBlock:inOpErrorBlock
 	                     databaseBlock:NULL
 	                        versionTag:nil
+	                       versionInfo:nil
 	                           options:nil];
 }
 
 - (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)recordHandler
                            mergeBlock:(YapDatabaseCloudKitMergeBlock)inMergeBlock
-                        conflictBlock:(YapDatabaseCloudKitConflictBlock)inConflictBlock
+                  operationErrorBlock:(YapDatabaseCloudKitOperationErrorBlock)inOpErrorBlock
                            versionTag:(NSString *)inVersionTag
+                          versionInfo:(id)inVersionInfo
 {
 	return [self initWithRecordHandler:recordHandler
 	                        mergeBlock:inMergeBlock
-	                     conflictBlock:inConflictBlock
+	               operationErrorBlock:inOpErrorBlock
 	                     databaseBlock:NULL
 	                        versionTag:inVersionTag
+	                       versionInfo:inVersionInfo
 	                           options:nil];
 }
 
 - (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)recordHandler
                            mergeBlock:(YapDatabaseCloudKitMergeBlock)inMergeBlock
-                        conflictBlock:(YapDatabaseCloudKitConflictBlock)inConflictBlock
+                  operationErrorBlock:(YapDatabaseCloudKitOperationErrorBlock)inOpErrorBlock
                            versionTag:(NSString *)inVersionTag
+                          versionInfo:(id)inVersionInfo
                               options:(YapDatabaseCloudKitOptions *)inOptions
 {
 	return [self initWithRecordHandler:recordHandler
 	                        mergeBlock:inMergeBlock
-	                     conflictBlock:inConflictBlock
+	               operationErrorBlock:inOpErrorBlock
 	                     databaseBlock:NULL
 	                        versionTag:inVersionTag
+	                       versionInfo:inVersionInfo
 	                           options:inOptions];
 }
 
 - (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)recordHandler
                            mergeBlock:(YapDatabaseCloudKitMergeBlock)inMergeBlock
-                        conflictBlock:(YapDatabaseCloudKitConflictBlock)inConflictBlock
+                  operationErrorBlock:(YapDatabaseCloudKitOperationErrorBlock)inOpErrorBlock
                         databaseBlock:(YapDatabaseCloudKitDatabaseBlock)inDatabaseBlock
                            versionTag:(NSString *)inVersionTag
+                          versionInfo:(id)inVersionInfo
                               options:(YapDatabaseCloudKitOptions *)inOptions
 {
 	if ((self = [super init]))
@@ -151,10 +157,11 @@
 		recordBlockType = recordHandler.recordBlockType;
 		
 		mergeBlock = inMergeBlock;
-		conflictBlock = inConflictBlock;
+		opErrorBlock = inOpErrorBlock;
 		databaseBlock = inDatabaseBlock;
 		
 		versionTag = inVersionTag ? [inVersionTag copy] : @"";
+		versionInfo = inVersionInfo;
 		
 		options = inOptions ? [inOptions copy] : [[YapDatabaseCloudKitOptions alloc] init];
 		
@@ -378,8 +385,6 @@
 
 - (YapDatabaseConnection *)completionDatabaseConnection
 {
-	// Todo: Maybe figure out better solution for this ?
-	
 	if (completionDatabaseConnection == nil)
 	{
 		completionDatabaseConnection = [self.registeredDatabase newConnection];
@@ -449,23 +454,35 @@
 			{
 				if (operationError)
 				{
-					YDBLogError(@"Failed upload for (%@): %@", changeSet.databaseIdentifier, operationError);
-					
-					// I've seen:
-					//
-					// - CKErrorPartialFailure
-					//   And operationError.userInfo returns a dictionary with a key of CKPartialErrorsByItemIDKey.
-					//   key = CKRecordID
-					//   value = CKError (with error code 14 = CKErrorServerRecordChanged)
-					
-					[strongSelf handleFailedOperation:changeSet withError:operationError];
+					if (operationError.code == CKErrorPartialFailure)
+					{
+						YDBLogInfo(@"CKModifyRecordsOperation partial error: databaseIdentifier = %@\n"
+						           @"  error = %@", changeSet.databaseIdentifier, operationError);
+						
+						[strongSelf handlePartiallyFailedOperationWithChangeSet:changeSet
+						                                           savedRecords:savedRecords
+						                                       deletedRecordIDs:deletedRecordIDs
+						                                                  error:operationError];
+					}
+					else
+					{
+						YDBLogInfo(@"CKModifyRecordsOperation error: databaseIdentifier = %@\n"
+						           @"  error = %@", changeSet.databaseIdentifier, operationError);
+						
+						[strongSelf handleFailedOperationWithChangeSet:changeSet
+						                                         error:operationError];
+					}
 				}
 				else
 				{
-					YDBLogVerbose(@"Finished upload for (%@):\n  savedRecords: %@\n  deletedRecordIDs: %@",
+					YDBLogVerbose(@"CKModifyRecordsOperation complete: databaseIdentifier = %@:\n"
+					              @"  savedRecords: %@\n"
+					              @"  deletedRecordIDs: %@",
 					              changeSet.databaseIdentifier, savedRecords, deletedRecordIDs);
 					
-					[strongSelf handleCompletedOperation:changeSet withSavedRecords:savedRecords];
+					[strongSelf handleCompletedOperationWithChangeSet:changeSet
+					                                     savedRecords:savedRecords
+					                                 deletedRecordIDs:deletedRecordIDs];
 				}
 			}
 		};
@@ -474,16 +491,86 @@
 	}
 }
 
-- (void)handleFailedOperation:(YDBCKChangeSet *)changeSet withError:(NSError *)error
+- (void)handleFailedOperationWithChangeSet:(YDBCKChangeSet *)changeSet
+                                     error:(NSError *)operationError
 {
 	YDBLogAutoTrace();
 	
-	// Todo: How to handle failed operations...
+	// First, we suspend ourself.
+	// It is the responsibility of the delegate to resume us at the appropriate time.
 	
-	masterOperationQueue.suspended = YES;
+	[self suspend];
+	
+	// Inform the user about the problem via the operationErrorBlock.
+	
+	NSString *databaseIdentifier = changeSet.databaseIdentifier;
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		opErrorBlock(databaseIdentifier, operationError);
+	});
 }
 
-- (void)handleCompletedOperation:(YDBCKChangeSet *)changeSet withSavedRecords:(NSArray *)savedRecords
+- (void)handlePartiallyFailedOperationWithChangeSet:(YDBCKChangeSet *)changeSet
+                                       savedRecords:(NSArray *)savedRecords
+                                   deletedRecordIDs:(NSArray *)deletedRecordIDs
+                                              error:(NSError *)operationError
+{
+	// First, we suspend ourself.
+	// It is the responsibility of the delegate to resume us at the appropriate time.
+	
+	[self suspend];
+	
+	// We need to figure out what succeeded.
+	// So first we make mutable versions of the original requests.
+	
+	NSMutableDictionary *success_savedRecords = [NSMutableDictionary dictionaryWithCapacity:[savedRecords count]];
+	NSMutableSet *success_deletedRecordIDs = [NSMutableSet setWithCapacity:[deletedRecordIDs count]];
+	
+	for (CKRecord *record in savedRecords)
+	{
+		CKRecordID *recordID = record.recordID;
+		if (recordID)
+			[success_savedRecords setObject:record forKey:recordID];
+	}
+	
+	[success_deletedRecordIDs addObjectsFromArray:deletedRecordIDs];
+	
+	// And then we remove those items that were indicated as failed.
+	
+	NSDictionary *partialErrorsByItemIDKey = [operationError.userInfo objectForKey:CKPartialErrorsByItemIDKey];
+	
+	[partialErrorsByItemIDKey enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		
+		__unsafe_unretained CKRecordID *recordID = (CKRecordID *)key;
+	//	__unsafe_unretained NSError *recordError = (NSError *)obj;
+		
+		[success_savedRecords removeObjectForKey:recordID];
+		[success_deletedRecordIDs removeObject:recordID];
+	}];
+	
+	// Start the database transaction to update the queue(s) by removing those items that have succeeded.
+	
+	NSString *extName = self.registeredName;
+	
+	[[self completionDatabaseConnection] asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[[transaction ext:extName] handlePartiallyCompletedOperationWithChangeSet:changeSet
+		                                                             savedRecords:success_savedRecords
+		                                                         deletedRecordIDs:success_deletedRecordIDs];
+	}];
+	
+	// Inform the user about the problem via the operationErrorBlock.
+	
+	NSString *databaseIdentifier = changeSet.databaseIdentifier;
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		opErrorBlock(databaseIdentifier, operationError);
+	});
+}
+
+- (void)handleCompletedOperationWithChangeSet:(YDBCKChangeSet *)changeSet
+                                 savedRecords:(NSArray *)savedRecords
+                             deletedRecordIDs:(NSArray *)deletedRecordIDs
 {
 	YDBLogAutoTrace();
 	
@@ -491,23 +578,9 @@
 	
 	[[self completionDatabaseConnection] asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		YapDatabaseCloudKitTransaction *ckTransaction = [transaction ext:extName];
-		
-		// Drop the row in the queue table that was storing all the information for this changeSet.
-		
-		[ckTransaction removeQueueRowWithUUID:changeSet.uuid];
-		
-		// Update any records that were saved.
-		// We need to store the new system fields of the CKRecord.
-		
-		NSDictionary *mapping = [changeSet recordIDToRowidMapping];
-		for (CKRecord *record in savedRecords)
-		{
-			NSNumber *rowidNumber = [mapping objectForKey:record.recordID];
-			
-			[ckTransaction updateRecord:record withDatabaseIdentifier:changeSet.databaseIdentifier
-			                                           potentialRowid:rowidNumber];
-		}
+		[[transaction ext:extName] handleCompletedOperationWithChangeSet:changeSet
+		                                                    savedRecords:savedRecords
+		                                                deletedRecordIDs:deletedRecordIDs];
 	}];
 }
 
