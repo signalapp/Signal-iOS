@@ -10,16 +10,17 @@
 
 @interface FingerprintViewController : UIViewController
 
-@property(nonatomic, strong) IBOutlet UILabel* presentationLabel;
+@property (nonatomic, strong) IBOutlet UILabel     * presentationLabel;
 
-@property(nonatomic, strong) IBOutlet UILabel* contactFingerprintTitleLabel;
-@property(nonatomic, strong) IBOutlet UILabel* userFingerprintTitleLabel;
-@property(nonatomic, strong) IBOutlet UILabel* contactFingerprintLabel;
-@property(nonatomic, strong) IBOutlet UILabel* userFingerprintLabel;
+@property (nonatomic, strong) IBOutlet UIImageView * contactImageView;
+@property (nonatomic, strong) IBOutlet UILabel     * contactFingerprintTitleLabel;
+@property (nonatomic, strong) IBOutlet UILabel     * contactFingerprintLabel;
 
-@property(nonatomic, strong) IBOutlet UIButton* closeButton;
-@property(nonatomic, strong) IBOutlet UIButton* infoButton;
-@property(nonatomic, strong) IBOutlet UIButton* shredMessagesAndContactButton;
-@property(nonatomic, strong) IBOutlet UIButton* showQRCodeButton;
+@property (nonatomic, strong) IBOutlet UIImageView * userImageView;
+@property (nonatomic, strong) IBOutlet UILabel     * userFingerprintTitleLabel;
+@property (nonatomic, strong) IBOutlet UILabel     * userFingerprintLabel;
+
+@property (nonatomic, strong) IBOutlet UIButton    * closeButton;
+@property (nonatomic, strong) IBOutlet UIButton    * shredMessagesAndContactButton;
 
 @end
