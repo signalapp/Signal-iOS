@@ -586,6 +586,9 @@
 		FC4F9FF71A1664EA00DA100A /* endcall@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4F9FF21A1664EA00DA100A /* endcall@2x.png */; };
 		FC4F9FFD1A179FCF00DA100A /* lock@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4F9FFC1A179FCF00DA100A /* lock@2x.png */; };
 		FC4F9FFF1A17A39E00DA100A /* photo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4F9FFE1A17A39E00DA100A /* photo@2x.png */; };
+		FC4FA0071A18BDAE00DA100A /* info@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4FA0061A18BDAE00DA100A /* info@2x.png */; };
+		FC4FA0091A18BF3100DA100A /* lock_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4FA0081A18BF3100DA100A /* lock_white@2x.png */; };
+		FC4FA00D1A18CC4300DA100A /* shred@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4FA00C1A18CC4300DA100A /* shred@2x.png */; };
 		FCAC963519FEF4E20046DFC5 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */; };
 		FCAC963C19FEF9280046DFC5 /* SignalsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */; };
 		FCAC964019FEF99A0046DFC5 /* TableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963E19FEF99A0046DFC5 /* TableViewCell.m */; };
@@ -1355,6 +1358,9 @@
 		FC4F9FF21A1664EA00DA100A /* endcall@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "endcall@2x.png"; sourceTree = "<group>"; };
 		FC4F9FFC1A179FCF00DA100A /* lock@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lock@2x.png"; sourceTree = "<group>"; };
 		FC4F9FFE1A17A39E00DA100A /* photo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "photo@2x.png"; sourceTree = "<group>"; };
+		FC4FA0061A18BDAE00DA100A /* info@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "info@2x.png"; sourceTree = "<group>"; };
+		FC4FA0081A18BF3100DA100A /* lock_white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lock_white@2x.png"; sourceTree = "<group>"; };
+		FC4FA00C1A18CC4300DA100A /* shred@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shred@2x.png"; sourceTree = "<group>"; };
 		FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Storyboard.storyboard; path = Signal/src/Storyboard/Storyboard.storyboard; sourceTree = SOURCE_ROOT; };
 		FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignalsViewController.h; path = UITests/SignalsViewController.h; sourceTree = "<group>"; };
 		FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalsViewController.m; path = UITests/SignalsViewController.m; sourceTree = "<group>"; };
@@ -3178,6 +3184,9 @@
 		FCAFC2F91A0C4E1700AE5136 /* icons8 */ = {
 			isa = PBXGroup;
 			children = (
+				FC4FA00C1A18CC4300DA100A /* shred@2x.png */,
+				FC4FA0081A18BF3100DA100A /* lock_white@2x.png */,
+				FC4FA0061A18BDAE00DA100A /* info@2x.png */,
 				FC4F9FFE1A17A39E00DA100A /* photo@2x.png */,
 				FC4F9FFC1A179FCF00DA100A /* lock@2x.png */,
 				FC4F9FEE1A1664EA00DA100A /* mute_off@2x.png */,
@@ -3417,6 +3426,7 @@
 				FCAFC32E1A0D46D500AE5136 /* settings_dark@2x.png in Resources */,
 				E148750B18A06966002CC4F3 /* InviteContactsViewController.xib in Resources */,
 				FCB11D901A12A388002F93FB /* quit@2x.png in Resources */,
+				FC4FA00D1A18CC4300DA100A /* shred@2x.png in Resources */,
 				E148750C18A06966002CC4F3 /* LeftSideMenuViewController.xib in Resources */,
 				E148750D18A06966002CC4F3 /* PreferenceListViewController.xib in Resources */,
 				FCAFC3301A0D5E3000AE5136 /* share@2x.png in Resources */,
@@ -3470,6 +3480,7 @@
 				FCAFC3281A0D466F00AE5136 /* delete_history@2x.png in Resources */,
 				E14874BA18A0692F002CC4F3 /* home_icon.png in Resources */,
 				E14874BB18A0692F002CC4F3 /* icon_contacts.png in Resources */,
+				FC4FA0071A18BDAE00DA100A /* info@2x.png in Resources */,
 				E14874BC18A0692F002CC4F3 /* icon_favourites.png in Resources */,
 				E14874BD18A0692F002CC4F3 /* icon_keypad.png in Resources */,
 				E14874BE18A0692F002CC4F3 /* icon_recents.png in Resources */,
@@ -3550,6 +3561,7 @@
 				E1370BEF18A0689000826894 /* AppIcon60x60.png in Resources */,
 				FC4F9FED1A1658EE00DA100A /* call@2x.png in Resources */,
 				E1370BF018A0689000826894 /* AppIcon60x60@2x.png in Resources */,
+				FC4FA0091A18BF3100DA100A /* lock_white@2x.png in Resources */,
 				E1370BF118A0689000826894 /* AppIcon76x76.png in Resources */,
 				E1370BF218A0689000826894 /* AppIcon76x76@2x.png in Resources */,
 				E1370BE718A0688300826894 /* Default-568h@2x.png in Resources */,
