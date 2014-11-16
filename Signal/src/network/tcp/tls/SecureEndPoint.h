@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "NetworkEndPoint.h"
 #import "HostNameEndPoint.h"
-#import "IpEndPoint.h"
+#import "IPEndPoint.h"
 #import "Certificate.h"
 
 /**
@@ -12,13 +12,12 @@
  *
  **/
 
-@interface SecureEndPoint : NSObject<NetworkEndPoint> {
-@private id<NetworkEndPoint> optionalMoreSpecificEndPoint;
-}
-@property (nonatomic, readonly) Certificate* certificate;
-@property (nonatomic, readonly) HostNameEndPoint* hostNameEndPoint;
+@interface SecureEndPoint : NSObject <NetworkEndPoint>
 
-+(SecureEndPoint*) secureEndPointForHost:(HostNameEndPoint*)host
-                 identifiedByCertificate:(Certificate*)certificate;
+@property (strong, readonly, nonatomic) Certificate* certificate;
+@property (strong, readonly, nonatomic) HostNameEndPoint* hostNameEndPoint;
+
+- (instancetype)initWithHost:(HostNameEndPoint*)host
+     identifiedByCertificate:(Certificate*)certificate;
 
 @end

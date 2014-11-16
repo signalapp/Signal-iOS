@@ -17,12 +17,11 @@
  *
 **/
 
-@interface ConfirmAckPacket : NSObject{
-@private HandshakePacket* embedding;
-}
+@interface ConfirmAckPacket : NSObject
 
-+(ConfirmAckPacket*)confirmAckPacket;
-+(ConfirmAckPacket*)confirmAckPacketParsedFromHandshakePacket:(HandshakePacket*)handshakePacket;
--(HandshakePacket*) embeddedIntoHandshakePacket;
+@property (strong, readonly, nonatomic, getter=embeddedIntoHandshakePacket) HandshakePacket* embedding;
+
+- (instancetype)init;
+- (instancetype)initFromHandshakePacket:(HandshakePacket*)handshakePacket;
 
 @end

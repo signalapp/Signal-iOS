@@ -1,4 +1,4 @@
-#import "HttpRequest+SignalUtil.h"
+#import "HTTPRequest+SignalUtil.h"
 #import "Constraints.h"
 #import "Environment.h"
 #import "PreferencesUtil.h"
@@ -9,10 +9,10 @@
 
 /**
  *
- * Augments HttpRequest with utility methods related to interacting with signaling servers.
+ * Augments HTTPRequest with utility methods related to interacting with signaling servers.
  *
  */
-@implementation HttpRequest (SignalUtil)
+@implementation HTTPRequest (SignalUtil)
 
 - (NSNumber*)tryGetSessionId {
     if (![self.location hasPrefix:@"/session/"]) return nil;
@@ -42,49 +42,49 @@
     return [self.method isEqualToString:@"BUSY"] && [@(targetSessionId) isEqualToNumber:self.tryGetSessionId];
 }
 
-+ (HttpRequest*)httpRequestToOpenPortWithSessionId:(int64_t)sessionId {
-    return [HttpRequest httpRequestUnauthenticatedWithMethod:@"GET"
-                                                 andLocation:[NSString stringWithFormat:@"/open/%lld", sessionId]];
++ (HTTPRequest*)httpRequestToOpenPortWithSessionId:(int64_t)sessionId {
+    return [[HTTPRequest alloc] initUnauthenticatedWithMethod:@"GET"
+                                                  andLocation:[NSString stringWithFormat:@"/open/%lld", sessionId]];
 }
 
-+ (HttpRequest*)httpRequestToRingWithSessionId:(int64_t)sessionId {
-    return [HttpRequest httpRequestWithOtpAuthenticationAndMethod:@"RING"
-                                                      andLocation:[NSString stringWithFormat:@"/session/%lld", sessionId]];
++ (HTTPRequest*)httpRequestToRingWithSessionId:(int64_t)sessionId {
+    return [[HTTPRequest alloc] initWithOTPAuthenticationAndMethod:@"RING"
+                                                       andLocation:[NSString stringWithFormat:@"/session/%lld", sessionId]];
 }
 
-+ (HttpRequest*)httpRequestToSignalBusyWithSessionId:(int64_t)sessionId {
-    return [HttpRequest httpRequestWithOtpAuthenticationAndMethod:@"BUSY"
-                                                      andLocation:[NSString stringWithFormat:@"/session/%lld", sessionId]];
++ (HTTPRequest*)httpRequestToSignalBusyWithSessionId:(int64_t)sessionId {
+    return [[HTTPRequest alloc] initWithOTPAuthenticationAndMethod:@"BUSY"
+                                                       andLocation:[NSString stringWithFormat:@"/session/%lld", sessionId]];
 }
 
-+ (HttpRequest*)httpRequestToInitiateToRemoteNumber:(PhoneNumber*)remoteNumber {
++ (HTTPRequest*)httpRequestToInitiateToRemoteNumber:(PhoneNumber*)remoteNumber {
     require(remoteNumber != nil);
     
     NSString* formattedRemoteNumber = remoteNumber.toE164;
     NSString* interopVersionInsert = CLAIMED_INTEROP_VERSION_IN_INITIATE_SIGNAL == 0
                                    ? @""
                                    : [NSString stringWithFormat:@"/%d", CLAIMED_INTEROP_VERSION_IN_INITIATE_SIGNAL];
-    return [HttpRequest httpRequestWithOtpAuthenticationAndMethod:@"GET"
-                                                      andLocation:[NSString stringWithFormat:@"/session%@/%@",
-                                                                   interopVersionInsert,
-                                                                   formattedRemoteNumber]];
+    return [[HTTPRequest alloc] initWithOTPAuthenticationAndMethod:@"GET"
+                                                       andLocation:[NSString stringWithFormat:@"/session%@/%@",
+                                                                    interopVersionInsert,
+                                                                    formattedRemoteNumber]];
 }
 
-+ (HttpRequest*)httpRequestToStartRegistrationOfPhoneNumber {
-    return [HttpRequest httpRequestWithBasicAuthenticationAndMethod:@"GET"
-                                                        andLocation:@"/users/verification"];
++ (HTTPRequest*)httpRequestToStartRegistrationOfPhoneNumber {
+    return [[HTTPRequest alloc] initWithBasicAuthenticationAndMethod:@"GET"
+                                                         andLocation:@"/users/verification"];
 }
 
-+ (HttpRequest*)httpRequestToStartRegistrationOfPhoneNumberWithVoice {
-    return [HttpRequest httpRequestWithBasicAuthenticationAndMethod:@"GET"
-                                                        andLocation:@"/users/verification/voice"];
++ (HTTPRequest*)httpRequestToStartRegistrationOfPhoneNumberWithVoice {
+    return [[HTTPRequest alloc] initWithBasicAuthenticationAndMethod:@"GET"
+                                                         andLocation:@"/users/verification/voice"];
 }
 
-+ (HttpRequest*)httpRequestToVerifyAccessToPhoneNumberWithChallenge:(NSString*)challenge {
++ (HTTPRequest*)httpRequestToVerifyAccessToPhoneNumberWithChallenge:(NSString*)challenge {
     require(challenge != nil);
     
     PhoneNumber* localPhoneNumber = SGNKeychainUtil.localNumber;
-    NSString* query = [NSString stringWithFormat:@"/users/verification/%@", [localPhoneNumber toE164]];
+    NSString* query = [NSString stringWithFormat:@"/users/verification/%@", localPhoneNumber.toE164];
     [SGNKeychainUtil generateSignaling];
     
     NSData* signalingCipherKey = SGNKeychainUtil.signalingCipherKey;
@@ -93,23 +93,23 @@
     NSString* encodedSignalingKey = [[@[signalingCipherKey, signalingMacKey, signalingExtraKeyData] concatDatas] encodedAsBase64];
     NSString* body = [@{@"key" : encodedSignalingKey, @"challenge" : challenge} encodedAsJSON];
     
-    return [HttpRequest httpRequestWithBasicAuthenticationAndMethod:@"PUT"
-                                                        andLocation:query
-                                                    andOptionalBody:body];
+    return [[HTTPRequest alloc] initWithBasicAuthenticationAndMethod:@"PUT"
+                                                         andLocation:query
+                                                     andOptionalBody:body];
 }
 
-+ (HttpRequest*)httpRequestToRegisterForApnSignalingWithDeviceToken:(NSData*)deviceToken {
++ (HTTPRequest*)httpRequestToRegisterForApnSignalingWithDeviceToken:(NSData*)deviceToken {
     require(deviceToken != nil);
     
     NSString* query = [NSString stringWithFormat:@"/apn/%@", [deviceToken encodedAsHexString]];
     
-    return [HttpRequest httpRequestWithBasicAuthenticationAndMethod:@"PUT"
-                                                        andLocation:query];
+    return [[HTTPRequest alloc] initWithBasicAuthenticationAndMethod:@"PUT"
+                                                         andLocation:query];
 }
 
-+ (HttpRequest*)httpRequestForPhoneNumberDirectoryFilter {
-    return [HttpRequest httpRequestWithOtpAuthenticationAndMethod:@"GET"
-                                                      andLocation:@"/users/directory"];
++ (HTTPRequest*)httpRequestForPhoneNumberDirectoryFilter {
+    return [[HTTPRequest alloc] initWithOTPAuthenticationAndMethod:@"GET"
+                                                       andLocation:@"/users/directory"];
 }
 
 @end

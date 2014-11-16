@@ -4,8 +4,8 @@
 @interface CallTermination ()
 
 @property (readwrite, nonatomic) CallTerminationType type;
-@property (readwrite, nonatomic) id failure;
-@property (readwrite, nonatomic) id messageInfo;
+@property (strong, readwrite, nonatomic) id failure;
+@property (strong, readwrite, nonatomic) id messageInfo;
 
 @end
 

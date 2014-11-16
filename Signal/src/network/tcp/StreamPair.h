@@ -7,9 +7,10 @@
 **/
 
 @interface StreamPair : NSObject
-@property (nonatomic, readonly) NSInputStream* inputStream;
-@property (nonatomic, readonly) NSOutputStream* outputStream;
 
-+(StreamPair*) streamPairWithInput:(NSInputStream*)input andOutput:(NSOutputStream*)output;
+@property (strong, readonly, nonatomic) NSInputStream* inputStream;
+@property (strong, readonly, nonatomic) NSOutputStream* outputStream;
+
+- (instancetype)initWithInput:(NSInputStream*)input andOutput:(NSOutputStream*)output;
 
 @end

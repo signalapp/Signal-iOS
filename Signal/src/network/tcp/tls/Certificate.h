@@ -7,12 +7,13 @@
  */
 @interface Certificate : NSObject
 
-+(Certificate*) certificateFromTrust:(SecTrustRef)trust
-                             atIndex:(CFIndex)index;
+// This is unused, do we still need it?
+- (instancetype)initFromTrust:(SecTrustRef)trust
+                      atIndex:(CFIndex)index;
 
-+(Certificate*) certificateFromResourcePath:(NSString*)resourcePath
-                                     ofType:(NSString*)resourceType;
+- (instancetype)initFromResourcePath:(NSString*)resourcePath
+                              ofType:(NSString*)resourceType;
 
--(void) setAsAnchorForTrust:(SecTrustRef)trust;
+- (void)setAsAnchorForTrust:(SecTrustRef)trust;
 
 @end

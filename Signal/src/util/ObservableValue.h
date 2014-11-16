@@ -11,7 +11,7 @@ typedef void (^LatestValueCallback)(id latestValue);
  */
 @interface ObservableValue : NSObject
 
-@property (readonly, atomic) id currentValue;
+@property (strong, readonly, atomic) id currentValue;
 
 - (void)watchLatestValueOnArbitraryThread:(LatestValueCallback)callback
                            untilCancelled:(TOCCancelToken*)untilCancelledToken;

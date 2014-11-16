@@ -20,8 +20,8 @@
 
     NSString* reliableHostName = @"example.com";
     
-    TOCFuture* f = [LowLatencyConnector asyncLowLatencyConnectToEndPoint:[HostNameEndPoint hostNameEndPointWithHostName:reliableHostName
-                                                                                                                andPort:80]
+    TOCFuture* f = [LowLatencyConnector asyncLowLatencyConnectToEndPoint:[[HostNameEndPoint alloc] initWithHostName:reliableHostName
+                                                                                                            andPort:80]
                                                           untilCancelled:nil];
     
     testChurnUntil(!f.isIncomplete, 5.0);
@@ -31,7 +31,7 @@
     
     // --- attempt to actually use the streams ---
     __block NSString* response = nil;
-    PacketHandler* h = [PacketHandler packetHandler:^(id packet) {
+    PacketHandler* h = [[PacketHandler alloc] initPacketHandler:^(id packet) {
         @synchronized(churnLock()) {
             response = [packet decodedAsUtf8];
         }
@@ -51,8 +51,8 @@
     
     NSString* reliableHostNameKnownToHaveMultipleIps = @"google.com";
     
-    TOCFuture* f = [LowLatencyConnector asyncLowLatencyConnectToEndPoint:[HostNameEndPoint hostNameEndPointWithHostName:reliableHostNameKnownToHaveMultipleIps
-                                                                                                                andPort:80]
+    TOCFuture* f = [LowLatencyConnector asyncLowLatencyConnectToEndPoint:[[HostNameEndPoint alloc] initWithHostName:reliableHostNameKnownToHaveMultipleIps
+                                                                                                            andPort:80]
                                                           untilCancelled:nil];
     
     testChurnUntil(!f.isIncomplete, 5.0);
@@ -62,7 +62,7 @@
     
     // --- attempt to actually use the streams ---
     __block NSString* response = nil;
-    PacketHandler* h = [PacketHandler packetHandler:^(id packet) {
+    PacketHandler* h = [[PacketHandler alloc] initPacketHandler:^(id packet) {
         @synchronized(churnLock()) {
             response = [packet decodedAsUtf8];
         }
@@ -81,7 +81,7 @@
 -(void) testCancelledLowLatencyConnect {
     NSString* reliableHostName = @"example.com";
     
-    TOCFuture* f = [LowLatencyConnector asyncLowLatencyConnectToEndPoint:[HostNameEndPoint hostNameEndPointWithHostName:reliableHostName andPort:80]
+    TOCFuture* f = [LowLatencyConnector asyncLowLatencyConnectToEndPoint:[[HostNameEndPoint alloc] initWithHostName:reliableHostName andPort:80]
                                                           untilCancelled:TOCCancelToken.cancelledToken];
     
     testChurnUntil(!f.isIncomplete, 5.0);

@@ -7,39 +7,27 @@
 
 @class SecureEndPoint;
 @class HostNameEndPoint;
-@class IpEndPoint;
+@class IPEndPoint;
 
 /**
  *
  * The network stream class handles connecting to and communicating with a server over tcp or ssl.
- * To make an SSL connection, connect to a SecureEndPoint instead of a raw IpEndPoint or HostNameEndPoint.
+ * To make an SSL connection, connect to a SecureEndPoint instead of a raw IPEndPoint or HostNameEndPoint.
  *
 **/
 
-@interface NetworkStream : NSObject<Terminable, NSStreamDelegate> {
-@private NSMutableData* readBuffer;
-@private NSInputStream* inputStream;
-@private NSOutputStream* outputStream;
-@private PacketHandler* rawDataHandler;
-@private bool closedLocally;
-@private CyclicalBuffer* writeBuffer;
-@private TOCFutureSource* futureConnectedAndWritableSource;
-@private TOCFutureSource* futureOpenedSource;
-@private id<NetworkEndPoint> remoteEndPoint;
-@private NSRunLoop* runLoop;
-@private bool started;
-}
+@interface NetworkStream : NSObject <Terminable, NSStreamDelegate>
 
-+(NetworkStream*) networkStreamToEndPoint:(id<NetworkEndPoint>)remoteEndPoint;
+- (instancetype)initWithRemoteEndPoint:(id<NetworkEndPoint>)remoteEndPoint;
 
--(TOCFuture*) asyncConnectionCompleted;
+- (TOCFuture*)asyncConnectionCompleted;
 
--(TOCFuture*) asyncTcpHandshakeCompleted;
+- (TOCFuture*)asyncTCPHandshakeCompleted;
 
--(void) send:(NSData*)data;
+- (void)send:(NSData*)data;
 
--(void) startWithHandler:(PacketHandler*)handler;
+- (void)startWithHandler:(PacketHandler*)handler;
 
--(void) startProcessingStreamEventsEvenWithoutHandler;
+- (void)startProcessingStreamEventsEvenWithoutHandler;
 
 @end

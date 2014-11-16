@@ -5,10 +5,8 @@
  * Instances of IgnoredPacketFailure are used to indicate that a packet was ignored.
  *
  */
-@interface IgnoredPacketFailure : NSObject {
-@private NSString* reason;
-}
+@interface IgnoredPacketFailure : NSObject
 
-+(IgnoredPacketFailure*) new:(NSString*)reason;
+- (instancetype)initWithReason:(NSString*)reason;
 
 @end

@@ -170,7 +170,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 - (BOOL)resolvesInternationallyTo:(PhoneNumber*)otherPhoneNumber {
-    return [[self toE164] isEqualToString:[otherPhoneNumber toE164]];
+    return [self.toE164 isEqualToString:otherPhoneNumber.toE164];
 }
 
 - (NSString*)description {

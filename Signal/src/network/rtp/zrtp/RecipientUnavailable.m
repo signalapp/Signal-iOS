@@ -2,11 +2,7 @@
 
 @implementation RecipientUnavailable
 
-+(RecipientUnavailable*) recipientUnavailable {
-    return [RecipientUnavailable new];
-}
-
--(NSString *)description {
+- (NSString*)description {
     return @"Recipient unavailable";
 }
 

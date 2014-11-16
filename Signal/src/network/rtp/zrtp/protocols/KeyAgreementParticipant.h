@@ -12,7 +12,9 @@
 **/
 
 @protocol KeyAgreementParticipant
--(id<KeyAgreementProtocol>) getProtocol;
--(NSData*) getPublicKeyData;
--(NSData*) calculateKeyAgreementAgainstRemotePublicKey:(NSData*)remotePublicKey;
+
+- (id<KeyAgreementProtocol>)getProtocol;
+- (NSData*)getPublicKeyData;
+- (NSData*)calculateKeyAgreementAgainstRemotePublicKey:(NSData*)remotePublicKey;
+
 @end

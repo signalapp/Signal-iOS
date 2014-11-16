@@ -2,22 +2,33 @@
 #import "Constraints.h"
 #import "HashChain.h"
 
+@interface HashChain ()
+
+@property (strong, readwrite, nonatomic) NSData* h0;
+@property (strong, readwrite, nonatomic) NSData* h1;
+@property (strong, readwrite, nonatomic) NSData* h2;
+@property (strong, readwrite, nonatomic) NSData* h3;
+
+@end
+
 @implementation HashChain
 
-@synthesize h0,h1,h2,h3;
-
-+(HashChain*) hashChainWithSeed:(NSData*)seed {
-    require(seed != nil);
-    require(seed.length == HASH_CHAIN_ITEM_LENGTH);
-    HashChain* s = [HashChain new];
-    s->h0 = seed;
-    s->h1 = [s->h0 hashWithSha256];
-    s->h2 = [s->h1 hashWithSha256];
-    s->h3 = [s->h2 hashWithSha256];
-    return s;
+- (instancetype)initWithSeed:(NSData*)seed {
+    if (self = [super init]) {
+        require(seed != nil);
+        require(seed.length == HASH_CHAIN_ITEM_LENGTH);
+        
+        self.h0 = seed;
+        self.h1 = [self.h0 hashWithSha256];
+        self.h2 = [self.h1 hashWithSha256];
+        self.h3 = [self.h2 hashWithSha256];
+    }
+    
+    return self;
 }
-+(HashChain*) hashChainWithSecureGeneratedData {
-    return [HashChain hashChainWithSeed:[CryptoTools generateSecureRandomData:HASH_CHAIN_ITEM_LENGTH]];
+
+- (instancetype)initWithSecureGeneratedData {
+    return [self initWithSeed:[CryptoTools generateSecureRandomData:HASH_CHAIN_ITEM_LENGTH]];
 }
 
 @end

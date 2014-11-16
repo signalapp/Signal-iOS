@@ -2,7 +2,7 @@
 #import "HashChain.h"
 #import "ZID.h"
 #import "HelloPacket.h"
-#import "DhPacket.h"
+#import "DHPacket.h"
 
 /**
  * 
@@ -46,42 +46,32 @@
  *
 **/
 
+@interface CommitPacket : NSObject
 
-@interface CommitPacket : NSObject {
-@private HandshakePacket* embedding;
-}
-@property (nonatomic,readonly) NSData* h2;
-@property (nonatomic,readonly) NSData* hashSpecId;
-@property (nonatomic,readonly) NSData* cipherSpecId;
-@property (nonatomic,readonly) NSData* authSpecId;
-@property (nonatomic,readonly) NSData* agreementSpecId;
-@property (nonatomic,readonly) NSData* sasSpecId;
-@property (nonatomic,readonly) Zid* zid;
-@property (nonatomic,readonly) NSData* dhPart2HelloCommitment;
+@property (strong, readonly, nonatomic) NSData* h2;
+@property (strong, readonly, nonatomic) NSData* hashSpecId;
+@property (strong, readonly, nonatomic) NSData* cipherSpecId;
+@property (strong, readonly, nonatomic) NSData* authSpecId;
+@property (strong, readonly, nonatomic) NSData* agreementSpecId;
+@property (strong, readonly, nonatomic) NSData* sasSpecId;
+@property (strong, readonly, nonatomic) Zid* zid;
+@property (strong, readonly, nonatomic) NSData* dhPart2HelloCommitment;
 
-+(CommitPacket*) commitPacketWithDefaultSpecsAndKeyAgreementProtocol:(id<KeyAgreementProtocol>)keyAgreementProtocol
+@property (strong, readonly, nonatomic, getter=embeddedIntoHandshakePacket) HandshakePacket* embedding;
+
+- (instancetype)initFromHandshakePacket:(HandshakePacket*)handshakePacket;
+
++ (CommitPacket*)commitPacketWithDefaultSpecsAndKeyAgreementProtocol:(id<KeyAgreementProtocol>)keyAgreementProtocol
                                                         andHashChain:(HashChain*)hashChain
                                                               andZid:(Zid*)zid
                                                 andCommitmentToHello:(HelloPacket*)hello
-                                                          andDhPart2:(DhPacket*)dhPart2;
+                                                          andDHPart2:(DHPacket*)dhPart2;
 
-+(CommitPacket*) commitPacketWithHashChainH2:(NSData*)h2
-                                      andZid:(Zid*)zid
-                               andHashSpecId:(NSData*)hashSpecId
-                             andCipherSpecId:(NSData*)cipherSpecId
-                               andAuthSpecId:(NSData*)authSpecId
-                              andAgreeSpecId:(NSData*)agreeSpecId
-                                andSasSpecId:(NSData*)sasSpecId
-                   andDhPart2HelloCommitment:(NSData*)dhPart2HelloCommitment
-                                  andHmacKey:(NSData*)hmacKey;
+- (void)verifyCommitmentAgainstHello:(HelloPacket*)hello
+                          andDHPart2:(DHPacket*)dhPart2;
 
--(void) verifyCommitmentAgainstHello:(HelloPacket*)hello
-                          andDhPart2:(DhPacket*)dhPart2;
+- (void)verifyMacWithHashChainH1:(NSData*)hashChainH1;
 
-+(CommitPacket*) commitPacketParsedFromHandshakePacket:(HandshakePacket*)handshakePacket;
 
--(void) verifyMacWithHashChainH1:(NSData*)hashChainH1;
-
--(HandshakePacket*) embeddedIntoHandshakePacket;
 
 @end

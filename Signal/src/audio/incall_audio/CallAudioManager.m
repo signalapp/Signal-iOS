@@ -35,8 +35,8 @@
         PacketHandlerBlock handler = ^(EncodedAudioPacket* packet) {
             [audioProcessor receivedPacket:packet];
         };
-        [audioSocket startWithHandler:[PacketHandler packetHandler:handler
-                                                  withErrorHandler:errorHandler]
+        [audioSocket startWithHandler:[[PacketHandler alloc] initPacketHandler:handler
+                                                              withErrorHandler:errorHandler]
                        untilCancelled:untilCancelledToken];
     }
 }

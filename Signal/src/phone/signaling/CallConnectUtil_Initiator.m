@@ -2,10 +2,10 @@
 #import "CallConnectUtil.h"
 #import "CallConnectUtil_Server.h"
 #import "IgnoredPacketFailure.h"
-#import "HttpRequest+SignalUtil.h"
+#import "HTTPRequest+SignalUtil.h"
 #import "UnrecognizedRequestFailure.h"
 #import "Util.h"
-#import "ZrtpManager.h"
+#import "ZRTPManager.h"
 
 @implementation CallConnectUtil_Initiator
 
@@ -30,12 +30,12 @@
     
     TOCFuture* futureSignalConnection = [CallConnectUtil_Server asyncConnectToDefaultSignalingServerUntilCancelled:callController.untilCancelledToken];
     
-    return [futureSignalConnection thenTry:^(HttpManager* httpManager) {
-        requireState([httpManager isKindOfClass:[HttpManager class]]);
+    return [futureSignalConnection thenTry:^(HTTPManager* httpManager) {
+        requireState([httpManager isKindOfClass:[HTTPManager class]]);
         
         TOCFutureSource* predeclaredFutureSession = [[TOCFutureSource alloc] init];
         
-        HttpResponse* (^serverRequestHandler)(HttpRequest*) = ^(HttpRequest* remoteRequest) {
+        HTTPResponse* (^serverRequestHandler)(HTTPRequest*) = ^(HTTPRequest* remoteRequest) {
             return [self respondToServerRequest:remoteRequest
                         usingEventualDescriptor:predeclaredFutureSession.future
                               andCallController:callController];
@@ -45,12 +45,12 @@
                              andErrorHandler:callController.errorHandler
                               untilCancelled:[callController untilCancelledToken]];
         
-        HttpRequest* initiateRequest = [HttpRequest httpRequestToInitiateToRemoteNumber:callController.callState.remoteNumber];
+        HTTPRequest* initiateRequest = [HTTPRequest httpRequestToInitiateToRemoteNumber:callController.callState.remoteNumber];
         TOCFuture* futureResponseToInitiate = [httpManager asyncOkResponseForRequest:initiateRequest
                                                                      unlessCancelled:[callController untilCancelledToken]];
         TOCFuture* futureResponseToInitiateWithInterpretedFailures = [futureResponseToInitiate catchTry:^(id error) {
-            if ([error isKindOfClass:[HttpResponse class]]) {
-                HttpResponse* badResponse = error;
+            if ([error isKindOfClass:[HTTPResponse class]]) {
+                HTTPResponse* badResponse = error;
                 return [TOCFuture futureWithFailure:[self callTerminationForBadResponse:badResponse
                                                                       toInitiateRequest:initiateRequest]];
             }
@@ -58,7 +58,7 @@
             return [TOCFuture futureWithFailure:error];
         }];
         
-        TOCFuture* futureSession = [futureResponseToInitiateWithInterpretedFailures thenTry:^(HttpResponse* response) {
+        TOCFuture* futureSession = [futureResponseToInitiateWithInterpretedFailures thenTry:^(HTTPResponse* response) {
             return [[InitiatorSessionDescriptor alloc] initFromJSON:response.getOptionalBodyText];
         }];
         [predeclaredFutureSession trySetResult:futureSession];
@@ -67,8 +67,8 @@
     }];
 }
 
-+ (CallTermination*)callTerminationForBadResponse:(HttpResponse*)badResponse
-                                toInitiateRequest:(HttpRequest*)initiateRequest {
++ (CallTermination*)callTerminationForBadResponse:(HTTPResponse*)badResponse
+                                toInitiateRequest:(HTTPRequest*)initiateRequest {
     require(badResponse != nil);
     require(initiateRequest != nil);
     
@@ -92,7 +92,7 @@
     }
 }
 
-+ (HttpResponse*)respondToServerRequest:(HttpRequest*)request
++ (HTTPResponse*)respondToServerRequest:(HTTPRequest*)request
                 usingEventualDescriptor:(TOCFuture*)futureInitiatorSessionDescriptor
                       andCallController:(CallController*)callController {
     require(request != nil);
@@ -101,15 +101,15 @@
     
     // heart beat?
     if (request.isKeepAlive) {
-        return [HttpResponse httpResponse200Ok];
+        return [HTTPResponse httpResponse200Ok];
     }
     
     // too soon?
     if (!futureInitiatorSessionDescriptor.hasResult) {
         [callController terminateWithReason:CallTerminationTypeBadInteractionWithServer
-                            withFailureInfo:[IgnoredPacketFailure new:@"Didn't receive session id from signaling server. Not able to understand request."]
+                            withFailureInfo:[[IgnoredPacketFailure alloc] initWithReason:@"Didn't receive session id from signaling server. Not able to understand request."]
                              andRelatedInfo:request];
-        return [HttpResponse httpResponse500InternalServerError];
+        return [HTTPResponse httpResponse500InternalServerError];
     }
     int64_t sessionId = [[futureInitiatorSessionDescriptor forceGetResult] sessionId];
     
@@ -117,13 +117,13 @@
     if ([request isHangupForSession:sessionId]) {
         [callController terminateWithRejectionOrRemoteHangupAndFailureInfo:nil
                                                             andRelatedInfo:request];
-        return [HttpResponse httpResponse200Ok];
+        return [HTTPResponse httpResponse200Ok];
     }
     
     // ringing?
     if ([request isRingingForSession:sessionId]) {
         [callController advanceCallProgressTo:CallProgressTypeRinging];
-        return [HttpResponse httpResponse200Ok];
+        return [HTTPResponse httpResponse200Ok];
     }
     
     // busy signal?
@@ -131,14 +131,14 @@
         [callController terminateWithReason:CallTerminationTypeResponderIsBusy
                             withFailureInfo:nil
                              andRelatedInfo:request];
-        return [HttpResponse httpResponse200Ok];
+        return [HTTPResponse httpResponse200Ok];
     }
     
     // errr.....
     [callController terminateWithReason:CallTerminationTypeBadInteractionWithServer
-                        withFailureInfo:[UnrecognizedRequestFailure new:@"Didn't understand signaling server."]
+                        withFailureInfo:[[UnrecognizedRequestFailure alloc] initWithReason:@"Didn't understand signaling server."]
                          andRelatedInfo:request];
-    return [HttpResponse httpResponse501NotImplemented];
+    return [HTTPResponse httpResponse501NotImplemented];
 }
 
 @end

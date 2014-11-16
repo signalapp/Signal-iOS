@@ -2,14 +2,14 @@
 #import "TestUtil.h"
 #import "Util.h"
 #import "CallController.h"
-#import "ZrtpManager.h"
+#import "ZRTPManager.h"
 #import "ThreadManager.h"
-#import "ZrtpHandshakeResult.h"
+#import "ZRTPHandshakeResult.h"
 #import "DiscardingLog.h"
 #import "HelloAckPacket.h"
 #import "ConfirmAckPacket.h"
 #import "HostNameEndPoint.h"
-#import "IpAddress.h"
+#import "IPAddress.h"
 #import "SGNKeychainUtil.h"
 
 bool pm(HandshakePacket* p1, HandshakePacket* p2);
@@ -17,14 +17,14 @@ bool pm(HandshakePacket* p1, HandshakePacket* p2) {
     return p1 != nil
     && p2 != nil
     && p1.class == p2.class
-    && [[p1 embeddedIntoRtpPacketWithSequenceNumber:0 usingInteropOptions:@[]] isEqualToRtpPacket:[p2 embeddedIntoRtpPacketWithSequenceNumber:0 usingInteropOptions:@[]]];
+    && [[p1 embeddedIntoRTPPacketWithSequenceNumber:0 usingInteropOptions:@[]] isEqualToRTPPacket:[p2 embeddedIntoRTPPacketWithSequenceNumber:0 usingInteropOptions:@[]]];
 }
 #define AssertPacketsMatch(p1, p2) STAssertTrue(pm(p1, p2), @"")
 
-@interface ZrtpTest : XCTestCase
+@interface ZRTPTest : XCTestCase
 @end
 
-@implementation ZrtpTest
+@implementation ZRTPTest
 
 - (void)setUp{
     [Environment setCurrent:[Release unitTestEnvironment:@[]]];
@@ -32,22 +32,22 @@ bool pm(HandshakePacket* p1, HandshakePacket* p2) {
     [Environment setCurrent:testEnv];
 }
 
--(void) testPerturbedZrtpHandshake {
-    IpEndPoint* receiver = [IpEndPoint ipEndPointAtAddress:IpAddress.localhost
+-(void) testPerturbedZRTPHandshake {
+    IPEndPoint* receiver = [[IPEndPoint alloc] initWithAddress:IPAddress.localhost
                                                     onPort:10000 + (in_port_t)arc4random_uniform(20000)];
     
-    UdpSocket* u1 = [UdpSocket udpSocketToFirstSenderOnLocalPort:receiver.port];
+    UDPSocket* u1 = [[UDPSocket alloc] initSocketToFirstSenderOnLocalPort:receiver.port];
     CallController* cc1 = [[CallController alloc] initForCallInitiatedLocally:true
                                                              withRemoteNumber:testPhoneNumber1
                                                 andOptionallySpecifiedContact:nil];
-    TOCFuture* f1 = [ZrtpManager asyncPerformHandshakeOver:[RtpSocket rtpSocketOverUdp:u1 interopOptions:@[]]
+    TOCFuture* f1 = [ZRTPManager asyncPerformHandshakeOver:[[RTPSocket alloc] initOverUDPSocket:u1 interopOptions:@[]]
                                          andCallController:cc1];
     
-    UdpSocket* u2 = [UdpSocket udpSocketTo:receiver];
+    UDPSocket* u2 = [[UDPSocket alloc] initSocketToRemoteEndPoint:receiver];
     CallController* cc2 = [[CallController alloc] initForCallInitiatedLocally:false
                                                              withRemoteNumber:testPhoneNumber2
                                                 andOptionallySpecifiedContact:nil];
-    TOCFuture* f2 = [ZrtpManager asyncPerformHandshakeOver:[RtpSocket rtpSocketOverUdp:u2 interopOptions:@[]]
+    TOCFuture* f2 = [ZRTPManager asyncPerformHandshakeOver:[[RTPSocket alloc] initOverUDPSocket:u2 interopOptions:@[]]
                                          andCallController:cc2];
     
     testChurnUntil(!f1.isIncomplete && !f2.isIncomplete, 15.0);
@@ -58,23 +58,23 @@ bool pm(HandshakePacket* p1, HandshakePacket* p2) {
     [cc2 terminateWithReason:CallTerminationTypeHangupLocal withFailureInfo:nil andRelatedInfo:nil];
 }
 
--(void) testPerturbedZrtpHandshakeWithoutConfAck {
-    IpEndPoint* receiver = [IpEndPoint ipEndPointAtAddress:IpAddress.localhost
+-(void) testPerturbedZRTPHandshakeWithoutConfAck {
+    IPEndPoint* receiver = [[IPEndPoint alloc] initWithAddress:IPAddress.localhost
                                                     onPort:10000 + (in_port_t)arc4random_uniform(20000)];
     [Environment setCurrent:testEnvWith(ENVIRONMENT_TESTING_OPTION_LOSE_CONF_ACK_ON_PURPOSE)];
     
-    UdpSocket* u1 = [UdpSocket udpSocketToFirstSenderOnLocalPort:receiver.port];
+    UDPSocket* u1 = [[UDPSocket alloc] initSocketToFirstSenderOnLocalPort:receiver.port];
     CallController* cc1 = [[CallController alloc] initForCallInitiatedLocally:true
                                                              withRemoteNumber:testPhoneNumber1
                                                 andOptionallySpecifiedContact:nil];
-    TOCFuture* f1 = [ZrtpManager asyncPerformHandshakeOver:[RtpSocket rtpSocketOverUdp:u1 interopOptions:@[]]
+    TOCFuture* f1 = [ZRTPManager asyncPerformHandshakeOver:[[RTPSocket alloc] initOverUDPSocket:u1 interopOptions:@[]]
                                          andCallController:cc1];
     
-    UdpSocket* u2 = [UdpSocket udpSocketTo:receiver];
+    UDPSocket* u2 = [[UDPSocket alloc] initSocketToRemoteEndPoint:receiver];
     CallController* cc2 = [[CallController alloc] initForCallInitiatedLocally:false
                                                              withRemoteNumber:testPhoneNumber2
                                                 andOptionallySpecifiedContact:nil];
-    TOCFuture* f2 = [ZrtpManager asyncPerformHandshakeOver:[RtpSocket rtpSocketOverUdp:u2 interopOptions:@[]]
+    TOCFuture* f2 = [ZRTPManager asyncPerformHandshakeOver:[[RTPSocket alloc] initOverUDPSocket:u2 interopOptions:@[]]
                                          andCallController:cc2];
     
     testChurnUntil(!f2.isIncomplete, 15.0);
@@ -83,12 +83,12 @@ bool pm(HandshakePacket* p1, HandshakePacket* p2) {
     
     // send authenticated data to signal end of handshake
     if (f2.hasResult) {
-        ZrtpHandshakeResult* result = [f2 forceGetResult];
-        SrtpSocket* socket = [result secureRtpSocket];
-        [socket startWithHandler:[PacketHandler packetHandler:^(id packet) { test(false); }
+        ZRTPHandshakeResult* result = [f2 forceGetResult];
+        SRTPSocket* socket = [result secureRTPSocket];
+        [socket startWithHandler:[[PacketHandler alloc] initPacketHandler:^(id packet) { test(false); }
                                              withErrorHandler:^(id error, id relatedInfo, bool causedTermination) { test(!causedTermination); }]
                   untilCancelled:[cc1 untilCancelledToken]];
-        [socket secureAndSendRtpPacket:[RtpPacket rtpPacketWithDefaultsAndSequenceNumber:1 andPayload:[NSData data]]];
+        [socket secureAndSendRTPPacket:[[RTPPacket alloc] initWithDefaultsAndSequenceNumber:1 andPayload:[NSData data]]];
     }
     
     
@@ -102,21 +102,21 @@ bool pm(HandshakePacket* p1, HandshakePacket* p2) {
 -(void) testDhHandshake {
     [Environment setCurrent:testEnvWith(TESTING_OPTION_USE_DH_FOR_HANDSHAKE)];
 
-    IpEndPoint* receiver = [IpEndPoint ipEndPointAtAddress:IpAddress.localhost
+    IPEndPoint* receiver = [[IPEndPoint alloc] initWithAddress:IPAddress.localhost
                                                     onPort:10000 + (in_port_t)arc4random_uniform(20000)];
     
-    UdpSocket* u1 = [UdpSocket udpSocketToFirstSenderOnLocalPort:receiver.port];
+    UDPSocket* u1 = [[UDPSocket alloc] initSocketToFirstSenderOnLocalPort:receiver.port];
     CallController* cc1 = [[CallController alloc] initForCallInitiatedLocally:true
                                                              withRemoteNumber:testPhoneNumber1
                                                 andOptionallySpecifiedContact:nil];
-    TOCFuture* f1 = [ZrtpManager asyncPerformHandshakeOver:[RtpSocket rtpSocketOverUdp:u1 interopOptions:@[]]
+    TOCFuture* f1 = [ZRTPManager asyncPerformHandshakeOver:[[RTPSocket alloc] initOverUDPSocket:u1 interopOptions:@[]]
                                          andCallController:cc1];
     
-    UdpSocket* u2 = [UdpSocket udpSocketTo:receiver];
+    UDPSocket* u2 = [[UDPSocket alloc] initSocketToRemoteEndPoint:receiver];
     CallController* cc2 = [[CallController alloc] initForCallInitiatedLocally:false
                                                              withRemoteNumber:testPhoneNumber2
                                                 andOptionallySpecifiedContact:nil];
-    TOCFuture* f2 = [ZrtpManager asyncPerformHandshakeOver:[RtpSocket rtpSocketOverUdp:u2 interopOptions:@[]]
+    TOCFuture* f2 = [ZRTPManager asyncPerformHandshakeOver:[[RTPSocket alloc] initOverUDPSocket:u2 interopOptions:@[]]
                                          andCallController:cc2];
     
     testChurnUntil(!f1.isIncomplete && !f2.isIncomplete, 15.0);

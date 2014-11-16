@@ -68,8 +68,8 @@ phoneDirectoryManager;
     Environment* env = Environment.getCurrent;
     
     NSString* hostName = [self relayServerNameToHostName:name];
-    HostNameEndPoint* location = [HostNameEndPoint hostNameEndPointWithHostName:hostName andPort:env.serverPort];
-    return [SecureEndPoint secureEndPointForHost:location identifiedByCertificate:env.certificate];
+    HostNameEndPoint* location = [[HostNameEndPoint alloc] initWithHostName:hostName andPort:env.serverPort];
+    return [[SecureEndPoint alloc] initWithHost:location identifiedByCertificate:env.certificate];
 }
 
 +(Environment*) environmentWithLogging:(id<Logging>)logging
@@ -84,8 +84,8 @@ phoneDirectoryManager;
                            andPhoneManager:(PhoneManager*)phoneManager
                       andRecentCallManager:(RecentCallManager *)recentCallManager
                 andTestingAndLegacyOptions:(NSArray*)testingAndLegacyOptions
-                           andZrtpClientId:(NSData*)zrtpClientId
-                          andZrtpVersionId:(NSData*)zrtpVersionId
+                           andZRTPClientId:(NSData*)zrtpClientId
+                          andZRTPVersionId:(NSData*)zrtpVersionId
                         andContactsManager:(ContactsManager *)contactsManager
                   andPhoneDirectoryManager:(PhoneNumberDirectoryFilterManager*)phoneDirectoryManager {
     
@@ -109,9 +109,9 @@ phoneDirectoryManager;
     e->logging = logging;
     e->testingAndLegacyOptions = testingAndLegacyOptions;
     e->serverPort = serverPort;
-    e->masterServerSecureEndPoint = [SecureEndPoint secureEndPointForHost:[HostNameEndPoint hostNameEndPointWithHostName:masterServerHostName
-                                                                                                                 andPort:serverPort]
-                                                  identifiedByCertificate:certificate];
+    e->masterServerSecureEndPoint = [[SecureEndPoint alloc] initWithHost:[[HostNameEndPoint alloc] initWithHostName:masterServerHostName
+                                                                                                            andPort:serverPort]
+                                                 identifiedByCertificate:certificate];
     e->phoneDirectoryManager = phoneDirectoryManager;
     e->defaultRelayName = defaultRelayName;
     e->certificate = certificate;

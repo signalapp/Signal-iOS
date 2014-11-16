@@ -4,7 +4,7 @@
 #import "NotificationManifest.h"
 #import "PreferencesUtil.h"
 #import "RPServerRequestsManager.h"
-#import "HttpRequest+SignalUtil.h"
+#import "HTTPRequest+SignalUtil.h"
 #import "ThreadManager.h"
 #import "Util.h"
 

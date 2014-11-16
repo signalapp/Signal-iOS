@@ -4,7 +4,7 @@
 
 @interface ObservableValue ()
 
-@property (readwrite, atomic) id currentValue;
+@property (strong, readwrite, atomic) id currentValue;
 
 @property (strong, nonatomic) Queue* queuedActionsToRun;
 @property (nonatomic) bool isRunningActions;

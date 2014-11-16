@@ -2,26 +2,26 @@
 #import "TestUtil.h"
 #import "Util.h"
 
-@interface RtpPacketTests : XCTestCase
+@interface RTPPacketTests : XCTestCase
 
 @end
 
-@implementation RtpPacketTests
+@implementation RTPPacketTests
 
 - (void)setUp{
     [Environment setCurrent:[Release unitTestEnvironment:@[]]];
 }
 
 -(void) testRawDataSimple {
-    RtpPacket* r = [RtpPacket rtpPacketWithVersion:2
-                                        andPadding:0
-                  andContributingSourceIdentifiers:@[]
-                andSynchronizationSourceIdentifier:0
-                                      andMarkerBit:false
-                                    andPayloadtype:0
-                                 andSequenceNumber:5
-                                      andTimeStamp:0
-                                        andPayload:increasingData(5)];
+    RTPPacket* r = [[RTPPacket alloc] initWithVersion:2
+                                           andPadding:0
+                     andContributingSourceIdentifiers:@[]
+                   andSynchronizationSourceIdentifier:0
+                                         andMarkerBit:false
+                                       andPayloadtype:0
+                                    andSequenceNumber:5
+                                         andTimeStamp:0
+                                           andPayload:increasingData(5)];
     
     // values were retained
     test([r version] == 2);
@@ -36,7 +36,7 @@
     test([[r payload] isEqualToData:increasingData(5)]);
 
     // equivalent to simplified constructor
-    test([r isEqualToRtpPacket:[RtpPacket rtpPacketWithDefaultsAndSequenceNumber:5 andPayload:increasingData(5)]]);
+    test([r isEqualToRTPPacket:[[RTPPacket alloc] initWithDefaultsAndSequenceNumber:5 andPayload:increasingData(5)]]);
 
     // packed correctly
     NSData* expectedData = [@[
@@ -47,19 +47,19 @@
     test([[r rawPacketDataUsingInteropOptions:@[]] isEqualToData:expectedData]);
 
     // reparsing packed data gives same packet
-    test([r isEqualToRtpPacket:[RtpPacket rtpPacketParsedFromPacketData:expectedData]]);
-    test(![r isEqualToRtpPacket:[RtpPacket rtpPacketWithDefaultsAndSequenceNumber:0 andPayload:[NSData data]]]);
+    test([r isEqualToRTPPacket:[[RTPPacket alloc] initFromPacketData:expectedData]]);
+    test(![r isEqualToRTPPacket:[[RTPPacket alloc] initWithDefaultsAndSequenceNumber:0 andPayload:[NSData data]]]);
 }
 -(void) testRawData {
-    RtpPacket* r = [RtpPacket rtpPacketWithVersion:2
-                                        andPadding:3
-                  andContributingSourceIdentifiers:@[@101, @102]
-                andSynchronizationSourceIdentifier:0x45645645
-                                      andMarkerBit:true
-                                    andPayloadtype:0x77
-                                 andSequenceNumber:0x2122
-                                      andTimeStamp:0xABCDEFAB
-                                        andPayload:increasingData(6)];
+    RTPPacket* r = [[RTPPacket alloc] initWithVersion:2
+                                           andPadding:3
+                     andContributingSourceIdentifiers:@[@101, @102]
+                   andSynchronizationSourceIdentifier:0x45645645
+                                         andMarkerBit:true
+                                       andPayloadtype:0x77
+                                    andSequenceNumber:0x2122
+                                         andTimeStamp:0xABCDEFAB
+                                           andPayload:increasingData(6)];
 
     // values were retained
     test([r version] == 2);
@@ -83,21 +83,21 @@
                             @0,@0,@3] toUint8Data];
     
     test([[r rawPacketDataUsingInteropOptions:@[]] isEqualToData:expectedData]);
-    test([r isEqualToRtpPacket:[RtpPacket rtpPacketParsedFromPacketData:expectedData]]);
-    test(![r isEqualToRtpPacket:[RtpPacket rtpPacketWithDefaultsAndSequenceNumber:90 andPayload:[NSData data]]]);
+    test([r isEqualToRTPPacket:[[RTPPacket alloc] initFromPacketData:expectedData]]);
+    test(![r isEqualToRTPPacket:[[RTPPacket alloc] initWithDefaultsAndSequenceNumber:90 andPayload:[NSData data]]]);
 }
 -(void) testExtendedData {
-    RtpPacket* r = [RtpPacket rtpPacketWithVersion:2
-                                        andPadding:0
-                  andContributingSourceIdentifiers:@[]
-                andSynchronizationSourceIdentifier:0
-                            andExtensionIdentifier:0xFEAB
-                                  andExtensionData:increasingDataFrom(10, 5)
-                                      andMarkerBit:false
-                                    andPayloadtype:0
-                                 andSequenceNumber:5
-                                      andTimeStamp:0
-                                        andPayload:increasingData(5)];
+    RTPPacket* r = [[RTPPacket alloc] initWithVersion:2
+                                           andPadding:0
+                     andContributingSourceIdentifiers:@[]
+                   andSynchronizationSourceIdentifier:0
+                               andExtensionIdentifier:0xFEAB
+                                     andExtensionData:increasingDataFrom(10, 5)
+                                         andMarkerBit:false
+                                       andPayloadtype:0
+                                    andSequenceNumber:5
+                                         andTimeStamp:0
+                                           andPayload:increasingData(5)];
 
     // values were retained
     test([r version] == 2);
@@ -122,8 +122,8 @@
                             @10,@11,@12,@13,@14,
                             @0,@1,@2,@3,@4] toUint8Data];
     test([[r rawPacketDataUsingInteropOptions:@[]] isEqualToData:expectedData]);
-    test([r isEqualToRtpPacket:[RtpPacket rtpPacketParsedFromPacketData:expectedData]]);
-    test(![r isEqualToRtpPacket:[RtpPacket rtpPacketWithDefaultsAndSequenceNumber:0 andPayload:[NSData data]]]);
+    test([r isEqualToRTPPacket:[[RTPPacket alloc] initFromPacketData:expectedData]]);
+    test(![r isEqualToRTPPacket:[[RTPPacket alloc] initWithDefaultsAndSequenceNumber:0 andPayload:[NSData data]]]);
 }
 
 @end

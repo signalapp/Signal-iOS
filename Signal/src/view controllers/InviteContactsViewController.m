@@ -8,7 +8,7 @@
 #import "NSArray+FunctionalUtil.h"
 #import "LocalizableText.h"
 #import "ObservableValue.h"
-#import "SmsInvite.h"
+#import "SMSInvite.h"
 #import "TabBarParentViewController.h"
 #import "UnseenWhisperUserCell.h"
 
@@ -28,7 +28,7 @@ static NSString *const INVITE_CONTACTS_TABLE_CELL_IDENTIFIER = @"ContactTableVie
     
     BOOL _isSearching;
     NSString *_currentSearchTerm;
-    SmsInvite* smsInvite;
+    SMSInvite* smsInvite;
 }
 
 @end
@@ -212,7 +212,7 @@ static NSString *const INVITE_CONTACTS_TABLE_CELL_IDENTIFIER = @"ContactTableVie
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (buttonIndex != actionSheet.cancelButtonIndex) {
-        smsInvite = [[SmsInvite alloc] initWithParent:self];
+        smsInvite = [[SMSInvite alloc] initWithParent:self];
         [smsInvite sendSMSInviteToNumber:_selectedContactNumbers[(NSUInteger)buttonIndex]];
     }
 }

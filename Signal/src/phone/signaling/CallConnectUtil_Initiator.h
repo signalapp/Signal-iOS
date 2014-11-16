@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "CallController.h"
-#import "HttpManager.h"
+#import "HTTPManager.h"
 #import "InitiatorSessionDescriptor.h"
 
 /**

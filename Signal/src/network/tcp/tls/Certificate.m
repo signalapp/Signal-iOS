@@ -2,13 +2,23 @@
 #import "Util.h"
 
 @interface Certificate ()
-@property SecCertificateRef secCertificateRef;
+
+@property (nonatomic) SecCertificateRef secCertificateRef;
+
 @end
 
 @implementation Certificate
 
-+(Certificate*) certificateFromTrust:(SecTrustRef)trust
-                             atIndex:(CFIndex)index {
+- (instancetype)initWithCertificate:(SecCertificateRef)cert {
+    if (self = [super init]) {
+        self.secCertificateRef = cert;
+    }
+    
+    return self;
+}
+
+- (instancetype)initFromTrust:(SecTrustRef)trust
+                      atIndex:(CFIndex)index {
     require(trust != nil);
     require(index >= 0);
     
@@ -16,33 +26,29 @@
     checkOperation(cert != nil);
     CFRetain(cert);
     
-    Certificate* instance = [Certificate new];
-    instance.secCertificateRef = cert;
-    return instance;
+    return [self initWithCertificate:cert];
 }
 
-+(Certificate*) certificateFromResourcePath:(NSString*)resourcePath
-                                     ofType:(NSString*)resourceType {
+- (instancetype)initFromResourcePath:(NSString*)resourcePath
+                              ofType:(NSString*)resourceType {
     require(resourcePath != nil);
     require(resourceType != nil);
     
-    NSString *certPath = [NSBundle.mainBundle pathForResource:resourcePath ofType:resourceType];
-    NSData *certData = [[NSData alloc] initWithContentsOfFile:certPath];
+    NSString* certPath = [[NSBundle mainBundle] pathForResource:resourcePath ofType:resourceType];
+    NSData* certData = [[NSData alloc] initWithContentsOfFile:certPath];
     checkOperation(certData != nil);
-
+    
     SecCertificateRef cert = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certData);
     checkOperation(cert != nil);
     
-    Certificate* instance = [Certificate new];
-    instance.secCertificateRef = cert;
-    return instance;
+    return [self initWithCertificate:cert];
 }
 
--(void) dealloc {
+- (void)dealloc {
     CFRelease(self.secCertificateRef);
 }
 
--(void) setAsAnchorForTrust:(SecTrustRef)trust {
+- (void)setAsAnchorForTrust:(SecTrustRef)trust {
     require(trust != nil);
     
     CFMutableArrayRef anchorCerts = CFArrayCreateMutable(NULL, 1, &kCFTypeArrayCallBacks);
@@ -57,7 +63,7 @@
                              (int)setAnchorResult]));
 }
 
--(NSString *)description {
+- (NSString*)description {
     return (__bridge_transfer NSString*)SecCertificateCopySubjectSummary(self.secCertificateRef);
 }
 

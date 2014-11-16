@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-typedef enum {
+typedef NS_ENUM(NSInteger, CallProgressType) {
     /// Connecting covers:
     /// - The initiator is establishing connection (over tls/tcp) to the default signaling server
     /// - The initiator is requesting (using an http request) a call session to the to-be responder
@@ -32,7 +32,7 @@ typedef enum {
     /// - Any of the call setup failed for whatever reason
     /// - Either of the users decided to hang up
     CallProgressTypeTerminated
-} CallProgressType;
+};
 
 /**
  *

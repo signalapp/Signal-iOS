@@ -10,10 +10,10 @@
  **/
 @interface CallConnectUtil_Server : NSObject
 
-/// Result has type Future(HttpManager)
+/// Result has type Future(HTTPManager)
 + (TOCFuture*)asyncConnectToDefaultSignalingServerUntilCancelled:(TOCCancelToken*)untilCancelledToken;
 
-/// Result has type Future(HttpManager)
+/// Result has type Future(HTTPManager)
 + (TOCFuture*)asyncConnectToSignalingServerNamed:(NSString*)name
                                   untilCancelled:(TOCCancelToken*)untilCancelledToken;
 

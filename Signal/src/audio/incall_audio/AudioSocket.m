@@ -1,10 +1,10 @@
 #import "AudioSocket.h"
 #import "Constraints.h"
-#import "RtpPacket.h"
+#import "RTPPacket.h"
 
 @implementation AudioSocket
 
-+(AudioSocket*) audioSocketOver:(SrtpSocket*)srtpSocket {
++(AudioSocket*) audioSocketOver:(SRTPSocket*)srtpSocket {
     require(srtpSocket != nil);
     AudioSocket* p = [AudioSocket new];
     p->srtpSocket = srtpSocket;
@@ -16,23 +16,23 @@
     requireState(!started);
     started = true;
     
-    PacketHandlerBlock valueHandler = ^(RtpPacket* rtpPacket) {
+    PacketHandlerBlock valueHandler = ^(RTPPacket* rtpPacket) {
         require(rtpPacket != nil);
-        require([rtpPacket isKindOfClass:[RtpPacket class]]);
+        require([rtpPacket isKindOfClass:[RTPPacket class]]);
         [handler handlePacket:[EncodedAudioPacket encodedAudioPacketWithAudioData:[rtpPacket payload]
                                                                 andSequenceNumber:[rtpPacket sequenceNumber]]];
     };
     
-    [srtpSocket startWithHandler:[PacketHandler packetHandler:valueHandler
-                                             withErrorHandler:[handler errorHandler]]
+    [srtpSocket startWithHandler:[[PacketHandler alloc] initPacketHandler:valueHandler
+                                                         withErrorHandler:[handler errorHandler]]
                   untilCancelled:untilCancelledToken];
 }
 -(void) send:(EncodedAudioPacket*)audioPacket {
     require(audioPacket != nil);
     
-    RtpPacket* rtpPacket = [RtpPacket rtpPacketWithDefaultsAndSequenceNumber:[audioPacket sequenceNumber]
-                                                                  andPayload:[audioPacket audioData]];
-    [srtpSocket secureAndSendRtpPacket:rtpPacket];
+    RTPPacket* rtpPacket = [[RTPPacket alloc] initWithDefaultsAndSequenceNumber:[audioPacket sequenceNumber]
+                                                                     andPayload:[audioPacket audioData]];
+    [srtpSocket secureAndSendRTPPacket:rtpPacket];
 }
 
 @end

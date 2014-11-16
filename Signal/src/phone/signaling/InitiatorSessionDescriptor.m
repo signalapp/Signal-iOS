@@ -8,7 +8,7 @@
 
 @interface InitiatorSessionDescriptor ()
 
-@property (nonatomic, readwrite) in_port_t relayUdpPort;
+@property (nonatomic, readwrite) in_port_t relayUDPSocketPort;
 @property (nonatomic, readwrite) int64_t sessionId;
 @property (nonatomic, readwrite) NSString* relayServerName;
 
@@ -18,14 +18,14 @@
 
 - (instancetype)initWithSessionId:(int64_t)sessionId
                andRelayServerName:(NSString*)relayServerName
-                     andRelayPort:(in_port_t)relayUdpPort {
+                     andRelayPort:(in_port_t)relayUDPSocketPort {
     if (self = [super init]) {
         require(relayServerName != nil);
-        require(relayUdpPort > 0);
+        require(relayUDPSocketPort > 0);
         
         self.sessionId = sessionId;
         self.relayServerName = relayServerName;
-        self.relayUdpPort = relayUdpPort;
+        self.relayUDPSocketPort = relayUDPSocketPort;
     }
     
     return self;
@@ -44,14 +44,14 @@
     checkOperationDescribe([jsonRelayPort unsignedShortValue] > 0, @"Unexpected json data");
     
     int64_t sessionId = [[jsonSessionId description] longLongValue]; // workaround: asking for longLongValue directly causes rounding-through-double
-    in_port_t relayUdpPort = [jsonRelayPort unsignedShortValue];
+    in_port_t relayUDPSocketPort = [jsonRelayPort unsignedShortValue];
 
-    return [self initWithSessionId:sessionId andRelayServerName:jsonRelayName andRelayPort:relayUdpPort];
+    return [self initWithSessionId:sessionId andRelayServerName:jsonRelayName andRelayPort:relayUDPSocketPort];
 }
 
 - (NSString*)toJSON {
     return [@{SessionIdKey : @(self.sessionId),
-            RelayPortKey : @(self.relayUdpPort),
+            RelayPortKey : @(self.relayUDPSocketPort),
             RelayHostKey : self.relayServerName
             } encodedAsJSON];
 }
@@ -59,7 +59,7 @@
 - (NSString*)description {
     return [NSString stringWithFormat:@"relay name: %@, relay port: %d, session id: %llud",
             self.relayServerName,
-            self.relayUdpPort,
+            self.relayUDPSocketPort,
             self.sessionId];
 }
 

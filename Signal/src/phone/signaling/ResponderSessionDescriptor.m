@@ -23,7 +23,7 @@
 @interface ResponderSessionDescriptor ()
 
 @property (nonatomic, readwrite) int32_t interopVersion;
-@property (nonatomic, readwrite) in_port_t relayUdpPort;
+@property (nonatomic, readwrite) in_port_t relayUDPSocketPort;
 @property (nonatomic, readwrite) int64_t sessionId;
 @property (nonatomic, readwrite) NSString* relayServerName;
 @property (nonatomic, readwrite) PhoneNumber* initiatorNumber;
@@ -33,17 +33,17 @@
 @implementation ResponderSessionDescriptor
 
 - (instancetype)initWithInteropVersion:(int32_t)interopVersion
-                       andRelayUdpPort:(in_port_t)relayUdpPort
+                       andRelayUDPSocketPort:(in_port_t)relayUDPSocketPort
                           andSessionId:(int64_t)sessionId
                     andRelayServerName:(NSString*)relayServerName
                     andInitiatorNumber:(PhoneNumber*)initiatorNumber {
     if (self = [super init]) {
-        require(relayUdpPort > 0);
+        require(relayUDPSocketPort > 0);
         require(relayServerName != nil);
         require(initiatorNumber != nil);
         
         self.interopVersion  = interopVersion;
-        self.relayUdpPort    = relayUdpPort;
+        self.relayUDPSocketPort    = relayUDPSocketPort;
         self.sessionId       = sessionId;
         self.relayServerName = relayServerName;
         self.initiatorNumber = initiatorNumber;
@@ -79,12 +79,12 @@
     
     int32_t interopVersion = parsedPayload.version;
     int64_t sessionId = parsedPayload.sessionId;
-    in_port_t relayUdpPort = (in_port_t)parsedPayload.port;
+    in_port_t relayUDPSocketPort = (in_port_t)parsedPayload.port;
     NSString* relayServerName = parsedPayload.serverName;
     PhoneNumber* phoneNumber = [[PhoneNumber alloc] initFromE164:parsedPayload.initiator];
     
     return [self initWithInteropVersion:interopVersion
-                        andRelayUdpPort:relayUdpPort
+                        andRelayUDPSocketPort:relayUDPSocketPort
                            andSessionId:sessionId
                      andRelayServerName:relayServerName
                      andInitiatorNumber:phoneNumber];
@@ -115,7 +115,7 @@
 - (NSString*)description {
     return [NSString stringWithFormat:@"relay name: %@, relay port: %d, session id: %llud, interop version: %d",
             self.relayServerName,
-            self.relayUdpPort,
+            self.relayUDPSocketPort,
             self.sessionId,
             self.interopVersion];
 }

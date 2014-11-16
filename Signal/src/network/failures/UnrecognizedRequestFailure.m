@@ -1,14 +1,22 @@
 #import "UnrecognizedRequestFailure.h"
 
+@interface UnrecognizedRequestFailure ()
+
+@property (strong, nonatomic) NSString* reason;
+
+@end
+
 @implementation UnrecognizedRequestFailure
 
-+(UnrecognizedRequestFailure*) new:(NSString*)reason {
-    UnrecognizedRequestFailure* instance = [UnrecognizedRequestFailure new];
-    instance->reason = reason;
-    return instance;
+- (instancetype)initWithReason:(NSString*)reason {
+    if (self = [super init]) {
+        self.reason = reason;
+    }
+    
+    return self;
 }
 
--(NSString *)description {
-    return [NSString stringWithFormat:@"Unrecognized request: %@", reason];
+- (NSString*)description {
+    return [NSString stringWithFormat:@"Unrecognized request: %@", self.reason];
 }
 @end

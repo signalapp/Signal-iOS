@@ -1,29 +1,35 @@
 #import "EC25KeyAgreementParticipant.h"
-#import "EvpKeyAgreement.h"
+#import "EVPKeyAgreement.h"
 #import "Constraints.h"
+
+@interface EC25KeyAgreementParticipant ()
+
+@property (strong, nonatomic) EVPKeyAgreement* evpKeyAgreement;
+@property (strong, nonatomic) EC25KeyAgreementProtocol* protocol;
+
+@end
 
 @implementation EC25KeyAgreementParticipant
 
-+(EC25KeyAgreementParticipant*) participantWithPrivateKeyGeneratedForProtocol:(EC25KeyAgreementProtocol*)protocol{
-    return  [[EC25KeyAgreementParticipant alloc] initWithProtocol:protocol];
+- (instancetype)initWithPrivateKeyGeneratedForProtocol:(EC25KeyAgreementProtocol*)protocol {
+    if (self = [super init]) {
+        self.protocol = protocol;
+        self.evpKeyAgreement = [EVPKeyAgreement evpEC25KeyAgreement];
+        [self.evpKeyAgreement generateKeyPair];
+    }
+    
+    return self;
 }
 
--(EC25KeyAgreementParticipant*) initWithProtocol:(EC25KeyAgreementProtocol*) proto {
-    protocol = proto;
-    evpKeyAgreement = [EvpKeyAgreement evpEc25KeyAgreement];
-    [evpKeyAgreement generateKeyPair];
-    return  self;
+- (id<KeyAgreementProtocol>)getProtocol {
+    return self.protocol;
 }
 
--(id<KeyAgreementProtocol>) getProtocol{
-    return protocol;
+- (NSData*)getPublicKeyData {
+    return  self.evpKeyAgreement.getPublicKey;
 }
 
--(NSData*) getPublicKeyData{
-    return  evpKeyAgreement.getPublicKey;
-}
-
--(NSData*) calculateKeyAgreementAgainstRemotePublicKey:(NSData*)remotePublicKey{
-    return [evpKeyAgreement getSharedSecretForRemotePublicKey:remotePublicKey];
+- (NSData*)calculateKeyAgreementAgainstRemotePublicKey:(NSData*)remotePublicKey {
+    return [self.evpKeyAgreement getSharedSecretForRemotePublicKey:remotePublicKey];
 }
 @end

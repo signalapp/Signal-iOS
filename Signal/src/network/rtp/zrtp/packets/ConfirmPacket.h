@@ -40,39 +40,30 @@
  *
 **/
 
-@interface ConfirmPacket : NSObject {
-@private HandshakePacket* embedding;
-}
-@property (readonly,atomic) NSData* confirmMac;
-@property (readonly,atomic) NSData* iv;
-@property (readonly,atomic) NSData* hashChainH0;
-@property (readonly,atomic) uint32_t unusedAndSignatureLengthAndFlags; // Unused (15 bits of zeros)   | sig len (9 bits)|0 0 0 0|E|V|A|D
-@property (readonly,atomic) uint32_t cacheExperationInterval;
-@property (readonly,atomic) bool isPart1;
+@interface ConfirmPacket : NSObject
 
-+(ConfirmPacket*) confirm1PacketWithHashChain:(HashChain*)hashChain
+@property (strong, readonly, atomic) NSData* confirmMac;
+@property (strong, readonly, atomic) NSData* iv;
+@property (strong, readonly, atomic) NSData* hashChainH0;
+@property (readonly, atomic) uint32_t unusedAndSignatureLengthAndFlags; // Unused (15 bits of zeros)   | sig len (9 bits)|0 0 0 0|E|V|A|D
+@property (readonly, atomic) uint32_t cacheExperationInterval;
+@property (readonly, atomic) bool isPart1;
+
+@property (strong, readonly, nonatomic, getter=embeddedIntoHandshakePacket) HandshakePacket* embedding;
+
++ (ConfirmPacket*)confirm1PacketWithHashChain:(HashChain*)hashChain
                                     andMacKey:(NSData*)macKey
                                  andCipherKey:(NSData*)cipherKey
-                                        andIv:(NSData*)iv;
+                                        andIV:(NSData*)iv;
 
-+(ConfirmPacket*) confirm2PacketWithHashChain:(HashChain*)hashChain
++ (ConfirmPacket*)confirm2PacketWithHashChain:(HashChain*)hashChain
                                     andMacKey:(NSData*)macKey
                                  andCipherKey:(NSData*)cipherKey
-                                        andIv:(NSData*)iv;
+                                        andIV:(NSData*)iv;
 
-+(ConfirmPacket*) confirmPacketWithHashChainH0:(NSData*)hashChainH0
-           andUnusedAndSignatureLengthAndFlags:(uint32_t)unused
-                    andCacheExpirationInterval:(uint32_t)cacheExpirationInterval
-                                     andMacKey:(NSData*)macKey
-                                  andCipherKey:(NSData*)cipherKey
-                                         andIv:(NSData*)iv
-                                    andIsPart1:(bool)isPart1;
-
-+(ConfirmPacket*) confirmPacketParsedFromHandshakePacket:(HandshakePacket*)handshakePacket
++ (ConfirmPacket*)confirmPacketParsedFromHandshakePacket:(HandshakePacket*)handshakePacket
                                               withMacKey:(NSData*)macKey
                                             andCipherKey:(NSData*)cipherKey
                                               andIsPart1:(bool)isPart1;
-
--(HandshakePacket*) embeddedIntoHandshakePacket;
 
 @end

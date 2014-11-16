@@ -1,7 +1,7 @@
 #import <XCTest/XCTest.h>
 #import "SecureEndPoint.h"
 #import "TestUtil.h"
-#import "IpEndPoint.h"
+#import "IPEndPoint.h"
 
 @interface SecureEndPointTest : XCTestCase
 
@@ -10,8 +10,8 @@
 @implementation SecureEndPointTest
 
 -(void) testCert {
-    Certificate* r = [Certificate certificateFromResourcePath:@"whisperReal"
-                                                       ofType:@"cer"];
+    Certificate* r = [[Certificate alloc] initFromResourcePath:@"whisperReal"
+                                                        ofType:@"cer"];
     test(r != nil);
 }
 

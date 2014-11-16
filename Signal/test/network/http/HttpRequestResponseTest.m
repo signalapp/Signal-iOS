@@ -1,18 +1,18 @@
 #import <XCTest/XCTest.h>
 #import "TestUtil.h"
 #import "Util.h"
-#import "HttpSocket.h"
-#import "HttpRequestUtil.h"
+#import "HTTPSocket.h"
+#import "HTTPRequest+Util.h"
 #import "PreferencesUtil.h"
-#import "HttpRequest+SignalUtil.h"
+#import "HTTPRequest+SignalUtil.h"
 #import "SGNKeychainUtil.h"
 #import <UICKeyChainStore/UICKeyChainStore.h>
 
-@interface HttpRequestResponseTest : XCTestCase
+@interface HTTPRequestResponseTest : XCTestCase
 
 @end
 
-@implementation HttpRequestResponseTest
+@implementation HTTPRequestResponseTest
 
 // todo: write production tests for signaling
 
@@ -21,116 +21,116 @@
 //    [SGNKeychainUtil setLocalNumberTo:[[PhoneNumber alloc] initFromE164:@"+12211231235"]];
 //    [UICKeyChainStore setString:@"shall_not_password" forKey:@"Password"];
 //    [Environment.preferences setValueForKey:@"PasswordCounter" toValue:@2357];
-//    HttpRequest* h = [HttpRequest httpRequestToInitiateToRemoteNumber:[[PhoneNumber alloc] initFromE164:@"+19023334444"]];
+//    HTTPRequest* h = [HTTPRequest httpRequestToInitiateToRemoteNumber:[[PhoneNumber alloc] initFromE164:@"+19023334444"]];
 //    test([[h method] isEqualToString:@"GET"]);
 //    test([[h location] isEqualToString:@"/session/1/+19023334444"]);
-//    NSLog(@"HTTP rep: %@", h.toHttp);
-//    test([h.toHttp isEqualToString:@"GET /session/1/+19023334444 HTTP/1.0\r\nAuthorization: OTP KzE5MDI3Nzc4ODg4OmluQ3lLcE1ZaFRQS0ZwN3BITlN3bUxVMVpCTT06MjM1Nw==\r\n\r\n"]);
-//    test([h isEqualToHttpRequest:[HttpRequest httpRequestFromData:[h serialize]]]);
+//    NSLog(@"HTTP rep: %@", h.toHTTP);
+//    test([h.toHTTP isEqualToString:@"GET /session/1/+19023334444 HTTP/1.0\r\nAuthorization: OTP KzE5MDI3Nzc4ODg4OmluQ3lLcE1ZaFRQS0ZwN3BITlN3bUxVMVpCTT06MjM1Nw==\r\n\r\n"]);
+//    test([h isEqualToHTTPRequest:[[HTTPRequest alloc] initFromData:[h serialize]]]);
 //}
 -(void) testRequestToOpenPort {
-    HttpRequest* h = [HttpRequest httpRequestToOpenPortWithSessionId:2357];
+    HTTPRequest* h = [HTTPRequest httpRequestToOpenPortWithSessionId:2357];
     test([[h method] isEqualToString:@"GET"]);
     test([[h location] isEqualToString:@"/open/2357"]);
-    test([h.toHttp isEqualToString:@"GET /open/2357 HTTP/1.0\r\n\r\n"]);
-    test([h isEqualToHttpRequest:[HttpRequest httpRequestFromData:[h serialize]]]);
+    test([h.toHTTP isEqualToString:@"GET /open/2357 HTTP/1.0\r\n\r\n"]);
+    test([h isEqualToHTTPRequest:[[HTTPRequest alloc] initFromData:[h serialize]]]);
 }
 //-(void) testRequestToRing {
 //    [Environment setCurrent:testEnv];
 //    [SGNKeychainUtil setLocalNumberTo:[[PhoneNumber alloc] initFromE164:@"+19025555555"]];
 //    [UICKeyChainStore setString:@"shall_not_password" forKey:@"Password"];
 //    [UICKeyChainStore setString:[@0 stringValue] forKey:@"PasswordCounter"];
-//    HttpRequest* h = [HttpRequest httpRequestToRingWithSessionId:458847238];
+//    HTTPRequest* h = [HTTPRequest httpRequestToRingWithSessionId:458847238];
 //    test([[h method] isEqualToString:@"RING"]);
 //    test([[h location] isEqualToString:@"/session/458847238"]);
-//    test([h.toHttp isEqualToString:@"RING /session/458847238 HTTP/1.0\r\nAuthorization: OTP KzE5MDI1NTU1NTU1OnpOV1owY3k3S3A5S3NNd0RXbnlHZFBNR2ZzTT06MA==\r\n\r\n"]);
-//    test([h isEqualToHttpRequest:[HttpRequest httpRequestFromData:[h serialize]]]);
+//    test([h.toHTTP isEqualToString:@"RING /session/458847238 HTTP/1.0\r\nAuthorization: OTP KzE5MDI1NTU1NTU1OnpOV1owY3k3S3A5S3NNd0RXbnlHZFBNR2ZzTT06MA==\r\n\r\n"]);
+//    test([h isEqualToHTTPRequest:[[HTTPRequest alloc] initFromData:[h serialize]]]);
 //}
 -(void) testRequestFromData {
-    HttpRequest* h0 = [HttpRequest httpRequestFromData:[@"GET /index.html HTTP/1.0\r\nContent-Length: 0\r\n\r\n" encodedAsUtf8]];
+    HTTPRequest* h0 = [[HTTPRequest alloc] initFromData:[@"GET /index.html HTTP/1.0\r\nContent-Length: 0\r\n\r\n" encodedAsUtf8]];
     test([[h0 method] isEqualToString:@"GET"]);
     test([[h0 location] isEqualToString:@"/index.html"]);
     test([[h0 headers] count] == 1);
     test([[h0 headers][@"Content-Length"] isEqualToString:@"0"]);
     test([[h0 optionalBody] isEqualToString:@""]);
 
-    HttpRequest* h1 = [HttpRequest httpRequestFromData:[@"GET /index.html HTTP/1.0\r\nContent-Length: 10\r\n\r\nabcdefghij" encodedAsUtf8]];
+    HTTPRequest* h1 = [[HTTPRequest alloc] initFromData:[@"GET /index.html HTTP/1.0\r\nContent-Length: 10\r\n\r\nabcdefghij" encodedAsUtf8]];
     test([[h1 method] isEqualToString:@"GET"]);
     test([[h1 location] isEqualToString:@"/index.html"]);
     test([[h1 headers] count] == 1);
     test([[h1 headers][@"Content-Length"] isEqualToString:@"10"]);
     test([[h1 optionalBody] isEqualToString:@"abcdefghij"]);
     
-    HttpRequest* h = [HttpRequest httpRequestFromData:@"GET /index.html HTTP/1.0\r\n\r\n".encodedAsUtf8];
+    HTTPRequest* h = [[HTTPRequest alloc] initFromData:@"GET /index.html HTTP/1.0\r\n\r\n".encodedAsUtf8];
     test([[h method] isEqualToString:@"GET"]);
     test([[h location] isEqualToString:@"/index.html"]);
     test([[h headers] count] == 0);
     test([h optionalBody] == nil);
     
-    testThrows([HttpRequest httpRequestFromData:@"GET /index.html HTTP/1.0\r\n".encodedAsUtf8]);
-    testThrows([HttpRequest httpRequestFromData:[@"GET /index.html HTTP/1.0\r\nContent-Length: 10\r\n\r\n" encodedAsUtf8]]);
-    testThrows([HttpRequest httpRequestFromData:@"GET /index.html\r\n\r\n".encodedAsUtf8]);
+    testThrows([[HTTPRequest alloc] initFromData:@"GET /index.html HTTP/1.0\r\n".encodedAsUtf8]);
+    testThrows([[HTTPRequest alloc] initFromData:[@"GET /index.html HTTP/1.0\r\nContent-Length: 10\r\n\r\n" encodedAsUtf8]]);
+    testThrows([[HTTPRequest alloc] initFromData:@"GET /index.html\r\n\r\n".encodedAsUtf8]);
 }
 -(void) testResponseOk {
-    HttpResponse* h = [HttpResponse httpResponse200Ok];
+    HTTPResponse* h = [HTTPResponse httpResponse200Ok];
     test(h.getStatusCode == 200);
     test(h.getOptionalBodyText == nil);
     test([h.getHeaders count] == 0);
 }
 -(void) testResponseFromData {
-    HttpResponse* h = [HttpResponse httpResponseFromData:@"HTTP/1.1 200 OK\r\n\r\n".encodedAsUtf8];
+    HTTPResponse* h = [HTTPResponse httpResponseFromData:@"HTTP/1.1 200 OK\r\n\r\n".encodedAsUtf8];
     test(h.isOkResponse);
     test(h.getStatusCode == 200);
     test([h.getStatusText isEqualToString: @"OK"]);
     test(h.getOptionalBodyText == nil);
     test([h.getHeaders count] == 0);
     
-    HttpResponse* h2 = [HttpResponse httpResponseFromData:@"HTTP/1.1 404 Not Found\r\n\r\n".encodedAsUtf8];
+    HTTPResponse* h2 = [HTTPResponse httpResponseFromData:@"HTTP/1.1 404 Not Found\r\n\r\n".encodedAsUtf8];
     test(!h2.isOkResponse);
     test(h2.getStatusCode == 404);
     test([h2.getStatusText isEqualToString:@"Not Found"]);
     test(h2.getOptionalBodyText == nil);
     test([h2.getHeaders count] == 0);
 
-    testThrows([HttpResponse httpResponseFromData:@"HTTP/1.1 200 OK\r\n".encodedAsUtf8]);
-    testThrows([HttpResponse httpResponseFromData:@"HTTP/1.1 200\r\n\r\n".encodedAsUtf8]);
+    testThrows([HTTPResponse httpResponseFromData:@"HTTP/1.1 200 OK\r\n".encodedAsUtf8]);
+    testThrows([HTTPResponse httpResponseFromData:@"HTTP/1.1 200\r\n\r\n".encodedAsUtf8]);
 }
 -(void) testTryFromPartialData {
     NSUInteger len;
-    HttpRequestOrResponse* h;
-    h = [HttpRequestOrResponse tryExtractFromPartialData:@"HTTP/1.1 200".encodedAsUtf8 usedLengthOut:&len];
+    HTTPRequestOrResponse* h;
+    h = [HTTPRequestOrResponse tryExtractFromPartialData:@"HTTP/1.1 200".encodedAsUtf8 usedLengthOut:&len];
     test(h == nil);
-    h = [HttpRequestOrResponse tryExtractFromPartialData:@"HTTP/1.1 200 OK".encodedAsUtf8 usedLengthOut:&len];
+    h = [HTTPRequestOrResponse tryExtractFromPartialData:@"HTTP/1.1 200 OK".encodedAsUtf8 usedLengthOut:&len];
     test(h == nil);
-    h = [HttpRequestOrResponse tryExtractFromPartialData:@"HTTP/1.1 200 OK\r\n".encodedAsUtf8 usedLengthOut:&len];
+    h = [HTTPRequestOrResponse tryExtractFromPartialData:@"HTTP/1.1 200 OK\r\n".encodedAsUtf8 usedLengthOut:&len];
     test(h == nil);
 
-    h = [HttpRequestOrResponse tryExtractFromPartialData:@"HTTP/1.1 200 OK\r\n\r\n".encodedAsUtf8 usedLengthOut:&len];
+    h = [HTTPRequestOrResponse tryExtractFromPartialData:@"HTTP/1.1 200 OK\r\n\r\n".encodedAsUtf8 usedLengthOut:&len];
     test(h.isResponse);
     test([[h response] isOkResponse]);
     test(len == 19);
     
-    h = [HttpRequestOrResponse tryExtractFromPartialData:[@"HTTP/1.1 200 OK\r\n\r\n*&DY*SWA(TD&(BTNGNSADN" encodedAsUtf8] usedLengthOut:&len];
+    h = [HTTPRequestOrResponse tryExtractFromPartialData:[@"HTTP/1.1 200 OK\r\n\r\n*&DY*SWA(TD&(BTNGNSADN" encodedAsUtf8] usedLengthOut:&len];
     test(h.isResponse);
     test([[h response] isOkResponse]);
     test(len == 19);
 
-    h = [HttpRequestOrResponse tryExtractFromPartialData:@"GET /index.html".encodedAsUtf8 usedLengthOut:&len];
+    h = [HTTPRequestOrResponse tryExtractFromPartialData:@"GET /index.html".encodedAsUtf8 usedLengthOut:&len];
     test(h == nil);
-    h = [HttpRequestOrResponse tryExtractFromPartialData:@"GET /index.html HTTP/1.0\r\n".encodedAsUtf8 usedLengthOut:&len];
+    h = [HTTPRequestOrResponse tryExtractFromPartialData:@"GET /index.html HTTP/1.0\r\n".encodedAsUtf8 usedLengthOut:&len];
     test(h == nil);
     
-    h = [HttpRequestOrResponse tryExtractFromPartialData:@"GET /index.html HTTP/1.0\r\n\r\n".encodedAsUtf8 usedLengthOut:&len];
+    h = [HTTPRequestOrResponse tryExtractFromPartialData:@"GET /index.html HTTP/1.0\r\n\r\n".encodedAsUtf8 usedLengthOut:&len];
     test(h.isRequest);
     test([[[h request] method] isEqualToString:@"GET"]);
     test(len == 28);
     
-    h = [HttpRequestOrResponse tryExtractFromPartialData:[@"GET /index.html HTTP/1.0\r\n\r\nU$%#*(NYVYAY*" encodedAsUtf8] usedLengthOut:&len];
+    h = [HTTPRequestOrResponse tryExtractFromPartialData:[@"GET /index.html HTTP/1.0\r\n\r\nU$%#*(NYVYAY*" encodedAsUtf8] usedLengthOut:&len];
     test(h.isRequest);
     test([[[h request] method] isEqualToString:@"GET"]);
     test(len == 28);
 
-    testThrows([HttpRequestOrResponse tryExtractFromPartialData:@"GET\r\n\r\n".encodedAsUtf8 usedLengthOut:&len]);
-    testThrows([HttpRequestOrResponse tryExtractFromPartialData:@"HTTP/1.1 200\r\n\r\n".encodedAsUtf8 usedLengthOut:&len]);
+    testThrows([HTTPRequestOrResponse tryExtractFromPartialData:@"GET\r\n\r\n".encodedAsUtf8 usedLengthOut:&len]);
+    testThrows([HTTPRequestOrResponse tryExtractFromPartialData:@"HTTP/1.1 200\r\n\r\n".encodedAsUtf8 usedLengthOut:&len]);
 }
 @end

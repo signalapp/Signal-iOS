@@ -2,7 +2,6 @@
 #import "ShortAuthenticationStringGenerator.h"
 #import "Util.h"
 
-
 #define MIN_SAS_BYTES 2
 
 const char* PGP_LIST_EVEN[] = {
@@ -77,7 +76,7 @@ const char* PGP_LIST_ODD[] = {
 
 @implementation ShortAuthenticationStringGenerator
 
-+(NSString*) generateFromData:(NSData*)sasBytes {
++ (NSString*)generateFromData:(NSData*)sasBytes {
     require(sasBytes != nil);
     require(sasBytes.length >= MIN_SAS_BYTES);
     uint8_t wordIndexOne = [sasBytes uint8At:0];

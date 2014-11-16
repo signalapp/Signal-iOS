@@ -17,7 +17,7 @@
     DropoutTracker* d = [DropoutTracker new];
     
     d->audioDurationPerPacket = audioDurationPerPacket;
-    d->sequenceCounter = [SequenceCounter sequenceCounter];
+    d->sequenceCounter = [[SequenceCounter alloc] init];
     d->priorLatenesses = [Queue new];
     d->lateBins = [NSMutableArray array];
 

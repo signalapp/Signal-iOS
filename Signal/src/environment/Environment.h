@@ -58,8 +58,8 @@ andCurrentRegionCodeForPhoneNumbers:(NSString*)currentRegionCodeForPhoneNumbers
                    andPhoneManager:(PhoneManager*)phoneManager
               andRecentCallManager:(RecentCallManager *)recentCallManager
         andTestingAndLegacyOptions:(NSArray*)testingAndLegacyOptions
-                   andZrtpClientId:(NSData*)zrtpClientId
-                  andZrtpVersionId:(NSData*)zrtpVersionId
+                   andZRTPClientId:(NSData*)zrtpClientId
+                  andZRTPVersionId:(NSData*)zrtpVersionId
                 andContactsManager:(ContactsManager *)contactsManager
           andPhoneDirectoryManager:(PhoneNumberDirectoryFilterManager*)phoneDirectoryManager;
 

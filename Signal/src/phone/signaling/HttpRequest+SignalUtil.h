@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
-#import "HttpManager.h"
-#import "HttpRequestUtil.h"
+#import "HTTPManager.h"
+#import "HTTPRequest+Util.h"
 #import "PhoneNumberDirectoryFilter.h"
 
 #define SIGNAL_STATUS_CODE_STALE_SESSION 404
@@ -8,7 +8,7 @@
 #define SIGNAL_STATUS_CODE_SERVER_MESSAGE 402
 #define SIGNAL_STATUS_CODE_LOGIN_FAILED 401
 
-@interface HttpRequest (SignalUtil)
+@interface HTTPRequest (SignalUtil)
 
 - (bool)isKeepAlive;
 
@@ -18,22 +18,22 @@
 
 - (bool)isBusyForSession:(int64_t)targetSessionId;
 
-+ (HttpRequest*)httpRequestToOpenPortWithSessionId:(int64_t)sessionId;
++ (HTTPRequest*)httpRequestToOpenPortWithSessionId:(int64_t)sessionId;
 
-+ (HttpRequest*)httpRequestToInitiateToRemoteNumber:(PhoneNumber*)remoteNumber;
++ (HTTPRequest*)httpRequestToInitiateToRemoteNumber:(PhoneNumber*)remoteNumber;
 
-+ (HttpRequest*)httpRequestToRingWithSessionId:(int64_t)sessionId;
++ (HTTPRequest*)httpRequestToRingWithSessionId:(int64_t)sessionId;
 
-+ (HttpRequest*)httpRequestToSignalBusyWithSessionId:(int64_t)sessionId;
++ (HTTPRequest*)httpRequestToSignalBusyWithSessionId:(int64_t)sessionId;
 
-+ (HttpRequest*)httpRequestToStartRegistrationOfPhoneNumber;
++ (HTTPRequest*)httpRequestToStartRegistrationOfPhoneNumber;
 
-+ (HttpRequest*)httpRequestToStartRegistrationOfPhoneNumberWithVoice;
++ (HTTPRequest*)httpRequestToStartRegistrationOfPhoneNumberWithVoice;
 
-+ (HttpRequest*)httpRequestToVerifyAccessToPhoneNumberWithChallenge:(NSString*)challenge;
++ (HTTPRequest*)httpRequestToVerifyAccessToPhoneNumberWithChallenge:(NSString*)challenge;
 
-+ (HttpRequest*)httpRequestToRegisterForApnSignalingWithDeviceToken:(NSData*)deviceToken;
++ (HTTPRequest*)httpRequestToRegisterForApnSignalingWithDeviceToken:(NSData*)deviceToken;
 
-+ (HttpRequest*)httpRequestForPhoneNumberDirectoryFilter;
++ (HTTPRequest*)httpRequestForPhoneNumberDirectoryFilter;
 
 @end

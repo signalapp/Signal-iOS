@@ -1,17 +1,23 @@
 #import "NegotiationFailed.h"
 
+@interface NegotiationFailed ()
+
+@property (strong, readwrite, nonatomic) NSString* reason;
+
+@end
+
 @implementation NegotiationFailed
 
-@synthesize reason;
-
-+(NegotiationFailed*) negotiationFailedWithReason:(NSString*)reason {
-    NegotiationFailed* instance = [NegotiationFailed new];
-    instance->reason = reason;
-    return instance;
+- (instancetype)initWithReason:(NSString*)reason {
+    if (self = [super init]) {
+        self.reason = reason;
+    }
+    
+    return self;
 }
 
-- (NSString *)description {
-    return [NSString stringWithFormat:@"Negotation failed: %@", reason];
+- (NSString*)description {
+    return [NSString stringWithFormat:@"Negotation failed: %@", self.reason];
 }
 
 @end

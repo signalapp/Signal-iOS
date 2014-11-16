@@ -23,7 +23,7 @@
 + (TOCFuture*)asyncRespondToCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor
                                     andCallController:(CallController*)callController;
 
-/// Result has type Future(HttpResponse)
+/// Result has type Future(HTTPResponse)
 + (TOCFuture*)asyncSignalTooBusyToAnswerCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor;
 
 @end

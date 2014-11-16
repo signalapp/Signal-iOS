@@ -1,50 +1,58 @@
 #import "HostNameEndPoint.h"
-#import "DnsManager.h"
-#import "IpEndPoint.h"
+#import "DNSManager.h"
+#import "IPEndPoint.h"
 #import "ThreadManager.h"
 #import "Util.h"
 
-@implementation HostNameEndPoint
-@synthesize hostname, port;
+@interface HostNameEndPoint ()
 
-+(HostNameEndPoint*) hostNameEndPointWithHostName:(NSString*)hostname
-                                          andPort:(in_port_t)port {
-    require(hostname != nil);
-    require(port > 0);
+@property (nonatomic, readwrite) in_port_t port;
+@property (strong, nonatomic, readwrite) NSString* hostname;
+
+@end
+
+@implementation HostNameEndPoint
+
+- (instancetype)initWithHostName:(NSString*)hostname
+                         andPort:(in_port_t)port {
+    if (self = [super init]) {
+        require(hostname != nil);
+        require(port > 0);
+        self.hostname = hostname;
+        self.port = port;
+    }
     
-    HostNameEndPoint* h = [HostNameEndPoint new];
-    h->hostname = hostname.copy; // avoid mutability
-    h->port = port;
-    return h;
+    return self;
 }
 
--(void) handleStreamsOpened:(StreamPair *)streamPair {
+- (void)handleStreamsOpened:(StreamPair*)streamPair {
     // no work needed
 }
--(TOCFuture*)asyncHandleStreamsConnected:(StreamPair *)streamPair {
+
+- (TOCFuture*)asyncHandleStreamsConnected:(StreamPair*)streamPair {
     return [TOCFuture futureWithResult:@YES];
 }
 
--(StreamPair*)createStreamPair {
+- (StreamPair*)createStreamPair {
     CFReadStreamRef readStream;
     CFWriteStreamRef writeStream;
-    CFStreamCreatePairWithSocketToHost(NULL, (__bridge CFStringRef)hostname, port, &readStream, &writeStream);
-    return [StreamPair streamPairWithInput:(__bridge_transfer NSInputStream*)readStream
-                                 andOutput:(__bridge_transfer NSOutputStream*)writeStream];
+    CFStreamCreatePairWithSocketToHost(NULL, (__bridge CFStringRef)self.hostname, self.port, &readStream, &writeStream);
+    return [[StreamPair alloc] initWithInput:(__bridge_transfer NSInputStream*)readStream
+                                   andOutput:(__bridge_transfer NSOutputStream*)writeStream];
 }
 
--(TOCFuture*) asyncResolveToSpecificEndPointsUnlessCancelled:(TOCCancelToken*)unlessCancelledToken {
-    TOCFuture* futureDnsResult = [DnsManager asyncQueryAddressesForDomainName:hostname
+- (TOCFuture*)asyncResolveToSpecificEndPointsUnlessCancelled:(TOCCancelToken*)unlessCancelledToken {
+    TOCFuture* futureDnsResult = [DNSManager asyncQueryAddressesForDomainName:self.hostname
                                                               unlessCancelled:unlessCancelledToken];
     return [futureDnsResult thenTry:^(NSArray* ipAddresses) {
-        return [ipAddresses map:^(IpAddress* address) {
-            return [IpEndPoint ipEndPointAtAddress:address onPort:port];
+        return [ipAddresses map:^(IPAddress* address) {
+            return [[IPEndPoint alloc] initWithAddress:address onPort:self.port];
         }];
     }];
 }
 
--(NSString*) description {
-    return [NSString stringWithFormat:@"%@:%d", hostname, port];
+- (NSString*)description {
+    return [NSString stringWithFormat:@"%@:%d", self.hostname, self.port];
 }
 
 @end

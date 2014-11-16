@@ -2,7 +2,7 @@
 
 #import "InviteContactsViewController.h"
 #import "LocalizableText.h"
-#import "SmsInvite.h"
+#import "SMSInvite.h"
 
 #define CANCEL_BUTTON_INDEX 0
 #define INVITE_BUTTON_INDEX 1
@@ -10,7 +10,7 @@
 @implementation InviteContactModal {
     UIAlertView* alertView;
     UIViewController* parent;
-    SmsInvite* smsInvite;
+    SMSInvite* smsInvite;
     PhoneNumber* phoneNumber;
 }
 
@@ -31,7 +31,7 @@
 
 -(void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if(INVITE_BUTTON_INDEX == buttonIndex){
-        smsInvite = [[SmsInvite alloc] initWithParent:parent];
+        smsInvite = [[SMSInvite alloc] initWithParent:parent];
         [smsInvite sendSMSInviteToNumber:phoneNumber];
     }
 }

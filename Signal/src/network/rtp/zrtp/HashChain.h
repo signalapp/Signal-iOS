@@ -19,12 +19,12 @@
 
 @interface HashChain : NSObject
 
-@property (nonatomic, readonly) NSData* h0;
-@property (nonatomic, readonly) NSData* h1;
-@property (nonatomic, readonly) NSData* h2;
-@property (nonatomic, readonly) NSData* h3;
+@property (strong, readonly, nonatomic) NSData* h0;
+@property (strong, readonly, nonatomic) NSData* h1;
+@property (strong, readonly, nonatomic) NSData* h2;
+@property (strong, readonly, nonatomic) NSData* h3;
 
-+(HashChain*) hashChainWithSeed:(NSData*)seed;
-+(HashChain*) hashChainWithSecureGeneratedData;
+- (instancetype)initWithSeed:(NSData*)seed;
+- (instancetype)initWithSecureGeneratedData;
 
 @end

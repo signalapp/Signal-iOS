@@ -16,19 +16,19 @@
                                                                        andRelayServerName:@"example.com"
                                                                              andRelayPort:6];
     test([d sessionId] == 5);
-    test([d relayUdpPort] == 6);
+    test([d relayUDPSocketPort] == 6);
     test([d.relayServerName isEqualToString:@"example.com"]);
     
     // roundtrip
     InitiatorSessionDescriptor* d2 = [[InitiatorSessionDescriptor alloc] initFromJSON:d.toJSON];
     test([d2 sessionId] == 5);
-    test([d2 relayUdpPort] == 6);
+    test([d2 relayUDPSocketPort] == 6);
     test([d2.relayServerName isEqualToString:@"example.com"]);
     
     // constant
     InitiatorSessionDescriptor* d3 = [[InitiatorSessionDescriptor alloc] initFromJSON:@"{\"sessionId\":5,\"serverName\":\"example.com\",\"relayPort\":6}"];
     test([d3 sessionId] == 5);
-    test([d3 relayUdpPort] == 6);
+    test([d3 relayUDPSocketPort] == 6);
     test([d3.relayServerName isEqualToString:@"example.com"]);
 }
 
@@ -50,7 +50,7 @@
 //    ResponderSessionDescriptor* d = [[ResponderSessionDescriptor alloc] initFromEncryptedRemoteNotification:notification];
 //  
 //    test(d.interopVersion == 1);
-//    test(d.relayUdpPort == 11235);
+//    test(d.relayUDPSocketPort == 11235);
 //    test(d.sessionId == 2357);
 //    test([d.relayServerName isEqualToString:@"Test"]);
 //    test([d.initiatorNumber.toE164 isEqualToString:@"+19027777777"]);

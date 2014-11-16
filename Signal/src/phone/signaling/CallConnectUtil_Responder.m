@@ -2,10 +2,10 @@
 
 #import "CallConnectUtil.h"
 #import "CallConnectUtil_Server.h"
-#import "HttpRequest+SignalUtil.h"
+#import "HTTPRequest+SignalUtil.h"
 #import "UnrecognizedRequestFailure.h"
 #import "Util.h"
-#import "ZrtpManager.h"
+#import "ZRTPManager.h"
 
 @implementation CallConnectUtil_Responder
 
@@ -39,10 +39,10 @@
     TOCFuture* futureSignalConnection = [CallConnectUtil_Server asyncConnectToSignalingServerNamed:sessionDescriptor.relayServerName
                                                                                     untilCancelled:[callController untilCancelledToken]];
     
-    return [futureSignalConnection thenTry:^id(HttpManager* httpManager) {
-        require([httpManager isKindOfClass:[HttpManager class]]);
+    return [futureSignalConnection thenTry:^id(HTTPManager* httpManager) {
+        require([httpManager isKindOfClass:[HTTPManager class]]);
         
-        HttpResponse* (^serverRequestHandler)(HttpRequest*) = ^(HttpRequest* remoteRequest) {
+        HTTPResponse* (^serverRequestHandler)(HTTPRequest*) = ^(HTTPRequest* remoteRequest) {
             return [self respondToServerRequest:remoteRequest
                                 usingDescriptor:sessionDescriptor
                               andCallController:callController];
@@ -52,12 +52,12 @@
                              andErrorHandler:Environment.errorNoter
                               untilCancelled:[callController untilCancelledToken]];
         
-        HttpRequest* ringRequest = [HttpRequest httpRequestToRingWithSessionId:sessionDescriptor.sessionId];
+        HTTPRequest* ringRequest = [HTTPRequest httpRequestToRingWithSessionId:sessionDescriptor.sessionId];
         TOCFuture* futureResponseToRing = [httpManager asyncOkResponseForRequest:ringRequest
                                                                  unlessCancelled:[callController untilCancelledToken]];
         TOCFuture* futureResponseToRingWithInterpretedFailures = [futureResponseToRing catchTry:^(id error) {
-            if ([error isKindOfClass:[HttpResponse class]]) {
-                HttpResponse* badResponse = error;
+            if ([error isKindOfClass:[HTTPResponse class]]) {
+                HTTPResponse* badResponse = error;
                 return [TOCFuture futureWithFailure:[self callTerminationForBadResponse:badResponse
                                                                           toRingRequest:ringRequest]];
             }
@@ -69,8 +69,8 @@
     }];
 }
 
-+ (CallTermination*)callTerminationForBadResponse:(HttpResponse*)badResponse
-                                    toRingRequest:(HttpRequest*)ringRequest {
++ (CallTermination*)callTerminationForBadResponse:(HTTPResponse*)badResponse
+                                    toRingRequest:(HTTPRequest*)ringRequest {
     require(badResponse != nil);
     require(ringRequest != nil);
     
@@ -89,7 +89,7 @@
                                           andMessageInfo:ringRequest];
     }
 }
-+ (HttpResponse*)respondToServerRequest:(HttpRequest*)request
++ (HTTPResponse*)respondToServerRequest:(HTTPRequest*)request
                         usingDescriptor:(ResponderSessionDescriptor*)responderSessionDescriptor
                       andCallController:(CallController*)callController {
     require(request != nil);
@@ -98,7 +98,7 @@
     
     // heart beat?
     if (request.isKeepAlive) {
-        return [HttpResponse httpResponse200Ok];
+        return [HTTPResponse httpResponse200Ok];
     }
     
     // hangup?
@@ -106,20 +106,20 @@
         [callController terminateWithReason:CallTerminationTypeHangupRemote
                             withFailureInfo:nil
                              andRelatedInfo:request];
-        return [HttpResponse httpResponse200Ok];
+        return [HTTPResponse httpResponse200Ok];
     }
     
     // errr......
     [callController terminateWithReason:CallTerminationTypeBadInteractionWithServer
-                        withFailureInfo:[UnrecognizedRequestFailure new:@"Didn't understand signaling server."]
+                        withFailureInfo:[[UnrecognizedRequestFailure alloc] initWithReason:@"Didn't understand signaling server."]
                          andRelatedInfo:request];
-    return [HttpResponse httpResponse501NotImplemented];
+    return [HTTPResponse httpResponse501NotImplemented];
 }
 
 + (TOCFuture*)asyncSignalTooBusyToAnswerCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor {
     require(sessionDescriptor != nil);
     
-    HttpRequest* busyRequest = [HttpRequest httpRequestToSignalBusyWithSessionId:sessionDescriptor.sessionId];
+    HTTPRequest* busyRequest = [HTTPRequest httpRequestToSignalBusyWithSessionId:sessionDescriptor.sessionId];
     
     return [self asyncOkResponseFor:busyRequest
            fromSignalingServerNamed:sessionDescriptor.relayServerName
@@ -127,7 +127,7 @@
                     andErrorHandler:Environment.errorNoter];
 }
 
-+(TOCFuture*) asyncOkResponseFor:(HttpRequest*)request
++(TOCFuture*) asyncOkResponseFor:(HTTPRequest*)request
         fromSignalingServerNamed:(NSString*)name
                  unlessCancelled:(TOCCancelToken*)unlessCancelledToken
                  andErrorHandler:(ErrorHandlerBlock)errorHandler {
@@ -135,8 +135,8 @@
     require(errorHandler != nil);
     require(name != nil);
     
-    HttpManager* manager = [HttpManager startWithEndPoint:[Environment getSecureEndPointToSignalingServerNamed:name]
-                                           untilCancelled:unlessCancelledToken];
+    HTTPManager* manager = [[HTTPManager alloc] initWithEndPoint:[Environment getSecureEndPointToSignalingServerNamed:name]
+                                                  untilCancelled:unlessCancelledToken];
     
     [manager startWithRejectingRequestHandlerAndErrorHandler:errorHandler
                                               untilCancelled:nil];

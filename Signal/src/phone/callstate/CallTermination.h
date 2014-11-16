@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-typedef enum {
+typedef NS_ENUM(NSInteger, CallTerminationType) {
     // -- while connecting --
     CallTerminationTypeLoginFailed, /// The signaling server said our authentication details were wrong.
     CallTerminationTypeNoSuchUser, /// The signaling server said there's red phone user with that number.
@@ -25,7 +25,7 @@ typedef enum {
     // -- uh oh --
     CallTerminationTypeBadInteractionWithServer, /// The signaling or relay server did something we didn't expect or understand.
     CallTerminationTypeUncategorizedFailure, /// Something went wrong. We didn't handle it properly, so we don't know what exactly it was.
-} CallTerminationType;
+};
 
 /**
  *
@@ -36,8 +36,8 @@ typedef enum {
 @interface CallTermination : NSObject <NSCopying>
 
 @property (readonly, nonatomic) CallTerminationType type;
-@property (readonly, nonatomic) id failure;
-@property (readonly, nonatomic) id messageInfo;
+@property (strong, readonly, nonatomic) id failure;
+@property (strong, readonly, nonatomic) id messageInfo;
 
 - (instancetype)initWithType:(CallTerminationType)type
                   andFailure:(id)failure

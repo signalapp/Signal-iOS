@@ -13,7 +13,7 @@
 		7038632718F70C0700D4A43F /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632418F70C0700D4A43F /* CryptoTools.m */; };
 		7038632818F70C0700D4A43F /* EvpSymetricUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632618F70C0700D4A43F /* EvpSymetricUtil.m */; };
 		707E548C18FF0B8A00C8649D /* InviteContactModal.m in Sources */ = {isa = PBXBuildFile; fileRef = 707E548B18FF0B8A00C8649D /* InviteContactModal.m */; };
-		707E549218FF26E800C8649D /* SmsInvite.m in Sources */ = {isa = PBXBuildFile; fileRef = 707E549118FF26E800C8649D /* SmsInvite.m */; };
+		707E549218FF26E800C8649D /* SMSInvite.m in Sources */ = {isa = PBXBuildFile; fileRef = 707E549118FF26E800C8649D /* SMSInvite.m */; };
 		7095B7B018F46D35002C66E2 /* PhoneNumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7095B7AF18F46D35002C66E2 /* PhoneNumberUtil.m */; };
 		70B800A6190C53180042E3F0 /* libspandsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70B800A3190C529C0042E3F0 /* libspandsp.a */; };
 		70B800AF190C548D0042E3F0 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70B800AC190C54790042E3F0 /* libspeex.a */; };
@@ -76,34 +76,34 @@
 		76EB058918170B33006006FC /* PropertyListPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041918170B33006006FC /* PropertyListPreferences.m */; };
 		76EB058A18170B33006006FC /* Release.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041B18170B33006006FC /* Release.m */; };
 		76EB058B18170B33006006FC /* Release.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041B18170B33006006FC /* Release.m */; };
-		76EB058C18170B33006006FC /* DnsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042018170B33006006FC /* DnsManager.m */; };
-		76EB058D18170B33006006FC /* DnsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042018170B33006006FC /* DnsManager.m */; };
+		76EB058C18170B33006006FC /* DNSManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042018170B33006006FC /* DNSManager.m */; };
+		76EB058D18170B33006006FC /* DNSManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042018170B33006006FC /* DNSManager.m */; };
 		76EB058E18170B33006006FC /* HostNameEndPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042218170B33006006FC /* HostNameEndPoint.m */; };
 		76EB058F18170B33006006FC /* HostNameEndPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042218170B33006006FC /* HostNameEndPoint.m */; };
 		76EB059018170B33006006FC /* IgnoredPacketFailure.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042518170B33006006FC /* IgnoredPacketFailure.m */; };
 		76EB059118170B33006006FC /* IgnoredPacketFailure.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042518170B33006006FC /* IgnoredPacketFailure.m */; };
 		76EB059218170B33006006FC /* UnrecognizedRequestFailure.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042718170B33006006FC /* UnrecognizedRequestFailure.m */; };
 		76EB059318170B33006006FC /* UnrecognizedRequestFailure.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042718170B33006006FC /* UnrecognizedRequestFailure.m */; };
-		76EB059418170B33006006FC /* HttpManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042A18170B33006006FC /* HttpManager.m */; };
-		76EB059518170B33006006FC /* HttpManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042A18170B33006006FC /* HttpManager.m */; };
-		76EB059E18170B33006006FC /* HttpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043418170B33006006FC /* HttpSocket.m */; };
-		76EB059F18170B33006006FC /* HttpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043418170B33006006FC /* HttpSocket.m */; };
-		76EB05A018170B33006006FC /* IpAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043618170B33006006FC /* IpAddress.m */; };
-		76EB05A118170B33006006FC /* IpAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043618170B33006006FC /* IpAddress.m */; };
-		76EB05A218170B33006006FC /* IpEndPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043818170B33006006FC /* IpEndPoint.m */; };
-		76EB05A318170B33006006FC /* IpEndPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043818170B33006006FC /* IpEndPoint.m */; };
+		76EB059418170B33006006FC /* HTTPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042A18170B33006006FC /* HTTPManager.m */; };
+		76EB059518170B33006006FC /* HTTPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042A18170B33006006FC /* HTTPManager.m */; };
+		76EB059E18170B33006006FC /* HTTPSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043418170B33006006FC /* HTTPSocket.m */; };
+		76EB059F18170B33006006FC /* HTTPSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043418170B33006006FC /* HTTPSocket.m */; };
+		76EB05A018170B33006006FC /* IPAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043618170B33006006FC /* IPAddress.m */; };
+		76EB05A118170B33006006FC /* IPAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043618170B33006006FC /* IPAddress.m */; };
+		76EB05A218170B33006006FC /* IPEndPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043818170B33006006FC /* IPEndPoint.m */; };
+		76EB05A318170B33006006FC /* IPEndPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043818170B33006006FC /* IPEndPoint.m */; };
 		76EB05A418170B33006006FC /* PacketHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043B18170B33006006FC /* PacketHandler.m */; };
 		76EB05A518170B33006006FC /* PacketHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043B18170B33006006FC /* PacketHandler.m */; };
-		76EB05A618170B33006006FC /* RtpPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043E18170B33006006FC /* RtpPacket.m */; };
-		76EB05A718170B33006006FC /* RtpPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043E18170B33006006FC /* RtpPacket.m */; };
-		76EB05A818170B33006006FC /* RtpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB044018170B33006006FC /* RtpSocket.m */; };
-		76EB05A918170B33006006FC /* RtpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB044018170B33006006FC /* RtpSocket.m */; };
+		76EB05A618170B33006006FC /* RTPPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043E18170B33006006FC /* RTPPacket.m */; };
+		76EB05A718170B33006006FC /* RTPPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB043E18170B33006006FC /* RTPPacket.m */; };
+		76EB05A818170B33006006FC /* RTPSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB044018170B33006006FC /* RTPSocket.m */; };
+		76EB05A918170B33006006FC /* RTPSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB044018170B33006006FC /* RTPSocket.m */; };
 		76EB05AA18170B33006006FC /* SequenceCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB044318170B33006006FC /* SequenceCounter.m */; };
 		76EB05AB18170B33006006FC /* SequenceCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB044318170B33006006FC /* SequenceCounter.m */; };
-		76EB05AC18170B33006006FC /* SrtpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB044518170B33006006FC /* SrtpSocket.m */; };
-		76EB05AD18170B33006006FC /* SrtpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB044518170B33006006FC /* SrtpSocket.m */; };
-		76EB05AE18170B33006006FC /* SrtpStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB044718170B33006006FC /* SrtpStream.m */; };
-		76EB05AF18170B33006006FC /* SrtpStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB044718170B33006006FC /* SrtpStream.m */; };
+		76EB05AC18170B33006006FC /* SRTPSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB044518170B33006006FC /* SRTPSocket.m */; };
+		76EB05AD18170B33006006FC /* SRTPSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB044518170B33006006FC /* SRTPSocket.m */; };
+		76EB05AE18170B33006006FC /* SRTPStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB044718170B33006006FC /* SRTPStream.m */; };
+		76EB05AF18170B33006006FC /* SRTPStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB044718170B33006006FC /* SRTPStream.m */; };
 		76EB05B218170B33006006FC /* DH3KKeyAgreementProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB044D18170B33006006FC /* DH3KKeyAgreementProtocol.m */; };
 		76EB05B318170B33006006FC /* DH3KKeyAgreementProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB044D18170B33006006FC /* DH3KKeyAgreementProtocol.m */; };
 		76EB05B418170B33006006FC /* HashChain.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB044F18170B33006006FC /* HashChain.m */; };
@@ -118,10 +118,10 @@
 		76EB05BD18170B33006006FC /* ConfirmAckPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB045818170B33006006FC /* ConfirmAckPacket.m */; };
 		76EB05BE18170B33006006FC /* ConfirmPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB045A18170B33006006FC /* ConfirmPacket.m */; };
 		76EB05BF18170B33006006FC /* ConfirmPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB045A18170B33006006FC /* ConfirmPacket.m */; };
-		76EB05C018170B33006006FC /* DhPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB045C18170B33006006FC /* DhPacket.m */; };
-		76EB05C118170B33006006FC /* DhPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB045C18170B33006006FC /* DhPacket.m */; };
-		76EB05C218170B33006006FC /* DhPacketSharedSecretHashes.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB045E18170B33006006FC /* DhPacketSharedSecretHashes.m */; };
-		76EB05C318170B33006006FC /* DhPacketSharedSecretHashes.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB045E18170B33006006FC /* DhPacketSharedSecretHashes.m */; };
+		76EB05C018170B33006006FC /* DHPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB045C18170B33006006FC /* DHPacket.m */; };
+		76EB05C118170B33006006FC /* DHPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB045C18170B33006006FC /* DHPacket.m */; };
+		76EB05C218170B33006006FC /* DHPacketSharedSecretHashes.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB045E18170B33006006FC /* DHPacketSharedSecretHashes.m */; };
+		76EB05C318170B33006006FC /* DHPacketSharedSecretHashes.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB045E18170B33006006FC /* DHPacketSharedSecretHashes.m */; };
 		76EB05C418170B33006006FC /* HandshakePacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB046018170B33006006FC /* HandshakePacket.m */; };
 		76EB05C518170B33006006FC /* HandshakePacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB046018170B33006006FC /* HandshakePacket.m */; };
 		76EB05C618170B33006006FC /* HelloAckPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB046218170B33006006FC /* HelloAckPacket.m */; };
@@ -132,16 +132,16 @@
 		76EB05CB18170B33006006FC /* RecipientUnavailable.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB046A18170B33006006FC /* RecipientUnavailable.m */; };
 		76EB05CC18170B33006006FC /* ShortAuthenticationStringGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB046C18170B33006006FC /* ShortAuthenticationStringGenerator.m */; };
 		76EB05CD18170B33006006FC /* ShortAuthenticationStringGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB046C18170B33006006FC /* ShortAuthenticationStringGenerator.m */; };
-		76EB05CE18170B33006006FC /* ZrtpHandshakeResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB046E18170B33006006FC /* ZrtpHandshakeResult.m */; };
-		76EB05CF18170B33006006FC /* ZrtpHandshakeResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB046E18170B33006006FC /* ZrtpHandshakeResult.m */; };
-		76EB05D018170B33006006FC /* ZrtpHandshakeSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047018170B33006006FC /* ZrtpHandshakeSocket.m */; };
-		76EB05D118170B33006006FC /* ZrtpHandshakeSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047018170B33006006FC /* ZrtpHandshakeSocket.m */; };
-		76EB05D218170B33006006FC /* ZrtpInitiator.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047218170B33006006FC /* ZrtpInitiator.m */; };
-		76EB05D318170B33006006FC /* ZrtpInitiator.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047218170B33006006FC /* ZrtpInitiator.m */; };
-		76EB05D418170B33006006FC /* ZrtpManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047418170B33006006FC /* ZrtpManager.m */; };
-		76EB05D518170B33006006FC /* ZrtpManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047418170B33006006FC /* ZrtpManager.m */; };
-		76EB05D618170B33006006FC /* ZrtpResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047618170B33006006FC /* ZrtpResponder.m */; };
-		76EB05D718170B33006006FC /* ZrtpResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047618170B33006006FC /* ZrtpResponder.m */; };
+		76EB05CE18170B33006006FC /* ZRTPHandshakeResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB046E18170B33006006FC /* ZRTPHandshakeResult.m */; };
+		76EB05CF18170B33006006FC /* ZRTPHandshakeResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB046E18170B33006006FC /* ZRTPHandshakeResult.m */; };
+		76EB05D018170B33006006FC /* ZRTPHandshakeSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047018170B33006006FC /* ZRTPHandshakeSocket.m */; };
+		76EB05D118170B33006006FC /* ZRTPHandshakeSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047018170B33006006FC /* ZRTPHandshakeSocket.m */; };
+		76EB05D218170B33006006FC /* ZRTPInitiator.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047218170B33006006FC /* ZRTPInitiator.m */; };
+		76EB05D318170B33006006FC /* ZRTPInitiator.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047218170B33006006FC /* ZRTPInitiator.m */; };
+		76EB05D418170B33006006FC /* ZRTPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047418170B33006006FC /* ZRTPManager.m */; };
+		76EB05D518170B33006006FC /* ZRTPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047418170B33006006FC /* ZRTPManager.m */; };
+		76EB05D618170B33006006FC /* ZRTPResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047618170B33006006FC /* ZRTPResponder.m */; };
+		76EB05D718170B33006006FC /* ZRTPResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047618170B33006006FC /* ZRTPResponder.m */; };
 		76EB05D818170B33006006FC /* LowLatencyCandidate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047918170B33006006FC /* LowLatencyCandidate.m */; };
 		76EB05D918170B33006006FC /* LowLatencyCandidate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047918170B33006006FC /* LowLatencyCandidate.m */; };
 		76EB05DA18170B33006006FC /* LowLatencyConnector.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB047B18170B33006006FC /* LowLatencyConnector.m */; };
@@ -154,8 +154,8 @@
 		76EB05E118170B33006006FC /* NetworkStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB048218170B33006006FC /* NetworkStream.m */; };
 		76EB05E218170B33006006FC /* SecureEndPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB048418170B33006006FC /* SecureEndPoint.m */; };
 		76EB05E318170B33006006FC /* SecureEndPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB048418170B33006006FC /* SecureEndPoint.m */; };
-		76EB05E418170B33006006FC /* UdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB048718170B33006006FC /* UdpSocket.m */; };
-		76EB05E518170B33006006FC /* UdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB048718170B33006006FC /* UdpSocket.m */; };
+		76EB05E418170B33006006FC /* UDPSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB048718170B33006006FC /* UDPSocket.m */; };
+		76EB05E518170B33006006FC /* UDPSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB048718170B33006006FC /* UDPSocket.m */; };
 		76EB05E618170B33006006FC /* CallController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB048B18170B33006006FC /* CallController.m */; };
 		76EB05E718170B33006006FC /* CallController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB048B18170B33006006FC /* CallController.m */; };
 		76EB05E818170B33006006FC /* CallFailedServerMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB048D18170B33006006FC /* CallFailedServerMessage.m */; };
@@ -349,10 +349,10 @@
 		B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */ = {isa = PBXBuildFile; fileRef = B60C16641988999D00E97A6C /* VersionMigrations.m */; };
 		B60EDE041A05A01700D73516 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60EDE031A05A01700D73516 /* AudioToolbox.framework */; };
 		B63761E319E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E219E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m */; };
-		B63761EC19E1FBE8005735D1 /* HttpRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E519E1FBE8005735D1 /* HttpRequest.m */; };
-		B63761ED19E1FBE8005735D1 /* HttpRequestOrResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E719E1FBE8005735D1 /* HttpRequestOrResponse.m */; };
-		B63761EE19E1FBE8005735D1 /* HttpRequestUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E919E1FBE8005735D1 /* HttpRequestUtil.m */; };
-		B63761EF19E1FBE8005735D1 /* HttpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761EB19E1FBE8005735D1 /* HttpResponse.m */; };
+		B63761EC19E1FBE8005735D1 /* HTTPRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E519E1FBE8005735D1 /* HTTPRequest.m */; };
+		B63761ED19E1FBE8005735D1 /* HTTPRequestOrResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E719E1FBE8005735D1 /* HTTPRequestOrResponse.m */; };
+		B63761EE19E1FBE8005735D1 /* HTTPRequest+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E919E1FBE8005735D1 /* HTTPRequest+Util.m */; };
+		B63761EF19E1FBE8005735D1 /* HTTPResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761EB19E1FBE8005735D1 /* HTTPResponse.m */; };
 		B6416FB8199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F57199A0478003C5699 /* Localizable.strings */; };
 		B65EDA1219E1BE6400AAA7CB /* RPAPICall.m in Sources */ = {isa = PBXBuildFile; fileRef = B65EDA1119E1BE6400AAA7CB /* RPAPICall.m */; };
 		B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
@@ -555,7 +555,7 @@
 		E148751518A06AFD002CC4F3 /* HelveticaNeueLTStd-Md.otf in Resources */ = {isa = PBXBuildFile; fileRef = 765052A618294C9F008313E1 /* HelveticaNeueLTStd-Md.otf */; };
 		E16E5BEE18AAC40200B7C403 /* EC25KeyAgreementParticipant.m in Sources */ = {isa = PBXBuildFile; fileRef = E16E5BE918AAC40200B7C403 /* EC25KeyAgreementParticipant.m */; };
 		E16E5BEF18AAC40200B7C403 /* EC25KeyAgreementProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = E16E5BEB18AAC40200B7C403 /* EC25KeyAgreementProtocol.m */; };
-		E16E5BF018AAC40200B7C403 /* EvpKeyAgreement.m in Sources */ = {isa = PBXBuildFile; fileRef = E16E5BED18AAC40200B7C403 /* EvpKeyAgreement.m */; };
+		E16E5BF018AAC40200B7C403 /* EVPKeyAgreement.m in Sources */ = {isa = PBXBuildFile; fileRef = E16E5BED18AAC40200B7C403 /* EVPKeyAgreement.m */; };
 		E16E5BF918AAF02100B7C403 /* EC25AgreerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = E16E5BF818AAF02100B7C403 /* EC25AgreerTest.m */; };
 		E16E5C1418AEDB5A00B7C403 /* message_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = E16E5C1218AEDB5A00B7C403 /* message_icon.png */; };
 		E16E5C1518AEDB5A00B7C403 /* phone_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = E16E5C1318AEDB5A00B7C403 /* phone_icon.png */; };
@@ -634,8 +634,8 @@
 		7038632618F70C0700D4A43F /* EvpSymetricUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EvpSymetricUtil.m; sourceTree = "<group>"; };
 		707E548A18FF0B8A00C8649D /* InviteContactModal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InviteContactModal.h; sourceTree = "<group>"; };
 		707E548B18FF0B8A00C8649D /* InviteContactModal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InviteContactModal.m; sourceTree = "<group>"; };
-		707E549018FF26E800C8649D /* SmsInvite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmsInvite.h; sourceTree = "<group>"; };
-		707E549118FF26E800C8649D /* SmsInvite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmsInvite.m; sourceTree = "<group>"; };
+		707E549018FF26E800C8649D /* SMSInvite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSInvite.h; sourceTree = "<group>"; };
+		707E549118FF26E800C8649D /* SMSInvite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSInvite.m; sourceTree = "<group>"; };
 		7095B7AE18F46D35002C66E2 /* PhoneNumberUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneNumberUtil.h; sourceTree = "<group>"; };
 		7095B7AF18F46D35002C66E2 /* PhoneNumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberUtil.m; sourceTree = "<group>"; };
 		70B8009E190C529C0042E3F0 /* spandsp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = spandsp.xcodeproj; path = Libraries/spandsp/spandsp/spandsp.xcodeproj; sourceTree = "<group>"; };
@@ -725,35 +725,34 @@
 		76EB041918170B33006006FC /* PropertyListPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PropertyListPreferences.m; sourceTree = "<group>"; };
 		76EB041A18170B33006006FC /* Release.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Release.h; sourceTree = "<group>"; };
 		76EB041B18170B33006006FC /* Release.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Release.m; sourceTree = "<group>"; };
-		76EB041F18170B33006006FC /* DnsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DnsManager.h; sourceTree = "<group>"; };
-		76EB042018170B33006006FC /* DnsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DnsManager.m; sourceTree = "<group>"; };
+		76EB042018170B33006006FC /* DNSManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DNSManager.m; sourceTree = "<group>"; };
 		76EB042118170B33006006FC /* HostNameEndPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HostNameEndPoint.h; sourceTree = "<group>"; };
 		76EB042218170B33006006FC /* HostNameEndPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HostNameEndPoint.m; sourceTree = "<group>"; };
 		76EB042418170B33006006FC /* IgnoredPacketFailure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IgnoredPacketFailure.h; sourceTree = "<group>"; };
 		76EB042518170B33006006FC /* IgnoredPacketFailure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IgnoredPacketFailure.m; sourceTree = "<group>"; };
 		76EB042618170B33006006FC /* UnrecognizedRequestFailure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnrecognizedRequestFailure.h; sourceTree = "<group>"; };
 		76EB042718170B33006006FC /* UnrecognizedRequestFailure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UnrecognizedRequestFailure.m; sourceTree = "<group>"; };
-		76EB042918170B33006006FC /* HttpManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpManager.h; sourceTree = "<group>"; };
-		76EB042A18170B33006006FC /* HttpManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpManager.m; sourceTree = "<group>"; };
-		76EB043318170B33006006FC /* HttpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpSocket.h; sourceTree = "<group>"; };
-		76EB043418170B33006006FC /* HttpSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpSocket.m; sourceTree = "<group>"; };
-		76EB043518170B33006006FC /* IpAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IpAddress.h; sourceTree = "<group>"; };
-		76EB043618170B33006006FC /* IpAddress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IpAddress.m; sourceTree = "<group>"; };
-		76EB043718170B33006006FC /* IpEndPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IpEndPoint.h; sourceTree = "<group>"; };
-		76EB043818170B33006006FC /* IpEndPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IpEndPoint.m; sourceTree = "<group>"; };
+		76EB042918170B33006006FC /* HTTPManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPManager.h; sourceTree = "<group>"; };
+		76EB042A18170B33006006FC /* HTTPManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPManager.m; sourceTree = "<group>"; };
+		76EB043318170B33006006FC /* HTTPSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPSocket.h; sourceTree = "<group>"; };
+		76EB043418170B33006006FC /* HTTPSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPSocket.m; sourceTree = "<group>"; };
+		76EB043518170B33006006FC /* IPAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPAddress.h; sourceTree = "<group>"; };
+		76EB043618170B33006006FC /* IPAddress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IPAddress.m; sourceTree = "<group>"; };
+		76EB043718170B33006006FC /* IPEndPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPEndPoint.h; sourceTree = "<group>"; };
+		76EB043818170B33006006FC /* IPEndPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IPEndPoint.m; sourceTree = "<group>"; };
 		76EB043918170B33006006FC /* NetworkEndPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkEndPoint.h; sourceTree = "<group>"; };
 		76EB043A18170B33006006FC /* PacketHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PacketHandler.h; sourceTree = "<group>"; };
 		76EB043B18170B33006006FC /* PacketHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PacketHandler.m; sourceTree = "<group>"; };
-		76EB043D18170B33006006FC /* RtpPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtpPacket.h; sourceTree = "<group>"; };
-		76EB043E18170B33006006FC /* RtpPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RtpPacket.m; sourceTree = "<group>"; };
-		76EB043F18170B33006006FC /* RtpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtpSocket.h; sourceTree = "<group>"; };
-		76EB044018170B33006006FC /* RtpSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RtpSocket.m; sourceTree = "<group>"; };
+		76EB043D18170B33006006FC /* RTPPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTPPacket.h; sourceTree = "<group>"; };
+		76EB043E18170B33006006FC /* RTPPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RTPPacket.m; sourceTree = "<group>"; };
+		76EB043F18170B33006006FC /* RTPSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTPSocket.h; sourceTree = "<group>"; };
+		76EB044018170B33006006FC /* RTPSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RTPSocket.m; sourceTree = "<group>"; };
 		76EB044218170B33006006FC /* SequenceCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SequenceCounter.h; sourceTree = "<group>"; };
 		76EB044318170B33006006FC /* SequenceCounter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SequenceCounter.m; sourceTree = "<group>"; };
-		76EB044418170B33006006FC /* SrtpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SrtpSocket.h; sourceTree = "<group>"; };
-		76EB044518170B33006006FC /* SrtpSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SrtpSocket.m; sourceTree = "<group>"; };
-		76EB044618170B33006006FC /* SrtpStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SrtpStream.h; sourceTree = "<group>"; };
-		76EB044718170B33006006FC /* SrtpStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SrtpStream.m; sourceTree = "<group>"; };
+		76EB044418170B33006006FC /* SRTPSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRTPSocket.h; sourceTree = "<group>"; };
+		76EB044518170B33006006FC /* SRTPSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SRTPSocket.m; sourceTree = "<group>"; };
+		76EB044618170B33006006FC /* SRTPStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRTPStream.h; sourceTree = "<group>"; };
+		76EB044718170B33006006FC /* SRTPStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SRTPStream.m; sourceTree = "<group>"; };
 		76EB044C18170B33006006FC /* DH3KKeyAgreementProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DH3KKeyAgreementProtocol.h; sourceTree = "<group>"; };
 		76EB044D18170B33006006FC /* DH3KKeyAgreementProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DH3KKeyAgreementProtocol.m; sourceTree = "<group>"; };
 		76EB044E18170B33006006FC /* HashChain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashChain.h; sourceTree = "<group>"; };
@@ -768,10 +767,10 @@
 		76EB045818170B33006006FC /* ConfirmAckPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfirmAckPacket.m; sourceTree = "<group>"; };
 		76EB045918170B33006006FC /* ConfirmPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfirmPacket.h; sourceTree = "<group>"; };
 		76EB045A18170B33006006FC /* ConfirmPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfirmPacket.m; sourceTree = "<group>"; };
-		76EB045B18170B33006006FC /* DhPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DhPacket.h; sourceTree = "<group>"; };
-		76EB045C18170B33006006FC /* DhPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DhPacket.m; sourceTree = "<group>"; };
-		76EB045D18170B33006006FC /* DhPacketSharedSecretHashes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DhPacketSharedSecretHashes.h; sourceTree = "<group>"; };
-		76EB045E18170B33006006FC /* DhPacketSharedSecretHashes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DhPacketSharedSecretHashes.m; sourceTree = "<group>"; };
+		76EB045B18170B33006006FC /* DHPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DHPacket.h; sourceTree = "<group>"; };
+		76EB045C18170B33006006FC /* DHPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DHPacket.m; sourceTree = "<group>"; };
+		76EB045D18170B33006006FC /* DHPacketSharedSecretHashes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DHPacketSharedSecretHashes.h; sourceTree = "<group>"; };
+		76EB045E18170B33006006FC /* DHPacketSharedSecretHashes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DHPacketSharedSecretHashes.m; sourceTree = "<group>"; };
 		76EB045F18170B33006006FC /* HandshakePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HandshakePacket.h; sourceTree = "<group>"; };
 		76EB046018170B33006006FC /* HandshakePacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HandshakePacket.m; sourceTree = "<group>"; };
 		76EB046118170B33006006FC /* HelloAckPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HelloAckPacket.h; sourceTree = "<group>"; };
@@ -780,21 +779,21 @@
 		76EB046418170B33006006FC /* HelloPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HelloPacket.m; sourceTree = "<group>"; };
 		76EB046618170B33006006FC /* KeyAgreementParticipant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyAgreementParticipant.h; sourceTree = "<group>"; };
 		76EB046718170B33006006FC /* KeyAgreementProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyAgreementProtocol.h; sourceTree = "<group>"; };
-		76EB046818170B33006006FC /* ZrtpRole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZrtpRole.h; sourceTree = "<group>"; };
+		76EB046818170B33006006FC /* ZRTPRole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZRTPRole.h; sourceTree = "<group>"; };
 		76EB046918170B33006006FC /* RecipientUnavailable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecipientUnavailable.h; sourceTree = "<group>"; };
 		76EB046A18170B33006006FC /* RecipientUnavailable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecipientUnavailable.m; sourceTree = "<group>"; };
 		76EB046B18170B33006006FC /* ShortAuthenticationStringGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShortAuthenticationStringGenerator.h; sourceTree = "<group>"; };
 		76EB046C18170B33006006FC /* ShortAuthenticationStringGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShortAuthenticationStringGenerator.m; sourceTree = "<group>"; };
-		76EB046D18170B33006006FC /* ZrtpHandshakeResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZrtpHandshakeResult.h; sourceTree = "<group>"; };
-		76EB046E18170B33006006FC /* ZrtpHandshakeResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZrtpHandshakeResult.m; sourceTree = "<group>"; };
-		76EB046F18170B33006006FC /* ZrtpHandshakeSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZrtpHandshakeSocket.h; sourceTree = "<group>"; };
-		76EB047018170B33006006FC /* ZrtpHandshakeSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZrtpHandshakeSocket.m; sourceTree = "<group>"; };
-		76EB047118170B33006006FC /* ZrtpInitiator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZrtpInitiator.h; sourceTree = "<group>"; };
-		76EB047218170B33006006FC /* ZrtpInitiator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZrtpInitiator.m; sourceTree = "<group>"; };
-		76EB047318170B33006006FC /* ZrtpManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZrtpManager.h; sourceTree = "<group>"; };
-		76EB047418170B33006006FC /* ZrtpManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZrtpManager.m; sourceTree = "<group>"; };
-		76EB047518170B33006006FC /* ZrtpResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZrtpResponder.h; sourceTree = "<group>"; };
-		76EB047618170B33006006FC /* ZrtpResponder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZrtpResponder.m; sourceTree = "<group>"; };
+		76EB046D18170B33006006FC /* ZRTPHandshakeResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZRTPHandshakeResult.h; sourceTree = "<group>"; };
+		76EB046E18170B33006006FC /* ZRTPHandshakeResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZRTPHandshakeResult.m; sourceTree = "<group>"; };
+		76EB046F18170B33006006FC /* ZRTPHandshakeSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZRTPHandshakeSocket.h; sourceTree = "<group>"; };
+		76EB047018170B33006006FC /* ZRTPHandshakeSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZRTPHandshakeSocket.m; sourceTree = "<group>"; };
+		76EB047118170B33006006FC /* ZRTPInitiator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZRTPInitiator.h; sourceTree = "<group>"; };
+		76EB047218170B33006006FC /* ZRTPInitiator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZRTPInitiator.m; sourceTree = "<group>"; };
+		76EB047318170B33006006FC /* ZRTPManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZRTPManager.h; sourceTree = "<group>"; };
+		76EB047418170B33006006FC /* ZRTPManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZRTPManager.m; sourceTree = "<group>"; };
+		76EB047518170B33006006FC /* ZRTPResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZRTPResponder.h; sourceTree = "<group>"; };
+		76EB047618170B33006006FC /* ZRTPResponder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZRTPResponder.m; sourceTree = "<group>"; };
 		76EB047818170B33006006FC /* LowLatencyCandidate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LowLatencyCandidate.h; sourceTree = "<group>"; };
 		76EB047918170B33006006FC /* LowLatencyCandidate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LowLatencyCandidate.m; sourceTree = "<group>"; };
 		76EB047A18170B33006006FC /* LowLatencyConnector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LowLatencyConnector.h; sourceTree = "<group>"; };
@@ -807,8 +806,8 @@
 		76EB048218170B33006006FC /* NetworkStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkStream.m; sourceTree = "<group>"; };
 		76EB048318170B33006006FC /* SecureEndPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecureEndPoint.h; sourceTree = "<group>"; };
 		76EB048418170B33006006FC /* SecureEndPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecureEndPoint.m; sourceTree = "<group>"; };
-		76EB048618170B33006006FC /* UdpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UdpSocket.h; sourceTree = "<group>"; };
-		76EB048718170B33006006FC /* UdpSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UdpSocket.m; sourceTree = "<group>"; };
+		76EB048618170B33006006FC /* UDPSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UDPSocket.h; sourceTree = "<group>"; };
+		76EB048718170B33006006FC /* UDPSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UDPSocket.m; sourceTree = "<group>"; };
 		76EB048A18170B33006006FC /* CallController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallController.h; sourceTree = "<group>"; };
 		76EB048B18170B33006006FC /* CallController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallController.m; sourceTree = "<group>"; };
 		76EB048C18170B33006006FC /* CallFailedServerMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallFailedServerMessage.h; sourceTree = "<group>"; };
@@ -1021,14 +1020,14 @@
 		B60EDE031A05A01700D73516 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		B63761E119E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AFHTTPSessionManager+SignalMethods.h"; sourceTree = "<group>"; };
 		B63761E219E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AFHTTPSessionManager+SignalMethods.m"; sourceTree = "<group>"; };
-		B63761E419E1FBE8005735D1 /* HttpRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequest.h; sourceTree = "<group>"; };
-		B63761E519E1FBE8005735D1 /* HttpRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequest.m; sourceTree = "<group>"; };
-		B63761E619E1FBE8005735D1 /* HttpRequestOrResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequestOrResponse.h; sourceTree = "<group>"; };
-		B63761E719E1FBE8005735D1 /* HttpRequestOrResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequestOrResponse.m; sourceTree = "<group>"; };
-		B63761E819E1FBE8005735D1 /* HttpRequestUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequestUtil.h; sourceTree = "<group>"; };
-		B63761E919E1FBE8005735D1 /* HttpRequestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequestUtil.m; sourceTree = "<group>"; };
-		B63761EA19E1FBE8005735D1 /* HttpResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpResponse.h; sourceTree = "<group>"; };
-		B63761EB19E1FBE8005735D1 /* HttpResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpResponse.m; sourceTree = "<group>"; };
+		B63761E419E1FBE8005735D1 /* HTTPRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPRequest.h; sourceTree = "<group>"; };
+		B63761E519E1FBE8005735D1 /* HTTPRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPRequest.m; sourceTree = "<group>"; };
+		B63761E619E1FBE8005735D1 /* HTTPRequestOrResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPRequestOrResponse.h; sourceTree = "<group>"; };
+		B63761E719E1FBE8005735D1 /* HTTPRequestOrResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPRequestOrResponse.m; sourceTree = "<group>"; };
+		B63761E819E1FBE8005735D1 /* HTTPRequest+Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "HTTPRequest+Util.h"; sourceTree = "<group>"; };
+		B63761E919E1FBE8005735D1 /* HTTPRequest+Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "HTTPRequest+Util.m"; sourceTree = "<group>"; };
+		B63761EA19E1FBE8005735D1 /* HTTPResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPResponse.h; sourceTree = "<group>"; };
+		B63761EB19E1FBE8005735D1 /* HTTPResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPResponse.m; sourceTree = "<group>"; };
 		B6416F37199A0478003C5699 /* an */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = an; path = Localizable.strings; sourceTree = "<group>"; };
 		B6416F3A199A0478003C5699 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = Localizable.strings; sourceTree = "<group>"; };
 		B6416F3D199A0478003C5699 /* be */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = be; path = Localizable.strings; sourceTree = "<group>"; };
@@ -1131,6 +1130,7 @@
 		D221A0E7169DFFC500537ABF /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = ../../../../../../System/Library/Frameworks/AVFoundation.framework; sourceTree = "<group>"; };
 		D24B5BD4169F568C00681372 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = ../../../../../../System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<group>"; };
 		D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		DB8E63651A0C5E2800041EDD /* DNSManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DNSManager.h; sourceTree = "<group>"; };
 		DBD04A081A06F6D2004FE592 /* NSMutableData+Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableData+Util.h"; sourceTree = "<group>"; };
 		DBD04A091A06F6D2004FE592 /* NSMutableData+Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableData+Util.m"; sourceTree = "<group>"; };
 		DBD04A0B1A06FE59004FE592 /* TOCFuture+FutureUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TOCFuture+FutureUtil.h"; sourceTree = "<group>"; };
@@ -1233,8 +1233,8 @@
 		E16E5BE918AAC40200B7C403 /* EC25KeyAgreementParticipant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EC25KeyAgreementParticipant.m; sourceTree = "<group>"; };
 		E16E5BEA18AAC40200B7C403 /* EC25KeyAgreementProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EC25KeyAgreementProtocol.h; sourceTree = "<group>"; };
 		E16E5BEB18AAC40200B7C403 /* EC25KeyAgreementProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EC25KeyAgreementProtocol.m; sourceTree = "<group>"; };
-		E16E5BEC18AAC40200B7C403 /* EvpKeyAgreement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpKeyAgreement.h; sourceTree = "<group>"; };
-		E16E5BED18AAC40200B7C403 /* EvpKeyAgreement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EvpKeyAgreement.m; sourceTree = "<group>"; };
+		E16E5BEC18AAC40200B7C403 /* EVPKeyAgreement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EVPKeyAgreement.h; sourceTree = "<group>"; };
+		E16E5BED18AAC40200B7C403 /* EVPKeyAgreement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EVPKeyAgreement.m; sourceTree = "<group>"; };
 		E16E5BF818AAF02100B7C403 /* EC25AgreerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EC25AgreerTest.m; sourceTree = "<group>"; };
 		E16E5C1218AEDB5A00B7C403 /* message_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = message_icon.png; sourceTree = "<group>"; };
 		E16E5C1318AEDB5A00B7C403 /* phone_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = phone_icon.png; sourceTree = "<group>"; };
@@ -1660,10 +1660,10 @@
 				76EB041E18170B33006006FC /* dns */,
 				76EB042318170B33006006FC /* failures */,
 				76EB042818170B33006006FC /* http */,
-				76EB043518170B33006006FC /* IpAddress.h */,
-				76EB043618170B33006006FC /* IpAddress.m */,
-				76EB043718170B33006006FC /* IpEndPoint.h */,
-				76EB043818170B33006006FC /* IpEndPoint.m */,
+				76EB043518170B33006006FC /* IPAddress.h */,
+				76EB043618170B33006006FC /* IPAddress.m */,
+				76EB043718170B33006006FC /* IPEndPoint.h */,
+				76EB043818170B33006006FC /* IPEndPoint.m */,
 				76EB043918170B33006006FC /* NetworkEndPoint.h */,
 				76EB043A18170B33006006FC /* PacketHandler.h */,
 				76EB043B18170B33006006FC /* PacketHandler.m */,
@@ -1679,8 +1679,8 @@
 		76EB041E18170B33006006FC /* dns */ = {
 			isa = PBXGroup;
 			children = (
-				76EB041F18170B33006006FC /* DnsManager.h */,
-				76EB042018170B33006006FC /* DnsManager.m */,
+				76EB042018170B33006006FC /* DNSManager.m */,
+				DB8E63651A0C5E2800041EDD /* DNSManager.h */,
 				76EB042118170B33006006FC /* HostNameEndPoint.h */,
 				76EB042218170B33006006FC /* HostNameEndPoint.m */,
 			);
@@ -1706,18 +1706,18 @@
 				B67ADDC31989FF8700E1A773 /* RPServerRequestsManager.m */,
 				B63761E119E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.h */,
 				B63761E219E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m */,
-				B63761E419E1FBE8005735D1 /* HttpRequest.h */,
-				B63761E519E1FBE8005735D1 /* HttpRequest.m */,
-				B63761E619E1FBE8005735D1 /* HttpRequestOrResponse.h */,
-				B63761E719E1FBE8005735D1 /* HttpRequestOrResponse.m */,
-				B63761E819E1FBE8005735D1 /* HttpRequestUtil.h */,
-				B63761E919E1FBE8005735D1 /* HttpRequestUtil.m */,
-				B63761EA19E1FBE8005735D1 /* HttpResponse.h */,
-				B63761EB19E1FBE8005735D1 /* HttpResponse.m */,
-				76EB042918170B33006006FC /* HttpManager.h */,
-				76EB042A18170B33006006FC /* HttpManager.m */,
-				76EB043318170B33006006FC /* HttpSocket.h */,
-				76EB043418170B33006006FC /* HttpSocket.m */,
+				B63761E419E1FBE8005735D1 /* HTTPRequest.h */,
+				B63761E519E1FBE8005735D1 /* HTTPRequest.m */,
+				B63761E619E1FBE8005735D1 /* HTTPRequestOrResponse.h */,
+				B63761E719E1FBE8005735D1 /* HTTPRequestOrResponse.m */,
+				B63761E819E1FBE8005735D1 /* HTTPRequest+Util.h */,
+				B63761E919E1FBE8005735D1 /* HTTPRequest+Util.m */,
+				B63761EA19E1FBE8005735D1 /* HTTPResponse.h */,
+				B63761EB19E1FBE8005735D1 /* HTTPResponse.m */,
+				76EB042918170B33006006FC /* HTTPManager.h */,
+				76EB042A18170B33006006FC /* HTTPManager.m */,
+				76EB043318170B33006006FC /* HTTPSocket.h */,
+				76EB043418170B33006006FC /* HTTPSocket.m */,
 			);
 			path = http;
 			sourceTree = "<group>";
@@ -1725,10 +1725,10 @@
 		76EB043C18170B33006006FC /* rtp */ = {
 			isa = PBXGroup;
 			children = (
-				76EB043D18170B33006006FC /* RtpPacket.h */,
-				76EB043E18170B33006006FC /* RtpPacket.m */,
-				76EB043F18170B33006006FC /* RtpSocket.h */,
-				76EB044018170B33006006FC /* RtpSocket.m */,
+				76EB043D18170B33006006FC /* RTPPacket.h */,
+				76EB043E18170B33006006FC /* RTPPacket.m */,
+				76EB043F18170B33006006FC /* RTPSocket.h */,
+				76EB044018170B33006006FC /* RTPSocket.m */,
 				76EB044118170B33006006FC /* srtp */,
 				76EB044818170B33006006FC /* zrtp */,
 			);
@@ -1740,10 +1740,10 @@
 			children = (
 				76EB044218170B33006006FC /* SequenceCounter.h */,
 				76EB044318170B33006006FC /* SequenceCounter.m */,
-				76EB044418170B33006006FC /* SrtpSocket.h */,
-				76EB044518170B33006006FC /* SrtpSocket.m */,
-				76EB044618170B33006006FC /* SrtpStream.h */,
-				76EB044718170B33006006FC /* SrtpStream.m */,
+				76EB044418170B33006006FC /* SRTPSocket.h */,
+				76EB044518170B33006006FC /* SRTPSocket.m */,
+				76EB044618170B33006006FC /* SRTPStream.h */,
+				76EB044718170B33006006FC /* SRTPStream.m */,
 			);
 			path = srtp;
 			sourceTree = "<group>";
@@ -1764,16 +1764,16 @@
 				76EB046A18170B33006006FC /* RecipientUnavailable.m */,
 				76EB046B18170B33006006FC /* ShortAuthenticationStringGenerator.h */,
 				76EB046C18170B33006006FC /* ShortAuthenticationStringGenerator.m */,
-				76EB046D18170B33006006FC /* ZrtpHandshakeResult.h */,
-				76EB046E18170B33006006FC /* ZrtpHandshakeResult.m */,
-				76EB046F18170B33006006FC /* ZrtpHandshakeSocket.h */,
-				76EB047018170B33006006FC /* ZrtpHandshakeSocket.m */,
-				76EB047118170B33006006FC /* ZrtpInitiator.h */,
-				76EB047218170B33006006FC /* ZrtpInitiator.m */,
-				76EB047318170B33006006FC /* ZrtpManager.h */,
-				76EB047418170B33006006FC /* ZrtpManager.m */,
-				76EB047518170B33006006FC /* ZrtpResponder.h */,
-				76EB047618170B33006006FC /* ZrtpResponder.m */,
+				76EB046D18170B33006006FC /* ZRTPHandshakeResult.h */,
+				76EB046E18170B33006006FC /* ZRTPHandshakeResult.m */,
+				76EB046F18170B33006006FC /* ZRTPHandshakeSocket.h */,
+				76EB047018170B33006006FC /* ZRTPHandshakeSocket.m */,
+				76EB047118170B33006006FC /* ZRTPInitiator.h */,
+				76EB047218170B33006006FC /* ZRTPInitiator.m */,
+				76EB047318170B33006006FC /* ZRTPManager.h */,
+				76EB047418170B33006006FC /* ZRTPManager.m */,
+				76EB047518170B33006006FC /* ZRTPResponder.h */,
+				76EB047618170B33006006FC /* ZRTPResponder.m */,
 			);
 			path = zrtp;
 			sourceTree = "<group>";
@@ -1789,8 +1789,8 @@
 				E16E5BE918AAC40200B7C403 /* EC25KeyAgreementParticipant.m */,
 				E16E5BEA18AAC40200B7C403 /* EC25KeyAgreementProtocol.h */,
 				E16E5BEB18AAC40200B7C403 /* EC25KeyAgreementProtocol.m */,
-				E16E5BEC18AAC40200B7C403 /* EvpKeyAgreement.h */,
-				E16E5BED18AAC40200B7C403 /* EvpKeyAgreement.m */,
+				E16E5BEC18AAC40200B7C403 /* EVPKeyAgreement.h */,
+				E16E5BED18AAC40200B7C403 /* EVPKeyAgreement.m */,
 			);
 			path = agreement;
 			sourceTree = "<group>";
@@ -1804,10 +1804,10 @@
 				76EB045818170B33006006FC /* ConfirmAckPacket.m */,
 				76EB045918170B33006006FC /* ConfirmPacket.h */,
 				76EB045A18170B33006006FC /* ConfirmPacket.m */,
-				76EB045B18170B33006006FC /* DhPacket.h */,
-				76EB045C18170B33006006FC /* DhPacket.m */,
-				76EB045D18170B33006006FC /* DhPacketSharedSecretHashes.h */,
-				76EB045E18170B33006006FC /* DhPacketSharedSecretHashes.m */,
+				76EB045B18170B33006006FC /* DHPacket.h */,
+				76EB045C18170B33006006FC /* DHPacket.m */,
+				76EB045D18170B33006006FC /* DHPacketSharedSecretHashes.h */,
+				76EB045E18170B33006006FC /* DHPacketSharedSecretHashes.m */,
 				76EB045F18170B33006006FC /* HandshakePacket.h */,
 				76EB046018170B33006006FC /* HandshakePacket.m */,
 				76EB046118170B33006006FC /* HelloAckPacket.h */,
@@ -1823,7 +1823,7 @@
 			children = (
 				76EB046618170B33006006FC /* KeyAgreementParticipant.h */,
 				76EB046718170B33006006FC /* KeyAgreementProtocol.h */,
-				76EB046818170B33006006FC /* ZrtpRole.h */,
+				76EB046818170B33006006FC /* ZRTPRole.h */,
 			);
 			path = protocols;
 			sourceTree = "<group>";
@@ -1858,8 +1858,8 @@
 		76EB048518170B33006006FC /* udp */ = {
 			isa = PBXGroup;
 			children = (
-				76EB048618170B33006006FC /* UdpSocket.h */,
-				76EB048718170B33006006FC /* UdpSocket.m */,
+				76EB048618170B33006006FC /* UDPSocket.h */,
+				76EB048718170B33006006FC /* UDPSocket.m */,
 			);
 			path = udp;
 			sourceTree = "<group>";
@@ -2013,8 +2013,8 @@
 				7095B7AE18F46D35002C66E2 /* PhoneNumberUtil.h */,
 				7095B7AF18F46D35002C66E2 /* PhoneNumberUtil.m */,
 				76EB04F018170B33006006FC /* protocols */,
-				707E549018FF26E800C8649D /* SmsInvite.h */,
-				707E549118FF26E800C8649D /* SmsInvite.m */,
+				707E549018FF26E800C8649D /* SMSInvite.h */,
+				707E549118FF26E800C8649D /* SMSInvite.m */,
 				76EB04F518170B33006006FC /* NSString+Util.h */,
 				76EB04F618170B33006006FC /* NSString+Util.m */,
 				76EB04F718170B33006006FC /* ThreadManager.h */,
@@ -3423,23 +3423,23 @@
 				76EB061A18170B33006006FC /* DiscardingLog.m in Sources */,
 				76EB068418170B34006006FC /* ContactDetailTableViewCell.m in Sources */,
 				76EB066218170B34006006FC /* SettingsViewController.m in Sources */,
-				76EB05AC18170B33006006FC /* SrtpSocket.m in Sources */,
+				76EB05AC18170B33006006FC /* SRTPSocket.m in Sources */,
 				B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */,
 				76EB062A18170B33006006FC /* BadState.m in Sources */,
 				B97940271832BD2400BD66CB /* UIUtil.m in Sources */,
 				76EB05BE18170B33006006FC /* ConfirmPacket.m in Sources */,
 				76EB058618170B33006006FC /* PreferencesUtil.m in Sources */,
-				76EB05A818170B33006006FC /* RtpSocket.m in Sources */,
+				76EB05A818170B33006006FC /* RTPSocket.m in Sources */,
 				70B80119190C55660042E3F0 /* TextFormat.m in Sources */,
 				E197B61818BBEC1A00F073E5 /* RemoteIOAudio.m in Sources */,
 				70B8011C190C55660042E3F0 /* Utilities.m in Sources */,
 				B67ADDC41989FF8700E1A773 /* RPServerRequestsManager.m in Sources */,
-				76EB059418170B33006006FC /* HttpManager.m in Sources */,
+				76EB059418170B33006006FC /* HTTPManager.m in Sources */,
 				76EB05EC18170B33006006FC /* CallState.m in Sources */,
-				76EB05D218170B33006006FC /* ZrtpInitiator.m in Sources */,
+				76EB05D218170B33006006FC /* ZRTPInitiator.m in Sources */,
 				76EB05E018170B33006006FC /* NetworkStream.m in Sources */,
 				B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */,
-				76EB05D618170B33006006FC /* ZrtpResponder.m in Sources */,
+				76EB05D618170B33006006FC /* ZRTPResponder.m in Sources */,
 				70B8010E190C55660042E3F0 /* CodedInputStream.m in Sources */,
 				7095B7B018F46D35002C66E2 /* PhoneNumberUtil.m in Sources */,
 				70B8010F190C55660042E3F0 /* CodedOutputStream.m in Sources */,
@@ -3464,7 +3464,7 @@
 				76EB058418170B33006006FC /* LocalizableText.m in Sources */,
 				76EB057A18170B33006006FC /* ContactsManager.m in Sources */,
 				E197B61918BBEC1A00F073E5 /* RemoteIOBufferListWrapper.m in Sources */,
-				76EB05A618170B33006006FC /* RtpPacket.m in Sources */,
+				76EB05A618170B33006006FC /* RTPPacket.m in Sources */,
 				76EB064218170B33006006FC /* NSString+Util.m in Sources */,
 				76EB065A18170B34006006FC /* NextResponderScrollView.m in Sources */,
 				76EB062618170B33006006FC /* Queue.m in Sources */,
@@ -3478,12 +3478,12 @@
 				70B80115190C55660042E3F0 /* GeneratedMessage.m in Sources */,
 				E197B61418BBEC1A00F073E5 /* DropoutTracker.m in Sources */,
 				76EB062C18170B33006006FC /* OperationFailed.m in Sources */,
-				707E549218FF26E800C8649D /* SmsInvite.m in Sources */,
+				707E549218FF26E800C8649D /* SMSInvite.m in Sources */,
 				76EB05DA18170B33006006FC /* LowLatencyConnector.m in Sources */,
 				76EB05EE18170B33006006FC /* CallTermination.m in Sources */,
 				E1CD329618BCFF9900B1A496 /* SoundInstance.m in Sources */,
 				76EB05B418170B33006006FC /* HashChain.m in Sources */,
-				76EB05E418170B33006006FC /* UdpSocket.m in Sources */,
+				76EB05E418170B33006006FC /* UDPSocket.m in Sources */,
 				76EB058218170B33006006FC /* Environment.m in Sources */,
 				76EB064418170B33006006FC /* ThreadManager.m in Sources */,
 				70B8011A190C55660042E3F0 /* UnknownFieldSet.m in Sources */,
@@ -3491,13 +3491,13 @@
 				E197B61E18BBEC6D00F073E5 /* AudioRouter.m in Sources */,
 				E197B60D18BBEC1A00F073E5 /* AudioSocket.m in Sources */,
 				76EB061418170B33006006FC /* AnonymousConditionLogger.m in Sources */,
-				76EB05C018170B33006006FC /* DhPacket.m in Sources */,
+				76EB05C018170B33006006FC /* DHPacket.m in Sources */,
 				765052A1182945EF008313E1 /* LocalizableCustomFontLabel.m in Sources */,
 				7038632818F70C0700D4A43F /* EvpSymetricUtil.m in Sources */,
 				76EB066418170B34006006FC /* TabBarParentViewController.m in Sources */,
 				76EB068618170B34006006FC /* ContactTableViewCell.m in Sources */,
-				B63761ED19E1FBE8005735D1 /* HttpRequestOrResponse.m in Sources */,
-				76EB05A018170B33006006FC /* IpAddress.m in Sources */,
+				B63761ED19E1FBE8005735D1 /* HTTPRequestOrResponse.m in Sources */,
+				76EB05A018170B33006006FC /* IPAddress.m in Sources */,
 				70B8011B190C55660042E3F0 /* UnknownFieldSet_Builder.m in Sources */,
 				B9A578B1183D60EE00C17105 /* FavouriteTableViewCell.m in Sources */,
 				76EB057618170B33006006FC /* Contact.m in Sources */,
@@ -3506,7 +3506,7 @@
 				76EB065818170B34006006FC /* LeftSideMenuViewController.m in Sources */,
 				DBD04A0A1A06F6D2004FE592 /* NSMutableData+Util.m in Sources */,
 				76EB05EA18170B33006006FC /* CallProgress.m in Sources */,
-				76EB05C218170B33006006FC /* DhPacketSharedSecretHashes.m in Sources */,
+				76EB05C218170B33006006FC /* DHPacketSharedSecretHashes.m in Sources */,
 				B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */,
 				76EB063218170B33006006FC /* NSData+CRC.m in Sources */,
 				E197B62418BBF5BB00F073E5 /* SoundPlayer.m in Sources */,
@@ -3515,7 +3515,7 @@
 				76EB063618170B33006006FC /* NSData+Util.m in Sources */,
 				E197B60C18BBEC1A00F073E5 /* AudioPacker.m in Sources */,
 				E197B61218BBEC1A00F073E5 /* AudioStretcher.m in Sources */,
-				76EB05A218170B33006006FC /* IpEndPoint.m in Sources */,
+				76EB05A218170B33006006FC /* IPEndPoint.m in Sources */,
 				70B8010D190C55660042E3F0 /* AbstractMessage_Builder.m in Sources */,
 				E197B61A18BBEC1A00F073E5 /* SpeexCodec.m in Sources */,
 				70B80118190C55660042E3F0 /* MutableField.m in Sources */,
@@ -3534,18 +3534,18 @@
 				76EB05C418170B33006006FC /* HandshakePacket.m in Sources */,
 				76EB05AA18170B33006006FC /* SequenceCounter.m in Sources */,
 				7038632718F70C0700D4A43F /* CryptoTools.m in Sources */,
-				76EB058C18170B33006006FC /* DnsManager.m in Sources */,
+				76EB058C18170B33006006FC /* DNSManager.m in Sources */,
 				76EB059018170B33006006FC /* IgnoredPacketFailure.m in Sources */,
 				B942EB0E183A9633000887BB /* SearchBarTitleView.m in Sources */,
 				765052AF182AC9B5008313E1 /* DialerButtonView.m in Sources */,
 				70B80110190C55660042E3F0 /* ConcreteExtensionField.m in Sources */,
 				70B80112190C55660042E3F0 /* ExtendableMessage_Builder.m in Sources */,
-				76EB05D418170B33006006FC /* ZrtpManager.m in Sources */,
+				76EB05D418170B33006006FC /* ZRTPManager.m in Sources */,
 				76EB058E18170B33006006FC /* HostNameEndPoint.m in Sources */,
 				E19167A418A9687800B7A468 /* DH3KKeyAgreementParticipant.m in Sources */,
 				B9CA51BA18809ACA007E204E /* InviteContactsViewController.m in Sources */,
 				76EB065218170B34006006FC /* FavouritesViewController.m in Sources */,
-				E16E5BF018AAC40200B7C403 /* EvpKeyAgreement.m in Sources */,
+				E16E5BF018AAC40200B7C403 /* EVPKeyAgreement.m in Sources */,
 				70B80113190C55660042E3F0 /* ExtensionRegistry.m in Sources */,
 				B9EB5AC61884D370007CBB57 /* UnseenWhisperUserCell.m in Sources */,
 				B65EDA1219E1BE6400AAA7CB /* RPAPICall.m in Sources */,
@@ -3561,16 +3561,16 @@
 				DBE024DA1A09FA540043579E /* TOCFuture+FutureUtil.m in Sources */,
 				B9B89C54185A2B5F00A24465 /* LeftSideMenuCell.m in Sources */,
 				76EB068E18170B34006006FC /* CallLogTableViewCell.m in Sources */,
-				76EB05CE18170B33006006FC /* ZrtpHandshakeResult.m in Sources */,
-				B63761EE19E1FBE8005735D1 /* HttpRequestUtil.m in Sources */,
+				76EB05CE18170B33006006FC /* ZRTPHandshakeResult.m in Sources */,
+				B63761EE19E1FBE8005735D1 /* HTTPRequest+Util.m in Sources */,
 				76EB05B618170B33006006FC /* MasterSecret.m in Sources */,
 				76EB05F418170B33006006FC /* CallConnectResult.m in Sources */,
-				76EB059E18170B33006006FC /* HttpSocket.m in Sources */,
+				76EB059E18170B33006006FC /* HTTPSocket.m in Sources */,
 				E197B60E18BBEC1A00F073E5 /* CallAudioManager.m in Sources */,
 				76EB065418170B34006006FC /* InboxFeedViewController.m in Sources */,
 				76EB054018170B33006006FC /* AppDelegate.m in Sources */,
-				76EB05D018170B33006006FC /* ZrtpHandshakeSocket.m in Sources */,
-				B63761EF19E1FBE8005735D1 /* HttpResponse.m in Sources */,
+				76EB05D018170B33006006FC /* ZRTPHandshakeSocket.m in Sources */,
+				B63761EF19E1FBE8005735D1 /* HTTPResponse.m in Sources */,
 				E197B61518BBEC1A00F073E5 /* JitterQueue.m in Sources */,
 				BFB074C919A5611000F2947C /* ObservableValue.m in Sources */,
 				76EB05C818170B33006006FC /* HelloPacket.m in Sources */,
@@ -3591,13 +3591,13 @@
 				76EB05B218170B33006006FC /* DH3KKeyAgreementProtocol.m in Sources */,
 				76EB066018170B34006006FC /* RegisterViewController.m in Sources */,
 				76EB060618170B33006006FC /* PhoneNumberDirectoryFilterManager.m in Sources */,
-				B63761EC19E1FBE8005735D1 /* HttpRequest.m in Sources */,
+				B63761EC19E1FBE8005735D1 /* HTTPRequest.m in Sources */,
 				76EB060818170B33006006FC /* ResponderSessionDescriptor.m in Sources */,
 				B90418E6183E9DD40038554A /* DateUtil.m in Sources */,
 				76EB05C618170B33006006FC /* HelloAckPacket.m in Sources */,
 				76EB05E818170B33006006FC /* CallFailedServerMessage.m in Sources */,
 				76EB05FA18170B33006006FC /* CallConnectUtil_Responder.m in Sources */,
-				76EB05AE18170B33006006FC /* SrtpStream.m in Sources */,
+				76EB05AE18170B33006006FC /* SRTPStream.m in Sources */,
 				E197B61318BBEC1A00F073E5 /* DesiredBufferDepthController.m in Sources */,
 				76EB064818170B33006006FC /* Zid.m in Sources */,
 				76EB05E218170B33006006FC /* SecureEndPoint.m in Sources */,
@@ -3615,13 +3615,13 @@
 			files = (
 				76EB05ED18170B33006006FC /* CallState.m in Sources */,
 				76EB064918170B33006006FC /* Zid.m in Sources */,
-				76EB05AF18170B33006006FC /* SrtpStream.m in Sources */,
+				76EB05AF18170B33006006FC /* SRTPStream.m in Sources */,
 				76EB061318170B33006006FC /* LoggingUtil.m in Sources */,
 				DBE024DB1A09FA5F0043579E /* TOCFuture+FutureUtil.m in Sources */,
 				76EB064F18170B34006006FC /* ContactDetailViewController.m in Sources */,
-				76EB05A718170B33006006FC /* RtpPacket.m in Sources */,
+				76EB05A718170B33006006FC /* RTPPacket.m in Sources */,
 				76EB05BF18170B33006006FC /* ConfirmPacket.m in Sources */,
-				76EB05E518170B33006006FC /* UdpSocket.m in Sources */,
+				76EB05E518170B33006006FC /* UDPSocket.m in Sources */,
 				76EB05BD18170B33006006FC /* ConfirmAckPacket.m in Sources */,
 				76EB05DB18170B33006006FC /* LowLatencyConnector.m in Sources */,
 				76EB060F18170B33006006FC /* DecayingSampleEstimator.m in Sources */,
@@ -3637,11 +3637,11 @@
 				76EB05FD18170B33006006FC /* CallConnectUtil_Server.m in Sources */,
 				76EB058B18170B33006006FC /* Release.m in Sources */,
 				76D713E8182D3E3F00C9C9C8 /* PreferenceListTableViewCell.m in Sources */,
-				76EB05D318170B33006006FC /* ZrtpInitiator.m in Sources */,
+				76EB05D318170B33006006FC /* ZRTPInitiator.m in Sources */,
 				B9A578B2183D60EE00C17105 /* FavouriteTableViewCell.m in Sources */,
 				76EB061518170B33006006FC /* AnonymousConditionLogger.m in Sources */,
 				76EB060718170B33006006FC /* PhoneNumberDirectoryFilterManager.m in Sources */,
-				76EB05A118170B33006006FC /* IpAddress.m in Sources */,
+				76EB05A118170B33006006FC /* IPAddress.m in Sources */,
 				762D9DD018281C7400A5E418 /* SettingsTableHeaderView.m in Sources */,
 				76EB05CD18170B33006006FC /* ShortAuthenticationStringGenerator.m in Sources */,
 				76EB05B718170B33006006FC /* MasterSecret.m in Sources */,
@@ -3657,8 +3657,8 @@
 				A157075817F0CD6D007C2BD6 /* AudioRemoteIOTest.m in Sources */,
 				76EB05DD18170B33006006FC /* StreamPair.m in Sources */,
 				76EB065318170B34006006FC /* FavouritesViewController.m in Sources */,
-				76EB059518170B33006006FC /* HttpManager.m in Sources */,
-				76EB05A318170B33006006FC /* IpEndPoint.m in Sources */,
+				76EB059518170B33006006FC /* HTTPManager.m in Sources */,
+				76EB05A318170B33006006FC /* IPEndPoint.m in Sources */,
 				76EB054118170B33006006FC /* AppDelegate.m in Sources */,
 				A157075917F0CD6D007C2BD6 /* AudioStretcherTest.m in Sources */,
 				76EB05B918170B33006006FC /* NegotiationFailed.m in Sources */,
@@ -3669,7 +3669,7 @@
 				76EB068518170B34006006FC /* ContactDetailTableViewCell.m in Sources */,
 				A157075E17F0CD6D007C2BD6 /* HttpRequestResponseTest.m in Sources */,
 				76919BF71805D190008C664A /* ContactManagerTest.m in Sources */,
-				76EB05D118170B33006006FC /* ZrtpHandshakeSocket.m in Sources */,
+				76EB05D118170B33006006FC /* ZRTPHandshakeSocket.m in Sources */,
 				A157075F17F0CD6D007C2BD6 /* IpAddressTest.m in Sources */,
 				76EB05F518170B33006006FC /* CallConnectResult.m in Sources */,
 				BFB074C219A4BCA400F2947C /* ObservableTest.m in Sources */,
@@ -3691,7 +3691,7 @@
 				76EB063118170B33006006FC /* NSData+Conversions.m in Sources */,
 				76EB05F918170B33006006FC /* CallConnectUtil_Initiator.m in Sources */,
 				A157076717F0CD6D007C2BD6 /* MasterSecretTest.m in Sources */,
-				76EB05CF18170B33006006FC /* ZrtpHandshakeResult.m in Sources */,
+				76EB05CF18170B33006006FC /* ZRTPHandshakeResult.m in Sources */,
 				76EB060518170B33006006FC /* PhoneNumberDirectoryFilter.m in Sources */,
 				76EB065D18170B34006006FC /* CallLogViewController.m in Sources */,
 				A157076817F0CD6D007C2BD6 /* ShortAuthenticationStringGeneratorTest.m in Sources */,
@@ -3707,14 +3707,14 @@
 				76EB063318170B33006006FC /* NSData+CRC.m in Sources */,
 				BFB074C819A5611000F2947C /* TOCCancelToken+FutureUtil.m in Sources */,
 				76EB062718170B33006006FC /* Queue.m in Sources */,
-				76EB05C118170B33006006FC /* DhPacket.m in Sources */,
+				76EB05C118170B33006006FC /* DHPacket.m in Sources */,
 				76EB060B18170B33006006FC /* HttpRequest+SignalUtil.m in Sources */,
 				A157076C17F0CD6D007C2BD6 /* NetworkStreamTest.m in Sources */,
 				76EB065B18170B34006006FC /* NextResponderScrollView.m in Sources */,
 				76EB05BB18170B33006006FC /* CommitPacket.m in Sources */,
 				A157076D17F0CD6D007C2BD6 /* SecureEndPointTest.m in Sources */,
 				A157076E17F0CD6D007C2BD6 /* UdpSocketTest.m in Sources */,
-				76EB05C318170B33006006FC /* DhPacketSharedSecretHashes.m in Sources */,
+				76EB05C318170B33006006FC /* DHPacketSharedSecretHashes.m in Sources */,
 				BF8C3D8319CE3B6A008F644C /* RecentCallTest.m in Sources */,
 				76EB05C718170B33006006FC /* HelloAckPacket.m in Sources */,
 				A157076F17F0CD6D007C2BD6 /* PhoneNumberTest.m in Sources */,
@@ -3722,8 +3722,8 @@
 				76C87F14181EE11C00C4ACAB /* InboxFeedFooterCell.m in Sources */,
 				A157077017F0CD6D007C2BD6 /* SessionDescriptorTest.m in Sources */,
 				76EB05B318170B33006006FC /* DH3KKeyAgreementProtocol.m in Sources */,
-				76EB05AD18170B33006006FC /* SrtpSocket.m in Sources */,
-				76EB058D18170B33006006FC /* DnsManager.m in Sources */,
+				76EB05AD18170B33006006FC /* SRTPSocket.m in Sources */,
+				76EB058D18170B33006006FC /* DNSManager.m in Sources */,
 				A157077117F0CD6D007C2BD6 /* DecayingSampleEstimatorTest.m in Sources */,
 				A157077217F0CD6D007C2BD6 /* EventWindowTest.m in Sources */,
 				B97CBFAF1886100E008E0DE9 /* CountryCodeTableViewCell.m in Sources */,
@@ -3744,7 +3744,7 @@
 				76EB068D18170B34006006FC /* InboxFeedTableViewCell.m in Sources */,
 				BFB074C119A4BCA400F2947C /* FutureUtilTest.m in Sources */,
 				B684A46D19C3446200B11029 /* PushManagerTest.m in Sources */,
-				76EB05A918170B33006006FC /* RtpSocket.m in Sources */,
+				76EB05A918170B33006006FC /* RTPSocket.m in Sources */,
 				765052B0182AC9B5008313E1 /* DialerButtonView.m in Sources */,
 				76EB062B18170B33006006FC /* BadState.m in Sources */,
 				76EB062F18170B33006006FC /* SecurityFailure.m in Sources */,
@@ -3753,11 +3753,11 @@
 				76EB05E718170B33006006FC /* CallController.m in Sources */,
 				76EB05A518170B33006006FC /* PacketHandler.m in Sources */,
 				A157077A17F0CD6D007C2BD6 /* CyclicalBufferTest.m in Sources */,
-				76EB05D518170B33006006FC /* ZrtpManager.m in Sources */,
+				76EB05D518170B33006006FC /* ZRTPManager.m in Sources */,
 				76EB061118170B33006006FC /* EventWindow.m in Sources */,
 				76EB05FF18170B33006006FC /* InitiateSignal.pb.m in Sources */,
 				76EB057518170B33006006FC /* RecentCallManager.m in Sources */,
-				76EB059F18170B33006006FC /* HttpSocket.m in Sources */,
+				76EB059F18170B33006006FC /* HTTPSocket.m in Sources */,
 				76EB062D18170B33006006FC /* OperationFailed.m in Sources */,
 				76EB068F18170B34006006FC /* CallLogTableViewCell.m in Sources */,
 				B9CA51BB18809ACA007E204E /* InviteContactsViewController.m in Sources */,
@@ -3781,7 +3781,7 @@
 				A157077E17F0CD6D007C2BD6 /* QueueTest.m in Sources */,
 				E16E5BF918AAF02100B7C403 /* EC25AgreerTest.m in Sources */,
 				A157077F17F0CD6D007C2BD6 /* UtilTest.m in Sources */,
-				76EB05D718170B33006006FC /* ZrtpResponder.m in Sources */,
+				76EB05D718170B33006006FC /* ZRTPResponder.m in Sources */,
 				76EB05EF18170B33006006FC /* CallTermination.m in Sources */,
 				76EB065518170B34006006FC /* InboxFeedViewController.m in Sources */,
 				BFB074CA19A5611000F2947C /* ObservableValue.m in Sources */,

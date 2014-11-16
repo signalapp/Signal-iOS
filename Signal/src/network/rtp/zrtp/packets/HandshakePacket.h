@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "RtpPacket.h"
+#import "RTPPacket.h"
 #import "KeyAgreementParticipant.h"
 #import "KeyAgreementProtocol.h"
 #import "Util.h"
@@ -45,7 +45,7 @@
 
 #define HANDSHAKE_TRUNCATED_HMAC_LENGTH 8
 
-@class DhPacket;
+@class DHPacket;
 @class CommitPacket;
 @class ConfirmPacket;
 @class HelloPacket;
@@ -54,25 +54,25 @@
 
 @interface HandshakePacket : NSObject
 
-@property (nonatomic,readonly) NSData* typeId;
-@property (nonatomic,readonly) NSData* payload;
+@property (strong, readonly, nonatomic) NSData* typeId;
+@property (strong, readonly, nonatomic) NSData* payload;
 
-+(HandshakePacket*) handshakePacketWithTypeId:(NSData*)typeId andPayload:(NSData*)payload;
-+(HandshakePacket*) handshakePacketParsedFromRtpPacket:(RtpPacket*)rtpPacket;
--(HandshakePacket*) withHmacAppended:(NSData*)macKey;
--(HandshakePacket*) withHmacVerifiedAndRemoved:(NSData*)macKey;
+- (instancetype)initWithTypeId:(NSData*)typeId andPayload:(NSData*)payload;
+- (instancetype)initFromRTPPacket:(RTPPacket*)rtpPacket;
+- (HandshakePacket*)withHMACAppended:(NSData*)macKey;
+- (HandshakePacket*)withHMACVerifiedAndRemoved:(NSData*)macKey;
 
--(NSData*)rtpExtensionPayloadExceptCrc;
--(NSData*)dataUsedForAuthentication;
--(RtpPacket*) embeddedIntoRtpPacketWithSequenceNumber:(uint16_t)sequenceNumber usingInteropOptions:(NSArray*)interopOptions;
+- (NSData*)dataUsedForAuthentication;
+- (RTPPacket*)embeddedIntoRTPPacketWithSequenceNumber:(uint16_t)sequenceNumber
+                                  usingInteropOptions:(NSArray*)interopOptions;
 
--(HelloPacket*) parsedAsHello;
--(HelloAckPacket*) parsedAsHelloAck;
--(CommitPacket*) parsedAsCommitPacket;
--(DhPacket*) parsedAsDh1;
--(DhPacket*) parsedAsDh2;
--(ConfirmPacket*) parsedAsConfirm1AuthenticatedWithMacKey:(NSData*)macKey andCipherKey:(NSData*)cipherKey;
--(ConfirmPacket*) parsedAsConfirm2AuthenticatedWithMacKey:(NSData*)macKey andCipherKey:(NSData*)cipherKey;
--(ConfirmAckPacket*) parsedAsConfAck;
+- (HelloPacket*)parsedAsHello;
+- (HelloAckPacket*)parsedAsHelloAck;
+- (CommitPacket*)parsedAsCommitPacket;
+- (DHPacket*)parsedAsDH1;
+- (DHPacket*)parsedAsDH2;
+- (ConfirmPacket*)parsedAsConfirm1AuthenticatedWithMacKey:(NSData*)macKey andCipherKey:(NSData*)cipherKey;
+- (ConfirmPacket*)parsedAsConfirm2AuthenticatedWithMacKey:(NSData*)macKey andCipherKey:(NSData*)cipherKey;
+- (ConfirmAckPacket*)parsedAsConfAck;
 
 @end
