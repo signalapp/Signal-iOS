@@ -73,7 +73,8 @@
     NSData* legacySpecifiedData = [NSData dataWithBytes:legacySpecifiedData_raw length:sizeof(legacySpecifiedData_raw)];
 
     RTPPacket* rtp = [[RTPPacket alloc] initFromPacketData:legacySpecifiedData];
-    HelloPacket* p = [[HelloPacket alloc] initFromHandshakePacket:[[HandshakePacket alloc] initFromRTPPacket:rtp]];
+    HandshakePacket* handshake = [[HandshakePacket alloc] initFromRTPPacket:rtp];
+    HelloPacket* p = [[HelloPacket alloc] initFromHandshakePacket:handshake];
     [p verifyMacWithHashChainH2:h.h2];
     test(rtp.wasAdjustedDueToInteropIssues);
     test([p.hashChainH3 isEqual:h.h3]);

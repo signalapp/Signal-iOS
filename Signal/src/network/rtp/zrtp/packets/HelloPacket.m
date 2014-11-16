@@ -261,8 +261,9 @@
         [self setFlagsAndSpecIdsFromPayload:payload];
         
         self.embedding = handshakePacket;
-
     }
+    
+    return self;
 }
 
 - (NSArray*)agreeIdsIncludingImplied {
