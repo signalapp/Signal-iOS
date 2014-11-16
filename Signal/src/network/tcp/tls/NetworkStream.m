@@ -55,6 +55,9 @@
                 [self onNetworkFailure:error];
             }
         }];
+        
+        [self.inputStream setDelegate:self];
+        [self.outputStream setDelegate:self];
     }
     
     return self;
