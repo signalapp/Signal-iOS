@@ -24,11 +24,17 @@
 static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableViewCell";
 
 
-@interface ContactsTableViewController () {
-    NSMutableDictionary *_latestAlphabeticalContacts;
-    NSArray *_latestSortedAlphabeticalContactKeys;
-    NSArray *_latestContacts;
+@interface ContactsTableViewController () <UISearchBarDelegate, UISearchResultsUpdating>
+{
+    NSMutableDictionary *latestAlphabeticalContacts;
+    NSArray *latestSortedAlphabeticalContactKeys;
+    NSArray * latestContacts;
+    
+    NSArray * searchResults;
 }
+
+@property (nonatomic, strong) UISearchController *searchController;
+
 @end
 
 @implementation ContactsTableViewController
@@ -37,16 +43,58 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     [super viewDidLoad];
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
     //Hide search bar
     self.tableView.contentOffset = CGPointMake(0, 44);
     
+    self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+    
+    self.searchController.searchResultsUpdater = self;
+    
+    self.searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y, self.searchController.searchBar.frame.size.width, 44.0);
+    
+    self.tableView.tableHeaderView = self.searchController.searchBar;
+    self.definesPresentationContext = YES;
+
     [self setupContacts];
+    searchResults = latestContacts;
+    
     [self.tableView reloadData];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
+
+
+#pragma mark - UISearchResultsUpdating
+
+-(void)updateSearchResultsForSearchController:(UISearchController *)searchController {
+    
+    NSString *searchString = [self.searchController.searchBar text];
+    
+    [self filterContentForSearchText:searchString scope:nil];
+    
+    [self.tableView reloadData];
+}
+
+
+#pragma mark - UISearchBarDelegate
+
+- (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope {
+    [self updateSearchResultsForSearchController:self.searchController];
+}
+
+
+#pragma mark - Filter
+
+- (void)filterContentForSearchText:(NSString*)searchText scope:(NSString*)scope
+{
+    NSPredicate *resultPredicate = [NSPredicate predicateWithFormat:@"fullName contains[c] %@", searchText];
+    searchResults = [latestContacts filteredArrayUsingPredicate:resultPredicate];
+    if (!searchResults.count && _searchController.searchBar.text.length == 0) searchResults = latestContacts;
+}
+
 
 #pragma mark - Contact functions
 
@@ -56,31 +104,32 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     //    [observableContacts watchLatestValue:^(NSArray *latestContacts) {
     //        _latestContacts = latestContacts;
     //    } onThread:NSThread.mainThread untilCancelled:nil];
-    _latestContacts = [DemoDataFactory makeFakeContacts];
+    
+    latestContacts = [DemoDataFactory makeFakeContacts];
     
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"firstName" ascending:YES];
     NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
-    _latestSortedAlphabeticalContactKeys = [_latestContacts sortedArrayUsingDescriptors:sortDescriptors];
+    latestSortedAlphabeticalContactKeys = [latestContacts sortedArrayUsingDescriptors:sortDescriptors];
     
-    _latestAlphabeticalContacts = [self alphabetDictionaryInit];
+    latestAlphabeticalContacts = [self alphabetDictionaryInit];
     
-    for (Contact*contact in _latestContacts)
+    for (Contact*contact in latestContacts)
     {
         NSString * firstLetter = [contact.firstName substringToIndex:1];
         
-        NSMutableArray * mutArray = [[_latestAlphabeticalContacts objectForKey:firstLetter] mutableCopy];
+        NSMutableArray * mutArray = [[latestAlphabeticalContacts objectForKey:firstLetter] mutableCopy];
         if (![mutArray containsObject:contact])
             [mutArray addObject:contact];
-        [_latestAlphabeticalContacts setObject:mutArray forKey:firstLetter];
+        [latestAlphabeticalContacts setObject:mutArray forKey:firstLetter];
         
     }
     
-    _latestSortedAlphabeticalContactKeys = [[_latestAlphabeticalContacts allKeys]sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+    latestSortedAlphabeticalContactKeys = [[latestAlphabeticalContacts allKeys]sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
     
 }
 
 - (NSArray *)contactsForSectionIndex:(NSUInteger)index {
-    return [_latestAlphabeticalContacts valueForKey:_latestSortedAlphabeticalContactKeys[index]];
+    return [latestAlphabeticalContacts valueForKey:latestSortedAlphabeticalContactKeys[index]];
 }
 
 
@@ -124,23 +173,34 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 
 #pragma mark - Table view data source
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return (NSInteger)[[self contactsForSectionIndex:(NSUInteger)section] count];
+    if (self.searchController.active) {
+        return (NSInteger)[searchResults count];
+    } else {
+        return (NSInteger)[[self contactsForSectionIndex:(NSUInteger)section] count];
+    }
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    if ([[self contactsForSectionIndex:(NSUInteger)section] count])
-        return _latestSortedAlphabeticalContactKeys[(NSUInteger)section];
-    else return nil;
+    
+    if ([[self contactsForSectionIndex:(NSUInteger)section] count]) {
+        return latestSortedAlphabeticalContactKeys[(NSUInteger)section];
+    } else {
+        return nil;
+    }
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return (NSInteger)[[_latestAlphabeticalContacts allKeys] count];
+    if (self.searchController.active) {
+        return 1;
+    } else {
+        return (NSInteger)[[latestAlphabeticalContacts allKeys] count];
+    }
 }
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
 {
     tableView.sectionIndexBackgroundColor = [UIColor clearColor];
-    return _latestSortedAlphabeticalContactKeys;
+    return latestSortedAlphabeticalContactKeys;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -151,10 +211,9 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
                                       reuseIdentifier:CONTACT_BROWSE_TABLE_CELL_IDENTIFIER];
     }
     
-    NSArray *contactSection = [self contactsForSectionIndex:(NSUInteger)indexPath.section];
-    Contact *contact = contactSection[(NSUInteger)indexPath.row];
     
-    [cell configureWithContact:contact];
+    [cell configureWithContact:[self contactForIndexPath:indexPath]];
+    
     return cell;
 }
 
@@ -162,6 +221,20 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 {
     [self performSegueWithIdentifier:@"DetailSegue" sender:self];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+-(Contact*)contactForIndexPath:(NSIndexPath*)indexPath
+{
+    Contact *contact = nil;
+    
+    if (self.searchController.active) {
+        contact = [searchResults objectAtIndex:(NSUInteger)indexPath.row];
+    } else {
+        NSArray *contactSection = [self contactsForSectionIndex:(NSUInteger)indexPath.section];
+        contact = contactSection[(NSUInteger)indexPath.row];
+    }
+    
+    return contact;
 }
 
 #pragma mark - Segue

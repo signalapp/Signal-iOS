@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface ContactsTableViewController : UITableViewController
-@property(nonatomic,strong) IBOutlet UISearchBar* searchBar;
+
 @end
