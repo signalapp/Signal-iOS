@@ -1708,7 +1708,7 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 			potentialRowid:rowidNumber];
 	}
 	
-	// Update other changeSets (if needed)
+	// Update other changeSets (if needed), including the
 	
 	YDBCKChangeQueue *masterQueue = parentConnection->parent->masterQueue;
 	YDBCKChangeQueue *pendingQueue = [masterQueue newPendingQueue];
@@ -1721,7 +1721,7 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 						 withSavedRowid:rowidNumber
 								 record:savedRecord
 					 databaseIdentifier:changeSet.databaseIdentifier
-				  isOpPartialCompletion:NO];
+				  isOpPartialCompletion:YES];
 	}
 	
 	for (CKRecordID *deletedRecordID in deletedRecordIDs)
@@ -1795,15 +1795,11 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		          isOpPartialCompletion:NO];
 	}
 	
-	for (CKRecordID *deletedRecordID in deletedRecordIDs)
-	{
-		NSNumber *rowidNumber = [mapping objectForKey:deletedRecordID];
-		
-		[masterQueue updatePendingQueue:pendingQueue
-		          withSavedDeletedRowid:rowidNumber
-		                       recordID:deletedRecordID
-		             databaseIdentifier:changeSet.databaseIdentifier];
-	}
+	// Note: No need to updatePendingQueue:withSavedDeletedRowid:::,
+	// because that method only handles updating the inFlight changeSet.
+	//
+	// But we already dropped the corresponding row from the database anyway,
+	// using the removeQueueRowWithUUID method.
 	
 	for (YDBCKChangeSet *oldChangeSet in pendingQueue.changeSetsFromPreviousCommits)
 	{
@@ -1944,7 +1940,7 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	{
 		// Nothing to do here.
 		// We already handled everything in
-		//   'handleCompletedOperationWithChangeSet:savedRecords:'.
+		//   'handleCompletedOperationWithChangeSet:savedRecords:deletedRecordIDs:'.
 		return;
 	}
 	if (parentConnection->isOperationPartialCompletionTransaction)
@@ -1994,8 +1990,8 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 			{
 				[masterQueue updatePendingQueue:pendingQueue
 				         withRemoteDeletedRowid:rowidNumber
-				                       recordID:dirtyRecordInfo.dirty_record.recordID // I don't think we'll have this?
-				             databaseIdentifier:dirtyRecordInfo.dirty_databaseIdentifier];
+				                       recordID:dirtyRecordInfo.clean_recordID
+				             databaseIdentifier:dirtyRecordInfo.clean_databaseIdentifier];
 			}
 			else if (dirtyRecordInfo.skipUploadDeletion)
 			{
