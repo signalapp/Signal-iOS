@@ -35,6 +35,7 @@
         _contactPictureView.image = image;
     } else {
         _contactPictureView.image = nil;
+        [_contactPictureView addConstraint:[NSLayoutConstraint constraintWithItem:_contactPictureView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0f constant:0]];
     }
 }
 
