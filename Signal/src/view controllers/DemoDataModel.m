@@ -112,18 +112,28 @@ enum {kDemoDataModelCase0, kDemoDataModelCase1,kDemoDataModelCase2, kDemoDataMod
     switch (modelNumber) {
         case kDemoDataModelCase0:
             _demoContact = [Contact contactWithFirstName:@"Dylan" andLastName:@"Bourgeois" andUserTextPhoneNumbers:@[@"954-736-9230"] andEmails:nil andContactID:0];
+            _demoContact.isRedPhoneContact = YES;
+            _demoContact.isTextSecureContact = YES;
             break;
         case kDemoDataModelCase1:
             _demoContact = [Contact contactWithFirstName:@"Frederic" andLastName:@"Jacobs" andUserTextPhoneNumbers:@[@"954-736-9231"] andEmails:nil andContactID:0];
+            _demoContact.isRedPhoneContact = YES;
+            _demoContact.isTextSecureContact = NO;
             break;
         case kDemoDataModelCase2:
             _demoContact = [Contact contactWithFirstName:@"Romain" andLastName:@"Ruetschi" andUserTextPhoneNumbers:@[@"954-736-9233"] andEmails:nil andContactID:0];
+            _demoContact.isRedPhoneContact = NO;
+            _demoContact.isTextSecureContact = NO;
             break;
         case kDemoDataModelCase3:
             _demoContact = [Contact contactWithFirstName:@"Stephen" andLastName:@"Colbert" andUserTextPhoneNumbers:@[@"954-736-9232"] andEmails:nil andContactID:0];
+            _demoContact.isRedPhoneContact = NO;
+            _demoContact.isTextSecureContact = YES;
             break;
         case kDemoDataModelCase4:
             _demoContact = [Contact contactWithFirstName:@"Johnny" andLastName:@"Ramone" andUserTextPhoneNumbers:@[@"954-736-9221"] andEmails:nil andContactID:0];
+            _demoContact.isRedPhoneContact = YES;
+            _demoContact.isTextSecureContact = YES;
             break;
         default:
             break;

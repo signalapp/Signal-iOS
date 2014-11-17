@@ -37,6 +37,20 @@
         _contactPictureView.image = nil;
         [_contactPictureView addConstraint:[NSLayoutConstraint constraintWithItem:_contactPictureView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0f constant:0]];
     }
+    
+    if (contact.isRedPhoneContact)
+    {
+        _callButton.imageView.image = [UIImage imageNamed:@"call_dark"];
+    } else {
+        [_callButton addConstraint:[NSLayoutConstraint constraintWithItem:_callButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0f constant:0]];
+    }
+    
+    if (contact.isTextSecureContact)
+    {
+        _messageButton.imageView.image = [UIImage imageNamed:@"signal"];
+    } else {
+        [_messageButton addConstraint:[NSLayoutConstraint constraintWithItem:_messageButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0f constant:0]];
+    }
 }
 
 - (void)configureBorder:(BOOL)show {
