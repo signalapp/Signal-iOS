@@ -44,11 +44,15 @@
                         </subviews>
                         <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstAttribute="trailingMargin" secondItem="PaA-ol-uQT" secondAttribute="trailing" constant="-16" id="EdI-ia-IjN"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="PaA-ol-uQT" secondAttribute="trailing" constant="-16" id="EdI-ia-IjN">
+                                <variation key="heightClass=regular-widthClass=compact" constant="-26"/>
+                            </constraint>
                             <constraint firstItem="PaA-ol-uQT" firstAttribute="leading" secondItem="EFA-Fu-XJm" secondAttribute="leadingMargin" constant="-16" id="OD6-Pc-Zug"/>
                             <constraint firstItem="PaA-ol-uQT" firstAttribute="top" secondItem="lZK-q4-iwt" secondAttribute="bottom" constant="-64" id="ouV-vM-Vyv"/>
                             <constraint firstItem="7uh-gm-z8v" firstAttribute="top" secondItem="PaA-ol-uQT" secondAttribute="bottom" id="s5v-Hl-a3k"/>
-                            <constraint firstItem="PaA-ol-uQT" firstAttribute="width" secondItem="EFA-Fu-XJm" secondAttribute="width" id="wn4-O9-ILm"/>
+                            <constraint firstItem="PaA-ol-uQT" firstAttribute="width" secondItem="EFA-Fu-XJm" secondAttribute="width" id="wn4-O9-ILm">
+                                <variation key="heightClass=regular-widthClass=compact" constant="10"/>
+                            </constraint>
                         </constraints>
                         <variation key="default">
                             <mask key="subviews">
@@ -69,7 +73,7 @@
                             <mask key="constraints">
                                 <include reference="s5v-Hl-a3k"/>
                                 <include reference="EdI-ia-IjN"/>
-                                <include reference="OD6-Pc-Zug"/>
+                                <exclude reference="OD6-Pc-Zug"/>
                                 <include reference="ouV-vM-Vyv"/>
                                 <include reference="wn4-O9-ILm"/>
                             </mask>

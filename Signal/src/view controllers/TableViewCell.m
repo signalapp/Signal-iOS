@@ -32,6 +32,8 @@
         _scrollView.contentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
         _deleteImageView.image    = [_deleteImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         _archiveImageView.image   = [_archiveImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        
+        
     }
     return self;
 }
@@ -45,7 +47,7 @@
     _snippetLabel.text        = testMessage._snippet;
     _contactPictureView.image = nil;
     _timeLabel.attributedText = [self dateArrributedString:[NSDate date]];
-    self.separatorInset = UIEdgeInsetsMake(0,_contactPictureView.frame.size.width*1.5, 0, 0);
+    self.separatorInset = UIEdgeInsetsMake(0,_contactPictureView.frame.size.width*1.5f, 0, 0);
 
     [self setUpLastAction:testMessage.lastActionString];
     

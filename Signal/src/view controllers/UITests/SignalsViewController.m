@@ -47,10 +47,6 @@ static NSString *const kSegueIndentifier = @"showSegue";
 -(void)tableViewSetUp
 {
     self._tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-//    
-//    CGRect headerFrame           = self._tableView.tableHeaderView.frame;
-//    headerFrame.size.height      = 1.0f;
-//    self._tableView.tableHeaderView.frame = headerFrame;
 }
 
 #pragma mark - Table view data source
@@ -110,10 +106,7 @@ static NSString *const kSegueIndentifier = @"showSegue";
 
 #pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
     
     if ([segue.identifier isEqualToString:kSegueIndentifier])
     {
@@ -125,8 +118,6 @@ static NSString *const kSegueIndentifier = @"showSegue";
             vc._senderTitleString = _contactFromCompose.fullName;
         } else if (_groupFromCompose) {
             vc._senderTitleString = _groupFromCompose.groupName;
-            NSLog(@"%@",_groupFromCompose.groupMembers);
-
         }
 
     }
