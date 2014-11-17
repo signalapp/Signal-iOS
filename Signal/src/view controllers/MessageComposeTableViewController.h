@@ -18,8 +18,7 @@
 #import "JSQMessagesKeyboardController.h"
 
 
-@interface MessageComposeTableViewController : UITableViewController <UISearchBarDelegate>
+@interface MessageComposeTableViewController : UITableViewController
 
-@property (nonatomic, strong) IBOutlet UISearchBar * searchBar;
 
 @end
