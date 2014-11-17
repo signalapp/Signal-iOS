@@ -29,6 +29,22 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [self initializeSearch];
+    
+    contacts = [DemoDataFactory makeFakeContacts];
+    searchResults = contacts;
+
+    self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+}
+
+#pragma mark - Initializers
+
+-(void)initializeSearch
+{
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     
     self.searchController.searchResultsUpdater = self;
@@ -36,17 +52,12 @@
     self.searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y, self.searchController.searchBar.frame.size.width, 44.0);
     
     self.tableView.tableHeaderView = self.searchController.searchBar;
+    
+    self.searchController.dimsBackgroundDuringPresentation = NO;
+    self.searchController.hidesNavigationBarDuringPresentation = NO;
+    
     self.definesPresentationContext = YES;
     
-    contacts = [DemoDataFactory makeFakeContacts];
-    searchResults = contacts;
-
-
-    self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
 }
 
 #pragma mark - UISearchResultsUpdating
@@ -118,7 +129,10 @@
     UITabBarController * tb = (UITabBarController*)self.parentViewController.presentingViewController;
     UINavigationController* nav = (UINavigationController*)[tb.childViewControllers objectAtIndex:1];
     SignalsViewController* s = (SignalsViewController*)nav.topViewController;
-    s.contactFromCompose = [self contactForIndexPath:[tableView indexPathForSelectedRow]];
+
+    s.contactFromCompose = [self contactForIndexPath:indexPath];
+
+    [self.searchController dismissViewControllerAnimated:NO completion:nil];
     
     [self dismissViewControllerAnimated:YES completion:^(){
         [s performSegueWithIdentifier:@"showSegue" sender:nil];
