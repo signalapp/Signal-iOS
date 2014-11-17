@@ -1,6 +1,6 @@
 #import "HTTPRequest+Util.h"
 #import "Constraints.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "Util.h"
 #import "SGNKeychainUtil.h"
 

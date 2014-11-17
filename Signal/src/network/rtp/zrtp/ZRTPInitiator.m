@@ -6,7 +6,7 @@
 #import "MasterSecret.h"
 #import "Util.h"
 #import "ZRTPInitiator.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "SGNKeychainUtil.h"
 
 #define DHRS1_LENGTH 8

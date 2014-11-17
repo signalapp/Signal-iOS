@@ -70,8 +70,8 @@
 		76EB058318170B33006006FC /* Environment.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041318170B33006006FC /* Environment.m */; };
 		76EB058418170B33006006FC /* LocalizableText.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041518170B33006006FC /* LocalizableText.m */; };
 		76EB058518170B33006006FC /* LocalizableText.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041518170B33006006FC /* LocalizableText.m */; };
-		76EB058618170B33006006FC /* PreferencesUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041718170B33006006FC /* PreferencesUtil.m */; };
-		76EB058718170B33006006FC /* PreferencesUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041718170B33006006FC /* PreferencesUtil.m */; };
+		76EB058618170B33006006FC /* PropertyListPreferences+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041718170B33006006FC /* PropertyListPreferences+Util.m */; };
+		76EB058718170B33006006FC /* PropertyListPreferences+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041718170B33006006FC /* PropertyListPreferences+Util.m */; };
 		76EB058818170B33006006FC /* PropertyListPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041918170B33006006FC /* PropertyListPreferences.m */; };
 		76EB058918170B33006006FC /* PropertyListPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041918170B33006006FC /* PropertyListPreferences.m */; };
 		76EB058A18170B33006006FC /* Release.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041B18170B33006006FC /* Release.m */; };
@@ -719,8 +719,8 @@
 		76EB041318170B33006006FC /* Environment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Environment.m; sourceTree = "<group>"; };
 		76EB041418170B33006006FC /* LocalizableText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalizableText.h; sourceTree = "<group>"; };
 		76EB041518170B33006006FC /* LocalizableText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalizableText.m; sourceTree = "<group>"; };
-		76EB041618170B33006006FC /* PreferencesUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferencesUtil.h; sourceTree = "<group>"; };
-		76EB041718170B33006006FC /* PreferencesUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferencesUtil.m; sourceTree = "<group>"; };
+		76EB041618170B33006006FC /* PropertyListPreferences+Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PropertyListPreferences+Util.h"; sourceTree = "<group>"; };
+		76EB041718170B33006006FC /* PropertyListPreferences+Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PropertyListPreferences+Util.m"; sourceTree = "<group>"; };
 		76EB041818170B33006006FC /* PropertyListPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyListPreferences.h; sourceTree = "<group>"; };
 		76EB041918170B33006006FC /* PropertyListPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PropertyListPreferences.m; sourceTree = "<group>"; };
 		76EB041A18170B33006006FC /* Release.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Release.h; sourceTree = "<group>"; };
@@ -1640,8 +1640,8 @@
 				B6C93C4D199567AD00EDF894 /* DebugLogger.m */,
 				76EB041418170B33006006FC /* LocalizableText.h */,
 				76EB041518170B33006006FC /* LocalizableText.m */,
-				76EB041618170B33006006FC /* PreferencesUtil.h */,
-				76EB041718170B33006006FC /* PreferencesUtil.m */,
+				76EB041618170B33006006FC /* PropertyListPreferences+Util.h */,
+				76EB041718170B33006006FC /* PropertyListPreferences+Util.m */,
 				76EB041818170B33006006FC /* PropertyListPreferences.h */,
 				76EB041918170B33006006FC /* PropertyListPreferences.m */,
 				76EB041A18170B33006006FC /* Release.h */,
@@ -3428,7 +3428,7 @@
 				76EB062A18170B33006006FC /* BadState.m in Sources */,
 				B97940271832BD2400BD66CB /* UIUtil.m in Sources */,
 				76EB05BE18170B33006006FC /* ConfirmPacket.m in Sources */,
-				76EB058618170B33006006FC /* PreferencesUtil.m in Sources */,
+				76EB058618170B33006006FC /* PropertyListPreferences+Util.m in Sources */,
 				76EB05A818170B33006006FC /* RTPSocket.m in Sources */,
 				70B80119190C55660042E3F0 /* TextFormat.m in Sources */,
 				E197B61818BBEC1A00F073E5 /* RemoteIOAudio.m in Sources */,
@@ -3730,7 +3730,7 @@
 				A157077417F0CD6D007C2BD6 /* TestUtil.m in Sources */,
 				A157077517F0CD6D007C2BD6 /* BloomFilterTest.m in Sources */,
 				76EB05E918170B33006006FC /* CallFailedServerMessage.m in Sources */,
-				76EB058718170B33006006FC /* PreferencesUtil.m in Sources */,
+				76EB058718170B33006006FC /* PropertyListPreferences+Util.m in Sources */,
 				76EB064118170B33006006FC /* AnonymousTerminator.m in Sources */,
 				A157077717F0CD6D007C2BD6 /* ConversionsTest.m in Sources */,
 				76EB058318170B33006006FC /* Environment.m in Sources */,

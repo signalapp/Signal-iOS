@@ -44,60 +44,60 @@ static unsigned char DH3K_PRIME[]={
 
 @implementation Release
 
-+(Environment*) releaseEnvironmentWithLogging:(id<Logging>)logging {
++ (Environment*)releaseEnvironmentWithLogging:(id<Logging>)logging {
     //ErrorHandlerBlock errorDiscarder = ^(id error, id relatedInfo, bool causedTermination) {};
     ErrorHandlerBlock errorNoter = ^(id error, id relatedInfo, bool causedTermination) { DDLogError(@"%@: %@, %d", error, relatedInfo, causedTermination); };
     
-    return [Environment environmentWithLogging:logging
-                                     andErrorNoter:errorNoter
-                                     andServerPort:31337
-                           andMasterServerHostName:@"master.whispersystems.org"
-                               andDefaultRelayName:@"relay"
-                      andRelayServerHostNameSuffix:@"whispersystems.org"
-                                    andCertificate:[[Certificate alloc] initFromResourcePath:@"whisperReal" ofType:@"cer"]
-               andCurrentRegionCodeForPhoneNumbers:[(NSLocale*)NSLocale.currentLocale objectForKey:NSLocaleCountryCode]
-                 andSupportedKeyAgreementProtocols:[self supportedKeyAgreementProtocols]
-                                   andPhoneManager:[[PhoneManager alloc] initWithErrorHandler:errorNoter]
-                              andRecentCallManager:[RecentCallManager new]
-                        andTestingAndLegacyOptions:@[ENVIRONMENT_LEGACY_OPTION_RTP_PADDING_BIT_IMPLIES_EXTENSION_BIT_AND_TWELVE_EXTRA_ZERO_BYTES_IN_HEADER]
-                                   andZRTPClientId:RELEASE_ZRTP_CLIENT_ID
-                                  andZRTPVersionId:RELEASE_ZRTP_VERSION_ID
-								andContactsManager:[ContactsManager new]
-						  andPhoneDirectoryManager:[PhoneNumberDirectoryFilterManager new]];
+    return [[Environment alloc] initWithLogging:logging
+                                  andErrorNoter:errorNoter
+                                  andServerPort:31337
+                        andMasterServerHostName:@"master.whispersystems.org"
+                            andDefaultRelayName:@"relay"
+                   andRelayServerHostNameSuffix:@"whispersystems.org"
+                                 andCertificate:[[Certificate alloc] initFromResourcePath:@"whisperReal" ofType:@"cer"]
+            andCurrentRegionCodeForPhoneNumbers:[(NSLocale*)NSLocale.currentLocale objectForKey:NSLocaleCountryCode]
+              andSupportedKeyAgreementProtocols:[self supportedKeyAgreementProtocols]
+                                andPhoneManager:[[PhoneManager alloc] initWithErrorHandler:errorNoter]
+                           andRecentCallManager:[[RecentCallManager alloc] init]
+                     andTestingAndLegacyOptions:@[ENVIRONMENT_LEGACY_OPTION_RTP_PADDING_BIT_IMPLIES_EXTENSION_BIT_AND_TWELVE_EXTRA_ZERO_BYTES_IN_HEADER]
+                                andZRTPClientId:RELEASE_ZRTP_CLIENT_ID
+                               andZRTPVersionId:RELEASE_ZRTP_VERSION_ID
+                             andContactsManager:[[ContactsManager alloc] init]
+                       andPhoneDirectoryManager:[[PhoneNumberDirectoryFilterManager alloc] init]];
 }
 
-+(Environment*) unitTestEnvironment:(NSArray*)testingAndLegacyOptions {
++ (Environment*)unitTestEnvironment:(NSArray*)testingAndLegacyOptions {
     NSArray* keyAgreementProtocols = self.supportedKeyAgreementProtocols;
     if ([testingAndLegacyOptions containsObject:TESTING_OPTION_USE_DH_FOR_HANDSHAKE]) {
         keyAgreementProtocols = @[[Release supportedDH3KKeyAgreementProtocol]];
     }
     
-    return [Environment environmentWithLogging:[[DiscardingLog alloc] init]
-                                     andErrorNoter:^(id error, id relatedInfo, bool causedTermination) {}
-                                     andServerPort:31337
-                           andMasterServerHostName:@"master.whispersystems.org"
-                               andDefaultRelayName:@"relay"
-                      andRelayServerHostNameSuffix:@"whispersystems.org"
-                                    andCertificate:[[Certificate alloc] initFromResourcePath:@"whisperReal" ofType:@"cer"]
-               andCurrentRegionCodeForPhoneNumbers:@"US"
-                 andSupportedKeyAgreementProtocols:keyAgreementProtocols
-                                   andPhoneManager:nil
-                              andRecentCallManager:nil
-                        andTestingAndLegacyOptions:testingAndLegacyOptions
-                                   andZRTPClientId:TESTING_ZRTP_CLIENT_ID
-                                  andZRTPVersionId:TESTING_ZRTP_VERSION_ID
-								andContactsManager:nil
-						  andPhoneDirectoryManager:nil];
+    return [[Environment alloc] initWithLogging:[[DiscardingLog alloc] init]
+                                  andErrorNoter:^(id error, id relatedInfo, bool causedTermination) {}
+                                  andServerPort:31337
+                        andMasterServerHostName:@"master.whispersystems.org"
+                            andDefaultRelayName:@"relay"
+                   andRelayServerHostNameSuffix:@"whispersystems.org"
+                                 andCertificate:[[Certificate alloc] initFromResourcePath:@"whisperReal" ofType:@"cer"]
+            andCurrentRegionCodeForPhoneNumbers:@"US"
+              andSupportedKeyAgreementProtocols:keyAgreementProtocols
+                                andPhoneManager:nil
+                           andRecentCallManager:nil
+                     andTestingAndLegacyOptions:testingAndLegacyOptions
+                                andZRTPClientId:TESTING_ZRTP_CLIENT_ID
+                               andZRTPVersionId:TESTING_ZRTP_VERSION_ID
+                             andContactsManager:nil
+                       andPhoneDirectoryManager:nil];
 }
 
-+(NSArray*) supportedKeyAgreementProtocols {
++ (NSArray*)supportedKeyAgreementProtocols {
     return @[
              [[EC25KeyAgreementProtocol alloc] init],
              [Release supportedDH3KKeyAgreementProtocol]
              ];
 }
 
-+(DH3KKeyAgreementProtocol*) supportedDH3KKeyAgreementProtocol {
++ (DH3KKeyAgreementProtocol*)supportedDH3KKeyAgreementProtocol {
     NSData* prime = [NSData dataWithBytes:DH3K_PRIME length:sizeof(DH3K_PRIME)];
     NSData* generator = [NSData dataWithSingleByte:DH3K_GENERATOR];
     return [[DH3KKeyAgreementProtocol alloc] initWithModulus:prime andGenerator:generator];

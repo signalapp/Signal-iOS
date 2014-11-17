@@ -1,6 +1,6 @@
 #import "SearchBarTitleView.h"
 #import "Environment.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "LocalizableText.h"
 
 #import <UIViewController+MMDrawerController.h>

@@ -5,7 +5,7 @@
 #import "NotificationManifest.h"
 #import "PhoneNumberDirectoryFilter.h"
 #import "PhoneNumberDirectoryFilterManager.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "Util.h"
 
 #define ADDRESSBOOK_QUEUE dispatch_get_main_queue()

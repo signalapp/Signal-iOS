@@ -25,57 +25,58 @@
 @class PhoneNumberDirectoryFilterManager;
 
 @interface Environment : NSObject
-@property (nonatomic, readonly) in_port_t serverPort;
-@property (nonatomic, readonly) id<Logging> logging;
-@property (nonatomic, readonly) SecureEndPoint* masterServerSecureEndPoint;
-@property (nonatomic, readonly) NSString* defaultRelayName;
-@property (nonatomic, readonly) Certificate* certificate;
-@property (nonatomic, readonly) NSString* relayServerHostNameSuffix;
-@property (nonatomic, readonly) NSArray* keyAgreementProtocolsInDescendingPriority;
-@property (nonatomic, readonly) ErrorHandlerBlock errorNoter;
-@property (nonatomic, readonly) NSString* currentRegionCodeForPhoneNumbers;
-@property (nonatomic, readonly) PhoneManager* phoneManager;
-@property (nonatomic, readonly) RecentCallManager *recentCallManager;
-@property (nonatomic, readonly) NSArray* testingAndLegacyOptions;
-@property (nonatomic, readonly) NSData* zrtpClientId;
-@property (nonatomic, readonly) NSData* zrtpVersionId;
-@property (nonatomic, readonly) ContactsManager *contactsManager;
-@property (nonatomic, readonly) PhoneNumberDirectoryFilterManager* phoneDirectoryManager;
 
-+(SecureEndPoint*) getMasterServerSecureEndPoint;
-+(SecureEndPoint*) getSecureEndPointToDefaultRelayServer;
-+(SecureEndPoint*) getSecureEndPointToSignalingServerNamed:(NSString*)name;
+@property (readonly, nonatomic) in_port_t serverPort;
+@property (readonly, nonatomic) ErrorHandlerBlock errorNoter;
+@property (strong, readonly, nonatomic) id<Logging> logging;
+@property (strong, readonly, nonatomic) SecureEndPoint* masterServerSecureEndPoint;
+@property (strong, readonly, nonatomic) NSString* defaultRelayName;
+@property (strong, readonly, nonatomic) Certificate* certificate;
+@property (strong, readonly, nonatomic) NSString* relayServerHostNameSuffix;
+@property (strong, readonly, nonatomic) NSArray* keyAgreementProtocolsInDescendingPriority;
+@property (strong, readonly, nonatomic) NSString* currentRegionCodeForPhoneNumbers;
+@property (strong, readonly, nonatomic) PhoneManager* phoneManager;
+@property (strong, readonly, nonatomic) RecentCallManager *recentCallManager;
+@property (strong, readonly, nonatomic) NSArray* testingAndLegacyOptions;
+@property (strong, readonly, nonatomic) NSData* zrtpClientId;
+@property (strong, readonly, nonatomic) NSData* zrtpVersionId;
+@property (strong, readonly, nonatomic) ContactsManager *contactsManager;
+@property (strong, readonly, nonatomic) PhoneNumberDirectoryFilterManager* phoneDirectoryManager;
 
-+(Environment*) environmentWithLogging:(id<Logging>)logging
-                     andErrorNoter:(ErrorHandlerBlock)errorNoter
-                     andServerPort:(in_port_t)serverPort
-           andMasterServerHostName:(NSString*)masterServerHostName
-               andDefaultRelayName:(NSString*)defaultRelayName
-      andRelayServerHostNameSuffix:(NSString*)relayServerHostNameSuffix
-                    andCertificate:(Certificate*)certificate
++ (SecureEndPoint*)getMasterServerSecureEndPoint;
++ (SecureEndPoint*)getSecureEndPointToDefaultRelayServer;
++ (SecureEndPoint*)getSecureEndPointToSignalingServerNamed:(NSString*)name;
+
+- (instancetype)initWithLogging:(id<Logging>)logging
+                  andErrorNoter:(ErrorHandlerBlock)errorNoter
+                  andServerPort:(in_port_t)serverPort
+        andMasterServerHostName:(NSString*)masterServerHostName
+            andDefaultRelayName:(NSString*)defaultRelayName
+   andRelayServerHostNameSuffix:(NSString*)relayServerHostNameSuffix
+                 andCertificate:(Certificate*)certificate
 andCurrentRegionCodeForPhoneNumbers:(NSString*)currentRegionCodeForPhoneNumbers
- andSupportedKeyAgreementProtocols:(NSArray*)keyAgreementProtocolsInDescendingPriority
-                   andPhoneManager:(PhoneManager*)phoneManager
-              andRecentCallManager:(RecentCallManager *)recentCallManager
-        andTestingAndLegacyOptions:(NSArray*)testingAndLegacyOptions
-                   andZRTPClientId:(NSData*)zrtpClientId
-                  andZRTPVersionId:(NSData*)zrtpVersionId
-                andContactsManager:(ContactsManager *)contactsManager
-          andPhoneDirectoryManager:(PhoneNumberDirectoryFilterManager*)phoneDirectoryManager;
+andSupportedKeyAgreementProtocols:(NSArray*)keyAgreementProtocolsInDescendingPriority
+                andPhoneManager:(PhoneManager*)phoneManager
+           andRecentCallManager:(RecentCallManager*)recentCallManager
+     andTestingAndLegacyOptions:(NSArray*)testingAndLegacyOptions
+                andZRTPClientId:(NSData*)zrtpClientId
+               andZRTPVersionId:(NSData*)zrtpVersionId
+             andContactsManager:(ContactsManager*)contactsManager
+       andPhoneDirectoryManager:(PhoneNumberDirectoryFilterManager*)phoneDirectoryManager;
 
-+(Environment*) getCurrent;
-+(void) setCurrent:(Environment*)curEnvironment;
-+(id<Logging>) logging;
-+(NSString*) relayServerNameToHostName:(NSString*)name;
-+(ErrorHandlerBlock) errorNoter;
-+(NSString*) currentRegionCodeForPhoneNumbers;
-+(bool) hasEnabledTestingOrLegacyOption:(NSString*)flag;
-+(PhoneManager*) phoneManager;
++ (Environment*)getCurrent;
++ (void)setCurrent:(Environment*)curEnvironment;
++ (id<Logging>)logging;
++ (NSString*)relayServerNameToHostName:(NSString*)name;
++ (ErrorHandlerBlock)errorNoter;
++ (NSString*)currentRegionCodeForPhoneNumbers;
++ (bool)hasEnabledTestingOrLegacyOption:(NSString*)flag;
++ (PhoneManager*)phoneManager;
 
-+(PropertyListPreferences*)preferences;
++ (PropertyListPreferences*)preferences;
 
-+(BOOL)isRegistered;
-+(void)setRegistered:(BOOL)status;
-+(void)resetAppData;
++ (BOOL)isRegistered;
++ (void)setRegistered:(BOOL)status;
++ (void)resetAppData;
 
 @end

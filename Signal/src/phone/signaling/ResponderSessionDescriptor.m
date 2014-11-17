@@ -2,7 +2,7 @@
 
 #import "Constraints.h"
 #import "CryptoTools.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "Util.h"
 #import "InitiateSignal.pb.h"
 #import "SGNKeychainUtil.h"

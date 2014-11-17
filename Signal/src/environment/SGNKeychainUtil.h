@@ -12,32 +12,32 @@
 
 @interface SGNKeychainUtil : NSObject
 
-+(void)generateSignaling;
-+(void)generateServerAuthPassword;
++ (void)generateSignaling;
++ (void)generateServerAuthPassword;
 
-+(void)wipeKeychain;
++ (void)wipeKeychain;
 
 #pragma mark Registered Phone Number
 
-+(PhoneNumber*)localNumber;
-+(void)setLocalNumberTo:(PhoneNumber*)localNumber;
++ (PhoneNumber*)localNumber;
++ (void)setLocalNumberTo:(PhoneNumber*)localNumber;
 
 #pragma mark Signaling Key
 
-+(int64_t)getAndIncrementOneTimeCounter;
++ (int64_t)getAndIncrementOneTimeCounter;
 
 #pragma mark Zid
 
-+(Zid*)zid;
++ (Zid*)zid;
 
 #pragma mark Server Auth
 
-+(NSString*)serverAuthPassword;
++ (NSString*)serverAuthPassword;
 
 #pragma mark Signaling
 
-+(NSData*)signalingMacKey;
-+(NSData*)signalingCipherKey;
-+(NSData*)signalingExtraKey;
++ (NSData*)signalingMacKey;
++ (NSData*)signalingCipherKey;
++ (NSData*)signalingExtraKey;
 
 @end

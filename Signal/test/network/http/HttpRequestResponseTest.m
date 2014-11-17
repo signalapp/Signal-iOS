@@ -3,7 +3,7 @@
 #import "Util.h"
 #import "HTTPSocket.h"
 #import "HTTPRequest+Util.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "HTTPRequest+SignalUtil.h"
 #import "SGNKeychainUtil.h"
 #import <UICKeyChainStore/UICKeyChainStore.h>

@@ -1,7 +1,7 @@
 #import "PhoneNumberDirectoryFilter.h"
 #import "Environment.h"
 #import "Constraints.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 
 #define HASH_COUNT_HEADER_KEY @"X-Hash-Count"
 #define MIN_NEW_EXPIRATION_SECONDS (12 * 60 * 60)

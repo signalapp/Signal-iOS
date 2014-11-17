@@ -6,7 +6,7 @@
 #import "PhoneNumber.h"
 #import "PhoneNumberDirectoryFilterManager.h"
 #import "PhoneNumberUtil.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "PushManager.h"
 #import "RegisterViewController.h"
 #import "RPServerRequestsManager.h"

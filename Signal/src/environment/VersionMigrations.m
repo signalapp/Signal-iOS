@@ -11,31 +11,33 @@
 
 @implementation VersionMigrations
 
-+ (void)migrationFrom1Dot0Dot2toLarger{
++ (void)migrationFrom1Dot0Dot2toLarger {
     
     // Preferences were stored in both a preference file and a plist in the documents folder, as a temporary measure, we are going to move all the preferences to the NSUserDefaults preference store, those will be migrated to a SQLCipher-backed database
     
     NSString* documentsDirectory = [NSHomeDirectory() stringByAppendingPathComponent:@"/Documents/"];
-    NSString *path = [NSString stringWithFormat:@"%@/%@.plist", documentsDirectory, @"RedPhone-Data"];
+    NSString* path = [NSString stringWithFormat:@"%@/%@.plist", documentsDirectory, @"RedPhone-Data"];
     
-    if ([NSFileManager.defaultManager fileExistsAtPath:path]) {
-        NSData *plistData = [NSData dataWithContentsOfFile:path];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+        NSData* plistData = [NSData dataWithContentsOfFile:path];
         
-        NSError *error;
+        NSError* error;
         NSPropertyListFormat format;
-        NSDictionary *dict = [NSPropertyListSerialization propertyListWithData:plistData options:NSPropertyListImmutable format:&format error:&error];
+        NSDictionary* dict = [NSPropertyListSerialization propertyListWithData:plistData
+                                                                       options:NSPropertyListImmutable
+                                                                        format:&format
+                                                                         error:&error];
         
-        NSArray *entries = [dict allKeys];
-        NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
+        NSArray* entries = [dict allKeys];
         
         for (NSUInteger i = 0; i < entries.count; i++) {
-            NSString *key = entries[i];
-            [defaults setObject:dict[key] forKey:key];
+            NSString* key = entries[i];
+            [[NSUserDefaults standardUserDefaults] setObject:dict[key] forKey:key];
         }
         
-        [defaults synchronize];
+        [[NSUserDefaults standardUserDefaults] synchronize];
         
-        [NSFileManager.defaultManager removeItemAtPath:path error:&error];
+        [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
         
         if (error) {
             DDLogError(@"Error while migrating data: %@", error.description);
@@ -43,13 +45,13 @@
         
         // Some users push IDs were not correctly registered, by precaution, we are going to re-register all of them
         
-        [PushManager.sharedManager registrationWithSuccess:^{
+        [[PushManager sharedManager] registrationWithSuccess:^{
             
         } failure:^{
             DDLogError(@"Error re-registering on migration from 1.0.2");
         }];
         
-        [NSFileManager.defaultManager removeItemAtPath:path error:&error];
+        [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
         
         if (error) {
             DDLogError(@"Error upgrading from 1.0.2 : %@", error.description);

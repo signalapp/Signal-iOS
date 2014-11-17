@@ -3,7 +3,7 @@
 #import "TOCFuture+FutureUtil.h"
 #import "LocalizableText.h"
 #import "Operation.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "PhoneNumber.h"
 #import "RecentCallManager.h"
 #import "RegisterViewController.h"

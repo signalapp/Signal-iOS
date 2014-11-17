@@ -1,7 +1,7 @@
 #import "CallLogTableViewCell.h"
 #import "Environment.h"
 #import "ContactsManager.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "LocalizableText.h"
 #import "Util.h"
 

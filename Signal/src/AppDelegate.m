@@ -9,7 +9,7 @@
 #import "InCallViewController.h"
 #import "LeftSideMenuViewController.h"
 #import "MMDrawerController.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "NotificationTracker.h"
 #import "PushManager.h"
 #import "PriorityQueue.h"

@@ -2,7 +2,7 @@
 #import "ContactsManager.h"
 #import "NSArray+FunctionalUtil.h"
 #import "ObservableValue.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 
 
 #define RECENT_CALLS_DEFAULT_KEY @"RPRecentCallsDefaultKey"

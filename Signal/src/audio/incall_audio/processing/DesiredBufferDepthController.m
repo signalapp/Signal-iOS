@@ -1,6 +1,6 @@
 #import "DesiredBufferDepthController.h"
 #import "Constraints.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "Util.h"
 #import "AudioPacker.h"
 

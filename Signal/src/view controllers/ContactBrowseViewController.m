@@ -5,7 +5,7 @@
 #import "ContactTableViewCell.h"
 #import "InCallViewController.h"
 #import "LocalizableText.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "TabBarParentViewController.h"
 #import "NotificationManifest.h"
 #import "PhoneNumberDirectoryFilterManager.h"

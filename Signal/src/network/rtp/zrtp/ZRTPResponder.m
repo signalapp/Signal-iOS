@@ -1,7 +1,7 @@
 #import "CommitPacket.h"
 #import "ConfirmPacket.h"
 #import "DH3KKeyAgreementProtocol.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "NSArray+FunctionalUtil.h"
 #import "MasterSecret.h"
 #import "Util.h"

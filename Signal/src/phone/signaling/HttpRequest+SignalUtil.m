@@ -1,7 +1,7 @@
 #import "HTTPRequest+SignalUtil.h"
 #import "Constraints.h"
 #import "Environment.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "Util.h"
 #import "SGNKeychainUtil.h"
 

@@ -5,7 +5,7 @@
 #import "InboxFeedViewController.h"
 #import "LeftSideMenuViewController.h"
 #import "LocalizableText.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "RecentCall.h"
 #import "RecentCallManager.h"
 #import "RegisterViewController.h"

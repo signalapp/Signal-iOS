@@ -1,7 +1,7 @@
 #import "Contact.h"
 #import "Util.h"
 #import "Environment.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 
 static NSString* const DEFAULTS_KEY_CONTACT = @"DefaultsKeyContact";
 static NSString* const DEFAULTS_KEY_PHONE_NUMBER = @"DefaultsKeyPhoneNumber";

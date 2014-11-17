@@ -4,7 +4,7 @@
 #import "ContactsManager.h"
 #import "LocalizableText.h"
 #import "NSArray+FunctionalUtil.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "TabBarParentViewController.h"
 
 #import "UIViewController+MMDrawerController.h"

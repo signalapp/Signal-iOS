@@ -1,4 +1,4 @@
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "CryptoTools.h"
 #import "Constraints.h"
 #import "PhoneNumber.h"
@@ -26,46 +26,50 @@
 
 #define kSignalVersionKey @"SignalUpdateVersionKey"
 
-@implementation PropertyListPreferences (PropertyUtil)
+@implementation PropertyListPreferences (Util)
 
--(PhoneNumberDirectoryFilter*) tryGetSavedPhoneNumberDirectory {
+- (PhoneNumberDirectoryFilter*)tryGetSavedPhoneNumberDirectory {
     NSUInteger hashCount = [[self tryGetValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_HASH_COUNT_KEY] unsignedIntegerValue];
-    NSData* data = [self tryGetValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_DATA_KEY];
-    NSDate* expiration = [self tryGetValueForKey:PHONE_DIRECTORY_EXPIRATION];
+    NSData* data         = [self tryGetValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_DATA_KEY];
+    NSDate* expiration   = [self tryGetValueForKey:PHONE_DIRECTORY_EXPIRATION];
+    
     if (hashCount == 0 || data.length == 0 || expiration == nil) return nil;
     BloomFilter* bloomFilter = [[BloomFilter alloc] initWithHashCount:hashCount andData:data];
     return [[PhoneNumberDirectoryFilter alloc] initWithBloomFilter:bloomFilter andExpirationDate:expiration];
 }
--(void) setSavedPhoneNumberDirectory:(PhoneNumberDirectoryFilter*)phoneNumberDirectoryFilter {
+
+- (void)setSavedPhoneNumberDirectory:(PhoneNumberDirectoryFilter*)phoneNumberDirectoryFilter {
     [self setValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_DATA_KEY toValue:nil];
     [self setValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_HASH_COUNT_KEY toValue:nil];
     [self setValueForKey:PHONE_DIRECTORY_EXPIRATION toValue:nil];
     if (phoneNumberDirectoryFilter == nil) return;
     
-    NSData* data = [[phoneNumberDirectoryFilter bloomFilter] data];
+    NSData* data        = [[phoneNumberDirectoryFilter bloomFilter] data];
     NSNumber* hashCount = @([[phoneNumberDirectoryFilter bloomFilter] hashCount]);
-    NSDate* expiry = phoneNumberDirectoryFilter.getExpirationDate;
+    NSDate* expiry      = phoneNumberDirectoryFilter.getExpirationDate;
+    
     [self setValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_DATA_KEY toValue:data];
     [self setValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_HASH_COUNT_KEY toValue:hashCount];
     [self setValueForKey:PHONE_DIRECTORY_EXPIRATION toValue:expiry];
     [self sendDirectoryUpdateNotification];
 }
 
--(void) sendDirectoryUpdateNotification{
+- (void)sendDirectoryUpdateNotification {
     [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_UPDATE object:nil];
 }
 
--(NSTimeInterval) getCachedOrDefaultDesiredBufferDepth {
+- (NSTimeInterval)getCachedOrDefaultDesiredBufferDepth {
     id v = [self tryGetValueForKey:CALL_STREAM_DES_BUFFER_LEVEL_KEY];
     if (v == nil) return DEFAULT_CALL_STREAM_DES_BUFFER_LEVEL;
     return [v doubleValue];
 }
--(void) setCachedDesiredBufferDepth:(double)value {
+
+- (void)setCachedDesiredBufferDepth:(double)value {
     require(value >= 0);
     [self setValueForKey:CALL_STREAM_DES_BUFFER_LEVEL_KEY toValue:@(value)];
 }
 
--(BOOL) getFreshInstallTutorialsEnabled {
+- (BOOL)getFreshInstallTutorialsEnabled {
     NSNumber *preference = [self tryGetValueForKey:FRESH_INSTALL_TUTORIALS_ENABLED_KEY];
     if (preference) {
         return [preference boolValue];
@@ -73,7 +77,8 @@
         return YES;
     }
 }
--(BOOL) getContactImagesEnabled {
+
+- (BOOL)getContactImagesEnabled {
     NSNumber *preference = [self tryGetValueForKey:CONTACT_IMAGES_ENABLED_KEY];
     if (preference) {
         return [preference boolValue];
@@ -81,7 +86,8 @@
         return YES;
     }
 }
--(BOOL) getAutocorrectEnabled {
+
+- (BOOL)getAutocorrectEnabled {
     NSNumber *preference = [self tryGetValueForKey:AUTOCORRECT_ENABLED_KEY];
     if (preference) {
         return [preference boolValue];
@@ -89,7 +95,8 @@
         return YES;
     }
 }
--(BOOL) getHistoryLogEnabled {
+
+- (BOOL)getHistoryLogEnabled {
     NSNumber *preference = [self tryGetValueForKey:HISTORY_LOG_ENABLED_KEY];
     if (preference) {
         return [preference boolValue];
@@ -98,7 +105,7 @@
     }
 }
 
-- (BOOL)loggingIsEnabled{
+- (BOOL)loggingIsEnabled {
     NSNumber *preference = [self tryGetValueForKey:DEBUG_IS_ENABLED_KEY];
     if (preference) {
         return [preference boolValue];
@@ -107,7 +114,7 @@
     }
 }
 
--(BOOL)screenSecurityIsEnabled{
+- (BOOL)screenSecurityIsEnabled {
     NSNumber *preference = [self tryGetValueForKey:SCREEN_SECURITY_KEY];
     if (preference) {
         return [preference boolValue];
@@ -116,43 +123,46 @@
     }
 }
 
--(void)setScreenSecurity:(BOOL)flag{
+- (void)setScreenSecurity:(BOOL)flag {
     [self setValueForKey:SCREEN_SECURITY_KEY toValue:@(flag)];
 }
 
--(void) setFreshInstallTutorialsEnabled:(BOOL)enabled {
+- (void)setFreshInstallTutorialsEnabled:(BOOL)enabled {
     [self setValueForKey:FRESH_INSTALL_TUTORIALS_ENABLED_KEY toValue:@(enabled)];
 }
 
--(void) setContactImagesEnabled:(BOOL)enabled {
+- (void)setContactImagesEnabled:(BOOL)enabled {
     [self setValueForKey:CONTACT_IMAGES_ENABLED_KEY toValue:@(enabled)];
 }
--(void) setAutocorrectEnabled:(BOOL)enabled {
+
+- (void)setAutocorrectEnabled:(BOOL)enabled {
     [self setValueForKey:AUTOCORRECT_ENABLED_KEY toValue:@(enabled)];
 }
--(void) setHistoryLogEnabled:(BOOL)enabled {
+
+- (void)setHistoryLogEnabled:(BOOL)enabled {
     [self setValueForKey:HISTORY_LOG_ENABLED_KEY toValue:@(enabled)];
 }
 
--(BOOL) encounteredRevokedPushPermission{
+- (BOOL)encounteredRevokedPushPermission {
     return [[self tryGetValueForKey:PUSH_REVOKED_KEY] boolValue];
 }
--(void) setRevokedPushPermission:(BOOL)revoked{
+
+- (void)setRevokedPushPermission:(BOOL)revoked {
     [self setValueForKey:PUSH_REVOKED_KEY toValue:@(revoked)];
 }
 
--(void) setLoggingEnabled:(BOOL)flag{
+- (void)setLoggingEnabled:(BOOL)flag {
     [self setValueForKey:DEBUG_IS_ENABLED_KEY toValue:@(flag)];
 }
 
--(NSString*)lastRanVersion{
+- (NSString*)lastRanVersion {
     return [NSUserDefaults.standardUserDefaults objectForKey:kSignalVersionKey];
 }
 
--(NSString*)setAndGetCurrentVersion{
+- (NSString*)setAndGetCurrentVersion {
     NSString *lastVersion = self.lastRanVersion;
     
-    [NSUserDefaults.standardUserDefaults setObject:[NSString stringWithFormat:@"%@", NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"]]
+    [NSUserDefaults.standardUserDefaults setObject:[NSString stringWithFormat:@"%@", [NSBundle mainBundle].infoDictionary[@"CFBundleVersion"]]
                                             forKey:kSignalVersionKey];
     [NSUserDefaults.standardUserDefaults synchronize];
     return lastVersion;

@@ -2,7 +2,7 @@
 
 #import "Environment.h"
 #import "NotificationManifest.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "RPServerRequestsManager.h"
 #import "HTTPRequest+SignalUtil.h"
 #import "ThreadManager.h"

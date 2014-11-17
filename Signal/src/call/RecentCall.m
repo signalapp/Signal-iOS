@@ -1,6 +1,6 @@
 #import "RecentCall.h"
 #import "Environment.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "Util.h"
 
 static NSString *const DEFAULTS_KEY_CONTACT_ID = @"DefaultsKeyContactID";

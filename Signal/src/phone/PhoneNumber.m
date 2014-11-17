@@ -1,7 +1,7 @@
 #import "PhoneNumber.h"
 #import "Constraints.h"
 #import "Util.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "Environment.h"
 #import "NBPhoneNumber.h"
 #import "NBAsYouTypeFormatter.h"

@@ -11,7 +11,7 @@ NSArray* RandomPermutation(NSUInteger count) {
     for (NSUInteger i = 0; i < count; i++)
         d[i] = i;
     for (NSUInteger i = 0; i < count; i++) {
-        NSUInteger j = arc4random_uniform(count - i) + i;
+        NSUInteger j = arc4random_uniform((u_int32_t)count - (u_int32_t)i) + i;
         NSUInteger t = d[i];
         d[i] = d[j];
         d[j] = t;
