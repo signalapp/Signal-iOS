@@ -69,6 +69,8 @@
 }
 
 -(void)setUpLastAction:(NSString*)lastAction {
+    
+    //TODO: Set up KVO
     if ([lastAction isEqualToString:@"read"]) {
         _lastActionImageView.image = [UIImage imageNamed:@"checkmark"];
     } else if ([lastAction isEqualToString:@"replied"]) {
@@ -121,7 +123,7 @@
     } else {
         
         double ratio = (_archiveView.frame.size.width/2.0f - _scrollView.contentOffset.x) / (_archiveView.frame.size.width/2.0f);
-        double newWidth = ARCHIVE_IMAGE_VIEW_WIDTH/2 + (ARCHIVE_IMAGE_VIEW_WIDTH * ratio)/2.0f;
+        double newWidth = ARCHIVE_IMAGE_VIEW_WIDTH/2.0f + (ARCHIVE_IMAGE_VIEW_WIDTH * ratio)/2.0f;
         _archiveImageView.bounds = CGRectMake(_archiveImageView.bounds.origin.x,
                                               _archiveImageView.bounds.origin.y,
                                               (CGFloat)newWidth,
@@ -139,7 +141,7 @@
     } else {
         
         double ratio = _scrollView.contentOffset.x / (CGRectGetWidth(_deleteView.frame)*2);
-        double newWidth = DELETE_IMAGE_VIEW_WIDTH/2 + (DELETE_IMAGE_VIEW_WIDTH * ratio)/2.0f;
+        double newWidth = DELETE_IMAGE_VIEW_WIDTH/2.0f + (DELETE_IMAGE_VIEW_WIDTH * ratio)/2.0f;
         
         _deleteImageView.bounds = CGRectMake(_deleteImageView.bounds.origin.x,
                                              _deleteImageView.bounds.origin.y,
