@@ -47,14 +47,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     //Hide search bar
     self.tableView.contentOffset = CGPointMake(0, 44);
     
-    self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
-    
-    self.searchController.searchResultsUpdater = self;
-    
-    self.searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y, self.searchController.searchBar.frame.size.width, 44.0);
-    
-    self.tableView.tableHeaderView = self.searchController.searchBar;
-    self.definesPresentationContext = YES;
+    [self initializeSearch];
 
     [self setupContacts];
     searchResults = latestContacts;
@@ -66,6 +59,25 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     [super didReceiveMemoryWarning];
 }
 
+#pragma mark - Initializers
+
+-(void)initializeSearch
+{
+    self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+    
+    self.searchController.searchResultsUpdater = self;
+    
+    self.searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y, self.searchController.searchBar.frame.size.width, 44.0);
+    
+    self.tableView.tableHeaderView = self.searchController.searchBar;
+    
+    self.searchController.dimsBackgroundDuringPresentation = NO;
+    self.searchController.hidesNavigationBarDuringPresentation = NO;
+    
+    self.definesPresentationContext = YES;
+    
+    
+}
 
 #pragma mark - UISearchResultsUpdating
 
@@ -243,10 +255,16 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 {
     if ([segue.identifier isEqualToString:@"DetailSegue"])
     {
+        Contact *contact = nil;
         ContactDetailTableViewController * detailvc = [segue destinationViewController];
         NSIndexPath * indexPath = [self.tableView indexPathForSelectedRow];
-        NSArray *contactSection = [self contactsForSectionIndex:(NSUInteger)indexPath.section];
-        Contact *contact = contactSection[(NSUInteger)indexPath.row];
+        
+        if (self.searchController.active) {
+            contact = [searchResults objectAtIndex:(NSUInteger)indexPath.row];
+        } else {
+            NSArray *contactSection = [self contactsForSectionIndex:(NSUInteger)indexPath.section];
+            contact = contactSection[(NSUInteger)indexPath.row];
+        }
         detailvc.contact = contact;
     }
 }
