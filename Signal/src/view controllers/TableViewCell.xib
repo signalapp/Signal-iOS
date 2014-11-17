@@ -147,9 +147,9 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="archive.png" width="18" height="18"/>
+        <image name="archive.png" width="100" height="100"/>
         <image name="contact_default_feed.png" width="242" height="242"/>
-        <image name="delete.png" width="22" height="22"/>
+        <image name="delete.png" width="100" height="100"/>
         <image name="reply.png" width="100" height="100"/>
     </resources>
 </document>
