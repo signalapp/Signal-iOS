@@ -160,6 +160,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [self performSegueWithIdentifier:@"DetailSegue" sender:self];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 

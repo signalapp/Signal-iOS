@@ -8,13 +8,13 @@
 
 #import "MessageComposeTableViewController.h"
 #import "MessagesViewController.h"
-
 #import "SignalsViewController.h"
+
+#import "ContactTableViewCell.h"
 
 @interface MessageComposeTableViewController () {
     NSArray* contacts;
     NSArray* searchResults;
-    
 }
 
 @end
@@ -32,7 +32,6 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Table view data source
@@ -52,24 +51,14 @@
 }
 
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SearchCell"];
+- (ContactTableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    ContactTableViewCell *cell = (ContactTableViewCell*)[tableView dequeueReusableCellWithIdentifier:@"ContactTableViewCell"];
     
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"SearchCell"];
+        cell = [[ContactTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"ContactTableViewCell"];
     }
-    
-    NSUInteger row = (NSUInteger)indexPath.row;
-    Contact* contact = nil;
-    
-    if (tableView == self.searchDisplayController.searchResultsTableView) {
-        contact = searchResults[row];
-    } else {
-        contact = contacts[row];
-    }
-    
-    cell.textLabel.text = contact.fullName;
-    
+
+    [cell configureWithContact:[self contactForIndexPath:indexPath]];
     
     tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 
@@ -79,25 +68,12 @@
 #pragma mark - Table View delegate
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    Contact *contact = nil;
-    
-    if ([self.tableView indexPathsForSelectedRows].count == 1)
-    {
-        if (self.searchDisplayController.active) {
-            indexPath = [self.searchDisplayController.searchResultsTableView indexPathForSelectedRow];
-            contact = [searchResults objectAtIndex:(NSUInteger)indexPath.row];
-        } else {
-            indexPath = [self.tableView indexPathForSelectedRow];
-            contact = [contacts objectAtIndex:(NSUInteger)indexPath.row];
-        }
-    }
-    
     //HACK: This is horrible due to the view hierarchy, but gets the job done. Gets a reference to the SignalsVC so we can present the conversation from it.
     
     UITabBarController * tb = (UITabBarController*)self.parentViewController.presentingViewController;
     UINavigationController* nav = (UINavigationController*)[tb.childViewControllers objectAtIndex:1];
     SignalsViewController* s = (SignalsViewController*)nav.topViewController;
-    s.contactFromCompose = contact;
+    s.contactFromCompose = [self contactForIndexPath:[tableView indexPathForSelectedRow]];
     
     [self dismissViewControllerAnimated:YES completion:^(){
         [s performSegueWithIdentifier:@"showSegue" sender:nil];
@@ -107,10 +83,22 @@
 
 -(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
+    ContactTableViewCell * cell = (ContactTableViewCell*)[tableView cellForRowAtIndexPath:indexPath];
     cell.accessoryType = UITableViewCellAccessoryNone;
 }
 
+-(Contact*)contactForIndexPath:(NSIndexPath*)indexPath
+{
+    Contact *contact = nil;
+    
+    if (self.searchDisplayController.active) {
+        contact = [searchResults objectAtIndex:(NSUInteger)indexPath.row];
+    } else {
+        contact = [contacts objectAtIndex:(NSUInteger)indexPath.row];
+    }
+
+    return contact;
+}
 
 #pragma mark - Search 
 

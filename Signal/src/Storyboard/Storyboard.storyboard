@@ -1439,29 +1439,6 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                             <color key="barTintColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                             <textInputTraits key="textInputTraits" returnKeyType="search" enablesReturnKeyAutomatically="YES"/>
                         </searchBar>
-                        <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="ContactTableViewCell" textLabel="iJB-rT-aDU" style="IBUITableViewCellStyleDefault" id="lmY-dm-qT2" customClass="ContactTableViewCell">
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="lmY-dm-qT2" id="H16-Uc-U3o">
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="iJB-rT-aDU">
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <nil key="highlightedColor"/>
-                                            <variation key="heightClass=regular-widthClass=compact">
-                                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                            </variation>
-                                        </label>
-                                    </subviews>
-                                </tableViewCellContentView>
-                                <connections>
-                                    <outlet property="nameLabel" destination="iJB-rT-aDU" id="NgJ-0O-pHs"/>
-                                    <segue destination="0XE-hu-8cu" kind="show" identifier="DetailSegue" id="p7r-9p-0dl"/>
-                                </connections>
-                            </tableViewCell>
-                        </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="6mY-1Q-YBT" id="ENQ-OE-pLW"/>
                             <outlet property="delegate" destination="6mY-1Q-YBT" id="hz8-JN-cbT"/>
@@ -1476,6 +1453,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                     </navigationItem>
                     <connections>
                         <outlet property="searchBar" destination="7QA-tO-WHo" id="a3c-hU-oJT"/>
+                        <segue destination="0XE-hu-8cu" kind="show" identifier="DetailSegue" id="nHU-Zk-VvG"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xQP-wB-KqH" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -3256,25 +3234,6 @@ Licensed under the GPLv3</string>
                                 <outlet property="delegate" destination="Qga-41-bw2" id="36X-SG-PM7"/>
                             </connections>
                         </searchBar>
-                        <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="SearchCell" textLabel="jnW-y1-ab8" style="IBUITableViewCellStyleDefault" id="CFr-aj-EJR">
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="CFr-aj-EJR" id="ImH-ro-04A">
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="jnW-y1-ab8">
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <nil key="highlightedColor"/>
-                                            <variation key="heightClass=regular-widthClass=compact">
-                                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                            </variation>
-                                        </label>
-                                    </subviews>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="Qga-41-bw2" id="dUq-5d-dub"/>
                             <outlet property="delegate" destination="Qga-41-bw2" id="vfF-Gh-noL"/>
