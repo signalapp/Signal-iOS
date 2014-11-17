@@ -23,6 +23,7 @@ typedef enum : NSUInteger {
 
 @interface MessagesViewController () {
     UIImage* tappedImage;
+    BOOL isGroupConversation;
 }
 
 @end
@@ -35,7 +36,8 @@ typedef enum : NSUInteger {
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
 
-
+    //DEBUG:
+    isGroupConversation = NO;
     
     self.title = self._senderTitleString;
 
@@ -48,6 +50,18 @@ typedef enum : NSUInteger {
     
     self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
     self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
+    
+    if (!isGroupConversation)
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(keyboardWillShow:)
+                                                     name:UIKeyboardWillShowNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(keyboardWillHide:)
+                                                     name:UIKeyboardWillHideNotification
+                                                   object:nil];
+    }
     
 }
 
@@ -62,10 +76,28 @@ typedef enum : NSUInteger {
     [super didReceiveMemoryWarning];
 }
 
+-(void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+}
+
 -(void)initWithGroup:(NSArray *)group
 {
     //Search for an existing group to set self.title & fetch messages for this identifier
     //If none found, instantiate new group
+}
+
+#pragma mark - Keyboard Handlers
+
+-(void)keyboardWillShow:(id)sender
+{
+    [self.inputToolbar.contentView setRightBarButtonItem:[JSQMessagesToolbarButtonFactory defaultSendButtonItem]];
+}
+
+-(void)keyboardWillHide:(id)sender
+{
+    [self.inputToolbar.contentView setRightBarButtonItem:[JSQMessagesToolbarButtonFactory signalCallButtonItem]];
 }
 
 #pragma mark - Fingerprints
@@ -90,15 +122,21 @@ typedef enum : NSUInteger {
          senderDisplayName:(NSString *)senderDisplayName
                       date:(NSDate *)date
 {
-    [JSQSystemSoundPlayer jsq_playMessageSentSound];
+    if ([button.titleLabel.text isEqualToString:@"Call"])
+    {
+        NSLog(@"Let's call !");
+
+    } else if (text.length > 0) {
+        [JSQSystemSoundPlayer jsq_playMessageSentSound];
     
-    JSQTextMessage *message = [[JSQTextMessage alloc] initWithSenderId:senderId
+        JSQTextMessage *message = [[JSQTextMessage alloc] initWithSenderId:senderId
                                                      senderDisplayName:senderDisplayName
                                                                   date:date
                                                                   text:text];
     
-    [self.demoData.messages addObject:message];
-    [self finishSendingMessage];
+        [self.demoData.messages addObject:message];
+        [self finishSendingMessage];
+    }
 }
 
 
