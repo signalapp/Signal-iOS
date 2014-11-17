@@ -3,6 +3,7 @@
 #import "DH3KKeyAgreementProtocol.h"
 #import "NSArray+FunctionalUtil.h"
 #import "Environment.h"
+#import "NSData+CryptoTools.h"
 
 #define MAX_SPEC_IDS 7
 #define CLIENT_ID_LENGTH 16
@@ -184,7 +185,7 @@
 }
 
 - (void)verifyMacWithHashChainH2:(NSData*)hashChainH2 {
-    checkOperationDescribe([[hashChainH2 hashWithSha256] isEqualToData_TimingSafe:self.hashChainH3], @"Invalid preimage");
+    checkOperationDescribe([[hashChainH2 hashWithSHA256] isEqualToData_TimingSafe:self.hashChainH3], @"Invalid preimage");
     [self.embedding withHMACVerifiedAndRemoved:hashChainH2];
 }
 

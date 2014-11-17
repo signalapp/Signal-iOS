@@ -1,5 +1,6 @@
 #import "ConfirmPacket.h"
 #import "CryptoTools.h"
+#import "NSData+CryptoTools.h"
 #import "DH3KKeyAgreementProtocol.h"
 #import "Constraints.h"
 #import "NSArray+FunctionalUtil.h"
@@ -125,7 +126,7 @@
 - (HandshakePacket*)handleDH:(HandshakePacket*)packet {
     self.foreignDH = [packet parsedAsDH1];
     
-    [self.foreignHello verifyMacWithHashChainH2:[[self.foreignDH hashChainH1] hashWithSha256]];
+    [self.foreignHello verifyMacWithHashChainH2:[[self.foreignDH hashChainH1] hashWithSHA256]];
     
     NSData* dhResult = [self.keyAgreementParticipant calculateKeyAgreementAgainstRemotePublicKey:[self.foreignDH publicKeyData]];
     

@@ -416,6 +416,7 @@
 		DBD04A0A1A06F6D2004FE592 /* NSMutableData+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = DBD04A091A06F6D2004FE592 /* NSMutableData+Util.m */; };
 		DBD04A101A06FFA4004FE592 /* NSNumber+NumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = DBD04A0F1A06FFA4004FE592 /* NSNumber+NumberUtil.m */; };
 		DBD04A151A071A23004FE592 /* RunningThreadRunLoopPair.m in Sources */ = {isa = PBXBuildFile; fileRef = DBD04A141A071A23004FE592 /* RunningThreadRunLoopPair.m */; };
+		DBDA25A11A19C9EC00D32349 /* NSData+CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = DBDA25A01A19C9EC00D32349 /* NSData+CryptoTools.m */; };
 		DBE024DA1A09FA540043579E /* TOCFuture+FutureUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = DBD04A0C1A06FE59004FE592 /* TOCFuture+FutureUtil.m */; };
 		DBE024DB1A09FA5F0043579E /* TOCFuture+FutureUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = DBD04A0C1A06FE59004FE592 /* TOCFuture+FutureUtil.m */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
@@ -1139,6 +1140,8 @@
 		DBD04A0F1A06FFA4004FE592 /* NSNumber+NumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNumber+NumberUtil.m"; sourceTree = "<group>"; };
 		DBD04A131A071A23004FE592 /* RunningThreadRunLoopPair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RunningThreadRunLoopPair.h; sourceTree = "<group>"; };
 		DBD04A141A071A23004FE592 /* RunningThreadRunLoopPair.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RunningThreadRunLoopPair.m; sourceTree = "<group>"; };
+		DBDA259F1A19C9EB00D32349 /* NSData+CryptoTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+CryptoTools.h"; sourceTree = "<group>"; };
+		DBDA25A01A19C9EC00D32349 /* NSData+CryptoTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+CryptoTools.m"; sourceTree = "<group>"; };
 		DBE024D91A09F2A30043579E /* FutureUtilTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FutureUtilTest.h; sourceTree = "<group>"; };
 		E108ED13187E34FD0045AEA3 /* iTunesArtwork@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iTunesArtwork@2x.png"; sourceTree = "<group>"; };
 		E1370B3018A0660300826894 /* archive_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = archive_icon.png; sourceTree = "<group>"; };
@@ -1446,6 +1449,8 @@
 			children = (
 				7038632318F70C0700D4A43F /* CryptoTools.h */,
 				7038632418F70C0700D4A43F /* CryptoTools.m */,
+				DBDA259F1A19C9EB00D32349 /* NSData+CryptoTools.h */,
+				DBDA25A01A19C9EC00D32349 /* NSData+CryptoTools.m */,
 				701231B318ECAA4500D456C4 /* EvpMessageDigest.h */,
 				701231B418ECAA4500D456C4 /* EvpMessageDigest.m */,
 				7038632518F70C0700D4A43F /* EvpSymetricUtil.h */,
@@ -3458,6 +3463,7 @@
 				E197B61718BBEC1A00F073E5 /* AnonymousAudioCallbackHandler.m in Sources */,
 				76EB05BC18170B33006006FC /* ConfirmAckPacket.m in Sources */,
 				76EB060C18170B33006006FC /* CategorizingLogger.m in Sources */,
+				DBDA25A11A19C9EC00D32349 /* NSData+CryptoTools.m in Sources */,
 				76EB058A18170B33006006FC /* Release.m in Sources */,
 				76EB061018170B33006006FC /* EventWindow.m in Sources */,
 				E197B62718BBF63B00F073E5 /* SoundBoard.m in Sources */,

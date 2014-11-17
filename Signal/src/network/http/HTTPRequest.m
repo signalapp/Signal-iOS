@@ -89,7 +89,7 @@
     if (optionalBody != nil) {
         headers[@"Content-Length"] = [@(optionalBody.length) stringValue];
     }
-    headers[@"Authorization"] = [HTTPRequest computeOtpAuthorizationTokenForLocalNumber:localNumber
+    headers[@"Authorization"] = [HTTPRequest computeOTPAuthorizationTokenForLocalNumber:localNumber
                                                                         andCounterValue:counter
                                                                             andPassword:password];
     
@@ -107,7 +107,7 @@
     return [http request];
 }
 
-+ (NSString*)computeOtpAuthorizationTokenForLocalNumber:(PhoneNumber*)localNumber
++ (NSString*)computeOTPAuthorizationTokenForLocalNumber:(PhoneNumber*)localNumber
                                         andCounterValue:(int64_t)counterValue
                                             andPassword:(NSString*)password {
     require(localNumber != nil);
@@ -115,7 +115,7 @@
     
     NSString* rawToken = [NSString stringWithFormat:@"%@:%@:%lld",
                           localNumber.toE164,
-                          [CryptoTools computeOtpWithPassword:password andCounter:counterValue],
+                          [CryptoTools computeOTPWithPassword:password andCounter:counterValue],
                           counterValue];
     return [@"OTP " stringByAppendingString:rawToken.encodedAsUtf8.encodedAsBase64];
 }

@@ -37,7 +37,7 @@
 
 - (bool)isEqualToHTTPRequest:(HTTPRequest*)other;
 
-+ (NSString*)computeOtpAuthorizationTokenForLocalNumber:(PhoneNumber*)localNumber
++ (NSString*)computeOTPAuthorizationTokenForLocalNumber:(PhoneNumber*)localNumber
                                         andCounterValue:(int64_t)counterValue
                                             andPassword:(NSString*)password;
 

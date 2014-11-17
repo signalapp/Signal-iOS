@@ -1,6 +1,7 @@
 #import "ConfirmPacket.h"
 #import "Util.h"
 #import "NSData+Conversions.h"
+#import "NSData+CryptoTools.h"
 
 #define TRUNCATED_HMAC_LENGTH 8
 #define CONFIRM_IV_LENGTH 16
@@ -108,8 +109,8 @@ andUnusedAndSignatureLengthAndFlags:(uint32_t)unused
                              [NSData dataWithBigEndianBytesOfUInt32:self.cacheExperationInterval]
                              ] concatDatas];
     
-    NSData* encrytedSensitiveData = [sensitiveData encryptWithAesInCipherFeedbackModeWithKey:cipherKey andIv:self.iv];
-    NSData* hmacForSensitiveData = [[encrytedSensitiveData hmacWithSha256WithKey:macKey] take:TRUNCATED_HMAC_LENGTH];
+    NSData* encrytedSensitiveData = [sensitiveData encryptWithAESInCipherFeedbackModeWithKey:cipherKey andIV:self.iv];
+    NSData* hmacForSensitiveData = [[encrytedSensitiveData hmacWithSHA256WithKey:macKey] take:TRUNCATED_HMAC_LENGTH];
     
     NSData* typeId = self.isPart1 ? HANDSHAKE_TYPE_CONFIRM_1 : HANDSHAKE_TYPE_CONFIRM_2;
     
@@ -162,10 +163,10 @@ andUnusedAndSignatureLengthAndFlags:(uint32_t)unused
     NSData* volatileEncryptedData = [self getVolatileEncryptedDataFromPayload:payload];
     NSData* includedHMAC = [self getIncludedHMACFromPayload:payload];
     
-    NSData* expectedHMAC = [[volatileEncryptedData hmacWithSha256WithKey:macKey] take:TRUNCATED_HMAC_LENGTH];
+    NSData* expectedHMAC = [[volatileEncryptedData hmacWithSHA256WithKey:macKey] take:TRUNCATED_HMAC_LENGTH];
     checkOperation([includedHMAC isEqualToData_TimingSafe:expectedHMAC]);
     
-    return [volatileEncryptedData decryptWithAesInCipherFeedbackModeWithKey:cipherKey andIv:iv];
+    return [volatileEncryptedData decryptWithAESInCipherFeedbackModeWithKey:cipherKey andIV:iv];
 }
 
 + (NSData*)getHashChainH0FromDecryptedData:(NSData*)decryptedData {

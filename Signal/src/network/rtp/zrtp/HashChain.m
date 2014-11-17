@@ -1,4 +1,5 @@
 #import "CryptoTools.h"
+#import "NSData+CryptoTools.h"
 #import "Constraints.h"
 #import "HashChain.h"
 
@@ -19,9 +20,9 @@
         require(seed.length == HASH_CHAIN_ITEM_LENGTH);
         
         self.h0 = seed;
-        self.h1 = [self.h0 hashWithSha256];
-        self.h2 = [self.h1 hashWithSha256];
-        self.h3 = [self.h2 hashWithSha256];
+        self.h1 = [self.h0 hashWithSHA256];
+        self.h2 = [self.h1 hashWithSHA256];
+        self.h3 = [self.h2 hashWithSHA256];
     }
     
     return self;

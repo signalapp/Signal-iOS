@@ -9,7 +9,7 @@
 
 @implementation EvpMessageDigest
 
-+(NSData*) hash:(NSData*) data withDigest:(const EVP_MD*) digest {
++ (NSData*)hash:(NSData*)data withDigest:(const EVP_MD*)digest {
     NSUInteger expectedDigestLength = [NumberUtil assertConvertIntToNSUInteger:EVP_MD_size(digest)];
     unsigned int digestLength = 0;
     unsigned char digestBuffer[expectedDigestLength];
@@ -29,7 +29,7 @@
     return [NSData dataWithBytes:digestBuffer length:digestLength];
 }
 
-+(NSData*) hmacWithData:(NSData*) data andKey:(NSData*) key andDigest:(const EVP_MD*) md{
++ (NSData*)hmacWithData:(NSData*)data andKey:(NSData*)key andDigest:(const EVP_MD*)md {
     NSUInteger digestLength = [NumberUtil assertConvertIntToNSUInteger:EVP_MD_size(md)];
     
     unsigned char* digest = HMAC(md,
@@ -40,13 +40,16 @@
     return [NSData  dataWithBytes:digest length:digestLength];
 }
 
-+(NSData*) hashWithSha256:(NSData *)data {
++ (NSData*)hashWithSHA256:(NSData*)data {
     return [self hash:data withDigest:EVP_sha256()];
 }
-+(NSData*) hmacUsingSha1Data:(NSData*) data withKey:(NSData*) key {
+
++ (NSData*)hmacUsingSHA1Data:(NSData*)data withKey:(NSData*)key {
     return [self hmacWithData:data andKey:key andDigest:EVP_sha1()];
 }
-+(NSData*) hmacUsingSha256Data:(NSData*) data withKey:(NSData*) key{
+
++ (NSData*)hmacUsingSHA256Data:(NSData*)data withKey:(NSData*)key {
     return [self hmacWithData:data andKey:key andDigest:EVP_sha256()];
 }
+
 @end

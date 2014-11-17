@@ -1,6 +1,7 @@
 #import "DHPacket.h"
 #import "Util.h"
 #import "CryptoTools.h"
+#import "NSData+CryptoTools.h"
 
 #define     H1_PAYLOAD_OFFSET           0
 #define    RS1_PAYLOAD_OFFSET           DH_HASH_CHAIN_H1_LENGTH
@@ -63,7 +64,7 @@
         require(hashChainH0.length == HASH_CHAIN_ITEM_LENGTH);
         
         self.isPart1 = isPart1;
-        self.hashChainH1 = [hashChainH0 hashWithSha256];
+        self.hashChainH1 = [hashChainH0 hashWithSHA256];
         self.sharedSecretHashes = sharedSecretHashes;
         self.publicKeyData = publicKeyData;
         self.embedding = [self embedIntoHandshakePacketAuthenticatedWithMacKey:hashChainH0];
@@ -73,7 +74,7 @@
 }
 
 - (void)verifyMacWithHashChainH0:(NSData*)hashChainH0 {
-    checkOperation([[hashChainH0 hashWithSha256] isEqualToData_TimingSafe:self.hashChainH1]);
+    checkOperation([[hashChainH0 hashWithSHA256] isEqualToData_TimingSafe:self.hashChainH1]);
     [self.embedding withHMACVerifiedAndRemoved:hashChainH0];
 }
 

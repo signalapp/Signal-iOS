@@ -3,6 +3,7 @@
 #import "NSData+Conversions.h"
 #import "Util.h"
 #import "CryptoTools.h"
+#import "NSData+CryptoTools.h"
 #import "NSData+CRC.h"
 #import "DHPacket.h"
 #import "ConfirmPacket.h"
@@ -79,7 +80,7 @@
 
 - (HandshakePacket*)withHMACAppended:(NSData*)macKey {
     require(macKey != nil);
-    NSData* digest = [[[self rtpExtensionPayloadUsedForHMACBeforeHMACAppended] hmacWithSha256WithKey:macKey] take:HANDSHAKE_TRUNCATED_HMAC_LENGTH];
+    NSData* digest = [[[self rtpExtensionPayloadUsedForHMACBeforeHMACAppended] hmacWithSHA256WithKey:macKey] take:HANDSHAKE_TRUNCATED_HMAC_LENGTH];
     NSData* authenticatedPayload = [@[self.payload, digest] concatDatas];
     return [[HandshakePacket alloc] initWithTypeId:self.typeId andPayload:authenticatedPayload];
 }
@@ -89,10 +90,10 @@
     
     NSData* authenticatedData = [self rtpExtensionHeaderAndPayloadExceptCRC];
     
-    NSData* expectedHmac = [[[authenticatedData skipLastVolatile:HANDSHAKE_TRUNCATED_HMAC_LENGTH] hmacWithSha256WithKey:macKey] take:HANDSHAKE_TRUNCATED_HMAC_LENGTH];
-    NSData* includedHmac = [authenticatedData takeLastVolatile:HANDSHAKE_TRUNCATED_HMAC_LENGTH];
+    NSData* expectedHMAC = [[[authenticatedData skipLastVolatile:HANDSHAKE_TRUNCATED_HMAC_LENGTH] hmacWithSHA256WithKey:macKey] take:HANDSHAKE_TRUNCATED_HMAC_LENGTH];
+    NSData* includedHMAC = [authenticatedData takeLastVolatile:HANDSHAKE_TRUNCATED_HMAC_LENGTH];
     
-    checkOperation([expectedHmac isEqualToData_TimingSafe:includedHmac]);
+    checkOperation([expectedHMAC isEqualToData_TimingSafe:includedHMAC]);
     
     return [[HandshakePacket alloc] initWithTypeId:self.typeId andPayload:[self.payload skipLast:HANDSHAKE_TRUNCATED_HMAC_LENGTH]];
 }

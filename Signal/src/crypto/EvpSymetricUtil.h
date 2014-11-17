@@ -5,12 +5,13 @@
 
 @interface EvpSymetricUtil : NSObject
 
-+(NSData*) encryptMessage:(NSData*) message usingAes128WithCbcAndPaddingAndKey:(NSData*) key andIv:(NSData*) iv;
-+(NSData*) decryptMessage:(NSData*) message usingAes128WithCbcAndPaddingAndKey:(NSData*) key andIv:(NSData*) iv;
++ (NSData*)encryptMessage:(NSData*)message usingAES128WithCBCAndPaddingAndKey:(NSData*)key andIV:(NSData*)iv;
++ (NSData*)decryptMessage:(NSData*)message usingAES128WithCBCAndPaddingAndKey:(NSData*)key andIV:(NSData*)iv;
 
-+(NSData*) encryptMessage:(NSData*) message usingAes128WithCfbAndKey:(NSData*) key andIv:(NSData*) iv;
-+(NSData*) decryptMessage:(NSData*) message usingAes128WithCfbAndKey:(NSData*) key andIv:(NSData*) iv;
++ (NSData*)encryptMessage:(NSData*)message usingAES128WithCFBAndKey:(NSData*)key andIV:(NSData*)iv;
++ (NSData*)decryptMessage:(NSData*)message usingAES128WithCFBAndKey:(NSData*)key andIV:(NSData*)iv;
 
-+(NSData*) encryptMessage:(NSData *)message usingAes128InCounterModeAndKey:(NSData *)key andIv:(NSData *)iv;
-+(NSData*) decryptMessage:(NSData *)message usingAes128InCounterModeAndKey:(NSData *)key andIv:(NSData *)iv;
++ (NSData*)encryptMessage:(NSData*)message usingAES128InCounterModeAndKey:(NSData*)key andIV:(NSData*)iv;
++ (NSData*)decryptMessage:(NSData*)message usingAES128InCounterModeAndKey:(NSData*)key andIV:(NSData*)iv;
+
 @end

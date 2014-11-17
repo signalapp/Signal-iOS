@@ -2,6 +2,7 @@
 #import "Constraints.h"
 #import "Util.h"
 #import "CryptoTools.h"
+#import "NSData+CryptoTools.h"
 #import "NSData+Conversions.h"
 
 @interface BloomFilter ()
@@ -39,7 +40,7 @@
 - (uint32_t)hash:(NSData*)value
            index:(NSUInteger)index {
     NSData* key = [[@(index) stringValue] encodedAsAscii];
-    NSData* hash = [value hmacWithSha1WithKey:key];
+    NSData* hash = [value hmacWithSHA1WithKey:key];
     return [hash bigEndianUInt32At:0] % (self.data.length * 8);
 }
 

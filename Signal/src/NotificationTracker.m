@@ -1,5 +1,6 @@
 #import "NotificationTracker.h"
 #import "CryptoTools.h"
+#import "NSData+CryptoTools.h"
 #import "NSArray+FunctionalUtil.h"
 
 #define MAX_NOTIFICATIONS_TO_TRACK 100
@@ -43,7 +44,7 @@
 // Uniquely Identify a notification by the hash of the message payload.
 -(NSData*) getIdForNotification:(NSDictionary*) notification {
     NSData* data = [notification[NOTIFICATION_PAYLOAD_KEY] dataUsingEncoding:NSUTF8StringEncoding];
-    NSData* notificationHash = [data hashWithSha256];
+    NSData* notificationHash = [data hashWithSHA256];
     return notificationHash;
 }
 

@@ -1,6 +1,7 @@
 #import "CommitPacket.h"
 #import "Util.h"
 #import "CryptoTools.h"
+#import "NSData+CryptoTools.h"
 
 #define         ZID_LENGTH      12
 #define   HASH_SPEC_LENGTH      4
@@ -55,7 +56,7 @@
                                        andAuthSpecId:COMMIT_DEFAULT_AUTH_SPEC_ID
                                       andAgreeSpecId:keyAgreementProtocol.getId
                                         andSasSpecId:COMMIT_DEFAULT_SAS_SPEC_ID
-                           andDHPart2HelloCommitment:[[@[dhPart2Data, helloData] concatDatas] hashWithSha256]
+                           andDHPart2HelloCommitment:[[@[dhPart2Data, helloData] concatDatas] hashWithSHA256]
                                           andHMACKey:hashChain.h1];
 }
 
@@ -155,12 +156,12 @@
     NSData* expected = [[@[
                          [[dhPart2 embeddedIntoHandshakePacket] dataUsedForAuthentication],
                          [[hello embeddedIntoHandshakePacket] dataUsedForAuthentication]]
-                         concatDatas] hashWithSha256];
+                         concatDatas] hashWithSHA256];
     checkOperation([self.dhPart2HelloCommitment isEqualToData_TimingSafe:expected]);
 }
 
 - (void)verifyMacWithHashChainH1:(NSData*)hashChainH1 {
-    checkOperation([[hashChainH1 hashWithSha256] isEqualToData_TimingSafe:self.h2]);
+    checkOperation([[hashChainH1 hashWithSHA256] isEqualToData_TimingSafe:self.h2]);
     [self.embedding withHMACVerifiedAndRemoved:hashChainH1];
 }
 

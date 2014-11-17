@@ -1,6 +1,7 @@
 #import "MasterSecret.h"
 #import "NSData+Conversions.h"
 #import "CryptoTools.h"
+#import "NSData+CryptoTools.h"
 #import "ShortAuthenticationStringGenerator.h"
 #import "Util.h"
 
@@ -105,7 +106,7 @@
                     
                     ] concatDatas];
     
-    return [data hashWithSha256];
+    return [data hashWithSHA256];
 }
 
 + (NSData*)calculateTotalHashFromResponderHello:(HelloPacket*)responderHello
@@ -126,7 +127,7 @@
                     
                     ] concatDatas];
     
-    return [data hashWithSha256];
+    return [data hashWithSHA256];
     
 }
 
@@ -182,7 +183,7 @@
                      
                      ].concatDatas;
     
-    NSData* digest = [input hmacWithSha256WithKey:self.sharedSecret];
+    NSData* digest = [input hmacWithSHA256WithKey:self.sharedSecret];
     
     return [digest take:truncatedLength];
 }

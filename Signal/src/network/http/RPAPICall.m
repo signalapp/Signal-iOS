@@ -145,7 +145,7 @@
     return [AFHTTPRequestSerializer serializer];
 }
 
-+ (NSString*) computeOtpAuthorizationTokenForLocalNumber:(PhoneNumber*)localNumber
++ (NSString*) computeOTPAuthorizationTokenForLocalNumber:(PhoneNumber*)localNumber
                                         andCounterValue:(int64_t)counterValue
                                             andPassword:(NSString*)password {
     require(localNumber != nil);
@@ -153,7 +153,7 @@
     
     NSString* rawToken = [NSString stringWithFormat:@"%@:%@:%lld",
                           localNumber.toE164,
-                          [CryptoTools computeOtpWithPassword:password andCounter:counterValue],
+                          [CryptoTools computeOTPWithPassword:password andCounter:counterValue],
                           counterValue];
     return [@"OTP " stringByAppendingString:rawToken.encodedAsUtf8.encodedAsBase64];
 }

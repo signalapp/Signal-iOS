@@ -1,5 +1,6 @@
 #import "SRTPStream.h"
 #import "Util.h"
+#import "NSData+CryptoTools.h"
 
 #define HMAC_LENGTH 20
 #define IV_SALT_LENGTH 14
@@ -40,10 +41,10 @@
 
     NSData* iv = [self getIvForSequenceNumber:[normalRTPPacket sequenceNumber]
            andSynchronizationSourceIdentifier:[normalRTPPacket synchronizationSourceIdentifier]];
-    NSData* encryptedPayload = [payload encryptWithAesInCounterModeWithKey:self.cipherKey andIv:iv];
+    NSData* encryptedPayload = [payload encryptWithAESInCounterModeWithKey:self.cipherKey andIV:iv];
 
     RTPPacket* encryptedRTPPacket = [normalRTPPacket withPayload:encryptedPayload];
-    NSData* hmac = [[encryptedRTPPacket rawPacketDataUsingInteropOptions:@[]] hmacWithSha1WithKey:self.macKey];
+    NSData* hmac = [[encryptedRTPPacket rawPacketDataUsingInteropOptions:@[]] hmacWithSHA1WithKey:self.macKey];
     NSData* authenticatedEncryptedPayload = [@[encryptedPayload, hmac] concatDatas];
 
     return [encryptedRTPPacket withPayload:authenticatedEncryptedPayload];
@@ -54,14 +55,14 @@
     checkOperationDescribe([[securedRTPPacket payload] length] >= HMAC_LENGTH, @"Payload not long enough to include hmac");
 
     NSData* authenticatedData = [securedRTPPacket rawPacketDataUsingInteropOptions:nil];
-    NSData* includedHmac = [authenticatedData takeLastVolatile:HMAC_LENGTH];
-    NSData* expectedHmac = [[authenticatedData skipLastVolatile:HMAC_LENGTH] hmacWithSha1WithKey:self.macKey];
-    checkOperationDescribe(expectedHmac.length == HMAC_LENGTH, @"Hmac length constant is wrong");
-    checkOperationDescribe([includedHmac isEqualToData_TimingSafe:expectedHmac], @"Authentication failed.");
+    NSData* includedHMAC = [authenticatedData takeLastVolatile:HMAC_LENGTH];
+    NSData* expectedHMAC = [[authenticatedData skipLastVolatile:HMAC_LENGTH] hmacWithSHA1WithKey:self.macKey];
+    checkOperationDescribe(expectedHMAC.length == HMAC_LENGTH, @"HMAC length constant is wrong");
+    checkOperationDescribe([includedHMAC isEqualToData_TimingSafe:expectedHMAC], @"Authentication failed.");
 
     NSData* iv = [self getIvForSequenceNumber:[securedRTPPacket sequenceNumber] andSynchronizationSourceIdentifier:[securedRTPPacket synchronizationSourceIdentifier]];
     NSData* encryptedPayload = [[securedRTPPacket payload] skipLastVolatile:HMAC_LENGTH];
-    NSData* decryptedPayload = [encryptedPayload decryptWithAesInCounterModeWithKey:self.cipherKey andIv:iv];
+    NSData* decryptedPayload = [encryptedPayload decryptWithAESInCounterModeWithKey:self.cipherKey andIV:iv];
 
     return [securedRTPPacket withPayload:decryptedPayload];
 }
