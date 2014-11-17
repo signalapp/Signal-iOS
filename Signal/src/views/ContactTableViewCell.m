@@ -2,6 +2,12 @@
 
 #define CONTACT_TABLE_CELL_BORDER_WIDTH 1.0f
 
+@interface ContactTableViewCell() {
+    
+}
+@property(strong,nonatomic) Contact* associatedContact;
+@end
+
 @implementation ContactTableViewCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
@@ -17,6 +23,8 @@
 
 - (void)configureWithContact:(Contact *)contact {
 	
+    _associatedContact = contact;
+    
     _nameLabel.attributedText = [self attributedStringForContact:contact];
 
     UIImage *image = contact.image;
@@ -53,6 +61,16 @@
     
     [fullNameAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0, contact.fullName.length)];
     return fullNameAttributedString;
+}
+
+-(IBAction)callContact:(id)sender
+{
+    //Initiate Call to _associatedContact
+}
+
+-(IBAction)messageContact:(id)sender
+{
+    //Load messages to _associatedContact
 }
 
 @end
