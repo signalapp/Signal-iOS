@@ -8,8 +8,8 @@
 
 #import "Socket.h"
 
-NSString * const SocketOpenedNotification = @"SocketOpenedNotification";
-NSString * const SocketClosedNotification = @"SocketClosedNotification";
+NSString * const SocketOpenedNotification     = @"SocketOpenedNotification";
+NSString * const SocketClosedNotification     = @"SocketClosedNotification";
 NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 
 @implementation Socket

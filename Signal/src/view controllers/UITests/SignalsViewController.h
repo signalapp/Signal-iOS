@@ -11,7 +11,6 @@
 
 #import "GroupModel.h"
 
-#import "Socket.h"
 
 @interface SignalsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, TableViewCellDelegate>
 
@@ -22,8 +21,5 @@
 
 @property (strong, nonatomic) IBOutlet UISegmentedControl * segmentedControl;
 
-@property (nonatomic, strong) IBOutlet UIProgressView* socketStatusView;
-
-@property (nonatomic, strong) Socket * socket;
 
 @end

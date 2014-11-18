@@ -39,53 +39,16 @@ static NSString *const kSegueIndentifier = @"showSegue";
     numberOfCells = _dataArray.count;
     [self tableViewSetUp];
     
-    _socket = [[Socket alloc]init];
-    
-    [self initializeObserver];
-    
-    _socket.status = kSocketStatusOpen;
-    
-    
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
 
--(void)dealloc
-{
-    [_socket removeObserver:self forKeyPath:@"status"];
-}
 
 -(void)tableViewSetUp
 {
     self._tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-}
-
-#pragma mark - Socket Status Notifications
-
--(void)initializeObserver
-{
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(socketDidOpen) name:SocketOpenedNotification object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(socketDidClose) name:SocketClosedNotification object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(socketIsConnecting) name:SocketConnectingNotification object:nil];
-}
-
--(void)socketDidOpen
-{
-    _socketStatusView.progressTintColor = [UIColor greenColor];
-}
-
--(void)socketDidClose
-{
-    _socketStatusView.progressTintColor = [UIColor redColor];
-
-}
-
--(void)socketIsConnecting
-{
-    _socketStatusView.progressTintColor = [UIColor yellowColor];
-
 }
 
 

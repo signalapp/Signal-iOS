@@ -593,6 +593,7 @@
 		FC4FA0191A1A180D00DA100A /* archive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4FA0151A1A180D00DA100A /* archive@2x.png */; };
 		FC4FA01A1A1A180D00DA100A /* blue-archive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4FA0161A1A180D00DA100A /* blue-archive@2x.png */; };
 		FC4FA0231A1B8A8D00DA100A /* Socket.m in Sources */ = {isa = PBXBuildFile; fileRef = FC4FA0221A1B8A8D00DA100A /* Socket.m */; };
+		FC4FA0261A1B9DC600DA100A /* SignalsNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC4FA0251A1B9DC600DA100A /* SignalsNavigationController.m */; };
 		FCAC963519FEF4E20046DFC5 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */; };
 		FCAC963C19FEF9280046DFC5 /* SignalsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */; };
 		FCAC964019FEF99A0046DFC5 /* TableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963E19FEF99A0046DFC5 /* TableViewCell.m */; };
@@ -1363,6 +1364,8 @@
 		FC4FA0161A1A180D00DA100A /* blue-archive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blue-archive@2x.png"; sourceTree = "<group>"; };
 		FC4FA0211A1B8A8D00DA100A /* Socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Socket.h; sourceTree = "<group>"; };
 		FC4FA0221A1B8A8D00DA100A /* Socket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Socket.m; sourceTree = "<group>"; };
+		FC4FA0241A1B9DC600DA100A /* SignalsNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalsNavigationController.h; sourceTree = "<group>"; };
+		FC4FA0251A1B9DC600DA100A /* SignalsNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalsNavigationController.m; sourceTree = "<group>"; };
 		FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Storyboard.storyboard; path = Signal/src/Storyboard/Storyboard.storyboard; sourceTree = SOURCE_ROOT; };
 		FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignalsViewController.h; path = UITests/SignalsViewController.h; sourceTree = "<group>"; };
 		FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalsViewController.m; path = UITests/SignalsViewController.m; sourceTree = "<group>"; };
@@ -3108,6 +3111,8 @@
 				FCB11D921A12A4AA002F93FB /* FullImageViewController.m */,
 				FCFD256D1A151BCB00F4C644 /* NewGroupViewController.h */,
 				FCFD256E1A151BCB00F4C644 /* NewGroupViewController.m */,
+				FC4FA0241A1B9DC600DA100A /* SignalsNavigationController.h */,
+				FC4FA0251A1B9DC600DA100A /* SignalsNavigationController.m */,
 			);
 			name = Signals;
 			sourceTree = "<group>";
@@ -3847,6 +3852,7 @@
 				70BAFD5D190584BE00FA5E0B /* NotificationTracker.m in Sources */,
 				76EB05A418170B33006006FC /* PacketHandler.m in Sources */,
 				E197B62118BBF12700F073E5 /* AppAudioManager.m in Sources */,
+				FC4FA0261A1B9DC600DA100A /* SignalsNavigationController.m in Sources */,
 				76EB068C18170B34006006FC /* InboxFeedTableViewCell.m in Sources */,
 				76EB062018170B33006006FC /* BloomFilter.m in Sources */,
 				76EB063818170B33006006FC /* DictionaryUtil.m in Sources */,
