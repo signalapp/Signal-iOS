@@ -308,8 +308,11 @@ typedef enum : NSUInteger {
 
 -(void)didPressAccessoryButton:(UIButton *)sender
 {
-    [self.inputToolbar resignFirstResponder];
-    [DJWActionSheet showInView:self.navigationController.view
+    [self.inputToolbar.contentView.textView resignFirstResponder];
+    
+    UIView *presenter = self.parentViewController.view;
+    
+    [DJWActionSheet showInView:presenter
                      withTitle:nil
              cancelButtonTitle:@"Cancel"
         destructiveButtonTitle:nil

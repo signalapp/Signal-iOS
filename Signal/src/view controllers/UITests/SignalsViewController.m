@@ -18,7 +18,7 @@
 #define HEADER_HEIGHT 44.0f
 
 
-static NSString *const kCellNibName = @"TableViewCell";
+static NSString *const kCellNibName      = @"TableViewCell";
 static NSString *const kSegueIndentifier = @"showSegue";
 
 
