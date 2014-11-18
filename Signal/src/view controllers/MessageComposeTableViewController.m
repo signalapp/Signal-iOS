@@ -58,6 +58,8 @@
     
     self.definesPresentationContext = YES;
     
+    self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    
 }
 
 #pragma mark - UISearchResultsUpdating
@@ -118,6 +120,11 @@
     tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 
     return cell;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 44.0f;
 }
 
 #pragma mark - Table View delegate

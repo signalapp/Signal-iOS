@@ -76,6 +76,8 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     
     self.definesPresentationContext = YES;
     
+    self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    
     
 }
 
