@@ -406,7 +406,6 @@
 		D2179CFE16BB0B480006F3AB /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */; };
 		D221A08E169C9E5E00537ABF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A08D169C9E5E00537ABF /* UIKit.framework */; };
 		D221A090169C9E5E00537ABF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A08F169C9E5E00537ABF /* Foundation.framework */; };
-		D221A092169C9E5E00537ABF /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A091169C9E5E00537ABF /* CoreGraphics.framework */; };
 		D221A09A169C9E5E00537ABF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D221A099169C9E5E00537ABF /* main.m */; };
 		D221A0AD169C9E5F00537ABF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A08D169C9E5E00537ABF /* UIKit.framework */; };
 		D221A0AE169C9E5F00537ABF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A08F169C9E5E00537ABF /* Foundation.framework */; };
@@ -593,6 +592,7 @@
 		FC4FA0181A1A180D00DA100A /* delete@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4FA0141A1A180D00DA100A /* delete@2x.png */; };
 		FC4FA0191A1A180D00DA100A /* archive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4FA0151A1A180D00DA100A /* archive@2x.png */; };
 		FC4FA01A1A1A180D00DA100A /* blue-archive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC4FA0161A1A180D00DA100A /* blue-archive@2x.png */; };
+		FC4FA0231A1B8A8D00DA100A /* Socket.m in Sources */ = {isa = PBXBuildFile; fileRef = FC4FA0221A1B8A8D00DA100A /* Socket.m */; };
 		FCAC963519FEF4E20046DFC5 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */; };
 		FCAC963C19FEF9280046DFC5 /* SignalsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */; };
 		FCAC964019FEF99A0046DFC5 /* TableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963E19FEF99A0046DFC5 /* TableViewCell.m */; };
@@ -1361,6 +1361,8 @@
 		FC4FA0141A1A180D00DA100A /* delete@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "delete@2x.png"; sourceTree = "<group>"; };
 		FC4FA0151A1A180D00DA100A /* archive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "archive@2x.png"; sourceTree = "<group>"; };
 		FC4FA0161A1A180D00DA100A /* blue-archive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blue-archive@2x.png"; sourceTree = "<group>"; };
+		FC4FA0211A1B8A8D00DA100A /* Socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Socket.h; sourceTree = "<group>"; };
+		FC4FA0221A1B8A8D00DA100A /* Socket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Socket.m; sourceTree = "<group>"; };
 		FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Storyboard.storyboard; path = Signal/src/Storyboard/Storyboard.storyboard; sourceTree = SOURCE_ROOT; };
 		FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignalsViewController.h; path = UITests/SignalsViewController.h; sourceTree = "<group>"; };
 		FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalsViewController.m; path = UITests/SignalsViewController.m; sourceTree = "<group>"; };
@@ -1433,7 +1435,6 @@
 				D2179CFC16BB0B3A0006F3AB /* CoreTelephony.framework in Frameworks */,
 				D221A08E169C9E5E00537ABF /* UIKit.framework in Frameworks */,
 				D221A090169C9E5E00537ABF /* Foundation.framework in Frameworks */,
-				D221A092169C9E5E00537ABF /* CoreGraphics.framework in Frameworks */,
 				D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */,
 				D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */,
 				F995AC2FFD6D4442B012604A /* libPods.a in Frameworks */,
@@ -3142,6 +3143,8 @@
 				FCAC964619FEFE1A0046DFC5 /* DemoDataModel.m */,
 				FCFD25701A1524DB00F4C644 /* GroupModel.h */,
 				FCFD25711A1524DB00F4C644 /* GroupModel.m */,
+				FC4FA0211A1B8A8D00DA100A /* Socket.h */,
+				FC4FA0221A1B8A8D00DA100A /* Socket.m */,
 			);
 			name = DemoData;
 			sourceTree = "<group>";
@@ -3857,6 +3860,7 @@
 				76EB059E18170B33006006FC /* HttpSocket.m in Sources */,
 				E197B60E18BBEC1A00F073E5 /* CallAudioManager.m in Sources */,
 				76EB065418170B34006006FC /* InboxFeedViewController.m in Sources */,
+				FC4FA0231A1B8A8D00DA100A /* Socket.m in Sources */,
 				76EB054018170B33006006FC /* AppDelegate.m in Sources */,
 				76EB05D018170B33006006FC /* ZrtpHandshakeSocket.m in Sources */,
 				B63761EF19E1FBE8005735D1 /* HttpResponse.m in Sources */,
