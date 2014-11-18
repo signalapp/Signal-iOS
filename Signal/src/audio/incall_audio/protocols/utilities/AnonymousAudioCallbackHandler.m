@@ -1,21 +1,32 @@
 #import "AnonymousAudioCallbackHandler.h"
 
+@interface AnonymousAudioCallbackHandler ()
+
+@property (readwrite, nonatomic, copy) void (^handleNewDataRecordedBlock)(CyclicalBuffer* data);
+@property (readwrite, nonatomic, copy) void (^handlePlaybackOccurredWithBytesRequestedBlock)(NSUInteger requested, NSUInteger bytesRemaining);
+
+@end
+
 @implementation AnonymousAudioCallbackHandler
 
-+(AnonymousAudioCallbackHandler*) anonymousAudioInterfaceDelegateWithRecordingCallback:(void(^)(CyclicalBuffer* data))recordingCallback
-                                                           andPlaybackOccurredCallback:(void(^)(NSUInteger requested, NSUInteger bytesRemaining))playbackCallback {
-    AnonymousAudioCallbackHandler* a = [AnonymousAudioCallbackHandler new];
-    a->_handleNewDataRecordedBlock = recordingCallback;
-    a->_handlePlaybackOccurredWithBytesRequestedBlock = playbackCallback;
-    return a;
+- (instancetype)initDelegateWithRecordingCallback:(void(^)(CyclicalBuffer* data))recordingCallback
+                      andPlaybackOccurredCallback:(void(^)(NSUInteger requested, NSUInteger bytesRemaining))playbackCallback {
+    if (self = [super init]) {
+        self.handleNewDataRecordedBlock = recordingCallback;
+        self.handlePlaybackOccurredWithBytesRequestedBlock = playbackCallback;
+    }
+    
+    return self;
 }
--(void) handleNewDataRecorded:(CyclicalBuffer*)data {
-    if (_handleNewDataRecordedBlock != nil)
-        _handleNewDataRecordedBlock(data);
+
+- (void)handleNewDataRecorded:(CyclicalBuffer*)data {
+    if (self.handleNewDataRecordedBlock != nil)
+        self.handleNewDataRecordedBlock(data);
 }
--(void) handlePlaybackOccurredWithBytesRequested:(NSUInteger)requested andBytesRemaining:(NSUInteger)bytesRemaining {
-    if (_handlePlaybackOccurredWithBytesRequestedBlock != nil)
-        _handlePlaybackOccurredWithBytesRequestedBlock(requested, bytesRemaining);
+
+- (void)handlePlaybackOccurredWithBytesRequested:(NSUInteger)requested andBytesRemaining:(NSUInteger)bytesRemaining {
+    if (self.handlePlaybackOccurredWithBytesRequestedBlock != nil)
+        self.handlePlaybackOccurredWithBytesRequestedBlock(requested, bytesRemaining);
 }
 
 @end

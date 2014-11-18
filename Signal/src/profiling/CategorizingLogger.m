@@ -96,12 +96,12 @@
 }
 
 - (void)notifyBadArrival:(uint16_t)sequenceNumber
-                  ofType:(enum JitterBadArrivalType)arrivalType {
-    [self log:@"JitterQueue bad arrival" details:[NSString stringWithFormat:@"sequence: %d, arrival type: %d", sequenceNumber, arrivalType]];
+                  ofType:(JitterBadArrivalType)arrivalType {
+    [self log:@"JitterQueue bad arrival" details:[NSString stringWithFormat:@"sequence: %d, arrival type: %ldd", sequenceNumber, arrivalType]];
 }
 
-- (void)notifyBadDequeueOfType:(enum JitterBadDequeueType)type {
-    [self log:@"JitterQueue bad dequeue" details:[NSString stringWithFormat:@"type: %d", type]];
+- (void)notifyBadDequeueOfType:(JitterBadDequeueType)type {
+    [self log:@"JitterQueue bad dequeue" details:[NSString stringWithFormat:@"type: %ld", type]];
 }
 
 - (void)notifyResyncFrom:(uint16_t)oldReadHeadSequenceNumber

@@ -6,11 +6,11 @@
  
 @interface AudioRouter : NSObject
 
++ (void)restoreDefaults;
++ (void)routeAllAudioToInteralSpeaker;
++ (void)routeAllAudioToExternalSpeaker;
 
-+(void) restoreDefaults;
-+(void) routeAllAudioToInteralSpeaker;
-+(void) routeAllAudioToExternalSpeaker;
++ (BOOL)isOutputRoutedToSpeaker;
++ (BOOL)isOutputRoutedToReciever;
 
-+(BOOL) isOutputRoutedToSpeaker;
-+(BOOL) isOutputRoutedToReciever;
 @end

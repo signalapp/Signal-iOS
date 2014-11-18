@@ -10,25 +10,21 @@
  *
  */
 
-@interface RecentCallManager : NSObject {
-@private ObservableValueController* observableRecentsController;
-}
+@interface RecentCallManager : NSObject
 
 - (ObservableValue *)getObservableRecentCalls;
-- (void)watchForCallsThrough:(PhoneManager*)phoneManager
-			  untilCancelled:(TOCCancelToken*)untilCancelledToken;
-- (void)watchForContactUpdatesFrom:(ContactsManager*) contactManager
-                   untillCancelled:(TOCCancelToken*) cancelToken;
+- (void)watchForCallsThrough:(PhoneManager*)phoneManager untilCancelled:(TOCCancelToken*)untilCancelledToken;
+- (void)watchForContactUpdatesFrom:(ContactsManager*)contactManager untillCancelled:(TOCCancelToken*)cancelToken;
 
-- (void)addRecentCall:(RecentCall *)recentCall;
-- (void)removeRecentCall:(RecentCall *)recentCall;
-- (void)archiveRecentCall:(RecentCall *)recentCall;
+- (void)addRecentCall:(RecentCall*)recentCall;
+- (void)removeRecentCall:(RecentCall*)recentCall;
+- (void)archiveRecentCall:(RecentCall*)recentCall;
 - (void)clearRecentCalls;
 - (void)addMissedCallDueToBusy:(ResponderSessionDescriptor*)incomingCallDescriptor;
-- (NSArray *)recentsForSearchString:(NSString *)optionalSearchString
-                 andExcludeArchived:(BOOL)excludeArchived;
+- (NSArray*)recentsForSearchString:(NSString*)optionalSearchString
+                andExcludeArchived:(BOOL)excludeArchived;
 - (void)saveContactsToDefaults;
-- (BOOL)isPhoneNumberPresentInRecentCalls:(PhoneNumber*) phoneNumber;
+- (BOOL)isPhoneNumberPresentInRecentCalls:(PhoneNumber*)phoneNumber;
 - (NSUInteger)missedCallCount;
 
 @end

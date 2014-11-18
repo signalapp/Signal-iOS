@@ -13,7 +13,7 @@
         double stretch = [s doubleValue];
         double freq = 300;
         
-        AudioStretcher* a = [AudioStretcher audioStretcher];
+        AudioStretcher* a = [[AudioStretcher alloc] init];
         
         NSData* inputData = sineWave(freq, 8000, 8000);
         NSData* outputData = [a stretchAudioData:inputData stretchFactor:stretch];

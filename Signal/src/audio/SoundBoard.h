@@ -1,5 +1,4 @@
 #import <Foundation/Foundation.h>
-
 #import "SoundInstance.h"
 
 /**
@@ -10,12 +9,12 @@
 
 @interface SoundBoard : NSObject
 
-+(SoundInstance*) instanceOfInboundRingtone;
-+(SoundInstance*) instanceOfOutboundRingtone;
-+(SoundInstance*) instanceOfHandshakeSound;
-+(SoundInstance*) instanceOfCompletedSound;
-+(SoundInstance*) instanceOfBusySound;
-+(SoundInstance*) instanceOfErrorAlert;
-+(SoundInstance*) instanceOfAlert;
++ (SoundInstance*)instanceOfInboundRingtone;
++ (SoundInstance*)instanceOfOutboundRingtone;
++ (SoundInstance*)instanceOfHandshakeSound;
++ (SoundInstance*)instanceOfCompletedSound;
++ (SoundInstance*)instanceOfBusySound;
++ (SoundInstance*)instanceOfErrorAlert;
++ (SoundInstance*)instanceOfAlert;
 
 @end

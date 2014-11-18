@@ -2,8 +2,6 @@
 #import "Constraints.h"
 #import "SpeexCodec.h"
 
-@implementation SpeexCodec
-
 #define MAX_FRAMES 512
 #define DECODED_SAMPLE_SIZE_IN_BYTES 2
 #define FRAME_SIZE_IN_SAMPLES 160
@@ -13,48 +11,71 @@
 #define QUALITY_PARAMETER 3
 #define COMPLEXITY_PARAMETER 1
 
-+(SpeexCodec*) speexCodec {
-    SpeexCodec* c = [SpeexCodec new];
-    c->logging = [Environment.logging getConditionLoggerForSender:self];
-    [c openSpeex];
-    return c;
+@interface SpeexCodec ()
+
+@property (nonatomic) void* decodingState;
+@property (nonatomic) SpeexBits decodingBits;
+@property (nonatomic) spx_int16_t decodingFrameSize;
+@property (nonatomic) spx_int16_t* decodingBuffer;
+
+@property (nonatomic) void* encodingState;
+@property (nonatomic) SpeexBits encodingBits;
+@property (nonatomic) spx_int16_t encodingFrameSize;
+@property (nonatomic) NSUInteger encodingBufferSizeInBytes;
+
+@property (nonatomic) BOOL terminated;
+
+@property (strong, nonatomic) id<ConditionLogger> logging;
+@property (nonatomic) NSUInteger cachedEncodedLength;
+
+@end
+
+@implementation SpeexCodec
+
+@synthesize decodingBits = _decodingBits, encodingBits = _encodingBits;
+
+- (instancetype)init {
+    if (self = [super init]) {
+        self.logging = [Environment.logging getConditionLoggerForSender:[SpeexCodec class]];
+        [self openSpeex];
+    }
+    
+    return self;
 }
--(void) dealloc {
+
+- (void)dealloc {
     [self closeSpeex];
 }
 
-+(NSUInteger)frameSizeInSamples {
++ (NSUInteger)frameSizeInSamples {
     return FRAME_SIZE_IN_SAMPLES;
 }
 
--(NSUInteger)encodedFrameSizeInBytes {
-    requireState(cachedEncodedLength != 0);
-    return cachedEncodedLength;
+- (NSUInteger)encodedFrameSizeInBytes {
+    requireState(self.cachedEncodedLength != 0);
+    return self.cachedEncodedLength;
 }
--(NSUInteger)decodedFrameSizeInBytes {
+
+- (NSUInteger)decodedFrameSizeInBytes {
     return FRAME_SIZE_IN_SAMPLES*DECODED_SAMPLE_SIZE_IN_BYTES;
 }
 
--(void) determineDecodedLength {
-    NSData* encoded = [self encode:[NSMutableData dataWithLength:[self decodedFrameSizeInBytes]]];
-    cachedEncodedLength = encoded.length;
-}
 
--(NSData*)encode:(NSData*)rawData {
+- (NSData*)encode:(NSData*)rawData {
     require(rawData != nil);
     require(rawData.length == FRAME_SIZE_IN_SAMPLES*DECODED_SAMPLE_SIZE_IN_BYTES);
-    speex_bits_reset(&encodingBits);
-    speex_encode_int(encodingState, (spx_int16_t*)[rawData bytes], &encodingBits);
+    speex_bits_reset(&_encodingBits);
+    speex_encode_int(self.encodingState, (spx_int16_t*)[rawData bytes], &_encodingBits);
     
-    NSMutableData* outputBuffer = [NSMutableData dataWithLength:encodingBufferSizeInBytes];
-    int outputSizeInBytes = speex_bits_write(&encodingBits, [outputBuffer mutableBytes], (int)encodingBufferSizeInBytes);
+    NSMutableData* outputBuffer = [NSMutableData dataWithLength:self.encodingBufferSizeInBytes];
+    int outputSizeInBytes = speex_bits_write(&_encodingBits, [outputBuffer mutableBytes], (int)self.encodingBufferSizeInBytes);
     checkOperation(outputSizeInBytes > 0);
     [outputBuffer setLength:(NSUInteger)outputSizeInBytes];
     
     return outputBuffer;
 }
 
--(NSData*)decode:(NSData*)potentiallyMissingEncodedData {
+- (NSData*)decode:(NSData*)potentiallyMissingEncodedData {
     NSUInteger encodedDataLength = potentiallyMissingEncodedData.length;
     if (potentiallyMissingEncodedData == nil) {
         encodedDataLength = [self decodedFrameSizeInBytes]; // size for infering audio data
@@ -65,23 +86,23 @@
     
     int decodedLength = [self decodeSpeexBits:dbits withLength:(int)encodedDataLength];
     
-    return [NSData dataWithBytes:decodingBuffer length:(NSUInteger)decodedLength*sizeof(spx_int16_t)];
+    return [NSData dataWithBytes:self.decodingBuffer length:(NSUInteger)decodedLength*sizeof(spx_int16_t)];
 }
 
--(NSUInteger) encodedDataLengthFromData:(NSData*)potentiallyMissingEncodedData{
+- (NSUInteger)encodedDataLengthFromData:(NSData*)potentiallyMissingEncodedData {
     if (potentiallyMissingEncodedData != nil) {
         return potentiallyMissingEncodedData.length;
     }
     return [self decodedFrameSizeInBytes];
 }
 
-- (SpeexBits *)getSpeexBitsFromData:(NSData *)encodedData andDataLength:(int)encodedDataLength {
-    SpeexBits *dbits=NULL;
+- (SpeexBits*)getSpeexBitsFromData:(NSData*)encodedData andDataLength:(int)encodedDataLength {
+    SpeexBits* dbits = NULL;
     char* encodingStream;
-    if([encodedData bytes] != NULL){
+    if ([encodedData bytes] != NULL) {
         encodingStream = (char*)[encodedData bytes];
-        speex_bits_read_from(&decodingBits, encodingStream, encodedDataLength);
-        dbits = &decodingBits;
+        speex_bits_read_from(&_decodingBits, encodingStream, encodedDataLength);
+        dbits = &_decodingBits;
     }
     return dbits;
 }
@@ -90,25 +111,25 @@
     int decodingBufferIndex = 0;
     int decodingBufferLength = (int)[self decodedFrameSizeInBytes];
     int count = 0;
-    while(0 == speex_decode_int(decodingState, dbits, decodingBuffer + decodingBufferIndex)){
+    while (0 == speex_decode_int(self.decodingState, dbits, self.decodingBuffer + decodingBufferIndex)) {
         count++;
-        decodingBufferIndex += decodingFrameSize;
-        if(decodingBufferIndex + decodingFrameSize > decodingBufferLength){
-            [logging logWarning:[NSString stringWithFormat:@"out of space in the decArr buffer, idx=%d, frameSize=%d, length=%d", decodingBufferIndex,decodingFrameSize,decodingBufferLength]];
+        decodingBufferIndex += self.decodingFrameSize;
+        if (decodingBufferIndex + self.decodingFrameSize > decodingBufferLength) {
+            [self.logging logWarning:[NSString stringWithFormat:@"out of space in the decArr buffer, idx=%d, frameSize=%d, length=%d", decodingBufferIndex, self.decodingFrameSize, decodingBufferLength]];
             break;
         }
-        if(decodingBufferIndex + decodingFrameSize > decodingFrameSize * MAX_FRAMES){
-            [logging logWarning:[NSString stringWithFormat:@"out of space in the dec_buffer buffer, idx=%d", decodingBufferIndex]];
+        if (decodingBufferIndex + self.decodingFrameSize > self.decodingFrameSize * MAX_FRAMES) {
+            [self.logging logWarning:[NSString stringWithFormat:@"out of space in the dec_buffer buffer, idx=%d", decodingBufferIndex]];
             break;
         }
-        if(dbits == NULL){
+        if (dbits == NULL) {
             break;
         }
     }
     return decodingBufferIndex;
 }
 
--(void) openSpeex {
+- (void)openSpeex {
     [self initiateEncoderAndDecoder];
     [self applySpeexSettings];
     [self initiateSpeexBuffers];
@@ -117,52 +138,60 @@
 
 - (void)initiateEncoderAndDecoder {
     
-    encodingState = speex_encoder_init(&speex_nb_mode);
-    decodingState = speex_decoder_init(&speex_nb_mode);
+    self.encodingState = speex_encoder_init(&speex_nb_mode);
+    self.decodingState = speex_decoder_init(&speex_nb_mode);
     
-    checkOperationDescribe(encodingState != NULL, @"speex encoder init failed");
-    checkOperationDescribe(decodingState != NULL, @"speex decoder init failed");
+    checkOperationDescribe(self.encodingState != NULL, @"speex encoder init failed");
+    checkOperationDescribe(self.decodingState != NULL, @"speex decoder init failed");
 }
 
--(void)applySpeexSettings{
+- (void)applySpeexSettings {
     spx_int32_t tmp;
     tmp=PERPETUAL_ENHANCER_PARAMETER;
-    speex_decoder_ctl(decodingState, SPEEX_SET_ENH, &tmp);
+    speex_decoder_ctl(self.decodingState, SPEEX_SET_ENH, &tmp);
     tmp=VARIABLE_BIT_RATE_PARAMETER;
-    speex_encoder_ctl(encodingState, SPEEX_SET_VBR, &tmp);
+    speex_encoder_ctl(self.encodingState, SPEEX_SET_VBR, &tmp);
     tmp=QUALITY_PARAMETER;
-    speex_encoder_ctl(encodingState, SPEEX_SET_QUALITY, &tmp);
+    speex_encoder_ctl(self.encodingState, SPEEX_SET_QUALITY, &tmp);
     tmp=COMPLEXITY_PARAMETER;
-    speex_encoder_ctl(encodingState, SPEEX_SET_COMPLEXITY, &tmp);
+    speex_encoder_ctl(self.encodingState, SPEEX_SET_COMPLEXITY, &tmp);
     
-    speex_encoder_ctl(encodingState, SPEEX_GET_FRAME_SIZE, &encodingFrameSize);
-    speex_decoder_ctl(decodingState, SPEEX_GET_FRAME_SIZE, &decodingFrameSize);
+    spx_int16_t frameSize;
+    speex_encoder_ctl(self.encodingState, SPEEX_GET_FRAME_SIZE, &frameSize);
+    self.encodingFrameSize = frameSize;
+    speex_decoder_ctl(self.decodingState, SPEEX_GET_FRAME_SIZE, &frameSize);
+    self.decodingFrameSize = frameSize;
     
     int sampleRate = (int)SAMPLE_RATE;
-    speex_encoder_ctl(encodingState, SPEEX_SET_SAMPLING_RATE, &sampleRate);
-    speex_decoder_ctl(decodingState, SPEEX_SET_SAMPLING_RATE, &sampleRate);
+    speex_encoder_ctl(self.encodingState, SPEEX_SET_SAMPLING_RATE, &sampleRate);
+    speex_decoder_ctl(self.decodingState, SPEEX_SET_SAMPLING_RATE, &sampleRate);
 }
 
 - (void)initiateSpeexBuffers {
-    speex_bits_init(&encodingBits);
-    speex_bits_init(&decodingBits);
+    speex_bits_init(&_encodingBits);
+    speex_bits_init(&_decodingBits);
     
-    encodingBufferSizeInBytes = (NSUInteger)encodingFrameSize * MAX_FRAMES;
-    decodingBuffer = (spx_int16_t *) malloc( sizeof( spx_int16_t ) * (NSUInteger)decodingFrameSize*MAX_FRAMES );
+    self.encodingBufferSizeInBytes = (NSUInteger)self.encodingFrameSize * MAX_FRAMES;
+    self.decodingBuffer = (spx_int16_t*) malloc( sizeof(spx_int16_t) * (NSUInteger)self.decodingFrameSize * MAX_FRAMES );
     
-    checkOperationDescribe(decodingBuffer != NULL, @"buffer allocation failed");
+    checkOperationDescribe(self.decodingBuffer != NULL, @"buffer allocation failed");
 }
 
--(void) closeSpeex {
-    terminated = true;
+- (void)determineDecodedLength {
+    NSData* encoded = [self encode:[NSMutableData dataWithLength:[self decodedFrameSizeInBytes]]];
+    self.cachedEncodedLength = encoded.length;
+}
+
+- (void)closeSpeex {
+    self.terminated = true;
     
-    speex_encoder_destroy( encodingState );
-    speex_decoder_destroy( decodingState );
+    speex_encoder_destroy( self.encodingState );
+    speex_decoder_destroy( self.decodingState );
     
-    speex_bits_destroy( &encodingBits );
-    speex_bits_destroy( &decodingBits );
+    speex_bits_destroy( &_encodingBits );
+    speex_bits_destroy( &_decodingBits );
     
-    free(decodingBuffer);
+    free(self.decodingBuffer);
 }
 
 @end

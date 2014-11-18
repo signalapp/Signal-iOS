@@ -10,56 +10,62 @@
 
 #define DESIRED_BUFFER_DEPTH_DECAY_RATE 0.01
 
+@interface DesiredBufferDepthController ()
+
+@property (strong, nonatomic) DropoutTracker* dropoutTracker;
+@property (strong, nonatomic) DecayingSampleEstimator* decayingDesiredBufferDepth;
+@property (strong, nonatomic) id<ValueLogger> desiredDelayLogger;
+
+@end
+
 @implementation DesiredBufferDepthController
 
-+(DesiredBufferDepthController*) desiredBufferDepthControllerForJitterQueue:(JitterQueue*)jitterQueue {
-    require(jitterQueue != nil);
+- (instancetype)initForJitterQueue:(JitterQueue*)jitterQueue {
+    if (self = [super init]) {
+        require(jitterQueue != nil);
+        
+        NSTimeInterval audioDurationPerPacket = (NSTimeInterval)(AUDIO_FRAMES_PER_PACKET*[SpeexCodec frameSizeInSamples]) / SAMPLE_RATE;
+        double initialDesiredBufferDepth = Environment.preferences.getCachedOrDefaultDesiredBufferDepth;
+        
+        self.dropoutTracker = [[DropoutTracker alloc] initWithAudioDurationPerPacket:audioDurationPerPacket];
+        self.decayingDesiredBufferDepth = [[DecayingSampleEstimator alloc] initWithInitialEstimate:initialDesiredBufferDepth
+                                                                             andDecayPerUnitSample:DESIRED_BUFFER_DEPTH_DECAY_RATE];
+        self.desiredDelayLogger = [Environment.logging getValueLoggerForValue:@"desired buffer depth" from:self];
+        
+        [jitterQueue registerWatcher:self];
+    }
     
-    NSTimeInterval audioDurationPerPacket = (NSTimeInterval)(AUDIO_FRAMES_PER_PACKET*[SpeexCodec frameSizeInSamples])
-                                          / SAMPLE_RATE;
-    double initialDesiredBufferDepth = Environment.preferences.getCachedOrDefaultDesiredBufferDepth;
-    
-    DropoutTracker* dropoutTracker = [DropoutTracker dropoutTrackerWithAudioDurationPerPacket:audioDurationPerPacket];
-
-    DecayingSampleEstimator* decayingDesiredBufferDepth =
-        [[DecayingSampleEstimator alloc] initWithInitialEstimate:initialDesiredBufferDepth
-                                           andDecayPerUnitSample:DESIRED_BUFFER_DEPTH_DECAY_RATE];
-    
-    DesiredBufferDepthController* result = [DesiredBufferDepthController new];
-    result->dropoutTracker = dropoutTracker;
-    result->decayingDesiredBufferDepth = decayingDesiredBufferDepth;
-    result->desiredDelayLogger = [Environment.logging getValueLoggerForValue:@"desired buffer depth" from:self];
-    
-    [jitterQueue registerWatcher:result];
-    return result;
+    return self;
 }
 
--(double) getAndUpdateDesiredBufferDepth {
-    double r = decayingDesiredBufferDepth.currentEstimate;
-    [decayingDesiredBufferDepth updateWithNextSample:[dropoutTracker getDepthForThreshold:DROPOUT_THRESHOLD]];
-    [decayingDesiredBufferDepth forceEstimateTo:[NumberUtil clamp:decayingDesiredBufferDepth.currentEstimate
-                                                            toMin:MIN_DESIRED_FRAME_DELAY
-                                                           andMax:MAX_DESIRED_FRAME_DELAY]];
-    [desiredDelayLogger logValue:r];
+- (double)getAndUpdateDesiredBufferDepth {
+    double r = self.decayingDesiredBufferDepth.currentEstimate;
+    [self.decayingDesiredBufferDepth updateWithNextSample:[self.dropoutTracker getDepthForThreshold:DROPOUT_THRESHOLD]];
+    [self.decayingDesiredBufferDepth forceEstimateTo:[NumberUtil clamp:self.decayingDesiredBufferDepth.currentEstimate
+                                                                 toMin:MIN_DESIRED_FRAME_DELAY
+                                                                andMax:MAX_DESIRED_FRAME_DELAY]];
+    [self.desiredDelayLogger logValue:r];
     return r;
 }
 
--(void) notifyArrival:(uint16_t)sequenceNumber {
-    [dropoutTracker observeSequenceNumber:sequenceNumber];
-}
--(void) notifyBadArrival:(uint16_t)sequenceNumber ofType:(enum JitterBadArrivalType)arrivalType {
-}
--(void) notifyBadDequeueOfType:(enum JitterBadDequeueType)type {
-}
--(void) notifyDequeue:(uint16_t)sequenceNumber withRemainingEnqueuedItemCount:(NSUInteger)remainingCount {
-}
--(void) notifyResyncFrom:(uint16_t)oldReadHeadSequenceNumber to:(uint16_t)newReadHeadSequenceNumber {
-}
--(void) notifyDiscardOverflow:(uint16_t)sequenceNumber resyncingFrom:(uint16_t)oldReadHeadSequenceNumber to:(uint16_t)newReadHeadSequenceNumber {
+- (void)notifyArrival:(uint16_t)sequenceNumber {
+    [self.dropoutTracker observeSequenceNumber:sequenceNumber];
 }
 
--(void) terminate {
-    [Environment.preferences setCachedDesiredBufferDepth:decayingDesiredBufferDepth.currentEstimate];
+- (void)notifyBadArrival:(uint16_t)sequenceNumber ofType:(JitterBadArrivalType)arrivalType {}
+
+- (void)notifyBadDequeueOfType:(JitterBadDequeueType)type {}
+
+- (void)notifyDequeue:(uint16_t)sequenceNumber withRemainingEnqueuedItemCount:(NSUInteger)remainingCount {}
+
+- (void)notifyResyncFrom:(uint16_t)oldReadHeadSequenceNumber to:(uint16_t)newReadHeadSequenceNumber {}
+
+- (void)notifyDiscardOverflow:(uint16_t)sequenceNumber
+                resyncingFrom:(uint16_t)oldReadHeadSequenceNumber
+                           to:(uint16_t)newReadHeadSequenceNumber {}
+
+- (void)terminate {
+    [Environment.preferences setCachedDesiredBufferDepth:self.decayingDesiredBufferDepth.currentEstimate];
 }
 
 @end

@@ -1,55 +1,50 @@
 #import "AppAudioManager.h"
-
 #import <AVFoundation/AVAudioSession.h>
-
 #import "AudioRouter.h"
 #import "SoundBoard.h"
 #import "SoundPlayer.h"
 
-
 #define DEFAULT_CATEGORY AVAudioSessionCategorySoloAmbient
 #define RECORDING_CATEGORY AVAudioSessionCategoryPlayAndRecord
 
+@interface AppAudioManager ()
 
-AppAudioManager*  sharedAppAudioManager;
+@property (nonatomic) BOOL isSpeakerphoneActive;
 
-@interface AppAudioManager (){
-    enum AudioProfile _audioProfile;
-    BOOL isSpeakerphoneActive;
-}
-@property (retain) SoundPlayer *soundPlayer;
 @end
-
 
 @implementation AppAudioManager
 
-+(AppAudioManager*) sharedInstance {
-    @synchronized(self){
-        if( nil == sharedAppAudioManager){
-            sharedAppAudioManager = [AppAudioManager new];
-            sharedAppAudioManager.soundPlayer = [SoundPlayer new];
-            [[sharedAppAudioManager soundPlayer] setDelegate:sharedAppAudioManager];
-        }
-    }
-    return sharedAppAudioManager;
+#pragma mark Creation
+
++ (instancetype)sharedInstance {
+    static AppAudioManager* sharedInstance = nil;
+    static dispatch_once_t onceToken = 0;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[AppAudioManager alloc] init];
+        [[SoundPlayer sharedInstance] setDelegate:sharedInstance];
+    });
+    return sharedInstance;
 }
 
 #pragma mark AudioState Management
 
--(void) setAudioProfile:(enum AudioProfile) profile {
+@synthesize audioProfile = _audioProfile;
+
+- (void)setAudioProfile:(AudioProfile)audioProfile {
     [self updateAudioRouter];
-     _audioProfile = profile;
+     _audioProfile = audioProfile;
 }
 
--(void) updateAudioRouter{
-    if (isSpeakerphoneActive){
+- (void)updateAudioRouter {
+    if (self.isSpeakerphoneActive) {
         [AudioRouter routeAllAudioToExternalSpeaker];
-    }else{
-        switch (_audioProfile) {
-            case AudioProfile_Default:
+    } else {
+        switch (self.audioProfile) {
+            case AudioProfileDefault:
                 [AudioRouter routeAllAudioToInteralSpeaker];
                 break;
-            case AudioProfile_ExternalSpeaker:
+            case AudioProfileExternalSpeaker:
                 [AudioRouter routeAllAudioToExternalSpeaker];
                 break;
             default:
@@ -58,28 +53,28 @@ AppAudioManager*  sharedAppAudioManager;
     }
 }
 
-
--(void) overrideAudioProfile{
-    isSpeakerphoneActive = YES;
+- (void)overrideAudioProfile {
+    self.isSpeakerphoneActive = YES;
     [self updateAudioRouter];
 }
 
--(void) resetOverride{
-    isSpeakerphoneActive = NO;
+- (void)resetOverride {
+    self.isSpeakerphoneActive = NO;
     [self updateAudioRouter];
 }
 
--(enum AudioProfile) getCurrentAudioProfile{
-    return (isSpeakerphoneActive) ? AudioProfile_ExternalSpeaker : _audioProfile;
+- (AudioProfile)getCurrentAudioProfile {
+    return (self.isSpeakerphoneActive) ? AudioProfileExternalSpeaker : self.audioProfile;
 }
 
-#pragma mark AudioControl;
--(void) respondToProgressChange:(CallProgressType) progressType
-        forLocallyInitiatedCall:(BOOL) initiatedLocally {
+#pragma mark AudioControl
+
+- (void)respondToProgressChange:(CallProgressType)progressType
+        forLocallyInitiatedCall:(BOOL)initiatedLocally {
     switch (progressType){
         case CallProgressTypeConnecting:
-            [sharedAppAudioManager setAudioEnabled:YES];
-            [_soundPlayer stopAllAudio];
+            [self setAudioEnabled:YES];
+            [[SoundPlayer sharedInstance] stopAllAudio];
         case CallProgressTypeRinging:
             (initiatedLocally) ? [self handleOutboundRing] : [self handleInboundRing];
             break;
@@ -94,20 +89,18 @@ AppAudioManager*  sharedAppAudioManager;
     }
 }
 
--(void) respondToTerminationType:(CallTerminationType) terminationType {
-    if(terminationType == CallTerminationTypeResponderIsBusy) {
-        [_soundPlayer playSound:[SoundBoard instanceOfBusySound]];
-    }
-    else if([self shouldErrorSoundBePlayedForCallTerminationType:terminationType]){
-        [_soundPlayer playSound:[SoundBoard instanceOfErrorAlert]];
-    }
-    else {
-        [_soundPlayer playSound:[SoundBoard instanceOfAlert]];
+- (void)respondToTerminationType:(CallTerminationType)terminationType {
+    if (terminationType == CallTerminationTypeResponderIsBusy) {
+        [[SoundPlayer sharedInstance] playSound:[SoundBoard instanceOfBusySound]];
+    } else if ([self shouldErrorSoundBePlayedForCallTerminationType:terminationType]) {
+        [[SoundPlayer sharedInstance] stopAllAudio];
+        [[SoundPlayer sharedInstance] playSound:[SoundBoard instanceOfErrorAlert]];
+    } else {
+        [[SoundPlayer sharedInstance] playSound:[SoundBoard instanceOfAlert]];
     }
 }
 
--(BOOL) shouldErrorSoundBePlayedForCallTerminationType:(CallTerminationType) type{
-    [_soundPlayer stopAllAudio];
+- (BOOL)shouldErrorSoundBePlayedForCallTerminationType:(CallTerminationType)type {
     if (type == CallTerminationTypeRejectedLocal  ||
         type == CallTerminationTypeRejectedRemote ||
         type == CallTerminationTypeHangupLocal    ||
@@ -118,78 +111,83 @@ AppAudioManager*  sharedAppAudioManager;
     return YES;
 }
 
--(void) handleInboundRing {
-    [_soundPlayer playSound:[SoundBoard instanceOfInboundRingtone]];
+- (void)handleInboundRing {
+    [[SoundPlayer sharedInstance] playSound:[SoundBoard instanceOfInboundRingtone]];
 }
 
--(void) handleOutboundRing {
-    [self setAudioProfile:AudioProfile_Default];
-    [_soundPlayer playSound:[SoundBoard instanceOfOutboundRingtone]];
+- (void)handleOutboundRing {
+    [self setAudioProfile:AudioProfileDefault];
+    [[SoundPlayer sharedInstance] playSound:[SoundBoard instanceOfOutboundRingtone]];
 }
 
--(void) handleSecuring {
-    [_soundPlayer stopAllAudio];
-    [self setAudioProfile:AudioProfile_Default];
-    [_soundPlayer playSound:[SoundBoard instanceOfHandshakeSound]];
+- (void)handleSecuring {
+    [[SoundPlayer sharedInstance] stopAllAudio];
+    [self setAudioProfile:AudioProfileDefault];
+    [[SoundPlayer sharedInstance] playSound:[SoundBoard instanceOfHandshakeSound]];
 }
 
--(void) handleCallEstablished {
-    [_soundPlayer stopAllAudio];
-    [self setAudioProfile:AudioProfile_Default];
-    [_soundPlayer playSound:[SoundBoard instanceOfCompletedSound]];
+- (void)handleCallEstablished {
+    [[SoundPlayer sharedInstance] stopAllAudio];
+    [self setAudioProfile:AudioProfileDefault];
+    [[SoundPlayer sharedInstance] playSound:[SoundBoard instanceOfCompletedSound]];
 }
 
--(BOOL) toggleSpeakerPhone {
-    isSpeakerphoneActive=!isSpeakerphoneActive;
+- (BOOL)toggleSpeakerPhone {
+    self.isSpeakerphoneActive = !self.isSpeakerphoneActive;
     [self updateAudioRouter];
     
-    return isSpeakerphoneActive;
+    return self.isSpeakerphoneActive;
 }
 
 #pragma mark Audio Control
 
--(void) cancellAllAudio {
-    [_soundPlayer stopAllAudio];
+- (void)cancellAllAudio {
+    [[SoundPlayer sharedInstance] stopAllAudio];
 }
 
--(BOOL) requestRecordingPrivlege {
+- (BOOL)requestRecordingPrivlege {
     return [self changeAudioSessionCategoryTo:RECORDING_CATEGORY];
 }
 
--(BOOL) releaseRecordingPrivlege{
+- (BOOL)releaseRecordingPrivlege {
     return [self changeAudioSessionCategoryTo:DEFAULT_CATEGORY];
 }
 
--(void) requestRequiredPermissionsIfNeeded {
-    [AVAudioSession.sharedInstance requestRecordPermission:^(BOOL granted) {
+- (void)requestRequiredPermissionsIfNeeded {
+    [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
         if (!granted) {
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"") message:NSLocalizedString(@"AUDIO_PERMISSION_MESSAGE", @"") delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil, nil];
+#warning Deprecated method, this should be changed
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
+                                                                message:NSLocalizedString(@"AUDIO_PERMISSION_MESSAGE", @"")
+                                                               delegate:nil
+                                                      cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                                                      otherButtonTitles:nil, nil];
             [alertView show];
         }
     }];
 }
 
--(BOOL) changeAudioSessionCategoryTo:(NSString*) category {
+- (BOOL)changeAudioSessionCategoryTo:(NSString*)category {
     NSError* e;
-    [AVAudioSession.sharedInstance setCategory:category error:&e];
+    [[AVAudioSession sharedInstance] setCategory:category error:&e];
     return (nil != e);
 }
 
--(BOOL) setAudioEnabled:(BOOL) enable {
+- (BOOL)setAudioEnabled:(BOOL)enable {
     NSError* e;
     if (enable) {
         [[AVAudioSession sharedInstance] setActive:enable error:&e];
-        [_soundPlayer awake];
+        [[SoundPlayer sharedInstance] awake];
     } else {
         [[AVAudioSession sharedInstance] setActive:enable
                                        withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation
                                              error:&e];
     }
-    return ( nil !=e );
+    return (nil !=e);
 }
 
--(void) awake {
-    [_soundPlayer awake];
+- (void)awake {
+    [[SoundPlayer sharedInstance] awake];
 }
 
 #pragma mark Sound Player Delegate
@@ -198,7 +196,7 @@ AppAudioManager*  sharedAppAudioManager;
     if (instanceType == SoundInstanceTypeBusySound ||
         instanceType == SoundInstanceTypeErrorAlert ||
         instanceType == SoundInstanceTypeAlert) {
-        [sharedAppAudioManager setAudioEnabled:NO];
+        [self setAudioEnabled:NO];
     }
 }
     

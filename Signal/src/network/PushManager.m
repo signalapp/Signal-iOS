@@ -85,7 +85,7 @@
     self.registerWithServerFutureSource = [[TOCFutureSource alloc] init];
     
     [RPServerRequestsManager.sharedInstance performRequest:[RPAPICall registerPushNotificationWithPushToken:token] success:^(NSURLSessionDataTask *task, id responseObject) {
-        if ([task.response isKindOfClass: NSHTTPURLResponse.class]){
+        if ([task.response isKindOfClass:[NSHTTPURLResponse class]]){
             NSInteger statusCode = [(NSHTTPURLResponse*) task.response statusCode];
             if (statusCode == 200) {
                 [self.registerWithServerFutureSource trySetResult:@YES];

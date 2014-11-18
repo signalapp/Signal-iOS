@@ -11,28 +11,21 @@
  *
 **/
 
-@interface JitterQueue : NSObject <BufferDepthMeasure> {
-@private PriorityQueue* resultPriorityQueue;
-@private uint16_t readHeadMin;
-@private uint16_t readHeadSpan;
-@private NSMutableSet* idsInJitterQueue;
-@private NSMutableArray* watchers;
-@private uint16_t largestLatestEnqueued;
-}
+@interface JitterQueue : NSObject <BufferDepthMeasure>
 
-+(JitterQueue*) jitterQueue;
+- (instancetype)init;
 
--(void) registerWatcher:(id<JitterQueueNotificationReceiver>)watcher;
+- (void)registerWatcher:(id<JitterQueueNotificationReceiver>)watcher;
 
 // Provides a framed audio packet to be placed in sequence.
 // Returns true if the packet was successfully enqueued.
 // Returns false if the packet has arrived too late, far too early, or is a duplicate.
--(bool) tryEnqueue:(EncodedAudioPacket*)packet;
+- (bool)tryEnqueue:(EncodedAudioPacket*)packet;
 
 // Returns the next framed audio packet in sequence, or nil if the next packet has not arrived in time.
--(EncodedAudioPacket*) tryDequeue;
+- (EncodedAudioPacket*)tryDequeue;
 
 // The number of framed audio packets (contiguous or not) in the queue.
--(NSUInteger) count;
+- (NSUInteger)count;
 
 @end

@@ -11,11 +11,9 @@
  *
  **/
 
-@interface AudioStretcher : NSObject {
-@private struct time_scale_state_s timeScaleState;
-}
+@interface AudioStretcher : NSObject
 
-+(AudioStretcher*) audioStretcher;
--(NSData*) stretchAudioData:(NSData*)audioData stretchFactor:(double)stretchFactor;
+- (instancetype)init;
+- (NSData*)stretchAudioData:(NSData*)audioData stretchFactor:(double)stretchFactor;
 
 @end

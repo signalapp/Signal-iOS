@@ -80,7 +80,7 @@
     NSError* jsonParseError = nil;
     id parsedJSON = [NSJSONSerialization dataWithJSONObject:self.encodedAsUtf8 options:0 error:&jsonParseError];
     checkOperationDescribe(jsonParseError == nil, ([NSString stringWithFormat:@"Invalid json: %@", self]));
-    checkOperationDescribe([parsedJSON isKindOfClass:NSData.class], @"Unexpected json data");
+    checkOperationDescribe([parsedJSON isKindOfClass:[NSData class]], @"Unexpected json data");
     return parsedJSON;
 }
 
@@ -88,7 +88,7 @@
     NSError* jsonParseError = nil;
     id parsedJSON = [NSJSONSerialization JSONObjectWithData:self.encodedAsUtf8 options:0 error:&jsonParseError];
     checkOperationDescribe(jsonParseError == nil, ([NSString stringWithFormat:@"JSON parse error: %@, on json: %@", jsonParseError, self]));
-    checkOperationDescribe([parsedJSON isKindOfClass:NSDictionary.class], @"Unexpected json data");
+    checkOperationDescribe([parsedJSON isKindOfClass:[NSDictionary class]], @"Unexpected json data");
     return parsedJSON;
 }
 

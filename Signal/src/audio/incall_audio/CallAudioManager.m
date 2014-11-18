@@ -6,65 +6,73 @@
 
 #define SAFETY_FACTOR_FOR_COMPUTE_DELAY 3.0
 
+@interface CallAudioManager ()
+
+@property (strong, nonatomic) RemoteIOAudio* audioInterface;
+@property (strong, nonatomic) AudioProcessor* audioProcessor;
+@property (strong, nonatomic) AudioSocket* audioSocket;
+@property (nonatomic) bool started;
+@property (nonatomic) NSUInteger bytesInPlaybackBuffer;
+
+@end
+
 @implementation CallAudioManager
 
-+(CallAudioManager*) callAudioManagerStartedWithAudioSocket:(AudioSocket*)audioSocket
-                                            andErrorHandler:(ErrorHandlerBlock)errorHandler
-                                             untilCancelled:(TOCCancelToken*)untilCancelledToken {
-    require(audioSocket != nil);
+- (instancetype)initWithAudioSocket:(AudioSocket*)audioSocket
+                    andErrorHandler:(ErrorHandlerBlock)errorHandler
+                     untilCancelled:(TOCCancelToken*)untilCancelledToken {
+    if (self = [super init]) {
+        require(audioSocket != nil);
+        
+        self.audioProcessor = [[AudioProcessor alloc] init];
+        self.audioSocket = audioSocket;
+        
+        [self startWithErrorHandler:errorHandler untilCancelled:untilCancelledToken];
+    }
     
-    AudioProcessor* processor = [AudioProcessor audioProcessor];
-    
-    CallAudioManager* newCallAudioManagerInstance = [CallAudioManager new];
-    newCallAudioManagerInstance->audioProcessor = processor;
-    newCallAudioManagerInstance->audioSocket = audioSocket;
-    
-    [newCallAudioManagerInstance startWithErrorHandler:errorHandler untilCancelled:untilCancelledToken];
-    
-    return newCallAudioManagerInstance;
+    return self;
 }
 
--(void) startWithErrorHandler:(ErrorHandlerBlock)errorHandler untilCancelled:(TOCCancelToken*)untilCancelledToken {
+- (void)startWithErrorHandler:(ErrorHandlerBlock)errorHandler untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(errorHandler != nil);
     require(untilCancelledToken != nil);
     @synchronized(self) {
-        requireState(!started);
-        started = true;
+        requireState(!self.started);
+        self.started = true;
         if (untilCancelledToken.isAlreadyCancelled) return;
-        audioInterface = [RemoteIOAudio remoteIOInterfaceStartedWithDelegate:self untilCancelled:untilCancelledToken];
+        self.audioInterface = [[RemoteIOAudio alloc] initWithDelegate:self untilCancelled:untilCancelledToken];
         PacketHandlerBlock handler = ^(EncodedAudioPacket* packet) {
-            [audioProcessor receivedPacket:packet];
+            [self.audioProcessor receivedPacket:packet];
         };
-        [audioSocket startWithHandler:[[PacketHandler alloc] initPacketHandler:handler
-                                                              withErrorHandler:errorHandler]
-                       untilCancelled:untilCancelledToken];
+        [self.audioSocket startWithHandler:[[PacketHandler alloc] initPacketHandler:handler withErrorHandler:errorHandler]
+                            untilCancelled:untilCancelledToken];
     }
 }
 
--(void) handlePlaybackOccurredWithBytesRequested:(NSUInteger)requested andBytesRemaining:(NSUInteger)bytesRemaining {
-    if (bytesInPlaybackBuffer >= requested) {
-        bytesInPlaybackBuffer -= requested;
+- (void)handlePlaybackOccurredWithBytesRequested:(NSUInteger)requested andBytesRemaining:(NSUInteger)bytesRemaining {
+    if (self.bytesInPlaybackBuffer >= requested) {
+        self.bytesInPlaybackBuffer -= requested;
     }
     
-    NSUInteger bytesAddedIfPullMore = [audioProcessor.codec decodedFrameSizeInBytes];
+    NSUInteger bytesAddedIfPullMore = [self.audioProcessor.codec decodedFrameSizeInBytes];
     double minSafeBufferSize = MAX(requested, bytesAddedIfPullMore)*SAFETY_FACTOR_FOR_COMPUTE_DELAY;
-    while (bytesInPlaybackBuffer < minSafeBufferSize) {
-        NSData* decodedAudioData = [audioProcessor tryDecodeOrInferFrame];
+    while (self.bytesInPlaybackBuffer < minSafeBufferSize) {
+        NSData* decodedAudioData = [self.audioProcessor tryDecodeOrInferFrame];
         if (decodedAudioData == nil) break;
-        [audioInterface populatePlaybackQueueWithData:decodedAudioData];
-        bytesInPlaybackBuffer += decodedAudioData.length;
+        [self.audioInterface populatePlaybackQueueWithData:decodedAudioData];
+        self.bytesInPlaybackBuffer += decodedAudioData.length;
     }
 }
 
--(void) handleNewDataRecorded:(CyclicalBuffer*)recordingQueue {
-    NSArray* encodedPackets = [audioProcessor encodeAudioPacketsFromBuffer:recordingQueue];
+- (void)handleNewDataRecorded:(CyclicalBuffer*)recordingQueue {
+    NSArray* encodedPackets = [self.audioProcessor encodeAudioPacketsFromBuffer:recordingQueue];
     for (EncodedAudioPacket* packet in encodedPackets) {
-        [audioSocket send:packet];
+        [self.audioSocket send:packet];
     }
 }
 
--(BOOL) toggleMute {
-	return [audioInterface toggleMute];
+- (BOOL)toggleMute {
+	return [self.audioInterface toggleMute];
 }
 
 @end

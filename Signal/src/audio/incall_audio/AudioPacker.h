@@ -17,18 +17,12 @@
  * Missing packets are split into frames with no audio data. The missing frames are inferred by speex.
  *
  */
-@interface AudioPacker : NSObject {
-@private NSMutableArray* framesToSend;
-@private uint16_t nextSequenceNumber;
-@private Queue* audioFrameToReceiveQueue;
-}
+@interface AudioPacker : NSObject
 
-+(AudioPacker*) audioPacker;
+- (void)packFrame:(EncodedAudioFrame*)frame;
+- (EncodedAudioPacket*)tryGetFinishedAudioPacket;
 
--(void)packFrame:(EncodedAudioFrame*)frame;
--(EncodedAudioPacket*) tryGetFinishedAudioPacket;
-
--(void)unpackPotentiallyMissingAudioPacket:(EncodedAudioPacket*)potentiallyMissingPacket;
--(EncodedAudioFrame*) tryGetReceivedFrame;
+- (void)unpackPotentiallyMissingAudioPacket:(EncodedAudioPacket*)potentiallyMissingPacket;
+- (EncodedAudioFrame*)tryGetReceivedFrame;
 
 @end

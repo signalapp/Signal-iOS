@@ -7,12 +7,12 @@
  * RemoteIOBufferListWrapper is used by RemoteIOAudio to manage an audio buffer list.
  *
  **/
+
 @interface RemoteIOBufferListWrapper : NSObject
 
-@property (nonatomic, assign) NSUInteger sampleCount;
-@property (nonatomic, readonly) AudioBufferList* audioBufferList;
+@property (assign, nonatomic) NSUInteger sampleCount;
+@property (readonly, nonatomic) AudioBufferList* audioBufferList;
 
-+(RemoteIOBufferListWrapper*) remoteIOBufferListWithMonoBufferSize:(NSUInteger)bufferSize;
-
+- (instancetype)initWithMonoBufferSize:(NSUInteger)bufferSize;
 
 @end

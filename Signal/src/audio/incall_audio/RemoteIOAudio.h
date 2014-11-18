@@ -7,10 +7,10 @@
 #import "RemoteIOBufferListWrapper.h"
 #import "Terminable.h"
 
-enum State {
-    NOT_STARTED,
-    STARTED,
-    TERMINATED
+typedef NS_ENUM(NSInteger, RemoteIOAudioState) {
+    RemoteIOAudioStateNotStarted,
+    RemoteIOAudioStateStarted,
+    RemoteIOAudioStateTerminated
 };
 
 /**
@@ -24,31 +24,18 @@ enum State {
  * and Redphone's audio format.
  *
  */
-@interface RemoteIOAudio : NSObject <AVAudioSessionDelegate> {
-    
-    AudioUnit                   rioAudioUnit;
-    
-    BOOL                        isStreaming;
-    
-    id<AudioCallbackHandler>    delegate;
-    
-    NSMutableSet *              unusedBuffers;
-    
-    id<OccurrenceLogger>        starveLogger;
-    id<ConditionLogger>         conditionLogger;
-    id<ValueLogger>             playbackBufferSizeLogger;
-    id<ValueLogger>             recordingQueueSizeLogger;
-}
 
-@property (nonatomic,readonly) enum State state;
-@property (strong) CyclicalBuffer*        recordingQueue;
-@property (strong) CyclicalBuffer*        playbackQueue;
-@property (assign) AudioUnit              rioAudioUnit;
+@interface RemoteIOAudio : NSObject <AVAudioSessionDelegate>
 
-+(RemoteIOAudio*) remoteIOInterfaceStartedWithDelegate:(id<AudioCallbackHandler>)delegateIn untilCancelled:(TOCCancelToken*)untilCancelledToken;
--(void) populatePlaybackQueueWithData:(NSData*)data;
--(NSUInteger)getSampleRateInHertz;
--(BOOL) toggleMute;
+@property (readonly, nonatomic) RemoteIOAudioState state;
+@property (strong)              CyclicalBuffer*    recordingQueue;
+@property (strong)              CyclicalBuffer*    playbackQueue;
+@property (assign)              AudioUnit          rioAudioUnit;
+
+- (instancetype)initWithDelegate:(id<AudioCallbackHandler>)delegateIn untilCancelled:(TOCCancelToken*)untilCancelledToken;
+- (void)populatePlaybackQueueWithData:(NSData*)data;
+- (NSUInteger)getSampleRateInHertz;
+- (BOOL)toggleMute;
 
 @end
 

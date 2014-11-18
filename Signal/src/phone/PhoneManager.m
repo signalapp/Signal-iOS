@@ -87,9 +87,9 @@
     
     TOCFuture* futureCalling = [futureConnected thenTry:^id(CallConnectResult* connectResult) {
         [callController advanceCallProgressToConversingWithShortAuthenticationString:connectResult.shortAuthenticationString];
-        CallAudioManager *cam = [CallAudioManager callAudioManagerStartedWithAudioSocket:connectResult.audioSocket
-                                                                         andErrorHandler:callController.errorHandler
-                                                                          untilCancelled:lifetime];
+        CallAudioManager *cam = [[CallAudioManager alloc] initWithAudioSocket:connectResult.audioSocket
+                                                              andErrorHandler:callController.errorHandler
+                                                               untilCancelled:lifetime];
 		[callController setCallAudioManager:cam];
         return nil;
     }];
@@ -131,9 +131,9 @@
     
     TOCFuture* futureStarted = [futureConnected thenTry:^id(CallConnectResult* connectResult) {
         [callController advanceCallProgressToConversingWithShortAuthenticationString:connectResult.shortAuthenticationString];
-        CallAudioManager* cam = [CallAudioManager callAudioManagerStartedWithAudioSocket:connectResult.audioSocket
-                                                 andErrorHandler:callController.errorHandler
-                                                  untilCancelled:lifetime];
+        CallAudioManager* cam = [[CallAudioManager alloc] initWithAudioSocket:connectResult.audioSocket
+                                                              andErrorHandler:callController.errorHandler
+                                                               untilCancelled:lifetime];
 		[callController setCallAudioManager:cam];
         return nil;
     }];

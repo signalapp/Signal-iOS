@@ -75,9 +75,9 @@
     }];
     
     return [futureZRTPHandshakeResult thenTry:^(ZRTPHandshakeResult* zrtpResult) {
-        AudioSocket* audioSocket = [AudioSocket audioSocketOver:[zrtpResult secureRTPSocket]];
+        AudioSocket* audioSocket = [[AudioSocket alloc] initOverSRTPSocket:zrtpResult.secureRTPSocket];
         
-        NSString* sas = [[zrtpResult masterSecret] shortAuthenticationString];
+        NSString* sas = [zrtpResult.masterSecret shortAuthenticationString];
         
         return [[CallConnectResult alloc] initWithShortAuthenticationString:sas
                                                              andAudioSocket:audioSocket];

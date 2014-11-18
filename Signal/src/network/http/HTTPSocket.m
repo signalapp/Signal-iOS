@@ -81,7 +81,7 @@
     
     PacketHandler* packetHandler = [[PacketHandler alloc] initPacketHandler:^(id packet) {
         require(packet != nil);
-        require([packet isKindOfClass:NSData.class]);
+        require([packet isKindOfClass:[NSData class]]);
         NSData* data = packet;
         
         [self.partialDataBuffer replaceBytesInRange:NSMakeRange(self.partialDataBuffer.length, data.length) withBytes:[data bytes]];

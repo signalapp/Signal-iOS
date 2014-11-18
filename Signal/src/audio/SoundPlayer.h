@@ -13,11 +13,13 @@
 
 @property (strong, nonatomic) id<SoundPlayerDelegate> delegate;
 
--(void) playSound:(SoundInstance*) player;
--(void) stopSound:(SoundInstance*) player;
++ (instancetype)sharedInstance;
 
--(void) stopAllAudio;
--(void) awake;
+- (void)playSound:(SoundInstance*)player;
+- (void)stopSound:(SoundInstance*)player;
+
+- (void)stopAllAudio;
+- (void)awake;
 
 @end
 

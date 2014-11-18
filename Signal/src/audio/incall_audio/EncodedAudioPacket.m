@@ -1,16 +1,24 @@
 #import "EncodedAudioPacket.h"
 #import "Constraints.h"
 
+@interface EncodedAudioPacket ()
+
+@property (strong, readwrite, nonatomic) NSData* audioData;
+@property (readwrite, nonatomic) uint16_t sequenceNumber;
+
+@end
+
 @implementation EncodedAudioPacket
 
-@synthesize audioData, sequenceNumber;
-
-+(EncodedAudioPacket*) encodedAudioPacketWithAudioData:(NSData*)audioData andSequenceNumber:(uint16_t)sequenceNumber {
-    require(audioData != nil);
-    EncodedAudioPacket* p = [EncodedAudioPacket new];
-    p->audioData = audioData;
-    p->sequenceNumber = sequenceNumber;
-    return p;
+- (instancetype)initWithAudioData:(NSData*)audioData andSequenceNumber:(uint16_t)sequenceNumber {
+    if (self = [super init]) {
+        require(audioData != nil);
+        
+        self.audioData = audioData;
+        self.sequenceNumber = sequenceNumber;
+    }
+    
+    return self;
 }
 
 @end

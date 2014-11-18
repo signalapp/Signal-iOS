@@ -127,7 +127,7 @@
     
     PacketHandlerBlock httpHandler = ^(HTTPRequestOrResponse* requestOrResponse) {
         require(requestOrResponse != nil);
-        require([requestOrResponse isKindOfClass:HTTPRequestOrResponse.class]);
+        require([requestOrResponse isKindOfClass:[HTTPRequestOrResponse class]]);
         @synchronized (self) {
             if (requestOrResponse.isRequest) {
                 HTTPResponse* response = requestHandler([requestOrResponse request]);

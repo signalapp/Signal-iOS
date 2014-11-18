@@ -13,16 +13,12 @@
  *
  **/
 
-@interface CallAudioManager : NSObject<AudioCallbackHandler> {
-@private RemoteIOAudio* audioInterface;
-@private AudioProcessor* audioProcessor;
-@private AudioSocket* audioSocket;
-@private bool started;
-@private NSUInteger bytesInPlaybackBuffer;
-}
+@interface CallAudioManager : NSObject <AudioCallbackHandler>
 
-+(CallAudioManager*) callAudioManagerStartedWithAudioSocket:(AudioSocket*)audioSocket
-                                            andErrorHandler:(ErrorHandlerBlock)errorHandler
-                                             untilCancelled:(TOCCancelToken*)untilCancelledToken;
--(BOOL) toggleMute;
+- (instancetype)initWithAudioSocket:(AudioSocket*)audioSocket
+                    andErrorHandler:(ErrorHandlerBlock)errorHandler
+                     untilCancelled:(TOCCancelToken*)untilCancelledToken;
+
+- (BOOL)toggleMute;
+
 @end

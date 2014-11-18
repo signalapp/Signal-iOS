@@ -12,27 +12,27 @@
  *
  */
 
-typedef enum {
-	RPRecentCallTypeIncoming = 1,
-	RPRecentCallTypeOutgoing,
-	RPRecentCallTypeMissed,
-} RPRecentCallType;
+typedef NS_ENUM(NSInteger, RPRecentCallType) {
+    RPRecentCallTypeIncoming = 1,
+    RPRecentCallTypeOutgoing,
+    RPRecentCallTypeMissed
+};
 
 extern NSString *const CALL_TYPE_IMAGE_NAME_INCOMING;
 extern NSString *const CALL_TYPE_IMAGE_NAME_OUTGOING;
 
 @interface RecentCall : NSObject
 
-@property (nonatomic, readonly) ABRecordID contactRecordID;
-@property (nonatomic, readonly) PhoneNumber *phoneNumber;
-@property (nonatomic, readonly) RPRecentCallType callType;
-@property (nonatomic, readonly) NSDate *date;
+@property (readonly, nonatomic) RPRecentCallType callType;
+@property (strong, readonly, nonatomic) PhoneNumber *phoneNumber;
+@property (strong, readonly, nonatomic) NSDate *date;
 @property (nonatomic) BOOL isArchived;
 @property (nonatomic) BOOL userNotified;
 
-+ (RecentCall *)recentCallWithContactID:(ABRecordID)contactID
-                              andNumber:(PhoneNumber *)number
-                            andCallType:(RPRecentCallType)type;
+@property (nonatomic, setter=updateRecentCallWithContactID:) ABRecordID contactRecordID;
 
--(void)updateRecentCallWithContactId:(ABRecordID) contactID;
+- (instancetype)initWithContactID:(ABRecordID)contactID
+                        andNumber:(PhoneNumber*)number
+                      andCallType:(RPRecentCallType)type;
+
 @end

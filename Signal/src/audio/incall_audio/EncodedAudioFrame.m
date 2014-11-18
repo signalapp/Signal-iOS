@@ -1,23 +1,30 @@
 #import "EncodedAudioFrame.h"
 #import "Constraints.h"
 
+@interface EncodedAudioFrame ()
+
+@property (strong, readwrite, nonatomic, getter=tryGetAudioData) NSData* audioData;
+
+@end
+
 @implementation EncodedAudioFrame
 
-+(EncodedAudioFrame*) encodedAudioFrameWithData:(NSData*)audioData {
-    require(audioData != nil);
-    EncodedAudioFrame* frame = [EncodedAudioFrame new];
-    frame->audioData = audioData;
-    return frame;
-}
-+(EncodedAudioFrame*) encodedAudioFrameWithoutData {
-    return [EncodedAudioFrame new];
+- (instancetype)initWithData:(NSData*)audioData {
+    if (self = [super init]) {
+        require(audioData != nil);
+        
+        self.audioData = audioData;
+    }
+    
+    return self;
 }
 
--(bool) isMissingAudioData {
-    return audioData == nil;
++ (instancetype)emptyFrame {
+    return [[self alloc] init];
 }
--(NSData*) tryGetAudioData {
-    return audioData;
+
+- (bool)isMissingAudioData {
+    return self.audioData == nil;
 }
 
 @end

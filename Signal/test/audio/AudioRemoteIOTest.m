@@ -36,9 +36,9 @@
     };
     
     TOCCancelTokenSource* life = [TOCCancelTokenSource new];
-    a = [RemoteIOAudio remoteIOInterfaceStartedWithDelegate:[AnonymousAudioCallbackHandler anonymousAudioInterfaceDelegateWithRecordingCallback:countCalls
-                                                                                                                    andPlaybackOccurredCallback:generateWhooOOOoooOOOOooOOOOoooSineWave]
-                                             untilCancelled:life.token];
+    a = [[RemoteIOAudio alloc] initWithDelegate:[[AnonymousAudioCallbackHandler alloc] initDelegateWithRecordingCallback:countCalls
+                                                                                             andPlaybackOccurredCallback:generateWhooOOOoooOOOOooOOOOoooSineWave]
+                                 untilCancelled:life.token];
     
     // churn the run loop, to allow the audio to play and be recorded
     // YOU SHOULD HEAR A WOOOoooOOOOoooOOO TONE WHILE THIS IS HAPPENING (with the frequency going up and down)

@@ -1,22 +1,27 @@
 #import "RemoteIOBufferListWrapper.h"
 
+@interface RemoteIOBufferListWrapper ()
+
+@property (readwrite, nonatomic) AudioBufferList* audioBufferList;
+
+@end
+
 @implementation RemoteIOBufferListWrapper
 
-@synthesize sampleCount, audioBufferList;
-
-+(RemoteIOBufferListWrapper*) remoteIOBufferListWithMonoBufferSize:(NSUInteger)bufferSize {
-    AudioBufferList* audioBufferList = malloc(sizeof(AudioBufferList));
-    audioBufferList->mNumberBuffers = 1;
-    audioBufferList->mBuffers[0].mNumberChannels = 1;
-    audioBufferList->mBuffers[0].mDataByteSize = (UInt32)bufferSize;
-    audioBufferList->mBuffers[0].mData = malloc(bufferSize);
+- (instancetype)initWithMonoBufferSize:(NSUInteger)bufferSize {
+    if (self = [super init]) {
+        self.audioBufferList = malloc(sizeof(AudioBufferList));
+        self.audioBufferList->mNumberBuffers = 1;
+        self.audioBufferList->mBuffers[0].mNumberChannels = 1;
+        self.audioBufferList->mBuffers[0].mDataByteSize = (UInt32)bufferSize;
+        self.audioBufferList->mBuffers[0].mData = malloc(bufferSize);
+    }
     
-    RemoteIOBufferListWrapper* w = [RemoteIOBufferListWrapper new];
-    w->audioBufferList = audioBufferList;
-    return w;
+    return self;
 }
--(void) dealloc {
-    free(audioBufferList->mBuffers[0].mData);
+
+- (void)dealloc {
+    free(self.audioBufferList->mBuffers[0].mData);
 }
 
 @end

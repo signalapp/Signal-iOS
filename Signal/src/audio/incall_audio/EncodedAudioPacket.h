@@ -11,9 +11,9 @@
 **/
 @interface EncodedAudioPacket : NSObject
 
-@property (readonly,nonatomic) NSData* audioData;
-@property (readonly,nonatomic) uint16_t sequenceNumber;
+@property (strong, readonly, nonatomic) NSData* audioData;
+@property (readonly, nonatomic) uint16_t sequenceNumber;
 
-+(EncodedAudioPacket*) encodedAudioPacketWithAudioData:(NSData*)audioData andSequenceNumber:(uint16_t)sequenceNumber;
+- (instancetype)initWithAudioData:(NSData*)audioData andSequenceNumber:(uint16_t)sequenceNumber;
 
 @end

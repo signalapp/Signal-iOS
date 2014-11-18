@@ -7,26 +7,39 @@
 #define READ_HEAD_BAD_SPAN_THRESHOLD 0x100
 #define MAXIMUM_JITTER_QUEUE_SIZE_BEFORE_DISCARDING 25
 
+@interface JitterQueue ()
+
+@property (strong, nonatomic) PriorityQueue* resultPriorityQueue;
+@property (strong, nonatomic) NSMutableSet* idsInJitterQueue;
+@property (strong, nonatomic) NSMutableArray* watchers;
+@property (nonatomic) uint16_t readHeadMin;
+@property (nonatomic) uint16_t readHeadSpan;
+@property (nonatomic) uint16_t largestLatestEnqueued;
+
+@end
+
 @implementation JitterQueue
 
-+(JitterQueue*) jitterQueue {
-    JitterQueue* q = [JitterQueue new];
-    q->readHeadSpan = READ_HEAD_BAD_SPAN_THRESHOLD+1;
-    q->watchers = [NSMutableArray array];
-    [q registerWatcher:Environment.logging.jitterQueueNotificationReceiver];
-    return q;
+- (instancetype)init {
+    if (self = [super init]) {
+        self.readHeadSpan = READ_HEAD_BAD_SPAN_THRESHOLD + 1;
+        self.watchers = [[NSMutableArray alloc] init];
+        [self registerWatcher:Environment.logging.jitterQueueNotificationReceiver];
+    }
+    
+    return self;
 }
 
--(void) registerWatcher:(id<JitterQueueNotificationReceiver>)watcher {
+- (void)registerWatcher:(id<JitterQueueNotificationReceiver>)watcher {
     if (watcher == nil) return;
-    [watchers addObject:watcher];
+    [self.watchers addObject:watcher];
 }
 
--(NSUInteger) count {
-    return resultPriorityQueue.count;
+- (NSUInteger)count {
+    return self.resultPriorityQueue.count;
 }
 
--(bool) tryEnqueue:(EncodedAudioPacket*)audioPacket {
+- (bool)tryEnqueue:(EncodedAudioPacket*)audioPacket {
     require(audioPacket != nil);
     
     uint16_t sequenceNumber = [audioPacket sequenceNumber];
@@ -34,13 +47,13 @@
         return false;
     }
     
-    [idsInJitterQueue addObject:@(sequenceNumber)];
-    [resultPriorityQueue enqueue:audioPacket];
-    if ([NumberUtil congruentDifferenceMod2ToThe16From:largestLatestEnqueued to:sequenceNumber] > 0) {
-        largestLatestEnqueued = sequenceNumber;
+    [self.idsInJitterQueue addObject:@(sequenceNumber)];
+    [self.resultPriorityQueue enqueue:audioPacket];
+    if ([NumberUtil congruentDifferenceMod2ToThe16From:self.largestLatestEnqueued to:sequenceNumber] > 0) {
+        self.largestLatestEnqueued = sequenceNumber;
     }
 
-    for (id<JitterQueueNotificationReceiver> watcher in watchers) {
+    for (id<JitterQueueNotificationReceiver> watcher in self.watchers) {
         [watcher notifyArrival:sequenceNumber];
     }
 
@@ -48,46 +61,49 @@
 
     return true;
 }
--(bool) tryFitIntoSequence:(uint16_t)sequenceNumber {
-    int16_t sequenceNumberRelativeToReadHead = [NumberUtil congruentDifferenceMod2ToThe16From:readHeadMin to:sequenceNumber];
+
+- (bool)tryFitIntoSequence:(uint16_t)sequenceNumber {
+    int16_t sequenceNumberRelativeToReadHead = [NumberUtil congruentDifferenceMod2ToThe16From:self.readHeadMin to:sequenceNumber];
     
-    enum JitterBadArrivalType badArrivalType;
+    JitterBadArrivalType badArrivalType;
     if ([self tryForceSyncIfNecessary:sequenceNumber]) {
         return true;
     } else if (sequenceNumberRelativeToReadHead < 0) {
         badArrivalType = JitterBadArrivalType_Stale;
     } else if (sequenceNumberRelativeToReadHead > READ_HEAD_MAX_QUEUE_AHEAD) {
         badArrivalType = JitterBadArrivalType_TooSoon;
-    } else if ([idsInJitterQueue containsObject:@(sequenceNumber)]) {
+    } else if ([self.idsInJitterQueue containsObject:@(sequenceNumber)]) {
         badArrivalType = JitterBadArrivalType_Duplicate;
     } else {
         return true;
     }
     
-    for (id<JitterQueueNotificationReceiver> watcher in watchers) {
+    for (id<JitterQueueNotificationReceiver> watcher in self.watchers) {
         [watcher notifyBadArrival:sequenceNumber ofType:badArrivalType];
     }
     
     return false;
 }
--(bool) tryForceSyncIfNecessary:(uint16_t)sequenceNumber {
-    if (readHeadSpan <= READ_HEAD_BAD_SPAN_THRESHOLD) return false;
+
+- (bool)tryForceSyncIfNecessary:(uint16_t)sequenceNumber {
+    if (self.readHeadSpan <= READ_HEAD_BAD_SPAN_THRESHOLD) return false;
     
-    if (resultPriorityQueue != nil) { // (only log resyncs, not the initial sync)
-        for (id<JitterQueueNotificationReceiver> watcher in watchers) {
-            [watcher notifyResyncFrom:readHeadMin to:sequenceNumber];
+    if (self.resultPriorityQueue != nil) { // (only log resyncs, not the initial sync)
+        for (id<JitterQueueNotificationReceiver> watcher in self.watchers) {
+            [watcher notifyResyncFrom:self.readHeadMin to:sequenceNumber];
         }
     }
     
-    readHeadMin = sequenceNumber;
-    largestLatestEnqueued = sequenceNumber;
-    readHeadSpan = 1;
-    idsInJitterQueue = [NSMutableSet set];
-    resultPriorityQueue = [JitterQueue makeCyclingPacketPriorityQueue];
+    self.readHeadMin = sequenceNumber;
+    self.largestLatestEnqueued = sequenceNumber;
+    self.readHeadSpan = 1;
+    self.idsInJitterQueue = [[NSMutableSet alloc] init];
+    self.resultPriorityQueue = [JitterQueue makeCyclingPacketPriorityQueue];
     
     return true;
 }
-+(PriorityQueue*) makeCyclingPacketPriorityQueue {
+
++ (PriorityQueue*)makeCyclingPacketPriorityQueue {
     return [[PriorityQueue alloc] initAscendingWithComparator:^NSComparisonResult(EncodedAudioPacket* obj1, EncodedAudioPacket* obj2) {
         int16_t d = [NumberUtil congruentDifferenceMod2ToThe16From:[obj2 sequenceNumber]
                                                                 to:[obj1 sequenceNumber]];
@@ -95,25 +111,26 @@
         return [NumberUtil signOfInt32:d];
     }];
 }
--(void) discardExcess {
-    if (resultPriorityQueue.count <= MAXIMUM_JITTER_QUEUE_SIZE_BEFORE_DISCARDING) return;
+
+- (void)discardExcess {
+    if (self.resultPriorityQueue.count <= MAXIMUM_JITTER_QUEUE_SIZE_BEFORE_DISCARDING) return;
     
-    EncodedAudioPacket* discarded = [resultPriorityQueue dequeue];
+    EncodedAudioPacket* discarded = [self.resultPriorityQueue dequeue];
     uint16_t discardedSequenceNumber = [discarded sequenceNumber];
-    [idsInJitterQueue removeObject:@(discardedSequenceNumber)];
+    [self.idsInJitterQueue removeObject:@(discardedSequenceNumber)];
     
-    uint16_t oldReadHeadMax = readHeadMin+readHeadSpan-1;
-    readHeadMin = [[resultPriorityQueue peek] sequenceNumber];
-    readHeadSpan = 1;
+    uint16_t oldReadHeadMax = self.readHeadMin + self.readHeadSpan - 1;
+    self.readHeadMin = [[self.resultPriorityQueue peek] sequenceNumber];
+    self.readHeadSpan = 1;
     
-    for (id<JitterQueueNotificationReceiver> e in watchers) {
+    for (id<JitterQueueNotificationReceiver> e in self.watchers) {
         [e notifyDiscardOverflow:discardedSequenceNumber
                    resyncingFrom:oldReadHeadMax
-                              to:readHeadMin];
+                              to:self.readHeadMin];
     }
 }
 
--(EncodedAudioPacket*) tryDequeue {
+- (EncodedAudioPacket*)tryDequeue {
     if ([self checkReactIfOutOfSyncForDequeue]
         || [self checkReactIfEmptyForDequeue]
         || [self checkReactIfNoDataUnderReadHeadForDequeue]) {
@@ -121,52 +138,55 @@
         return nil;
     }
     
-    EncodedAudioPacket* result = [resultPriorityQueue dequeue];
-    readHeadMin = [result sequenceNumber]+1;
-    readHeadSpan = 1;
-    [idsInJitterQueue removeObject:@([result sequenceNumber])];
+    EncodedAudioPacket* result = [self.resultPriorityQueue dequeue];
+    self.readHeadMin = [result sequenceNumber]+1;
+    self.readHeadSpan = 1;
+    [self.idsInJitterQueue removeObject:@([result sequenceNumber])];
     
-    for (id<JitterQueueNotificationReceiver> e in watchers) {
-        [e notifyDequeue:[result sequenceNumber] withRemainingEnqueuedItemCount:idsInJitterQueue.count];
+    for (id<JitterQueueNotificationReceiver> e in self.watchers) {
+        [e notifyDequeue:[result sequenceNumber] withRemainingEnqueuedItemCount:self.idsInJitterQueue.count];
     }
     return result;
 }
--(bool) checkReactIfOutOfSyncForDequeue {
-    bool isOutOfSync = readHeadSpan > READ_HEAD_BAD_SPAN_THRESHOLD;
+
+- (bool)checkReactIfOutOfSyncForDequeue {
+    bool isOutOfSync = self.readHeadSpan > READ_HEAD_BAD_SPAN_THRESHOLD;
     if (isOutOfSync) {
-        for (id<JitterQueueNotificationReceiver> watcher in watchers) {
+        for (id<JitterQueueNotificationReceiver> watcher in self.watchers) {
             [watcher notifyBadDequeueOfType:JitterBadDequeueType_Desynced];
         }
     }
     return isOutOfSync;
 }
--(bool) checkReactIfEmptyForDequeue {
-    bool isEmpty = resultPriorityQueue.count == 0;
+
+- (bool)checkReactIfEmptyForDequeue {
+    bool isEmpty = self.resultPriorityQueue.count == 0;
     if (isEmpty) {
-        readHeadSpan += 1;
-        for (id<JitterQueueNotificationReceiver> watcher in watchers) {
+        self.readHeadSpan += 1;
+        for (id<JitterQueueNotificationReceiver> watcher in self.watchers) {
             [watcher notifyBadDequeueOfType:JitterBadDequeueType_Empty];
         }
     }
     return isEmpty;
 }
--(bool) checkReactIfNoDataUnderReadHeadForDequeue {
-    EncodedAudioPacket* result = [resultPriorityQueue peek];
-    int16_t d = [NumberUtil congruentDifferenceMod2ToThe16From:readHeadMin
+
+- (bool)checkReactIfNoDataUnderReadHeadForDequeue {
+    EncodedAudioPacket* result = [self.resultPriorityQueue peek];
+    int16_t d = [NumberUtil congruentDifferenceMod2ToThe16From:self.readHeadMin
                                                             to:[result sequenceNumber]];
-    bool notUnderHead = d < 0 || d >= readHeadSpan;
+    bool notUnderHead = d < 0 || d >= self.readHeadSpan;
     if (notUnderHead) {
-        readHeadSpan += 1;
-        for (id<JitterQueueNotificationReceiver> watcher in watchers) {
+        self.readHeadSpan += 1;
+        for (id<JitterQueueNotificationReceiver> watcher in self.watchers) {
             [watcher notifyBadDequeueOfType:JitterBadDequeueType_NoDataUnderReadHead];
         }
     }
     return notUnderHead;
 }
 
--(int16_t) currentBufferDepth {
-    if (readHeadSpan > READ_HEAD_BAD_SPAN_THRESHOLD) return 0;
-    return [NumberUtil congruentDifferenceMod2ToThe16From:readHeadMin + readHeadSpan - 1 to:largestLatestEnqueued];
+- (int16_t)currentBufferDepth {
+    if (self.readHeadSpan > READ_HEAD_BAD_SPAN_THRESHOLD) return 0;
+    return [NumberUtil congruentDifferenceMod2ToThe16From:self.readHeadMin + self.readHeadSpan - 1 to:self.largestLatestEnqueued];
 }
 
 @end

@@ -51,7 +51,7 @@
 - (ErrorHandlerBlock)errorHandler {
     return ^(id error, id relatedInfo, bool causedTermination) {
         if (causedTermination) {
-            if ([error isKindOfClass:CallTermination.class]) {
+            if ([error isKindOfClass:[CallTermination class]]) {
                 CallTermination* t = error;
                 [self terminateWithReason:t.type
                           withFailureInfo:t.failure

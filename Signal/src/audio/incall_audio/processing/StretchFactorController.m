@@ -13,60 +13,68 @@ static double STRETCH_MODE_FACTORS[] = {1/0.95, 1, 1/1.05, 0.5};
 
 #define BUFFER_DEPTH_DECAYING_FACTOR 0.05
 
+@interface StretchFactorController ()
+
+@property (nonatomic) int currentStretchMode;
+@property (strong, nonatomic) id<BufferDepthMeasure> bufferDepthMeasure;
+@property (strong, nonatomic) DesiredBufferDepthController* desiredBufferDepthController;
+@property (strong, nonatomic) DecayingSampleEstimator* decayingBufferDepthMeasure;
+@property (strong, nonatomic) id<ValueLogger> stretchModeChangeLogger;
+
+@end
+
 @implementation StretchFactorController
 
-+(StretchFactorController*) stretchFactorControllerForJitterQueue:(JitterQueue*)jitterQueue {
+- (instancetype)initForJitterQueue:(JitterQueue*)jitterQueue {
+    if (self = [super init]) {
+        require(jitterQueue != nil);
+        
+        self.desiredBufferDepthController = [[DesiredBufferDepthController alloc] initForJitterQueue:jitterQueue];
+        self.currentStretchMode = STRETCH_MODE_NORMAL;
+        self.bufferDepthMeasure = jitterQueue;
+        self.decayingBufferDepthMeasure = [[DecayingSampleEstimator alloc] initWithInitialEstimate:0
+                                                                             andDecayPerUnitSample:BUFFER_DEPTH_DECAYING_FACTOR];
+        self.stretchModeChangeLogger = [Environment.logging getValueLoggerForValue:@"stretch factor" from:self];
+    }
     
-    require(jitterQueue != nil);
-    
-    DesiredBufferDepthController* desiredBufferDepthController =
-        [DesiredBufferDepthController desiredBufferDepthControllerForJitterQueue:jitterQueue];
-
-    StretchFactorController* p = [StretchFactorController new];
-    p->desiredBufferDepthController = desiredBufferDepthController;
-    p->currentStretchMode = STRETCH_MODE_NORMAL;
-    p->bufferDepthMeasure = jitterQueue;
-    p->decayingBufferDepthMeasure = [[DecayingSampleEstimator alloc] initWithInitialEstimate:0
-                                                                       andDecayPerUnitSample:BUFFER_DEPTH_DECAYING_FACTOR];
-    p->stretchModeChangeLogger = [Environment.logging getValueLoggerForValue:@"stretch factor" from:self];
-    return p;
+    return self;
 }
 
--(int) reconsiderStretchMode {
-    int16_t currentBufferDepth = bufferDepthMeasure.currentBufferDepth;
-    [decayingBufferDepthMeasure updateWithNextSample:currentBufferDepth];
-    double desiredBufferDepth = desiredBufferDepthController.getAndUpdateDesiredBufferDepth;
+- (int)reconsiderStretchMode {
+    int16_t currentBufferDepth = self.bufferDepthMeasure.currentBufferDepth;
+    [self.decayingBufferDepthMeasure updateWithNextSample:currentBufferDepth];
+    double desiredBufferDepth = self.desiredBufferDepthController.getAndUpdateDesiredBufferDepth;
     
     double currentBufferDepthDelta = currentBufferDepth - desiredBufferDepth;
-    double decayingBufferDepthDelta = decayingBufferDepthMeasure.currentEstimate - desiredBufferDepth;
+    double decayingBufferDepthDelta = self.decayingBufferDepthMeasure.currentEstimate - desiredBufferDepth;
     
     bool shouldStartSuperShrink = currentBufferDepthDelta > SUPER_SHRINK_THRESHOLD;
-    bool shouldMaintainSuperShrink = currentBufferDepthDelta > 0 && currentStretchMode == STRETCH_MODE_SUPER_SHRINK;
-    bool shouldEndSuperShrinkAndResetEstimate = !shouldMaintainSuperShrink && currentStretchMode == STRETCH_MODE_SUPER_SHRINK;
+    bool shouldMaintainSuperShrink = currentBufferDepthDelta > 0 && self.currentStretchMode == STRETCH_MODE_SUPER_SHRINK;
+    bool shouldEndSuperShrinkAndResetEstimate = !shouldMaintainSuperShrink && self.currentStretchMode == STRETCH_MODE_SUPER_SHRINK;
     
     bool shouldStartShrink = decayingBufferDepthDelta > SHRINK_THRESHOLD;
-    bool shouldMaintainShrink = decayingBufferDepthDelta > 0 && currentStretchMode == STRETCH_MODE_SHRINK;
+    bool shouldMaintainShrink = decayingBufferDepthDelta > 0 && self.currentStretchMode == STRETCH_MODE_SHRINK;
     
     bool shouldStartExpand = decayingBufferDepthDelta < EXPAND_THRESHOLD;
-    bool shouldMaintainExpand = decayingBufferDepthDelta < 0 && currentStretchMode == STRETCH_MODE_EXPAND;
+    bool shouldMaintainExpand = decayingBufferDepthDelta < 0 && self.currentStretchMode == STRETCH_MODE_EXPAND;
     
     if (shouldEndSuperShrinkAndResetEstimate) {
-        [decayingBufferDepthMeasure forceEstimateTo:desiredBufferDepth];
+        [self.decayingBufferDepthMeasure forceEstimateTo:desiredBufferDepth];
         return STRETCH_MODE_NORMAL;
     }
     if (shouldStartSuperShrink) return STRETCH_MODE_SUPER_SHRINK;
     if (shouldStartShrink) return STRETCH_MODE_SHRINK;
     if (shouldStartExpand) return STRETCH_MODE_EXPAND;
-    if (shouldMaintainShrink || shouldMaintainExpand || shouldMaintainSuperShrink) return currentStretchMode;
+    if (shouldMaintainShrink || shouldMaintainExpand || shouldMaintainSuperShrink) return self.currentStretchMode;
     return STRETCH_MODE_NORMAL;
 }
 
--(double) getAndUpdateDesiredStretchFactor {
-    int prevMode = currentStretchMode;
-    currentStretchMode = [self reconsiderStretchMode];
-    double factor = STRETCH_MODE_FACTORS[currentStretchMode];
-    if (prevMode != currentStretchMode) {
-        [stretchModeChangeLogger logValue:factor];
+- (double)getAndUpdateDesiredStretchFactor {
+    int prevMode = self.currentStretchMode;
+    self.currentStretchMode = [self reconsiderStretchMode];
+    double factor = STRETCH_MODE_FACTORS[self.currentStretchMode];
+    if (prevMode != self.currentStretchMode) {
+        [self.stretchModeChangeLogger logValue:factor];
     }
     return factor;
 }
