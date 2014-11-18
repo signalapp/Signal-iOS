@@ -65,11 +65,11 @@
     UIFont *lastNameFont;
     
     if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
-        firstNameFont = [UIFont boldSystemFontOfSize:_nameLabel.font.pointSize];
+        firstNameFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:_nameLabel.font.pointSize];
         lastNameFont  = [UIFont systemFontOfSize:_nameLabel.font.pointSize];
     } else{
-        firstNameFont = [UIFont systemFontOfSize:_nameLabel.font.pointSize];
-        lastNameFont  = [UIFont boldSystemFontOfSize:_nameLabel.font.pointSize];
+        firstNameFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:_nameLabel.font.pointSize];
+        lastNameFont  = [UIFont systemFontOfSize:_nameLabel.font.pointSize];
     }
     [fullNameAttributedString addAttribute:NSFontAttributeName value:firstNameFont range:NSMakeRange(0, contact.firstName.length)];
     [fullNameAttributedString addAttribute:NSFontAttributeName value:lastNameFont range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
