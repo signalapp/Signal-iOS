@@ -35,6 +35,8 @@ typedef enum : NSUInteger {
     // Do any additional setup after loading the view.
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
+    
+    [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont fontWithName:@"HelveticaNeue-Light" size:16.0f]];
 
     //DEBUG:
     isGroupConversation = NO;
