@@ -15,11 +15,11 @@
 
 @interface InboxFeedViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, InboxFeedTableViewCellDelegate, SearchBarTitleViewDelegate>
 
-@property (nonatomic, strong) IBOutlet UITableView *inboxFeedTableView;
-@property (nonatomic, strong) IBOutlet SearchBarTitleView *searchBarTitleView;
-@property (nonatomic, strong) IBOutlet UIView *freshInboxView;
-@property (nonatomic, strong) IBOutlet UILabel *freshAppTutorialTopLabel;
-@property (nonatomic, strong) IBOutlet UILabel *freshAppTutorialMiddleLabel;
+@property (strong, nonatomic) IBOutlet UITableView* inboxFeedTableView;
+@property (strong, nonatomic) IBOutlet SearchBarTitleView* searchBarTitleView;
+@property (strong, nonatomic) IBOutlet UIView* freshInboxView;
+@property (strong, nonatomic) IBOutlet UILabel* freshAppTutorialTopLabel;
+@property (strong, nonatomic) IBOutlet UILabel* freshAppTutorialMiddleLabel;
 
 
 

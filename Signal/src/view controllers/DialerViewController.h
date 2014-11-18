@@ -6,26 +6,26 @@
 
 @interface DialerViewController : UIViewController <DialerButtonViewDelegate>
 
-@property (nonatomic, strong) IBOutlet UIButton *backspaceButton;
-@property (nonatomic, strong) IBOutlet InteractiveLabel *numberLabel;
-@property (nonatomic, strong) IBOutlet UIButton *callButton;
-@property (nonatomic, strong) IBOutlet UIButton *addContactButton;
-@property (nonatomic, strong) IBOutlet UIImageView *matchedContactImageView;
+@property (strong, nonatomic) IBOutlet UIButton* backspaceButton;
+@property (strong, nonatomic) IBOutlet InteractiveLabel* numberLabel;
+@property (strong, nonatomic) IBOutlet UIButton* callButton;
+@property (strong, nonatomic) IBOutlet UIButton* addContactButton;
+@property (strong, nonatomic) IBOutlet UIImageView* matchedContactImageView;
 
-@property (nonatomic, strong) IBOutlet DialerButtonView *button0;
-@property (nonatomic, strong) IBOutlet DialerButtonView *button1;
-@property (nonatomic, strong) IBOutlet DialerButtonView *button2;
-@property (nonatomic, strong) IBOutlet DialerButtonView *button3;
-@property (nonatomic, strong) IBOutlet DialerButtonView *button4;
-@property (nonatomic, strong) IBOutlet DialerButtonView *button5;
-@property (nonatomic, strong) IBOutlet DialerButtonView *button6;
-@property (nonatomic, strong) IBOutlet DialerButtonView *button7;
-@property (nonatomic, strong) IBOutlet DialerButtonView *button8;
-@property (nonatomic, strong) IBOutlet DialerButtonView *button9;
-@property (nonatomic, strong) IBOutlet DialerButtonView *buttonStar;
-@property (nonatomic, strong) IBOutlet DialerButtonView *buttonPound;
+@property (strong, nonatomic) IBOutlet DialerButtonView* button0;
+@property (strong, nonatomic) IBOutlet DialerButtonView* button1;
+@property (strong, nonatomic) IBOutlet DialerButtonView* button2;
+@property (strong, nonatomic) IBOutlet DialerButtonView* button3;
+@property (strong, nonatomic) IBOutlet DialerButtonView* button4;
+@property (strong, nonatomic) IBOutlet DialerButtonView* button5;
+@property (strong, nonatomic) IBOutlet DialerButtonView* button6;
+@property (strong, nonatomic) IBOutlet DialerButtonView* button7;
+@property (strong, nonatomic) IBOutlet DialerButtonView* button8;
+@property (strong, nonatomic) IBOutlet DialerButtonView* button9;
+@property (strong, nonatomic) IBOutlet DialerButtonView* buttonStar;
+@property (strong, nonatomic) IBOutlet DialerButtonView* buttonPound;
 
-@property (nonatomic, assign) PhoneNumber *phoneNumber;
+@property (strong, nonatomic) PhoneNumber* phoneNumber;
 
 - (IBAction)callButtonTapped;
 - (IBAction)backspaceButtonTouchDown;

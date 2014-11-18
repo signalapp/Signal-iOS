@@ -3,28 +3,24 @@
 #import "CollapsingFutures.h"
 #import "CountryCodeViewController.h"
 
-@interface RegisterViewController : UIViewController <CountryCodeViewControllerDelegate, UITextFieldDelegate> {
-@private TOCFutureSource* registered;
-@private TOCFutureSource* futureChallengeAcceptedSource;
-@private TOCCancelTokenSource* life;
-}
+@interface RegisterViewController : UIViewController <CountryCodeViewControllerDelegate, UITextFieldDelegate>
 
-@property (nonatomic, strong) IBOutlet UIButton *registerButton;
-@property (nonatomic, strong) IBOutlet UIButton *challengeButton;
-@property (nonatomic, strong) IBOutlet UITextField *phoneNumberTextField;
-@property (nonatomic, strong) IBOutlet UILabel *countryCodeLabel;
-@property (nonatomic, strong) IBOutlet UILabel *countryNameLabel;
-@property (nonatomic, strong) IBOutlet UITextField *challengeTextField;
-@property (nonatomic, strong) IBOutlet UIActivityIndicatorView *registerActivityIndicator;
-@property (nonatomic, strong) IBOutlet UIActivityIndicatorView *challengeActivityIndicator;
-@property (nonatomic, strong) IBOutlet UIScrollView *scrollView;
-@property (nonatomic, strong) IBOutlet UIView *containerView;
-@property (nonatomic, strong) IBOutlet UIButton *registerCancelButton;
-@property (nonatomic, strong) IBOutlet UIButton *continueToWhisperButton;
+@property (strong, nonatomic) IBOutlet UIButton* registerButton;
+@property (strong, nonatomic) IBOutlet UIButton* challengeButton;
+@property (strong, nonatomic) IBOutlet UITextField* phoneNumberTextField;
+@property (strong, nonatomic) IBOutlet UILabel* countryCodeLabel;
+@property (strong, nonatomic) IBOutlet UILabel* countryNameLabel;
+@property (strong, nonatomic) IBOutlet UITextField* challengeTextField;
+@property (strong, nonatomic) IBOutlet UIActivityIndicatorView* registerActivityIndicator;
+@property (strong, nonatomic) IBOutlet UIActivityIndicatorView* challengeActivityIndicator;
+@property (strong, nonatomic) IBOutlet UIScrollView* scrollView;
+@property (strong, nonatomic) IBOutlet UIView* containerView;
+@property (strong, nonatomic) IBOutlet UIButton* registerCancelButton;
+@property (strong, nonatomic) IBOutlet UIButton* continueToWhisperButton;
 
-@property (nonatomic, strong) IBOutlet UILabel *challengeNumberLabel;
-@property (nonatomic, strong) IBOutlet UILabel *voiceChallengeTextLabel;
-@property (nonatomic, strong) IBOutlet UIButton *initiateVoiceVerificationButton;
+@property (strong, nonatomic) IBOutlet UILabel* challengeNumberLabel;
+@property (strong, nonatomic) IBOutlet UILabel* voiceChallengeTextLabel;
+@property (strong, nonatomic) IBOutlet UIButton* initiateVoiceVerificationButton;
 
 - (IBAction)registerPhoneNumberTapped;
 - (IBAction)registerCancelButtonTapped;
@@ -34,6 +30,6 @@
 - (IBAction)changeCountryCodeTapped;
 - (IBAction)initiateVoiceVerificationButtonHandler;
 
-+ (RegisterViewController*)registerViewController;
+- (instancetype)init;
 
 @end

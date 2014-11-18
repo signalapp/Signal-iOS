@@ -97,7 +97,7 @@
     NSStreamStatus status = [self.outputStream streamStatus];
     if (status < NSStreamStatusOpen) return;
     if (status >= NSStreamStatusAtEnd) {
-        [self.rawDataHandler handleError:@"Wrote to ended/closed/errored stream."
+        [self.rawDataHandler handleError:[NSString stringWithFormat:@"Wrote to ended/closed/errored stream. Error: %lu", status]
                              relatedInfo:nil
                        causedTermination:false];
         return;

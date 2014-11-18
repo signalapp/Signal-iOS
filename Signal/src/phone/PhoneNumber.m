@@ -6,8 +6,8 @@
 #import "NBPhoneNumber.h"
 #import "NBAsYouTypeFormatter.h"
 
-static NSString *const RPDefaultsKeyPhoneNumberString = @"RPDefaultsKeyPhoneNumberString";
-static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneNumberCanonical";
+static NSString* const RPDefaultsKeyPhoneNumberString = @"RPDefaultsKeyPhoneNumberString";
+static NSString* const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneNumberCanonical";
 
 @interface PhoneNumber ()
 

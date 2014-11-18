@@ -7,18 +7,18 @@
 
 @interface TabBarParentViewController : UIViewController
 
-@property (nonatomic, strong) IBOutlet UIButton *tabBarFavouritesButton;
-@property (nonatomic, strong) IBOutlet UIButton *tabBarInboxButton;
-@property (nonatomic, strong) IBOutlet UIButton *tabBarContactsButton;
-@property (nonatomic, strong) IBOutlet UIButton *tabBarDialerButton;
-@property (nonatomic, strong) IBOutlet UIButton *tabBarCallLogButton;
+@property (strong, nonatomic) IBOutlet UIButton* tabBarFavouritesButton;
+@property (strong, nonatomic) IBOutlet UIButton* tabBarInboxButton;
+@property (strong, nonatomic) IBOutlet UIButton* tabBarContactsButton;
+@property (strong, nonatomic) IBOutlet UIButton* tabBarDialerButton;
+@property (strong, nonatomic) IBOutlet UIButton* tabBarCallLogButton;
 
-@property (nonatomic, strong) IBOutlet UILabel *missedCallCountLabel;
-@property (nonatomic, strong) IBOutlet UIImageView *whisperUserUpdateImageView;
+@property (strong, nonatomic) IBOutlet UILabel* missedCallCountLabel;
+@property (strong, nonatomic) IBOutlet UIImageView* whisperUserUpdateImageView;
 
-@property (nonatomic, strong) IBOutlet UIView *viewControllerFrameView;
-@property (nonatomic, strong) InboxFeedViewController *inboxFeedViewController;
-@property (nonatomic, strong) SettingsViewController *settingsViewController;
+@property (strong, nonatomic) IBOutlet UIView* viewControllerFrameView;
+@property (strong, nonatomic) InboxFeedViewController* inboxFeedViewController;
+@property (strong, nonatomic) SettingsViewController* settingsViewController;
 
 - (IBAction)presentInboxViewController;
 - (IBAction)presentDialerViewController;
@@ -30,8 +30,8 @@
 - (void)presentSettingsViewController;
 - (void)updateMissedCallCountLabel;
 
-- (void)setNewWhisperUsersAsSeen:(NSArray *)users;
+- (void)setNewWhisperUsersAsSeen:(NSArray*)users;
 
-- (void)showDialerViewControllerWithNumber:(PhoneNumber *)number;
+- (void)showDialerViewControllerWithNumber:(PhoneNumber*)number;
 
 @end

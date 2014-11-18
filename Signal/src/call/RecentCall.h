@@ -18,8 +18,8 @@ typedef NS_ENUM(NSInteger, RPRecentCallType) {
     RPRecentCallTypeMissed
 };
 
-extern NSString *const CALL_TYPE_IMAGE_NAME_INCOMING;
-extern NSString *const CALL_TYPE_IMAGE_NAME_OUTGOING;
+extern NSString* const CALL_TYPE_IMAGE_NAME_INCOMING;
+extern NSString* const CALL_TYPE_IMAGE_NAME_OUTGOING;
 
 @interface RecentCall : NSObject
 

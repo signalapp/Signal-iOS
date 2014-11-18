@@ -3,15 +3,15 @@
 #import "PropertyListPreferences+Util.h"
 #import "Util.h"
 
-static NSString *const DEFAULTS_KEY_CONTACT_ID = @"DefaultsKeyContactID";
-static NSString *const DEFAULTS_KEY_PHONE_NUMBER = @"DefaultsKeyPhoneNumber";
-static NSString *const DEFAULTS_KEY_CALL_TYPE = @"DefaultsKeycallType";
-static NSString *const DEFAULTS_KEY_DATE = @"DefaultsKeyDate";
-static NSString *const DEFAULTS_KEY_IS_ARCHIVED = @"DefaultsKeyDateIsArchived";
-static NSString *const DEFAULTS_KEY_USER_NOTIFIED = @"DefaultsKeyUserNotified";
+static NSString* const DEFAULTS_KEY_CONTACT_ID = @"DefaultsKeyContactID";
+static NSString* const DEFAULTS_KEY_PHONE_NUMBER = @"DefaultsKeyPhoneNumber";
+static NSString* const DEFAULTS_KEY_CALL_TYPE = @"DefaultsKeycallType";
+static NSString* const DEFAULTS_KEY_DATE = @"DefaultsKeyDate";
+static NSString* const DEFAULTS_KEY_IS_ARCHIVED = @"DefaultsKeyDateIsArchived";
+static NSString* const DEFAULTS_KEY_USER_NOTIFIED = @"DefaultsKeyUserNotified";
 
-NSString *const CALL_TYPE_IMAGE_NAME_INCOMING = @"incoming_call_icon";
-NSString *const CALL_TYPE_IMAGE_NAME_OUTGOING = @"outgoing_call_icon";
+NSString* const CALL_TYPE_IMAGE_NAME_INCOMING = @"incoming_call_icon";
+NSString* const CALL_TYPE_IMAGE_NAME_OUTGOING = @"outgoing_call_icon";
 
 @interface RecentCall ()
 

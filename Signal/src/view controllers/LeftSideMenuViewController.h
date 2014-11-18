@@ -12,10 +12,10 @@
 
 @interface LeftSideMenuViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 
-@property (nonatomic, strong) TabBarParentViewController *centerTabBarViewController;
-@property (nonatomic, strong) IBOutlet UITableView *menuOptionTableView;
-@property (nonatomic, strong) IBOutlet UIView *firstSectionHeaderView;
-@property (nonatomic, strong) IBOutlet UIView *secondSectionHeaderView;
+@property (strong, nonatomic) TabBarParentViewController* centerTabBarViewController;
+@property (strong, nonatomic) IBOutlet UITableView* menuOptionTableView;
+@property (strong, nonatomic) IBOutlet UIView* firstSectionHeaderView;
+@property (strong, nonatomic) IBOutlet UIView* secondSectionHeaderView;
 
 - (void)showDialerViewController;
 - (void)showContactsViewController;

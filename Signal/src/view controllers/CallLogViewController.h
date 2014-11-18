@@ -6,7 +6,7 @@
 
 @interface CallLogViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, CallLogTableViewCellDelegate, SearchBarTitleViewDelegate>
 
-@property (nonatomic, strong) IBOutlet SearchBarTitleView *searchBarTitleView;
-@property (nonatomic, strong) IBOutlet UITableView *recentCallsTableView;
+@property (strong, nonatomic) IBOutlet SearchBarTitleView *searchBarTitleView;
+@property (strong, nonatomic) IBOutlet UITableView *recentCallsTableView;
 
 @end

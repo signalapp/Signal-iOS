@@ -1,10 +1,10 @@
 #import "UIUtil.h"
 
-static NSString *const HELVETICA_NEUE_LTSTD_LIGHT_NAME = @"HelveticaNeueLTStd-Lt";
-static NSString *const HELVETICA_NEUE_LTSTD_BOLD_NAME = @"HelveticaNeueLTStd-Bold";
-static NSString *const HELVETICA_NEUE_LTSTD_MEDIUM_NAME = @"HelveticaNeueLTStd-Md";
-static NSString *const HELVETICA_REGULAR_NAME = @"Helvetica";
-static NSString *const HELVETICA_LIGHT_NAME = @"Helvetica-Light";
+static NSString* const HELVETICA_NEUE_LTSTD_LIGHT_NAME = @"HelveticaNeueLTStd-Lt";
+static NSString* const HELVETICA_NEUE_LTSTD_BOLD_NAME = @"HelveticaNeueLTStd-Bold";
+static NSString* const HELVETICA_NEUE_LTSTD_MEDIUM_NAME = @"HelveticaNeueLTStd-Md";
+static NSString* const HELVETICA_REGULAR_NAME = @"Helvetica";
+static NSString* const HELVETICA_LIGHT_NAME = @"Helvetica-Light";
 
 #define CONTACT_PICTURE_VIEW_BORDER_WIDTH 2.0f
 

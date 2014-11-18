@@ -10,8 +10,8 @@
 
 #define ADDRESSBOOK_QUEUE dispatch_get_main_queue()
 
-static NSString *const FAVOURITES_DEFAULT_KEY = @"FAVOURITES_DEFAULT_KEY";
-static NSString *const KNOWN_USERS_DEFAULT_KEY = @"KNOWN_USERS_DEFAULT_KEY";
+static NSString* const FAVOURITES_DEFAULT_KEY = @"FAVOURITES_DEFAULT_KEY";
+static NSString* const KNOWN_USERS_DEFAULT_KEY = @"KNOWN_USERS_DEFAULT_KEY";
 
 typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL*);
 

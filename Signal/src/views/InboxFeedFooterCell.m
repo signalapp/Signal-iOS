@@ -19,7 +19,7 @@
                 _inboxMessageLabelFirst.text = HOME_FOOTER_FIRST_MESSAGE_CALLS_UNSORTED;
                 _inboxMessageLabelSecond.text = inboxCount == 1 ? HOME_FOOTER_SECOND_MESSAGE_CALL_UNSORTED : HOME_FOOTER_SECOND_MESSAGE_CALLS_UNSORTED;
             }
-        } onThread:NSThread.mainThread untilCancelled:nil];
+        } onThread:[NSThread mainThread] untilCancelled:nil];
     }
     return self;
 }

@@ -15,7 +15,7 @@
 
 @interface DebugLogger ()
 
-@property (nonatomic) DDFileLogger *fileLogger;
+@property (nonatomic) DDFileLogger* fileLogger;
 
 @end
 
@@ -46,9 +46,9 @@ MacrosSingletonImplemention
         [self disableFileLogging];
     }
     
-    NSError  *error;
-    NSString *logPath    = [NSHomeDirectory() stringByAppendingString:@"/Library/Caches/Logs/"];
-    NSArray  *logsFiles  = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:logPath error:&error];
+    NSError*  error;
+    NSString* logPath    = [NSHomeDirectory() stringByAppendingString:@"/Library/Caches/Logs/"];
+    NSArray*  logsFiles  = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:logPath error:&error];
 
     for (NSUInteger i = 0; i < logsFiles.count; i++) {
         [[NSFileManager defaultManager] removeItemAtPath:[logPath stringByAppendingString:logsFiles[i]] error:&error];

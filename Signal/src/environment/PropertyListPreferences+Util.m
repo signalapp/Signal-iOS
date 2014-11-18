@@ -156,15 +156,15 @@
 }
 
 - (NSString*)lastRanVersion {
-    return [NSUserDefaults.standardUserDefaults objectForKey:kSignalVersionKey];
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kSignalVersionKey];
 }
 
 - (NSString*)setAndGetCurrentVersion {
     NSString *lastVersion = self.lastRanVersion;
     
-    [NSUserDefaults.standardUserDefaults setObject:[NSString stringWithFormat:@"%@", [NSBundle mainBundle].infoDictionary[@"CFBundleVersion"]]
+    [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%@", [NSBundle mainBundle].infoDictionary[@"CFBundleVersion"]]
                                             forKey:kSignalVersionKey];
-    [NSUserDefaults.standardUserDefaults synchronize];
+    [[NSUserDefaults standardUserDefaults] synchronize];
     return lastVersion;
 }
 

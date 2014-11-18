@@ -5,8 +5,8 @@
 #define ONE_DAY_TIME_INTERVAL (double)60*60*24
 #define ONE_WEEK_TIME_INTERVAL (double)60*60*24*7
 
-static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
-static NSString *const DATE_FORMAT_HOUR_MINUTE = @"h:mm a   ";
+static NSString* const DATE_FORMAT_WEEKDAY = @"EEEE";
+static NSString* const DATE_FORMAT_HOUR_MINUTE = @"h:mm a   ";
 
 @implementation DateUtil
 

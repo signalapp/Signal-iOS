@@ -5,11 +5,11 @@
 #import "PhoneNumber.h"
 #import "PhoneNumberUtil.h"
 
-static NSString *const CONTRY_CODE_TABLE_CELL_IDENTIFIER = @"CountryCodeTableViewCell";
+static NSString* const CONTRY_CODE_TABLE_CELL_IDENTIFIER = @"CountryCodeTableViewCell";
 
-@interface CountryCodeViewController () {
-    NSArray *_countryCodes;
-}
+@interface CountryCodeViewController ()
+
+@property (strong, nonatomic) NSArray* countryCodes;
 
 @end
 
@@ -17,7 +17,7 @@ static NSString *const CONTRY_CODE_TABLE_CELL_IDENTIFIER = @"CountryCodeTableVie
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    _countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:nil];
+    self.countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:nil];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -27,48 +27,48 @@ static NSString *const CONTRY_CODE_TABLE_CELL_IDENTIFIER = @"CountryCodeTableVie
 #pragma mark - Actions
 
 - (IBAction)cancelTapped:(id)sender {
-    [_delegate countryCodeViewControllerDidCancel:self];
+    [self.delegate countryCodeViewControllerDidCancel:self];
 }
 
 
 #pragma mark - UITableViewDelegate
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return (NSInteger)_countryCodes.count;
+- (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section {
+    return (NSInteger)self.countryCodes.count;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    CountryCodeTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CONTRY_CODE_TABLE_CELL_IDENTIFIER];
+- (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+    CountryCodeTableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:CONTRY_CODE_TABLE_CELL_IDENTIFIER];
     
     if (!cell) {
         cell = [[CountryCodeTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                reuseIdentifier:CONTRY_CODE_TABLE_CELL_IDENTIFIER];
     }
     
-    NSString *countryCode = _countryCodes[(NSUInteger)indexPath.row];
-    NSString *callingCode = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
-    NSString *countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
+    NSString* countryCode = self.countryCodes[(NSUInteger)indexPath.row];
+    NSString* callingCode = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
+    NSString* countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
     [cell configureWithCountryCode:callingCode andCountryName:countryName];
     
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
     
-    NSString *countryCode = _countryCodes[(NSUInteger)indexPath.row];
-    NSString *callingCode = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
-    NSString *countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
+    NSString* countryCode = self.countryCodes[(NSUInteger)indexPath.row];
+    NSString* callingCode = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
+    NSString* countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
     
-    [_delegate countryCodeViewController:self
-                    didSelectCountryCode:callingCode
-                              forCountry:countryName];
+    [self.delegate countryCodeViewController:self
+                        didSelectCountryCode:callingCode
+                                  forCountry:countryName];
 }
 
 #pragma mark - UISearchBarDelegate
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    _countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:searchText];
-    [_countryCodeTableView reloadData];
+- (void)searchBar:(UISearchBar*)searchBar textDidChange:(NSString*)searchText {
+    self.countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:searchText];
+    [self.countryCodeTableView reloadData];
 }
 
 @end

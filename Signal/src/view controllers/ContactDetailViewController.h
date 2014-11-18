@@ -13,15 +13,15 @@
 
 @interface ContactDetailViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
-@property (nonatomic, strong) IBOutlet UIButton *favouriteButton;
-@property (nonatomic, strong) IBOutlet UIView *secureInfoHeaderView;
-@property (nonatomic, strong) IBOutlet UILabel *contactNameLabel;
-@property (nonatomic, strong) IBOutlet UIImageView *contactImageView;
-@property (nonatomic, strong) IBOutlet UITableView *contactInfoTableView;
+@property (strong, nonatomic) IBOutlet UIButton* favouriteButton;
+@property (strong, nonatomic) IBOutlet UIView* secureInfoHeaderView;
+@property (strong, nonatomic) IBOutlet UILabel* contactNameLabel;
+@property (strong, nonatomic) IBOutlet UIImageView* contactImageView;
+@property (strong, nonatomic) IBOutlet UITableView* contactInfoTableView;
 
-@property (nonatomic, readonly) Contact *contact;
+@property (strong, readonly, nonatomic) Contact* contact;
 
-+ (ContactDetailViewController *)contactDetailViewControllerWithContact:(Contact *)contact;
+- (instancetype)initWithContact:(Contact*)contact;
 
 - (IBAction)favouriteButtonTapped;
 
