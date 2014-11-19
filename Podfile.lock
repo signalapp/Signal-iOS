@@ -1,12 +1,12 @@
 PODS:
   - 25519 (1.8)
   - AFNetworking (2.5.0):
-    - AFNetworking/NSURLConnection
-    - AFNetworking/NSURLSession
-    - AFNetworking/Reachability
-    - AFNetworking/Security
-    - AFNetworking/Serialization
-    - AFNetworking/UIKit
+    - AFNetworking/NSURLConnection (= 2.5.0)
+    - AFNetworking/NSURLSession (= 2.5.0)
+    - AFNetworking/Reachability (= 2.5.0)
+    - AFNetworking/Security (= 2.5.0)
+    - AFNetworking/Serialization (= 2.5.0)
+    - AFNetworking/UIKit (= 2.5.0)
   - AFNetworking/NSURLConnection (2.5.0):
     - AFNetworking/Reachability
     - AFNetworking/Security
@@ -26,7 +26,7 @@ PODS:
     - HKDFKit (~> 0.0.3)
     - ProtocolBuffers (~> 1.9.2)
   - CocoaLumberjack (1.9.2):
-    - CocoaLumberjack/Extensions
+    - CocoaLumberjack/Extensions (= 1.9.2)
   - CocoaLumberjack/Core (1.9.2)
   - CocoaLumberjack/Extensions (1.9.2):
     - CocoaLumberjack/Core
@@ -37,7 +37,7 @@ PODS:
   - JSQSystemSoundPlayer (2.0.0)
   - libPhoneNumber-iOS (0.7.3)
   - Mantle (1.5.1):
-    - Mantle/extobjc
+    - Mantle/extobjc (= 1.5.1)
   - Mantle/extobjc (1.5.1)
   - OpenSSL (1.0.109)
   - PastelogKit (1.2):
@@ -81,6 +81,14 @@ EXTERNAL SOURCES:
   UICKeyChainStore:
     :podspec: Podspecs/UICKeyChainStore.podspec
 
+CHECKOUT OPTIONS:
+  JSQMessagesViewController:
+    :commit: 21d877492e948f27fde4115573a809798cc78210
+    :git: https://github.com/dtsbourg/JSQMessagesViewController
+  SocketRocket:
+    :commit: d0585af165
+    :git: https://github.com/square/SocketRocket.git
+
 SPEC CHECKSUMS:
   25519: 601ffb5d258aa33d642062d6fa4096db210e02e7
   AFNetworking: 0f54cb5d16ce38c1b76948faffb8d5fb705021c7
@@ -102,4 +110,4 @@ SPEC CHECKSUMS:
   UnionFind: 45777a8b6878d3a602af3654cc3a09b87389d356
   YapDatabase: 096e860167b04e629b88bea33dfb7a4153279bb0
 
-COCOAPODS: 0.34.4
+COCOAPODS: 0.35.0

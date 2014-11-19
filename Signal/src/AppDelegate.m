@@ -15,6 +15,9 @@
 #import "Util.h"
 #import "VersionMigrations.h"
 
+#import "InitialViewController.h"
+
+
 #import <PastelogKit/Pastelog.h>
 
 #define kSignalVersionKey @"SignalUpdateVersionKey"
@@ -157,6 +160,21 @@
         }
     
     } onThread:NSThread.mainThread untilCancelled:nil];
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    
+    InitialViewController *viewControllerForNewUser = [storyboard instantiateViewControllerWithIdentifier:@"UserInitialViewController"];
+    
+    UITabBarController *viewController = [storyboard instantiateViewControllerWithIdentifier:@"UserInitialViewController"];
+    
+    BOOL isNewUser = NO;
+    if (isNewUser) {
+        self.window.rootViewController = viewControllerForNewUser;
+    } else {
+        self.window.rootViewController = viewController;
+    }
+    
+    [self.window makeKeyAndVisible];
     
     
     return YES;
