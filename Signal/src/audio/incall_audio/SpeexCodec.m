@@ -80,7 +80,7 @@
     if (potentiallyMissingEncodedData == nil) {
         encodedDataLength = [self decodedFrameSizeInBytes]; // size for infering audio data
     }
-    if(encodedDataLength == 0) return nil;
+    if (encodedDataLength == 0) return nil;
     
     SpeexBits *dbits = [self getSpeexBitsFromData:potentiallyMissingEncodedData andDataLength:(int)encodedDataLength];
     

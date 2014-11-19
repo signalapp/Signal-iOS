@@ -26,26 +26,24 @@
 
 @interface Environment : NSObject
 
-@property (readonly, nonatomic) in_port_t serverPort;
-@property (readonly, nonatomic) ErrorHandlerBlock errorNoter;
-@property (strong, readonly, nonatomic) id<Logging> logging;
-@property (strong, readonly, nonatomic) SecureEndPoint* masterServerSecureEndPoint;
-@property (strong, readonly, nonatomic) NSString* defaultRelayName;
-@property (strong, readonly, nonatomic) Certificate* certificate;
-@property (strong, readonly, nonatomic) NSString* relayServerHostNameSuffix;
-@property (strong, readonly, nonatomic) NSArray* keyAgreementProtocolsInDescendingPriority;
-@property (strong, readonly, nonatomic) NSString* currentRegionCodeForPhoneNumbers;
-@property (strong, readonly, nonatomic) PhoneManager* phoneManager;
-@property (strong, readonly, nonatomic) RecentCallManager *recentCallManager;
-@property (strong, readonly, nonatomic) NSArray* testingAndLegacyOptions;
-@property (strong, readonly, nonatomic) NSData* zrtpClientId;
-@property (strong, readonly, nonatomic) NSData* zrtpVersionId;
-@property (strong, readonly, nonatomic) ContactsManager *contactsManager;
+@property (readonly, nonatomic)         in_port_t                          serverPort;
+@property (readonly, nonatomic)         ErrorHandlerBlock                  errorNoter;
+@property (strong, readonly, nonatomic) NSString*                          defaultRelayName;
+@property (strong, readonly, nonatomic) NSString*                          relayServerHostNameSuffix;
+@property (strong, readonly, nonatomic) NSString*                          currentRegionCodeForPhoneNumbers;
+@property (strong, readonly, nonatomic) NSArray*                           keyAgreementProtocolsInDescendingPriority;
+@property (strong, readonly, nonatomic) NSArray*                           testingAndLegacyOptions;
+@property (strong, readonly, nonatomic) NSData*                            zrtpClientId;
+@property (strong, readonly, nonatomic) NSData*                            zrtpVersionId;
+@property (strong, readonly, nonatomic) ContactsManager*                   contactsManager;
 @property (strong, readonly, nonatomic) PhoneNumberDirectoryFilterManager* phoneDirectoryManager;
+@property (strong, readonly, nonatomic) PhoneManager*                      phoneManager;
+@property (strong, readonly, nonatomic) RecentCallManager*                 recentCallManager;
+@property (strong, readonly, nonatomic) Certificate*                       certificate;
+@property (strong, readonly, nonatomic) SecureEndPoint*                    masterServerSecureEndPoint;
+@property (strong, readonly, nonatomic) id<Logging>                        logging;
 
-+ (SecureEndPoint*)getMasterServerSecureEndPoint;
-+ (SecureEndPoint*)getSecureEndPointToDefaultRelayServer;
-+ (SecureEndPoint*)getSecureEndPointToSignalingServerNamed:(NSString*)name;
+#pragma mark Creation
 
 - (instancetype)initWithLogging:(id<Logging>)logging
                   andErrorNoter:(ErrorHandlerBlock)errorNoter
@@ -64,17 +62,29 @@ andSupportedKeyAgreementProtocols:(NSArray*)keyAgreementProtocolsInDescendingPri
              andContactsManager:(ContactsManager*)contactsManager
        andPhoneDirectoryManager:(PhoneNumberDirectoryFilterManager*)phoneDirectoryManager;
 
+#pragma mark Current Environment
+
 + (Environment*)getCurrent;
 + (void)setCurrent:(Environment*)curEnvironment;
+
+#pragma mark Secure End Points
+
++ (SecureEndPoint*)getMasterServerSecureEndPoint;
++ (SecureEndPoint*)getSecureEndPointToDefaultRelayServer;
++ (SecureEndPoint*)getSecureEndPointToSignalingServerNamed:(NSString*)name;
+
+#pragma mark Other
+
 + (id<Logging>)logging;
 + (NSString*)relayServerNameToHostName:(NSString*)name;
 + (ErrorHandlerBlock)errorNoter;
 + (NSString*)currentRegionCodeForPhoneNumbers;
 + (bool)hasEnabledTestingOrLegacyOption:(NSString*)flag;
+
+#pragma mark Phone specific
+
 + (PhoneManager*)phoneManager;
-
 + (PropertyListPreferences*)preferences;
-
 + (BOOL)isRegistered;
 + (void)setRegistered:(BOOL)status;
 + (void)resetAppData;

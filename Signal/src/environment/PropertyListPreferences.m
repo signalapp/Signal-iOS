@@ -48,7 +48,7 @@
         } else {
             if ([value isKindOfClass:[NSData class]]) {
                 [UICKeyChainStore setData:value forKey:key];
-            } else if ([value isKindOfClass:[NSString class]]){
+            } else if ([value isKindOfClass:[NSString class]]) {
                 [UICKeyChainStore setString:value forKey:key];
             } else{
                 DDLogError(@"Unexpected class stored in the Keychain.");

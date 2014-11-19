@@ -186,7 +186,7 @@ static bool doesActiveInstanceExist;
 
 - (void)startWithDelegate:(id<AudioCallbackHandler>)delegateIn untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(delegateIn != nil);
-    @synchronized(self){
+    @synchronized(self) {
         requireState(self.state == RemoteIOAudioStateNotStarted);
         
         self.delegate = delegateIn;
@@ -333,7 +333,7 @@ static OSStatus playbackCallback(void *inRefCon,
         failure = @"systemSoundUnspecifiedError";
     } else if (resultCode == kAudioServicesSystemSoundClientTimedOutError) {
         failure = @"systemSoundClientTimedOutError";
-    } else if (resultCode == errSecParam){
+    } else if (resultCode == errSecParam) {
         failure = @"oneOrMoreNonValidParameter";
     } else {
         failure = [@(resultCode) description];

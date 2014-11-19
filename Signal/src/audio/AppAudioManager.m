@@ -71,7 +71,7 @@
 
 - (void)respondToProgressChange:(CallProgressType)progressType
         forLocallyInitiatedCall:(BOOL)initiatedLocally {
-    switch (progressType){
+    switch (progressType) {
         case CallProgressTypeConnecting:
             [self setAudioEnabled:YES];
             [[SoundPlayer sharedInstance] stopAllAudio];

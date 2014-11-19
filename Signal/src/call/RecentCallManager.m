@@ -134,7 +134,7 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
     NSData *encodedData = [[NSUserDefaults standardUserDefaults] objectForKey:RECENT_CALLS_DEFAULT_KEY];
     id data = [NSKeyedUnarchiver unarchiveObjectWithData:encodedData];
 
-    if(![data isKindOfClass:[NSArray class]]) {
+    if (![data isKindOfClass:[NSArray class]]) {
         return [[NSMutableArray alloc] init];
     } else {
         return [NSMutableArray arrayWithArray:data];

@@ -117,7 +117,7 @@
     
     if (shouldTryCall) {
         [self initiateCallToPhoneNumber:phoneNumber];
-    } else if(phoneNumber.isValid) {
+    } else if (phoneNumber.isValid) {
         [self promptToInvitePhoneNumber:phoneNumber];
     }
 }

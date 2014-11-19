@@ -158,7 +158,7 @@
     }
     
     [Environment.phoneManager.currentCallObservable watchLatestValue:^(CallState* latestCall) {
-        if (latestCall == nil){
+        if (latestCall == nil) {
             return;
         }
         
@@ -169,7 +169,7 @@
             [self.callPickUpFuture.future thenDo:^(NSNumber* accept) {
                 if ([accept isEqualToNumber:@YES]) {
                     [callViewController answerButtonTapped];
-                } else if ([accept isEqualToNumber:@NO]){
+                } else if ([accept isEqualToNumber:@NO]) {
                     [callViewController rejectButtonTapped];
                 }
             }];

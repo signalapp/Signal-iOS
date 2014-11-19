@@ -17,22 +17,22 @@ static Environment* environment = nil;
 
 @interface Environment ()
 
-@property (readwrite, nonatomic) in_port_t serverPort;
-@property (readwrite, nonatomic) ErrorHandlerBlock errorNoter;
-@property (strong, readwrite, nonatomic) id<Logging> logging;
-@property (strong, readwrite, nonatomic) SecureEndPoint* masterServerSecureEndPoint;
-@property (strong, readwrite, nonatomic) NSString* defaultRelayName;
-@property (strong, readwrite, nonatomic) Certificate* certificate;
-@property (strong, readwrite, nonatomic) NSString* relayServerHostNameSuffix;
-@property (strong, readwrite, nonatomic) NSArray* keyAgreementProtocolsInDescendingPriority;
-@property (strong, readwrite, nonatomic) NSString* currentRegionCodeForPhoneNumbers;
-@property (strong, readwrite, nonatomic) PhoneManager* phoneManager;
-@property (strong, readwrite, nonatomic) RecentCallManager *recentCallManager;
-@property (strong, readwrite, nonatomic) NSArray* testingAndLegacyOptions;
-@property (strong, readwrite, nonatomic) NSData* zrtpClientId;
-@property (strong, readwrite, nonatomic) NSData* zrtpVersionId;
-@property (strong, readwrite, nonatomic) ContactsManager *contactsManager;
+@property (readwrite, nonatomic)         in_port_t                          serverPort;
+@property (readwrite, nonatomic)         ErrorHandlerBlock                  errorNoter;
+@property (strong, readwrite, nonatomic) NSString*                          defaultRelayName;
+@property (strong, readwrite, nonatomic) NSString*                          relayServerHostNameSuffix;
+@property (strong, readwrite, nonatomic) NSString*                          currentRegionCodeForPhoneNumbers;
+@property (strong, readwrite, nonatomic) NSArray*                           keyAgreementProtocolsInDescendingPriority;
+@property (strong, readwrite, nonatomic) NSArray*                           testingAndLegacyOptions;
+@property (strong, readwrite, nonatomic) NSData*                            zrtpClientId;
+@property (strong, readwrite, nonatomic) NSData*                            zrtpVersionId;
+@property (strong, readwrite, nonatomic) ContactsManager*                   contactsManager;
 @property (strong, readwrite, nonatomic) PhoneNumberDirectoryFilterManager* phoneDirectoryManager;
+@property (strong, readwrite, nonatomic) PhoneManager*                      phoneManager;
+@property (strong, readwrite, nonatomic) RecentCallManager*                 recentCallManager;
+@property (strong, readwrite, nonatomic) Certificate*                       certificate;
+@property (strong, readwrite, nonatomic) SecureEndPoint*                    masterServerSecureEndPoint;
+@property (strong, readwrite, nonatomic) id<Logging>                        logging;
 
 @end
 
@@ -164,13 +164,13 @@ andSupportedKeyAgreementProtocols:(NSArray*)keyAgreementProtocolsInDescendingPri
     NSData *macKey       = [SGNKeychainUtil signalingMacKey];
     NSData *extra        = [SGNKeychainUtil signalingExtraKey];
     NSString *serverAuth = [SGNKeychainUtil serverAuthPassword];
-    BOOL registered      = [[NSUserDefaults.standardUserDefaults objectForKey:isRegisteredUserDefaultString] boolValue];
+    BOOL registered      = [[[NSUserDefaults standardUserDefaults] objectForKey:isRegisteredUserDefaultString] boolValue];
     
     return signalingKey && macKey && extra && serverAuth && registered;
 }
 
 + (void)setRegistered:(BOOL)status {
-    [NSUserDefaults.standardUserDefaults setObject:status?@YES:@NO forKey:isRegisteredUserDefaultString];
+    [[NSUserDefaults standardUserDefaults] setObject:status?@YES:@NO forKey:isRegisteredUserDefaultString];
 }
 
 + (PropertyListPreferences*)preferences {

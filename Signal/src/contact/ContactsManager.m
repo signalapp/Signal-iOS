@@ -342,7 +342,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         
         if (firstNameOrdering && contact.firstName != nil && contact.firstName.length > 0) {
             nameToUse = contact.firstName;
-        } else if (!firstNameOrdering && contact.lastName != nil && contact.lastName.length > 0){
+        } else if (!firstNameOrdering && contact.lastName != nil && contact.lastName.length > 0) {
             nameToUse = contact.lastName;
         } else if (contact.lastName == nil) {
             if (contact.fullName.length > 0) {
@@ -418,14 +418,14 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 #pragma mark - Favourites
 
 - (NSMutableArray*)loadFavouriteIds {
-    NSArray* favourites = [NSUserDefaults.standardUserDefaults objectForKey:FAVOURITES_DEFAULT_KEY];
-    return favourites == nil ? [NSMutableArray array] : favourites.mutableCopy;
+    NSArray* favourites = [[NSUserDefaults standardUserDefaults] objectForKey:FAVOURITES_DEFAULT_KEY];
+    return favourites == nil ? [[NSMutableArray alloc] init] : favourites.mutableCopy;
 }
 
 - (void)saveFavouriteIds {
-    [NSUserDefaults.standardUserDefaults setObject:[self.favouriteContactIds copy]
+    [[NSUserDefaults standardUserDefaults] setObject:[self.favouriteContactIds copy]
                                               forKey:FAVOURITES_DEFAULT_KEY];
-    [NSUserDefaults.standardUserDefaults synchronize];
+    [[NSUserDefaults standardUserDefaults] synchronize];
     [self.observableFavouritesController updateValue:[self contactsForContactIds:self.favouriteContactIds]];
 }
 
@@ -462,14 +462,14 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 	NSArray* currentUsers = [self getWhisperUsersFromContactsArray:self.latestContactsById.allValues];
 	NSArray* newUsers     = [self getNewItemsFrom:currentUsers comparedTo:self.latestWhisperUsersById.allValues];
     
-	if(newUsers.count > 0){
+	if (newUsers.count > 0) {
 		[self.observableWhisperUsersController updateValue:currentUsers];
 	}
     
     NSArray* unacknowledgedUserIds = [self getUnacknowledgedUsersFrom:currentUsers];
-    if(unacknowledgedUserIds.count > 0) {
+    if (unacknowledgedUserIds.count > 0) {
         NSArray *unacknowledgedUsers = [self contactsForContactIds: unacknowledgedUserIds];
-        if(!self.newUserNotificationsEnabled) {
+        if (!self.newUserNotificationsEnabled) {
             [self addContactsToKnownWhisperUsers:unacknowledgedUsers];
         } else {
             NSDictionary* payload = @{NOTIFICATION_DATAKEY_NEW_USERS: unacknowledgedUsers};
@@ -504,7 +504,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 - (BOOL)isContactRegisteredWithWhisper:(Contact*)contact {
-	for (PhoneNumber* phoneNumber in contact.parsedPhoneNumbers){
+	for (PhoneNumber* phoneNumber in contact.parsedPhoneNumbers) {
 		if ([self isPhoneNumberRegisteredWithWhisper:phoneNumber]) {
 			return YES;
 		}
@@ -518,7 +518,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 - (void)addContactsToKnownWhisperUsers:(NSArray*)contacts {
-    for(Contact* contact in contacts){
+    for (Contact* contact in contacts) {
         [self.knownWhisperUserIds addObject:@([contact recordID])];
     }
     NSMutableSet *users = [[NSMutableSet alloc] initWithArray:self.latestWhisperUsersById.allValues];
@@ -529,24 +529,24 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 - (BOOL)knownUserStoreInitialized {
-    NSUserDefaults* d = [NSUserDefaults.standardUserDefaults objectForKey:KNOWN_USERS_DEFAULT_KEY];
+    NSUserDefaults* d = [[NSUserDefaults standardUserDefaults] objectForKey:KNOWN_USERS_DEFAULT_KEY];
     return (Nil != d);
 }
 
 - (NSMutableArray*)loadKnownWhisperUsers{
-    NSArray* knownUsers = [NSUserDefaults.standardUserDefaults objectForKey:KNOWN_USERS_DEFAULT_KEY];
+    NSArray* knownUsers = [[NSUserDefaults standardUserDefaults] objectForKey:KNOWN_USERS_DEFAULT_KEY];
     return knownUsers == nil ? [[NSMutableArray alloc] init] : knownUsers.mutableCopy;
 }
 
 - (void)saveKnownWhisperUsers {
     self.knownWhisperUserIds = [[NSMutableArray alloc] initWithArray:[self.latestWhisperUsersById allKeys]];
-    [NSUserDefaults.standardUserDefaults setObject:[self.knownWhisperUserIds copy] forKey:KNOWN_USERS_DEFAULT_KEY];
-    [NSUserDefaults.standardUserDefaults synchronize];
+    [[NSUserDefaults standardUserDefaults] setObject:[self.knownWhisperUserIds copy] forKey:KNOWN_USERS_DEFAULT_KEY];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)clearKnownWhisUsers{
-    [NSUserDefaults.standardUserDefaults setObject:@[] forKey:KNOWN_USERS_DEFAULT_KEY];
-    [NSUserDefaults.standardUserDefaults synchronize];
+    [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:KNOWN_USERS_DEFAULT_KEY];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 @end

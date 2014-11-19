@@ -24,7 +24,7 @@
     AVAudioSessionRouteDescription* routeDesc = [AVAudioSession sharedInstance].currentRoute;
     
     for (AVAudioSessionPortDescription* portDesc in routeDesc.outputs) {
-        if (AVAudioSessionPortBuiltInSpeaker == [portDesc portType]){
+        if (AVAudioSessionPortBuiltInSpeaker == [portDesc portType]) {
             return YES;
         }
     }

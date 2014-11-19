@@ -38,7 +38,7 @@
     
     NSMutableArray* encodedFrames = [[NSMutableArray alloc] init];
     NSUInteger decodedFrameSize = [self.codec decodedFrameSizeInBytes];
-    while([buffer enqueuedLength] >= decodedFrameSize){
+    while([buffer enqueuedLength] >= decodedFrameSize) {
         NSData* rawFrame = [buffer dequeueDataWithLength:decodedFrameSize];
         requireState(rawFrame != nil);
         NSData* encodedFrameData = [self.codec encode:rawFrame];

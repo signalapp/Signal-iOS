@@ -56,7 +56,7 @@
 
 - (id<OccurrenceLogger>)getOccurrenceLoggerForSender:(id)sender
                                              withKey:(NSString*)key {
-    id<OccurrenceLogger> r = [[AnonymousOccurrenceLogger alloc] initWithMarker:^(id details){
+    id<OccurrenceLogger> r = [[AnonymousOccurrenceLogger alloc] initWithMarker:^(id details) {
         [self log:[NSString stringWithFormat:@"Mark %@ from %@", key, sender] details:details];
     }];
     return [LoggingUtil throttleOccurrenceLogger:r discardingAfterEventForDuration:0.5];

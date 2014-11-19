@@ -68,12 +68,12 @@
 
 - (HandshakePacket*)handlePacket:(HandshakePacket*)packet {
     @try {
-        if      (self.packetExpectation == EXPECTING_NOTHING){     return nil;}
-        else if (self.packetExpectation == EXPECTING_HELLO){       return [self handleHello:packet];}
-        else if (self.packetExpectation == EXPECTING_COMMIT){      return [self handleCommit:packet];}
-        else if (self.packetExpectation == EXPECTING_DH){          return [self handleDH:packet];}
-        else if (self.packetExpectation == EXPECTING_CONFIRM)    { return [self handleConfirmTwo:packet];}
-        else {return nil;}
+        if      (self.packetExpectation == EXPECTING_NOTHING) return nil;
+        else if (self.packetExpectation == EXPECTING_HELLO)   return [self handleHello:packet];
+        else if (self.packetExpectation == EXPECTING_COMMIT)  return [self handleCommit:packet];
+        else if (self.packetExpectation == EXPECTING_DH)      return [self handleDH:packet];
+        else if (self.packetExpectation == EXPECTING_CONFIRM) return [self handleConfirmTwo:packet];
+        else return nil;
     } @catch (SecurityFailure* ex) {
         [self.callController terminateWithReason:CallTerminationTypeHandshakeFailed withFailureInfo:ex andRelatedInfo:packet];
         return nil;

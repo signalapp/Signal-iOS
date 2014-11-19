@@ -30,7 +30,7 @@
 - (TOCFuture*)finallyTry:(TOCFutureFinallyContinuation)completionContinuation {
     require(completionContinuation != nil);
     
-    return [self finally:^id(TOCFuture* completed){
+    return [self finally:^id(TOCFuture* completed) {
         @try {
             return completionContinuation(completed);
         } @catch (id ex) {
@@ -42,7 +42,7 @@
 - (TOCFuture*)thenTry:(TOCFutureThenContinuation)resultContinuation {
     require(resultContinuation != nil);
     
-    return [self then:^id(id result){
+    return [self then:^id(id result) {
         @try {
             return resultContinuation(result);
         } @catch (id ex) {
@@ -54,7 +54,7 @@
 - (TOCFuture*)catchTry:(TOCFutureCatchContinuation)failureContinuation {
     require(failureContinuation != nil);
     
-    return [self catch:^id(id failure){
+    return [self catch:^id(id failure) {
         @try {
             return failureContinuation(failure);
         } @catch (id ex) {

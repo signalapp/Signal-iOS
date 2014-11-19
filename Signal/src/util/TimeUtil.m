@@ -119,7 +119,7 @@
         callback();
         return;
     }
-    if (shouldRunImmediately){
+    if (shouldRunImmediately) {
         callback();
     }
     

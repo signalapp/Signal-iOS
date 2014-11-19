@@ -18,7 +18,7 @@
     unsigned char cipherText[bufferLength];
     
     EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
-    if(!ctx) { RAISE_EXCEPTION; }
+    if (!ctx) { RAISE_EXCEPTION; }
     
     @try {
         RAISE_EXCEPTION_ON_FAILURE(  EVP_EncryptInit_ex(ctx, cipher, NULL,[key bytes], [iv bytes]))
@@ -57,7 +57,7 @@
     unsigned char plainText[bufferLength];
     
     EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
-    if(!ctx) { RAISE_EXCEPTION; }
+    if (!ctx) { RAISE_EXCEPTION; }
 
     @try {
         RAISE_EXCEPTION_ON_FAILURE(EVP_DecryptInit_ex(  ctx, cipher, NULL, [key bytes], [iv bytes]))

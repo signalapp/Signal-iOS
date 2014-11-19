@@ -112,7 +112,7 @@
         
         if (d < 0) {
             id error = [self.outputStream streamError];
-            if (error == nil){
+            if (error == nil) {
                 error = @"Unknown error when writing to stream.";
             }
             [self.rawDataHandler handleError:error relatedInfo:nil causedTermination:false];

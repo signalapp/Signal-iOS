@@ -37,7 +37,7 @@
 + (NSData*)switchEndiannessOfData:(NSData*)data {
     const void* bytes = [data bytes];
     NSMutableData* switchedEndianData = [[NSMutableData alloc] init];
-    for (NSUInteger i = data.length; i > 0; --i){
+    for (NSUInteger i = data.length; i > 0; --i) {
         uint8_t byte = *(((uint8_t*)(bytes))+((i-1)*sizeof(uint8_t)));
         [switchedEndianData appendData:[NSData dataWithBytes:&byte length:sizeof(byte)]];
     }
