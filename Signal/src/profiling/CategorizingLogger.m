@@ -92,11 +92,11 @@
 
 - (void)notifyBadArrival:(uint16_t)sequenceNumber
                   ofType:(JitterBadArrivalType)arrivalType {
-    [self log:@"JitterQueue bad arrival" details:[NSString stringWithFormat:@"sequence: %d, arrival type: %ldd", sequenceNumber, arrivalType]];
+    [self log:@"JitterQueue bad arrival" details:[NSString stringWithFormat:@"sequence: %d, arrival type: %d", sequenceNumber, arrivalType]];
 }
 
 - (void)notifyBadDequeueOfType:(JitterBadDequeueType)type {
-    [self log:@"JitterQueue bad dequeue" details:[NSString stringWithFormat:@"type: %ld", type]];
+    [self log:@"JitterQueue bad dequeue" details:[NSString stringWithFormat:@"type: %d", type]];
 }
 
 - (void)notifyResyncFrom:(uint16_t)oldReadHeadSequenceNumber
