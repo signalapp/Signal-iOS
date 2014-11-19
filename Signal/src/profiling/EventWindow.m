@@ -36,7 +36,7 @@
     self.lastWindowEnding = endOfWindowTime;
     
     NSTimeInterval startOfWindowTime = endOfWindowTime - self.windowDuration;
-    while(self.events.count > 0 && [[self.events peek] doubleValue] < startOfWindowTime) {
+    while (self.events.count > 0 && [self.events.peek  doubleValue] < startOfWindowTime) {
         [self.events dequeue];
     }
     return self.events.count;

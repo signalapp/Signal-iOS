@@ -120,7 +120,7 @@
     [self.idsInJitterQueue removeObject:@(discardedSequenceNumber)];
     
     uint16_t oldReadHeadMax = self.readHeadMin + self.readHeadSpan - 1;
-    self.readHeadMin = [[self.resultPriorityQueue peek] sequenceNumber];
+    self.readHeadMin = [self.resultPriorityQueue.peek sequenceNumber];
     self.readHeadSpan = 1;
     
     for (id<JitterQueueNotificationReceiver> e in self.watchers) {
@@ -171,7 +171,7 @@
 }
 
 - (bool)checkReactIfNoDataUnderReadHeadForDequeue {
-    EncodedAudioPacket* result = [self.resultPriorityQueue peek];
+    EncodedAudioPacket* result = self.resultPriorityQueue.peek;
     int16_t d = [NumberUtil congruentDifferenceMod2ToThe16From:self.readHeadMin
                                                             to:[result sequenceNumber]];
     bool notUnderHead = d < 0 || d >= self.readHeadSpan;

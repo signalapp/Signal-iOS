@@ -56,11 +56,11 @@
     NSData* d02 = [@[@0, @2] toUint8Data];
     
     test([[d tryFindIndexOf:[NSData data]] intValue] == 0);
-    test([[d tryFindIndexOf:d] intValue] == 0);
+    test([d tryFindIndexOf:d].intValue == 0);
     
-    test([[d tryFindIndexOf:d01] intValue] == 0);
+    test([d tryFindIndexOf:d01].intValue == 0);
     test([d tryFindIndexOf:d02] == nil);
-    test([[d tryFindIndexOf:d34] intValue] == 3);
+    test([d tryFindIndexOf:d34].intValue == 3);
     test([d34 tryFindIndexOf:d] == nil);
     test([d tryFindIndexOf:d67] == nil);
 }
