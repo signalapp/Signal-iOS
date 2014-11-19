@@ -80,7 +80,7 @@
         NSArray* headerLineParts = [headerLine componentsSeparatedByString:@":"];
         checkOperation(headerLineParts.count >= 2);
         NSString* headerKey = [headerLineParts[0] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
-        NSString* headerValue = [[headerLine substringFromIndex:[(NSString *)headerLineParts[0] length]+1] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+        NSString* headerValue = [[headerLine substringFromIndex:[(NSString*)headerLineParts[0] length]+1] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
         headers[headerKey] = headerValue;
     }
     

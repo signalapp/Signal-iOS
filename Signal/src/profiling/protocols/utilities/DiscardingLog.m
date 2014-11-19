@@ -5,7 +5,7 @@
 #pragma mark Logging
 
 - (id<OccurrenceLogger>)getOccurrenceLoggerForSender:(id)sender
-                                             withKey:(NSString *)key {
+                                             withKey:(NSString*)key {
     return self;
 }
 

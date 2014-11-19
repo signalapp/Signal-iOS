@@ -57,9 +57,6 @@
 
 - (void)setupPasteBehaviour {
     [self.numberLabel onPaste:^(id sender) {
-
-#warning Is the following line necessary?
-        [UIPasteboard generalPasteboard];
         if ([[UIPasteboard generalPasteboard] containsPasteboardTypes:UIPasteboardTypeListString]) {
             [self.currentNumberMutable setString:[self sanitizePhoneNumberFromUnknownSource:[[UIPasteboard generalPasteboard] string]]];
             [self updateNumberLabel];

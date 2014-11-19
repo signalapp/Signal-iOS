@@ -261,7 +261,7 @@ static NSString* const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 }
 
 - (void)contactRefreshFailed {
-#warning Deprecated method, this should be changed
+#warning Deprecated method
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:TIMEOUT
                                                     message:TIMEOUT_CONTACTS_DETAIL
                                                    delegate:nil

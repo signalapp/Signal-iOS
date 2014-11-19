@@ -156,7 +156,7 @@
 - (void)requestRequiredPermissionsIfNeeded {
     [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
         if (!granted) {
-#warning Deprecated method, this should be changed
+#warning Deprecated method
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
                                                                 message:NSLocalizedString(@"AUDIO_PERMISSION_MESSAGE", @"")
                                                                delegate:nil

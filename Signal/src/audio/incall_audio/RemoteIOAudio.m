@@ -19,7 +19,7 @@
 
 @property (nonatomic) BOOL isStreaming;
 
-@property (strong, nonatomic) id<AudioCallbackHandler> delegate;
+@property (weak, nonatomic)   id<AudioCallbackHandler> delegate;
 @property (strong, nonatomic) id<OccurrenceLogger>     starveLogger;
 @property (strong, nonatomic) id<ConditionLogger>      conditionLogger;
 @property (strong, nonatomic) id<ValueLogger>          playbackBufferSizeLogger;
@@ -138,7 +138,7 @@ static bool doesActiveInstanceExist;
 }
 
 - (void)setAudioCallbacks {
-    const AURenderCallbackStruct recordingCallbackStruct = {recordingCallback, (__bridge void *)(self)};
+    const AURenderCallbackStruct recordingCallbackStruct = {recordingCallback, (__bridge void*)(self)};
     [self checkDone:AudioUnitSetProperty(self.rioAudioUnit,
                                          kAudioOutputUnitProperty_SetInputCallback,
                                          kAudioUnitScope_Global,
@@ -146,7 +146,7 @@ static bool doesActiveInstanceExist;
                                          &recordingCallbackStruct,
                                          sizeof(recordingCallbackStruct))];
     
-    const AURenderCallbackStruct playbackCallbackStruct = {playbackCallback, (__bridge void *)(self)};
+    const AURenderCallbackStruct playbackCallbackStruct = {playbackCallback, (__bridge void*)(self)};
     [self checkDone:AudioUnitSetProperty(self.rioAudioUnit,
                                          kAudioUnitProperty_SetRenderCallback,
                                          kAudioUnitScope_Global,
@@ -254,7 +254,8 @@ static OSStatus recordingCallback(void *inRefCon,
     }
     
     [self.recordingQueueSizeLogger logValue:[self.recordingQueue enqueuedLength]];
-    [self.delegate handleNewDataRecorded:self.recordingQueue];
+    id delegate = self.delegate;
+    [delegate handleNewDataRecorded:self.recordingQueue];
 }
 
 - (void)populatePlaybackQueueWithData:(NSData*)data {
@@ -304,7 +305,8 @@ static OSStatus playbackCallback(void *inRefCon,
     NSUInteger consumedByteCount = availableByteCount >= requestedByteCount ? requestedByteCount : 0;
     NSUInteger remainingByteCount = availableByteCount - consumedByteCount;
     [self.playbackBufferSizeLogger logValue:remainingByteCount];
-    [self.delegate handlePlaybackOccurredWithBytesRequested:requestedByteCount andBytesRemaining:remainingByteCount];
+    id delegate = self.delegate;
+    [delegate handlePlaybackOccurredWithBytesRequested:requestedByteCount andBytesRemaining:remainingByteCount];
 }
 
 - (void)dealloc {

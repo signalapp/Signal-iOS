@@ -39,7 +39,7 @@ static NSString* const FAVOURITE_FALSE_ICON_NAME = @"favourite_false_icon";
 	
     if (self.contact) {
         self.navigationController.navigationBar.barTintColor = [UIUtil darkBackgroundColor];
-        self.navigationController.navigationBar.tintColor = UIColor.whiteColor;
+        self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
         self.navigationController.navigationBar.translucent = NO;
         self.contactNameLabel.text = self.contact.fullName;
         if (self.contact.image) {
@@ -94,7 +94,7 @@ static NSString* const FAVOURITE_FALSE_ICON_NAME = @"favourite_false_icon";
     return cell;
 }
 
-- (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
     if (indexPath.row < (NSInteger)[[self.contact userTextPhoneNumbers] count]) {

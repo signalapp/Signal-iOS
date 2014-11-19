@@ -3,6 +3,6 @@
 @interface BadArgument : NSException
 
 + (BadArgument*)new:(NSString*)reason;
-+ (void)raise:(NSString *)message;
++ (void)raise:(NSString*)message;
 
 @end

@@ -29,7 +29,7 @@
     return self;
 }
 
-- (void)receivedPacket:(EncodedAudioPacket *)packet {
+- (void)receivedPacket:(EncodedAudioPacket*)packet {
     [self.jitterQueue tryEnqueue:packet];
 }
 

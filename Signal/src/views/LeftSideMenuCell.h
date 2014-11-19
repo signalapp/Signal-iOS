@@ -2,6 +2,6 @@
 
 @interface LeftSideMenuCell : UITableViewCell
 
-@property (nonatomic, strong) IBOutlet UILabel *menuTitleLabel;
+@property (strong, nonatomic) IBOutlet UILabel* menuTitleLabel;
 
 @end

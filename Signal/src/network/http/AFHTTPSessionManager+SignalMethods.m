@@ -13,8 +13,8 @@
 - (NSURLSessionDataTask*)dataTaskWithHTTPMethod:(NSString*)method
                                       URLString:(NSString*)URLString
                                      parameters:(id)parameters
-                                        success:(void (^)(NSURLSessionDataTask *, id))success
-                                        failure:(void (^)(NSURLSessionDataTask *, NSError *))failure;
+                                        success:(void (^)(NSURLSessionDataTask*, id))success
+                                        failure:(void (^)(NSURLSessionDataTask*, NSError*))failure;
 
 @end
 
@@ -22,8 +22,8 @@
 
 - (NSURLSessionDataTask*)BUSY:(NSString*)URLString
                    parameters:(id)parameters
-                      success:(void (^)(NSURLSessionDataTask *task, id responseObject))success
-                      failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure{
+                      success:(void (^)(NSURLSessionDataTask* task, id responseObject))success
+                      failure:(void (^)(NSURLSessionDataTask* task, NSError* error))failure {
     
     NSURLSessionDataTask* dataTask = [self dataTaskWithHTTPMethod:@"BUSY"
                                                         URLString:URLString
@@ -38,10 +38,10 @@
 
 - (NSURLSessionDataTask*)RING:(NSString*)URLString
                    parameters:(id)parameters
-                      success:(void (^)(NSURLSessionDataTask *task, id responseObject))success
-                      failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure{
+                      success:(void (^)(NSURLSessionDataTask* task, id responseObject))success
+                      failure:(void (^)(NSURLSessionDataTask* task, NSError *error))failure {
     
-    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"RING"
+    NSURLSessionDataTask* dataTask = [self dataTaskWithHTTPMethod:@"RING"
                                                         URLString:URLString
                                                        parameters:parameters
                                                           success:success

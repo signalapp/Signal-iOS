@@ -107,7 +107,7 @@
     return dbits;
 }
 
-- (int)decodeSpeexBits:(SpeexBits *)dbits withLength:(int)encodedDataLength {
+- (int)decodeSpeexBits:(SpeexBits*)dbits withLength:(int)encodedDataLength {
     int decodingBufferIndex = 0;
     int decodingBufferLength = (int)[self decodedFrameSizeInBytes];
     int count = 0;

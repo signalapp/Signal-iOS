@@ -24,10 +24,10 @@ typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 
 - (NSArray*)getContactsFromAddressBook:(ABAddressBookRef)addressBook;
 - (Contact*)latestContactWithRecordId:(ABRecordID)recordId;
-- (Contact*)latestContactForPhoneNumber:(PhoneNumber *)phoneNumber;
-- (NSArray*)latestContactsWithSearchString:(NSString *)searchString;
+- (Contact*)latestContactForPhoneNumber:(PhoneNumber*)phoneNumber;
+- (NSArray*)latestContactsWithSearchString:(NSString*)searchString;
 
-- (void)toggleFavourite:(Contact *)contact;
+- (void)toggleFavourite:(Contact*)contact;
 - (NSArray*)contactsForContactIds:(NSArray*)favouriteIds;
 + (NSArray*)favouritesForAllContacts:(NSArray*)contacts;
 

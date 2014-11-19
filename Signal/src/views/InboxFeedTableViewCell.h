@@ -11,29 +11,30 @@
  */
 
 @class InboxFeedTableViewCell;
+
 @protocol InboxFeedTableViewCellDelegate <NSObject>
 
-- (void)inboxFeedTableViewCellTappedDelete:(InboxFeedTableViewCell *)cell;
-- (void)inboxFeedTableViewCellTappedArchive:(InboxFeedTableViewCell *)cell;
+- (void)inboxFeedTableViewCellTappedDelete:(InboxFeedTableViewCell*)cell;
+- (void)inboxFeedTableViewCellTappedArchive:(InboxFeedTableViewCell*)cell;
 
 @end
 
 @interface InboxFeedTableViewCell : UITableViewCell <UIScrollViewDelegate>
 
-@property (nonatomic, strong) IBOutlet UILabel *nameLabel;
-@property (nonatomic, strong) IBOutlet UIImageView *contactPictureView;
-@property (nonatomic, strong) IBOutlet UIImageView *callTypeImageView;
-@property (nonatomic, strong) IBOutlet UILabel *numberLabel;
-@property (nonatomic, strong) IBOutlet UILabel *timeLabel;
-@property (nonatomic, strong) IBOutlet NextResponderScrollView *scrollView;
-@property (nonatomic, strong) IBOutlet UIView *contentContainerView;
-@property (nonatomic, strong) IBOutlet UIView *missedCallView;
-@property (nonatomic, strong) IBOutlet UIView *deleteView;
-@property (nonatomic, strong) IBOutlet UIView *archiveView;
-@property (nonatomic, strong) IBOutlet UIImageView *deleteImageView;
-@property (nonatomic, strong) IBOutlet UIImageView *archiveImageView;
-@property (nonatomic, assign) id<InboxFeedTableViewCellDelegate> delegate;
+@property (strong, nonatomic) IBOutlet UILabel* nameLabel;
+@property (strong, nonatomic) IBOutlet UIImageView* contactPictureView;
+@property (strong, nonatomic) IBOutlet UIImageView* callTypeImageView;
+@property (strong, nonatomic) IBOutlet UILabel* numberLabel;
+@property (strong, nonatomic) IBOutlet UILabel* timeLabel;
+@property (strong, nonatomic) IBOutlet NextResponderScrollView* scrollView;
+@property (strong, nonatomic) IBOutlet UIView* contentContainerView;
+@property (strong, nonatomic) IBOutlet UIView* missedCallView;
+@property (strong, nonatomic) IBOutlet UIView* deleteView;
+@property (strong, nonatomic) IBOutlet UIView* archiveView;
+@property (strong, nonatomic) IBOutlet UIImageView* deleteImageView;
+@property (strong, nonatomic) IBOutlet UIImageView* archiveImageView;
+@property (weak, nonatomic) id<InboxFeedTableViewCellDelegate> delegate;
 
-- (void)configureWithRecentCall:(RecentCall *)recentCall;
+- (void)configureWithRecentCall:(RecentCall*)recentCall;
 
 @end

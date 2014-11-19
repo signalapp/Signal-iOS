@@ -221,7 +221,7 @@ static NSString* const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
     }
 }
 
-- (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath {
     if (self.isSearching) {
         return [self searchCellForIndexPath:indexPath];
     } else {
@@ -291,7 +291,7 @@ static NSString* const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
     [cell configureWithRecentCall:recent];
     return cell;
 }
-- (UITableViewCell*)contactCellForIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell*)contactCellForIndexPath:(NSIndexPath*)indexPath {
     ContactTableViewCell* cell = [self.inboxFeedTableView dequeueReusableCellWithIdentifier:CONTACT_TABLE_VIEW_CELL_IDENTIFIER];
 
     if (!cell) {

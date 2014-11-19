@@ -8,8 +8,8 @@
 
 @interface InboxFeedFooterCell : UITableViewCell
 
-@property (nonatomic, strong) IBOutlet UILabel *inboxCountLabel;
-@property (nonatomic, strong) IBOutlet UILabel *inboxMessageLabelFirst;
-@property (nonatomic, strong) IBOutlet UILabel *inboxMessageLabelSecond;
+@property (strong, nonatomic) IBOutlet UILabel* inboxCountLabel;
+@property (strong, nonatomic) IBOutlet UILabel* inboxMessageLabelFirst;
+@property (strong, nonatomic) IBOutlet UILabel* inboxMessageLabelSecond;
 
 @end

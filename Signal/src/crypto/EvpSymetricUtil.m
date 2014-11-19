@@ -44,7 +44,7 @@
     require(iv.length  == [NumberUtil assertConvertIntToNSUInteger:cipherIvLength]);
 }
 
-+ (NSData*)decryptMessage:(NSData*)cipherText usingCipher:(const EVP_CIPHER*)cipher andKey:(NSData*)key andIV:(NSData *)iv {
++ (NSData*)decryptMessage:(NSData*)cipherText usingCipher:(const EVP_CIPHER*)cipher andKey:(NSData*)key andIV:(NSData*)iv {
  
     [self assertKey:key andIV:iv lengthsAgainstCipher:cipher];
     

@@ -5,18 +5,17 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     
-    NSString *fontName = [self fontName];
-    self.font = [UIFont fontWithName:fontName size:self.font.pointSize];
+    self.font = [UIFont fontWithName:[self fontName] size:self.font.pointSize];
 }
 
-- (void)setLocalizationKey:(NSString *)localizationKey {
-    _localizationKey = localizationKey;
-    if (_localizationKey) {
-        self.text = NSLocalizedString(_localizationKey, @"");
+- (void)setLocalizationKey:(NSString*)localizationKey {
+    self.localizationKey = localizationKey;
+    if (self.localizationKey) {
+        self.text = NSLocalizedString(self.localizationKey, @"");
     }
 }
 
-- (NSString *)fontName {
+- (NSString*)fontName {
     return nil;
 }
 
@@ -24,7 +23,7 @@
 
 #define LocalizableCustomFontLabel(CLASS_NAME, FONT_NAME) \
 @implementation CLASS_NAME \
-- (NSString *)fontName { \
+- (NSString*)fontName { \
 return @"" # FONT_NAME; \
 } \
 @end \

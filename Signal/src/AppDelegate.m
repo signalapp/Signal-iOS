@@ -93,7 +93,7 @@
     
     if (error) {
         DDLogError(@"Error while removing log files from backup: %@", error.description);
-#warning Deprecated method, this should be changed
+#warning Deprecated method
         UIAlertView* alert = [[UIAlertView alloc]initWithTitle:NSLocalizedString(@"WARNING", @"")
                                                        message:NSLocalizedString(@"DISABLING_BACKUP_FAILED", @"")
                                                       delegate:nil

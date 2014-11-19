@@ -184,7 +184,7 @@ void onReceivedData(CFSocketRef socket, CFSocketCallBackType type, CFDataRef add
     }
     
     @try {
-        CFSocketContext socketContext = { 0, (__bridge void *)self, CFRetain, CFRelease, CFCopyDescription };
+        CFSocketContext socketContext = { 0, (__bridge void*)self, CFRetain, CFRelease, CFCopyDescription };
         
         self.socket = CFSocketCreate(kCFAllocatorDefault,
                                      PF_INET,

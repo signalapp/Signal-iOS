@@ -12,7 +12,7 @@
 
 @interface RecentCallManager : NSObject
 
-- (ObservableValue *)getObservableRecentCalls;
+- (ObservableValue*)getObservableRecentCalls;
 - (void)watchForCallsThrough:(PhoneManager*)phoneManager untilCancelled:(TOCCancelToken*)untilCancelledToken;
 - (void)watchForContactUpdatesFrom:(ContactsManager*)contactManager untillCancelled:(TOCCancelToken*)cancelToken;
 

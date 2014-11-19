@@ -8,7 +8,7 @@
 
 @interface SettingsTableHeaderView : UIView
 
-@property (nonatomic, strong) IBOutlet UIImageView *columnStateImageView;
+@property (strong, nonatomic) IBOutlet UIImageView* columnStateImageView;
 
 - (void)setColumnStateExpanded:(BOOL)isExpanded andIsAnimated:(BOOL)animated;
 

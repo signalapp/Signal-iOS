@@ -11,7 +11,7 @@
 
 @interface SoundPlayer : NSObject
 
-@property (strong, nonatomic) id<SoundPlayerDelegate> delegate;
+@property (weak, nonatomic) id<SoundPlayerDelegate> delegate;
 
 + (instancetype)sharedInstance;
 

@@ -27,7 +27,8 @@ static NSString* const CONTRY_CODE_TABLE_CELL_IDENTIFIER = @"CountryCodeTableVie
 #pragma mark - Actions
 
 - (IBAction)cancelTapped:(id)sender {
-    [self.delegate countryCodeViewControllerDidCancel:self];
+    id delegate = self.delegate;
+    [delegate countryCodeViewControllerDidCancel:self];
 }
 
 
@@ -59,9 +60,10 @@ static NSString* const CONTRY_CODE_TABLE_CELL_IDENTIFIER = @"CountryCodeTableVie
     NSString* callingCode = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
     NSString* countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
     
-    [self.delegate countryCodeViewController:self
-                        didSelectCountryCode:callingCode
-                                  forCountry:countryName];
+    id delegate = self.delegate;
+    [delegate countryCodeViewController:self
+                   didSelectCountryCode:callingCode
+                             forCountry:countryName];
 }
 
 #pragma mark - UISearchBarDelegate

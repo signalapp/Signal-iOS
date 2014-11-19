@@ -6,7 +6,7 @@
     return [[BadArgument alloc] initWithName:@"Invalid Argument" reason:reason userInfo:nil];
 }
 
-+ (void)raise:(NSString *)message {
++ (void)raise:(NSString*)message {
     [BadArgument raise:@"Invalid Argument" format:@"%@", message];
 }
 

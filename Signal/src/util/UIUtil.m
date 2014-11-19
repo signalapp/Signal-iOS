@@ -46,7 +46,7 @@ static NSString* const HELVETICA_LIGHT_NAME = @"Helvetica-Light";
     return [UIColor colorWithRed:237.0f/255.0f green:96.0f/255.0f blue:98.0f/255.0f alpha:1.0f];
 }
 
-+ (UIColor *)greenColor {
++ (UIColor*)greenColor {
     return [UIColor colorWithRed:0.0f green:199.0f/255.0f blue:149.0f/255.0f alpha:1.0f];
 }
 

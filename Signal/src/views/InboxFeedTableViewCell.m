@@ -12,62 +12,65 @@
 
 @implementation InboxFeedTableViewCell
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
-    self = [NSBundle.mainBundle loadNibNamed:NSStringFromClass(self.class)
+@synthesize contactPictureView = _contactPictureView;
+
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString*)reuseIdentifier {
+    self = [[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class])
                                           owner:self
                                         options:nil][0];
 
 
     if (self) {
-        _scrollView.contentSize = CGSizeMake(CGRectGetWidth(_contentContainerView.bounds),
-                                             CGRectGetHeight(_scrollView.frame));
+        self.scrollView.contentSize = CGSizeMake(CGRectGetWidth(self.contentContainerView.bounds),
+                                                 CGRectGetHeight(self.scrollView.frame));
 
         [UIUtil applyRoundedBorderToImageView:&_contactPictureView];
         
-        _scrollView.contentOffset				= CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
-        _missedCallView.layer.cornerRadius		= MISSED_CALL_VIEW_CORNER_RADIUS;
-        _deleteImageView.image = [_deleteImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _archiveImageView.image = [_archiveImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        self.scrollView.contentOffset          = CGPointMake(CGRectGetWidth(self.archiveView.frame), 0);
+        self.missedCallView.layer.cornerRadius = MISSED_CALL_VIEW_CORNER_RADIUS;
+        self.deleteImageView.image             = [self.deleteImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        self.archiveImageView.image            = [self.archiveImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     }
+    
     return self;
 }
 
-- (NSString *)reuseIdentifier {
-    return NSStringFromClass(self.class);
+- (NSString*)reuseIdentifier {
+    return NSStringFromClass([self class]);
 }
 
-- (void)configureWithRecentCall:(RecentCall *)recentCall {
-    Contact *contact = [Environment.getCurrent.contactsManager latestContactWithRecordId:recentCall.contactRecordID];
+- (void)configureWithRecentCall:(RecentCall*)recentCall {
+    Contact* contact = [Environment.getCurrent.contactsManager latestContactWithRecordId:recentCall.contactRecordID];
 
     if (contact) {
-        _nameLabel.text = contact.fullName;
+        self.nameLabel.text = contact.fullName;
         if (contact.image) {
-            _contactPictureView.image = contact.image;
+            self.contactPictureView.image = contact.image;
         } else {
-            _contactPictureView.image = nil;
+            self.contactPictureView.image = nil;
         }
     } else {
-        _nameLabel.text = UNKNOWN_CONTACT_NAME;
-        _contactPictureView.image = nil;
+        self.nameLabel.text = UNKNOWN_CONTACT_NAME;
+        self.contactPictureView.image = nil;
     }
 
     if (recentCall.callType == RPRecentCallTypeOutgoing) {
-        _callTypeImageView.image = [UIImage imageNamed:CALL_TYPE_IMAGE_NAME_OUTGOING];
+        self.callTypeImageView.image = [UIImage imageNamed:CALL_TYPE_IMAGE_NAME_OUTGOING];
     } else {
-        _callTypeImageView.image = [UIImage imageNamed:CALL_TYPE_IMAGE_NAME_INCOMING];
+        self.callTypeImageView.image = [UIImage imageNamed:CALL_TYPE_IMAGE_NAME_INCOMING];
     }
 
-    _missedCallView.hidden = recentCall.userNotified;
-    _numberLabel.text = recentCall.phoneNumber.localizedDescriptionForUser;
-    _timeLabel.attributedText = [self dateArrributedString:[recentCall date]];
+    self.missedCallView.hidden    = recentCall.userNotified;
+    self.numberLabel.text         = recentCall.phoneNumber.localizedDescriptionForUser;
+    self.timeLabel.attributedText = [self dateArrributedString:[recentCall date]];
 }
 
 #pragma mark - Date formatting
 
-- (NSAttributedString *)dateArrributedString:(NSDate *)date {
+- (NSAttributedString*)dateArrributedString:(NSDate*)date {
 
-    NSString *dateString;
-    NSString *timeString = [[DateUtil timeFormatter] stringFromDate:date];
+    NSString* dateString;
+    NSString* timeString = [[DateUtil timeFormatter] stringFromDate:date];
 
       
     if ([DateUtil dateIsOlderThanOneWeek:date]) {
@@ -99,59 +102,60 @@
 
 #pragma mark - UIScrollViewDelegate
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
 
-    if (_scrollView.contentOffset.x < 0) {
-        _archiveImageView.tintColor = [UIUtil redColor];
-        _archiveImageView.bounds = CGRectMake(_archiveImageView.bounds.origin.x,
-                                              _archiveImageView.bounds.origin.y,
-                                              ARCHIVE_IMAGE_VIEW_WIDTH,
-                                              _archiveImageView.bounds.size.height);
+    if (self.scrollView.contentOffset.x < 0) {
+        self.archiveImageView.tintColor = [UIUtil redColor];
+        self.archiveImageView.bounds = CGRectMake(self.archiveImageView.bounds.origin.x,
+                                                  self.archiveImageView.bounds.origin.y,
+                                                  ARCHIVE_IMAGE_VIEW_WIDTH,
+                                                  self.archiveImageView.bounds.size.height);
     } else {
 
-        double ratio = (_archiveView.frame.size.width/2.0f - _scrollView.contentOffset.x) / (_archiveView.frame.size.width/2.0f);
+        double ratio = (self.archiveView.frame.size.width/2.0f - self.scrollView.contentOffset.x) / (self.archiveView.frame.size.width/2.0f);
         double newWidth = ARCHIVE_IMAGE_VIEW_WIDTH/2 + (ARCHIVE_IMAGE_VIEW_WIDTH * ratio)/2.0f;
-        _archiveImageView.bounds = CGRectMake(_archiveImageView.bounds.origin.x,
-                                              _archiveImageView.bounds.origin.y,
-                                              (CGFloat)newWidth,
-                                              _archiveImageView.bounds.size.height);
-        _archiveImageView.tintColor = UIColor.whiteColor;
+        self.archiveImageView.bounds = CGRectMake(self.archiveImageView.bounds.origin.x,
+                                                  self.archiveImageView.bounds.origin.y,
+                                                  (CGFloat)newWidth,
+                                                  self.archiveImageView.bounds.size.height);
+        self.archiveImageView.tintColor = [UIColor whiteColor];
 
     }
 
-    if (scrollView.contentOffset.x > CGRectGetWidth(_archiveView.frame)*2) {
-        _deleteImageView.tintColor = [UIUtil redColor];
-        _deleteImageView.bounds = CGRectMake(_deleteImageView.bounds.origin.x,
-                                             _deleteImageView.bounds.origin.y,
-                                             DELETE_IMAGE_VIEW_WIDTH,
-                                             _deleteImageView.bounds.size.height);
+    if (scrollView.contentOffset.x > CGRectGetWidth(self.archiveView.frame)*2) {
+        self.deleteImageView.tintColor = [UIUtil redColor];
+        self.deleteImageView.bounds = CGRectMake(self.deleteImageView.bounds.origin.x,
+                                                 self.deleteImageView.bounds.origin.y,
+                                                 DELETE_IMAGE_VIEW_WIDTH,
+                                                 self.deleteImageView.bounds.size.height);
     } else {
 
-        double ratio = _scrollView.contentOffset.x / (CGRectGetWidth(_deleteView.frame)*2);
+        double ratio = self.scrollView.contentOffset.x / (CGRectGetWidth(self.deleteView.frame)*2);
         double newWidth = DELETE_IMAGE_VIEW_WIDTH/2 + (DELETE_IMAGE_VIEW_WIDTH * ratio)/2.0f;
         
-        _deleteImageView.bounds = CGRectMake(_deleteImageView.bounds.origin.x,
-                                             _deleteImageView.bounds.origin.y,
-                                             (CGFloat)newWidth,
-                                             _deleteImageView.bounds.size.height);
-        _deleteImageView.tintColor = UIColor.whiteColor;
+        self.deleteImageView.bounds = CGRectMake(self.deleteImageView.bounds.origin.x,
+                                                 self.deleteImageView.bounds.origin.y,
+                                                 (CGFloat)newWidth,
+                                                 self.deleteImageView.bounds.size.height);
+        self.deleteImageView.tintColor = [UIColor whiteColor];
     }
 }
 
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
+- (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
                      withVelocity:(CGPoint)velocity
-              targetContentOffset:(inout CGPoint *)targetContentOffset {
-	
-    if (_scrollView.contentOffset.x < 0) {
-        [_delegate inboxFeedTableViewCellTappedArchive:self];
+              targetContentOffset:(inout CGPoint*)targetContentOffset {
+    id delegate = self.delegate;
+    
+    if (self.scrollView.contentOffset.x < 0) {
+        [delegate inboxFeedTableViewCellTappedArchive:self];
     } else {
-        *targetContentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
+        *targetContentOffset = CGPointMake(CGRectGetWidth(self.archiveView.frame), 0);
     }
 
-    if (scrollView.contentOffset.x > CGRectGetWidth(_archiveView.frame)*2) {
-        [_delegate inboxFeedTableViewCellTappedDelete:self];
+    if (scrollView.contentOffset.x > CGRectGetWidth(self.archiveView.frame)*2) {
+        [delegate inboxFeedTableViewCellTappedDelete:self];
     } else {
-        *targetContentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
+        *targetContentOffset = CGPointMake(CGRectGetWidth(self.archiveView.frame), 0);
     }
 }
 

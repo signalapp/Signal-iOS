@@ -6,21 +6,21 @@
 
 @protocol SearchBarTitleViewDelegate <NSObject>
 
-- (void)searchBarTitleView:(SearchBarTitleView *)view didSearchForTerm:(NSString *)term;
-- (void)searchBarTitleViewDidEndSearching:(SearchBarTitleView *)view;
-- (void)searchBarTitleViewDidTapMenu:(SearchBarTitleView *)view;
+- (void)searchBarTitleView:(SearchBarTitleView*)view didSearchForTerm:(NSString*)term;
+- (void)searchBarTitleViewDidEndSearching:(SearchBarTitleView*)view;
+- (void)searchBarTitleViewDidTapMenu:(SearchBarTitleView*)view;
 
 @end
 
 @interface SearchBarTitleView : UIView <UITextFieldDelegate>
 
-@property (nonatomic, strong) IBOutlet UILabel *titleLabel;
-@property (nonatomic, strong) IBOutlet UIView *searchBarContainer;
-@property (nonatomic, strong) IBOutlet UITextField *searchTextField;
-@property (nonatomic, strong) IBOutlet UIButton *searchButton;
-@property (nonatomic, strong) IBOutlet UIButton *cancelButton;
-@property (nonatomic, strong) IBOutlet UIButton *menuButton;
-@property (nonatomic, assign) IBOutlet id<SearchBarTitleViewDelegate> delegate;
+@property (strong, nonatomic) IBOutlet UILabel* titleLabel;
+@property (strong, nonatomic) IBOutlet UIView* searchBarContainer;
+@property (strong, nonatomic) IBOutlet UITextField* searchTextField;
+@property (strong, nonatomic) IBOutlet UIButton* searchButton;
+@property (strong, nonatomic) IBOutlet UIButton* cancelButton;
+@property (strong, nonatomic) IBOutlet UIButton* menuButton;
+@property (weak, nonatomic)   IBOutlet id<SearchBarTitleViewDelegate> delegate;
 
 - (void)updateAutoCorrectionType;
 

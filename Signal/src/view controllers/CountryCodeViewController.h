@@ -16,7 +16,7 @@
 
 @property (strong, nonatomic) IBOutlet UITableView* countryCodeTableView;
 @property (strong, nonatomic) IBOutlet UISearchBar* searchBar;
-@property (nonatomic) id<CountryCodeViewControllerDelegate> delegate;
+@property (weak, nonatomic) id<CountryCodeViewControllerDelegate> delegate;
 
 - (IBAction)cancelTapped:(id)sender;
 

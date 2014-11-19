@@ -32,7 +32,7 @@ static NSString* const DATE_FORMAT_HOUR_MINUTE = @"h:mm a   ";
     return [[NSDate date] timeIntervalSinceDate:date] > ONE_DAY_TIME_INTERVAL;
 }
 
-+ (BOOL)dateIsOlderThanOneWeek:(NSDate *)date {
++ (BOOL)dateIsOlderThanOneWeek:(NSDate*)date {
     return [[NSDate date] timeIntervalSinceDate:date] > ONE_WEEK_TIME_INTERVAL;
 }
 

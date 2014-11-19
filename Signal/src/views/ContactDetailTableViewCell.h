@@ -11,11 +11,11 @@
 
 @interface ContactDetailTableViewCell : UITableViewCell
 
-@property (nonatomic, strong) IBOutlet UILabel *infoTypeLabel;
-@property (nonatomic, strong) IBOutlet UILabel *infoDisplayLabel;
+@property (strong, nonatomic) IBOutlet UILabel* infoTypeLabel;
+@property (strong, nonatomic) IBOutlet UILabel* infoDisplayLabel;
 
-- (void)configureWithPhoneNumber:(PhoneNumber *)numberString isSecure:(BOOL)isSecure;
-- (void)configureWithEmailString:(NSString *)emailString;
-- (void)configureWithNotes:(NSString *)notes;
+- (void)configureWithPhoneNumber:(PhoneNumber*)numberString isSecure:(BOOL)isSecure;
+- (void)configureWithEmailString:(NSString*)emailString;
+- (void)configureWithNotes:(NSString*)notes;
 
 @end

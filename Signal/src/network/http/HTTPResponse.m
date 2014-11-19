@@ -94,7 +94,7 @@
 
 //@synthesize optionalBodyText = _optionalBodyText;
 
-- (void)setOptionalBodyText:(NSString *)optionalBodyText {
+- (void)setOptionalBodyText:(NSString*)optionalBodyText {
     if (optionalBodyText) {
         _optionalBodyText = optionalBodyText;
         if (!self.optionalBodyData) {
@@ -103,7 +103,7 @@
     }
 }
 
-- (void)setOptionalBodyData:(NSData *)optionalBodyData {
+- (void)setOptionalBodyData:(NSData*)optionalBodyData {
     if (optionalBodyData) {
         _optionalBodyData = optionalBodyData;
         if (!self.optionalBodyText) {

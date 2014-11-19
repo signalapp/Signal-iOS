@@ -2,7 +2,7 @@
 
 @interface InteractiveLabel : UILabel
 
--(void) onPaste:(void(^)(id sender)) pasteBlock;
--(void) onCopy:(void(^)(id sender))  copyBlock;
+- (void)onPaste:(void(^)(id sender))pasteBlock;
+- (void)onCopy:(void(^)(id sender))copyBlock;
 
 @end

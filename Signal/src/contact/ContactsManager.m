@@ -112,7 +112,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 - (void)pullLatestAddressBook{
     CFErrorRef creationError = nil;
     ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, &creationError);
-    checkOperationDescribe(nil == creationError, [((__bridge NSError *)creationError) localizedDescription]) ;
+    checkOperationDescribe(nil == creationError, [((__bridge NSError*)creationError) localizedDescription]) ;
     ABAddressBookRequestAccessWithCompletion(addressBookRef,  nil);
     [self.observableContactsController updateValue:[self getContactsFromAddressBook:addressBookRef]];
 }

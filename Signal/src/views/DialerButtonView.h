@@ -12,18 +12,20 @@
 @class DialerButtonView;
 
 @protocol DialerButtonViewDelegate  <NSObject>
-- (void)dialerButtonViewDidSelect:(DialerButtonView *)view;
+
+- (void)dialerButtonViewDidSelect:(DialerButtonView*)view;
+
 @end
 
 @interface DialerButtonView : UIView
 
-@property (nonatomic, strong) NSString *buttonInput;
-@property (nonatomic, strong) NSString *letterLocalizationKey;
-@property (nonatomic, strong) NSString *numberLocalizationKey;
+@property (strong, nonatomic) NSString* buttonInput;
+@property (strong, nonatomic) NSString* letterLocalizationKey;
+@property (strong, nonatomic) NSString* numberLocalizationKey;
 
-@property (nonatomic, strong) IBOutlet UILabel *numberLabel;
-@property (nonatomic, strong) IBOutlet UILabel *letterLabel;
-@property (nonatomic, assign) IBOutlet id<DialerButtonViewDelegate> delegate;
+@property (strong, nonatomic) IBOutlet UILabel* numberLabel;
+@property (strong, nonatomic) IBOutlet UILabel* letterLabel;
+@property (weak, nonatomic) IBOutlet id<DialerButtonViewDelegate> delegate;
 
 - (IBAction)buttonTouchUp;
 - (IBAction)buttonTouchCancel;

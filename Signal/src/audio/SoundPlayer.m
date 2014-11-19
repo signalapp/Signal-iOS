@@ -36,9 +36,8 @@
     @synchronized(self.currentActiveAudioPlayers) {
         sound.completionBlock = ^(SoundInstance* soundInstance) {
             [self removeSoundFromManifest:soundInstance];
-            if (self.delegate) {
-                [self.delegate didCompleteSoundInstanceOfType:soundInstance.soundInstanceType];
-            }
+            id delegate = self.delegate;
+            [delegate didCompleteSoundInstanceOfType:soundInstance.soundInstanceType];
         };
         [self.currentActiveAudioPlayers setValue:sound forKey:sound.getId];
     }
