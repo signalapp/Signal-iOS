@@ -9,6 +9,7 @@
 #import <XCTest/XCTest.h>
 #import <25519/Curve25519.h>
 
+#import "TSStorageManager.h"
 #import "TSStorageManager+IdentityKeyStore.h"
 #import "SecurityUtils.h"
 
@@ -20,6 +21,7 @@
 
 - (void)setUp {
     [super setUp];
+    [[TSStorageManager sharedManager] purgeCollection:@"TSStorageManagerTrustedKeysCollection"];
     // Put setup code here. This method is called before the invocation of each test method in the class.
 }
 
