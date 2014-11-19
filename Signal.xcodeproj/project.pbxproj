@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		701231B518ECAA4500D456C4 /* EvpMessageDigest.m in Sources */ = {isa = PBXBuildFile; fileRef = 701231B418ECAA4500D456C4 /* EvpMessageDigest.m */; };
+		701231B518ECAA4500D456C4 /* EVPMessageDigest.m in Sources */ = {isa = PBXBuildFile; fileRef = 701231B418ECAA4500D456C4 /* EVPMessageDigest.m */; };
 		70377AA91916BA0500CAF501 /* InteractiveLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 70377AA81916BA0500CAF501 /* InteractiveLabel.m */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
 		7038632718F70C0700D4A43F /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632418F70C0700D4A43F /* CryptoTools.m */; };
-		7038632818F70C0700D4A43F /* EvpSymetricUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632618F70C0700D4A43F /* EvpSymetricUtil.m */; };
+		7038632818F70C0700D4A43F /* EVPSymetricUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632618F70C0700D4A43F /* EVPSymetricUtil.m */; };
 		707E548C18FF0B8A00C8649D /* InviteContactModal.m in Sources */ = {isa = PBXBuildFile; fileRef = 707E548B18FF0B8A00C8649D /* InviteContactModal.m */; };
 		707E549218FF26E800C8649D /* SMSInvite.m in Sources */ = {isa = PBXBuildFile; fileRef = 707E549118FF26E800C8649D /* SMSInvite.m */; };
 		7095B7B018F46D35002C66E2 /* PhoneNumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7095B7AF18F46D35002C66E2 /* PhoneNumberUtil.m */; };
@@ -624,15 +624,15 @@
 
 /* Begin PBXFileReference section */
 		14DDBCE302E19644A773D119 /* Pods.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods.app store release.xcconfig"; path = "Pods/Target Support Files/Pods/Pods.app store release.xcconfig"; sourceTree = "<group>"; };
-		701231B318ECAA4500D456C4 /* EvpMessageDigest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpMessageDigest.h; sourceTree = "<group>"; };
-		701231B418ECAA4500D456C4 /* EvpMessageDigest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EvpMessageDigest.m; sourceTree = "<group>"; };
+		701231B318ECAA4500D456C4 /* EVPMessageDigest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EVPMessageDigest.h; sourceTree = "<group>"; };
+		701231B418ECAA4500D456C4 /* EVPMessageDigest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EVPMessageDigest.m; sourceTree = "<group>"; };
 		70377AA71916BA0500CAF501 /* InteractiveLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InteractiveLabel.h; sourceTree = "<group>"; };
 		70377AA81916BA0500CAF501 /* InteractiveLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InteractiveLabel.m; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		7038632318F70C0700D4A43F /* CryptoTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoTools.h; sourceTree = "<group>"; };
 		7038632418F70C0700D4A43F /* CryptoTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptoTools.m; sourceTree = "<group>"; };
-		7038632518F70C0700D4A43F /* EvpSymetricUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpSymetricUtil.h; sourceTree = "<group>"; };
-		7038632618F70C0700D4A43F /* EvpSymetricUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EvpSymetricUtil.m; sourceTree = "<group>"; };
+		7038632518F70C0700D4A43F /* EVPSymetricUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EVPSymetricUtil.h; sourceTree = "<group>"; };
+		7038632618F70C0700D4A43F /* EVPSymetricUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EVPSymetricUtil.m; sourceTree = "<group>"; };
 		707E548A18FF0B8A00C8649D /* InviteContactModal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InviteContactModal.h; sourceTree = "<group>"; };
 		707E548B18FF0B8A00C8649D /* InviteContactModal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InviteContactModal.m; sourceTree = "<group>"; };
 		707E549018FF26E800C8649D /* SMSInvite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSInvite.h; sourceTree = "<group>"; };
@@ -686,7 +686,7 @@
 		70B8FEE11909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "171756__nenadsimic__picked-coin-echo-2.wav"; sourceTree = "<group>"; };
 		70BAFD5B190584BE00FA5E0B /* NotificationTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationTracker.h; sourceTree = "<group>"; };
 		70BAFD5C190584BE00FA5E0B /* NotificationTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationTracker.m; sourceTree = "<group>"; };
-		70E803ED18F6DD1400BF77BC /* EvpUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpUtil.h; sourceTree = "<group>"; };
+		70E803ED18F6DD1400BF77BC /* EVPUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EVPUtil.h; sourceTree = "<group>"; };
 		762D9DCD18281C7400A5E418 /* SettingsTableHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsTableHeaderView.h; sourceTree = "<group>"; };
 		762D9DCE18281C7400A5E418 /* SettingsTableHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsTableHeaderView.m; sourceTree = "<group>"; };
 		7650529F182945EF008313E1 /* LocalizableCustomFontLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalizableCustomFontLabel.h; sourceTree = "<group>"; };
@@ -1451,11 +1451,11 @@
 				7038632418F70C0700D4A43F /* CryptoTools.m */,
 				DBDA259F1A19C9EB00D32349 /* NSData+CryptoTools.h */,
 				DBDA25A01A19C9EC00D32349 /* NSData+CryptoTools.m */,
-				701231B318ECAA4500D456C4 /* EvpMessageDigest.h */,
-				701231B418ECAA4500D456C4 /* EvpMessageDigest.m */,
-				7038632518F70C0700D4A43F /* EvpSymetricUtil.h */,
-				7038632618F70C0700D4A43F /* EvpSymetricUtil.m */,
-				70E803ED18F6DD1400BF77BC /* EvpUtil.h */,
+				701231B318ECAA4500D456C4 /* EVPMessageDigest.h */,
+				701231B418ECAA4500D456C4 /* EVPMessageDigest.m */,
+				7038632518F70C0700D4A43F /* EVPSymetricUtil.h */,
+				7038632618F70C0700D4A43F /* EVPSymetricUtil.m */,
+				70E803ED18F6DD1400BF77BC /* EVPUtil.h */,
 			);
 			path = crypto;
 			sourceTree = "<group>";
@@ -3451,7 +3451,7 @@
 				70B8010C190C55660042E3F0 /* AbstractMessage.m in Sources */,
 				E197B61618BBEC1A00F073E5 /* StretchFactorController.m in Sources */,
 				76EB065018170B34006006FC /* DialerViewController.m in Sources */,
-				701231B518ECAA4500D456C4 /* EvpMessageDigest.m in Sources */,
+				701231B518ECAA4500D456C4 /* EVPMessageDigest.m in Sources */,
 				76EB062218170B33006006FC /* CyclicalBuffer.m in Sources */,
 				76EB063C18170B33006006FC /* NumberUtil.m in Sources */,
 				76EB063A18170B33006006FC /* NSArray+FunctionalUtil.m in Sources */,
@@ -3499,7 +3499,7 @@
 				76EB061418170B33006006FC /* AnonymousConditionLogger.m in Sources */,
 				76EB05C018170B33006006FC /* DHPacket.m in Sources */,
 				765052A1182945EF008313E1 /* LocalizableCustomFontLabel.m in Sources */,
-				7038632818F70C0700D4A43F /* EvpSymetricUtil.m in Sources */,
+				7038632818F70C0700D4A43F /* EVPSymetricUtil.m in Sources */,
 				76EB066418170B34006006FC /* TabBarParentViewController.m in Sources */,
 				76EB068618170B34006006FC /* ContactTableViewCell.m in Sources */,
 				B63761ED19E1FBE8005735D1 /* HTTPRequestOrResponse.m in Sources */,

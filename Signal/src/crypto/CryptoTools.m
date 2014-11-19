@@ -4,8 +4,8 @@
 
 #import "Constraints.h"
 #import "NSData+Conversions.h"
-#import "EvpMessageDigest.h"
-#import "EvpSymetricUtil.h"
+#import "EVPMessageDigest.h"
+#import "EVPSymetricUtil.h"
 #import "Util.h"
 #import "NSData+CryptoTools.h"
 

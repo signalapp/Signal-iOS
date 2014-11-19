@@ -5,8 +5,8 @@
 #import <openssl/ec.h>
 #import <openssl/pem.h>
 
-#define checkEvpOperationResult(expr) checkSecurityOperation((expr) == 1, @"An elliptic curve operation didn't succeed.")
-#define checkEvpNotNull(expr, desc) checkSecurityOperation((expr) != NULL, desc)
+#define checkEVPOperationResult(expr) checkSecurityOperation((expr) == 1, @"An elliptic curve operation didn't succeed.")
+#define checkEVPNotNull(expr, desc) checkSecurityOperation((expr) != NULL, desc)
 
 #define EC25_COORDINATE_LENGTH 32
 #define NAMED_ELLIPTIC_CURVE NID_X9_62_prime256v1
@@ -62,9 +62,9 @@ typedef NS_ENUM(NSInteger, KeyAgreementType) {
 - (EVP_PKEY_CTX*)createParameterContext {
     EVP_PKEY_CTX* ctx;
     ctx = EVP_PKEY_CTX_new_id(self.keyAgreementType, NULL);
-    checkEvpNotNull(ctx , @"pctx_new_id");
+    checkEVPNotNull(ctx , @"pctx_new_id");
     
-    checkEvpOperationResult(EVP_PKEY_paramgen_init(ctx));
+    checkEVPOperationResult(EVP_PKEY_paramgen_init(ctx));
     
     return ctx;
 }
@@ -76,7 +76,7 @@ typedef NS_ENUM(NSInteger, KeyAgreementType) {
     DH* dh = DH_new();
     
     @try{
-        checkEvpNotNull(dh, @"dh_new");
+        checkEVPNotNull(dh, @"dh_new");
         
         dh->p = [self generateBignumberFor:modulus];
         dh->g = [self generateBignumberFor:generator];
@@ -86,7 +86,7 @@ typedef NS_ENUM(NSInteger, KeyAgreementType) {
             [self reportError:@"DH Parameters uninitialized"];
         }
         
-        [self createNewEvpKeyFreePreviousIfNessesary:&params];
+        [self createNewEVPKeyFreePreviousIfNessesary:&params];
         EVP_PKEY_set1_DH(params, dh);
         
     } @finally {
@@ -98,25 +98,25 @@ typedef NS_ENUM(NSInteger, KeyAgreementType) {
 - (void) generateEc25Parameters {
     EVP_PKEY_CTX* pctx = [self createParameterContext];
     
-    checkEvpOperationResult(EVP_PKEY_CTX_set_ec_paramgen_curve_nid(pctx, NAMED_ELLIPTIC_CURVE));
+    checkEVPOperationResult(EVP_PKEY_CTX_set_ec_paramgen_curve_nid(pctx, NAMED_ELLIPTIC_CURVE));
     
-    checkEvpOperationResult(EVP_PKEY_paramgen(pctx, &params));
+    checkEVPOperationResult(EVP_PKEY_paramgen(pctx, &params));
     
     EVP_PKEY_CTX_free(pctx);
 }
 
 
 - (void)generateKeyPair {
-    checkEvpNotNull(params, @"parameters uninitialized");
+    checkEVPNotNull(params, @"parameters uninitialized");
     
     EVP_PKEY_CTX* kctx = NULL;
     @try {
         kctx = EVP_PKEY_CTX_new(params, NULL);
-        checkEvpNotNull(kctx, @"key_ctx");
+        checkEVPNotNull(kctx, @"key_ctx");
         
-        checkEvpOperationResult(EVP_PKEY_keygen_init(kctx));
+        checkEVPOperationResult(EVP_PKEY_keygen_init(kctx));
         
-        checkEvpOperationResult(EVP_PKEY_keygen(kctx, &pkey));
+        checkEVPOperationResult(EVP_PKEY_keygen(kctx, &pkey));
     } @finally {
         if (kctx != NULL) EVP_PKEY_CTX_free(kctx);
     }
@@ -126,18 +126,18 @@ typedef NS_ENUM(NSInteger, KeyAgreementType) {
 - (NSData*)getSharedSecretForRemotePublicKey:(NSData*)publicKey {
     EVP_PKEY* peerkey = [self deserializePublicKey:publicKey];
     EVP_PKEY_CTX* ctx = EVP_PKEY_CTX_new(pkey, NULL);
-    checkEvpNotNull(ctx, @"ctx_new");
+    checkEVPNotNull(ctx, @"ctx_new");
     
-    checkEvpOperationResult(EVP_PKEY_derive_init(ctx));
-    checkEvpOperationResult(EVP_PKEY_derive_set_peer(ctx, peerkey));
+    checkEVPOperationResult(EVP_PKEY_derive_init(ctx));
+    checkEVPOperationResult(EVP_PKEY_derive_set_peer(ctx, peerkey));
     
     size_t secret_len;
-    checkEvpOperationResult(EVP_PKEY_derive(ctx, NULL, &secret_len));
+    checkEVPOperationResult(EVP_PKEY_derive(ctx, NULL, &secret_len));
     
     unsigned char* secret = OPENSSL_malloc(secret_len);
-    checkEvpNotNull(secret, @"OPENSSL_malloc");
+    checkEVPNotNull(secret, @"OPENSSL_malloc");
     
-    checkEvpOperationResult(EVP_PKEY_derive(ctx, secret, &secret_len));
+    checkEVPOperationResult(EVP_PKEY_derive(ctx, secret, &secret_len));
     
     NSData* secretData = [NSData dataWithBytes:secret length:secret_len];
     
@@ -166,7 +166,7 @@ typedef NS_ENUM(NSInteger, KeyAgreementType) {
     unsigned char* buf = NULL;
     @try {
         dh = EVP_PKEY_get1_DH(evkey);
-        checkEvpNotNull(dh, @"EVP_PKEY_get1_DH");
+        checkEVPNotNull(dh, @"EVP_PKEY_get1_DH");
         
         int publicKeySize = BN_num_bytes(dh->pub_key);
         NSMutableData* publicKeyBuffer = [NSMutableData dataWithLength:(NSUInteger)publicKeySize];
@@ -188,13 +188,13 @@ typedef NS_ENUM(NSInteger, KeyAgreementType) {
     EC_KEY* ec_key = NULL;
     @try {
         ec_key = EVP_PKEY_get1_EC_KEY(evkey);
-        checkEvpNotNull(ec_key, @"EVP_PKEY_get1_EC_KEY");
+        checkEVPNotNull(ec_key, @"EVP_PKEY_get1_EC_KEY");
         
         const EC_POINT* ec_pub = EC_KEY_get0_public_key(ec_key);
-        checkEvpNotNull(ec_pub, @"EC_KEY_get0_public_key");
+        checkEVPNotNull(ec_pub, @"EC_KEY_get0_public_key");
 
         const EC_GROUP* ec_group = EC_KEY_get0_group(ec_key);
-        checkEvpNotNull(ec_group, @"EC_KEY_get0_group");
+        checkEVPNotNull(ec_group, @"EC_KEY_get0_group");
         
         return [self packEcCoordinatesFromEcPoint:ec_pub withEcGroup:ec_group];
     } @finally {
@@ -219,16 +219,16 @@ typedef NS_ENUM(NSInteger, KeyAgreementType) {
     BIGNUM* bn = NULL;
     @try {
         evpk = EVP_PKEY_new();
-        checkEvpNotNull(evpk, @"EVP_PKEY_new");
+        checkEVPNotNull(evpk, @"EVP_PKEY_new");
         
         dh = DH_new();
-        checkEvpNotNull(dh, @"DH_new");
+        checkEVPNotNull(dh, @"DH_new");
         
         bn = BN_bin2bn(buf.bytes, [NumberUtil assertConvertNSUIntegerToInt:buf.length], NULL);
-        checkEvpNotNull(bn, @"BN_bin2bn");
+        checkEVPNotNull(bn, @"BN_bin2bn");
 
         dh->pub_key = bn;
-        checkEvpOperationResult(EVP_PKEY_assign_DH(evpk, dh));
+        checkEVPOperationResult(EVP_PKEY_assign_DH(evpk, dh));
 
         // Return without cleaning up the result
         EVP_PKEY* result = evpk;
@@ -265,9 +265,9 @@ typedef NS_ENUM(NSInteger, KeyAgreementType) {
         publicKey = EVP_PKEY_new();
         checkSecurityOperation(publicKey != NULL, @"EVP_PKEY_new");
         
-        checkEvpOperationResult(EC_KEY_set_public_key(key, publicKeyPoint));
+        checkEVPOperationResult(EC_KEY_set_public_key(key, publicKeyPoint));
         
-        checkEvpOperationResult(EVP_PKEY_assign_EC_KEY(publicKey, key));
+        checkEVPOperationResult(EVP_PKEY_assign_EC_KEY(publicKey, key));
         
         // Return without cleaning up the result
         EVP_PKEY* result = publicKey;
@@ -290,7 +290,7 @@ typedef NS_ENUM(NSInteger, KeyAgreementType) {
         y = BN_new();
         checkSecurityOperation(x != NULL && y != NULL, @"BN_new");
         
-        checkEvpOperationResult(EC_POINT_get_affine_coordinates_GFp(ec_group, ec_point, x, y, NULL));
+        checkEVPOperationResult(EC_POINT_get_affine_coordinates_GFp(ec_group, ec_point, x, y, NULL));
         
         int len_x = BN_num_bytes(x);
         int len_y = BN_num_bytes(y);
@@ -328,7 +328,7 @@ typedef NS_ENUM(NSInteger, KeyAgreementType) {
         y = BN_bin2bn(bytes + EC25_COORDINATE_LENGTH, EC25_COORDINATE_LENGTH, NULL);
         checkSecurityOperation(x != NULL && y != NULL, @"BN_bin2bn");
         
-        checkEvpOperationResult(EC_POINT_set_affine_coordinates_GFp(ecg, ecp, x, y, NULL));
+        checkEVPOperationResult(EC_POINT_set_affine_coordinates_GFp(ecg, ecp, x, y, NULL));
     } @finally {
         if (x != NULL) BN_free(x);
         if (y != NULL) BN_free(y);
@@ -337,7 +337,7 @@ typedef NS_ENUM(NSInteger, KeyAgreementType) {
 
 #pragma mark Helper Functions
 
-- (void)createNewEvpKeyFreePreviousIfNessesary:(EVP_PKEY**)evpKey {
+- (void)createNewEVPKeyFreePreviousIfNessesary:(EVP_PKEY**)evpKey {
     if (NULL != evpKey) {
         [self freeKey:(*evpKey)];
     }

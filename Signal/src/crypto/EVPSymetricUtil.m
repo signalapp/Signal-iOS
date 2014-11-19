@@ -1,10 +1,10 @@
-#import "EvpSymetricUtil.h"
+#import "EVPSymetricUtil.h"
 
 #import "Constraints.h"
-#import "EvpUtil.h"
+#import "EVPUtil.h"
 #import "NumberUtil.h"
 
-@implementation EvpSymetricUtil
+@implementation EVPSymetricUtil
 
 + (NSData*)encryptMessage:(NSData*)message usingCipher:(const EVP_CIPHER*)cipher andKey:(NSData*)key andIV:(NSData*)iv {
     [self assertKey:key andIV:iv lengthsAgainstCipher:cipher];

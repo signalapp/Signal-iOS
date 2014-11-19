@@ -2,7 +2,7 @@
 
 // Implements class level functions for Openssl's EVP_Digest Api
 
-@interface EvpMessageDigest : NSObject
+@interface EVPMessageDigest : NSObject
 
 + (NSData*)hashWithSHA256:(NSData*)data;
 + (NSData*)hmacUsingSHA1Data:(NSData*)data withKey:(NSData*)key;

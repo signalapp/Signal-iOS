@@ -1,13 +1,13 @@
-#import "EvpMessageDigest.h"
+#import "EVPMessageDigest.h"
 
 #import <evp.h>
 #import <hmac.h>
 
 #import "Constraints.h"
-#import "EvpUtil.h"
+#import "EVPUtil.h"
 #import "NumberUtil.h"
 
-@implementation EvpMessageDigest
+@implementation EVPMessageDigest
 
 + (NSData*)hash:(NSData*)data withDigest:(const EVP_MD*)digest {
     NSUInteger expectedDigestLength = [NumberUtil assertConvertIntToNSUInteger:EVP_MD_size(digest)];

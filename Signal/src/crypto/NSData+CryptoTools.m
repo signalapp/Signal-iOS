@@ -1,44 +1,44 @@
 #import "NSData+CryptoTools.h"
-#import "EvpMessageDigest.h"
-#import "EvpSymetricUtil.h"
+#import "EVPMessageDigest.h"
+#import "EVPSymetricUtil.h"
 #import "NSData+Util.h"
 
 @implementation NSData (CryptoTools)
 
 - (NSData*)hmacWithSHA1WithKey:(NSData*)key {
-    return [EvpMessageDigest hmacUsingSHA1Data:self withKey:key];
+    return [EVPMessageDigest hmacUsingSHA1Data:self withKey:key];
 }
 
 - (NSData*)hmacWithSHA256WithKey:(NSData*)key {
-    return [EvpMessageDigest hmacUsingSHA256Data:self withKey:key];
+    return [EVPMessageDigest hmacUsingSHA256Data:self withKey:key];
 }
 
 - (NSData*)encryptWithAESInCipherFeedbackModeWithKey:(NSData*)key andIV:(NSData*)iv {
-    return [EvpSymetricUtil encryptMessage:self usingAES128WithCFBAndKey:key andIV:iv];
+    return [EVPSymetricUtil encryptMessage:self usingAES128WithCFBAndKey:key andIV:iv];
 }
 
 - (NSData*)encryptWithAESInCipherBlockChainingModeWithPkcs7PaddingWithKey:(NSData*)key andIV:(NSData*)iv {
-    return [EvpSymetricUtil encryptMessage:self usingAES128WithCBCAndPaddingAndKey:key andIV:iv];
+    return [EVPSymetricUtil encryptMessage:self usingAES128WithCBCAndPaddingAndKey:key andIV:iv];
 }
 
 - (NSData*)encryptWithAESInCounterModeWithKey:(NSData*)key andIV:(NSData*)iv {
-    return [EvpSymetricUtil encryptMessage:self usingAES128InCounterModeAndKey:key andIV:iv];
+    return [EVPSymetricUtil encryptMessage:self usingAES128InCounterModeAndKey:key andIV:iv];
 }
 
 - (NSData*)decryptWithAESInCipherFeedbackModeWithKey:(NSData*)key andIV:(NSData*)iv {
-    return [EvpSymetricUtil decryptMessage:self usingAES128WithCFBAndKey:key andIV:iv];
+    return [EVPSymetricUtil decryptMessage:self usingAES128WithCFBAndKey:key andIV:iv];
 }
 
 - (NSData*)decryptWithAESInCipherBlockChainingModeWithPkcs7PaddingWithKey:(NSData*)key andIV:(NSData*)iv {
-    return [EvpSymetricUtil decryptMessage:self usingAES128WithCBCAndPaddingAndKey:key andIV:iv];
+    return [EVPSymetricUtil decryptMessage:self usingAES128WithCBCAndPaddingAndKey:key andIV:iv];
 }
 
 - (NSData*)decryptWithAESInCounterModeWithKey:(NSData*)key andIV:(NSData*)iv {
-    return [EvpSymetricUtil decryptMessage:self usingAES128InCounterModeAndKey:key andIV:iv];
+    return [EVPSymetricUtil decryptMessage:self usingAES128InCounterModeAndKey:key andIV:iv];
 }
 
 - (NSData*)hashWithSHA256 {
-    return [EvpMessageDigest hashWithSHA256:self];
+    return [EVPMessageDigest hashWithSHA256:self];
 }
 
 - (bool)isEqualToData_TimingSafe:(NSData*)other {
