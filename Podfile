@@ -6,7 +6,7 @@ link_with ["Signal", "SignalTests"]
 
 pod 'UICKeyChainStore',           :podspec => 'Podspecs/UICKeyChainStore.podspec'
 pod 'SocketRocket',               :git => 'https://github.com/square/SocketRocket.git', :commit => 'd0585af165'
-pod 'OpenSSL',		          '~> 1.0.109'
+pod 'OpenSSL',		          '~> 1.0.110'
 pod 'libPhoneNumber-iOS',         '~> 0.7'
 pod 'AxolotlKit',                 '~> 0.1'
 pod 'PastelogKit',                '~> 1.2'

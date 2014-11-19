@@ -168,12 +168,8 @@
     UITabBarController *viewController = [storyboard instantiateViewControllerWithIdentifier:@"UserInitialViewController"];
     
     BOOL isNewUser = NO;
-    if (isNewUser) {
-        self.window.rootViewController = viewControllerForNewUser;
-    } else {
-        self.window.rootViewController = viewController;
-    }
     
+    self.window.rootViewController = isNewUser ? viewControllerForNewUser : viewController;
     [self.window makeKeyAndVisible];
     
     
