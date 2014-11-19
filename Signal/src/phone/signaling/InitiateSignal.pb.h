@@ -2,8 +2,22 @@
 
 #import "ProtocolBuffers.h"
 
+// @@protoc_insertion_point(imports)
+
 @class InitiateSignal;
-@class InitiateSignal_Builder;
+@class InitiateSignalBuilder;
+#ifndef __has_feature
+  #define __has_feature(x) 0 // Compatibility with non-clang compilers.
+#endif // __has_feature
+
+#ifndef NS_RETURNS_NOT_RETAINED
+  #if __has_feature(attribute_ns_returns_not_retained)
+    #define NS_RETURNS_NOT_RETAINED __attribute__((ns_returns_not_retained))
+  #else
+    #define NS_RETURNS_NOT_RETAINED
+  #endif
+#endif
+
 
 @interface InitiateSignalRoot : NSObject {
 }
@@ -18,31 +32,32 @@
   BOOL hasServerName_:1;
   BOOL hasPort_:1;
   BOOL hasVersion_:1;
-  int64_t sessionId;
+  UInt64 sessionId;
   NSString* initiator;
   NSString* serverName;
-  int32_t port;
-  int32_t version;
+  UInt32 port;
+  UInt32 version;
 }
 - (BOOL) hasInitiator;
 - (BOOL) hasSessionId;
 - (BOOL) hasPort;
 - (BOOL) hasServerName;
 - (BOOL) hasVersion;
-@property (readonly, retain) NSString* initiator;
-@property (readonly) int64_t sessionId;
-@property (readonly) int32_t port;
-@property (readonly, retain) NSString* serverName;
-@property (readonly) int32_t version;
+@property (readonly, strong) NSString* initiator;
+@property (readonly) UInt64 sessionId;
+@property (readonly) UInt32 port;
+@property (readonly, strong) NSString* serverName;
+@property (readonly) UInt32 version;
 
 + (InitiateSignal*) defaultInstance;
 - (InitiateSignal*) defaultInstance;
 
 - (BOOL) isInitialized;
 - (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
-- (InitiateSignal_Builder*) builder;
-+ (InitiateSignal_Builder*) builder;
-+ (InitiateSignal_Builder*) builderWithPrototype:(InitiateSignal*) prototype;
+- (InitiateSignalBuilder*) builder;
++ (InitiateSignalBuilder*) builder;
++ (InitiateSignalBuilder*) builderWithPrototype:(InitiateSignal*) prototype;
+- (InitiateSignalBuilder*) toBuilder;
 
 + (InitiateSignal*) parseFromData:(NSData*) data;
 + (InitiateSignal*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
@@ -52,46 +67,48 @@
 + (InitiateSignal*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
 @end
 
-@interface InitiateSignal_Builder : PBGeneratedMessage_Builder {
+@interface InitiateSignalBuilder : PBGeneratedMessageBuilder {
 @private
   InitiateSignal* result;
 }
 
 - (InitiateSignal*) defaultInstance;
 
-- (InitiateSignal_Builder*) clear;
-- (InitiateSignal_Builder*) clone;
+- (InitiateSignalBuilder*) clear;
+- (InitiateSignalBuilder*) clone;
 
 - (InitiateSignal*) build;
 - (InitiateSignal*) buildPartial;
 
-- (InitiateSignal_Builder*) mergeFrom:(InitiateSignal*) other;
-- (InitiateSignal_Builder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
-- (InitiateSignal_Builder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+- (InitiateSignalBuilder*) mergeFrom:(InitiateSignal*) other;
+- (InitiateSignalBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (InitiateSignalBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
 
 - (BOOL) hasInitiator;
 - (NSString*) initiator;
-- (InitiateSignal_Builder*) setInitiator:(NSString*) value;
-- (InitiateSignal_Builder*) clearInitiator;
+- (InitiateSignalBuilder*) setInitiator:(NSString*) value;
+- (InitiateSignalBuilder*) clearInitiator;
 
 - (BOOL) hasSessionId;
-- (int64_t) sessionId;
-- (InitiateSignal_Builder*) setSessionId:(int64_t) value;
-- (InitiateSignal_Builder*) clearSessionId;
+- (UInt64) sessionId;
+- (InitiateSignalBuilder*) setSessionId:(UInt64) value;
+- (InitiateSignalBuilder*) clearSessionId;
 
 - (BOOL) hasPort;
-- (int32_t) port;
-- (InitiateSignal_Builder*) setPort:(int32_t) value;
-- (InitiateSignal_Builder*) clearPort;
+- (UInt32) port;
+- (InitiateSignalBuilder*) setPort:(UInt32) value;
+- (InitiateSignalBuilder*) clearPort;
 
 - (BOOL) hasServerName;
 - (NSString*) serverName;
-- (InitiateSignal_Builder*) setServerName:(NSString*) value;
-- (InitiateSignal_Builder*) clearServerName;
+- (InitiateSignalBuilder*) setServerName:(NSString*) value;
+- (InitiateSignalBuilder*) clearServerName;
 
 - (BOOL) hasVersion;
-- (int32_t) version;
-- (InitiateSignal_Builder*) setVersion:(int32_t) value;
-- (InitiateSignal_Builder*) clearVersion;
+- (UInt32) version;
+- (InitiateSignalBuilder*) setVersion:(UInt32) value;
+- (InitiateSignalBuilder*) clearVersion;
 @end
 
+
+// @@protoc_insertion_point(global_scope)

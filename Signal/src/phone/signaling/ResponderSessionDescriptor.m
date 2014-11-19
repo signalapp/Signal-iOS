@@ -72,8 +72,8 @@
     checkOperation(parsedPayload.initiator != nil);
     checkOperation(parsedPayload.serverName != nil);
 
-    int32_t interopVersion = parsedPayload.version;
-    int64_t sessionId = parsedPayload.sessionId;
+    unsigned int interopVersion = parsedPayload.version;
+    unsigned long long sessionId = parsedPayload.sessionId;
     in_port_t relayUdpPort = (in_port_t)parsedPayload.port;
     NSString* relayServerName = parsedPayload.serverName;
     PhoneNumber* phoneNumber = [PhoneNumber phoneNumberFromE164:parsedPayload.initiator];

@@ -5,7 +5,6 @@
 #import "ContactsManager.h"
 #import "Environment.h"
 #import "InCallViewController.h"
-#import "InviteContactModal.h"
 #import "LocalizableText.h"
 #import "PhoneManager.h"
 #import "PhoneNumberDirectoryFilter.h"
@@ -24,7 +23,6 @@
     NSTimer *_backspaceTimer;
     float _backspaceDuration;
     
-    InviteContactModal* inviteModal;
 }
 
 @end
@@ -202,8 +200,7 @@
 }
 
 -(void) promptToInvitePhoneNumber:(PhoneNumber*) phoneNumber {
-    inviteModal = [InviteContactModal inviteContactModelWithPhoneNumber:phoneNumber andParentViewController:self];
-    [inviteModal presentModalView];
+    // TODO
 }
 
 

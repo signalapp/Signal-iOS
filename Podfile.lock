@@ -1,85 +1,105 @@
 PODS:
-  - AFNetworking (2.4.1):
+  - 25519 (1.8)
+  - AFNetworking (2.5.0):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
     - AFNetworking/UIKit
-  - AFNetworking/NSURLConnection (2.4.1):
+  - AFNetworking/NSURLConnection (2.5.0):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/NSURLSession (2.4.1):
+  - AFNetworking/NSURLSession (2.5.0):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/Reachability (2.4.1)
-  - AFNetworking/Security (2.4.1)
-  - AFNetworking/Serialization (2.4.1)
-  - AFNetworking/UIKit (2.4.1):
+  - AFNetworking/Reachability (2.5.0)
+  - AFNetworking/Security (2.5.0)
+  - AFNetworking/Serialization (2.5.0)
+  - AFNetworking/UIKit (2.5.0):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
+  - AxolotlKit (0.1):
+    - 25519 (~> 1.8)
+    - HKDFKit (~> 0.0.3)
+    - ProtocolBuffers (~> 1.9.2)
   - CocoaLumberjack (1.9.2):
     - CocoaLumberjack/Extensions
   - CocoaLumberjack/Core (1.9.2)
   - CocoaLumberjack/Extensions (1.9.2):
     - CocoaLumberjack/Core
   - DJWActionSheet (1.0.4)
+  - HKDFKit (0.0.3)
   - JSQMessagesViewController (6.0-beta6):
     - JSQSystemSoundPlayer (~> 2.0.0)
   - JSQSystemSoundPlayer (2.0.0)
   - libPhoneNumber-iOS (0.7.3)
-  - MMDrawerController (0.5.7):
-    - MMDrawerController/Core
-    - MMDrawerController/MMDrawerBarButtonItem
-    - MMDrawerController/MMDrawerVisualStates
-    - MMDrawerController/Subclass
-  - MMDrawerController/Core (0.5.7)
-  - MMDrawerController/MMDrawerBarButtonItem (0.5.7):
-    - MMDrawerController/Core
-  - MMDrawerController/MMDrawerVisualStates (0.5.7):
-    - MMDrawerController/Core
-  - MMDrawerController/Subclass (0.5.7):
-    - MMDrawerController/Core
+  - Mantle (1.5.1):
+    - Mantle/extobjc
+  - Mantle/extobjc (1.5.1)
   - OpenSSL (1.0.109)
   - PastelogKit (1.2):
     - CocoaLumberjack (~> 1.9)
+  - ProtocolBuffers (1.9.2)
+  - SocketRocket (0.3.1-beta2)
+  - SQLCipher/common (3.1.0)
+  - SQLCipher/fts (3.1.0):
+    - SQLCipher/common
   - TwistedOakCollapsingFutures (1.0.0):
     - UnionFind (~> 1.0)
   - UICKeyChainStore (1.0.7)
   - UnionFind (1.0.1)
+  - YapDatabase/common (2.5.3):
+    - CocoaLumberjack (~> 1)
+  - YapDatabase/SQLCipher (2.5.3):
+    - SQLCipher/fts
+    - YapDatabase/common
 
 DEPENDENCIES:
-  - AFNetworking (~> 2.4.1)
+  - AFNetworking (~> 2.4)
+  - AxolotlKit (~> 0.1)
   - DJWActionSheet
   - JSQMessagesViewController (from `https://github.com/dtsbourg/JSQMessagesViewController`, branch `JSignalQ`)
   - libPhoneNumber-iOS (~> 0.7)
-  - MMDrawerController (~> 0.5.7)
+  - Mantle (~> 1.5)
   - OpenSSL (~> 1.0.109)
   - PastelogKit (~> 1.2)
+  - SocketRocket (from `https://github.com/square/SocketRocket.git`, commit `d0585af165`)
   - TwistedOakCollapsingFutures (~> 1.0)
   - UICKeyChainStore (from `Podspecs/UICKeyChainStore.podspec`)
+  - YapDatabase/SQLCipher
 
 EXTERNAL SOURCES:
   JSQMessagesViewController:
     :branch: JSignalQ
     :git: https://github.com/dtsbourg/JSQMessagesViewController
+  SocketRocket:
+    :commit: d0585af165
+    :git: https://github.com/square/SocketRocket.git
   UICKeyChainStore:
     :podspec: Podspecs/UICKeyChainStore.podspec
 
 SPEC CHECKSUMS:
-  AFNetworking: 0aabc6fae66d6e5d039eeb21c315843c7aae51ab
+  25519: 601ffb5d258aa33d642062d6fa4096db210e02e7
+  AFNetworking: 0f54cb5d16ce38c1b76948faffb8d5fb705021c7
+  AxolotlKit: 395c3302e840a1b9f053e9733002d586d4b10ce0
   CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
   DJWActionSheet: d88b302d7c29523e1e9fb9b62cfac46f59bb90d9
+  HKDFKit: 5998cf1bbb611e7ecc6bd3eaaef8c7a7da7be949
   JSQMessagesViewController: 960a09d11978bea52d1a676e97980838f8d98652
   JSQSystemSoundPlayer: c98443b1cbb3b45db09d0d3d6c2355cf78294981
   libPhoneNumber-iOS: 98fc07d70c8fdb5e6a8e3442c37e97353065c20e
-  MMDrawerController: c3ab7a318ddc7e2bcd133139c3161af08c6e1197
+  Mantle: d7c5ac734579ec751c58fecbf56189853056c58c
   OpenSSL: 4810adf5c99b0e2cd20670a11a987c805e8a521c
   PastelogKit: 8bab71b1d187617a83e7124cffe9eb1a600e6695
+  ProtocolBuffers: a834d6fe4ae0cc94d081b864e4948bdd483ad228
+  SocketRocket: 9cbe08469513356cddc0afcab1ff160bd190296a
+  SQLCipher: 981110217eb93c2779c34fb59e646a1c1da918d8
   TwistedOakCollapsingFutures: 07aab84fd3958dc94d55ef705b12857d9fbe61d1
   UICKeyChainStore: eef407137f0397e95a3df32cdf05f7e2ddd99647
   UnionFind: 45777a8b6878d3a602af3654cc3a09b87389d356
+  YapDatabase: 096e860167b04e629b88bea33dfb7a4153279bb0
 
 COCOAPODS: 0.34.4
