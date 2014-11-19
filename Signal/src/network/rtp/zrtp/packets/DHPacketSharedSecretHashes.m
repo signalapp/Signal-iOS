@@ -13,11 +13,11 @@
 
 @implementation DHPacketSharedSecretHashes
 
-+ (DHPacketSharedSecretHashes*)randomized {
-    return [[DHPacketSharedSecretHashes alloc] initWithRs1:[CryptoTools generateSecureRandomData:DH_RS1_LENGTH]
-                                                    andRs2:[CryptoTools generateSecureRandomData:DH_RS2_LENGTH]
-                                                    andAux:[CryptoTools generateSecureRandomData:DH_AUX_LENGTH]
-                                                    andPbx:[CryptoTools generateSecureRandomData:DH_PBX_LENGTH]];
++ (instancetype)randomizedSharedSecretHashes {
+    return [[self alloc] initWithRs1:[CryptoTools generateSecureRandomData:DH_RS1_LENGTH]
+                              andRs2:[CryptoTools generateSecureRandomData:DH_RS2_LENGTH]
+                              andAux:[CryptoTools generateSecureRandomData:DH_AUX_LENGTH]
+                              andPbx:[CryptoTools generateSecureRandomData:DH_PBX_LENGTH]];
 }
 
 - (instancetype)initWithRs1:(NSData*)rs1

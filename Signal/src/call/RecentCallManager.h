@@ -12,6 +12,8 @@
 
 @interface RecentCallManager : NSObject
 
+- (instancetype)init;
+
 - (ObservableValue*)getObservableRecentCalls;
 - (void)watchForCallsThrough:(PhoneManager*)phoneManager untilCancelled:(TOCCancelToken*)untilCancelledToken;
 - (void)watchForContactUpdatesFrom:(ContactsManager*)contactManager untillCancelled:(TOCCancelToken*)cancelToken;

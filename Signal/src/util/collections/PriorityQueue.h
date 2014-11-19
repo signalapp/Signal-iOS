@@ -5,7 +5,6 @@
 
 @property (readonly, nonatomic, copy) NSComparator comparator;
 
-+ (PriorityQueue*)priorityQueueAscendingWithComparator:(NSComparator)comparator;
 - (instancetype)initAscendingWithComparator:(NSComparator)comparator;
 - (void)enqueue:(id)item;
 - (id)peek;

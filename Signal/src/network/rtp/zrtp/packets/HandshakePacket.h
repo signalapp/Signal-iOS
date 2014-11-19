@@ -59,6 +59,7 @@
 
 - (instancetype)initWithTypeId:(NSData*)typeId andPayload:(NSData*)payload;
 - (instancetype)initFromRTPPacket:(RTPPacket*)rtpPacket;
+
 - (HandshakePacket*)withHMACAppended:(NSData*)macKey;
 - (HandshakePacket*)withHMACVerifiedAndRemoved:(NSData*)macKey;
 

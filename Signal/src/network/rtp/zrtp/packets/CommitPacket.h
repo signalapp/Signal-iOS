@@ -61,11 +61,11 @@
 
 - (instancetype)initFromHandshakePacket:(HandshakePacket*)handshakePacket;
 
-+ (CommitPacket*)commitPacketWithDefaultSpecsAndKeyAgreementProtocol:(id<KeyAgreementProtocol>)keyAgreementProtocol
-                                                        andHashChain:(HashChain*)hashChain
-                                                              andZid:(Zid*)zid
-                                                andCommitmentToHello:(HelloPacket*)hello
-                                                          andDHPart2:(DHPacket*)dhPart2;
++ (instancetype)defaultPacketWithKeyAgreementProtocol:(id<KeyAgreementProtocol>)keyAgreementProtocol
+                                         andHashChain:(HashChain*)hashChain
+                                               andZid:(Zid*)zid
+                                 andCommitmentToHello:(HelloPacket*)hello
+                                           andDHPart2:(DHPacket*)dhPart2;
 
 - (void)verifyCommitmentAgainstHello:(HelloPacket*)hello
                           andDHPart2:(DHPacket*)dhPart2;

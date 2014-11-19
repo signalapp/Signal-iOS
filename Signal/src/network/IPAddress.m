@@ -16,8 +16,8 @@
 
 @implementation IPAddress
 
-+ (IPAddress*)localhost {
-    return [[IPAddress alloc] initIPv4AddressFromString:LOCAL_HOST_IP];
++ (instancetype)localhost {
+    return [[self alloc] initIPv4AddressFromString:LOCAL_HOST_IP];
 }
 
 - (instancetype)initFromString:(NSString*)text {

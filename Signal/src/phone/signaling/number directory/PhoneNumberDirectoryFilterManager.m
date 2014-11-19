@@ -24,10 +24,12 @@
 
 @implementation PhoneNumberDirectoryFilterManager
 
-- (PhoneNumberDirectoryFilter*)phoneNumberDirectoryFilter {
-    if (!_phoneNumberDirectoryFilter)
-        _phoneNumberDirectoryFilter = [[PhoneNumberDirectoryFilter alloc] initDefault];
-    return _phoneNumberDirectoryFilter;
+- (instancetype)init {
+    if (self = [super init]) {
+        self.phoneNumberDirectoryFilter = [PhoneNumberDirectoryFilter defaultFilter];
+    }
+    
+    return self;
 }
 
 - (void)startUntilCancelled:(TOCCancelToken*)cancelToken {
@@ -70,7 +72,8 @@
 
 - (void)update {
     [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall fetchBloomFilter] success:^(NSURLSessionDataTask* task, NSData* responseObject) {
-        PhoneNumberDirectoryFilter* directory = [[PhoneNumberDirectoryFilter alloc] initFromURLResponse:(NSHTTPURLResponse*)task.response body:responseObject];
+        PhoneNumberDirectoryFilter* directory = [[PhoneNumberDirectoryFilter alloc] initFromURLResponse:(NSHTTPURLResponse*)task.response
+                                                                                                   body:responseObject];
         
         @synchronized(self) {
             self.phoneNumberDirectoryFilter = directory;

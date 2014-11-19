@@ -39,7 +39,7 @@
 - (NSURLSessionDataTask*)RING:(NSString*)URLString
                    parameters:(id)parameters
                       success:(void (^)(NSURLSessionDataTask* task, id responseObject))success
-                      failure:(void (^)(NSURLSessionDataTask* task, NSError *error))failure {
+                      failure:(void (^)(NSURLSessionDataTask* task, NSError* error))failure {
     
     NSURLSessionDataTask* dataTask = [self dataTaskWithHTTPMethod:@"RING"
                                                         URLString:URLString

@@ -19,6 +19,8 @@
  */
 @interface AudioPacker : NSObject
 
+- (instancetype)init;
+
 - (void)packFrame:(EncodedAudioFrame*)frame;
 - (EncodedAudioPacket*)tryGetFinishedAudioPacket;
 

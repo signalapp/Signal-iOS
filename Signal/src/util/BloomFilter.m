@@ -7,8 +7,8 @@
 
 @interface BloomFilter ()
 
-@property (nonatomic, readwrite) NSUInteger hashCount;
-@property (nonatomic, readwrite) NSData* data;
+@property (readwrite, nonatomic) NSUInteger hashCount;
+@property (strong, readwrite, nonatomic) NSData* data;
 
 @end
 
@@ -27,14 +27,14 @@
     return self;
 }
 
-- (instancetype)initWithNothing {
-    return [self initWithHashCount:1 andData:[NSMutableData dataWithLength:1]];
++ (instancetype)bloomFilterWithNothing {
+    return [[self alloc] initWithHashCount:1 andData:[NSMutableData dataWithLength:1]];
 }
 
-- (instancetype)initWithEverything {
++ (instancetype)bloomFilterWithEverything {
     NSMutableData* data = [NSMutableData dataWithLength:1];
     [data setUint8At:0 to:0xFF];
-    return [self initWithHashCount:1 andData:data];
+    return [[self alloc] initWithHashCount:1 andData:data];
 }
 
 - (uint32_t)hash:(NSData*)value

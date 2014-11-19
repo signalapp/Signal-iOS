@@ -43,23 +43,23 @@
 
 @interface DHPacket : NSObject
 
-@property (readonly, nonatomic) bool isPart1;
+@property (readonly, nonatomic) bool isPartOne;
 @property (strong, readonly, nonatomic) DHPacketSharedSecretHashes* sharedSecretHashes;
 @property (strong, readonly, nonatomic) NSData* publicKeyData;
 @property (strong, readonly, nonatomic) NSData* hashChainH1;
 
 @property (strong, readonly, nonatomic, getter=embeddedIntoHandshakePacket) HandshakePacket* embedding;
 
-+ (DHPacket*)dh1PacketWithHashChain:(HashChain*)hashChain
-              andSharedSecretHashes:(DHPacketSharedSecretHashes*)sharedSecretHashes
-                       andKeyAgreer:(id<KeyAgreementParticipant>)agreer;
++ (instancetype)packetOneWithHashChain:(HashChain*)hashChain
+                 andSharedSecretHashes:(DHPacketSharedSecretHashes*)sharedSecretHashes
+                          andKeyAgreer:(id<KeyAgreementParticipant>)agreer;
 
-+ (DHPacket*)dh2PacketWithHashChain:(HashChain*)hashChain
-              andSharedSecretHashes:(DHPacketSharedSecretHashes*)sharedSecretHashes
-                       andKeyAgreer:(id<KeyAgreementParticipant>)agreer;
++ (instancetype)packetTwoWithHashChain:(HashChain*)hashChain
+                 andSharedSecretHashes:(DHPacketSharedSecretHashes*)sharedSecretHashes
+                          andKeyAgreer:(id<KeyAgreementParticipant>)agreer;
 
 - (instancetype)initFromHandshakePacket:(HandshakePacket*)handshakePacket
-                             andIsPart1:(bool)isPart1;
+                           andIsPartOne:(bool)isPartOne;
 
 - (void)verifyMacWithHashChainH0:(NSData*)hashChainH0;
 

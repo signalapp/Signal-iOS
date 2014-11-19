@@ -2,6 +2,8 @@
 
 @interface Queue : NSObject
 
+- (instancetype)init;
+
 - (void)enqueue:(id)item;
 - (id)dequeue;
 - (id)tryDequeue;

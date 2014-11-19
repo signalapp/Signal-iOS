@@ -1684,8 +1684,8 @@
 		76EB041E18170B33006006FC /* dns */ = {
 			isa = PBXGroup;
 			children = (
-				76EB042018170B33006006FC /* DNSManager.m */,
 				DB8E63651A0C5E2800041EDD /* DNSManager.h */,
+				76EB042018170B33006006FC /* DNSManager.m */,
 				76EB042118170B33006006FC /* HostNameEndPoint.h */,
 				76EB042218170B33006006FC /* HostNameEndPoint.m */,
 			);

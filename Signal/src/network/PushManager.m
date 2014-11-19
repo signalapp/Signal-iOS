@@ -32,6 +32,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
+#warning Deprecated method
         self.missingPermissionsAlertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
                                                                       message:NSLocalizedString(@"PUSH_SETTINGS_MESSAGE", @"")
                                                                      delegate:nil

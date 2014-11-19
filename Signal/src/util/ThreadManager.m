@@ -15,52 +15,51 @@
 
 @implementation ThreadManager
 
-static ThreadManager* sharedThreadManagerInternal;
+static ThreadManager* sharedInstance = nil;
 
-+ (ThreadManager*)sharedThreadManager {
-    @synchronized(self) {
-        if (sharedThreadManagerInternal == nil) {
-            sharedThreadManagerInternal = [[ThreadManager alloc] init];
-            sharedThreadManagerInternal.low = [[RunningThreadRunLoopPair alloc] initWithThreadName:LOW_THREAD_NAME];
-            sharedThreadManagerInternal.normal = [[RunningThreadRunLoopPair alloc] initWithThreadName:NORMAL_THREAD_NAME];
-            sharedThreadManagerInternal.high = [[RunningThreadRunLoopPair alloc] initWithThreadName:HIGH_THREAD_NAME];
-        }
-    }
-    
-    return sharedThreadManagerInternal;
++ (instancetype)sharedInstance {
+    static ThreadManager* sharedInstance = nil;
+    static dispatch_once_t onceToken = 0;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[ThreadManager alloc] init];
+        sharedInstance.low = [[RunningThreadRunLoopPair alloc] initWithThreadName:LOW_THREAD_NAME];
+        sharedInstance.normal = [[RunningThreadRunLoopPair alloc] initWithThreadName:NORMAL_THREAD_NAME];
+        sharedInstance.high = [[RunningThreadRunLoopPair alloc] initWithThreadName:HIGH_THREAD_NAME];
+    });
+    return sharedInstance;
 }
 
 + (NSThread*)lowLatencyThread {
-    return [self sharedThreadManager].low.thread;
+    return [ThreadManager sharedInstance].low.thread;
 }
 
 + (NSRunLoop*)lowLatencyThreadRunLoop {
-    return [self sharedThreadManager].low.runLoop;
+    return [ThreadManager sharedInstance].low.runLoop;
 }
 
 + (NSThread*)normalLatencyThread {
-    return [self sharedThreadManager].normal.thread;
+    return [ThreadManager sharedInstance].normal.thread;
 }
 
 + (NSRunLoop*)normalLatencyThreadRunLoop {
-    return [self sharedThreadManager].normal.runLoop;
+    return [ThreadManager sharedInstance].normal.runLoop;
 }
 
 + (NSThread*)highLatencyThread {
-    return [self sharedThreadManager].high.thread;
+    return [ThreadManager sharedInstance].high.thread;
 }
 
 + (NSRunLoop*)highLatencyThreadRunLoop {
-    return [self sharedThreadManager].high.runLoop;
+    return [ThreadManager sharedInstance].high.runLoop;
 }
 
 + (void)terminate {
     @synchronized(self) {
-        if (sharedThreadManagerInternal == nil) return;
-        [sharedThreadManagerInternal.low terminate];
-        [sharedThreadManagerInternal.normal terminate];
-        [sharedThreadManagerInternal.high terminate];
-        sharedThreadManagerInternal = nil;
+        if (sharedInstance == nil) return;
+        [sharedInstance.low terminate];
+        [sharedInstance.normal terminate];
+        [sharedInstance.high terminate];
+        sharedInstance = nil;
     }
 }
 

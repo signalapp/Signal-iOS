@@ -42,13 +42,13 @@
         require(callController != nil);
         
         self.confirmIV                    = [CryptoTools generateSecureRandomData:IV_LENGTH];
-        self.dhSharedSecretHashes         = [DHPacketSharedSecretHashes randomized];
+        self.dhSharedSecretHashes         = [DHPacketSharedSecretHashes randomizedSharedSecretHashes];
         self.allowedKeyAgreementProtocols = Environment.getCurrent.keyAgreementProtocolsInDescendingPriority;
         self.hashChain                    = [[HashChain alloc] initWithSecureGeneratedData];
         self.badPacketLogger              = [Environment.logging getOccurrenceLoggerForSender:self withKey:@"Bad Packet"];
-        self.localHello                   = [HelloPacket helloPacketWithDefaultsAndHashChain:self.hashChain
-                                                                                      andZid:[SGNKeychainUtil zid]
-                                                                    andKeyAgreementProtocols:self.allowedKeyAgreementProtocols];
+        self.localHello                   = [HelloPacket defaultPacketWithHashChain:self.hashChain
+                                                                             andZid:[SGNKeychainUtil zid]
+                                                           andKeyAgreementProtocols:self.allowedKeyAgreementProtocols];
         self.packetExpectation            = EXPECTING_HELLO;
         self.callController               = callController;
     }
@@ -88,7 +88,7 @@
     
     self.packetExpectation = EXPECTING_COMMIT;
     
-    return [[[HelloAckPacket alloc] init] embeddedIntoHandshakePacket];
+    return [[HelloAckPacket defaultPacket] embeddedIntoHandshakePacket];
 }
 
 
@@ -100,7 +100,7 @@
     
     self.keyAgreementParticipant = [self retrieveKeyAgreementParticipant];
     
-    self.localDH = [DHPacket dh1PacketWithHashChain:self.hashChain
+    self.localDH = [DHPacket packetOneWithHashChain:self.hashChain
                               andSharedSecretHashes:self.dhSharedSecretHashes
                                        andKeyAgreer:self.keyAgreementParticipant];
     
@@ -132,10 +132,10 @@
     
     self.packetExpectation = EXPECTING_CONFIRM;
     
-    ConfirmPacket* confirm2Packet = [ConfirmPacket confirm1PacketWithHashChain:self.hashChain
-                                                                     andMacKey:[self.masterSecret responderMacKey]
-                                                                  andCipherKey:[self.masterSecret responderZRTPKey]
-                                                                         andIV:self.confirmIV];
+    ConfirmPacket* confirm2Packet = [ConfirmPacket packetOneWithHashChain:self.hashChain
+                                                                andMacKey:[self.masterSecret responderMacKey]
+                                                             andCipherKey:[self.masterSecret responderZRTPKey]
+                                                                    andIV:self.confirmIV];
     
     return [confirm2Packet embeddedIntoHandshakePacket];
 }
@@ -153,7 +153,7 @@
         return nil;
     }
     
-    return [[[ConfirmAckPacket alloc] init] embeddedIntoHandshakePacket];
+    return [[ConfirmAckPacket defaultPacket] embeddedIntoHandshakePacket];
 }
 
 - (bool)isAuthenticatedAudioDataImplyingConf2Ack:(id)packet {

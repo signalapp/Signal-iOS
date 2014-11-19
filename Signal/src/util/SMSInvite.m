@@ -13,19 +13,13 @@
     if (self = [super init]) {
         self.parent = parent;
     }
+    
     return self;
-}
-
-- (UIViewController*)parent {
-    if (!_parent) {
-        _parent = [[UIViewController alloc] init];
-    }
-    return _parent;
 }
 
 - (void)sendSMSInviteToNumber:(PhoneNumber*)number{
     if (MFMessageComposeViewController.canSendText && [[UIDevice currentDevice].model isEqualToString:@"iPhone"]){
-        MFMessageComposeViewController* messageController = [MFMessageComposeViewController new];
+        MFMessageComposeViewController* messageController = [[MFMessageComposeViewController alloc] init];
         
         NSString* inviteMessage = INVITE_USERS_MESSAGE;
         

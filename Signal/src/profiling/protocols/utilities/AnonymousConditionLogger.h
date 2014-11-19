@@ -11,9 +11,4 @@
                     andLogWarning:(void(^)(id details))logWarning
                       andLogError:(void(^)(id details))logError;
 
-// Conform to ConditionLogger
-- (void)logNotice:(id)details;
-- (void)logWarning:(id)details;
-- (void)logError:(id)details;
-
 @end

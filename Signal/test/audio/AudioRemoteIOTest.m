@@ -29,7 +29,7 @@
     };
     
     __block int recordCount = 0;
-    id countCalls = ^(CyclicalBuffer *data) {
+    id countCalls = ^(CyclicalBuffer* data) {
         @synchronized(a) {
             recordCount += 1;
         }

@@ -8,9 +8,9 @@
 
 @implementation HelloAckPacket
 
-- (instancetype)init {
-    return [self initFromHandshakePacket:[[HandshakePacket alloc] initWithTypeId:HANDSHAKE_TYPE_HELLO_ACK
-                                                                      andPayload:[[NSData alloc] init]]];
++ (instancetype)defaultPacket {
+    return [[self alloc] initFromHandshakePacket:[[HandshakePacket alloc] initWithTypeId:HANDSHAKE_TYPE_HELLO_ACK
+                                                                              andPayload:[[NSData alloc] init]]];
 }
 
 - (instancetype)initFromHandshakePacket:(HandshakePacket*)handshakePacket {

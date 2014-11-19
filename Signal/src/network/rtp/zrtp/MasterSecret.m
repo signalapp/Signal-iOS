@@ -48,12 +48,12 @@
 
 @implementation MasterSecret
 
-+(MasterSecret*) masterSecretFromDHResult:(NSData*)dhResult
-                        andInitiatorHello:(HelloPacket*)initiatorHello
-                        andResponderHello:(HelloPacket*)responderHello
-                                andCommit:(CommitPacket*)commit
-                               andDhPart1:(DHPacket*)dhPart1
-                               andDhPart2:(DHPacket*)dhPart2 {
++ (instancetype)masterSecretFromDHResult:(NSData*)dhResult
+                       andInitiatorHello:(HelloPacket*)initiatorHello
+                       andResponderHello:(HelloPacket*)responderHello
+                               andCommit:(CommitPacket*)commit
+                              andDhPart1:(DHPacket*)dhPart1
+                              andDhPart2:(DHPacket*)dhPart2 {
     require(dhResult != nil);
     require(initiatorHello != nil);
     require(responderHello != nil);

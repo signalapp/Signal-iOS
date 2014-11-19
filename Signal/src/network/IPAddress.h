@@ -12,7 +12,7 @@
 
 @interface IPAddress : NSObject
 
-+ (IPAddress*)localhost;
++ (instancetype)localhost;
 
 - (instancetype)initFromString:(NSString*)text;
 - (instancetype)initIPv4AddressFromString:(NSString*)text;

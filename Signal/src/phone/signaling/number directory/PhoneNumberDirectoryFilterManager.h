@@ -10,6 +10,8 @@
  */
 @interface PhoneNumberDirectoryFilterManager : NSObject
 
+- (instancetype)init;
+
 - (void)forceUpdate;
 - (void)startUntilCancelled:(TOCCancelToken*)cancelToken;
 - (PhoneNumberDirectoryFilter*)getCurrentFilter;

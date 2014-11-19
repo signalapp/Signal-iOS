@@ -35,11 +35,11 @@
 
 @implementation CommitPacket
 
-+ (CommitPacket*)commitPacketWithDefaultSpecsAndKeyAgreementProtocol:(id<KeyAgreementProtocol>)keyAgreementProtocol
-                                                        andHashChain:(HashChain*)hashChain
-                                                              andZid:(Zid*)zid
-                                                andCommitmentToHello:(HelloPacket*)hello
-                                                          andDHPart2:(DHPacket*)dhPart2 {
++ (instancetype)defaultPacketWithKeyAgreementProtocol:(id<KeyAgreementProtocol>)keyAgreementProtocol
+                                         andHashChain:(HashChain*)hashChain
+                                               andZid:(Zid*)zid
+                                 andCommitmentToHello:(HelloPacket*)hello
+                                           andDHPart2:(DHPacket*)dhPart2 {
     
     require(keyAgreementProtocol != nil);
     require(hashChain != nil);
@@ -49,15 +49,15 @@
     
     NSData* dhPart2Data = [[dhPart2 embeddedIntoHandshakePacket] dataUsedForAuthentication];
     NSData* helloData = [[hello embeddedIntoHandshakePacket] dataUsedForAuthentication];
-    return [[CommitPacket alloc] initWithHashChainH2:hashChain.h2
-                                              andZid:zid
-                                       andHashSpecId:COMMIT_DEFAULT_HASH_SPEC_ID
-                                     andCipherSpecId:COMMIT_DEFAULT_CIPHER_SPEC_ID
-                                       andAuthSpecId:COMMIT_DEFAULT_AUTH_SPEC_ID
-                                      andAgreeSpecId:keyAgreementProtocol.getId
-                                        andSasSpecId:COMMIT_DEFAULT_SAS_SPEC_ID
-                           andDHPart2HelloCommitment:[[@[dhPart2Data, helloData] concatDatas] hashWithSHA256]
-                                          andHMACKey:hashChain.h1];
+    return [[self alloc] initWithHashChainH2:hashChain.h2
+                                      andZid:zid
+                               andHashSpecId:COMMIT_DEFAULT_HASH_SPEC_ID
+                             andCipherSpecId:COMMIT_DEFAULT_CIPHER_SPEC_ID
+                               andAuthSpecId:COMMIT_DEFAULT_AUTH_SPEC_ID
+                              andAgreeSpecId:keyAgreementProtocol.getId
+                                andSasSpecId:COMMIT_DEFAULT_SAS_SPEC_ID
+                   andDHPart2HelloCommitment:[[@[dhPart2Data, helloData] concatDatas] hashWithSHA256]
+                                  andHMACKey:hashChain.h1];
 }
 
 - (instancetype)initWithHashChainH2:(NSData*)h2

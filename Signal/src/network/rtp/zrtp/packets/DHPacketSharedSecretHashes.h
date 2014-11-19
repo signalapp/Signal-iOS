@@ -22,7 +22,7 @@
 @property (strong, readonly, nonatomic) NSData* aux;
 @property (strong, readonly, nonatomic) NSData* pbx;
 
-+ (DHPacketSharedSecretHashes*)randomized;
++ (instancetype)randomizedSharedSecretHashes;
 
 - (instancetype)initWithRs1:(NSData*)rs1
                      andRs2:(NSData*)rs2

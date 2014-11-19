@@ -11,17 +11,11 @@
  */
 @interface PhoneNumber : NSObject
 
-- (instancetype)initFromText:(NSString*)text andRegion:(NSString*)regionCode;
-- (instancetype)initFromUserSpecifiedText:(NSString*)text;
 - (instancetype)initFromE164:(NSString*)text;
 
-+ (PhoneNumber*)phoneNumberFromText:(NSString*)text andRegion:(NSString*)regionCode;
-+ (PhoneNumber*)phoneNumberFromUserSpecifiedText:(NSString*)text;
-+ (PhoneNumber*)phoneNumberFromE164:(NSString*)text;
-
-+ (PhoneNumber*)tryParsePhoneNumberFromText:(NSString*)text fromRegion:(NSString*)regionCode;
-+ (PhoneNumber*)tryParsePhoneNumberFromUserSpecifiedText:(NSString*)text;
-+ (PhoneNumber*)tryParsePhoneNumberFromE164:(NSString*)text;
++ (instancetype)tryParsePhoneNumberFromText:(NSString*)text fromRegion:(NSString*)regionCode;
++ (instancetype)tryParsePhoneNumberFromUserSpecifiedText:(NSString*)text;
++ (instancetype)tryParsePhoneNumberFromE164:(NSString*)text;
 
 
 + (NSString*)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString*)input;

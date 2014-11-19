@@ -15,9 +15,9 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        self.audioFrameToReceiveQueue = [[Queue alloc] init];
-        self.framesToSend = [[NSMutableArray alloc] init];
-        self.nextSequenceNumber = [CryptoTools generateSecureRandomUInt16];
+        self.audioFrameToReceiveQueue   = [[Queue alloc] init];
+        self.framesToSend               = [[NSMutableArray alloc] init];
+        self.nextSequenceNumber         = [CryptoTools generateSecureRandomUInt16];
         
         // interop fix:
         // cut off the high bit (the sign bit), to avoid confusion over signed-ness when peer receives the initial number

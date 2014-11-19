@@ -51,7 +51,7 @@
     return self;
 }
 
-+ (HTTPResponse*)httpResponseFromData:(NSData*)data {
++ (instancetype)httpResponseFromData:(NSData*)data {
     require(data != nil);
     NSUInteger responseSize;
     HTTPRequestOrResponse* http = [HTTPRequestOrResponse tryExtractFromPartialData:data usedLengthOut:&responseSize];
@@ -59,25 +59,25 @@
     return [http response];
 }
 
-+ (HTTPResponse*)httpResponse200Ok {
++ (instancetype)httpResponse200Ok {
     return [HTTPResponse httpResponse200OkWithOptionalBody:nil];
 }
 
-+ (HTTPResponse*)httpResponse501NotImplemented {
++ (instancetype)httpResponse501NotImplemented {
     return [[HTTPResponse alloc] initFromStatusCode:501
                                       andStatusText:@"Not Implemented"
                                          andHeaders:@{}
                                 andOptionalBodyData:nil];
 }
 
-+ (HTTPResponse*)httpResponse500InternalServerError {
++ (instancetype)httpResponse500InternalServerError {
     return [[HTTPResponse alloc] initFromStatusCode:500
                                       andStatusText:@"Internal Server Error"
                                          andHeaders:@{}
                                 andOptionalBodyData:nil];
 }
 
-+ (HTTPResponse*)httpResponse200OkWithOptionalBody:(NSString*)optionalBody {
++ (instancetype)httpResponse200OkWithOptionalBody:(NSString*)optionalBody {
     return [[HTTPResponse alloc] initFromStatusCode:200
                                       andStatusText:@"OK"
                                          andHeaders:@{}

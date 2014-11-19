@@ -9,11 +9,12 @@
 
 @implementation Queue
 
-- (NSMutableArray*)items {
-    if (!_items) {
-        _items = [[NSMutableArray alloc] init];
+- (instancetype)init {
+    if (self = [super init]) {
+        self.items = [[NSMutableArray alloc] init];
     }
-    return _items;
+    
+    return self;
 }
 
 - (void)enqueue:(id)item {

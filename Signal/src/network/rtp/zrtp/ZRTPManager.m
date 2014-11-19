@@ -98,7 +98,7 @@
         // (the RFC says to treat this as implying a Conf2Ack)
         if ([self.zrtpRole isAuthenticatedAudioDataImplyingConf2Ack:relatedInfo]) {
             // low-priority todo: Can we cache this bit of audio data, so that when the srtp socket is started the data comes out?
-            [self handleHandshakePacket:[[[ConfirmAckPacket alloc] init] embeddedIntoHandshakePacket]];
+            [self handleHandshakePacket:[[ConfirmAckPacket defaultPacket] embeddedIntoHandshakePacket]];
         }
     };
     

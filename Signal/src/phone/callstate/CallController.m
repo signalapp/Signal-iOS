@@ -26,15 +26,15 @@
     if (self = [super init]) {
         require(remoteNumber != nil);
         
-        CallProgress* initialProgress =        [[CallProgress alloc] initWithType:CallProgressTypeConnecting];
-        self.progress =                        [[ObservableValueController alloc] initWithInitialValue:initialProgress];
-        self.canceller =                       [[TOCCancelTokenSource alloc] init];
-        self.termination =                     [[TOCFutureSource alloc] init];
-        self.shortAuthenticationString =       [[TOCFutureSource alloc] init];
-        self.interactiveCallAcceptedOrDenied = [[TOCFutureSource alloc] init];
-        self.initiatedLocally =                initiatedLocally;
-        self.remoteNumber =                    remoteNumber;
-        self.potentiallySpecifiedContact =     contact;
+        CallProgress* initialProgress           = [[CallProgress alloc] initWithType:CallProgressTypeConnecting];
+        self.progress                           = [[ObservableValueController alloc] initWithInitialValue:initialProgress];
+        self.canceller                          = [[TOCCancelTokenSource alloc] init];
+        self.termination                        = [[TOCFutureSource alloc] init];
+        self.shortAuthenticationString          = [[TOCFutureSource alloc] init];
+        self.interactiveCallAcceptedOrDenied    = [[TOCFutureSource alloc] init];
+        self.initiatedLocally                   = initiatedLocally;
+        self.remoteNumber                       = remoteNumber;
+        self.potentiallySpecifiedContact        = contact;
         
         self.exposedCallState = [[CallState alloc] initWithObservableProgress:self.progress
                                                          andFutureTermination:self.termination.future

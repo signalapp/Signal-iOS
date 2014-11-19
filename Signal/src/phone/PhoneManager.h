@@ -21,6 +21,8 @@
 
 @property (readonly, nonatomic, copy) ErrorHandlerBlock errorHandler;
 
+- (instancetype)initWithErrorHandler:(ErrorHandlerBlock)errorHandler;
+
 - (void)initiateOutgoingCallToRemoteNumber:(PhoneNumber*)remoteNumber;
 - (void)initiateOutgoingCallToContact:(Contact*)contact atRemoteNumber:(PhoneNumber*)remoteNumber;
 - (void)incomingCallWithSession:(ResponderSessionDescriptor*)session;
@@ -28,7 +30,5 @@
 - (void)answerCall;
 - (BOOL)toggleMute;
 - (ObservableValue*)currentCallObservable;
-
-- (instancetype)initWithErrorHandler:(ErrorHandlerBlock)errorHandler;
 
 @end

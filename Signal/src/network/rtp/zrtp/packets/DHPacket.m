@@ -14,7 +14,7 @@
 
 @interface DHPacket ()
 
-@property (readwrite, nonatomic) bool isPart1;
+@property (readwrite, nonatomic) bool isPartOne;
 @property (strong, readwrite, nonatomic) DHPacketSharedSecretHashes* sharedSecretHashes;
 @property (strong, readwrite, nonatomic) NSData* publicKeyData;
 @property (strong, readwrite, nonatomic) NSData* hashChainH1;
@@ -25,9 +25,9 @@
 
 @implementation DHPacket
 
-+ (DHPacket*)dh1PacketWithHashChain:(HashChain*)hashChain
-              andSharedSecretHashes:(DHPacketSharedSecretHashes*)sharedSecretHashes
-                       andKeyAgreer:(id<KeyAgreementParticipant>)agreer {
++ (instancetype)packetOneWithHashChain:(HashChain*)hashChain
+                 andSharedSecretHashes:(DHPacketSharedSecretHashes*)sharedSecretHashes
+                          andKeyAgreer:(id<KeyAgreementParticipant>)agreer {
     
     require(hashChain != nil);
     require(sharedSecretHashes != nil);
@@ -36,12 +36,12 @@
     return [[DHPacket alloc] initWithHashChainH0:hashChain.h0
                            andSharedSecretHashes:sharedSecretHashes
                                 andPublicKeyData:[agreer getPublicKeyData]
-                                      andIsPart1:true];
+                                    andIsPartOne:true];
 }
 
-+ (DHPacket*)dh2PacketWithHashChain:(HashChain*)hashChain
-              andSharedSecretHashes:(DHPacketSharedSecretHashes*)sharedSecretHashes
-                       andKeyAgreer:(id<KeyAgreementParticipant>)agreer {
++ (instancetype)packetTwoWithHashChain:(HashChain*)hashChain
+                 andSharedSecretHashes:(DHPacketSharedSecretHashes*)sharedSecretHashes
+                          andKeyAgreer:(id<KeyAgreementParticipant>)agreer {
     
     require(hashChain != nil);
     require(sharedSecretHashes != nil);
@@ -50,20 +50,20 @@
     return [[DHPacket alloc] initWithHashChainH0:hashChain.h0
                            andSharedSecretHashes:sharedSecretHashes
                                 andPublicKeyData:[agreer getPublicKeyData]
-                                      andIsPart1:false];
+                                    andIsPartOne:false];
 }
 
 - (instancetype)initWithHashChainH0:(NSData*)hashChainH0
               andSharedSecretHashes:(DHPacketSharedSecretHashes*)sharedSecretHashes
                    andPublicKeyData:(NSData*)publicKeyData
-                         andIsPart1:(bool)isPart1 {
+                       andIsPartOne:(bool)isPartOne {
     if (self = [super init]) {
         require(hashChainH0 != nil);
         require(sharedSecretHashes != nil);
         require(publicKeyData != nil);
         require(hashChainH0.length == HASH_CHAIN_ITEM_LENGTH);
         
-        self.isPart1 = isPart1;
+        self.isPartOne = isPartOne;
         self.hashChainH1 = [hashChainH0 hashWithSHA256];
         self.sharedSecretHashes = sharedSecretHashes;
         self.publicKeyData = publicKeyData;
@@ -97,10 +97,10 @@
 }
 
 - (instancetype)initFromHandshakePacket:(HandshakePacket*)handshakePacket
-                         andIsPart1:(bool)isPart1 {
+                           andIsPartOne:(bool)isPartOne {
     if (self = [super init]) {
         require(handshakePacket != nil);
-        NSData* expectedTypeIdDHPacket = isPart1 ? HANDSHAKE_TYPE_DH_1 : HANDSHAKE_TYPE_DH_2;
+        NSData* expectedTypeIdDHPacket = isPartOne ? HANDSHAKE_TYPE_DH_1 : HANDSHAKE_TYPE_DH_2;
         NSData* payload = [handshakePacket payload];
         
         checkOperation([[handshakePacket typeId] isEqualToData:expectedTypeIdDHPacket]);
@@ -119,7 +119,7 @@
     require(macKey != nil);
     requireState(self.hashChainH1.length == HASH_CHAIN_ITEM_LENGTH);
     
-    NSData* typeId = self.isPart1 ? HANDSHAKE_TYPE_DH_1 : HANDSHAKE_TYPE_DH_2;
+    NSData* typeId = self.isPartOne ? HANDSHAKE_TYPE_DH_1 : HANDSHAKE_TYPE_DH_2;
     
     NSData* payload = [@[
                        self.hashChainH1,

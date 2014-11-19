@@ -20,7 +20,8 @@
 
 @property (strong, readonly, nonatomic, getter=embeddedIntoHandshakePacket) HandshakePacket* embedding;
 
-- (instancetype)init;
++ (instancetype)defaultPacket;
+
 - (instancetype)initFromHandshakePacket:(HandshakePacket*)handshakePacket;
 
 @end

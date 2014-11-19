@@ -7,7 +7,4 @@
 
 - (instancetype)initWithLogValue:(void(^)(double value))logValue;
 
-// Conform to ValueLogger
-- (void)logValue:(double)value;
-
 @end

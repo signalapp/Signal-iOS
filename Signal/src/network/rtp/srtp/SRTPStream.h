@@ -16,7 +16,7 @@
                         andMacKey:(NSData*)macKey
                   andCipherIVSalt:(NSData*)cipherIVSalt;
 
--(RTPPacket*) encryptAndAuthenticateNormalRTPPacket:(RTPPacket*)normalRTPPacket;
--(RTPPacket*) verifyAuthenticationAndDecryptSecuredRTPPacket:(RTPPacket*)securedRTPPacket;
+- (RTPPacket*)encryptAndAuthenticateNormalRTPPacket:(RTPPacket*)normalRTPPacket;
+- (RTPPacket*)verifyAuthenticationAndDecryptSecuredRTPPacket:(RTPPacket*)securedRTPPacket;
 
 @end

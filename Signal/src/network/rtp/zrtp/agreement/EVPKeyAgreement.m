@@ -29,7 +29,7 @@ typedef NS_ENUM(NSInteger, KeyAgreementType) {
 
 #pragma mark Constructors / Initialization
 
-+ (EVPKeyAgreement*)evpDH3KKeyAgreementWithModulus:(NSData*)modulus andGenerator:(NSData*)generator {
++ (instancetype)evpDH3KKeyAgreementWithModulus:(NSData*)modulus andGenerator:(NSData*)generator {
     EVPKeyAgreement* evpKeyAgreement = [[EVPKeyAgreement alloc] initWithKeyType:KeyAgreementTypeDH ];
     assert(nil != modulus);
     assert(nil != generator);
@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, KeyAgreementType) {
     return evpKeyAgreement;
 }
 
-+ (EVPKeyAgreement*)evpEC25KeyAgreement {
++ (instancetype)evpEC25KeyAgreement {
     EVPKeyAgreement* evpKeyAgreement = [[EVPKeyAgreement alloc] initWithKeyType:KeyAgreementTypeECDH];
     [evpKeyAgreement generateEc25Parameters];
     [evpKeyAgreement generateKeyPair];

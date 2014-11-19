@@ -4,8 +4,8 @@
 
 @interface EVPKeyAgreement : NSObject
 
-+ (EVPKeyAgreement*)evpDH3KKeyAgreementWithModulus:(NSData*)modulus andGenerator:(NSData*)generator;
-+ (EVPKeyAgreement*)evpEC25KeyAgreement;
++ (instancetype)evpDH3KKeyAgreementWithModulus:(NSData*)modulus andGenerator:(NSData*)generator;
++ (instancetype)evpEC25KeyAgreement;
 
 - (void)generateKeyPair;
 - (NSData*)getPublicKey;

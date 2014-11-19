@@ -30,12 +30,12 @@
 @property (nonatomic, readonly) NSData* initiatorMacKey;
 @property (nonatomic, readonly) NSData* initiatorZRTPKey;
 
-+(MasterSecret*) masterSecretFromDHResult:(NSData*)dhResult
-                        andInitiatorHello:(HelloPacket*)initiatorHello
-                        andResponderHello:(HelloPacket*)responderHello
-                                andCommit:(CommitPacket*)commit
-                               andDhPart1:(DHPacket*)dhPart1
-                               andDhPart2:(DHPacket*)dhPart2;
++ (instancetype)masterSecretFromDHResult:(NSData*)dhResult
+                       andInitiatorHello:(HelloPacket*)initiatorHello
+                       andResponderHello:(HelloPacket*)responderHello
+                               andCommit:(CommitPacket*)commit
+                              andDhPart1:(DHPacket*)dhPart1
+                              andDhPart2:(DHPacket*)dhPart2;
 
 + (NSData*)calculateSharedSecretFromDhResult:(NSData*)dhResult
                                 andTotalHash:(NSData*)totalHash

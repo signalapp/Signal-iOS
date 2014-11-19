@@ -15,10 +15,4 @@
 - (instancetype)initWithHostName:(NSString*)hostname
                          andPort:(in_port_t)port;
 
-// Conform to NetworkEndPoint
-- (StreamPair*)createStreamPair;
-- (void) handleStreamsOpened:(StreamPair*)streamPair;
-- (TOCFuture*)asyncHandleStreamsConnected:(StreamPair*)streamPair;
-- (TOCFuture*)asyncResolveToSpecificEndPointsUnlessCancelled:(TOCCancelToken*)unlessCancelledToken;
-
 @end

@@ -42,14 +42,14 @@
     if (self = [super init]) {
         require(callController != nil);
         
-        self.allowedKeyAgreementProtocols = Environment.getCurrent.keyAgreementProtocolsInDescendingPriority;
-        self.dhSharedSecretHashes = [DHPacketSharedSecretHashes randomized];
-        self.zid = [SGNKeychainUtil zid];
-        self.confirmIV = [CryptoTools generateSecureRandomData:IV_LENGTH];
-        self.hashChain = [[HashChain alloc] initWithSecureGeneratedData];
-        self.badPacketLogger = [Environment.logging getOccurrenceLoggerForSender:self withKey:@"Bad Packet"];
-        self.packetExpectation = EXPECTING_HELLO;
-        self.callController = callController;
+        self.allowedKeyAgreementProtocols   = Environment.getCurrent.keyAgreementProtocolsInDescendingPriority;
+        self.dhSharedSecretHashes           = [DHPacketSharedSecretHashes randomizedSharedSecretHashes];
+        self.zid                            = [SGNKeychainUtil zid];
+        self.confirmIV                      = [CryptoTools generateSecureRandomData:IV_LENGTH];
+        self.hashChain                      = [[HashChain alloc] initWithSecureGeneratedData];
+        self.badPacketLogger                = [Environment.logging getOccurrenceLoggerForSender:self withKey:@"Bad Packet"];
+        self.packetExpectation              = EXPECTING_HELLO;
+        self.callController                 = callController;
     }
     
     return self;
@@ -94,9 +94,9 @@
 
     self.keyAgreementParticipant = [self retrieveKeyAgreementParticpant];
     
-    self.localHello   = [HelloPacket helloPacketWithDefaultsAndHashChain:self.hashChain
-                                                                  andZid:self.zid
-                                                andKeyAgreementProtocols:self.allowedKeyAgreementProtocols];
+    self.localHello   = [HelloPacket defaultPacketWithHashChain:self.hashChain
+                                                         andZid:self.zid
+                                       andKeyAgreementProtocols:self.allowedKeyAgreementProtocols];
     
     self.packetExpectation = EXPECTING_HELLO_ACK;
     
@@ -108,15 +108,15 @@
     
     [self retrieveKeyAgreementParticpant];
     
-    self.localDH = [DHPacket dh2PacketWithHashChain:self.hashChain
+    self.localDH = [DHPacket packetTwoWithHashChain:self.hashChain
                               andSharedSecretHashes:self.dhSharedSecretHashes
                                        andKeyAgreer:self.keyAgreementParticipant];
     
-    self.commitPacket = [CommitPacket commitPacketWithDefaultSpecsAndKeyAgreementProtocol:self.keyAgreementParticipant.getProtocol
-                                                                             andHashChain:self.hashChain
-                                                                                   andZid:self.zid
-                                                                     andCommitmentToHello:self.foreignHello
-                                                                               andDHPart2:self.localDH];
+    self.commitPacket = [CommitPacket defaultPacketWithKeyAgreementProtocol:self.keyAgreementParticipant.getProtocol
+                                                               andHashChain:self.hashChain
+                                                                     andZid:self.zid
+                                                       andCommitmentToHello:self.foreignHello
+                                                                 andDHPart2:self.localDH];
     
     self.packetExpectation = EXPECTING_DH;
     
@@ -149,10 +149,10 @@
     [self.foreignDH verifyMacWithHashChainH0:preimage];
     
     self.packetExpectation = EXPECTING_CONFIRM_ACK;
-    ConfirmPacket* confirm2Packet = [ConfirmPacket confirm2PacketWithHashChain:self.hashChain
-                                                                     andMacKey:[self.masterSecret initiatorMacKey]
-                                                                  andCipherKey:[self.masterSecret initiatorZRTPKey]
-                                                                         andIV:self.confirmIV];
+    ConfirmPacket* confirm2Packet = [ConfirmPacket packetTwoWithHashChain:self.hashChain
+                                                                andMacKey:[self.masterSecret initiatorMacKey]
+                                                             andCipherKey:[self.masterSecret initiatorZRTPKey]
+                                                                    andIV:self.confirmIV];
     return [confirm2Packet embeddedIntoHandshakePacket];
 }
 

@@ -16,8 +16,8 @@
 
 @implementation PhoneNumberDirectoryFilter
 
-- (instancetype)initDefault {
-    return [self initWithBloomFilter:[[BloomFilter alloc] initWithNothing] andExpirationDate:[NSDate date]];
++ (instancetype)defaultFilter {
+    return [[self alloc] initWithBloomFilter:[BloomFilter bloomFilterWithNothing] andExpirationDate:[NSDate date]];
 }
 
 - (instancetype)initWithBloomFilter:(BloomFilter*)bloomFilter andExpirationDate:(NSDate*)expirationDate {

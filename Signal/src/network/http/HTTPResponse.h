@@ -17,11 +17,11 @@
                         andHeaders:(NSDictionary*)headers
                andOptionalBodyData:(NSData*)optionalBody;
 
-+ (HTTPResponse*)httpResponseFromData:(NSData*)data;
-+ (HTTPResponse*)httpResponse200Ok;
-+ (HTTPResponse*)httpResponse200OkWithOptionalBody:(NSString*)optionalBody;
-+ (HTTPResponse*)httpResponse501NotImplemented;
-+ (HTTPResponse*)httpResponse500InternalServerError;
++ (instancetype)httpResponseFromData:(NSData*)data;
++ (instancetype)httpResponse200Ok;
++ (instancetype)httpResponse200OkWithOptionalBody:(NSString*)optionalBody;
++ (instancetype)httpResponse501NotImplemented;
++ (instancetype)httpResponse500InternalServerError;
 
 - (NSData*)serialize;
 - (bool)isOkResponse;

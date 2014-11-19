@@ -13,7 +13,8 @@
 @property (strong, nonatomic, readonly, getter=getExpirationDate) NSDate* expirationDate;
 @property (nonatomic, readonly) BloomFilter* bloomFilter;
 
-- (instancetype)initDefault;
++ (instancetype)defaultFilter;
+
 - (instancetype)initWithBloomFilter:(BloomFilter*)bloomFilter andExpirationDate:(NSDate*)expirationDate;
 - (instancetype)initFromURLResponse:(NSHTTPURLResponse*)response body:(NSData*)data;
 

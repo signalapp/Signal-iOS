@@ -19,7 +19,7 @@
 
 @interface RPServerRequestsManager ()
 
-@property (nonatomic, retain)AFHTTPSessionManager *operationManager;
+@property (nonatomic, retain)AFHTTPSessionManager* operationManager;
 
 @end
 
@@ -32,14 +32,14 @@ MacrosSingletonImplemention
     self = [super init];
     
     if (self) {
-        HostNameEndPoint *endpoint = Environment.getCurrent.masterServerSecureEndPoint.hostNameEndPoint;
-        NSURL *endPointURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@:%hu", endpoint.hostname, endpoint.port]];
-        NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+        HostNameEndPoint* endpoint = Environment.getCurrent.masterServerSecureEndPoint.hostNameEndPoint;
+        NSURL* endPointURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@:%hu", endpoint.hostname, endpoint.port]];
+        NSURLSessionConfiguration* sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
         self.operationManager = [[AFHTTPSessionManager alloc] initWithBaseURL:endPointURL sessionConfiguration:sessionConf];
         self.operationManager.responseSerializer                      = [AFJSONResponseSerializer serializer];
         self.operationManager.securityPolicy.allowInvalidCertificates = YES;
-        NSString *certPath = [[NSBundle mainBundle] pathForResource:@"whisperReal" ofType:@"cer"];
-        NSData *certData = [NSData dataWithContentsOfFile:certPath];
+        NSString* certPath = [[NSBundle mainBundle] pathForResource:@"whisperReal" ofType:@"cer"];
+        NSData* certData = [NSData dataWithContentsOfFile:certPath];
         SecCertificateRef cert = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certData));
         self.operationManager.securityPolicy.pinnedCertificates = @[(__bridge_transfer NSData*)SecCertificateCopyData(cert)];
         self.operationManager.securityPolicy.SSLPinningMode     = AFSSLPinningModeCertificate;
@@ -47,7 +47,7 @@ MacrosSingletonImplemention
     return self;
 }
 
-- (void)performRequest:(RPAPICall*)apiCall success:(void (^)(NSURLSessionDataTask *task, id responseObject))success failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure{
+- (void)performRequest:(RPAPICall*)apiCall success:(void (^)(NSURLSessionDataTask* task, id responseObject))success failure:(void (^)(NSURLSessionDataTask* task, NSError* error))failure{
     
     self.operationManager.requestSerializer  = apiCall.requestSerializer;
     self.operationManager.responseSerializer = apiCall.responseSerializer;
@@ -80,12 +80,12 @@ MacrosSingletonImplemention
 }
 
 - (TOCFuture*)futureForRequest:(RPAPICall*)apiCall{
-    TOCFutureSource *requestFutureSource = [TOCFutureSource new];
+    TOCFutureSource* requestFutureSource = [TOCFutureSource new];
     
-    [self performRequest:apiCall success:^(NSURLSessionDataTask *task, id responseObject) {
+    [self performRequest:apiCall success:^(NSURLSessionDataTask* task, id responseObject) {
         NSLog(@"ResponseObject: %@", responseObject);
         [requestFutureSource trySetResult:task.response];
-    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+    } failure:^(NSURLSessionDataTask* task, NSError* error) {
         [requestFutureSource trySetFailure:error];
     }];
     

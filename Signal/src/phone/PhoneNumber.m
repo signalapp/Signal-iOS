@@ -29,12 +29,12 @@ static NSString* const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
         NBPhoneNumber* number = [phoneUtil parse:text
                                    defaultRegion:regionCode
                                            error:&parseError];
-        checkOperationDescribe(parseError == nil, [parseError description]);
+        checkOperationDescribe(parseError == nil, parseError.description);
         //checkOperation([phoneUtil isValidNumber:number]);
         
         NSError* toE164Error;
         NSString* e164 = [phoneUtil format:number numberFormat:NBEPhoneNumberFormatE164 error:&toE164Error];
-        checkOperationDescribe(toE164Error == nil, [e164 description]);
+        checkOperationDescribe(toE164Error == nil, e164.description);
         
         self.phoneNumber = number;
         self.e164 = e164;
@@ -53,18 +53,6 @@ static NSString* const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     self = [self initFromText:text andRegion:@"ZZ"];
     checkOperation(self != nil);
     return self;
-}
-
-+ (PhoneNumber*)phoneNumberFromText:(NSString*)text andRegion:(NSString*)regionCode {
-    return [[PhoneNumber alloc] initFromText:text andRegion:regionCode];
-}
-
-+ (PhoneNumber*)phoneNumberFromUserSpecifiedText:(NSString*)text {
-    return [[PhoneNumber alloc] initFromUserSpecifiedText:text];
-}
-
-+ (PhoneNumber*)phoneNumberFromE164:(NSString*)text {
-    return [[PhoneNumber alloc] initFromE164:text];
 }
 
 + (NSString*)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString*)input {

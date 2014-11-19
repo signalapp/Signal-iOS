@@ -71,27 +71,27 @@
     return agreeSpecIds;
 }
 
-+ (HelloPacket*)helloPacketWithDefaultsAndHashChain:(HashChain*)hashChain
-                                             andZid:(Zid*)zid
-                           andKeyAgreementProtocols:(NSArray*)keyAgreementProtocols {
++ (instancetype)defaultPacketWithHashChain:(HashChain*)hashChain
+                                    andZid:(Zid*)zid
+                  andKeyAgreementProtocols:(NSArray*)keyAgreementProtocols {
     
     require(hashChain != nil);
     require(zid != nil);
     require(keyAgreementProtocols != nil);
     
-    return [[HelloPacket alloc] initWithVersion:Environment.getCurrent.zrtpVersionId
-                                    andClientId:Environment.getCurrent.zrtpClientId
-                                 andHashChainH3:hashChain.h3
-                                         andZid:zid
-                                   andFlags0SMP:0
-                             andFlagsUnusedLow4:0
-                            andFlagsUnusedHigh4:0
-                                 andHashSpecIds:@[]
-                               andCipherSpecIds:@[]
-                                 andAuthSpecIds:@[]
-                                andAgreeSpecIds:[self getAgreeIdsFromKeyAgreementProtocols:keyAgreementProtocols]
-                                  andSasSpecIds:@[]
-                       authenticatedWithHMACKey:hashChain.h2];
+    return [[self alloc] initWithVersion:Environment.getCurrent.zrtpVersionId
+                             andClientId:Environment.getCurrent.zrtpClientId
+                          andHashChainH3:hashChain.h3
+                                  andZid:zid
+                            andFlags0SMP:0
+                      andFlagsUnusedLow4:0
+                     andFlagsUnusedHigh4:0
+                          andHashSpecIds:@[]
+                        andCipherSpecIds:@[]
+                          andAuthSpecIds:@[]
+                         andAgreeSpecIds:[self getAgreeIdsFromKeyAgreementProtocols:keyAgreementProtocols]
+                           andSasSpecIds:@[]
+                authenticatedWithHMACKey:hashChain.h2];
 }
 
 - (instancetype)initWithVersion:(NSData*)versionId

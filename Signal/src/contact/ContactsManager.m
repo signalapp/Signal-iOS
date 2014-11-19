@@ -36,12 +36,12 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL*);
 
 - (instancetype)init {
     if (self = [super init]) {
-        self.newUserNotificationsEnabled = [self knownUserStoreInitialized];
-        self.favouriteContactIds = [self loadFavouriteIds];
-        self.knownWhisperUserIds = [self loadKnownWhisperUsers];
-        self.life = [[TOCCancelTokenSource alloc] init];
-        self.observableContactsController = [[ObservableValueController alloc] initWithInitialValue:nil];
-        self.observableWhisperUsersController = [[ObservableValueController alloc] initWithInitialValue:nil];
+        self.newUserNotificationsEnabled        = [self knownUserStoreInitialized];
+        self.favouriteContactIds                = [self loadFavouriteIds];
+        self.knownWhisperUserIds                = [self loadKnownWhisperUsers];
+        self.life                               = [[TOCCancelTokenSource alloc] init];
+        self.observableContactsController       = [[ObservableValueController alloc] initWithInitialValue:nil];
+        self.observableWhisperUsersController   = [[ObservableValueController alloc] initWithInitialValue:nil];
         [self registerNotificationHandlers];
     }
     

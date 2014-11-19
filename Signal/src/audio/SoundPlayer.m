@@ -16,8 +16,6 @@
 
 @implementation SoundPlayer
 
-
-
 #pragma mark Creation
 
 + (instancetype)sharedInstance {

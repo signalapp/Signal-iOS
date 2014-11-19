@@ -14,7 +14,7 @@
 @property (strong, readwrite, atomic) NSData* hashChainH0;
 @property (readwrite, atomic) uint32_t unusedAndSignatureLengthAndFlags;
 @property (readwrite, atomic) uint32_t cacheExperationInterval;
-@property (readwrite, atomic) bool isPart1;
+@property (readwrite, atomic) bool isPartOne;
 
 @property (strong, readwrite, nonatomic, getter=embeddedIntoHandshakePacket) HandshakePacket* embedding;
 
@@ -22,40 +22,40 @@
 
 @implementation ConfirmPacket
 
-+ (ConfirmPacket*)confirm1PacketWithHashChain:(HashChain*)hashChain
-                                    andMacKey:(NSData*)macKey
-                                 andCipherKey:(NSData*)cipherKey
-                                        andIV:(NSData*)iv {
-    return [[ConfirmPacket alloc] initWithHashChainH0:hashChain.h0
-                  andUnusedAndSignatureLengthAndFlags:0
-                           andCacheExpirationInterval:0xFFFFFFFF
-                                            andMacKey:macKey
-                                         andCipherKey:cipherKey
-                                                andIV:iv
-                                           andIsPart1:true];
++ (instancetype)packetOneWithHashChain:(HashChain*)hashChain
+                             andMacKey:(NSData*)macKey
+                          andCipherKey:(NSData*)cipherKey
+                                 andIV:(NSData*)iv {
+    return [[self alloc] initWithHashChainH0:hashChain.h0
+         andUnusedAndSignatureLengthAndFlags:0
+                  andCacheExpirationInterval:0xFFFFFFFF
+                                   andMacKey:macKey
+                                andCipherKey:cipherKey
+                                       andIV:iv
+                                andIsPartOne:true];
 }
 
-+ (ConfirmPacket*)confirm2PacketWithHashChain:(HashChain*)hashChain
-                                    andMacKey:(NSData*)macKey
-                                 andCipherKey:(NSData*)cipherKey
-                                        andIV:(NSData*)iv {
-    return [[ConfirmPacket alloc] initWithHashChainH0:hashChain.h0
-                  andUnusedAndSignatureLengthAndFlags:0
-                           andCacheExpirationInterval:0xFFFFFFFF
-                                            andMacKey:macKey
-                                         andCipherKey:cipherKey
-                                                andIV:iv
-                                           andIsPart1:false];
++ (instancetype)packetTwoWithHashChain:(HashChain*)hashChain
+                             andMacKey:(NSData*)macKey
+                          andCipherKey:(NSData*)cipherKey
+                                 andIV:(NSData*)iv {
+    return [[self alloc] initWithHashChainH0:hashChain.h0
+         andUnusedAndSignatureLengthAndFlags:0
+                  andCacheExpirationInterval:0xFFFFFFFF
+                                   andMacKey:macKey
+                                andCipherKey:cipherKey
+                                       andIV:iv
+                                andIsPartOne:false];
 }
 
-+ (ConfirmPacket*)confirmPacketParsedFromHandshakePacket:(HandshakePacket*)handshakePacket
-                                              withMacKey:(NSData*)macKey
-                                            andCipherKey:(NSData*)cipherKey
-                                              andIsPart1:(bool)isPart1 {
++ (instancetype)packetParsedFromHandshakePacket:(HandshakePacket*)handshakePacket
+                                     withMacKey:(NSData*)macKey
+                                   andCipherKey:(NSData*)cipherKey
+                                   andIsPartOne:(bool)isPartOne {
     require(handshakePacket != nil);
     require(macKey != nil);
     require(cipherKey != nil);
-    NSData* expectedConfirmTypeId = isPart1 ? HANDSHAKE_TYPE_CONFIRM_1 : HANDSHAKE_TYPE_CONFIRM_2;
+    NSData* expectedConfirmTypeId = isPartOne ? HANDSHAKE_TYPE_CONFIRM_1 : HANDSHAKE_TYPE_CONFIRM_2;
     
     checkOperation([[handshakePacket typeId] isEqualToData:expectedConfirmTypeId]);
     checkOperation([[handshakePacket payload] length] == TRUNCATED_HMAC_LENGTH + CONFIRM_IV_LENGTH + HASH_CHAIN_ITEM_LENGTH + WORD_LENGTH + WORD_LENGTH);
@@ -69,7 +69,7 @@
                                andCacheExpirationInterval:[self getCacheExpirationIntervalFromDecryptedData:decryptedData]
                                           andIncludedHMAC:[self getIncludedHMACFromPayload:[handshakePacket payload]]
                                                     andIV:[self getIvFromPayload:[handshakePacket payload]]
-                                               andIsPart1:isPart1];
+                                             andIsPartOne:isPartOne];
 }
 
 - (instancetype)initWithHashChainH0:(NSData*)hashChainH0
@@ -78,7 +78,7 @@ andUnusedAndSignatureLengthAndFlags:(uint32_t)unused
                           andMacKey:(NSData*)macKey
                        andCipherKey:(NSData*)cipherKey
                               andIV:(NSData*)iv
-                         andIsPart1:(bool)isPart1 {
+                       andIsPartOne:(bool)isPartOne {
     if (self = [super init]) {
         require(macKey != nil);
         require(cipherKey != nil);
@@ -91,7 +91,7 @@ andUnusedAndSignatureLengthAndFlags:(uint32_t)unused
         self.unusedAndSignatureLengthAndFlags = unused;
         self.cacheExperationInterval = cacheExpirationInterval;
         self.iv = iv;
-        self.isPart1 = isPart1;
+        self.isPartOne = isPartOne;
         self.embedding = [self generateEmbedding:cipherKey andMacKey:macKey];
     }
     
@@ -112,7 +112,7 @@ andUnusedAndSignatureLengthAndFlags:(uint32_t)unused
     NSData* encrytedSensitiveData = [sensitiveData encryptWithAESInCipherFeedbackModeWithKey:cipherKey andIV:self.iv];
     NSData* hmacForSensitiveData = [[encrytedSensitiveData hmacWithSHA256WithKey:macKey] take:TRUNCATED_HMAC_LENGTH];
     
-    NSData* typeId = self.isPart1 ? HANDSHAKE_TYPE_CONFIRM_1 : HANDSHAKE_TYPE_CONFIRM_2;
+    NSData* typeId = self.isPartOne ? HANDSHAKE_TYPE_CONFIRM_1 : HANDSHAKE_TYPE_CONFIRM_2;
     
     NSData* payload = [@[
                        hmacForSensitiveData,
@@ -129,13 +129,13 @@ andUnusedAndSignatureLengthAndFlags:(uint32_t)unused
              andCacheExpirationInterval:(uint32_t)cacheExpirationInterval
                         andIncludedHMAC:(NSData*)includedHMAC
                                   andIV:(NSData*)iv
-                             andIsPart1:(bool)isPart1 {
+                           andIsPartOne:(bool)isPartOne {
     if (self = [super init]) {
         self.hashChainH0                      = hashChainH0;
         self.unusedAndSignatureLengthAndFlags = unused;
         self.cacheExperationInterval          = cacheExpirationInterval;
         self.iv                               = iv;
-        self.isPart1                          = isPart1;
+        self.isPartOne                          = isPartOne;
         self.confirmMac                       = includedHMAC;
         self.embedding                        = source;
     }

@@ -7,7 +7,4 @@
 
 - (instancetype)initWithMarker:(void(^)(id details))marker;
 
-// Conform to OccurrenceLogger
-- (void)markOccurrence:(id)details;
-
 @end

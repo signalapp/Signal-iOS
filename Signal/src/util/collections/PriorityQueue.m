@@ -10,10 +10,6 @@
 
 @implementation PriorityQueue
 
-+ (PriorityQueue*)priorityQueueAscendingWithComparator:(NSComparator)comparator {
-    return [[PriorityQueue alloc] initAscendingWithComparator:comparator];
-}
-
 - (instancetype)initAscendingWithComparator:(NSComparator)comparator {
     if (self = [super init]) {
         require(comparator != nil);

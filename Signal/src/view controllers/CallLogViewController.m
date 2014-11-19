@@ -76,7 +76,7 @@ typedef NSComparisonResult (^CallComparator)(RecentCall*, RecentCall*);
     [self.recentCallsTableView deleteRowsAtIndexPaths:@[indexPath]
                                      withRowAnimation:UITableViewRowAnimationLeft];
 
-    RecentCall *recent;
+    RecentCall* recent;
 
     [Environment.getCurrent.recentCallManager removeRecentCall:recent];
 

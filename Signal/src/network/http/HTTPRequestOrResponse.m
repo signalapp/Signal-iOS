@@ -21,7 +21,7 @@
     return self;
 }
 
-+(HTTPRequestOrResponse*) httpRequestOrResponse:(id)requestOrResponse {
++ (HTTPRequestOrResponse*)httpRequestOrResponse:(id)requestOrResponse {
     return [[HTTPRequestOrResponse alloc] initWithRequestOrResponse:requestOrResponse];
 }
 
@@ -47,7 +47,7 @@
     return [self.requestOrResponse serialize];
 }
 
-+ (HTTPRequestOrResponse*)tryExtractFromPartialData:(NSData*)data usedLengthOut:(NSUInteger*)usedLengthPtr {
++ (instancetype)tryExtractFromPartialData:(NSData*)data usedLengthOut:(NSUInteger*)usedLengthPtr {
     require(data != nil);
 
     // first line should contain HTTP

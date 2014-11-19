@@ -19,19 +19,11 @@
 - (instancetype)initWithValue:(id)value {
     if (self = [super init]) {
         self.currentValue = value;
+        self.callbacks = [[NSMutableSet alloc] init];
+        self.queuedActionsToRun = [[Queue alloc] init];
     }
     
     return self;
-}
-
-- (NSMutableSet*)callbacks {
-    if (!_callbacks) _callbacks = [[NSMutableSet alloc] init];
-    return _callbacks;
-}
-
-- (Queue*)queuedActionsToRun {
-    if (!_queuedActionsToRun) _queuedActionsToRun = [[Queue alloc] init];
-    return _queuedActionsToRun;
 }
 
 - (void)watchLatestValueOnArbitraryThread:(LatestValueCallback)callback

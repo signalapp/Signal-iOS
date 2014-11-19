@@ -47,23 +47,23 @@
 @property (strong, readonly, atomic) NSData* hashChainH0;
 @property (readonly, atomic) uint32_t unusedAndSignatureLengthAndFlags; // Unused (15 bits of zeros)   | sig len (9 bits)|0 0 0 0|E|V|A|D
 @property (readonly, atomic) uint32_t cacheExperationInterval;
-@property (readonly, atomic) bool isPart1;
+@property (readonly, atomic) bool isPartOne;
 
 @property (strong, readonly, nonatomic, getter=embeddedIntoHandshakePacket) HandshakePacket* embedding;
 
-+ (ConfirmPacket*)confirm1PacketWithHashChain:(HashChain*)hashChain
-                                    andMacKey:(NSData*)macKey
-                                 andCipherKey:(NSData*)cipherKey
-                                        andIV:(NSData*)iv;
++ (instancetype)packetOneWithHashChain:(HashChain*)hashChain
+                             andMacKey:(NSData*)macKey
+                          andCipherKey:(NSData*)cipherKey
+                                 andIV:(NSData*)iv;
 
-+ (ConfirmPacket*)confirm2PacketWithHashChain:(HashChain*)hashChain
-                                    andMacKey:(NSData*)macKey
-                                 andCipherKey:(NSData*)cipherKey
-                                        andIV:(NSData*)iv;
++ (instancetype)packetTwoWithHashChain:(HashChain*)hashChain
+                             andMacKey:(NSData*)macKey
+                          andCipherKey:(NSData*)cipherKey
+                                 andIV:(NSData*)iv;
 
-+ (ConfirmPacket*)confirmPacketParsedFromHandshakePacket:(HandshakePacket*)handshakePacket
-                                              withMacKey:(NSData*)macKey
-                                            andCipherKey:(NSData*)cipherKey
-                                              andIsPart1:(bool)isPart1;
++ (instancetype)packetParsedFromHandshakePacket:(HandshakePacket*)handshakePacket
+                                     withMacKey:(NSData*)macKey
+                                   andCipherKey:(NSData*)cipherKey
+                                   andIsPartOne:(bool)isPartOne;
 
 @end

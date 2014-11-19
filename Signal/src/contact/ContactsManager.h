@@ -18,6 +18,8 @@ typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 
 @interface ContactsManager : NSObject
 
+- (instancetype)init;
+
 - (ObservableValue*)getObservableContacts;
 - (ObservableValue*)getObservableWhisperUsers;
 - (ObservableValue*)getObservableFavourites;

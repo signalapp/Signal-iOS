@@ -176,25 +176,25 @@
 }
 
 - (DHPacket*)parsedAsDH1 {
-    return [[DHPacket alloc] initFromHandshakePacket:self andIsPart1:true];
+    return [[DHPacket alloc] initFromHandshakePacket:self andIsPartOne:true];
 }
 
 - (DHPacket*)parsedAsDH2 {
-    return [[DHPacket alloc] initFromHandshakePacket:self andIsPart1:false];
+    return [[DHPacket alloc] initFromHandshakePacket:self andIsPartOne:false];
 }
 
 - (ConfirmPacket*)parsedAsConfirm1AuthenticatedWithMacKey:(NSData*)macKey andCipherKey:(NSData*)cipherKey {
-    return [ConfirmPacket confirmPacketParsedFromHandshakePacket:self
-                                                      withMacKey:macKey
-                                                    andCipherKey:cipherKey
-                                                      andIsPart1:true];
+    return [ConfirmPacket packetParsedFromHandshakePacket:self
+                                               withMacKey:macKey
+                                             andCipherKey:cipherKey
+                                             andIsPartOne:true];
 }
 
 - (ConfirmPacket*)parsedAsConfirm2AuthenticatedWithMacKey:(NSData*)macKey andCipherKey:(NSData*)cipherKey {
-    return [ConfirmPacket confirmPacketParsedFromHandshakePacket:self
-                                                      withMacKey:macKey
-                                                    andCipherKey:cipherKey
-                                                      andIsPart1:false];
+    return [ConfirmPacket packetParsedFromHandshakePacket:self
+                                               withMacKey:macKey
+                                             andCipherKey:cipherKey
+                                             andIsPartOne:false];
 }
 
 - (ConfirmAckPacket*)parsedAsConfAck {

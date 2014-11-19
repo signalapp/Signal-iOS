@@ -15,18 +15,13 @@
 
 #pragma mark Private methods
 
-- (NSMutableArray*)callbacks {
-    if (!_callbacks) {
-        _callbacks = [[NSMutableArray alloc] init];
+- (instancetype)init {
+    if (self = [super init]) {
+        self.callbacks = [[NSMutableArray alloc] init];
+        self.indexDic = [[NSMutableDictionary alloc] init];
     }
-    return _callbacks;
-}
-
-- (NSMutableDictionary*)indexDic {
-    if (!_indexDic) {
-        _indexDic = [[NSMutableDictionary alloc] init];
-    }
-    return _indexDic;
+    
+    return self;
 }
 
 - (void)log:(NSString*)category

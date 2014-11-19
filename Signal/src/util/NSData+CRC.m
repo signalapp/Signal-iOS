@@ -3,7 +3,7 @@
 #define DEFAULT_POLYNOMIAL 0xEDB88320L
 #define DEFAULT_SEED       0xFFFFFFFFL
 
-void generateCRC32Table(uint32_t *pTable, uint32_t poly);
+void generateCRC32Table(uint32_t* pTable, uint32_t poly);
 
 @implementation NSData (CRC)
 

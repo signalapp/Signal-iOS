@@ -64,9 +64,9 @@
 
 @property (strong, readonly, nonatomic, getter=embeddedIntoHandshakePacket) HandshakePacket* embedding;
 
-+ (HelloPacket*)helloPacketWithDefaultsAndHashChain:(HashChain*)hashChain
-                                             andZid:(Zid*)zid
-                           andKeyAgreementProtocols:(NSArray*)keyAgreementProtocols;
++ (instancetype)defaultPacketWithHashChain:(HashChain*)hashChain
+                                    andZid:(Zid*)zid
+                  andKeyAgreementProtocols:(NSArray*)keyAgreementProtocols;
 
 - (instancetype)initWithVersion:(NSData*)versionId
                     andClientId:(NSData*)clientId

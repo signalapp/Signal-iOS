@@ -51,8 +51,8 @@
 
 - (NSString*)toJSON {
     return [@{SessionIdKey : @(self.sessionId),
-            RelayPortKey : @(self.relayUDPSocketPort),
-            RelayHostKey : self.relayServerName
+              RelayPortKey : @(self.relayUDPSocketPort),
+              RelayHostKey : self.relayServerName
             } encodedAsJSON];
 }
 

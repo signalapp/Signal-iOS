@@ -7,7 +7,4 @@
 
 - (instancetype)initWithTerminator:(void (^)(void))terminate;
 
-// Conform to Terminable
-- (void)terminate;
-
 @end

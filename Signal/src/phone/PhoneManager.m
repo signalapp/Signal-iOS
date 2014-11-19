@@ -21,28 +21,15 @@
 - (instancetype)initWithErrorHandler:(ErrorHandlerBlock)errorHandler {
     if (self = [super init]) {
         self.errorHandler = errorHandler;
+        self.currentCallControllerObservable = [[ObservableValueController alloc] initWithInitialValue:nil];
+        self.currentCallStateObservable = [[ObservableValueController alloc] initWithInitialValue:nil];
+        
         [self.currentCallControllerObservable watchLatestValue:^(CallController* latestValue) {
             [self.currentCallStateObservable updateValue:latestValue.callState];
         } onThread:[NSThread currentThread] untilCancelled:nil];
     }
     
     return self;
-}
-
-- (ObservableValueController*)currentCallControllerObservable {
-    if (!_currentCallControllerObservable)
-        _currentCallControllerObservable = [[ObservableValueController alloc] initWithInitialValue:nil];
-    return _currentCallControllerObservable;
-}
-
-- (ObservableValueController*)currentCallStateObservable {
-    if (!_currentCallStateObservable)
-        _currentCallStateObservable = [[ObservableValueController alloc] initWithInitialValue:nil];
-    return _currentCallStateObservable;
-}
-
-+ (PhoneManager*)phoneManagerWithErrorHandler:(ErrorHandlerBlock)errorHandler {
-    return [[PhoneManager alloc] initWithErrorHandler:errorHandler];
 }
 
 - (ObservableValue*)currentCallObservable {
