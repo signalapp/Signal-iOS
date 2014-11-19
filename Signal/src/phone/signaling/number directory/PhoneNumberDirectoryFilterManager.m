@@ -25,11 +25,13 @@
 @implementation PhoneNumberDirectoryFilterManager
 
 - (instancetype)init {
-    if (self = [super init]) {
-        self.phoneNumberDirectoryFilter = [PhoneNumberDirectoryFilter defaultFilter];
-    }
-    
-    return self;
+    return [super init];
+}
+
+- (PhoneNumberDirectoryFilter*)phoneNumberDirectoryFilter {
+    if (!_phoneNumberDirectoryFilter)
+        _phoneNumberDirectoryFilter = [PhoneNumberDirectoryFilter defaultFilter];
+    return _phoneNumberDirectoryFilter;
 }
 
 - (void)startUntilCancelled:(TOCCancelToken*)cancelToken {

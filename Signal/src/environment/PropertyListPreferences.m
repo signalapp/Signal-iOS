@@ -6,7 +6,7 @@
 
 - (void)clear {
     @synchronized(self) {
-        NSString *appDomain = [NSBundle mainBundle].bundleIdentifier;
+        NSString* appDomain = [NSBundle mainBundle].bundleIdentifier;
         [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
     }
 }

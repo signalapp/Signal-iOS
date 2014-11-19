@@ -9,9 +9,9 @@
 }
 
 - (void)setLocalizationKey:(NSString*)localizationKey {
-    self.localizationKey = localizationKey;
-    if (self.localizationKey) {
-        self.text = NSLocalizedString(self.localizationKey, @"");
+    _localizationKey = localizationKey;
+    if (_localizationKey) {
+        self.text = NSLocalizedString(_localizationKey, @"");
     }
 }
 
