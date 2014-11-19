@@ -46,7 +46,7 @@ static NSString* const DEFAULTS_KEY_DATE = @"DefaultsKeyDate";
             }
         }
         
-        self.parsedPhoneNumbers = parsedPhoneNumbers;
+        self.parsedPhoneNumbers = [parsedPhoneNumbers copy];
     }
     
     return self;
@@ -99,7 +99,7 @@ static NSString* const DEFAULTS_KEY_DATE = @"DefaultsKeyDate";
 
 - (UIImage*)image {
 	if (Environment.preferences.getContactImagesEnabled) {
-		return self.image;
+		return _image;
 	} else {
 		return nil;
 	}

@@ -118,7 +118,7 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
 }
 
 - (void)clearRecentCalls {
-    [_allRecents removeAllObjects];
+    [self.allRecents removeAllObjects];
     [self.observableRecentsController updateValue:[self.allRecents copy]];
     [self saveContactsToDefaults];
 }

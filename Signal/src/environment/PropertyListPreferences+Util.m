@@ -70,7 +70,7 @@
 }
 
 - (BOOL)getFreshInstallTutorialsEnabled {
-    NSNumber *preference = [self tryGetValueForKey:FRESH_INSTALL_TUTORIALS_ENABLED_KEY];
+    NSNumber* preference = [self tryGetValueForKey:FRESH_INSTALL_TUTORIALS_ENABLED_KEY];
     if (preference) {
         return [preference boolValue];
     } else {
@@ -79,7 +79,7 @@
 }
 
 - (BOOL)getContactImagesEnabled {
-    NSNumber *preference = [self tryGetValueForKey:CONTACT_IMAGES_ENABLED_KEY];
+    NSNumber* preference = [self tryGetValueForKey:CONTACT_IMAGES_ENABLED_KEY];
     if (preference) {
         return [preference boolValue];
     } else {
@@ -88,7 +88,7 @@
 }
 
 - (BOOL)getAutocorrectEnabled {
-    NSNumber *preference = [self tryGetValueForKey:AUTOCORRECT_ENABLED_KEY];
+    NSNumber* preference = [self tryGetValueForKey:AUTOCORRECT_ENABLED_KEY];
     if (preference) {
         return [preference boolValue];
     } else {
@@ -97,7 +97,7 @@
 }
 
 - (BOOL)getHistoryLogEnabled {
-    NSNumber *preference = [self tryGetValueForKey:HISTORY_LOG_ENABLED_KEY];
+    NSNumber* preference = [self tryGetValueForKey:HISTORY_LOG_ENABLED_KEY];
     if (preference) {
         return [preference boolValue];
     } else {
@@ -106,7 +106,7 @@
 }
 
 - (BOOL)loggingIsEnabled {
-    NSNumber *preference = [self tryGetValueForKey:DEBUG_IS_ENABLED_KEY];
+    NSNumber* preference = [self tryGetValueForKey:DEBUG_IS_ENABLED_KEY];
     if (preference) {
         return [preference boolValue];
     } else{
@@ -115,7 +115,7 @@
 }
 
 - (BOOL)screenSecurityIsEnabled {
-    NSNumber *preference = [self tryGetValueForKey:SCREEN_SECURITY_KEY];
+    NSNumber* preference = [self tryGetValueForKey:SCREEN_SECURITY_KEY];
     if (preference) {
         return [preference boolValue];
     } else{
@@ -160,7 +160,7 @@
 }
 
 - (NSString*)setAndGetCurrentVersion {
-    NSString *lastVersion = self.lastRanVersion;
+    NSString* lastVersion = self.lastRanVersion;
     
     [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%@", [NSBundle mainBundle].infoDictionary[@"CFBundleVersion"]]
                                             forKey:kSignalVersionKey];
