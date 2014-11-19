@@ -39,7 +39,7 @@ PODS:
   - Mantle (1.5.1):
     - Mantle/extobjc (= 1.5.1)
   - Mantle/extobjc (1.5.1)
-  - OpenSSL (1.0.109)
+  - OpenSSL (1.0.110)
   - PastelogKit (1.2):
     - CocoaLumberjack (~> 1.9)
   - ProtocolBuffers (1.9.2)
@@ -64,7 +64,7 @@ DEPENDENCIES:
   - JSQMessagesViewController (from `https://github.com/dtsbourg/JSQMessagesViewController`, branch `JSignalQ`)
   - libPhoneNumber-iOS (~> 0.7)
   - Mantle (~> 1.5)
-  - OpenSSL (~> 1.0.109)
+  - OpenSSL (~> 1.0.110)
   - PastelogKit (~> 1.2)
   - SocketRocket (from `https://github.com/square/SocketRocket.git`, commit `d0585af165`)
   - TwistedOakCollapsingFutures (~> 1.0)
@@ -100,7 +100,7 @@ SPEC CHECKSUMS:
   JSQSystemSoundPlayer: c98443b1cbb3b45db09d0d3d6c2355cf78294981
   libPhoneNumber-iOS: 98fc07d70c8fdb5e6a8e3442c37e97353065c20e
   Mantle: d7c5ac734579ec751c58fecbf56189853056c58c
-  OpenSSL: 4810adf5c99b0e2cd20670a11a987c805e8a521c
+  OpenSSL: 72a82aa51b056ae5833307a3fef9b571f38ce11c
   PastelogKit: 8bab71b1d187617a83e7124cffe9eb1a600e6695
   ProtocolBuffers: a834d6fe4ae0cc94d081b864e4948bdd483ad228
   SocketRocket: 9cbe08469513356cddc0afcab1ff160bd190296a

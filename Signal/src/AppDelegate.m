@@ -12,6 +12,7 @@
 #import "PriorityQueue.h"
 #import "RecentCallManager.h"
 #import "Release.h"
+#import "TSAccountManager.h"
 #import "Util.h"
 #import "VersionMigrations.h"
 
@@ -161,21 +162,19 @@
     
     } onThread:NSThread.mainThread untilCancelled:nil];
     
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:[NSBundle mainBundle]];
     
-    InitialViewController *viewControllerForNewUser = [storyboard instantiateViewControllerWithIdentifier:@"UserInitialViewController"];
+    UIViewController *viewController;
     
-    UITabBarController *viewController = [storyboard instantiateViewControllerWithIdentifier:@"UserInitialViewController"];
-    
-    BOOL isNewUser = NO;
-    if (isNewUser) {
-        self.window.rootViewController = viewControllerForNewUser;
-    } else {
-        self.window.rootViewController = viewController;
+    if (![TSAccountManager isRegistered]) {
+        viewController = [storyboard instantiateViewControllerWithIdentifier:@"RegisterInitialViewController"];
+    } else{
+        viewController = [storyboard instantiateViewControllerWithIdentifier:@"UserInitialViewController"];
     }
     
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.rootViewController = viewController;
     [self.window makeKeyAndVisible];
-    
     
     return YES;
 }
