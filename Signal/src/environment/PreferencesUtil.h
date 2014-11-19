@@ -1,7 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "PhoneNumberDirectoryFilter.h"
 #import "PropertyListPreferences.h"
-#import "CallLogViewController.h"
 #import "Zid.h"
 
 @class PhoneNumber;

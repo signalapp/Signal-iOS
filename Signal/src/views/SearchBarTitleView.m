@@ -3,7 +3,6 @@
 #import "PreferencesUtil.h"
 #import "LocalizableText.h"
 
-#import <UIViewController+MMDrawerController.h>
 
 #define SEARCH_BAR_ANIMATION_DURATION 0.25
 

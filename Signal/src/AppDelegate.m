@@ -1,24 +1,22 @@
 #import "AppDelegate.h"
 #import "AppAudioManager.h"
-#import "CallLogViewController.h"
 #import "CategorizingLogger.h"
 #import "DebugLogger.h"
 #import "DialerViewController.h"
 #import "DiscardingLog.h"
 #import "Environment.h"
 #import "InCallViewController.h"
-#import "LeftSideMenuViewController.h"
-#import "MMDrawerController.h"
 #import "PreferencesUtil.h"
 #import "NotificationTracker.h"
 #import "PushManager.h"
 #import "PriorityQueue.h"
 #import "RecentCallManager.h"
 #import "Release.h"
-#import "SettingsViewController.h"
-#import "TabBarParentViewController.h"
 #import "Util.h"
 #import "VersionMigrations.h"
+
+#import "InitialViewController.h"
+
 
 #import <PastelogKit/Pastelog.h>
 
@@ -31,7 +29,6 @@
 @interface AppDelegate ()
 
 @property (nonatomic, retain) UIWindow            *blankWindow;
-@property (nonatomic, strong) MMDrawerController  *drawerController;
 @property (nonatomic, strong) NotificationTracker *notificationTracker;
 
 @property (nonatomic) TOCFutureSource *callPickUpFuture;
@@ -139,12 +136,6 @@
     [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
     [UIApplication.sharedApplication setStatusBarStyle:UIStatusBarStyleDefault];
     
-    LeftSideMenuViewController *leftSideMenuViewController = [LeftSideMenuViewController new];
-    
-    self.drawerController = [[MMDrawerController alloc] initWithCenterViewController:leftSideMenuViewController.centerTabBarViewController leftDrawerViewController:leftSideMenuViewController];
-    //self.window.rootViewController = _drawerController;
-    //[self.window makeKeyAndVisible];
-    
     //Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotif) {
@@ -169,9 +160,23 @@
                 }
             }];
         }
-        [_drawerController.centerViewController presentViewController:callViewController animated:YES completion:nil];
-        
+    
     } onThread:NSThread.mainThread untilCancelled:nil];
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    
+    InitialViewController *viewControllerForNewUser = [storyboard instantiateViewControllerWithIdentifier:@"UserInitialViewController"];
+    
+    UITabBarController *viewController = [storyboard instantiateViewControllerWithIdentifier:@"UserInitialViewController"];
+    
+    BOOL isNewUser = NO;
+    if (isNewUser) {
+        self.window.rootViewController = viewControllerForNewUser;
+    } else {
+        self.window.rootViewController = viewController;
+    }
+    
+    [self.window makeKeyAndVisible];
     
     
     return YES;

@@ -37,12 +37,12 @@ MacrosSingletonImplemention
         NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
         self.operationManager = [[AFHTTPSessionManager alloc] initWithBaseURL:endPointURL sessionConfiguration:sessionConf];
         self.operationManager.responseSerializer                      = [AFJSONResponseSerializer serializer];
+        self.operationManager.securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate];
         self.operationManager.securityPolicy.allowInvalidCertificates = YES;
         NSString *certPath = [NSBundle.mainBundle pathForResource:@"whisperReal" ofType:@"cer"];
         NSData *certData = [NSData dataWithContentsOfFile:certPath];
         SecCertificateRef cert = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certData));
         self.operationManager.securityPolicy.pinnedCertificates = @[(__bridge_transfer NSData *)SecCertificateCopyData(cert)];
-        self.operationManager.securityPolicy.SSLPinningMode     = AFSSLPinningModeCertificate;
     }
     return self;
 }

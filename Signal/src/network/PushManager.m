@@ -58,22 +58,12 @@
         return;
     }
     
-    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
-        
-        // On iOS7, we just need to register for Push Notifications (user notifications are enabled with them)
-        [self registrationForPushWithSuccess:success failure:failure];
-        
-    } else{
-        
-        // On iOS 8+, both Push Notifications and User Notfications need to be registered.
-        
-        [self registrationForPushWithSuccess:^{
-            [self registrationForUserNotificationWithSuccess:success failure:^{
-                [self.missingPermissionsAlertView show];
-                failure();
-            }];
-        } failure:failure];
-    }
+    [self registrationForPushWithSuccess:^{
+        [self registrationForUserNotificationWithSuccess:success failure:^{
+            [self.missingPermissionsAlertView show];
+            failure();
+        }];
+    } failure:failure];
 }
 
 
@@ -108,15 +98,8 @@
 
 -(TOCFuture*)registerPushNotificationFuture{
     self.pushNotificationFutureSource = [TOCFutureSource new];
+    [UIApplication.sharedApplication registerForRemoteNotifications];
     
-    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
-        [UIApplication.sharedApplication registerForRemoteNotificationTypes:(UIRemoteNotificationType)self.mandatoryNotificationTypes];
-        if ([self isMissingMandatoryNotificationTypes]) {
-            [self.pushNotificationFutureSource trySetFailure:@"Missing Types"];
-        }
-    } else {
-        [UIApplication.sharedApplication registerForRemoteNotifications];
-    }
     return self.pushNotificationFutureSource.future;
 }
 
@@ -173,11 +156,7 @@
 }
 
 -(BOOL) needToRegisterForRemoteNotifications {
-    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
-        return self.wantRemoteNotifications;
-    } else{
-        return self.wantRemoteNotifications && (!UIApplication.sharedApplication.isRegisteredForRemoteNotifications);
-    }
+    return self.wantRemoteNotifications && (!UIApplication.sharedApplication.isRegisteredForRemoteNotifications);
 }
 
 -(BOOL) wantRemoteNotifications {
@@ -216,29 +195,17 @@
 
 -(BOOL)isMissingMandatoryNotificationTypes {
     int mandatoryTypes = self.mandatoryNotificationTypes;
-    int currentTypes;
-    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
-        currentTypes = UIApplication.sharedApplication.enabledRemoteNotificationTypes;
-    } else {
-        currentTypes = UIApplication.sharedApplication.currentUserNotificationSettings.types;
-    }
+    int currentTypes = UIApplication.sharedApplication.currentUserNotificationSettings.types;
+    
     return (mandatoryTypes & currentTypes) != mandatoryTypes;
 }
 
 -(int)allNotificationTypes{
-    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
-        return UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeBadge;
-    } else {
-        return UIUserNotificationTypeAlert | UIUserNotificationTypeSound | UIUserNotificationTypeBadge;
-    }
+    return UIUserNotificationTypeAlert | UIUserNotificationTypeSound | UIUserNotificationTypeBadge;
 }
 
 -(int)mandatoryNotificationTypes{
-    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
-        return UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound;
-    } else {
-        return UIUserNotificationTypeAlert | UIUserNotificationTypeSound;
-    }
+    return UIUserNotificationTypeAlert | UIUserNotificationTypeSound;
 }
 
 @end
