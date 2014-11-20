@@ -267,7 +267,7 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
 -(NSData*) generateCcrcData {
     return [[contributingSourceIdentifiers map:^id(NSNumber* ccsrc) {
         return [NSData dataWithBigEndianBytesOfUInt32:[ccsrc unsignedIntValue]];
-    }] concatDatas];
+    }] ows_concatDatas];
 }
 -(NSData*) generateExtensionHeaderData {
     if (!hasExtensionHeader) return [NSData data];
@@ -276,7 +276,7 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
             [NSData dataWithBigEndianBytesOfUInt16:extensionHeaderIdentifier],
             [NSData dataWithBigEndianBytesOfUInt16:(uint16_t)extensionHeaderData.length],
             extensionHeaderData
-            ] concatDatas];
+            ] ows_concatDatas];
 }
 -(NSData*) generatePaddingData {
     NSMutableData* paddingData = [NSMutableData dataWithLength:padding];
@@ -310,7 +310,7 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
             [self generateExtensionHeaderData],
             payload,
             [self generatePaddingData]
-            ] concatDatas];
+            ] ows_concatDatas];
 }
 
 -(RtpPacket*) withSequenceNumber:(uint16_t)newSequenceNumber {

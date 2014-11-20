@@ -3,7 +3,7 @@
 
 @implementation NSArray (Util)
 
--(NSData*) toUint8Data {
+-(NSData*)ows_toUint8Data {
     NSUInteger n = self.count;
     uint8_t x[n];
     for (NSUInteger i = 0; i < n; i++) {
@@ -11,7 +11,7 @@
     }
     return [NSData dataWithBytes:x length:n];
 }
--(NSData*) concatDatas {
+-(NSData*)ows_concatDatas {
     NSUInteger t = 0;
     for (id d in self) {
         require([d isKindOfClass:NSData.class]);
@@ -26,7 +26,7 @@
     }
     return result;
 }
--(NSArray*) concatArrays {
+-(NSArray*)ows_concatArrays {
     NSMutableArray* r = [NSMutableArray array];
     for (id e in self) {
         require([e isKindOfClass:NSArray.class]);

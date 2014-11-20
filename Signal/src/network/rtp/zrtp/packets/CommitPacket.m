@@ -44,7 +44,7 @@
                                        andAuthSpecId:COMMIT_DEFAULT_AUTH_SPEC_ID
                                       andAgreeSpecId:keyAgreementProtocol.getId
                                         andSasSpecId:COMMIT_DEFAULT_SAS_SPEC_ID
-                           andDhPart2HelloCommitment:@[dhPart2Data, helloData].concatDatas.hashWithSha256
+                           andDhPart2HelloCommitment:@[dhPart2Data, helloData].ows_concatDatas.hashWithSha256
                                           andHmacKey:hashChain.h1];
 }
 
@@ -109,7 +109,7 @@
                        agreementSpecId,
                        sasSpecId,
                        dhPart2HelloCommitment
-                       ].concatDatas;
+                       ].ows_concatDatas;
     
     return [[HandshakePacket handshakePacketWithTypeId:HANDSHAKE_TYPE_COMMIT andPayload:payload] withHmacAppended:hmacKey];
 }
@@ -120,7 +120,7 @@
     NSData* expected = [[@[
                          [[dhPart2 embeddedIntoHandshakePacket] dataUsedForAuthentication],
                          [[hello embeddedIntoHandshakePacket] dataUsedForAuthentication]]
-                         concatDatas] hashWithSha256];
+                         ows_concatDatas] hashWithSha256];
     checkOperation([dhPart2HelloCommitment isEqualToData_TimingSafe:expected]);
 }
 -(void) verifyMacWithHashChainH1:(NSData*)hashChainH1 {

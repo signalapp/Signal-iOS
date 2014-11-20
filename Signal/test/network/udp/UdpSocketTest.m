@@ -17,9 +17,9 @@
     
     __block NSData* received = nil;
     __block bool senderReceivedData = false;
-    NSData* r1 = [@[@2,@3,@5] toUint8Data];
-    NSData* r2 = [@[@7,@11,@13] toUint8Data];
-    NSData* r3 = [@[@17,@19,@23] toUint8Data];
+    NSData* r1 = [@[@2,@3,@5] ows_toUint8Data];
+    NSData* r2 = [@[@7,@11,@13] ows_toUint8Data];
+    NSData* r3 = [@[@17,@19,@23] ows_toUint8Data];
     
     in_port_t port1 = (in_port_t)(arc4random_uniform(40000) + 10000);
     in_port_t port2 = port1 + (in_port_t)1;
@@ -68,9 +68,9 @@
     
     __block NSData* received = nil;
     __block bool senderReceivedData = false;
-    NSData* r1 = [@[@2,@3,@5] toUint8Data];
-    NSData* r2 = [@[@7,@11,@13] toUint8Data];
-    NSData* r3 = [@[@17,@19,@23] toUint8Data];
+    NSData* r1 = [@[@2,@3,@5] ows_toUint8Data];
+    NSData* r2 = [@[@7,@11,@13] ows_toUint8Data];
+    NSData* r3 = [@[@17,@19,@23] ows_toUint8Data];
     
     in_port_t unusedPort = (in_port_t)(arc4random_uniform(40000) + 10000);
     
