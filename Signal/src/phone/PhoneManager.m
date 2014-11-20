@@ -26,7 +26,7 @@
         
         [self.currentCallControllerObservable watchLatestValue:^(CallController* latestValue) {
             [self.currentCallStateObservable updateValue:latestValue.callState];
-        } onThread:[NSThread currentThread] untilCancelled:nil];
+        } onThread:NSThread.currentThread untilCancelled:nil];
     }
     
     return self;
@@ -143,7 +143,7 @@
 }
 
 - (BOOL)toggleMute {
-	return [self.currentCallController toggleMute];
+	return [[self currentCallController] toggleMute];
 }
 
 - (void)terminate {

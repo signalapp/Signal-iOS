@@ -47,7 +47,7 @@
 
 - (void)performOnThread:(NSThread*)thread {
     require(thread != nil);
-    [self performSelector:@selector(run) onThread:thread withObject:nil waitUntilDone:thread == [NSThread currentThread]];
+    [self performSelector:@selector(run) onThread:thread withObject:nil waitUntilDone:thread == NSThread.currentThread];
 }
 
 - (void)performOnThreadAndWaitUntilDone:(NSThread*)thread {

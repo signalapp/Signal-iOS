@@ -60,7 +60,7 @@ static NSString* const HELVETICA_LIGHT_NAME = @"Helvetica-Light";
 
 + (void)applyRoundedBorderToImageView:(UIImageView* __strong*)imageView {
     [[*imageView layer] setBorderWidth:CONTACT_PICTURE_VIEW_BORDER_WIDTH];
-    [[*imageView layer] setBorderColor:[[UIColor lightGrayColor] CGColor]];
+    [[*imageView layer] setBorderColor:[UIColor.lightGrayColor CGColor]];
     [[*imageView layer] setCornerRadius:CGRectGetWidth([*imageView frame])/2];
     [[*imageView layer] setMasksToBounds:YES];
 }

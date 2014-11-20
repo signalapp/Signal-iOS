@@ -38,7 +38,7 @@
 }
 
 - (void)runLoopUntilCancelled {
-    NSThread* curThread = [NSThread currentThread];
+    NSThread* curThread = NSThread.currentThread;
     NSRunLoop* curRunLoop = [NSRunLoop currentRunLoop];
     
     while (!curThread.isCancelled) {

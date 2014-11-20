@@ -5,10 +5,10 @@
 @implementation FavouriteTableViewCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString*)reuseIdentifier {
-    self = [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class]) owner:self options:nil] firstObject];
+    self = [[NSBundle.mainBundle loadNibNamed:NSStringFromClass([self class]) owner:self options:nil] firstObject];
     
     if (self) {
-        self.contactPictureView.layer.borderColor = [[UIColor lightGrayColor] CGColor];
+        self.contactPictureView.layer.borderColor = [UIColor.lightGrayColor CGColor];
         self.contactPictureView.layer.masksToBounds = YES;
     }
     
@@ -54,7 +54,7 @@
                                      value:[UIFont boldSystemFontOfSize:self.nameLabel.font.pointSize]
                                      range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
     [fullNameAttributedString addAttribute:NSForegroundColorAttributeName
-                                     value:[UIColor blackColor]
+                                     value:UIColor.blackColor
                                      range:NSMakeRange(0, contact.fullName.length)];
     return fullNameAttributedString;
 }

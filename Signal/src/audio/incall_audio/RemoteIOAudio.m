@@ -60,7 +60,7 @@ static bool doesActiveInstanceExist;
 }
 
 - (void)setupAudio {
-    [[AppAudioManager sharedInstance] requestRecordingPrivlege];
+    [AppAudioManager.sharedInstance requestRecordingPrivlege];
     self.rioAudioUnit = [self makeAudioUnit];
     [self setAudioEnabled];
     [self setAudioStreamFormat];
@@ -199,7 +199,7 @@ static bool doesActiveInstanceExist;
             self.state = RemoteIOAudioStateTerminated;
             doesActiveInstanceExist = false;
             [self checkDone:AudioOutputUnitStop(self.rioAudioUnit)];
-            [[AppAudioManager sharedInstance] releaseRecordingPrivlege];
+            [AppAudioManager.sharedInstance releaseRecordingPrivlege];
             [self.unusedBuffers removeAllObjects];
         }
     }];

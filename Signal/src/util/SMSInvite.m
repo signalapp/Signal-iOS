@@ -18,7 +18,7 @@
 }
 
 - (void)sendSMSInviteToNumber:(PhoneNumber*)number{
-    if (MFMessageComposeViewController.canSendText && [[UIDevice currentDevice].model isEqualToString:@"iPhone"]) {
+    if (MFMessageComposeViewController.canSendText && [UIDevice.currentDevice.model isEqualToString:@"iPhone"]) {
         MFMessageComposeViewController* messageController = [[MFMessageComposeViewController alloc] init];
         
         NSString* inviteMessage = INVITE_USERS_MESSAGE;

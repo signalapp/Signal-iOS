@@ -34,7 +34,7 @@
     require(resourcePath != nil);
     require(resourceType != nil);
     
-    NSString* certPath = [[NSBundle mainBundle] pathForResource:resourcePath ofType:resourceType];
+    NSString* certPath = [NSBundle.mainBundle pathForResource:resourcePath ofType:resourceType];
     NSData* certData = [[NSData alloc] initWithContentsOfFile:certPath];
     checkOperation(certData != nil);
     

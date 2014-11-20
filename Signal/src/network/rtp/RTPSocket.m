@@ -62,7 +62,7 @@
 
 - (void)handleRTPPacket:(RTPPacket*)rtpPacket {
     @synchronized(self) {
-        if ([ThreadManager lowLatencyThread] == [NSThread currentThread]) {
+        if ([ThreadManager lowLatencyThread] == NSThread.currentThread) {
             [self.currentHandler handlePacket:rtpPacket];
             return;
         }

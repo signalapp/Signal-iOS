@@ -38,8 +38,8 @@ static NSString* const FAVOURITE_FALSE_ICON_NAME = @"favourite_false_icon";
 - (void)viewWillAppear:(BOOL)animated {
 	
     if (self.contact) {
-        self.navigationController.navigationBar.barTintColor = [UIUtil darkBackgroundColor];
-        self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+        self.navigationController.navigationBar.barTintColor = UIUtil.darkBackgroundColor;
+        self.navigationController.navigationBar.tintColor = UIColor.whiteColor;
         self.navigationController.navigationBar.translucent = NO;
         self.contactNameLabel.text = self.contact.fullName;
         if (self.contact.image) {
@@ -139,26 +139,26 @@ static NSString* const FAVOURITE_FALSE_ICON_NAME = @"favourite_false_icon";
                                                                                   style:UIBarButtonItemStylePlain
                                                                                  target:self
                                                                                  action:@selector(favouriteButtonTapped)];
-        self.navigationItem.rightBarButtonItem.tintColor = [UIColor yellowColor];
+        self.navigationItem.rightBarButtonItem.tintColor = UIColor.yellowColor;
     } else {
         UIImage* favouriteImage = [UIImage imageNamed:FAVOURITE_FALSE_ICON_NAME];
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:favouriteImage
                                                                                   style:UIBarButtonItemStylePlain
                                                                                  target:self
                                                                                  action:@selector(favouriteButtonTapped)];
-        self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
+        self.navigationItem.rightBarButtonItem.tintColor = UIColor.whiteColor;
     }
 }
 
 - (void)openPhoneAppWithPhoneNumber:(PhoneNumber*)phoneNumber {
     if (phoneNumber) {
-        [[UIApplication sharedApplication] openURL:phoneNumber.toSystemDialerURL];
+        [UIApplication.sharedApplication openURL:phoneNumber.toSystemDialerURL];
     }
 }
 
 - (void)openEmailAppWithEmail:(NSString*)email {
     NSString* mailURL = [NSString stringWithFormat:@"%@%@",MAIL_URL_PREFIX, email];
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:mailURL]];
+    [UIApplication.sharedApplication openURL:[NSURL URLWithString:mailURL]];
 }
 
 - (void)startSecureCallWithNumber:(PhoneNumber*)number {

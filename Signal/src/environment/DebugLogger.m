@@ -36,7 +36,7 @@ MacrosSingletonImplemention
 }
 
 - (void)enableTTYLogging {
-    [DDLog addLogger:[DDTTYLogger sharedInstance]];
+    [DDLog addLogger:DDTTYLogger.sharedInstance];
 }
 
 - (void)wipeLogs {
@@ -48,10 +48,10 @@ MacrosSingletonImplemention
     
     NSError*  error;
     NSString* logPath    = [NSHomeDirectory() stringByAppendingString:@"/Library/Caches/Logs/"];
-    NSArray*  logsFiles  = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:logPath error:&error];
+    NSArray*  logsFiles  = [NSFileManager.defaultManager contentsOfDirectoryAtPath:logPath error:&error];
 
     for (NSUInteger i = 0; i < logsFiles.count; i++) {
-        [[NSFileManager defaultManager] removeItemAtPath:[logPath stringByAppendingString:logsFiles[i]] error:&error];
+        [NSFileManager.defaultManager removeItemAtPath:[logPath stringByAppendingString:logsFiles[i]] error:&error];
     }
     
     if (error) {

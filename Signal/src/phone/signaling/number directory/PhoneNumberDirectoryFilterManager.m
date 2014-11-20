@@ -73,7 +73,7 @@
 }
 
 - (void)update {
-    [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall fetchBloomFilter] success:^(NSURLSessionDataTask* task, NSData* responseObject) {
+    [RPServerRequestsManager.sharedInstance performRequest:[RPAPICall fetchBloomFilter] success:^(NSURLSessionDataTask* task, NSData* responseObject) {
         PhoneNumberDirectoryFilter* directory = [[PhoneNumberDirectoryFilter alloc] initFromURLResponse:(NSHTTPURLResponse*)task.response
                                                                                                    body:responseObject];
         
@@ -82,7 +82,7 @@
         }
         
         [Environment.preferences setSavedPhoneNumberDirectory:directory];
-        [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
+        [NSNotificationCenter.defaultCenter postNotificationName:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
         [self scheduleUpdate];
         
     } failure:^(NSURLSessionDataTask* task, NSError* error) {
@@ -96,7 +96,7 @@
             self.phoneNumberDirectoryFilter = [[PhoneNumberDirectoryFilter alloc] initWithBloomFilter:filter andExpirationDate:retryDate];
         }
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_FAILED object:nil];
+        [NSNotificationCenter.defaultCenter postNotificationName:NOTIFICATION_DIRECTORY_FAILED object:nil];
     }];
 }
 

@@ -15,11 +15,11 @@
 }
 
 - (void)localizeAndStyle {
-    NSDictionary* labelAttributes = @{NSForegroundColorAttributeName:[UIColor grayColor]};
+    NSDictionary* labelAttributes = @{NSForegroundColorAttributeName:UIColor.grayColor};
 
     self.searchTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TXT_SEARCH_PLACEHOLDER_TEXT
                                                                                  attributes:labelAttributes];
-    self.searchTextField.tintColor = [UIColor grayColor];
+    self.searchTextField.tintColor = UIColor.grayColor;
 }
 
 - (void)setupEvents {

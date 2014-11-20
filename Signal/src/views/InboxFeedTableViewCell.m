@@ -15,7 +15,7 @@
 @synthesize contactPictureView = _contactPictureView;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString*)reuseIdentifier {
-    self = [[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class])
+    self = [NSBundle.mainBundle loadNibNamed:NSStringFromClass([self class])
                                           owner:self
                                         options:nil][0];
 
@@ -70,23 +70,23 @@
 - (NSAttributedString*)dateArrributedString:(NSDate*)date {
 
     NSString* dateString;
-    NSString* timeString = [[DateUtil timeFormatter] stringFromDate:date];
+    NSString* timeString = [DateUtil.timeFormatter stringFromDate:date];
 
       
     if ([DateUtil dateIsOlderThanOneWeek:date]) {
-        dateString = [[DateUtil dateFormatter] stringFromDate:date];
+        dateString = [DateUtil.dateFormatter stringFromDate:date];
     } else {
-        dateString = [[DateUtil weekdayFormatter] stringFromDate:date];
+        dateString = [DateUtil.weekdayFormatter stringFromDate:date];
     }
 
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:[timeString stringByAppendingString:dateString]];
 
     [attributedString addAttribute:NSForegroundColorAttributeName
-                             value:[UIColor darkGrayColor]
+                             value:UIColor.darkGrayColor
                              range:NSMakeRange(0, timeString.length)];
 
     [attributedString addAttribute:NSForegroundColorAttributeName
-                             value:[UIUtil darkBackgroundColor]
+                             value:UIUtil.darkBackgroundColor
                              range:NSMakeRange(timeString.length,dateString.length)];
 
     [attributedString addAttribute:NSFontAttributeName
@@ -105,7 +105,7 @@
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
 
     if (self.scrollView.contentOffset.x < 0) {
-        self.archiveImageView.tintColor = [UIUtil redColor];
+        self.archiveImageView.tintColor = UIUtil.redColor;
         self.archiveImageView.bounds = CGRectMake(self.archiveImageView.bounds.origin.x,
                                                   self.archiveImageView.bounds.origin.y,
                                                   ARCHIVE_IMAGE_VIEW_WIDTH,
@@ -118,12 +118,12 @@
                                                   self.archiveImageView.bounds.origin.y,
                                                   (CGFloat)newWidth,
                                                   self.archiveImageView.bounds.size.height);
-        self.archiveImageView.tintColor = [UIColor whiteColor];
+        self.archiveImageView.tintColor = UIColor.whiteColor;
 
     }
 
     if (scrollView.contentOffset.x > CGRectGetWidth(self.archiveView.frame)*2) {
-        self.deleteImageView.tintColor = [UIUtil redColor];
+        self.deleteImageView.tintColor = UIUtil.redColor;
         self.deleteImageView.bounds = CGRectMake(self.deleteImageView.bounds.origin.x,
                                                  self.deleteImageView.bounds.origin.y,
                                                  DELETE_IMAGE_VIEW_WIDTH,
@@ -137,7 +137,7 @@
                                                  self.deleteImageView.bounds.origin.y,
                                                  (CGFloat)newWidth,
                                                  self.deleteImageView.bounds.size.height);
-        self.deleteImageView.tintColor = [UIColor whiteColor];
+        self.deleteImageView.tintColor = UIColor.whiteColor;
     }
 }
 

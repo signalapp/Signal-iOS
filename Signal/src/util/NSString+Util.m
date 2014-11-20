@@ -60,7 +60,7 @@
                      replacedBy:(NSString*)replacement {
     require(regex != nil);
     require(replacement != nil);
-    NSMutableString* m = self.mutableCopy;
+    NSMutableString* m = [self mutableCopy];
     [regex replaceMatchesInString:m options:0 range:NSMakeRange(0, m.length) withTemplate:replacement];
     return m;
 }
@@ -176,7 +176,7 @@
 
 - (NSString*)withCharactersInRange:(NSRange)range
                         replacedBy:(NSString*)substring {
-    NSMutableString* result = self.mutableCopy;
+    NSMutableString* result = [self mutableCopy];
     [result replaceCharactersInRange:range withString:substring];
     return result;
 }

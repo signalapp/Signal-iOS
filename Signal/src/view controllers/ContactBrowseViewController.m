@@ -33,14 +33,14 @@ static NSString* const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(contactsDidRefresh)
-                                                 name:NOTIFICATION_DIRECTORY_WAS_UPDATED
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(contactRefreshFailed)
-                                                 name:NOTIFICATION_DIRECTORY_FAILED
-                                               object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(contactsDidRefresh)
+                                               name:NOTIFICATION_DIRECTORY_WAS_UPDATED
+                                             object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(contactRefreshFailed)
+                                               name:NOTIFICATION_DIRECTORY_FAILED
+                                             object:nil];
 
     self.refreshControl = [[UIRefreshControl alloc] init];
     [self.refreshControl addTarget:self action:@selector(refreshContacts) forControlEvents:UIControlEventValueChanged];
@@ -76,7 +76,7 @@ static NSString* const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)onSearchOrContactChange:(NSString*)searchTerm {
@@ -91,15 +91,15 @@ static NSString* const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 }
 
 - (void)observeKeyboardNotifications {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillShow:)
-                                                 name:UIKeyboardWillShowNotification
-                                               object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(keyboardWillShow:)
+                                               name:UIKeyboardWillShowNotification
+                                             object:nil];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillHide:)
-                                                 name:UIKeyboardWillHideNotification
-                                               object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(keyboardWillHide:)
+                                               name:UIKeyboardWillHideNotification
+                                             object:nil];
 }
 
 - (void)notificationViewTapped:(id)sender {
@@ -163,7 +163,7 @@ static NSString* const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     [observableContacts watchLatestValue:^(NSArray* latestContacts) {
         self.latestContacts = latestContacts;
         [self onSearchOrContactChange:nil];
-    } onThread:[NSThread mainThread] untilCancelled:nil];
+    } onThread:NSThread.mainThread untilCancelled:nil];
 }
 
 - (NSArray*)contactsForSectionIndex:(NSUInteger)index {

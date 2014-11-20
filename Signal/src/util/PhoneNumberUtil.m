@@ -14,7 +14,7 @@
 }
 
 + (NSString*)callingCodeFromCountryCode:(NSString*)code {
-    NSNumber* callingCode = [[NBPhoneNumberUtil sharedInstance] getCountryCodeForRegion:code];
+    NSNumber* callingCode = [NBPhoneNumberUtil.sharedInstance getCountryCodeForRegion:code];
     return [NSString stringWithFormat:@"%@%@", COUNTRY_CODE_PREFIX, callingCode];
 }
 
@@ -32,7 +32,7 @@
 }
 
 + (NSString*)normalizePhoneNumber:(NSString*)number {
-    return [[NBPhoneNumberUtil sharedInstance] normalizePhoneNumber:number];
+    return [NBPhoneNumberUtil.sharedInstance normalizePhoneNumber:number];
 }
 
 + (NSUInteger) translateCursorPosition:(NSUInteger)offset

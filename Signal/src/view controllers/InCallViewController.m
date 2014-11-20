@@ -58,7 +58,7 @@ static NSInteger connectingFlashCounter = 0;
     [self showCallState];
     [self setupButtonBorders];
     [self localizeButtons];
-    [[UIDevice currentDevice] setProximityMonitoringEnabled:YES];
+    [UIDevice.currentDevice setProximityMonitoringEnabled:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -70,11 +70,11 @@ static NSInteger connectingFlashCounter = 0;
     [super viewWillDisappear:animated];
     [self stopRingingAnimation];
     [self stopConnectingFlashAnimation];
-    [[AppAudioManager sharedInstance] cancellAllAudio];
+    [AppAudioManager.sharedInstance cancellAllAudio];
 }
 
 - (void)dealloc {
-    [[UIDevice currentDevice] setProximityMonitoringEnabled:NO];
+    [UIDevice.currentDevice setProximityMonitoringEnabled:NO];
 }
 
 - (void)showCallState {
@@ -174,8 +174,8 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 - (void)setupButtonBorders {
-    self.muteButton.layer.borderColor		= [UIUtil blueColor].CGColor;
-    self.speakerButton.layer.borderColor	= [UIUtil blueColor].CGColor;
+    self.muteButton.layer.borderColor		= [UIUtil.blueColor CGColor];
+    self.speakerButton.layer.borderColor	= [UIUtil.blueColor CGColor];
     self.muteButton.layer.borderWidth		= BUTTON_BORDER_WIDTH;
     self.speakerButton.layer.borderWidth	= BUTTON_BORDER_WIDTH;
 
@@ -221,13 +221,13 @@ static NSInteger connectingFlashCounter = 0;
 
     [[self.callState observableProgress] watchLatestValue:^(CallProgress* latestProgress) {
         [self onCallProgressed:latestProgress];
-    } onThread:[NSThread mainThread] untilCancelled:nil];
+    } onThread:NSThread.mainThread untilCancelled:nil];
 }
 
 - (void)onCallProgressed:(CallProgress*)latestProgress {
     BOOL showAcceptRejectButtons = !self.callState.initiatedLocally && [latestProgress type] <= CallProgressTypeRinging;
     [self displayAcceptRejectButtons:showAcceptRejectButtons];
-    [[AppAudioManager sharedInstance] respondToProgressChange:[latestProgress type]
+    [AppAudioManager.sharedInstance respondToProgressChange:[latestProgress type]
                                       forLocallyInitiatedCall:self.callState.initiatedLocally];
     
     if (latestProgress.type == CallProgressTypeRinging) {
@@ -237,7 +237,7 @@ static NSInteger connectingFlashCounter = 0;
     if (latestProgress.type == CallProgressTypeTerminated) {
         [self.callState.futureTermination thenDo:^(CallTermination* termination) {
             [self onCallEnded:termination];
-            [[AppAudioManager sharedInstance] respondToTerminationType:[termination type]];
+            [AppAudioManager.sharedInstance respondToTerminationType:[termination type]];
         }];
     } else {
         self.callStatusLabel.text = latestProgress.localizedDescriptionForUser;
@@ -261,7 +261,7 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 - (void)speakerButtonTapped {
-    self.speakerButton.selected = [[AppAudioManager sharedInstance] toggleSpeakerPhone];
+    self.speakerButton.selected = [AppAudioManager.sharedInstance toggleSpeakerPhone];
 }
 
 - (void)answerButtonTapped {
@@ -283,15 +283,15 @@ static NSInteger connectingFlashCounter = 0;
         message = [message stringByAppendingString:serverMessage.text];
     }
     
-    self.endButton.backgroundColor = [UIColor grayColor];
-    self.callStatusLabel.textColor = [UIColor redColor];
+    self.endButton.backgroundColor = UIColor.grayColor;
+    self.callStatusLabel.textColor = UIColor.redColor;
     
     [self showConnectingError];
     self.callStatusLabel.text = message;
 }
 
 - (void)dismissViewWithOptionalDelay:(BOOL)useDelay {
-    if (useDelay && UIApplicationStateActive == [[UIApplication sharedApplication] applicationState]) {
+    if (useDelay && UIApplicationStateActive == [UIApplication.sharedApplication applicationState]) {
         [self dismissViewControllerAfterDelay:END_CALL_CLEANUP_DELAY];
     } else {
         [self dismissViewControllerAnimated:NO completion:nil];

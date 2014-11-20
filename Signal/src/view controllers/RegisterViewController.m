@@ -55,7 +55,7 @@
     self.registerCancelButton.hidden = !isRegisteredAlready;
     
     [self initializeKeyboardHandlers];
-    [self setPlaceholderTextColor:[UIColor lightGrayColor]];
+    [self setPlaceholderTextColor:UIColor.lightGrayColor];
 }
 
 - (instancetype)init {
@@ -105,7 +105,7 @@
 - (void)populateDefaultCountryNameAndCode {
     NSLocale* locale = NSLocale.currentLocale;
     NSString* countryCode = [locale objectForKey:NSLocaleCountryCode];
-    NSNumber* cc = [[NBPhoneNumberUtil sharedInstance] getCountryCodeForRegion:countryCode];
+    NSNumber* cc = [NBPhoneNumberUtil.sharedInstance getCountryCodeForRegion:countryCode];
     
     self.countryCodeLabel.text = [NSString stringWithFormat:@"%@%@",COUNTRY_CODE_PREFIX, cc];
     self.countryNameLabel.text = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
@@ -133,7 +133,7 @@
     
     [SGNKeychainUtil setLocalNumberTo:localNumber];
     
-    [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall requestVerificationCode]
+    [RPServerRequestsManager.sharedInstance performRequest:[RPAPICall requestVerificationCode]
                                                      success:^(NSURLSessionDataTask *task, id responseObject) {
         [self showViewNumber:CHALLENGE_VIEW_NUMBER];
         [self.challengeNumberLabel setText:phoneNumber.description];
@@ -165,10 +165,10 @@
     self.challengeButton.enabled = NO;
     [self.challengeActivityIndicator startAnimating];
     
-    [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall verifyVerificationCode:self.challengeTextField.text]
+    [RPServerRequestsManager.sharedInstance performRequest:[RPAPICall verifyVerificationCode:self.challengeTextField.text]
                                                      success:^(NSURLSessionDataTask *task, id responseObject) {
         
-        [[PushManager sharedManager] registrationWithSuccess:^{
+        [PushManager.sharedManager registrationWithSuccess:^{
             [self.futureChallengeAcceptedSource trySetResult:@YES];
             [Environment setRegistered:YES];
             [self.registered trySetResult:@YES];
@@ -260,7 +260,7 @@
     [self stopVoiceVerificationCountdownTimer];
     [self.voiceChallengeTextLabel setText:NSLocalizedString(@"REGISTER_CALL_CALLING", @"")];
     
-    [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall requestVerificationCodeWithVoice]
+    [RPServerRequestsManager.sharedInstance performRequest:[RPAPICall requestVerificationCodeWithVoice]
                                                      success:^(NSURLSessionDataTask *task, id responseObject) {
         
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, VOICE_VERIFICATION_COOLDOWN_SECONDS * NSEC_PER_SEC);
@@ -292,15 +292,15 @@
 }
 
 - (void)observeKeyboardNotifications {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillShow:)
-                                                 name:UIKeyboardWillShowNotification
-                                               object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(keyboardWillShow:)
+                                               name:UIKeyboardWillShowNotification
+                                             object:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillHide:)
-                                                 name:UIKeyboardWillHideNotification
-                                               object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(keyboardWillHide:)
+                                               name:UIKeyboardWillHideNotification
+                                             object:nil];
 }
 
 - (void)keyboardWillShow:(NSNotification*)notification {

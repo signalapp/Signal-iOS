@@ -85,7 +85,7 @@
 - (TOCFuture*)registerForPushFutureWithToken:(NSData*)token {
     self.registerWithServerFutureSource = [[TOCFutureSource alloc] init];
     
-    [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall registerPushNotificationWithPushToken:token] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [RPServerRequestsManager.sharedInstance performRequest:[RPAPICall registerPushNotificationWithPushToken:token] success:^(NSURLSessionDataTask *task, id responseObject) {
         if ([task.response isKindOfClass:[NSHTTPURLResponse class]]) {
             NSInteger statusCode = [(NSHTTPURLResponse*) task.response statusCode];
             if (statusCode == 200) {
@@ -111,19 +111,19 @@
     self.pushNotificationFutureSource = [[TOCFutureSource alloc] init];
     
     if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
-        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationType)self.mandatoryNotificationTypes];
+        [UIApplication.sharedApplication registerForRemoteNotificationTypes:(UIRemoteNotificationType)self.mandatoryNotificationTypes];
         if ([self isMissingMandatoryNotificationTypes]) {
             [self.pushNotificationFutureSource trySetFailure:@"Missing Types"];
         }
     } else {
-        [[UIApplication sharedApplication] registerForRemoteNotifications];
+        [UIApplication.sharedApplication registerForRemoteNotifications];
     }
     return self.pushNotificationFutureSource.future;
 }
 
 - (TOCFuture*)registerForUserNotificationsFuture {
     self.userNotificationFutureSource = [[TOCFutureSource alloc] init];
-    [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationType)[self allNotificationTypes] categories:[NSSet setWithObject:[self userNotificationsCallCategory]]]];
+    [UIApplication.sharedApplication registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationType)[self allNotificationTypes] categories:[NSSet setWithObject:[self userNotificationsCallCategory]]]];
     return self.userNotificationFutureSource.future;
 }
 
@@ -177,12 +177,12 @@
     if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
         return self.wantRemoteNotifications;
     } else {
-        return self.wantRemoteNotifications && (![UIApplication sharedApplication].isRegisteredForRemoteNotifications);
+        return self.wantRemoteNotifications && (!UIApplication.sharedApplication.isRegisteredForRemoteNotifications);
     }
 }
 
 - (BOOL)wantRemoteNotifications {
-    BOOL isSimulator = [[UIDevice currentDevice].model.lowercaseString rangeOfString:@"simulator"].location != NSNotFound;
+    BOOL isSimulator = [UIDevice.currentDevice.model.lowercaseString rangeOfString:@"simulator"].location != NSNotFound;
     
     if (isSimulator) {
         // Simulator is used for debugging but can't receive push notifications, so don't bother trying to get them
@@ -219,9 +219,9 @@
     int mandatoryTypes = self.mandatoryNotificationTypes;
     int currentTypes;
     if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
-        currentTypes = [UIApplication sharedApplication].enabledRemoteNotificationTypes;
+        currentTypes = UIApplication.sharedApplication.enabledRemoteNotificationTypes;
     } else {
-        currentTypes = [UIApplication sharedApplication].currentUserNotificationSettings.types;
+        currentTypes = UIApplication.sharedApplication.currentUserNotificationSettings.types;
     }
     return (mandatoryTypes & currentTypes) != mandatoryTypes;
 }

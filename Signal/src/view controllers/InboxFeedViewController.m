@@ -70,7 +70,7 @@ static NSString* const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -96,22 +96,22 @@ static NSString* const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
                  shouldChangeCharactersInRange:NSMakeRange(0, 0)
                              replacementString:SEARCH_BAR_DEFAULT_EMPTY_STRING];
             }
-        } onThread:[NSThread mainThread] untilCancelled:nil];
+        } onThread:NSThread.mainThread untilCancelled:nil];
 
         
-    } onThread:[NSThread mainThread] untilCancelled:nil];
+    } onThread:NSThread.mainThread untilCancelled:nil];
 }
 
 - (void)observeKeyboardNotifications {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillShow:)
-                                                 name:UIKeyboardWillShowNotification
-                                               object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(keyboardWillShow:)
+                                               name:UIKeyboardWillShowNotification
+                                             object:nil];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillHide:)
-                                                 name:UIKeyboardWillHideNotification
-                                               object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(keyboardWillHide:)
+                                               name:UIKeyboardWillHideNotification
+                                             object:nil];
 }
 
 - (void)setupLabelLocalizationAndStyles {
@@ -390,8 +390,8 @@ static NSString* const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
         }
     }
 
-    self.searchRegisteredContacts = registeredContacts.copy;
-    self.searchUnregisteredContacts = unregisteredContacts.copy;
+    self.searchRegisteredContacts = [registeredContacts copy];
+    self.searchUnregisteredContacts = [unregisteredContacts copy];
 }
 
 #pragma mark - Keyboard

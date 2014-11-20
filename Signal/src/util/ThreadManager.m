@@ -30,27 +30,27 @@ static ThreadManager* sharedInstance = nil;
 }
 
 + (NSThread*)lowLatencyThread {
-    return [ThreadManager sharedInstance].low.thread;
+    return ThreadManager.sharedInstance.low.thread;
 }
 
 + (NSRunLoop*)lowLatencyThreadRunLoop {
-    return [ThreadManager sharedInstance].low.runLoop;
+    return ThreadManager.sharedInstance.low.runLoop;
 }
 
 + (NSThread*)normalLatencyThread {
-    return [ThreadManager sharedInstance].normal.thread;
+    return ThreadManager.sharedInstance.normal.thread;
 }
 
 + (NSRunLoop*)normalLatencyThreadRunLoop {
-    return [ThreadManager sharedInstance].normal.runLoop;
+    return ThreadManager.sharedInstance.normal.runLoop;
 }
 
 + (NSThread*)highLatencyThread {
-    return [ThreadManager sharedInstance].high.thread;
+    return ThreadManager.sharedInstance.high.thread;
 }
 
 + (NSRunLoop*)highLatencyThreadRunLoop {
-    return [ThreadManager sharedInstance].high.runLoop;
+    return ThreadManager.sharedInstance.high.runLoop;
 }
 
 + (void)terminate {

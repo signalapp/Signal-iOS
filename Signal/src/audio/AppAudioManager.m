@@ -22,7 +22,7 @@
     static dispatch_once_t onceToken = 0;
     dispatch_once(&onceToken, ^{
         sharedInstance = [[AppAudioManager alloc] init];
-        [[SoundPlayer sharedInstance] setDelegate:sharedInstance];
+        [SoundPlayer.sharedInstance setDelegate:sharedInstance];
     });
     return sharedInstance;
 }
@@ -74,7 +74,7 @@
     switch (progressType) {
         case CallProgressTypeConnecting:
             [self setAudioEnabled:YES];
-            [[SoundPlayer sharedInstance] stopAllAudio];
+            [SoundPlayer.sharedInstance stopAllAudio];
         case CallProgressTypeRinging:
             (initiatedLocally) ? [self handleOutboundRing] : [self handleInboundRing];
             break;
@@ -91,12 +91,12 @@
 
 - (void)respondToTerminationType:(CallTerminationType)terminationType {
     if (terminationType == CallTerminationTypeResponderIsBusy) {
-        [[SoundPlayer sharedInstance] playSound:[SoundBoard instanceOfBusySound]];
+        [SoundPlayer.sharedInstance playSound:[SoundBoard instanceOfBusySound]];
     } else if ([self shouldErrorSoundBePlayedForCallTerminationType:terminationType]) {
-        [[SoundPlayer sharedInstance] stopAllAudio];
-        [[SoundPlayer sharedInstance] playSound:[SoundBoard instanceOfErrorAlert]];
+        [SoundPlayer.sharedInstance stopAllAudio];
+        [SoundPlayer.sharedInstance playSound:[SoundBoard instanceOfErrorAlert]];
     } else {
-        [[SoundPlayer sharedInstance] playSound:[SoundBoard instanceOfAlert]];
+        [SoundPlayer.sharedInstance playSound:[SoundBoard instanceOfAlert]];
     }
 }
 
@@ -112,24 +112,24 @@
 }
 
 - (void)handleInboundRing {
-    [[SoundPlayer sharedInstance] playSound:[SoundBoard instanceOfInboundRingtone]];
+    [SoundPlayer.sharedInstance playSound:[SoundBoard instanceOfInboundRingtone]];
 }
 
 - (void)handleOutboundRing {
     [self setAudioProfile:AudioProfileDefault];
-    [[SoundPlayer sharedInstance] playSound:[SoundBoard instanceOfOutboundRingtone]];
+    [SoundPlayer.sharedInstance playSound:[SoundBoard instanceOfOutboundRingtone]];
 }
 
 - (void)handleSecuring {
-    [[SoundPlayer sharedInstance] stopAllAudio];
+    [SoundPlayer.sharedInstance stopAllAudio];
     [self setAudioProfile:AudioProfileDefault];
-    [[SoundPlayer sharedInstance] playSound:[SoundBoard instanceOfHandshakeSound]];
+    [SoundPlayer.sharedInstance playSound:[SoundBoard instanceOfHandshakeSound]];
 }
 
 - (void)handleCallEstablished {
-    [[SoundPlayer sharedInstance] stopAllAudio];
+    [SoundPlayer.sharedInstance stopAllAudio];
     [self setAudioProfile:AudioProfileDefault];
-    [[SoundPlayer sharedInstance] playSound:[SoundBoard instanceOfCompletedSound]];
+    [SoundPlayer.sharedInstance playSound:[SoundBoard instanceOfCompletedSound]];
 }
 
 - (BOOL)toggleSpeakerPhone {
@@ -142,7 +142,7 @@
 #pragma mark Audio Control
 
 - (void)cancellAllAudio {
-    [[SoundPlayer sharedInstance] stopAllAudio];
+    [SoundPlayer.sharedInstance stopAllAudio];
 }
 
 - (BOOL)requestRecordingPrivlege {
@@ -154,7 +154,7 @@
 }
 
 - (void)requestRequiredPermissionsIfNeeded {
-    [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
+    [AVAudioSession.sharedInstance requestRecordPermission:^(BOOL granted) {
         if (!granted) {
 #warning Deprecated method
             UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
@@ -169,17 +169,17 @@
 
 - (BOOL)changeAudioSessionCategoryTo:(NSString*)category {
     NSError* e;
-    [[AVAudioSession sharedInstance] setCategory:category error:&e];
+    [AVAudioSession.sharedInstance setCategory:category error:&e];
     return (nil != e);
 }
 
 - (BOOL)setAudioEnabled:(BOOL)enable {
     NSError* e;
     if (enable) {
-        [[AVAudioSession sharedInstance] setActive:enable error:&e];
-        [[SoundPlayer sharedInstance] awake];
+        [AVAudioSession.sharedInstance setActive:enable error:&e];
+        [SoundPlayer.sharedInstance awake];
     } else {
-        [[AVAudioSession sharedInstance] setActive:enable
+        [AVAudioSession.sharedInstance setActive:enable
                                        withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation
                                              error:&e];
     }
@@ -187,7 +187,7 @@
 }
 
 - (void)awake {
-    [[SoundPlayer sharedInstance] awake];
+    [SoundPlayer.sharedInstance awake];
 }
 
 #pragma mark Sound Player Delegate

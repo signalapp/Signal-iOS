@@ -71,15 +71,15 @@
     NSError* error;
     
     NSDictionary* attrs = @{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication};
-    [[NSFileManager defaultManager] setAttributes:attrs ofItemAtPath:preferencesPath error:&error];
+    [NSFileManager.defaultManager setAttributes:attrs ofItemAtPath:preferencesPath error:&error];
     
-    [pathsToExclude addObject:[[preferencesPath stringByAppendingString:[NSBundle mainBundle].bundleIdentifier] stringByAppendingString:@".plist"]];
+    [pathsToExclude addObject:[[preferencesPath stringByAppendingString:NSBundle.mainBundle.bundleIdentifier] stringByAppendingString:@".plist"]];
     
     NSString* logPath    = [NSHomeDirectory() stringByAppendingString:@"/Library/Caches/Logs/"];
-    NSArray*  logsFiles  = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:logPath error:&error];
+    NSArray*  logsFiles  = [NSFileManager.defaultManager contentsOfDirectoryAtPath:logPath error:&error];
     
     attrs = @{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication};
-    [[NSFileManager defaultManager] setAttributes:attrs ofItemAtPath:logPath error:&error];
+    [NSFileManager.defaultManager setAttributes:attrs ofItemAtPath:logPath error:&error];
     
     for (NSString* logsFile in logsFiles) {
         [pathsToExclude addObject:[logPath stringByAppendingString:logsFile]];
@@ -117,20 +117,20 @@
     }
     
     loggingIsEnabled = TRUE;
-    [[DebugLogger sharedInstance] enableTTYLogging];
+    [DebugLogger.sharedInstance enableTTYLogging];
     
 #elif RELEASE
     loggingIsEnabled = Environment.preferences.loggingIsEnabled;
 #endif
 
     if (loggingIsEnabled) {
-        [[DebugLogger sharedInstance] enableFileLogging];
+        [DebugLogger.sharedInstance enableFileLogging];
     }
     
     [self performUpdateCheck];
     [self protectPreferenceFiles];
     
-    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
     
     [self prepareScreenshotProtection];
     
@@ -141,7 +141,7 @@
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
     [Environment.getCurrent.phoneDirectoryManager startUntilCancelled:nil];
     [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+    [UIApplication.sharedApplication setStatusBarStyle:UIStatusBarStyleDefault];
     
     LeftSideMenuViewController* leftSideMenuViewController = [[LeftSideMenuViewController alloc] init];
     
@@ -176,22 +176,22 @@
         }
         [self.drawerController.centerViewController presentViewController:callViewController animated:YES completion:nil];
         
-    } onThread:[NSThread mainThread] untilCancelled:nil];
+    } onThread:NSThread.mainThread untilCancelled:nil];
     
     
     return YES;
 }
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
-    [[PushManager sharedManager].pushNotificationFutureSource trySetResult:deviceToken];
+    [PushManager.sharedManager.pushNotificationFutureSource trySetResult:deviceToken];
 }
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error {
-    [[PushManager sharedManager].pushNotificationFutureSource trySetFailure:error];
+    [PushManager.sharedManager.pushNotificationFutureSource trySetFailure:error];
 }
 
 - (void)application:(UIApplication*)application didRegisterUserNotificationSettings:(UIUserNotificationSettings*)notificationSettings {
-    [[PushManager sharedManager].userNotificationFutureSource trySetResult:notificationSettings];
+    [PushManager.sharedManager.userNotificationFutureSource trySetResult:notificationSettings];
 }
 
 - (void)application:(UIApplication*)application didReceiveRemoteNotification:(NSDictionary*)userInfo {
@@ -222,17 +222,17 @@
 }
 
 - (void)applicationDidBecomeActive:(UIApplication*)application {
-    [[AppAudioManager sharedInstance] awake];
+    [AppAudioManager.sharedInstance awake];
     
     // Hacky way to clear notification center after processed push
-    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:1];
-    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+    [UIApplication.sharedApplication setApplicationIconBadgeNumber:1];
+    [UIApplication.sharedApplication setApplicationIconBadgeNumber:0];
     
     [self removeScreenProtection];
     
     if (Environment.isRegistered) {
-        [[PushManager sharedManager] verifyPushPermissions];
-        [[AppAudioManager sharedInstance] requestRequiredPermissionsIfNeeded];
+        [PushManager.sharedManager verifyPushPermissions];
+        [AppAudioManager.sharedInstance requestRequiredPermissionsIfNeeded];
     }
 }
 

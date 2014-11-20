@@ -6,22 +6,22 @@
 @implementation AudioRouter
 
 + (void)restoreDefaults {
-    [[AVAudioSession sharedInstance] setActive:YES error:nil];
+    [AVAudioSession.sharedInstance setActive:YES error:nil];
     [AudioRouter routeAllAudioToExternalSpeaker];
 }
 
 + (void)routeAllAudioToInteralSpeaker {
-    [[AVAudioSession sharedInstance] setCategory:DEFAULT_CATAGORY error:nil];
+    [AVAudioSession.sharedInstance setCategory:DEFAULT_CATAGORY error:nil];
 }
 
 + (void)routeAllAudioToExternalSpeaker {
-    [[AVAudioSession sharedInstance] setCategory:DEFAULT_CATAGORY
+    [AVAudioSession.sharedInstance setCategory:DEFAULT_CATAGORY
                                      withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker
                                            error:nil];
 }
 
 + (BOOL)isOutputRoutedToSpeaker {
-    AVAudioSessionRouteDescription* routeDesc = [AVAudioSession sharedInstance].currentRoute;
+    AVAudioSessionRouteDescription* routeDesc = AVAudioSession.sharedInstance.currentRoute;
     
     for (AVAudioSessionPortDescription* portDesc in routeDesc.outputs) {
         if (AVAudioSessionPortBuiltInSpeaker == [portDesc portType]) {
@@ -32,7 +32,7 @@
 }
 
 + (BOOL)isOutputRoutedToReciever {
-    AVAudioSessionRouteDescription* routeDesc = [AVAudioSession sharedInstance].currentRoute;
+    AVAudioSessionRouteDescription* routeDesc = AVAudioSession.sharedInstance.currentRoute;
     
     for (AVAudioSessionPortDescription* portDesc in routeDesc.outputs) {
         if (AVAudioSessionPortBuiltInReceiver == [portDesc portType]) {

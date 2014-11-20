@@ -59,12 +59,12 @@
     ObservableValue* recentCallObservable = Environment.getCurrent.recentCallManager.getObservableRecentCalls;
     [recentCallObservable watchLatestValue:^(NSArray* latestRecents) {
         [self updateMissedCallCountLabel];		
-    } onThread:[NSThread mainThread] untilCancelled:nil];
+    } onThread:NSThread.mainThread untilCancelled:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(newUsersDetected:)
-                                                 name:NOTIFICATION_NEW_USERS_AVAILABLE
-                                               object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(newUsersDetected:)
+                                               name:NOTIFICATION_NEW_USERS_AVAILABLE
+                                             object:nil];
 
 }
 
@@ -81,11 +81,11 @@
     [controller didMoveToParentViewController:self];
     [self setNeedsStatusBarAppearanceUpdate];
 
-    self.tabBarFavouritesButton.backgroundColor = [UIUtil darkBackgroundColor];
-    self.tabBarContactsButton.backgroundColor   = [UIUtil darkBackgroundColor];
-    self.tabBarDialerButton.backgroundColor     = [UIUtil darkBackgroundColor];
-    self.tabBarInboxButton.backgroundColor      = [UIUtil darkBackgroundColor];
-    self.tabBarCallLogButton.backgroundColor    = [UIUtil darkBackgroundColor];
+    self.tabBarFavouritesButton.backgroundColor = UIUtil.darkBackgroundColor;
+    self.tabBarContactsButton.backgroundColor   = UIUtil.darkBackgroundColor;
+    self.tabBarDialerButton.backgroundColor     = UIUtil.darkBackgroundColor;
+    self.tabBarInboxButton.backgroundColor      = UIUtil.darkBackgroundColor;
+    self.tabBarCallLogButton.backgroundColor    = UIUtil.darkBackgroundColor;
 }
 
 - (void)removeCurrentChildViewController {
@@ -105,7 +105,7 @@
         [self.inboxFeedNavigationController popToRootViewControllerAnimated:YES];
     } else {
         [self presentChildViewController:self.inboxFeedNavigationController];
-        self.tabBarInboxButton.backgroundColor = [UIColor darkGrayColor];
+        self.tabBarInboxButton.backgroundColor = UIColor.darkGrayColor;
     }
 }
 
@@ -116,7 +116,7 @@
 - (void)presentContactsViewController {
     [self.contactNavigationController popToRootViewControllerAnimated:NO];
     [self presentChildViewController:self.contactNavigationController];
-    self.tabBarContactsButton.backgroundColor = [UIColor darkGrayColor];
+    self.tabBarContactsButton.backgroundColor = UIColor.darkGrayColor;
 }
 
 - (void)presentRecentCallsViewController {
@@ -125,7 +125,7 @@
     }
 
     [self presentChildViewController:self.callLogNavigationController];
-    self.tabBarCallLogButton.backgroundColor = [UIColor darkGrayColor];
+    self.tabBarCallLogButton.backgroundColor = UIColor.darkGrayColor;
 }
 
 - (void)presentFavouritesViewController {
@@ -135,7 +135,7 @@
 
     [self.favouritesNavigationController popToRootViewControllerAnimated:NO];
     [self presentChildViewController:self.favouritesNavigationController];
-    self.tabBarFavouritesButton.backgroundColor = [UIColor darkGrayColor];
+    self.tabBarFavouritesButton.backgroundColor = UIColor.darkGrayColor;
 }
 
 - (void)presentInviteContactsViewController {
@@ -160,7 +160,7 @@
     }
     [self.dialerNavigationController popToRootViewControllerAnimated:NO];
     [self presentChildViewController:self.dialerNavigationController];
-    self.tabBarDialerButton.backgroundColor = [UIColor darkGrayColor];
+    self.tabBarDialerButton.backgroundColor = UIColor.darkGrayColor;
 }
 
 - (void)updateMissedCallCountLabel {

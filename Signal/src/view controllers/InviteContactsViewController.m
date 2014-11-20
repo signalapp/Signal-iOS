@@ -50,19 +50,19 @@ static NSString* const INVITE_CONTACTS_TABLE_CELL_IDENTIFIER = @"ContactTableVie
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)observeKeyboardNotifications {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillShow:)
-                                                 name:UIKeyboardWillShowNotification
-                                               object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(keyboardWillShow:)
+                                               name:UIKeyboardWillShowNotification
+                                             object:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillHide:)
-                                                 name:UIKeyboardWillHideNotification
-                                               object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(keyboardWillHide:)
+                                               name:UIKeyboardWillHideNotification
+                                             object:nil];
 }
 
 - (void)setupContacts {
@@ -72,7 +72,7 @@ static NSString* const INVITE_CONTACTS_TABLE_CELL_IDENTIFIER = @"ContactTableVie
         self.latestContacts = [self getUnregisteredUsersFromAllUsers:latestContacts searchTerm:nil];
         self.displayedContacts = self.latestContacts;
         [self.contactTableView reloadData];
-    } onThread:[NSThread mainThread] untilCancelled:nil];
+    } onThread:NSThread.mainThread untilCancelled:nil];
 }
 
 - (NSArray*)getUnregisteredUsersFromAllUsers:(NSArray*)users searchTerm:(NSString*)searchTerm {

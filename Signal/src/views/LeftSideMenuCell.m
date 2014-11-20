@@ -4,7 +4,7 @@
 @implementation LeftSideMenuCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString*)reuseIdentifier {
-    self = [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class])
+    self = [[NSBundle.mainBundle loadNibNamed:NSStringFromClass([self class])
                                           owner:self
                                         options:nil] firstObject];
     return self;
@@ -13,9 +13,9 @@
 - (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
     [super setHighlighted:highlighted animated:animated];
     if (highlighted) {
-        self.menuTitleLabel.textColor = [UIUtil darkBackgroundColor];
+        self.menuTitleLabel.textColor = UIUtil.darkBackgroundColor;
     } else {
-        self.menuTitleLabel.textColor = [UIUtil whiteColor];
+        self.menuTitleLabel.textColor = UIUtil.whiteColor;
     }
 }
 

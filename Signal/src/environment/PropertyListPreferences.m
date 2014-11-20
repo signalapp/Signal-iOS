@@ -6,23 +6,23 @@
 
 - (void)clear {
     @synchronized(self) {
-        NSString* appDomain = [NSBundle mainBundle].bundleIdentifier;
-        [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
+        NSString* appDomain = NSBundle.mainBundle.bundleIdentifier;
+        [NSUserDefaults.standardUserDefaults removePersistentDomainForName:appDomain];
     }
 }
 
 - (id)tryGetValueForKey:(NSString*)key {
     require(key != nil);
     @synchronized(self) {
-        return [[NSUserDefaults standardUserDefaults] objectForKey:key];
+        return [NSUserDefaults.standardUserDefaults objectForKey:key];
     }
 }
 
 - (void)setValueForKey:(NSString*)key toValue:(id)value {
     require(key != nil);
     @synchronized(self) {
-        [[NSUserDefaults standardUserDefaults] setObject:value forKey:key];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+        [NSUserDefaults.standardUserDefaults setObject:value forKey:key];
+        [NSUserDefaults.standardUserDefaults synchronize];
     }
 }
 

@@ -41,7 +41,7 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
                 }
             }
         }
-    } onThread:[NSThread mainThread] untilCancelled:cancelToken];
+    } onThread:NSThread.mainThread untilCancelled:cancelToken];
 }
 
 - (void)watchForCallsThrough:(PhoneManager*)phoneManager untilCancelled:(TOCCancelToken*)untilCancelledToken {
@@ -51,7 +51,7 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
         if (latestCall != nil && Environment.preferences.getHistoryLogEnabled) {
             [self addCall:latestCall];
         }
-    } onThread:[NSThread mainThread] untilCancelled:untilCancelledToken];
+    } onThread:NSThread.mainThread untilCancelled:untilCancelledToken];
 }
 
 - (void)addCall:(CallState*)call {
@@ -126,12 +126,12 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
 - (void)saveContactsToDefaults {
     NSData *saveData = [NSKeyedArchiver archivedDataWithRootObject:[self.allRecents copy]];
 
-    [[NSUserDefaults standardUserDefaults] setObject:saveData forKey:RECENT_CALLS_DEFAULT_KEY];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [NSUserDefaults.standardUserDefaults setObject:saveData forKey:RECENT_CALLS_DEFAULT_KEY];
+    [NSUserDefaults.standardUserDefaults synchronize];
 }
 
 - (NSMutableArray*)loadContactsFromDefaults {
-    NSData *encodedData = [[NSUserDefaults standardUserDefaults] objectForKey:RECENT_CALLS_DEFAULT_KEY];
+    NSData *encodedData = [NSUserDefaults.standardUserDefaults objectForKey:RECENT_CALLS_DEFAULT_KEY];
     id data = [NSKeyedUnarchiver unarchiveObjectWithData:encodedData];
 
     if (![data isKindOfClass:[NSArray class]]) {

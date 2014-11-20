@@ -231,10 +231,10 @@ static NSString* const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
     BOOL loggingEnabled = !self.disableDebugLogsButton.selected;
     
     if (!loggingEnabled) {
-        [[DebugLogger sharedInstance] disableFileLogging];
+        [DebugLogger.sharedInstance disableFileLogging];
         [[DebugLogger sharedInstance ] wipeLogs];
     } else{
-        [[DebugLogger sharedInstance] enableFileLogging];
+        [DebugLogger.sharedInstance enableFileLogging];
     }
 
     [Environment.preferences setLoggingEnabled:loggingEnabled];

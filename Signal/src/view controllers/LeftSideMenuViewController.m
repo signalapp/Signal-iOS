@@ -124,15 +124,15 @@ static NSString *WHISPER_SYSTEMS_BUGREPORT_URL = @"http://support.whispersystems
 }
 
 - (void)openAboutWhisperUrl {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:WHISPER_SYSTEMS_URL]];
+    [UIApplication.sharedApplication openURL:[NSURL URLWithString:WHISPER_SYSTEMS_URL]];
 }
 
 - (void)openBugReporterUrl {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:WHISPER_SYSTEMS_BUGREPORT_URL]];
+    [UIApplication.sharedApplication openURL:[NSURL URLWithString:WHISPER_SYSTEMS_BUGREPORT_URL]];
 }
 
 - (void)openBlogUrl {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:WHISPER_SYSTEMS_BLOG_URL]];
+    [UIApplication.sharedApplication openURL:[NSURL URLWithString:WHISPER_SYSTEMS_BLOG_URL]];
 }
 
 #pragma mark - UITableViewDelegate
@@ -171,7 +171,7 @@ static NSString *WHISPER_SYSTEMS_BUGREPORT_URL = @"http://support.whispersystems
     if (!cell) {
         cell = [[LeftSideMenuCell alloc] initWithStyle:UITableViewCellStyleDefault
                                        reuseIdentifier:SIDE_MENU_TABLE_CELL_IDENTIFIER];		
-        cell.backgroundColor = [UIColor clearColor];
+        cell.backgroundColor = UIColor.clearColor;
     }
 
     if (indexPath.section == FIRST_SECTION_INDEX) {

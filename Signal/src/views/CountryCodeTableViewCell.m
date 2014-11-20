@@ -3,7 +3,7 @@
 @implementation CountryCodeTableViewCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString*)reuseIdentifier {
-    self = [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class])
+    self = [[NSBundle.mainBundle loadNibNamed:NSStringFromClass([self class])
                                           owner:self
                                         options:nil] firstObject];
     return self;

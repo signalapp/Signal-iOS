@@ -43,12 +43,12 @@ typedef NSComparisonResult (^CallComparator)(RecentCall*, RecentCall*);
 }
 
 - (void)observeKeyboardNotifications {
-    [[NSNotificationCenter defaultCenter] addObserver:self
+    [NSNotificationCenter.defaultCenter addObserver:self
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
                                                object:nil];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
+    [NSNotificationCenter.defaultCenter addObserver:self
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
@@ -68,7 +68,7 @@ typedef NSComparisonResult (^CallComparator)(RecentCall*, RecentCall*);
         if (!self.tableViewContentMutating) {
             [self.recentCallsTableView reloadData];
         }
-    } onThread:[NSThread mainThread] untilCancelled:nil];
+    } onThread:NSThread.mainThread untilCancelled:nil];
 }
 
 - (void)deleteRecentCallAtIndexPath:(NSIndexPath*)indexPath {

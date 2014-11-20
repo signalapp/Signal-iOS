@@ -29,7 +29,7 @@ static NSString* const CONTACT_TABLE_VIEW_CELL_IDENTIFIER = @"ContactTableViewCe
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -49,7 +49,7 @@ static NSString* const CONTACT_TABLE_VIEW_CELL_IDENTIFIER = @"ContactTableViewCe
         self.favourites = latestFavourites;
         [self.favouriteTableView reloadData];
         [self hideTableViewIfNoFavourites];
-    } onThread:[NSThread mainThread] untilCancelled:nil];
+    } onThread:NSThread.mainThread untilCancelled:nil];
 }
 
 - (void)hideTableViewIfNoFavourites {
@@ -67,15 +67,15 @@ static NSString* const CONTACT_TABLE_VIEW_CELL_IDENTIFIER = @"ContactTableViewCe
 }
 
 - (void)observeKeyboardNotifications {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillShow:)
-                                                 name:UIKeyboardWillShowNotification
-                                               object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(keyboardWillShow:)
+                                               name:UIKeyboardWillShowNotification
+                                             object:nil];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillHide:)
-                                                 name:UIKeyboardWillHideNotification
-                                               object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(keyboardWillHide:)
+                                               name:UIKeyboardWillHideNotification
+                                             object:nil];
 }
 
 - (void)favouriteTapped:(Contact*)contact {
@@ -89,7 +89,7 @@ static NSString* const CONTACT_TABLE_VIEW_CELL_IDENTIFIER = @"ContactTableViewCe
         }
     }
 
-    [[UIApplication sharedApplication] openURL:[contact.parsedPhoneNumbers[0] toSystemDialerURL]];
+    [UIApplication.sharedApplication openURL:[contact.parsedPhoneNumbers[0] toSystemDialerURL]];
 }
 
 #pragma mark - UITableViewDelegate

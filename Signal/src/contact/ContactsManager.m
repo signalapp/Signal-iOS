@@ -69,10 +69,10 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL*);
 
 #pragma mark - Notification Handlers
 - (void)registerNotificationHandlers{
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(updatedDirectoryHandler:)
-                                                 name:NOTIFICATION_DIRECTORY_UPDATE
-                                               object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(updatedDirectoryHandler:)
+                                               name:NOTIFICATION_DIRECTORY_UPDATE
+                                             object:nil];
 }
 
 - (void)updatedDirectoryHandler:(NSNotification*)notification {
@@ -418,14 +418,14 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 #pragma mark - Favourites
 
 - (NSMutableArray*)loadFavouriteIds {
-    NSArray* favourites = [[NSUserDefaults standardUserDefaults] objectForKey:FAVOURITES_DEFAULT_KEY];
-    return favourites == nil ? [[NSMutableArray alloc] init] : favourites.mutableCopy;
+    NSArray* favourites = [NSUserDefaults.standardUserDefaults objectForKey:FAVOURITES_DEFAULT_KEY];
+    return favourites == nil ? [[NSMutableArray alloc] init] : [favourites mutableCopy];
 }
 
 - (void)saveFavouriteIds {
-    [[NSUserDefaults standardUserDefaults] setObject:[self.favouriteContactIds copy]
+    [NSUserDefaults.standardUserDefaults setObject:[self.favouriteContactIds copy]
                                               forKey:FAVOURITES_DEFAULT_KEY];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [NSUserDefaults.standardUserDefaults synchronize];
     [self.observableFavouritesController updateValue:[self contactsForContactIds:self.favouriteContactIds]];
 }
 
@@ -473,7 +473,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
             [self addContactsToKnownWhisperUsers:unacknowledgedUsers];
         } else {
             NSDictionary* payload = @{NOTIFICATION_DATAKEY_NEW_USERS: unacknowledgedUsers};
-            [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_NEW_USERS_AVAILABLE object:self userInfo:payload];
+            [NSNotificationCenter.defaultCenter postNotificationName:NOTIFICATION_NEW_USERS_AVAILABLE object:self userInfo:payload];
         }
     }
     return newUsers.count;
@@ -529,24 +529,24 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 - (BOOL)knownUserStoreInitialized {
-    NSUserDefaults* d = [[NSUserDefaults standardUserDefaults] objectForKey:KNOWN_USERS_DEFAULT_KEY];
+    NSUserDefaults* d = [NSUserDefaults.standardUserDefaults objectForKey:KNOWN_USERS_DEFAULT_KEY];
     return (Nil != d);
 }
 
 - (NSMutableArray*)loadKnownWhisperUsers{
-    NSArray* knownUsers = [[NSUserDefaults standardUserDefaults] objectForKey:KNOWN_USERS_DEFAULT_KEY];
-    return knownUsers == nil ? [[NSMutableArray alloc] init] : knownUsers.mutableCopy;
+    NSArray* knownUsers = [NSUserDefaults.standardUserDefaults objectForKey:KNOWN_USERS_DEFAULT_KEY];
+    return knownUsers == nil ? [[NSMutableArray alloc] init] : [knownUsers mutableCopy];
 }
 
 - (void)saveKnownWhisperUsers {
     self.knownWhisperUserIds = [[NSMutableArray alloc] initWithArray:[self.latestWhisperUsersById allKeys]];
-    [[NSUserDefaults standardUserDefaults] setObject:[self.knownWhisperUserIds copy] forKey:KNOWN_USERS_DEFAULT_KEY];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [NSUserDefaults.standardUserDefaults setObject:[self.knownWhisperUserIds copy] forKey:KNOWN_USERS_DEFAULT_KEY];
+    [NSUserDefaults.standardUserDefaults synchronize];
 }
 
 - (void)clearKnownWhisUsers{
-    [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:KNOWN_USERS_DEFAULT_KEY];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [NSUserDefaults.standardUserDefaults setObject:@[] forKey:KNOWN_USERS_DEFAULT_KEY];
+    [NSUserDefaults.standardUserDefaults synchronize];
 }
 
 @end

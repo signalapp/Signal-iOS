@@ -19,7 +19,7 @@
     require(sessionDescriptor != nil);
     require(callController != nil);
     return [CallConnectUtil_Responder asyncConnectToIncomingCallWithSessionDescriptor:sessionDescriptor
-                                                                  andCallController:callController];
+                                                                    andCallController:callController];
 }
 
 + (TOCFuture*)asyncSignalTooBusyToAnswerCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor {

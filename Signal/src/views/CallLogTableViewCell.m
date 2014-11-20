@@ -11,7 +11,7 @@
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString*)reuseIdentifier {
 
-    self = [[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class])
+    self = [NSBundle.mainBundle loadNibNamed:NSStringFromClass([self class])
                                          owner:self
                                        options:nil][0];
     if (self) {
@@ -49,9 +49,9 @@
     self.contactNumberLabel.text = recentCall.phoneNumber.localizedDescriptionForUser;
 
     if ([DateUtil dateIsOlderThanOneWeek:[recentCall date]]) {
-        self.timeLabel.text = [[DateUtil dateFormatter] stringFromDate:[recentCall date]];
+        self.timeLabel.text = [DateUtil.dateFormatter stringFromDate:[recentCall date]];
     } else {
-        self.timeLabel.text = [[DateUtil weekdayFormatter] stringFromDate:[recentCall date]];
+        self.timeLabel.text = [DateUtil.weekdayFormatter stringFromDate:[recentCall date]];
     }
 }
 
@@ -60,7 +60,7 @@
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
 	
     if (scrollView.contentOffset.x > CGRectGetWidth(_deleteView.frame)) {
-        self.deleteImageView.tintColor = [UIUtil redColor];
+        self.deleteImageView.tintColor = UIUtil.redColor;
 
         self.deleteImageView.bounds = CGRectMake(self.deleteImageView.bounds.origin.x,
                                                  self.deleteImageView.bounds.origin.y,
@@ -75,7 +75,7 @@
                                                  self.deleteImageView.bounds.origin.y,
                                                  (CGFloat)newWidth,
                                                  self.deleteImageView.bounds.size.height);
-        self.deleteImageView.tintColor = [UIColor whiteColor];
+        self.deleteImageView.tintColor = UIColor.whiteColor;
     }
 }
 

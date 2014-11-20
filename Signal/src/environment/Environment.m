@@ -164,13 +164,13 @@ andSupportedKeyAgreementProtocols:(NSArray*)keyAgreementProtocolsInDescendingPri
     NSData *macKey       = [SGNKeychainUtil signalingMacKey];
     NSData *extra        = [SGNKeychainUtil signalingExtraKey];
     NSString *serverAuth = [SGNKeychainUtil serverAuthPassword];
-    BOOL registered      = [[[NSUserDefaults standardUserDefaults] objectForKey:isRegisteredUserDefaultString] boolValue];
+    BOOL registered      = [[NSUserDefaults.standardUserDefaults objectForKey:isRegisteredUserDefaultString] boolValue];
     
     return signalingKey && macKey && extra && serverAuth && registered;
 }
 
 + (void)setRegistered:(BOOL)status {
-    [[NSUserDefaults standardUserDefaults] setObject:status?@YES:@NO forKey:isRegisteredUserDefaultString];
+    [NSUserDefaults.standardUserDefaults setObject:status?@YES:@NO forKey:isRegisteredUserDefaultString];
 }
 
 + (PropertyListPreferences*)preferences {
@@ -181,7 +181,7 @@ andSupportedKeyAgreementProtocols:(NSArray*)keyAgreementProtocolsInDescendingPri
     [SGNKeychainUtil wipeKeychain];
     [Environment.preferences clear];
     if (self.preferences.loggingIsEnabled) {
-        [[DebugLogger sharedInstance] wipeLogs];
+        [DebugLogger.sharedInstance wipeLogs];
     }
     [self.preferences setAndGetCurrentVersion];
 }
