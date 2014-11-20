@@ -5,7 +5,7 @@
 #import "HttpRequestUtil.h"
 #import "PreferencesUtil.h"
 #import "SignalUtil.h"
-#import "SGNKeychainUtil.h"
+#import "SignalKeyingStorage.h"
 #import <UICKeyChainStore/UICKeyChainStore.h>
 
 @interface HttpRequestResponseTest : XCTestCase
@@ -18,7 +18,7 @@
 
 //-(void) testRequestToInitiate {
 //    [Environment setCurrent:testEnv];
-//    [SGNKeychainUtil setLocalNumberTo:[PhoneNumber phoneNumberFromE164:@"+12211231235"]];
+//    [SignalKeyingStorage setLocalNumberTo:[PhoneNumber phoneNumberFromE164:@"+12211231235"]];
 //    [UICKeyChainStore setString:@"shall_not_password" forKey:@"Password"];
 //    [Environment.preferences setValueForKey:@"PasswordCounter" toValue:@2357];
 //    HttpRequest* h = [HttpRequest httpRequestToInitiateToRemoteNumber:[PhoneNumber phoneNumberFromE164:@"+19023334444"]];
@@ -37,7 +37,7 @@
 }
 //-(void) testRequestToRing {
 //    [Environment setCurrent:testEnv];
-//    [SGNKeychainUtil setLocalNumberTo:[PhoneNumber phoneNumberFromE164:@"+19025555555"]];
+//    [SignalKeyingStorage setLocalNumberTo:[PhoneNumber phoneNumberFromE164:@"+19025555555"]];
 //    [UICKeyChainStore setString:@"shall_not_password" forKey:@"Password"];
 //    [UICKeyChainStore setString:[@0 stringValue] forKey:@"PasswordCounter"];
 //    HttpRequest* h = [HttpRequest httpRequestToRingWithSessionId:458847238];

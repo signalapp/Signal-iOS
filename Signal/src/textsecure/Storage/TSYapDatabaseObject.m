@@ -49,7 +49,7 @@
 }
 
 
-#pragma - mark Class Methods
+#pragma mark Class Methods
 
 + (NSString *)collection{
     return NSStringFromClass([self class]);

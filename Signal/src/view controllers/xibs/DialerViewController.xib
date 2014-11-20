@@ -604,7 +604,7 @@
                         <outlet property="numberLabel" destination="J3B-Zg-DgR" id="1Tx-cs-Unb"/>
                     </connections>
                 </view>
-                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T7H-JR-Beb" userLabel="Button *" customClass="DialerButtonView">
+                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="T7H-JR-Beb" userLabel="Button *" customClass="DialerButtonView">
                     <rect key="frame" x="33" y="328" width="75" height="77"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jQH-w4-imN">
@@ -658,7 +658,7 @@
                         <outlet property="numberLabel" destination="325-Sb-hA5" id="gxO-5s-17q"/>
                     </connections>
                 </view>
-                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="97j-3K-zxA" userLabel="Button 0" customClass="DialerButtonView">
+                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="97j-3K-zxA" userLabel="Button 0" customClass="DialerButtonView">
                     <rect key="frame" x="123" y="328" width="74" height="77"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ynu-j8-rAV">
@@ -712,7 +712,7 @@
                         <outlet property="numberLabel" destination="hKX-df-8oI" id="qKJ-sl-JSm"/>
                     </connections>
                 </view>
-                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4UG-he-mMF" userLabel="Button #" customClass="DialerButtonView">
+                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="4UG-he-mMF" userLabel="Button #" customClass="DialerButtonView">
                     <rect key="frame" x="211" y="328" width="76" height="77"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bdz-8Z-3vp">
@@ -749,9 +749,7 @@
                         <constraint firstItem="byT-uY-L8H" firstAttribute="top" secondItem="4UG-he-mMF" secondAttribute="top" constant="15" id="cko-jF-jcU"/>
                         <constraint firstItem="byT-uY-L8H" firstAttribute="leading" secondItem="4UG-he-mMF" secondAttribute="leading" id="iqV-Ht-kfY"/>
                         <constraint firstAttribute="bottom" secondItem="byT-uY-L8H" secondAttribute="bottom" constant="25" id="qHE-nQ-Auk"/>
-                        <constraint firstItem="byT-uY-L8H" firstAttribute="leading" secondItem="bdz-8Z-3vp" secondAttribute="leading" id="qgW-iJ-DA3"/>
-                        <constraint firstItem="u7c-Hl-VSu" firstAttribute="trailing" secondItem="bdz-8Z-3vp" secondAttribute="trailing" id="rY8-SG-5WK"/>
-                        <constraint firstItem="u7c-Hl-VSu" firstAttribute="trailing" secondItem="byT-uY-L8H" secondAttribute="trailing" id="s6F-Fm-nOK"/>
+                        <constraint firstItem="byT-uY-L8H" firstAttribute="leading" secondItem="bdz-8Z-3vp" secondAttribute="leading" id="qgW-iJ-DA3"/>w
                         <constraint firstAttribute="bottom" secondItem="u7c-Hl-VSu" secondAttribute="bottom" constant="9" id="yaX-gl-2EW"/>
                     </constraints>
                     <userDefinedRuntimeAttributes>
@@ -764,7 +762,7 @@
                         <outlet property="numberLabel" destination="byT-uY-L8H" id="MLp-Uv-nKS"/>
                     </connections>
                 </view>
-                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gJH-91-Zx5">
+                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="gJH-91-Zx5"w
                     <rect key="frame" x="0.0" y="404" width="320" height="9"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>

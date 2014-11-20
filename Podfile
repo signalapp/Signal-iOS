@@ -12,7 +12,7 @@ pod 'AxolotlKit',                 '~> 0.1'
 pod 'PastelogKit',                '~> 1.2'
 pod 'TwistedOakCollapsingFutures','~> 1.0'
 pod 'YapDatabase/SQLCipher'
-pod 'AFNetworking',               '~> 2.4'
+pod 'AFNetworking',               '~> 2.5'
 pod 'Mantle',                     '~> 1.5'
 
 pod 'JSQMessagesViewController', :git => 'https://github.com/dtsbourg/JSQMessagesViewController', :branch => 'JSignalQ'

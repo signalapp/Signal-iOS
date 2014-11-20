@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#include "TableViewCell.h"
+#include "InboxTableViewCell.h"
 #import <UIKit/UIKit.h>
 
 #import "GroupModel.h"

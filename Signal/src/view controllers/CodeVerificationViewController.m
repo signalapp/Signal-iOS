@@ -11,7 +11,7 @@
 #import "RPServerRequestsManager.h"
 #import "LocalizableText.h"
 #import "PushManager.h"
-#import "SGNKeychainUtil.h"
+#import "SignalKeyingStorage.h"
 #import "TSAccountManager.h"
 
 @interface CodeVerificationViewController ()
@@ -36,12 +36,28 @@
 - (IBAction)verifyChallengeAction:(id)sender {
     
     [_challengeTextField resignFirstResponder];
-    
     //TODO: Lock UI interactions
+    
+<<<<<<< HEAD
+    //TODO: Lock UI interactions
+=======
+    [self registerWithSuccess:^{
+        [self performSegueWithIdentifier:@"verifiedSegue" sender:self];
+    } failure:^{
+       // TODO: Unlock UI
+        NSLog(@"Failed to register");
+    }];
+}
+
+
+- (void)registerWithSuccess:(void(^)())success failure:(void(^)())failure{
+    //TODO: Refactor this to use futures? Better error handling needed. Good enough for PoC
+>>>>>>> mergebranch
     
     [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall verifyVerificationCode:_challengeTextField.text] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSString *signupToken) {
+<<<<<<< HEAD
             [TSAccountManager registerWithRedPhoneToken:signupToken pushToken:pushToken success:^{
                  [self performSegueWithIdentifier:@"verifiedSegue" sender:self];
             } failure:^(TSRegistrationFailure failureType) {
@@ -49,6 +65,17 @@
             }];
         } failure:^{
             
+=======
+        
+            [TSAccountManager registerWithRedPhoneToken:signupToken pushToken:pushToken success:^{
+                success();
+            } failure:^(TSRegistrationFailure failureType) {
+                failure();
+            }];
+        
+        } failure:^{
+            failure();
+>>>>>>> mergebranch
         }];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         NSString *alertTitle = NSLocalizedString(@"REGISTRATION_ERROR", @"");
@@ -65,6 +92,7 @@
     }];
 }
 
+
 #pragma mark - Keyboard notifications
 
 - (void)initializeKeyboardHandlers{
@@ -77,6 +105,7 @@
     [self.view endEditing:NO];
 }
 
+<<<<<<< HEAD
 /*
 #pragma mark - Navigation
 
@@ -87,4 +116,6 @@
 }
 */
 
+=======
+>>>>>>> mergebranch
 @end

@@ -15,24 +15,26 @@
 #import "Environment.h"
 #import "Contact.h"
 #import "ContactsManager.h"
+#import "LocalizableText.h"
 #import "PhoneNumberDirectoryFilterManager.h"
-
-#import "DemoDataFactory.h"
+#import "NotificationManifest.h"
 
 #import <AddressBook/AddressBook.h>
+
+#define REFRESH_TIMEOUT 20
 
 static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableViewCell";
 
 
 @interface ContactsTableViewController () <UISearchBarDelegate, UISearchResultsUpdating>
 {
-    NSMutableDictionary *latestAlphabeticalContacts;
-    NSArray *latestSortedAlphabeticalContactKeys;
-    NSArray * latestContacts;
-    
-    NSArray * searchResults;
+    NSDictionary *latestAlphabeticalContacts;
+    NSArray *searchResults;
 }
 
+
+@property NSArray *latestSortedAlphabeticalContactKeys;
+@property NSArray *latestContacts;
 @property (nonatomic, strong) UISearchController *searchController;
 
 @end
@@ -44,13 +46,19 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
-    //Hide search bar
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contactsDidRefresh) name:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contactRefreshFailed) name:NOTIFICATION_DIRECTORY_FAILED object:nil];
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc]
+                                        init];
+    [refreshControl addTarget:self action:@selector(refreshContacts) forControlEvents:UIControlEventValueChanged];
+    self.refreshControl = refreshControl;
+    [self.contactTableView addSubview:self.refreshControl];
+    
     self.tableView.contentOffset = CGPointMake(0, 44);
     
     [self initializeSearch];
-
+    
     [self setupContacts];
-    searchResults = latestContacts;
     
     [self.tableView reloadData];
 }
@@ -105,45 +113,24 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 - (void)filterContentForSearchText:(NSString*)searchText scope:(NSString*)scope
 {
     NSPredicate *resultPredicate = [NSPredicate predicateWithFormat:@"fullName contains[c] %@", searchText];
-    searchResults = [latestContacts filteredArrayUsingPredicate:resultPredicate];
-    if (!searchResults.count && _searchController.searchBar.text.length == 0) searchResults = latestContacts;
+    searchResults = [self.latestContacts filteredArrayUsingPredicate:resultPredicate];
+    if (!searchResults.count && _searchController.searchBar.text.length == 0) searchResults = self.latestContacts;
 }
 
 
 #pragma mark - Contact functions
 
 - (void)setupContacts {
-    //    ObservableValue *observableContacts = Environment.getCurrent.contactsManager.getObservableWhisperUsers;
-    //
-    //    [observableContacts watchLatestValue:^(NSArray *latestContacts) {
-    //        _latestContacts = latestContacts;
-    //    } onThread:NSThread.mainThread untilCancelled:nil];
+    ObservableValue *observableContacts = Environment.getCurrent.contactsManager.getObservableWhisperUsers;
     
-    latestContacts = [DemoDataFactory makeFakeContacts];
-    
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"firstName" ascending:YES];
-    NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
-    latestSortedAlphabeticalContactKeys = [latestContacts sortedArrayUsingDescriptors:sortDescriptors];
-    
-    latestAlphabeticalContacts = [self alphabetDictionaryInit];
-    
-    for (Contact*contact in latestContacts)
-    {
-        NSString * firstLetter = [contact.firstName substringToIndex:1];
-        
-        NSMutableArray * mutArray = [[latestAlphabeticalContacts objectForKey:firstLetter] mutableCopy];
-        if (![mutArray containsObject:contact])
-            [mutArray addObject:contact];
-        [latestAlphabeticalContacts setObject:mutArray forKey:firstLetter];
-        
-    }
-    
-    latestSortedAlphabeticalContactKeys = [[latestAlphabeticalContacts allKeys]sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
-    
+    [observableContacts watchLatestValue:^(NSArray *latestContacts) {
+        _latestContacts = latestContacts;
+        [self onSearchOrContactChange:nil];
+    } onThread:NSThread.mainThread untilCancelled:nil];
 }
 
 - (NSArray *)contactsForSectionIndex:(NSUInteger)index {
-    return [latestAlphabeticalContacts valueForKey:latestSortedAlphabeticalContactKeys[index]];
+    return [latestAlphabeticalContacts valueForKey:self.latestSortedAlphabeticalContactKeys[index]];
 }
 
 
@@ -177,8 +164,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
             @"W": @[],
             @"X": @[],
             @"Y": @[],
-            @"Z": @[],
-            
+            @"Z": @[]
             };
     
     return [dic mutableCopy];
@@ -198,7 +184,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     
     if ([[self contactsForSectionIndex:(NSUInteger)section] count]) {
-        return latestSortedAlphabeticalContactKeys[(NSUInteger)section];
+        return self.latestSortedAlphabeticalContactKeys[(NSUInteger)section];
     } else {
         return nil;
     }
@@ -216,6 +202,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     if (self.searchController.active) {
         return 1;
     } else {
+        NSLog(@"Sections contacts %@", latestAlphabeticalContacts);
         return (NSInteger)[[latestAlphabeticalContacts allKeys] count];
     }
 }
@@ -223,7 +210,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
 {
     tableView.sectionIndexBackgroundColor = [UIColor clearColor];
-    return latestSortedAlphabeticalContactKeys;
+    return _latestSortedAlphabeticalContactKeys;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -231,7 +218,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     
     if (!cell) {
         cell = [[ContactTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                      reuseIdentifier:CONTACT_BROWSE_TABLE_CELL_IDENTIFIER];
+                                           reuseIdentifier:CONTACT_BROWSE_TABLE_CELL_IDENTIFIER];
     }
     
     
@@ -255,6 +242,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     } else {
         NSArray *contactSection = [self contactsForSectionIndex:(NSUInteger)indexPath.section];
         contact = contactSection[(NSUInteger)indexPath.row];
+        NSLog(@"Contact: %@", contact);
     }
     
     return contact;
@@ -292,8 +280,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     
     DialerViewController * dialer = [DialerViewController new];
     
-    UINavigationController *navigationController = [[UINavigationController alloc]
-                                                   initWithRootViewController:dialer];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:dialer];
     navigationController.tabBarController.hidesBottomBarWhenPushed = NO;
     
     dialer.phoneNumber = nil;
@@ -304,9 +291,34 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     navigationController.hidesBottomBarWhenPushed = YES;
     navigationController.navigationBarHidden=YES;
     
-    [self.tabBarController presentViewController:navigationController animated:YES completion:^(){
+    [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+}
+
+#pragma mark - Refresh controls
+
+- (void)onSearchOrContactChange:(NSString *)searchTerm {
+    if (_latestContacts) {
+        latestAlphabeticalContacts = [ContactsManager groupContactsByFirstLetter:_latestContacts
+                                                             matchingSearchString:searchTerm];
         
-    }];
+        NSArray *contactKeys = [latestAlphabeticalContacts allKeys];
+        _latestSortedAlphabeticalContactKeys = [contactKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+        [_contactTableView reloadData];
+    }
+}
+
+- (void)refreshContacts{
+    [Environment.getCurrent.phoneDirectoryManager forceUpdate];
+}
+
+- (void)contactRefreshFailed{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:TIMEOUT message:TIMEOUT_CONTACTS_DETAIL delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil];
+    [alert show];
+    [self.refreshControl endRefreshing];
+}
+
+- (void)contactsDidRefresh{
+    [self.refreshControl endRefreshing];
 }
 
 @end

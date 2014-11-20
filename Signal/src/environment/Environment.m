@@ -9,7 +9,7 @@
 #import "ContactsManager.h"
 #import "PreferencesUtil.h"
 #import "PhoneNumberDirectoryFilterManager.h"
-#import "SGNKeychainUtil.h"
+#import "SignalKeyingStorage.h"
 
 #define isRegisteredUserDefaultString @"isRegistered"
 
@@ -149,10 +149,10 @@ phoneDirectoryManager;
 
 +(BOOL)isRegistered{
     // Attributes that need to be set
-    NSData *signalingKey = SGNKeychainUtil.signalingCipherKey;
-    NSData *macKey       = SGNKeychainUtil.signalingMacKey;
-    NSData *extra        = SGNKeychainUtil.signalingExtraKey;
-    NSString *serverAuth = SGNKeychainUtil.serverAuthPassword;
+    NSData *signalingKey = SignalKeyingStorage.signalingCipherKey;
+    NSData *macKey       = SignalKeyingStorage.signalingMacKey;
+    NSData *extra        = SignalKeyingStorage.signalingExtraKey;
+    NSString *serverAuth = SignalKeyingStorage.serverAuthPassword;
     BOOL registered = [[NSUserDefaults.standardUserDefaults objectForKey:isRegisteredUserDefaultString] boolValue];
     
     return signalingKey && macKey && extra && serverAuth && registered;
@@ -167,7 +167,7 @@ phoneDirectoryManager;
 }
 
 +(void)resetAppData{
-    [SGNKeychainUtil wipeKeychain];
+    [SignalKeyingStorage wipeKeychain];
     [Environment.preferences clear];
     if (self.preferences.loggingIsEnabled) {
         [DebugLogger.sharedInstance wipeLogs];

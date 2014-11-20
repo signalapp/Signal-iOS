@@ -8,7 +8,7 @@
 #import "ZrtpResponder.h"
 #import "HelloAckPacket.h"
 #import "ConfirmAckPacket.h"
-#import "SGNKeychainUtil.h"
+#import "SignalKeyingStorage.h"
 
 #define DHRS1_LENGTH 8
 #define DHRS2_LENGTH 8
@@ -30,7 +30,7 @@
     s->badPacketLogger = [Environment.logging getOccurrenceLoggerForSender:self withKey:@"Bad Packet"];
     
     s->localHello = [HelloPacket helloPacketWithDefaultsAndHashChain:s->hashChain
-                                                              andZid:[SGNKeychainUtil zid]
+                                                              andZid:[SignalKeyingStorage zid]
                                             andKeyAgreementProtocols:s->allowedKeyAgreementProtocols];
     s->packetExpectation = EXPECTING_HELLO;
     s->callController = callController;

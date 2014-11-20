@@ -13,6 +13,7 @@
 @property(nonatomic, strong) IBOutlet UIImageView* fullImageView;
 @property(nonatomic, strong) IBOutlet UIButton* saveButton;
 @property(nonatomic, strong) IBOutlet UIButton* closeButton;
+@property(nonatomic, strong) IBOutlet UIScrollView* pinchView;
 
 @property(nonatomic, strong) UIImage* image;
 

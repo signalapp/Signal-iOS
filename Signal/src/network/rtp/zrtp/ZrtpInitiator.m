@@ -7,7 +7,7 @@
 #import "Util.h"
 #import "ZrtpInitiator.h"
 #import "PreferencesUtil.h"
-#import "SGNKeychainUtil.h"
+#import "SignalKeyingStorage.h"
 
 #define DHRS1_LENGTH 8
 #define DHRS2_LENGTH 8
@@ -24,7 +24,7 @@
     
     s->allowedKeyAgreementProtocols = Environment.getCurrent.keyAgreementProtocolsInDescendingPriority;
     s->dhSharedSecretHashes = [DhPacketSharedSecretHashes dhPacketSharedSecretHashesRandomized];
-    s->zid = [SGNKeychainUtil zid];
+    s->zid = [SignalKeyingStorage zid];
     s->confirmIv = [CryptoTools generateSecureRandomData:IV_LENGTH];
     s->hashChain = [HashChain hashChainWithSecureGeneratedData];
     s->badPacketLogger = [Environment.logging getOccurrenceLoggerForSender:self withKey:@"Bad Packet"];
