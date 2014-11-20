@@ -18,7 +18,9 @@
 @implementation AudioProcessor
 
 - (instancetype)init {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.jitterQueue             = [[JitterQueue alloc] init];
         self.stretchFactorController = [[StretchFactorController alloc] initForJitterQueue:self.jitterQueue];
         self.codec                   = [[SpeexCodec alloc] init];

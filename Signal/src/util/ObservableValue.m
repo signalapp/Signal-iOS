@@ -17,7 +17,9 @@
 @implementation ObservableValue
 
 - (instancetype)initWithValue:(id)value {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.currentValue = value;
         self.callbacks = [[NSMutableSet alloc] init];
         self.queuedActionsToRun = [[Queue alloc] init];

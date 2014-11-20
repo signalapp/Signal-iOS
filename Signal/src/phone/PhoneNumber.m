@@ -19,7 +19,9 @@ static NSString* const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 @implementation PhoneNumber
 
 - (instancetype)initFromText:(NSString*)text andRegion:(NSString*)regionCode {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(text != nil);
         require(regionCode != nil);
         
@@ -171,7 +173,9 @@ static NSString* const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 - (id)initWithCoder:(NSCoder*)decoder {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.phoneNumber = [decoder decodeObjectForKey:RPDefaultsKeyPhoneNumberString];
         self.e164 = [decoder decodeObjectForKey:RPDefaultsKeyPhoneNumberCanonical];
     }

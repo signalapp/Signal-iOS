@@ -35,7 +35,9 @@
 static bool doesActiveInstanceExist;
 
 - (instancetype)initWithDelegate:(id<AudioCallbackHandler>)delegateIn untilCancelled:(TOCCancelToken*)untilCancelledToken {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         checkOperationDescribe(!doesActiveInstanceExist, @"Only one RemoteIOInterfance instance can exist at a time. Adding more will break previous instances.");
         doesActiveInstanceExist = true;
         

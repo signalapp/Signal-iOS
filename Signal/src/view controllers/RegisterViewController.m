@@ -59,7 +59,9 @@
 }
 
 - (instancetype)init {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.life = [[TOCCancelTokenSource alloc] init];
         self.registered = [TOCFutureSource futureSourceUntil:self.life.token];
     }

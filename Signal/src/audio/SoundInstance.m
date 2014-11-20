@@ -11,7 +11,9 @@
 
 - (instancetype)initWithFile:(NSString*)audioFile
         andSoundInstanceType:(SoundInstanceType)soundInstanceType {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.soundInstanceType = soundInstanceType;
         self.audioPlayer = [SoundInstance createAudioPlayerForFile:audioFile];
         [self.audioPlayer setDelegate:self];

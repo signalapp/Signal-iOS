@@ -26,7 +26,9 @@ static double STRETCH_MODE_FACTORS[] = {1/0.95, 1, 1/1.05, 0.5};
 @implementation StretchFactorController
 
 - (instancetype)initForJitterQueue:(JitterQueue*)jitterQueue {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(jitterQueue != nil);
         
         self.desiredBufferDepthController = [[DesiredBufferDepthController alloc] initForJitterQueue:jitterQueue];

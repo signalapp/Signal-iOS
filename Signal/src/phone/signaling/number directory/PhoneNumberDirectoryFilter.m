@@ -21,7 +21,9 @@
 }
 
 - (instancetype)initWithBloomFilter:(BloomFilter*)bloomFilter andExpirationDate:(NSDate*)expirationDate {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(bloomFilter != nil);
         require(expirationDate != nil);
         

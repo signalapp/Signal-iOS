@@ -23,7 +23,9 @@
 - (instancetype)initForCallInitiatedLocally:(bool)initiatedLocally
                            withRemoteNumber:(PhoneNumber*)remoteNumber
               andOptionallySpecifiedContact:(Contact*)contact {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(remoteNumber != nil);
         
         CallProgress* initialProgress           = [[CallProgress alloc] initWithType:CallProgressTypeConnecting];

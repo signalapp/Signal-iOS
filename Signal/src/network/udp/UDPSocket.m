@@ -17,7 +17,9 @@
 @implementation UDPSocket
 
 - (instancetype)initSocketToFirstSenderOnLocalPort:(in_port_t)localPort {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(localPort > 0);
         self.specifiedLocalPort = localPort;
     }
@@ -27,7 +29,9 @@
 
 - (instancetype)initSocketFromLocalPort:(in_port_t)localPort
                        toRemoteEndPoint:(IPEndPoint*)remoteEndPoint {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(remoteEndPoint != nil);
         require([remoteEndPoint port] > 0);
         require(localPort > 0);
@@ -40,7 +44,9 @@
 }
 
 - (instancetype)initSocketToRemoteEndPoint:(IPEndPoint*)remoteEndPoint {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(remoteEndPoint != nil);
         require([remoteEndPoint port] > 0);
         

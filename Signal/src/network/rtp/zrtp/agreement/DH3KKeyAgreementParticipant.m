@@ -10,7 +10,9 @@
 @implementation DH3KKeyAgreementParticipant
 
 - (instancetype)initWithPrivateKeyGeneratedForProtocol:(DH3KKeyAgreementProtocol*)protocol {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         assert(nil != protocol);
         
         self.protocol = protocol;

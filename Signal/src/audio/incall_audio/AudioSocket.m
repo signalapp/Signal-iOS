@@ -12,7 +12,9 @@
 @implementation AudioSocket
 
 - (instancetype)initOverSRTPSocket:(SRTPSocket*)srtpSocket {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(srtpSocket != nil);
         
         self.srtpSocket = srtpSocket;

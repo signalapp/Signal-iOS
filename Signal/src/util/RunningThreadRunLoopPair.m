@@ -19,7 +19,9 @@
 @implementation RunningThreadRunLoopPair
 
 - (instancetype)initWithThreadName:(NSString*)name {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(name != nil);
         self.thread = [[NSThread alloc] initWithTarget:self selector:@selector(runLoopUntilCancelled) object:nil];
         [self.thread setName:name];

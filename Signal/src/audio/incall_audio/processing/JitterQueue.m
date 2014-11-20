@@ -21,7 +21,9 @@
 @implementation JitterQueue
 
 - (instancetype)init {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.readHeadSpan = READ_HEAD_BAD_SPAN_THRESHOLD + 1;
         self.watchers = [[NSMutableArray alloc] init];
         [self registerWatcher:Environment.logging.jitterQueueNotificationReceiver];

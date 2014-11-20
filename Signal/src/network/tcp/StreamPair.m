@@ -11,7 +11,9 @@
 @implementation StreamPair
 
 - (instancetype)initWithInput:(NSInputStream*)input andOutput:(NSOutputStream*)output {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(input != nil);
         require(output != nil);
 

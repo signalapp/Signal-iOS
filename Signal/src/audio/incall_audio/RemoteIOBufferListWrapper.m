@@ -9,7 +9,9 @@
 @implementation RemoteIOBufferListWrapper
 
 - (instancetype)initWithMonoBufferSize:(NSUInteger)bufferSize {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.audioBufferList = malloc(sizeof(AudioBufferList));
         self.audioBufferList->mNumberBuffers = 1;
         self.audioBufferList->mBuffers[0].mNumberChannels = 1;

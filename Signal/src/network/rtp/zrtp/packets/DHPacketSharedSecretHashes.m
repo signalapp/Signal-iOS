@@ -24,7 +24,9 @@
                      andRs2:(NSData*)rs2
                      andAux:(NSData*)aux
                      andPbx:(NSData*)pbx {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(rs1 != nil);
         require(rs2 != nil);
         require(aux != nil);

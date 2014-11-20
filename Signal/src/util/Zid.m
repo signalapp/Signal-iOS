@@ -10,7 +10,9 @@
 @implementation Zid
 
 - (instancetype)initWithData:(NSData*)zidData {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(zidData != nil);
         require(zidData.length == 12);
         self.data = zidData;

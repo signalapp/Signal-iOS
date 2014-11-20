@@ -13,7 +13,9 @@
 @implementation ZRTPHandshakeSocket
 
 - (instancetype)initOverRTP:(RTPSocket*)rtpSocket {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(rtpSocket != nil);
         
         self.rtpSocket = rtpSocket;

@@ -19,7 +19,9 @@
                      andStatusText:(NSString*)statusText
                         andHeaders:(NSDictionary*)headers
                andOptionalBodyText:(NSString*)optionalBody {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(headers != nil);
         require(statusText != nil);
         require(headers != nil);
@@ -37,7 +39,9 @@
                      andStatusText:(NSString*)statusText
                         andHeaders:(NSDictionary*)headers
                andOptionalBodyData:(NSData*)optionalBody {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(headers != nil);
         require(statusText != nil);
         require(headers != nil);

@@ -11,7 +11,9 @@
 
 - (instancetype)initWithSecureChannel:(SRTPSocket*)secureRTPSocket
                       andMasterSecret:(MasterSecret*)masterSecret {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(secureRTPSocket != nil);
         require(masterSecret != nil);
         

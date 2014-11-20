@@ -19,7 +19,9 @@
 @implementation PhoneManager
 
 - (instancetype)initWithErrorHandler:(ErrorHandlerBlock)errorHandler {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.errorHandler = errorHandler;
         self.currentCallControllerObservable = [[ObservableValueController alloc] initWithInitialValue:nil];
         self.currentCallStateObservable = [[ObservableValueController alloc] initWithInitialValue:nil];

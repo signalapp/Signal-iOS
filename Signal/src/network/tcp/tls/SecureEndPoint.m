@@ -25,7 +25,9 @@
      identifiedByCertificate:(Certificate*)certificate
 withOptionalMoreSpecificEndPoint:(id<NetworkEndPoint>)optionalMoreSpecificEndPoint {
     
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(host != nil);
         require(certificate != nil);
         

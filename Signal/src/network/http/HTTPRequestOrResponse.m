@@ -12,7 +12,9 @@
 @implementation HTTPRequestOrResponse
 
 - (instancetype)initWithRequestOrResponse:(id)requestOrResponse {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(requestOrResponse != nil);
         self.requestOrResponse = requestOrResponse;
         require(self.isResponse || self.isRequest);

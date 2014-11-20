@@ -19,7 +19,9 @@
                    andLocation:(NSString*)location
                     andHeaders:(NSDictionary*)headers
                andOptionalBody:(NSString*)optionalBody {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(method != nil);
         require(location != nil);
         require(headers != nil);

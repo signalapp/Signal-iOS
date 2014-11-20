@@ -79,7 +79,9 @@ andUnusedAndSignatureLengthAndFlags:(uint32_t)unused
                        andCipherKey:(NSData*)cipherKey
                               andIV:(NSData*)iv
                        andIsPartOne:(bool)isPartOne {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(macKey != nil);
         require(cipherKey != nil);
         require(hashChainH0 != nil);
@@ -130,7 +132,9 @@ andUnusedAndSignatureLengthAndFlags:(uint32_t)unused
                         andIncludedHMAC:(NSData*)includedHMAC
                                   andIV:(NSData*)iv
                            andIsPartOne:(bool)isPartOne {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.hashChainH0                      = hashChainH0;
         self.unusedAndSignatureLengthAndFlags = unused;
         self.cacheExperationInterval          = cacheExpirationInterval;

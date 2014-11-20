@@ -10,7 +10,9 @@
 @implementation Queue
 
 - (instancetype)init {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.items = [[NSMutableArray alloc] init];
     }
     

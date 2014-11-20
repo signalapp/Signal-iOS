@@ -20,7 +20,9 @@
 - (instancetype)initWithCipherKey:(NSData*)cipherKey
                         andMacKey:(NSData*)macKey
                   andCipherIVSalt:(NSData*)cipherIVSalt {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(cipherKey != nil);
         require(macKey != nil);
         require(cipherIVSalt != nil);

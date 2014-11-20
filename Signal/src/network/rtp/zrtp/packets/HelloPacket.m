@@ -108,7 +108,9 @@
                   andSasSpecIds:(NSArray*)sasIds
        authenticatedWithHMACKey:(NSData*)hmacKey {
     
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(versionId != nil);
         require(clientId != nil);
         require(hashChainH3 != nil);
@@ -248,7 +250,9 @@
 }
 
 - (instancetype)initFromHandshakePacket:(HandshakePacket*)handshakePacket {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(handshakePacket != nil);
         checkOperationDescribe([[handshakePacket typeId] isEqualToData:HANDSHAKE_TYPE_HELLO], @"Not a hello packet");
         

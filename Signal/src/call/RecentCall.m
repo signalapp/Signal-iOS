@@ -26,7 +26,9 @@ NSString* const CALL_TYPE_IMAGE_NAME_OUTGOING = @"outgoing_call_icon";
 - (instancetype)initWithContactID:(ABRecordID)contactID
                         andNumber:(PhoneNumber*)number
                       andCallType:(RPRecentCallType)type {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.contactRecordID = contactID;
         self.callType        = type;
         self.date            = [NSDate date];
@@ -49,7 +51,9 @@ NSString* const CALL_TYPE_IMAGE_NAME_OUTGOING = @"outgoing_call_icon";
 }
 
 - (instancetype)initWithCoder:(NSCoder*)decoder {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.callType        = (RPRecentCallType)[[decoder decodeObjectForKey:DEFAULTS_KEY_CALL_TYPE] intValue];
         self.contactRecordID = [[decoder decodeObjectForKey:DEFAULTS_KEY_CONTACT_ID] intValue];
         self.phoneNumber     = [decoder decodeObjectForKey:DEFAULTS_KEY_PHONE_NUMBER];

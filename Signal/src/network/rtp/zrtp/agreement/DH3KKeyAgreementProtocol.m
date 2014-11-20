@@ -18,7 +18,9 @@
 @implementation DH3KKeyAgreementProtocol
 
 - (instancetype)initWithModulus:(NSData*)modulus andGenerator:(NSData*)generator {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         assert(nil != modulus);
         assert(nil != generator);
         

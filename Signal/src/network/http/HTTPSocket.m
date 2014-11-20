@@ -18,7 +18,9 @@
 @implementation HTTPSocket
 
 - (instancetype)initOverNetworkStream:(NetworkStream*)rawDataChannel {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(rawDataChannel != nil);
         
         self.rawDataChannelTCP = rawDataChannel;
@@ -31,7 +33,9 @@
 }
 
 - (instancetype)initOverUDP:(UDPSocket*)rawDataChannel {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(rawDataChannel != nil);
         
         self.rawDataChannelUDP = rawDataChannel;

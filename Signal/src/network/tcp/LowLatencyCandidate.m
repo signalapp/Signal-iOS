@@ -11,7 +11,9 @@
 @implementation LowLatencyCandidate
 
 - (instancetype)initWithRemoteEndPoint:(id<NetworkEndPoint>)remoteEndPoint {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(remoteEndPoint != nil);
         
         self.remoteEndPoint = remoteEndPoint;

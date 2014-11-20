@@ -10,7 +10,9 @@
 @implementation CallFailedServerMessage
 
 - (instancetype)initWithText:(NSString*)text {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(text != nil);
         self.text = text;
     }

@@ -11,7 +11,9 @@
 @implementation PriorityQueue
 
 - (instancetype)initAscendingWithComparator:(NSComparator)comparator {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(comparator != nil);
         self.comparator = comparator;
     }

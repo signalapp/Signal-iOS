@@ -21,7 +21,9 @@
 - (instancetype)initWithAudioSocket:(AudioSocket*)audioSocket
                     andErrorHandler:(ErrorHandlerBlock)errorHandler
                      untilCancelled:(TOCCancelToken*)untilCancelledToken {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(audioSocket != nil);
         
         self.audioProcessor = [[AudioProcessor alloc] init];

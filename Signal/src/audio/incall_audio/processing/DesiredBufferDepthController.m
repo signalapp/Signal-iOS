@@ -21,7 +21,9 @@
 @implementation DesiredBufferDepthController
 
 - (instancetype)initForJitterQueue:(JitterQueue*)jitterQueue {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(jitterQueue != nil);
         
         NSTimeInterval audioDurationPerPacket = (NSTimeInterval)(AUDIO_FRAMES_PER_PACKET*[SpeexCodec frameSizeInSamples]) / SAMPLE_RATE;

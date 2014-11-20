@@ -23,7 +23,9 @@ static NSString* const FAVOURITE_FALSE_ICON_NAME = @"favourite_false_icon";
 @synthesize contactImageView = _contactImageView;
 
 - (instancetype)initWithContact:(Contact*)contact {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.contact = contact;
     }
     

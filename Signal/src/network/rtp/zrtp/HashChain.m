@@ -15,7 +15,9 @@
 @implementation HashChain
 
 - (instancetype)initWithSeed:(NSData*)seed {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(seed != nil);
         require(seed.length == HASH_CHAIN_ITEM_LENGTH);
         

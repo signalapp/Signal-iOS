@@ -17,7 +17,9 @@
 @synthesize timeScaleState = _timeScaleState;
 
 - (instancetype)init {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         checkOperation(time_scale_init(&_timeScaleState, SAMPLE_RATE, 1.0) != NULL);
     }
     

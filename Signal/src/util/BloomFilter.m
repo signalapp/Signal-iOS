@@ -16,7 +16,9 @@
 
 - (instancetype)initWithHashCount:(NSUInteger)hashCount
                           andData:(NSData*)data {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(hashCount > 0);
         require(data != nil);
         

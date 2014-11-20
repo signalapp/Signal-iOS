@@ -12,7 +12,9 @@
 
 - (instancetype)initPacketHandler:(PacketHandlerBlock)dataHandler
                  withErrorHandler:(ErrorHandlerBlock)errorHandler {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(dataHandler != nil);
         require(errorHandler != nil);
         

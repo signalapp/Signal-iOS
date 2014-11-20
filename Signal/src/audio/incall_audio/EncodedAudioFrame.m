@@ -10,7 +10,9 @@
 @implementation EncodedAudioFrame
 
 - (instancetype)initWithData:(NSData*)audioData {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(audioData != nil);
         
         self.audioData = audioData;

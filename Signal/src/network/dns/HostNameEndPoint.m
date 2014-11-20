@@ -15,7 +15,9 @@
 
 - (instancetype)initWithHostName:(NSString*)hostname
                          andPort:(in_port_t)port {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(hostname != nil);
         require(port > 0);
         self.hostname = hostname;

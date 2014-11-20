@@ -13,7 +13,9 @@
 
 - (instancetype)initWithAddress:(IPAddress*)address
                          onPort:(in_port_t)port {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(address != nil);
         
         self.address = address;
@@ -24,7 +26,9 @@
 }
 
 - (instancetype)initWithUnspecifiedAddressOnPort:(in_port_t)port {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         struct sockaddr_in s;
         memset(&s, 0, sizeof(struct sockaddr_in));
         s.sin_len = sizeof(struct sockaddr_in);

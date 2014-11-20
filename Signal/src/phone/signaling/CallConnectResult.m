@@ -11,7 +11,9 @@
 
 - (instancetype)initWithShortAuthenticationString:(NSString*)shortAuthenticationString
                                    andAudioSocket:(AudioSocket*)audioSocket {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(shortAuthenticationString != nil);
         require(audioSocket != nil);
         

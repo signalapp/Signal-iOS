@@ -16,7 +16,9 @@
 #pragma mark Private methods
 
 - (instancetype)init {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.callbacks = [[NSMutableArray alloc] init];
         self.indexDic = [[NSMutableDictionary alloc] init];
     }

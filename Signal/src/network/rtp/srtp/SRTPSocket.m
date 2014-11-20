@@ -21,7 +21,9 @@
         andOutgoingCipherKey:(NSData*)outgoingCipherKey
            andOutgoingMacKey:(NSData*)outgoingMacKey
              andOutgoingSalt:(NSData*)outgoingSalt {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(rtpSocket != nil);
         require(incomingCipherKey != nil);
         require(incomingMacKey != nil);

@@ -10,7 +10,9 @@
 @implementation Certificate
 
 - (instancetype)initWithCertificate:(SecCertificateRef)cert {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.secCertificateRef = cert;
     }
     

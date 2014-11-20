@@ -57,7 +57,9 @@
               andSharedSecretHashes:(DHPacketSharedSecretHashes*)sharedSecretHashes
                    andPublicKeyData:(NSData*)publicKeyData
                        andIsPartOne:(bool)isPartOne {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(hashChainH0 != nil);
         require(sharedSecretHashes != nil);
         require(publicKeyData != nil);
@@ -98,7 +100,9 @@
 
 - (instancetype)initFromHandshakePacket:(HandshakePacket*)handshakePacket
                            andIsPartOne:(bool)isPartOne {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(handshakePacket != nil);
         NSData* expectedTypeIdDHPacket = isPartOne ? HANDSHAKE_TYPE_DH_1 : HANDSHAKE_TYPE_DH_2;
         NSData* payload = [handshakePacket payload];

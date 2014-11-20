@@ -15,7 +15,9 @@
 @implementation NotificationTracker
 
 - (instancetype)init {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.witnessedNotifications = [[NSMutableArray alloc] init];
     }
     

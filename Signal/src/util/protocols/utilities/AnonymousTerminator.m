@@ -11,7 +11,9 @@
 @implementation AnonymousTerminator
 
 - (instancetype)initWithTerminator:(void (^)(void))terminate {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(terminate != nil);
         self.terminateBlock = terminate;
     }

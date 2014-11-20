@@ -38,7 +38,9 @@
 @implementation ZRTPResponder
 
 - (instancetype)initWithCallController:(CallController*)callController {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(callController != nil);
         
         self.confirmIV                    = [CryptoTools generateSecureRandomData:IV_LENGTH];

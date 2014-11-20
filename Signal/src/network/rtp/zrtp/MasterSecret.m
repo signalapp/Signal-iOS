@@ -135,7 +135,9 @@
                         andTotalHash:(NSData*)totalHash
                      andInitiatorZid:(Zid*)initiatorZid
                      andResponderZid:(Zid*)responderZid {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(sharedSecret != nil);
         require(totalHash != nil);
         require(initiatorZid != nil);

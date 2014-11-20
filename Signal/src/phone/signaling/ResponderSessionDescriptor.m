@@ -38,7 +38,9 @@
                           andSessionId:(int64_t)sessionId
                     andRelayServerName:(NSString*)relayServerName
                     andInitiatorNumber:(PhoneNumber*)initiatorNumber {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(relayUDPSocketPort > 0);
         require(relayServerName != nil);
         require(initiatorNumber != nil);

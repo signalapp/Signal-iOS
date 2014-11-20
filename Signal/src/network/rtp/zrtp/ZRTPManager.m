@@ -56,7 +56,9 @@
                    andRTPSocketToSecure:(RTPSocket*)rtpSocket
                             andZRTPRole:(id<ZRTPRole>)zrtpRole
                       andCallController:(CallController*)callController {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(handshakeSocket != nil);
         require(rtpSocket != nil);
         require(callController != nil);

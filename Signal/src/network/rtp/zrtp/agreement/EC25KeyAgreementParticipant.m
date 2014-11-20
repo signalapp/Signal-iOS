@@ -12,7 +12,9 @@
 @implementation EC25KeyAgreementParticipant
 
 - (instancetype)initWithPrivateKeyGeneratedForProtocol:(EC25KeyAgreementProtocol*)protocol {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.protocol = protocol;
         self.evpKeyAgreement = [EVPKeyAgreement evpEC25KeyAgreement];
         [self.evpKeyAgreement generateKeyPair];

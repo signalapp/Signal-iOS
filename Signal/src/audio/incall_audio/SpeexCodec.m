@@ -35,7 +35,9 @@
 @synthesize decodingBits = _decodingBits, encodingBits = _encodingBits;
 
 - (instancetype)init {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.logging = [Environment.logging getConditionLoggerForSender:[SpeexCodec class]];
         [self openSpeex];
     }

@@ -10,7 +10,9 @@
 @implementation AnonymousOccurrenceLogger
 
 - (instancetype)initWithMarker:(void(^)(id details))marker {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(marker != nil);
         self.marker = marker;
     }

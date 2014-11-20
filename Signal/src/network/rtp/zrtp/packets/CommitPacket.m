@@ -69,7 +69,9 @@
                        andSasSpecId:(NSData*)sasSpecId
           andDHPart2HelloCommitment:(NSData*)dhPart2HelloCommitment
                          andHMACKey:(NSData*)hmacKey {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(h2 != nil);
         require(zid != nil);
         require(hashSpecId != nil);
@@ -103,7 +105,9 @@
 }
 
 - (instancetype)initFromHandshakePacket:(HandshakePacket*)handshakePacket {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(handshakePacket != nil);
         checkOperation([[handshakePacket typeId] isEqualToData:HANDSHAKE_TYPE_COMMIT]);
         NSData* payload = [handshakePacket payload];

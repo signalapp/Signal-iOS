@@ -11,7 +11,9 @@
 
 - (instancetype)initDelegateWithRecordingCallback:(void(^)(CyclicalBuffer* data))recordingCallback
                       andPlaybackOccurredCallback:(void(^)(NSUInteger requested, NSUInteger bytesRemaining))playbackCallback {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.handleNewDataRecordedBlock = recordingCallback;
         self.handlePlaybackOccurredWithBytesRequestedBlock = playbackCallback;
     }

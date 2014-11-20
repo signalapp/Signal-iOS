@@ -99,7 +99,9 @@ andSupportedKeyAgreementProtocols:(NSArray*)keyAgreementProtocolsInDescendingPri
              andContactsManager:(ContactsManager*)contactsManager
        andPhoneDirectoryManager:(PhoneNumberDirectoryFilterManager*)phoneDirectoryManager {
     
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(errorNoter != nil);
         require(zrtpClientId != nil);
         require(zrtpVersionId != nil);

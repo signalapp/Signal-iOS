@@ -42,7 +42,9 @@ static NSInteger connectingFlashCounter = 0;
 
 - (instancetype)initWithCallState:(CallState*)callState
         andOptionallyKnownContact:(Contact*)contact {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(callState != nil);
         
         self.potentiallyKnownContact = contact;

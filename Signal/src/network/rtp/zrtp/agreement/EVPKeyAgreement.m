@@ -47,7 +47,9 @@ typedef NS_ENUM(NSInteger, KeyAgreementType) {
 }
 
 - (instancetype)initWithKeyType:(KeyAgreementType)keyType {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.keyAgreementType = keyType;
     }
     

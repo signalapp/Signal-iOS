@@ -14,7 +14,9 @@
 - (instancetype)initWithLogNotice:(void(^)(id details))logNotice
                     andLogWarning:(void(^)(id details))logWarning
                       andLogError:(void(^)(id details))logError {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(logNotice != nil);
         require(logWarning != nil);
         require(logError != nil);

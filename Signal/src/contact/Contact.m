@@ -30,7 +30,9 @@ static NSString* const DEFAULTS_KEY_DATE = @"DefaultsKeyDate";
                         andEmails:(NSArray*)emails
                      andContactID:(ABRecordID)record {
     
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.firstName = firstName;
         self.lastName = lastName;
         self.userTextPhoneNumbers = phoneNumbers;

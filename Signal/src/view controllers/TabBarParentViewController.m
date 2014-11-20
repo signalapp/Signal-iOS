@@ -35,7 +35,9 @@
 @implementation TabBarParentViewController
 
 - (instancetype)init {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.settingsViewController             = [[SettingsViewController alloc] init];
         self.inboxFeedViewController            = [[InboxFeedViewController alloc] init];
         self.settingsNavigationController       = [[UINavigationController alloc] initWithRootViewController:self.settingsViewController];

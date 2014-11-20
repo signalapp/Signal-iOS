@@ -10,7 +10,9 @@
 @implementation CallProgress
 
 - (instancetype)initWithType:(CallProgressType)type {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.type = type;
     }
     

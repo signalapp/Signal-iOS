@@ -10,7 +10,9 @@
 @implementation Operation
 
 - (instancetype)initWithAction:(Action)block {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(block != NULL);
         self.callback = block;
     }

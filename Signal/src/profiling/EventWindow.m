@@ -12,7 +12,9 @@
 @implementation EventWindow
 
 - (instancetype)initWithWindowDuration:(NSTimeInterval)windowDuration {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(windowDuration >= 0);
         self.windowDuration = windowDuration;
         self.lastWindowEnding = -INFINITY;

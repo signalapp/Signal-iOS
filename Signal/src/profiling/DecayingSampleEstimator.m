@@ -11,7 +11,9 @@
 
 - (instancetype)initWithInitialEstimate:(double)initialEstimate
                   andDecayPerUnitSample:(double)decayPerUnitSample {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(decayPerUnitSample >= 0);
         require(decayPerUnitSample <= 1);
         self.estimate = initialEstimate;

@@ -13,7 +13,9 @@
 @implementation RTPSocket
 
 - (instancetype)initOverUDPSocket:(UDPSocket*)udpSocket interopOptions:(NSArray*)interopOptions {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(udpSocket != nil);
         require(interopOptions != nil);
         

@@ -31,7 +31,9 @@
 @implementation HandshakePacket
 
 - (instancetype)initWithTypeId:(NSData*)typeId andPayload:(NSData*)payload {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(typeId != nil);
         require(payload != nil);
         require(typeId.length == HANDSHAKE_TYPE_ID_LENGTH);
@@ -56,7 +58,9 @@
 }
 
 - (instancetype)initFromRTPPacket:(RTPPacket*)rtpPacket {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(rtpPacket != nil);
         checkOperation([rtpPacket timeStamp] == HANDSHAKE_PACKET_TIMESTAMP_COOKIE);
         checkOperation([rtpPacket version] == 0);

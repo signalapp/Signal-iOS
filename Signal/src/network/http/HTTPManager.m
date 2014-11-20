@@ -16,7 +16,9 @@
 
 - (instancetype)initWithSocket:(HTTPSocket*)httpSocket
                 untilCancelled:(TOCCancelToken*)untilCancelledToken {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(httpSocket != nil);
         
         self.httpChannel = httpSocket;

@@ -22,7 +22,9 @@
                        andInitiatedLocally:(bool)initiatedLocally
             andPotentiallySpecifiedContact:(Contact*)contact
                          andFutureAccepted:(TOCFuture*)futureCallLocallyAcceptedOrRejected {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(observableProgress != nil);
         require(futureTermination != nil);
         require(futureSas != nil);

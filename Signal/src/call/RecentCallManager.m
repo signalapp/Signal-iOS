@@ -19,7 +19,9 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
 @implementation RecentCallManager
 
 - (instancetype)init {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.allRecents = [self loadContactsFromDefaults];
         self.observableRecentsController = [[ObservableValueController alloc] initWithInitialValue:self.allRecents];
     }

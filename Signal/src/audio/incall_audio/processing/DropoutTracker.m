@@ -25,7 +25,9 @@
 @implementation DropoutTracker
 
 - (instancetype)initWithAudioDurationPerPacket:(NSTimeInterval)audioDurationPerPacket {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.audioDurationPerPacket = audioDurationPerPacket;
         self.sequenceCounter = [[SequenceCounter alloc] init];
         self.priorLatenesses = [[Queue alloc] init];

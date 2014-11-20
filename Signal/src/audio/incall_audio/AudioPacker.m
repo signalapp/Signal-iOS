@@ -14,7 +14,9 @@
 @implementation AudioPacker
 
 - (instancetype)init {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.audioFrameToReceiveQueue   = [[Queue alloc] init];
         self.framesToSend               = [[NSMutableArray alloc] init];
         self.nextSequenceNumber         = [CryptoTools generateSecureRandomUInt16];

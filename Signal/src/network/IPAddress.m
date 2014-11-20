@@ -37,7 +37,9 @@
 }
 
 - (instancetype)initIPv4AddressFromString:(NSString*)text {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(text != nil);
         
         struct sockaddr_in s;
@@ -61,7 +63,9 @@
 }
 
 - (instancetype)initIPv6AddressFromString:(NSString*)text {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(text != nil);
         
         struct sockaddr_in6 s;
@@ -85,7 +89,9 @@
 }
 
 - (instancetype)initIPv4AddressFromSockaddr:(struct sockaddr_in)sockaddr {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.ipv4Data = sockaddr;
         self.isIPv4 = true;
     }
@@ -94,7 +100,9 @@
 }
 
 - (instancetype)initIPv6AddressFromSockaddr:(struct sockaddr_in6)sockaddr {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.ipv6Data = sockaddr;
         self.isIPv6 = true;
     }

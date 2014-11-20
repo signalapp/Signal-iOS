@@ -74,7 +74,9 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
               andSequenceNumber:(uint16_t)sequenceNumber
                    andTimeStamp:(uint32_t)timeStamp
                      andPayload:(NSData*)payload {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require((version & ~0x3) == 0);
         require((payloadType & ~0x7F) == 0);
         require(contributingSourceIdentifiers != nil);
@@ -127,7 +129,9 @@ andSynchronizationSourceIdentifier:synchronizedSourceIdentifier
 }
 
 - (instancetype)initFromPacketData:(NSData*)packetData {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(packetData != nil);
         
         NSUInteger minSize = MINIMUM_RTP_HEADER_LENGTH;

@@ -10,7 +10,9 @@
 @implementation SMSInvite
 
 - (instancetype)initWithParent:(UIViewController*)parent {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.parent = parent;
     }
     

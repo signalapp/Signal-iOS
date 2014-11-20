@@ -9,7 +9,9 @@
 @implementation NegotiationFailed
 
 - (instancetype)initWithReason:(NSString*)reason {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.reason = reason;
     }
     

@@ -11,7 +11,9 @@
 @implementation EncodedAudioPacket
 
 - (instancetype)initWithAudioData:(NSData*)audioData andSequenceNumber:(uint16_t)sequenceNumber {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(audioData != nil);
         
         self.audioData = audioData;

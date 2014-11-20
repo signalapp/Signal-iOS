@@ -19,7 +19,9 @@
 - (instancetype)initWithSessionId:(int64_t)sessionId
                andRelayServerName:(NSString*)relayServerName
                      andRelayPort:(in_port_t)relayUDPSocketPort {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(relayServerName != nil);
         require(relayUDPSocketPort > 0);
         

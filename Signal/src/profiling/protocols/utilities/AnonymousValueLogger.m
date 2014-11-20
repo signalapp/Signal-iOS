@@ -10,7 +10,9 @@
 @implementation AnonymousValueLogger
 
 - (instancetype)initWithLogValue:(void(^)(double value))logValue {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         require(logValue != nil);
         self.logValueBlock = logValue;
     }

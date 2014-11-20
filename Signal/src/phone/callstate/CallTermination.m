@@ -14,7 +14,9 @@
 - (instancetype)initWithType:(CallTerminationType)type
                   andFailure:(id)failure
               andMessageInfo:(id)messageInfo {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         self.type = type;
         self.failure = failure;
         self.messageInfo = messageInfo;

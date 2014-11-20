@@ -14,7 +14,9 @@
 }
 
 - (instancetype)initFromHandshakePacket:(HandshakePacket*)handshakePacket {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
         checkOperation([[handshakePacket typeId] isEqualToData:HANDSHAKE_TYPE_HELLO_ACK]);
         checkOperation([[handshakePacket payload] length] == 0);
         

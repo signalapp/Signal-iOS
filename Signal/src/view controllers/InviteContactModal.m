@@ -19,7 +19,9 @@
 
 - (instancetype)initWithPhoneNumber:(PhoneNumber*)phoneNumber
             andParentViewController:(UIViewController*)parent {
-    if (self = [super init]) {
+    self = [super init];
+	
+    if (self) {
 #warning Deprecated method
         self.alertView = [[UIAlertView alloc] initWithTitle:INVITE_USER_MODAL_TITLE
                                                     message:INVITE_USER_MODAL_TEXT
