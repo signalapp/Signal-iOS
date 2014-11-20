@@ -11,7 +11,7 @@
 #import "PhoneNumber.h"
 #import "RPAPICall.h"
 #import "SignalUtil.h"
-#import "SGNKeychainUtil.h"
+#import "SignalKeyingStorage.h"
 #import "Util.h"
 
 #define CLAIMED_INTEROP_VERSION_IN_INITIATE_SIGNAL 1
@@ -36,7 +36,7 @@
 
 
 + (RPAPICall*)requestVerificationCode {
-    [SGNKeychainUtil generateServerAuthPassword];
+    [SignalKeyingStorage generateServerAuthPassword];
     RPAPICall *apiCall = [self defaultAPICall];
     apiCall.method = HTTP_GET;
     apiCall.endPoint = @"/users/verification";
@@ -51,13 +51,13 @@
 
 + (RPAPICall*)verifyVerificationCode:(NSString*)verificationCode {
     RPAPICall *apiCall = [self defaultAPICall];
-    [SGNKeychainUtil generateSignaling];
+    [SignalKeyingStorage generateSignaling];
     apiCall.method = HTTP_PUT;
-    apiCall.endPoint = [NSString stringWithFormat:@"/users/verification/%@", SGNKeychainUtil.localNumber];
+    apiCall.endPoint = [NSString stringWithFormat:@"/users/verification/%@", SignalKeyingStorage.localNumber];
     
-    NSData* signalingCipherKey    = SGNKeychainUtil.signalingCipherKey;
-    NSData* signalingMacKey       = SGNKeychainUtil.signalingMacKey;
-    NSData* signalingExtraKeyData = SGNKeychainUtil.signalingCipherKey;
+    NSData* signalingCipherKey    = SignalKeyingStorage.signalingCipherKey;
+    NSData* signalingMacKey       = SignalKeyingStorage.signalingMacKey;
+    NSData* signalingExtraKeyData = SignalKeyingStorage.signalingCipherKey;
     NSString* encodedSignalingKey = @[signalingCipherKey, signalingMacKey, signalingExtraKeyData].ows_concatDatas.encodedAsBase64;
     apiCall.parameters            = @{@"key" : encodedSignalingKey, @"challenge" : verificationCode};
     return apiCall;
@@ -136,13 +136,13 @@
 
 + (AFHTTPRequestSerializer*)basicAuthenticationSerializer {
     AFHTTPRequestSerializer *serializer = [AFJSONRequestSerializer serializerWithWritingOptions:0];
-    [serializer setValue:[self computeBasicAuthorizationTokenForLocalNumber:SGNKeychainUtil.localNumber andPassword:SGNKeychainUtil.serverAuthPassword]forHTTPHeaderField:@"Authorization"];
+    [serializer setValue:[self computeBasicAuthorizationTokenForLocalNumber:SignalKeyingStorage.localNumber andPassword:SignalKeyingStorage.serverAuthPassword]forHTTPHeaderField:@"Authorization"];
     return serializer;
 }
 
 + (AFHTTPRequestSerializer*)otpAuthenticationSerializer {
     AFHTTPRequestSerializer *serializer = [AFJSONRequestSerializer serializerWithWritingOptions:0];
-    [serializer setValue:[self computeOtpAuthorizationTokenForLocalNumber:SGNKeychainUtil.localNumber andCounterValue:[SGNKeychainUtil getAndIncrementOneTimeCounter] andPassword:SGNKeychainUtil.serverAuthPassword] forHTTPHeaderField:@"Authorization"];
+    [serializer setValue:[self computeOtpAuthorizationTokenForLocalNumber:SignalKeyingStorage.localNumber andCounterValue:[SignalKeyingStorage getAndIncrementOneTimeCounter] andPassword:SignalKeyingStorage.serverAuthPassword] forHTTPHeaderField:@"Authorization"];
     return serializer;
 }
 

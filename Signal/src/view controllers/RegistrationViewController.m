@@ -19,7 +19,7 @@
 #import "PushManager.h"
 #import "RPServerRequestsManager.h"
 #import "SignalUtil.h"
-#import "SGNKeychainUtil.h"
+#import "SignalKeyingStorage.h"
 #import "ThreadManager.h"
 #import "Util.h"
 
@@ -71,7 +71,7 @@
     
     [_phoneNumberTextField resignFirstResponder];
     
-    [SGNKeychainUtil setLocalNumberTo:localNumber];
+    [SignalKeyingStorage setLocalNumberTo:localNumber];
     
     [[RPServerRequestsManager sharedInstance]performRequest:[RPAPICall requestVerificationCode] success:^(NSURLSessionDataTask *task, id responseObject) {
         [self performSegueWithIdentifier:@"codeSent" sender:self];

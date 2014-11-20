@@ -1,6 +1,9 @@
 #import "PropertyListPreferences.h"
 #import "Constraints.h"
 #import <UICKeyChainStore/UICKeyChainStore.h>
+#import "TSStorageManager.h"
+
+#define SignalDatabaseCollection @"SignalPreferences"
 
 @implementation PropertyListPreferences
 
@@ -11,21 +14,16 @@
     }
 }
 
--(id) tryGetValueForKey:(NSString *)key {
+- (id)tryGetValueForKey:(NSString *)key {
     require(key != nil);
-    @synchronized(self) {
-        return [NSUserDefaults.standardUserDefaults objectForKey:key];
-    }
+    return [TSStorageManager.sharedManager objectForKey:key inCollection:SignalDatabaseCollection];
 }
--(void) setValueForKey:(NSString *)key toValue:(id)value {
+- (void)setValueForKey:(NSString *)key toValue:(id)value {
     require(key != nil);
-    @synchronized(self) {
-        NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
-        [userDefaults setObject:value forKey:key];
-        [userDefaults synchronize];
-    }
+    
+    [TSStorageManager.sharedManager setObject:value forKey:key inCollection:SignalDatabaseCollection];
 }
--(id) adjustAndTryGetNewValueForKey:(NSString *)key afterAdjuster:(id (^)(id))adjuster {
+- (id)adjustAndTryGetNewValueForKey:(NSString *)key afterAdjuster:(id (^)(id))adjuster {
     require(key != nil);
     require(adjuster != nil);
     @synchronized(self) {

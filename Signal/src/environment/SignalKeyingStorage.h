@@ -1,5 +1,5 @@
 //
-//  SGNKeychainUtil.h
+//  SignalKeyingStorage.h
 //  Signal
 //
 //  Created by Frederic Jacobs on 09/07/14.
@@ -10,7 +10,7 @@
 #import "PhoneNumber.h"
 #import "Zid.h"
 
-@interface SGNKeychainUtil : NSObject
+@interface SignalKeyingStorage : NSObject
 
 +(void)generateSignaling;
 +(void)generateServerAuthPassword;

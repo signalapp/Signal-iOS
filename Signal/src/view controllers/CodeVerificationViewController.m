@@ -11,7 +11,7 @@
 #import "RPServerRequestsManager.h"
 #import "LocalizableText.h"
 #import "PushManager.h"
-#import "SGNKeychainUtil.h"
+#import "SignalKeyingStorage.h"
 #import "TSAccountManager.h"
 
 @interface CodeVerificationViewController ()
@@ -36,19 +36,32 @@
 - (IBAction)verifyChallengeAction:(id)sender {
     
     [_challengeTextField resignFirstResponder];
-    
     //TODO: Lock UI interactions
+    
+    [self registerWithSuccess:^{
+        [self performSegueWithIdentifier:@"verifiedSegue" sender:self];
+    } failure:^{
+       // TODO: Unlock UI
+        NSLog(@"Failed to register");
+    }];
+}
+
+
+- (void)registerWithSuccess:(void(^)())success failure:(void(^)())failure{
+    //TODO: Refactor this to use futures? Better error handling needed. Good enough for PoC
     
     [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall verifyVerificationCode:_challengeTextField.text] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSString *signupToken) {
+        
             [TSAccountManager registerWithRedPhoneToken:signupToken pushToken:pushToken success:^{
-                 [self performSegueWithIdentifier:@"verifiedSegue" sender:self];
+                success();
             } failure:^(TSRegistrationFailure failureType) {
-                NSLog(@":(");
+                failure();
             }];
+        
         } failure:^{
-            
+            failure();
         }];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         NSString *alertTitle = NSLocalizedString(@"REGISTRATION_ERROR", @"");
@@ -65,6 +78,7 @@
     }];
 }
 
+
 #pragma mark - Keyboard notifications
 
 - (void)initializeKeyboardHandlers{
@@ -76,15 +90,5 @@
 - (void)dismissKeyboardFromAppropriateSubView {
     [self.view endEditing:NO];
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

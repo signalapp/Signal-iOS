@@ -10,7 +10,7 @@
 #import "ConfirmAckPacket.h"
 #import "HostNameEndPoint.h"
 #import "IpAddress.h"
-#import "SGNKeychainUtil.h"
+#import "SignalKeyingStorage.h"
 
 bool pm(HandshakePacket* p1, HandshakePacket* p2);
 bool pm(HandshakePacket* p1, HandshakePacket* p2) {
@@ -28,7 +28,7 @@ bool pm(HandshakePacket* p1, HandshakePacket* p2) {
 
 - (void)setUp{
     [Environment setCurrent:[Release unitTestEnvironment:@[]]];
-    [SGNKeychainUtil generateSignaling];
+    [SignalKeyingStorage generateSignaling];
     [Environment setCurrent:testEnv];
 }
 

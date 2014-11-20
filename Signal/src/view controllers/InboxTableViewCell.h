@@ -15,15 +15,16 @@ typedef enum : NSUInteger {
     kInboxState,
 } CellState;
 
-@class TableViewCell;
+
+@class InboxTableViewCell;
 @protocol TableViewCellDelegate <NSObject>
 
-- (void)tableViewCellTappedDelete:(TableViewCell *)cell;
-- (void)tableViewCellTappedArchive:(TableViewCell *)cell;
+- (void)tableViewCellTappedDelete:(InboxTableViewCell *)cell;
+- (void)tableViewCellTappedArchive:(InboxTableViewCell *)cell;
 
 @end
 
-@interface TableViewCell : UITableViewCell  <UIScrollViewDelegate>
+@interface InboxTableViewCell : UITableViewCell  <UIScrollViewDelegate>
 
 
 @property (nonatomic, strong) IBOutlet UIImageView* lastActionImageView;

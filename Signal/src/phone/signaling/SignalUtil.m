@@ -4,7 +4,7 @@
 #import "Environment.h"
 #import "PreferencesUtil.h"
 #import "Util.h"
-#import "SGNKeychainUtil.h"
+#import "SignalKeyingStorage.h"
 
 #define CLAIMED_INTEROP_VERSION_IN_INITIATE_SIGNAL 1
 
@@ -80,13 +80,13 @@
 +(HttpRequest*) httpRequestToVerifyAccessToPhoneNumberWithChallenge:(NSString*)challenge {
     require(challenge != nil);
     
-    PhoneNumber* localPhoneNumber = SGNKeychainUtil.localNumber;
+    PhoneNumber* localPhoneNumber = SignalKeyingStorage.localNumber;
     NSString* query = [NSString stringWithFormat:@"/users/verification/%@", localPhoneNumber.toE164];
-    [SGNKeychainUtil generateSignaling];
+    [SignalKeyingStorage generateSignaling];
     
-    NSData* signalingCipherKey = SGNKeychainUtil.signalingCipherKey;
-    NSData* signalingMacKey = SGNKeychainUtil.signalingMacKey;
-    NSData* signalingExtraKeyData = SGNKeychainUtil.signalingCipherKey;
+    NSData* signalingCipherKey = SignalKeyingStorage.signalingCipherKey;
+    NSData* signalingMacKey = SignalKeyingStorage.signalingMacKey;
+    NSData* signalingExtraKeyData = SignalKeyingStorage.signalingCipherKey;
     NSString* encodedSignalingKey = @[signalingCipherKey, signalingMacKey, signalingExtraKeyData].ows_concatDatas.encodedAsBase64;
     NSString* body = @{@"key" : encodedSignalingKey, @"challenge" : challenge}.encodedAsJson;
     

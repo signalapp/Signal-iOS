@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14A388a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="kts-vO-ui1">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="kts-vO-ui1">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
@@ -1441,6 +1441,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="contactTableView" destination="GqA-oC-CJa" id="7n8-SC-J1z"/>
                         <segue destination="0XE-hu-8cu" kind="show" identifier="DetailSegue" id="nHU-Zk-VvG"/>
                     </connections>
                 </tableViewController>
@@ -2253,9 +2254,6 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Neb-cr-TuQ">
                                         <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                                        <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                            <rect key="frame" x="0.0" y="0.0" width="400" height="800"/>
-                                        </variation>
                                     </imageView>
                                 </subviews>
                                 <constraints>
@@ -2287,8 +2285,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="wCF-r0-Mcy"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="400" height="800"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="subviews">
                                         <include reference="Neb-cr-TuQ"/>
                                     </mask>
@@ -2371,14 +2368,14 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 <exclude reference="wrt-Gs-Awk"/>
                             </mask>
                             <mask key="constraints">
-                                <exclude reference="Roc-JQ-f9y"/>
-                                <exclude reference="ZDj-at-031"/>
-                                <exclude reference="rPg-Hq-Xxk"/>
-                                <exclude reference="YbI-cl-hOB"/>
-                                <exclude reference="qxF-m3-YlM"/>
                                 <exclude reference="3F7-s6-l2J"/>
                                 <exclude reference="Ept-m4-iN0"/>
                                 <exclude reference="lve-Jx-YbD"/>
+                                <exclude reference="YbI-cl-hOB"/>
+                                <exclude reference="qxF-m3-YlM"/>
+                                <exclude reference="Roc-JQ-f9y"/>
+                                <exclude reference="ZDj-at-031"/>
+                                <exclude reference="rPg-Hq-Xxk"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -2388,14 +2385,14 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 <include reference="wrt-Gs-Awk"/>
                             </mask>
                             <mask key="constraints">
-                                <include reference="Roc-JQ-f9y"/>
-                                <include reference="ZDj-at-031"/>
-                                <include reference="rPg-Hq-Xxk"/>
-                                <include reference="YbI-cl-hOB"/>
-                                <include reference="qxF-m3-YlM"/>
                                 <include reference="3F7-s6-l2J"/>
                                 <include reference="Ept-m4-iN0"/>
                                 <include reference="lve-Jx-YbD"/>
+                                <include reference="YbI-cl-hOB"/>
+                                <include reference="qxF-m3-YlM"/>
+                                <include reference="Roc-JQ-f9y"/>
+                                <include reference="ZDj-at-031"/>
+                                <include reference="rPg-Hq-Xxk"/>
                             </mask>
                         </variation>
                     </view>

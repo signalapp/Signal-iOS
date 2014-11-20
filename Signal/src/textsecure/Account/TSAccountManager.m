@@ -67,8 +67,6 @@
     return registrationID;
 }
 
-#if TARGET_OS_IPHONE
-
 + (void)registerForPushNotifications:(NSData *)pushToken success:(successCompletionBlock)success failure:(failedVerificationBlock)failureBlock{
  
     NSString *stringToken = [[pushToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<> "]];
@@ -91,13 +89,11 @@
 }
 
 + (void)registerWithRedPhoneToken:(NSString*)tsToken pushToken:(NSData*)pushToken success:(successCompletionBlock)successBlock failure:(failedVerificationBlock)failureBlock{
-    NSLog(@"PushToken:%@ TStoken: %@", pushToken, tsToken);
     
     NSString *authToken           = [self generateNewAccountAuthenticationToken];
     NSString *signalingKey        = [self generateNewSignalingKeyToken];
     NSString *phoneNumber         = [[tsToken componentsSeparatedByString:@":"] objectAtIndex:0];
-    NSLog(@"Phone Number %@", phoneNumber);
-    
+   
     require(phoneNumber != nil);
     require(signalingKey != nil);
     require(authToken != nil);
@@ -113,19 +109,26 @@
         if (statuscode == 200 || statuscode == 204) {
             
             [TSStorageManager storeServerToken:authToken signalingKey:signalingKey phoneNumber:phoneNumber];
+            [self registerPreKeys:successBlock failure:failureBlock];
             
-            [self registerForPushNotifications:pushToken success:^{
-                successBlock();
-            } failure:^(TSRegistrationFailure failureType) {
-                failureBlock(kTSRegistrationFailureNetwork);
-            }];
         } else{
             failureBlock(kTSRegistrationFailureNetwork);
         }
         
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        //TODO: Cover all error types: https://github.com/WhisperSystems/TextSecure-Server/wiki/API-Protocol
         failureBlock(kTSRegistrationFailureNetwork);
     }];
+}
+
++ (void)registerPreKeysAfterPush:(NSData*)pushToken
+                         success:(successCompletionBlock)successBlock
+                         failure:(failedVerificationBlock)failureBlock
+{
+        [self registerForPushNotifications:pushToken success:^{
+            [self registerPreKeys:successBlock
+                          failure:failureBlock];
+        } failure:failureBlock];
 }
 
 + (void)registerPreKeys:(successCompletionBlock)successBlock failure:(failedVerificationBlock)failureBlock {
@@ -134,7 +137,6 @@
         successBlock();
     } failure:failureBlock];
 }
-
 
 #pragma mark Server keying material
 
@@ -151,7 +153,5 @@
     return signalingKeyTokenPrint;
 }
 
-
-#endif
 
 @end

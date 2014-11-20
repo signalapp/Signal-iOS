@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "TableViewCell.h"
+#import "InboxTableViewCell.h"
 #import "Util.h"
 
 #define ARCHIVE_IMAGE_VIEW_WIDTH 22.0f
@@ -15,7 +15,7 @@
 #define DATE_LABEL_SIZE 13
 
 
-@implementation TableViewCell
+@implementation InboxTableViewCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [NSBundle.mainBundle loadNibNamed:NSStringFromClass(self.class)
@@ -32,7 +32,6 @@
         _scrollView.contentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
         _deleteImageView.image    = [_deleteImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         _archiveImageView.image   = [_archiveImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-        
         
     }
     return self;

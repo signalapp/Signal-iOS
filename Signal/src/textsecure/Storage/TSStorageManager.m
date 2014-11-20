@@ -20,6 +20,7 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
 @interface TSStorageManager ()
 
 @property YapDatabase *database;
+@property YapDatabaseConnection *dbConnection;
 
 @end
 
@@ -32,6 +33,40 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
         sharedMyManager = [[self alloc] init];
     });
     return sharedMyManager;
+}
+
+- (instancetype)init {
+    self = [super init];
+    
+    if (self) {
+        self.database     = [self newDatabaseInit];
+        self.dbConnection = self.databaseConnection;
+    }
+    
+    return self;
+}
+
+- (YapDatabase*)newDatabaseInit{
+    YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
+    options.corruptAction = YapDatabaseCorruptAction_Fail;
+    options.passphraseBlock = ^{
+        return [self databasePassword];
+    };
+    
+    return [[YapDatabase alloc] initWithPath:[self dbPath]
+                            objectSerializer:NULL
+                          objectDeserializer:NULL
+                          metadataSerializer:NULL
+                        metadataDeserializer:NULL
+                             objectSanitizer:NULL
+                           metadataSanitizer:NULL
+                                     options:options];
+    
+    
+}
+
+- (YapDatabaseConnection *)databaseConnection {
+    return self.database.newConnection;
 }
 
 - (BOOL)userSetPassword {
@@ -80,70 +115,30 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
     return dbPassword;
 }
 
-- (instancetype)init {
-    self = [super init];
-    
-    if (self) {
-        self.database = [self newDatabaseInit];
-    }
-    
-    return self;
-}
-
-- (YapDatabase*)newDatabaseInit{
-    YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
-    options.corruptAction = YapDatabaseCorruptAction_Fail;
-    options.passphraseBlock = ^{
-        return [self databasePassword];
-    };
-    
-    return [[YapDatabase alloc] initWithPath:[self dbPath]
-                            objectSerializer:NULL
-                          objectDeserializer:NULL
-                          metadataSerializer:NULL
-                        metadataDeserializer:NULL
-                             objectSanitizer:NULL
-                           metadataSanitizer:NULL
-                                     options:options];
-    
-    
-}
-
-- (YapDatabaseConnection *)databaseConnection {
-    return self.database.newConnection;
-}
-
 #pragma mark convenience methods
 
 - (void)purgeCollection:(NSString*)collection {
-    YapDatabaseConnection *dbConn = [self databaseConnection];
-    
-    [dbConn readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction removeAllObjectsInCollection:collection];
     }];
 }
 
 - (void)setObject:(id)object forKey:(NSString*)key inCollection:(NSString*)collection {
-    YapDatabaseConnection *dbConn = [self databaseConnection];
-    
-    [dbConn readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction setObject:object forKey:key inCollection:collection];
     }];
 }
 
 - (void)removeObjectForKey:(NSString*)string inCollection:(NSString *)collection{
-    YapDatabaseConnection *dbConn = [self databaseConnection];
-    
-    [dbConn readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction removeObjectForKey:string inCollection:collection];
     }];
 }
 
 - (id)objectForKey:(NSString*)key inCollection:(NSString *)collection {
-    YapDatabaseConnection *dbConn = [self databaseConnection];
     __block NSString *object;
     
-    [dbConn readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         object = [transaction objectForKey:key inCollection:collection];
     }];
     
@@ -151,10 +146,9 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
 }
 
 - (NSDictionary*)dictionaryForKey:(NSString*)key inCollection:(NSString *)collection {
-    YapDatabaseConnection *dbConn = [self databaseConnection];
     __block NSDictionary *object;
     
-    [dbConn readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         object = [transaction objectForKey:key inCollection:collection];
     }];
     
@@ -216,6 +210,7 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
     }
     
     self.database = [self newDatabaseInit];
+    self.dbConnection = self.databaseConnection;
 }
 
 @end

@@ -10,4 +10,6 @@
 
 @interface ContactsTableViewController : UITableViewController
 
+@property (nonatomic, strong) IBOutlet UITableView *contactTableView;
+
 @end

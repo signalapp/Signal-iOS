@@ -121,7 +121,7 @@
 
     BOOL shouldTryCall = [Environment.getCurrent.phoneDirectoryManager.getCurrentFilter containsPhoneNumber:phoneNumber] || [Environment.getCurrent.recentCallManager isPhoneNumberPresentInRecentCalls:phoneNumber];
     
-    if( shouldTryCall){
+    if (shouldTryCall){
         [self initiateCallToPhoneNumber:phoneNumber];
     }else if(phoneNumber.isValid){
         [self promptToInvitePhoneNumber:phoneNumber];

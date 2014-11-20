@@ -34,5 +34,4 @@ extern const struct TSMessageEdges {
 #pragma mark Utility Method 
 
 + (NSString*)stringFromTimeStamp:(uint64_t)timestamp;
-
 @end
