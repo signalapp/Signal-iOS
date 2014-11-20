@@ -3038,7 +3038,6 @@
 				ORGANIZATIONNAME = "Open Whisper Systems";
 				TargetAttributes = {
 					D221A088169C9E5E00537ABF = {
-						DevelopmentTeam = KWE8Q2PE7S;
 						SystemCapabilities = {
 							com.apple.DataProtection = {
 								enabled = 1;
