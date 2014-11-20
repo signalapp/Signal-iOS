@@ -168,14 +168,9 @@
     
     UIViewController *viewController;
     
-    if (![TSAccountManager isRegistered]) {
-        viewController = [storyboard instantiateViewControllerWithIdentifier:@"RegisterInitialViewController"];
-    } else{
-        viewController = [storyboard instantiateViewControllerWithIdentifier:@"UserInitialViewController"];
-    }
+    BOOL isNewUser = NO;
     
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.window.rootViewController = viewController;
+    self.window.rootViewController = isNewUser ? viewControllerForNewUser : viewController;
     [self.window makeKeyAndVisible];
     
     return YES;

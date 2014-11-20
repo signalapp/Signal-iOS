@@ -34,10 +34,9 @@ MacrosSingletonImplemention
     if (self) {
         HostNameEndPoint *endpoint = Environment.getCurrent.masterServerSecureEndPoint.hostNameEndPoint;
         NSURL *endPointURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@:%hu", endpoint.hostname, endpoint.port]];
-        NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+        NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.defaultSessionConfiguration;
         self.operationManager = [[AFHTTPSessionManager alloc] initWithBaseURL:endPointURL sessionConfiguration:sessionConf];
-        self.operationManager.responseSerializer                      = [AFJSONResponseSerializer serializer];
-        self.operationManager.securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate];
+        self.operationManager.securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeNone];
         self.operationManager.securityPolicy.allowInvalidCertificates = YES;
         NSString *certPath = [NSBundle.mainBundle pathForResource:@"whisperReal" ofType:@"cer"];
         NSData *certData = [NSData dataWithContentsOfFile:certPath];
@@ -90,7 +89,6 @@ MacrosSingletonImplemention
     }];
     
     return [requestFutureSource future];
-    
 }
 
 @end

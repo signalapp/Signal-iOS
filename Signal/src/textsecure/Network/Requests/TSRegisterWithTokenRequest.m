@@ -12,8 +12,14 @@
 
 @implementation TSRegisterWithTokenRequest
 
-- (TSRequest*) initWithVerificationToken:(NSString*)verificationToken signalingKey:(NSString*)signalingKey authKey:(NSString*)authKey{
-    self = [super initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/token/%@", textSecureAccountsAPI, verificationToken]]];
+- (TSRequest*) initWithVerificationToken:(NSString*)verificationCode
+                            signalingKey:(NSString*)signalingKey
+                                 authKey:(NSString*)authKey
+                                  number:(NSString*)number
+{
+    self = [super initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/token/%@", textSecureAccountsAPI, verificationCode]]];
+    
+    self.numberToValidate = number;
     
     [self.parameters addEntriesFromDictionary:@{@"signalingKey": signalingKey, @"AuthKey": authKey, @"supportsSMS": @FALSE, @"registrationId": [NSString stringWithFormat:@"%i",[TSAccountManager getOrGenerateRegistrationId]]}];
     

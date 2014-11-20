@@ -58,7 +58,7 @@
         return;
     }
     
-    [self registrationForPushWithSuccess:^{
+    [self registrationForPushWithSuccess:^(NSData* pushToken){
         [self registrationForUserNotificationWithSuccess:success failure:^{
             [self.missingPermissionsAlertView show];
             failure();
@@ -109,7 +109,7 @@
     return self.userNotificationFutureSource.future;
 }
 
-- (void)registrationForPushWithSuccess:(void (^)())success failure:(void (^)())failure{
+- (void)registrationForPushWithSuccess:(void (^)(NSData* pushToken))success failure:(void (^)())failure{
     TOCFuture       *requestPushTokenFuture = [self registerPushNotificationFuture];
     
     [requestPushTokenFuture catchDo:^(id failureObj) {
@@ -132,9 +132,33 @@
         }];
         
         [registerPushTokenFuture thenDo:^(id value) {
-            success();
+            success(pushToken);
         }];
     }];
+}
+
+
+- (void)registrationAndRedPhoneTokenRequestWithSuccess:(void (^)(NSData* pushToken, NSString* signupToken))success failure:(void (^)())failure{
+    [self registrationForPushWithSuccess:^(NSData *pushToken) {        
+        [RPServerRequestsManager.sharedInstance performRequest:[RPAPICall requestTextSecureVerificationCode] success:^(NSURLSessionDataTask *task, id responseObject) {
+            NSError *error;
+            
+            NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+            NSString* tsToken = [dictionary objectForKey:@"token"];
+            
+            if (!tsToken || !pushToken || error) {
+                failure();
+                return;
+            }
+            
+            success(pushToken, tsToken);
+        } failure:^(NSURLSessionDataTask *task, NSError *error) {
+            failure();
+        }];
+    } failure:^{
+        failure();
+    }];
+    
 }
 
 - (void)registrationForUserNotificationWithSuccess:(void (^)())success failure:(void (^)())failure{

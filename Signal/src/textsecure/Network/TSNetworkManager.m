@@ -12,7 +12,7 @@
 #import "TSConstants.h"
 #import "TSNetworkManager.h"
 #import "TSRequest.h"
-#import "TSServerCodeVerificationRequest.h"
+#import "TSRegisterWithTokenRequest.h"
 #import "TSStorageManager+keyingMaterial.h"
 #import "TSUploadAttachment.h"
 
@@ -52,23 +52,11 @@
 
 #pragma mark Manager Methods
 
-- (void) queueUnauthenticatedRequest:(TSRequest*) request success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))successCompletionBlock failure: (void (^)(AFHTTPRequestOperation *operation, NSError *error)) failureCompletionBlock{
-    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-    
-    [operation  setCompletionBlockWithSuccess:successCompletionBlock failure:failureCompletionBlock];
-    [self.operationManager.operationQueue addOperation:operation];
-}
-
 - (void) queueAuthenticatedRequest:(TSRequest*) request success:(void (^)(NSURLSessionDataTask *task, id responseObject))success failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure {
-    if ([request isKindOfClass:[TSRequestVerificationCodeRequest class]]) {
-        // The only unauthenticated request is the initial request for a verification code
-        self.operationManager.requestSerializer = [AFJSONRequestSerializer serializer];
-        [self.operationManager GET:[textSecureServerURL stringByAppendingString:request.URL.absoluteString] parameters:request.parameters success:success failure:failure];
-        
-    } else if ([request isKindOfClass:[TSServerCodeVerificationRequest class]]){
+    if ([request isKindOfClass:[TSRegisterWithTokenRequest class]]){
         // We plant the Authorization parameter ourselves, no need to double add.
         self.operationManager.requestSerializer = [AFJSONRequestSerializer serializer];
-        [self.operationManager.requestSerializer setAuthorizationHeaderFieldWithUsername:((TSServerCodeVerificationRequest*)request).numberToValidate password:[request.parameters objectForKey:@"AuthKey"]];
+        [self.operationManager.requestSerializer setAuthorizationHeaderFieldWithUsername:((TSRegisterWithTokenRequest*)request).numberToValidate password:[request.parameters objectForKey:@"AuthKey"]];
         
         [request.parameters removeObjectForKey:@"AuthKey"];
         
