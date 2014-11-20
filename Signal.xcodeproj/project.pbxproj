@@ -29,7 +29,6 @@
 		765052B3182BF839008313E1 /* HelveticaNeueLTStd-Th.otf in Resources */ = {isa = PBXBuildFile; fileRef = 765052B1182BF839008313E1 /* HelveticaNeueLTStd-Th.otf */; };
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		76919BF71805D190008C664A /* ContactManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 76919BF61805D190008C664A /* ContactManagerTest.m */; };
-		76B818A1182C39460088060E /* PreferenceListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76B8189D182C39460088060E /* PreferenceListViewController.xib */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76D713E7182D3E3F00C9C9C8 /* PreferenceListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 76D713E6182D3E3F00C9C9C8 /* PreferenceListTableViewCell.m */; };
 		76D713E8182D3E3F00C9C9C8 /* PreferenceListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 76D713E6182D3E3F00C9C9C8 /* PreferenceListTableViewCell.m */; };
@@ -229,22 +228,15 @@
 		76EB064718170B33006006FC /* TimeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04FA18170B33006006FC /* TimeUtil.m */; };
 		76EB064818170B33006006FC /* Zid.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04FD18170B33006006FC /* Zid.m */; };
 		76EB064918170B33006006FC /* Zid.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04FD18170B33006006FC /* Zid.m */; };
-		76EB064E18170B34006006FC /* ContactDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB050418170B33006006FC /* ContactDetailViewController.m */; };
-		76EB064F18170B34006006FC /* ContactDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB050418170B33006006FC /* ContactDetailViewController.m */; };
 		76EB065018170B34006006FC /* DialerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB050618170B33006006FC /* DialerViewController.m */; };
 		76EB065118170B34006006FC /* DialerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB050618170B33006006FC /* DialerViewController.m */; };
 		76EB065618170B34006006FC /* InCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB050C18170B33006006FC /* InCallViewController.m */; };
 		76EB065718170B34006006FC /* InCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB050C18170B33006006FC /* InCallViewController.m */; };
 		76EB065A18170B34006006FC /* NextResponderScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB051018170B33006006FC /* NextResponderScrollView.m */; };
 		76EB065B18170B34006006FC /* NextResponderScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB051018170B33006006FC /* NextResponderScrollView.m */; };
-		76EB066018170B34006006FC /* RegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB051618170B33006006FC /* RegisterViewController.m */; };
-		76EB066118170B34006006FC /* RegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB051618170B33006006FC /* RegisterViewController.m */; };
 		76EB066918170B34006006FC /* CallAudioManagerDemo.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB051D18170B33006006FC /* CallAudioManagerDemo.xib */; };
-		76EB066D18170B34006006FC /* ContactDetailTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB051F18170B33006006FC /* ContactDetailTableViewCell.xib */; };
-		76EB066F18170B34006006FC /* ContactDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052018170B33006006FC /* ContactDetailViewController.xib */; };
 		76EB067118170B34006006FC /* DialerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052118170B33006006FC /* DialerViewController.xib */; };
 		76EB067918170B34006006FC /* InCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052518170B33006006FC /* InCallViewController.xib */; };
-		76EB068118170B34006006FC /* RegisterViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052918170B33006006FC /* RegisterViewController.xib */; };
 		76EB068418170B34006006FC /* ContactDetailTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB052D18170B33006006FC /* ContactDetailTableViewCell.m */; };
 		76EB068518170B34006006FC /* ContactDetailTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB052D18170B33006006FC /* ContactDetailTableViewCell.m */; };
 		76EB068618170B34006006FC /* ContactTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB052F18170B33006006FC /* ContactTableViewCell.m */; };
@@ -569,13 +561,9 @@
 		E14874FE18A06951002CC4F3 /* PreferenceListTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76D713E9182D3E5100C9C9C8 /* PreferenceListTableViewCell.xib */; };
 		E14874FF18A06951002CC4F3 /* UnseenWhisperUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9EB5AC81884D387007CBB57 /* UnseenWhisperUserCell.xib */; };
 		E148750018A06966002CC4F3 /* CallAudioManagerDemo.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB051D18170B33006006FC /* CallAudioManagerDemo.xib */; };
-		E148750318A06966002CC4F3 /* ContactDetailTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB051F18170B33006006FC /* ContactDetailTableViewCell.xib */; };
-		E148750418A06966002CC4F3 /* ContactDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052018170B33006006FC /* ContactDetailViewController.xib */; };
 		E148750518A06966002CC4F3 /* CountryCodeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B97CBFA718860EA3008E0DE9 /* CountryCodeViewController.xib */; };
 		E148750618A06966002CC4F3 /* DialerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052118170B33006006FC /* DialerViewController.xib */; };
 		E148750A18A06966002CC4F3 /* InCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052518170B33006006FC /* InCallViewController.xib */; };
-		E148750D18A06966002CC4F3 /* PreferenceListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76B8189D182C39460088060E /* PreferenceListViewController.xib */; };
-		E148750E18A06966002CC4F3 /* RegisterViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052918170B33006006FC /* RegisterViewController.xib */; };
 		E148751218A06AFD002CC4F3 /* HelveticaNeueLTStd-Bd.otf in Resources */ = {isa = PBXBuildFile; fileRef = B96A30FE187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf */; };
 		E148751318A06AFD002CC4F3 /* HelveticaNeueLTStd-Th.otf in Resources */ = {isa = PBXBuildFile; fileRef = 765052B1182BF839008313E1 /* HelveticaNeueLTStd-Th.otf */; };
 		E148751418A06AFD002CC4F3 /* HelveticaNeueLTStd-Lt.otf in Resources */ = {isa = PBXBuildFile; fileRef = 765052A518294C9F008313E1 /* HelveticaNeueLTStd-Lt.otf */; };
@@ -702,7 +690,6 @@
 		765052B1182BF839008313E1 /* HelveticaNeueLTStd-Th.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HelveticaNeueLTStd-Th.otf"; sourceTree = "<group>"; };
 		768A1A2A17FC9CD300E00ED8 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		76919BF61805D190008C664A /* ContactManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactManagerTest.m; path = contact/ContactManagerTest.m; sourceTree = "<group>"; };
-		76B8189D182C39460088060E /* PreferenceListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PreferenceListViewController.xib; path = ../PreferenceListViewController.xib; sourceTree = "<group>"; };
 		76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		76D713E5182D3E3F00C9C9C8 /* PreferenceListTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferenceListTableViewCell.h; sourceTree = "<group>"; };
 		76D713E6182D3E3F00C9C9C8 /* PreferenceListTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferenceListTableViewCell.m; sourceTree = "<group>"; };
@@ -913,22 +900,15 @@
 		76EB04FB18170B33006006FC /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
 		76EB04FC18170B33006006FC /* Zid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Zid.h; sourceTree = "<group>"; };
 		76EB04FD18170B33006006FC /* Zid.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Zid.m; sourceTree = "<group>"; };
-		76EB050318170B33006006FC /* ContactDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailViewController.h; sourceTree = "<group>"; };
-		76EB050418170B33006006FC /* ContactDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailViewController.m; sourceTree = "<group>"; };
 		76EB050518170B33006006FC /* DialerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DialerViewController.h; sourceTree = "<group>"; };
 		76EB050618170B33006006FC /* DialerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DialerViewController.m; sourceTree = "<group>"; };
 		76EB050B18170B33006006FC /* InCallViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InCallViewController.h; sourceTree = "<group>"; };
 		76EB050C18170B33006006FC /* InCallViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InCallViewController.m; sourceTree = "<group>"; };
 		76EB050F18170B33006006FC /* NextResponderScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NextResponderScrollView.h; sourceTree = "<group>"; };
 		76EB051018170B33006006FC /* NextResponderScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NextResponderScrollView.m; sourceTree = "<group>"; };
-		76EB051518170B33006006FC /* RegisterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterViewController.h; sourceTree = "<group>"; };
-		76EB051618170B33006006FC /* RegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegisterViewController.m; sourceTree = "<group>"; };
 		76EB051D18170B33006006FC /* CallAudioManagerDemo.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CallAudioManagerDemo.xib; sourceTree = "<group>"; };
-		76EB051F18170B33006006FC /* ContactDetailTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactDetailTableViewCell.xib; sourceTree = "<group>"; };
-		76EB052018170B33006006FC /* ContactDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactDetailViewController.xib; sourceTree = "<group>"; };
 		76EB052118170B33006006FC /* DialerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DialerViewController.xib; sourceTree = "<group>"; };
 		76EB052518170B33006006FC /* InCallViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InCallViewController.xib; sourceTree = "<group>"; };
-		76EB052918170B33006006FC /* RegisterViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RegisterViewController.xib; sourceTree = "<group>"; };
 		76EB052C18170B33006006FC /* ContactDetailTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailTableViewCell.h; sourceTree = "<group>"; };
 		76EB052D18170B33006006FC /* ContactDetailTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailTableViewCell.m; sourceTree = "<group>"; };
 		76EB052E18170B33006006FC /* ContactTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactTableViewCell.h; sourceTree = "<group>"; };
@@ -2082,8 +2062,6 @@
 		76EB04FE18170B33006006FC /* view controllers */ = {
 			isa = PBXGroup;
 			children = (
-				76EB050318170B33006006FC /* ContactDetailViewController.h */,
-				76EB050418170B33006006FC /* ContactDetailViewController.m */,
 				B97CBFA518860EA3008E0DE9 /* CountryCodeViewController.h */,
 				B97CBFA618860EA3008E0DE9 /* CountryCodeViewController.m */,
 				76EB050518170B33006006FC /* DialerViewController.h */,
@@ -2092,8 +2070,6 @@
 				76EB050C18170B33006006FC /* InCallViewController.m */,
 				76EB050F18170B33006006FC /* NextResponderScrollView.h */,
 				76EB051018170B33006006FC /* NextResponderScrollView.m */,
-				76EB051518170B33006006FC /* RegisterViewController.h */,
-				76EB051618170B33006006FC /* RegisterViewController.m */,
 				76EB051C18170B33006006FC /* xibs */,
 			);
 			path = "view controllers";
@@ -2103,13 +2079,9 @@
 			isa = PBXGroup;
 			children = (
 				76EB051D18170B33006006FC /* CallAudioManagerDemo.xib */,
-				76EB051F18170B33006006FC /* ContactDetailTableViewCell.xib */,
-				76EB052018170B33006006FC /* ContactDetailViewController.xib */,
 				B97CBFA718860EA3008E0DE9 /* CountryCodeViewController.xib */,
 				76EB052118170B33006006FC /* DialerViewController.xib */,
 				76EB052518170B33006006FC /* InCallViewController.xib */,
-				76B8189D182C39460088060E /* PreferenceListViewController.xib */,
-				76EB052918170B33006006FC /* RegisterViewController.xib */,
 			);
 			path = xibs;
 			sourceTree = "<group>";
@@ -3561,9 +3533,7 @@
 				B633C5E91A1D190B0059AC12 /* spinner_connecting_flash.png in Resources */,
 				B633C5E61A1D190B0059AC12 /* speaker_on@2x.png in Resources */,
 				B633C5BB1A1D190B0059AC12 /* message_bubble.png in Resources */,
-				E148750318A06966002CC4F3 /* ContactDetailTableViewCell.xib in Resources */,
 				B633C5B51A1D190B0059AC12 /* lock@2x.png in Resources */,
-				E148750418A06966002CC4F3 /* ContactDetailViewController.xib in Resources */,
 				B633C58E1A1D190B0059AC12 /* contacts.png in Resources */,
 				B633C5A41A1D190B0059AC12 /* favourite_true_icon@2x.png in Resources */,
 				E148750518A06966002CC4F3 /* CountryCodeViewController.xib in Resources */,
@@ -3573,11 +3543,9 @@
 				B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */,
 				E148750A18A06966002CC4F3 /* InCallViewController.xib in Resources */,
 				B633C5E71A1D190B0059AC12 /* spinner_connecting.png in Resources */,
-				E148750D18A06966002CC4F3 /* PreferenceListViewController.xib in Resources */,
 				B633C5D01A1D190B0059AC12 /* red-delete@2x.png in Resources */,
 				B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */,
 				B633C5C91A1D190B0059AC12 /* outgoing_call_icon.png in Resources */,
-				E148750E18A06966002CC4F3 /* RegisterViewController.xib in Resources */,
 				B633C5EA1A1D190B0059AC12 /* spinner_connecting_flash@2x.png in Resources */,
 				B633C5E31A1D190B0059AC12 /* speaker_icon_selected.png in Resources */,
 				B633C5B01A1D190B0059AC12 /* incoming_call_icon.png in Resources */,
@@ -3737,18 +3705,14 @@
 				B9EB5ACA1884D387007CBB57 /* UnseenWhisperUserCell.xib in Resources */,
 				76EB067118170B34006006FC /* DialerViewController.xib in Resources */,
 				76EB067918170B34006006FC /* InCallViewController.xib in Resources */,
-				76EB068118170B34006006FC /* RegisterViewController.xib in Resources */,
 				B6850E5A1995A4710068E715 /* whisperFake.cer in Resources */,
 				B97CBFB218861023008E0DE9 /* CountryCodeTableViewCell.xib in Resources */,
 				B9A578B5183D610300C17105 /* FavouriteTableViewCell.xib in Resources */,
 				B9B89C58185A2B7000A24465 /* LeftSideMenuCell.xib in Resources */,
 				76D713EB182D3E5100C9C9C8 /* PreferenceListTableViewCell.xib in Resources */,
-				76EB066F18170B34006006FC /* ContactDetailViewController.xib in Resources */,
 				76EB069318170B34006006FC /* ContactTableViewCell.xib in Resources */,
 				76EB066918170B34006006FC /* CallAudioManagerDemo.xib in Resources */,
 				765052B3182BF839008313E1 /* HelveticaNeueLTStd-Th.otf in Resources */,
-				76B818A1182C39460088060E /* PreferenceListViewController.xib in Resources */,
-				76EB066D18170B34006006FC /* ContactDetailTableViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3835,7 +3799,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				76EB064E18170B34006006FC /* ContactDetailViewController.m in Sources */,
 				76EB063E18170B33006006FC /* Operation.m in Sources */,
 				76EB05F618170B33006006FC /* CallConnectUtil.m in Sources */,
 				76EB061218170B33006006FC /* LoggingUtil.m in Sources */,
@@ -4045,7 +4008,6 @@
 				76EB058818170B33006006FC /* PropertyListPreferences.m in Sources */,
 				B6B096821A1D25ED008BFAA6 /* TSSubmitMessageRequest.m in Sources */,
 				76EB05B218170B33006006FC /* DH3KKeyAgreementProtocol.m in Sources */,
-				76EB066018170B34006006FC /* RegisterViewController.m in Sources */,
 				76EB060618170B33006006FC /* PhoneNumberDirectoryFilterManager.m in Sources */,
 				B63761EC19E1FBE8005735D1 /* HttpRequest.m in Sources */,
 				B6B096941A1D25ED008BFAA6 /* NSString+escape.m in Sources */,
@@ -4081,7 +4043,6 @@
 				76EB064918170B33006006FC /* Zid.m in Sources */,
 				76EB05AF18170B33006006FC /* SrtpStream.m in Sources */,
 				76EB061318170B33006006FC /* LoggingUtil.m in Sources */,
-				76EB064F18170B34006006FC /* ContactDetailViewController.m in Sources */,
 				76EB05A718170B33006006FC /* RtpPacket.m in Sources */,
 				76EB05BF18170B33006006FC /* ConfirmPacket.m in Sources */,
 				76EB05E518170B33006006FC /* UdpSocket.m in Sources */,
@@ -4201,7 +4162,6 @@
 				76EB060918170B33006006FC /* ResponderSessionDescriptor.m in Sources */,
 				76EB062518170B33006006FC /* PriorityQueue.m in Sources */,
 				A157077917F0CD6D007C2BD6 /* CryptoToolsTest.m in Sources */,
-				76EB066118170B34006006FC /* RegisterViewController.m in Sources */,
 				BFB074C119A4BCA400F2947C /* FutureUtilTest.m in Sources */,
 				B684A46D19C3446200B11029 /* PushManagerTest.m in Sources */,
 				76EB05A918170B33006006FC /* RtpSocket.m in Sources */,
