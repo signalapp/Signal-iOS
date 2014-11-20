@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "TSConstants.h"
-#import "TSNumberVerifier.h"
+#import "TSAccountManager.h"
 
 @interface TSPreKeyManager : NSObject
 

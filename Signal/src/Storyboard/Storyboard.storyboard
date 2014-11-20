@@ -990,7 +990,6 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 </variation>
                                 <connections>
                                     <action selector="sendCodeAction:" destination="sL4-Zw-2Og" eventType="touchUpInside" id="T8X-Mx-4I6"/>
-                                    <segue destination="3Uo-Ow-qOD" kind="show" identifier="codeSentSegue" id="HE2-Vz-KDj"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qJb-ZJ-J5r">
@@ -1154,6 +1153,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                         <outlet property="countryCodeLabel" destination="TiF-CF-7WU" id="a8o-pE-QzV"/>
                         <outlet property="countryNameLabel" destination="4o4-Xj-5JG" id="dFh-dM-mgC"/>
                         <outlet property="phoneNumberTextField" destination="tTJ-pq-Z9L" id="gPX-pu-twz"/>
+                        <segue destination="3Uo-Ow-qOD" kind="show" identifier="codeSent" id="KhC-MI-Evx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rfK-ej-7ve" userLabel="First Responder" sceneMemberID="firstResponder"/>

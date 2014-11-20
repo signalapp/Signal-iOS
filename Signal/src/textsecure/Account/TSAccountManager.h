@@ -8,9 +8,19 @@
 
 #import <Foundation/Foundation.h>
 #import "TSConstants.h"
-#import "TSNumberVerifier.h"
 
-typedef void(^codeVerifierBlock)(TSNumberVerifier *numberVerifier);
+typedef NS_ENUM(NSUInteger, TSRegistrationFailure) {
+    kTSRegistrationFailureAuthentication,
+    kTSRegistrationFailureNetwork,
+    kTSRegistrationFailureRateLimit,
+    kTSRegistrationFailureWrongCode,
+    kTSRegistrationFailureAlreadyRegistered,
+    kTSRegistrationFailurePrekeys,
+    kTSRegistrationFailurePushID,
+    kTSRegistrationFailureRequest
+};
+
+typedef void(^failedVerificationBlock)(TSRegistrationFailure failureType);
 
 @interface TSAccountManager : NSObject
 
@@ -47,16 +57,7 @@ typedef void(^codeVerifierBlock)(TSNumberVerifier *numberVerifier);
 
 #if TARGET_OS_IPHONE
 
-/**
- *  Request a verification challenge
- *
- *  @param phoneNumber  phone number to send verification challenge to
- *  @param transport    sms or voice call
- *  @param successBlock block to execute on success of request
- *  @param failureBlock block to execute on failure of request
- */
-
-+ (void)registerWithPhoneNumber:(NSString*)phoneNumber overTransport:(VerificationTransportType)transport success:(codeVerifierBlock)success failure:(failedRegistrationRequestBlock)failureBlock;
++ (void)registerWithRedPhoneToken:(NSString*)tsToken pushToken:(NSData*)pushToken success:(successCompletionBlock)successBlock failure:(failedVerificationBlock)failureBlock;
 
 /**
  *  Register's the device's push notification token with the server

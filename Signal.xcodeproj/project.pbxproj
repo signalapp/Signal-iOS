@@ -427,7 +427,6 @@
 		B6B095E81A1D25C5008BFAA6 /* TSStoragePreKeyStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095E21A1D25C5008BFAA6 /* TSStoragePreKeyStoreTests.m */; };
 		B6B095E91A1D25C5008BFAA6 /* TSStorageSignedPreKeyStore.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095E31A1D25C5008BFAA6 /* TSStorageSignedPreKeyStore.m */; };
 		B6B096611A1D25ED008BFAA6 /* TSAccountManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095ED1A1D25ED008BFAA6 /* TSAccountManager.m */; };
-		B6B096621A1D25ED008BFAA6 /* TSNumberVerifier.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095EF1A1D25ED008BFAA6 /* TSNumberVerifier.m */; };
 		B6B096631A1D25ED008BFAA6 /* TSPreKeyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095F11A1D25ED008BFAA6 /* TSPreKeyManager.m */; };
 		B6B096641A1D25ED008BFAA6 /* TSContactThread.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095F51A1D25ED008BFAA6 /* TSContactThread.m */; };
 		B6B096651A1D25ED008BFAA6 /* TSGroupThread.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095F71A1D25ED008BFAA6 /* TSGroupThread.m */; };
@@ -457,8 +456,6 @@
 		B6B0967D1A1D25ED008BFAA6 /* TSRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0962A1A1D25ED008BFAA6 /* TSRequest.m */; };
 		B6B0967E1A1D25ED008BFAA6 /* TSRequestAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0962C1A1D25ED008BFAA6 /* TSRequestAttachment.m */; };
 		B6B0967F1A1D25ED008BFAA6 /* TSRequestAttachmentId.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0962E1A1D25ED008BFAA6 /* TSRequestAttachmentId.m */; };
-		B6B096801A1D25ED008BFAA6 /* TSRequestVerificationCodeRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096301A1D25ED008BFAA6 /* TSRequestVerificationCodeRequest.m */; };
-		B6B096811A1D25ED008BFAA6 /* TSServerCodeVerificationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096321A1D25ED008BFAA6 /* TSServerCodeVerificationRequest.m */; };
 		B6B096821A1D25ED008BFAA6 /* TSSubmitMessageRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096341A1D25ED008BFAA6 /* TSSubmitMessageRequest.m */; };
 		B6B096831A1D25ED008BFAA6 /* TSUploadAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096361A1D25ED008BFAA6 /* TSUploadAttachment.m */; };
 		B6B096841A1D25ED008BFAA6 /* TSNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096381A1D25ED008BFAA6 /* TSNetworkManager.m */; };
@@ -1134,8 +1131,6 @@
 		B6B095E31A1D25C5008BFAA6 /* TSStorageSignedPreKeyStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSStorageSignedPreKeyStore.m; sourceTree = "<group>"; };
 		B6B095EC1A1D25ED008BFAA6 /* TSAccountManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAccountManager.h; sourceTree = "<group>"; };
 		B6B095ED1A1D25ED008BFAA6 /* TSAccountManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAccountManager.m; sourceTree = "<group>"; };
-		B6B095EE1A1D25ED008BFAA6 /* TSNumberVerifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSNumberVerifier.h; sourceTree = "<group>"; };
-		B6B095EF1A1D25ED008BFAA6 /* TSNumberVerifier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSNumberVerifier.m; sourceTree = "<group>"; };
 		B6B095F01A1D25ED008BFAA6 /* TSPreKeyManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSPreKeyManager.h; sourceTree = "<group>"; };
 		B6B095F11A1D25ED008BFAA6 /* TSPreKeyManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSPreKeyManager.m; sourceTree = "<group>"; };
 		B6B095F41A1D25ED008BFAA6 /* TSContactThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSContactThread.h; sourceTree = "<group>"; };
@@ -1194,10 +1189,6 @@
 		B6B0962C1A1D25ED008BFAA6 /* TSRequestAttachment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRequestAttachment.m; sourceTree = "<group>"; };
 		B6B0962D1A1D25ED008BFAA6 /* TSRequestAttachmentId.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRequestAttachmentId.h; sourceTree = "<group>"; };
 		B6B0962E1A1D25ED008BFAA6 /* TSRequestAttachmentId.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRequestAttachmentId.m; sourceTree = "<group>"; };
-		B6B0962F1A1D25ED008BFAA6 /* TSRequestVerificationCodeRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRequestVerificationCodeRequest.h; sourceTree = "<group>"; };
-		B6B096301A1D25ED008BFAA6 /* TSRequestVerificationCodeRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRequestVerificationCodeRequest.m; sourceTree = "<group>"; };
-		B6B096311A1D25ED008BFAA6 /* TSServerCodeVerificationRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSServerCodeVerificationRequest.h; sourceTree = "<group>"; };
-		B6B096321A1D25ED008BFAA6 /* TSServerCodeVerificationRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSServerCodeVerificationRequest.m; sourceTree = "<group>"; };
 		B6B096331A1D25ED008BFAA6 /* TSSubmitMessageRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSSubmitMessageRequest.h; sourceTree = "<group>"; };
 		B6B096341A1D25ED008BFAA6 /* TSSubmitMessageRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSSubmitMessageRequest.m; sourceTree = "<group>"; };
 		B6B096351A1D25ED008BFAA6 /* TSUploadAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSUploadAttachment.h; sourceTree = "<group>"; };
@@ -2785,8 +2776,6 @@
 			children = (
 				B6B095EC1A1D25ED008BFAA6 /* TSAccountManager.h */,
 				B6B095ED1A1D25ED008BFAA6 /* TSAccountManager.m */,
-				B6B095EE1A1D25ED008BFAA6 /* TSNumberVerifier.h */,
-				B6B095EF1A1D25ED008BFAA6 /* TSNumberVerifier.m */,
 				B6B095F01A1D25ED008BFAA6 /* TSPreKeyManager.h */,
 				B6B095F11A1D25ED008BFAA6 /* TSPreKeyManager.m */,
 			);
@@ -2886,10 +2875,6 @@
 				B6B0962C1A1D25ED008BFAA6 /* TSRequestAttachment.m */,
 				B6B0962D1A1D25ED008BFAA6 /* TSRequestAttachmentId.h */,
 				B6B0962E1A1D25ED008BFAA6 /* TSRequestAttachmentId.m */,
-				B6B0962F1A1D25ED008BFAA6 /* TSRequestVerificationCodeRequest.h */,
-				B6B096301A1D25ED008BFAA6 /* TSRequestVerificationCodeRequest.m */,
-				B6B096311A1D25ED008BFAA6 /* TSServerCodeVerificationRequest.h */,
-				B6B096321A1D25ED008BFAA6 /* TSServerCodeVerificationRequest.m */,
 				B6B096331A1D25ED008BFAA6 /* TSSubmitMessageRequest.h */,
 				B6B096341A1D25ED008BFAA6 /* TSSubmitMessageRequest.m */,
 				B6B096351A1D25ED008BFAA6 /* TSUploadAttachment.h */,
@@ -3356,7 +3341,7 @@
 				ORGANIZATIONNAME = "Open Whisper Systems";
 				TargetAttributes = {
 					D221A088169C9E5E00537ABF = {
-						DevelopmentTeam = DRXTS3ZU8M;
+						DevelopmentTeam = U68MSDN6DR;
 						SystemCapabilities = {
 							com.apple.DataProtection = {
 								enabled = 1;
@@ -3740,7 +3725,6 @@
 				76EB05FC18170B33006006FC /* CallConnectUtil_Server.m in Sources */,
 				76EB062418170B33006006FC /* PriorityQueue.m in Sources */,
 				76EB061A18170B33006006FC /* DiscardingLog.m in Sources */,
-				B6B096621A1D25ED008BFAA6 /* TSNumberVerifier.m in Sources */,
 				B6B0968B1A1D25ED008BFAA6 /* TSStorageManager+SignedPreKeyStore.m in Sources */,
 				B6B0966E1A1D25ED008BFAA6 /* TSGroupMessageManager.m in Sources */,
 				76EB05AC18170B33006006FC /* SrtpSocket.m in Sources */,
@@ -3759,7 +3743,6 @@
 				B67ADDC41989FF8700E1A773 /* RPServerRequestsManager.m in Sources */,
 				76EB059418170B33006006FC /* HttpManager.m in Sources */,
 				76EB05EC18170B33006006FC /* CallState.m in Sources */,
-				B6B096811A1D25ED008BFAA6 /* TSServerCodeVerificationRequest.m in Sources */,
 				76EB05D218170B33006006FC /* ZrtpInitiator.m in Sources */,
 				76EB05E018170B33006006FC /* NetworkStream.m in Sources */,
 				B6B0968A1A1D25ED008BFAA6 /* TSStorageManager+SessionStore.m in Sources */,
@@ -3948,7 +3931,6 @@
 				E197B61318BBEC1A00F073E5 /* DesiredBufferDepthController.m in Sources */,
 				76EB064818170B33006006FC /* Zid.m in Sources */,
 				B6B096741A1D25ED008BFAA6 /* TSMessagesManager.m in Sources */,
-				B6B096801A1D25ED008BFAA6 /* TSRequestVerificationCodeRequest.m in Sources */,
 				B6B096661A1D25ED008BFAA6 /* TSContact.m in Sources */,
 				B6B0967D1A1D25ED008BFAA6 /* TSRequest.m in Sources */,
 				76EB05E218170B33006006FC /* SecureEndPoint.m in Sources */,
