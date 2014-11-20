@@ -9,7 +9,7 @@
 #import "FullImageViewController.h"
 #import "DJWActionSheet.h"
 
-@interface FullImageViewController ()
+@interface FullImageViewController () <UIScrollViewDelegate>
 
 @end
 
@@ -17,8 +17,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
     _fullImageView.image = _image;
+    
+    [self initializeScrollView];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -26,6 +29,21 @@
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark - Initializer
+
+-(void)initializeScrollView
+{
+    UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
+    [doubleTap setNumberOfTapsRequired:2];
+    [_pinchView addGestureRecognizer:doubleTap];
+    
+    _pinchView.delegate = self;
+    _pinchView.minimumZoomScale=0.9;
+    _pinchView.maximumZoomScale=3.0;
+    _pinchView.showsVerticalScrollIndicator = NO;
+    _pinchView.showsHorizontalScrollIndicator = NO;
+    _pinchView.contentSize=CGSizeMake(CGRectGetWidth(_fullImageView.frame), CGRectGetHeight(_fullImageView.frame));
+}
 
 #pragma mark - IBAction
 
@@ -52,6 +70,59 @@
                           }
                       }];
 
+}
+
+#pragma mark - Scroll View
+
+- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
+{
+    return _fullImageView;
+}
+
+- (IBAction)handleDoubleTap:(id)sender {
+    
+    CGFloat desiredScale = [self doubleTapDestinationZoomScale];
+    CGPoint center = [(UITapGestureRecognizer*)sender locationInView:_fullImageView];
+    CGRect zoomRect = [self zoomRectForScale:desiredScale withCenter:center];
+    
+    [_pinchView zoomToRect:zoomRect animated:YES];
+    [_pinchView setZoomScale:desiredScale animated:YES];
+}
+
+
+- (CGRect)zoomRectForScale:(CGFloat)scale withCenter:(CGPoint)center {
+    CGRect zoomRect;
+    
+    zoomRect.size.height = CGRectGetHeight(_pinchView.frame) / scale;
+    zoomRect.size.width  = CGRectGetWidth(_pinchView.frame)  / scale;
+    
+    zoomRect.origin.x    = center.x - ((CGRectGetWidth(zoomRect) / 2.0f));
+    zoomRect.origin.y    = center.y - ((CGRectGetHeight(zoomRect) / 2.0f));
+    
+    return zoomRect;
+}
+
+- (CGFloat)doubleTapDestinationZoomScale
+{
+    BOOL cond = _pinchView.zoomScale == _pinchView.maximumZoomScale;
+    
+    return cond ? _pinchView.minimumZoomScale : _pinchView.maximumZoomScale;
+}
+
+#pragma mark - Layout
+
+-(void)centerInSuperview
+{
+    CGRect frame = _fullImageView.frame;
+    CGRect superviewFrame = self.view.frame;
+    
+    CGFloat dy = (CGRectGetHeight(superviewFrame) - CGRectGetHeight(frame)) / 2.0f;
+    frame.origin.y = dy;
+    
+    CGFloat dx = (CGRectGetWidth(superviewFrame) - CGRectGetWidth(frame)) / 2.0f;
+    frame.origin.x = dx;
+    
+    _fullImageView.frame = frame;
 }
 
 /*

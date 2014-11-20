@@ -2248,6 +2248,60 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nm6-V1-1DQ">
+                                <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Neb-cr-TuQ">
+                                        <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                        <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                            <rect key="frame" x="0.0" y="0.0" width="400" height="800"/>
+                                        </variation>
+                                    </imageView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="Neb-cr-TuQ" firstAttribute="leading" secondItem="Nm6-V1-1DQ" secondAttribute="leading" id="9te-80-0Kb"/>
+                                    <constraint firstItem="Neb-cr-TuQ" firstAttribute="top" secondItem="Nm6-V1-1DQ" secondAttribute="top" id="JpP-5v-dCV"/>
+                                    <constraint firstAttribute="trailing" secondItem="Neb-cr-TuQ" secondAttribute="trailing" constant="400" id="MIF-Ph-3aX">
+                                        <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
+                                    </constraint>
+                                    <constraint firstAttribute="centerX" secondItem="Neb-cr-TuQ" secondAttribute="centerX" constant="200" id="OgJ-gl-OHy">
+                                        <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
+                                    </constraint>
+                                    <constraint firstAttribute="centerY" secondItem="Neb-cr-TuQ" secondAttribute="centerY" constant="400" id="pHe-78-0g9">
+                                        <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
+                                    </constraint>
+                                    <constraint firstAttribute="bottom" secondItem="Neb-cr-TuQ" secondAttribute="bottom" constant="800" id="wCF-r0-Mcy">
+                                        <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
+                                    </constraint>
+                                </constraints>
+                                <variation key="default">
+                                    <mask key="subviews">
+                                        <exclude reference="Neb-cr-TuQ"/>
+                                    </mask>
+                                    <mask key="constraints">
+                                        <exclude reference="9te-80-0Kb"/>
+                                        <exclude reference="JpP-5v-dCV"/>
+                                        <exclude reference="MIF-Ph-3aX"/>
+                                        <exclude reference="OgJ-gl-OHy"/>
+                                        <exclude reference="pHe-78-0g9"/>
+                                        <exclude reference="wCF-r0-Mcy"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="0.0" y="0.0" width="400" height="800"/>
+                                    <mask key="subviews">
+                                        <include reference="Neb-cr-TuQ"/>
+                                    </mask>
+                                    <mask key="constraints">
+                                        <include reference="9te-80-0Kb"/>
+                                        <include reference="JpP-5v-dCV"/>
+                                        <include reference="MIF-Ph-3aX"/>
+                                        <include reference="OgJ-gl-OHy"/>
+                                        <include reference="pHe-78-0g9"/>
+                                        <include reference="wCF-r0-Mcy"/>
+                                    </mask>
+                                </variation>
+                            </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2yV-c9-cpf">
                                 <rect key="frame" x="-23" y="-15" width="46" height="30"/>
                                 <constraints>
@@ -2298,62 +2352,58 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                     <action selector="more:" destination="m2q-RS-sTo" eventType="touchUpInside" id="jeq-kT-wEb"/>
                                 </connections>
                             </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Neb-cr-TuQ">
-                                <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                            </imageView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
                         <constraints>
-                            <constraint firstItem="Neb-cr-TuQ" firstAttribute="top" secondItem="t0J-yq-Mbh" secondAttribute="bottom" constant="-20" id="2DU-ph-wzP">
-                                <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
-                            </constraint>
                             <constraint firstItem="LH9-C1-m9I" firstAttribute="top" secondItem="wrt-Gs-Awk" secondAttribute="bottom" constant="20" id="3F7-s6-l2J"/>
-                            <constraint firstItem="Neb-cr-TuQ" firstAttribute="leading" secondItem="WfW-cb-tK6" secondAttribute="leadingMargin" constant="-16" id="FjI-1c-dRD"/>
-                            <constraint firstItem="Neb-cr-TuQ" firstAttribute="width" secondItem="WfW-cb-tK6" secondAttribute="width" id="I7f-Xr-QHf"/>
-                            <constraint firstItem="Neb-cr-TuQ" firstAttribute="height" secondItem="WfW-cb-tK6" secondAttribute="height" id="WYI-sv-yl6"/>
+                            <constraint firstItem="LH9-C1-m9I" firstAttribute="top" secondItem="Nm6-V1-1DQ" secondAttribute="bottom" id="Ept-m4-iN0"/>
+                            <constraint firstItem="Nm6-V1-1DQ" firstAttribute="top" secondItem="t0J-yq-Mbh" secondAttribute="bottom" id="Roc-JQ-f9y"/>
                             <constraint firstItem="2yV-c9-cpf" firstAttribute="leading" secondItem="WfW-cb-tK6" secondAttribute="leadingMargin" id="YbI-cl-hOB"/>
+                            <constraint firstItem="Nm6-V1-1DQ" firstAttribute="leading" secondItem="WfW-cb-tK6" secondAttribute="leadingMargin" constant="-16" id="ZDj-at-031"/>
                             <constraint firstItem="LH9-C1-m9I" firstAttribute="top" secondItem="2yV-c9-cpf" secondAttribute="bottom" constant="20" id="lve-Jx-YbD"/>
                             <constraint firstItem="wrt-Gs-Awk" firstAttribute="leading" secondItem="2yV-c9-cpf" secondAttribute="trailing" constant="20" id="qxF-m3-YlM"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Nm6-V1-1DQ" secondAttribute="trailing" constant="-16" id="rPg-Hq-Xxk"/>
                         </constraints>
                         <variation key="default">
                             <mask key="subviews">
+                                <exclude reference="Nm6-V1-1DQ"/>
                                 <exclude reference="2yV-c9-cpf"/>
                                 <exclude reference="wrt-Gs-Awk"/>
-                                <exclude reference="Neb-cr-TuQ"/>
                             </mask>
                             <mask key="constraints">
-                                <exclude reference="3F7-s6-l2J"/>
-                                <exclude reference="lve-Jx-YbD"/>
+                                <exclude reference="Roc-JQ-f9y"/>
+                                <exclude reference="ZDj-at-031"/>
+                                <exclude reference="rPg-Hq-Xxk"/>
                                 <exclude reference="YbI-cl-hOB"/>
                                 <exclude reference="qxF-m3-YlM"/>
-                                <exclude reference="2DU-ph-wzP"/>
-                                <exclude reference="FjI-1c-dRD"/>
-                                <exclude reference="I7f-Xr-QHf"/>
-                                <exclude reference="WYI-sv-yl6"/>
+                                <exclude reference="3F7-s6-l2J"/>
+                                <exclude reference="Ept-m4-iN0"/>
+                                <exclude reference="lve-Jx-YbD"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
                             <mask key="subviews">
+                                <include reference="Nm6-V1-1DQ"/>
                                 <include reference="2yV-c9-cpf"/>
                                 <include reference="wrt-Gs-Awk"/>
-                                <include reference="Neb-cr-TuQ"/>
                             </mask>
                             <mask key="constraints">
-                                <include reference="3F7-s6-l2J"/>
-                                <include reference="lve-Jx-YbD"/>
+                                <include reference="Roc-JQ-f9y"/>
+                                <include reference="ZDj-at-031"/>
+                                <include reference="rPg-Hq-Xxk"/>
                                 <include reference="YbI-cl-hOB"/>
                                 <include reference="qxF-m3-YlM"/>
-                                <include reference="2DU-ph-wzP"/>
-                                <include reference="FjI-1c-dRD"/>
-                                <include reference="I7f-Xr-QHf"/>
-                                <include reference="WYI-sv-yl6"/>
+                                <include reference="3F7-s6-l2J"/>
+                                <include reference="Ept-m4-iN0"/>
+                                <include reference="lve-Jx-YbD"/>
                             </mask>
                         </variation>
                     </view>
-                    <nil key="simulatedStatusBarMetrics"/>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <connections>
                         <outlet property="closeButton" destination="2yV-c9-cpf" id="0LC-MN-kUI"/>
                         <outlet property="fullImageView" destination="Neb-cr-TuQ" id="oFA-rD-2T5"/>
+                        <outlet property="pinchView" destination="Nm6-V1-1DQ" id="yXB-Op-QkS"/>
                         <outlet property="saveButton" destination="wrt-Gs-Awk" id="69f-4L-Igh"/>
                     </connections>
                 </viewController>
