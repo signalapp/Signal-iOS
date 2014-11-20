@@ -533,7 +533,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sd1-mY-rAe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3165" y="-261"/>
+            <point key="canvasLocation" x="3082.5" y="-261"/>
         </scene>
         <!--Initial View Controller-->
         <scene sceneID="t5l-Kr-ojc">
