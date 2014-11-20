@@ -56,8 +56,7 @@
     NSNumber *cc = [NBPhoneNumberUtil.sharedInstance getCountryCodeForRegion:countryCode];
     
     _countryCodeLabel.text = [NSString stringWithFormat:@"%@%@",COUNTRY_CODE_PREFIX, cc];
-    //_countryNameLabel.text = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
-    _countryNameLabel.text = @"United States";
+    _countryNameLabel.text = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
 }
 
 
@@ -68,10 +67,27 @@
     PhoneNumber* localNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
     if(localNumber==nil){ return; }
     
+    //TO:DO Disable button
+    
     [_phoneNumberTextField resignFirstResponder];
     
-    // perform RPServerRequest here
-
+    [SGNKeychainUtil setLocalNumberTo:localNumber];
+    
+    [[RPServerRequestsManager sharedInstance]performRequest:[RPAPICall requestVerificationCode] success:^(NSURLSessionDataTask *task, id responseObject) {
+        [self performSegueWithIdentifier:@"codeSent" sender:self];
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        
+        //TODO: Re-enable button
+        DDLogError(@"Registration failed with information %@", error.description);
+        
+        UIAlertView *registrationErrorAV = [[UIAlertView alloc]initWithTitle:REGISTER_ERROR_ALERT_VIEW_TITLE
+                                                                     message:REGISTER_ERROR_ALERT_VIEW_BODY
+                                                                    delegate:nil
+                                                           cancelButtonTitle:REGISTER_ERROR_ALERT_VIEW_DISMISS
+                                                           otherButtonTitles:nil, nil];
+        
+        [registrationErrorAV show];
+    }];
     
 }
 

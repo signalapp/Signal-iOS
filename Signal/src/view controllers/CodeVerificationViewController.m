@@ -8,6 +8,12 @@
 
 #import "CodeVerificationViewController.h"
 
+#import "RPServerRequestsManager.h"
+#import "LocalizableText.h"
+#import "PushManager.h"
+#import "SGNKeychainUtil.h"
+#import "TSAccountManager.h"
+
 @interface CodeVerificationViewController ()
 
 @end
@@ -31,9 +37,32 @@
     
     [_challengeTextField resignFirstResponder];
     
-    //Perform verification
+    //TODO: Lock UI interactions
     
-    [self performSegueWithIdentifier:@"verifiedSegue" sender:self];
+    [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall verifyVerificationCode:_challengeTextField.text] success:^(NSURLSessionDataTask *task, id responseObject) {
+        
+        [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSString *signupToken) {
+            [TSAccountManager registerWithRedPhoneToken:signupToken pushToken:pushToken success:^{
+                 [self performSegueWithIdentifier:@"verifiedSegue" sender:self];
+            } failure:^(TSRegistrationFailure failureType) {
+                NSLog(@":(");
+            }];
+        } failure:^{
+            
+        }];
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        NSString *alertTitle = NSLocalizedString(@"REGISTRATION_ERROR", @"");
+        
+        NSHTTPURLResponse* badResponse = (NSHTTPURLResponse*)task.response;
+        if (badResponse.statusCode == 401) {
+            SignalAlertView(alertTitle, REGISTER_CHALLENGE_ALERT_VIEW_BODY);
+        } else if (badResponse.statusCode == 413){
+            SignalAlertView(alertTitle, NSLocalizedString(@"REGISTER_RATE_LIMITING_BODY", @""));
+        } else {
+            NSString *alertBodyString = [NSString stringWithFormat:@"%@ %lu", NSLocalizedString(@"SERVER_CODE", @""),(unsigned long)badResponse.statusCode];
+            SignalAlertView (alertTitle, alertBodyString);
+        }
+    }];
 }
 
 #pragma mark - Keyboard notifications
@@ -44,10 +73,9 @@
         
 }
 
--(void) dismissKeyboardFromAppropriateSubView {
+- (void)dismissKeyboardFromAppropriateSubView {
     [self.view endEditing:NO];
 }
-
 
 /*
 #pragma mark - Navigation

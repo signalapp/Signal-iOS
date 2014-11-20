@@ -7,6 +7,7 @@
 //
 
 #import <Mantle/Mantle.h>
+#import "TSConstants.h"
 
 @interface TSServerMessage : MTLModel<MTLJSONSerializing>
 
