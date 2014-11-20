@@ -25,7 +25,24 @@
 
 - (BOOL)isGroupThread;
 
-@property (getter=isBlocked) BOOL   blocked;
-@property (nonatomic, copy)  NSDate *lastMessageDate;
+/**
+ *  Returns the name of the thread.
+ *
+ *  @return name of the thread
+ */
+
+- (NSString*)name;
+
+/**
+ *  Returns the image representing the thread. Nil if not available.
+ *
+ *  @return UIImage of the thread, or nil.
+ */
+
+- (UIImage*)image;
+
+@property (getter=isBlocked) BOOL blocked;
+@property (nonatomic) uint64_t lastMessageId;
+- (NSDate*)lastMessageDate;
 
 @end

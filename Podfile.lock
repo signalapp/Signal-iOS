@@ -58,7 +58,7 @@ PODS:
     - YapDatabase/common
 
 DEPENDENCIES:
-  - AFNetworking (~> 2.4)
+  - AFNetworking (~> 2.5)
   - AxolotlKit (~> 0.1)
   - DJWActionSheet
   - JSQMessagesViewController (from `https://github.com/dtsbourg/JSQMessagesViewController`, branch `JSignalQ`)

@@ -12,7 +12,7 @@
 #import "DataUtil.h"
 #import "Environment.h"
 #import "HostNameEndPoint.h"
-#import "SGNKeychainUtil.h"
+#import "SignalKeyingStorage.h"
 #import "Util.h"
 
 #import "AFHTTPSessionManager+SignalMethods.h"

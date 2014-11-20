@@ -46,13 +46,13 @@ static unsigned char DH3K_PRIME[]={
 
 +(Environment*) releaseEnvironmentWithLogging:(id<Logging>)logging {
     //ErrorHandlerBlock errorDiscarder = ^(id error, id relatedInfo, bool causedTermination) {};
-    ErrorHandlerBlock errorNoter = ^(id error, id relatedInfo, bool causedTermination) { DDLogError(@"%@: %@, %d", error, relatedInfo, causedTermination); };
+    ErrorHandlerBlock errorNoter = ^(id error, id relatedInfo, bool causedTermination) {DDLogError(@"%@: %@, %d", error, relatedInfo, causedTermination); };
     
     return [Environment environmentWithLogging:logging
                                      andErrorNoter:errorNoter
                                      andServerPort:31337
-                           andMasterServerHostName:@"master.whispersystems.org"
-                               andDefaultRelayName:@"relay"
+                           andMasterServerHostName:@"testing.whispersystems.org"
+                               andDefaultRelayName:@"testing"
                       andRelayServerHostNameSuffix:@"whispersystems.org"
                                     andCertificate:[Certificate certificateFromResourcePath:@"whisperReal" ofType:@"cer"]
                andCurrentRegionCodeForPhoneNumbers:[(NSLocale*)NSLocale.currentLocale objectForKey:NSLocaleCountryCode]

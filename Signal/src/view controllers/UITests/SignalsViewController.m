@@ -8,7 +8,7 @@
 
 #import "AppDelegate.h"
 #import "DemoDataFactory.h"
-#import "TableViewCell.h"
+#import "InboxTableViewCell.h"
 
 #import "MessagesViewController.h"
 #import "SignalsViewController.h"
@@ -73,7 +73,7 @@ static NSString *const kSegueIndentifier = @"showSegue";
     return (NSInteger)numberOfCells;
 }
 
- - (TableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (InboxTableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
      return [self inboxFeedCellForIndexPath:indexPath];
  }
 
@@ -81,13 +81,13 @@ static NSString *const kSegueIndentifier = @"showSegue";
     return CELL_HEIGHT;
 }
 
--(TableViewCell*)inboxFeedCellForIndexPath:(NSIndexPath *)indexPath {
+-(InboxTableViewCell*)inboxFeedCellForIndexPath:(NSIndexPath *)indexPath {
     
-    TableViewCell *cell = [self._tableView dequeueReusableCellWithIdentifier:kCellNibName];
+    InboxTableViewCell *cell = [self._tableView dequeueReusableCellWithIdentifier:kCellNibName];
     
     
     if (!cell) {
-        cell = [[TableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+        cell = [[InboxTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                     reuseIdentifier:kCellNibName];
         cell.delegate = self;
     }
@@ -102,11 +102,11 @@ static NSString *const kSegueIndentifier = @"showSegue";
 
 #pragma mark - HomeFeedTableViewCellDelegate
 
-- (void)tableViewCellTappedDelete:(TableViewCell *)cell {
+- (void)tableViewCellTappedDelete:(InboxTableViewCell*)cell {
     NSLog(@"Delete");
 }
 
-- (void)tableViewCellTappedArchive:(TableViewCell *)cell {
+- (void)tableViewCellTappedArchive:(InboxTableViewCell*)cell {
     NSLog(@"Archive");
 }
 

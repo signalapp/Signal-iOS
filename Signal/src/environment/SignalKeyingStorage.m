@@ -1,15 +1,15 @@
 //
-//  SGNKeychainUtil.m
+//  SignalKeyingStorage.m
 //  Signal
 //
 //  Created by Frederic Jacobs on 09/07/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 #import "CryptoTools.h"
-#import "SGNKeychainUtil.h"
-#import <UICKeyChainStore/UICKeyChainStore.h>
+#import "SignalKeyingStorage.h"
 #import "Constraints.h"
 #import "Util.h"
+#import "TSStorageManager.h"
 
 #define LOCAL_NUMBER_KEY @"Number"
 #define PASSWORD_COUNTER_KEY @"PasswordCounter"
@@ -20,12 +20,14 @@
 #define ZID_LENGTH 12
 #define SIGNALING_EXTRA_KEY @"Signaling Extra Key"
 
+#define SignalKeyingCollection @"SignalKeyingCollection"
+
 #define SIGNALING_MAC_KEY_LENGTH    20
 #define SIGNALING_CIPHER_KEY_LENGTH 16
 #define SAVED_PASSWORD_LENGTH 18
 #define SIGNALING_EXTRA_KEY_LENGTH 4
 
-@implementation SGNKeychainUtil
+@implementation SignalKeyingStorage
 
 + (void)generateServerAuthPassword{
     [self storeString:[[CryptoTools generateSecureRandomData:SAVED_PASSWORD_LENGTH] encodedAsBase64] forKey:SAVED_PASSWORD_KEY];
@@ -39,12 +41,12 @@
 }
 
 +(void)wipeKeychain{
-    [UICKeyChainStore removeAllItems];
+    [TSStorageManager.sharedManager purgeCollection:SignalKeyingCollection];
 }
 
 +(int64_t) getAndIncrementOneTimeCounter {
     __block int64_t oldCounter;
-    oldCounter = [[UICKeyChainStore stringForKey:PASSWORD_COUNTER_KEY] longLongValue];
+    oldCounter = [[self stringForKey:PASSWORD_COUNTER_KEY] longLongValue];
     int64_t newCounter = (oldCounter == INT64_MAX)?INT64_MIN:(oldCounter + 1);
     [self storeString:[@(newCounter) stringValue] forKey:PASSWORD_COUNTER_KEY];
     return newCounter;
@@ -98,12 +100,8 @@
 
 #pragma mark Keychain wrapper methods
 
-+(BOOL)storeData:(NSData*)data forKey:(NSString*)key{
-    BOOL success = [UICKeyChainStore setData:data forKey:key];
-    if (!success) {
-        DDLogError(@"Failed to set value for key: %@", key);
-    }
-    return success;
++(void)storeData:(NSData*)data forKey:(NSString*)key{
+    [TSStorageManager.sharedManager setObject:data forKey:key inCollection:SignalKeyingCollection];
 }
 
 +(NSData*)dataForKey:(NSString*)key andVerifyLength:(uint)length{
@@ -117,28 +115,15 @@
 }
 
 +(NSData*)dataForKey:(NSString*)key{
-    NSData *data = [UICKeyChainStore dataForKey:key];
-    if (!data) {
-        DDLogError(@"Failed to get value for key: %@", key);
-    }
-    return data;
+    return [TSStorageManager.sharedManager dataForKey:key inCollection:SignalKeyingCollection];
 }
 
 +(NSString*)stringForKey:(NSString*)key{
-    NSString *string = [UICKeyChainStore stringForKey:key];
-    if (!string) {
-        DDLogError(@"Failed to get value for key: %@", key);
-    }
-    return string;
+    return [TSStorageManager.sharedManager stringForKey:key inCollection:SignalKeyingCollection];
 }
 
-+(BOOL)storeString:(NSString*)string forKey:(NSString*)key{
-    BOOL success = [UICKeyChainStore setString:string forKey:key];
-    
-    if (!success) {
-        DDLogError(@"Failed to set value for key: %@", key);
-    }
-    return success;
++(void)storeString:(NSString*)string forKey:(NSString*)key{
+    [TSStorageManager.sharedManager setObject:string forKey:key inCollection:SignalKeyingCollection];
 }
 
 @end
