@@ -18,8 +18,6 @@
 		70B800AF190C548D0042E3F0 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70B800AC190C54790042E3F0 /* libspeex.a */; };
 		70B8FEE21909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav in Resources */ = {isa = PBXBuildFile; fileRef = 70B8FEE11909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav */; };
 		70BAFD5D190584BE00FA5E0B /* NotificationTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 70BAFD5C190584BE00FA5E0B /* NotificationTracker.m */; };
-		762D9DCF18281C7400A5E418 /* SettingsTableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 762D9DCE18281C7400A5E418 /* SettingsTableHeaderView.m */; };
-		762D9DD018281C7400A5E418 /* SettingsTableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 762D9DCE18281C7400A5E418 /* SettingsTableHeaderView.m */; };
 		765052A1182945EF008313E1 /* LocalizableCustomFontLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 765052A0182945EF008313E1 /* LocalizableCustomFontLabel.m */; };
 		765052A2182945EF008313E1 /* LocalizableCustomFontLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 765052A0182945EF008313E1 /* LocalizableCustomFontLabel.m */; };
 		765052AA18294C9F008313E1 /* HelveticaNeueLTStd-Lt.otf in Resources */ = {isa = PBXBuildFile; fileRef = 765052A518294C9F008313E1 /* HelveticaNeueLTStd-Lt.otf */; };
@@ -30,9 +28,6 @@
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		76919BF71805D190008C664A /* ContactManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 76919BF61805D190008C664A /* ContactManagerTest.m */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
-		76D713E7182D3E3F00C9C9C8 /* PreferenceListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 76D713E6182D3E3F00C9C9C8 /* PreferenceListTableViewCell.m */; };
-		76D713E8182D3E3F00C9C9C8 /* PreferenceListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 76D713E6182D3E3F00C9C9C8 /* PreferenceListTableViewCell.m */; };
-		76D713EB182D3E5100C9C9C8 /* PreferenceListTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76D713E9182D3E5100C9C9C8 /* PreferenceListTableViewCell.xib */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
 		76EB054118170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
 		76EB057218170B33006006FC /* RecentCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040018170B33006006FC /* RecentCall.m */; };
@@ -237,8 +232,6 @@
 		76EB066918170B34006006FC /* CallAudioManagerDemo.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB051D18170B33006006FC /* CallAudioManagerDemo.xib */; };
 		76EB067118170B34006006FC /* DialerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052118170B33006006FC /* DialerViewController.xib */; };
 		76EB067918170B34006006FC /* InCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052518170B33006006FC /* InCallViewController.xib */; };
-		76EB068418170B34006006FC /* ContactDetailTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB052D18170B33006006FC /* ContactDetailTableViewCell.m */; };
-		76EB068518170B34006006FC /* ContactDetailTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB052D18170B33006006FC /* ContactDetailTableViewCell.m */; };
 		76EB068618170B34006006FC /* ContactTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB052F18170B33006006FC /* ContactTableViewCell.m */; };
 		76EB068718170B34006006FC /* ContactTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB052F18170B33006006FC /* ContactTableViewCell.m */; };
 		76EB069318170B34006006FC /* ContactTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB053A18170B33006006FC /* ContactTableViewCell.xib */; };
@@ -491,8 +484,6 @@
 		B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C93C4D199567AD00EDF894 /* DebugLogger.m */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B90418E7183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
-		B942EB0E183A9633000887BB /* SearchBarTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = B942EB0D183A9633000887BB /* SearchBarTitleView.m */; };
-		B942EB0F183A9633000887BB /* SearchBarTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = B942EB0D183A9633000887BB /* SearchBarTitleView.m */; };
 		B96A3100187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf in Resources */ = {isa = PBXBuildFile; fileRef = B96A30FE187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf */; };
 		B97940271832BD2400BD66CB /* UIUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B97940261832BD2400BD66CB /* UIUtil.m */; };
 		B97940281832BD2400BD66CB /* UIUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B97940261832BD2400BD66CB /* UIUtil.m */; };
@@ -502,16 +493,7 @@
 		B97CBFAE1886100E008E0DE9 /* CountryCodeTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B97CBFAD1886100E008E0DE9 /* CountryCodeTableViewCell.m */; };
 		B97CBFAF1886100E008E0DE9 /* CountryCodeTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B97CBFAD1886100E008E0DE9 /* CountryCodeTableViewCell.m */; };
 		B97CBFB218861023008E0DE9 /* CountryCodeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B97CBFB018861023008E0DE9 /* CountryCodeTableViewCell.xib */; };
-		B9A578B1183D60EE00C17105 /* FavouriteTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B9A578B0183D60ED00C17105 /* FavouriteTableViewCell.m */; };
-		B9A578B2183D60EE00C17105 /* FavouriteTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B9A578B0183D60ED00C17105 /* FavouriteTableViewCell.m */; };
-		B9A578B5183D610300C17105 /* FavouriteTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9A578B3183D610300C17105 /* FavouriteTableViewCell.xib */; };
-		B9B89C54185A2B5F00A24465 /* LeftSideMenuCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B9B89C53185A2B5F00A24465 /* LeftSideMenuCell.m */; };
-		B9B89C55185A2B5F00A24465 /* LeftSideMenuCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B9B89C53185A2B5F00A24465 /* LeftSideMenuCell.m */; };
-		B9B89C58185A2B7000A24465 /* LeftSideMenuCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9B89C56185A2B7000A24465 /* LeftSideMenuCell.xib */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
-		B9EB5AC61884D370007CBB57 /* UnseenWhisperUserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B9EB5AC51884D370007CBB57 /* UnseenWhisperUserCell.m */; };
-		B9EB5AC71884D370007CBB57 /* UnseenWhisperUserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B9EB5AC51884D370007CBB57 /* UnseenWhisperUserCell.m */; };
-		B9EB5ACA1884D387007CBB57 /* UnseenWhisperUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9EB5AC81884D387007CBB57 /* UnseenWhisperUserCell.xib */; };
 		BF8C3D8319CE3B6A008F644C /* RecentCallTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8C3D8219CE3B6A008F644C /* RecentCallTest.m */; };
 		BFB074C119A4BCA400F2947C /* FutureUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074BF19A4BCA400F2947C /* FutureUtilTest.m */; };
 		BFB074C219A4BCA400F2947C /* ObservableTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074C019A4BCA400F2947C /* ObservableTest.m */; };
@@ -556,10 +538,6 @@
 		E1370BF618A068A600826894 /* whisperReal.cer in Resources */ = {isa = PBXBuildFile; fileRef = E1C407C117F0C246007BEE65 /* whisperReal.cer */; };
 		E14874F818A06951002CC4F3 /* ContactTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB053A18170B33006006FC /* ContactTableViewCell.xib */; };
 		E14874F918A06951002CC4F3 /* CountryCodeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B97CBFB018861023008E0DE9 /* CountryCodeTableViewCell.xib */; };
-		E14874FA18A06951002CC4F3 /* FavouriteTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9A578B3183D610300C17105 /* FavouriteTableViewCell.xib */; };
-		E14874FD18A06951002CC4F3 /* LeftSideMenuCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9B89C56185A2B7000A24465 /* LeftSideMenuCell.xib */; };
-		E14874FE18A06951002CC4F3 /* PreferenceListTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76D713E9182D3E5100C9C9C8 /* PreferenceListTableViewCell.xib */; };
-		E14874FF18A06951002CC4F3 /* UnseenWhisperUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9EB5AC81884D387007CBB57 /* UnseenWhisperUserCell.xib */; };
 		E148750018A06966002CC4F3 /* CallAudioManagerDemo.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB051D18170B33006006FC /* CallAudioManagerDemo.xib */; };
 		E148750518A06966002CC4F3 /* CountryCodeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B97CBFA718860EA3008E0DE9 /* CountryCodeViewController.xib */; };
 		E148750618A06966002CC4F3 /* DialerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052118170B33006006FC /* DialerViewController.xib */; };
@@ -679,8 +657,6 @@
 		70BAFD5B190584BE00FA5E0B /* NotificationTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationTracker.h; sourceTree = "<group>"; };
 		70BAFD5C190584BE00FA5E0B /* NotificationTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationTracker.m; sourceTree = "<group>"; };
 		70E803ED18F6DD1400BF77BC /* EvpUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpUtil.h; sourceTree = "<group>"; };
-		762D9DCD18281C7400A5E418 /* SettingsTableHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsTableHeaderView.h; sourceTree = "<group>"; };
-		762D9DCE18281C7400A5E418 /* SettingsTableHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsTableHeaderView.m; sourceTree = "<group>"; };
 		7650529F182945EF008313E1 /* LocalizableCustomFontLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalizableCustomFontLabel.h; sourceTree = "<group>"; };
 		765052A0182945EF008313E1 /* LocalizableCustomFontLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalizableCustomFontLabel.m; sourceTree = "<group>"; };
 		765052A518294C9F008313E1 /* HelveticaNeueLTStd-Lt.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HelveticaNeueLTStd-Lt.otf"; sourceTree = "<group>"; };
@@ -691,9 +667,6 @@
 		768A1A2A17FC9CD300E00ED8 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		76919BF61805D190008C664A /* ContactManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactManagerTest.m; path = contact/ContactManagerTest.m; sourceTree = "<group>"; };
 		76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
-		76D713E5182D3E3F00C9C9C8 /* PreferenceListTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferenceListTableViewCell.h; sourceTree = "<group>"; };
-		76D713E6182D3E3F00C9C9C8 /* PreferenceListTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferenceListTableViewCell.m; sourceTree = "<group>"; };
-		76D713E9182D3E5100C9C9C8 /* PreferenceListTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PreferenceListTableViewCell.xib; path = ../PreferenceListTableViewCell.xib; sourceTree = "<group>"; };
 		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		76EB03C318170B33006006FC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		76EB03FF18170B33006006FC /* RecentCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecentCall.h; sourceTree = "<group>"; };
@@ -909,8 +882,6 @@
 		76EB051D18170B33006006FC /* CallAudioManagerDemo.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CallAudioManagerDemo.xib; sourceTree = "<group>"; };
 		76EB052118170B33006006FC /* DialerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DialerViewController.xib; sourceTree = "<group>"; };
 		76EB052518170B33006006FC /* InCallViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InCallViewController.xib; sourceTree = "<group>"; };
-		76EB052C18170B33006006FC /* ContactDetailTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailTableViewCell.h; sourceTree = "<group>"; };
-		76EB052D18170B33006006FC /* ContactDetailTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailTableViewCell.m; sourceTree = "<group>"; };
 		76EB052E18170B33006006FC /* ContactTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactTableViewCell.h; sourceTree = "<group>"; };
 		76EB052F18170B33006006FC /* ContactTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactTableViewCell.m; sourceTree = "<group>"; };
 		76EB053A18170B33006006FC /* ContactTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactTableViewCell.xib; sourceTree = "<group>"; };
@@ -1278,8 +1249,6 @@
 		B6C93C4D199567AD00EDF894 /* DebugLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugLogger.m; sourceTree = "<group>"; };
 		B90418E4183E9DD40038554A /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
 		B90418E5183E9DD40038554A /* DateUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtil.m; sourceTree = "<group>"; };
-		B942EB0C183A9633000887BB /* SearchBarTitleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchBarTitleView.h; sourceTree = "<group>"; };
-		B942EB0D183A9633000887BB /* SearchBarTitleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchBarTitleView.m; sourceTree = "<group>"; };
 		B96A30FE187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HelveticaNeueLTStd-Bd.otf"; sourceTree = "<group>"; };
 		B97940251832BD2400BD66CB /* UIUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIUtil.h; sourceTree = "<group>"; };
 		B97940261832BD2400BD66CB /* UIUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIUtil.m; sourceTree = "<group>"; };
@@ -1289,16 +1258,7 @@
 		B97CBFAC1886100E008E0DE9 /* CountryCodeTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryCodeTableViewCell.h; sourceTree = "<group>"; };
 		B97CBFAD1886100E008E0DE9 /* CountryCodeTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryCodeTableViewCell.m; sourceTree = "<group>"; };
 		B97CBFB018861023008E0DE9 /* CountryCodeTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CountryCodeTableViewCell.xib; sourceTree = "<group>"; };
-		B9A578AF183D60ED00C17105 /* FavouriteTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FavouriteTableViewCell.h; sourceTree = "<group>"; };
-		B9A578B0183D60ED00C17105 /* FavouriteTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FavouriteTableViewCell.m; sourceTree = "<group>"; };
-		B9A578B3183D610300C17105 /* FavouriteTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FavouriteTableViewCell.xib; sourceTree = "<group>"; };
-		B9B89C52185A2B5F00A24465 /* LeftSideMenuCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LeftSideMenuCell.h; sourceTree = "<group>"; };
-		B9B89C53185A2B5F00A24465 /* LeftSideMenuCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LeftSideMenuCell.m; sourceTree = "<group>"; };
-		B9B89C56185A2B7000A24465 /* LeftSideMenuCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LeftSideMenuCell.xib; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
-		B9EB5AC41884D370007CBB57 /* UnseenWhisperUserCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnseenWhisperUserCell.h; sourceTree = "<group>"; };
-		B9EB5AC51884D370007CBB57 /* UnseenWhisperUserCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UnseenWhisperUserCell.m; sourceTree = "<group>"; };
-		B9EB5AC81884D387007CBB57 /* UnseenWhisperUserCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UnseenWhisperUserCell.xib; sourceTree = "<group>"; };
 		BF8C3D8219CE3B6A008F644C /* RecentCallTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentCallTest.m; sourceTree = "<group>"; };
 		BFB074BF19A4BCA400F2947C /* FutureUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FutureUtilTest.m; sourceTree = "<group>"; };
 		BFB074C019A4BCA400F2947C /* ObservableTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObservableTest.m; sourceTree = "<group>"; };
@@ -2089,30 +2049,16 @@
 		76EB052B18170B33006006FC /* views */ = {
 			isa = PBXGroup;
 			children = (
-				76EB052C18170B33006006FC /* ContactDetailTableViewCell.h */,
-				76EB052D18170B33006006FC /* ContactDetailTableViewCell.m */,
 				76EB052E18170B33006006FC /* ContactTableViewCell.h */,
 				76EB052F18170B33006006FC /* ContactTableViewCell.m */,
 				B97CBFAC1886100E008E0DE9 /* CountryCodeTableViewCell.h */,
 				B97CBFAD1886100E008E0DE9 /* CountryCodeTableViewCell.m */,
 				765052AD182AC9B5008313E1 /* DialerButtonView.h */,
 				765052AE182AC9B5008313E1 /* DialerButtonView.m */,
-				B9A578AF183D60ED00C17105 /* FavouriteTableViewCell.h */,
-				B9A578B0183D60ED00C17105 /* FavouriteTableViewCell.m */,
 				70377AA71916BA0500CAF501 /* InteractiveLabel.h */,
 				70377AA81916BA0500CAF501 /* InteractiveLabel.m */,
-				B9B89C52185A2B5F00A24465 /* LeftSideMenuCell.h */,
-				B9B89C53185A2B5F00A24465 /* LeftSideMenuCell.m */,
 				7650529F182945EF008313E1 /* LocalizableCustomFontLabel.h */,
 				765052A0182945EF008313E1 /* LocalizableCustomFontLabel.m */,
-				76D713E5182D3E3F00C9C9C8 /* PreferenceListTableViewCell.h */,
-				76D713E6182D3E3F00C9C9C8 /* PreferenceListTableViewCell.m */,
-				B942EB0C183A9633000887BB /* SearchBarTitleView.h */,
-				B942EB0D183A9633000887BB /* SearchBarTitleView.m */,
-				762D9DCD18281C7400A5E418 /* SettingsTableHeaderView.h */,
-				762D9DCE18281C7400A5E418 /* SettingsTableHeaderView.m */,
-				B9EB5AC41884D370007CBB57 /* UnseenWhisperUserCell.h */,
-				B9EB5AC51884D370007CBB57 /* UnseenWhisperUserCell.m */,
 				76EB053818170B33006006FC /* xibs */,
 			);
 			path = views;
@@ -2123,10 +2069,6 @@
 			children = (
 				76EB053A18170B33006006FC /* ContactTableViewCell.xib */,
 				B97CBFB018861023008E0DE9 /* CountryCodeTableViewCell.xib */,
-				B9A578B3183D610300C17105 /* FavouriteTableViewCell.xib */,
-				B9B89C56185A2B7000A24465 /* LeftSideMenuCell.xib */,
-				76D713E9182D3E5100C9C9C8 /* PreferenceListTableViewCell.xib */,
-				B9EB5AC81884D387007CBB57 /* UnseenWhisperUserCell.xib */,
 			);
 			path = xibs;
 			sourceTree = "<group>";
@@ -3566,19 +3508,15 @@
 				E14874F918A06951002CC4F3 /* CountryCodeTableViewCell.xib in Resources */,
 				B633C5BF1A1D190B0059AC12 /* mute_icon.png in Resources */,
 				B633C5ED1A1D190B0059AC12 /* spinner_ringing.png in Resources */,
-				E14874FA18A06951002CC4F3 /* FavouriteTableViewCell.xib in Resources */,
 				B633C5911A1D190B0059AC12 /* contacts_arrow@2x.png in Resources */,
 				B633C5871A1D190B0059AC12 /* call_dark@2x.png in Resources */,
 				B633C5FC1A1D190B0059AC12 /* volume_high@2x.png in Resources */,
 				B633C5BE1A1D190B0059AC12 /* missed.png in Resources */,
-				E14874FD18A06951002CC4F3 /* LeftSideMenuCell.xib in Resources */,
 				B633C5AC1A1D190B0059AC12 /* in_call_phone_icon.png in Resources */,
 				B633C5851A1D190B0059AC12 /* blue-archive@2x.png in Resources */,
 				B633C5BD1A1D190B0059AC12 /* message_icon.png in Resources */,
 				B633C5AF1A1D190B0059AC12 /* in_call_phrase_icon@2x.png in Resources */,
 				B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */,
-				E14874FE18A06951002CC4F3 /* PreferenceListTableViewCell.xib in Resources */,
-				E14874FF18A06951002CC4F3 /* UnseenWhisperUserCell.xib in Resources */,
 				B633C5D41A1D190B0059AC12 /* search_cancel@2x.png in Resources */,
 				B633C5A51A1D190B0059AC12 /* forward_button.png in Resources */,
 				B633C5F11A1D190B0059AC12 /* tab_icon_favourites.png in Resources */,
@@ -3702,14 +3640,10 @@
 				76EB060118170B33006006FC /* InitiateSignal.proto in Resources */,
 				765052AA18294C9F008313E1 /* HelveticaNeueLTStd-Lt.otf in Resources */,
 				B97CBFAB18860EA3008E0DE9 /* CountryCodeViewController.xib in Resources */,
-				B9EB5ACA1884D387007CBB57 /* UnseenWhisperUserCell.xib in Resources */,
 				76EB067118170B34006006FC /* DialerViewController.xib in Resources */,
 				76EB067918170B34006006FC /* InCallViewController.xib in Resources */,
 				B6850E5A1995A4710068E715 /* whisperFake.cer in Resources */,
 				B97CBFB218861023008E0DE9 /* CountryCodeTableViewCell.xib in Resources */,
-				B9A578B5183D610300C17105 /* FavouriteTableViewCell.xib in Resources */,
-				B9B89C58185A2B7000A24465 /* LeftSideMenuCell.xib in Resources */,
-				76D713EB182D3E5100C9C9C8 /* PreferenceListTableViewCell.xib in Resources */,
 				76EB069318170B34006006FC /* ContactTableViewCell.xib in Resources */,
 				76EB066918170B34006006FC /* CallAudioManagerDemo.xib in Resources */,
 				765052B3182BF839008313E1 /* HelveticaNeueLTStd-Th.otf in Resources */,
@@ -3808,7 +3742,6 @@
 				76EB05FC18170B33006006FC /* CallConnectUtil_Server.m in Sources */,
 				76EB062418170B33006006FC /* PriorityQueue.m in Sources */,
 				76EB061A18170B33006006FC /* DiscardingLog.m in Sources */,
-				76EB068418170B34006006FC /* ContactDetailTableViewCell.m in Sources */,
 				B6B096621A1D25ED008BFAA6 /* TSNumberVerifier.m in Sources */,
 				B6B0968B1A1D25ED008BFAA6 /* TSStorageManager+SignedPreKeyStore.m in Sources */,
 				B6B0966E1A1D25ED008BFAA6 /* TSGroupMessageManager.m in Sources */,
@@ -3902,7 +3835,6 @@
 				B6B096921A1D25ED008BFAA6 /* NSData+hexString.m in Sources */,
 				B63761ED19E1FBE8005735D1 /* HttpRequestOrResponse.m in Sources */,
 				76EB05A018170B33006006FC /* IpAddress.m in Sources */,
-				B9A578B1183D60EE00C17105 /* FavouriteTableViewCell.m in Sources */,
 				B6B096651A1D25ED008BFAA6 /* TSGroupThread.m in Sources */,
 				FCAC965119FF0A6E0046DFC5 /* MessagesViewController.m in Sources */,
 				B6B0966B1A1D25ED008BFAA6 /* TSAttachement.m in Sources */,
@@ -3927,10 +3859,8 @@
 				FCFD25721A1524DB00F4C644 /* GroupModel.m in Sources */,
 				E197B61A18BBEC1A00F073E5 /* SpeexCodec.m in Sources */,
 				B6B0967F1A1D25ED008BFAA6 /* TSRequestAttachmentId.m in Sources */,
-				762D9DCF18281C7400A5E418 /* SettingsTableHeaderView.m in Sources */,
 				76EB05F018170B33006006FC /* PhoneManager.m in Sources */,
 				E197B60F18BBEC1A00F073E5 /* EncodedAudioFrame.m in Sources */,
-				76D713E7182D3E3F00C9C9C8 /* PreferenceListTableViewCell.m in Sources */,
 				B6B0966C1A1D25ED008BFAA6 /* TSCall.m in Sources */,
 				B6B096781A1D25ED008BFAA6 /* TSDeregisterAccountRequest.m in Sources */,
 				76EB061818170B33006006FC /* AnonymousValueLogger.m in Sources */,
@@ -3946,7 +3876,6 @@
 				76EB058C18170B33006006FC /* DnsManager.m in Sources */,
 				B6B096881A1D25ED008BFAA6 /* TSStorageManager+keyFromIntLong.m in Sources */,
 				76EB059018170B33006006FC /* IgnoredPacketFailure.m in Sources */,
-				B942EB0E183A9633000887BB /* SearchBarTitleView.m in Sources */,
 				765052AF182AC9B5008313E1 /* DialerButtonView.m in Sources */,
 				FCAC964419FEFD8B0046DFC5 /* DemoDataFactory.m in Sources */,
 				76EB05D418170B33006006FC /* ZrtpManager.m in Sources */,
@@ -3956,7 +3885,6 @@
 				E16E5BF018AAC40200B7C403 /* EvpKeyAgreement.m in Sources */,
 				FCFD25821A154B3800F4C644 /* CodeVerificationViewController.m in Sources */,
 				FCF72A131A02D27F006BC849 /* ContactDetailTableViewController.m in Sources */,
-				B9EB5AC61884D370007CBB57 /* UnseenWhisperUserCell.m in Sources */,
 				B65EDA1219E1BE6400AAA7CB /* RPAPICall.m in Sources */,
 				76EB05DC18170B33006006FC /* StreamPair.m in Sources */,
 				70377AA91916BA0500CAF501 /* InteractiveLabel.m in Sources */,
@@ -3968,7 +3896,6 @@
 				FC4FA0261A1B9DC600DA100A /* SignalsNavigationController.m in Sources */,
 				76EB062018170B33006006FC /* BloomFilter.m in Sources */,
 				76EB063818170B33006006FC /* DictionaryUtil.m in Sources */,
-				B9B89C54185A2B5F00A24465 /* LeftSideMenuCell.m in Sources */,
 				B6B0967A1A1D25ED008BFAA6 /* TSRegisterForPushRequest.m in Sources */,
 				76EB05CE18170B33006006FC /* ZrtpHandshakeResult.m in Sources */,
 				B63761EE19E1FBE8005735D1 /* HttpRequestUtil.m in Sources */,
@@ -4050,7 +3977,6 @@
 				76EB05DB18170B33006006FC /* LowLatencyConnector.m in Sources */,
 				76EB060F18170B33006006FC /* DecayingSampleEstimator.m in Sources */,
 				76EB057718170B33006006FC /* Contact.m in Sources */,
-				B9EB5AC71884D370007CBB57 /* UnseenWhisperUserCell.m in Sources */,
 				76EB05FB18170B33006006FC /* CallConnectUtil_Responder.m in Sources */,
 				B6B095E61A1D25C5008BFAA6 /* TSMessageStorageTests.m in Sources */,
 				76EB063718170B33006006FC /* DataUtil.m in Sources */,
@@ -4058,16 +3984,12 @@
 				B90418E7183E9DD40038554A /* DateUtil.m in Sources */,
 				76EB05CB18170B33006006FC /* RecipientUnavailable.m in Sources */,
 				76EB061B18170B33006006FC /* DiscardingLog.m in Sources */,
-				B9B89C55185A2B5F00A24465 /* LeftSideMenuCell.m in Sources */,
 				76EB05FD18170B33006006FC /* CallConnectUtil_Server.m in Sources */,
 				76EB058B18170B33006006FC /* Release.m in Sources */,
-				76D713E8182D3E3F00C9C9C8 /* PreferenceListTableViewCell.m in Sources */,
 				76EB05D318170B33006006FC /* ZrtpInitiator.m in Sources */,
-				B9A578B2183D60EE00C17105 /* FavouriteTableViewCell.m in Sources */,
 				76EB061518170B33006006FC /* AnonymousConditionLogger.m in Sources */,
 				76EB060718170B33006006FC /* PhoneNumberDirectoryFilterManager.m in Sources */,
 				76EB05A118170B33006006FC /* IpAddress.m in Sources */,
-				762D9DD018281C7400A5E418 /* SettingsTableHeaderView.m in Sources */,
 				76EB05CD18170B33006006FC /* ShortAuthenticationStringGenerator.m in Sources */,
 				76EB05B718170B33006006FC /* MasterSecret.m in Sources */,
 				76EB05DF18170B33006006FC /* Certificate.m in Sources */,
@@ -4089,7 +4011,6 @@
 				76EB060318170B33006006FC /* InitiatorSessionDescriptor.m in Sources */,
 				A157075B17F0CD6D007C2BD6 /* SpeexCodecTest.m in Sources */,
 				A157075D17F0CD6D007C2BD6 /* DnsManagerTest.m in Sources */,
-				76EB068518170B34006006FC /* ContactDetailTableViewCell.m in Sources */,
 				A157075E17F0CD6D007C2BD6 /* HttpRequestResponseTest.m in Sources */,
 				76919BF71805D190008C664A /* ContactManagerTest.m in Sources */,
 				76EB05D118170B33006006FC /* ZrtpHandshakeSocket.m in Sources */,
@@ -4188,7 +4109,6 @@
 				76EB057318170B33006006FC /* RecentCall.m in Sources */,
 				76EB058518170B33006006FC /* LocalizableText.m in Sources */,
 				76EB061918170B33006006FC /* AnonymousValueLogger.m in Sources */,
-				B942EB0F183A9633000887BB /* SearchBarTitleView.m in Sources */,
 				76EB058918170B33006006FC /* PropertyListPreferences.m in Sources */,
 				76EB063D18170B33006006FC /* NumberUtil.m in Sources */,
 				76EB05E118170B33006006FC /* NetworkStream.m in Sources */,
