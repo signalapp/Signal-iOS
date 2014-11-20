@@ -89,7 +89,7 @@
                              hashChainH0,
                              [NSData dataWithBigEndianBytesOfUInt32:unusedAndSignatureLengthAndFlags],
                              [NSData dataWithBigEndianBytesOfUInt32:cacheExperationInterval]
-                             ] concatDatas];
+                             ] ows_concatDatas];
     
     NSData* encrytedSensitiveData = [sensitiveData encryptWithAesInCipherFeedbackModeWithKey:cipherKey andIv:iv];
     NSData* hmacForSensitiveData = [[encrytedSensitiveData hmacWithSha256WithKey:macKey] take:TRUNCATED_HMAC_LENGTH];
@@ -100,7 +100,7 @@
                        hmacForSensitiveData,
                        iv,
                        encrytedSensitiveData
-                       ] concatDatas];
+                       ] ows_concatDatas];
     
     return [HandshakePacket handshakePacketWithTypeId:typeId andPayload:payload];
 }

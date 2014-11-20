@@ -87,7 +87,7 @@
     NSData* signalingCipherKey = SGNKeychainUtil.signalingCipherKey;
     NSData* signalingMacKey = SGNKeychainUtil.signalingMacKey;
     NSData* signalingExtraKeyData = SGNKeychainUtil.signalingCipherKey;
-    NSString* encodedSignalingKey = @[signalingCipherKey, signalingMacKey, signalingExtraKeyData].concatDatas.encodedAsBase64;
+    NSString* encodedSignalingKey = @[signalingCipherKey, signalingMacKey, signalingExtraKeyData].ows_concatDatas.encodedAsBase64;
     NSString* body = @{@"key" : encodedSignalingKey, @"challenge" : challenge}.encodedAsJson;
     
     return [HttpRequest httpRequestWithBasicAuthenticationAndMethod:@"PUT"

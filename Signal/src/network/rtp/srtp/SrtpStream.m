@@ -30,7 +30,7 @@
 
     RtpPacket* encryptedRtpPacket = [normalRtpPacket withPayload:encryptedPayload];
     NSData* hmac = [[encryptedRtpPacket rawPacketDataUsingInteropOptions:@[]] hmacWithSha1WithKey:macKey];
-    NSData* authenticatedEncryptedPayload = [@[encryptedPayload, hmac] concatDatas];
+    NSData* authenticatedEncryptedPayload = [@[encryptedPayload, hmac] ows_concatDatas];
 
     return [encryptedRtpPacket withPayload:authenticatedEncryptedPayload];
 }

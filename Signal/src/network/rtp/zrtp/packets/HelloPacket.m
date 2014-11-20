@@ -157,9 +157,9 @@
             hashChainH3,
             zid.getData,
             [self generateFlags],
-            [[@[hashIds, cipherIds, authIds, agreeIds, sasIds] concatArrays] concatDatas]
+            [[@[hashIds, cipherIds, authIds, agreeIds, sasIds] ows_concatArrays] ows_concatDatas]
             
-            ] concatDatas];
+            ] ows_concatDatas];
 }
 
 -(void) verifyMacWithHashChainH2:(NSData*)hashChainH2 {
