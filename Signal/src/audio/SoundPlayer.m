@@ -2,70 +2,80 @@
 #import "SoundBoard.h"
 
 @interface SoundInstance ()
--(void) play;
--(void) stop;
+
+- (void)play;
+- (void)stop;
+
+@end
+
+@interface SoundPlayer ()
+
+@property (strong, nonatomic) NSMutableDictionary* currentActiveAudioPlayers;
+
 @end
 
 @implementation SoundPlayer
 
-NSMutableDictionary* currentActiveAudioPlayers;
+#pragma mark Creation
 
--(SoundPlayer*) init{
-    currentActiveAudioPlayers = [NSMutableDictionary dictionary];
-    return self;
++ (instancetype)sharedInstance {
+    static SoundPlayer* sharedInstance = nil;
+    static dispatch_once_t onceToken = 0;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[SoundPlayer alloc] init];
+        sharedInstance.currentActiveAudioPlayers = [[NSMutableDictionary alloc] init];
+    });
+    return sharedInstance;
 }
 
 #pragma mark Delegate Implementations
 
-
--(void) addSoundToManifest:(SoundInstance*) sound {
-    @synchronized(currentActiveAudioPlayers){
-        [sound setCompeletionBlock:^(SoundInstance* soundInst)  {
-            [self removeSoundFromManifest:soundInst];
-            if (self.delegate) {
-                [self.delegate didCompleteSoundInstanceOfType:soundInst.instanceType];
-            }
-        }];
-        [currentActiveAudioPlayers setValue:sound forKey:sound.getId];
+- (void)addSoundToManifest:(SoundInstance*)sound {
+    @synchronized(self.currentActiveAudioPlayers) {
+        sound.completionBlock = ^(SoundInstance* soundInstance) {
+            [self removeSoundFromManifest:soundInstance];
+            id delegate = self.delegate;
+            [delegate didCompleteSoundInstanceOfType:soundInstance.soundInstanceType];
+        };
+        [self.currentActiveAudioPlayers setValue:sound forKey:sound.getId];
     }
 }
--(void) removeSoundFromManifest:(SoundInstance*) sound {
+
+- (void)removeSoundFromManifest:(SoundInstance*)sound {
     [self removeSoundFromMainifestById:sound.getId];
 }
 
--(void) removeSoundFromMainifestById:(NSString*) soundId {
-    @synchronized(currentActiveAudioPlayers){
-        [currentActiveAudioPlayers removeObjectForKey:soundId];
+- (void)removeSoundFromMainifestById:(NSString*)soundId {
+    @synchronized(self.currentActiveAudioPlayers) {
+        [self.currentActiveAudioPlayers removeObjectForKey:soundId];
     }
 }
 
--(void) playSound:(SoundInstance*) sound {
-    if (![self isSoundPlaying:sound]){
+- (void)playSound:(SoundInstance*)sound {
+    if (![self isSoundPlaying:sound]) {
         [self addSoundToManifest:sound];
         [sound play];
     }
 }
 
--(void) stopSound:(SoundInstance*) sound {
-    SoundInstance* playingSoundInstance = currentActiveAudioPlayers[sound.getId];
+- (void)stopSound:(SoundInstance*)sound {
+    SoundInstance* playingSoundInstance = self.currentActiveAudioPlayers[sound.getId];
     [self removeSoundFromManifest:sound];
     [playingSoundInstance stop];
 }
 
--(void) stopAllAudio{
-    for( SoundInstance* sound in currentActiveAudioPlayers.allValues){
+- (void)stopAllAudio {
+    for (SoundInstance* sound in self.currentActiveAudioPlayers.allValues) {
         [self stopSound:sound];
     }
 }
 
--(BOOL) isSoundPlaying:(SoundInstance*) sound {
-    return nil != currentActiveAudioPlayers[sound.getId];
+- (BOOL)isSoundPlaying:(SoundInstance*)sound {
+    return nil != self.currentActiveAudioPlayers[sound.getId];
 }
 
--(void) awake {
-    for( SoundInstance* sound in currentActiveAudioPlayers.allValues){
-        [sound play];
-    }
+- (void)awake {
+    [self.currentActiveAudioPlayers.allValues makeObjectsPerformSelector:@selector(play)];
 }
 
 @end

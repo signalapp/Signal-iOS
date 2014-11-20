@@ -15,7 +15,7 @@
         [x2 setUint8At:i to:(uint8_t)(i & 255)];
     }
 
-    SpeexCodec* c = [SpeexCodec speexCodec];
+    SpeexCodec* c = [[SpeexCodec alloc] init];
     NSData* e100 = [c encode:x1];
     NSData* e200 = [c encode:x2];
     test(e200.length == e100.length);
@@ -28,7 +28,7 @@
         [x2 setUint8At:i to:(uint8_t)(i & 255)];
     }
     
-    SpeexCodec* c = [SpeexCodec speexCodec];
+    SpeexCodec* c = [[SpeexCodec alloc] init];
     NSData* e100 = [c encode:x1];
     NSData* e200 = [c encode:x2];
     NSData* d100 = [c decode:e100];

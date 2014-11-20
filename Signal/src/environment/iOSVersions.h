@@ -87,7 +87,7 @@
 static dispatch_once_t onceToken; \
 static id sharedInstance = nil; \
 dispatch_once(&onceToken, ^{ \
-sharedInstance = [self.class new]; \
+sharedInstance = [[[self class] alloc] init]; \
 }); \
 \
 return sharedInstance; \

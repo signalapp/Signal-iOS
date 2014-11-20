@@ -1,20 +1,30 @@
 #import "StreamPair.h"
 #import "Constraints.h"
 
+@interface StreamPair ()
+
+@property (strong, readwrite, nonatomic) NSInputStream* inputStream;
+@property (strong, readwrite, nonatomic) NSOutputStream* outputStream;
+
+@end
+
 @implementation StreamPair
-@synthesize inputStream, outputStream;
 
-+(StreamPair*) streamPairWithInput:(NSInputStream*)input andOutput:(NSOutputStream*)output {
-    require(input != nil);
-    require(output != nil);
+- (instancetype)initWithInput:(NSInputStream*)input andOutput:(NSOutputStream*)output {
+    self = [super init];
+	
+    if (self) {
+        require(input != nil);
+        require(output != nil);
 
-    StreamPair* r = [StreamPair new];
-    r->inputStream = input;
-    r->outputStream = output;
+        self.inputStream = input;
+        self.outputStream = output;
+        
+        [self.inputStream setProperty:NSStreamNetworkServiceTypeVoIP forKey:NSStreamNetworkServiceType];
+        [self.outputStream setProperty:NSStreamNetworkServiceTypeVoIP forKey:NSStreamNetworkServiceType];
+    }
     
-    [r->inputStream setProperty:NSStreamNetworkServiceTypeVoIP forKey:NSStreamNetworkServiceType];
-    [r->outputStream setProperty:NSStreamNetworkServiceTypeVoIP forKey:NSStreamNetworkServiceType];
-    return r;
+    return self;
 }
 
 @end

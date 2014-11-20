@@ -2,7 +2,7 @@
 #import "HelloPacket.h"
 #import "TestUtil.h"
 #import "Util.h"
-#import "Crc32.h"
+#import "NSData+CRC.h"
 
 @interface HandshakePacketTest : XCTestCase
 
@@ -16,21 +16,21 @@
 
 -(void) testHelloPacket {
     [Environment setCurrent:testEnv];
-    HashChain* h = [HashChain hashChainWithSeed:[NSData dataWithLength:32]];
-    HelloPacket* p = [HelloPacket helloPacketWithVersion:@"1.10".encodedAsUtf8
-                                             andClientId:@"RedPhone 019    ".encodedAsAscii
-                                          andHashChainH3:[h h3]
-                                                  andZid:[Zid zidWithData:increasingData(12)]
-                                            andFlags0SMP:0
-                                      andFlagsUnusedLow4:0
-                                     andFlagsUnusedHigh4:0
-                                          andHashSpecIds:@[]
-                                        andCipherSpecIds:@[]
-                                          andAuthSpecIds:@[]
-                                         andAgreeSpecIds:@[]
-                                           andSasSpecIds:@[]
-                                authenticatedWithHmacKey:[h h2]];
-    NSData* data = [[[p embeddedIntoHandshakePacket] embeddedIntoRtpPacketWithSequenceNumber:0x25 usingInteropOptions:@[]] rawPacketDataUsingInteropOptions:@[]];
+    HashChain* h = [[HashChain alloc] initWithSeed:[NSData dataWithLength:32]];
+    HelloPacket* p = [[HelloPacket alloc] initWithVersion:@"1.10".encodedAsUtf8
+                                              andClientId:@"RedPhone 019    ".encodedAsAscii
+                                           andHashChainH3:[h h3]
+                                                   andZid:[[Zid alloc] initWithData:increasingData(12)]
+                                             andFlags0SMP:0
+                                       andFlagsUnusedLow4:0
+                                      andFlagsUnusedHigh4:0
+                                           andHashSpecIds:@[]
+                                         andCipherSpecIds:@[]
+                                           andAuthSpecIds:@[]
+                                          andAgreeSpecIds:@[]
+                                            andSasSpecIds:@[]
+                                 authenticatedWithHMACKey:[h h2]];
+    NSData* data = [[[p embeddedIntoHandshakePacket] embeddedIntoRTPPacketWithSequenceNumber:0x25 usingInteropOptions:@[]] rawPacketDataUsingInteropOptions:@[]];
     uint8_t expectedData[] = {
         0x10,0x0,
         0x00,0x25, // sequence number
@@ -52,7 +52,7 @@
 
 -(void) testLegacyHelloPacket {
     [Environment setCurrent:testEnvWith(ENVIRONMENT_LEGACY_OPTION_RTP_PADDING_BIT_IMPLIES_EXTENSION_BIT_AND_TWELVE_EXTRA_ZERO_BYTES_IN_HEADER)];
-    HashChain* h = [HashChain hashChainWithSeed:[NSData dataWithLength:32]];
+    HashChain* h = [[HashChain alloc] initWithSeed:[NSData dataWithLength:32]];
     uint8_t legacySpecifiedData_raw[] = {
         0x20,0x0, // <-- wrong flag
         0x00,0x25, // sequence number
@@ -72,8 +72,9 @@
     };
     NSData* legacySpecifiedData = [NSData dataWithBytes:legacySpecifiedData_raw length:sizeof(legacySpecifiedData_raw)];
 
-    RtpPacket* rtp = [RtpPacket rtpPacketParsedFromPacketData:legacySpecifiedData];
-    HelloPacket* p = [HelloPacket helloPacketParsedFromHandshakePacket:[HandshakePacket handshakePacketParsedFromRtpPacket:rtp]];
+    RTPPacket* rtp = [[RTPPacket alloc] initFromPacketData:legacySpecifiedData];
+    HandshakePacket* handshake = [[HandshakePacket alloc] initFromRTPPacket:rtp];
+    HelloPacket* p = [[HelloPacket alloc] initFromHandshakePacket:handshake];
     [p verifyMacWithHashChainH2:h.h2];
     test(rtp.wasAdjustedDueToInteropIssues);
     test([p.hashChainH3 isEqual:h.h3]);
@@ -86,10 +87,9 @@
     
     NSData* key =[@"11" decodedAsHexString];
     
-    HandshakePacket* p = [HandshakePacket handshakePacketWithTypeId:type
-                                                         andPayload:payload];
-    HandshakePacket* withHMAC = [p withHmacAppended:key];
-    HandshakePacket* strippedOfValidHMAC = [withHMAC withHmacVerifiedAndRemoved:key];
+    HandshakePacket* p = [[HandshakePacket alloc] initWithTypeId:type andPayload:payload];
+    HandshakePacket* withHMAC = [p withHMACAppended:key];
+    HandshakePacket* strippedOfValidHMAC = [withHMAC withHMACVerifiedAndRemoved:key];
     
     test([[p payload] isEqualToData:[strippedOfValidHMAC payload]]);
     
@@ -106,13 +106,12 @@
     NSData* badkey =[@"10" decodedAsHexString];
     
     
-    HandshakePacket* p = [HandshakePacket handshakePacketWithTypeId:type
-                                                         andPayload:payload];
-    HandshakePacket* withHMAC = [p withHmacAppended:key];
+    HandshakePacket* p = [[HandshakePacket alloc] initWithTypeId:type andPayload:payload];
+    HandshakePacket* withHMAC = [p withHMACAppended:key];
     
-    testThrows([withHMAC withHmacVerifiedAndRemoved:badkey]);
+    testThrows([withHMAC withHMACVerifiedAndRemoved:badkey]);
     
-    HandshakePacket* strippedOfValidHMAC = [withHMAC withHmacVerifiedAndRemoved:key];
+    HandshakePacket* strippedOfValidHMAC = [withHMAC withHMACVerifiedAndRemoved:key];
     
     test([[p payload] isEqualToData:[strippedOfValidHMAC payload]]);
     

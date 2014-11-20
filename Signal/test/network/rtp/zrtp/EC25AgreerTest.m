@@ -9,7 +9,7 @@
 @implementation EC25AgreerTest
 
 -(void) testKeyExchangeMatchesPeerButNotOthers {
-    EC25KeyAgreementProtocol* protocol = [EC25KeyAgreementProtocol protocol];
+    EC25KeyAgreementProtocol* protocol = [[EC25KeyAgreementProtocol alloc] init];
     
     id<KeyAgreementParticipant> ec1 = [protocol generateParticipantWithNewKeys];
     id<KeyAgreementParticipant> ec2 = [protocol generateParticipantWithNewKeys];
@@ -29,7 +29,7 @@
 }
 
 -(void) testKeyExchangeSucceedsConsistently {
-    EC25KeyAgreementProtocol* protocol = [EC25KeyAgreementProtocol protocol];
+    EC25KeyAgreementProtocol* protocol = [[EC25KeyAgreementProtocol alloc] init];
     for (int i = 0; i < 1000; i++) {
         id<KeyAgreementParticipant> ec1 = [protocol generateParticipantWithNewKeys];
         id<KeyAgreementParticipant> ec2 = [protocol generateParticipantWithNewKeys];

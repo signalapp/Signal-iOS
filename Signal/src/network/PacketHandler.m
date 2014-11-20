@@ -1,32 +1,40 @@
 #import "PacketHandler.h"
 #import "Constraints.h"
 
+@interface PacketHandler ()
+
+@property (strong, readwrite, nonatomic) PacketHandlerBlock dataHandler;
+@property (strong, readwrite, nonatomic) ErrorHandlerBlock errorHandler;
+
+@end
+
 @implementation PacketHandler
 
-@synthesize dataHandler, errorHandler;
-
-+(PacketHandler*) packetHandler:(PacketHandlerBlock)dataHandler
-               withErrorHandler:(ErrorHandlerBlock)errorHandler {
+- (instancetype)initPacketHandler:(PacketHandlerBlock)dataHandler
+                 withErrorHandler:(ErrorHandlerBlock)errorHandler {
+    self = [super init];
+	
+    if (self) {
+        require(dataHandler != nil);
+        require(errorHandler != nil);
+        
+        self.dataHandler = dataHandler;
+        self.errorHandler = errorHandler;
+    }
     
-    require(dataHandler != nil);
-    require(errorHandler != nil);
-    
-    PacketHandler* p = [PacketHandler new];
-    p->dataHandler = [dataHandler copy];
-    p->errorHandler = [errorHandler copy];
-    return p;
+    return self;
 }
 
--(void) handlePacket:(id)packet {
-    dataHandler(packet);
+- (void)handlePacket:(id)packet {
+    self.dataHandler(packet);
 }
 
--(void) handleError:(id)error
+- (void)handleError:(id)error
         relatedInfo:(id)relatedInfo
   causedTermination:(bool)causedTermination {
     
     DDLogError(@"Pack handler failed with error: %@ and info: %@", error, relatedInfo);
-    errorHandler(error, relatedInfo, causedTermination);
+    self.errorHandler(error, relatedInfo, causedTermination);
 }
 
 @end

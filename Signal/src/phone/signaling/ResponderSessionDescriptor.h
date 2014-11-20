@@ -11,18 +11,18 @@
  */
 @interface ResponderSessionDescriptor : NSObject
 
-@property (nonatomic,readonly) int32_t interopVersion;
-@property (nonatomic,readonly) in_port_t relayUdpPort;
-@property (nonatomic,readonly) int64_t sessionId;
-@property (nonatomic,readonly) NSString* relayServerName;
-@property (nonatomic,readonly) PhoneNumber* initiatorNumber;
+@property (nonatomic, readonly) int32_t interopVersion;
+@property (nonatomic, readonly) in_port_t relayUDPSocketPort;
+@property (nonatomic, readonly) int64_t sessionId;
+@property (nonatomic, readonly) NSString* relayServerName;
+@property (nonatomic, readonly) PhoneNumber* initiatorNumber;
 
-+(ResponderSessionDescriptor*)responderSessionDescriptorWithInteropVersion:(int32_t)interopVersion
-                                                           andRelayUdpPort:(in_port_t)relayUdpPort
-                                                              andSessionId:(int64_t)sessionId
-                                                        andRelayServerName:(NSString*)relayServerName
-                                                        andInitiatorNumber:(PhoneNumber*)initiatorNumber;
+- (instancetype)initWithInteropVersion:(int32_t)interopVersion
+                 andRelayUDPSocketPort:(in_port_t)relayUDPSocketPort
+                          andSessionId:(int64_t)sessionId
+                    andRelayServerName:(NSString*)relayServerName
+                    andInitiatorNumber:(PhoneNumber*)initiatorNumber;
 
-+(ResponderSessionDescriptor*)responderSessionDescriptorFromEncryptedRemoteNotification:(NSDictionary*)remoteNotif;
+- (instancetype)initFromEncryptedRemoteNotification:(NSDictionary*)remoteNotif;
 
 @end

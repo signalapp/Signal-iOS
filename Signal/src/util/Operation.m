@@ -1,58 +1,68 @@
 #import "Util.h"
 #import "Constraints.h"
 
+@interface Operation ()
+
+@property (nonatomic, readwrite, copy) Action callback;
+
+@end
+
 @implementation Operation
 
-+(Operation*) operation:(Action)block {
-    require(block != NULL);
-    Operation* a = [Operation new];
-    a->_callback = block;
-    return a;
+- (instancetype)initWithAction:(Action)block {
+    self = [super init];
+	
+    if (self) {
+        require(block != NULL);
+        self.callback = block;
+    }
+    
+    return self;
 }
 
-+(void) asyncRun:(Action)action
++ (void)asyncRun:(Action)action
         onThread:(NSThread*)thread {
     
     require(action != nil);
     require(thread != nil);
     
-    [[Operation operation:action] performOnThread:thread];
+    [[[Operation alloc] initWithAction:action] performOnThread:thread];
 }
 
-+(void) asyncRunAndWaitUntilDone:(Action)action
++ (void)asyncRunAndWaitUntilDone:(Action)action
                         onThread:(NSThread*)thread {
     
     require(action != nil);
     require(thread != nil);
     
-    [[Operation operation:action] performOnThreadAndWaitUntilDone:thread];
+    [[[Operation alloc] initWithAction:action] performOnThreadAndWaitUntilDone:thread];
 }
 
-+(void) asyncRunOnNewThread:(Action)action {
++ (void)asyncRunOnNewThread:(Action)action {
     require(action != nil);
-    [[Operation operation:action] performOnNewThread];
+    [[[Operation alloc] initWithAction:action] performOnNewThread];
 }
 
--(SEL) selectorToRun {
+- (SEL)selectorToRun {
     return @selector(run);
 }
 
--(void) performOnThread:(NSThread*)thread {
+- (void)performOnThread:(NSThread*)thread {
     require(thread != nil);
     [self performSelector:@selector(run) onThread:thread withObject:nil waitUntilDone:thread == NSThread.currentThread];
 }
 
--(void) performOnThreadAndWaitUntilDone:(NSThread*)thread {
+- (void)performOnThreadAndWaitUntilDone:(NSThread*)thread {
     require(thread != nil);
     [self performSelector:@selector(run) onThread:thread withObject:nil waitUntilDone:true];
 }
 
--(void) performOnNewThread {
+- (void)performOnNewThread {
     [NSThread detachNewThreadSelector:[self selectorToRun] toTarget:self withObject:nil];
 }
 
--(void) run {
-    _callback();
+- (void)run {
+    self.callback();
 }
 
 @end

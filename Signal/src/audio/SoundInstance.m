@@ -1,69 +1,66 @@
 #import "SoundInstance.h"
 
-@interface SoundInstance (){
-    void (^completionBlock)(SoundInstance*);
-}
-@property (retain) AVAudioPlayer *audioPlayer;
+@interface SoundInstance ()
 
+@property (readwrite, nonatomic) SoundInstanceType soundInstanceType;
+@property (strong, nonatomic) AVAudioPlayer *audioPlayer;
 
 @end
 
 @implementation SoundInstance
 
-+(SoundInstance*) soundInstanceForFile:(NSString*) audioFile {
-    SoundInstance* soundInstance = [SoundInstance new];
-    soundInstance.audioPlayer = [soundInstance.class createAudioPlayerForFile:audioFile];
-    [soundInstance.audioPlayer setDelegate:soundInstance];
-    return soundInstance;
+- (instancetype)initWithFile:(NSString*)audioFile
+        andSoundInstanceType:(SoundInstanceType)soundInstanceType {
+    self = [super init];
+	
+    if (self) {
+        self.soundInstanceType = soundInstanceType;
+        self.audioPlayer = [SoundInstance createAudioPlayerForFile:audioFile];
+        [self.audioPlayer setDelegate:self];
+    }
+    
+    return self;
 }
 
--(NSString*) getId{
+- (NSString*)getId {
     return [[self.audioPlayer url] absoluteString];
 }
 
--(void) play {
+- (void)play {
     [self.audioPlayer play];
 }
 
--(void) stop {
+- (void)stop {
     [self.audioPlayer stop];
     [self audioPlayerDidFinishPlaying:self.audioPlayer successfully:YES];
 }
 
--(void) setAudioToLoopIndefinitely {
+- (void)setAudioToLoopIndefinitely {
     self.audioPlayer.numberOfLoops = -1;
 }
 
--(void) setAudioLoopCount:(NSInteger) loopCount {
+- (void)setAudioLoopCount:(NSInteger)loopCount {
     self.audioPlayer.numberOfLoops = loopCount;
 }
 
-- (SoundInstanceType)instanceType {
-    if (!_instanceType) {
-        _instanceType = SoundInstanceTypeNothing;
-    }
-    return _instanceType;
++ (NSURL*)urlToFile:(NSString*)file {
+    return [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", NSBundle.mainBundle.resourcePath, file]];
 }
 
-+(NSURL*) urlToFile:(NSString*) file {
-    return [NSURL fileURLWithPath:
-            [NSString stringWithFormat:@"%@/%@", NSBundle.mainBundle.resourcePath,file]];
-}
-
-+(AVAudioPlayer*) createAudioPlayerForFile:(NSString*) audioFile {
-    NSURL* url = [self urlToFile:audioFile];
++ (AVAudioPlayer*)createAudioPlayerForFile:(NSString*)audioFile {
+    NSURL* url = [SoundInstance urlToFile:audioFile];
     
-    NSError *error;
+    NSError* error;
     AVAudioPlayer* audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&error];
-    if (nil == audioPlayer){ NSLog(@" %@",[error description]);}
+    if (!audioPlayer) {
+        NSLog(@" %@",[error description]);
+    }
+    
     return audioPlayer;
 }
 
--(void) setCompeletionBlock:(void (^)(SoundInstance* )) block {
-    completionBlock = block;
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer*)player successfully:(BOOL)flag {
+    self.completionBlock(self);
 }
 
--(void) audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
-    completionBlock(self);
-}
 @end

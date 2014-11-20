@@ -6,7 +6,8 @@
 
 @interface NotificationTracker : NSObject
 
-+(NotificationTracker*) notificationTracker;
--(BOOL) shouldProcessNotification:(NSDictionary*) notification;
+- (instancetype)init;
+
+- (BOOL)shouldProcessNotification:(NSDictionary*)notification;
 
 @end

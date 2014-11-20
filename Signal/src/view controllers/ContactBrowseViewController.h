@@ -10,12 +10,12 @@
 
 @interface ContactBrowseViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, SearchBarTitleViewDelegate>
 
-@property (nonatomic, strong) IBOutlet UITableView *contactTableView;
-@property (nonatomic, strong) IBOutlet SearchBarTitleView *searchBarTitleView;
-@property (nonatomic, strong) IBOutlet UIView *notificationView;
-@property (nonatomic, retain) UIRefreshControl *refreshControl;
+@property (strong, nonatomic) IBOutlet UITableView* contactTableView;
+@property (strong, nonatomic) IBOutlet SearchBarTitleView* searchBarTitleView;
+@property (strong, nonatomic) IBOutlet UIView* notificationView;
+@property (strong, nonatomic) UIRefreshControl* refreshControl;
 
 - (IBAction)notificationViewTapped:(id)sender;
-- (void)showNotificationForNewWhisperUsers:(NSArray *)users;
+- (void)showNotificationForNewWhisperUsers:(NSArray*)users;
 
 @end

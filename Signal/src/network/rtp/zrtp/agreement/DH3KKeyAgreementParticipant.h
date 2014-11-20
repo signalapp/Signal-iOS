@@ -1,8 +1,7 @@
 #import <Foundation/Foundation.h>
-
 #import "KeyAgreementParticipant.h"
 #import "DH3KKeyAgreementProtocol.h"
-#import "EvpKeyAgreement.h"
+#import "EVPKeyAgreement.h"
 
 /**
  *
@@ -11,13 +10,8 @@
  *
 **/
 
-@interface DH3KKeyAgreementParticipant :  NSObject <KeyAgreementParticipant> {
+@interface DH3KKeyAgreementParticipant :  NSObject <KeyAgreementParticipant>
 
-@private DH3KKeyAgreementProtocol* protocol;
-@private EvpKeyAgreement* evpKeyAgreement;
-
-}
-
-+(DH3KKeyAgreementParticipant*) participantWithPrivateKeyGeneratedForProtocol:(DH3KKeyAgreementProtocol*) protocol;
+- (instancetype)initWithPrivateKeyGeneratedForProtocol:(DH3KKeyAgreementProtocol*)protocol;
 
 @end

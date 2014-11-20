@@ -11,26 +11,27 @@
  */
 
 @class CallLogTableViewCell;
+
 @protocol CallLogTableViewCellDelegate <NSObject>
 
-- (void)recentCallTableViewCellTappedDelete:(CallLogTableViewCell *)cell;
-- (void)recentCallTableViewCellTappedCall:(CallLogTableViewCell *)cell;
+- (void)recentCallTableViewCellTappedDelete:(CallLogTableViewCell*)cell;
+- (void)recentCallTableViewCellTappedCall:(CallLogTableViewCell*)cell;
 
 @end
 
 @interface CallLogTableViewCell : UITableViewCell <UIScrollViewDelegate>
 
-@property (nonatomic, strong) IBOutlet UILabel *contactNameLabel;
-@property (nonatomic, strong) IBOutlet UILabel *contactNumberLabel;
-@property (nonatomic, strong) IBOutlet UILabel *timeLabel;
-@property (nonatomic, strong) IBOutlet UIImageView *callTypeImageView;
-@property (nonatomic, strong) IBOutlet NextResponderScrollView *scrollView;
-@property (nonatomic, strong) IBOutlet UIView *contentContainerView;
-@property (nonatomic, strong) IBOutlet UIView *deleteView;
-@property (nonatomic, strong) IBOutlet UIImageView *deleteImageView;
-@property (nonatomic, assign) id<CallLogTableViewCellDelegate> delegate;
+@property (strong, nonatomic) IBOutlet UILabel* contactNameLabel;
+@property (strong, nonatomic) IBOutlet UILabel* contactNumberLabel;
+@property (strong, nonatomic) IBOutlet UILabel* timeLabel;
+@property (strong, nonatomic) IBOutlet UIImageView* callTypeImageView;
+@property (strong, nonatomic) IBOutlet NextResponderScrollView* scrollView;
+@property (strong, nonatomic) IBOutlet UIView* contentContainerView;
+@property (strong, nonatomic) IBOutlet UIView* deleteView;
+@property (strong, nonatomic) IBOutlet UIImageView* deleteImageView;
+@property (weak, nonatomic) id<CallLogTableViewCellDelegate> delegate;
 
-- (void)configureWithRecentCall:(RecentCall *)recentCall;
+- (void)configureWithRecentCall:(RecentCall*)recentCall;
 - (IBAction)phoneCallButtonTapped;
 
 @end

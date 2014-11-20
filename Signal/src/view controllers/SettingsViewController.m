@@ -1,9 +1,9 @@
 #import "DebugLogger.h"
 #import "Environment.h"
-#import "FutureUtil.h"
+#import "TOCFuture+FutureUtil.h"
 #import "LocalizableText.h"
 #import "Operation.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "PhoneNumber.h"
 #import "RecentCallManager.h"
 #import "RegisterViewController.h"
@@ -17,27 +17,28 @@
 #define PRIVACY_SECTION_INDEX 0
 #define DEBUG_SECTION_INDEX 1
 
-static NSString *const CHECKBOX_CHECKMARK_IMAGE_NAME = @"checkbox_checkmark";
-static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
+static NSString* const CHECKBOX_CHECKMARK_IMAGE_NAME = @"checkbox_checkmark";
+static NSString* const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 
-@interface SettingsViewController () {
-    NSArray *_sectionHeaderViews;
-    NSArray *_privacyTableViewCells;
-    NSArray *_debuggingTableViewCells;
-    
-    NSString *gistURL;
-}
+@interface SettingsViewController ()
+
+@property (strong, nonatomic) NSArray* sectionHeaderViews;
+@property (strong, nonatomic) NSArray* privacyTableViewCells;
+@property (strong, nonatomic) NSArray* debuggingTableViewCells;
+@property (strong, nonatomic) NSString* gistURL;
 
 @end
 
 @implementation SettingsViewController
 
+@synthesize privacyTableViewCells = _privacyTableViewCells, debuggingTableViewCells = _debuggingTableViewCells;
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    _sectionHeaderViews = @[_privacyAndSecurityHeaderView , self.debuggingHeaderView];
+    self.sectionHeaderViews = @[self.privacyAndSecurityHeaderView , self.debuggingHeaderView];
     
-    _titleLabel.text = SETTINGS_NAV_BAR_TITLE;
+    self.titleLabel.text = SETTINGS_NAV_BAR_TITLE;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -65,23 +66,23 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 #pragma mark - Local number
 
 - (void)configureLocalNumber {
-    PhoneNumber *localNumber = SGNKeychainUtil.localNumber;
+    PhoneNumber* localNumber = [SGNKeychainUtil localNumber];
     if (localNumber) {
-        _phoneNumberLabel.attributedText = [self localNumberAttributedStringForNumber:localNumber];
+        self.phoneNumberLabel.attributedText = [self localNumberAttributedStringForNumber:localNumber];
     } else {
-        _phoneNumberLabel.text = @"";
+        self.phoneNumberLabel.text = @"";
     }
 }
 
-- (NSAttributedString *)localNumberAttributedStringForNumber:(PhoneNumber *)number {
-    NSString *numberPrefixString = SETTINGS_NUMBER_PREFIX;
-    NSString *localNumberString = number.toE164;
+- (NSAttributedString*)localNumberAttributedStringForNumber:(PhoneNumber*)number {
+    NSString* numberPrefixString = SETTINGS_NUMBER_PREFIX;
+    NSString* localNumberString = number.toE164;
     
-    NSString *displayString = [NSString stringWithFormat:@"%@ %@", numberPrefixString, localNumberString];
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:displayString];
+    NSString* displayString = [NSString stringWithFormat:@"%@ %@", numberPrefixString, localNumberString];
+    NSMutableAttributedString* attributedString = [[NSMutableAttributedString alloc] initWithString:displayString];
     
-    UIFont *prefixFont = [UIUtil helveticaNeueLTStdLightFontWithSize:_phoneNumberLabel.font.pointSize];
-    UIFont *numberFont = [UIUtil helveticaNeueLTStdBoldFontWithSize:_phoneNumberLabel.font.pointSize];
+    UIFont* prefixFont = [UIUtil helveticaNeueLTStdLightFontWithSize:self.phoneNumberLabel.font.pointSize];
+    UIFont* numberFont = [UIUtil helveticaNeueLTStdBoldFontWithSize:self.phoneNumberLabel.font.pointSize];
     
     [attributedString addAttribute:NSFontAttributeName
                              value:prefixFont
@@ -96,76 +97,76 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 #pragma mark - Preferences
 
 - (void)configureCheckboxPreferences {
-    NSArray *buttons = @[_hideContactImagesButton,
-                         _enableScreenSecurityButton,
-                         _disableAutocorrectButton,
-                         _disableHistoryButton,
-                         _disableDebugLogsButton];
+    NSArray* buttons = @[self.hideContactImagesButton,
+                         self.enableScreenSecurityButton,
+                         self.disableAutocorrectButton,
+                         self.disableHistoryButton,
+                         self.disableDebugLogsButton];
     
-    for (UIButton *button in buttons) {
+    for (UIButton* button in buttons) {
         [button setImage:[UIImage imageNamed:CHECKBOX_EMPTY_IMAGE_NAME]
                 forState:UIControlStateNormal];
         
         [button setImage:[UIImage imageNamed:CHECKBOX_CHECKMARK_IMAGE_NAME]
                 forState:UIControlStateSelected];
     }
-    PropertyListPreferences *prefs       = Environment.preferences;
-    _hideContactImagesButton.selected    = !prefs.getContactImagesEnabled;
-    _enableScreenSecurityButton.selected = prefs.screenSecurityIsEnabled;
-    _disableAutocorrectButton.selected   = !prefs.getAutocorrectEnabled;
-    _disableHistoryButton.selected       = !prefs.getHistoryLogEnabled;
-    _disableDebugLogsButton.selected     = !prefs.loggingIsEnabled;
+    PropertyListPreferences* prefs           = Environment.preferences;
+    self.hideContactImagesButton.selected    = !prefs.getContactImagesEnabled;
+    self.enableScreenSecurityButton.selected = prefs.screenSecurityIsEnabled;
+    self.disableAutocorrectButton.selected   = !prefs.getAutocorrectEnabled;
+    self.disableHistoryButton.selected       = !prefs.getHistoryLogEnabled;
+    self.disableDebugLogsButton.selected     = !prefs.loggingIsEnabled;
 }
 
 - (void)configureAllCells {
-    _privacyTableViewCells   = [self privacyAndSecurityCells];
-    _debuggingTableViewCells = [self debugCells];
-    [_privacyAndSecurityHeaderView setColumnStateExpanded:YES andIsAnimated:NO];
-    [_debuggingHeaderView setColumnStateExpanded:YES andIsAnimated:NO];
+    self.privacyTableViewCells   = [self privacyAndSecurityCells];
+    self.debuggingTableViewCells = [self debugCells];
+    [self.privacyAndSecurityHeaderView setColumnStateExpanded:YES andIsAnimated:NO];
+    [self.debuggingHeaderView setColumnStateExpanded:YES andIsAnimated:NO];
 }
 
 - (void)saveExpandedSectionPreferences {
-    NSMutableArray *expandedSectionPrefs = [NSMutableArray array];
-    NSNumber *numberBoolYes = @YES;
-    NSNumber *numberBoolNo = @NO;
+    NSMutableArray* expandedSectionPrefs = [[NSMutableArray alloc] init];
+    NSNumber* numberBoolYes = @YES;
+    NSNumber* numberBoolNo = @NO;
     
-    [expandedSectionPrefs addObject:(_privacyTableViewCells ? numberBoolYes : numberBoolNo)];
+    [expandedSectionPrefs addObject:(self.privacyTableViewCells ? numberBoolYes : numberBoolNo)];
 }
 
 #pragma mark - Table View Helpers
 
-- (NSArray *)privacyAndSecurityCells {
-    return @[_hideContactImagesCell,
-             _enableScreenSecurityCell,
-             _disableAutocorrectCell,
-             _disableHistoryCell,
-             _clearHistoryLogCell];
+- (NSArray*)privacyAndSecurityCells {
+    return @[self.hideContactImagesCell,
+             self.enableScreenSecurityCell,
+             self.disableAutocorrectCell,
+             self.disableHistoryCell,
+             self.clearHistoryLogCell];
 }
 
-- (NSArray *)debugCells{
+- (NSArray*)debugCells {
     
-    NSMutableArray *cells = [@[_disableLogsCell] mutableCopy];
+    NSMutableArray* cells = [@[self.disableLogsCell] mutableCopy];
     
     if (Environment.preferences.loggingIsEnabled) {
-        [cells addObject:_sendDebugLog];
+        [cells addObject:self.sendDebugLog];
     }
     
     return cells;
 }
 
-- (NSArray *)indexPathsForCells:(NSArray *)cells forRow:(NSInteger)row {
-    NSMutableArray *indexPaths = [NSMutableArray array];
+- (NSArray*)indexPathsForCells:(NSArray*)cells forRow:(NSInteger)row {
+    NSMutableArray* indexPaths = [[NSMutableArray alloc] init];
     for (NSUInteger i = 0; i < cells.count; i++) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(NSInteger)i inSection:row];
+        NSIndexPath* indexPath = [NSIndexPath indexPathForRow:(NSInteger)i inSection:row];
         [indexPaths addObject:indexPath];
     }
     return indexPaths;
 }
 
-- (NSArray *)cellsForRow:(NSInteger)row {
+- (NSArray*)cellsForRow:(NSInteger)row {
     if (row == PRIVACY_SECTION_INDEX) {
         return [self privacyAndSecurityCells];
-    } else if (row == DEBUG_SECTION_INDEX){
+    } else if (row == DEBUG_SECTION_INDEX) {
         return [self debugCells];
     }else {
         return @[];
@@ -175,76 +176,76 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 #pragma mark - Actions
 
 - (void)registerTapped {
-    RegisterViewController *registerViewController = [RegisterViewController registerViewController];
-    [self presentViewController:registerViewController animated:YES completion:nil];
+    [self presentViewController:[[RegisterViewController alloc] init] animated:YES completion:nil];
 }
 
 - (void)privacyAndSecurityTapped {
     [self toggleCells:&_privacyTableViewCells forRow:PRIVACY_SECTION_INDEX];
-    BOOL columnExpanded = _privacyTableViewCells != nil;
-    [_privacyAndSecurityHeaderView setColumnStateExpanded:columnExpanded andIsAnimated:YES];
+    BOOL columnExpanded = self.privacyTableViewCells != nil;
+    [self.privacyAndSecurityHeaderView setColumnStateExpanded:columnExpanded andIsAnimated:YES];
 }
 
 - (void)debuggingTapped:(id)sender{
     [self toggleCells:&_debuggingTableViewCells forRow:DEBUG_SECTION_INDEX];
-    BOOL columnExpanded = _debuggingTableViewCells != nil;
-    [_debuggingHeaderView setColumnStateExpanded:columnExpanded andIsAnimated:YES];
+    BOOL columnExpanded = self.debuggingTableViewCells != nil;
+    [self.debuggingHeaderView setColumnStateExpanded:columnExpanded andIsAnimated:YES];
 }
 
-- (void)toggleCells:(NSArray *__strong*)cells forRow:(NSInteger)row {
-    [_settingsTableView beginUpdates];
+- (void)toggleCells:(NSArray* __strong*)cells forRow:(NSInteger)row {
+    [self.settingsTableView beginUpdates];
     if (*cells) {
-        [_settingsTableView deleteRowsAtIndexPaths:[self indexPathsForCells:*cells forRow:row]
-                                  withRowAnimation:UITableViewRowAnimationFade];
+        [self.settingsTableView deleteRowsAtIndexPaths:[self indexPathsForCells:*cells forRow:row]
+                                      withRowAnimation:UITableViewRowAnimationFade];
         *cells = nil;
     } else {
         *cells = [self cellsForRow:row];
-        [_settingsTableView insertRowsAtIndexPaths:[self indexPathsForCells:*cells forRow:row]
-                                  withRowAnimation:UITableViewRowAnimationFade];
+        [self.settingsTableView insertRowsAtIndexPaths:[self indexPathsForCells:*cells forRow:row]
+                                      withRowAnimation:UITableViewRowAnimationFade];
     }
-    [_settingsTableView endUpdates];
+    [self.settingsTableView endUpdates];
 }
 
 - (IBAction)hideContactImagesButtonTapped {
-    _hideContactImagesButton.selected = !_hideContactImagesButton.selected;
-    [Environment.preferences setContactImagesEnabled:!_hideContactImagesButton.selected];
+    self.hideContactImagesButton.selected = !self.hideContactImagesButton.selected;
+    [Environment.preferences setContactImagesEnabled:!self.hideContactImagesButton.selected];
 }
 
 - (IBAction)disableAutocorrectButtonTapped {
-    _disableAutocorrectButton.selected = !_disableAutocorrectButton.selected;
-    [Environment.preferences setAutocorrectEnabled:!_disableAutocorrectButton.selected];
+    self.disableAutocorrectButton.selected = !self.disableAutocorrectButton.selected;
+    [Environment.preferences setAutocorrectEnabled:!self.disableAutocorrectButton.selected];
 }
 
 - (IBAction)disableHistoryButtonTapped {
-    _disableHistoryButton.selected = !_disableHistoryButton.selected;
-    [Environment.preferences setHistoryLogEnabled:!_disableHistoryButton.selected];
+    self.disableHistoryButton.selected = !self.disableHistoryButton.selected;
+    [Environment.preferences setHistoryLogEnabled:!self.disableHistoryButton.selected];
 }
 
 - (IBAction)enableScreenSecurityTapped:(id)sender{
-    _enableScreenSecurityButton.selected = !_enableScreenSecurityButton.selected;
-    [Environment.preferences setScreenSecurity:_enableScreenSecurityButton.selected];
+    self.enableScreenSecurityButton.selected = !self.enableScreenSecurityButton.selected;
+    [Environment.preferences setScreenSecurity:self.enableScreenSecurityButton.selected];
 }
 
 - (IBAction)disableLogTapped:(id)sender{
-    _disableDebugLogsButton.selected = !_disableDebugLogsButton.selected;
+    self.disableDebugLogsButton.selected = !self.disableDebugLogsButton.selected;
     
-    BOOL loggingEnabled = !_disableDebugLogsButton.selected;
+    BOOL loggingEnabled = !self.disableDebugLogsButton.selected;
     
     if (!loggingEnabled) {
         [DebugLogger.sharedInstance disableFileLogging];
-        [DebugLogger.sharedInstance wipeLogs];
+        [[DebugLogger sharedInstance ] wipeLogs];
     } else{
         [DebugLogger.sharedInstance enableFileLogging];
     }
 
     [Environment.preferences setLoggingEnabled:loggingEnabled];
-    _debuggingTableViewCells = [self debugCells];
-    [_settingsTableView reloadData];
+    self.debuggingTableViewCells = [self debugCells];
+    [self.settingsTableView reloadData];
 }
 
 - (void)clearHistory {
     [Environment.getCurrent.recentCallManager clearRecentCalls];
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SETTINGS_LOG_CLEAR_TITLE
+#warning Deprecated method
+    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:SETTINGS_LOG_CLEAR_TITLE
                                                         message:SETTINGS_LOG_CLEAR_MESSAGE
                                                        delegate:nil
                                               cancelButtonTitle:nil
@@ -254,60 +255,60 @@ static NSString *const CHECKBOX_EMPTY_IMAGE_NAME = @"checkbox_empty";
 
 #pragma mark - UITableViewDelegate
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return (NSInteger)_sectionHeaderViews.count;
+- (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
+    return (NSInteger)self.sectionHeaderViews.count;
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    return _sectionHeaderViews[(NSUInteger)section];
+- (UIView*)tableView:(UITableView*)tableView viewForHeaderInSection:(NSInteger)section {
+    return self.sectionHeaderViews[(NSUInteger)section];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+- (CGFloat)tableView:(UITableView*)tableView heightForHeaderInSection:(NSInteger)section {
     return SECTION_HEADER_VIEW_HEIGHT;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    UIView *headerView = _sectionHeaderViews[(NSUInteger)section];
-    if (headerView == _privacyAndSecurityHeaderView) {
-        return (NSInteger)_privacyTableViewCells.count;
-    } else if (headerView == _debuggingHeaderView){
-        return (NSInteger)_debuggingTableViewCells.count;
-    }else {
+- (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section {
+    UIView* headerView = self.sectionHeaderViews[(NSUInteger)section];
+    if (headerView == self.privacyAndSecurityHeaderView) {
+        return (NSInteger)self.privacyTableViewCells.count;
+    } else if (headerView == self.debuggingHeaderView) {
+        return (NSInteger)self.debuggingTableViewCells.count;
+    } else {
         return 0;
     }
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UIView *headerView = _sectionHeaderViews[(NSUInteger)indexPath.section];
-    UITableViewCell *cell = nil;
-    if (headerView == _privacyAndSecurityHeaderView) {
-        cell = _privacyTableViewCells[(NSUInteger)indexPath.row];
-    } else if (headerView ==_debuggingHeaderView){
-        cell = _debuggingTableViewCells[(NSUInteger)indexPath.row];
+- (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+    UIView* headerView = self.sectionHeaderViews[(NSUInteger)indexPath.section];
+    UITableViewCell* cell = nil;
+    if (headerView == self.privacyAndSecurityHeaderView) {
+        cell = self.privacyTableViewCells[(NSUInteger)indexPath.row];
+    } else if (headerView ==self.debuggingHeaderView) {
+        cell = self.debuggingTableViewCells[(NSUInteger)indexPath.row];
     }
     [self findAndLocalizeLabelsForView:cell];
     
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    if (cell == _clearHistoryLogCell) {
+    UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
+    if (cell == self.clearHistoryLogCell) {
         [self clearHistory];
     }
     
-    if (cell == _sendDebugLog) {
+    if (cell == self.sendDebugLog) {
         [Pastelog submitLogs];
     }
 }
 
 
-- (void)findAndLocalizeLabelsForView:(UIView *)view {
-    for (UIView *subview in view.subviews) {
+- (void)findAndLocalizeLabelsForView:(UIView*)view {
+    for (UIView* subview in view.subviews) {
         if ([subview respondsToSelector:@selector(localizationKey)]) {
-            LocalizableCustomFontLabel *label = (LocalizableCustomFontLabel *)subview;
+            LocalizableCustomFontLabel* label = (LocalizableCustomFontLabel*)subview;
             if (label.localizationKey) {
                 label.text = NSLocalizedString(label.localizationKey, @"");
             }

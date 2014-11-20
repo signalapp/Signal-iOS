@@ -9,16 +9,15 @@
  */
 @interface InitiatorSessionDescriptor : NSObject
 
-@property (nonatomic, readonly) in_port_t relayUdpPort;
+@property (nonatomic, readonly) in_port_t relayUDPSocketPort;
 @property (nonatomic, readonly) int64_t sessionId;
 @property (nonatomic, readonly) NSString* relayServerName;
 
-+(InitiatorSessionDescriptor*) initiatorSessionDescriptorWithSessionId:(int64_t)sessionId
-                                                    andRelayServerName:(NSString*)relayServerName
-                                                          andRelayPort:(in_port_t)relayUdpPort;
+- (instancetype)initWithSessionId:(int64_t)sessionId
+               andRelayServerName:(NSString*)relayServerName
+                     andRelayPort:(in_port_t)relayUDPSocketPort;
+- (instancetype)initFromJSON:(NSString*)json;
 
-+(InitiatorSessionDescriptor*) initiatorSessionDescriptorFromJson:(NSString*)json;
-
--(NSString*) toJson;
+- (NSString*)toJSON;
 
 @end

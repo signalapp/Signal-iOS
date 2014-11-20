@@ -12,99 +12,102 @@
 
 #import <UIViewController+MMDrawerController.h>
 
-@interface TabBarParentViewController () {
-    DialerViewController *_dialerViewController;
-    ContactBrowseViewController *_contactsViewController;
-    CallLogViewController *_callLogViewController;
-    FavouritesViewController *_favouritesViewController;
-    InviteContactsViewController *_inviteContactsViewController;
-    
-    UINavigationController *_contactNavigationController;
-    UINavigationController *_dialerNavigationController;
-    UINavigationController *_callLogNavigationController;
-    UINavigationController *_inboxFeedNavigationController;
-    UINavigationController *_favouritesNavigationController;
-    UINavigationController *_settingsNavigationController;
-    UINavigationController *_inviteContactsNavigationController;
-    
-    UIViewController *_currentViewController;
-}
+@interface TabBarParentViewController ()
+
+@property (strong, nonatomic) DialerViewController* dialerViewController;
+@property (strong, nonatomic) ContactBrowseViewController* contactsViewController;
+@property (strong, nonatomic) CallLogViewController* callLogViewController;
+@property (strong, nonatomic) FavouritesViewController* favouritesViewController;
+@property (strong, nonatomic) InviteContactsViewController* inviteContactsViewController;
+
+@property (strong, nonatomic) UINavigationController* contactNavigationController;
+@property (strong, nonatomic) UINavigationController* dialerNavigationController;
+@property (strong, nonatomic) UINavigationController* callLogNavigationController;
+@property (strong, nonatomic) UINavigationController* inboxFeedNavigationController;
+@property (strong, nonatomic) UINavigationController* favouritesNavigationController;
+@property (strong, nonatomic) UINavigationController* settingsNavigationController;
+@property (strong, nonatomic) UINavigationController* inviteContactsNavigationController;
+
+@property (strong, nonatomic) UIViewController* currentViewController;
 
 @end
 
 @implementation TabBarParentViewController
 
-- (id)init {
-    if ((self = [super init])) {
-        _settingsViewController = [SettingsViewController new];
-        _inboxFeedViewController = [InboxFeedViewController new];
-        _settingsNavigationController = [[UINavigationController alloc] initWithRootViewController:_settingsViewController];
-        _inviteContactsViewController = [InviteContactsViewController new];
-        _inviteContactsNavigationController = [[UINavigationController alloc] initWithRootViewController:_inviteContactsViewController];
-        _contactsViewController = [ContactBrowseViewController new];
-        _contactNavigationController = [[UINavigationController alloc] initWithRootViewController:_contactsViewController];
+- (instancetype)init {
+    self = [super init];
+	
+    if (self) {
+        self.settingsViewController             = [[SettingsViewController alloc] init];
+        self.inboxFeedViewController            = [[InboxFeedViewController alloc] init];
+        self.settingsNavigationController       = [[UINavigationController alloc] initWithRootViewController:self.settingsViewController];
+        self.inviteContactsViewController       = [[InviteContactsViewController alloc] init];
+        self.inviteContactsNavigationController = [[UINavigationController alloc] initWithRootViewController:self.inviteContactsViewController];
+        self.contactsViewController             = [[ContactBrowseViewController alloc] init];
+        self.contactNavigationController        = [[UINavigationController alloc] initWithRootViewController:self.contactsViewController];
     }
+    
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self updateMissedCallCountLabel];
-    if (!_currentViewController) {
+    if (!self.currentViewController) {
         [self presentInboxViewController];
     }
-    _whisperUserUpdateImageView.hidden = [self hideUserUpdateNotification];
+    self.whisperUserUpdateImageView.hidden = [self hideUserUpdateNotification];
     
-    ObservableValue *recentCallObservable = Environment.getCurrent.recentCallManager.getObservableRecentCalls;
-    [recentCallObservable watchLatestValue:^(NSArray *latestRecents) {
+    ObservableValue* recentCallObservable = Environment.getCurrent.recentCallManager.getObservableRecentCalls;
+    [recentCallObservable watchLatestValue:^(NSArray* latestRecents) {
         [self updateMissedCallCountLabel];		
     } onThread:NSThread.mainThread untilCancelled:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(newUsersDetected:)
-                                                 name:NOTIFICATION_NEW_USERS_AVAILABLE
-                                               object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(newUsersDetected:)
+                                               name:NOTIFICATION_NEW_USERS_AVAILABLE
+                                             object:nil];
 
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
-    return _currentViewController == _dialerNavigationController ? UIStatusBarStyleDefault: UIStatusBarStyleLightContent;
+    return self.currentViewController == self.dialerNavigationController ? UIStatusBarStyleDefault: UIStatusBarStyleLightContent;
 }
 
-- (void)presentChildViewController:(UIViewController *)controller {
+- (void)presentChildViewController:(UIViewController*)controller {
     [self removeCurrentChildViewController];
-    _currentViewController = controller;
+    self.currentViewController = controller;
     [self addChildViewController:controller];
-    controller.view.frame = _viewControllerFrameView.frame;
-    [_viewControllerFrameView addSubview:controller.view];
+    controller.view.frame = self.viewControllerFrameView.frame;
+    [self.viewControllerFrameView addSubview:controller.view];
     [controller didMoveToParentViewController:self];
     [self setNeedsStatusBarAppearanceUpdate];
 
-    _tabBarFavouritesButton.backgroundColor = [UIUtil darkBackgroundColor];
-    _tabBarContactsButton.backgroundColor = [UIUtil darkBackgroundColor];
-    _tabBarDialerButton.backgroundColor = [UIUtil darkBackgroundColor];
-    _tabBarInboxButton.backgroundColor = [UIUtil darkBackgroundColor];
-    _tabBarCallLogButton.backgroundColor = [UIUtil darkBackgroundColor];
+    self.tabBarFavouritesButton.backgroundColor = UIUtil.darkBackgroundColor;
+    self.tabBarContactsButton.backgroundColor   = UIUtil.darkBackgroundColor;
+    self.tabBarDialerButton.backgroundColor     = UIUtil.darkBackgroundColor;
+    self.tabBarInboxButton.backgroundColor      = UIUtil.darkBackgroundColor;
+    self.tabBarCallLogButton.backgroundColor    = UIUtil.darkBackgroundColor;
 }
 
 - (void)removeCurrentChildViewController {
-    if (_currentViewController) {
-        [_currentViewController willMoveToParentViewController:nil];
-        [_currentViewController.view removeFromSuperview];
-        [_currentViewController removeFromParentViewController];
+    if (self.currentViewController) {
+        [self.currentViewController willMoveToParentViewController:nil];
+        [self.currentViewController.view removeFromSuperview];
+        [self.currentViewController removeFromParentViewController];
     }
 }
 
 - (void)presentInboxViewController {
-    if (!_inboxFeedNavigationController) {
-        _inboxFeedNavigationController = [[UINavigationController alloc] initWithRootViewController:_inboxFeedViewController];
+    if (!self.inboxFeedNavigationController) {
+        self.inboxFeedNavigationController = [[UINavigationController alloc] initWithRootViewController:self.inboxFeedViewController];
     }
 
-    if (_currentViewController == _inboxFeedNavigationController) {
-        [_inboxFeedNavigationController popToRootViewControllerAnimated:YES];
+    if (self.currentViewController == self.inboxFeedNavigationController) {
+        [self.inboxFeedNavigationController popToRootViewControllerAnimated:YES];
     } else {
-        [self presentChildViewController:_inboxFeedNavigationController];
-        _tabBarInboxButton.backgroundColor = [UIColor darkGrayColor];
+        [self presentChildViewController:self.inboxFeedNavigationController];
+        self.tabBarInboxButton.backgroundColor = UIColor.darkGrayColor;
     }
 }
 
@@ -113,98 +116,96 @@
 }
 
 - (void)presentContactsViewController {
-    [_contactNavigationController popToRootViewControllerAnimated:NO];
-    [self presentChildViewController:_contactNavigationController];
-    _tabBarContactsButton.backgroundColor = [UIColor darkGrayColor];
+    [self.contactNavigationController popToRootViewControllerAnimated:NO];
+    [self presentChildViewController:self.contactNavigationController];
+    self.tabBarContactsButton.backgroundColor = UIColor.darkGrayColor;
 }
 
 - (void)presentRecentCallsViewController {
-    if (!_callLogViewController) {
-        _callLogViewController = [CallLogViewController new];
-        _callLogNavigationController = [[UINavigationController alloc] initWithRootViewController:_callLogViewController];
+    if (!self.callLogViewController) {
+        self.callLogNavigationController = [[UINavigationController alloc] initWithRootViewController:[[CallLogViewController alloc] init]];
     }
 
-    [self presentChildViewController:_callLogNavigationController];
-    _tabBarCallLogButton.backgroundColor = [UIColor darkGrayColor];
+    [self presentChildViewController:self.callLogNavigationController];
+    self.tabBarCallLogButton.backgroundColor = UIColor.darkGrayColor;
 }
 
 - (void)presentFavouritesViewController {
-    if (!_favouritesViewController) {
-        _favouritesViewController = [FavouritesViewController new];
-        _favouritesNavigationController = [[UINavigationController alloc] initWithRootViewController:_favouritesViewController];
+    if (!self.favouritesViewController) {
+        self.favouritesNavigationController = [[UINavigationController alloc] initWithRootViewController:[[FavouritesViewController alloc] init]];
     }
 
-    [_favouritesNavigationController popToRootViewControllerAnimated:NO];
-    [self presentChildViewController:_favouritesNavigationController];
-    _tabBarFavouritesButton.backgroundColor = [UIColor darkGrayColor];
+    [self.favouritesNavigationController popToRootViewControllerAnimated:NO];
+    [self presentChildViewController:self.favouritesNavigationController];
+    self.tabBarFavouritesButton.backgroundColor = UIColor.darkGrayColor;
 }
 
 - (void)presentInviteContactsViewController {
-    [_inviteContactsNavigationController popToRootViewControllerAnimated:NO];
-    [self presentChildViewController:_inviteContactsNavigationController];
+    [self.inviteContactsNavigationController popToRootViewControllerAnimated:NO];
+    [self presentChildViewController:self.inviteContactsNavigationController];
 }
 
 - (void)presentSettingsViewController {
-    [self presentChildViewController:_settingsNavigationController];
+    [self presentChildViewController:self.settingsNavigationController];
 }
 
 - (void)presentLeftSideMenu {
     [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
 }
 
-- (void)showDialerViewControllerWithNumber:(PhoneNumber *)number {
-    if (!_dialerViewController) {
-        _dialerViewController = [DialerViewController new];
-        _dialerNavigationController = [[UINavigationController alloc] initWithRootViewController:_dialerViewController];
+- (void)showDialerViewControllerWithNumber:(PhoneNumber*)number {
+    if (!self.dialerViewController) {
+        self.dialerNavigationController = [[UINavigationController alloc] initWithRootViewController:[[DialerViewController alloc] init]];
     }
     if (number) {
-        _dialerViewController.phoneNumber = number;
+        self.dialerViewController.phoneNumber = number;
     }
-    [_dialerNavigationController popToRootViewControllerAnimated:NO];
-    [self presentChildViewController:_dialerNavigationController];
-    _tabBarDialerButton.backgroundColor = [UIColor darkGrayColor];
+    [self.dialerNavigationController popToRootViewControllerAnimated:NO];
+    [self presentChildViewController:self.dialerNavigationController];
+    self.tabBarDialerButton.backgroundColor = UIColor.darkGrayColor;
 }
 
 - (void)updateMissedCallCountLabel {
     NSUInteger missedCallCount = Environment.getCurrent.recentCallManager.missedCallCount;
     if (missedCallCount > 0) {
-        _tabBarInboxButton.frame = CGRectMake(CGRectGetMinX(_tabBarInboxButton.frame),
-                                              CGRectGetMinY(_tabBarInboxButton.frame),
-                                              CGRectGetWidth(_tabBarInboxButton.frame),
-                                              CGRectGetHeight(_tabBarInboxButton.frame) - CGRectGetHeight(_missedCallCountLabel.frame));
-        _missedCallCountLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)missedCallCount];
-        _missedCallCountLabel.hidden = NO;
+        self.tabBarInboxButton.frame = CGRectMake(CGRectGetMinX(self.tabBarInboxButton.frame),
+                                                  CGRectGetMinY(self.tabBarInboxButton.frame),
+                                                  CGRectGetWidth(self.tabBarInboxButton.frame),
+                                                  CGRectGetHeight(self.tabBarInboxButton.frame) -
+                                                  CGRectGetHeight(self.missedCallCountLabel.frame));
+        self.missedCallCountLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)missedCallCount];
+        self.missedCallCountLabel.hidden = NO;
     } else {
-        _tabBarInboxButton.frame = CGRectMake(CGRectGetMinX(_tabBarInboxButton.frame),
-                                              CGRectGetMinY(_tabBarInboxButton.frame),
-                                              CGRectGetWidth(_tabBarInboxButton.frame),
-                                              CGRectGetHeight(_tabBarInboxButton.frame));
-        _missedCallCountLabel.hidden = YES;
+        self.tabBarInboxButton.frame = CGRectMake(CGRectGetMinX(self.tabBarInboxButton.frame),
+                                                  CGRectGetMinY(self.tabBarInboxButton.frame),
+                                                  CGRectGetWidth(self.tabBarInboxButton.frame),
+                                                  CGRectGetHeight(self.tabBarInboxButton.frame));
+        self.missedCallCountLabel.hidden = YES;
     }
 }
 
 #pragma mark - Contact Updates
 
-- (void)newUsersDetected:(NSNotification* )notification {
+- (void)newUsersDetected:(NSNotification*)notification {
     dispatch_async( dispatch_get_main_queue(), ^{
-        NSArray *newUsers = [notification userInfo][NOTIFICATION_DATAKEY_NEW_USERS];
+        NSArray* newUsers = [notification userInfo][NOTIFICATION_DATAKEY_NEW_USERS];
         [self updateNewUsers:newUsers];
     });
 }
 
-- (void)updateNewUsers:(NSArray *)users {
-    [_inviteContactsViewController updateWithNewWhisperUsers:users];
-    [_contactsViewController showNotificationForNewWhisperUsers:users];
-    _whisperUserUpdateImageView.hidden = [self hideUserUpdateNotification];
+- (void)updateNewUsers:(NSArray*)users {
+    [self.inviteContactsViewController updateWithNewWhisperUsers:users];
+    [self.contactsViewController showNotificationForNewWhisperUsers:users];
+    self.whisperUserUpdateImageView.hidden = [self hideUserUpdateNotification];
 }
 
-- (void)setNewWhisperUsersAsSeen:(NSArray *)users {
+- (void)setNewWhisperUsersAsSeen:(NSArray*)users {
     [Environment.getCurrent.contactsManager addContactsToKnownWhisperUsers:users];
-    [_contactsViewController showNotificationForNewWhisperUsers:nil];
-    _whisperUserUpdateImageView.hidden = [self hideUserUpdateNotification];
+    [self.contactsViewController showNotificationForNewWhisperUsers:nil];
+    self.whisperUserUpdateImageView.hidden = [self hideUserUpdateNotification];
   }
 
--(BOOL) hideUserUpdateNotification {
+- (BOOL)hideUserUpdateNotification {
     return (0 == Environment.getCurrent.contactsManager.getNumberOfUnacknowledgedCurrentUsers);
 }
 @end

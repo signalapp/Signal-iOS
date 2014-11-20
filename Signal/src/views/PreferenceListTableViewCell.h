@@ -8,6 +8,6 @@
 
 @interface PreferenceListTableViewCell : UITableViewCell
 
-@property (nonatomic, strong) IBOutlet UILabel *preferenceTextLabel;
+@property (strong, nonatomic) IBOutlet UILabel* preferenceTextLabel;
 
 @end

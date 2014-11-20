@@ -5,11 +5,11 @@
 
 @implementation TimeUtil
 
-+(NSTimeInterval) time {
++ (NSTimeInterval)time {
     return [[NSProcessInfo processInfo] systemUptime];
 }
 
-+(TOCFuture*) scheduleEvaluate:(Function)function
++ (TOCFuture*)scheduleEvaluate:(Function)function
                     afterDelay:(NSTimeInterval)delay
                      onRunLoop:(NSRunLoop*)runLoop
                unlessCancelled:(TOCCancelToken*)unlessCancelledToken {
@@ -32,7 +32,7 @@
     return result.future;
 }
 
-+(TOCFuture*) scheduleEvaluate:(Function)function
+ +(TOCFuture*)scheduleEvaluate:(Function)function
                             at:(NSDate*)date
                      onRunLoop:(NSRunLoop*)runLoop
                unlessCancelled:(TOCCancelToken*)unlessCancelledToken {
@@ -48,7 +48,7 @@
                   unlessCancelled:unlessCancelledToken];
 }
 
-+(void) scheduleRun:(Action)action
++ (void)scheduleRun:(Action)action
          afterDelay:(NSTimeInterval)delay
           onRunLoop:(NSRunLoop*)runLoop
     unlessCancelled:(TOCCancelToken*)unlessCancelledToken {
@@ -66,7 +66,7 @@
        andRunImmediately:NO];
 }
 
-+(void) scheduleRun:(Action)action
++ (void)scheduleRun:(Action)action
                  at:(NSDate*)date
           onRunLoop:(NSRunLoop*)runLoop
     unlessCancelled:(TOCCancelToken*)unlessCancelledToken {
@@ -82,7 +82,7 @@
       unlessCancelled:unlessCancelledToken];
 }
 
-+(void) scheduleRun:(Action)action
++ (void)scheduleRun:(Action)action
        periodically:(NSTimeInterval)interval
           onRunLoop:(NSRunLoop*)runLoop
      untilCancelled:(TOCCancelToken*)untilCancelledToken
@@ -100,7 +100,7 @@
        andRunImmediately:shouldRunImmediately];
 }
 
-+(void) scheduleHelper:(Action)callback
++ (void)scheduleHelper:(Action)callback
             withPeriod:(NSTimeInterval)interval
              onRunLoop:(NSRunLoop*)runLoop
              repeating:(bool)repeats
@@ -119,15 +119,15 @@
         callback();
         return;
     }
-    if (shouldRunImmediately){
+    if (shouldRunImmediately) {
         callback();
     }
     
     callback = [callback copy];
     __block bool hasBeenCancelled = false;
-    __block NSObject* cancelLock = [NSObject new];
+    __block NSObject* cancelLock = [[NSObject alloc] init];
     
-    Operation* callbackUnlessCancelled = [Operation operation:^{
+    Operation* callbackUnlessCancelled = [[Operation alloc] initWithAction:^{
         @synchronized(cancelLock) {
             if (hasBeenCancelled) return;
             callback();

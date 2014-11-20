@@ -1,16 +1,16 @@
 #import <XCTest/XCTest.h>
 #import <CoreFoundation/CFSocket.h>
-#import "IpAddress.h"
+#import "IPAddress.h"
 #import "TestUtil.h"
 #import "ThreadManager.h"
-#import "UdpSocket.h"
+#import "UDPSocket.h"
 #import "Util.h"
 
-@interface UdpSocketTest : XCTestCase
+@interface UDPSocketTest : XCTestCase
 
 @end
 
-@implementation UdpSocketTest
+@implementation UDPSocketTest
 -(void) testSpecifiedPortLocally {
     TOCCancelTokenSource* receiverLife = [TOCCancelTokenSource new];
     TOCCancelTokenSource* senderLife = [TOCCancelTokenSource new];
@@ -24,15 +24,17 @@
     in_port_t port1 = (in_port_t)(arc4random_uniform(40000) + 10000);
     in_port_t port2 = port1 + (in_port_t)1;
     
-    UdpSocket* receiver = [UdpSocket udpSocketFromLocalPort:port1 toRemoteEndPoint:[IpEndPoint ipEndPointAtAddress:IpAddress.localhost onPort:port2]];
-    UdpSocket* sender = [UdpSocket udpSocketFromLocalPort:port2 toRemoteEndPoint:[IpEndPoint ipEndPointAtAddress:IpAddress.localhost onPort:port1]];
-    [receiver startWithHandler:[PacketHandler packetHandler:^(id packet) {
+    UDPSocket* receiver = [[UDPSocket alloc] initSocketFromLocalPort:port1
+                                                    toRemoteEndPoint:[[IPEndPoint alloc] initWithAddress:IPAddress.localhost onPort:port2]];
+    UDPSocket* sender = [[UDPSocket alloc] initSocketFromLocalPort:port2
+                                                  toRemoteEndPoint:[[IPEndPoint alloc] initWithAddress:IPAddress.localhost onPort:port1]];
+    [receiver startWithHandler:[[PacketHandler alloc] initPacketHandler:^(id packet) {
         received = packet;
     } withErrorHandler:^(id error, id relatedInfo, bool causedTermination) {
         test(false);
     }] untilCancelled:receiverLife.token];
     __block bool failed = false;
-    [sender startWithHandler:[PacketHandler packetHandler:^(NSData* packet) {
+    [sender startWithHandler:[[PacketHandler alloc] initPacketHandler:^(NSData* packet) {
         // there's a length check here because when the destination is unreachable the sender sometimes gets a superfluous empty data callback... no idea why.
         senderReceivedData |= packet.length > 0;
     } withErrorHandler:^(id error, id relatedInfo, bool causedTermination) {
@@ -74,9 +76,9 @@
     
     in_port_t unusedPort = (in_port_t)(arc4random_uniform(40000) + 10000);
     
-    UdpSocket* receiver = [UdpSocket udpSocketTo:[IpEndPoint ipEndPointAtAddress:IpAddress.localhost
-                                                                          onPort:unusedPort]];
-    [receiver startWithHandler:[PacketHandler packetHandler:^(id packet) {
+    UDPSocket* receiver = [[UDPSocket alloc] initSocketToRemoteEndPoint:[[IPEndPoint alloc] initWithAddress:IPAddress.localhost
+                                                                                                 onPort:unusedPort]];
+    [receiver startWithHandler:[[PacketHandler alloc] initPacketHandler:^(id packet) {
         @synchronized (churnLock()) {
             received = packet;
         }
@@ -85,10 +87,10 @@
     }] untilCancelled:receiverLife.token];
     
     __block bool failed = false;
-    UdpSocket* sender = [UdpSocket udpSocketFromLocalPort:unusedPort
-                                         toRemoteEndPoint:[IpEndPoint ipEndPointAtAddress:IpAddress.localhost
-                                                                                   onPort:receiver.localPort]];
-    [sender startWithHandler:[PacketHandler packetHandler:^(NSData* packet) {
+    UDPSocket* sender = [[UDPSocket alloc] initSocketFromLocalPort:unusedPort
+                                                  toRemoteEndPoint:[[IPEndPoint alloc] initWithAddress:IPAddress.localhost
+                                                                                            onPort:receiver.localPort]];
+    [sender startWithHandler:[[PacketHandler alloc] initPacketHandler:^(NSData* packet) {
         // there's a length check here because when the destination is unreachable the sender sometimes gets a superfluous empty data callback... no idea why.
         senderReceivedData |= packet.length > 0;
     } withErrorHandler:^(id error, id relatedInfo, bool causedTermination) {
@@ -113,7 +115,7 @@
     [senderLife cancel];
     test(!senderReceivedData);
 }
--(void) testUdpListen {
+-(void) testUDPSocketListen {
     TOCCancelTokenSource* receiverLife = [TOCCancelTokenSource new];
     TOCCancelTokenSource* senderLife = [TOCCancelTokenSource new];
     
@@ -126,8 +128,8 @@
     
     in_port_t port = (in_port_t)(arc4random_uniform(40000) + 10000);
     
-    UdpSocket* listener = [UdpSocket udpSocketToFirstSenderOnLocalPort:port];
-    [listener startWithHandler:[PacketHandler packetHandler:^(NSData* packet) {
+    UDPSocket* listener = [[UDPSocket alloc] initSocketToFirstSenderOnLocalPort:port];
+    [listener startWithHandler:[[PacketHandler alloc] initPacketHandler:^(NSData* packet) {
         listenerReceiveCount += 1;
         listenerReceiveLength += packet.length;
         listenerReceivedLast = packet;
@@ -135,9 +137,9 @@
         test(false);
     }] untilCancelled:receiverLife.token];
     
-    IpEndPoint* e = [IpEndPoint ipEndPointAtAddress:IpAddress.localhost onPort:port];
-    UdpSocket* client = [UdpSocket udpSocketTo:e];
-    [client startWithHandler:[PacketHandler packetHandler:^(NSData* packet) {
+    IPEndPoint* e = [[IPEndPoint alloc] initWithAddress:IPAddress.localhost onPort:port];
+    UDPSocket* client = [[UDPSocket alloc] initSocketToRemoteEndPoint:e];
+    [client startWithHandler:[[PacketHandler alloc] initPacketHandler:^(NSData* packet) {
         clientReceiveCount += 1;
         clientReceiveLength += packet.length;
         clientReceivedLast = packet;
@@ -170,13 +172,13 @@
     [receiverLife cancel];
     [senderLife cancel];
 }
--(void) testUdpFail {
+-(void) testUDPSocketFail {
     TOCCancelTokenSource* life = [TOCCancelTokenSource new];
     
     in_port_t unusedPort = 10000 + (in_port_t)arc4random_uniform(30000);
-    UdpSocket* udp = [UdpSocket udpSocketTo:[IpEndPoint ipEndPointAtAddress:IpAddress.localhost onPort:unusedPort]];
+    UDPSocket* udp = [[UDPSocket alloc] initSocketToRemoteEndPoint:[[IPEndPoint alloc] initWithAddress:IPAddress.localhost onPort:unusedPort]];
     __block bool failed = false;
-    [udp startWithHandler:[PacketHandler packetHandler:^(id packet) {
+    [udp startWithHandler:[[PacketHandler alloc] initPacketHandler:^(id packet) {
         test(false);
     } withErrorHandler:^(id error, id relatedInfo, bool causedTermination) {
         failed = true;

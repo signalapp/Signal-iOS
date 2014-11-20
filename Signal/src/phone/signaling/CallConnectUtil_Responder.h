@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "HttpManager.h"
+#import "HTTPManager.h"
 #import "ResponderSessionDescriptor.h"
 #import "CallController.h"
 
@@ -17,10 +17,10 @@
 @interface CallConnectUtil_Responder : NSObject
 
 /// Result has type Future(CallConnectResult)
-+(TOCFuture*) asyncConnectToIncomingCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor
++ (TOCFuture*)asyncConnectToIncomingCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor
                                             andCallController:(CallController*)callController;
 
-/// Result has type Future(HttpResponse)
-+(TOCFuture*) asyncSignalTooBusyToAnswerCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor;
+/// Result has type Future(HTTPResponse)
++ (TOCFuture*)asyncSignalTooBusyToAnswerCallWithSessionDescriptor:(ResponderSessionDescriptor*)sessionDescriptor;
 
 @end

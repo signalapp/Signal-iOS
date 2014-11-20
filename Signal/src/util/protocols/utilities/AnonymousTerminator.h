@@ -1,11 +1,10 @@
 #import <Foundation/Foundation.h>
 #import "Terminable.h"
 
-@interface AnonymousTerminator : NSObject<Terminable> {
-@private bool alreadyCalled;
-}
-@property (readonly,nonatomic,copy) void (^terminateBlock)(void);
+@interface AnonymousTerminator : NSObject <Terminable>
 
-+(AnonymousTerminator*) cancellerWithCancel:(void (^)(void))terminate;
+@property (nonatomic, readonly, copy) void (^terminateBlock)(void);
+
+- (instancetype)initWithTerminator:(void (^)(void))terminate;
 
 @end

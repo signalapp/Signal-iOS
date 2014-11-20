@@ -1,67 +1,75 @@
 #import "PhoneNumber.h"
 #import "Constraints.h"
 #import "Util.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "Environment.h"
 #import "NBPhoneNumber.h"
 #import "NBAsYouTypeFormatter.h"
 
-static NSString *const RPDefaultsKeyPhoneNumberString = @"RPDefaultsKeyPhoneNumberString";
-static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneNumberCanonical";
+static NSString* const RPDefaultsKeyPhoneNumberString = @"RPDefaultsKeyPhoneNumberString";
+static NSString* const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneNumberCanonical";
+
+@interface PhoneNumber ()
+
+@property (strong, nonatomic) NBPhoneNumber* phoneNumber;
+@property (strong, nonatomic) NSString* e164;
+
+@end
 
 @implementation PhoneNumber
 
-+(PhoneNumber*) phoneNumberFromText:(NSString*)text andRegion:(NSString*)regionCode {
-    require(text != nil);
-    require(regionCode != nil);
+- (instancetype)initFromText:(NSString*)text andRegion:(NSString*)regionCode {
+    self = [super init];
+	
+    if (self) {
+        require(text != nil);
+        require(regionCode != nil);
+        
+        NBPhoneNumberUtil *phoneUtil = NBPhoneNumberUtil.sharedInstance;
+        
+        NSError* parseError = nil;
+        NBPhoneNumber* number = [phoneUtil parse:text
+                                   defaultRegion:regionCode
+                                           error:&parseError];
+        checkOperationDescribe(parseError == nil, parseError.description);
+        //checkOperation([phoneUtil isValidNumber:number]);
+        
+        NSError* toE164Error;
+        NSString* e164 = [phoneUtil format:number numberFormat:NBEPhoneNumberFormatE164 error:&toE164Error];
+        checkOperationDescribe(toE164Error == nil, e164.description);
+        
+        self.phoneNumber = number;
+        self.e164 = e164;
+    }
     
-    NBPhoneNumberUtil *phoneUtil = NBPhoneNumberUtil.sharedInstance;
-    
-    NSError* parseError = nil;
-    NBPhoneNumber *number = [phoneUtil parse:text
-                               defaultRegion:regionCode
-                                       error:&parseError];
-    checkOperationDescribe(parseError == nil, [parseError description]);
-    //checkOperation([phoneUtil isValidNumber:number]);
-    
-    NSError* toE164Error;
-    NSString* e164 = [phoneUtil format:number numberFormat:NBEPhoneNumberFormatE164 error:&toE164Error];
-    checkOperationDescribe(toE164Error == nil, [e164 description]);
-    
-    PhoneNumber* phoneNumber = [PhoneNumber new];
-    phoneNumber->phoneNumber = number;
-    phoneNumber->e164 = e164;
-    return phoneNumber;
+    return self;
 }
 
-+(PhoneNumber*) phoneNumberFromUserSpecifiedText:(NSString*)text {
-    require(text != nil);
-    
-    return [PhoneNumber phoneNumberFromText:text
-                                  andRegion:Environment.currentRegionCodeForPhoneNumbers];
+- (instancetype)initFromUserSpecifiedText:(NSString*)text {
+    return [self initFromText:text andRegion:[Environment currentRegionCodeForPhoneNumbers]];
 }
 
-+(PhoneNumber*) phoneNumberFromE164:(NSString*)text {
+- (instancetype)initFromE164:(NSString*)text {
     require(text != nil);
     checkOperation([text hasPrefix:COUNTRY_CODE_PREFIX]);
-    PhoneNumber *number = [PhoneNumber phoneNumberFromText:text
-                                                 andRegion:@"ZZ"];
-
-    checkOperation(number != nil);
-    return number;
+    self = [self initFromText:text andRegion:@"ZZ"];
+    checkOperation(self != nil);
+    return self;
 }
 
-+(NSString*) bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString*)input {
++ (NSString*)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString*)input {
     return [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:input
-                                                               withSpecifiedRegionCode:Environment.currentRegionCodeForPhoneNumbers];
+                                                               withSpecifiedRegionCode:[Environment currentRegionCodeForPhoneNumbers]];
 }
 
-+(NSString*) bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString*)input withSpecifiedCountryCodeString:(NSString *)countryCodeString{
++ (NSString*)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString*)input
+                                             withSpecifiedCountryCodeString:(NSString*)countryCodeString {
     return [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:input
                                                                withSpecifiedRegionCode:[PhoneNumber regionCodeFromCountryCodeString:countryCodeString]];
 }
 
-+(NSString*) bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString*)input withSpecifiedRegionCode:(NSString *) regionCode{
++ (NSString*)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString*)input
+                                                    withSpecifiedRegionCode:(NSString*)regionCode {
     NBAsYouTypeFormatter* formatter = [[NBAsYouTypeFormatter alloc] initWithRegionCode:regionCode];
     
     NSString* result = input;
@@ -71,27 +79,26 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return result;
 }
 
-
-+(NSString*) regionCodeFromCountryCodeString:(NSString*) countryCodeString {
++ (NSString*)regionCodeFromCountryCodeString:(NSString*) countryCodeString {
     NBPhoneNumberUtil* phoneUtil = NBPhoneNumberUtil.sharedInstance;
     NSString* regionCode = [phoneUtil getRegionCodeForCountryCode:@([[countryCodeString substringFromIndex:1] integerValue])];
     return regionCode;
 }
 
 
-+(PhoneNumber*) tryParsePhoneNumberFromText:(NSString*)text fromRegion:(NSString*)regionCode {
++ (PhoneNumber*)tryParsePhoneNumberFromText:(NSString*)text fromRegion:(NSString*)regionCode {
     require(text != nil);
     require(regionCode != nil);
     
     @try {
-        return [self phoneNumberFromText:text andRegion:regionCode];
+        return [[PhoneNumber alloc] initFromText:text andRegion:regionCode];
     } @catch (OperationFailed* ex) {
         DDLogError(@"Error parsing phone number from region code");
         return nil;
     }
 }
 
-+(PhoneNumber*) tryParsePhoneNumberFromUserSpecifiedText:(NSString*)text {
++ (PhoneNumber*)tryParsePhoneNumberFromUserSpecifiedText:(NSString*)text {
     require(text != nil);
 
     char s[text.length+1];
@@ -107,68 +114,72 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     text = [NSString stringWithUTF8String:(void*)s];
 
     @try {
-        return [self phoneNumberFromUserSpecifiedText:text];
+        return [[PhoneNumber alloc] initFromUserSpecifiedText:text];
     } @catch (OperationFailed* ex) {
         return nil;
     }
 }
-+(PhoneNumber*) tryParsePhoneNumberFromE164:(NSString*)text {
+
++ (PhoneNumber*)tryParsePhoneNumberFromE164:(NSString*)text {
     require(text != nil);
 	
     @try {
-        return [self phoneNumberFromE164:text];
+        return [[PhoneNumber alloc] initFromE164:text];
     } @catch (OperationFailed* ex) {
         return nil;
     }
 }
 
--(NSURL*) toSystemDialerURL {
-    NSString* link = [NSString stringWithFormat:@"telprompt://%@", e164];
+- (NSURL*)toSystemDialerURL {
+    NSString* link = [NSString stringWithFormat:@"telprompt://%@", self.e164];
     return [NSURL URLWithString:link];
 }
 
--(NSString *)toE164 {
-    return e164;
+- (NSString*)toE164 {
+    return self.e164;
 }
 
 - (NSNumber*)getCountryCode {
-    return phoneNumber.countryCode;
+    return self.phoneNumber.countryCode;
 }
 
--(BOOL)isValid {
-    return [NBPhoneNumberUtil.sharedInstance isValidNumber:phoneNumber];
+- (BOOL)isValid {
+    return [NBPhoneNumberUtil.sharedInstance isValidNumber:self.phoneNumber];
 }
 
--(NSString *)localizedDescriptionForUser {
-    NBPhoneNumberUtil *phoneUtil = NBPhoneNumberUtil.sharedInstance;
+- (NSString*)localizedDescriptionForUser {
+    NBPhoneNumberUtil* phoneUtil = NBPhoneNumberUtil.sharedInstance;
 
     NSError* formatError = nil;
-    NSString* pretty = [phoneUtil format:phoneNumber
+    NSString* pretty = [phoneUtil format:self.phoneNumber
                             numberFormat:NBEPhoneNumberFormatINTERNATIONAL
                                    error:&formatError];
     
-    if (formatError != nil) return e164;
+    if (formatError != nil) return self.e164;
     return pretty;
 }
 
--(BOOL)resolvesInternationallyTo:(PhoneNumber*) otherPhoneNumber {
+- (BOOL)resolvesInternationallyTo:(PhoneNumber*)otherPhoneNumber {
     return [self.toE164 isEqualToString:otherPhoneNumber.toE164];
 }
 
--(NSString*) description {
-    return e164;
+- (NSString*)description {
+    return self.e164;
 }
 
-- (void)encodeWithCoder:(NSCoder *)encoder {
-    [encoder encodeObject:phoneNumber forKey:RPDefaultsKeyPhoneNumberString];
-    [encoder encodeObject:e164 forKey:RPDefaultsKeyPhoneNumberCanonical];
+- (void)encodeWithCoder:(NSCoder*)encoder {
+    [encoder encodeObject:self.phoneNumber forKey:RPDefaultsKeyPhoneNumberString];
+    [encoder encodeObject:self.e164 forKey:RPDefaultsKeyPhoneNumberCanonical];
 }
 
-- (id)initWithCoder:(NSCoder *)decoder {
-    if((self = [super init])) {
-        phoneNumber = [decoder decodeObjectForKey:RPDefaultsKeyPhoneNumberString];
-        e164 = [decoder decodeObjectForKey:RPDefaultsKeyPhoneNumberCanonical];
+- (id)initWithCoder:(NSCoder*)decoder {
+    self = [super init];
+	
+    if (self) {
+        self.phoneNumber = [decoder decodeObjectForKey:RPDefaultsKeyPhoneNumberString];
+        self.e164 = [decoder decodeObjectForKey:RPDefaultsKeyPhoneNumberCanonical];
     }
+    
     return self;
 }
 

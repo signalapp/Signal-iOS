@@ -2,6 +2,4 @@
 
 @interface RecipientUnavailable : NSObject
 
-+(RecipientUnavailable*) recipientUnavailable;
-
 @end

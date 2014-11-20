@@ -15,47 +15,63 @@
 #define FLAG_MUTED    1
 #define FLAG_UNMUTED  0
 
-@implementation RemoteIOAudio
+@interface RemoteIOAudio ()
 
-@synthesize playbackQueue, recordingQueue, rioAudioUnit, state;
+@property (nonatomic) BOOL isStreaming;
+
+@property (weak, nonatomic)   id<AudioCallbackHandler> delegate;
+@property (strong, nonatomic) id<OccurrenceLogger>     starveLogger;
+@property (strong, nonatomic) id<ConditionLogger>      conditionLogger;
+@property (strong, nonatomic) id<ValueLogger>          playbackBufferSizeLogger;
+@property (strong, nonatomic) id<ValueLogger>          recordingQueueSizeLogger;
+@property (strong, nonatomic) NSMutableSet*            unusedBuffers;
+
+@property (readwrite, nonatomic) RemoteIOAudioState state;
+
+@end
+
+@implementation RemoteIOAudio
 
 static bool doesActiveInstanceExist;
 
-+(RemoteIOAudio*) remoteIOInterfaceStartedWithDelegate:(id<AudioCallbackHandler>)delegateIn untilCancelled:(TOCCancelToken*)untilCancelledToken {
-    
-    checkOperationDescribe(!doesActiveInstanceExist, @"Only one RemoteIOInterfance instance can exist at a time. Adding more will break previous instances.");
-    doesActiveInstanceExist = true;
-    
-    RemoteIOAudio* newRemoteIoInterface = [RemoteIOAudio new];
-    newRemoteIoInterface->starveLogger = [Environment.logging getOccurrenceLoggerForSender:newRemoteIoInterface withKey:@"starve"];
-    newRemoteIoInterface->conditionLogger = [Environment.logging getConditionLoggerForSender:newRemoteIoInterface];
-    newRemoteIoInterface->recordingQueue = [CyclicalBuffer new];
-    newRemoteIoInterface->playbackQueue =  [CyclicalBuffer new];
-    newRemoteIoInterface->unusedBuffers = [NSMutableSet set];
-    newRemoteIoInterface->state = NOT_STARTED;
-    newRemoteIoInterface->playbackBufferSizeLogger = [Environment.logging getValueLoggerForValue:@"|playback queue|" from:newRemoteIoInterface];
-    newRemoteIoInterface->recordingQueueSizeLogger = [Environment.logging getValueLoggerForValue:@"|recording queue|" from:newRemoteIoInterface];
-    
-    while (newRemoteIoInterface->unusedBuffers.count < INITIAL_NUMBER_OF_BUFFERS) {
-        [newRemoteIoInterface addUnusedBuffer];
+- (instancetype)initWithDelegate:(id<AudioCallbackHandler>)delegateIn untilCancelled:(TOCCancelToken*)untilCancelledToken {
+    self = [super init];
+	
+    if (self) {
+        checkOperationDescribe(!doesActiveInstanceExist, @"Only one RemoteIOInterfance instance can exist at a time. Adding more will break previous instances.");
+        doesActiveInstanceExist = true;
+        
+        self.starveLogger = [Environment.logging getOccurrenceLoggerForSender:self withKey:@"starve"];
+        self.conditionLogger = [Environment.logging getConditionLoggerForSender:self];
+        self.recordingQueue = [[CyclicalBuffer alloc] init];
+        self.playbackQueue = [[CyclicalBuffer alloc] init];
+        self.unusedBuffers = [[NSMutableSet alloc] init];
+        self.state = RemoteIOAudioStateNotStarted;
+        self.playbackBufferSizeLogger = [Environment.logging getValueLoggerForValue:@"|playback queue|" from:self];
+        self.recordingQueueSizeLogger = [Environment.logging getValueLoggerForValue:@"|recording queue|" from:self];
+        
+        while (self.unusedBuffers.count < INITIAL_NUMBER_OF_BUFFERS) {
+            [self addUnusedBuffer];
+        }
+        
+        [self setupAudio];
+        [self startWithDelegate:delegateIn untilCancelled:untilCancelledToken];
     }
-    [newRemoteIoInterface setupAudio];
     
-    [newRemoteIoInterface startWithDelegate:delegateIn untilCancelled:untilCancelledToken];
-    
-    return newRemoteIoInterface;
+    return self;
 }
 
--(void)setupAudio {
+- (void)setupAudio {
     [AppAudioManager.sharedInstance requestRecordingPrivlege];
-    rioAudioUnit = [self makeAudioUnit];
+    self.rioAudioUnit = [self makeAudioUnit];
     [self setAudioEnabled];
     [self setAudioStreamFormat];
     [self setAudioCallbacks];
     [self unsetAudioShouldAllocateBuffer];
-    [self checkDone:AudioUnitInitialize(rioAudioUnit)];
+    [self checkDone:AudioUnitInitialize(self.rioAudioUnit)];
 }
--(AudioUnit)makeAudioUnit {
+
+- (AudioUnit)makeAudioUnit {
     AudioComponentDescription audioUnitDescription = [self makeAudioComponentDescription];
     AudioComponent component = AudioComponentFindNext(NULL, &audioUnitDescription);
     
@@ -63,7 +79,8 @@ static bool doesActiveInstanceExist;
     [self checkDone:AudioComponentInstanceNew(component, &unit)];
     return unit;
 }
--(AudioComponentDescription) makeAudioComponentDescription {
+
+- (AudioComponentDescription)makeAudioComponentDescription {
     AudioComponentDescription d;
     d.componentType         = kAudioUnitType_Output;
     d.componentSubType      = kAudioUnitSubType_VoiceProcessingIO;
@@ -72,37 +89,40 @@ static bool doesActiveInstanceExist;
     d.componentFlagsMask    = 0;
     return d;
 }
--(void)setAudioEnabled {
+
+- (void)setAudioEnabled {
     const UInt32 enable = 1;
-    [self checkDone:AudioUnitSetProperty(rioAudioUnit,
+    [self checkDone:AudioUnitSetProperty(self.rioAudioUnit,
                                          kAudioOutputUnitProperty_EnableIO,
                                          kAudioUnitScope_Input,
                                          INPUT_BUS,
                                          &enable,
                                          sizeof(enable))];
-    [self checkDone:AudioUnitSetProperty(rioAudioUnit,
+    [self checkDone:AudioUnitSetProperty(self.rioAudioUnit,
                                          kAudioOutputUnitProperty_EnableIO,
                                          kAudioUnitScope_Output,
                                          OUTPUT_BUS,
                                          &enable,
                                          sizeof(enable))];
 }
--(void)setAudioStreamFormat {
+
+- (void)setAudioStreamFormat {
     const AudioStreamBasicDescription streamDesc = [self makeAudioStreamBasicDescription];
-    [self checkDone:AudioUnitSetProperty(rioAudioUnit,
+    [self checkDone:AudioUnitSetProperty(self.rioAudioUnit,
                                          kAudioUnitProperty_StreamFormat,
                                          kAudioUnitScope_Input,
                                          OUTPUT_BUS,
                                          &streamDesc,
                                          sizeof(streamDesc))];
-    [self checkDone:AudioUnitSetProperty(rioAudioUnit,
+    [self checkDone:AudioUnitSetProperty(self.rioAudioUnit,
                                          kAudioUnitProperty_StreamFormat,
                                          kAudioUnitScope_Output,
                                          INPUT_BUS,
                                          &streamDesc,
                                          sizeof(streamDesc))];
 }
--(AudioStreamBasicDescription) makeAudioStreamBasicDescription {
+
+- (AudioStreamBasicDescription)makeAudioStreamBasicDescription {
     const UInt32 framesPerPacket = 1;
     AudioStreamBasicDescription d;
     d.mSampleRate       = SAMPLE_RATE;
@@ -118,26 +138,28 @@ static bool doesActiveInstanceExist;
                         | kAudioFormatFlagIsPacked;
     return d;
 }
--(void)setAudioCallbacks {
-    const AURenderCallbackStruct recordingCallbackStruct = {recordingCallback, (__bridge void *)(self)};
-    [self checkDone:AudioUnitSetProperty(rioAudioUnit,
+
+- (void)setAudioCallbacks {
+    const AURenderCallbackStruct recordingCallbackStruct = {recordingCallback, (__bridge void*)(self)};
+    [self checkDone:AudioUnitSetProperty(self.rioAudioUnit,
                                          kAudioOutputUnitProperty_SetInputCallback,
                                          kAudioUnitScope_Global,
                                          INPUT_BUS,
                                          &recordingCallbackStruct,
                                          sizeof(recordingCallbackStruct))];
     
-    const AURenderCallbackStruct playbackCallbackStruct = {playbackCallback, (__bridge void *)(self)};
-    [self checkDone:AudioUnitSetProperty(rioAudioUnit,
+    const AURenderCallbackStruct playbackCallbackStruct = {playbackCallback, (__bridge void*)(self)};
+    [self checkDone:AudioUnitSetProperty(self.rioAudioUnit,
                                          kAudioUnitProperty_SetRenderCallback,
                                          kAudioUnitScope_Global,
                                          OUTPUT_BUS,
                                          &playbackCallbackStruct,
                                          sizeof(playbackCallbackStruct))];
 }
--(void)unsetAudioShouldAllocateBuffer {
+
+- (void)unsetAudioShouldAllocateBuffer {
     const UInt32 shouldAllocateBuffer = 0;
-    [self checkDone:AudioUnitSetProperty(rioAudioUnit,
+    [self checkDone:AudioUnitSetProperty(self.rioAudioUnit,
                                          kAudioUnitProperty_ShouldAllocateBuffer,
                                          kAudioUnitScope_Output,
                                          INPUT_BUS,
@@ -145,40 +167,42 @@ static bool doesActiveInstanceExist;
                                          sizeof(shouldAllocateBuffer))];
 }
 
--(RemoteIOBufferListWrapper*) addUnusedBuffer {
-    RemoteIOBufferListWrapper* buf = [RemoteIOBufferListWrapper remoteIOBufferListWithMonoBufferSize:BUFFER_SIZE];
-    [unusedBuffers addObject:buf];
+- (RemoteIOBufferListWrapper*)addUnusedBuffer {
+    RemoteIOBufferListWrapper* buf = [[RemoteIOBufferListWrapper alloc] initWithMonoBufferSize:BUFFER_SIZE];
+    [self.unusedBuffers addObject:buf];
     return buf;
 }
--(RemoteIOBufferListWrapper*) tryTakeUnusedBuffer {
-    RemoteIOBufferListWrapper* buffer = (RemoteIOBufferListWrapper*)[unusedBuffers anyObject];
+
+- (RemoteIOBufferListWrapper*)tryTakeUnusedBuffer {
+    RemoteIOBufferListWrapper* buffer = (RemoteIOBufferListWrapper*)[self.unusedBuffers anyObject];
     if (buffer == nil) return nil;
-    [unusedBuffers removeObject:buffer];
+    [self.unusedBuffers removeObject:buffer];
     return buffer;
 }
--(void) returnUsedBuffer:(RemoteIOBufferListWrapper*)buffer {
+
+- (void)returnUsedBuffer:(RemoteIOBufferListWrapper*)buffer {
     require(buffer != nil);
-    if (state == TERMINATED) return; // in case a buffer was in use as termination occurred
-    [unusedBuffers addObject:buffer];
+    if (self.state == RemoteIOAudioStateTerminated) return; // in case a buffer was in use as termination occurred
+    [self.unusedBuffers addObject:buffer];
 }
 
--(void) startWithDelegate:(id<AudioCallbackHandler>)delegateIn untilCancelled:(TOCCancelToken*)untilCancelledToken {
+- (void)startWithDelegate:(id<AudioCallbackHandler>)delegateIn untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(delegateIn != nil);
-    @synchronized(self){
-        requireState(state == NOT_STARTED);
+    @synchronized(self) {
+        requireState(self.state == RemoteIOAudioStateNotStarted);
         
-        delegate = delegateIn;
-        [self checkDone:AudioOutputUnitStart(rioAudioUnit)];
-        state = STARTED;
+        self.delegate = delegateIn;
+        [self checkDone:AudioOutputUnitStart(self.rioAudioUnit)];
+        self.state = RemoteIOAudioStateStarted;
     }
 
     [untilCancelledToken whenCancelledDo:^{
         @synchronized(self) {
-            state = TERMINATED;
+            self.state = RemoteIOAudioStateTerminated;
             doesActiveInstanceExist = false;
-            [self checkDone:AudioOutputUnitStop(rioAudioUnit)];
+            [self checkDone:AudioOutputUnitStop(self.rioAudioUnit)];
             [AppAudioManager.sharedInstance releaseRecordingPrivlege];
-            [unusedBuffers removeAllObjects];
+            [self.unusedBuffers removeAllObjects];
         }
     }];
 }
@@ -220,27 +244,30 @@ static OSStatus recordingCallback(void *inRefCon,
     }
     return noErr;
 }
--(void) onRecordedDataIntoBuffer:(RemoteIOBufferListWrapper*)buffer {
-    @synchronized(self){
-        if (state == TERMINATED) return;
+
+- (void)onRecordedDataIntoBuffer:(RemoteIOBufferListWrapper*)buffer {
+    @synchronized(self) {
+        if (self.state == RemoteIOAudioStateTerminated) return;
         NSData* recordedAudioVolatile = [NSData dataWithBytesNoCopy:[buffer audioBufferList]->mBuffers[0].mData
                                                              length:[buffer sampleCount]*SAMPLE_SIZE_IN_BYTES
                                                        freeWhenDone:NO];
-        [recordingQueue enqueueData:recordedAudioVolatile];
+        [self.recordingQueue enqueueData:recordedAudioVolatile];
         [self returnUsedBuffer:buffer];
     }
     
-    [recordingQueueSizeLogger logValue:[recordingQueue enqueuedLength]];
-    [delegate handleNewDataRecorded:recordingQueue];
+    [self.recordingQueueSizeLogger logValue:[self.recordingQueue enqueuedLength]];
+    id delegate = self.delegate;
+    [delegate handleNewDataRecorded:self.recordingQueue];
 }
 
--(void)populatePlaybackQueueWithData:(NSData*)data {
+- (void)populatePlaybackQueueWithData:(NSData*)data {
     require(data != nil);
     if (data.length == 0) return;
-    @synchronized(self){
-        [playbackQueue enqueueData:data];
+    @synchronized(self) {
+        [self.playbackQueue enqueueData:data];
     }
 }
+
 static OSStatus playbackCallback(void *inRefCon,
                                  AudioUnitRenderActionFlags *ioActionFlags,
                                  const AudioTimeStamp *inTimeStamp,
@@ -255,7 +282,7 @@ static OSStatus playbackCallback(void *inRefCon,
         
         if (availableByteCount < requestedByteCount) {
             NSUInteger starveAmount = requestedByteCount - availableByteCount;
-            [instance->starveLogger markOccurrence:@(starveAmount)];
+            [instance.starveLogger markOccurrence:@(starveAmount)];
         } else {
             NSData* audioToCopyVolatile = [[instance playbackQueue] dequeuePotentialyVolatileDataWithLength:requestedByteCount];
             memcpy(ioData->mBuffers[0].mData, [audioToCopyVolatile bytes], audioToCopyVolatile.length);
@@ -272,27 +299,29 @@ static OSStatus playbackCallback(void *inRefCon,
     
     return noErr;
 }
--(void) onRequestedPlaybackDataAmount:(NSUInteger)requestedByteCount andHadAvailableAmount:(NSUInteger)availableByteCount {
+
+- (void)onRequestedPlaybackDataAmount:(NSUInteger)requestedByteCount andHadAvailableAmount:(NSUInteger)availableByteCount {
     @synchronized(self) {
-        if (state == TERMINATED) return;
+        if (self.state == RemoteIOAudioStateTerminated) return;
     }
     NSUInteger consumedByteCount = availableByteCount >= requestedByteCount ? requestedByteCount : 0;
     NSUInteger remainingByteCount = availableByteCount - consumedByteCount;
-    [playbackBufferSizeLogger logValue:remainingByteCount];
+    [self.playbackBufferSizeLogger logValue:remainingByteCount];
+    id delegate = self.delegate;
     [delegate handlePlaybackOccurredWithBytesRequested:requestedByteCount andBytesRemaining:remainingByteCount];
 }
 
--(void) dealloc{
-    if (state != TERMINATED) {
+- (void)dealloc {
+    if (self.state != RemoteIOAudioStateTerminated) {
         doesActiveInstanceExist = false;
     }
 }
 
--(NSUInteger)getSampleRateInHertz {
+- (NSUInteger)getSampleRateInHertz {
     return SAMPLE_RATE;
 }
 
--(void)checkDone:(OSStatus)resultCode {
+- (void)checkDone:(OSStatus)resultCode {
     if (resultCode == kAudioSessionNoError) return;
     
     NSString* failure;
@@ -306,18 +335,18 @@ static OSStatus playbackCallback(void *inRefCon,
         failure = @"systemSoundUnspecifiedError";
     } else if (resultCode == kAudioServicesSystemSoundClientTimedOutError) {
         failure = @"systemSoundClientTimedOutError";
-    } else if (resultCode == errSecParam){
+    } else if (resultCode == errSecParam) {
         failure = @"oneOrMoreNonValidParameter";
-    }else {
+    } else {
         failure = [@(resultCode) description];
     }
-    [conditionLogger logError:[NSString stringWithFormat:@"StatusCheck failed: %@", failure]];
+    [self.conditionLogger logError:[NSString stringWithFormat:@"StatusCheck failed: %@", failure]];
 }
 
--(bool)	isAudioMuted {
+- (bool)isAudioMuted {
 	UInt32 currentMuteFlag;
 	UInt32 propertyByteSize;
-	[self checkDone:AudioUnitGetProperty(rioAudioUnit,
+	[self checkDone:AudioUnitGetProperty(self.rioAudioUnit,
 										 kAUVoiceIOProperty_MuteOutput,
                                          kAudioUnitScope_Global,
                                          OUTPUT_BUS,
@@ -326,11 +355,11 @@ static OSStatus playbackCallback(void *inRefCon,
 	return (FLAG_MUTED == currentMuteFlag);
 }
 
--(BOOL) toggleMute {
+- (BOOL)toggleMute {
 	BOOL shouldBeMuted = !self.isAudioMuted;
 	UInt32 newValue =  shouldBeMuted ? FLAG_MUTED : FLAG_UNMUTED;
 	
-	[self checkDone:AudioUnitSetProperty(rioAudioUnit,
+	[self checkDone:AudioUnitSetProperty(self.rioAudioUnit,
 										 kAUVoiceIOProperty_MuteOutput,
                                          kAudioUnitScope_Global,
                                          OUTPUT_BUS,
@@ -339,6 +368,5 @@ static OSStatus playbackCallback(void *inRefCon,
 	
 	return shouldBeMuted;
 }
-
 
 @end

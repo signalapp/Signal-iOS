@@ -16,12 +16,12 @@
  *
 **/
 
-@interface HelloAckPacket : NSObject{
-@private HandshakePacket* embedding;
-}
+@interface HelloAckPacket : NSObject
 
-+(HelloAckPacket*)helloAckPacket;
-+(HelloAckPacket*)helloAckPacketParsedFromHandshakePacket:(HandshakePacket*)handshakePacket;
--(HandshakePacket*) embeddedIntoHandshakePacket;
+@property (strong, readonly, nonatomic, getter=embeddedIntoHandshakePacket) HandshakePacket* embedding;
+
++ (instancetype)defaultPacket;
+
+- (instancetype)initFromHandshakePacket:(HandshakePacket*)handshakePacket;
 
 @end

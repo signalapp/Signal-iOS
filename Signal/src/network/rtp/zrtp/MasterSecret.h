@@ -2,7 +2,7 @@
 #import "Zid.h"
 #import "HelloPacket.h"
 #import "CommitPacket.h"
-#import "DhPacket.h"
+#import "DHPacket.h"
 
 /**
  *
@@ -22,36 +22,36 @@
 @property (nonatomic, readonly) NSData* responderSrtpKey;
 @property (nonatomic, readonly) NSData* responderSrtpSalt;
 @property (nonatomic, readonly) NSData* responderMacKey;
-@property (nonatomic, readonly) NSData* responderZrtpKey;
+@property (nonatomic, readonly) NSData* responderZRTPKey;
 
 @property (nonatomic, readonly) Zid* initiatorZid;
 @property (nonatomic, readonly) NSData* initiatorSrtpKey;
 @property (nonatomic, readonly) NSData* initiatorSrtpSalt;
 @property (nonatomic, readonly) NSData* initiatorMacKey;
-@property (nonatomic, readonly) NSData* initiatorZrtpKey;
+@property (nonatomic, readonly) NSData* initiatorZRTPKey;
 
-+(MasterSecret*) masterSecretFromDhResult:(NSData*)dhResult
-                        andInitiatorHello:(HelloPacket*)initiatorHello
-                        andResponderHello:(HelloPacket*)responderHello
-                                andCommit:(CommitPacket*)commit
-                               andDhPart1:(DhPacket*)dhPart1
-                               andDhPart2:(DhPacket*)dhPart2;
++ (instancetype)masterSecretFromDHResult:(NSData*)dhResult
+                       andInitiatorHello:(HelloPacket*)initiatorHello
+                       andResponderHello:(HelloPacket*)responderHello
+                               andCommit:(CommitPacket*)commit
+                              andDhPart1:(DHPacket*)dhPart1
+                              andDhPart2:(DHPacket*)dhPart2;
 
-+(NSData*) calculateSharedSecretFromDhResult:(NSData*)dhResult
++ (NSData*)calculateSharedSecretFromDhResult:(NSData*)dhResult
                                 andTotalHash:(NSData*)totalHash
                              andInitiatorZid:(Zid*)initiatorZid
                              andResponderZid:(Zid*)responderZid;
 
-+(NSData*) calculateTotalHashFromResponderHello:(HelloPacket*)responderHello
++ (NSData*)calculateTotalHashFromResponderHello:(HelloPacket*)responderHello
                                       andCommit:(CommitPacket*)commit
-                                     andDhPart1:(DhPacket*)dhPart1
-                                     andDhPart2:(DhPacket*)dhPart2;
+                                     andDhPart1:(DHPacket*)dhPart1
+                                     andDhPart2:(DHPacket*)dhPart2;
 
-+(MasterSecret*) masterSecretFromSharedSecret:(NSData*)sharedSecret
-                                 andTotalHash:(NSData*)totalHash
-                              andInitiatorZid:(Zid*)initiatorZid
-                              andResponderZid:(Zid*)responderZid;
+- (instancetype)initFromSharedSecret:(NSData*)sharedSecret
+                        andTotalHash:(NSData*)totalHash
+                     andInitiatorZid:(Zid*)initiatorZid
+                     andResponderZid:(Zid*)responderZid;
 
--(NSString*) shortAuthenticationString;
+- (NSString*)shortAuthenticationString;
 
 @end

@@ -18,20 +18,20 @@
  */
 @interface CallState : NSObject
 
-@property (nonatomic, readonly) ObservableValue* observableProgress;
-@property (nonatomic, readonly) TOCFuture* futureTermination;
-@property (nonatomic, readonly) TOCFuture* futureShortAuthenticationString;
-@property (nonatomic, readonly) PhoneNumber* remoteNumber;
+@property (strong, nonatomic, readonly) ObservableValue* observableProgress;
+@property (strong, nonatomic, readonly) TOCFuture* futureTermination;
+@property (strong, nonatomic, readonly) TOCFuture* futureShortAuthenticationString;
+@property (strong, nonatomic, readonly) PhoneNumber* remoteNumber;
+@property (strong, nonatomic, readonly) Contact* potentiallySpecifiedContact;
+@property (strong, nonatomic, readonly) TOCFuture* futureCallLocallyAcceptedOrRejected;
 @property (nonatomic, readonly) bool initiatedLocally;
-@property (nonatomic, readonly) Contact* potentiallySpecifiedContact;
-@property (nonatomic, readonly) TOCFuture* futureCallLocallyAcceptedOrRejected;
 
-+(CallState*) callStateWithObservableProgress:(ObservableValue*)observableProgress
-                         andFutureTermination:(TOCFuture*)futureTermination
-                                 andFutureSas:(TOCFuture*)futureSas
-                              andRemoteNumber:(PhoneNumber*)remoteNumber
-                          andInitiatedLocally:(bool)initiatedLocally
-               andPotentiallySpecifiedContact:(Contact*)contact
-                            andFutureAccepted:(TOCFuture*)futureCallLocallyAcceptedOrRejected;
+- (instancetype)initWithObservableProgress:(ObservableValue*)observableProgress
+                      andFutureTermination:(TOCFuture*)futureTermination
+                              andFutureSas:(TOCFuture*)futureSas
+                           andRemoteNumber:(PhoneNumber*)remoteNumber
+                       andInitiatedLocally:(bool)initiatedLocally
+            andPotentiallySpecifiedContact:(Contact*)contact
+                         andFutureAccepted:(TOCFuture*)futureCallLocallyAcceptedOrRejected;
 
 @end

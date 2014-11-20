@@ -1,6 +1,7 @@
 #import "MasterSecret.h"
-#import "Conversions.h"
+#import "NSData+Conversions.h"
 #import "CryptoTools.h"
+#import "NSData+CryptoTools.h"
 #import "ShortAuthenticationStringGenerator.h"
 #import "Util.h"
 
@@ -24,18 +25,35 @@
 #define RESPONDER_ZRTP_KEY_LENGTH  16
 #define SAS_LENGTH                 4
 
+@interface MasterSecret ()
+
+@property (nonatomic, readwrite) NSData* totalHash;
+@property (nonatomic, readwrite) NSData* counter;
+@property (nonatomic, readwrite) NSData* sharedSecret;
+@property (nonatomic, readwrite) NSData* shortAuthenticationStringData;
+
+@property (nonatomic, readwrite) Zid* responderZid;
+@property (nonatomic, readwrite) NSData* responderSrtpKey;
+@property (nonatomic, readwrite) NSData* responderSrtpSalt;
+@property (nonatomic, readwrite) NSData* responderMacKey;
+@property (nonatomic, readwrite) NSData* responderZRTPKey;
+
+@property (nonatomic, readwrite) Zid* initiatorZid;
+@property (nonatomic, readwrite) NSData* initiatorSrtpKey;
+@property (nonatomic, readwrite) NSData* initiatorSrtpSalt;
+@property (nonatomic, readwrite) NSData* initiatorMacKey;
+@property (nonatomic, readwrite) NSData* initiatorZRTPKey;
+
+@end
+
 @implementation MasterSecret
 
-@synthesize initiatorMacKey, initiatorSrtpSalt, initiatorZrtpKey, initiatorSrtpKey, initiatorZid,
-            responderMacKey, responderSrtpSalt, responderZrtpKey, responderSrtpKey, responderZid,
-            shortAuthenticationStringData, sharedSecret, totalHash, counter;
-
-+(MasterSecret*) masterSecretFromDhResult:(NSData*)dhResult
-                        andInitiatorHello:(HelloPacket*)initiatorHello
-                        andResponderHello:(HelloPacket*)responderHello
-                                andCommit:(CommitPacket*)commit
-                               andDhPart1:(DhPacket*)dhPart1
-                               andDhPart2:(DhPacket*)dhPart2 {
++ (instancetype)masterSecretFromDHResult:(NSData*)dhResult
+                       andInitiatorHello:(HelloPacket*)initiatorHello
+                       andResponderHello:(HelloPacket*)responderHello
+                               andCommit:(CommitPacket*)commit
+                              andDhPart1:(DHPacket*)dhPart1
+                              andDhPart2:(DHPacket*)dhPart2 {
     require(dhResult != nil);
     require(initiatorHello != nil);
     require(responderHello != nil);
@@ -53,14 +71,14 @@
                                                    andInitiatorZid:[initiatorHello zid]
                                                    andResponderZid:[responderHello zid]];
     
-    return [MasterSecret masterSecretFromSharedSecret:sharedSecret
+    return [[MasterSecret alloc] initFromSharedSecret:sharedSecret
                                          andTotalHash:totalHash
                                       andInitiatorZid:[initiatorHello zid]
                                       andResponderZid:[responderHello zid]];
     
 }
 
-+(NSData*) calculateSharedSecretFromDhResult:(NSData*)dhResult
++ (NSData*)calculateSharedSecretFromDhResult:(NSData*)dhResult
                                 andTotalHash:(NSData*)totalHash
                              andInitiatorZid:(Zid*)initiatorZid
                              andResponderZid:(Zid*)responderZid {
@@ -79,8 +97,8 @@
                     counter,
                     dhResult,
                     @"ZRTP-HMAC-KDF".encodedAsUtf8,
-                    initiatorZid.getData,
-                    responderZid.getData,
+                    initiatorZid.data,
+                    responderZid.data,
                     totalHash,
                     s1Length,
                     s2Length,
@@ -88,13 +106,13 @@
                     
                     ] concatDatas];
     
-    return [data hashWithSha256];
+    return [data hashWithSHA256];
 }
 
-+(NSData*) calculateTotalHashFromResponderHello:(HelloPacket*)responderHello
++ (NSData*)calculateTotalHashFromResponderHello:(HelloPacket*)responderHello
                                       andCommit:(CommitPacket*)commit
-                                     andDhPart1:(DhPacket*)dhPart1
-                                     andDhPart2:(DhPacket*)dhPart2 {
+                                     andDhPart1:(DHPacket*)dhPart1
+                                     andDhPart2:(DHPacket*)dhPart2 {
     require(responderHello != nil);
     require(commit != nil);
     require(dhPart1 != nil);
@@ -109,60 +127,71 @@
                     
                     ] concatDatas];
     
-    return [data hashWithSha256];
+    return [data hashWithSHA256];
     
 }
 
-+(MasterSecret*) masterSecretFromSharedSecret:(NSData*)sharedSecret
-                                 andTotalHash:(NSData*)totalHash
-                              andInitiatorZid:(Zid*)initiatorZid
-                              andResponderZid:(Zid*)responderZid {
-    require(sharedSecret != nil);
-    require(totalHash != nil);
-    require(initiatorZid != nil);
-    require(responderZid != nil);
+- (instancetype)initFromSharedSecret:(NSData*)sharedSecret
+                        andTotalHash:(NSData*)totalHash
+                     andInitiatorZid:(Zid*)initiatorZid
+                     andResponderZid:(Zid*)responderZid {
+    self = [super init];
+	
+    if (self) {
+        require(sharedSecret != nil);
+        require(totalHash != nil);
+        require(initiatorZid != nil);
+        require(responderZid != nil);
+        
+        self.initiatorZid                  = initiatorZid;
+        self.responderZid                  = responderZid;
+        self.totalHash                     = totalHash;
+        self.sharedSecret                  = sharedSecret;
+        self.counter                       = [NSData dataWithBigEndianBytesOfUInt32:1];
+        
+        self.initiatorSrtpKey              = [self deriveKeyWithLabel:INITIATOR_SRTP_KEY_LABEL
+                                                   andTruncatedLength:INITIATOR_SRTP_KEY_LENGTH];
+        self.responderSrtpKey              = [self deriveKeyWithLabel:RESPONDER_SRTP_KEY_LABEL
+                                                   andTruncatedLength:RESPONDER_SRTP_KEY_LENGTH];
+        self.initiatorSrtpSalt             = [self deriveKeyWithLabel:INITIATOR_SRTP_SALT_LABEL
+                                                   andTruncatedLength:INITIATOR_SRTP_SALT_LENGTH];
+        self.responderSrtpSalt             = [self deriveKeyWithLabel:RESPONDER_SRTP_SALT_LABEL
+                                                   andTruncatedLength:RESPONDER_SRTP_SALT_LENGTH];
+        self.initiatorMacKey               = [self deriveKeyWithLabel:INITIATOR_MAC_KEY_LABEL
+                                                   andTruncatedLength:INITIATOR_MAC_KEY_LENGTH];
+        self.responderMacKey               = [self deriveKeyWithLabel:RESPONDER_MAC_KEY_LABEL
+                                                   andTruncatedLength:RESPONDER_MAC_KEY_LENGTH];
+        self.initiatorZRTPKey              = [self deriveKeyWithLabel:INITIATOR_ZRTP_KEY_LABEL
+                                                   andTruncatedLength:INITIATOR_ZRTP_KEY_LENGTH];
+        self.responderZRTPKey              = [self deriveKeyWithLabel:RESPONDER_ZRTP_KEY_LABEL
+                                                   andTruncatedLength:RESPONDER_ZRTP_KEY_LENGTH];
+        self.shortAuthenticationStringData = [self deriveKeyWithLabel:SAS_LABEL
+                                                   andTruncatedLength:SAS_LENGTH];
+    }
     
-    MasterSecret* s = [MasterSecret new];
-    
-    s->initiatorZid                  = initiatorZid;
-    s->responderZid                  = responderZid;
-    s->totalHash                     = totalHash;
-    s->sharedSecret                  = sharedSecret;
-    s->counter                       = [NSData dataWithBigEndianBytesOfUInt32:1];
-    
-    s->initiatorSrtpKey              = [s deriveKeyWithLabel:INITIATOR_SRTP_KEY_LABEL  andTruncatedLength:INITIATOR_SRTP_KEY_LENGTH];
-    s->responderSrtpKey              = [s deriveKeyWithLabel:RESPONDER_SRTP_KEY_LABEL  andTruncatedLength:RESPONDER_SRTP_KEY_LENGTH];
-    s->initiatorSrtpSalt             = [s deriveKeyWithLabel:INITIATOR_SRTP_SALT_LABEL andTruncatedLength:INITIATOR_SRTP_SALT_LENGTH];
-    s->responderSrtpSalt             = [s deriveKeyWithLabel:RESPONDER_SRTP_SALT_LABEL andTruncatedLength:RESPONDER_SRTP_SALT_LENGTH];
-    s->initiatorMacKey               = [s deriveKeyWithLabel:INITIATOR_MAC_KEY_LABEL   andTruncatedLength:INITIATOR_MAC_KEY_LENGTH];
-    s->responderMacKey               = [s deriveKeyWithLabel:RESPONDER_MAC_KEY_LABEL   andTruncatedLength:RESPONDER_MAC_KEY_LENGTH];
-    s->initiatorZrtpKey              = [s deriveKeyWithLabel:INITIATOR_ZRTP_KEY_LABEL  andTruncatedLength:INITIATOR_ZRTP_KEY_LENGTH];
-    s->responderZrtpKey              = [s deriveKeyWithLabel:RESPONDER_ZRTP_KEY_LABEL  andTruncatedLength:RESPONDER_ZRTP_KEY_LENGTH];
-    s->shortAuthenticationStringData = [s deriveKeyWithLabel:SAS_LABEL                 andTruncatedLength:SAS_LENGTH];
-    
-    return s;
+    return self;
 }
 
--(NSData*) deriveKeyWithLabel:(NSString*)label andTruncatedLength:(uint16_t)truncatedLength {
+- (NSData*)deriveKeyWithLabel:(NSString*)label andTruncatedLength:(uint16_t)truncatedLength {
     NSData* input = @[
                      
-                     counter,
+                     self.counter,
                      label.encodedAsUtf8,
                      [@[@0] toUint8Data],
-                     initiatorZid.getData,
-                     responderZid.getData,
-                     totalHash,
+                     self.initiatorZid.data,
+                     self.responderZid.data,
+                     self.totalHash,
                      [NSData dataWithBigEndianBytesOfUInt32:truncatedLength]
                      
                      ].concatDatas;
     
-    NSData* digest = [input hmacWithSha256WithKey:sharedSecret];
+    NSData* digest = [input hmacWithSHA256WithKey:self.sharedSecret];
     
     return [digest take:truncatedLength];
 }
 
--(NSString*) shortAuthenticationString {
-    return [ShortAuthenticationStringGenerator generateFromData:shortAuthenticationStringData];
+- (NSString*)shortAuthenticationString {
+    return [ShortAuthenticationStringGenerator generateFromData:self.shortAuthenticationStringData];
 }
 
 @end

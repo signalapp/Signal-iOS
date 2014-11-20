@@ -1,42 +1,52 @@
 #import "AudioPacker.h"
 #import "CryptoTools.h"
-#import "Conversions.h"
+#import "NSData+Conversions.h"
 #import "Util.h"
+
+@interface AudioPacker ()
+
+@property (strong, nonatomic) NSMutableArray* framesToSend;
+@property (strong, nonatomic) Queue* audioFrameToReceiveQueue;
+@property (nonatomic) uint16_t nextSequenceNumber;
+
+@end
 
 @implementation AudioPacker
 
-+(AudioPacker*) audioPacker {
-    AudioPacker* newAudioPackerInstance = [AudioPacker new];
-    newAudioPackerInstance->audioFrameToReceiveQueue = [Queue new];
-    newAudioPackerInstance->framesToSend = [NSMutableArray array];
-    newAudioPackerInstance->nextSequenceNumber = [CryptoTools generateSecureRandomUInt16];
+- (instancetype)init {
+    self = [super init];
+	
+    if (self) {
+        self.audioFrameToReceiveQueue   = [[Queue alloc] init];
+        self.framesToSend               = [[NSMutableArray alloc] init];
+        self.nextSequenceNumber         = [CryptoTools generateSecureRandomUInt16];
+        
+        // interop fix:
+        // cut off the high bit (the sign bit), to avoid confusion over signed-ness when peer receives the initial number
+        // also cut off the next bit, so that at least 2^14 packets (instead of 1) must fail to arrive before confusion can be caused
+        self.nextSequenceNumber &= 0x3FFF;
+    }
     
-    // interop fix:
-    // cut off the high bit (the sign bit), to avoid confusion over signed-ness when peer receives the initial number
-    // also cut off the next bit, so that at least 2^14 packets (instead of 1) must fail to arrive before confusion can be caused
-    newAudioPackerInstance->nextSequenceNumber &= 0x3FFF;
-    
-    return newAudioPackerInstance;
+    return self;
 }
 
--(void)packFrame:(EncodedAudioFrame*)frame{
+- (void)packFrame:(EncodedAudioFrame*)frame {
     require(frame != nil);
-    require(!frame.isMissingAudioData);
-    [framesToSend addObject:frame.tryGetAudioData];
+    require(![frame isMissingAudioData]);
+    [self.framesToSend addObject:[frame tryGetAudioData]];
 }
 
--(EncodedAudioPacket*) tryGetFinishedAudioPacket{
-    if (framesToSend.count < AUDIO_FRAMES_PER_PACKET) return nil;
+- (EncodedAudioPacket*)tryGetFinishedAudioPacket {
+    if (self.framesToSend.count < AUDIO_FRAMES_PER_PACKET) return nil;
     
-    uint16_t sequenceNumber = nextSequenceNumber++;
-    NSData* payload = [framesToSend concatDatas];
+    uint16_t sequenceNumber = self.nextSequenceNumber++;
+    NSData* payload = [self.framesToSend concatDatas];
     
-    [framesToSend removeAllObjects];
-    return [EncodedAudioPacket encodedAudioPacketWithAudioData:payload
-                                             andSequenceNumber:sequenceNumber];
+    [self.framesToSend removeAllObjects];
+    return [[EncodedAudioPacket alloc] initWithAudioData:payload andSequenceNumber:sequenceNumber];
 }
 
--(void)unpackPotentiallyMissingAudioPacket:(EncodedAudioPacket*)potentiallyMissingPacket{
+- (void)unpackPotentiallyMissingAudioPacket:(EncodedAudioPacket*)potentiallyMissingPacket {
     if (potentiallyMissingPacket != nil) {
         [self enqueueFramesForPacket:potentiallyMissingPacket];
     } else {
@@ -44,14 +54,14 @@
     }
 }
 
--(EncodedAudioFrame*) tryGetReceivedFrame{
-    return [audioFrameToReceiveQueue tryDequeue];
+- (EncodedAudioFrame*)tryGetReceivedFrame {
+    return [self.audioFrameToReceiveQueue tryDequeue];
 }
 
 #pragma mark -
 #pragma mark Private Methods
 
--(void) enqueueFramesForPacket:(EncodedAudioPacket*)packet {
+- (void)enqueueFramesForPacket:(EncodedAudioPacket*)packet {
     require(packet != nil);
     
     NSData* audioData = [packet audioData];
@@ -60,12 +70,13 @@
     NSUInteger frameSize = audioData.length / AUDIO_FRAMES_PER_PACKET;
     for (NSUInteger i = 0; i < AUDIO_FRAMES_PER_PACKET; i++) {
         NSData* frameData = [audioData subdataWithRange:NSMakeRange(frameSize*i, frameSize)];
-        [audioFrameToReceiveQueue enqueue:[EncodedAudioFrame encodedAudioFrameWithData:frameData]];
+        [self.audioFrameToReceiveQueue enqueue:[[EncodedAudioFrame alloc] initWithData:frameData]];
     }
 }
--(void) enqueueFramesForMissingPacket {
+
+- (void)enqueueFramesForMissingPacket {
     for (NSUInteger i = 0; i < AUDIO_FRAMES_PER_PACKET; i++) {
-        [audioFrameToReceiveQueue enqueue:[EncodedAudioFrame encodedAudioFrameWithoutData]];
+        [self.audioFrameToReceiveQueue enqueue:[EncodedAudioFrame emptyFrame]];
     }
 }
 

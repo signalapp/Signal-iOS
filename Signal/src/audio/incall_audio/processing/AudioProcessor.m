@@ -4,62 +4,76 @@
 #import "SpeexCodec.h"
 #import "Util.h"
 
+@interface AudioProcessor ()
+
+@property (strong, readwrite, nonatomic) SpeexCodec* codec;
+@property (strong, nonatomic) StretchFactorController* stretchFactorController;
+@property (strong, nonatomic) AudioStretcher* audioStretcher;
+@property (strong, nonatomic) AudioPacker* audioPacker;
+@property (strong, nonatomic) JitterQueue* jitterQueue;
+@property (nonatomic) bool haveReceivedDataYet;
+
+@end
+
 @implementation AudioProcessor
 
-@synthesize codec;
-
-+(AudioProcessor*) audioProcessor {    
-    JitterQueue* jitterQueue = [JitterQueue jitterQueue];
-    
-    AudioProcessor* newAudioProcessorInstance = [AudioProcessor new];
-    newAudioProcessorInstance->codec = [SpeexCodec speexCodec];
-    newAudioProcessorInstance->stretchFactorController = [StretchFactorController stretchFactorControllerForJitterQueue:jitterQueue];
-    newAudioProcessorInstance->audioStretcher = [AudioStretcher audioStretcher];
-    newAudioProcessorInstance->jitterQueue = jitterQueue;
-    newAudioProcessorInstance->audioPacker = [AudioPacker audioPacker];
-    return newAudioProcessorInstance;
-}
-
--(void)receivedPacket:(EncodedAudioPacket *)packet {
-    [jitterQueue tryEnqueue:packet];
-}
--(NSArray*) encodeAudioPacketsFromBuffer:(CyclicalBuffer*) buffer {
-    require(buffer != nil);
-    
-    NSMutableArray* encodedFrames = [NSMutableArray array];
-    NSUInteger decodedFrameSize = [codec decodedFrameSizeInBytes];
-    while([buffer enqueuedLength] >= decodedFrameSize){
-        NSData* rawFrame = [buffer dequeueDataWithLength:decodedFrameSize];
-        requireState(rawFrame != nil);
-        NSData* encodedFrameData = [codec encode:rawFrame];
-        [encodedFrames addObject:[EncodedAudioFrame encodedAudioFrameWithData:encodedFrameData]];
+- (instancetype)init {
+    self = [super init];
+	
+    if (self) {
+        self.jitterQueue             = [[JitterQueue alloc] init];
+        self.stretchFactorController = [[StretchFactorController alloc] initForJitterQueue:self.jitterQueue];
+        self.codec                   = [[SpeexCodec alloc] init];
+        self.audioStretcher          = [[AudioStretcher alloc] init];
+        self.audioPacker             = [[AudioPacker alloc] init];
     }
     
-    NSMutableArray* encodedPackets = [NSMutableArray array];
+    return self;
+}
+
+- (void)receivedPacket:(EncodedAudioPacket*)packet {
+    [self.jitterQueue tryEnqueue:packet];
+}
+
+- (NSArray*)encodeAudioPacketsFromBuffer:(CyclicalBuffer*)buffer {
+    require(buffer != nil);
+    
+    NSMutableArray* encodedFrames = [[NSMutableArray alloc] init];
+    NSUInteger decodedFrameSize = [self.codec decodedFrameSizeInBytes];
+    while([buffer enqueuedLength] >= decodedFrameSize) {
+        NSData* rawFrame = [buffer dequeueDataWithLength:decodedFrameSize];
+        requireState(rawFrame != nil);
+        NSData* encodedFrameData = [self.codec encode:rawFrame];
+        [encodedFrames addObject:[[EncodedAudioFrame alloc] initWithData:encodedFrameData]];
+    }
+    
+    NSMutableArray* encodedPackets = [[NSMutableArray alloc] init];
     for (EncodedAudioFrame* frame in encodedFrames) {
-        [audioPacker packFrame:frame];
-        EncodedAudioPacket* packet = [audioPacker tryGetFinishedAudioPacket];
+        [self.audioPacker packFrame:frame];
+        EncodedAudioPacket* packet = [self.audioPacker tryGetFinishedAudioPacket];
         if (packet != nil) [encodedPackets addObject:packet];
     }
     
     return encodedPackets;
 }
--(EncodedAudioFrame*) pullFrame {
-    EncodedAudioFrame* frame = [audioPacker tryGetReceivedFrame];
+
+- (EncodedAudioFrame*)pullFrame {
+    EncodedAudioFrame* frame = [self.audioPacker tryGetReceivedFrame];
     if (frame != nil) return frame;
     
-    EncodedAudioPacket* potentiallyMissingPacket = [jitterQueue tryDequeue];
-    [audioPacker unpackPotentiallyMissingAudioPacket:potentiallyMissingPacket];
-    return [audioPacker tryGetReceivedFrame];
+    EncodedAudioPacket* potentiallyMissingPacket = [self.jitterQueue tryDequeue];
+    [self.audioPacker unpackPotentiallyMissingAudioPacket:potentiallyMissingPacket];
+    return [self.audioPacker tryGetReceivedFrame];
 }
--(NSData*) tryDecodeOrInferFrame {
+
+- (NSData*)tryDecodeOrInferFrame {
     EncodedAudioFrame* frame = [self pullFrame];
-    haveReceivedDataYet |= !frame.isMissingAudioData;
-    if (!haveReceivedDataYet) return nil;
+    self.haveReceivedDataYet |= !frame.isMissingAudioData;
+    if (!self.haveReceivedDataYet) return nil;
     
-    NSData* raw = [codec decode:frame.tryGetAudioData];
-    double stretch = [stretchFactorController getAndUpdateDesiredStretchFactor];
-    return [audioStretcher stretchAudioData:raw stretchFactor:stretch];
+    NSData* raw = [self.codec decode:frame.tryGetAudioData];
+    double stretch = [self.stretchFactorController getAndUpdateDesiredStretchFactor];
+    return [self.audioStretcher stretchAudioData:raw stretchFactor:stretch];
 }
 
 @end

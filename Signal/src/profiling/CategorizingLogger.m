@@ -4,44 +4,68 @@
 #import "AnonymousValueLogger.h"
 #import "LoggingUtil.h"
 
+@interface CategorizingLogger ()
+
+@property (strong, nonatomic) NSMutableArray* callbacks;
+@property (strong, nonatomic) NSMutableDictionary* indexDic;
+
+@end
+
 @implementation CategorizingLogger
 
-+(CategorizingLogger*) categorizingLogger {
-    CategorizingLogger* c = [CategorizingLogger new];
-    c->callbacks = [NSMutableArray array];
-    c->indexDic = [NSMutableDictionary dictionary];
-    return c;
-}
--(void) addLoggingCallback:(void(^)(NSString* category, id details, NSUInteger index))callback {
-    [callbacks addObject:[callback copy]];
+#pragma mark Private methods
+
+- (instancetype)init {
+    self = [super init];
+	
+    if (self) {
+        self.callbacks = [[NSMutableArray alloc] init];
+        self.indexDic = [[NSMutableDictionary alloc] init];
+    }
+    
+    return self;
 }
 
--(void) log:(NSString*)category details:(id)details {
-    NSNumber* index = indexDic[category];
+- (void)log:(NSString*)category
+    details:(id)details {
+    NSNumber* index = self.indexDic[category];
     if (index == nil) {
-        index = @(indexDic.count);
-        indexDic[category] = index;
+        index = @(self.indexDic.count);
+        self.indexDic[category] = index;
     }
+    
     NSUInteger x = [index unsignedIntegerValue];
-    for (void (^callback)(NSString* category, id details, NSUInteger index) in callbacks) {
+    for (void (^callback)(NSString* category, id details, NSUInteger index) in self.callbacks) {
         callback(category, details, x);
     }
 }
 
--(id<ValueLogger>) getValueLoggerForValue:(id)valueIdentity from:(id)sender {
-    id<ValueLogger> r = [AnonymousValueLogger anonymousValueLogger:^(double value) {
+#pragma mark Public methods
+
+- (void)addLoggingCallback:(void(^)(NSString* category, id details, NSUInteger index))callback {
+    [self.callbacks addObject:[callback copy]];
+}
+
+#pragma mark Logging
+
+- (id<ValueLogger>)getValueLoggerForValue:(id)valueIdentity
+                                     from:(id)sender {
+    id<ValueLogger> r = [[AnonymousValueLogger alloc] initWithLogValue:^(double value) {
         [self log:[NSString stringWithFormat:@"Value %@ from %@", valueIdentity, sender] details:@(value)];
     }];
     return [LoggingUtil throttleValueLogger:r discardingAfterEventForDuration:0.5];
 }
--(id<OccurrenceLogger>) getOccurrenceLoggerForSender:(id)sender withKey:(NSString*)key {
-    id<OccurrenceLogger> r = [AnonymousOccurrenceLogger anonymousOccurencyLoggerWithMarker:^(id details){
+
+- (id<OccurrenceLogger>)getOccurrenceLoggerForSender:(id)sender
+                                             withKey:(NSString*)key {
+    id<OccurrenceLogger> r = [[AnonymousOccurrenceLogger alloc] initWithMarker:^(id details) {
         [self log:[NSString stringWithFormat:@"Mark %@ from %@", key, sender] details:details];
     }];
     return [LoggingUtil throttleOccurrenceLogger:r discardingAfterEventForDuration:0.5];
 }
--(id<ConditionLogger>) getConditionLoggerForSender:(id)sender {
-    return [AnonymousConditionLogger anonymousConditionLoggerWithLogNotice:^(NSString *text) {
+
+- (id<ConditionLogger>)getConditionLoggerForSender:(id)sender {
+    return [[AnonymousConditionLogger alloc] initWithLogNotice:^(NSString *text) {
         [self log:[NSString stringWithFormat:@"Notice from %@", sender] details:text];
     } andLogWarning:^(NSString *text) {
         [self log:[NSString stringWithFormat:@"Warning from %@", sender] details:text];
@@ -49,29 +73,42 @@
         [self log:[NSString stringWithFormat:@"Error from %@", sender] details:text];
     }];
 }
--(id<JitterQueueNotificationReceiver>) jitterQueueNotificationReceiver {
+
+- (id<JitterQueueNotificationReceiver>)jitterQueueNotificationReceiver {
     return self;
 }
 
--(void) notifyCreated {
+#pragma mark JitterQueueNotificationReceiver
+
+- (void)notifyCreated {
     [self log:@"JitterQueue created" details:nil];
 }
--(void) notifyArrival:(uint16_t)sequenceNumber {
+
+- (void)notifyArrival:(uint16_t)sequenceNumber {
     [self log:@"JitterQueue arrival" details:[NSString stringWithFormat:@"sequence: %d", sequenceNumber]];
 }
--(void) notifyDequeue:(uint16_t)sequenceNumber withRemainingEnqueuedItemCount:(NSUInteger)remainingCount {
+
+- (void)notifyDequeue:(uint16_t)sequenceNumber withRemainingEnqueuedItemCount:(NSUInteger)remainingCount {
     [self log:@"JitterQueue dequeue" details:[NSString stringWithFormat:@"sequence: %d, remaining: %lu", sequenceNumber, (unsigned long)remainingCount]];
 }
--(void) notifyBadArrival:(uint16_t)sequenceNumber ofType:(enum JitterBadArrivalType)arrivalType {
+
+- (void)notifyBadArrival:(uint16_t)sequenceNumber
+                  ofType:(JitterBadArrivalType)arrivalType {
     [self log:@"JitterQueue bad arrival" details:[NSString stringWithFormat:@"sequence: %d, arrival type: %d", sequenceNumber, arrivalType]];
 }
--(void) notifyBadDequeueOfType:(enum JitterBadDequeueType)type {
+
+- (void)notifyBadDequeueOfType:(JitterBadDequeueType)type {
     [self log:@"JitterQueue bad dequeue" details:[NSString stringWithFormat:@"type: %d", type]];
 }
--(void) notifyResyncFrom:(uint16_t)oldReadHeadSequenceNumber to:(uint16_t)newReadHeadSequenceNumber {
+
+- (void)notifyResyncFrom:(uint16_t)oldReadHeadSequenceNumber
+                      to:(uint16_t)newReadHeadSequenceNumber {
     [self log:@"JitterQueue resync" details:[NSString stringWithFormat:@"from: %d, to: %d", oldReadHeadSequenceNumber, newReadHeadSequenceNumber]];
 }
--(void) notifyDiscardOverflow:(uint16_t)discardedSequenceNumber resyncingFrom:(uint16_t)oldReadHeadSequenceNumber to:(uint16_t)newReadHeadSequenceNumber {
+
+- (void)notifyDiscardOverflow:(uint16_t)discardedSequenceNumber
+                resyncingFrom:(uint16_t)oldReadHeadSequenceNumber
+                           to:(uint16_t)newReadHeadSequenceNumber {
     [self log:@"JitterQueue discard overflow" details:[NSString stringWithFormat:@"discarded: %d, from: %d, to: %d", discardedSequenceNumber, oldReadHeadSequenceNumber, newReadHeadSequenceNumber]];
 }
 

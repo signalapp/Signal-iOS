@@ -32,11 +32,11 @@
 -(void) testReplies {
     [Environment setCurrent:testEnvWith(ENVIRONMENT_TESTING_OPTION_ALLOW_NETWORK_STREAM_TO_NON_SECURE_END_POINTS)];
     
-    HostNameEndPoint* e = [HostNameEndPoint hostNameEndPointWithHostName:@"example.com" andPort:80];
-    NetworkStream* s = [NetworkStream networkStreamToEndPoint:e];
+    HostNameEndPoint* e = [[HostNameEndPoint alloc] initWithHostName:@"example.com" andPort:80];
+    NetworkStream* s = [[NetworkStream alloc] initWithRemoteEndPoint:e];
     
     __block bool receivedReply = false;
-    [s startWithHandler:[PacketHandler packetHandler:^(id packet){
+    [s startWithHandler:[[PacketHandler alloc] initPacketHandler:^(id packet){
         @synchronized(churnLock()) {
             receivedReply = true;
         }
@@ -57,11 +57,11 @@
     [Environment setCurrent:testEnvWith(ENVIRONMENT_TESTING_OPTION_ALLOW_NETWORK_STREAM_TO_NON_SECURE_END_POINTS)];
     
     in_port_t unusedPort = 10000 + (in_port_t)arc4random_uniform(30000);
-    HostNameEndPoint* e = [HostNameEndPoint hostNameEndPointWithHostName:@"localhost" andPort:unusedPort];
-    NetworkStream* s = [NetworkStream networkStreamToEndPoint:e];
+    HostNameEndPoint* e = [[HostNameEndPoint alloc] initWithHostName:@"localhost" andPort:unusedPort];
+    NetworkStream* s = [[NetworkStream alloc] initWithRemoteEndPoint:e];
     
     __block bool errored = false;
-    [s startWithHandler:[PacketHandler packetHandler:^(id packet){
+    [s startWithHandler:[[PacketHandler alloc] initPacketHandler:^(id packet){
         test(false);
     } withErrorHandler:^(id error, id relatedInfo, bool causedTermination) {
         @synchronized(churnLock()) {
@@ -79,12 +79,12 @@
 -(void) testAuthenticationPass {
     [Environment setCurrent:testEnv];
     
-    SecureEndPoint* e = [SecureEndPoint secureEndPointForHost:[HostNameEndPoint hostNameEndPointWithHostName:TEST_SERVER_HOST andPort:TEST_SERVER_PORT]
-                                      identifiedByCertificate:[Certificate certificateFromResourcePath:TEST_SERVER_CERT_PATH
-                                                                                                ofType:TEST_SERVER_CERT_TYPE]];
-    NetworkStream* s = [NetworkStream networkStreamToEndPoint:e];
+    SecureEndPoint* e = [[SecureEndPoint alloc] initWithHost:[[HostNameEndPoint alloc] initWithHostName:TEST_SERVER_HOST andPort:TEST_SERVER_PORT]
+                                     identifiedByCertificate:[[Certificate alloc] initFromResourcePath:TEST_SERVER_CERT_PATH
+                                                                                                    ofType:TEST_SERVER_CERT_TYPE]];
+    NetworkStream* s = [[NetworkStream alloc] initWithRemoteEndPoint:e];
     
-    [s startWithHandler:[PacketHandler packetHandler:^(id packet) {
+    [s startWithHandler:[[PacketHandler alloc] initPacketHandler:^(id packet) {
         test(false);
     } withErrorHandler:^(id error, id relatedInfo, bool causedTermination) {
         test(false);
@@ -111,13 +111,14 @@
     Certificate* instance = [Certificate new];
     instance.secCertificateRef = cert;
 
-    SecureEndPoint* e = [SecureEndPoint secureEndPointForHost:[HostNameEndPoint hostNameEndPointWithHostName:TEST_SERVER_HOST andPort:TEST_SERVER_PORT]
-                                      identifiedByCertificate:instance];
+    SecureEndPoint* e = [[SecureEndPoint alloc] initWithHost:[[HostNameEndPoint alloc] initWithHostName:TEST_SERVER_HOST
+                                                                                                andPort:TEST_SERVER_PORT]
+                                     identifiedByCertificate:instance];
     
-    NetworkStream* s = [NetworkStream networkStreamToEndPoint:e];
+    NetworkStream* s = [[NetworkStream alloc] initWithRemoteEndPoint:e];
     
     __block bool terminated = false;
-    [s startWithHandler:[PacketHandler packetHandler:^(id packet) {
+    [s startWithHandler:[[PacketHandler alloc] initPacketHandler:^(id packet) {
         test(false);
     } withErrorHandler:^(id error, id relatedInfo, bool causedTermination) {
         @synchronized(churnLock()) {
@@ -135,14 +136,14 @@
 -(void) testAuthenticationFail_WrongHostName {
     [Environment setCurrent:testEnv];
     
-    SecureEndPoint* e = [SecureEndPoint secureEndPointForHost:[HostNameEndPoint hostNameEndPointWithHostName:TEST_SERVER_INCORRECT_HOST_TO_SAME_IP
-                                                                                                     andPort:TEST_SERVER_PORT]
-                                      identifiedByCertificate:[Certificate certificateFromResourcePath:TEST_SERVER_CERT_PATH
+    SecureEndPoint* e = [[SecureEndPoint alloc] initWithHost:[[HostNameEndPoint alloc] initWithHostName:TEST_SERVER_INCORRECT_HOST_TO_SAME_IP
+                                                                                                andPort:TEST_SERVER_PORT]
+                                     identifiedByCertificate:[[Certificate alloc] initFromResourcePath:TEST_SERVER_CERT_PATH
                                                                                                 ofType:TEST_SERVER_CERT_TYPE]];
-    NetworkStream* s = [NetworkStream networkStreamToEndPoint:e];
+    NetworkStream* s = [[NetworkStream alloc] initWithRemoteEndPoint:e];
     
     __block bool terminated = false;
-    [s startWithHandler:[PacketHandler packetHandler:^(id packet) {
+    [s startWithHandler:[[PacketHandler alloc] initPacketHandler:^(id packet) {
         test(false);
     } withErrorHandler:^(id error, id relatedInfo, bool causedTermination) {
         @synchronized(churnLock()) {

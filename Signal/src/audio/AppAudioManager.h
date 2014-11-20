@@ -14,30 +14,29 @@
  *  which speaker to use or if all sounds should be muted.
  **/
 
-@interface AppAudioManager : NSObject <SoundPlayerDelegate>
-
-enum AudioProfile {
-    AudioProfile_Default,
-    AudioProfile_ExternalSpeaker,
+typedef NS_ENUM(NSInteger, AudioProfile) {
+    AudioProfileDefault,
+    AudioProfileExternalSpeaker
 };
 
-+(AppAudioManager*) sharedInstance;
+@interface AppAudioManager : NSObject <SoundPlayerDelegate>
 
--(void) setAudioProfile:(enum AudioProfile) profile;
--(enum AudioProfile) getCurrentAudioProfile;
+@property (nonatomic, getter=getCurrentAudioProfile) AudioProfile audioProfile;
 
--(void) respondToProgressChange:(enum CallProgressType) progressType forLocallyInitiatedCall:(BOOL) initiatedLocally;
--(void) respondToTerminationType:(enum CallTerminationType) terminationType;
++ (instancetype)sharedInstance;
 
--(BOOL) toggleSpeakerPhone;
--(void) cancellAllAudio;
+- (void)respondToProgressChange:(CallProgressType)progressType forLocallyInitiatedCall:(BOOL)initiatedLocally;
+- (void)respondToTerminationType:(CallTerminationType)terminationType;
 
--(void) requestRequiredPermissionsIfNeeded;
--(BOOL) requestRecordingPrivlege;
--(BOOL) releaseRecordingPrivlege;
+- (BOOL)toggleSpeakerPhone;
+- (void)cancellAllAudio;
 
--(BOOL) setAudioEnabled:(BOOL) enable;
--(void) awake;
+- (void)requestRequiredPermissionsIfNeeded;
+- (BOOL)requestRecordingPrivlege;
+- (BOOL)releaseRecordingPrivlege;
+
+- (BOOL)setAudioEnabled:(BOOL)enable;
+- (void)awake;
 
 - (void)didCompleteSoundInstanceOfType:(SoundInstanceType)instanceType;
 

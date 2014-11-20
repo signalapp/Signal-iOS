@@ -2,12 +2,10 @@
 #import "JitterQueue.h"
 #import "Logging.h"
 
-@interface CategorizingLogger : NSObject<Logging, JitterQueueNotificationReceiver> {
-@private NSMutableArray* callbacks;
-@private NSMutableDictionary* indexDic;
-}
+@interface CategorizingLogger : NSObject <Logging, JitterQueueNotificationReceiver>
 
-+(CategorizingLogger*) categorizingLogger;
--(void) addLoggingCallback:(void(^)(NSString* category, id details, NSUInteger index))callback;
+- (instancetype)init;
+
+- (void)addLoggingCallback:(void(^)(NSString* category, id details, NSUInteger index))callback;
 
 @end

@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "CallController.h"
-#import "HttpManager.h"
+#import "HTTPManager.h"
 #import "InitiatorSessionDescriptor.h"
 
 /**
@@ -17,7 +17,7 @@
 @interface CallConnectUtil_Initiator : NSObject
 
 /// Result has type Future*(CallConnectResult)
-+(TOCFuture*) asyncConnectCallToRemoteNumber:(PhoneNumber*)remoteNumber
++ (TOCFuture*)asyncConnectCallToRemoteNumber:(PhoneNumber*)remoteNumber
                           withCallController:(CallController*)callController;
 
 @end

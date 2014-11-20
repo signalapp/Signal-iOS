@@ -1,5 +1,5 @@
 #import "ConversionsTest.h"
-#import "Conversions.h"
+#import "NSData+Conversions.h"
 #import "Util.h"
 #import "TestUtil.h"
 

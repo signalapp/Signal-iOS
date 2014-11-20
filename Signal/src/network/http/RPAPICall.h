@@ -23,11 +23,11 @@ typedef NS_ENUM(NSInteger, HTTPMethod) {
 
 #pragma mark API Call Properties
 
-@property (nonatomic, readonly) NSString *endPoint;
+@property (nonatomic, readonly) NSString* endPoint;
 @property (nonatomic, readonly) HTTPMethod method;
-@property (nonatomic, readonly) NSDictionary *parameters;
-@property (nonatomic, readonly) AFHTTPRequestSerializer  <AFURLRequestSerialization>  *requestSerializer;
-@property (nonatomic, readonly) AFHTTPResponseSerializer <AFURLResponseSerialization> *responseSerializer;
+@property (nonatomic, readonly) NSDictionary* parameters;
+@property (nonatomic, readonly) AFHTTPRequestSerializer  <AFURLRequestSerialization>*  requestSerializer;
+@property (nonatomic, readonly) AFHTTPResponseSerializer <AFURLResponseSerialization>* responseSerializer;
 
 #pragma mark API Call Contstructors
 

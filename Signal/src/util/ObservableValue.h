@@ -9,19 +9,14 @@ typedef void (^LatestValueCallback)(id latestValue);
  * An ObservableValue represents an asynchronous stream of values, such as 'latest state of toggle' or 'latest sensor reading'.
  *
  */
-@interface ObservableValue : NSObject {
-@protected NSMutableSet* callbacks;
-@private Queue* queuedActionsToRun;
-@private bool isRunningActions;
-@protected bool sealed;
-}
+@interface ObservableValue : NSObject
 
-@property (readonly,atomic) id currentValue;
+@property (strong, readonly, atomic) id currentValue;
 
--(void) watchLatestValueOnArbitraryThread:(LatestValueCallback)callback
+- (void)watchLatestValueOnArbitraryThread:(LatestValueCallback)callback
                            untilCancelled:(TOCCancelToken*)untilCancelledToken;
 
--(void) watchLatestValue:(LatestValueCallback)callback
+- (void)watchLatestValue:(LatestValueCallback)callback
                 onThread:(NSThread*)thread
           untilCancelled:(TOCCancelToken*)untilCancelledToken;
 
@@ -29,9 +24,9 @@ typedef void (^LatestValueCallback)(id latestValue);
 
 @interface ObservableValueController : ObservableValue
 
-+(ObservableValueController *)observableValueControllerWithInitialValue:(id)value;
--(void)updateValue:(id)value;
--(void)adjustValue:(id(^)(id))adjustment;
--(void)sealValue;
+- (instancetype)initWithInitialValue:(id)value;
+- (void)updateValue:(id)value;
+- (void)adjustValue:(id(^)(id))adjustment;
+- (void)sealValue;
 
 @end

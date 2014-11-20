@@ -16,13 +16,10 @@
  *
  **/
 
-@interface DesiredBufferDepthController : NSObject<Terminable, JitterQueueNotificationReceiver> {
-@private DropoutTracker* dropoutTracker;
-@private DecayingSampleEstimator* decayingDesiredBufferDepth;
-@private id<ValueLogger> desiredDelayLogger;
-}
+@interface DesiredBufferDepthController : NSObject <Terminable, JitterQueueNotificationReceiver>
 
-+(DesiredBufferDepthController*) desiredBufferDepthControllerForJitterQueue:(JitterQueue*)jitterQueue;
--(double) getAndUpdateDesiredBufferDepth;
+- (instancetype)initForJitterQueue:(JitterQueue*)jitterQueue;
+
+- (double)getAndUpdateDesiredBufferDepth;
 
 @end

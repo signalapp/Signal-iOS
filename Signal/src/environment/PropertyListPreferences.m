@@ -4,28 +4,29 @@
 
 @implementation PropertyListPreferences
 
--(void) clear {
+- (void)clear {
     @synchronized(self) {
-        NSString *appDomain = NSBundle.mainBundle.bundleIdentifier;
+        NSString* appDomain = NSBundle.mainBundle.bundleIdentifier;
         [NSUserDefaults.standardUserDefaults removePersistentDomainForName:appDomain];
     }
 }
 
--(id) tryGetValueForKey:(NSString *)key {
+- (id)tryGetValueForKey:(NSString*)key {
     require(key != nil);
     @synchronized(self) {
         return [NSUserDefaults.standardUserDefaults objectForKey:key];
     }
 }
--(void) setValueForKey:(NSString *)key toValue:(id)value {
+
+- (void)setValueForKey:(NSString*)key toValue:(id)value {
     require(key != nil);
     @synchronized(self) {
-        NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
-        [userDefaults setObject:value forKey:key];
-        [userDefaults synchronize];
+        [NSUserDefaults.standardUserDefaults setObject:value forKey:key];
+        [NSUserDefaults.standardUserDefaults synchronize];
     }
 }
--(id) adjustAndTryGetNewValueForKey:(NSString *)key afterAdjuster:(id (^)(id))adjuster {
+
+- (id)adjustAndTryGetNewValueForKey:(NSString*)key afterAdjuster:(id (^)(id))adjuster {
     require(key != nil);
     require(adjuster != nil);
     @synchronized(self) {
@@ -38,16 +39,16 @@
 
 #pragma mark KeyChain store
 
--(void) secureTrySetValueForKey:(NSString *)key toValue:(id)value {
+- (void)secureTrySetValueForKey:(NSString*)key toValue:(id)value {
     require(key != nil);
     @synchronized(self) {
         if (value == nil) {
             [UICKeyChainStore removeItemForKey:key];
             DDLogWarn(@"Removing object for key: %@", key);
         } else {
-            if ([value isKindOfClass:NSData.class]) {
+            if ([value isKindOfClass:[NSData class]]) {
                 [UICKeyChainStore setData:value forKey:key];
-            } else if ([value isKindOfClass:NSString.class]){
+            } else if ([value isKindOfClass:[NSString class]]) {
                 [UICKeyChainStore setString:value forKey:key];
             } else{
                 DDLogError(@"Unexpected class stored in the Keychain.");
@@ -56,21 +57,21 @@
     }
 }
 
--(NSData*) secureTryGetDataForKey:(NSString *)key {
+- (NSData*)secureTryGetDataForKey:(NSString*)key {
     require(key != nil);
     @synchronized(self) {
         return [UICKeyChainStore dataForKey:key];
     }
 }
 
--(NSString*) secureTryGetStringForKey:(NSString *)key {
+- (NSString*)secureTryGetStringForKey:(NSString*)key {
     require(key != nil);
     @synchronized(self) {
         return [UICKeyChainStore stringForKey:key];
     }
 }
 
--(NSData*) secureDataStoreAdjustAndTryGetNewValueForKey:(NSString *)key afterAdjuster:(id (^)(id))adjuster {
+- (NSData*)secureDataStoreAdjustAndTryGetNewValueForKey:(NSString*)key afterAdjuster:(id (^)(id))adjuster {
     require(key != nil);
     require(adjuster != nil);
     @synchronized(self) {
@@ -81,7 +82,7 @@
     }
 }
 
--(NSString*) secureStringStoreAdjustAndTryGetNewValueForKey:(NSString *)key afterAdjuster:(id (^)(id))adjuster {
+- (NSString*)secureStringStoreAdjustAndTryGetNewValueForKey:(NSString*)key afterAdjuster:(id (^)(id))adjuster {
     require(key != nil);
     require(adjuster != nil);
     @synchronized(self) {
@@ -91,6 +92,5 @@
         return newValue;
     }
 }
-
 
 @end

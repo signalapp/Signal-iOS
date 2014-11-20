@@ -15,35 +15,35 @@ static NSString *WHISPER_SYSTEMS_URL = @"https://whispersystems.org/";
 static NSString *WHISPER_SYSTEMS_BLOG_URL = @"https://whispersystems.org/blog";
 static NSString *WHISPER_SYSTEMS_BUGREPORT_URL = @"http://support.whispersystems.org";
 
-@interface LeftSideMenuViewController () {
-    NSArray *_firstSectionOptions;
-    NSArray *_secondSectionOptions;
-}
+@interface LeftSideMenuViewController ()
+
+@property (strong, nonatomic) NSArray* firstSectionOptions;
+@property (strong, nonatomic) NSArray* secondSectionOptions;
 
 @end
 
 @implementation LeftSideMenuViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil bundle:(NSBundle*)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        _centerTabBarViewController = [TabBarParentViewController new];
+        self.centerTabBarViewController = [[TabBarParentViewController alloc] init];
     }
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    _firstSectionOptions = @[MAIN_MENU_OPTION_RECENT_CALLS,
-                             MAIN_MENU_OPTION_FAVOURITES,
-                             MAIN_MENU_OPTION_CONTACTS,
-                             MAIN_MENU_OPTION_DIALER,
-                             MAIN_MENU_INVITE_CONTACTS];
+    self.firstSectionOptions = @[MAIN_MENU_OPTION_RECENT_CALLS,
+                                 MAIN_MENU_OPTION_FAVOURITES,
+                                 MAIN_MENU_OPTION_CONTACTS,
+                                 MAIN_MENU_OPTION_DIALER,
+                                 MAIN_MENU_INVITE_CONTACTS];
 
-    _secondSectionOptions = @[MAIN_MENU_OPTION_SETTINGS,
-                              MAIN_MENU_OPTION_ABOUT,
-                              MAIN_MENU_OPTION_REPORT_BUG,
-                              MAIN_MENU_OPTION_BLOG];
+    self.secondSectionOptions = @[MAIN_MENU_OPTION_SETTINGS,
+                                  MAIN_MENU_OPTION_ABOUT,
+                                  MAIN_MENU_OPTION_REPORT_BUG,
+                                  MAIN_MENU_OPTION_BLOG];
 
     self.mm_drawerController.closeDrawerGestureModeMask = MMCloseDrawerGestureModePanningCenterView | MMCloseDrawerGestureModeTapCenterView;
     self.mm_drawerController.openDrawerGestureModeMask = MMOpenDrawerGestureModeBezelPanningCenterView;
@@ -64,36 +64,36 @@ static NSString *WHISPER_SYSTEMS_BUGREPORT_URL = @"http://support.whispersystems
 #pragma mark - View Controller Presentation
 
 - (void)showRecentsViewController {
-    [_centerTabBarViewController presentRecentCallsViewController];
+    [self.centerTabBarViewController presentRecentCallsViewController];
     [self.mm_drawerController closeDrawerAnimated:YES completion:nil];
 }
 
 - (void)showContactsViewController {
-    [_centerTabBarViewController presentContactsViewController];
+    [self.centerTabBarViewController presentContactsViewController];
     [self.mm_drawerController closeDrawerAnimated:YES completion:nil];
 }
 
 - (void)showDialerViewController {
-    [_centerTabBarViewController presentDialerViewController];
+    [self.centerTabBarViewController presentDialerViewController];
     [self.mm_drawerController closeDrawerAnimated:YES completion:nil];
 }
 
 - (void)showSettingsViewController {
-    [_centerTabBarViewController presentSettingsViewController];
+    [self.centerTabBarViewController presentSettingsViewController];
     [self.mm_drawerController closeDrawerAnimated:YES completion:nil];
 }
 
 - (void)showFavouritesViewController {
-    [_centerTabBarViewController presentFavouritesViewController];
+    [self.centerTabBarViewController presentFavouritesViewController];
     [self.mm_drawerController closeDrawerAnimated:YES completion:nil];
 }
 
 - (void)showInviteContactsViewController {
-    [_centerTabBarViewController presentInviteContactsViewController];
+    [self.centerTabBarViewController presentInviteContactsViewController];
     [self.mm_drawerController closeDrawerAnimated:YES completion:nil];
 }
 
-- (void)selectMenuOption:(NSString *)menuOption {
+- (void)selectMenuOption:(NSString*)menuOption {
     if ([menuOption isEqualToString:MAIN_MENU_OPTION_RECENT_CALLS]) {
         [self showRecentsViewController];
     }
@@ -137,61 +137,61 @@ static NSString *WHISPER_SYSTEMS_BUGREPORT_URL = @"http://support.whispersystems
 
 #pragma mark - UITableViewDelegate
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+- (CGFloat)tableView:(UITableView*)tableView heightForHeaderInSection:(NSInteger)section {
     if (section == FIRST_SECTION_INDEX) {
-        return CGRectGetHeight(_firstSectionHeaderView.frame);
+        return CGRectGetHeight(self.firstSectionHeaderView.frame);
     } else {
-        return CGRectGetHeight(_secondSectionHeaderView.frame);
+        return CGRectGetHeight(self.secondSectionHeaderView.frame);
     }
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+- (UIView*)tableView:(UITableView*)tableView viewForHeaderInSection:(NSInteger)section {
     if (section == FIRST_SECTION_INDEX) {
-        return _firstSectionHeaderView;
+        return self.firstSectionHeaderView;
     } else {
-        return _secondSectionHeaderView;
+        return self.secondSectionHeaderView;
     }
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+- (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
     return NUMBER_OF_TABLE_VIEW_SECTIONS;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section {
     if (section == FIRST_SECTION_INDEX) {
-        return (NSInteger)_firstSectionOptions.count;
+        return (NSInteger)self.firstSectionOptions.count;
     } else {
-        return (NSInteger)_secondSectionOptions.count;
+        return (NSInteger)self.secondSectionOptions.count;
     }
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    LeftSideMenuCell *cell = [tableView dequeueReusableCellWithIdentifier:SIDE_MENU_TABLE_CELL_IDENTIFIER];
+- (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+    LeftSideMenuCell* cell = [tableView dequeueReusableCellWithIdentifier:SIDE_MENU_TABLE_CELL_IDENTIFIER];
 
     if (!cell) {
         cell = [[LeftSideMenuCell alloc] initWithStyle:UITableViewCellStyleDefault
                                        reuseIdentifier:SIDE_MENU_TABLE_CELL_IDENTIFIER];		
-        cell.backgroundColor = [UIColor clearColor];
+        cell.backgroundColor = UIColor.clearColor;
     }
 
     if (indexPath.section == FIRST_SECTION_INDEX) {
-        cell.menuTitleLabel.text = _firstSectionOptions[(NSUInteger)indexPath.row];
+        cell.menuTitleLabel.text = self.firstSectionOptions[(NSUInteger)indexPath.row];
     } else {
-        cell.menuTitleLabel.text = _secondSectionOptions[(NSUInteger)indexPath.row];
+        cell.menuTitleLabel.text = self.secondSectionOptions[(NSUInteger)indexPath.row];
     }
 
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
     if (self.isLeftSideViewOpenCompletely) {
-        NSString *menuOption;
+        NSString* menuOption;
         if (indexPath.section == FIRST_SECTION_INDEX) {
-            menuOption = _firstSectionOptions[(NSUInteger)indexPath.row];
+            menuOption = self.firstSectionOptions[(NSUInteger)indexPath.row];
         } else {
-            menuOption = _secondSectionOptions[(NSUInteger)indexPath.row];
+            menuOption = self.secondSectionOptions[(NSUInteger)indexPath.row];
         }
         
         [self selectMenuOption:menuOption];

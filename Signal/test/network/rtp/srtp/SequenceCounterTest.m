@@ -8,21 +8,21 @@
 
 @implementation SequenceCounterTest
 -(void)testCountingForwards {
-    SequenceCounter* s = [SequenceCounter sequenceCounter];
+    SequenceCounter* s = [[SequenceCounter alloc] init];
     
     test([s convertNext:1] == (int64_t)1);
     test([s convertNext:2] == (int64_t)2);
     test([s convertNext:6] == (int64_t)6);
 }
 -(void)testCountingBackwards {
-    SequenceCounter* s = [SequenceCounter sequenceCounter];
+    SequenceCounter* s = [[SequenceCounter alloc] init];
     
     test([s convertNext:UINT16_MAX] == (int64_t)-1);
     test([s convertNext:UINT16_MAX-1] == (int64_t)-2);
     test([s convertNext:UINT16_MAX-5] == (int64_t)-6);
 }
 -(void)testCountingLimits {
-    SequenceCounter* s = [SequenceCounter sequenceCounter];
+    SequenceCounter* s = [[SequenceCounter alloc] init];
     
     uint16_t signedMin = (uint16_t)((int32_t)INT16_MIN + (1 << 16));
     test([s convertNext:INT16_MAX] == (int64_t)INT16_MAX);
@@ -31,7 +31,7 @@
     test([s convertNext:signedMin] == (int64_t)(INT16_MAX + 1));
 }
 -(void)testCountingRandomizedDelta {
-    SequenceCounter* s = [SequenceCounter sequenceCounter];
+    SequenceCounter* s = [[SequenceCounter alloc] init];
     
     int64_t prevLongId = 0;
     uint16_t prevShortId = 0;

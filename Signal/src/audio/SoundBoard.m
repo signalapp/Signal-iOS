@@ -10,49 +10,49 @@ static NSString* SoundFile_Ringtone  =@"r.caf";
 
 @implementation SoundBoard
 
-+(SoundInstance*) instanceOfInboundRingtone {
-    SoundInstance* soundInstance = [SoundInstance soundInstanceForFile:SoundFile_Ringtone];
++ (SoundInstance*)instanceOfInboundRingtone {
+    SoundInstance* soundInstance = [[SoundInstance alloc] initWithFile:SoundFile_Ringtone
+                                                  andSoundInstanceType:SoundInstanceTypeInboundRingtone];
     [soundInstance setAudioToLoopIndefinitely];
-    [soundInstance setInstanceType:SoundInstanceTypeInboundRingtone];
     return soundInstance;
 }
 
-+(SoundInstance*) instanceOfOutboundRingtone {
-    SoundInstance* soundInstance = [SoundInstance soundInstanceForFile:SoundFile_Outbound];
++ (SoundInstance*)instanceOfOutboundRingtone {
+    SoundInstance* soundInstance = [[SoundInstance alloc] initWithFile:SoundFile_Outbound
+                                                  andSoundInstanceType:SoundInstanceTypeOutboundRingtone];
     [soundInstance setAudioToLoopIndefinitely];
-    [soundInstance setInstanceType:SoundInstanceTypeOutboundRingtone];
     return soundInstance;
 }
 
-+(SoundInstance*) instanceOfHandshakeSound {
-    SoundInstance* soundInstance = [SoundInstance soundInstanceForFile:SoundFile_Handshake];
++ (SoundInstance*)instanceOfHandshakeSound {
+    SoundInstance* soundInstance = [[SoundInstance alloc] initWithFile:SoundFile_Handshake
+                                                  andSoundInstanceType:SoundInstanceTypeHandshakeSound];
     [soundInstance setAudioToLoopIndefinitely];
-    [soundInstance setInstanceType:SoundInstanceTypeHandshakeSound];
     return soundInstance;
 }
 
-+(SoundInstance*) instanceOfCompletedSound {
-    SoundInstance* soundInstance = [SoundInstance soundInstanceForFile:SoundFile_Completed];
-    [soundInstance setInstanceType:SoundInstanceTypeCompletedSound];
++ (SoundInstance*)instanceOfCompletedSound {
+    SoundInstance* soundInstance = [[SoundInstance alloc] initWithFile:SoundFile_Completed
+                                                  andSoundInstanceType:SoundInstanceTypeCompletedSound];
     return soundInstance;
 }
 
-+(SoundInstance*) instanceOfBusySound {
-    SoundInstance* soundInstance = [SoundInstance soundInstanceForFile:SoundFile_Busy];
++ (SoundInstance*)instanceOfBusySound {
+    SoundInstance* soundInstance = [[SoundInstance alloc] initWithFile:SoundFile_Busy
+                                                  andSoundInstanceType:SoundInstanceTypeBusySound];
     [soundInstance setAudioLoopCount:10];
-    [soundInstance setInstanceType:SoundInstanceTypeBusySound];
     return soundInstance;
 }
 
-+(SoundInstance*) instanceOfErrorAlert {
-    SoundInstance* soundInstance = [SoundInstance soundInstanceForFile:SoundFile_Failure];
-    [soundInstance setInstanceType:SoundInstanceTypeErrorAlert];
++ (SoundInstance*)instanceOfErrorAlert {
+    SoundInstance* soundInstance = [[SoundInstance alloc] initWithFile:SoundFile_Failure
+                                                  andSoundInstanceType:SoundInstanceTypeErrorAlert];
     return soundInstance;
 }
 
-+(SoundInstance*) instanceOfAlert {
-    SoundInstance* soundInstance = [SoundInstance soundInstanceForFile:SoundFile_Alert];
-    [soundInstance setInstanceType:SoundInstanceTypeAlert];
++ (SoundInstance*)instanceOfAlert {
+    SoundInstance* soundInstance = [[SoundInstance alloc] initWithFile:SoundFile_Alert
+                                                  andSoundInstanceType:SoundInstanceTypeAlert];
     return soundInstance;
 }
 

@@ -1,6 +1,6 @@
 #import "Environment.h"
 #import "LocalizableText.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "CallLogViewController.h"
 #import "RecentCall.h"
 #import "TabBarParentViewController.h"
@@ -10,15 +10,15 @@
 
 #define RECENT_CALL_TABLE_CELL_HEIGHT 43
 
-static NSString *const RECENT_CALL_TABLE_CELL_IDENTIFIER = @"CallLogTableViewCell";
+static NSString* const RECENT_CALL_TABLE_CELL_IDENTIFIER = @"CallLogTableViewCell";
 
 typedef NSComparisonResult (^CallComparator)(RecentCall*, RecentCall*);
 
-@interface CallLogViewController () {
-    NSArray *_recents;
-    BOOL _tableViewContentMutating;
-    NSString *_searchTerm;
-}
+@interface CallLogViewController ()
+
+@property (strong, nonatomic) NSArray* recents;
+@property (strong, nonatomic) NSString* searchTerm;
+@property (nonatomic) BOOL tableViewContentMutating;
 
 @end
 
@@ -28,8 +28,8 @@ typedef NSComparisonResult (^CallComparator)(RecentCall*, RecentCall*);
     [super viewDidLoad];
     [self observeRecentCalls];
     [self observeKeyboardNotifications];
-    _searchBarTitleView.titleLabel.text = RECENT_NAV_BAR_TITLE;
-    _recentCallsTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.searchBarTitleView.titleLabel.text = RECENT_NAV_BAR_TITLE;
+    self.recentCallsTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -43,12 +43,12 @@ typedef NSComparisonResult (^CallComparator)(RecentCall*, RecentCall*);
 }
 
 - (void)observeKeyboardNotifications {
-    [[NSNotificationCenter defaultCenter] addObserver:self
+    [NSNotificationCenter.defaultCenter addObserver:self
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
                                                object:nil];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
+    [NSNotificationCenter.defaultCenter addObserver:self
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
@@ -57,122 +57,121 @@ typedef NSComparisonResult (^CallComparator)(RecentCall*, RecentCall*);
 - (void)observeRecentCalls {
     ObservableValue *observableRecents = Environment.getCurrent.recentCallManager.getObservableRecentCalls;
 
-    [observableRecents watchLatestValue:^(NSArray *latestRecents) {
-        if (_searchTerm) {
-            _recents = [Environment.getCurrent.recentCallManager recentsForSearchString:_searchTerm
+    [observableRecents watchLatestValue:^(NSArray* latestRecents) {
+        if (self.searchTerm) {
+            self.recents = [Environment.getCurrent.recentCallManager recentsForSearchString:self.searchTerm
                                                                          andExcludeArchived:NO];
         } else {
-            _recents = latestRecents;
+            self.recents = latestRecents;
         }
         
-        if (!_tableViewContentMutating) {
-            [_recentCallsTableView reloadData];
+        if (!self.tableViewContentMutating) {
+            [self.recentCallsTableView reloadData];
         }
     } onThread:NSThread.mainThread untilCancelled:nil];
 }
 
-- (void)deleteRecentCallAtIndexPath:(NSIndexPath *)indexPath {
-    [_recentCallsTableView beginUpdates];
-    [_recentCallsTableView deleteRowsAtIndexPaths:@[indexPath]
-                                 withRowAnimation:UITableViewRowAnimationLeft];
+- (void)deleteRecentCallAtIndexPath:(NSIndexPath*)indexPath {
+    [self.recentCallsTableView beginUpdates];
+    [self.recentCallsTableView deleteRowsAtIndexPaths:@[indexPath]
+                                     withRowAnimation:UITableViewRowAnimationLeft];
 
-    RecentCall *recent;
-
+    RecentCall* recent;
 
     [Environment.getCurrent.recentCallManager removeRecentCall:recent];
 
-    [_recentCallsTableView endUpdates];
+    [self.recentCallsTableView endUpdates];
 }
 
 #pragma mark - UITableViewDelegate
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return (NSInteger)_recents.count;
+- (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section {
+    return (NSInteger)self.recents.count;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath {
     CallLogTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:RECENT_CALL_TABLE_CELL_IDENTIFIER];
     if (!cell) {
         cell = [[CallLogTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                            reuseIdentifier:RECENT_CALL_TABLE_CELL_IDENTIFIER];
         cell.delegate = self;
     }
-    RecentCall *recent = _recents[(NSUInteger)indexPath.row];
+    RecentCall* recent = self.recents[(NSUInteger)indexPath.row];
     [cell configureWithRecentCall:recent];
 
     return cell;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath {
     return RECENT_CALL_TABLE_CELL_HEIGHT;
 }
 
 #pragma mark - RecentCallTableViewCellDelegate
 
-- (void)recentCallTableViewCellTappedDelete:(CallLogTableViewCell *)cell {
-    _tableViewContentMutating = YES;
-    NSIndexPath *indexPath = [_recentCallsTableView indexPathForCell:cell];
+- (void)recentCallTableViewCellTappedDelete:(CallLogTableViewCell*)cell {
+    self.tableViewContentMutating = YES;
+    NSIndexPath* indexPath = [self.recentCallsTableView indexPathForCell:cell];
 
-    [_recentCallsTableView beginUpdates];
-    [_recentCallsTableView deleteRowsAtIndexPaths:@[indexPath]
-                                 withRowAnimation:UITableViewRowAnimationLeft];
+    [self.recentCallsTableView beginUpdates];
+    [self.recentCallsTableView deleteRowsAtIndexPaths:@[indexPath]
+                                  withRowAnimation:UITableViewRowAnimationLeft];
 
-    RecentCall *recent = _recents[(NSUInteger)indexPath.row];
+    RecentCall *recent = self.recents[(NSUInteger)indexPath.row];
     [Environment.getCurrent.recentCallManager removeRecentCall:recent];
 
-    [_recentCallsTableView endUpdates];
-    _tableViewContentMutating = NO;
+    [self.recentCallsTableView endUpdates];
+    self.tableViewContentMutating = NO;
 }
 
-- (void)recentCallTableViewCellTappedCall:(CallLogTableViewCell *)cell {
-    NSIndexPath *indexPath = [_recentCallsTableView indexPathForCell:cell];
-    RecentCall *recent = _recents[(NSUInteger)indexPath.row];
-    [(TabBarParentViewController *)self.mm_drawerController.centerViewController showDialerViewControllerWithNumber:recent.phoneNumber];
+- (void)recentCallTableViewCellTappedCall:(CallLogTableViewCell*)cell {
+    NSIndexPath* indexPath = [self.recentCallsTableView indexPathForCell:cell];
+    RecentCall* recent = self.recents[(NSUInteger)indexPath.row];
+    [(TabBarParentViewController*)self.mm_drawerController.centerViewController showDialerViewControllerWithNumber:recent.phoneNumber];
 }
 
 #pragma mark - SearchBarTitleViewDelegate
 
-- (void)searchBarTitleView:(SearchBarTitleView *)view didSearchForTerm:(NSString *)term {
-    _searchTerm = term;
-    _recents = [Environment.getCurrent.recentCallManager recentsForSearchString:term
+- (void)searchBarTitleView:(SearchBarTitleView*)view didSearchForTerm:(NSString*)term {
+    self.searchTerm = term;
+    self.recents = [Environment.getCurrent.recentCallManager recentsForSearchString:term
                                                                  andExcludeArchived:NO];
-    [_recentCallsTableView reloadData];
+    [self.recentCallsTableView reloadData];
 }
 
-- (void)searchBarTitleViewDidTapMenu:(SearchBarTitleView *)view {
+- (void)searchBarTitleViewDidTapMenu:(SearchBarTitleView*)view {
     [self.mm_drawerController openDrawerSide:MMDrawerSideLeft
                                     animated:YES
                                   completion:nil];
 }
 
-- (void)searchBarTitleViewDidEndSearching:(SearchBarTitleView *)view {
-    _searchTerm = nil;
-    _recents = [Environment.getCurrent.recentCallManager recentsForSearchString:nil
+- (void)searchBarTitleViewDidEndSearching:(SearchBarTitleView*)view {
+    self.searchTerm = nil;
+    self.recents = [Environment.getCurrent.recentCallManager recentsForSearchString:nil
                                                                  andExcludeArchived:NO];
-    [_recentCallsTableView reloadData];
+    [self.recentCallsTableView reloadData];
 }
 
 #pragma mark - Keyboard
 
-- (void)keyboardWillShow:(NSNotification *)notification {
+- (void)keyboardWillShow:(NSNotification*)notification {
     double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     [UIView animateWithDuration:duration animations:^{
         CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-        CGFloat height = CGRectGetHeight(_recentCallsTableView.frame) - (keyboardSize.height-BOTTOM_TAB_BAR_HEIGHT);
-        _recentCallsTableView.frame = CGRectMake(CGRectGetMinX(_recentCallsTableView.frame),
-                                                 CGRectGetMinY(_recentCallsTableView.frame),
-                                                 CGRectGetWidth(_recentCallsTableView.frame),
-                                                 height);
+        CGFloat height = CGRectGetHeight(self.recentCallsTableView.frame) - (keyboardSize.height-BOTTOM_TAB_BAR_HEIGHT);
+        self.recentCallsTableView.frame = CGRectMake(CGRectGetMinX(self.recentCallsTableView.frame),
+                                                     CGRectGetMinY(self.recentCallsTableView.frame),
+                                                     CGRectGetWidth(self.recentCallsTableView.frame),
+                                                     height);
     }];
 }
 
-- (void)keyboardWillHide:(NSNotification *)notification {
+- (void)keyboardWillHide:(NSNotification*)notification {
     CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
-    CGFloat height = CGRectGetHeight(_recentCallsTableView.frame) + (keyboardSize.height-BOTTOM_TAB_BAR_HEIGHT);
-    _recentCallsTableView.frame = CGRectMake(CGRectGetMinX(_recentCallsTableView.frame),
-                                             CGRectGetMinY(_recentCallsTableView.frame),
-                                             CGRectGetWidth(_recentCallsTableView.frame),
-                                             height);
+    CGFloat height = CGRectGetHeight(self.recentCallsTableView.frame) + (keyboardSize.height-BOTTOM_TAB_BAR_HEIGHT);
+    self.recentCallsTableView.frame = CGRectMake(CGRectGetMinX(self.recentCallsTableView.frame),
+                                                 CGRectGetMinY(self.recentCallsTableView.frame),
+                                                 CGRectGetWidth(self.recentCallsTableView.frame),
+                                                 height);
 }
 
 @end

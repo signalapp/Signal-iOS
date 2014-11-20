@@ -1,20 +1,32 @@
 #import "AnonymousTerminator.h"
 #import "Constraints.h"
 
+@interface AnonymousTerminator ()
+
+@property BOOL alreadyCalled;
+@property (nonatomic, readwrite, copy) void (^terminateBlock)(void);
+
+@end
+
 @implementation AnonymousTerminator
 
-+(AnonymousTerminator*) cancellerWithCancel:(void (^)(void))terminate {
-    require(terminate != nil);
-    AnonymousTerminator* c = [AnonymousTerminator new];
-    c->_terminateBlock = terminate;
-    return c;
+- (instancetype)initWithTerminator:(void (^)(void))terminate {
+    self = [super init];
+	
+    if (self) {
+        require(terminate != nil);
+        self.terminateBlock = terminate;
+    }
+    
+    return self;
 }
 
--(void) terminate {
-    @synchronized(self) {
-        if (alreadyCalled) return;
-        alreadyCalled = true;
-    }
-    _terminateBlock();
+#pragma mark Terminable
+
+- (void)terminate {
+    if (self.alreadyCalled) return;
+    self.alreadyCalled = YES;
+    self.terminateBlock();
 }
+
 @end

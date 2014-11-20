@@ -12,6 +12,8 @@
 **/
 
 @protocol KeyAgreementProtocol
--(id<KeyAgreementParticipant>) generateParticipantWithNewKeys;
--(NSData*) getId;
+
+- (id<KeyAgreementParticipant>)generateParticipantWithNewKeys;
+- (NSData*)getId;
+
 @end

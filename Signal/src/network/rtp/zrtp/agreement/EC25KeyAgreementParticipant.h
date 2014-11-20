@@ -1,14 +1,10 @@
-
 #import <Foundation/Foundation.h>
 #import "KeyAgreementParticipant.h"
 #import "EC25KeyAgreementProtocol.h"
-#import "EvpKeyAgreement.h"
+#import "EVPKeyAgreement.h"
 
-@interface EC25KeyAgreementParticipant : NSObject<KeyAgreementParticipant>{
-@private EvpKeyAgreement* evpKeyAgreement;
-@private EC25KeyAgreementProtocol* protocol;
-}
+@interface EC25KeyAgreementParticipant : NSObject <KeyAgreementParticipant>
 
-+(EC25KeyAgreementParticipant*) participantWithPrivateKeyGeneratedForProtocol:(EC25KeyAgreementProtocol*)protocol;
+- (instancetype)initWithPrivateKeyGeneratedForProtocol:(EC25KeyAgreementProtocol*)protocol;
 
 @end

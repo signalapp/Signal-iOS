@@ -1,24 +1,29 @@
 #import "HelloAckPacket.h"
 
+@interface HelloAckPacket ()
+
+@property (strong, readwrite, nonatomic, getter=embeddedIntoHandshakePacket) HandshakePacket* embedding;
+
+@end
+
 @implementation HelloAckPacket
 
-+(HelloAckPacket*)helloAckPacket {
-    HelloAckPacket* h = [HelloAckPacket new];
-    h->embedding = [HandshakePacket handshakePacketWithTypeId:HANDSHAKE_TYPE_HELLO_ACK andPayload:[NSData data]];
-    return h;
++ (instancetype)defaultPacket {
+    return [[self alloc] initFromHandshakePacket:[[HandshakePacket alloc] initWithTypeId:HANDSHAKE_TYPE_HELLO_ACK
+                                                                              andPayload:[[NSData alloc] init]]];
 }
 
-+(HelloAckPacket*)helloAckPacketParsedFromHandshakePacket:(HandshakePacket*)handshakePacket {
-    checkOperation([[handshakePacket typeId] isEqualToData:HANDSHAKE_TYPE_HELLO_ACK]);
-    checkOperation([[handshakePacket payload] length] == 0);
+- (instancetype)initFromHandshakePacket:(HandshakePacket*)handshakePacket {
+    self = [super init];
+	
+    if (self) {
+        checkOperation([[handshakePacket typeId] isEqualToData:HANDSHAKE_TYPE_HELLO_ACK]);
+        checkOperation([[handshakePacket payload] length] == 0);
+        
+        self.embedding = handshakePacket;
+    }
     
-    HelloAckPacket* h = [HelloAckPacket new];
-    h->embedding = handshakePacket;
-    return h;
-}
-
--(HandshakePacket*) embeddedIntoHandshakePacket {
-    return embedding;
+    return self;
 }
 
 @end

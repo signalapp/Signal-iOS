@@ -4,9 +4,7 @@
  *  Wrapper for system dependant audio interface.
  **/
 
-@interface SoundInstance : NSObject <AVAudioPlayerDelegate>
-
-typedef enum {
+typedef NS_ENUM(NSInteger, SoundInstanceType) {
     SoundInstanceTypeNothing,
     SoundInstanceTypeInboundRingtone,
     SoundInstanceTypeOutboundRingtone,
@@ -15,17 +13,21 @@ typedef enum {
     SoundInstanceTypeBusySound,
     SoundInstanceTypeErrorAlert,
     SoundInstanceTypeAlert
-} SoundInstanceType;
+};
 
-@property (nonatomic) SoundInstanceType instanceType;
+@interface SoundInstance : NSObject <AVAudioPlayerDelegate>
 
-+(SoundInstance*) soundInstanceForFile:(NSString*) audioFile;
--(NSString*) getId;
+@property (strong, nonatomic) void (^completionBlock)(SoundInstance*);
+@property (readonly, nonatomic) SoundInstanceType soundInstanceType;
 
--(void) setAudioToLoopIndefinitely;
--(void) setAudioLoopCount:(NSInteger) loopCount;
--(void) setCompeletionBlock:(void (^)(SoundInstance*)) block;
+- (instancetype)initWithFile:(NSString*)audioFile
+        andSoundInstanceType:(SoundInstanceType)soundInstanceType;
+- (NSString*)getId;
 
-- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player
+- (void)setAudioToLoopIndefinitely;
+- (void)setAudioLoopCount:(NSInteger)loopCount;
+
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer*)player
                        successfully:(BOOL)flag;
+
 @end

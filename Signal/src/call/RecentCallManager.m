@@ -1,44 +1,44 @@
 #import "RecentCallManager.h"
 #import "ContactsManager.h"
-#import "FunctionalUtil.h"
+#import "NSArray+FunctionalUtil.h"
 #import "ObservableValue.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 
 
 #define RECENT_CALLS_DEFAULT_KEY @"RPRecentCallsDefaultKey"
 
 typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
 
-@interface RecentCallManager () {
-    NSMutableArray *_allRecents;
-}
+@interface RecentCallManager ()
+
+@property (strong, nonatomic) NSMutableArray* allRecents;
+@property (strong, nonatomic) ObservableValueController* observableRecentsController;
 
 @end
 
 @implementation RecentCallManager
 
-- (id)init {
-    if (self = [super init]) {
-        [self initRecentCallsObservable];
+- (instancetype)init {
+    self = [super init];
+	
+    if (self) {
+        self.allRecents = [self loadContactsFromDefaults];
+        self.observableRecentsController = [[ObservableValueController alloc] initWithInitialValue:self.allRecents];
     }
+    
     return self;
 }
 
--(void) initRecentCallsObservable {
-    _allRecents = [self loadContactsFromDefaults];
-    observableRecentsController = [ObservableValueController observableValueControllerWithInitialValue:_allRecents];
+- (ObservableValue*)getObservableRecentCalls {
+    return self.observableRecentsController;
 }
 
-- (ObservableValue *)getObservableRecentCalls {
-    return observableRecentsController;
-}
-
--(void) watchForContactUpdatesFrom:(ContactsManager*) contactManager untillCancelled:(TOCCancelToken*) cancelToken{
+- (void)watchForContactUpdatesFrom:(ContactsManager*)contactManager untillCancelled:(TOCCancelToken*)cancelToken {
     [contactManager.getObservableWhisperUsers watchLatestValue:^(NSArray* latestUsers) {
-        for (RecentCall* recentCall in _allRecents) {
+        for (RecentCall* recentCall in self.allRecents) {
             if (![contactManager latestContactWithRecordId:recentCall.contactRecordID]) {
                 Contact* contact = [contactManager latestContactForPhoneNumber:recentCall.phoneNumber];
-                if(contact){
+                if (contact) {
                     [self updateRecentCall:recentCall withContactId:contact.recordID];
                 }
             }
@@ -46,8 +46,7 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
     } onThread:NSThread.mainThread untilCancelled:cancelToken];
 }
 
--(void) watchForCallsThrough:(PhoneManager*)phoneManager
-              untilCancelled:(TOCCancelToken*)untilCancelledToken {
+- (void)watchForCallsThrough:(PhoneManager*)phoneManager untilCancelled:(TOCCancelToken*)untilCancelledToken {
     require(phoneManager != nil);
 
     [phoneManager.currentCallObservable watchLatestValue:^(CallState* latestCall) {
@@ -57,7 +56,7 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
     } onThread:NSThread.mainThread untilCancelled:untilCancelledToken];
 }
 
--(void) addCall:(CallState*)call {
+- (void)addCall:(CallState*)call {
     require(call != nil);
     
     [call.futureCallLocallyAcceptedOrRejected finallyDo:^(TOCFuture* interactionCompletion) {
@@ -69,18 +68,18 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
                                   : isMissedCall ? RPRecentCallTypeMissed
                                   : RPRecentCallTypeIncoming;
         
-        [self addRecentCall:[RecentCall recentCallWithContactID:contact.recordID
-                                                      andNumber:call.remoteNumber
-                                                    andCallType:callType]];
+        [self addRecentCall:[[RecentCall alloc] initWithContactID:contact.recordID
+                                                        andNumber:call.remoteNumber
+                                                      andCallType:callType]];
     }];
 }
 
--(Contact*) tryGetContactForCall:(CallState*)call {
+- (Contact*)tryGetContactForCall:(CallState*)call {
     if (call.potentiallySpecifiedContact != nil) return call.potentiallySpecifiedContact;
     return [self tryGetContactForNumber:call.remoteNumber];
 }
 
--(Contact*) tryGetContactForNumber:(PhoneNumber*)number {
+- (Contact*)tryGetContactForNumber:(PhoneNumber*)number {
     return [Environment.getCurrent.contactsManager latestContactForPhoneNumber:number];
 }
 
@@ -88,72 +87,70 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
     require(incomingCallDescriptor != nil);
     
     Contact* contact = [self tryGetContactForNumber:incomingCallDescriptor.initiatorNumber];
-    [self addRecentCall:[RecentCall recentCallWithContactID:contact.recordID
-                                                  andNumber:incomingCallDescriptor.initiatorNumber
-                                                andCallType:RPRecentCallTypeMissed]];
+    [self addRecentCall:[[RecentCall alloc] initWithContactID:contact.recordID
+                                                    andNumber:incomingCallDescriptor.initiatorNumber
+                                                  andCallType:RPRecentCallTypeMissed]];
 }
 
--(void) updateRecentCall:(RecentCall*) recentCall withContactId:(ABRecordID) contactId {
-    [recentCall updateRecentCallWithContactId:contactId];
-    [observableRecentsController updateValue:_allRecents.copy];
+- (void)updateRecentCall:(RecentCall*)recentCall withContactId:(ABRecordID)contactId {
+    [recentCall updateRecentCallWithContactID:contactId];
+    [self.observableRecentsController updateValue:[self.allRecents copy]];
     [self saveContactsToDefaults];
 }
 
-- (void)addRecentCall:(RecentCall *)recentCall {
-    [_allRecents insertObject:recentCall atIndex:0];
+- (void)addRecentCall:(RecentCall*)recentCall {
+    [self.allRecents insertObject:recentCall atIndex:0];
     [Environment.preferences setFreshInstallTutorialsEnabled:NO];
-    [observableRecentsController updateValue:_allRecents.copy];
+    [self.observableRecentsController updateValue:[self.allRecents copy]];
     [self saveContactsToDefaults];
 }
 
-- (void)removeRecentCall:(RecentCall *)recentCall {
-    [_allRecents removeObject:recentCall];
-    [observableRecentsController updateValue:_allRecents.copy];
+- (void)removeRecentCall:(RecentCall*)recentCall {
+    [self.allRecents removeObject:recentCall];
+    [self.observableRecentsController updateValue:[self.allRecents copy]];
     [self saveContactsToDefaults];
 }
 
-- (void)archiveRecentCall:(RecentCall *)recentCall {
-    NSUInteger indexOfRecent = [_allRecents indexOfObject:recentCall];
+- (void)archiveRecentCall:(RecentCall*)recentCall {
+    NSUInteger indexOfRecent = [self.allRecents indexOfObject:recentCall];
     recentCall.isArchived = YES;
-    _allRecents[indexOfRecent] = recentCall;
+    self.allRecents[indexOfRecent] = recentCall;
     [self saveContactsToDefaults];
-    [observableRecentsController updateValue:_allRecents.copy];
+    [self.observableRecentsController updateValue:[self.allRecents copy]];
 }
 
 - (void)clearRecentCalls {
-    [_allRecents removeAllObjects];
-    [observableRecentsController updateValue:_allRecents.copy];
+    [self.allRecents removeAllObjects];
+    [self.observableRecentsController updateValue:[self.allRecents copy]];
     [self saveContactsToDefaults];
 }
 
 - (void)saveContactsToDefaults {
-    NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
-    NSData *saveData = [NSKeyedArchiver archivedDataWithRootObject:_allRecents.copy];
+    NSData *saveData = [NSKeyedArchiver archivedDataWithRootObject:[self.allRecents copy]];
 
-    [defaults setObject:saveData forKey:RECENT_CALLS_DEFAULT_KEY];
-    [defaults synchronize];
+    [NSUserDefaults.standardUserDefaults setObject:saveData forKey:RECENT_CALLS_DEFAULT_KEY];
+    [NSUserDefaults.standardUserDefaults synchronize];
 }
 
-- (NSMutableArray *)loadContactsFromDefaults {
-    NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
-    NSData *encodedData = [defaults objectForKey:RECENT_CALLS_DEFAULT_KEY];
+- (NSMutableArray*)loadContactsFromDefaults {
+    NSData *encodedData = [NSUserDefaults.standardUserDefaults objectForKey:RECENT_CALLS_DEFAULT_KEY];
     id data = [NSKeyedUnarchiver unarchiveObjectWithData:encodedData];
 
-    if(![data isKindOfClass:NSArray.class]) {
-        return [NSMutableArray array];
+    if (![data isKindOfClass:[NSArray class]]) {
+        return [[NSMutableArray alloc] init];
     } else {
         return [NSMutableArray arrayWithArray:data];
     }
 }
 
-- (NSArray *)recentsForSearchString:(NSString *)optionalSearchString andExcludeArchived:(BOOL)excludeArchived {
-    ContactsManager *contactsManager = Environment.getCurrent.contactsManager;
-    SearchTermConditionalBlock searchBlock = ^BOOL(RecentCall *obj, NSUInteger idx, BOOL *stop) {
+- (NSArray*)recentsForSearchString:(NSString*)optionalSearchString andExcludeArchived:(BOOL)excludeArchived {
+    ContactsManager* contactsManager = Environment.getCurrent.contactsManager;
+    SearchTermConditionalBlock searchBlock = ^BOOL(RecentCall* obj, NSUInteger idx, BOOL* stop) {
         BOOL nameMatchesSearch = YES;
         BOOL numberMatchesSearch = YES;
         
         if (optionalSearchString) {
-            NSString *contactName = [contactsManager latestContactWithRecordId:obj.contactRecordID].fullName;
+            NSString* contactName = [contactsManager latestContactWithRecordId:obj.contactRecordID].fullName;
             nameMatchesSearch = [ContactsManager name:contactName matchesQuery:optionalSearchString];
             numberMatchesSearch = [ContactsManager phoneNumber:obj.phoneNumber matchesQuery:optionalSearchString];
         }
@@ -165,20 +162,20 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
         }
     };
 
-    NSIndexSet *newsFeedIndexes = [_allRecents indexesOfObjectsPassingTest:searchBlock];
-    return [_allRecents objectsAtIndexes:newsFeedIndexes];
+    NSIndexSet *newsFeedIndexes = [self.allRecents indexesOfObjectsPassingTest:searchBlock];
+    return [self.allRecents objectsAtIndexes:newsFeedIndexes];
 }
 
 - (NSUInteger)missedCallCount {
-    SearchTermConditionalBlock missedCallBlock = ^BOOL(RecentCall *recentCall, NSUInteger idx, BOOL *stop) {
+    SearchTermConditionalBlock missedCallBlock = ^BOOL(RecentCall* recentCall, NSUInteger idx, BOOL* stop) {
         return !recentCall.userNotified;
     };
 
-    return [[_allRecents indexesOfObjectsPassingTest:missedCallBlock] count];
+    return [[self.allRecents indexesOfObjectsPassingTest:missedCallBlock] count];
 }
 
--(BOOL) isPhoneNumberPresentInRecentCalls:(PhoneNumber*) phoneNumber {
-    return [_allRecents any:^int(RecentCall* call) {
+- (BOOL)isPhoneNumberPresentInRecentCalls:(PhoneNumber*)phoneNumber {
+    return [self.allRecents any:^int(RecentCall* call) {
         return [call.phoneNumber resolvesInternationallyTo:phoneNumber];
     }];
 }

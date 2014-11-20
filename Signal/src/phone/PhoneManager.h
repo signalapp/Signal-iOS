@@ -17,22 +17,18 @@
  * User actions like 'make a call' should roughly translate one-to-one with the exposed methods.
  *
  */
-@interface PhoneManager : NSObject<Terminable> {
-@private ObservableValueController* currentCallControllerObservable;
-@private ObservableValueController* currentCallStateObservable;
-@private int64_t lastIncomingSessionId;
-}
+@interface PhoneManager : NSObject <Terminable>
 
-@property (readonly,nonatomic,copy) ErrorHandlerBlock errorHandler;
+@property (readonly, nonatomic, copy) ErrorHandlerBlock errorHandler;
 
--(void) initiateOutgoingCallToRemoteNumber:(PhoneNumber*)remoteNumber;
--(void) initiateOutgoingCallToContact:(Contact*)contact atRemoteNumber:(PhoneNumber*)remoteNumber;
--(void) incomingCallWithSession:(ResponderSessionDescriptor*)session;
--(void) hangupOrDenyCall;
--(void) answerCall;
--(BOOL) toggleMute;
--(ObservableValue*) currentCallObservable;
+- (instancetype)initWithErrorHandler:(ErrorHandlerBlock)errorHandler;
 
-+(PhoneManager*) phoneManagerWithErrorHandler:(ErrorHandlerBlock)errorHandler;
+- (void)initiateOutgoingCallToRemoteNumber:(PhoneNumber*)remoteNumber;
+- (void)initiateOutgoingCallToContact:(Contact*)contact atRemoteNumber:(PhoneNumber*)remoteNumber;
+- (void)incomingCallWithSession:(ResponderSessionDescriptor*)session;
+- (void)hangupOrDenyCall;
+- (void)answerCall;
+- (BOOL)toggleMute;
+- (ObservableValue*)currentCallObservable;
 
 @end

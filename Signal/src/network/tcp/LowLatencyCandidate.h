@@ -1,19 +1,19 @@
 #import <Foundation/Foundation.h>
 #import "CollapsingFutures.h"
-#import "IpEndPoint.h"
+#import "IPEndPoint.h"
 #import "NetworkStream.h"
 
-@interface LowLatencyCandidate : NSObject<Terminable>
+@interface LowLatencyCandidate : NSObject <Terminable>
 
-@property (readonly,nonatomic) IpEndPoint* remoteEndPoint;
-@property (readonly,nonatomic) NetworkStream* networkStream;
+@property (strong, readonly, nonatomic) IPEndPoint* remoteEndPoint;
+@property (strong, readonly, nonatomic) NetworkStream* networkStream;
 
-+(LowLatencyCandidate*) lowLatencyCandidateToRemoteEndPoint:(id<NetworkEndPoint>)remoteEndPoint;
+- (instancetype)initWithRemoteEndPoint:(id<NetworkEndPoint>)remoteEndPoint;
 
--(void) preStart;
+- (void)preStart;
 
--(TOCUntilOperation) tcpHandshakeCompleter;
+- (TOCUntilOperation)tcpHandshakeCompleter;
 
--(TOCFuture*) delayedUntilAuthenticated;
+- (TOCFuture*)delayedUntilAuthenticated;
 
 @end

@@ -1,38 +1,40 @@
 #import "PhoneNumberDirectoryFilter.h"
 #import "Environment.h"
 #import "Constraints.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 
 #define HASH_COUNT_HEADER_KEY @"X-Hash-Count"
 #define MIN_NEW_EXPIRATION_SECONDS (12 * 60 * 60)
 #define MAX_EXPIRATION_SECONDS (24 * 60 * 60)
 
+@interface PhoneNumberDirectoryFilter ()
+
+@property (strong, nonatomic, readwrite, getter=getExpirationDate) NSDate* expirationDate;
+@property (nonatomic, readwrite) BloomFilter* bloomFilter;
+
+@end
+
 @implementation PhoneNumberDirectoryFilter
 
-@synthesize bloomFilter;
-
-+(PhoneNumberDirectoryFilter*) phoneNumberDirectoryFilterDefault {
-    return [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterWithBloomFilter:[BloomFilter bloomFilterWithNothing]
-                                                               andExpirationDate:[NSDate date]];
-}
-+(PhoneNumberDirectoryFilter*) phoneNumberDirectoryFilterWithBloomFilter:(BloomFilter*)bloomFilter
-                                                       andExpirationDate:(NSDate*)expirationDate {
-    require(bloomFilter != nil);
-    require(expirationDate != nil);
-    PhoneNumberDirectoryFilter* newInstance = [PhoneNumberDirectoryFilter new];
-    newInstance->bloomFilter = bloomFilter;
-    newInstance->expirationDate = expirationDate;
-    return newInstance;
++ (instancetype)defaultFilter {
+    return [[self alloc] initWithBloomFilter:[BloomFilter bloomFilterWithNothing] andExpirationDate:[NSDate date]];
 }
 
--(NSDate*) getExpirationDate {
-    NSDate* currentDate = [NSDate date];
-    NSDate* maxExpiryDate = [NSDate dateWithTimeInterval:MAX_EXPIRATION_SECONDS sinceDate:currentDate];
-    expirationDate = [expirationDate earlierDate:maxExpiryDate];
-    return expirationDate;
+- (instancetype)initWithBloomFilter:(BloomFilter*)bloomFilter andExpirationDate:(NSDate*)expirationDate {
+    self = [super init];
+	
+    if (self) {
+        require(bloomFilter != nil);
+        require(expirationDate != nil);
+        
+        self.bloomFilter = bloomFilter;
+        self.expirationDate = expirationDate;
+    }
+    
+    return self;
 }
 
-+(PhoneNumberDirectoryFilter*) phoneNumberDirectoryFilterFromURLResponse:(NSHTTPURLResponse*)response body:(NSData*)data {
+- (instancetype)initFromURLResponse:(NSHTTPURLResponse*)response body:(NSData*)data {
     require(response != nil);
     
     checkOperation(response.statusCode == 200);
@@ -46,20 +48,26 @@
     NSData* responseBody = data;
     checkOperation(responseBody.length > 0);
     
-    BloomFilter* bloomFilter = [BloomFilter bloomFilterWithHashCount:(NSUInteger)hashCountValue
-                                                             andData:responseBody];
+    BloomFilter* bloomFilter = [[BloomFilter alloc] initWithHashCount:(NSUInteger)hashCountValue
+                                                              andData:responseBody];
     
     NSTimeInterval expirationDuration = MIN_NEW_EXPIRATION_SECONDS
                                       + arc4random_uniform(MAX_EXPIRATION_SECONDS - MIN_NEW_EXPIRATION_SECONDS);
     NSDate* expirationDate = [NSDate dateWithTimeInterval:expirationDuration sinceDate:[NSDate date]];
     
-    return [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterWithBloomFilter:bloomFilter
-                                                               andExpirationDate:expirationDate];
+    return [self initWithBloomFilter:bloomFilter andExpirationDate:expirationDate];
 }
 
--(bool) containsPhoneNumber:(PhoneNumber*)phoneNumber {
+- (NSDate*)getExpirationDate {
+    NSDate* currentDate = [NSDate date];
+    NSDate* maxExpiryDate = [NSDate dateWithTimeInterval:MAX_EXPIRATION_SECONDS sinceDate:currentDate];
+    _expirationDate = [_expirationDate earlierDate:maxExpiryDate];
+    return _expirationDate;
+}
+
+- (bool)containsPhoneNumber:(PhoneNumber*)phoneNumber {
     if (phoneNumber == nil) return false;
-    return [bloomFilter contains:phoneNumber.toE164];
+    return [self.bloomFilter contains:phoneNumber.toE164];
 }
 
 @end

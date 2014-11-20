@@ -9,7 +9,7 @@
 #import "InCallViewController.h"
 #import "LeftSideMenuViewController.h"
 #import "MMDrawerController.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "NotificationTracker.h"
 #import "PushManager.h"
 #import "PriorityQueue.h"
@@ -19,7 +19,6 @@
 #import "TabBarParentViewController.h"
 #import "Util.h"
 #import "VersionMigrations.h"
-
 #import <PastelogKit/Pastelog.h>
 
 #define kSignalVersionKey @"SignalUpdateVersionKey"
@@ -30,11 +29,11 @@
 
 @interface AppDelegate ()
 
-@property (nonatomic, retain) UIWindow            *blankWindow;
-@property (nonatomic, strong) MMDrawerController  *drawerController;
-@property (nonatomic, strong) NotificationTracker *notificationTracker;
+@property (strong, nonatomic) UIWindow*            blankWindow;
+@property (strong, nonatomic) MMDrawerController*  drawerController;
+@property (strong, nonatomic) NotificationTracker* notificationTracker;
 
-@property (nonatomic) TOCFutureSource *callPickUpFuture;
+@property (nonatomic) TOCFutureSource* callPickUpFuture;
 
 @end
 
@@ -42,15 +41,15 @@
 
 #pragma mark Detect updates - perform migrations
 
-- (void)performUpdateCheck{
+- (void)performUpdateCheck {
     // We check if NSUserDefaults key for version exists.
-    NSString *previousVersion = Environment.preferences.lastRanVersion;
-    NSString *currentVersion  = [Environment.preferences setAndGetCurrentVersion];
+    NSString* previousVersion = Environment.preferences.lastRanVersion;
+    NSString* currentVersion  = [Environment.preferences setAndGetCurrentVersion];
     
     if (!previousVersion) {
         DDLogError(@"No previous version found. Possibly first launch since install.");
         [Environment resetAppData]; // We clean previous keychain entries in case their are some entries remaining.
-    } else if ([currentVersion compare:previousVersion options:NSNumericSearch] == NSOrderedDescending){
+    } else if ([currentVersion compare:previousVersion options:NSNumericSearch] == NSOrderedDescending) {
         [Environment resetAppData];
         // Application was updated, let's see if we have a migration scheme for it.
         if ([previousVersion isEqualToString:@"1.0.2"]) {
@@ -64,44 +63,49 @@
  *  Protects the preference and logs file with disk encryption and prevents them to leak to iCloud.
  */
 
-- (void)protectPreferenceFiles{
+- (void)protectPreferenceFiles {
     
-    NSMutableArray *pathsToExclude = [NSMutableArray array];
-    NSString *preferencesPath =[NSHomeDirectory() stringByAppendingString:@"/Library/Preferences/"];
+    NSMutableArray* pathsToExclude = [[NSMutableArray alloc] init];
+    NSString* preferencesPath = [NSHomeDirectory() stringByAppendingString:@"/Library/Preferences/"];
     
-    NSError *error;
+    NSError* error;
     
-    NSDictionary *attrs = @{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication};
+    NSDictionary* attrs = @{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication};
     [NSFileManager.defaultManager setAttributes:attrs ofItemAtPath:preferencesPath error:&error];
     
     [pathsToExclude addObject:[[preferencesPath stringByAppendingString:NSBundle.mainBundle.bundleIdentifier] stringByAppendingString:@".plist"]];
     
-    NSString *logPath    = [NSHomeDirectory() stringByAppendingString:@"/Library/Caches/Logs/"];
-    NSArray  *logsFiles  = [NSFileManager.defaultManager contentsOfDirectoryAtPath:logPath error:&error];
+    NSString* logPath    = [NSHomeDirectory() stringByAppendingString:@"/Library/Caches/Logs/"];
+    NSArray*  logsFiles  = [NSFileManager.defaultManager contentsOfDirectoryAtPath:logPath error:&error];
     
     attrs = @{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication};
     [NSFileManager.defaultManager setAttributes:attrs ofItemAtPath:logPath error:&error];
     
-    for (NSString *logsFile in logsFiles) {
+    for (NSString* logsFile in logsFiles) {
         [pathsToExclude addObject:[logPath stringByAppendingString:logsFile]];
     }
     
-    for (NSString *pathToExclude in pathsToExclude) {
+    for (NSString* pathToExclude in pathsToExclude) {
         [[NSURL fileURLWithPath:pathToExclude] setResourceValue:@YES
-                                                             forKey:NSURLIsExcludedFromBackupKey
-                                                              error:&error];
+                                                         forKey:NSURLIsExcludedFromBackupKey
+                                                          error:&error];
     }
     
     if (error) {
         DDLogError(@"Error while removing log files from backup: %@", error.description);
-        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:NSLocalizedString(@"WARNING", @"") message:NSLocalizedString(@"DISABLING_BACKUP_FAILED", @"") delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil, nil];
+#warning Deprecated method
+        UIAlertView* alert = [[UIAlertView alloc]initWithTitle:NSLocalizedString(@"WARNING", @"")
+                                                       message:NSLocalizedString(@"DISABLING_BACKUP_FAILED", @"")
+                                                      delegate:nil
+                                             cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                                             otherButtonTitles:nil, nil];
         [alert show];
         return;
     }
     
 }
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+- (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
     
     BOOL loggingIsEnabled;
 
@@ -130,46 +134,47 @@
     
     [self prepareScreenshotProtection];
     
-    self.notificationTracker = [NotificationTracker notificationTracker];
+    self.notificationTracker = [[NotificationTracker alloc] init];
     
-    CategorizingLogger* logger = [CategorizingLogger categorizingLogger];
+    CategorizingLogger* logger = [[CategorizingLogger alloc] init];
     [logger addLoggingCallback:^(NSString *category, id details, NSUInteger index) {}];
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
     [Environment.getCurrent.phoneDirectoryManager startUntilCancelled:nil];
     [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
     [UIApplication.sharedApplication setStatusBarStyle:UIStatusBarStyleDefault];
     
-    LeftSideMenuViewController *leftSideMenuViewController = [LeftSideMenuViewController new];
+    LeftSideMenuViewController* leftSideMenuViewController = [[LeftSideMenuViewController alloc] init];
     
-    self.drawerController = [[MMDrawerController alloc] initWithCenterViewController:leftSideMenuViewController.centerTabBarViewController leftDrawerViewController:leftSideMenuViewController];
-    self.window.rootViewController = _drawerController;
+    self.drawerController = [[MMDrawerController alloc] initWithCenterViewController:leftSideMenuViewController.centerTabBarViewController
+                                                            leftDrawerViewController:leftSideMenuViewController];
+    self.window.rootViewController = self.drawerController;
     [self.window makeKeyAndVisible];
     
     //Accept push notification when app is not open
-    NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
+    NSDictionary* remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotif) {
         DDLogInfo(@"Application was launched by tapping a push notification.");
         [self application:application didReceiveRemoteNotification:remoteNotif];
     }
     
     [Environment.phoneManager.currentCallObservable watchLatestValue:^(CallState* latestCall) {
-        if (latestCall == nil){
+        if (latestCall == nil) {
             return;
         }
         
-        InCallViewController *callViewController = [InCallViewController inCallViewControllerWithCallState:latestCall
-                                                                                 andOptionallyKnownContact:latestCall.potentiallySpecifiedContact];
+        InCallViewController* callViewController = [[InCallViewController alloc] initWithCallState:latestCall
+                                                                         andOptionallyKnownContact:latestCall.potentiallySpecifiedContact];
         
-        if (latestCall.initiatedLocally == false){
-            [self.callPickUpFuture.future thenDo:^(NSNumber *accept) {
+        if (latestCall.initiatedLocally == false) {
+            [self.callPickUpFuture.future thenDo:^(NSNumber* accept) {
                 if ([accept isEqualToNumber:@YES]) {
                     [callViewController answerButtonTapped];
-                } else if ([accept isEqualToNumber:@NO]){
+                } else if ([accept isEqualToNumber:@NO]) {
                     [callViewController rejectButtonTapped];
                 }
             }];
         }
-        [_drawerController.centerViewController presentViewController:callViewController animated:YES completion:nil];
+        [self.drawerController.centerViewController presentViewController:callViewController animated:YES completion:nil];
         
     } onThread:NSThread.mainThread untilCancelled:nil];
     
@@ -185,14 +190,14 @@
     [PushManager.sharedManager.pushNotificationFutureSource trySetFailure:error];
 }
 
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings{
+- (void)application:(UIApplication*)application didRegisterUserNotificationSettings:(UIUserNotificationSettings*)notificationSettings {
     [PushManager.sharedManager.userNotificationFutureSource trySetResult:notificationSettings];
 }
 
--(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+- (void)application:(UIApplication*)application didReceiveRemoteNotification:(NSDictionary*)userInfo {
     ResponderSessionDescriptor* call;
     @try {
-        call = [ResponderSessionDescriptor responderSessionDescriptorFromEncryptedRemoteNotification:userInfo];
+        call = [[ResponderSessionDescriptor alloc] initFromEncryptedRemoteNotification:userInfo];
         DDLogDebug(@"Received remote notification. Parsed session descriptor: %@.", call);
     } @catch (OperationFailed* ex) {
         DDLogError(@"Error parsing remote notification. Error: %@.", ex);
@@ -203,20 +208,20 @@
         DDLogError(@"Decryption of session descriptor failed");
         return;
     }
-    self.callPickUpFuture = [TOCFutureSource new];
+    self.callPickUpFuture = [[TOCFutureSource alloc] init];
     [Environment.phoneManager incomingCallWithSession:call];
 }
 
--(void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-    if([self.notificationTracker shouldProcessNotification:userInfo]){
+- (void)application:(UIApplication*)application didReceiveRemoteNotification:(NSDictionary*)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    if ([self.notificationTracker shouldProcessNotification:userInfo]) {
         [self application:application didReceiveRemoteNotification:userInfo];
-    } else{
+    } else {
         DDLogDebug(@"Push already processed. Skipping.");
     }
     completionHandler(UIBackgroundFetchResultNewData);
 }
 
--(void) applicationDidBecomeActive:(UIApplication *)application {
+- (void)applicationDidBecomeActive:(UIApplication*)application {
     [AppAudioManager.sharedInstance awake];
     
     // Hacky way to clear notification center after processed push
@@ -231,20 +236,20 @@
     }
 }
 
-- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void (^)())completionHandler{
+- (void)application:(UIApplication*)application handleActionWithIdentifier:(NSString*)identifier forRemoteNotification:(NSDictionary*)userInfo completionHandler:(void (^)())completionHandler {
     if ([identifier isEqualToString:Signal_Accept_Identifier]) {
         [self.callPickUpFuture trySetResult:@YES];
-    } else if ([identifier isEqualToString:Signal_Decline_Identifier]){
+    } else if ([identifier isEqualToString:Signal_Decline_Identifier]) {
         [self.callPickUpFuture trySetResult:@NO];
     }
     completionHandler();
 }
 
-- (void)applicationWillResignActive:(UIApplication *)application{
+- (void)applicationWillResignActive:(UIApplication*)application {
     [self protectScreen];
 }
 
-- (void)prepareScreenshotProtection{
+- (void)prepareScreenshotProtection {
     self.blankWindow = ({
         UIWindow *window = [[UIWindow alloc] initWithFrame:self.window.bounds];
         window.hidden = YES;
@@ -255,9 +260,9 @@
     });
 }
 
-- (void)protectScreen{
+- (void)protectScreen {
     if (Environment.preferences.screenSecurityIsEnabled) {
-        self.blankWindow.rootViewController = [UIViewController new];
+        self.blankWindow.rootViewController = [[UIViewController alloc] init];
         UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.blankWindow.bounds];
         if (self.blankWindow.bounds.size.height == 568) {
             imageView.image = [UIImage imageNamed:@"Default-568h"];
@@ -270,7 +275,7 @@
     }
 }
 
-- (void)removeScreenProtection{
+- (void)removeScreenProtection {
     if (Environment.preferences.screenSecurityIsEnabled) {
         self.blankWindow.rootViewController = nil;
         self.blankWindow.hidden = YES;

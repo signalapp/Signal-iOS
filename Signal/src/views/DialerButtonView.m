@@ -5,19 +5,18 @@
 
 - (void)awakeFromNib {
     [super awakeFromNib];
-    _numberLabel.text = NSLocalizedString(_numberLocalizationKey, @"");
-    _letterLabel.text = NSLocalizedString(_letterLocalizationKey, @"");
+    self.numberLabel.text = NSLocalizedString(self.numberLocalizationKey, @"");
+    self.letterLabel.text = NSLocalizedString(self.letterLocalizationKey, @"");
     self.layer.cornerRadius = 4.0f;
-    self.layer.borderColor = [[UIUtil darkBackgroundColor] CGColor];
+    self.layer.borderColor = [UIUtil.darkBackgroundColor CGColor];
 }
 
 - (void)setSelected:(BOOL)isSelected {
-		
     if (isSelected) {
-        self.backgroundColor = [UIUtil transparentLightGrayColor];
+        self.backgroundColor = UIUtil.transparentLightGrayColor;
         self.layer.borderWidth = 0.5f;
     } else {
-        self.backgroundColor = [UIColor clearColor];
+        self.backgroundColor = UIColor.clearColor;
         self.layer.borderWidth = 0.0f;
     }
 }
@@ -26,7 +25,8 @@
 
 - (void)buttonTouchUp {
     [self setSelected:NO];
-    [_delegate dialerButtonViewDidSelect:self];
+    id delegate = self.delegate;
+    [delegate dialerButtonViewDidSelect:self];
 }
 
 - (void)buttonTouchCancel {

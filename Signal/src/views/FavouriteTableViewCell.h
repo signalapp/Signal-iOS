@@ -10,17 +10,17 @@
 @class FavouriteTableViewCell;
 
 @protocol FavouriteTableViewCellDelegate <NSObject>
-- (void)favouriteTableViewCellTappedCall:(FavouriteTableViewCell *)cell;
+- (void)favouriteTableViewCellTappedCall:(FavouriteTableViewCell*)cell;
 @end
 
 
 @interface FavouriteTableViewCell : UITableViewCell
 
-@property (nonatomic, strong) IBOutlet UILabel *nameLabel;
-@property (nonatomic, strong) IBOutlet UIImageView *contactPictureView;
-@property (nonatomic, strong) id<FavouriteTableViewCellDelegate> delegate;
+@property (strong, nonatomic) IBOutlet UILabel* nameLabel;
+@property (strong, nonatomic) IBOutlet UIImageView* contactPictureView;
+@property (weak, nonatomic) id<FavouriteTableViewCellDelegate> delegate;
 
-- (void)configureWithContact:(Contact *)contact;
+- (void)configureWithContact:(Contact*)contact;
 - (IBAction)callTapped;
 
 @end

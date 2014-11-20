@@ -16,35 +16,43 @@
 #define CONNECTING_FLASH_DURATION 0.5f
 #define END_CALL_CLEANUP_DELAY (int)(3.1f * NSEC_PER_SEC)
 
-static NSString *const SPINNER_CONNECTING_IMAGE_NAME = @"spinner_connecting";
-static NSString *const SPINNER_CONNECTING_FLASH_IMAGE_NAME = @"spinner_connecting_flash";
-static NSString *const SPINNER_RINGING_IMAGE_NAME = @"spinner_ringing";
-static NSString *const SPINNER_ERROR_FLASH_IMAGE_NAME = @"spinner_error";
+static NSString* const SPINNER_CONNECTING_IMAGE_NAME = @"spinner_connecting";
+static NSString* const SPINNER_CONNECTING_FLASH_IMAGE_NAME = @"spinner_connecting_flash";
+static NSString* const SPINNER_RINGING_IMAGE_NAME = @"spinner_ringing";
+static NSString* const SPINNER_ERROR_FLASH_IMAGE_NAME = @"spinner_error";
 
 static NSInteger connectingFlashCounter = 0;
 
+@interface InCallViewController ()
 
-@interface InCallViewController () {
-    CallAudioManager *_callAudioManager;
-    NSTimer *_connectingFlashTimer;
-    NSTimer *_ringingAnimationTimer;
-}
+@property (strong, nonatomic) CallAudioManager* callAudioManager;
+@property (strong, nonatomic) NSTimer* connectingFlashTimer;
+@property (strong, nonatomic) NSTimer* ringingAnimationTimer;
+@property (strong, nonatomic) NSTimer* vibrateTimer;
 
-@property NSTimer *vibrateTimer;
+@property (strong, readwrite, nonatomic) CallState* callState;
+@property (strong, readwrite, nonatomic) Contact* potentiallyKnownContact;
+@property (readwrite, nonatomic) PushAcceptState callPushState;
 
 @end
 
 @implementation InCallViewController
 
-+(InCallViewController*) inCallViewControllerWithCallState:(CallState*)callState
-                                 andOptionallyKnownContact:(Contact*)contact {
-    require(callState != nil);
+@synthesize contactImageView = _contactImageView;
 
-    InCallViewController* controller = [InCallViewController new];
-    controller->_potentiallyKnownContact = contact;
-    controller->_callState = callState;
-    controller->_callPushState = PushNotSetState;
-    return controller;
+- (instancetype)initWithCallState:(CallState*)callState
+        andOptionallyKnownContact:(Contact*)contact {
+    self = [super init];
+	
+    if (self) {
+        require(callState != nil);
+        
+        self.potentiallyKnownContact = contact;
+        self.callState = callState;
+        self.callPushState = PushAcceptStateNotSet;
+    }
+    
+    return self;
 }
 
 - (void)viewDidLoad {
@@ -71,25 +79,25 @@ static NSInteger connectingFlashCounter = 0;
     [UIDevice.currentDevice setProximityMonitoringEnabled:NO];
 }
 
--(void) showCallState {
+- (void)showCallState {
     [self clearDetails];
     [self populateImmediateDetails];
     [self handleIncomingDetails];
 }
 
 - (void)startConnectingFlashAnimation {
-    if(!_ringingAnimationTimer.isValid){
-        _connectingFlashTimer = [NSTimer scheduledTimerWithTimeInterval:CONNECTING_FLASH_DURATION
-                                                                 target:self
-                                                               selector:@selector(flashConnectingIndicator)
-                                                               userInfo:nil
-                                                                repeats:YES];
+    if (!self.ringingAnimationTimer.isValid) {
+        self.connectingFlashTimer = [NSTimer scheduledTimerWithTimeInterval:CONNECTING_FLASH_DURATION
+                                                                     target:self
+                                                                   selector:@selector(flashConnectingIndicator)
+                                                                   userInfo:nil
+                                                                    repeats:YES];
     }
 }
 
 - (void)flashConnectingIndicator {
     
-    NSString *newImageName;
+    NSString* newImageName;
     
     if (connectingFlashCounter % 2 == 0) {
         newImageName = SPINNER_CONNECTING_IMAGE_NAME;
@@ -97,27 +105,27 @@ static NSInteger connectingFlashCounter = 0;
         newImageName = SPINNER_CONNECTING_FLASH_IMAGE_NAME;
     }
     
-    [_connectingIndicatorImageView setImage:[UIImage imageNamed:newImageName]];
+    [self.connectingIndicatorImageView setImage:[UIImage imageNamed:newImageName]];
     connectingFlashCounter++;
 }
 
 - (void)startRingingAnimation {
     [self stopConnectingFlashAnimation];
-    _ringingAnimationTimer = [NSTimer scheduledTimerWithTimeInterval:RINGING_ROTATION_DURATION
-                                                              target:self
-                                                            selector:@selector(rotateConnectingIndicator)
-                                                            userInfo:nil
-                                                             repeats:YES];
+    self.ringingAnimationTimer = [NSTimer scheduledTimerWithTimeInterval:RINGING_ROTATION_DURATION
+                                                                  target:self
+                                                                selector:@selector(rotateConnectingIndicator)
+                                                                userInfo:nil
+                                                                 repeats:YES];
     
-    if (!_answerButton.hidden) {
-        _vibrateTimer = [NSTimer scheduledTimerWithTimeInterval:VIBRATE_TIMER_DURATION
-                                                         target:self
-                                                       selector:@selector(vibrate)
-                                                       userInfo:nil
-                                                        repeats:YES];
+    if (!self.answerButton.hidden) {
+        self.vibrateTimer = [NSTimer scheduledTimerWithTimeInterval:VIBRATE_TIMER_DURATION
+                                                             target:self
+                                                           selector:@selector(vibrate)
+                                                           userInfo:nil
+                                                            repeats:YES];
     }
     
-    [_ringingAnimationTimer fire];
+    [self.ringingAnimationTimer fire];
 }
 
 - (void)vibrate {
@@ -125,120 +133,124 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 - (void)rotateConnectingIndicator {
-    [_connectingIndicatorImageView setImage:[UIImage imageNamed:SPINNER_RINGING_IMAGE_NAME]];
+    [self.connectingIndicatorImageView setImage:[UIImage imageNamed:SPINNER_RINGING_IMAGE_NAME]];
     [UIView animateWithDuration:RINGING_ROTATION_DURATION delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-        _connectingIndicatorImageView.transform = CGAffineTransformRotate(_connectingIndicatorImageView.transform, (float)M_PI_2);
+        self.connectingIndicatorImageView.transform = CGAffineTransformRotate(self.connectingIndicatorImageView.transform, (float)M_PI_2);
     } completion:nil];
 }
 
 - (void)performCallInSessionAnimation {
     [UIView animateWithDuration:0.5f animations:^{
-        [_callStateImageContainerView setFrame:CGRectMake(0, _callStateImageContainerView.frame.origin.y, _callStateImageContainerView.frame.size.width, _callStateImageContainerView.frame.size.height)];
+        [self.callStateImageContainerView setFrame:CGRectMake(0,
+                                                              self.callStateImageContainerView.frame.origin.y,
+                                                              self.callStateImageContainerView.frame.size.width,
+                                                              self.callStateImageContainerView.frame.size.height)];
     }];
 }
 
 - (void)stopRingingAnimation {
-    if (_ringingAnimationTimer) {
-        [_ringingAnimationTimer invalidate];
+    if (self.ringingAnimationTimer) {
+        [self.ringingAnimationTimer invalidate];
     }
-    if (_vibrateTimer) {
-        [_vibrateTimer invalidate];
+    if (self.vibrateTimer) {
+        [self.vibrateTimer invalidate];
     }
 }
 
 - (void)stopConnectingFlashAnimation {
-    if (_connectingFlashTimer) {
-        [_connectingFlashTimer invalidate];
+    if (self.connectingFlashTimer) {
+        [self.connectingFlashTimer invalidate];
     }
 }
 
 - (void)showConnectingError {
     [self stopRingingAnimation];
     [self stopConnectingFlashAnimation];
-    [_connectingIndicatorImageView setImage:[UIImage imageNamed:SPINNER_ERROR_FLASH_IMAGE_NAME]];
+    [self.connectingIndicatorImageView setImage:[UIImage imageNamed:SPINNER_ERROR_FLASH_IMAGE_NAME]];
 }
 
 - (void)localizeButtons {
-    [_endButton setTitle:END_CALL_BUTTON_TITLE forState:UIControlStateNormal];
-    [_answerButton setTitle:ANSWER_CALL_BUTTON_TITLE forState:UIControlStateNormal];
-    [_rejectButton setTitle:REJECT_CALL_BUTTON_TITLE forState:UIControlStateNormal];
+    [self.endButton setTitle:END_CALL_BUTTON_TITLE forState:UIControlStateNormal];
+    [self.answerButton setTitle:ANSWER_CALL_BUTTON_TITLE forState:UIControlStateNormal];
+    [self.rejectButton setTitle:REJECT_CALL_BUTTON_TITLE forState:UIControlStateNormal];
 }
 
 - (void)setupButtonBorders {
-    _muteButton.layer.borderColor		= [UIUtil blueColor].CGColor;
-    _speakerButton.layer.borderColor	= [UIUtil blueColor].CGColor;
-    _muteButton.layer.borderWidth		= BUTTON_BORDER_WIDTH;
-    _speakerButton.layer.borderWidth	= BUTTON_BORDER_WIDTH;
+    self.muteButton.layer.borderColor		= [UIUtil.blueColor CGColor];
+    self.speakerButton.layer.borderColor	= [UIUtil.blueColor CGColor];
+    self.muteButton.layer.borderWidth		= BUTTON_BORDER_WIDTH;
+    self.speakerButton.layer.borderWidth	= BUTTON_BORDER_WIDTH;
 
-    if (_potentiallyKnownContact) {
+    if (self.potentiallyKnownContact) {
 
-        if (_potentiallyKnownContact.image) {
+        if (self.potentiallyKnownContact.image) {
             [UIUtil applyRoundedBorderToImageView:&_contactImageView];
         }
         
-        _nameLabel.text = _potentiallyKnownContact.fullName;
+        self.nameLabel.text = self.potentiallyKnownContact.fullName;
     } else {
-        _nameLabel.text = UNKNOWN_CONTACT_NAME;
+        self.nameLabel.text = UNKNOWN_CONTACT_NAME;
     }
 }
 
--(void) clearDetails {
-    _callStatusLabel.text				= @"";
-    _nameLabel.text						= @"";
-    _phoneNumberLabel.text				= @"";
-    _authenicationStringLabel.text		= @"";
-    _contactImageView.image				= nil;
-    _authenicationStringLabel.hidden	= YES;
+- (void)clearDetails {
+    self.callStatusLabel.text				= @"";
+    self.nameLabel.text						= @"";
+    self.phoneNumberLabel.text				= @"";
+    self.authenicationStringLabel.text		= @"";
+    self.contactImageView.image				= nil;
+    self.authenicationStringLabel.hidden	= YES;
     [self displayAcceptRejectButtons:NO];
 }
 
--(void) populateImmediateDetails {
-    _phoneNumberLabel.text = _callState.remoteNumber.localizedDescriptionForUser;
+- (void)populateImmediateDetails {
+    self.phoneNumberLabel.text = self.callState.remoteNumber.localizedDescriptionForUser;
 
-    if (_potentiallyKnownContact) {
-        _nameLabel.text = _potentiallyKnownContact.fullName;
-        if (_potentiallyKnownContact.image) {
-            _contactImageView.image = _potentiallyKnownContact.image;
+    if (self.potentiallyKnownContact) {
+        self.nameLabel.text = self.potentiallyKnownContact.fullName;
+        if (self.potentiallyKnownContact.image) {
+            self.contactImageView.image = self.potentiallyKnownContact.image;
         }
     }
 }
--(void) handleIncomingDetails {
-    [_callState.futureShortAuthenticationString thenDo:^(NSString* sas) {
-        _authenicationStringLabel.hidden = NO;
-        _authenicationStringLabel.text = sas;
+
+- (void)handleIncomingDetails {
+    [self.callState.futureShortAuthenticationString thenDo:^(NSString* sas) {
+        self.authenicationStringLabel.hidden = NO;
+        self.authenicationStringLabel.text = sas;
         [self performCallInSessionAnimation];
     }];
 
-    [[_callState observableProgress] watchLatestValue:^(CallProgress* latestProgress) {
+    [[self.callState observableProgress] watchLatestValue:^(CallProgress* latestProgress) {
         [self onCallProgressed:latestProgress];
     } onThread:NSThread.mainThread untilCancelled:nil];
 }
 
--(void) onCallProgressed:(CallProgress*)latestProgress {
-    BOOL showAcceptRejectButtons = !_callState.initiatedLocally && [latestProgress type] <= CallProgressType_Ringing;
+- (void)onCallProgressed:(CallProgress*)latestProgress {
+    BOOL showAcceptRejectButtons = !self.callState.initiatedLocally && [latestProgress type] <= CallProgressTypeRinging;
     [self displayAcceptRejectButtons:showAcceptRejectButtons];
     [AppAudioManager.sharedInstance respondToProgressChange:[latestProgress type]
-                                    forLocallyInitiatedCall:_callState.initiatedLocally];
+                                      forLocallyInitiatedCall:self.callState.initiatedLocally];
     
-    if ([latestProgress type] == CallProgressType_Ringing) {
+    if (latestProgress.type == CallProgressTypeRinging) {
         [self startRingingAnimation];
     }
     
-    if ([latestProgress type] == CallProgressType_Terminated) {
-        [_callState.futureTermination thenDo:^(CallTermination* termination) {
+    if (latestProgress.type == CallProgressTypeTerminated) {
+        [self.callState.futureTermination thenDo:^(CallTermination* termination) {
             [self onCallEnded:termination];
             [AppAudioManager.sharedInstance respondToTerminationType:[termination type]];
         }];
     } else {
-        _callStatusLabel.text = latestProgress.localizedDescriptionForUser;
+        self.callStatusLabel.text = latestProgress.localizedDescriptionForUser;
     }
 }
 
--(void) onCallEnded:(CallTermination*)termination {
+- (void)onCallEnded:(CallTermination*)termination {
     [self updateViewForTermination:termination];
     [Environment.phoneManager hangupOrDenyCall];
     
-    [self dismissViewWithOptionalDelay: [termination type] != CallTerminationType_ReplacedByNext ];
+    [self dismissViewWithOptionalDelay: [termination type] != CallTerminationTypeReplacedByNext ];
 }
 
 - (void)endCallTapped {
@@ -247,11 +259,11 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 - (void)muteButtonTapped {
-	_muteButton.selected = [Environment.phoneManager toggleMute];
+	self.muteButton.selected = [Environment.phoneManager toggleMute];
 }
 
 - (void)speakerButtonTapped {
-    _speakerButton.selected = [AppAudioManager.sharedInstance toggleSpeakerPhone];
+    self.speakerButton.selected = [AppAudioManager.sharedInstance toggleSpeakerPhone];
 }
 
 - (void)answerButtonTapped {
@@ -265,41 +277,41 @@ static NSInteger connectingFlashCounter = 0;
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
--(void) updateViewForTermination:(CallTermination*) termination{
-    NSString* message = termination.localizedDescriptionForUser;
+- (void)updateViewForTermination:(CallTermination*)termination {
+    NSString* message = [termination localizedDescriptionForUser];
     
-    if ([termination type] == CallTerminationType_ServerMessage) {
-        CallFailedServerMessage* serverMessage = [termination messageInfo];
-        message = [message stringByAppendingString:[serverMessage text]];
+    if (termination.type == CallTerminationTypeServerMessage) {
+        CallFailedServerMessage* serverMessage = termination.messageInfo;
+        message = [message stringByAppendingString:serverMessage.text];
     }
     
-    _endButton.backgroundColor = [UIColor grayColor];
-    _callStatusLabel.textColor = [UIColor redColor];
+    self.endButton.backgroundColor = UIColor.grayColor;
+    self.callStatusLabel.textColor = UIColor.redColor;
     
     [self showConnectingError];
-    _callStatusLabel.text = message;
+    self.callStatusLabel.text = message;
 }
 
--(void) dismissViewWithOptionalDelay:(BOOL) useDelay {
-    if(useDelay && UIApplicationStateActive == [UIApplication.sharedApplication applicationState]){
+- (void)dismissViewWithOptionalDelay:(BOOL)useDelay {
+    if (useDelay && UIApplicationStateActive == [UIApplication.sharedApplication applicationState]) {
         [self dismissViewControllerAfterDelay:END_CALL_CLEANUP_DELAY];
-    }else{
+    } else {
         [self dismissViewControllerAnimated:NO completion:nil];
     }
 }
 
--(void) dismissViewControllerAfterDelay:(int) delay {
+- (void)dismissViewControllerAfterDelay:(int)delay {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delay), dispatch_get_main_queue(), ^{
         [self dismissViewControllerAnimated:YES completion:nil];
     });
 }
 
--(void) displayAcceptRejectButtons:(BOOL) enable{
-    _answerButton.hidden = !enable;
-    _rejectButton.hidden = !enable;
-    _endButton.hidden = enable;
-    if (_vibrateTimer && enable == false) {
-        [_vibrateTimer invalidate];
+- (void)displayAcceptRejectButtons:(BOOL)enable {
+    self.answerButton.hidden = !enable;
+    self.rejectButton.hidden = !enable;
+    self.endButton.hidden = enable;
+    if (self.vibrateTimer && enable == false) {
+        [self.vibrateTimer invalidate];
     }
 }
 

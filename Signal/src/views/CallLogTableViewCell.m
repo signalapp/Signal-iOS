@@ -1,7 +1,7 @@
 #import "CallLogTableViewCell.h"
 #import "Environment.h"
 #import "ContactsManager.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "LocalizableText.h"
 #import "Util.h"
 
@@ -9,81 +9,84 @@
 
 @implementation CallLogTableViewCell
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString*)reuseIdentifier {
 
-    self = [NSBundle.mainBundle loadNibNamed:NSStringFromClass(self.class)
-                                          owner:self
-                                        options:nil][0];
+    self = [NSBundle.mainBundle loadNibNamed:NSStringFromClass([self class])
+                                         owner:self
+                                       options:nil][0];
     if (self) {
-        _scrollView.contentSize = CGSizeMake(CGRectGetWidth(_contentContainerView.bounds),
-                                             CGRectGetHeight(_scrollView.frame));
-        _deleteImageView.image = [_deleteImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        self.scrollView.contentSize = CGSizeMake(CGRectGetWidth(self.contentContainerView.bounds),
+                                                 CGRectGetHeight(self.scrollView.frame));
+        self.deleteImageView.image = [self.deleteImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     }
+    
     return self;
 }
 
-- (NSString *)reuseIdentifier {
-    return NSStringFromClass(self.class);
+- (NSString*)reuseIdentifier {
+    return NSStringFromClass([self class]);
 }
 
 - (void)prepareForReuse {
-    _scrollView.contentOffset = CGPointMake(0, 0);
+    self.scrollView.contentOffset = CGPointMake(0, 0);
     [super prepareForReuse];
 }
 
-- (void)configureWithRecentCall:(RecentCall *)recentCall {
-    Contact *contact = [Environment.getCurrent.contactsManager latestContactWithRecordId:recentCall.contactRecordID];
+- (void)configureWithRecentCall:(RecentCall*)recentCall {
+    Contact* contact = [Environment.getCurrent.contactsManager latestContactWithRecordId:recentCall.contactRecordID];
     if (contact) {
-        _contactNameLabel.text = contact.fullName;
+        self.contactNameLabel.text = contact.fullName;
     } else {
-        _contactNameLabel.text = UNKNOWN_CONTACT_NAME;
+        self.contactNameLabel.text = UNKNOWN_CONTACT_NAME;
     }
 
     if (recentCall.callType == RPRecentCallTypeOutgoing) {
-        _callTypeImageView.image = [UIImage imageNamed:CALL_TYPE_IMAGE_NAME_OUTGOING];
+        self.callTypeImageView.image = [UIImage imageNamed:CALL_TYPE_IMAGE_NAME_OUTGOING];
     } else {
-        _callTypeImageView.image = [UIImage imageNamed:CALL_TYPE_IMAGE_NAME_INCOMING];
+        self.callTypeImageView.image = [UIImage imageNamed:CALL_TYPE_IMAGE_NAME_INCOMING];
     }
 
-    _contactNumberLabel.text = recentCall.phoneNumber.localizedDescriptionForUser;
+    self.contactNumberLabel.text = recentCall.phoneNumber.localizedDescriptionForUser;
 
     if ([DateUtil dateIsOlderThanOneWeek:[recentCall date]]) {
-        _timeLabel.text = [[DateUtil dateFormatter] stringFromDate:[recentCall date]];
+        self.timeLabel.text = [DateUtil.dateFormatter stringFromDate:[recentCall date]];
     } else {
-        _timeLabel.text = [[DateUtil weekdayFormatter] stringFromDate:[recentCall date]];
+        self.timeLabel.text = [DateUtil.weekdayFormatter stringFromDate:[recentCall date]];
     }
 }
 
 #pragma mark - UIScrollViewDelegate
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
 	
     if (scrollView.contentOffset.x > CGRectGetWidth(_deleteView.frame)) {
-        _deleteImageView.tintColor = [UIUtil redColor];
+        self.deleteImageView.tintColor = UIUtil.redColor;
 
-        _deleteImageView.bounds = CGRectMake(_deleteImageView.bounds.origin.x,
-                                             _deleteImageView.bounds.origin.y,
-                                             DELETE_IMAGE_VIEW_WIDTH,
-                                             _deleteImageView.bounds.size.height);
+        self.deleteImageView.bounds = CGRectMake(self.deleteImageView.bounds.origin.x,
+                                                 self.deleteImageView.bounds.origin.y,
+                                                 DELETE_IMAGE_VIEW_WIDTH,
+                                                 self.deleteImageView.bounds.size.height);
     } else {
         
-        double ratio = _scrollView.contentOffset.x / CGRectGetWidth(_deleteView.frame);
+        double ratio = self.scrollView.contentOffset.x / CGRectGetWidth(_deleteView.frame);
         double newWidth = DELETE_IMAGE_VIEW_WIDTH/2 + (DELETE_IMAGE_VIEW_WIDTH * ratio)/2.0f;
         
-        _deleteImageView.bounds = CGRectMake(_deleteImageView.bounds.origin.x,
-                                             _deleteImageView.bounds.origin.y,
-                                             (CGFloat)newWidth,
-                                             _deleteImageView.bounds.size.height);
-        _deleteImageView.tintColor = UIColor.whiteColor;
+        self.deleteImageView.bounds = CGRectMake(self.deleteImageView.bounds.origin.x,
+                                                 self.deleteImageView.bounds.origin.y,
+                                                 (CGFloat)newWidth,
+                                                 self.deleteImageView.bounds.size.height);
+        self.deleteImageView.tintColor = UIColor.whiteColor;
     }
 }
 
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
+- (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
                      withVelocity:(CGPoint)velocity
-              targetContentOffset:(inout CGPoint *)targetContentOffset {
+              targetContentOffset:(inout CGPoint*)targetContentOffset {
 
-    if (scrollView.contentOffset.x > CGRectGetWidth(_deleteView.frame)) {
-        [_delegate recentCallTableViewCellTappedDelete:self];
+    if (scrollView.contentOffset.x > CGRectGetWidth(self.deleteView.frame)) {
+        // Prevents weak warning, see http://stackoverflow.com/a/11899135/3577738
+        id delegate = self.delegate;
+        [delegate recentCallTableViewCellTappedDelete:self];
     } else {
         *targetContentOffset = CGPointMake(0, 0);
     }
@@ -92,7 +95,8 @@
 #pragma mark - Actions
 
 - (IBAction)phoneCallButtonTapped {
-    [_delegate recentCallTableViewCellTappedCall:self];
+    id delegate = self.delegate;
+    [delegate recentCallTableViewCellTappedCall:self];
 }
 
 @end

@@ -5,7 +5,7 @@
 #import "InboxFeedViewController.h"
 #import "LeftSideMenuViewController.h"
 #import "LocalizableText.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "RecentCall.h"
 #import "RecentCallManager.h"
 #import "RegisterViewController.h"
@@ -23,19 +23,19 @@
 #define TABLE_VIEW_NUM_SECTIONS_DEFAULT 1
 #define TABLE_VIEW_NUM_SECTIONS_SEARCHING 3
 
-static NSString *const INBOX_FEED_TABLE_VIEW_CELL_IDENTIFIER = @"InboxFeedTableViewCell";
-static NSString *const CONTACT_TABLE_VIEW_CELL_IDENTIFIER = @"ContactTableViewCell";
-static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
+static NSString* const INBOX_FEED_TABLE_VIEW_CELL_IDENTIFIER = @"InboxFeedTableViewCell";
+static NSString* const CONTACT_TABLE_VIEW_CELL_IDENTIFIER = @"ContactTableViewCell";
+static NSString* const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 
-@interface InboxFeedViewController () {
-    NSArray *_inboxFeed;
-    BOOL _tableViewContentMutating;
-    BOOL _isSearching;
+@interface InboxFeedViewController ()
 
-    NSArray *_searchInboxFeed;
-    NSArray *_searchRegisteredContacts;
-    NSArray *_searchUnregisteredContacts;
-}
+@property (strong, nonatomic) NSArray* inboxFeed;
+@property (nonatomic) BOOL tableViewContentMutating;
+@property (nonatomic) BOOL isSearching;
+
+@property (strong, nonatomic) NSArray* searchInboxFeed;
+@property (strong, nonatomic) NSArray* searchRegisteredContacts;
+@property (strong, nonatomic) NSArray* searchUnregisteredContacts;
 
 @end
 
@@ -48,7 +48,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
     [self observeKeyboardNotifications];
     [self setupLabelLocalizationAndStyles];
 
-    _inboxFeedTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.inboxFeedTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -60,18 +60,17 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:NO];
-    [_searchBarTitleView updateAutoCorrectionType];
-    [_inboxFeedTableView reloadData];
+    [self.searchBarTitleView updateAutoCorrectionType];
+    [self.inboxFeedTableView reloadData];
     
     if (!Environment.isRegistered) {
         [Environment resetAppData];
-        RegisterViewController *registerViewController = [RegisterViewController registerViewController];
-        [self presentViewController:registerViewController animated:NO completion:nil];
+        [self presentViewController:[[RegisterViewController alloc] init] animated:NO completion:nil];
     }
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -79,21 +78,21 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 }
 
 - (void)observeRecentCalls {
-    ObservableValue *observableContacts = Environment.getCurrent.contactsManager.getObservableContacts;
+    ObservableValue* observableContacts = Environment.getCurrent.contactsManager.getObservableContacts;
 
     [observableContacts watchLatestValue:^(id latestValue) {
 
-        ObservableValue *observableRecents = Environment.getCurrent.recentCallManager.getObservableRecentCalls;
+        ObservableValue* observableRecents = Environment.getCurrent.recentCallManager.getObservableRecentCalls;
         
-        [observableRecents watchLatestValue:^(NSArray *latestRecents) {
-            _inboxFeed = [Environment.getCurrent.recentCallManager recentsForSearchString:nil
+        [observableRecents watchLatestValue:^(NSArray* latestRecents) {
+            self.inboxFeed = [Environment.getCurrent.recentCallManager recentsForSearchString:nil
                                                                            andExcludeArchived:YES];
             [self updateTutorialVisibility];
-            if (!_tableViewContentMutating) {
-                [_inboxFeedTableView reloadData];
+            if (!self.tableViewContentMutating) {
+                [self.inboxFeedTableView reloadData];
             }
-            if (_isSearching) {
-                [_searchBarTitleView textField:_searchBarTitleView.searchTextField
+            if (self.isSearching) {
+                [self.searchBarTitleView textField:self.searchBarTitleView.searchTextField
                  shouldChangeCharactersInRange:NSMakeRange(0, 0)
                              replacementString:SEARCH_BAR_DEFAULT_EMPTY_STRING];
             }
@@ -104,20 +103,20 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 }
 
 - (void)observeKeyboardNotifications {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillShow:)
-                                                 name:UIKeyboardWillShowNotification
-                                               object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(keyboardWillShow:)
+                                               name:UIKeyboardWillShowNotification
+                                             object:nil];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillHide:)
-                                                 name:UIKeyboardWillHideNotification
-                                               object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(keyboardWillHide:)
+                                               name:UIKeyboardWillHideNotification
+                                             object:nil];
 }
 
 - (void)setupLabelLocalizationAndStyles {
-    _freshAppTutorialTopLabel.text = INBOX_VIEW_TUTORIAL_LABEL_TOP;
-    _freshAppTutorialMiddleLabel.text = INBOX_VIEW_TUTORIAL_LABEL_MIDDLE;
+    self.freshAppTutorialTopLabel.text = INBOX_VIEW_TUTORIAL_LABEL_TOP;
+    self.freshAppTutorialMiddleLabel.text = INBOX_VIEW_TUTORIAL_LABEL_MIDDLE;
 }
 
 #pragma mark - Viewed / Unviewed calls
@@ -125,7 +124,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 - (void)markMissedCallsAsViewed {
     BOOL needsSave = NO;
 
-    for (RecentCall *recent in _inboxFeed) {
+    for (RecentCall* recent in self.inboxFeed) {
         if (!recent.userNotified) {
             recent.userNotified = true;
             needsSave = true;
@@ -133,34 +132,34 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
     }
     if (needsSave) {
         [Environment.getCurrent.recentCallManager saveContactsToDefaults];
-        [(TabBarParentViewController *)self.mm_drawerController.centerViewController updateMissedCallCountLabel];
-        [_inboxFeedTableView reloadData];
+        [(TabBarParentViewController*)self.mm_drawerController.centerViewController updateMissedCallCountLabel];
+        [self.inboxFeedTableView reloadData];
     }
 }
 
 #pragma mark - Actions
 
-- (void)showRecentCallViewControllerWithRecentCall:(RecentCall *)recent {
-    [(TabBarParentViewController *)self.mm_drawerController.centerViewController showDialerViewControllerWithNumber:recent.phoneNumber];
+- (void)showRecentCallViewControllerWithRecentCall:(RecentCall*)recent {
+    [(TabBarParentViewController*)self.mm_drawerController.centerViewController showDialerViewControllerWithNumber:recent.phoneNumber];
 }
 
-- (void)showContactViewControllerWithContact:(Contact *)contact {
-    ContactDetailViewController *vc = [ContactDetailViewController contactDetailViewControllerWithContact:contact];
+- (void)showContactViewControllerWithContact:(Contact*)contact {
+    ContactDetailViewController* vc = [[ContactDetailViewController alloc] initWithContact:contact];
     [self.navigationController pushViewController:vc animated:YES];
 }
 
-- (void)removeNewsFeedCell:(InboxFeedTableViewCell *)cell willDelete:(BOOL)delete {
-    _tableViewContentMutating = YES;
-    NSIndexPath *indexPath = [_inboxFeedTableView indexPathForCell:cell];
+- (void)removeNewsFeedCell:(InboxFeedTableViewCell*)cell willDelete:(BOOL)delete {
+    self.tableViewContentMutating = YES;
+    NSIndexPath* indexPath = [self.inboxFeedTableView indexPathForCell:cell];
 
-    [_inboxFeedTableView beginUpdates];
+    [self.inboxFeedTableView beginUpdates];
 
-    RecentCall *recent;
+    RecentCall* recent;
 
-    if (_isSearching) {
-        recent = _searchInboxFeed[(NSUInteger)indexPath.row];
+    if (self.isSearching) {
+        recent = self.searchInboxFeed[(NSUInteger)indexPath.row];
     } else {
-        recent = _inboxFeed[(NSUInteger)indexPath.row];
+        recent = self.inboxFeed[(NSUInteger)indexPath.row];
     }
 
     recent.userNotified = YES;
@@ -175,29 +174,29 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
         [Environment.getCurrent.recentCallManager archiveRecentCall:recent];
     }
 
-    [_inboxFeedTableView deleteRowsAtIndexPaths:@[indexPath]
+    [self.inboxFeedTableView deleteRowsAtIndexPaths:@[indexPath]
                                withRowAnimation:animation];
 
-    [_inboxFeedTableView endUpdates];
-    _tableViewContentMutating = NO;
+    [self.inboxFeedTableView endUpdates];
+    self.tableViewContentMutating = NO;
 }
 
 - (void)updateTutorialVisibility {
-    _freshInboxView.hidden = !Environment.preferences.getFreshInstallTutorialsEnabled;
-    _inboxFeedTableView.hidden = !_freshInboxView.hidden;
+    self.freshInboxView.hidden = !Environment.preferences.getFreshInstallTutorialsEnabled;
+    self.inboxFeedTableView.hidden = !self.freshInboxView.hidden;
 }
 
 #pragma mark - UITableViewDelegate
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if (_isSearching) {
+- (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
+    if (self.isSearching) {
         return TABLE_VIEW_NUM_SECTIONS_SEARCHING;
     } else {
         return TABLE_VIEW_NUM_SECTIONS_DEFAULT;
     }
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+- (NSString*)tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section {
 	if (section == SEARCH_TABLE_SECTION_FEED) {
 		return @"";
 	} else if (section == SEARCH_TABLE_SECTION_REGISTERED) {
@@ -207,52 +206,51 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 	}
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-
-    if (_isSearching) {
+- (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section {
+    if (self.isSearching) {
         if (section == SEARCH_TABLE_SECTION_FEED) {
-            return (NSInteger)_searchInboxFeed.count;
+            return (NSInteger)self.searchInboxFeed.count;
         } else if (section == SEARCH_TABLE_SECTION_REGISTERED) {
-            return (NSInteger)_searchRegisteredContacts.count;
+            return (NSInteger)self.searchRegisteredContacts.count;
         } else {
-            return (NSInteger)_searchUnregisteredContacts.count;
+            return (NSInteger)self.searchUnregisteredContacts.count;
         }
     } else {
-        NSInteger inboxFeedAndInfoCellCount = (NSInteger)_inboxFeed.count + 1;
+        NSInteger inboxFeedAndInfoCellCount = (NSInteger)self.inboxFeed.count + 1;
         return inboxFeedAndInfoCellCount;
     }
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (_isSearching) {
+- (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+    if (self.isSearching) {
         return [self searchCellForIndexPath:indexPath];
     } else {
         return [self inboxFeedCellForIndexPath:indexPath];
     }
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    [_searchBarTitleView.searchTextField resignFirstResponder];
+    [self.searchBarTitleView.searchTextField resignFirstResponder];
 
-    if (_isSearching) {
+    if (self.isSearching) {
         if (indexPath.section == SEARCH_TABLE_SECTION_FEED) {
-            [self showRecentCallViewControllerWithRecentCall:_searchInboxFeed[(NSUInteger)indexPath.row]];
+            [self showRecentCallViewControllerWithRecentCall:self.searchInboxFeed[(NSUInteger)indexPath.row]];
         } else if (indexPath.section == SEARCH_TABLE_SECTION_REGISTERED) {
-            [self showContactViewControllerWithContact:_searchRegisteredContacts[(NSUInteger)indexPath.row]];
+            [self showContactViewControllerWithContact:self.searchRegisteredContacts[(NSUInteger)indexPath.row]];
         } else {
-            [self showContactViewControllerWithContact:_searchUnregisteredContacts[(NSUInteger)indexPath.row]];
+            [self showContactViewControllerWithContact:self.searchUnregisteredContacts[(NSUInteger)indexPath.row]];
         }
     } else {
-        if (indexPath.row < (NSInteger)_inboxFeed.count) {
-            [self showRecentCallViewControllerWithRecentCall:_inboxFeed[(NSUInteger)indexPath.row]];
+        if (indexPath.row < (NSInteger)self.inboxFeed.count) {
+            [self showRecentCallViewControllerWithRecentCall:self.inboxFeed[(NSUInteger)indexPath.row]];
         }
     }
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath {
     if (indexPath.section == SEARCH_TABLE_SECTION_FEED) {
-        if ((NSUInteger)indexPath.row == _inboxFeed.count) {
+        if ((NSUInteger)indexPath.row == self.inboxFeed.count) {
             return FOOTER_CELL_HEIGHT;
         } else {
             return INBOX_TABLE_VIEW_CELL_HEIGHT;
@@ -264,7 +262,7 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 
 #pragma mark - Table cell creation
 
-- (UITableViewCell *)searchCellForIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell*)searchCellForIndexPath:(NSIndexPath*)indexPath {
     if (indexPath.section == SEARCH_TABLE_SECTION_FEED) {
         return [self inboxCellForIndexPath:indexPath andIsSearching:YES];
     } else {
@@ -272,16 +270,16 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
     }
 }
 
-- (UITableViewCell *)inboxFeedCellForIndexPath:(NSIndexPath *)indexPath {
-    if (!_isSearching && (NSUInteger)[indexPath row] == _inboxFeed.count) {
+- (UITableViewCell*)inboxFeedCellForIndexPath:(NSIndexPath*)indexPath {
+    if (!self.isSearching && (NSUInteger)[indexPath row] == self.inboxFeed.count) {
         return [self inboxFeedFooterCell];
     } else {
         return [self inboxCellForIndexPath:indexPath andIsSearching:NO];
     }
 }
 
-- (UITableViewCell *)inboxCellForIndexPath:(NSIndexPath *)indexPath andIsSearching:(BOOL)isSearching {
-    InboxFeedTableViewCell *cell = [_inboxFeedTableView dequeueReusableCellWithIdentifier:INBOX_FEED_TABLE_VIEW_CELL_IDENTIFIER];
+- (UITableViewCell*)inboxCellForIndexPath:(NSIndexPath*)indexPath andIsSearching:(BOOL)isSearching {
+    InboxFeedTableViewCell* cell = [self.inboxFeedTableView dequeueReusableCellWithIdentifier:INBOX_FEED_TABLE_VIEW_CELL_IDENTIFIER];
 
     if (!cell) {
         cell = [[InboxFeedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
@@ -289,13 +287,12 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
         cell.delegate = self;
     }
 
-    RecentCall *recent = isSearching ? _searchInboxFeed[(NSUInteger)indexPath.row] : _inboxFeed[(NSUInteger)indexPath.row];
+    RecentCall* recent = isSearching ? self.searchInboxFeed[(NSUInteger)indexPath.row] : self.inboxFeed[(NSUInteger)indexPath.row];
     [cell configureWithRecentCall:recent];
     return cell;
 }
-
-- (UITableViewCell *)contactCellForIndexPath:(NSIndexPath *)indexPath {
-    ContactTableViewCell *cell = [_inboxFeedTableView dequeueReusableCellWithIdentifier:CONTACT_TABLE_VIEW_CELL_IDENTIFIER];
+- (UITableViewCell*)contactCellForIndexPath:(NSIndexPath*)indexPath {
+    ContactTableViewCell* cell = [self.inboxFeedTableView dequeueReusableCellWithIdentifier:CONTACT_TABLE_VIEW_CELL_IDENTIFIER];
 
     if (!cell) {
         cell = [[ContactTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
@@ -303,12 +300,12 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
     }
 
     NSUInteger searchIndex = (NSUInteger)indexPath.row;
-    Contact *contact;
+    Contact* contact;
 
     if (indexPath.section == SEARCH_TABLE_SECTION_REGISTERED) {
-        contact = _searchRegisteredContacts[searchIndex];
+        contact = self.searchRegisteredContacts[searchIndex];
     } else {
-        contact = _searchUnregisteredContacts[searchIndex];
+        contact = self.searchUnregisteredContacts[searchIndex];
     }
 
     [cell configureWithContact:contact];
@@ -316,8 +313,8 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
     return cell;
 }
 
-- (UITableViewCell *)inboxFeedFooterCell {
-    InboxFeedFooterCell *cell = [_inboxFeedTableView dequeueReusableCellWithIdentifier:FOOTER_TABLE_CELL_IDENTIFIER];
+- (UITableViewCell*)inboxFeedFooterCell {
+    InboxFeedFooterCell* cell = [self.inboxFeedTableView dequeueReusableCellWithIdentifier:FOOTER_TABLE_CELL_IDENTIFIER];
 
     if (!cell) {
         cell = [[InboxFeedFooterCell alloc] initWithStyle:UITableViewCellStyleDefault
@@ -329,58 +326,58 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
 
 #pragma mark - HomeFeedTableViewCellDelegate
 
-- (void)inboxFeedTableViewCellTappedDelete:(InboxFeedTableViewCell *)cell {
+- (void)inboxFeedTableViewCellTappedDelete:(InboxFeedTableViewCell*)cell {
     [self removeNewsFeedCell:cell willDelete:YES];
 }
 
-- (void)inboxFeedTableViewCellTappedArchive:(InboxFeedTableViewCell *)cell {
+- (void)inboxFeedTableViewCellTappedArchive:(InboxFeedTableViewCell*)cell {
     [self removeNewsFeedCell:cell willDelete:NO];
 }
 
 #pragma mark - SearchBarTitleViewDelegate
 
-- (void)searchBarTitleView:(SearchBarTitleView *)view didSearchForTerm:(NSString *)term {
+- (void)searchBarTitleView:(SearchBarTitleView*)view didSearchForTerm:(NSString*)term {
     BOOL searching = term.length > 0;
-    _isSearching = searching;
+    self.isSearching = searching;
 
     if (searching) {
-        _freshInboxView.hidden = YES;
-        _inboxFeedTableView.hidden = NO;
-        _searchInboxFeed = [Environment.getCurrent.recentCallManager recentsForSearchString:term
+        self.freshInboxView.hidden = YES;
+        self.inboxFeedTableView.hidden = NO;
+        self.searchInboxFeed = [Environment.getCurrent.recentCallManager recentsForSearchString:term
                                                                              andExcludeArchived:YES];
         
         [self reloadSearchContactsForTerm:term];
     } else {
         [self updateTutorialVisibility];
-        _searchInboxFeed = nil;
-        _searchRegisteredContacts = nil;
+        self.searchInboxFeed = nil;
+        self.searchRegisteredContacts = nil;
     }
-    [_inboxFeedTableView reloadData];
+    [self.inboxFeedTableView reloadData];
 }
 
-- (void)searchBarTitleViewDidTapMenu:(SearchBarTitleView *)view {
+- (void)searchBarTitleViewDidTapMenu:(SearchBarTitleView*)view {
     [self.mm_drawerController openDrawerSide:MMDrawerSideLeft
                                     animated:YES
                                   completion:nil];
 }
 
-- (void)searchBarTitleViewDidEndSearching:(SearchBarTitleView *)view {
-    _isSearching = false;
+- (void)searchBarTitleViewDidEndSearching:(SearchBarTitleView*)view {
+    self.isSearching = false;
     [self updateTutorialVisibility];
-    [_inboxFeedTableView reloadData];
+    [self.inboxFeedTableView reloadData];
 }
 
-- (void)reloadSearchContactsForTerm:(NSString *)term {
+- (void)reloadSearchContactsForTerm:(NSString*)term {
 	
-    NSArray *contacts = [Environment.getCurrent.contactsManager latestContactsWithSearchString:term];
+    NSArray* contacts = [Environment.getCurrent.contactsManager latestContactsWithSearchString:term];
 
-    NSMutableArray *registeredContacts = [NSMutableArray array];
-    NSMutableArray *unregisteredContacts = [NSMutableArray array];
+    NSMutableArray* registeredContacts = [[NSMutableArray alloc] init];
+    NSMutableArray* unregisteredContacts = [[NSMutableArray alloc] init];
 
-    for (Contact *contact in contacts) {
+    for (Contact* contact in contacts) {
         BOOL registeredContact = NO;
 
-        for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
+        for (PhoneNumber* phoneNumber in contact.parsedPhoneNumbers) {
             if ([Environment.getCurrent.phoneDirectoryManager.getCurrentFilter containsPhoneNumber:phoneNumber]) {
                 registeredContact = YES;
             }
@@ -393,32 +390,32 @@ static NSString *const FOOTER_TABLE_CELL_IDENTIFIER = @"InboxFeedFooterCell";
         }
     }
 
-    _searchRegisteredContacts = registeredContacts.copy;
-    _searchUnregisteredContacts = unregisteredContacts.copy;
+    self.searchRegisteredContacts = [registeredContacts copy];
+    self.searchUnregisteredContacts = [unregisteredContacts copy];
 }
 
 #pragma mark - Keyboard
 
-- (void)keyboardWillShow:(NSNotification *)notification {
+- (void)keyboardWillShow:(NSNotification*)notification {
     double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     [UIView animateWithDuration:duration animations:^{
         CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-        CGFloat height = CGRectGetHeight(_inboxFeedTableView.frame) - (keyboardSize.height-BOTTOM_TAB_BAR_HEIGHT);
-        _inboxFeedTableView.frame = CGRectMake(CGRectGetMinX(_inboxFeedTableView.frame),
-                                               CGRectGetMinY(_inboxFeedTableView.frame),
-                                               CGRectGetWidth(_inboxFeedTableView.frame),
-                                               height);
+        CGFloat height = CGRectGetHeight(self.inboxFeedTableView.frame) - (keyboardSize.height-BOTTOM_TAB_BAR_HEIGHT);
+        self.inboxFeedTableView.frame = CGRectMake(CGRectGetMinX(self.inboxFeedTableView.frame),
+                                                   CGRectGetMinY(self.inboxFeedTableView.frame),
+                                                   CGRectGetWidth(self.inboxFeedTableView.frame),
+                                                   height);
     }];
 }
 
-- (void)keyboardWillHide:(NSNotification *)notification {
+- (void)keyboardWillHide:(NSNotification*)notification {
     CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
-    CGFloat height = CGRectGetHeight(_inboxFeedTableView.frame) + (keyboardSize.height-BOTTOM_TAB_BAR_HEIGHT);
-    _inboxFeedTableView.frame = CGRectMake(CGRectGetMinX(_inboxFeedTableView.frame),
-                                           CGRectGetMinY(_inboxFeedTableView.frame),
-                                           CGRectGetWidth(_inboxFeedTableView.frame),
-                                           height);
-    if (!_searchInboxFeed) {
+    CGFloat height = CGRectGetHeight(self.inboxFeedTableView.frame) + (keyboardSize.height-BOTTOM_TAB_BAR_HEIGHT);
+    self.inboxFeedTableView.frame = CGRectMake(CGRectGetMinX(self.inboxFeedTableView.frame),
+                                               CGRectGetMinY(self.inboxFeedTableView.frame),
+                                               CGRectGetWidth(self.inboxFeedTableView.frame),
+                                               height);
+    if (!self.searchInboxFeed) {
         [self updateTutorialVisibility];
     }
 }

@@ -23,20 +23,14 @@
  *
  **/
 
-@interface AudioProcessor : NSObject {
-@private StretchFactorController* stretchFactorController;
-@private AudioStretcher* audioStretcher;
-@private AudioPacker* audioPacker;
-@private JitterQueue* jitterQueue;
-@private bool haveReceivedDataYet;
-}
+@interface AudioProcessor : NSObject
 
-@property (nonatomic,readonly) SpeexCodec* codec;
+@property (strong, readonly, nonatomic) SpeexCodec* codec;
 
-+(AudioProcessor*) audioProcessor;
+- (instancetype)init;
 
--(void) receivedPacket:(EncodedAudioPacket*)packet;
--(NSArray*) encodeAudioPacketsFromBuffer:(CyclicalBuffer*) buffer;
--(NSData*) tryDecodeOrInferFrame;
+- (void)receivedPacket:(EncodedAudioPacket*)packet;
+- (NSArray*)encodeAudioPacketsFromBuffer:(CyclicalBuffer*)buffer;
+- (NSData*)tryDecodeOrInferFrame;
 
 @end

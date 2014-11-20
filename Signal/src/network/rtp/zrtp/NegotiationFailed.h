@@ -2,8 +2,8 @@
 
 @interface NegotiationFailed : NSObject
 
-@property (nonatomic,readonly) NSString* reason;
+@property (strong, readonly, nonatomic) NSString* reason;
 
-+(NegotiationFailed*) negotiationFailedWithReason:(NSString*)reason;
+- (instancetype)initWithReason:(NSString*)reason;
 
 @end

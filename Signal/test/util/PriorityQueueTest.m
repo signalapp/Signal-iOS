@@ -43,7 +43,7 @@ NSArray* Permutations(uint32_t count) {
 @implementation PriorityQueueTest
 
 -(void) testTrivialPrioritizing {
-    PriorityQueue* q = [PriorityQueue priorityQueueAscendingWithComparator:^(NSNumber* obj1, NSNumber* obj2){
+    PriorityQueue* q = [[PriorityQueue alloc] initAscendingWithComparator:^(NSNumber* obj1, NSNumber* obj2) {
         return [obj1 compare:obj2];
     }];
     test(q.count == 0);
@@ -64,7 +64,7 @@ NSArray* Permutations(uint32_t count) {
     testThrows([q dequeue]);
 }
 -(void) testOrdersByComparatorInverse {
-    PriorityQueue* q = [PriorityQueue priorityQueueAscendingWithComparator:^(NSNumber* obj1, NSNumber* obj2){
+    PriorityQueue* q = [[PriorityQueue alloc] initAscendingWithComparator:^(NSNumber* obj1, NSNumber* obj2) {
         return [obj2 compare:obj1];
     }];
     
@@ -78,7 +78,7 @@ NSArray* Permutations(uint32_t count) {
 -(void) testSortsAllSmallPermutations {
     const uint32_t N = 7;
     for (NSArray* permutation in Permutations(N)) {
-        PriorityQueue* q = [PriorityQueue priorityQueueAscendingWithComparator:^(NSNumber* obj1, NSNumber* obj2){
+        PriorityQueue* q = [[PriorityQueue alloc] initAscendingWithComparator:^(NSNumber* obj1, NSNumber* obj2) {
             return [obj1 compare:obj2];
         }];
         for (NSNumber* e in permutation) {
@@ -97,7 +97,7 @@ NSArray* Permutations(uint32_t count) {
     const uint32_t Size = 500;
     const uint32_t Repetitions = 50;
     for (uint32_t repeat = 0; repeat < Repetitions; repeat++) {
-        PriorityQueue* q = [PriorityQueue priorityQueueAscendingWithComparator:^(NSNumber* obj1, NSNumber* obj2){
+        PriorityQueue* q = [[PriorityQueue alloc] initAscendingWithComparator:^(NSNumber* obj1, NSNumber* obj2) {
             return [obj1 compare:obj2];
         }];
         NSArray* permutation = RandomPermutation(Size);

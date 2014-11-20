@@ -1,8 +1,8 @@
 #import <XCTest/XCTest.h>
-#import "DnsManager.h"
+#import "DNSManager.h"
 #import "TestUtil.h"
 #import "Util.h"
-#import "IpAddress.h"
+#import "IPAddress.h"
 #import "ThreadManager.h"
 #import <netdb.h>
 
@@ -12,27 +12,27 @@
 #define nonExistentHostname [NSString stringWithFormat:@"%@kfurmtludehntlgihmvnduyebntiinvbudydepqowudyfnrkt.com", \
     [[CryptoTools generateSecureRandomData:10] encodedAsBase64]]
 
-@interface DnsManagerTest : XCTestCase
+@interface DNSManagerTest : XCTestCase
 
 @end
 
-@implementation DnsManagerTest
+@implementation DNSManagerTest
 
 -(void) testQueryAddresses_Sequential {
-    TOCFuture* f1 = [DnsManager asyncQueryAddressesForDomainName:reliableHostName
+    TOCFuture* f1 = [DNSManager asyncQueryAddressesForDomainName:reliableHostName
                                                  unlessCancelled:nil];
     testChurnUntil(f1.hasResult, 5.0);
     test(f1.hasResult && [(NSArray*)[f1 forceGetResult] count] > 0);
     
-    TOCFuture* f2 = [DnsManager asyncQueryAddressesForDomainName:invalidHostname
+    TOCFuture* f2 = [DNSManager asyncQueryAddressesForDomainName:invalidHostname
                                                  unlessCancelled:nil];
     testChurnUntil(f2.hasFailed, 5.0);
     
-    TOCFuture* f3 = [DnsManager asyncQueryAddressesForDomainName:nonExistentHostname
+    TOCFuture* f3 = [DNSManager asyncQueryAddressesForDomainName:nonExistentHostname
                                                  unlessCancelled:nil];
     testChurnUntil(f3.hasFailed, 5.0);
     
-    TOCFuture* f4 = [DnsManager asyncQueryAddressesForDomainName:infrastructureTestHostName
+    TOCFuture* f4 = [DNSManager asyncQueryAddressesForDomainName:infrastructureTestHostName
                                                  unlessCancelled:nil];
     testChurnUntil(f4.hasResult, 5.0);
     test(f4.hasResult && [(NSArray*)[f4 forceGetResult] count] > 0);
@@ -40,13 +40,13 @@
 }
 
 -(void) testQueryAddresses_Concurrent {
-    TOCFuture* f1 = [DnsManager asyncQueryAddressesForDomainName:reliableHostName
+    TOCFuture* f1 = [DNSManager asyncQueryAddressesForDomainName:reliableHostName
                                                  unlessCancelled:nil];
-    TOCFuture* f2 = [DnsManager asyncQueryAddressesForDomainName:invalidHostname
+    TOCFuture* f2 = [DNSManager asyncQueryAddressesForDomainName:invalidHostname
                                                  unlessCancelled:nil];
-    TOCFuture* f3 = [DnsManager asyncQueryAddressesForDomainName:nonExistentHostname
+    TOCFuture* f3 = [DNSManager asyncQueryAddressesForDomainName:nonExistentHostname
                                                  unlessCancelled:nil];
-    TOCFuture* f4 = [DnsManager asyncQueryAddressesForDomainName:infrastructureTestHostName
+    TOCFuture* f4 = [DNSManager asyncQueryAddressesForDomainName:infrastructureTestHostName
                                                  unlessCancelled:nil];
     
     testChurnUntil(f1.hasResult && f2.hasFailed && f3.hasFailed && f4.hasResult, 5.0);
@@ -56,13 +56,13 @@
 
 -(void) testQueryAddresses_Cancel {
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];
-    TOCFuture* f1 = [DnsManager asyncQueryAddressesForDomainName:reliableHostName
+    TOCFuture* f1 = [DNSManager asyncQueryAddressesForDomainName:reliableHostName
                                                  unlessCancelled:c.token];
-    TOCFuture* f2 = [DnsManager asyncQueryAddressesForDomainName:invalidHostname
+    TOCFuture* f2 = [DNSManager asyncQueryAddressesForDomainName:invalidHostname
                                                  unlessCancelled:c.token];
-    TOCFuture* f3 = [DnsManager asyncQueryAddressesForDomainName:nonExistentHostname
+    TOCFuture* f3 = [DNSManager asyncQueryAddressesForDomainName:nonExistentHostname
                                                  unlessCancelled:c.token];
-    TOCFuture* f4 = [DnsManager asyncQueryAddressesForDomainName:infrastructureTestHostName
+    TOCFuture* f4 = [DNSManager asyncQueryAddressesForDomainName:infrastructureTestHostName
                                                  unlessCancelled:c.token];
     [c cancel];
     
@@ -75,7 +75,7 @@
 
 -(void)testQueryAddresses_FastCancel {
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];
-    TOCFuture* f = [DnsManager asyncQueryAddressesForDomainName:reliableHostName
+    TOCFuture* f = [DNSManager asyncQueryAddressesForDomainName:reliableHostName
                                                 unlessCancelled:c.token];
     [c cancel];
     test(!f.isIncomplete);

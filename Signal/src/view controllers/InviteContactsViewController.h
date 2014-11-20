@@ -4,12 +4,12 @@
 
 @interface InviteContactsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UIActionSheetDelegate, SearchBarTitleViewDelegate>
 
-@property (nonatomic, strong) IBOutlet UIView *unseenWhisperUsersHeaderView;
-@property (nonatomic, strong) IBOutlet UIView *regularContactsHeaderView;
-@property (nonatomic, strong) IBOutlet UITableView *contactTableView;
+@property (strong, nonatomic) IBOutlet UIView* unseenWhisperUsersHeaderView;
+@property (strong, nonatomic) IBOutlet UIView* regularContactsHeaderView;
+@property (strong, nonatomic) IBOutlet UITableView* contactTableView;
 
 - (IBAction)dismissNewWhisperUsersTapped:(id)sender;
 
-- (void)updateWithNewWhisperUsers:(NSArray *)users;
+- (void)updateWithNewWhisperUsers:(NSArray*)users;
 
 @end

@@ -7,11 +7,12 @@
  *
 **/
 
-@interface HostNameEndPoint : NSObject<NetworkEndPoint>
-@property (nonatomic, readonly) in_port_t port;
-@property (nonatomic, readonly) NSString* hostname;
+@interface HostNameEndPoint : NSObject <NetworkEndPoint>
 
-+(HostNameEndPoint*) hostNameEndPointWithHostName:(NSString*)hostname
-                                          andPort:(in_port_t)port;
+@property (nonatomic, readonly) in_port_t port;
+@property (strong, nonatomic, readonly) NSString* hostname;
+
+- (instancetype)initWithHostName:(NSString*)hostname
+                         andPort:(in_port_t)port;
 
 @end

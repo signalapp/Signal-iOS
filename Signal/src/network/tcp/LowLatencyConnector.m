@@ -1,14 +1,14 @@
 #import "LowLatencyConnector.h"
 
 #import "Constraints.h"
-#import "DnsManager.h"
-#import "IpAddress.h"
+#import "DNSManager.h"
+#import "IPAddress.h"
 #import "NetworkStream.h"
 #import "Util.h"
 
 @implementation LowLatencyConnector
 
-+(TOCFuture*) asyncLowLatencyConnectToEndPoint:(id<NetworkEndPoint>)endPoint
++ (TOCFuture*)asyncLowLatencyConnectToEndPoint:(id<NetworkEndPoint>)endPoint
                                 untilCancelled:(TOCCancelToken*)untilCancelledToken {
     
     require(endPoint != nil);
@@ -21,13 +21,13 @@
     }];
 }
 
-+(TOCFuture*) startConnectingToAll:(NSArray*)specificEndPoints
++ (TOCFuture*)startConnectingToAll:(NSArray*)specificEndPoints
                     untilCancelled:(TOCCancelToken*)untilCancelledToken {
     
     require(specificEndPoints != nil);
     
     NSArray* candidates = [specificEndPoints map:^id(id<NetworkEndPoint> endPoint) {
-        return [LowLatencyCandidate lowLatencyCandidateToRemoteEndPoint:endPoint];
+        return [[LowLatencyCandidate alloc] initWithRemoteEndPoint:endPoint];
     }];
     
     for (LowLatencyCandidate* candidate in candidates) {

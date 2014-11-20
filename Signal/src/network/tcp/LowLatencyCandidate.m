@@ -1,44 +1,52 @@
 #import "LowLatencyCandidate.h"
 #import "Util.h"
 
+@interface LowLatencyCandidate ()
+
+@property (strong, readwrite, nonatomic) IPEndPoint* remoteEndPoint;
+@property (strong, readwrite, nonatomic) NetworkStream* networkStream;
+
+@end
+
 @implementation LowLatencyCandidate
 
-@synthesize networkStream, remoteEndPoint;
-
-+(LowLatencyCandidate*) lowLatencyCandidateToRemoteEndPoint:(id<NetworkEndPoint>)remoteEndPoint {
+- (instancetype)initWithRemoteEndPoint:(id<NetworkEndPoint>)remoteEndPoint {
+    self = [super init];
+	
+    if (self) {
+        require(remoteEndPoint != nil);
+        
+        self.remoteEndPoint = remoteEndPoint;
+        self.networkStream = [[NetworkStream alloc] initWithRemoteEndPoint:remoteEndPoint];
+    }
     
-    require(remoteEndPoint != nil);
-    
-    LowLatencyCandidate* r = [LowLatencyCandidate new];
-    r->remoteEndPoint = remoteEndPoint;
-    r->networkStream = [NetworkStream networkStreamToEndPoint:remoteEndPoint];
-    return r;
+    return self;
 }
 
--(void)terminate {
-    [networkStream terminate];
+- (void)terminate {
+    [self.networkStream terminate];
 }
 
--(void) preStart {
-    [networkStream startProcessingStreamEventsEvenWithoutHandler];
+- (void)preStart {
+    [self.networkStream startProcessingStreamEventsEvenWithoutHandler];
 }
 
--(TOCUntilOperation) tcpHandshakeCompleter {
+- (TOCUntilOperation)tcpHandshakeCompleter {
     return ^(TOCCancelToken* untilCancelledToken) {
         return [self completer:untilCancelledToken];
     };
 }
 
--(TOCFuture*) completer:(TOCCancelToken*)untilCancelledToken {
-    TOCFuture* tcpHandshakeCompleted = [networkStream asyncTcpHandshakeCompleted];
+- (TOCFuture*)completer:(TOCCancelToken*)untilCancelledToken {
+    TOCFuture* tcpHandshakeCompleted = [self.networkStream asyncTCPHandshakeCompleted];
     
     [untilCancelledToken whenCancelledTerminate:self];
     
     return [tcpHandshakeCompleted thenValue:self];
 }
 
--(TOCFuture*) delayedUntilAuthenticated {
-    return [networkStream.asyncConnectionCompleted thenValue:self];
+- (TOCFuture*)delayedUntilAuthenticated {
+    return [self.networkStream.asyncConnectionCompleted thenValue:self];
 }
 
 @end

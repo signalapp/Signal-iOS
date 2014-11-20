@@ -1,17 +1,29 @@
 #import "AnonymousValueLogger.h"
 #import "Constraints.h"
 
+@interface AnonymousValueLogger ()
+
+@property (nonatomic, readwrite, copy) void (^logValueBlock)(double value);
+
+@end
+
 @implementation AnonymousValueLogger
 
-+(AnonymousValueLogger*) anonymousValueLogger:(void(^)(double value))logValue {
-    require(logValue != nil);
-    AnonymousValueLogger* a = [AnonymousValueLogger new];
-    a->_logValueBlock = logValue;
-    return a;
+- (instancetype)initWithLogValue:(void(^)(double value))logValue {
+    self = [super init];
+	
+    if (self) {
+        require(logValue != nil);
+        self.logValueBlock = logValue;
+    }
+    
+    return self;
 }
 
--(void) logValue:(double)value {
-    _logValueBlock(value);
+#pragma mark ValueLogger
+
+- (void)logValue:(double)value {
+    self.logValueBlock(value);
 }
 
 @end

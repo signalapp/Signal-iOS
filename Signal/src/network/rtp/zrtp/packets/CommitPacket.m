@@ -1,11 +1,7 @@
 #import "CommitPacket.h"
 #import "Util.h"
 #import "CryptoTools.h"
-
-@implementation CommitPacket
-
-@synthesize agreementSpecId, authSpecId, cipherSpecId, dhPart2HelloCommitment, h2, hashSpecId, sasSpecId, zid;
-
+#import "NSData+CryptoTools.h"
 
 #define         ZID_LENGTH      12
 #define   HASH_SPEC_LENGTH      4
@@ -22,12 +18,28 @@
 #define    SAS_SPEC_OFFSET      AGREE_SPEC_OFFSET   +   AGREE_SPEC_LENGTH
 #define      COMMIT_OFFSET        SAS_SPEC_OFFSET   +     SAS_SPEC_LENGTH
 
+@interface CommitPacket ()
 
-+(CommitPacket*) commitPacketWithDefaultSpecsAndKeyAgreementProtocol:(id<KeyAgreementProtocol>)keyAgreementProtocol
-                                                        andHashChain:(HashChain*)hashChain
-                                                              andZid:(Zid*)zid
-                                                andCommitmentToHello:(HelloPacket*)hello
-                                                          andDhPart2:(DhPacket*)dhPart2 {
+@property (strong, readwrite, nonatomic) NSData* h2;
+@property (strong, readwrite, nonatomic) NSData* hashSpecId;
+@property (strong, readwrite, nonatomic) NSData* cipherSpecId;
+@property (strong, readwrite, nonatomic) NSData* authSpecId;
+@property (strong, readwrite, nonatomic) NSData* agreementSpecId;
+@property (strong, readwrite, nonatomic) NSData* sasSpecId;
+@property (strong, readwrite, nonatomic) Zid* zid;
+@property (strong, readwrite, nonatomic) NSData* dhPart2HelloCommitment;
+
+@property (strong, readwrite, nonatomic, getter=embeddedIntoHandshakePacket) HandshakePacket* embedding;
+
+@end
+
+@implementation CommitPacket
+
++ (instancetype)defaultPacketWithKeyAgreementProtocol:(id<KeyAgreementProtocol>)keyAgreementProtocol
+                                         andHashChain:(HashChain*)hashChain
+                                               andZid:(Zid*)zid
+                                 andCommitmentToHello:(HelloPacket*)hello
+                                           andDHPart2:(DHPacket*)dhPart2 {
     
     require(keyAgreementProtocol != nil);
     require(hashChain != nil);
@@ -37,144 +49,156 @@
     
     NSData* dhPart2Data = [[dhPart2 embeddedIntoHandshakePacket] dataUsedForAuthentication];
     NSData* helloData = [[hello embeddedIntoHandshakePacket] dataUsedForAuthentication];
-    return [CommitPacket commitPacketWithHashChainH2:hashChain.h2
-                                              andZid:zid
-                                       andHashSpecId:COMMIT_DEFAULT_HASH_SPEC_ID
-                                     andCipherSpecId:COMMIT_DEFAULT_CIPHER_SPEC_ID
-                                       andAuthSpecId:COMMIT_DEFAULT_AUTH_SPEC_ID
-                                      andAgreeSpecId:keyAgreementProtocol.getId
-                                        andSasSpecId:COMMIT_DEFAULT_SAS_SPEC_ID
-                           andDhPart2HelloCommitment:@[dhPart2Data, helloData].concatDatas.hashWithSha256
-                                          andHmacKey:hashChain.h1];
+    return [[self alloc] initWithHashChainH2:hashChain.h2
+                                      andZid:zid
+                               andHashSpecId:COMMIT_DEFAULT_HASH_SPEC_ID
+                             andCipherSpecId:COMMIT_DEFAULT_CIPHER_SPEC_ID
+                               andAuthSpecId:COMMIT_DEFAULT_AUTH_SPEC_ID
+                              andAgreeSpecId:keyAgreementProtocol.getId
+                                andSasSpecId:COMMIT_DEFAULT_SAS_SPEC_ID
+                   andDHPart2HelloCommitment:[[@[dhPart2Data, helloData] concatDatas] hashWithSHA256]
+                                  andHMACKey:hashChain.h1];
 }
 
-+(CommitPacket*) commitPacketWithHashChainH2:(NSData*)h2
-                                      andZid:(Zid*)zid
-                               andHashSpecId:(NSData*)hashSpecId
-                             andCipherSpecId:(NSData*)cipherSpecId
-                               andAuthSpecId:(NSData*)authSpecId
-                              andAgreeSpecId:(NSData*)agreeSpecId
-                                andSasSpecId:(NSData*)sasSpecId
-                   andDhPart2HelloCommitment:(NSData*)dhPart2HelloCommitment
-                                  andHmacKey:(NSData*)hmacKey {
+- (instancetype)initWithHashChainH2:(NSData*)h2
+                             andZid:(Zid*)zid
+                      andHashSpecId:(NSData*)hashSpecId
+                    andCipherSpecId:(NSData*)cipherSpecId
+                      andAuthSpecId:(NSData*)authSpecId
+                     andAgreeSpecId:(NSData*)agreeSpecId
+                       andSasSpecId:(NSData*)sasSpecId
+          andDHPart2HelloCommitment:(NSData*)dhPart2HelloCommitment
+                         andHMACKey:(NSData*)hmacKey {
+    self = [super init];
+	
+    if (self) {
+        require(h2 != nil);
+        require(zid != nil);
+        require(hashSpecId != nil);
+        require(cipherSpecId != nil);
+        require(authSpecId != nil);
+        require(agreeSpecId != nil);
+        require(sasSpecId != nil);
+        require(dhPart2HelloCommitment != nil);
+        require(hmacKey != nil);
+        
+        require(h2.length == HASH_CHAIN_ITEM_LENGTH);
+        require(hashSpecId.length == HASH_SPEC_LENGTH);
+        require(cipherSpecId.length == CIPHER_SPEC_LENGTH);
+        require(authSpecId.length == AUTH_SPEC_LENGTH);
+        require(agreeSpecId.length == AGREE_SPEC_LENGTH);
+        require(sasSpecId.length == SAS_SPEC_LENGTH);
+        
+        self.h2                     = h2;
+        self.zid                    = zid;
+        self.hashSpecId             = hashSpecId;
+        self.cipherSpecId           = cipherSpecId;
+        self.authSpecId             = authSpecId;
+        self.agreementSpecId        = agreeSpecId;
+        self.sasSpecId              = sasSpecId;
+        self.dhPart2HelloCommitment = dhPart2HelloCommitment;
+        
+        self.embedding              = [self embedInHandshakePacketAuthenticatedWith:hmacKey];
+    }
     
-    require(h2 != nil);
-    require(zid != nil);
-    require(hashSpecId != nil);
-    require(cipherSpecId != nil);
-    require(authSpecId != nil);
-    require(agreeSpecId != nil);
-    require(sasSpecId != nil);
-    require(dhPart2HelloCommitment != nil);
-    require(hmacKey != nil);
-    
-    require(h2.length == HASH_CHAIN_ITEM_LENGTH);
-    require(hashSpecId.length == HASH_SPEC_LENGTH);
-    require(cipherSpecId.length == CIPHER_SPEC_LENGTH);
-    require(authSpecId.length == AUTH_SPEC_LENGTH);
-    require(agreeSpecId.length == AGREE_SPEC_LENGTH);
-    require(sasSpecId.length == SAS_SPEC_LENGTH);
-    
-    CommitPacket* p = [CommitPacket new];
-    
-    p->h2 = h2;
-    p->zid = zid;
-    p->hashSpecId = hashSpecId;
-    p->cipherSpecId = cipherSpecId;
-    p->authSpecId = authSpecId;
-    p->agreementSpecId = agreeSpecId;
-    p->sasSpecId = sasSpecId;
-    p->dhPart2HelloCommitment = dhPart2HelloCommitment;
-    
-    p->embedding = [p embedInHandshakePacketAuthenticatedWith:hmacKey];
-    
-    return p;
+    return self;
 }
--(HandshakePacket*) embedInHandshakePacketAuthenticatedWith:(NSData*)hmacKey {
+
+- (instancetype)initFromHandshakePacket:(HandshakePacket*)handshakePacket {
+    self = [super init];
+	
+    if (self) {
+        require(handshakePacket != nil);
+        checkOperation([[handshakePacket typeId] isEqualToData:HANDSHAKE_TYPE_COMMIT]);
+        NSData* payload = [handshakePacket payload];
+        checkOperation(payload.length == COMMIT_OFFSET + COMMIT_LENGTH + HANDSHAKE_TRUNCATED_HMAC_LENGTH);
+        
+        self.h2                     = [self getH2FromPayload:payload];
+        self.zid                    = [self getZidFromPayload:payload];
+        self.hashSpecId             = [self getHashSpecIdFromPayload:payload];
+        self.cipherSpecId           = [self getCipherSpecIdFromPayload:payload];
+        self.authSpecId             = [self getAuthSpecIdFromPayload:payload];
+        self.agreementSpecId        = [self getAgreeSpecIdFromPayload:payload];
+        self.sasSpecId              = [self getSasSpecIdFromPayload:payload];
+        self.dhPart2HelloCommitment = [self getCommitmentFromPayload:payload];
+        
+        self.embedding              = handshakePacket;
+    }
+    
+    return self;
+}
+
+- (HandshakePacket*)embedInHandshakePacketAuthenticatedWith:(NSData*)hmacKey {
     
     require(hmacKey != nil);
-    requireState(h2.length == HASH_CHAIN_ITEM_LENGTH);
-    requireState(hashSpecId.length == HASH_SPEC_LENGTH);
-    requireState(cipherSpecId.length == CIPHER_SPEC_LENGTH);
-    requireState(authSpecId.length == AUTH_SPEC_LENGTH);
-    requireState(agreementSpecId.length == AGREE_SPEC_LENGTH);
-    requireState(sasSpecId.length == SAS_SPEC_LENGTH);
+    requireState(self.h2.length              == HASH_CHAIN_ITEM_LENGTH);
+    requireState(self.hashSpecId.length      == HASH_SPEC_LENGTH);
+    requireState(self.cipherSpecId.length    == CIPHER_SPEC_LENGTH);
+    requireState(self.authSpecId.length      == AUTH_SPEC_LENGTH);
+    requireState(self.agreementSpecId.length == AGREE_SPEC_LENGTH);
+    requireState(self.sasSpecId.length       == SAS_SPEC_LENGTH);
     
-    NSData* payload = @[
-                       h2,
-                       zid.getData,
-                       hashSpecId,
-                       cipherSpecId,
-                       authSpecId,
-                       agreementSpecId,
-                       sasSpecId,
-                       dhPart2HelloCommitment
-                       ].concatDatas;
+    NSData* payload = [@[
+                       self.h2,
+                       self.zid.data,
+                       self.hashSpecId,
+                       self.cipherSpecId,
+                       self.authSpecId,
+                       self.agreementSpecId,
+                       self.sasSpecId,
+                       self.dhPart2HelloCommitment
+                       ] concatDatas];
     
-    return [[HandshakePacket handshakePacketWithTypeId:HANDSHAKE_TYPE_COMMIT andPayload:payload] withHmacAppended:hmacKey];
+    return [[[HandshakePacket alloc] initWithTypeId:HANDSHAKE_TYPE_COMMIT andPayload:payload] withHMACAppended:hmacKey];
 }
--(void) verifyCommitmentAgainstHello:(HelloPacket*)hello andDhPart2:(DhPacket*)dhPart2 {
+
+- (void)verifyCommitmentAgainstHello:(HelloPacket*)hello
+                          andDHPart2:(DHPacket*)dhPart2 {
     require(hello != nil);
     require(dhPart2 != nil);
     
     NSData* expected = [[@[
                          [[dhPart2 embeddedIntoHandshakePacket] dataUsedForAuthentication],
                          [[hello embeddedIntoHandshakePacket] dataUsedForAuthentication]]
-                         concatDatas] hashWithSha256];
-    checkOperation([dhPart2HelloCommitment isEqualToData_TimingSafe:expected]);
-}
--(void) verifyMacWithHashChainH1:(NSData*)hashChainH1 {
-    checkOperation([[hashChainH1 hashWithSha256] isEqualToData_TimingSafe:h2]);
-    [embedding withHmacVerifiedAndRemoved:hashChainH1];
+                         concatDatas] hashWithSHA256];
+    checkOperation([self.dhPart2HelloCommitment isEqualToData_TimingSafe:expected]);
 }
 
-+(NSData*) getH2FromPayload:(NSData*)payload {
+- (void)verifyMacWithHashChainH1:(NSData*)hashChainH1 {
+    checkOperation([[hashChainH1 hashWithSHA256] isEqualToData_TimingSafe:self.h2]);
+    [self.embedding withHMACVerifiedAndRemoved:hashChainH1];
+}
+
+- (NSData*)getH2FromPayload:(NSData*)payload {
     return [payload subdataWithRange:NSMakeRange(0, HASH_CHAIN_ITEM_LENGTH)];
 }
-+(Zid*) getZidFromPayload:(NSData*)payload {
-    return [Zid zidWithData:[payload subdataWithRange:NSMakeRange(HASH_CHAIN_ITEM_LENGTH, ZID_LENGTH)]];
-}
-+(NSData*) getHashSpecIdFromPayload:(NSData*)payload {
-    return [payload subdataWithRange:NSMakeRange(HASH_SPEC_OFFSET, HASH_SPEC_LENGTH)];
-}
-+(NSData*) getCipherSpecIdFromPayload:(NSData*)payload {
-    return [payload subdataWithRange:NSMakeRange(CIPHER_SPEC_OFFSET, CIPHER_SPEC_LENGTH)];
-}
-+(NSData*) getAuthSpecIdFromPayload:(NSData*)payload {
-    return [payload subdataWithRange:NSMakeRange(AUTH_SPEC_OFFSET, AUTH_SPEC_LENGTH)];
-}
-+(NSData*) getAgreeSpecIdFromPayload:(NSData*)payload {
-    return [payload subdataWithRange:NSMakeRange(AGREE_SPEC_OFFSET, AGREE_SPEC_LENGTH)];
-}
-+(NSData*) getSasSpecIdFromPayload:(NSData*)payload {
-    return [payload subdataWithRange:NSMakeRange(SAS_SPEC_OFFSET, SAS_SPEC_LENGTH)];
-}
-+(NSData*) getCommitmentFromPayload:(NSData*)payload {
-    return [payload subdataWithRange:NSMakeRange(COMMIT_OFFSET, COMMIT_LENGTH)];
-}
-+(CommitPacket*) commitPacketParsedFromHandshakePacket:(HandshakePacket*)handshakePacket {
-    require(handshakePacket != nil);
-    checkOperation([[handshakePacket typeId] isEqualToData:HANDSHAKE_TYPE_COMMIT]);
-    NSData* payload = [handshakePacket payload];
-    checkOperation(payload.length == COMMIT_OFFSET + COMMIT_LENGTH + HANDSHAKE_TRUNCATED_HMAC_LENGTH);
-    
-    CommitPacket* p = [CommitPacket new];
-    
-    p->h2 = [self getH2FromPayload:payload];
-    p->zid = [self getZidFromPayload:payload];
-    p->hashSpecId = [self getHashSpecIdFromPayload:payload];
-    p->cipherSpecId = [self getCipherSpecIdFromPayload:payload];
-    p->authSpecId = [self getAuthSpecIdFromPayload:payload];
-    p->agreementSpecId = [self getAgreeSpecIdFromPayload:payload];
-    p->sasSpecId = [self getSasSpecIdFromPayload:payload];
-    p->dhPart2HelloCommitment = [self getCommitmentFromPayload:payload];
-    p->embedding = handshakePacket;
-    
-    return p;
+
+- (Zid*)getZidFromPayload:(NSData*)payload {
+    return [[Zid alloc] initWithData:[payload subdataWithRange:NSMakeRange(HASH_CHAIN_ITEM_LENGTH, ZID_LENGTH)]];
 }
 
--(HandshakePacket*) embeddedIntoHandshakePacket {
-    return embedding;
+- (NSData*)getHashSpecIdFromPayload:(NSData*)payload {
+    return [payload subdataWithRange:NSMakeRange(HASH_SPEC_OFFSET, HASH_SPEC_LENGTH)];
+}
+
+- (NSData*)getCipherSpecIdFromPayload:(NSData*)payload {
+    return [payload subdataWithRange:NSMakeRange(CIPHER_SPEC_OFFSET, CIPHER_SPEC_LENGTH)];
+}
+
+- (NSData*)getAuthSpecIdFromPayload:(NSData*)payload {
+    return [payload subdataWithRange:NSMakeRange(AUTH_SPEC_OFFSET, AUTH_SPEC_LENGTH)];
+}
+
+- (NSData*)getAgreeSpecIdFromPayload:(NSData*)payload {
+    return [payload subdataWithRange:NSMakeRange(AGREE_SPEC_OFFSET, AGREE_SPEC_LENGTH)];
+}
+
+- (NSData*)getSasSpecIdFromPayload:(NSData*)payload {
+    return [payload subdataWithRange:NSMakeRange(SAS_SPEC_OFFSET, SAS_SPEC_LENGTH)];
+}
+
+- (NSData*)getCommitmentFromPayload:(NSData*)payload {
+    return [payload subdataWithRange:NSMakeRange(COMMIT_OFFSET, COMMIT_LENGTH)];
 }
 
 @end

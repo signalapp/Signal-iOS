@@ -33,18 +33,11 @@
  *
  */
 
-@interface DropoutTracker : NSObject {
-@private Queue* priorLatenesses;
-@private NSMutableArray* lateBins;
-@private SequenceCounter* sequenceCounter;
-@private NSTimeInterval audioDurationPerPacket;
-@private bool startTimeInitialized;
-@private NSTimeInterval startTime;
-@private NSTimeInterval drift;
-}
+@interface DropoutTracker : NSObject
 
-+(DropoutTracker*) dropoutTrackerWithAudioDurationPerPacket:(NSTimeInterval)audioDurationPerPacket;
--(void) observeSequenceNumber:(uint16_t)seqNum;
--(double)getDepthForThreshold:(NSUInteger)maxEvents;
+- (instancetype)initWithAudioDurationPerPacket:(NSTimeInterval)audioDurationPerPacket;
+
+- (void)observeSequenceNumber:(uint16_t)seqNum;
+- (double)getDepthForThreshold:(NSUInteger)maxEvents;
 
 @end

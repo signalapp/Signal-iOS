@@ -4,19 +4,19 @@
 
 @protocol CountryCodeViewControllerDelegate <NSObject>
 
-- (void)countryCodeViewController:(CountryCodeViewController *)vc
-             didSelectCountryCode:(NSString *)code
-                       forCountry:(NSString *)country;
+- (void)countryCodeViewController:(CountryCodeViewController*)vc
+             didSelectCountryCode:(NSString*)code
+                       forCountry:(NSString*)country;
 
-- (void)countryCodeViewControllerDidCancel:(CountryCodeViewController *)vc;
+- (void)countryCodeViewControllerDidCancel:(CountryCodeViewController*)vc;
 
 @end
 
 @interface CountryCodeViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate>
 
-@property (nonatomic, strong) IBOutlet UITableView *countryCodeTableView;
-@property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
-@property (nonatomic, assign) id<CountryCodeViewControllerDelegate> delegate;
+@property (strong, nonatomic) IBOutlet UITableView* countryCodeTableView;
+@property (strong, nonatomic) IBOutlet UISearchBar* searchBar;
+@property (weak, nonatomic) id<CountryCodeViewControllerDelegate> delegate;
 
 - (IBAction)cancelTapped:(id)sender;
 

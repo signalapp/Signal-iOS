@@ -15,7 +15,7 @@ LocalizableCustomFontLabel(HelveticaNeueLTStdThinLabel, HelveticaNeueLTStd-Th) \
 
 @interface LocalizableCustomFontLabel : UILabel
 
-@property (nonatomic, strong) NSString *localizationKey;
+@property (strong, nonatomic) NSString* localizationKey;
 
 @end
 

@@ -8,7 +8,7 @@
 @implementation ObservableTest
 
 -(void) testObservableAddRemove {
-    ObservableValueController* s = [ObservableValueController observableValueControllerWithInitialValue:@""];
+    ObservableValueController* s = [[ObservableValueController alloc] initWithInitialValue:@""];
     ObservableValue* t = s;
     NSMutableArray* a = [NSMutableArray array];
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];
@@ -26,7 +26,7 @@
     test([a isEqualToArray:(@[@"", @5, @7])]);
 }
 -(void) testObservableAddAdd {
-    ObservableValueController* s = [ObservableValueController observableValueControllerWithInitialValue:@""];
+    ObservableValueController* s = [[ObservableValueController alloc] initWithInitialValue:@""];
     ObservableValue* t = s;
     NSMutableArray* a = [NSMutableArray array];
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];
@@ -47,7 +47,7 @@
     id v2 = nil;
     id v3 = @1;
     
-    ObservableValueController* s = [ObservableValueController observableValueControllerWithInitialValue:v1];
+    ObservableValueController* s = [[ObservableValueController alloc] initWithInitialValue:v1];
     ObservableValue* t = s;
     __block id latest = nil;
     __block int count = 0;
@@ -78,7 +78,7 @@
     test(count == 4);
 }
 -(void) testObservableReentrantAdd {
-    ObservableValueController* s = [ObservableValueController observableValueControllerWithInitialValue:@""];
+    ObservableValueController* s = [[ObservableValueController alloc] initWithInitialValue:@""];
     ObservableValue* t = s;
     NSMutableArray* a = [NSMutableArray array];
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];
@@ -106,7 +106,7 @@
     test([a isEqualToArray:(@[@"", @1, @1, @2, @2, @2, @2, @3, @3, @3, @3, @3, @3, @3, @3])]);
 }
 -(void) testObservableReentrantRemove {
-    ObservableValueController* s = [ObservableValueController observableValueControllerWithInitialValue:@""];
+    ObservableValueController* s = [[ObservableValueController alloc] initWithInitialValue:@""];
     ObservableValue* t = s;
     NSMutableArray* a = [NSMutableArray array];
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];

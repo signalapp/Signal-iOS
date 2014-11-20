@@ -7,50 +7,62 @@
 #import "RecentCallManager.h"
 #import "Util.h"
 
+@interface PhoneManager ()
+
+@property (strong, nonatomic) ObservableValueController* currentCallControllerObservable;
+@property (strong, nonatomic) ObservableValueController* currentCallStateObservable;
+@property (nonatomic) int64_t lastIncomingSessionId;
+@property (nonatomic) ErrorHandlerBlock errorHandler;
+
+@end
+
 @implementation PhoneManager
 
-+(PhoneManager*) phoneManagerWithErrorHandler:(ErrorHandlerBlock)errorHandler {
-    PhoneManager* m = [PhoneManager new];
-    m->_errorHandler = errorHandler;
-    m->currentCallControllerObservable = [ObservableValueController observableValueControllerWithInitialValue:nil];
-    m->currentCallStateObservable = [ObservableValueController observableValueControllerWithInitialValue:nil];
-
-    [m->currentCallControllerObservable watchLatestValue:^(CallController* latestValue) {
-        [m->currentCallStateObservable updateValue:latestValue.callState];
-    } onThread:NSThread.currentThread untilCancelled:nil];
+- (instancetype)initWithErrorHandler:(ErrorHandlerBlock)errorHandler {
+    self = [super init];
+	
+    if (self) {
+        self.errorHandler = errorHandler;
+        self.currentCallControllerObservable = [[ObservableValueController alloc] initWithInitialValue:nil];
+        self.currentCallStateObservable = [[ObservableValueController alloc] initWithInitialValue:nil];
+        
+        [self.currentCallControllerObservable watchLatestValue:^(CallController* latestValue) {
+            [self.currentCallStateObservable updateValue:latestValue.callState];
+        } onThread:NSThread.currentThread untilCancelled:nil];
+    }
     
-    return m;
+    return self;
 }
 
--(ObservableValue*) currentCallObservable {
-    return currentCallStateObservable;
+- (ObservableValue*)currentCallObservable {
+    return self.currentCallStateObservable;
 }
 
--(CallController*) cancelExistingCallAndInitNewCallWork:(bool)initiatedLocally
+- (CallController*)cancelExistingCallAndInitNewCallWork:(bool)initiatedLocally
                                                  remote:(PhoneNumber*)remoteNumber
                                         optionalContact:(Contact*)contact {
-    CallController* old = [self curCallController];
-    CallController* new = [CallController callControllerForCallInitiatedLocally:initiatedLocally
-                                                               withRemoteNumber:remoteNumber
-                                                  andOptionallySpecifiedContact:contact];
-    [old terminateWithReason:CallTerminationType_ReplacedByNext
-             withFailureInfo:nil
-              andRelatedInfo:nil];
-    [currentCallControllerObservable updateValue:new];
-    return new;
+    CallController* oldCallController = [self currentCallController];
+    CallController* newCallController = [[CallController alloc] initForCallInitiatedLocally:initiatedLocally
+                                                                           withRemoteNumber:remoteNumber
+                                                              andOptionallySpecifiedContact:contact];
+    [oldCallController terminateWithReason:CallTerminationTypeReplacedByNext
+                           withFailureInfo:nil
+                            andRelatedInfo:nil];
+    [self.currentCallControllerObservable updateValue:newCallController];
+    return newCallController;
 }
 
--(void) initiateOutgoingCallToContact:(Contact*)contact atRemoteNumber:(PhoneNumber*)remoteNumber {
+- (void)initiateOutgoingCallToContact:(Contact*)contact atRemoteNumber:(PhoneNumber*)remoteNumber {
     require(remoteNumber != nil);
     [self initiateOutgoingCallToRemoteNumber:remoteNumber withOptionallyKnownContact:contact];
 }
 
--(void) initiateOutgoingCallToRemoteNumber:(PhoneNumber*)remoteNumber {
+- (void)initiateOutgoingCallToRemoteNumber:(PhoneNumber*)remoteNumber {
     require(remoteNumber != nil);
     [self initiateOutgoingCallToRemoteNumber:remoteNumber withOptionallyKnownContact:nil];
 }
 
--(void) initiateOutgoingCallToRemoteNumber:(PhoneNumber*)remoteNumber withOptionallyKnownContact:(Contact*)contact {
+- (void)initiateOutgoingCallToRemoteNumber:(PhoneNumber*)remoteNumber withOptionallyKnownContact:(Contact*)contact {
     require(remoteNumber != nil);
 	
     CallController* callController = [self cancelExistingCallAndInitNewCallWork:true
@@ -64,9 +76,9 @@
     
     TOCFuture* futureCalling = [futureConnected thenTry:^id(CallConnectResult* connectResult) {
         [callController advanceCallProgressToConversingWithShortAuthenticationString:connectResult.shortAuthenticationString];
-        CallAudioManager *cam = [CallAudioManager callAudioManagerStartedWithAudioSocket:connectResult.audioSocket
-                                                 andErrorHandler:callController.errorHandler
-                                                  untilCancelled:lifetime];
+        CallAudioManager *cam = [[CallAudioManager alloc] initWithAudioSocket:connectResult.audioSocket
+                                                              andErrorHandler:callController.errorHandler
+                                                               untilCancelled:lifetime];
 		[callController setCallAudioManager:cam];
         return nil;
     }];
@@ -76,13 +88,13 @@
     }];
 }
 
--(void) incomingCallWithSession:(ResponderSessionDescriptor*)session {
+- (void)incomingCallWithSession:(ResponderSessionDescriptor*)session {
     require(session != nil);
 
-    int64_t prevSession = lastIncomingSessionId;
-    lastIncomingSessionId = session.sessionId;
+    int64_t prevSession = self.lastIncomingSessionId;
+    self.lastIncomingSessionId = session.sessionId;
 
-    if ([currentCallControllerObservable.currentValue callState].futureTermination.isIncomplete) {
+    if ([[self currentCallController] callState].futureTermination.isIncomplete) {
         if (session.sessionId == prevSession) {
             Environment.errorNoter(@"Ignoring duplicate incoming call signal.", session, false);
             return;
@@ -108,9 +120,9 @@
     
     TOCFuture* futureStarted = [futureConnected thenTry:^id(CallConnectResult* connectResult) {
         [callController advanceCallProgressToConversingWithShortAuthenticationString:connectResult.shortAuthenticationString];
-        CallAudioManager* cam = [CallAudioManager callAudioManagerStartedWithAudioSocket:connectResult.audioSocket
-                                                 andErrorHandler:callController.errorHandler
-                                                  untilCancelled:lifetime];
+        CallAudioManager* cam = [[CallAudioManager alloc] initWithAudioSocket:connectResult.audioSocket
+                                                              andErrorHandler:callController.errorHandler
+                                                               untilCancelled:lifetime];
 		[callController setCallAudioManager:cam];
         return nil;
     }];
@@ -119,24 +131,27 @@
         callController.errorHandler(error, nil, true);
     }];
 }
--(CallController*) curCallController {
-    return currentCallControllerObservable.currentValue;
-}
--(void) answerCall {
-    [[self curCallController] acceptCall];
-}
--(void) hangupOrDenyCall {
-    [[self curCallController] hangupOrDenyCall];
+
+- (CallController*)currentCallController {
+    return self.currentCallControllerObservable.currentValue;
 }
 
--(BOOL) toggleMute{
-	return [self.curCallController toggleMute];
+- (void)answerCall {
+    [[self currentCallController] acceptCall];
 }
 
--(void)terminate{
-    [[self curCallController] terminateWithReason:CallTerminationType_UncategorizedFailure
-                                  withFailureInfo:@"PhoneManager terminated"
-                                   andRelatedInfo:nil];
+- (void)hangupOrDenyCall {
+    [[self currentCallController] hangupOrDenyCall];
+}
+
+- (BOOL)toggleMute {
+	return [[self currentCallController] toggleMute];
+}
+
+- (void)terminate {
+    [[self currentCallController] terminateWithReason:CallTerminationTypeUncategorizedFailure
+                                      withFailureInfo:@"PhoneManager terminated"
+                                       andRelatedInfo:nil];
 }
 
 @end

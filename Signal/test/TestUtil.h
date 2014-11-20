@@ -6,8 +6,8 @@
 NSObject* churnLock(void);
 bool _testChurnHelper(int (^condition)(), NSTimeInterval delay);
 
-#define testPhoneNumber1 [PhoneNumber phoneNumberFromE164:@"+19027777777"]
-#define testPhoneNumber2 [PhoneNumber phoneNumberFromE164:@"+19028888888"]
+#define testPhoneNumber1 [[PhoneNumber alloc] initFromE164:@"+19027777777"]
+#define testPhoneNumber2 [[PhoneNumber alloc] initFromE164:@"+19028888888"]
 
 #define test(expressionExpectedToBeTrue) XCTAssert(expressionExpectedToBeTrue, @"")
 #define testThrows(expressionExpectedToThrow) XCTAssertThrows(expressionExpectedToThrow, @"")

@@ -2,9 +2,9 @@
 
 @interface CountryCodeTableViewCell : UITableViewCell
 
-@property (nonatomic, strong) IBOutlet UILabel *countryCodeLabel;
-@property (nonatomic, strong) IBOutlet UILabel *countryNameLabel;
+@property (strong, nonatomic) IBOutlet UILabel* countryCodeLabel;
+@property (strong, nonatomic) IBOutlet UILabel* countryNameLabel;
 
-- (void)configureWithCountryCode:(NSString *)code andCountryName:(NSString *)name;
+- (void)configureWithCountryCode:(NSString*)code andCountryName:(NSString*)name;
 
 @end

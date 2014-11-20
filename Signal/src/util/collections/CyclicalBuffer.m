@@ -4,96 +4,109 @@
 
 #define INITIAL_CAPACITY 100 // The buffer size can not be longer than an unsigned int.
 
+@interface CyclicalBuffer ()
+
+@property (strong, nonatomic) NSMutableData* buffer;
+@property (nonatomic) uint32_t readOffset;
+@property (nonatomic) uint32_t count;
+
+@end
+
 @implementation CyclicalBuffer
 
--(id) init {
-    if (self = [super init]) {
-        buffer = [NSMutableData dataWithLength:INITIAL_CAPACITY];
+- (instancetype)init {
+    self = [super init];
+	
+    if (self) {
+        self.buffer = [NSMutableData dataWithLength:INITIAL_CAPACITY];
     }
     return self;
 }
 
--(void) enqueueData:(NSData*)data {
+- (void)enqueueData:(NSData*)data {
     require(data != nil);
-    if(data.length == 0) return;
+    if (data.length == 0) return;
 
     NSUInteger incomingDataLength = data.length;
-    NSUInteger bufferCapacity = buffer.length;
-    NSUInteger writeOffset = (readOffset + count) % bufferCapacity;
-    NSUInteger bufferSpaceAvailable = bufferCapacity - count;
+    NSUInteger bufferCapacity = self.buffer.length;
+    NSUInteger writeOffset = (self.readOffset + self.count) % bufferCapacity;
+    NSUInteger bufferSpaceAvailable = bufferCapacity - self.count;
     NSUInteger writeSlack = bufferCapacity - writeOffset;
     
     if (bufferSpaceAvailable < incomingDataLength) {
-        NSUInteger readSlack = bufferCapacity - readOffset;
+        NSUInteger readSlack = bufferCapacity - self.readOffset;
         NSUInteger newCapacity = bufferCapacity * 2 + incomingDataLength;
         NSMutableData* newBuffer = [NSMutableData dataWithLength:newCapacity];
-        [newBuffer replaceBytesInRange:NSMakeRange(0, MIN(readSlack, count)) withBytes:(uint8_t*)[buffer bytes] + readOffset];
-        if (readSlack < count) {
-            [newBuffer replaceBytesInRange:NSMakeRange(readSlack, count - readSlack) withBytes:(uint8_t*)[buffer bytes]];
+        [newBuffer replaceBytesInRange:NSMakeRange(0, MIN(readSlack, self.count))
+                             withBytes:(uint8_t*)[self.buffer bytes] + self.readOffset];
+        if (readSlack < self.count) {
+            [newBuffer replaceBytesInRange:NSMakeRange(readSlack, self.count - readSlack) withBytes:(uint8_t*)[self.buffer bytes]];
         }
-        buffer = newBuffer;
+        self.buffer = newBuffer;
         bufferCapacity = newCapacity;
-        readOffset = 0;
-        writeOffset = count;
-        bufferSpaceAvailable = bufferCapacity - count;
+        self.readOffset = 0;
+        writeOffset = self.count;
+        bufferSpaceAvailable = bufferCapacity - self.count;
         writeSlack = bufferCapacity - writeOffset;
     }
     
     assert(bufferSpaceAvailable >= incomingDataLength);
     
-    [buffer replaceBytesInRange:NSMakeRange(writeOffset, MIN(writeSlack, incomingDataLength)) withBytes:[data bytes]];
+    [self.buffer replaceBytesInRange:NSMakeRange(writeOffset, MIN(writeSlack, incomingDataLength))
+                           withBytes:[data bytes]];
     if (incomingDataLength > writeSlack) {
-        [buffer replaceBytesInRange:NSMakeRange(0, incomingDataLength - writeSlack) withBytes:(uint8_t*)[data bytes] + writeSlack];
+        [self.buffer replaceBytesInRange:NSMakeRange(0, incomingDataLength - writeSlack)
+                               withBytes:(uint8_t*)[data bytes] + writeSlack];
     }
-    count += data.length;
+    self.count += (unsigned int)data.length;
 }
 
--(NSUInteger) enqueuedLength {
-    return count;
+- (NSUInteger)enqueuedLength {
+    return self.count;
 }
 
--(void) discard:(NSUInteger)length {
-    require(length <= count);
-    count -= length;
-    readOffset = (readOffset + length)%(unsigned int)buffer.length;
+- (void)discard:(NSUInteger)length {
+    require(length <= self.count);
+    self.count -= (unsigned int)length;
+    self.readOffset = (self.readOffset + length)%(unsigned int)self.buffer.length;
 }
 
--(NSData*) peekDataWithLength:(NSUInteger)length{
-    require(length <= count);
-    if (length == 0) return [NSData data];
+- (NSData*)peekDataWithLength:(NSUInteger)length {
+    require(length <= self.count);
+    if (length == 0) return [[NSData alloc] init];
     
-    NSUInteger readSlack = buffer.length - readOffset;
+    NSUInteger readSlack = self.buffer.length - self.readOffset;
     
     NSMutableData* result = [NSMutableData dataWithLength:length];
-    [result replaceBytesInRange:NSMakeRange(0, MIN(readSlack, length)) withBytes:(uint8_t*)[buffer bytes] + readOffset];
+    [result replaceBytesInRange:NSMakeRange(0, MIN(readSlack, length)) withBytes:(uint8_t*)[self.buffer bytes] + self.readOffset];
     if (readSlack < length) {
-        [result replaceBytesInRange:NSMakeRange(readSlack, length - readSlack) withBytes:[buffer bytes]];
+        [result replaceBytesInRange:NSMakeRange(readSlack, length - readSlack) withBytes:[self.buffer bytes]];
     }
     
     return result;
 }
 
--(NSData*) dequeueDataWithLength:(NSUInteger)length {
+- (NSData*)dequeueDataWithLength:(NSUInteger)length {
     NSData* result = [self peekDataWithLength:length];
     [self discard:length];
     return result;
 }
 
--(NSData*) dequeuePotentialyVolatileDataWithLength:(NSUInteger)length {
-    NSUInteger readSlack = buffer.length - readOffset;
+- (NSData*)dequeuePotentialyVolatileDataWithLength:(NSUInteger)length {
+    NSUInteger readSlack = self.buffer.length - self.readOffset;
     
     if (readSlack < length) return [self dequeueDataWithLength:length];
     
-    NSData* result = [buffer subdataVolatileWithRange:NSMakeRange(readOffset, length)];
+    NSData* result = [self.buffer subdataVolatileWithRange:NSMakeRange(self.readOffset, length)];
     
     [self discard:length];
     return result; 
 }
 
--(NSData*) peekVolatileHeadOfData {
-    NSUInteger capacity = buffer.length;
-    NSUInteger slack = capacity - readOffset;
-    return [buffer subdataVolatileWithRange:NSMakeRange(readOffset, MIN(count, slack))];
+- (NSData*)peekVolatileHeadOfData{
+    NSUInteger capacity = self.buffer.length;
+    NSUInteger slack = capacity - self.readOffset;
+    return [self.buffer subdataVolatileWithRange:NSMakeRange(self.readOffset, MIN(self.count, slack))];
 }
 
 @end

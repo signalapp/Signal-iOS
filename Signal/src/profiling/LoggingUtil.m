@@ -6,9 +6,10 @@
 
 @implementation LoggingUtil
 
-+(id<ValueLogger>) throttleValueLogger:(id<ValueLogger>)valueLogger discardingAfterEventForDuration:(NSTimeInterval)duration {
++ (id<ValueLogger>)throttleValueLogger:(id<ValueLogger>)valueLogger
+       discardingAfterEventForDuration:(NSTimeInterval)duration {
     __block NSTimeInterval t = [TimeUtil time] - duration;
-    return [AnonymousValueLogger anonymousValueLogger:^(double value) {
+    return [[AnonymousValueLogger alloc] initWithLogValue:^(double value) {
         double t2 = [TimeUtil time];
         if (t2 - duration < t) return;
         t = t2;
@@ -16,9 +17,11 @@
         [valueLogger logValue:value];
     }];
 }
-+(id<OccurrenceLogger>) throttleOccurrenceLogger:(id<OccurrenceLogger>)occurrenceLogger discardingAfterEventForDuration:(NSTimeInterval)duration {
+
++ (id<OccurrenceLogger>)throttleOccurrenceLogger:(id<OccurrenceLogger>)occurrenceLogger
+                 discardingAfterEventForDuration:(NSTimeInterval)duration {
     __block NSTimeInterval t = [TimeUtil time] - duration;
-    return [AnonymousOccurrenceLogger anonymousOccurencyLoggerWithMarker:^(id details) {
+    return [[AnonymousOccurrenceLogger alloc] initWithMarker:^(id details) {
         double t2 = [TimeUtil time];
         if (t2 - duration < t) return;
         t = t2;
@@ -27,19 +30,24 @@
     }];
 }
 
-+(id<ValueLogger>) getAccumulatingValueLoggerTo:(id<Logging>)logging named:(id)valueIdentity from:(id)sender {
++ (id<ValueLogger>)getAccumulatingValueLoggerTo:(id<Logging>)logging
+                                          named:(id)valueIdentity
+                                           from:(id)sender {
     __block double total = 0.0;
     id<ValueLogger> norm = [logging getValueLoggerForValue:valueIdentity from:sender];
-    return [AnonymousValueLogger anonymousValueLogger:^(double value) {
+    return [[AnonymousValueLogger alloc] initWithLogValue:^(double value) {
         total += value;
         [norm logValue:total];
     }];
 }
-+(id<ValueLogger>) getDifferenceValueLoggerTo:(id<Logging>)logging named:(id)valueIdentity from:(id)sender {
+
++ (id<ValueLogger>)getDifferenceValueLoggerTo:(id<Logging>)logging
+                                        named:(id)valueIdentity
+                                         from:(id)sender {
     __block double previous = 0.0;
     __block bool hasPrevious = false;
     id<ValueLogger> norm = [logging getValueLoggerForValue:valueIdentity from:sender];
-    return [AnonymousValueLogger anonymousValueLogger:^(double value) {
+    return [[AnonymousValueLogger alloc] initWithLogValue:^(double value) {
         double d = value - previous;
         previous = value;
         if (hasPrevious) {
@@ -48,30 +56,41 @@
         hasPrevious = true;
     }];
 }
-+(id<ValueLogger>) getAveragingValueLoggerTo:(id<Logging>)logging named:(id)valueIdentity from:(id)sender {
+
++ (id<ValueLogger>)getAveragingValueLoggerTo:(id<Logging>)logging
+                                       named:(id)valueIdentity
+                                        from:(id)sender {
     __block double total = 0.0;
     __block NSUInteger count = 0;
     id<ValueLogger> norm = [logging getValueLoggerForValue:valueIdentity from:sender];
-    return [AnonymousValueLogger anonymousValueLogger:^(double value) {
+    return [[AnonymousValueLogger alloc] initWithLogValue:^(double value) {
         total += value;
         count += 1;
         [norm logValue:total/count];
     }];
 }
-+(id<ValueLogger>) getValueEstimateLoggerTo:(id<Logging>)logging named:(id)valueIdentity from:(id)sender withEstimator:(DecayingSampleEstimator*)estimator {
+
++ (id<ValueLogger>)getValueEstimateLoggerTo:(id<Logging>)logging
+                                      named:(id)valueIdentity
+                                       from:(id)sender
+                              withEstimator:(DecayingSampleEstimator*)estimator {
     require(estimator != nil);
     id<ValueLogger> norm = [logging getValueLoggerForValue:valueIdentity from:sender];
-    return [AnonymousValueLogger anonymousValueLogger:^(double value) {
+    return [[AnonymousValueLogger alloc] initWithLogValue:^(double value) {
         [estimator updateWithNextSample:value];
         [norm logValue:estimator.currentEstimate];
     }];
 }
-+(id<ValueLogger>) getMagnitudeDecayingToZeroValueLoggerTo:(id<Logging>)logging named:(id)valueIdentity from:(id)sender withDecayFactor:(double)decayFactorPerSample {
+
++ (id<ValueLogger>)getMagnitudeDecayingToZeroValueLoggerTo:(id<Logging>)logging
+                                                     named:(id)valueIdentity
+                                                      from:(id)sender
+                                           withDecayFactor:(double)decayFactorPerSample {
     require(decayFactorPerSample <= 1);
     require(decayFactorPerSample >= 0);
     __block double decayingEstimate = 0.0;
     id<ValueLogger> norm = [logging getValueLoggerForValue:valueIdentity from:sender];
-    return [AnonymousValueLogger anonymousValueLogger:^(double value) {
+    return [[AnonymousValueLogger alloc] initWithLogValue:^(double value) {
         value = ABS(value);
         decayingEstimate = MAX(value, decayingEstimate*decayFactorPerSample);
         [norm logValue:decayingEstimate];

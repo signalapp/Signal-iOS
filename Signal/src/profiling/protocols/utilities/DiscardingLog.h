@@ -3,6 +3,6 @@
 #import "ConditionLogger.h"
 #import "JitterQueue.h"
 
-@interface DiscardingLog : NSObject<Logging, OccurrenceLogger, ConditionLogger, JitterQueueNotificationReceiver, ValueLogger>
-+(DiscardingLog*) discardingLog;
+@interface DiscardingLog : NSObject <Logging, OccurrenceLogger, ConditionLogger, JitterQueueNotificationReceiver, ValueLogger>
+
 @end

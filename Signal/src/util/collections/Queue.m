@@ -1,37 +1,52 @@
 #import "Queue.h"
 #import "Constraints.h"
 
-@implementation Queue {
-@private NSMutableArray* items;
-}
--(id) init {
-    if (self = [super init]) {
-        self->items = [NSMutableArray array];
+@interface Queue ()
+
+@property (strong, nonatomic) NSMutableArray* items;
+
+@end
+
+@implementation Queue
+
+- (instancetype)init {
+    self = [super init];
+	
+    if (self) {
+        self.items = [[NSMutableArray alloc] init];
     }
+    
     return self;
 }
--(void) enqueue:(id)item {
-    [items addObject:item];
+
+- (void)enqueue:(id)item {
+    [self.items addObject:item];
 }
--(id) tryDequeue {
+
+- (id)tryDequeue {
     if (self.count == 0) return nil;
     return [self dequeue];
 }
--(id) dequeue {
+
+- (id)dequeue {
     requireState(self.count > 0);
-    id result = items[0];
-    [items removeObjectAtIndex:0];
+    id result = self.items[0];
+    [self.items removeObjectAtIndex:0];
     return result;
 }
--(id) peek {
+
+- (id)peek {
     requireState(self.count > 0);
-    return items[0];
+    return self.items[0];
 }
--(id) peekAt:(NSUInteger)offset {
+
+- (id)peekAt:(NSUInteger)offset {
     require(offset < self.count);
-    return items[offset];
+    return self.items[offset];
 }
--(NSUInteger) count {
-    return items.count;
+
+- (NSUInteger)count {
+    return self.items.count;
 }
+
 @end

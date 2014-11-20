@@ -1,16 +1,23 @@
 #import "CallFailedServerMessage.h"
 #import "Util.h"
 
+@interface CallFailedServerMessage ()
+
+@property (readwrite, nonatomic) NSString* text;
+
+@end
+
 @implementation CallFailedServerMessage
 
-@synthesize text;
-
-+(CallFailedServerMessage*) callFailedServerMessageWithText:(NSString*)text {
-    require(text != nil);
+- (instancetype)initWithText:(NSString*)text {
+    self = [super init];
+	
+    if (self) {
+        require(text != nil);
+        self.text = text;
+    }
     
-    CallFailedServerMessage* instance = [CallFailedServerMessage new];
-    instance->text = text;
-    return instance;
+    return self;
 }
 
 @end

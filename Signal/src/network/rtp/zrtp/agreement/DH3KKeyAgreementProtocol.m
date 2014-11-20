@@ -3,31 +3,40 @@
 #import "Constraints.h"
 #import "CryptoTools.h"
 #import "Util.h"
-#import "Conversions.h"
+#import "NSData+Conversions.h"
+#import "EVPKeyAgreement.h"
 
-#import "EvpKeyAgreement.h"
+#define DH3k_KEY_AGREEMENT_ID @"DH3k".encodedAsUtf8
+
+@interface DH3KKeyAgreementProtocol ()
+
+@property (strong, readwrite, nonatomic, getter=getModulus) NSData* modulus;
+@property (strong, readwrite, nonatomic, getter=getGenerator) NSData* generator;
+
+@end
 
 @implementation DH3KKeyAgreementProtocol
 
-+(DH3KKeyAgreementProtocol*) protocolWithModulus:(NSData*)modulus andGenerator:(NSData*)generator {
-    assert(nil != modulus);
-    assert(nil != generator);
+- (instancetype)initWithModulus:(NSData*)modulus andGenerator:(NSData*)generator {
+    self = [super init];
+	
+    if (self) {
+        assert(nil != modulus);
+        assert(nil != generator);
+        
+        self.generator = generator;
+        self.modulus = modulus;
+    }
     
-    DH3KKeyAgreementProtocol* keyAgreementProtocol = [DH3KKeyAgreementProtocol new];
-    keyAgreementProtocol->generator = generator;
-    keyAgreementProtocol->modulus = modulus;
-    return keyAgreementProtocol;
+    return self;
 }
--(NSData*) getGenerator {
-    return generator;
+
+- (id<KeyAgreementParticipant>)generateParticipantWithNewKeys {
+    return [[DH3KKeyAgreementParticipant alloc] initWithPrivateKeyGeneratedForProtocol:self];
 }
--(NSData*) getModulus {
-    return modulus;
-}
--(id<KeyAgreementParticipant>) generateParticipantWithNewKeys {
-    return [DH3KKeyAgreementParticipant participantWithPrivateKeyGeneratedForProtocol:self];
-}
--(NSData*) getId {
+
+- (NSData*)getId {
     return DH3k_KEY_AGREEMENT_ID;
 }
+
 @end

@@ -1,28 +1,46 @@
 #import "AnonymousConditionLogger.h"
 #import "Constraints.h"
 
+@interface AnonymousConditionLogger ()
+
+@property (nonatomic, readwrite, copy) void (^logNoticeBlock)(id details);
+@property (nonatomic, readwrite, copy) void (^logWarningBlock)(id details);
+@property (nonatomic, readwrite, copy) void (^logErrorBlock)(id details);
+
+@end
+
 @implementation AnonymousConditionLogger
 
-+(AnonymousConditionLogger*) anonymousConditionLoggerWithLogNotice:(void(^)(id details))logNotice andLogWarning:(void(^)(id details))logWarning andLogError:(void(^)(id details))logError {
-    require(logNotice != nil);
-    require(logWarning != nil);
-    require(logError != nil);
+- (instancetype)initWithLogNotice:(void(^)(id details))logNotice
+                    andLogWarning:(void(^)(id details))logWarning
+                      andLogError:(void(^)(id details))logError {
+    self = [super init];
+	
+    if (self) {
+        require(logNotice != nil);
+        require(logWarning != nil);
+        require(logError != nil);
+        
+        self.logErrorBlock = logError;
+        self.logWarningBlock = logWarning;
+        self.logNoticeBlock = logNotice;
+    }
     
-    AnonymousConditionLogger* a = [AnonymousConditionLogger new];
-    a->_logErrorBlock = logError;
-    a->_logWarningBlock = logWarning;
-    a->_logNoticeBlock = logNotice;
-    return a;
+    return self;
 }
 
--(void) logError:(id)details {
-    _logErrorBlock(details);
+#pragma mark ConditionLogger
+
+- (void)logError:(id)details {
+    self.logErrorBlock(details);
 }
--(void) logWarning:(id)details {
-    _logWarningBlock(details);
+
+- (void)logWarning:(id)details {
+    self.logWarningBlock(details);
 }
--(void) logNotice:(id)details {
-    _logNoticeBlock(details);
+
+- (void)logNotice:(id)details {
+    self.logNoticeBlock(details);
 }
 
 @end

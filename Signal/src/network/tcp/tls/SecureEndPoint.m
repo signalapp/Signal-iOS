@@ -1,69 +1,78 @@
 #import "SecureEndPoint.h"
 #import "Util.h"
-#import "DnsManager.h"
+#import "DNSManager.h"
+
+@interface SecureEndPoint ()
+
+@property (strong, nonatomic) id<NetworkEndPoint> optionalMoreSpecificEndPoint;
+@property (strong, readwrite, nonatomic) Certificate* certificate;
+@property (strong, readwrite, nonatomic) HostNameEndPoint* hostNameEndPoint;
+
+@end
 
 @implementation SecureEndPoint
-@synthesize certificate, hostNameEndPoint;
 
-+(SecureEndPoint*) secureEndPointForHost:(HostNameEndPoint*)host
-                 identifiedByCertificate:(Certificate*)certificate {
+- (instancetype)initWithHost:(HostNameEndPoint*)host
+     identifiedByCertificate:(Certificate*)certificate {
     
     require(host != nil);
     require(certificate != nil);
     
-    return [self secureEndPointForHost:host
-               identifiedByCertificate:certificate
-      withOptionalMoreSpecificEndPoint:nil];
+    return [self initWithHost:host identifiedByCertificate:certificate withOptionalMoreSpecificEndPoint:nil];
 }
 
-+(SecureEndPoint*) secureEndPointForHost:(HostNameEndPoint*)host
-                 identifiedByCertificate:(Certificate*)certificate
-        withOptionalMoreSpecificEndPoint:(id<NetworkEndPoint>)optionalMoreSpecificEndPoint {
+- (instancetype)initWithHost:(HostNameEndPoint*)host
+     identifiedByCertificate:(Certificate*)certificate
+withOptionalMoreSpecificEndPoint:(id<NetworkEndPoint>)optionalMoreSpecificEndPoint {
     
-    require(host != nil);
-    require(certificate != nil);
-    
-    SecureEndPoint* s = [SecureEndPoint new];
-    s->hostNameEndPoint = host;
-    s->certificate = certificate;
-    s->optionalMoreSpecificEndPoint = optionalMoreSpecificEndPoint;
-    return s;
-}
-
--(StreamPair *)createStreamPair {
-    if (optionalMoreSpecificEndPoint != nil) {
-        return [optionalMoreSpecificEndPoint createStreamPair];
+    self = [super init];
+	
+    if (self) {
+        require(host != nil);
+        require(certificate != nil);
+        
+        self.hostNameEndPoint = host;
+        self.certificate = certificate;
+        self.optionalMoreSpecificEndPoint = optionalMoreSpecificEndPoint;
     }
     
-    return [hostNameEndPoint createStreamPair];
+    return self;
 }
 
--(void) handleStreamsOpened:(StreamPair *)streamPair {
-    [[streamPair inputStream] setProperty:NSStreamSocketSecurityLevelNegotiatedSSL
-                                   forKey:NSStreamSocketSecurityLevelKey];
+- (StreamPair*)createStreamPair {
+    if (self.optionalMoreSpecificEndPoint != nil) {
+        return [self.optionalMoreSpecificEndPoint createStreamPair];
+    }
     
-    [[streamPair outputStream] setProperty:NSStreamSocketSecurityLevelNegotiatedSSL
-                                    forKey:NSStreamSocketSecurityLevelKey];
+    return [self.hostNameEndPoint createStreamPair];
+}
+
+- (void)handleStreamsOpened:(StreamPair*)streamPair {
+    [streamPair.inputStream setProperty:NSStreamSocketSecurityLevelNegotiatedSSL
+                                 forKey:NSStreamSocketSecurityLevelKey];
+    
+    [streamPair.outputStream setProperty:NSStreamSocketSecurityLevelNegotiatedSSL
+                                  forKey:NSStreamSocketSecurityLevelKey];
     
     NSDictionary *settings = @{(id)kCFStreamSSLValidatesCertificateChain: @NO,
-                              (id)kCFStreamSSLPeerName: hostNameEndPoint.hostname};
+                               (id)kCFStreamSSLPeerName: self.hostNameEndPoint.hostname};
     
-    CFReadStreamSetProperty((CFReadStreamRef)[streamPair inputStream],
+    CFReadStreamSetProperty((CFReadStreamRef)streamPair.inputStream,
                             kCFStreamPropertySSLSettings,
                             (CFTypeRef)settings);
     
-    CFWriteStreamSetProperty((CFWriteStreamRef)[streamPair outputStream],
+    CFWriteStreamSetProperty((CFWriteStreamRef)streamPair.outputStream,
                              kCFStreamPropertySSLSettings,
                              (CFTypeRef)settings);
 }
 
--(void) authenticateSslStream:(StreamPair*)streamPair {
+- (void)authenticateSSLStream:(StreamPair*)streamPair {
     
-    SecTrustRef trust = (__bridge SecTrustRef)[[streamPair outputStream] propertyForKey:(__bridge NSString*)kCFStreamPropertySSLPeerTrust];
+    SecTrustRef trust = (__bridge SecTrustRef)[streamPair.outputStream propertyForKey:(__bridge NSString*)kCFStreamPropertySSLPeerTrust];
     
     checkOperation(SecTrustGetCertificateCount(trust) > 0);
     
-    [certificate setAsAnchorForTrust:trust];
+    [self.certificate setAsAnchorForTrust:trust];
     SecTrustResultType trustResult = kSecTrustResultInvalid;
     OSStatus evalResult = SecTrustEvaluate(trust, &trustResult);
     checkSecurityOperation(evalResult == 0,
@@ -74,40 +83,40 @@
                            ([NSString stringWithFormat:@"NetworkStream: SecTrustEvaluate returned bad result: %u.", trustResult]));
 }
 
--(TOCFuture*)asyncHandleStreamsConnected:(StreamPair *)streamPair {
+- (TOCFuture*)asyncHandleStreamsConnected:(StreamPair*)streamPair {
     require(streamPair != nil);
     
     @try {
-        [self authenticateSslStream:streamPair];
+        [self authenticateSSLStream:streamPair];
         return [TOCFuture futureWithResult:@YES];
     } @catch (OperationFailed* ex) {
         return [TOCFuture futureWithFailure:ex];
     }
 }
 
--(TOCFuture*) asyncResolveToSpecificEndPointsUnlessCancelled:(TOCCancelToken*)unlessCancelledToken {
-    TOCFuture* futureResolvedLocations = [hostNameEndPoint asyncResolveToSpecificEndPointsUnlessCancelled:unlessCancelledToken];
+- (TOCFuture*)asyncResolveToSpecificEndPointsUnlessCancelled:(TOCCancelToken*)unlessCancelledToken {
+    TOCFuture* futureResolvedLocations = [self.hostNameEndPoint asyncResolveToSpecificEndPointsUnlessCancelled:unlessCancelledToken];
     
     return [futureResolvedLocations thenTry:^(NSArray* specificEndPoints) {
         return [specificEndPoints map:^(id<NetworkEndPoint> specificEndPoint) {
-            return [SecureEndPoint secureEndPointForHost:hostNameEndPoint
-                                 identifiedByCertificate:certificate
-                        withOptionalMoreSpecificEndPoint:specificEndPoint];
+            return [[SecureEndPoint alloc] initWithHost:self.hostNameEndPoint
+                                identifiedByCertificate:self.certificate
+                       withOptionalMoreSpecificEndPoint:specificEndPoint];
         }];
     }];
 }
 
--(NSString*) description {
-    if (optionalMoreSpecificEndPoint == nil) {
+- (NSString*)description {
+    if (!self.optionalMoreSpecificEndPoint) {
         return [NSString stringWithFormat:@"Host: %@, Certificate: %@)",
-                hostNameEndPoint,
-                certificate];
+                self.hostNameEndPoint,
+                self.certificate];
     }
     
     return [NSString stringWithFormat:@"Host: %@ (resolved to %@), Certificate: %@)",
-            hostNameEndPoint,
-            optionalMoreSpecificEndPoint,
-            certificate];
+            self.hostNameEndPoint,
+            self.optionalMoreSpecificEndPoint,
+            self.certificate];
 }
 
 @end

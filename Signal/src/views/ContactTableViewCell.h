@@ -9,9 +9,9 @@
 
 @interface ContactTableViewCell : UITableViewCell
 
-@property (nonatomic, strong) IBOutlet UILabel *nameLabel;
-@property (nonatomic, strong) IBOutlet UIImageView *contactPictureView;
+@property (strong, nonatomic) IBOutlet UILabel* nameLabel;
+@property (strong, nonatomic) IBOutlet UIImageView* contactPictureView;
 
-- (void)configureWithContact:(Contact *)contact;
+- (void)configureWithContact:(Contact*)contact;
 
 @end

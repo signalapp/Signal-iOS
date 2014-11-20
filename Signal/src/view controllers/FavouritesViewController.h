@@ -10,7 +10,7 @@
 
 @interface FavouritesViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, SearchBarTitleViewDelegate, FavouriteTableViewCellDelegate>
 
-@property (nonatomic, strong) IBOutlet SearchBarTitleView *searchBarTitleView;
-@property (nonatomic, strong) IBOutlet UITableView *favouriteTableView;
+@property (strong, nonatomic) IBOutlet SearchBarTitleView* searchBarTitleView;
+@property (strong, nonatomic) IBOutlet UITableView* favouriteTableView;
 
 @end

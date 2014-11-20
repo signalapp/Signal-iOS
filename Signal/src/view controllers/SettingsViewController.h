@@ -15,26 +15,26 @@
 
 @interface SettingsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate>
 
-@property (nonatomic, strong) IBOutlet UITableView *settingsTableView;
-@property (nonatomic, strong) IBOutlet UILabel *phoneNumberLabel;
-@property (nonatomic, strong) IBOutlet UILabel *titleLabel;
+@property (strong, nonatomic) IBOutlet UITableView* settingsTableView;
+@property (strong, nonatomic) IBOutlet UILabel* phoneNumberLabel;
+@property (strong, nonatomic) IBOutlet UILabel* titleLabel;
 
-@property (nonatomic, strong) IBOutlet SettingsTableHeaderView *privacyAndSecurityHeaderView;
-@property (nonatomic, strong) IBOutlet SettingsTableHeaderView *debuggingHeaderView;
-@property (nonatomic, strong) IBOutlet UITableViewCell *hideContactImagesCell;
-@property (nonatomic, strong) IBOutlet UITableViewCell *disableAutocorrectCell;
-@property (nonatomic, strong) IBOutlet UITableViewCell *disableHistoryCell;
-@property (nonatomic, strong) IBOutlet UITableViewCell *clearHistoryLogCell;
-@property (nonatomic, strong) IBOutlet UITableViewCell *disableLogsCell;
-@property (nonatomic, strong) IBOutlet UITableViewCell *enableScreenSecurityCell;
+@property (strong, nonatomic) IBOutlet SettingsTableHeaderView* privacyAndSecurityHeaderView;
+@property (strong, nonatomic) IBOutlet SettingsTableHeaderView* debuggingHeaderView;
+@property (strong, nonatomic) IBOutlet UITableViewCell* hideContactImagesCell;
+@property (strong, nonatomic) IBOutlet UITableViewCell* disableAutocorrectCell;
+@property (strong, nonatomic) IBOutlet UITableViewCell* disableHistoryCell;
+@property (strong, nonatomic) IBOutlet UITableViewCell* clearHistoryLogCell;
+@property (strong, nonatomic) IBOutlet UITableViewCell* disableLogsCell;
+@property (strong, nonatomic) IBOutlet UITableViewCell* enableScreenSecurityCell;
 
-@property (nonatomic, strong) IBOutlet UIButton *hideContactImagesButton;
-@property (nonatomic, strong) IBOutlet UIButton *disableAutocorrectButton;
-@property (nonatomic, strong) IBOutlet UIButton *disableHistoryButton;
-@property (nonatomic, strong) IBOutlet UIButton *disableDebugLogsButton;
-@property (nonatomic, strong) IBOutlet UIButton *enableScreenSecurityButton;
+@property (strong, nonatomic) IBOutlet UIButton* hideContactImagesButton;
+@property (strong, nonatomic) IBOutlet UIButton* disableAutocorrectButton;
+@property (strong, nonatomic) IBOutlet UIButton* disableHistoryButton;
+@property (strong, nonatomic) IBOutlet UIButton* disableDebugLogsButton;
+@property (strong, nonatomic) IBOutlet UIButton* enableScreenSecurityButton;
 
-@property (nonatomic, strong) IBOutlet UITableViewCell *sendDebugLog;
+@property (strong, nonatomic) IBOutlet UITableViewCell* sendDebugLog;
 
 - (IBAction)registerTapped;
 

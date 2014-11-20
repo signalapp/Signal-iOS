@@ -13,15 +13,15 @@ typedef void (^ErrorHandlerBlock)(id error, id relatedInfo, bool causedTerminati
 
 @interface PacketHandler : NSObject
 
-@property (readonly,nonatomic) PacketHandlerBlock dataHandler;
-@property (readonly,nonatomic) ErrorHandlerBlock errorHandler;
+@property (strong, readonly, nonatomic) PacketHandlerBlock dataHandler;
+@property (strong, readonly, nonatomic) ErrorHandlerBlock errorHandler;
 
-+(PacketHandler*) packetHandler:(PacketHandlerBlock)dataHandler
-               withErrorHandler:(ErrorHandlerBlock)errorHandler;
+- (instancetype)initPacketHandler:(PacketHandlerBlock)dataHandler
+                 withErrorHandler:(ErrorHandlerBlock)errorHandler;
 
--(void) handlePacket:(id)packet;
+- (void)handlePacket:(id)packet;
 
--(void) handleError:(id)error
+- (void)handleError:(id)error
         relatedInfo:(id)packet
   causedTermination:(bool)causedTermination;
 

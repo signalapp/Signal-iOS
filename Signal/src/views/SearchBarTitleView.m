@@ -1,6 +1,6 @@
 #import "SearchBarTitleView.h"
 #import "Environment.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences+Util.h"
 #import "LocalizableText.h"
 
 #import <UIViewController+MMDrawerController.h>
@@ -15,81 +15,84 @@
 }
 
 - (void)localizeAndStyle {
-    NSDictionary *labelAttributes = @{NSForegroundColorAttributeName:[UIColor grayColor]};
+    NSDictionary* labelAttributes = @{NSForegroundColorAttributeName:UIColor.grayColor};
 
-    _searchTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TXT_SEARCH_PLACEHOLDER_TEXT
-                                                                             attributes:labelAttributes];
-    _searchTextField.tintColor = [UIColor grayColor];
+    self.searchTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TXT_SEARCH_PLACEHOLDER_TEXT
+                                                                                 attributes:labelAttributes];
+    self.searchTextField.tintColor = UIColor.grayColor;
 }
 
 - (void)setupEvents {
-    _searchTextField.delegate = self;
+    self.searchTextField.delegate = self;
 
-    [_searchButton addTarget:self
-                      action:@selector(searchButtonTapped)
-            forControlEvents:UIControlEventTouchUpInside];
+    [self.searchButton addTarget:self
+                          action:@selector(searchButtonTapped)
+                forControlEvents:UIControlEventTouchUpInside];
 
-    [_cancelButton addTarget:self
-                      action:@selector(cancelButtonTapped)
-            forControlEvents:UIControlEventTouchUpInside];
+    [self.cancelButton addTarget:self
+                          action:@selector(cancelButtonTapped)
+                forControlEvents:UIControlEventTouchUpInside];
 
-    [_menuButton addTarget:self
-                    action:@selector(menuButtonTapped)
-          forControlEvents:UIControlEventTouchUpInside];
+    [self.menuButton addTarget:self
+                        action:@selector(menuButtonTapped)
+              forControlEvents:UIControlEventTouchUpInside];
 }
 
 #pragma mark - Actions
 
 - (void)searchButtonTapped {
     [UIView animateWithDuration:SEARCH_BAR_ANIMATION_DURATION animations:^{
-        [_searchBarContainer setFrame:CGRectMake(0,
-                                                 CGRectGetMinY(_searchBarContainer.frame),
-                                                 CGRectGetWidth(_searchBarContainer.frame),
-                                                 CGRectGetHeight(_searchBarContainer.frame))];
+        [self.searchBarContainer setFrame:CGRectMake(0,
+                                                 CGRectGetMinY(self.searchBarContainer.frame),
+                                                 CGRectGetWidth(self.searchBarContainer.frame),
+                                                 CGRectGetHeight(self.searchBarContainer.frame))];
     } completion:^(BOOL finished) {
-        [_searchTextField becomeFirstResponder];
+        [self.searchTextField becomeFirstResponder];
     }];
 }
 
 - (void)cancelButtonTapped {
-    [_delegate searchBarTitleViewDidEndSearching:self];
+    id delegate = self.delegate;
+    [delegate searchBarTitleViewDidEndSearching:self];
     [UIView animateWithDuration:SEARCH_BAR_ANIMATION_DURATION animations:^{
-        [_searchBarContainer setFrame:CGRectMake(CGRectGetWidth(self.frame) - CGRectGetWidth(_searchButton.frame),
-                                                 CGRectGetMinY(_searchBarContainer.frame),
-                                                 CGRectGetWidth(_searchBarContainer.frame),
-                                                 CGRectGetHeight(_searchBarContainer.frame))];
+        [self.searchBarContainer setFrame:CGRectMake(CGRectGetWidth(self.frame) - CGRectGetWidth(self.searchButton.frame),
+                                                     CGRectGetMinY(self.searchBarContainer.frame),
+                                                     CGRectGetWidth(self.searchBarContainer.frame),
+                                                     CGRectGetHeight(self.searchBarContainer.frame))];
     } completion:^(BOOL finished) {
-        _searchTextField.text = SEARCH_BAR_DEFAULT_EMPTY_STRING;
-        [_searchTextField resignFirstResponder];
+        self.searchTextField.text = SEARCH_BAR_DEFAULT_EMPTY_STRING;
+        [self.searchTextField resignFirstResponder];
     }];	
 }
 
 - (void)updateAutoCorrectionType {
     BOOL autoCorrectEnabled = Environment.preferences.getAutocorrectEnabled;
-    _searchTextField.autocorrectionType = autoCorrectEnabled ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo;
+    self.searchTextField.autocorrectionType = autoCorrectEnabled ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo;
 }
 
 - (void)menuButtonTapped {
-    [_delegate searchBarTitleViewDidTapMenu:self];
+    id delegate = self.delegate;
+    [delegate searchBarTitleViewDidTapMenu:self];
 }
 
 #pragma mark - UITextFieldDelegate
 
-- (void)textFieldDidEndEditing:(UITextField *)textField {
+- (void)textFieldDidEndEditing:(UITextField*)textField {
     [textField resignFirstResponder];
 }
 
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+- (BOOL)textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string {
 	
     BOOL searchTapped = [string rangeOfCharacterFromSet:[NSCharacterSet newlineCharacterSet]].location != NSNotFound;
 
-    if(searchTapped) {
+    if (searchTapped) {
         [textField resignFirstResponder];
         return NO;
     }
 
     NSString *searchString = [textField.text stringByReplacingCharactersInRange:range withString:string];
-    [_delegate searchBarTitleView:self didSearchForTerm:searchString];
+    id delegate = self.delegate;
+    [delegate searchBarTitleView:self didSearchForTerm:searchString];
 
     return YES;
 }

@@ -8,12 +8,8 @@
  *
 **/
 
-@interface SequenceCounter : NSObject {
-@private uint16_t prevShortId;
-@private int64_t prevLongId;
-}
+@interface SequenceCounter : NSObject
 
-+(SequenceCounter*) sequenceCounter;
--(int64_t)convertNext:(uint16_t)nextShortId;
+- (int64_t)convertNext:(uint16_t)nextShortId;
 
 @end

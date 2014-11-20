@@ -4,54 +4,64 @@
 
 @implementation ContactTableViewCell
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
-    self = [NSBundle.mainBundle loadNibNamed:NSStringFromClass(self.class) owner:self options:nil][0];
-    _contactPictureView.layer.borderColor = [[UIColor lightGrayColor] CGColor];
-    _contactPictureView.layer.masksToBounds = YES;
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString*)reuseIdentifier {
+    self = [[NSBundle.mainBundle loadNibNamed:NSStringFromClass([self class]) owner:self options:nil] firstObject];
+    
+    if (self) {
+        self.contactPictureView.layer.borderColor = [UIColor.lightGrayColor CGColor];
+        self.contactPictureView.layer.masksToBounds = YES;
+    }
+    
     return self;
 }
 
-- (NSString *)reuseIdentifier {
-    return NSStringFromClass(self.class);
+- (NSString*)reuseIdentifier {
+    return NSStringFromClass([self class]);
 }
 
-- (void)configureWithContact:(Contact *)contact {
+- (void)configureWithContact:(Contact*)contact {
 	
-    _nameLabel.attributedText = [self attributedStringForContact:contact];
+    self.nameLabel.attributedText = [self attributedStringForContact:contact];
 
-    UIImage *image = contact.image;
+    UIImage* image = contact.image;
     BOOL imageNotNil = image != nil;
     [self configureBorder:imageNotNil];
 
     if (imageNotNil) {
-        _contactPictureView.image = image;
+        self.contactPictureView.image = image;
     } else {
-        _contactPictureView.image = nil;
+        self.contactPictureView.image = nil;
     }
 }
 
 - (void)configureBorder:(BOOL)show {
-    _contactPictureView.layer.borderWidth = show ? CONTACT_TABLE_CELL_BORDER_WIDTH : 0;
-    _contactPictureView.layer.cornerRadius = show ? CGRectGetWidth(_contactPictureView.frame)/2 : 0;
+    self.contactPictureView.layer.borderWidth = show ? CONTACT_TABLE_CELL_BORDER_WIDTH : 0;
+    self.contactPictureView.layer.cornerRadius = show ? CGRectGetWidth(self.contactPictureView.frame)/2 : 0;
 }
 
-- (NSAttributedString *)attributedStringForContact:(Contact *)contact {
+- (NSAttributedString*)attributedStringForContact:(Contact*)contact {
     NSMutableAttributedString *fullNameAttributedString = [[NSMutableAttributedString alloc] initWithString:contact.fullName];
 
-    UIFont *firstNameFont;
-    UIFont *lastNameFont;
+    UIFont* firstNameFont;
+    UIFont* lastNameFont;
     
     if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
-        firstNameFont = [UIFont boldSystemFontOfSize:_nameLabel.font.pointSize];
-        lastNameFont  = [UIFont systemFontOfSize:_nameLabel.font.pointSize];
+        firstNameFont = [UIFont boldSystemFontOfSize:self.nameLabel.font.pointSize];
+        lastNameFont  = [UIFont systemFontOfSize:self.nameLabel.font.pointSize];
     } else{
-        firstNameFont = [UIFont systemFontOfSize:_nameLabel.font.pointSize];
-        lastNameFont  = [UIFont boldSystemFontOfSize:_nameLabel.font.pointSize];
+        firstNameFont = [UIFont systemFontOfSize:self.nameLabel.font.pointSize];
+        lastNameFont  = [UIFont boldSystemFontOfSize:self.nameLabel.font.pointSize];
     }
-    [fullNameAttributedString addAttribute:NSFontAttributeName value:firstNameFont range:NSMakeRange(0, contact.firstName.length)];
-    [fullNameAttributedString addAttribute:NSFontAttributeName value:lastNameFont range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
+    [fullNameAttributedString addAttribute:NSFontAttributeName
+                                     value:firstNameFont
+                                     range:NSMakeRange(0, contact.firstName.length)];
+    [fullNameAttributedString addAttribute:NSFontAttributeName
+                                     value:lastNameFont
+                                     range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
     
-    [fullNameAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0, contact.fullName.length)];
+    [fullNameAttributedString addAttribute:NSForegroundColorAttributeName
+                                     value:UIColor.blackColor
+                                     range:NSMakeRange(0, contact.fullName.length)];
     return fullNameAttributedString;
 }
 

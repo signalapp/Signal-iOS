@@ -2,18 +2,33 @@
 #import "Util.h"
 #import "Environment.h"
 
+@interface ObservableValue ()
+
+@property (strong, readwrite, atomic) id currentValue;
+
+@property (strong, nonatomic) Queue* queuedActionsToRun;
+@property (nonatomic) bool isRunningActions;
+
+@property (nonatomic) bool sealed;
+@property (strong, nonatomic) NSMutableSet* callbacks;
+
+@end
+
 @implementation ObservableValue
 
-@synthesize currentValue;
-
--(ObservableValue*) initWithValue:(id)value {
-    callbacks = [NSMutableSet set];
-    queuedActionsToRun = [Queue new];
-    currentValue = value;
+- (instancetype)initWithValue:(id)value {
+    self = [super init];
+	
+    if (self) {
+        self.currentValue = value;
+        self.callbacks = [[NSMutableSet alloc] init];
+        self.queuedActionsToRun = [[Queue alloc] init];
+    }
+    
     return self;
 }
 
--(void) watchLatestValueOnArbitraryThread:(LatestValueCallback)callback
+- (void)watchLatestValueOnArbitraryThread:(LatestValueCallback)callback
                            untilCancelled:(TOCCancelToken*)untilCancelledToken {
     
     require(callback != nil);
@@ -22,15 +37,16 @@
     void(^callbackCopy)(id value) = [callback copy];
     [self queueRun:^{
         callbackCopy(self.currentValue);
-        [callbacks addObject:callbackCopy];
+        [self.callbacks addObject:callbackCopy];
     }];
     [untilCancelledToken whenCancelledDo:^{
         [self queueRun:^{
-            [callbacks removeObject:callbackCopy];
+            [self.callbacks removeObject:callbackCopy];
         }];
     }];
 }
--(void) watchLatestValue:(LatestValueCallback)callback
+
+- (void)watchLatestValue:(LatestValueCallback)callback
                 onThread:(NSThread*)thread
           untilCancelled:(TOCCancelToken*)untilCancelledToken {
     
@@ -47,13 +63,13 @@
 }
 
 /// used for avoiding re-entrancy issues (e.g. a callback registering another callback during enumeration)
--(void) queueRun:(void(^)())action {
+- (void)queueRun:(void(^)())action {
     @synchronized(self) {
-        if (isRunningActions) {
-            [queuedActionsToRun enqueue:[action copy]];
+        if (self.isRunningActions) {
+            [self.queuedActionsToRun enqueue:[action copy]];
             return;
         }
-        isRunningActions = true;
+        self.isRunningActions = true;
     }
     
     while (true) {
@@ -63,43 +79,44 @@
             [[Environment.logging getConditionLoggerForSender:self]
              logError:@"A queued action failed and may have stalled an ObservableValue."];
             @synchronized(self) {
-                isRunningActions = false;
+                self.isRunningActions = false;
             }
             [ex raise];
         }
         
         @synchronized(self) {
-            action = [queuedActionsToRun tryDequeue];
+            action = [self.queuedActionsToRun tryDequeue];
             if (action == nil) {
-                isRunningActions = false;
+                self.isRunningActions = false;
                 break;
             }
         }
     }
 }
 
--(void)updateValue:(id)value {
+- (void)updateValue:(id)value {
     [self queueRun:^{
-        if (value == currentValue) return;
-        requireState(!sealed);
+        if (value == self.currentValue) return;
+        requireState(!self.sealed);
         
-        currentValue = value;
-        for (void(^callback)(id value) in callbacks) {
+        self.currentValue = value;
+        for (void(^callback)(id value) in self.callbacks) {
             callback(value);
         }
     }];
 }
--(void)adjustValue:(id(^)(id))adjustment {
+
+- (void)adjustValue:(id(^)(id))adjustment {
     require(adjustment != nil);
     [self queueRun:^{
-        id oldValue = currentValue;
+        id oldValue = self.currentValue;
         id newValue = adjustment(oldValue);
         if (oldValue == newValue) return;
-        requireState(!sealed);
+        requireState(!self.sealed);
         
-        currentValue = newValue;
-        for (void(^callback)(id value) in callbacks) {
-            callback(currentValue);
+        self.currentValue = newValue;
+        for (void(^callback)(id value) in self.callbacks) {
+            callback(self.currentValue);
         }
     }];
 }
@@ -108,18 +125,23 @@
 
 @implementation ObservableValueController
 
-+(ObservableValueController *)observableValueControllerWithInitialValue:(id)value {
-    return [[ObservableValueController alloc] initWithValue:value];
+- (instancetype)initWithInitialValue:(id)value {
+    return [self initWithValue:value];
 }
 
--(void)updateValue:(id)value {
+- (void)updateValue:(id)value {
     [super updateValue:value];
 }
--(void)adjustValue:(id(^)(id))adjustment {
+
+- (void)adjustValue:(id(^)(id))adjustment {
     [super adjustValue:adjustment];
 }
--(void) sealValue {
-    [self queueRun:^{sealed = true; callbacks = nil;}];
+
+-( void) sealValue {
+    [self queueRun:^{
+        self.sealed = true;
+        self.callbacks = nil;
+    }];
 }
 
 @end

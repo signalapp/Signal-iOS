@@ -47,44 +47,44 @@
  *
 **/
 
-@interface HelloPacket : NSObject {
-@private HandshakePacket* embedding;
-}
-@property (nonatomic,readonly) NSData* versionId;
-@property (nonatomic,readonly) NSData* clientId;
-@property (nonatomic,readonly) NSData* hashChainH3;
-@property (nonatomic,readonly) Zid* zid;
-@property (nonatomic,readonly) uint8_t flags0SMP;
-@property (nonatomic,readonly) uint8_t flagsUnusedLow4;
-@property (nonatomic,readonly) uint8_t flagsUnusedHigh4;
-@property (nonatomic,readonly) NSArray* hashIds;
-@property (nonatomic,readonly) NSArray* cipherIds;
-@property (nonatomic,readonly) NSArray* authIds;
-@property (nonatomic,readonly) NSArray* agreeIds;
-@property (nonatomic,readonly) NSArray* sasIds;
+@interface HelloPacket : NSObject
 
-+(HelloPacket*) helloPacketWithDefaultsAndHashChain:(HashChain*)hashChain
-                                             andZid:(Zid*)zid
-                           andKeyAgreementProtocols:(NSArray*)keyAgreementProtocols;
+@property (strong, readonly, nonatomic) NSData* versionId;
+@property (strong, readonly, nonatomic) NSData* clientId;
+@property (strong, readonly, nonatomic) NSData* hashChainH3;
+@property (strong, readonly, nonatomic) Zid* zid;
+@property (readonly, nonatomic) uint8_t flags0SMP;
+@property (readonly, nonatomic) uint8_t flagsUnusedLow4;
+@property (readonly, nonatomic) uint8_t flagsUnusedHigh4;
+@property (strong, readonly, nonatomic) NSArray* hashIds;
+@property (strong, readonly, nonatomic) NSArray* cipherIds;
+@property (strong, readonly, nonatomic) NSArray* authIds;
+@property (strong, readonly, nonatomic) NSArray* agreeIds;
+@property (strong, readonly, nonatomic) NSArray* sasIds;
 
-+(HelloPacket*) helloPacketWithVersion:(NSData*)versionId
-                           andClientId:(NSData*)clientId
-                        andHashChainH3:(NSData*)hashChainH3
-                                andZid:(Zid*)zid
-                          andFlags0SMP:(uint8_t)flags0SMP
-                    andFlagsUnusedLow4:(uint8_t)flagsUnusedLow4
-                   andFlagsUnusedHigh4:(uint8_t)flagsUnusedHigh4
-                        andHashSpecIds:(NSArray*)hashIds
-                      andCipherSpecIds:(NSArray*)cipherIds
-                        andAuthSpecIds:(NSArray*)authIds
-                       andAgreeSpecIds:(NSArray*)agreeIds
-                         andSasSpecIds:(NSArray*)sasIds
-              authenticatedWithHmacKey:(NSData*)hmacKey;
+@property (strong, readonly, nonatomic, getter=embeddedIntoHandshakePacket) HandshakePacket* embedding;
 
-+(HelloPacket*) helloPacketParsedFromHandshakePacket:(HandshakePacket*)handshakePacket;
++ (instancetype)defaultPacketWithHashChain:(HashChain*)hashChain
+                                    andZid:(Zid*)zid
+                  andKeyAgreementProtocols:(NSArray*)keyAgreementProtocols;
 
--(void) verifyMacWithHashChainH2:(NSData*)hashChainH2;
--(NSArray*) agreeIdsIncludingImplied;
--(HandshakePacket*) embeddedIntoHandshakePacket;
+- (instancetype)initWithVersion:(NSData*)versionId
+                    andClientId:(NSData*)clientId
+                 andHashChainH3:(NSData*)hashChainH3
+                         andZid:(Zid*)zid
+                   andFlags0SMP:(uint8_t)flags0SMP
+             andFlagsUnusedLow4:(uint8_t)flagsUnusedLow4
+            andFlagsUnusedHigh4:(uint8_t)flagsUnusedHigh4
+                 andHashSpecIds:(NSArray*)hashIds
+               andCipherSpecIds:(NSArray*)cipherIds
+                 andAuthSpecIds:(NSArray*)authIds
+                andAgreeSpecIds:(NSArray*)agreeIds
+                  andSasSpecIds:(NSArray*)sasIds
+       authenticatedWithHMACKey:(NSData*)hmacKey;
+
+- (instancetype)initFromHandshakePacket:(HandshakePacket*)handshakePacket;
+
+- (void)verifyMacWithHashChainH2:(NSData*)hashChainH2;
+- (NSArray*)agreeIdsIncludingImplied;
 
 @end

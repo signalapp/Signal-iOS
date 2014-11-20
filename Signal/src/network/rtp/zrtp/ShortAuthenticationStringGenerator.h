@@ -9,6 +9,6 @@
 
 @interface ShortAuthenticationStringGenerator : NSObject
 
-+(NSString*)generateFromData:(NSData*)sasBytes;
++ (NSString*)generateFromData:(NSData*)sasBytes;
 
 @end
