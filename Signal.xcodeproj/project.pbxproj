@@ -3724,7 +3724,6 @@
 				76EB05FC18170B33006006FC /* CallConnectUtil_Server.m in Sources */,
 				76EB062418170B33006006FC /* PriorityQueue.m in Sources */,
 				76EB061A18170B33006006FC /* DiscardingLog.m in Sources */,
-				B6B096621A1D25ED008BFAA6 /* TSNumberVerifier.m in Sources */,
 				B6B0968B1A1D25ED008BFAA6 /* TSStorageManager+SignedPreKeyStore.m in Sources */,
 				B6B0966E1A1D25ED008BFAA6 /* TSGroupMessageManager.m in Sources */,
 				76EB05AC18170B33006006FC /* SrtpSocket.m in Sources */,
