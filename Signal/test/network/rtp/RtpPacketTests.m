@@ -43,7 +43,7 @@
                             @0x80,@0,@0,@5,
                             @0,@0,@0,@0,
                             @0,@0,@0,@0,
-                            @0,@1,@2,@3,@4] toUint8Data];
+                            @0,@1,@2,@3,@4] ows_toUint8Data];
     test([[r rawPacketDataUsingInteropOptions:@[]] isEqualToData:expectedData]);
 
     // reparsing packed data gives same packet
@@ -80,7 +80,7 @@
                             @0,@0,@0,@101,
                             @0,@0,@0,@102,
                             @0,@1,@2,@3,@4,@5,
-                            @0,@0,@3] toUint8Data];
+                            @0,@0,@3] ows_toUint8Data];
     
     test([[r rawPacketDataUsingInteropOptions:@[]] isEqualToData:expectedData]);
     test([r isEqualToRtpPacket:[RtpPacket rtpPacketParsedFromPacketData:expectedData]]);
@@ -120,7 +120,7 @@
                             @0xFE,@0xAB,
                             @0, @5,
                             @10,@11,@12,@13,@14,
-                            @0,@1,@2,@3,@4] toUint8Data];
+                            @0,@1,@2,@3,@4] ows_toUint8Data];
     test([[r rawPacketDataUsingInteropOptions:@[]] isEqualToData:expectedData]);
     test([r isEqualToRtpPacket:[RtpPacket rtpPacketParsedFromPacketData:expectedData]]);
     test(![r isEqualToRtpPacket:[RtpPacket rtpPacketWithDefaultsAndSequenceNumber:0 andPayload:[NSData data]]]);

@@ -233,7 +233,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     UIImage *img = [UIImage imageWithData:image];
         
     ContactSearchBlock searchBlock = ^BOOL(NSNumber *obj, NSUInteger idx, BOOL *stop) {
-        return [obj intValue] == recordID;
+        return obj.intValue == recordID;
     };
 
     NSUInteger favouriteIndex = [_favouriteContactIds indexOfObjectPassingTest:searchBlock];
@@ -394,7 +394,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 -(NSArray*) contactsForContactIds:(NSArray *)contactIds {
     NSMutableArray *contacts = [NSMutableArray array];
     for (NSNumber *favouriteId in contactIds) {
-        Contact *contact = [self latestContactWithRecordId:[favouriteId intValue]];
+        Contact *contact = [self latestContactWithRecordId:favouriteId.intValue];
         
         if (contact) {
             [contacts addObject:contact];

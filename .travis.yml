@@ -1,10 +1,5 @@
-before_install: 
-- brew update
-- brew unlink xctool
-- brew install xctool
-
 language: objective-c
-xcode_sdk: iphonesimulator8.0
+xcode_sdk: iphonesimulator8.1
 install: true
 xcode_workspace: Signal.xcworkspace
 xcode_scheme: Signal

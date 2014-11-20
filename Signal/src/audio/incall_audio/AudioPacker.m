@@ -29,7 +29,7 @@
     if (framesToSend.count < AUDIO_FRAMES_PER_PACKET) return nil;
     
     uint16_t sequenceNumber = nextSequenceNumber++;
-    NSData* payload = [framesToSend concatDatas];
+    NSData* payload = [framesToSend ows_concatDatas];
     
     [framesToSend removeAllObjects];
     return [EncodedAudioPacket encodedAudioPacketWithAudioData:payload

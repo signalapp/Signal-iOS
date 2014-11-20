@@ -981,7 +981,6 @@
 		A157074B17F0CD6D007C2BD6 /* ExceptionsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExceptionsTest.m; sourceTree = "<group>"; };
 		A157074C17F0CD6D007C2BD6 /* FunctionalUtilTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionalUtilTest.h; sourceTree = "<group>"; };
 		A157074D17F0CD6D007C2BD6 /* FunctionalUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionalUtilTest.m; sourceTree = "<group>"; };
-		A157074E17F0CD6D007C2BD6 /* PriorityQueueTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PriorityQueueTest.h; sourceTree = "<group>"; };
 		A157074F17F0CD6D007C2BD6 /* PriorityQueueTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PriorityQueueTest.m; sourceTree = "<group>"; };
 		A157075017F0CD6D007C2BD6 /* QueueTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QueueTest.h; sourceTree = "<group>"; };
 		A157075117F0CD6D007C2BD6 /* QueueTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QueueTest.m; sourceTree = "<group>"; };
@@ -2341,7 +2340,6 @@
 				A157074D17F0CD6D007C2BD6 /* FunctionalUtilTest.m */,
 				BFB074BF19A4BCA400F2947C /* FutureUtilTest.m */,
 				BFB074C019A4BCA400F2947C /* ObservableTest.m */,
-				A157074E17F0CD6D007C2BD6 /* PriorityQueueTest.h */,
 				A157074F17F0CD6D007C2BD6 /* PriorityQueueTest.m */,
 				A157075017F0CD6D007C2BD6 /* QueueTest.h */,
 				A157075117F0CD6D007C2BD6 /* QueueTest.m */,

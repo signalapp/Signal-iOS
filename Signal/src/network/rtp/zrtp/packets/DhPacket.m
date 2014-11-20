@@ -116,7 +116,7 @@
                        [sharedSecretHashes aux],
                        [sharedSecretHashes pbx],
                        publicKeyData
-                       ] concatDatas];
+                       ] ows_concatDatas];
     
     return [[HandshakePacket handshakePacketWithTypeId:typeId andPayload:payload] withHmacAppended:macKey];
 }

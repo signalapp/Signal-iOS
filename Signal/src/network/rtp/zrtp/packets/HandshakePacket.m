@@ -69,7 +69,7 @@
 -(HandshakePacket*) withHmacAppended:(NSData*)macKey {
     require(macKey != nil);
     NSData* digest = [[[self rtpExtensionPayloadUsedForHmacBeforeHmacAppended] hmacWithSha256WithKey:macKey] take:HANDSHAKE_TRUNCATED_HMAC_LENGTH];
-    NSData* authenticatedPayload = [@[payload, digest] concatDatas];
+    NSData* authenticatedPayload = [@[payload, digest] ows_concatDatas];
     return [HandshakePacket handshakePacketWithTypeId:typeId andPayload:authenticatedPayload];
 }
 -(HandshakePacket*) withHmacVerifiedAndRemoved:(NSData*)macKey {
@@ -96,14 +96,14 @@
             [NSData dataWithBigEndianBytesOfUInt16:(uint16_t)(payload.length + HEADER_FOOTER_LENGTH_WITHOUT_HMAC)],
             typeId,
             payload
-            ] concatDatas];
+            ] ows_concatDatas];
 }
 
 -(NSData*) rtpExtensionPayloadExceptCrc {
     return [@[
             typeId,
             payload
-            ] concatDatas];
+            ] ows_concatDatas];
 }
 
 -(NSData*) rtpExtensionPayloadUsedForHmacBeforeHmacAppended {
@@ -113,14 +113,14 @@
             [NSData dataWithBigEndianBytesOfUInt16:(uint16_t)(payload.length + HEADER_FOOTER_LENGTH_WITH_HMAC)],
             typeId,
             payload
-            ] concatDatas];
+            ] ows_concatDatas];
 }
 
 -(RtpPacket*) embeddedIntoRtpPacketWithSequenceNumber:(uint16_t)sequenceNumber usingInteropOptions:(NSArray*)interopOptions {
     requireState(typeId.length == HANDSHAKE_TYPE_ID_LENGTH);
     
     NSData* payloadExceptCrc = [self rtpExtensionPayloadExceptCrc];
-    NSData* extensionDataWithZeroCrc = [(@[payloadExceptCrc, [NSData dataWithBigEndianBytesOfUInt32:0]]) concatDatas];
+    NSData* extensionDataWithZeroCrc = [(@[payloadExceptCrc, [NSData dataWithBigEndianBytesOfUInt32:0]]) ows_concatDatas];
     RtpPacket* packetWithZeroCrc = [RtpPacket rtpPacketWithVersion:0 // invalid version 0 indicates a zrtp handshake packet
                                                        andPadding:false
                                  andContributingSourceIdentifiers:@[]
@@ -134,7 +134,7 @@
                                                        andPayload:[NSData data]];
 
     uint32_t crc = [[[packetWithZeroCrc rawPacketDataUsingInteropOptions:interopOptions] skipLastVolatile:4] crc32];
-    NSData* extensionData = [(@[payloadExceptCrc, [NSData dataWithBigEndianBytesOfUInt32:crc]]) concatDatas];
+    NSData* extensionData = [(@[payloadExceptCrc, [NSData dataWithBigEndianBytesOfUInt32:crc]]) ows_concatDatas];
     
     return [RtpPacket rtpPacketWithVersion:0 // invalid version 0 indicates a zrtp handshake packet
                                 andPadding:false

@@ -23,65 +23,65 @@
 }
 
 -(void) testArrayToUint8Data {
-    test([[(@[]) toUint8Data] length] == 0);
+    test([[(@[]) ows_toUint8Data] length] == 0);
 
-    NSData* d = [@[@0, @1] toUint8Data];
+    NSData* d = [@[@0, @1] ows_toUint8Data];
     test(d.length == 2);
     test(((uint8_t*)[d bytes])[0] == 0);
     test(((uint8_t*)[d bytes])[1] == 1);
 }
 -(void) testArrayConcatDatas {
-    NSData* d1 = [@[@0, @1] toUint8Data];
-    NSData* d2 = [@[@3, @4] toUint8Data];
-    NSData* d3 = [@[@6, @7] toUint8Data];
-    test([[@[] concatDatas] isEqualToData:[(@[]) toUint8Data]]);
-    test([[@[d1] concatDatas] isEqualToData:d1]);
-    test([[(@[d1, d2, d3]) concatDatas] isEqualToData:[(@[@0, @1, @3, @4, @6, @7]) toUint8Data]]);
+    NSData* d1 = [@[@0, @1] ows_toUint8Data];
+    NSData* d2 = [@[@3, @4] ows_toUint8Data];
+    NSData* d3 = [@[@6, @7] ows_toUint8Data];
+    test([[@[] ows_concatDatas] isEqualToData:[(@[]) ows_toUint8Data]]);
+    test([[@[d1] ows_concatDatas] isEqualToData:d1]);
+    test([[(@[d1, d2, d3]) ows_concatDatas] isEqualToData:[(@[@0, @1, @3, @4, @6, @7]) ows_toUint8Data]]);
 }
 
 -(void) testDatadDecodedAsUtf8 {
-    testThrows([[(@[@0xC3, @0x28]) toUint8Data] decodedAsUtf8]);
+    testThrows([[(@[@0xC3, @0x28]) ows_toUint8Data] decodedAsUtf8]);
     
-    NSString* ab = [[(@[@97, @98]) toUint8Data] decodedAsUtf8];
-    NSString* ab0 = [[(@[@97, @98, @0]) toUint8Data] decodedAsUtf8];
+    NSString* ab = [[(@[@97, @98]) ows_toUint8Data] decodedAsUtf8];
+    NSString* ab0 = [[(@[@97, @98, @0]) ows_toUint8Data] decodedAsUtf8];
     test([ab isEqualToString:@"ab"]);
     test([ab0 isEqualToString:@"ab\0"]);
     test(![ab0  isEqualToString:ab]);
 }
 -(void) testTryFindFirstIndexOf {
-    NSData* d = [@[@0, @1, @2, @3, @4, @5] toUint8Data];
-    NSData* d34 = [@[@3, @4] toUint8Data];
-    NSData* d67 = [@[@6, @7] toUint8Data];
-    NSData* d01 = [@[@0, @1] toUint8Data];
-    NSData* d02 = [@[@0, @2] toUint8Data];
+    NSData* d = [@[@0, @1, @2, @3, @4, @5] ows_toUint8Data];
+    NSData* d34 = [@[@3, @4] ows_toUint8Data];
+    NSData* d67 = [@[@6, @7] ows_toUint8Data];
+    NSData* d01 = [@[@0, @1] ows_toUint8Data];
+    NSData* d02 = [@[@0, @2] ows_toUint8Data];
     
     test([[d tryFindIndexOf:[NSData data]] intValue] == 0);
-    test([[d tryFindIndexOf:d] intValue] == 0);
+    test([d tryFindIndexOf:d].intValue == 0);
     
-    test([[d tryFindIndexOf:d01] intValue] == 0);
+    test([d tryFindIndexOf:d01].intValue == 0);
     test([d tryFindIndexOf:d02] == nil);
-    test([[d tryFindIndexOf:d34] intValue] == 3);
+    test([d tryFindIndexOf:d34].intValue == 3);
     test([d34 tryFindIndexOf:d] == nil);
     test([d tryFindIndexOf:d67] == nil);
 }
 -(void) testDatadDecodedAsAscii {
-    testThrows([[(@[@97, @0xAA]) toUint8Data] decodedAsAscii]);
+    testThrows([[(@[@97, @0xAA]) ows_toUint8Data] decodedAsAscii]);
 
-    NSString* ab = [[(@[@97, @98]) toUint8Data] decodedAsAscii];
-    NSString* ab0 = [[(@[@97, @98, @0]) toUint8Data] decodedAsAscii];
+    NSString* ab = [[(@[@97, @98]) ows_toUint8Data] decodedAsAscii];
+    NSString* ab0 = [[(@[@97, @98, @0]) ows_toUint8Data] decodedAsAscii];
     test([ab isEqualToString:@"ab"]);
     test([ab0 isEqualToString:@"ab\0"]);
     test(![ab0  isEqualToString:ab]);
 }
 -(void) testDatadDecodedAsAsciiReplacingErrorsWithDots {
-    test([[[(@[@97, @98]) toUint8Data] decodedAsAsciiReplacingErrorsWithDots] isEqualToString:@"ab"]);
-    test([[[(@[@97, @98, @0, @127, @250]) toUint8Data] decodedAsAsciiReplacingErrorsWithDots] isEqualToString:@"ab..."]);
+    test([[[(@[@97, @98]) ows_toUint8Data] decodedAsAsciiReplacingErrorsWithDots] isEqualToString:@"ab"]);
+    test([[[(@[@97, @98, @0, @127, @250]) ows_toUint8Data] decodedAsAsciiReplacingErrorsWithDots] isEqualToString:@"ab..."]);
 }
 -(void) testDataSkip {
-    NSData* d = [@[@0, @1, @2, @3] toUint8Data];
+    NSData* d = [@[@0, @1, @2, @3] ows_toUint8Data];
     test([[d skip:0] isEqualToData:d]);
-    test([[d skip:1] isEqualToData:[(@[@1, @2, @3]) toUint8Data]]);
-    test([[d skip:3] isEqualToData:[@[@3] toUint8Data]]);
+    test([[d skip:1] isEqualToData:[(@[@1, @2, @3]) ows_toUint8Data]]);
+    test([[d skip:3] isEqualToData:[@[@3] ows_toUint8Data]]);
     test([[d skip:4] length] == 0);
     testThrows([d skip:5]);
 
@@ -95,10 +95,10 @@
     test([b2 uint8At:0] == 0);
 }
 -(void) testDataTake {
-    NSData* d = [@[@0, @1, @2, @3] toUint8Data];
+    NSData* d = [@[@0, @1, @2, @3] ows_toUint8Data];
     test([[d take:0] length] == 0);
-    test([[d take:1] isEqualToData:[(@[@0]) toUint8Data]]);
-    test([[d take:3] isEqualToData:[(@[@0, @1, @2]) toUint8Data]]);
+    test([[d take:1] isEqualToData:[(@[@0]) ows_toUint8Data]]);
+    test([[d take:3] isEqualToData:[(@[@0, @1, @2]) ows_toUint8Data]]);
     test([[d take:4] isEqualToData:d]);
     testThrows([d take:5]);
     
@@ -112,10 +112,10 @@
     test([b2 uint8At:0] == 0);
 }
 -(void) testDataSkipLast {
-    NSData* d = [@[@0, @1, @2, @3] toUint8Data];
+    NSData* d = [@[@0, @1, @2, @3] ows_toUint8Data];
     test([[d skipLast:0] isEqualToData:d]);
-    test([[d skipLast:1] isEqualToData:[(@[@0, @1, @2]) toUint8Data]]);
-    test([[d skipLast:3] isEqualToData:[@[@0] toUint8Data]]);
+    test([[d skipLast:1] isEqualToData:[(@[@0, @1, @2]) ows_toUint8Data]]);
+    test([[d skipLast:3] isEqualToData:[@[@0] ows_toUint8Data]]);
     test([[d skipLast:4] length] == 0);
     testThrows([d skipLast:5]);
 
@@ -129,10 +129,10 @@
     test([b2 uint8At:0] == 0);
 }
 -(void) testDataTakeLast {
-    NSData* d = [@[@0, @1, @2, @3] toUint8Data];
+    NSData* d = [@[@0, @1, @2, @3] ows_toUint8Data];
     test([[d takeLast:0] length] == 0);
-    test([[d takeLast:1] isEqualToData:[(@[@3]) toUint8Data]]);
-    test([[d takeLast:3] isEqualToData:[(@[@1, @2, @3]) toUint8Data]]);
+    test([[d takeLast:1] isEqualToData:[(@[@3]) ows_toUint8Data]]);
+    test([[d takeLast:3] isEqualToData:[(@[@1, @2, @3]) ows_toUint8Data]]);
     test([[d takeLast:4] isEqualToData:d]);
     testThrows([d takeLast:5]);
 
@@ -180,40 +180,40 @@
     testThrows([d subdataVolatileWithRange:NSMakeRange(1, NSUIntegerMax)]);
 }
 -(void) testDataSkipVolatile {
-    NSData* d = [@[@0, @1, @2, @3] toUint8Data];
+    NSData* d = [@[@0, @1, @2, @3] ows_toUint8Data];
     test([[d skipVolatile:0] isEqualToData:d]);
-    test([[d skipVolatile:1] isEqualToData:[(@[@1, @2, @3]) toUint8Data]]);
-    test([[d skipVolatile:3] isEqualToData:[@[@3] toUint8Data]]);
+    test([[d skipVolatile:1] isEqualToData:[(@[@1, @2, @3]) ows_toUint8Data]]);
+    test([[d skipVolatile:3] isEqualToData:[@[@3] ows_toUint8Data]]);
     test([[d skipVolatile:4] length] == 0);
     testThrows([d skipVolatile:5]);
 }
 -(void) testDataTakeVolatile {
-    NSData* d = [@[@0, @1, @2, @3] toUint8Data];
+    NSData* d = [@[@0, @1, @2, @3] ows_toUint8Data];
     test([[d takeVolatile:0] length] == 0);
-    test([[d takeVolatile:1] isEqualToData:[(@[@0]) toUint8Data]]);
-    test([[d takeVolatile:3] isEqualToData:[(@[@0, @1, @2]) toUint8Data]]);
+    test([[d takeVolatile:1] isEqualToData:[(@[@0]) ows_toUint8Data]]);
+    test([[d takeVolatile:3] isEqualToData:[(@[@0, @1, @2]) ows_toUint8Data]]);
     test([[d takeVolatile:4] isEqualToData:d]);
     testThrows([d takeVolatile:5]);
 }
 -(void) testDataSkipLastVolatile {
-    NSData* d = [@[@0, @1, @2, @3] toUint8Data];
+    NSData* d = [@[@0, @1, @2, @3] ows_toUint8Data];
     test([[d skipLastVolatile:0] isEqualToData:d]);
-    test([[d skipLastVolatile:1] isEqualToData:[(@[@0, @1, @2]) toUint8Data]]);
-    test([[d skipLastVolatile:3] isEqualToData:[@[@0] toUint8Data]]);
+    test([[d skipLastVolatile:1] isEqualToData:[(@[@0, @1, @2]) ows_toUint8Data]]);
+    test([[d skipLastVolatile:3] isEqualToData:[@[@0] ows_toUint8Data]]);
     test([[d skipLastVolatile:4] length] == 0);
     testThrows([d skipLastVolatile:5]);
 }
 -(void) testDataTakeLastVolatile {
-    NSData* d = [@[@0, @1, @2, @3] toUint8Data];
+    NSData* d = [@[@0, @1, @2, @3] ows_toUint8Data];
     test([[d takeLastVolatile:0] length] == 0);
-    test([[d takeLastVolatile:1] isEqualToData:[(@[@3]) toUint8Data]]);
-    test([[d takeLastVolatile:3] isEqualToData:[(@[@1, @2, @3]) toUint8Data]]);
+    test([[d takeLastVolatile:1] isEqualToData:[(@[@3]) ows_toUint8Data]]);
+    test([[d takeLastVolatile:3] isEqualToData:[(@[@1, @2, @3]) ows_toUint8Data]]);
     test([[d takeLastVolatile:4] isEqualToData:d]);
     testThrows([d takeLastVolatile:5]);
 }
 
 -(void) testDataUint8At {
-    NSData* d = [@[@0, @1, @2, @3] toUint8Data];
+    NSData* d = [@[@0, @1, @2, @3] ows_toUint8Data];
     test([d uint8At:0] == 0);
     test([d uint8At:1] == 1);
     test([d uint8At:2] == 2);
@@ -227,26 +227,26 @@
     [d setUint8At:2 to:13];
     [d setUint8At:3 to:14];
     testThrows([d setUint8At:4 to:15]);
-    test([d isEqualToData:[(@[@11, @12, @13, @14]) toUint8Data]]);
+    test([d isEqualToData:[(@[@11, @12, @13, @14]) ows_toUint8Data]]);
 }
 -(void) testMutableDataReplaceBytesStartingAt {
     NSMutableData* d = [NSMutableData dataWithLength:6];
-    NSData* d2 = [@[@1, @2, @3] toUint8Data];
+    NSData* d2 = [@[@1, @2, @3] ows_toUint8Data];
     testThrows([d replaceBytesStartingAt:0 withData:nil]);
     testThrows([d replaceBytesStartingAt:4 withData:d2]);
     
     [d replaceBytesStartingAt:0 withData:d2];
-    test([d isEqualToData:[(@[@1, @2, @3, @0, @0, @0]) toUint8Data]]);
+    test([d isEqualToData:[(@[@1, @2, @3, @0, @0, @0]) ows_toUint8Data]]);
     [d replaceBytesStartingAt:2 withData:d2];
-    test([d isEqualToData:[(@[@1, @2, @1, @2, @3, @0]) toUint8Data]]);
+    test([d isEqualToData:[(@[@1, @2, @1, @2, @3, @0]) ows_toUint8Data]]);
     [d replaceBytesStartingAt:3 withData:d2];
-    test([d isEqualToData:[(@[@1, @2, @1, @1, @2, @3]) toUint8Data]]);
+    test([d isEqualToData:[(@[@1, @2, @1, @1, @2, @3]) ows_toUint8Data]]);
 }
 -(void) testStringEncodedAsUtf8 {
-    test([@"ab".encodedAsUtf8 isEqualToData:[(@[@97, @98]) toUint8Data]]);
+    test([@"ab".encodedAsUtf8 isEqualToData:[(@[@97, @98]) ows_toUint8Data]]);
 }
 -(void) testStringEncodedAsAscii {
-    test([@"ab".encodedAsAscii isEqualToData:[(@[@97, @98]) toUint8Data]]);
+    test([@"ab".encodedAsAscii isEqualToData:[(@[@97, @98]) ows_toUint8Data]]);
     testThrows(@"√".encodedAsAscii);
 }
 -(void) testBase64EncodeKnown {
