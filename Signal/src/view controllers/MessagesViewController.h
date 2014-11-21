@@ -11,13 +11,14 @@
 
 #import "DemoDataModel.h"
 
+@class TSThread;
 
 @interface MessagesViewController : JSQMessagesViewController <UIImagePickerControllerDelegate,UINavigationControllerDelegate>
-@property (strong, nonatomic) DemoDataModel *demoData;
 
-@property (strong, nonatomic) NSString* _senderTitleString;
+@property (strong, nonatomic) NSString* senderTitleString;
+@property DemoDataModel *demoData;
 
--(void)initWithGroup:(NSArray*)group;
 
+- (void)setupWithThread:(TSThread*)thread;
 
 @end

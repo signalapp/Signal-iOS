@@ -52,7 +52,15 @@ static NSInteger connectingFlashCounter = 0;
     [self showCallState];
     [self setupButtonBorders];
     [self localizeButtons];
+    [self linkActions];
+    
     [UIDevice.currentDevice setProximityMonitoringEnabled:YES];
+}
+
+-(void)linkActions
+{
+    [_muteButton addTarget:self action:@selector(muteButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+    [_speakerButton addTarget:self action:@selector(speakerButtonTapped) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -245,14 +253,23 @@ static NSInteger connectingFlashCounter = 0;
 - (void)muteButtonTapped {
 	_muteButton.selected = [Environment.phoneManager toggleMute];
     
-    NSString* newImageName = _muteButton.selected ? @"mute_on" : @"mute_off";
-    [_muteButton.imageView setImage:[UIImage imageNamed:newImageName]];
+    if (_muteButton.isSelected)
+    {
+        _muteLabel.text = @"Mute On";
+    } else {
+        _muteLabel.text = @"Mute Off";
+    }
 }
 
 - (void)speakerButtonTapped {
     _speakerButton.selected = [AppAudioManager.sharedInstance toggleSpeakerPhone];
-    NSString* newImageName = _speakerButton.selected ? @"speaker_on" : @"speaker_off";
-    [_speakerButton.imageView setImage:[UIImage imageNamed:newImageName]];
+    
+    if (_speakerButton.isSelected)
+    {
+        _speakerLabel.text = @"Speaker On";
+    } else {
+        _speakerLabel.text = @"Speaker Off";
+    }
 }
 
 - (void)answerButtonTapped {
@@ -274,7 +291,6 @@ static NSInteger connectingFlashCounter = 0;
         message = [message stringByAppendingString:[serverMessage text]];
     }
     
-    _endButton.backgroundColor = [UIColor grayColor];
     _callStatusLabel.textColor = [UIColor redColor];
     
     [self showConnectingError];
@@ -297,11 +313,14 @@ static NSInteger connectingFlashCounter = 0;
 
 -(void) displayAcceptRejectButtons:(BOOL) enable{
     
-    //TODO: if NO, animate reject button -> end call button
-    
     _answerButton.hidden = !enable;
     _rejectButton.hidden = !enable;
-    _endButton.hidden = enable;
+    _endButton.hidden    = enable;
+    
+    _answerLabel.hidden  = !enable;
+    _rejectLabel.hidden  = !enable;
+    _endLabel.hidden     = enable;
+    
     if (_vibrateTimer && enable == false) {
         [_vibrateTimer invalidate];
     }

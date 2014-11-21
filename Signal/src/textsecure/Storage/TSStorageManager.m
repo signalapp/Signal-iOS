@@ -13,6 +13,11 @@
 #import "CryptoTools.h"
 #import "NSData+Base64.h"
 
+#import "TSDatabaseView.h"
+
+
+NSString *const TSUIDatabaseConnectionDidUpdateNotification = @"TSUIDatabaseConnectionDidUpdateNotification";
+
 static const NSString *const databaseName  = @"Signal.sqlite";
 static NSString * keychainService          = @"TSKeyChainService";
 static NSString * keychainDBPassAccount    = @"TSDatabasePass";
@@ -20,7 +25,6 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
 @interface TSStorageManager ()
 
 @property YapDatabase *database;
-@property YapDatabaseConnection *dbConnection;
 
 @end
 
@@ -31,6 +35,7 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedMyManager = [[self alloc] init];
+        [sharedMyManager protectDatabaseFile];
     });
     return sharedMyManager;
 }
@@ -38,34 +43,58 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
 - (instancetype)init {
     self = [super init];
     
-    if (self) {
-        self.database     = [self newDatabaseInit];
-        self.dbConnection = self.databaseConnection;
-    }
-    
-    return self;
-}
-
-- (YapDatabase*)newDatabaseInit{
     YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
     options.corruptAction = YapDatabaseCorruptAction_Fail;
     options.passphraseBlock = ^{
         return [self databasePassword];
     };
     
-    return [[YapDatabase alloc] initWithPath:[self dbPath]
-                            objectSerializer:NULL
-                          objectDeserializer:NULL
-                          metadataSerializer:NULL
-                        metadataDeserializer:NULL
-                             objectSanitizer:NULL
-                           metadataSanitizer:NULL
-                                     options:options];
-    
+    _database = [[YapDatabase alloc] initWithPath:[self dbPath]
+                                     objectSerializer:NULL
+                                   objectDeserializer:NULL
+                                   metadataSerializer:NULL
+                                 metadataDeserializer:NULL
+                                      objectSanitizer:NULL
+                                    metadataSanitizer:NULL
+                                              options:options];
+    _dbConnection = self.newDatabaseConnection;
+    return self;
+}
+
+- (void)setupDatabase {
+    [TSDatabaseView registerThreadDatabaseView];
+    [TSDatabaseView registerBuddyConversationDatabaseView];
+}
+
+/**
+ *  Protects the preference and logs file with disk encryption and prevents them to leak to iCloud.
+ */
+
+- (void)protectDatabaseFile{
+
+    NSDictionary *attrs = @{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication};
+    NSError *error;
+
+
+    [NSFileManager.defaultManager setAttributes:attrs ofItemAtPath:[self dbPath] error:&error];
+    [[NSURL fileURLWithPath:[self dbPath]] setResourceValue:@YES
+                                                     forKey:NSURLIsExcludedFromBackupKey
+                                                      error:&error];
+
+    if (error) {
+        DDLogError(@"Error while removing log files from backup: %@", error.description);
+        UIAlertView *alert  = [[UIAlertView alloc]initWithTitle:NSLocalizedString(@"WARNING", @"")
+                                                        message:NSLocalizedString(@"DISABLING_BACKUP_FAILED", @"")
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                                              otherButtonTitles:nil];
+        [alert show];
+        return;
+    }
     
 }
 
-- (YapDatabaseConnection *)databaseConnection {
+- (YapDatabaseConnection *)newDatabaseConnection {
     return self.database.newConnection;
 }
 
@@ -209,8 +238,7 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
         DDLogError(@"Failed to delete database: %@", error.description);
     }
     
-    self.database = [self newDatabaseInit];
-    self.dbConnection = self.databaseConnection;
+    [self setupDatabase];
 }
 
 @end

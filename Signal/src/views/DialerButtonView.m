@@ -16,8 +16,15 @@
 - (void)setSelected:(BOOL)isSelected {
 		
     if (isSelected) {
-        //self.backgroundColor = [UIUtil transparentLightGrayColor];
-        //self.layer.borderWidth = 0.5f;
+
+        UIColor *color = [UIColor blackColor];
+        self.layer.shadowColor = [color CGColor];
+        self.layer.shadowRadius = 15.0f;
+        self.layer.shadowOpacity = 1.0f;
+        self.layer.shadowOffset = CGSizeZero;
+        self.layer.masksToBounds = NO;
+
+        
     } else {
         self.backgroundColor = [UIColor clearColor];
         self.layer.borderWidth = 0.0f;

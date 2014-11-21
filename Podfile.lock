@@ -32,7 +32,7 @@ PODS:
     - CocoaLumberjack/Core
   - DJWActionSheet (1.0.4)
   - HKDFKit (0.0.3)
-  - JSQMessagesViewController (6.0-beta6):
+  - JSQMessagesViewController (6.0.0):
     - JSQSystemSoundPlayer (~> 2.0.0)
   - JSQSystemSoundPlayer (2.0.0)
   - libPhoneNumber-iOS (0.7.3)
@@ -83,7 +83,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   JSQMessagesViewController:
-    :commit: 21d877492e948f27fde4115573a809798cc78210
+    :commit: 597670e44663c9fa70b6a2deec2b19147c763048
     :git: https://github.com/dtsbourg/JSQMessagesViewController
   SocketRocket:
     :commit: d0585af165
@@ -96,7 +96,7 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
   DJWActionSheet: d88b302d7c29523e1e9fb9b62cfac46f59bb90d9
   HKDFKit: 5998cf1bbb611e7ecc6bd3eaaef8c7a7da7be949
-  JSQMessagesViewController: 960a09d11978bea52d1a676e97980838f8d98652
+  JSQMessagesViewController: 49f449221a8f1da43403e6468ae2015fa0114a9e
   JSQSystemSoundPlayer: c98443b1cbb3b45db09d0d3d6c2355cf78294981
   libPhoneNumber-iOS: 98fc07d70c8fdb5e6a8e3442c37e97353065c20e
   Mantle: d7c5ac734579ec751c58fecbf56189853056c58c

@@ -14,8 +14,5 @@
 @property(nonatomic, strong) IBOutlet UISwitch* toggle;
 @property(nonatomic, strong) IBOutlet UILabel* state;
 
-//Header cell
-@property(nonatomic, strong) IBOutlet UIImageView* profileImageView;
-@property(nonatomic, strong) IBOutlet UIButton * changeProfileImageViewButton;
 
 @end

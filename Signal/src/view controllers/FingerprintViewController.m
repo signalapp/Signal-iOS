@@ -18,9 +18,18 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
+    [self.view setAlpha:0];
+    
     [self initializeImageViews];
     
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [UIView animateWithDuration:0.6 delay:0. options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [self.view setAlpha:1];
+    } completion:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -31,13 +40,13 @@
 #pragma mark - Initializers
 -(void)initializeImageViews
 {
-    _contactImageView.image = [UIImage imageNamed:@"DefaultContactImage"];
+    _contactImageView.image = [UIImage imageNamed:@"defaultConctact_light"];
     _contactImageView.layer.cornerRadius = 75.f/2;
     _contactImageView.layer.masksToBounds = YES;
     _contactImageView.layer.borderWidth = 2.0f;
     _contactImageView.layer.borderColor = [[UIColor whiteColor] CGColor];
     
-    _userImageView.image = [UIImage imageNamed:@"DefaultContactImage"];
+    _userImageView.image = [UIImage imageNamed:@"defaultConctact_light"];
     _userImageView.layer.cornerRadius = 75.f/2;
     _userImageView.layer.masksToBounds = YES;
     _userImageView.layer.borderWidth = 2.0f;
@@ -47,7 +56,12 @@
 #pragma mark - Action
 -(IBAction)closeButtonAction:(id)sender
 {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [UIView animateWithDuration:0.6 delay:0. options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [self.view setAlpha:0];
+    } completion:^(BOOL succeeded){
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }];
+
 }
 
 -(IBAction)shredAndDelete:(id)sender

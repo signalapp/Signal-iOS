@@ -9,6 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "TSConstants.h"
 
+static NSString *const TSRegistrationErrorDomain = @"TSRegistrationErrorDomain";
+static NSString *const TSRegistrationErrorUserInfoHTTPStatus = @"TSHTTPStatus";
+
 typedef NS_ENUM(NSUInteger, TSRegistrationFailure) {
     kTSRegistrationFailureAuthentication,
     kTSRegistrationFailureNetwork,
@@ -20,7 +23,7 @@ typedef NS_ENUM(NSUInteger, TSRegistrationFailure) {
     kTSRegistrationFailureRequest
 };
 
-typedef void(^failedVerificationBlock)(TSRegistrationFailure failureType);
+typedef void(^failedVerificationBlock)(NSError *error);
 
 @interface TSAccountManager : NSObject
 
@@ -68,5 +71,7 @@ typedef void(^failedVerificationBlock)(TSRegistrationFailure failureType);
 + (void)registerForPushNotifications:(NSData*)pushToken success:(successCompletionBlock)success failure:(failedVerificationBlock)failureBlock;
 
 #endif
+
++ (NSError *)errorForRegistrationFailure:(TSRegistrationFailure)failureType HTTPStatusCode:(long)HTTPStatus;
 
 @end

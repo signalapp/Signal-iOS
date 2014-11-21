@@ -8,7 +8,8 @@
 
 #import "TSThread.h"
 
-#import "TSContact.h"
+#import "Environment.h"
+#import "ContactsManager.h"
 #import "TSGroup.h"
 
 @implementation TSThread
@@ -30,6 +31,18 @@
 - (BOOL)isGroupThread{
     NSAssert(false, @"An abstract method on TSThread was called.");
     return FALSE;
+}
+
+- (uint64_t)lastMessageId{
+    return 0;
+}
+
+- (NSDate*)lastMessageDate{
+    return [NSDate date];
+}
+
+- (UIImage*)image{
+    return nil;
 }
 
 @end

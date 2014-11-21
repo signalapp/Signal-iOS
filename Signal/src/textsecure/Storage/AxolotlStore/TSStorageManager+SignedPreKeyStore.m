@@ -37,7 +37,7 @@
 - (NSArray*)loadSignedPreKeys {
     NSMutableArray *signedPreKeyRecords = [NSMutableArray array];
     
-    YapDatabaseConnection *conn = [self databaseConnection];
+    YapDatabaseConnection *conn = [self newDatabaseConnection];
     
     [conn readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [transaction enumerateRowsInCollection:TSStorageManagerSignedPreKeyStoreCollection

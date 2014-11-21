@@ -34,19 +34,13 @@
     [self setupPasteBehaviour];
     self.title = KEYPAD_NAV_BAR_TITLE;
     _currentNumberMutable = [NSMutableString string];
-    //[self updateNumberLabel];
+    [self updateNumberLabel];
     [self.navigationController setNavigationBarHidden:YES animated:NO];
     [_callButton setTitle:CALL_BUTTON_TITLE forState:UIControlStateNormal];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    UIBlurEffect * effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-    UIVisualEffectView * viewWithBlurredBackground =
-    [[UIVisualEffectView alloc] initWithEffect:effect];
-    viewWithBlurredBackground.frame = self.view.frame;
-    
-    [self.view insertSubview:viewWithBlurredBackground atIndex:0];
     
     if (_phoneNumber) {
         _currentNumberMutable = _phoneNumber.toE164.mutableCopy;
@@ -154,7 +148,6 @@
 }
 
 - (void)updateNumberLabel {
-    //DEBUG!!!
     NSString* numberText = [_currentNumberMutable copy];
     
     _numberLabel.text = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:numberText];

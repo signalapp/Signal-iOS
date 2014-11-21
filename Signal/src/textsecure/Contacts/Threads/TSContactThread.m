@@ -8,7 +8,9 @@
 
 #import "TSContactThread.h"
 
+#import "Environment.h"
 #import "TSStorageManager.h"
+#import "ContactsManager.h"
 
 #define TSContactThreadPrefix @"c"
 
@@ -23,13 +25,13 @@
     return self;
 }
 
-+ (instancetype)threadWithContactId:(NSString*)contactId{
++ (instancetype)threadWithContactId:(NSString*)contactId transaction:(YapDatabaseReadWriteTransaction*)transaction {
     
-    TSContactThread *thread = [self fetchObjectWithUniqueID:[self threadIdFromContactId:contactId]];
+    TSContactThread *thread = [self fetchObjectWithUniqueID:[self threadIdFromContactId:contactId] transaction:transaction];
     
     if (!thread) {
         thread = [[TSContactThread alloc] initWithContactId:contactId];
-        [thread save];
+        [thread saveWithTransaction:transaction];
     }
     
     return thread;
@@ -41,6 +43,17 @@
 
 - (BOOL)isGroupThread{
     return false;
+}
+
+- (NSString*)name{
+    NSString *contactId = [self contactIdentifier];
+    NSString *name      = [[Environment getCurrent].contactsManager nameStringForPhoneIdentifier:contactId];
+    
+    if (!name) {
+        name = contactId;
+    }
+    
+    return name;
 }
 
 + (NSString*)threadIdFromContactId:(NSString*)contactId{

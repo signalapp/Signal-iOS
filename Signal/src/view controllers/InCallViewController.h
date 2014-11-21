@@ -17,12 +17,17 @@
 @property (nonatomic, strong) IBOutlet UIView *callStateImageContainerView;
 
 @property (nonatomic, strong) IBOutlet UIButton *muteButton;
+@property (nonatomic, strong) IBOutlet UILabel* muteLabel;
 @property (nonatomic, strong) IBOutlet UIButton *speakerButton;
+@property (nonatomic, strong) IBOutlet UILabel* speakerLabel;
 
 @property (nonatomic, strong) IBOutlet UIButton *answerButton;
+@property (nonatomic, strong) IBOutlet UILabel  *answerLabel;
 @property (nonatomic, strong) IBOutlet UIButton *rejectButton;
+@property (nonatomic, strong) IBOutlet UILabel  *rejectLabel;
 
 @property (nonatomic, strong) IBOutlet UIButton *endButton;
+@property (nonatomic, strong) IBOutlet UILabel  *endLabel;
 
 @property (nonatomic, readonly) CallState *callState;
 @property (nonatomic, readonly) Contact *potentiallyKnownContact;

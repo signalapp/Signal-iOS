@@ -22,7 +22,7 @@
 }
 
 + (void)storeServerToken:(NSString*)authToken signalingKey:(NSString*)signalingKey phoneNumber:(NSString*)phoneNumber {
-    YapDatabaseConnection *dbConn = [[self sharedManager] databaseConnection];
+    YapDatabaseConnection *dbConn = [[self sharedManager] dbConnection];
     
     [dbConn readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction setObject:authToken    forKey:TSStorageServerAuthToken     inCollection:TSStorageUserAccountCollection];

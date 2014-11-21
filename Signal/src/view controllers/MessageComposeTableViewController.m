@@ -6,6 +6,8 @@
 //
 //
 
+#import "Environment.h"
+#import "Contact.h"
 #import "MessageComposeTableViewController.h"
 #import "MessagesViewController.h"
 #import "SignalsViewController.h"
@@ -24,14 +26,12 @@
 
 @implementation MessageComposeTableViewController
 
-
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     [self initializeSearch];
     
-    contacts = [DemoDataFactory makeFakeContacts];
+    contacts = [[Environment getCurrent] contactsManager].textSecureContacts;
     searchResults = contacts;
 
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
@@ -104,7 +104,6 @@
     } else {
         return (NSInteger)[contacts count];
     }
-    
 }
 
 
@@ -114,6 +113,8 @@
     if (cell == nil) {
         cell = [[ContactTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"ContactTableViewCell"];
     }
+
+    cell.shouldShowContactButtons = NO;
 
     [cell configureWithContact:[self contactForIndexPath:indexPath]];
     
@@ -178,6 +179,7 @@
 {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
+
 
 
 @end
