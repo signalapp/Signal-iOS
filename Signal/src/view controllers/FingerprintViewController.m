@@ -31,13 +31,13 @@
 #pragma mark - Initializers
 -(void)initializeImageViews
 {
-    _contactImageView.image = [UIImage imageNamed:@"DefaultContactImage"];
+    _contactImageView.image = [UIImage imageNamed:@"defaultConctact_light"];
     _contactImageView.layer.cornerRadius = 75.f/2;
     _contactImageView.layer.masksToBounds = YES;
     _contactImageView.layer.borderWidth = 2.0f;
     _contactImageView.layer.borderColor = [[UIColor whiteColor] CGColor];
     
-    _userImageView.image = [UIImage imageNamed:@"DefaultContactImage"];
+    _userImageView.image = [UIImage imageNamed:@"defaultConctact_light"];
     _userImageView.layer.cornerRadius = 75.f/2;
     _userImageView.layer.masksToBounds = YES;
     _userImageView.layer.borderWidth = 2.0f;

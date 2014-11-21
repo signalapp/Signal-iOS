@@ -572,6 +572,8 @@
 		E197B62718BBF63B00F073E5 /* SoundBoard.m in Sources */ = {isa = PBXBuildFile; fileRef = E197B62618BBF63B00F073E5 /* SoundBoard.m */; };
 		E1CD329618BCFF9900B1A496 /* SoundInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CD329518BCFF9900B1A496 /* SoundInstance.m */; };
 		F995AC2FFD6D4442B012604A /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
+		FC15B7BD1A1F808F00F59801 /* defaultContact@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC15B7BC1A1F808F00F59801 /* defaultContact@2x.png */; };
+		FC15B7BF1A1F80F200F59801 /* defaultConctact_light@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC15B7BE1A1F80F200F59801 /* defaultConctact_light@2x.png */; };
 		FC31962A1A067D8F0094C78E /* MessageComposeTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */; };
 		FC31962D1A06A2190094C78E /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC31962C1A06A2190094C78E /* FingerprintViewController.m */; };
 		FC3196301A0814130094C78E /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC31962F1A0814130094C78E /* SettingsTableViewController.m */; };
@@ -1349,6 +1351,8 @@
 		E1C407C117F0C246007BEE65 /* whisperReal.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperReal.cer; sourceTree = "<group>"; };
 		E1CD329418BCFF9900B1A496 /* SoundInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundInstance.h; sourceTree = "<group>"; };
 		E1CD329518BCFF9900B1A496 /* SoundInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundInstance.m; sourceTree = "<group>"; };
+		FC15B7BC1A1F808F00F59801 /* defaultContact@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "defaultContact@2x.png"; sourceTree = "<group>"; };
+		FC15B7BE1A1F80F200F59801 /* defaultConctact_light@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "defaultConctact_light@2x.png"; sourceTree = "<group>"; };
 		FC3196281A067D8F0094C78E /* MessageComposeTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageComposeTableViewController.h; sourceTree = "<group>"; };
 		FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageComposeTableViewController.m; sourceTree = "<group>"; };
 		FC31962B1A06A2190094C78E /* FingerprintViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FingerprintViewController.h; sourceTree = "<group>"; };
@@ -2274,6 +2278,8 @@
 				B633C50F1A1D190B0059AC12 /* contacts_arrow@2x.png */,
 				B633C5101A1D190B0059AC12 /* contacts_tab@2x.png */,
 				B633C5141A1D190B0059AC12 /* DefaultContactImage.png */,
+				FC15B7BE1A1F80F200F59801 /* defaultConctact_light@2x.png */,
+				FC15B7BC1A1F808F00F59801 /* defaultContact@2x.png */,
 				B633C5151A1D190B0059AC12 /* delete@2x.png */,
 				B633C5161A1D190B0059AC12 /* delete_history@2x.png */,
 				B633C5171A1D190B0059AC12 /* dismiss_notification_icon.png */,
@@ -3480,9 +3486,11 @@
 				E14874F818A06951002CC4F3 /* ContactTableViewCell.xib in Resources */,
 				B633C5BC1A1D190B0059AC12 /* message_bubble@2x.png in Resources */,
 				B633C5EF1A1D190B0059AC12 /* tab_icon_contacts.png in Resources */,
+				FC15B7BD1A1F808F00F59801 /* defaultContact@2x.png in Resources */,
 				B633C5D11A1D190B0059AC12 /* reply.png in Resources */,
 				B633C5EE1A1D190B0059AC12 /* spinner_ringing@2x.png in Resources */,
 				B633C6001A1D190B0059AC12 /* whisper_notification_icon@2x.png in Resources */,
+				FC15B7BF1A1F80F200F59801 /* defaultConctact_light@2x.png in Resources */,
 				E14874F918A06951002CC4F3 /* CountryCodeTableViewCell.xib in Resources */,
 				B633C5BF1A1D190B0059AC12 /* mute_icon.png in Resources */,
 				B633C5ED1A1D190B0059AC12 /* spinner_ringing.png in Resources */,
