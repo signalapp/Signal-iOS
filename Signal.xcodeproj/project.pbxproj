@@ -412,6 +412,20 @@
 		B63761ED19E1FBE8005735D1 /* HttpRequestOrResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E719E1FBE8005735D1 /* HttpRequestOrResponse.m */; };
 		B63761EE19E1FBE8005735D1 /* HttpRequestUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E919E1FBE8005735D1 /* HttpRequestUtil.m */; };
 		B63761EF19E1FBE8005735D1 /* HttpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761EB19E1FBE8005735D1 /* HttpResponse.m */; };
+		B63AF5C71A1F757900D01AAD /* TSContactsIntersectionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5AD1A1F757900D01AAD /* TSContactsIntersectionRequest.m */; };
+		B63AF5C81A1F757900D01AAD /* TSDeregisterAccountRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5AF1A1F757900D01AAD /* TSDeregisterAccountRequest.m */; };
+		B63AF5C91A1F757900D01AAD /* TSRecipientPrekeyRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5B11A1F757900D01AAD /* TSRecipientPrekeyRequest.m */; };
+		B63AF5CA1A1F757900D01AAD /* TSRegisterForPushRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5B31A1F757900D01AAD /* TSRegisterForPushRequest.m */; };
+		B63AF5CB1A1F757900D01AAD /* TSRegisterPrekeysRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5B51A1F757900D01AAD /* TSRegisterPrekeysRequest.m */; };
+		B63AF5CC1A1F757900D01AAD /* TSRegisterWithTokenRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5B71A1F757900D01AAD /* TSRegisterWithTokenRequest.m */; };
+		B63AF5CD1A1F757900D01AAD /* TSRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5B91A1F757900D01AAD /* TSRequest.m */; };
+		B63AF5CE1A1F757900D01AAD /* TSRequestAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5BB1A1F757900D01AAD /* TSRequestAttachment.m */; };
+		B63AF5CF1A1F757900D01AAD /* TSRequestAttachmentId.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5BD1A1F757900D01AAD /* TSRequestAttachmentId.m */; };
+		B63AF5D01A1F757900D01AAD /* TSSubmitMessageRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5BF1A1F757900D01AAD /* TSSubmitMessageRequest.m */; };
+		B63AF5D11A1F757900D01AAD /* TSUploadAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5C11A1F757900D01AAD /* TSUploadAttachment.m */; };
+		B63AF5D21A1F757900D01AAD /* TSNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5C31A1F757900D01AAD /* TSNetworkManager.m */; };
+		B63AF5D31A1F757900D01AAD /* TSSocketManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5C61A1F757900D01AAD /* TSSocketManager.m */; };
+		B63AF5D81A1F889500D01AAD /* SubProtocol.pb.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5D71A1F889500D01AAD /* SubProtocol.pb.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B6416FB8199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F57199A0478003C5699 /* Localizable.strings */; };
 		B65EDA1219E1BE6400AAA7CB /* RPAPICall.m in Sources */ = {isa = PBXBuildFile; fileRef = B65EDA1119E1BE6400AAA7CB /* RPAPICall.m */; };
 		B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
@@ -450,19 +464,6 @@
 		B6B096741A1D25ED008BFAA6 /* TSMessagesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096161A1D25ED008BFAA6 /* TSMessagesManager.m */; };
 		B6B096751A1D25ED008BFAA6 /* TSOutgoingMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096181A1D25ED008BFAA6 /* TSOutgoingMessage.m */; };
 		B6B096761A1D25ED008BFAA6 /* TSServerMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0961A1A1D25ED008BFAA6 /* TSServerMessage.m */; };
-		B6B096771A1D25ED008BFAA6 /* TSContactsIntersectionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0961E1A1D25ED008BFAA6 /* TSContactsIntersectionRequest.m */; };
-		B6B096781A1D25ED008BFAA6 /* TSDeregisterAccountRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096201A1D25ED008BFAA6 /* TSDeregisterAccountRequest.m */; };
-		B6B096791A1D25ED008BFAA6 /* TSRecipientPrekeyRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096221A1D25ED008BFAA6 /* TSRecipientPrekeyRequest.m */; };
-		B6B0967A1A1D25ED008BFAA6 /* TSRegisterForPushRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096241A1D25ED008BFAA6 /* TSRegisterForPushRequest.m */; };
-		B6B0967B1A1D25ED008BFAA6 /* TSRegisterPrekeysRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096261A1D25ED008BFAA6 /* TSRegisterPrekeysRequest.m */; };
-		B6B0967C1A1D25ED008BFAA6 /* TSRegisterWithTokenRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096281A1D25ED008BFAA6 /* TSRegisterWithTokenRequest.m */; };
-		B6B0967D1A1D25ED008BFAA6 /* TSRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0962A1A1D25ED008BFAA6 /* TSRequest.m */; };
-		B6B0967E1A1D25ED008BFAA6 /* TSRequestAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0962C1A1D25ED008BFAA6 /* TSRequestAttachment.m */; };
-		B6B0967F1A1D25ED008BFAA6 /* TSRequestAttachmentId.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0962E1A1D25ED008BFAA6 /* TSRequestAttachmentId.m */; };
-		B6B096821A1D25ED008BFAA6 /* TSSubmitMessageRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096341A1D25ED008BFAA6 /* TSSubmitMessageRequest.m */; };
-		B6B096831A1D25ED008BFAA6 /* TSUploadAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096361A1D25ED008BFAA6 /* TSUploadAttachment.m */; };
-		B6B096841A1D25ED008BFAA6 /* TSNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096381A1D25ED008BFAA6 /* TSNetworkManager.m */; };
-		B6B096851A1D25ED008BFAA6 /* TSSocketManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0963A1A1D25ED008BFAA6 /* TSSocketManager.m */; };
 		B6B096861A1D25ED008BFAA6 /* SecurityUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0963D1A1D25ED008BFAA6 /* SecurityUtils.m */; };
 		B6B096871A1D25ED008BFAA6 /* TSStorageManager+IdentityKeyStore.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096411A1D25ED008BFAA6 /* TSStorageManager+IdentityKeyStore.m */; };
 		B6B096881A1D25ED008BFAA6 /* TSStorageManager+keyFromIntLong.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096431A1D25ED008BFAA6 /* TSStorageManager+keyFromIntLong.m */; };
@@ -523,9 +524,6 @@
 		E1370BE418A0686C00826894 /* outring.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40B18A05754001A532A /* outring.mp3 */; };
 		E1370BE518A0686C00826894 /* r.caf in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40C18A05754001A532A /* r.caf */; };
 		E1370BE618A0686C00826894 /* sonarping.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40D18A05754001A532A /* sonarping.mp3 */; };
-		E1370BE718A0688300826894 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E1370BDA18A066F600826894 /* Default-568h@2x.png */; };
-		E1370BE818A0688300826894 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = E1370BDB18A066F600826894 /* Default.png */; };
-		E1370BE918A0688300826894 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E1370BDC18A066F600826894 /* Default@2x.png */; };
 		E1370BEA18A0689000826894 /* AppIcon29x29.jpg in Resources */ = {isa = PBXBuildFile; fileRef = E18AB3F418A05734001A532A /* AppIcon29x29.jpg */; };
 		E1370BEB18A0689000826894 /* AppIcon29x29.png in Resources */ = {isa = PBXBuildFile; fileRef = E18AB3F518A05734001A532A /* AppIcon29x29.png */; };
 		E1370BEC18A0689000826894 /* AppIcon29x29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E18AB3F618A05734001A532A /* AppIcon29x29@2x.png */; };
@@ -1072,6 +1070,34 @@
 		B63761E919E1FBE8005735D1 /* HttpRequestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequestUtil.m; sourceTree = "<group>"; };
 		B63761EA19E1FBE8005735D1 /* HttpResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpResponse.h; sourceTree = "<group>"; };
 		B63761EB19E1FBE8005735D1 /* HttpResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpResponse.m; sourceTree = "<group>"; };
+		B63AF5AC1A1F757900D01AAD /* TSContactsIntersectionRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSContactsIntersectionRequest.h; sourceTree = "<group>"; };
+		B63AF5AD1A1F757900D01AAD /* TSContactsIntersectionRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSContactsIntersectionRequest.m; sourceTree = "<group>"; };
+		B63AF5AE1A1F757900D01AAD /* TSDeregisterAccountRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSDeregisterAccountRequest.h; sourceTree = "<group>"; };
+		B63AF5AF1A1F757900D01AAD /* TSDeregisterAccountRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSDeregisterAccountRequest.m; sourceTree = "<group>"; };
+		B63AF5B01A1F757900D01AAD /* TSRecipientPrekeyRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRecipientPrekeyRequest.h; sourceTree = "<group>"; };
+		B63AF5B11A1F757900D01AAD /* TSRecipientPrekeyRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRecipientPrekeyRequest.m; sourceTree = "<group>"; };
+		B63AF5B21A1F757900D01AAD /* TSRegisterForPushRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRegisterForPushRequest.h; sourceTree = "<group>"; };
+		B63AF5B31A1F757900D01AAD /* TSRegisterForPushRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRegisterForPushRequest.m; sourceTree = "<group>"; };
+		B63AF5B41A1F757900D01AAD /* TSRegisterPrekeysRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRegisterPrekeysRequest.h; sourceTree = "<group>"; };
+		B63AF5B51A1F757900D01AAD /* TSRegisterPrekeysRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRegisterPrekeysRequest.m; sourceTree = "<group>"; };
+		B63AF5B61A1F757900D01AAD /* TSRegisterWithTokenRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRegisterWithTokenRequest.h; sourceTree = "<group>"; };
+		B63AF5B71A1F757900D01AAD /* TSRegisterWithTokenRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRegisterWithTokenRequest.m; sourceTree = "<group>"; };
+		B63AF5B81A1F757900D01AAD /* TSRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRequest.h; sourceTree = "<group>"; };
+		B63AF5B91A1F757900D01AAD /* TSRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRequest.m; sourceTree = "<group>"; };
+		B63AF5BA1A1F757900D01AAD /* TSRequestAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRequestAttachment.h; sourceTree = "<group>"; };
+		B63AF5BB1A1F757900D01AAD /* TSRequestAttachment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRequestAttachment.m; sourceTree = "<group>"; };
+		B63AF5BC1A1F757900D01AAD /* TSRequestAttachmentId.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRequestAttachmentId.h; sourceTree = "<group>"; };
+		B63AF5BD1A1F757900D01AAD /* TSRequestAttachmentId.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRequestAttachmentId.m; sourceTree = "<group>"; };
+		B63AF5BE1A1F757900D01AAD /* TSSubmitMessageRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSSubmitMessageRequest.h; sourceTree = "<group>"; };
+		B63AF5BF1A1F757900D01AAD /* TSSubmitMessageRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSSubmitMessageRequest.m; sourceTree = "<group>"; };
+		B63AF5C01A1F757900D01AAD /* TSUploadAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSUploadAttachment.h; sourceTree = "<group>"; };
+		B63AF5C11A1F757900D01AAD /* TSUploadAttachment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSUploadAttachment.m; sourceTree = "<group>"; };
+		B63AF5C21A1F757900D01AAD /* TSNetworkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSNetworkManager.h; sourceTree = "<group>"; };
+		B63AF5C31A1F757900D01AAD /* TSNetworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSNetworkManager.m; sourceTree = "<group>"; };
+		B63AF5C51A1F757900D01AAD /* TSSocketManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSSocketManager.h; sourceTree = "<group>"; };
+		B63AF5C61A1F757900D01AAD /* TSSocketManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSSocketManager.m; sourceTree = "<group>"; };
+		B63AF5D61A1F889500D01AAD /* SubProtocol.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SubProtocol.pb.h; sourceTree = "<group>"; };
+		B63AF5D71A1F889500D01AAD /* SubProtocol.pb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SubProtocol.pb.m; sourceTree = "<group>"; };
 		B6416F37199A0478003C5699 /* an */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = an; path = Localizable.strings; sourceTree = "<group>"; };
 		B6416F3A199A0478003C5699 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = Localizable.strings; sourceTree = "<group>"; };
 		B6416F3D199A0478003C5699 /* be */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = be; path = Localizable.strings; sourceTree = "<group>"; };
@@ -1176,32 +1202,6 @@
 		B6B096181A1D25ED008BFAA6 /* TSOutgoingMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSOutgoingMessage.m; sourceTree = "<group>"; };
 		B6B096191A1D25ED008BFAA6 /* TSServerMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSServerMessage.h; sourceTree = "<group>"; };
 		B6B0961A1A1D25ED008BFAA6 /* TSServerMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSServerMessage.m; sourceTree = "<group>"; };
-		B6B0961D1A1D25ED008BFAA6 /* TSContactsIntersectionRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSContactsIntersectionRequest.h; sourceTree = "<group>"; };
-		B6B0961E1A1D25ED008BFAA6 /* TSContactsIntersectionRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSContactsIntersectionRequest.m; sourceTree = "<group>"; };
-		B6B0961F1A1D25ED008BFAA6 /* TSDeregisterAccountRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSDeregisterAccountRequest.h; sourceTree = "<group>"; };
-		B6B096201A1D25ED008BFAA6 /* TSDeregisterAccountRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSDeregisterAccountRequest.m; sourceTree = "<group>"; };
-		B6B096211A1D25ED008BFAA6 /* TSRecipientPrekeyRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRecipientPrekeyRequest.h; sourceTree = "<group>"; };
-		B6B096221A1D25ED008BFAA6 /* TSRecipientPrekeyRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRecipientPrekeyRequest.m; sourceTree = "<group>"; };
-		B6B096231A1D25ED008BFAA6 /* TSRegisterForPushRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRegisterForPushRequest.h; sourceTree = "<group>"; };
-		B6B096241A1D25ED008BFAA6 /* TSRegisterForPushRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRegisterForPushRequest.m; sourceTree = "<group>"; };
-		B6B096251A1D25ED008BFAA6 /* TSRegisterPrekeysRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRegisterPrekeysRequest.h; sourceTree = "<group>"; };
-		B6B096261A1D25ED008BFAA6 /* TSRegisterPrekeysRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRegisterPrekeysRequest.m; sourceTree = "<group>"; };
-		B6B096271A1D25ED008BFAA6 /* TSRegisterWithTokenRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRegisterWithTokenRequest.h; sourceTree = "<group>"; };
-		B6B096281A1D25ED008BFAA6 /* TSRegisterWithTokenRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRegisterWithTokenRequest.m; sourceTree = "<group>"; };
-		B6B096291A1D25ED008BFAA6 /* TSRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRequest.h; sourceTree = "<group>"; };
-		B6B0962A1A1D25ED008BFAA6 /* TSRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRequest.m; sourceTree = "<group>"; };
-		B6B0962B1A1D25ED008BFAA6 /* TSRequestAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRequestAttachment.h; sourceTree = "<group>"; };
-		B6B0962C1A1D25ED008BFAA6 /* TSRequestAttachment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRequestAttachment.m; sourceTree = "<group>"; };
-		B6B0962D1A1D25ED008BFAA6 /* TSRequestAttachmentId.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRequestAttachmentId.h; sourceTree = "<group>"; };
-		B6B0962E1A1D25ED008BFAA6 /* TSRequestAttachmentId.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRequestAttachmentId.m; sourceTree = "<group>"; };
-		B6B096331A1D25ED008BFAA6 /* TSSubmitMessageRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSSubmitMessageRequest.h; sourceTree = "<group>"; };
-		B6B096341A1D25ED008BFAA6 /* TSSubmitMessageRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSSubmitMessageRequest.m; sourceTree = "<group>"; };
-		B6B096351A1D25ED008BFAA6 /* TSUploadAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSUploadAttachment.h; sourceTree = "<group>"; };
-		B6B096361A1D25ED008BFAA6 /* TSUploadAttachment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSUploadAttachment.m; sourceTree = "<group>"; };
-		B6B096371A1D25ED008BFAA6 /* TSNetworkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSNetworkManager.h; sourceTree = "<group>"; };
-		B6B096381A1D25ED008BFAA6 /* TSNetworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSNetworkManager.m; sourceTree = "<group>"; };
-		B6B096391A1D25ED008BFAA6 /* TSSocketManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSSocketManager.h; sourceTree = "<group>"; };
-		B6B0963A1A1D25ED008BFAA6 /* TSSocketManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSSocketManager.m; sourceTree = "<group>"; };
 		B6B0963C1A1D25ED008BFAA6 /* SecurityUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecurityUtils.h; sourceTree = "<group>"; };
 		B6B0963D1A1D25ED008BFAA6 /* SecurityUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecurityUtils.m; sourceTree = "<group>"; };
 		B6B096401A1D25ED008BFAA6 /* TSStorageManager+IdentityKeyStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TSStorageManager+IdentityKeyStore.h"; sourceTree = "<group>"; };
@@ -2380,6 +2380,65 @@
 			path = Images;
 			sourceTree = "<group>";
 		};
+		B63AF5A91A1F757900D01AAD /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				B63AF5AA1A1F757900D01AAD /* API */,
+				B63AF5C41A1F757900D01AAD /* WebSockets */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		B63AF5AA1A1F757900D01AAD /* API */ = {
+			isa = PBXGroup;
+			children = (
+				B63AF5AB1A1F757900D01AAD /* Requests */,
+				B63AF5C21A1F757900D01AAD /* TSNetworkManager.h */,
+				B63AF5C31A1F757900D01AAD /* TSNetworkManager.m */,
+			);
+			path = API;
+			sourceTree = "<group>";
+		};
+		B63AF5AB1A1F757900D01AAD /* Requests */ = {
+			isa = PBXGroup;
+			children = (
+				B63AF5AC1A1F757900D01AAD /* TSContactsIntersectionRequest.h */,
+				B63AF5AD1A1F757900D01AAD /* TSContactsIntersectionRequest.m */,
+				B63AF5AE1A1F757900D01AAD /* TSDeregisterAccountRequest.h */,
+				B63AF5AF1A1F757900D01AAD /* TSDeregisterAccountRequest.m */,
+				B63AF5B01A1F757900D01AAD /* TSRecipientPrekeyRequest.h */,
+				B63AF5B11A1F757900D01AAD /* TSRecipientPrekeyRequest.m */,
+				B63AF5B21A1F757900D01AAD /* TSRegisterForPushRequest.h */,
+				B63AF5B31A1F757900D01AAD /* TSRegisterForPushRequest.m */,
+				B63AF5B41A1F757900D01AAD /* TSRegisterPrekeysRequest.h */,
+				B63AF5B51A1F757900D01AAD /* TSRegisterPrekeysRequest.m */,
+				B63AF5B61A1F757900D01AAD /* TSRegisterWithTokenRequest.h */,
+				B63AF5B71A1F757900D01AAD /* TSRegisterWithTokenRequest.m */,
+				B63AF5B81A1F757900D01AAD /* TSRequest.h */,
+				B63AF5B91A1F757900D01AAD /* TSRequest.m */,
+				B63AF5BA1A1F757900D01AAD /* TSRequestAttachment.h */,
+				B63AF5BB1A1F757900D01AAD /* TSRequestAttachment.m */,
+				B63AF5BC1A1F757900D01AAD /* TSRequestAttachmentId.h */,
+				B63AF5BD1A1F757900D01AAD /* TSRequestAttachmentId.m */,
+				B63AF5BE1A1F757900D01AAD /* TSSubmitMessageRequest.h */,
+				B63AF5BF1A1F757900D01AAD /* TSSubmitMessageRequest.m */,
+				B63AF5C01A1F757900D01AAD /* TSUploadAttachment.h */,
+				B63AF5C11A1F757900D01AAD /* TSUploadAttachment.m */,
+			);
+			path = Requests;
+			sourceTree = "<group>";
+		};
+		B63AF5C41A1F757900D01AAD /* WebSockets */ = {
+			isa = PBXGroup;
+			children = (
+				B63AF5D61A1F889500D01AAD /* SubProtocol.pb.h */,
+				B63AF5D71A1F889500D01AAD /* SubProtocol.pb.m */,
+				B63AF5C51A1F757900D01AAD /* TSSocketManager.h */,
+				B63AF5C61A1F757900D01AAD /* TSSocketManager.m */,
+			);
+			path = WebSockets;
+			sourceTree = "<group>";
+		};
 		B6416F35199A0478003C5699 /* an.lproj */ = {
 			isa = PBXGroup;
 			children = (
@@ -2772,7 +2831,7 @@
 				B6B095EB1A1D25ED008BFAA6 /* Account */,
 				B6B095F21A1D25ED008BFAA6 /* Contacts */,
 				B6B096001A1D25ED008BFAA6 /* Messages */,
-				B6B0961B1A1D25ED008BFAA6 /* Network */,
+				B63AF5A91A1F757900D01AAD /* Network */,
 				B6B0963B1A1D25ED008BFAA6 /* Security */,
 				B6B0963E1A1D25ED008BFAA6 /* Storage */,
 				B6B096531A1D25ED008BFAA6 /* TSConstants.h */,
@@ -2850,47 +2909,6 @@
 				B6B0961A1A1D25ED008BFAA6 /* TSServerMessage.m */,
 			);
 			path = Messages;
-			sourceTree = "<group>";
-		};
-		B6B0961B1A1D25ED008BFAA6 /* Network */ = {
-			isa = PBXGroup;
-			children = (
-				B6B0961C1A1D25ED008BFAA6 /* Requests */,
-				B6B096371A1D25ED008BFAA6 /* TSNetworkManager.h */,
-				B6B096381A1D25ED008BFAA6 /* TSNetworkManager.m */,
-				B6B096391A1D25ED008BFAA6 /* TSSocketManager.h */,
-				B6B0963A1A1D25ED008BFAA6 /* TSSocketManager.m */,
-			);
-			path = Network;
-			sourceTree = "<group>";
-		};
-		B6B0961C1A1D25ED008BFAA6 /* Requests */ = {
-			isa = PBXGroup;
-			children = (
-				B6B0961D1A1D25ED008BFAA6 /* TSContactsIntersectionRequest.h */,
-				B6B0961E1A1D25ED008BFAA6 /* TSContactsIntersectionRequest.m */,
-				B6B0961F1A1D25ED008BFAA6 /* TSDeregisterAccountRequest.h */,
-				B6B096201A1D25ED008BFAA6 /* TSDeregisterAccountRequest.m */,
-				B6B096211A1D25ED008BFAA6 /* TSRecipientPrekeyRequest.h */,
-				B6B096221A1D25ED008BFAA6 /* TSRecipientPrekeyRequest.m */,
-				B6B096231A1D25ED008BFAA6 /* TSRegisterForPushRequest.h */,
-				B6B096241A1D25ED008BFAA6 /* TSRegisterForPushRequest.m */,
-				B6B096251A1D25ED008BFAA6 /* TSRegisterPrekeysRequest.h */,
-				B6B096261A1D25ED008BFAA6 /* TSRegisterPrekeysRequest.m */,
-				B6B096271A1D25ED008BFAA6 /* TSRegisterWithTokenRequest.h */,
-				B6B096281A1D25ED008BFAA6 /* TSRegisterWithTokenRequest.m */,
-				B6B096291A1D25ED008BFAA6 /* TSRequest.h */,
-				B6B0962A1A1D25ED008BFAA6 /* TSRequest.m */,
-				B6B0962B1A1D25ED008BFAA6 /* TSRequestAttachment.h */,
-				B6B0962C1A1D25ED008BFAA6 /* TSRequestAttachment.m */,
-				B6B0962D1A1D25ED008BFAA6 /* TSRequestAttachmentId.h */,
-				B6B0962E1A1D25ED008BFAA6 /* TSRequestAttachmentId.m */,
-				B6B096331A1D25ED008BFAA6 /* TSSubmitMessageRequest.h */,
-				B6B096341A1D25ED008BFAA6 /* TSSubmitMessageRequest.m */,
-				B6B096351A1D25ED008BFAA6 /* TSUploadAttachment.h */,
-				B6B096361A1D25ED008BFAA6 /* TSUploadAttachment.m */,
-			);
-			path = Requests;
 			sourceTree = "<group>";
 		};
 		B6B0963B1A1D25ED008BFAA6 /* Security */ = {
@@ -3548,16 +3566,13 @@
 				B633C5D31A1D190B0059AC12 /* search_cancel.png in Resources */,
 				E1370BF118A0689000826894 /* AppIcon76x76.png in Resources */,
 				E1370BF218A0689000826894 /* AppIcon76x76@2x.png in Resources */,
-				E1370BE718A0688300826894 /* Default-568h@2x.png in Resources */,
 				B633C5F31A1D190B0059AC12 /* tab_icon_inbox.png in Resources */,
 				B633C5B61A1D190B0059AC12 /* lock_white@2x.png in Resources */,
 				B633C5DF1A1D190B0059AC12 /* signal@2x.png in Resources */,
 				B633C5CA1A1D190B0059AC12 /* outgoing_call_icon@2x.png in Resources */,
-				E1370BE818A0688300826894 /* Default.png in Resources */,
 				B633C5A11A1D190B0059AC12 /* favourite_false_icon.png in Resources */,
 				B633C5F01A1D190B0059AC12 /* tab_icon_contacts@2x.png in Resources */,
 				B633C5831A1D190B0059AC12 /* backspace.png in Resources */,
-				E1370BE918A0688300826894 /* Default@2x.png in Resources */,
 				E1370BE018A0686600826894 /* busy.mp3 in Resources */,
 				B633C5A01A1D190B0059AC12 /* favourite.png in Resources */,
 				E1370BE118A0686C00826894 /* completed.mp3 in Resources */,
@@ -3720,6 +3735,7 @@
 				76EB05FC18170B33006006FC /* CallConnectUtil_Server.m in Sources */,
 				76EB062418170B33006006FC /* PriorityQueue.m in Sources */,
 				76EB061A18170B33006006FC /* DiscardingLog.m in Sources */,
+				B63AF5C71A1F757900D01AAD /* TSContactsIntersectionRequest.m in Sources */,
 				B6B0968B1A1D25ED008BFAA6 /* TSStorageManager+SignedPreKeyStore.m in Sources */,
 				B6B0966E1A1D25ED008BFAA6 /* TSGroupMessageManager.m in Sources */,
 				76EB05AC18170B33006006FC /* SrtpSocket.m in Sources */,
@@ -3745,8 +3761,9 @@
 				FC4FA0331A1D46AE00DA100A /* InitialViewController.m in Sources */,
 				B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */,
 				76EB05D618170B33006006FC /* ZrtpResponder.m in Sources */,
+				B63AF5C91A1F757900D01AAD /* TSRecipientPrekeyRequest.m in Sources */,
 				7095B7B018F46D35002C66E2 /* PhoneNumberUtil.m in Sources */,
-				B6B096791A1D25ED008BFAA6 /* TSRecipientPrekeyRequest.m in Sources */,
+				B63AF5D81A1F889500D01AAD /* SubProtocol.pb.m in Sources */,
 				E197B61618BBEC1A00F073E5 /* StretchFactorController.m in Sources */,
 				FCFD257F1A154B2C00F4C644 /* RegistrationViewController.m in Sources */,
 				76EB065018170B34006006FC /* DialerViewController.m in Sources */,
@@ -3768,6 +3785,7 @@
 				76EB058A18170B33006006FC /* Release.m in Sources */,
 				76EB061018170B33006006FC /* EventWindow.m in Sources */,
 				E197B62718BBF63B00F073E5 /* SoundBoard.m in Sources */,
+				B63AF5CA1A1F757900D01AAD /* TSRegisterForPushRequest.m in Sources */,
 				76EB058418170B33006006FC /* LocalizableText.m in Sources */,
 				76EB057A18170B33006006FC /* ContactsManager.m in Sources */,
 				B6B096611A1D25ED008BFAA6 /* TSAccountManager.m in Sources */,
@@ -3789,7 +3807,6 @@
 				E197B61418BBEC1A00F073E5 /* DropoutTracker.m in Sources */,
 				76EB062C18170B33006006FC /* OperationFailed.m in Sources */,
 				FCAC963C19FEF9280046DFC5 /* SignalsViewController.m in Sources */,
-				B6B0967B1A1D25ED008BFAA6 /* TSRegisterPrekeysRequest.m in Sources */,
 				707E549218FF26E800C8649D /* SmsInvite.m in Sources */,
 				76EB05DA18170B33006006FC /* LowLatencyConnector.m in Sources */,
 				76EB05EE18170B33006006FC /* CallTermination.m in Sources */,
@@ -3797,6 +3814,7 @@
 				76EB05B418170B33006006FC /* HashChain.m in Sources */,
 				76EB05E418170B33006006FC /* UdpSocket.m in Sources */,
 				B6B096931A1D25ED008BFAA6 /* NSData+messagePadding.m in Sources */,
+				B63AF5CE1A1F757900D01AAD /* TSRequestAttachment.m in Sources */,
 				76EB058218170B33006006FC /* Environment.m in Sources */,
 				76EB064418170B33006006FC /* ThreadManager.m in Sources */,
 				E197B61E18BBEC6D00F073E5 /* AudioRouter.m in Sources */,
@@ -3812,11 +3830,12 @@
 				76EB068618170B34006006FC /* ContactTableViewCell.m in Sources */,
 				B6B096921A1D25ED008BFAA6 /* NSData+hexString.m in Sources */,
 				B63761ED19E1FBE8005735D1 /* HttpRequestOrResponse.m in Sources */,
+				B63AF5C81A1F757900D01AAD /* TSDeregisterAccountRequest.m in Sources */,
 				76EB05A018170B33006006FC /* IpAddress.m in Sources */,
 				B6B096651A1D25ED008BFAA6 /* TSGroupThread.m in Sources */,
 				FCAC965119FF0A6E0046DFC5 /* MessagesViewController.m in Sources */,
+				B63AF5D01A1F757900D01AAD /* TSSubmitMessageRequest.m in Sources */,
 				B6B0966B1A1D25ED008BFAA6 /* TSAttachement.m in Sources */,
-				B6B096851A1D25ED008BFAA6 /* TSSocketManager.m in Sources */,
 				76EB057618170B33006006FC /* Contact.m in Sources */,
 				B6B0968F1A1D25ED008BFAA6 /* TSYapDatabaseObject.m in Sources */,
 				E197B61118BBEC1A00F073E5 /* AudioProcessor.m in Sources */,
@@ -3829,18 +3848,14 @@
 				E197B62418BBF5BB00F073E5 /* SoundPlayer.m in Sources */,
 				E197B61018BBEC1A00F073E5 /* EncodedAudioPacket.m in Sources */,
 				76EB063618170B33006006FC /* DataUtil.m in Sources */,
-				B6B096771A1D25ED008BFAA6 /* TSContactsIntersectionRequest.m in Sources */,
 				E197B60C18BBEC1A00F073E5 /* AudioPacker.m in Sources */,
 				E197B61218BBEC1A00F073E5 /* AudioStretcher.m in Sources */,
 				76EB05A218170B33006006FC /* IpEndPoint.m in Sources */,
 				E197B61A18BBEC1A00F073E5 /* SpeexCodec.m in Sources */,
-				B6B0967F1A1D25ED008BFAA6 /* TSRequestAttachmentId.m in Sources */,
 				76EB05F018170B33006006FC /* PhoneManager.m in Sources */,
 				E197B60F18BBEC1A00F073E5 /* EncodedAudioFrame.m in Sources */,
 				B6B0966C1A1D25ED008BFAA6 /* TSCall.m in Sources */,
-				B6B096781A1D25ED008BFAA6 /* TSDeregisterAccountRequest.m in Sources */,
 				76EB061818170B33006006FC /* AnonymousValueLogger.m in Sources */,
-				B6B0967C1A1D25ED008BFAA6 /* TSRegisterWithTokenRequest.m in Sources */,
 				76EB05E618170B33006006FC /* CallController.m in Sources */,
 				FC31962A1A067D8F0094C78E /* MessageComposeTableViewController.m in Sources */,
 				E16E5BEE18AAC40200B7C403 /* EC25KeyAgreementParticipant.m in Sources */,
@@ -3850,14 +3865,16 @@
 				76EB05AA18170B33006006FC /* SequenceCounter.m in Sources */,
 				7038632718F70C0700D4A43F /* CryptoTools.m in Sources */,
 				76EB058C18170B33006006FC /* DnsManager.m in Sources */,
+				B63AF5CB1A1F757900D01AAD /* TSRegisterPrekeysRequest.m in Sources */,
 				B6B096881A1D25ED008BFAA6 /* TSStorageManager+keyFromIntLong.m in Sources */,
 				76EB059018170B33006006FC /* IgnoredPacketFailure.m in Sources */,
 				765052AF182AC9B5008313E1 /* DialerButtonView.m in Sources */,
 				76EB05D418170B33006006FC /* ZrtpManager.m in Sources */,
+				B63AF5CD1A1F757900D01AAD /* TSRequest.m in Sources */,
 				76EB058E18170B33006006FC /* HostNameEndPoint.m in Sources */,
-				B6B096841A1D25ED008BFAA6 /* TSNetworkManager.m in Sources */,
 				E19167A418A9687800B7A468 /* DH3KKeyAgreementParticipant.m in Sources */,
 				E16E5BF018AAC40200B7C403 /* EvpKeyAgreement.m in Sources */,
+				B63AF5D11A1F757900D01AAD /* TSUploadAttachment.m in Sources */,
 				FCFD25821A154B3800F4C644 /* CodeVerificationViewController.m in Sources */,
 				FCF72A131A02D27F006BC849 /* ContactDetailTableViewController.m in Sources */,
 				B65EDA1219E1BE6400AAA7CB /* RPAPICall.m in Sources */,
@@ -3870,8 +3887,8 @@
 				E197B62118BBF12700F073E5 /* AppAudioManager.m in Sources */,
 				FC4FA0261A1B9DC600DA100A /* SignalsNavigationController.m in Sources */,
 				76EB062018170B33006006FC /* BloomFilter.m in Sources */,
+				B63AF5D31A1F757900D01AAD /* TSSocketManager.m in Sources */,
 				76EB063818170B33006006FC /* DictionaryUtil.m in Sources */,
-				B6B0967A1A1D25ED008BFAA6 /* TSRegisterForPushRequest.m in Sources */,
 				76EB05CE18170B33006006FC /* ZrtpHandshakeResult.m in Sources */,
 				B63761EE19E1FBE8005735D1 /* HttpRequestUtil.m in Sources */,
 				B6B096631A1D25ED008BFAA6 /* TSPreKeyManager.m in Sources */,
@@ -3895,7 +3912,6 @@
 				76EB060418170B33006006FC /* PhoneNumberDirectoryFilter.m in Sources */,
 				B97CBFA818860EA3008E0DE9 /* CountryCodeViewController.m in Sources */,
 				B6B1013C196D213F007E3930 /* SignalKeyingStorage.m in Sources */,
-				B6B0967E1A1D25ED008BFAA6 /* TSRequestAttachment.m in Sources */,
 				76EB059218170B33006006FC /* UnrecognizedRequestFailure.m in Sources */,
 				76EB05F818170B33006006FC /* CallConnectUtil_Initiator.m in Sources */,
 				B6B096761A1D25ED008BFAA6 /* TSServerMessage.m in Sources */,
@@ -3907,26 +3923,26 @@
 				76EB064018170B33006006FC /* AnonymousTerminator.m in Sources */,
 				B6B096721A1D25ED008BFAA6 /* TSMessage.m in Sources */,
 				76EB058818170B33006006FC /* PropertyListPreferences.m in Sources */,
-				B6B096821A1D25ED008BFAA6 /* TSSubmitMessageRequest.m in Sources */,
 				76EB05B218170B33006006FC /* DH3KKeyAgreementProtocol.m in Sources */,
 				76EB060618170B33006006FC /* PhoneNumberDirectoryFilterManager.m in Sources */,
 				B63761EC19E1FBE8005735D1 /* HttpRequest.m in Sources */,
 				B6B096941A1D25ED008BFAA6 /* NSString+escape.m in Sources */,
 				76EB060818170B33006006FC /* ResponderSessionDescriptor.m in Sources */,
 				B90418E6183E9DD40038554A /* DateUtil.m in Sources */,
+				B63AF5D21A1F757900D01AAD /* TSNetworkManager.m in Sources */,
 				76EB05C618170B33006006FC /* HelloAckPacket.m in Sources */,
 				76EB05E818170B33006006FC /* CallFailedServerMessage.m in Sources */,
 				76EB05FA18170B33006006FC /* CallConnectUtil_Responder.m in Sources */,
 				76EB05AE18170B33006006FC /* SrtpStream.m in Sources */,
-				B6B096831A1D25ED008BFAA6 /* TSUploadAttachment.m in Sources */,
 				B6B096711A1D25ED008BFAA6 /* TSInteraction.mm in Sources */,
 				B6B0966D1A1D25ED008BFAA6 /* TSErrorMessage.m in Sources */,
+				B63AF5CF1A1F757900D01AAD /* TSRequestAttachmentId.m in Sources */,
 				E197B61318BBEC1A00F073E5 /* DesiredBufferDepthController.m in Sources */,
 				76EB064818170B33006006FC /* Zid.m in Sources */,
 				B6B096741A1D25ED008BFAA6 /* TSMessagesManager.m in Sources */,
 				B6B096661A1D25ED008BFAA6 /* TSContact.m in Sources */,
-				B6B0967D1A1D25ED008BFAA6 /* TSRequest.m in Sources */,
 				76EB05E218170B33006006FC /* SecureEndPoint.m in Sources */,
+				B63AF5CC1A1F757900D01AAD /* TSRegisterWithTokenRequest.m in Sources */,
 				76EB05DE18170B33006006FC /* Certificate.m in Sources */,
 				76EB05B818170B33006006FC /* NegotiationFailed.m in Sources */,
 				B6B096731A1D25ED008BFAA6 /* TSMessagesManager+sendMessages.m in Sources */,

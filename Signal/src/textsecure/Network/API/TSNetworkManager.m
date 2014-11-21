@@ -39,13 +39,13 @@
     if (self = [super init]) {
         NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
         self.operationManager = [[AFHTTPSessionManager alloc] initWithBaseURL:[[NSURL alloc] initWithString:textSecureServerURL] sessionConfiguration:sessionConf];
-        //self.operationManager.responseSerializer                      = [AFJSONResponseSerializer serializer];
-        self.operationManager.securityPolicy.allowInvalidCertificates = YES;
-        //        NSString *certPath = [NSBundle.mainBundle pathForResource:@"whisperReal" ofType:@"cer"];
-        //        NSData *certData = [NSData dataWithContentsOfFile:certPath];
-        //        SecCertificateRef cert = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certData));
-        //        self.operationManager.securityPolicy.pinnedCertificates = @[(__bridge_transfer NSData *)SecCertificateCopyData(cert)];
-        //        self.operationManager.securityPolicy.SSLPinningMode     = AFSSLPinningModeCertificate;
+        AFSecurityPolicy *policy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate];
+        policy.allowInvalidCertificates = YES;
+        NSString *certPath = [NSBundle.mainBundle pathForResource:@"whisperReal" ofType:@"cer"];
+        NSData *certData = [NSData dataWithContentsOfFile:certPath];
+        SecCertificateRef cert = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certData));
+        policy.pinnedCertificates = @[(__bridge_transfer NSData *)SecCertificateCopyData(cert)];
+        self.operationManager.securityPolicy = policy;
     }
     return self;
 }
