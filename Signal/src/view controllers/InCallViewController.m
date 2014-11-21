@@ -253,17 +253,23 @@ static NSInteger connectingFlashCounter = 0;
 - (void)muteButtonTapped {
 	_muteButton.selected = [Environment.phoneManager toggleMute];
     
-    NSString* newImageName = _muteButton.selected ? @"mute_on" : @"mute_off";
-    [_muteButton.imageView setImage:[UIImage imageNamed:newImageName]];
-    _muteLabel.text = _muteButton.selected ? @"Mute On" : @"Mute Off";
+    if (_muteButton.isSelected)
+    {
+        _muteLabel.text = @"Mute On";
+    } else {
+        _muteLabel.text = @"Mute Off";
+    }
 }
 
 - (void)speakerButtonTapped {
     _speakerButton.selected = [AppAudioManager.sharedInstance toggleSpeakerPhone];
-    NSString* newImageName = _speakerButton.selected ? @"speaker_on" : @"speaker_off";
-    [_speakerButton.imageView setImage:[UIImage imageNamed:newImageName]];
-    _speakerLabel.text = _speakerButton.selected ? @"Speaker On" : @"Speaker Off";
-
+    
+    if (_speakerButton.isSelected)
+    {
+        _speakerLabel.text = @"Speaker On";
+    } else {
+        _speakerLabel.text = @"Speaker Off";
+    }
 }
 
 - (void)answerButtonTapped {
@@ -285,7 +291,6 @@ static NSInteger connectingFlashCounter = 0;
         message = [message stringByAppendingString:[serverMessage text]];
     }
     
-    _endButton.backgroundColor = [UIColor grayColor];
     _callStatusLabel.textColor = [UIColor redColor];
     
     [self showConnectingError];
@@ -311,6 +316,7 @@ static NSInteger connectingFlashCounter = 0;
     _answerButton.hidden = !enable;
     _rejectButton.hidden = !enable;
     _endButton.hidden    = enable;
+    
     _answerLabel.hidden  = !enable;
     _rejectLabel.hidden  = !enable;
     _endLabel.hidden     = enable;

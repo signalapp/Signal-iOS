@@ -8,14 +8,18 @@
             <connections>
                 <outlet property="answerButton" destination="NVz-Yw-lv9" id="ais-2w-sgi"/>
                 <outlet property="answerLabel" destination="vFU-Is-tsR" id="vHD-Tb-zxn"/>
+                <outlet property="authenicationStringLabel" destination="aKD-zQ-QvI" id="HcV-GV-cjE"/>
+                <outlet property="callStatusLabel" destination="Jwl-C5-rlv" id="SMR-99-rIz"/>
                 <outlet property="contactImageView" destination="RaM-LZ-tKb" id="wfQ-Lm-8G3"/>
                 <outlet property="endButton" destination="nRm-ZF-iKb" id="VhV-RV-dPz"/>
                 <outlet property="endLabel" destination="Soq-II-OQu" id="b76-3e-UjK"/>
                 <outlet property="muteButton" destination="SwD-qf-WHI" id="501-qx-o7a"/>
+                <outlet property="muteLabel" destination="waP-3r-3lT" id="h3X-4X-Yce"/>
                 <outlet property="nameLabel" destination="97v-HX-2d8" id="5k1-1m-hXK"/>
                 <outlet property="rejectButton" destination="BDs-2L-TAo" id="8dA-Xm-nFB"/>
                 <outlet property="rejectLabel" destination="wlg-XS-Khm" id="sWK-oq-Cwi"/>
                 <outlet property="speakerButton" destination="kqa-uu-A45" id="oe7-u1-H5c"/>
+                <outlet property="speakerLabel" destination="hSe-2g-y1v" id="XbE-3V-zpF"/>
                 <outlet property="view" destination="HZG-wU-hp0" id="2Vi-um-fXt"/>
             </connections>
         </placeholder>
@@ -115,7 +119,7 @@
                     <constraints>
                         <constraint firstAttribute="width" constant="65" id="sEE-0X-1bQ"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -125,7 +129,7 @@
                         <constraint firstAttribute="height" constant="21" id="2eD-gZ-cEx"/>
                         <constraint firstAttribute="width" constant="65" id="n9p-jL-ssF"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -135,7 +139,7 @@
                         <constraint firstAttribute="width" constant="65" id="KT8-YJ-PXt"/>
                         <constraint firstAttribute="height" constant="21" id="Uhu-6T-P71"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -145,7 +149,7 @@
                         <constraint firstAttribute="height" constant="21" id="Juc-mB-AJc"/>
                         <constraint firstAttribute="width" constant="82" id="pex-BI-o9F"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -154,7 +158,7 @@
                     <constraints>
                         <constraint firstAttribute="height" constant="31" id="wul-TL-f0t"/>
                     </constraints>
-                    <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="19"/>
+                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="19"/>
                     <color key="textColor" red="0.50588235294117645" green="0.50588235294117645" blue="0.50588235294117645" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -164,7 +168,7 @@
                         <constraint firstAttribute="height" constant="21" id="Chn-s9-50c"/>
                         <constraint firstAttribute="width" constant="65" id="LNi-cy-ZJ3"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
