@@ -35,10 +35,10 @@ static NSString* const kNameMainNumberCell = @"NameMainNumberCell";
 static NSString* const kActionCell         = @"ActionCell";
 
 //Deprecated
-static NSString* const kShareCell    = @"ShareCell";
-static NSString* const kEmailCell   = @"EmailCell";
-static NSString* const kAnnexPhoneNumberCell      = @"AnnexPhoneNumberCell";
-static NSString *const kNotesCell = @"NotesCell";
+static NSString* const kShareCell            = @"ShareCell";
+static NSString* const kEmailCell            = @"EmailCell";
+static NSString* const kAnnexPhoneNumberCell = @"AnnexPhoneNumberCell";
+static NSString *const kNotesCell            = @"NotesCell";
 //
 
 static NSString *const kContactDetailSegue = @"DetailSegue";
@@ -110,7 +110,7 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
     
     cell.contactName.text = [c fullName];
     
-    cell.contactPhoneNumber.text = [[c parsedPhoneNumbers] firstObject];
+    cell.contactPhoneNumber.text = [[c userTextPhoneNumbers] firstObject];
     
     if (c.image) {
         cell.contactImageView.image = c.image;
