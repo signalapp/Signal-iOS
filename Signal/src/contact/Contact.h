@@ -22,8 +22,6 @@
 @property (nonatomic, assign) BOOL isTextSecureContact;
 @property (nonatomic, assign) BOOL isRedPhoneContact;
 
-@property (nonatomic, assign) BOOL isFavourite;
-
 + (Contact*)contactWithFirstName:(NSString*)firstName
                      andLastName:(NSString *)lastName
          andUserTextPhoneNumbers:(NSArray*)phoneNumbers
@@ -36,7 +34,6 @@
                        andEmails:(NSArray*)emails
                         andImage:(UIImage *)image
                     andContactID:(ABRecordID)record
-                  andIsFavourite:(BOOL)isFavourite
                         andNotes:(NSString *)notes;
 
 - (NSString *)fullName;

@@ -110,7 +110,7 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
     
     cell.contactName.text = [c fullName];
     
-    cell.contactPhoneNumber.text = [c.userTextPhoneNumbers firstObject];
+    cell.contactPhoneNumber.text = [[c parsedPhoneNumbers] firstObject];
     
     if (c.image) {
         cell.contactImageView.image = c.image;

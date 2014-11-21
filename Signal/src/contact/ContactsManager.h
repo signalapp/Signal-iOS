@@ -20,7 +20,6 @@ typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 @private TOCFuture* futureAddressBook;
 @private ObservableValueController* observableContactsController;
 @private ObservableValueController* observableWhisperUsersController;
-@private ObservableValueController* observableFavouritesController;
 @private TOCCancelTokenSource* life;
 @private NSDictionary *latestContactsById;
 @private NSDictionary *latestWhisperUsersById;
@@ -28,16 +27,11 @@ typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 
 -(ObservableValue *) getObservableContacts;
 -(ObservableValue *) getObservableWhisperUsers;
--(ObservableValue *) getObservableFavourites;
 
 -(NSArray*) getContactsFromAddressBook:(ABAddressBookRef)addressBook;
 -(Contact*) latestContactWithRecordId:(ABRecordID)recordId;
 -(Contact*) latestContactForPhoneNumber:(PhoneNumber *)phoneNumber;
 -(NSArray*) latestContactsWithSearchString:(NSString *)searchString;
-
--(void) toggleFavourite:(Contact *)contact;
--(NSArray*) contactsForContactIds:(NSArray *)favouriteIds;
-+(NSArray *)favouritesForAllContacts:(NSArray *)contacts;
 
 -(void) addContactsToKnownWhisperUsers:(NSArray*) contacts;
 

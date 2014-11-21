@@ -10,7 +10,7 @@ static NSString *const DEFAULTS_KEY_DATE = @"DefaultsKeyDate";
 
 @implementation Contact
 
-@synthesize firstName, lastName, emails, image, recordID, isFavourite, notes, parsedPhoneNumbers, userTextPhoneNumbers;
+@synthesize firstName, lastName, emails, image, recordID, notes, parsedPhoneNumbers, userTextPhoneNumbers;
 
 + (Contact*)contactWithFirstName:(NSString*)firstName
                      andLastName:(NSString *)lastName
@@ -45,7 +45,6 @@ static NSString *const DEFAULTS_KEY_DATE = @"DefaultsKeyDate";
                        andEmails:(NSArray*)emails
                         andImage:(UIImage *)image
                     andContactID:(ABRecordID)record
-                  andIsFavourite:(BOOL)isFavourite
                         andNotes:(NSString *)notes {
 	
 	Contact* contact = [Contact contactWithFirstName:firstName
@@ -54,7 +53,6 @@ static NSString *const DEFAULTS_KEY_DATE = @"DefaultsKeyDate";
                                            andEmails:emails
                                         andContactID:record];
 
-	contact->isFavourite = isFavourite;
 	contact->image = image;
 	contact->notes = notes;
 	return contact;

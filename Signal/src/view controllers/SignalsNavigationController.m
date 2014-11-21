@@ -17,14 +17,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
     [self initializeSocketStatusBar];
-    
-    _socket = [[Socket alloc]init];
-    
     [self initializeObserver];
-    
-    _socket.status = kSocketStatusOpen;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -38,7 +32,7 @@
     
     CGRect bar = self.navigationBar.frame;
     _socketStatusView.frame = CGRectMake(0, bar.size.height-1.0f, self.view.frame.size.width, 1.0f);
-    _socketStatusView.progressTintColor = [UIColor greenColor];
+    _socketStatusView.progressTintColor = [UIColor redColor];
     _socketStatusView.progress = 1.0f;
     [self.navigationBar addSubview:_socketStatusView];
 }
@@ -47,8 +41,8 @@
 
 -(void)initializeObserver
 {
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(socketDidOpen) name:SocketOpenedNotification object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(socketDidClose) name:SocketClosedNotification object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(socketDidOpen)      name:SocketOpenedNotification object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(socketDidClose)     name:SocketClosedNotification object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(socketIsConnecting) name:SocketConnectingNotification object:nil];
 }
 
@@ -66,7 +60,6 @@
 -(void)socketIsConnecting
 {
     _socketStatusView.progressTintColor = [UIColor yellowColor];
-    
 }
 
 
