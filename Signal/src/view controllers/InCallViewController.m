@@ -165,10 +165,6 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 - (void)setupButtonBorders {
-    _muteButton.layer.borderColor		= [UIUtil blueColor].CGColor;
-    _speakerButton.layer.borderColor	= [UIUtil blueColor].CGColor;
-    _muteButton.layer.borderWidth		= BUTTON_BORDER_WIDTH;
-    _speakerButton.layer.borderWidth	= BUTTON_BORDER_WIDTH;
 
     if (_potentiallyKnownContact) {
 
