@@ -31,7 +31,6 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL*);
     self = [super init];
     if (self) {
         newUserNotificationsEnabled = [self knownUserStoreInitialized];
-        _favouriteContactIds = [self loadFavouriteIds];
         _knownWhisperUserIds = [self loadKnownWhisperUsers];
         life = [TOCCancelTokenSource new];
         observableContactsController = [ObservableValueController observableValueControllerWithInitialValue:nil];
@@ -119,12 +118,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 - (void)setupLatestWhisperUsers:(NSArray *)users {
     if (users) {
         latestWhisperUsersById = [ContactsManager keyContactsById:users];
-        
-        if (!observableFavouritesController) {
-            NSArray *favourites = [self contactsForContactIds:_favouriteContactIds];
-            observableFavouritesController = [ObservableValueController observableValueControllerWithInitialValue:favourites];
-        }
-
     }
 }
 
@@ -136,10 +129,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 -(ObservableValue *) getObservableWhisperUsers {
     return observableWhisperUsersController;
-}
-
--(ObservableValue *) getObservableFavourites {
-    return observableFavouritesController;
 }
 
 #pragma mark - Address Book utils
@@ -231,12 +220,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     NSArray *emails = [ContactsManager emailsForRecord:record];
     NSData *image = (__bridge_transfer NSData*)ABPersonCopyImageDataWithFormat(record, kABPersonImageFormatThumbnail);
     UIImage *img = [UIImage imageWithData:image];
-        
-    ContactSearchBlock searchBlock = ^BOOL(NSNumber *obj, NSUInteger idx, BOOL *stop) {
-        return obj.intValue == recordID;
-    };
-
-    NSUInteger favouriteIndex = [_favouriteContactIds indexOfObjectPassingTest:searchBlock];
 
     return [Contact contactWithFirstName:firstName
                              andLastName:lastName
@@ -244,7 +227,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
                                andEmails:emails
                                 andImage:img
                             andContactID:recordID
-                          andIsFavourite:favouriteIndex != NSNotFound
                                 andNotes:notes];
 }
 
@@ -401,47 +383,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         }
     }
     return [contacts copy];
-}
-
-#pragma mark - Favourites
-
--(NSMutableArray *)loadFavouriteIds {
-    NSArray *favourites = [NSUserDefaults.standardUserDefaults objectForKey:FAVOURITES_DEFAULT_KEY];
-    return favourites == nil ? [NSMutableArray array] : favourites.mutableCopy;
-}
-
--(void)saveFavouriteIds {
-    [NSUserDefaults.standardUserDefaults setObject:[_favouriteContactIds copy]
-                                              forKey:FAVOURITES_DEFAULT_KEY];
-    [NSUserDefaults.standardUserDefaults synchronize];
-    [observableFavouritesController updateValue:[self contactsForContactIds:_favouriteContactIds]];
-}
-
--(void)toggleFavourite:(Contact *)contact {
-    require(contact != nil);
-
-    contact.isFavourite = !contact.isFavourite;
-    if (contact.isFavourite) {
-        [_favouriteContactIds addObject:@(contact.recordID)];
-    } else {
-        
-        ContactSearchBlock removeBlock = ^BOOL(NSNumber *favouriteNumber, NSUInteger idx, BOOL *stop) {
-            return [favouriteNumber integerValue] == contact.recordID;
-        };
-        
-        NSUInteger indexToRemove = [_favouriteContactIds indexOfObjectPassingTest:removeBlock];
-        
-        if (indexToRemove != NSNotFound) {
-            [_favouriteContactIds removeObjectAtIndex:indexToRemove];
-        }
-    }
-    [self saveFavouriteIds];
-}
-
-+(NSArray *)favouritesForAllContacts:(NSArray *)contacts {
-    return [contacts filter:^int(Contact* contact) {
-        return contact.isFavourite;
-    }];
 }
 
 #pragma mark - Whisper User Management

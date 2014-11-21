@@ -423,7 +423,6 @@
 		B6AE33B91A1EB0AF003DF39D /* DemoDataFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AE33B61A1EB0AF003DF39D /* DemoDataFactory.m */; };
 		B6AE33BA1A1EB0AF003DF39D /* DemoDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AE33B81A1EB0AF003DF39D /* DemoDataModel.m */; };
 		B6AE33BD1A1EB121003DF39D /* GroupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AE33BC1A1EB121003DF39D /* GroupModel.m */; };
-		B6AE33C01A1EB2DD003DF39D /* Socket.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AE33BF1A1EB2DD003DF39D /* Socket.m */; };
 		B6B095E41A1D25C5008BFAA6 /* CryptographyTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6B095DE1A1D25C5008BFAA6 /* CryptographyTests.mm */; };
 		B6B095E51A1D25C5008BFAA6 /* TextSecureKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095DF1A1D25C5008BFAA6 /* TextSecureKitTests.m */; };
 		B6B095E61A1D25C5008BFAA6 /* TSMessageStorageTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095E01A1D25C5008BFAA6 /* TSMessageStorageTests.m */; };
@@ -1129,8 +1128,6 @@
 		B6AE33B81A1EB0AF003DF39D /* DemoDataModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoDataModel.m; sourceTree = "<group>"; };
 		B6AE33BB1A1EB121003DF39D /* GroupModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupModel.h; sourceTree = "<group>"; };
 		B6AE33BC1A1EB121003DF39D /* GroupModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GroupModel.m; sourceTree = "<group>"; };
-		B6AE33BE1A1EB2DD003DF39D /* Socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Socket.h; sourceTree = "<group>"; };
-		B6AE33BF1A1EB2DD003DF39D /* Socket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Socket.m; sourceTree = "<group>"; };
 		B6B095DE1A1D25C5008BFAA6 /* CryptographyTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CryptographyTests.mm; sourceTree = "<group>"; };
 		B6B095DF1A1D25C5008BFAA6 /* TextSecureKitTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextSecureKitTests.m; sourceTree = "<group>"; };
 		B6B095E01A1D25C5008BFAA6 /* TSMessageStorageTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSMessageStorageTests.m; sourceTree = "<group>"; };
@@ -2752,8 +2749,6 @@
 				B6AE33B61A1EB0AF003DF39D /* DemoDataFactory.m */,
 				B6AE33B71A1EB0AF003DF39D /* DemoDataModel.h */,
 				B6AE33B81A1EB0AF003DF39D /* DemoDataModel.m */,
-				B6AE33BE1A1EB2DD003DF39D /* Socket.h */,
-				B6AE33BF1A1EB2DD003DF39D /* Socket.m */,
 			);
 			name = temp;
 			sourceTree = "<group>";
@@ -3751,7 +3746,6 @@
 				B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */,
 				76EB05D618170B33006006FC /* ZrtpResponder.m in Sources */,
 				7095B7B018F46D35002C66E2 /* PhoneNumberUtil.m in Sources */,
-				B6AE33C01A1EB2DD003DF39D /* Socket.m in Sources */,
 				B6B096791A1D25ED008BFAA6 /* TSRecipientPrekeyRequest.m in Sources */,
 				E197B61618BBEC1A00F073E5 /* StretchFactorController.m in Sources */,
 				FCFD257F1A154B2C00F4C644 /* RegistrationViewController.m in Sources */,

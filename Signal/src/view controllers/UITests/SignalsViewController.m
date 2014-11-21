@@ -12,7 +12,7 @@
 
 #import "MessagesViewController.h"
 #import "SignalsViewController.h"
-
+#import "TSSocketManager.h"
 
 #define CELL_HEIGHT 71.0f
 #define HEADER_HEIGHT 44.0f
@@ -33,15 +33,8 @@ static NSString *const kSegueIndentifier = @"showSegue";
 
 @implementation SignalsViewController
 
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    
-    if (self) {
-        AppDelegate *delegate = [[UIApplication sharedApplication] delegate];
-        delegate.signalVC = self;
-    }
-    
-    return self;
+- (void)viewDidAppear:(BOOL)animated{
+    [TSSocketManager becomeActive];
 }
 
 - (void)viewDidLoad {
@@ -49,7 +42,6 @@ static NSString *const kSegueIndentifier = @"showSegue";
     _dataArray = [DemoDataFactory data];
     numberOfCells = _dataArray.count;
     [self tableViewSetUp];
-    
 }
 
 - (void)didReceiveMemoryWarning {
