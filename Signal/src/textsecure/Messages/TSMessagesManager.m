@@ -55,8 +55,8 @@
     return self;
 }
 
-- (void)handleBase64MessageSignal:(NSString*)base64EncodedMessage{
-    NSData *decryptedPayload = [Cryptography decryptAppleMessagePayload:[NSData dataFromBase64String:base64EncodedMessage] withSignalingKey:TSStorageManager.signalingKey];
+- (void)handleMessageSignal:(NSData*)signalData{
+    NSData *decryptedPayload = [Cryptography decryptAppleMessagePayload:signalData withSignalingKey:TSStorageManager.signalingKey];
     
     if (!decryptedPayload) {
         return;

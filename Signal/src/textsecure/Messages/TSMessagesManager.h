@@ -16,8 +16,7 @@
 
 @property (readonly) YapDatabaseConnection *dbConnection;
 
-- (void)handleBase64MessageSignal:(NSString*)base64EncodedMessage;
-
+- (void)handleMessageSignal:(NSData*)signalData;
 
 - (void)processException:(NSException*)exception outgoingMessage:(TSOutgoingMessage*)message;
 

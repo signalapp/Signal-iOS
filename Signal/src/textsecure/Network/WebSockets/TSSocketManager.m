@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
+#import "SubProtocol.pb.h"
+
 #import "TSConstants.h"
 #import "TSAccountManager.h"
 #import "TSMessagesManager.h"
@@ -49,7 +51,7 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 
 #pragma mark - Manage Socket
 
-+ (void)becomeActive{
++ (void)becomeActive {
     TSSocketManager *sharedInstance = [self sharedManager];
     SRWebSocket *socket =[sharedInstance websocket];
     
@@ -87,46 +89,57 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 
 #pragma mark - Delegate methods
 
-- (void) webSocketDidOpen:(SRWebSocket *)webSocket{
-    NSLog(@"WebSocket was sucessfully opened");
+- (void) webSocketDidOpen:(SRWebSocket *)webSocket {
     self.timer = [NSTimer scheduledTimerWithTimeInterval:kWebSocketHeartBeat target:self selector:@selector(webSocketHeartBeat) userInfo:nil repeats:YES];
     self.status = kSocketStatusOpen;
 }
 
-- (void) webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error{
-    NSLog(@"Error connecting to socket %@", error);
+- (void) webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
+    DDLogError(@"Error connecting to socket %@", error);
     [self.timer invalidate];
     self.status = kSocketStatusClosed;
 }
 
-- (void) webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message{
-    NSData *data    = [message dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *error  = nil;
+- (void) webSocket:(SRWebSocket *)webSocket didReceiveMessage:(NSData*)data {
+    WebSocketMessage *wsMessage = [WebSocketMessage parseFromData:data];
     
-    NSDictionary *serializedMessage = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
-    NSString *base64message = [serializedMessage objectForKey:@"message"];
-    
-    
-    if (!base64message || error) {
-        return;
+    if (wsMessage.type == WebSocketMessageTypeRequest) {
+        [self processWebSocketRequestMessage:wsMessage.request];
+    } else if (wsMessage.type == WebSocketMessageTypeResponse){
+        [self processWebSocketResponseMessage:wsMessage.response];
+    } else{
+        DDLogWarn(@"Got a WebSocketMessage of unknown type");
     }
-    
-    [[TSMessagesManager sharedManager] handleBase64MessageSignal:base64message];
-    
-    
-    NSString *ackedId = [serializedMessage objectForKey:@"id"];
-    [self.websocket send:[[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@{@"type":@"1", @"id":ackedId}
-                                                                                        options:0 error:nil]
-                                               encoding:NSUTF8StringEncoding]];
 }
 
-- (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean{
+- (void)processWebSocketRequestMessage:(WebSocketRequestMessage*)message {
+    DDLogInfo(@"Got message with verb: %@ and path: %@", message.verb, message.path);
+    
+    if ([message.path isEqualToString:@"/api/v1/message"] && [message.verb isEqualToString:@"PUT"]){
+        [[TSMessagesManager sharedManager] handleMessageSignal:message.body];
+    } else{
+        DDLogWarn(@"Unsupported WebSocket Request");
+    }
+}
+
+- (void)processWebSocketResponseMessage:(WebSocketResponseMessage*)message {
+    DDLogWarn(@"Client should not receive WebSocket Respond messages");
+}
+
+- (void)sendWebSocketMessageAcknowledgement:(NSString*)messageId {
+    WebSocketResponseMessageBuilder *message = [WebSocketResponseMessage builder];
+    [message setStatus:200];
+    [message setMessage:messageId];
+    [self.websocket send:message.build.data];
+}
+
+- (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
     DDLogVerbose(@"WebSocket did close");
     [self.timer invalidate];
     self.status = kSocketStatusClosed;
 }
 
-- (void)webSocketHeartBeat{
+- (void)webSocketHeartBeat {
     DDLogVerbose(@"WebSocket sent ping");
     [self.websocket sendPing:nil];
 }
@@ -152,7 +165,6 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
                 break;
             default:
                 break;
-                
         }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
