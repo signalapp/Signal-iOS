@@ -447,7 +447,7 @@ typedef enum : NSUInteger {
         NSError *err                             = NULL;
         CMTime time                              = CMTimeMake(2, 1);
         CGImageRef snapshotRef                   = [generate1 copyCGImageAtTime:time actualTime:NULL error:&err];
-        UIImage *snapshot                        = [[UIImage alloc] initWithCGImage:snapshotRef];
+        __unused UIImage *snapshot                        = [[UIImage alloc] initWithCGImage:snapshotRef];
         
         JSQVideoMediaItem * videoItem = [[JSQVideoMediaItem alloc] initWithFileURL:videoURL isReadyToPlay:YES];
         JSQMediaMessage * videoMessage = [JSQMediaMessage messageWithSenderId:kJSQDemoAvatarIdDylan

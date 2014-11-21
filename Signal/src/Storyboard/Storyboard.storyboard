@@ -1531,7 +1531,9 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                     </subviews>
                                     <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                                     <constraints>
-                                        <constraint firstItem="tO8-Ws-fM1" firstAttribute="top" secondItem="wU0-a0-5eX" secondAttribute="topMargin" id="3MK-mI-oOl"/>
+                                        <constraint firstItem="tO8-Ws-fM1" firstAttribute="top" secondItem="wU0-a0-5eX" secondAttribute="topMargin" id="3MK-mI-oOl">
+                                            <variation key="heightClass=regular-widthClass=compact" constant="8"/>
+                                        </constraint>
                                         <constraint firstItem="bNN-KQ-y5B" firstAttribute="top" secondItem="tO8-Ws-fM1" secondAttribute="bottom" constant="8" id="Tbx-o9-F7q"/>
                                         <constraint firstAttribute="centerX" secondItem="tO8-Ws-fM1" secondAttribute="centerX" id="arL-FC-hxm"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="bNN-KQ-y5B" secondAttribute="trailing" constant="42" id="ee0-9M-0xY"/>
