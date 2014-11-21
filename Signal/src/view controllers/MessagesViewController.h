@@ -15,7 +15,7 @@
 @interface MessagesViewController : JSQMessagesViewController <UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 @property (strong, nonatomic) DemoDataModel *demoData;
 
-@property (strong, nonatomic) NSString* _senderTitleString;
+@property (strong, nonatomic) NSString* senderTitleString;
 
 -(void)initWithGroup:(NSArray*)group;
 

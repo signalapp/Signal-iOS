@@ -41,7 +41,7 @@ typedef enum : NSUInteger {
     //DEBUG:
     isGroupConversation = NO;
     
-    self.title = self._senderTitleString;
+    self.title = self.senderTitleString;
 
     self.senderId = kJSQDemoAvatarIdDylan;
     self.senderDisplayName = kJSQDemoAvatarDisplayNameDylan;
