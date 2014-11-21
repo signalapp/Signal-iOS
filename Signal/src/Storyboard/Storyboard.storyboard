@@ -1599,6 +1599,9 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                                     <include reference="TCV-4b-mLz"/>
                                                 </mask>
                                             </variation>
+                                            <connections>
+                                                <action selector="messageButtonTapped:" destination="Oss-Ve-Ae2" eventType="touchUpInside" id="xUe-ws-ORM"/>
+                                            </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yd5-y1-zqu">
                                             <rect key="frame" x="-23" y="-15" width="46" height="30"/>
@@ -1621,6 +1624,9 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                                     <include reference="r9U-7K-XEr"/>
                                                 </mask>
                                             </variation>
+                                            <connections>
+                                                <action selector="callButtonTapped:" destination="Oss-Ve-Ae2" eventType="touchUpInside" id="1qD-m1-bQk"/>
+                                            </connections>
                                         </button>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Message" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Njs-kS-m25">
                                             <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
