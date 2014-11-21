@@ -308,7 +308,9 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 }
 
 - (void)refreshContacts{
-    [Environment.getCurrent.phoneDirectoryManager forceUpdate];
+    Environment *env = [Environment getCurrent];
+    PhoneNumberDirectoryFilterManager *manager = [env phoneDirectoryManager];
+    [manager forceUpdate];
 }
 
 - (void)contactRefreshFailed{
