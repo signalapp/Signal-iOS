@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14A388a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
@@ -7,11 +7,19 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="InCallViewController">
             <connections>
                 <outlet property="answerButton" destination="NVz-Yw-lv9" id="ais-2w-sgi"/>
+                <outlet property="answerLabel" destination="vFU-Is-tsR" id="vHD-Tb-zxn"/>
+                <outlet property="authenicationStringLabel" destination="aKD-zQ-QvI" id="HcV-GV-cjE"/>
+                <outlet property="callStatusLabel" destination="Jwl-C5-rlv" id="SMR-99-rIz"/>
                 <outlet property="contactImageView" destination="RaM-LZ-tKb" id="wfQ-Lm-8G3"/>
+                <outlet property="endButton" destination="nRm-ZF-iKb" id="VhV-RV-dPz"/>
+                <outlet property="endLabel" destination="Soq-II-OQu" id="b76-3e-UjK"/>
                 <outlet property="muteButton" destination="SwD-qf-WHI" id="501-qx-o7a"/>
+                <outlet property="muteLabel" destination="waP-3r-3lT" id="h3X-4X-Yce"/>
                 <outlet property="nameLabel" destination="97v-HX-2d8" id="5k1-1m-hXK"/>
                 <outlet property="rejectButton" destination="BDs-2L-TAo" id="8dA-Xm-nFB"/>
+                <outlet property="rejectLabel" destination="wlg-XS-Khm" id="sWK-oq-Cwi"/>
                 <outlet property="speakerButton" destination="kqa-uu-A45" id="oe7-u1-H5c"/>
+                <outlet property="speakerLabel" destination="hSe-2g-y1v" id="XbE-3V-zpF"/>
                 <outlet property="view" destination="HZG-wU-hp0" id="2Vi-um-fXt"/>
             </connections>
         </placeholder>
@@ -44,6 +52,19 @@
                     </state>
                     <connections>
                         <action selector="rejectButtonTapped" destination="-1" eventType="touchUpInside" id="OXc-q4-FKd"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nRm-ZF-iKb">
+                    <rect key="frame" x="130" y="448" width="60" height="60"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="60" id="HlE-i0-rOx"/>
+                        <constraint firstAttribute="width" constant="60" id="dnt-Bx-uSl"/>
+                    </constraints>
+                    <state key="normal" image="endcall.png">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="endCallTapped" destination="-1" eventType="touchUpInside" id="DYU-sE-6Eq"/>
                     </connections>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Moxie Marlinspike" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="97v-HX-2d8">
@@ -98,7 +119,7 @@
                     <constraints>
                         <constraint firstAttribute="width" constant="65" id="sEE-0X-1bQ"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -108,7 +129,7 @@
                         <constraint firstAttribute="height" constant="21" id="2eD-gZ-cEx"/>
                         <constraint firstAttribute="width" constant="65" id="n9p-jL-ssF"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -118,7 +139,7 @@
                         <constraint firstAttribute="width" constant="65" id="KT8-YJ-PXt"/>
                         <constraint firstAttribute="height" constant="21" id="Uhu-6T-P71"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -128,7 +149,7 @@
                         <constraint firstAttribute="height" constant="21" id="Juc-mB-AJc"/>
                         <constraint firstAttribute="width" constant="82" id="pex-BI-o9F"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -137,8 +158,18 @@
                     <constraints>
                         <constraint firstAttribute="height" constant="31" id="wul-TL-f0t"/>
                     </constraints>
-                    <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="19"/>
+                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="19"/>
                     <color key="textColor" red="0.50588235294117645" green="0.50588235294117645" blue="0.50588235294117645" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="End Call" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Soq-II-OQu">
+                    <rect key="frame" x="128" y="519" width="65" height="21"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="21" id="Chn-s9-50c"/>
+                        <constraint firstAttribute="width" constant="65" id="LNi-cy-ZJ3"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
+                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
             </subviews>
@@ -151,6 +182,7 @@
                 <constraint firstItem="BDs-2L-TAo" firstAttribute="leading" secondItem="HZG-wU-hp0" secondAttribute="leading" constant="58" id="F8P-um-o2b"/>
                 <constraint firstItem="97v-HX-2d8" firstAttribute="top" secondItem="HZG-wU-hp0" secondAttribute="top" constant="41" id="Gvc-Dy-kco"/>
                 <constraint firstItem="aKD-zQ-QvI" firstAttribute="leading" secondItem="HZG-wU-hp0" secondAttribute="leading" constant="10" id="Hjb-Qe-vBw"/>
+                <constraint firstItem="Soq-II-OQu" firstAttribute="top" secondItem="nRm-ZF-iKb" secondAttribute="bottom" constant="11" id="Hm8-Bd-yeD"/>
                 <constraint firstItem="wlg-XS-Khm" firstAttribute="top" secondItem="BDs-2L-TAo" secondAttribute="bottom" constant="8" id="JGb-sp-NA0"/>
                 <constraint firstItem="Jwl-C5-rlv" firstAttribute="leading" secondItem="HZG-wU-hp0" secondAttribute="leading" constant="32" id="KlA-eq-sf4"/>
                 <constraint firstItem="waP-3r-3lT" firstAttribute="top" secondItem="SwD-qf-WHI" secondAttribute="bottom" constant="8" id="PM0-Px-j8i"/>
@@ -160,6 +192,8 @@
                 <constraint firstAttribute="trailing" secondItem="vFU-Is-tsR" secondAttribute="trailing" constant="53" id="WbN-f7-5Ul"/>
                 <constraint firstItem="BDs-2L-TAo" firstAttribute="top" secondItem="SwD-qf-WHI" secondAttribute="bottom" constant="66" id="ZTp-g1-Qjf"/>
                 <constraint firstItem="NVz-Yw-lv9" firstAttribute="top" secondItem="hSe-2g-y1v" secondAttribute="bottom" constant="37" id="c6i-Sl-4zO"/>
+                <constraint firstItem="Soq-II-OQu" firstAttribute="centerX" secondItem="nRm-ZF-iKb" secondAttribute="centerX" constant="0.5" id="dQy-zH-CXP"/>
+                <constraint firstAttribute="bottom" secondItem="nRm-ZF-iKb" secondAttribute="bottom" constant="60" id="em9-Dj-R0L"/>
                 <constraint firstAttribute="trailing" secondItem="aKD-zQ-QvI" secondAttribute="trailing" constant="10" id="g4G-xZ-IJ8"/>
                 <constraint firstAttribute="centerX" secondItem="aKD-zQ-QvI" secondAttribute="centerX" id="gD8-TX-RmQ"/>
                 <constraint firstItem="SwD-qf-WHI" firstAttribute="leading" secondItem="HZG-wU-hp0" secondAttribute="leading" constant="61" id="geI-2C-oZ7"/>
@@ -170,6 +204,7 @@
                 <constraint firstItem="vFU-Is-tsR" firstAttribute="top" secondItem="NVz-Yw-lv9" secondAttribute="bottom" constant="8" id="nzC-jP-K51"/>
                 <constraint firstItem="RaM-LZ-tKb" firstAttribute="leading" secondItem="Jwl-C5-rlv" secondAttribute="trailing" constant="8" id="pYn-Qg-Zdo"/>
                 <constraint firstAttribute="bottom" secondItem="BDs-2L-TAo" secondAttribute="bottom" constant="60" id="qQX-az-VYB"/>
+                <constraint firstAttribute="centerX" secondItem="nRm-ZF-iKb" secondAttribute="centerX" id="tHH-tZ-cqO"/>
                 <constraint firstItem="waP-3r-3lT" firstAttribute="leading" secondItem="HZG-wU-hp0" secondAttribute="leading" constant="59" id="tav-cw-VlV"/>
                 <constraint firstAttribute="bottom" secondItem="NVz-Yw-lv9" secondAttribute="bottom" constant="60" id="v3Y-zl-LvU"/>
                 <constraint firstAttribute="trailing" secondItem="kqa-uu-A45" secondAttribute="trailing" constant="56" id="wDa-Jc-6fC"/>

@@ -9,6 +9,7 @@
 #import "DJWActionSheet.h"
 #import "ActionContactDetailCell.h"
 
+
 @implementation ActionContactDetailCell
 
 - (void)awakeFromNib {
@@ -22,7 +23,15 @@
 }
 
 
-    
+-(IBAction)messageButtonTapped:(id)sender
+{
+    NSLog(@"%s", __PRETTY_FUNCTION__);
+}
+
+-(IBAction)callButtonTapped:(id)sender
+{
+    NSLog(@"%s", __PRETTY_FUNCTION__);
+}
 
 
 @end

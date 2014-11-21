@@ -12,5 +12,4 @@
 @property (strong, nonatomic) IBOutlet UIButton *contactTextButton;
 @property (strong, nonatomic) IBOutlet UIButton *contactCallButton;
 @property (strong, nonatomic) IBOutlet UIButton *contactShredButton;
-@property (strong, nonatomic) IBOutlet UIButton *contactFavoriteButton;
 @end

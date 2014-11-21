@@ -14,11 +14,7 @@
     // Initialization code
     
     [self.toggle addTarget:self action:@selector(toggleSetting:) forControlEvents:UIControlEventValueChanged];
-    
-    [self.profileImageView.layer setCornerRadius:50.0f];
-    [self.profileImageView.layer setMasksToBounds:YES];
-    
-    [self.changeProfileImageViewButton addTarget:self action:@selector(changeImageView:) forControlEvents:UIControlEventTouchUpInside];
+
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -37,11 +33,5 @@
     }
 }
 
-#pragma mark - Editing Profile 
--(void)changeImageView:(id)sender
-{
-    NSLog(@"hi");
-
-}
 
 @end

@@ -35,25 +35,26 @@ static NSString* const kNameMainNumberCell = @"NameMainNumberCell";
 static NSString* const kActionCell         = @"ActionCell";
 
 //Deprecated
-static NSString* const kShareCell    = @"ShareCell";
-static NSString* const kEmailCell   = @"EmailCell";
-static NSString* const kAnnexPhoneNumberCell      = @"AnnexPhoneNumberCell";
-static NSString *const kNotesCell = @"NotesCell";
+static NSString* const kShareCell            = @"ShareCell";
+static NSString* const kEmailCell            = @"EmailCell";
+static NSString* const kAnnexPhoneNumberCell = @"AnnexPhoneNumberCell";
+static NSString *const kNotesCell            = @"NotesCell";
 //
 
 static NSString *const kContactDetailSegue = @"DetailSegue";
 
 
 
-@interface ContactDetailTableViewController ()
-
+@interface ContactDetailTableViewController () {
+    BOOL doesImageExist;
+}
 @end
 
 @implementation ContactDetailTableViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    doesImageExist = YES;
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
 }
 
@@ -110,10 +111,14 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
     
     cell.contactName.text = [c fullName];
     
-    cell.contactPhoneNumber.text = [[c parsedPhoneNumbers] firstObject];
+    cell.contactPhoneNumber.text = [[c userTextPhoneNumbers] firstObject];
     
     if (c.image) {
         cell.contactImageView.image = c.image;
+    } else {
+        [cell.contactImageView addConstraint:[NSLayoutConstraint constraintWithItem:cell.contactImageView attribute:NSLayoutAttributeHeight relatedBy:0 toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:0]];
+        doesImageExist = NO;
+        
     }
     [cell.contactImageView.layer setCornerRadius:50.0f];
     [cell.contactImageView.layer setMasksToBounds:YES];
@@ -127,7 +132,7 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
     
     switch (indexPath.row) {
         case kNameMainNumberCellIndexPath:
-            cellHeight = kNameMainNumberCellHeight;
+            cellHeight = doesImageExist ? kNameMainNumberCellHeight : 87.0f;
             break;
         case kActionCellIndexPath:
             cellHeight = kActionCellHeight;
