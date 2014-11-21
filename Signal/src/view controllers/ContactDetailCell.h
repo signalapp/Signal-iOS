@@ -20,5 +20,4 @@
 @property (strong, nonatomic) IBOutlet UITextView *contactNotesTextView;
 
 
-
 @end
