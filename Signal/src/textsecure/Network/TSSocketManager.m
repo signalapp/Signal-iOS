@@ -14,11 +14,15 @@
 #import <CocoaLumberjack/DDLog.h>
 
 #define kWebSocketHeartBeat 15
-#define ddLogLevel LOG_LEVEL_DEBUG
+
+NSString * const SocketOpenedNotification     = @"SocketOpenedNotification";
+NSString * const SocketClosedNotification     = @"SocketClosedNotification";
+NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 
 @interface TSSocketManager ()
 @property (nonatomic, retain) NSTimer *timer;
 @property (nonatomic, retain) SRWebSocket *websocket;
+@property (nonatomic) NSUInteger status;
 @end
 
 @implementation TSSocketManager
@@ -28,6 +32,7 @@
     
     if (self) {
         self.websocket = nil;
+        [self addObserver:self forKeyPath:@"status" options:0 context:kSocketStatusObservationContext];
     }
     
     return self;
@@ -45,18 +50,22 @@
 #pragma mark - Manage Socket
 
 + (void)becomeActive{
-    SRWebSocket *socket =[[self sharedManager] websocket];
+    TSSocketManager *sharedInstance = [self sharedManager];
+    SRWebSocket *socket =[sharedInstance websocket];
     
     if (socket) {
         switch ([socket readyState]) {
             case SR_OPEN:
                 DDLogVerbose(@"WebSocket already open on connection request");
+                sharedInstance.status = kSocketStatusOpen;
                 return;
             case SR_CONNECTING:
                 DDLogVerbose(@"WebSocket is already connecting");
+                sharedInstance.status = kSocketStatusConnecting;
                 return;
             default:
                 [socket close];
+                sharedInstance.status = kSocketStatusClosed;
                 socket.delegate = nil;
                 socket = nil;
                 break;
@@ -81,11 +90,13 @@
 - (void) webSocketDidOpen:(SRWebSocket *)webSocket{
     NSLog(@"WebSocket was sucessfully opened");
     self.timer = [NSTimer scheduledTimerWithTimeInterval:kWebSocketHeartBeat target:self selector:@selector(webSocketHeartBeat) userInfo:nil repeats:YES];
+    self.status = kSocketStatusOpen;
 }
 
 - (void) webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error{
     NSLog(@"Error connecting to socket %@", error);
     [self.timer invalidate];
+    self.status = kSocketStatusClosed;
 }
 
 - (void) webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message{
@@ -97,7 +108,6 @@
     
     
     if (!base64message || error) {
-        NSLog(@"WTF?!");
         return;
     }
     
@@ -105,12 +115,15 @@
     
     
     NSString *ackedId = [serializedMessage objectForKey:@"id"];
-    [self.websocket send:[[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@{@"type":@"1", @"id":ackedId} options:0 error:nil] encoding:NSUTF8StringEncoding]];
+    [self.websocket send:[[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@{@"type":@"1", @"id":ackedId}
+                                                                                        options:0 error:nil]
+                                               encoding:NSUTF8StringEncoding]];
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean{
     DDLogVerbose(@"WebSocket did close");
     [self.timer invalidate];
+    self.status = kSocketStatusClosed;
 }
 
 - (void)webSocketHeartBeat{
@@ -121,5 +134,30 @@
 - (NSString*)webSocketAuthenticationString{
     return [NSString stringWithFormat:@"?login=%@&password=%@", [[TSAccountManager registeredNumber] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],[TSStorageManager serverAuthToken]];
 }
+
+#pragma mark UI Delegates
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if (context == kSocketStatusObservationContext)
+    {
+        switch (self.status) {
+            case kSocketStatusOpen:
+                [[NSNotificationCenter defaultCenter] postNotificationName:SocketOpenedNotification object:self];
+                break;
+            case kSocketStatusClosed:
+                [[NSNotificationCenter defaultCenter] postNotificationName:SocketClosedNotification object:self];
+                break;
+            case kSocketStatusConnecting:
+                [[NSNotificationCenter defaultCenter] postNotificationName:SocketConnectingNotification object:self];
+                break;
+            default:
+                break;
+                
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
 
 @end

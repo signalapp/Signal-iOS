@@ -74,8 +74,7 @@ andCurrentRegionCodeForPhoneNumbers:(NSString*)currentRegionCodeForPhoneNumbers
 
 +(PropertyListPreferences*)preferences;
 
-+(BOOL)isRegistered;
-+(void)setRegistered:(BOOL)status;
++(BOOL)isRedPhoneRegistered;
 +(void)resetAppData;
 
 @end

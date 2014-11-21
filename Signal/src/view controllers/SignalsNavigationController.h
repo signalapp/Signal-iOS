@@ -7,13 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Socket.h"
+#import "TSSocketManager.h"
 
 @interface SignalsNavigationController : UINavigationController
 
-@property (nonatomic, strong) Socket * socket;
-
 @property (nonatomic, strong) UIProgressView* socketStatusView;
-
 
 @end

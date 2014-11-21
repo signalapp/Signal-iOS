@@ -122,7 +122,6 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 
 - (void)setupContacts {
     ObservableValue *observableContacts = Environment.getCurrent.contactsManager.getObservableWhisperUsers;
-    
     [observableContacts watchLatestValue:^(NSArray *latestContacts) {
         _latestContacts = latestContacts;
         [self onSearchOrContactChange:nil];
@@ -202,7 +201,6 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     if (self.searchController.active) {
         return 1;
     } else {
-        NSLog(@"Sections contacts %@", latestAlphabeticalContacts);
         return (NSInteger)[[latestAlphabeticalContacts allKeys] count];
     }
 }
@@ -220,7 +218,6 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
         cell = [[ContactTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                            reuseIdentifier:CONTACT_BROWSE_TABLE_CELL_IDENTIFIER];
     }
-    
     
     [cell configureWithContact:[self contactForIndexPath:indexPath]];
     
@@ -242,7 +239,6 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     } else {
         NSArray *contactSection = [self contactsForSectionIndex:(NSUInteger)indexPath.section];
         contact = contactSection[(NSUInteger)indexPath.row];
-        NSLog(@"Contact: %@", contact);
     }
     
     return contact;
@@ -275,9 +271,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 
 #pragma mark - IBAction
 
--(IBAction)presentDialer:(id)sender
-{
-    
+-(IBAction)presentDialer:(id)sender {
     DialerViewController * dialer = [DialerViewController new];
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:dialer];
@@ -308,7 +302,9 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 }
 
 - (void)refreshContacts{
-    [Environment.getCurrent.phoneDirectoryManager forceUpdate];
+    Environment *env = [Environment getCurrent];
+    PhoneNumberDirectoryFilterManager *manager = [env phoneDirectoryManager];
+    [manager forceUpdate];
 }
 
 - (void)contactRefreshFailed{

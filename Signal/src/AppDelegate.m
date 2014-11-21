@@ -160,6 +160,8 @@
             }];
         }
     
+        [self.window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+        [self.window.rootViewController presentViewController:callViewController animated:NO completion:nil];
     } onThread:NSThread.mainThread untilCancelled:nil];
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:[NSBundle mainBundle]];
@@ -228,7 +230,7 @@
     
     [self removeScreenProtection];
     
-    if (Environment.isRegistered) {
+    if (Environment.isRedPhoneRegistered) {
         [PushManager.sharedManager verifyPushPermissions];
         [AppAudioManager.sharedInstance requestRequiredPermissionsIfNeeded];
     }
