@@ -14,6 +14,7 @@
     self = [NSBundle.mainBundle loadNibNamed:NSStringFromClass(self.class) owner:self options:nil][0];
     _contactPictureView.layer.borderColor = [[UIColor lightGrayColor] CGColor];
     _contactPictureView.layer.masksToBounds = YES;
+    self.selectionStyle = UITableViewCellSelectionStyleGray;
     return self;
 }
 

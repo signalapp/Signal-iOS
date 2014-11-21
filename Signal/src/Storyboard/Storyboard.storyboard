@@ -24,7 +24,7 @@
                                 <color key="separatorColor" white="0.66666666666666663" alpha="0.5" colorSpace="calibratedWhite"/>
                                 <inset key="separatorInset" minX="20" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="bnD-Ld-pC4">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="bnD-Ld-pC4">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="bnD-Ld-pC4" id="9EM-iT-Acg">
                                             <autoresizingMask key="autoresizingMask"/>
@@ -1815,7 +1815,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="ShareCell" rowHeight="60" id="hSC-7F-dj5" customClass="ContactDetailCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ShareCell" rowHeight="60" id="hSC-7F-dj5" customClass="ContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="hSC-7F-dj5" id="lvR-BE-4Mx">
                                     <autoresizingMask key="autoresizingMask"/>
@@ -1895,7 +1895,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="EmailCell" rowHeight="60" id="fWm-EM-av7" customClass="ContactDetailCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="EmailCell" rowHeight="60" id="fWm-EM-av7" customClass="ContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="fWm-EM-av7" id="yVD-4a-A9L">
                                     <autoresizingMask key="autoresizingMask"/>
@@ -1934,7 +1934,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="AnnexPhoneNumberCell" rowHeight="60" id="gGz-wn-6Ah" customClass="ContactDetailCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="AnnexPhoneNumberCell" rowHeight="60" id="gGz-wn-6Ah" customClass="ContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="gGz-wn-6Ah" id="GZI-HN-czN">
                                     <autoresizingMask key="autoresizingMask"/>
@@ -2847,7 +2847,7 @@ Licensed under the GPLv3</string>
                                             </variation>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" rowHeight="60" id="qa9-qm-gch">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" rowHeight="60" id="qa9-qm-gch">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="qa9-qm-gch" id="TLw-od-YLh">
                                             <autoresizingMask key="autoresizingMask"/>
@@ -2994,7 +2994,7 @@ Licensed under the GPLv3</string>
                                             </variation>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" rowHeight="60" id="EsY-xH-b6d">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" rowHeight="60" id="EsY-xH-b6d">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="EsY-xH-b6d" id="b4g-jW-QGg">
                                             <autoresizingMask key="autoresizingMask"/>
@@ -3239,7 +3239,7 @@ Licensed under the GPLv3</string>
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="GroupSearchCell" textLabel="a4j-OQ-ala" style="IBUITableViewCellStyleDefault" id="yfF-Jl-bZ1">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="gray" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="GroupSearchCell" textLabel="a4j-OQ-ala" style="IBUITableViewCellStyleDefault" id="yfF-Jl-bZ1">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="yfF-Jl-bZ1" id="f0v-od-N9K">
                                             <autoresizingMask key="autoresizingMask"/>
