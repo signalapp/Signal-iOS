@@ -147,19 +147,14 @@ phoneDirectoryManager;
     return Environment.getCurrent.logging;
 }
 
-+(BOOL)isRegistered{
++(BOOL)isRedPhoneRegistered{
     // Attributes that need to be set
     NSData *signalingKey = SignalKeyingStorage.signalingCipherKey;
     NSData *macKey       = SignalKeyingStorage.signalingMacKey;
     NSData *extra        = SignalKeyingStorage.signalingExtraKey;
     NSString *serverAuth = SignalKeyingStorage.serverAuthPassword;
-    BOOL registered = [[NSUserDefaults.standardUserDefaults objectForKey:isRegisteredUserDefaultString] boolValue];
     
-    return signalingKey && macKey && extra && serverAuth && registered;
-}
-
-+(void)setRegistered:(BOOL)status{
-    [NSUserDefaults.standardUserDefaults setObject:status?@YES:@NO forKey:isRegisteredUserDefaultString];
+    return signalingKey && macKey && extra && serverAuth;
 }
 
 +(PropertyListPreferences*)preferences{

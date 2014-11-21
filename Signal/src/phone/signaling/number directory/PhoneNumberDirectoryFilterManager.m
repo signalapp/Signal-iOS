@@ -48,8 +48,9 @@
 }
 -(void) scheduleUpdateAt:(NSDate*)date {
     void(^doUpdate)(void) = ^{
-        if (Environment.isRegistered) {
+        if (Environment.isRedPhoneRegistered) {
             [self update];
+            
         }
     };
     
