@@ -696,10 +696,16 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="Mof-iB-rK4" firstAttribute="leading" secondItem="sqD-R1-bDb" secondAttribute="leadingMargin" constant="133" id="2LP-n6-sju"/>
+                            <constraint firstItem="Mof-iB-rK4" firstAttribute="leading" secondItem="sqD-R1-bDb" secondAttribute="leadingMargin" constant="133" id="2LP-n6-sju">
+                                <variation key="heightClass=regular-widthClass=compact" constant="120"/>
+                            </constraint>
                             <constraint firstItem="XvA-gQ-BvT" firstAttribute="top" secondItem="pSv-Dm-f1R" secondAttribute="bottom" constant="33" id="6nH-Or-yM8"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="Mof-iB-rK4" secondAttribute="trailing" constant="111" id="7iK-MA-IkY"/>
-                            <constraint firstAttribute="centerX" secondItem="Mof-iB-rK4" secondAttribute="centerX" constant="-11" id="7pm-Ag-hz5"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Mof-iB-rK4" secondAttribute="trailing" constant="111" id="7iK-MA-IkY">
+                                <variation key="heightClass=regular-widthClass=compact" constant="120"/>
+                            </constraint>
+                            <constraint firstAttribute="centerX" secondItem="Mof-iB-rK4" secondAttribute="centerX" constant="-11" id="7pm-Ag-hz5">
+                                <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
+                            </constraint>
                             <constraint firstItem="XvA-gQ-BvT" firstAttribute="leading" secondItem="8e0-BB-J7K" secondAttribute="trailing" constant="24" id="Awz-px-K0y"/>
                             <constraint firstItem="f2V-td-jYH" firstAttribute="top" secondItem="8e0-BB-J7K" secondAttribute="bottom" constant="36" id="GVY-Zq-Uwd"/>
                             <constraint firstItem="91B-iw-6Q2" firstAttribute="top" secondItem="Mof-iB-rK4" secondAttribute="bottom" constant="8" id="JXZ-Xt-34m"/>
