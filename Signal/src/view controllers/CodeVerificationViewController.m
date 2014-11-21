@@ -38,9 +38,6 @@
     [_challengeTextField resignFirstResponder];
     //TODO: Lock UI interactions
     
-<<<<<<< HEAD
-    //TODO: Lock UI interactions
-=======
     [self registerWithSuccess:^{
         [self performSegueWithIdentifier:@"verifiedSegue" sender:self];
     } failure:^{
@@ -52,21 +49,10 @@
 
 - (void)registerWithSuccess:(void(^)())success failure:(void(^)())failure{
     //TODO: Refactor this to use futures? Better error handling needed. Good enough for PoC
->>>>>>> mergebranch
     
     [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall verifyVerificationCode:_challengeTextField.text] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSString *signupToken) {
-<<<<<<< HEAD
-            [TSAccountManager registerWithRedPhoneToken:signupToken pushToken:pushToken success:^{
-                 [self performSegueWithIdentifier:@"verifiedSegue" sender:self];
-            } failure:^(TSRegistrationFailure failureType) {
-                NSLog(@":(");
-            }];
-        } failure:^{
-            
-=======
-        
             [TSAccountManager registerWithRedPhoneToken:signupToken pushToken:pushToken success:^{
                 success();
             } failure:^(TSRegistrationFailure failureType) {
@@ -75,7 +61,6 @@
         
         } failure:^{
             failure();
->>>>>>> mergebranch
         }];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         NSString *alertTitle = NSLocalizedString(@"REGISTRATION_ERROR", @"");
@@ -105,17 +90,4 @@
     [self.view endEditing:NO];
 }
 
-<<<<<<< HEAD
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
-
-=======
->>>>>>> mergebranch
 @end
