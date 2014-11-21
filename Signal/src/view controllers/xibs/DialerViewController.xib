@@ -804,7 +804,7 @@
                     </connections>
                 </button>
             </subviews>
-            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="m52-xI-oom" firstAttribute="top" secondItem="82K-Nd-cmI" secondAttribute="bottom" constant="-1" id="0Pc-SZ-dLd"/>
                 <constraint firstItem="T7H-JR-Beb" firstAttribute="leading" secondItem="YQD-uu-VVV" secondAttribute="leading" id="1ZM-3u-VBg"/>
