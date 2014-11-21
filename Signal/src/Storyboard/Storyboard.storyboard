@@ -480,12 +480,14 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                         <constraints>
                             <constraint firstItem="hdo-6G-gXy" firstAttribute="top" secondItem="VCu-vN-Pjg" secondAttribute="bottom" id="1dB-W2-GMz"/>
                             <constraint firstAttribute="centerX" secondItem="VCu-vN-Pjg" secondAttribute="centerX" id="5Wt-QM-aQa"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="VCu-vN-Pjg" secondAttribute="trailing" constant="-16" id="7HF-IV-JbS"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="VCu-vN-Pjg" secondAttribute="trailing" constant="-16" id="7HF-IV-JbS">
+                                <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
+                            </constraint>
                             <constraint firstItem="VCu-vN-Pjg" firstAttribute="top" secondItem="8Oc-YZ-y0M" secondAttribute="bottom" constant="-20" id="KIN-pk-9pP"/>
                             <constraint firstAttribute="width" secondItem="VCu-vN-Pjg" secondAttribute="width" id="gOw-BF-mQC"/>
                             <constraint firstAttribute="height" secondItem="VCu-vN-Pjg" secondAttribute="height" id="nEQ-Wa-OyH"/>
                             <constraint firstAttribute="centerY" secondItem="VCu-vN-Pjg" secondAttribute="centerY" id="sho-vB-Yk8"/>
-                            <constraint firstItem="VCu-vN-Pjg" firstAttribute="leading" secondItem="StY-nr-mRe" secondAttribute="leadingMargin" constant="-16" id="wdN-bv-bSl"/>
+                            <constraint firstItem="VCu-vN-Pjg" firstAttribute="leading" secondItem="StY-nr-mRe" secondAttribute="leadingMargin" id="wdN-bv-bSl"/>
                         </constraints>
                         <variation key="default">
                             <mask key="subviews">
@@ -509,12 +511,12 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                             <mask key="constraints">
                                 <include reference="1dB-W2-GMz"/>
                                 <include reference="5Wt-QM-aQa"/>
-                                <include reference="7HF-IV-JbS"/>
+                                <exclude reference="7HF-IV-JbS"/>
                                 <include reference="KIN-pk-9pP"/>
                                 <include reference="gOw-BF-mQC"/>
                                 <include reference="nEQ-Wa-OyH"/>
                                 <include reference="sho-vB-Yk8"/>
-                                <include reference="wdN-bv-bSl"/>
+                                <exclude reference="wdN-bv-bSl"/>
                             </mask>
                         </variation>
                     </view>

@@ -114,6 +114,8 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
     
     if (c.image) {
         cell.contactImageView.image = c.image;
+    } else {
+        cell.contactImageView.image = [UIImage imageNamed:@"defaultContact"];
     }
     [cell.contactImageView.layer setCornerRadius:50.0f];
     [cell.contactImageView.layer setMasksToBounds:YES];
