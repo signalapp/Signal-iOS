@@ -11,6 +11,8 @@
 #import "RecentCall.h"
 #import "PhoneNumber.h"
 
+#import "JSQCall.h"
+
 enum {kDemoDataModelCase0, kDemoDataModelCase1,kDemoDataModelCase2, kDemoDataModelCase3, kDemoDataModelCase4};
 
 @implementation DemoDataModel
@@ -38,30 +40,46 @@ enum {kDemoDataModelCase0, kDemoDataModelCase1,kDemoDataModelCase2, kDemoDataMod
      *  You should have a mutable array or orderedSet, or something.
      */
     self.messages = [[NSMutableArray alloc] initWithObjects:
-                     [[JSQTextMessage alloc] initWithSenderId:kJSQDemoAvatarIdDylan
+                     [[JSQMessage alloc] initWithSenderId:kJSQDemoAvatarIdDylan
                                             senderDisplayName:kJSQDemoAvatarDisplayNameDylan
                                                          date:[NSDate distantPast]
                                                          text:@"Welcome to JSQMessages: A messaging UI framework for iOS."],
                      
-                     [[JSQTextMessage alloc] initWithSenderId:kJSQDemoAvatarIdDylan
+                     [[JSQMessage alloc] initWithSenderId:kJSQDemoAvatarIdDylan
                                             senderDisplayName:kJSQDemoAvatarDisplayNameDylan
                                                          date:[NSDate distantPast]
                                                          text:@"It even has data detectors. You can call me tonight. My cell number is 123-456-7890. My website is www.hexedbits.com."],
                      
-                     [[JSQTextMessage alloc] initWithSenderId:kJSQDemoAvatarIdMoxie
+                     [[JSQMessage alloc] initWithSenderId:kJSQDemoAvatarIdMoxie
                                             senderDisplayName:kJSQDemoAvatarDisplayNameMoxie
                                                          date:[NSDate date]
                                                          text:@"JSQMessagesViewController is nearly an exact replica of the iOS Messages App. And perhaps, better."],
                      
-                     [[JSQTextMessage alloc] initWithSenderId:kJSQDemoAvatarIdFred
+                     [[JSQMessage alloc] initWithSenderId:kJSQDemoAvatarIdFred
                                             senderDisplayName:kJSQDemoAvatarDisplayNameFred
                                                          date:[NSDate date]
                                                          text:@"It is unit-tested, free, open-source, and documented."],
                      
-                     [[JSQTextMessage alloc] initWithSenderId:kJSQDemoAvatarIdDylan
+                     [[JSQMessage alloc] initWithSenderId:kJSQDemoAvatarIdDylan
                                             senderDisplayName:kJSQDemoAvatarDisplayNameDylan
                                                          date:[NSDate date]
                                                          text:@"Now with media messages!"],
+                     [[JSQCall alloc] initWithCallerId:kJSQDemoAvatarIdMoxie
+                                     callerDisplayName:kJSQDemoAvatarDisplayNameMoxie
+                                                  date:[NSDate date]
+                                              duration:127
+                                                status:kCallIncoming],
+                     [[JSQCall alloc] initWithCallerId:kJSQDemoAvatarIdFred
+                                     callerDisplayName:kJSQDemoAvatarDisplayNameFred
+                                                  date:[NSDate date]
+                                              duration:0
+                                                status:kCallMissed],
+                     [[JSQCall alloc] initWithCallerId:kJSQDemoAvatarIdFred
+                                     callerDisplayName:kJSQDemoAvatarDisplayNameFred
+                                                  date:[NSDate date]
+                                              duration:0
+                                                status:kCallFailed],
+                     
                      nil];
 }
 
