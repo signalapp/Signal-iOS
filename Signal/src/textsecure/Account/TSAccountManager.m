@@ -74,17 +74,19 @@
     [[TSNetworkManager sharedManager] queueAuthenticatedRequest:[[TSRegisterForPushRequest alloc] initWithPushIdentifier:stringToken] success:^(NSURLSessionDataTask *task, id responseObject) {
         success();
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        TSRegistrationFailure failureType = kTSRegistrationFailureNetwork;
         switch ([task statusCode]) {
             case 401:
-                failureBlock(kTSRegistrationFailureAuthentication);
+                failureType = kTSRegistrationFailureAuthentication;
                 break;
             case 415:
-                failureBlock(kTSRegistrationFailureRequest);
+                failureType = kTSRegistrationFailureRequest;
                 break;
             default:
-                failureBlock(kTSRegistrationFailureNetwork);
                 break;
         }
+        
+        failureBlock([self errorForRegistrationFailure:failureType HTTPStatusCode:[task statusCode]]);
     }];
 }
 
@@ -112,13 +114,14 @@
             [self registerPreKeys:successBlock failure:failureBlock];
             
         } else{
-            failureBlock(kTSRegistrationFailureNetwork);
+            failureBlock([self errorForRegistrationFailure:kTSRegistrationFailureNetwork HTTPStatusCode:statuscode]);
         }
         
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
 
         //TODO: Cover all error types: https://github.com/WhisperSystems/TextSecure-Server/wiki/API-Protocol
-        failureBlock(kTSRegistrationFailureNetwork);
+        // Above link doesn't appear to document the endpoint /v1/accounts/token/{token} - is it similar to /v1/accounts/code/{code} ?
+        failureBlock([self errorForRegistrationFailure:kTSRegistrationFailureNetwork HTTPStatusCode:[task statusCode]]);
     }];
 }
 
@@ -127,6 +130,40 @@
         [TSAccountManager setRegistered:YES];
         successBlock();
     } failure:failureBlock];
+}
+
+#pragma mark Errors
+
++ (NSError *)errorForRegistrationFailure:(TSRegistrationFailure)failureType HTTPStatusCode:(long)HTTPStatus {
+    
+    NSString *description = NSLocalizedString(@"REGISTRATION_ERROR", @"");
+    NSString *failureReason = nil;
+    
+    // TODO: Need localized strings for the rest of the values in the TSRegistrationFailure enum
+    if (failureType == kTSRegistrationFailureWrongCode) {
+        failureReason = NSLocalizedString(@"REGISTER_CHALLENGE_ALERT_VIEW_BODY", @"");
+    } else if (failureType == kTSRegistrationFailureRateLimit) {
+        failureReason = NSLocalizedString(@"REGISTER_RATE_LIMITING_BODY", @"");
+    } else if (failureType == kTSRegistrationFailureNetwork) {
+        failureReason = NSLocalizedString(@"REGISTRATION_BODY", @"");
+    } else {
+        failureReason = NSLocalizedString(@"REGISTER_CHALLENGE_UNKNOWN_ERROR", @"");
+    }
+    
+    NSMutableDictionary *userInfo = NSMutableDictionary.new;
+    
+    userInfo[NSLocalizedDescriptionKey] = description;
+    
+    if (failureReason != nil) {
+        userInfo[NSLocalizedFailureReasonErrorKey] = failureReason;
+    }
+    if (HTTPStatus != 0) {
+        userInfo[TSRegistrationErrorUserInfoHTTPStatus] = @(HTTPStatus);
+    }
+    
+    NSError *error = [NSError errorWithDomain:TSRegistrationErrorDomain code:failureType userInfo:userInfo];
+    
+    return error;
 }
 
 #pragma mark Server keying material
