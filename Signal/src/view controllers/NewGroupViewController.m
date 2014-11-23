@@ -202,7 +202,7 @@
     NSUInteger row = (NSUInteger)indexPath.row;
     Contact* contact = contacts[row-1];
     
-    cell.textLabel.text = contact.fullName;
+    cell.textLabel.attributedText = [self attributedStringForContact:contact inCell:cell];
     
     } else {
         cell.textLabel.text = @"Add People:";
@@ -236,6 +236,27 @@
     return NO;
 }
 
+#pragma mark - Cell Utility
+
+- (NSAttributedString *)attributedStringForContact:(Contact *)contact inCell:(UITableViewCell*)cell {
+    NSMutableAttributedString *fullNameAttributedString = [[NSMutableAttributedString alloc] initWithString:contact.fullName];
+    
+    UIFont *firstNameFont;
+    UIFont *lastNameFont;
+    
+    if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
+        firstNameFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:cell.textLabel.font.pointSize];
+        lastNameFont  = [UIFont systemFontOfSize:cell.textLabel.font.pointSize];
+    } else{
+        firstNameFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:cell.textLabel.font.pointSize];
+        lastNameFont  = [UIFont systemFontOfSize:cell.textLabel.font.pointSize];
+    }
+    [fullNameAttributedString addAttribute:NSFontAttributeName value:firstNameFont range:NSMakeRange(0, contact.firstName.length)];
+    [fullNameAttributedString addAttribute:NSFontAttributeName value:lastNameFont range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
+    
+    [fullNameAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0, contact.fullName.length)];
+    return fullNameAttributedString;
+}
 
 /*
 #pragma mark - Navigation

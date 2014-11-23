@@ -586,7 +586,6 @@
 		FCB11D8A1A1284BB002F93FB /* SettingsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCB11D891A1284BB002F93FB /* SettingsTableViewCell.m */; };
 		FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB11D8B1A129A76002F93FB /* CoreMedia.framework */; };
 		FCB11D931A12A4AA002F93FB /* FullImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCB11D921A12A4AA002F93FB /* FullImageViewController.m */; };
-		FCC7D9DF1A21190000D7BF28 /* TSAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = FCC7D9DE1A21190000D7BF28 /* TSAdapter.m */; };
 		FCF72A081A01A765006BC849 /* ContactsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A071A01A765006BC849 /* ContactsTableViewController.m */; };
 		FCF72A131A02D27F006BC849 /* ContactDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */; };
 		FCF72A161A02D2BB006BC849 /* ContactDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A151A02D2BB006BC849 /* ContactDetailCell.m */; };
@@ -1379,8 +1378,6 @@
 		FCB11D8B1A129A76002F93FB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		FCB11D911A12A4AA002F93FB /* FullImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FullImageViewController.h; sourceTree = "<group>"; };
 		FCB11D921A12A4AA002F93FB /* FullImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FullImageViewController.m; sourceTree = "<group>"; };
-		FCC7D9DD1A21190000D7BF28 /* TSAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TSAdapter.h; path = UITests/TSAdapter.h; sourceTree = "<group>"; };
-		FCC7D9DE1A21190000D7BF28 /* TSAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSAdapter.m; path = UITests/TSAdapter.m; sourceTree = "<group>"; };
 		FCF72A061A01A765006BC849 /* ContactsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsTableViewController.h; sourceTree = "<group>"; };
 		FCF72A071A01A765006BC849 /* ContactsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsTableViewController.m; sourceTree = "<group>"; };
 		FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailTableViewController.m; sourceTree = "<group>"; };
@@ -3227,7 +3224,6 @@
 		FC3196321A08142D0094C78E /* Signals */ = {
 			isa = PBXGroup;
 			children = (
-				FCC7D9DC1A2118B900D7BF28 /* Adapter */,
 				FC3196281A067D8F0094C78E /* MessageComposeTableViewController.h */,
 				FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */,
 				FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */,
@@ -3293,15 +3289,6 @@
 				FC3196311A08141D0094C78E /* Settings */,
 			);
 			name = ViewControllers;
-			sourceTree = "<group>";
-		};
-		FCC7D9DC1A2118B900D7BF28 /* Adapter */ = {
-			isa = PBXGroup;
-			children = (
-				FCC7D9DD1A21190000D7BF28 /* TSAdapter.h */,
-				FCC7D9DE1A21190000D7BF28 /* TSAdapter.m */,
-			);
-			name = Adapter;
 			sourceTree = "<group>";
 		};
 		FCFD25791A1543D500F4C644 /* Signup */ = {
@@ -3921,7 +3908,6 @@
 				E197B60E18BBEC1A00F073E5 /* CallAudioManager.m in Sources */,
 				76EB054018170B33006006FC /* AppDelegate.m in Sources */,
 				76EB05D018170B33006006FC /* ZrtpHandshakeSocket.m in Sources */,
-				FCC7D9DF1A21190000D7BF28 /* TSAdapter.m in Sources */,
 				B63761EF19E1FBE8005735D1 /* HttpResponse.m in Sources */,
 				E197B61518BBEC1A00F073E5 /* JitterQueue.m in Sources */,
 				B6B0968C1A1D25ED008BFAA6 /* TSDatabaseView.m in Sources */,

@@ -15,6 +15,15 @@
     _contactPictureView.layer.borderColor = [[UIColor lightGrayColor] CGColor];
     _contactPictureView.layer.masksToBounds = YES;
     self.selectionStyle = UITableViewCellSelectionStyleGray;
+    
+    if (!_shouldShowContactButtons)
+    {
+        _callButton.hidden = YES;
+        _callButton.enabled = NO;
+        _messageButton.hidden = YES;
+        _callButton.enabled = NO;
+    }
+    
     return self;
 }
 
@@ -23,7 +32,7 @@
 }
 
 - (void)configureWithContact:(Contact *)contact {
-	
+    
     _associatedContact = contact;
     
     _nameLabel.attributedText = [self attributedStringForContact:contact];
@@ -39,14 +48,14 @@
         [_contactPictureView addConstraint:[NSLayoutConstraint constraintWithItem:_contactPictureView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0f constant:0]];
     }
     
-    if (contact.isRedPhoneContact)
+    if (contact.isRedPhoneContact && _shouldShowContactButtons)
     {
         _callButton.imageView.image = [UIImage imageNamed:@"call_dark"];
     } else {
         [_callButton addConstraint:[NSLayoutConstraint constraintWithItem:_callButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0f constant:0]];
     }
     
-    if (contact.isTextSecureContact)
+    if (contact.isTextSecureContact && _shouldShowContactButtons)
     {
         _messageButton.imageView.image = [UIImage imageNamed:@"signal"];
     } else {
