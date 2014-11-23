@@ -22,13 +22,12 @@
 #import "YapDatabaseFullTextSearch.h"
 #import "YapDatabase.h"
 
-#define CELL_HEIGHT   71.0f
+#define CELL_HEIGHT 71.0f
 #define HEADER_HEIGHT 44.0f
 
 
-static NSString *const inboxTableViewCell = @"inBoxTableViewCell";
-static NSString *const kSegueIndentifier  = @"showSegue";
-
+static NSString *const inboxTableViewCell      = @"inBoxTableViewCell";
+static NSString *const kSegueIndentifier = @"showSegue";
 
 @interface SignalsViewController () {
     NSArray * _dataArray;
@@ -45,8 +44,6 @@ static NSString *const kSegueIndentifier  = @"showSegue";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    [self tableViewSetUp];
     
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
     

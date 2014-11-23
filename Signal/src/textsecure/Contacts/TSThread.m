@@ -7,9 +7,6 @@
 //
 
 #import "TSThread.h"
-
-#import "Environment.h"
-#import "ContactsManager.h"
 #import "TSGroup.h"
 
 @implementation TSThread

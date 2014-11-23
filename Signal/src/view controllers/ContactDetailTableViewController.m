@@ -43,7 +43,9 @@ static NSString* const kEmailCell            = @"EmailCell";
 static NSString* const kAnnexPhoneNumberCell = @"AnnexPhoneNumberCell";
 static NSString *const kNotesCell            = @"NotesCell";
 
-static NSString *const kContactDetailSegue   = @"DetailSegue";
+
+static NSString *const kContactDetailSegue = @"DetailSegue";
+
 
 @interface ContactDetailTableViewController () {
     BOOL doesImageExist;

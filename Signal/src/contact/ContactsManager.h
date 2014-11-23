@@ -45,6 +45,4 @@ typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 - (NSArray*)allContacts;
 - (NSArray*)textSecureContacts;
 
-- (NSString*)nameStringForPhoneIdentifier:(NSString*)identifier;
-
 @end

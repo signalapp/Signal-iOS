@@ -134,7 +134,7 @@
             }
         }
         
-        [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [[TSStorageManager sharedManager].databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             for (NSString *identifier in tsIdentifiers) {
                 TSRecipient *recipient = [TSRecipient recipientWithTextSecureIdentifier:identifier withTransaction:transaction];
                 if (!recipient) {

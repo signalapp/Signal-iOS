@@ -19,6 +19,7 @@ NSString *TSThreadGroup = @"TSThreadGroup";
 
 NSString *TSThreadDatabaseViewExtensionName     = @"TSThreadDatabaseViewExtensionName";
 NSString *TSMessageDatabaseViewExtensionName    = @"TSMessageDatabaseViewExtensionName";
+NSString *TSRecipientsDatabaseViewExtensionName = @"TSRecipientsDatabaseViewExtensionName";
 
 @implementation TSDatabaseView
 

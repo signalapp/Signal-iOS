@@ -15,9 +15,8 @@
 
 @interface MessagesViewController : JSQMessagesViewController <UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 
-@property (strong, nonatomic) NSString* senderTitleString;
+@property (strong, nonatomic) NSString* _senderTitleString;
 @property DemoDataModel *demoData;
-
 
 - (void)setupWithThread:(TSThread*)thread;
 
