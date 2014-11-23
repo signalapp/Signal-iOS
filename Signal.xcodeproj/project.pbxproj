@@ -572,6 +572,7 @@
 		F995AC2FFD6D4442B012604A /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
 		FC15B7BD1A1F808F00F59801 /* defaultContact@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC15B7BC1A1F808F00F59801 /* defaultContact@2x.png */; };
 		FC15B7BF1A1F80F200F59801 /* defaultConctact_light@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC15B7BE1A1F80F200F59801 /* defaultConctact_light@2x.png */; };
+		FC1F90C01A22342B004F8253 /* group_photo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC1F90BF1A22342B004F8253 /* group_photo@2x.png */; };
 		FC31962A1A067D8F0094C78E /* MessageComposeTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */; };
 		FC31962D1A06A2190094C78E /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC31962C1A06A2190094C78E /* FingerprintViewController.m */; };
 		FC3196301A0814130094C78E /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC31962F1A0814130094C78E /* SettingsTableViewController.m */; };
@@ -1353,6 +1354,7 @@
 		E1CD329518BCFF9900B1A496 /* SoundInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundInstance.m; sourceTree = "<group>"; };
 		FC15B7BC1A1F808F00F59801 /* defaultContact@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "defaultContact@2x.png"; sourceTree = "<group>"; };
 		FC15B7BE1A1F80F200F59801 /* defaultConctact_light@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "defaultConctact_light@2x.png"; sourceTree = "<group>"; };
+		FC1F90BF1A22342B004F8253 /* group_photo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "group_photo@2x.png"; sourceTree = "<group>"; };
 		FC3196281A067D8F0094C78E /* MessageComposeTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageComposeTableViewController.h; sourceTree = "<group>"; };
 		FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageComposeTableViewController.m; sourceTree = "<group>"; };
 		FC31962B1A06A2190094C78E /* FingerprintViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FingerprintViewController.h; sourceTree = "<group>"; };
@@ -2258,6 +2260,7 @@
 		B633C4FD1A1D190B0059AC12 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FC1F90BF1A22342B004F8253 /* group_photo@2x.png */,
 				B633C4FE1A1D190B0059AC12 /* archive@2x.png */,
 				B633C4FF1A1D190B0059AC12 /* archive_icon.png */,
 				B633C5001A1D190B0059AC12 /* archive_icon@2x.png */,
@@ -3479,6 +3482,7 @@
 				B633C5BB1A1D190B0059AC12 /* message_bubble.png in Resources */,
 				B633C5B51A1D190B0059AC12 /* lock@2x.png in Resources */,
 				B633C58E1A1D190B0059AC12 /* contacts.png in Resources */,
+				FC1F90C01A22342B004F8253 /* group_photo@2x.png in Resources */,
 				B633C5A41A1D190B0059AC12 /* favourite_true_icon@2x.png in Resources */,
 				E148750518A06966002CC4F3 /* CountryCodeViewController.xib in Resources */,
 				B633C5C41A1D190B0059AC12 /* mute_on@2x.png in Resources */,

@@ -3079,31 +3079,6 @@ Licensed under the GPLv3</string>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ukg-om-VX3">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ul8-NY-i4c">
-                                        <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="80" id="Fkg-iq-6Ap"/>
-                                            <constraint firstAttribute="width" constant="80" id="l0W-ug-b1c"/>
-                                        </constraints>
-                                        <state key="normal" image="photo.png">
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <variation key="default">
-                                            <mask key="constraints">
-                                                <exclude reference="Fkg-iq-6Ap"/>
-                                                <exclude reference="l0W-ug-b1c"/>
-                                            </mask>
-                                        </variation>
-                                        <variation key="heightClass=regular-widthClass=compact">
-                                            <mask key="constraints">
-                                                <include reference="Fkg-iq-6Ap"/>
-                                                <include reference="l0W-ug-b1c"/>
-                                            </mask>
-                                        </variation>
-                                        <connections>
-                                            <action selector="addGroupPhoto:" destination="bDi-2Q-XOC" eventType="touchUpInside" id="S3n-hS-Ac6"/>
-                                        </connections>
-                                    </button>
                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Name this group chat" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gbm-B5-gCc">
                                         <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
                                         <constraints>
@@ -3122,6 +3097,35 @@ Licensed under the GPLv3</string>
                                             </mask>
                                         </variation>
                                     </textField>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ul8-NY-i4c">
+                                        <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="80" id="Fkg-iq-6Ap">
+                                                <variation key="heightClass=regular-widthClass=compact" constant="60"/>
+                                            </constraint>
+                                            <constraint firstAttribute="width" constant="80" id="l0W-ug-b1c">
+                                                <variation key="heightClass=regular-widthClass=compact" constant="60"/>
+                                            </constraint>
+                                        </constraints>
+                                        <state key="normal" image="group_photo.png">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <variation key="default">
+                                            <mask key="constraints">
+                                                <exclude reference="Fkg-iq-6Ap"/>
+                                                <exclude reference="l0W-ug-b1c"/>
+                                            </mask>
+                                        </variation>
+                                        <variation key="heightClass=regular-widthClass=compact">
+                                            <mask key="constraints">
+                                                <include reference="Fkg-iq-6Ap"/>
+                                                <include reference="l0W-ug-b1c"/>
+                                            </mask>
+                                        </variation>
+                                        <connections>
+                                            <action selector="addGroupPhoto:" destination="bDi-2Q-XOC" eventType="touchUpInside" id="S3n-hS-Ac6"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -3129,13 +3133,17 @@ Licensed under the GPLv3</string>
                                     <constraint firstItem="gbm-B5-gCc" firstAttribute="top" secondItem="Ukg-om-VX3" secondAttribute="top" constant="35" id="3Zi-yw-cGM"/>
                                     <constraint firstAttribute="height" constant="100" id="GmE-Dd-5tf"/>
                                     <constraint firstItem="Ul8-NY-i4c" firstAttribute="leading" secondItem="Ukg-om-VX3" secondAttribute="leading" constant="8" id="Z82-gx-rVW"/>
-                                    <constraint firstItem="Ul8-NY-i4c" firstAttribute="top" secondItem="Ukg-om-VX3" secondAttribute="top" constant="10" id="ZIm-Uq-bM8"/>
-                                    <constraint firstItem="gbm-B5-gCc" firstAttribute="leading" secondItem="Ul8-NY-i4c" secondAttribute="trailing" constant="8" id="yn3-rt-mGC"/>
+                                    <constraint firstItem="Ul8-NY-i4c" firstAttribute="top" secondItem="Ukg-om-VX3" secondAttribute="top" constant="10" id="ZIm-Uq-bM8">
+                                        <variation key="heightClass=regular-widthClass=compact" constant="20"/>
+                                    </constraint>
+                                    <constraint firstItem="gbm-B5-gCc" firstAttribute="leading" secondItem="Ul8-NY-i4c" secondAttribute="trailing" constant="8" id="yn3-rt-mGC">
+                                        <variation key="heightClass=regular-widthClass=compact" constant="18"/>
+                                    </constraint>
                                 </constraints>
                                 <variation key="default">
                                     <mask key="subviews">
-                                        <exclude reference="Ul8-NY-i4c"/>
                                         <exclude reference="gbm-B5-gCc"/>
+                                        <exclude reference="Ul8-NY-i4c"/>
                                     </mask>
                                     <mask key="constraints">
                                         <exclude reference="GmE-Dd-5tf"/>
@@ -3148,8 +3156,8 @@ Licensed under the GPLv3</string>
                                 </variation>
                                 <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="subviews">
-                                        <include reference="Ul8-NY-i4c"/>
                                         <include reference="gbm-B5-gCc"/>
+                                        <include reference="Ul8-NY-i4c"/>
                                     </mask>
                                     <mask key="constraints">
                                         <include reference="GmE-Dd-5tf"/>
@@ -3270,10 +3278,10 @@ Licensed under the GPLv3</string>
         <image name="call_dark.png" width="50" height="50"/>
         <image name="contacts_tab.png" width="24" height="24"/>
         <image name="delete_history.png" width="50" height="50"/>
+        <image name="group_photo.png" width="100" height="100"/>
         <image name="keypad.png" width="25" height="25"/>
         <image name="lock_white.png" width="100" height="100"/>
         <image name="logo_intro.png" width="291" height="255"/>
-        <image name="photo.png" width="200" height="200"/>
         <image name="quit.png" width="50" height="50"/>
         <image name="savephoto.png" width="50" height="50"/>
         <image name="settings.png" width="24" height="24"/>
