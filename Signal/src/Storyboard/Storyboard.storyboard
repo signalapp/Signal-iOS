@@ -2237,7 +2237,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
         <scene sceneID="miN-Ma-3eR">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="tuk-0x-yCb" customClass="SignalsNavigationController" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="signals.png" id="jye-1e-hLH">
+                    <tabBarItem key="tabBarItem" title="" image="signals_tab.png" id="jye-1e-hLH">
                         <inset key="imageInsets" minX="0.0" minY="4" maxX="0.0" maxY="-4"/>
                     </tabBarItem>
                     <toolbarItems/>
@@ -2282,7 +2282,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
         <scene sceneID="8zg-9i-Ja1">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="hxR-Pc-Gxm" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" image="settings.png" id="39n-tG-6SH">
+                    <tabBarItem key="tabBarItem" image="settings_tab.png" id="39n-tG-6SH">
                         <inset key="imageInsets" minX="0.0" minY="4" maxX="0.0" maxY="-4"/>
                     </tabBarItem>
                     <toolbarItems/>
@@ -3284,11 +3284,11 @@ Licensed under the GPLv3</string>
         <image name="logo_intro.png" width="291" height="255"/>
         <image name="quit.png" width="50" height="50"/>
         <image name="savephoto.png" width="50" height="50"/>
-        <image name="settings.png" width="24" height="24"/>
+        <image name="settings_tab.png" width="24" height="24"/>
         <image name="share.png" width="50" height="50"/>
         <image name="shred.png" width="200" height="200"/>
         <image name="signal.png" width="50" height="50"/>
-        <image name="signals.png" width="24" height="24"/>
+        <image name="signals_tab.png" width="24" height="24"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="QK8-XK-Wd3"/>
