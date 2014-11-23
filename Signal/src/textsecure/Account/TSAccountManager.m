@@ -36,7 +36,7 @@
 }
 
 + (NSString *)registeredNumber {
-    YapDatabaseConnection *dbConn = [[TSStorageManager sharedManager] databaseConnection];
+    YapDatabaseConnection *dbConn = [[TSStorageManager sharedManager] newDatabaseConnection];
     __block NSString *phoneNumber;
     
     [dbConn readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -47,7 +47,7 @@
 }
 
 + (int)getOrGenerateRegistrationId {
-    YapDatabaseConnection *dbConn = [[TSStorageManager sharedManager] databaseConnection];
+    YapDatabaseConnection *dbConn = [[TSStorageManager sharedManager] newDatabaseConnection];
     __block int registrationID;
     
     [dbConn readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -68,12 +68,15 @@
 }
 
 + (void)registerForPushNotifications:(NSData *)pushToken success:(successCompletionBlock)success failure:(failedVerificationBlock)failureBlock{
- 
+    
     NSString *stringToken = [[pushToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<> "]];
     
     [[TSNetworkManager sharedManager] queueAuthenticatedRequest:[[TSRegisterForPushRequest alloc] initWithPushIdentifier:stringToken] success:^(NSURLSessionDataTask *task, id responseObject) {
         success();
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        
+        NSLog(@"NSError: %@", error.debugDescription);
+        
         TSRegistrationFailure failureType = kTSRegistrationFailureNetwork;
         switch ([task statusCode]) {
             case 401:
@@ -91,7 +94,7 @@
 }
 
 + (void)registerWithRedPhoneToken:(NSString*)tsToken pushToken:(NSData*)pushToken success:(successCompletionBlock)successBlock failure:(failedVerificationBlock)failureBlock{
-
+    
     NSString *authToken           = [self generateNewAccountAuthenticationToken];
     NSString *signalingKey        = [self generateNewSignalingKeyToken];
     NSString *phoneNumber         = [[tsToken componentsSeparatedByString:@":"] objectAtIndex:0];
@@ -109,9 +112,16 @@
         long statuscode               = response.statusCode;
         
         if (statuscode == 200 || statuscode == 204) {
-            
+
             [TSStorageManager storeServerToken:authToken signalingKey:signalingKey phoneNumber:phoneNumber];
-            [self registerPreKeys:successBlock failure:failureBlock];
+            
+            [self registerForPushNotifications:pushToken success:^{
+                [self registerPreKeys:^{
+                    successBlock();
+                } failure:failureBlock];
+            } failure:^(NSError *error) {
+                failureBlock([self errorForRegistrationFailure:kTSRegistrationFailureNetwork HTTPStatusCode:0]);
+            }];
             
         } else{
             failureBlock([self errorForRegistrationFailure:kTSRegistrationFailureNetwork HTTPStatusCode:statuscode]);
@@ -119,7 +129,7 @@
         
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         DDLogError(@"Error registering with TextSecure: %@", error.debugDescription);
-
+        
         //TODO: Cover all error types: https://github.com/WhisperSystems/TextSecure-Server/wiki/API-Protocol
         // Above link doesn't appear to document the endpoint /v1/accounts/token/{token} - is it similar to /v1/accounts/code/{code} ?
         failureBlock([self errorForRegistrationFailure:kTSRegistrationFailureNetwork HTTPStatusCode:[task statusCode]]);

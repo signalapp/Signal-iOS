@@ -47,46 +47,56 @@
     self = [super init];
     
     if (self) {
-        _dbConnection = [TSStorageManager sharedManager].databaseConnection;
+        _dbConnection = [TSStorageManager sharedManager].newDatabaseConnection;
     }
     
     return self;
 }
 
 - (void)handleMessageSignal:(NSData*)signalData{
-    NSData *decryptedPayload = [Cryptography decryptAppleMessagePayload:signalData withSignalingKey:TSStorageManager.signalingKey];
+    NSString *base64String   = [[NSString alloc] initWithData:signalData encoding:NSUTF8StringEncoding];
+    
+    NSData *encryptedSignal  = [NSData dataFromBase64String:base64String];
+    NSData *decryptedPayload = [Cryptography decryptAppleMessagePayload:encryptedSignal
+                                                       withSignalingKey:TSStorageManager.signalingKey];
     
     if (!decryptedPayload) {
+        DDLogWarn(@"Failed to decrypt incoming payload or bad HMAC");
         return;
     }
     
-    IncomingPushMessageSignal *messageSignal = [IncomingPushMessageSignal parseFromData:decryptedPayload];
-    
-    switch (messageSignal.type) {
-        case IncomingPushMessageSignalTypeCiphertext:
-            [self handleSecureMessage:messageSignal];
-            break;
-            
-        case IncomingPushMessageSignalTypePrekeyBundle:
-            [self handlePreKeyBundle:messageSignal];
-            break;
-            
+    @try {
+        IncomingPushMessageSignal *messageSignal = [IncomingPushMessageSignal parseFromData:decryptedPayload];
+        
+        switch (messageSignal.type) {
+            case IncomingPushMessageSignalTypeCiphertext:
+                [self handleSecureMessage:messageSignal];
+                break;
+                
+            case IncomingPushMessageSignalTypePrekeyBundle:
+                [self handlePreKeyBundle:messageSignal];
+                break;
+                
             // Other messages are just dismissed for now.
-            
-        case IncomingPushMessageSignalTypeKeyExchange:
-            NSLog(@"Key exchange!");
-            break;
-        case IncomingPushMessageSignalTypePlaintext:
-            NSLog(@"Plaintext");
-            break;
-        case IncomingPushMessageSignalTypeReceipt:
-            NSLog(@"Receipt");
-            break;
-        case IncomingPushMessageSignalTypeUnknown:
-            NSLog(@"Unknown");
-            break;
-        default:
-            break;
+                
+            case IncomingPushMessageSignalTypeKeyExchange:
+                DDLogWarn(@"Received Key Exchange Message, not supported");
+                break;
+            case IncomingPushMessageSignalTypePlaintext:
+                DDLogWarn(@"Received a plaintext message");
+                break;
+            case IncomingPushMessageSignalTypeReceipt:
+                DDLogInfo(@"Received a delivery receipt");
+                break;
+            case IncomingPushMessageSignalTypeUnknown:
+                DDLogWarn(@"Received an unknown message type");
+                break;
+            default:
+                break;
+        }
+    }
+    @catch (NSException *exception) {
+        DDLogWarn(@"Received an incorrectly formatted protocol buffer: %@", exception.debugDescription);
     }
 }
 
@@ -100,16 +110,12 @@
             // Deal with failure
         }
         
-        WhisperMessage *message = [[WhisperMessage alloc] initWithData:secureMessage.message];
-        
-        if (!message) {
-            [self failedProtocolBufferDeserialization:secureMessage];
-            return;
-        }
-        
-        NSData *plaintext;
+        PushMessageContent *content;
         
         @try {
+            
+            WhisperMessage *message = [[WhisperMessage alloc] initWithData:secureMessage.message];
+            
             SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
                                                                     preKeyStore:storageManager
                                                               signedPreKeyStore:storageManager
@@ -117,17 +123,12 @@
                                                                     recipientId:recipientId
                                                                        deviceId:deviceId];
             
-            plaintext = [[cipher decrypt:message] removePadding];
+            NSData *plaintext = [[cipher decrypt:message] removePadding];
+            
+            content = [PushMessageContent parseFromData:plaintext];
         }
         @catch (NSException *exception) {
             [self processException:exception pushSignal:secureMessage];
-            return;
-        }
-        
-        PushMessageContent *content = [PushMessageContent parseFromData:plaintext];
-        
-        if (!content) {
-            [self failedProtocolBufferDeserialization:secureMessage];
             return;
         }
         
@@ -141,16 +142,11 @@
         NSString *recipientId            = preKeyMessage.source;
         int  deviceId                    = preKeyMessage.sourceDevice;
         
-        PreKeyWhisperMessage *message = [[PreKeyWhisperMessage alloc] initWithData:preKeyMessage.message];
+        PushMessageContent *content;
         
-        if (!message) {
-            [self failedProtocolBufferDeserialization:preKeyMessage];
-            return;
-        }
-        
-        
-        NSData *plaintext;
         @try {
+            PreKeyWhisperMessage *message = [[PreKeyWhisperMessage alloc] initWithData:preKeyMessage.message];
+            
             SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
                                                                     preKeyStore:storageManager
                                                               signedPreKeyStore:storageManager
@@ -158,17 +154,12 @@
                                                                     recipientId:recipientId
                                                                        deviceId:deviceId];
             
-            plaintext = [[cipher decrypt:message] removePadding];
+            NSData *plaintext = [[cipher decrypt:message] removePadding];
+            
+            content = [PushMessageContent parseFromData:plaintext];
         }
         @catch (NSException *exception) {
             [self processException:exception pushSignal:preKeyMessage];
-            return;
-        }
-        
-        PushMessageContent *content = [PushMessageContent parseFromData:plaintext];
-        
-        if (!content) {
-            [self failedProtocolBufferDeserialization:preKeyMessage];
             return;
         }
         
@@ -194,12 +185,14 @@
 }
 
 - (void)handleEndSessionMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{
-    TSContactThread  *thread    = [TSContactThread threadWithContactId:message.source];
-    uint64_t         timeStamp  = message.timestamp;
-
-    if (thread){
-        [[[TSInfoMessage alloc] initWithTimestamp:timeStamp inThread:thread messageType:TSInfoMessageTypeSessionDidEnd] save];
-    }
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        TSContactThread  *thread    = [TSContactThread threadWithContactId:message.source transaction:transaction];
+        uint64_t         timeStamp  = message.timestamp;
+        
+        if (thread){
+            [[[TSInfoMessage alloc] initWithTimestamp:timeStamp inThread:thread messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
+        }
+    }];
     
     [[TSStorageManager sharedManager] deleteAllSessionsForContact:message.source];
 }
@@ -217,25 +210,22 @@
     NSString *body      = content.body;
     NSData   *groupId   = content.hasGroup?content.group.id:nil;
     
-    TSIncomingMessage *incomingMessage;
-    
-    if (groupId) {
-        TSGroupThread *thread = [TSGroupThread threadWithGroupId:groupId];
-        incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:thread authorId:message.source messageBody:body attachements:nil];
-    } else{
-        TSContactThread *thread = [TSContactThread threadWithContactId:message.source];
-        incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:thread messageBody:body attachements:nil];
-    }
-    
-    NSLog(@"Incoming message: %@", incomingMessage.body);
-    [incomingMessage save];
-}
-
-- (void)failedProtocolBufferDeserialization:(IncomingPushMessageSignal*)signal{
-    NSLog(@"Failed Protocol buffer deserialization");
-    TSErrorMessage *errorMessage = [TSErrorMessage invalidProtocolBufferWithSignal:signal];
-    [errorMessage save];
-    return;
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        TSIncomingMessage *incomingMessage;
+        TSThread          *thread;
+        if (groupId) {
+            TSGroupThread *gThread = [TSGroupThread threadWithGroupId:groupId];
+            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachements:nil];
+            thread = gThread;
+        } else{
+            TSContactThread *cThread = [TSContactThread threadWithContactId:message.source transaction:transaction];
+            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:cThread messageBody:body attachements:nil];
+            thread = cThread;
+        }
+        
+        [incomingMessage saveWithTransaction:transaction];
+        [thread saveWithTransaction:transaction];
+    }];
 }
 
 - (void)processException:(NSException*)exception pushSignal:(IncomingPushMessageSignal*)signal{

@@ -22,7 +22,7 @@ typedef NS_ENUM(int32_t, TSErrorMessageType){
     TSErrorMessageInvalidVersion
 };
 
-+ (instancetype)invalidProtocolBufferWithSignal:(IncomingPushMessageSignal*)preKeyMessage;
++ (instancetype)invalidProtocolBufferWithException:(NSException*)exception;
 + (instancetype)duplicateMessageWithSignal:(IncomingPushMessageSignal*)preKeyMessage;
 + (instancetype)invalidVersionWithSignal:(IncomingPushMessageSignal*)preKeyMessage;
 + (instancetype)missingKeyIdWithSignal:(IncomingPushMessageSignal*)preKeyMessage;

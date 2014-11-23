@@ -23,7 +23,7 @@ extern NSString *const TSUIDatabaseConnectionDidUpdateNotification;
 - (void)setupDatabase;
 
 - (YapDatabase*)database;
-- (YapDatabaseConnection*)databaseConnection;
+- (YapDatabaseConnection*)newDatabaseConnection;
 
 - (void)setObject:(id)object forKey:(NSString*)key inCollection:(NSString*)collection;
 - (void)removeObjectForKey:(NSString*)string inCollection:(NSString *)collection;
@@ -40,5 +40,7 @@ extern NSString *const TSUIDatabaseConnectionDidUpdateNotification;
 - (PreKeyRecord*)preKeyRecordForKey:(NSString*)key inCollection:(NSString*)collection;
 - (SignedPreKeyRecord*)signedPreKeyRecordForKey:(NSString*)key inCollection:(NSString*)collection;
 - (void)purgeCollection:(NSString*)collection;
+
+@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @end

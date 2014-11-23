@@ -60,7 +60,6 @@
             } failure:^(NSError *error) {
                 failure(error);
             }];
-        
         } failure:^{
             // PushManager shows its own error alerts, so we don't want to show a second one
             failure(nil);

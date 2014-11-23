@@ -1173,8 +1173,8 @@
 		B6B095FB1A1D25ED008BFAA6 /* TSGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSGroup.m; sourceTree = "<group>"; };
 		B6B095FC1A1D25ED008BFAA6 /* TSRecipient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRecipient.h; sourceTree = "<group>"; };
 		B6B095FD1A1D25ED008BFAA6 /* TSRecipient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRecipient.m; sourceTree = "<group>"; };
-		B6B095FE1A1D25ED008BFAA6 /* TSThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSThread.h; sourceTree = "<group>"; };
-		B6B095FF1A1D25ED008BFAA6 /* TSThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSThread.m; sourceTree = "<group>"; };
+		B6B095FE1A1D25ED008BFAA6 /* TSThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TSThread.h; path = ../TSThread.h; sourceTree = "<group>"; };
+		B6B095FF1A1D25ED008BFAA6 /* TSThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSThread.m; path = ../TSThread.m; sourceTree = "<group>"; };
 		B6B096011A1D25ED008BFAA6 /* IncomingPushMessageSignal.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncomingPushMessageSignal.pb.h; sourceTree = "<group>"; };
 		B6B096021A1D25ED008BFAA6 /* IncomingPushMessageSignal.pb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IncomingPushMessageSignal.pb.m; sourceTree = "<group>"; };
 		B6B096031A1D25ED008BFAA6 /* TSAttachement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAttachement.h; sourceTree = "<group>"; };
@@ -2863,8 +2863,6 @@
 				B6B095FB1A1D25ED008BFAA6 /* TSGroup.m */,
 				B6B095FC1A1D25ED008BFAA6 /* TSRecipient.h */,
 				B6B095FD1A1D25ED008BFAA6 /* TSRecipient.m */,
-				B6B095FE1A1D25ED008BFAA6 /* TSThread.h */,
-				B6B095FF1A1D25ED008BFAA6 /* TSThread.m */,
 			);
 			path = Contacts;
 			sourceTree = "<group>";
@@ -2876,6 +2874,8 @@
 				B6B095F51A1D25ED008BFAA6 /* TSContactThread.m */,
 				B6B095F61A1D25ED008BFAA6 /* TSGroupThread.h */,
 				B6B095F71A1D25ED008BFAA6 /* TSGroupThread.m */,
+				B6B095FE1A1D25ED008BFAA6 /* TSThread.h */,
+				B6B095FF1A1D25ED008BFAA6 /* TSThread.m */,
 			);
 			path = Threads;
 			sourceTree = "<group>";

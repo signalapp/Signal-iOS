@@ -425,4 +425,15 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 	return phoneNumber != nil && [directory containsPhoneNumber:phoneNumber];
 }
 
+- (NSString*)nameStringForPhoneIdentifier:(NSString*)identifier{
+    for (Contact *contact in self.textSecureContacts) {
+        for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
+            if ([phoneNumber.toE164 isEqualToString:identifier]) {
+                return contact.fullName;
+            }
+        }
+    }
+    return nil;
+}
+
 @end
