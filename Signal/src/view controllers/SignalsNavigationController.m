@@ -37,6 +37,14 @@
     [self.navigationBar addSubview:_socketStatusView];
 }
 
+-(void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self forKeyPath:SocketOpenedNotification];
+    [[NSNotificationCenter defaultCenter] removeObserver:self forKeyPath:SocketClosedNotification];
+    [[NSNotificationCenter defaultCenter] removeObserver:self forKeyPath:SocketConnectingNotification];
+    
+}
+
 #pragma mark - Socket Status Notifications
 
 -(void)initializeObserver
