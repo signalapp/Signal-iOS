@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14A388a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="kts-vO-ui1">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="kts-vO-ui1">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
@@ -1764,25 +1764,25 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                             <exclude reference="jiU-kH-HN5"/>
                                         </mask>
                                         <mask key="constraints">
-                                            <exclude reference="5uk-1r-gO8"/>
-                                            <exclude reference="d2p-aN-BLp"/>
-                                            <exclude reference="oW3-SC-n5d"/>
-                                            <exclude reference="VZj-eb-IRz"/>
-                                            <exclude reference="lsu-rO-VMN"/>
-                                            <exclude reference="H6U-fc-9b2"/>
-                                            <exclude reference="R2z-Rq-wQr"/>
-                                            <exclude reference="gq2-cU-hxB"/>
-                                            <exclude reference="C9w-qG-yIC"/>
-                                            <exclude reference="KD5-FZ-hIh"/>
-                                            <exclude reference="toZ-zh-Iy3"/>
-                                            <exclude reference="uMB-bd-99x"/>
                                             <exclude reference="CzT-yE-ZZi"/>
                                             <exclude reference="flS-Xw-75h"/>
                                             <exclude reference="jGu-1E-j8M"/>
                                             <exclude reference="jyc-n8-PKc"/>
+                                            <exclude reference="VZj-eb-IRz"/>
+                                            <exclude reference="lsu-rO-VMN"/>
+                                            <exclude reference="C9w-qG-yIC"/>
+                                            <exclude reference="KD5-FZ-hIh"/>
+                                            <exclude reference="toZ-zh-Iy3"/>
+                                            <exclude reference="uMB-bd-99x"/>
+                                            <exclude reference="5uk-1r-gO8"/>
+                                            <exclude reference="d2p-aN-BLp"/>
+                                            <exclude reference="oW3-SC-n5d"/>
                                             <exclude reference="Dfd-BI-EVU"/>
                                             <exclude reference="EbC-OA-toO"/>
                                             <exclude reference="roy-5R-k37"/>
+                                            <exclude reference="H6U-fc-9b2"/>
+                                            <exclude reference="R2z-Rq-wQr"/>
+                                            <exclude reference="gq2-cU-hxB"/>
                                         </mask>
                                     </variation>
                                     <variation key="heightClass=regular-widthClass=compact">
@@ -1795,25 +1795,25 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                             <include reference="jiU-kH-HN5"/>
                                         </mask>
                                         <mask key="constraints">
-                                            <include reference="5uk-1r-gO8"/>
-                                            <include reference="d2p-aN-BLp"/>
-                                            <include reference="oW3-SC-n5d"/>
-                                            <include reference="VZj-eb-IRz"/>
-                                            <include reference="lsu-rO-VMN"/>
-                                            <exclude reference="H6U-fc-9b2"/>
-                                            <include reference="R2z-Rq-wQr"/>
-                                            <include reference="gq2-cU-hxB"/>
-                                            <include reference="C9w-qG-yIC"/>
-                                            <exclude reference="KD5-FZ-hIh"/>
-                                            <include reference="toZ-zh-Iy3"/>
-                                            <include reference="uMB-bd-99x"/>
                                             <include reference="CzT-yE-ZZi"/>
                                             <exclude reference="flS-Xw-75h"/>
                                             <include reference="jGu-1E-j8M"/>
                                             <include reference="jyc-n8-PKc"/>
+                                            <include reference="VZj-eb-IRz"/>
+                                            <include reference="lsu-rO-VMN"/>
+                                            <include reference="C9w-qG-yIC"/>
+                                            <exclude reference="KD5-FZ-hIh"/>
+                                            <include reference="toZ-zh-Iy3"/>
+                                            <include reference="uMB-bd-99x"/>
+                                            <include reference="5uk-1r-gO8"/>
+                                            <include reference="d2p-aN-BLp"/>
+                                            <include reference="oW3-SC-n5d"/>
                                             <include reference="Dfd-BI-EVU"/>
                                             <include reference="EbC-OA-toO"/>
                                             <exclude reference="roy-5R-k37"/>
+                                            <exclude reference="H6U-fc-9b2"/>
+                                            <include reference="R2z-Rq-wQr"/>
+                                            <include reference="gq2-cU-hxB"/>
                                         </mask>
                                     </variation>
                                 </tableViewCellContentView>

@@ -1,7 +1,10 @@
 #import "Contact.h"
+#import "ContactsManager.h"
+#import "TSStorageManager.h"
 #import "Util.h"
 #import "Environment.h"
 #import "PreferencesUtil.h"
+#import "TSRecipient.h"
 
 static NSString *const DEFAULTS_KEY_CONTACT = @"DefaultsKeyContact";
 static NSString *const DEFAULTS_KEY_PHONE_NUMBER = @"DefaultsKeyPhoneNumber";
@@ -77,6 +80,24 @@ static NSString *const DEFAULTS_KEY_DATE = @"DefaultsKeyDate";
 	} else {
 		return nil;
 	}
+}
+
+- (BOOL)isTextSecureContact{
+    __block BOOL isRecipient = NO;
+    [[TSStorageManager sharedManager].databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        for (PhoneNumber *number in self.parsedPhoneNumbers) {
+            if ([TSRecipient recipientWithTextSecureIdentifier:number.toE164 withTransaction:transaction]) {
+                isRecipient = YES;
+                break;
+            }
+        }
+    }];
+    return isRecipient;
+}
+
+- (BOOL)isRedPhoneContact{
+    ContactsManager *contactManager = [Environment getCurrent].contactsManager;
+    return [contactManager isContactRegisteredWithRedPhone:self];
 }
 
 @end

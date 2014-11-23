@@ -121,7 +121,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 #pragma mark - Contact functions
 
 - (void)setupContacts {
-    ObservableValue *observableContacts = Environment.getCurrent.contactsManager.getObservableWhisperUsers;
+    ObservableValue *observableContacts = Environment.getCurrent.contactsManager.getObservableRedPhoneUsers;
     [observableContacts watchLatestValue:^(NSArray *latestContacts) {
         _latestContacts = latestContacts;
         [self onSearchOrContactChange:nil];

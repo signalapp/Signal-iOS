@@ -95,7 +95,7 @@
     NSString *authToken           = [self generateNewAccountAuthenticationToken];
     NSString *signalingKey        = [self generateNewSignalingKeyToken];
     NSString *phoneNumber         = [[tsToken componentsSeparatedByString:@":"] objectAtIndex:0];
-
+    
     require(phoneNumber != nil);
     require(signalingKey != nil);
     require(authToken != nil);
@@ -118,6 +118,7 @@
         }
         
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        DDLogError(@"Error registering with TextSecure: %@", error.debugDescription);
 
         //TODO: Cover all error types: https://github.com/WhisperSystems/TextSecure-Server/wiki/API-Protocol
         // Above link doesn't appear to document the endpoint /v1/accounts/token/{token} - is it similar to /v1/accounts/code/{code} ?

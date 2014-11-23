@@ -11,15 +11,13 @@
 
 #import "GroupModel.h"
 
-
 @interface SignalsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, TableViewCellDelegate>
 
-@property (nonatomic) Contact* contactFromCompose;
-@property (nonatomic) GroupModel* groupFromCompose;
+@property (nonatomic) Contact    *contactFromCompose;
+@property (nonatomic) GroupModel *groupFromCompose;
 
-@property (nonatomic,strong) IBOutlet UITableView* _tableView;
-
-@property (strong, nonatomic) IBOutlet UISegmentedControl * segmentedControl;
+@property (nonatomic, retain) IBOutlet UITableView *tableView;
+@property (nonatomic, retain) IBOutlet UISegmentedControl *segmentedControl;
 
 
 @end

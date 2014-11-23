@@ -8,7 +8,6 @@
 
 #import "TSThread.h"
 
-#import "TSContact.h"
 #import "TSGroup.h"
 
 @implementation TSThread

@@ -10,16 +10,9 @@
 
 #define ADDRESSBOOK_QUEUE dispatch_get_main_queue()
 
-static NSString *const FAVOURITES_DEFAULT_KEY = @"FAVOURITES_DEFAULT_KEY";
-static NSString *const KNOWN_USERS_DEFAULT_KEY = @"KNOWN_USERS_DEFAULT_KEY";
-
 typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL*);
 
 @interface ContactsManager () {
-	NSMutableArray *_favouriteContactIds;
-    NSMutableArray *_knownWhisperUserIds;
-    BOOL newUserNotificationsEnabled;
-    
     id addressBookReference;
 }
 
@@ -30,11 +23,9 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL*);
 - (id)init {
     self = [super init];
     if (self) {
-        newUserNotificationsEnabled = [self knownUserStoreInitialized];
-        _knownWhisperUserIds = [self loadKnownWhisperUsers];
-        life = [TOCCancelTokenSource new];
-        observableContactsController = [ObservableValueController observableValueControllerWithInitialValue:nil];
-        observableWhisperUsersController = [ObservableValueController observableValueControllerWithInitialValue:nil];
+        life                                = [TOCCancelTokenSource new];
+        observableContactsController        = [ObservableValueController observableValueControllerWithInitialValue:nil];
+        observableRedPhoneUsersController   = [ObservableValueController observableValueControllerWithInitialValue:nil];
         [self registerNotificationHandlers];
     }
     return self;
@@ -47,9 +38,9 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL*);
         }
     } untilCancelled:life.token];
     
-    [observableWhisperUsersController watchLatestValueOnArbitraryThread:^(NSArray *latestUsers) {
+    [observableRedPhoneUsersController watchLatestValueOnArbitraryThread:^(NSArray *latestUsers) {
         @synchronized(self) {
-            [self setupLatestWhisperUsers:latestUsers];
+            [self setupLatestRedPhoneUsers:latestUsers];
         }
     } untilCancelled:life.token];
 }
@@ -64,12 +55,10 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL*);
 }
 
 -(void) updatedDirectoryHandler:(NSNotification*) notification {
-    [self checkForNewWhisperUsers];
+    NSArray *currentUsers = [self getRedPhoneUsersFromContactsArray:latestContactsById.allValues];
+    
+    [observableRedPhoneUsersController updateValue:currentUsers];
  }
-
--(void) enableNewUserNotifications{
-    newUserNotificationsEnabled = YES;
-}
 
 #pragma mark - Address Book callbacks
 
@@ -110,12 +99,12 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         latestContactsById = [ContactsManager keyContactsById:contacts];
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            [self checkForNewWhisperUsers];
+            [self updatedDirectoryHandler:nil];
         });
     }
 }
 
-- (void)setupLatestWhisperUsers:(NSArray *)users {
+- (void)setupLatestRedPhoneUsers:(NSArray *)users {
     if (users) {
         latestWhisperUsersById = [ContactsManager keyContactsById:users];
     }
@@ -127,8 +116,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return observableContactsController;
 }
 
--(ObservableValue *) getObservableWhisperUsers {
-    return observableWhisperUsersController;
+-(ObservableValue *) getObservableRedPhoneUsers {
+    return observableRedPhoneUsersController;
 }
 
 #pragma mark - Address Book utils
@@ -344,7 +333,11 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }
 }
 
--(NSArray*) recordsForContacts:(NSArray*) contacts{
+- (NSArray*)allContacts {
+    return [latestContactsById allValues];
+}
+
+- (NSArray*)recordsForContacts:(NSArray*) contacts{
     return [contacts map:^id(Contact *contact) {
         return @([contact recordID]);
     }];
@@ -387,40 +380,26 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 #pragma mark - Whisper User Management
 
--(NSUInteger) checkForNewWhisperUsers {
-	NSArray *currentUsers = [self getWhisperUsersFromContactsArray:latestContactsById.allValues];
-	NSArray *newUsers     = [self getNewItemsFrom:currentUsers comparedTo:latestWhisperUsersById.allValues];
-    
-	if(newUsers.count > 0){
-		[observableWhisperUsersController updateValue:currentUsers];
-	}
-    
-    NSArray *unacknowledgedUserIds = [self getUnacknowledgedUsersFrom:currentUsers];
-    if(unacknowledgedUserIds.count > 0){
-        NSArray *unacknowledgedUsers = [self contactsForContactIds: unacknowledgedUserIds];
-        if(!newUserNotificationsEnabled){
-            [self addContactsToKnownWhisperUsers:unacknowledgedUsers];
-        }else{
-            NSDictionary *payload = @{NOTIFICATION_DATAKEY_NEW_USERS: unacknowledgedUsers};
-            [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_NEW_USERS_AVAILABLE object:self userInfo:payload];
-        }
-    }
-    return newUsers.count;
-}
-
--(NSArray*) getUnacknowledgedUsersFrom:(NSArray*) users {
-    NSArray *userIds = [self recordsForContacts:users];
-    return [self getNewItemsFrom:userIds comparedTo:_knownWhisperUserIds ];
-}
-
--(NSUInteger) getNumberOfUnacknowledgedCurrentUsers{
-    NSArray *currentUsers = [self getWhisperUsersFromContactsArray:latestContactsById.allValues];
-    return [[self getUnacknowledgedUsersFrom:currentUsers] count];
-}
-
--(NSArray*) getWhisperUsersFromContactsArray:(NSArray*) contacts {
+-(NSArray*) getRedPhoneUsersFromContactsArray:(NSArray*) contacts {
 	return [contacts filter:^int(Contact* contact) {
-        return [self isContactRegisteredWithWhisper:contact];
+        return [self isContactRegisteredWithRedPhone:contact];
+    }];
+}
+
+-(NSArray*) textSecureContacts {
+    return [[self.allContacts filter:^int(Contact* contact) {
+        return [contact isTextSecureContact];
+    }] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        Contact *contact1 = (Contact*)obj1;
+        Contact *contact2 = (Contact*)obj2;
+        
+        BOOL firstNameOrdering = ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst?YES:NO;
+        
+        if (firstNameOrdering) {
+            return [contact1.firstName compare:contact2.firstName];
+        } else {
+            return [contact2.lastName compare:contact2.lastName];
+        }
     }];
 }
 
@@ -432,50 +411,18 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 	return newSet.allObjects;
 }
 
-- (BOOL)isContactRegisteredWithWhisper:(Contact*) contact {
+- (BOOL)isContactRegisteredWithRedPhone:(Contact*) contact {
 	for(PhoneNumber *phoneNumber in contact.parsedPhoneNumbers){
-		if ( [self isPhoneNumberRegisteredWithWhisper:phoneNumber]) {
+		if ( [self isPhoneNumberRegisteredWithRedPhone:phoneNumber]) {
 			return YES;
 		}
 	}
 	return NO;
 }
 
-- (BOOL)isPhoneNumberRegisteredWithWhisper:(PhoneNumber *)phoneNumber {
+- (BOOL)isPhoneNumberRegisteredWithRedPhone:(PhoneNumber *)phoneNumber {
 	PhoneNumberDirectoryFilter* directory = Environment.getCurrent.phoneDirectoryManager.getCurrentFilter;
 	return phoneNumber != nil && [directory containsPhoneNumber:phoneNumber];
-}
-
--(void) addContactsToKnownWhisperUsers:(NSArray*) contacts {
-    for( Contact *contact in contacts){
-        [_knownWhisperUserIds addObject:@([contact recordID])];
-    }
-    NSMutableSet *users = [NSMutableSet setWithArray:latestWhisperUsersById.allValues];
-    [users addObjectsFromArray:contacts];
-    
-    [observableWhisperUsersController updateValue:users.allObjects];
-    [self saveKnownWhisperUsers];
-}
-
--(BOOL) knownUserStoreInitialized{
-    NSUserDefaults *d = [NSUserDefaults.standardUserDefaults objectForKey:KNOWN_USERS_DEFAULT_KEY];
-    return  (Nil != d);
-}
-
--(NSMutableArray*) loadKnownWhisperUsers{
-    NSArray *knownUsers = [NSUserDefaults.standardUserDefaults objectForKey:KNOWN_USERS_DEFAULT_KEY];
-    return knownUsers == nil ? [NSMutableArray array] : knownUsers.mutableCopy;
-}
-
--(void) saveKnownWhisperUsers{
-    _knownWhisperUserIds = [NSMutableArray arrayWithArray:[latestWhisperUsersById allKeys]];
-    [NSUserDefaults.standardUserDefaults setObject:[_knownWhisperUserIds copy] forKey:KNOWN_USERS_DEFAULT_KEY];
-    [NSUserDefaults.standardUserDefaults synchronize];
-}
-
--(void) clearKnownWhisUsers{
-    [NSUserDefaults.standardUserDefaults setObject:@[] forKey:KNOWN_USERS_DEFAULT_KEY];
-    [NSUserDefaults.standardUserDefaults synchronize];
 }
 
 @end

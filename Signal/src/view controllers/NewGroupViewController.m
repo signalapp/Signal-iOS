@@ -8,6 +8,9 @@
 
 #import "NewGroupViewController.h"
 #import "SignalsViewController.h"
+#import "Contact.h"
+#import "ContactsManager.h"
+#import "Environment.h"
 
 #import "Contact.h"
 #import "DemoDataFactory.h"
@@ -32,7 +35,7 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Create" style:UIBarButtonItemStylePlain target:self action:@selector(createGroup)];
     self.navigationItem.title = @"New Group";
     
-    contacts = [DemoDataFactory makeFakeContacts];
+    contacts = [Environment getCurrent].contactsManager.textSecureContacts;
     
     [self initializeDelegates];
     [self initializeTableView];
@@ -41,7 +44,6 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Initializers
@@ -135,7 +137,6 @@
         picker.mediaTypes = [[NSArray alloc] initWithObjects: (NSString *)kUTTypeImage,  nil];
         [self presentViewController:picker animated:YES completion:NULL];
     }
-
 }
 
 -(void)chooseFromLibrary

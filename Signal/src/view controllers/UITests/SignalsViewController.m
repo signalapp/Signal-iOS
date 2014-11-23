@@ -12,13 +12,22 @@
 
 #import "MessagesViewController.h"
 #import "SignalsViewController.h"
+#import "TSStorageManager.h"
+#import "TSDatabaseView.h"
 #import "TSSocketManager.h"
+
+#import <YapDatabase/YapDatabaseViewChange.h>
+#import "YapDatabaseViewTransaction.h"
+#import "YapDatabaseViewMappings.h"
+#import "YapDatabaseViewConnection.h"
+#import "YapDatabaseFullTextSearch.h"
+#import "YapDatabase.h"
 
 #define CELL_HEIGHT 71.0f
 #define HEADER_HEIGHT 44.0f
 
 
-static NSString *const kCellNibName      = @"TableViewCell";
+static NSString *const inboxTableViewCell      = @"inBoxTableViewCell";
 static NSString *const kSegueIndentifier = @"showSegue";
 
 
@@ -28,20 +37,31 @@ static NSString *const kSegueIndentifier = @"showSegue";
     
 }
 @property (strong, nonatomic) DemoDataModel *demoData;
+@property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
+@property (nonatomic, strong) YapDatabaseViewMappings *threadMappings;
 
 @end
 
 @implementation SignalsViewController
 
-- (void)viewDidAppear:(BOOL)animated{
-    [TSSocketManager becomeActive];
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
-    _dataArray = [DemoDataFactory data];
-    numberOfCells = _dataArray.count;
-    [self tableViewSetUp];
+    
+    [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    
+    self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSThreadGroup]
+                                                                     view:TSThreadDatabaseViewExtensionName];
+    
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
+        [self.threadMappings updateWithTransaction:transaction];
+    }];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(yapDatabaseModified:)
+                                                 name:TSUIDatabaseConnectionDidUpdateNotification
+                                               object:nil];
+    
+    [TSSocketManager becomeActive];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -51,46 +71,50 @@ static NSString *const kSegueIndentifier = @"showSegue";
 
 -(void)tableViewSetUp
 {
-    self._tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
 
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    return (NSInteger)[self.threadMappings numberOfSections];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return (NSInteger)numberOfCells;
+    return (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
 }
 
-- (InboxTableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-     return [self inboxFeedCellForIndexPath:indexPath];
- }
+- (InboxTableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+    
+    InboxTableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:inboxTableViewCell];
+    TSThread *thread = [self threadForIndexPath:indexPath];
+    
+    if (!cell) {
+        cell = [[InboxTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                         reuseIdentifier:inboxTableViewCell];
+        cell.delegate = self;
+    }
+    
+    [cell configureWithThread:thread];
+    [cell configureForState:_segmentedControl.selectedSegmentIndex == 0 ? kInboxState : kArchiveState];
+    
+    return cell;
+}
+
+- (TSThread*)threadForIndexPath:(NSIndexPath*)indexPath {
+    
+    __block TSThread *thread = nil;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        thread = [[transaction extension:TSThreadDatabaseViewExtensionName] objectAtIndexPath:indexPath withMappings:self.threadMappings];
+    }];
+    
+    return thread;
+}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return CELL_HEIGHT;
 }
-
--(InboxTableViewCell*)inboxFeedCellForIndexPath:(NSIndexPath *)indexPath {
-    
-    InboxTableViewCell *cell = [self._tableView dequeueReusableCellWithIdentifier:kCellNibName];
-    
-    
-    if (!cell) {
-        cell = [[InboxTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                    reuseIdentifier:kCellNibName];
-        cell.delegate = self;
-    }
-    
-    DemoDataModel *recent = _dataArray[(NSUInteger)indexPath.row];
-    [cell configureWithTestMessage:recent];
-    [cell configureForState:_segmentedControl.selectedSegmentIndex == 0 ? kInboxState : kArchiveState];
-    return cell;
-
-}
-
 
 #pragma mark - HomeFeedTableViewCellDelegate
 
@@ -117,7 +141,7 @@ static NSString *const kSegueIndentifier = @"showSegue";
     if ([segue.identifier isEqualToString:kSegueIndentifier])
     {
         MessagesViewController * vc = [segue destinationViewController];
-        NSIndexPath *selectedIndexPath = [self._tableView indexPathForSelectedRow];
+        NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
         if (selectedIndexPath) {
             vc._senderTitleString =  ((DemoDataModel*)_dataArray[(NSUInteger)selectedIndexPath.row])._sender;
         } else if (_contactFromCompose) {
@@ -125,7 +149,7 @@ static NSString *const kSegueIndentifier = @"showSegue";
         } else if (_groupFromCompose) {
             vc._senderTitleString = _groupFromCompose.groupName;
         }
-
+        
     }
 }
 
@@ -136,14 +160,106 @@ static NSString *const kSegueIndentifier = @"showSegue";
     switch (_segmentedControl.selectedSegmentIndex) {
         case 0:
             numberOfCells=5;
-            [self._tableView reloadData];
+            [self.tableView reloadData];
             break;
             
         case 1:
             numberOfCells=3;
-            [self._tableView reloadData];
+            [self.tableView reloadData];
             break;
             
     }
+}
+
+#pragma mark Database delegates
+
+- (YapDatabaseConnection *)uiDatabaseConnection {
+    NSAssert([NSThread isMainThread], @"Must access uiDatabaseConnection on main thread!");
+    if (!_uiDatabaseConnection) {
+        YapDatabase *database = TSStorageManager.sharedManager.database;
+        _uiDatabaseConnection = [database newConnection];
+        [_uiDatabaseConnection beginLongLivedReadTransaction];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(yapDatabaseModified:)
+                                                     name:YapDatabaseModifiedNotification
+                                                   object:database];
+    }
+    return _uiDatabaseConnection;
+}
+
+- (void)yapDatabaseModified:(NSNotification *)notification {
+    NSArray *notifications = notification.userInfo[@"notifications"];
+    
+    NSArray *sectionChanges = nil;
+    NSArray *rowChanges = nil;
+    
+    [[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] getSectionChanges:&sectionChanges
+                                                                              rowChanges:&rowChanges
+                                                                        forNotifications:notifications
+                                                                            withMappings:self.threadMappings];
+    
+    if ([sectionChanges count] == 0 && [rowChanges count] == 0){
+        
+        return;
+    }
+    
+    [self.tableView beginUpdates];
+    
+    for (YapDatabaseViewSectionChange *sectionChange in sectionChanges)
+    {
+        switch (sectionChange.type)
+        {
+            case YapDatabaseViewChangeDelete :
+            {
+                [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionChange.index]
+                              withRowAnimation:UITableViewRowAnimationAutomatic];
+                break;
+            }
+            case YapDatabaseViewChangeInsert :
+            {
+                [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionChange.index]
+                              withRowAnimation:UITableViewRowAnimationAutomatic];
+                break;
+            }
+            case YapDatabaseViewChangeUpdate:
+            case YapDatabaseViewChangeMove:
+                break;
+        }
+    }
+    
+    for (YapDatabaseViewRowChange *rowChange in rowChanges)
+    {
+        switch (rowChange.type)
+        {
+            case YapDatabaseViewChangeDelete :
+            {
+                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]
+                                      withRowAnimation:UITableViewRowAnimationAutomatic];
+                break;
+            }
+            case YapDatabaseViewChangeInsert :
+            {
+                [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
+                                      withRowAnimation:UITableViewRowAnimationAutomatic];
+                break;
+            }
+            case YapDatabaseViewChangeMove :
+            {
+                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]
+                                      withRowAnimation:UITableViewRowAnimationAutomatic];
+                [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
+                                      withRowAnimation:UITableViewRowAnimationAutomatic];
+                break;
+            }
+            case YapDatabaseViewChangeUpdate :
+            {
+                [self.tableView reloadRowsAtIndexPaths:@[ rowChange.indexPath ]
+                                      withRowAnimation:UITableViewRowAnimationNone];
+                break;
+            }
+        }
+    }
+    
+    [self.tableView endUpdates];
 }
 @end

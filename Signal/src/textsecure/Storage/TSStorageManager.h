@@ -15,9 +15,12 @@
 @class PreKeyRecord;
 @class SignedPreKeyRecord;
 
+extern NSString *const TSUIDatabaseConnectionDidUpdateNotification;
+
 @interface TSStorageManager : NSObject
 
 + (instancetype)sharedManager;
+- (void)setupDatabase;
 
 - (YapDatabase*)database;
 - (YapDatabaseConnection*)databaseConnection;

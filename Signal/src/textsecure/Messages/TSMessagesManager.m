@@ -14,8 +14,6 @@
 #import "IncomingPushMessageSignal.pb.h"
 #import "NSData+Base64.h"
 
-#import "TSContact.h"
-
 #import "TSIncomingMessage.h"
 #import "TSErrorMessage.h"
 #import "TSInfoMessage.h"

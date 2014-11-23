@@ -13,6 +13,11 @@
 #import "CryptoTools.h"
 #import "NSData+Base64.h"
 
+#import "TSDatabaseView.h"
+
+
+NSString *const TSUIDatabaseConnectionDidUpdateNotification = @"TSUIDatabaseConnectionDidUpdateNotification";
+
 static const NSString *const databaseName  = @"Signal.sqlite";
 static NSString * keychainService          = @"TSKeyChainService";
 static NSString * keychainDBPassAccount    = @"TSDatabasePass";
@@ -35,25 +40,14 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
     return sharedMyManager;
 }
 
-- (instancetype)init {
-    self = [super init];
-    
-    if (self) {
-        self.database     = [self newDatabaseInit];
-        self.dbConnection = self.databaseConnection;
-    }
-    
-    return self;
-}
-
-- (YapDatabase*)newDatabaseInit{
+- (void)setupDatabase {
     YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
     options.corruptAction = YapDatabaseCorruptAction_Fail;
     options.passphraseBlock = ^{
         return [self databasePassword];
     };
     
-    return [[YapDatabase alloc] initWithPath:[self dbPath]
+    self. database = [[YapDatabase alloc] initWithPath:[self dbPath]
                             objectSerializer:NULL
                           objectDeserializer:NULL
                           metadataSerializer:NULL
@@ -61,8 +55,9 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
                              objectSanitizer:NULL
                            metadataSanitizer:NULL
                                      options:options];
-    
-    
+    self.dbConnection = self.databaseConnection;
+    [TSDatabaseView registerThreadDatabaseView];
+    [TSDatabaseView registerBuddyConversationDatabaseView];
 }
 
 - (YapDatabaseConnection *)databaseConnection {
@@ -209,8 +204,7 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
         DDLogError(@"Failed to delete database: %@", error.description);
     }
     
-    self.database = [self newDatabaseInit];
-    self.dbConnection = self.databaseConnection;
+    [self setupDatabase];
 }
 
 @end

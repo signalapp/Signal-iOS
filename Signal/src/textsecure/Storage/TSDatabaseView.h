@@ -10,4 +10,12 @@
 
 @interface TSDatabaseView : NSObject
 
+extern NSString *TSThreadGroup;
+
+extern NSString *TSThreadDatabaseViewExtensionName;
+extern NSString *TSMessageDatabaseViewExtensionName;
+
++ (BOOL)registerThreadDatabaseView;
++ (BOOL)registerBuddyConversationDatabaseView;
+
 @end

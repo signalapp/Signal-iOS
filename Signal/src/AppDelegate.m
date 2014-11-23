@@ -12,6 +12,7 @@
 #import "PriorityQueue.h"
 #import "RecentCallManager.h"
 #import "Release.h"
+#import "TSStorageManager.h"
 #import "TSAccountManager.h"
 #import "Util.h"
 #import "VersionMigrations.h"
@@ -121,6 +122,8 @@
         [DebugLogger.sharedInstance enableFileLogging];
     }
     
+    [[TSStorageManager sharedManager] setupDatabase];
+    
     [self performUpdateCheck];
     [self protectPreferenceFiles];
     
@@ -141,6 +144,21 @@
         DDLogInfo(@"Application was launched by tapping a push notification.");
         [self application:application didReceiveRemoteNotification:remoteNotif];
     }
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:[NSBundle mainBundle]];
+    
+    UIViewController *viewController;
+    
+    if (![TSAccountManager isRegistered]) {
+        viewController = [storyboard instantiateViewControllerWithIdentifier:@"RegisterInitialViewController"];
+    } else{
+        viewController = [storyboard instantiateViewControllerWithIdentifier:@"UserInitialViewController"];
+    }
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.rootViewController = viewController;
+    
+    [self.window makeKeyAndVisible];
     
     [Environment.phoneManager.currentCallObservable watchLatestValue:^(CallState* latestCall) {
         if (latestCall == nil){
@@ -163,21 +181,6 @@
         [self.window.rootViewController dismissViewControllerAnimated:NO completion:nil];
         [self.window.rootViewController presentViewController:callViewController animated:NO completion:nil];
     } onThread:NSThread.mainThread untilCancelled:nil];
-    
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:[NSBundle mainBundle]];
-    
-    UIViewController *viewController;
-    
-    if (![TSAccountManager isRegistered]) {
-        viewController = [storyboard instantiateViewControllerWithIdentifier:@"RegisterInitialViewController"];
-    } else{
-        viewController = [storyboard instantiateViewControllerWithIdentifier:@"UserInitialViewController"];
-    }
-    
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.window.rootViewController = viewController;
-
-    [self.window makeKeyAndVisible];
     
     return YES;
 }

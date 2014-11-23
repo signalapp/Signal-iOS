@@ -19,32 +19,30 @@ typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 @interface ContactsManager : NSObject {
 @private TOCFuture* futureAddressBook;
 @private ObservableValueController* observableContactsController;
-@private ObservableValueController* observableWhisperUsersController;
+@private ObservableValueController* observableRedPhoneUsersController;
+@private ObservableValueController* observableTextSecureUsersController;
 @private TOCCancelTokenSource* life;
 @private NSDictionary *latestContactsById;
 @private NSDictionary *latestWhisperUsersById;
 }
 
 -(ObservableValue *) getObservableContacts;
--(ObservableValue *) getObservableWhisperUsers;
+-(ObservableValue *) getObservableRedPhoneUsers;
 
 -(NSArray*) getContactsFromAddressBook:(ABAddressBookRef)addressBook;
 -(Contact*) latestContactWithRecordId:(ABRecordID)recordId;
 -(Contact*) latestContactForPhoneNumber:(PhoneNumber *)phoneNumber;
 -(NSArray*) latestContactsWithSearchString:(NSString *)searchString;
 
--(void) addContactsToKnownWhisperUsers:(NSArray*) contacts;
-
 +(NSDictionary *)groupContactsByFirstLetter:(NSArray *)contacts matchingSearchString:(NSString *)optionalSearchString;
 
 +(BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString;
 +(BOOL)phoneNumber:(PhoneNumber *)phoneNumber matchesQuery:(NSString *)queryString;
--(BOOL)isContactRegisteredWithWhisper:(Contact*) contact;
+-(BOOL)isContactRegisteredWithRedPhone:(Contact*) contact;
 
 -(void) doAfterEnvironmentInitSetup;
 
--(void) enableNewUserNotifications;
--(NSUInteger) getNumberOfUnacknowledgedCurrentUsers;
-
+- (NSArray*)allContacts;
+- (NSArray*)textSecureContacts;
 
 @end

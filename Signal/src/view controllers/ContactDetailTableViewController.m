@@ -43,8 +43,6 @@ static NSString *const kNotesCell            = @"NotesCell";
 
 static NSString *const kContactDetailSegue = @"DetailSegue";
 
-
-
 @interface ContactDetailTableViewController () {
     BOOL doesImageExist;
 }
@@ -122,8 +120,6 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
     }
     [cell.contactImageView.layer setCornerRadius:50.0f];
     [cell.contactImageView.layer setMasksToBounds:YES];
-
-    
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath

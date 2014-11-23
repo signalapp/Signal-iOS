@@ -41,15 +41,14 @@
     return NSStringFromClass(self.class);
 }
 
--(void)configureWithTestMessage:(DemoDataModel*)testMessage {
-    _nameLabel.text           = testMessage._sender;
-    _snippetLabel.text        = testMessage._snippet;
+-(void)configureWithThread:(TSThread*)thread {
+    _nameLabel.text           = thread.name;
+    _snippetLabel.text        = @"Missing implementation";
     _contactPictureView.image = nil;
-    _timeLabel.attributedText = [self dateArrributedString:[NSDate date]];
+    _timeLabel.attributedText = [self dateAttributedString:thread.lastMessageDate];
     self.separatorInset = UIEdgeInsetsMake(0,_contactPictureView.frame.size.width*1.5f, 0, 0);
 
-    [self setUpLastAction:testMessage.lastActionString];
-    
+    [self setUpLastAction:@"read"]; // TODO: Change 
 }
 
 -(void)configureForState:(CellState)state
@@ -89,7 +88,7 @@
 
 #pragma mark - Date formatting
 
-- (NSAttributedString *)dateArrributedString:(NSDate *)date {
+- (NSAttributedString *)dateAttributedString:(NSDate *)date {
     
     NSString *timeString = [[DateUtil timeFormatter] stringFromDate:date];
     
