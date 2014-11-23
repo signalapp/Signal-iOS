@@ -84,9 +84,7 @@
     [[TSStorageManager sharedManager] setupDatabase];
     
     [self performUpdateCheck];
-    
-    //self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
-    
+
     [self prepareScreenshotProtection];
     
     self.notificationTracker = [NotificationTracker notificationTracker];

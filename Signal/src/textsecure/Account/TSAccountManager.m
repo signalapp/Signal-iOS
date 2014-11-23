@@ -73,7 +73,7 @@
     
     [[TSNetworkManager sharedManager] queueAuthenticatedRequest:[[TSRegisterForPushRequest alloc] initWithPushIdentifier:stringToken] success:^(NSURLSessionDataTask *task, id responseObject) {
         success();
-    } failure:^(NSURLSessionDataTask *task, NSError *error) {   
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
         NSLog(@"NSError: %@", error.debugDescription);
         
         TSRegistrationFailure failureType = kTSRegistrationFailureNetwork;

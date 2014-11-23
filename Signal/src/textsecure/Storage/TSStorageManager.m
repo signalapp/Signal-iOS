@@ -40,24 +40,58 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
     return sharedMyManager;
 }
 
-- (void)setupDatabase {
+- (instancetype)init {
+    self = [super init];
+    
     YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
     options.corruptAction = YapDatabaseCorruptAction_Fail;
     options.passphraseBlock = ^{
         return [self databasePassword];
     };
     
-    self. database = [[YapDatabase alloc] initWithPath:[self dbPath]
-                            objectSerializer:NULL
-                          objectDeserializer:NULL
-                          metadataSerializer:NULL
-                        metadataDeserializer:NULL
-                             objectSanitizer:NULL
-                           metadataSanitizer:NULL
-                                     options:options];
-    self.dbConnection = self.databaseConnection;
+    _database = [[YapDatabase alloc] initWithPath:[self dbPath]
+                                     objectSerializer:NULL
+                                   objectDeserializer:NULL
+                                   metadataSerializer:NULL
+                                 metadataDeserializer:NULL
+                                      objectSanitizer:NULL
+                                    metadataSanitizer:NULL
+                                              options:options];
+    _dbConnection = self.newDatabaseConnection;
+    return self;
+}
+
+- (void)setupDatabase {
     [TSDatabaseView registerThreadDatabaseView];
     [TSDatabaseView registerBuddyConversationDatabaseView];
+}
+
+/**
+ *  Protects the preference and logs file with disk encryption and prevents them to leak to iCloud.
+ */
+
+- (void)protectDatabaseFile{
+
+    NSDictionary *attrs = @{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication};
+    NSError *error;
+
+
+    [NSFileManager.defaultManager setAttributes:attrs ofItemAtPath:[self dbPath] error:&error];
+    [[NSURL fileURLWithPath:[self dbPath]] setResourceValue:@YES
+                                                     forKey:NSURLIsExcludedFromBackupKey
+                                                      error:&error];
+
+    if (error) {
+        DDLogError(@"Error while removing log files from backup: %@", error.description);
+        UIAlertView *alert  = [[UIAlertView alloc]initWithTitle:NSLocalizedString(@"WARNING", @"")
+                                                        message:NSLocalizedString(@"DISABLING_BACKUP_FAILED", @"")
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                                              otherButtonTitles:nil];
+        [alert show];
+        return;
+    }
+    
 }
 
 - (YapDatabaseConnection *)newDatabaseConnection {

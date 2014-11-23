@@ -84,7 +84,7 @@ static NSString *const DEFAULTS_KEY_DATE = @"DefaultsKeyDate";
 
 - (BOOL)isTextSecureContact{
     __block BOOL isRecipient = NO;
-    [[TSStorageManager sharedManager].databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         for (PhoneNumber *number in self.parsedPhoneNumbers) {
             if ([TSRecipient recipientWithTextSecureIdentifier:number.toE164 withTransaction:transaction]) {
                 isRecipient = YES;
