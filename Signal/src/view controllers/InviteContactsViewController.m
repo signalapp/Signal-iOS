@@ -41,12 +41,23 @@ static NSString *const INVITE_CONTACTS_TABLE_CELL_IDENTIFIER = @"ContactTableVie
     [self observeKeyboardNotifications];
 }
 
+CGFloat tabBarSize = 64.0f;
+CGFloat iPhone6Size = 568.0f;
+
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden = YES;
     if (_newWhisperUsers) {
         [(TabBarParentViewController *)self.mm_drawerController.centerViewController setNewWhisperUsersAsSeen:_newWhisperUsers];
         [_contactTableView reloadData];
+    }
+    
+    
+    if (CGRectGetHeight(self.view.frame) < iPhone6Size) {
+        CGRect contactsFrame = _contactTableView.frame;
+        contactsFrame.size.height -= tabBarSize;
+        
+        _contactTableView.frame = contactsFrame;
     }
 }
 
