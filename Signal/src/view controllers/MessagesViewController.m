@@ -40,6 +40,9 @@ typedef enum : NSUInteger {
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
     
     [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont fontWithName:@"HelveticaNeue-Light" size:16.0f]];
+    
+    self.collectionView.showsVerticalScrollIndicator = NO;
+    self.collectionView.showsHorizontalScrollIndicator = NO;
 
     //DEBUG:
     isGroupConversation = NO;

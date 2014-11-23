@@ -18,9 +18,18 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
+    [self.view setAlpha:0];
+    
     [self initializeImageViews];
     
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [UIView animateWithDuration:0.6 delay:0. options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [self.view setAlpha:1];
+    } completion:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -47,7 +56,12 @@
 #pragma mark - Action
 -(IBAction)closeButtonAction:(id)sender
 {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [UIView animateWithDuration:0.6 delay:0. options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [self.view setAlpha:0];
+    } completion:^(BOOL succeeded){
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }];
+
 }
 
 -(IBAction)shredAndDelete:(id)sender

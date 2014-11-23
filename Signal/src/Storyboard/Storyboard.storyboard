@@ -120,7 +120,7 @@
                     </view>
                     <connections>
                         <segue destination="m2q-RS-sTo" kind="presentation" identifier="fullImage" id="vI3-mk-n1C"/>
-                        <segue destination="urv-62-RsD" kind="presentation" identifier="fingerprintSegue" modalPresentationStyle="overCurrentContext" id="Zjl-QX-tHE"/>
+                        <segue destination="urv-62-RsD" kind="presentation" identifier="fingerprintSegue" modalPresentationStyle="overCurrentContext" animates="NO" id="Zjl-QX-tHE"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yXZ-iE-5va" userLabel="First Responder" sceneMemberID="firstResponder"/>
