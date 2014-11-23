@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14A388a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14C68k" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
@@ -77,32 +77,32 @@
                             </state>
                         </button>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="rKW-B9-eAC">
-                            <rect key="frame" x="11" y="5" width="40" height="40"/>
+                            <rect key="frame" x="5" y="5" width="40" height="40"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="40" id="CYQ-6u-lWT"/>
                             </constraints>
                         </imageView>
                         <label opaque="NO" clipsSubviews="YES" contentMode="left" verticalHuggingPriority="249" text="" textAlignment="center" lineBreakMode="characterWrap" baselineAdjustment="none" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="18" customClass="InteractiveLabel">
-                            <rect key="frame" x="63" y="4" width="218" height="24"/>
+                            <rect key="frame" x="53" y="4" width="212" height="24"/>
                             <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="25"/>
                             <color key="textColor" red="0.1176470588" green="0.1215686275" blue="0.098039215690000001" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
                     <constraints>
-                        <constraint firstItem="rKW-B9-eAC" firstAttribute="leading" secondItem="46v-6I-Vd1" secondAttribute="leading" constant="11" id="1MK-4L-fmc"/>
+                        <constraint firstItem="rKW-B9-eAC" firstAttribute="leading" secondItem="46v-6I-Vd1" secondAttribute="leading" constant="5" id="1MK-4L-fmc"/>
                         <constraint firstItem="19" firstAttribute="leading" secondItem="z0U-dT-qTX" secondAttribute="trailing" constant="-17" id="I93-CJ-PCC"/>
                         <constraint firstItem="rKW-B9-eAC" firstAttribute="top" secondItem="z0U-dT-qTX" secondAttribute="top" constant="-4" id="IEE-EU-xs0"/>
                         <constraint firstAttribute="centerX" secondItem="z0U-dT-qTX" secondAttribute="centerX" constant="-12.5" id="TI9-wa-jW9"/>
                         <constraint firstItem="z0U-dT-qTX" firstAttribute="top" relation="greaterThanOrEqual" secondItem="18" secondAttribute="bottom" constant="-19" id="VbQ-f9-7ql"/>
                         <constraint firstAttribute="trailing" secondItem="19" secondAttribute="trailing" id="a68-eg-Mdx"/>
                         <constraint firstItem="18" firstAttribute="top" secondItem="46v-6I-Vd1" secondAttribute="top" constant="4" id="cKi-Na-rzp"/>
-                        <constraint firstItem="18" firstAttribute="leading" secondItem="z0U-dT-qTX" secondAttribute="leading" id="dwd-MA-its"/>
-                        <constraint firstItem="18" firstAttribute="leading" secondItem="rKW-B9-eAC" secondAttribute="trailing" constant="12" id="eLy-Ro-Nu7"/>
+                        <constraint firstItem="18" firstAttribute="leading" secondItem="z0U-dT-qTX" secondAttribute="leading" constant="-10" id="dwd-MA-its"/>
+                        <constraint firstItem="18" firstAttribute="leading" secondItem="rKW-B9-eAC" secondAttribute="trailing" constant="8" id="eLy-Ro-Nu7"/>
                         <constraint firstItem="19" firstAttribute="top" secondItem="18" secondAttribute="top" constant="-5" id="geQ-OJ-hqH"/>
                         <constraint firstItem="19" firstAttribute="centerY" secondItem="46v-6I-Vd1" secondAttribute="centerY" constant="1" id="iqn-rv-cZq"/>
                         <constraint firstAttribute="height" constant="47" id="lUK-SU-Ip3"/>
-                        <constraint firstItem="19" firstAttribute="leading" secondItem="18" secondAttribute="trailing" constant="-16" id="qrc-x2-TaW"/>
+                        <constraint firstItem="19" firstAttribute="leading" secondItem="18" secondAttribute="trailing" id="qrc-x2-TaW"/>
                         <constraint firstAttribute="bottom" secondItem="18" secondAttribute="bottom" constant="19" id="sfi-hI-Yda"/>
                         <constraint firstAttribute="bottom" secondItem="rKW-B9-eAC" secondAttribute="bottom" constant="2" id="tzq-xR-Yen"/>
                         <constraint firstItem="rKW-B9-eAC" firstAttribute="top" secondItem="46v-6I-Vd1" secondAttribute="top" constant="5" id="usR-lV-A4W"/>
@@ -274,8 +274,8 @@
                         <outlet property="numberLabel" destination="3i3-dp-B02" id="ieQ-yz-vHQ"/>
                     </connections>
                 </view>
-                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jeX-1I-jvh" userLabel="Button 4" customClass="DialerButtonView">
-                    <rect key="frame" x="33" y="162" width="75" height="77"/>
+                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="jeX-1I-jvh" userLabel="Button 4" customClass="DialerButtonView">
+                    <rect key="frame" x="33" y="161" width="75" height="77"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AuY-J1-5vG">
                             <rect key="frame" x="0.0" y="0.0" width="75" height="79"/>
@@ -329,8 +329,8 @@
                         <outlet property="numberLabel" destination="dFw-RO-jPR" id="cml-9w-BQD"/>
                     </connections>
                 </view>
-                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="J4P-Go-2yG" userLabel="Button 5" customClass="DialerButtonView">
-                    <rect key="frame" x="123" y="162" width="74" height="77"/>
+                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="J4P-Go-2yG" userLabel="Button 5" customClass="DialerButtonView">
+                    <rect key="frame" x="123" y="161" width="74" height="77"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="68R-sE-I0I">
                             <rect key="frame" x="0.0" y="0.0" width="74" height="79"/>
@@ -384,8 +384,8 @@
                         <outlet property="numberLabel" destination="sFz-u3-Wec" id="2zT-TK-KpV"/>
                     </connections>
                 </view>
-                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0rE-bh-Z8m" userLabel="Button 6" customClass="DialerButtonView">
-                    <rect key="frame" x="211" y="162" width="76" height="77"/>
+                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="0rE-bh-Z8m" userLabel="Button 6" customClass="DialerButtonView">
+                    <rect key="frame" x="211" y="161" width="76" height="77"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qam-v7-y4Y">
                             <rect key="frame" x="0.0" y="0.0" width="76" height="79"/>
@@ -605,7 +605,7 @@
                     </connections>
                 </view>
                 <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="T7H-JR-Beb" userLabel="Button *" customClass="DialerButtonView">
-                    <rect key="frame" x="33" y="328" width="75" height="77"/>
+                    <rect key="frame" x="33" y="327" width="75" height="77"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jQH-w4-imN">
                             <rect key="frame" x="0.0" y="0.0" width="75" height="79"/>
@@ -659,7 +659,7 @@
                     </connections>
                 </view>
                 <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="97j-3K-zxA" userLabel="Button 0" customClass="DialerButtonView">
-                    <rect key="frame" x="123" y="328" width="74" height="77"/>
+                    <rect key="frame" x="123" y="327" width="74" height="77"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ynu-j8-rAV">
                             <rect key="frame" x="0.0" y="0.0" width="74" height="79"/>
@@ -713,7 +713,7 @@
                     </connections>
                 </view>
                 <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="4UG-he-mMF" userLabel="Button #" customClass="DialerButtonView">
-                    <rect key="frame" x="211" y="328" width="76" height="77"/>
+                    <rect key="frame" x="211" y="327" width="76" height="77"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bdz-8Z-3vp">
                             <rect key="frame" x="0.0" y="-7" width="76" height="79"/>
@@ -765,23 +765,23 @@
                     </connections>
                 </view>
                 <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="gJH-91-Zx5">
-                    <rect key="frame" x="0.0" y="404" width="320" height="9"/>
+                    <rect key="frame" x="0.0" y="403" width="320" height="8.5"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
                 <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="8db-9r-Y2f">
-                    <rect key="frame" x="0.0" y="320" width="320" height="8"/>
+                    <rect key="frame" x="0.0" y="320" width="320" height="7.5"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
-                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DOT-fb-PK3">
-                    <rect key="frame" x="0.0" y="238" width="320" height="8"/>
+                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="DOT-fb-PK3">
+                    <rect key="frame" x="0.0" y="237" width="320" height="8"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
                 <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="m52-xI-oom">
-                    <rect key="frame" x="0.0" y="151" width="320" height="8"/>
+                    <rect key="frame" x="0.0" y="151" width="320" height="7.5"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
                 <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="dAV-fN-l7c">
-                    <rect key="frame" x="0.0" y="67" width="320" height="8"/>
+                    <rect key="frame" x="0.0" y="67" width="320" height="7.5"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstAttribute="height" relation="lessThanOrEqual" priority="1" constant="19" id="Nr1-Ta-njj"/>
