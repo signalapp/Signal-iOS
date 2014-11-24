@@ -13,7 +13,7 @@
 #import "DJWActionSheet.h"
 
 #define kImageRadius 50.0f
-#define kMinRows 4
+#define kMinRows 3
 #define kFirstAdaptableCellRow 2
 
 
@@ -171,10 +171,11 @@ static NSString *const kContactDetailSegue   = @"DetailSegue";
 
 -(NSUInteger)numberOfRowsForContact:(Contact*)contact
 {
+    NSUInteger numNotes = contact.notes.length == 0 ? 0 : 1;
     NSUInteger numEmails = contact.emails.count;
     NSUInteger numPhoneNumbers = contact.userTextPhoneNumbers.count-1; //Don't count main
     
-    return kMinRows + numEmails + numPhoneNumbers;
+    return kMinRows + numEmails + numPhoneNumbers + numNotes;
 }
 
 -(UITableViewCell*)adaptableCellAtIndexPath:(NSIndexPath*)idx
@@ -207,7 +208,11 @@ static NSString *const kContactDetailSegue   = @"DetailSegue";
     
     else if (idx.row == (NSInteger)[self numberOfRowsForContact:_contact]-1)
     {
-        return [self.tableView dequeueReusableCellWithIdentifier:kNotesCell forIndexPath:idx];
+        cell = [self.tableView dequeueReusableCellWithIdentifier:kNotesCell forIndexPath:idx];
+
+        cell.contactNotesTextView.text = _contact.notes;
+        
+        return cell;
         
     }
     
