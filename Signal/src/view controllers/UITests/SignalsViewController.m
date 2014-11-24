@@ -143,11 +143,11 @@ static NSString *const kSegueIndentifier = @"showSegue";
         MessagesViewController * vc = [segue destinationViewController];
         NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
         if (selectedIndexPath) {
-            vc._senderTitleString =  ((DemoDataModel*)_dataArray[(NSUInteger)selectedIndexPath.row])._sender;
+            vc.senderTitleString =  ((DemoDataModel*)_dataArray[(NSUInteger)selectedIndexPath.row])._sender;
         } else if (_contactFromCompose) {
-            vc._senderTitleString = _contactFromCompose.fullName;
+            vc.senderTitleString = _contactFromCompose.fullName;
         } else if (_groupFromCompose) {
-            vc._senderTitleString = _groupFromCompose.groupName;
+            vc.senderTitleString = _groupFromCompose.groupName;
         }
         
     }

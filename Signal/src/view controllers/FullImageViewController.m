@@ -38,8 +38,8 @@
     [_pinchView addGestureRecognizer:doubleTap];
     
     _pinchView.delegate = self;
-    _pinchView.minimumZoomScale=0.9;
-    _pinchView.maximumZoomScale=3.0;
+    _pinchView.minimumZoomScale=0.9f;
+    _pinchView.maximumZoomScale=3.0f;
     _pinchView.showsVerticalScrollIndicator = NO;
     _pinchView.showsHorizontalScrollIndicator = NO;
     _pinchView.contentSize=CGSizeMake(CGRectGetWidth(_fullImageView.frame), CGRectGetHeight(_fullImageView.frame));

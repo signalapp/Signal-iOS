@@ -114,6 +114,8 @@
         cell = [[ContactTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"ContactTableViewCell"];
     }
 
+    cell.shouldShowContactButtons = NO;
+
     [cell configureWithContact:[self contactForIndexPath:indexPath]];
     
     tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -177,6 +179,7 @@
 {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
+
 
 
 @end

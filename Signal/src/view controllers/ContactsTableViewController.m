@@ -219,6 +219,8 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
                                            reuseIdentifier:CONTACT_BROWSE_TABLE_CELL_IDENTIFIER];
     }
     
+    cell.shouldShowContactButtons = YES;
+    
     [cell configureWithContact:[self contactForIndexPath:indexPath]];
     
     return cell;
@@ -265,6 +267,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
             NSArray *contactSection = [self contactsForSectionIndex:(NSUInteger)indexPath.section];
             contact = contactSection[(NSUInteger)indexPath.row];
         }
+
         detailvc.contact = contact;
     }
 }

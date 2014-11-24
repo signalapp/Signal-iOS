@@ -11,6 +11,9 @@
 #import "MessagesViewController.h"
 #import "FullImageViewController.h"
 
+#import "JSQCallCollectionViewCell.h"
+#import "JSQCall.h"
+
 #import "DJWActionSheet.h"
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <AVFoundation/AVFoundation.h>
@@ -37,11 +40,14 @@ typedef enum : NSUInteger {
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
     
     [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont fontWithName:@"HelveticaNeue-Light" size:16.0f]];
+    
+    self.collectionView.showsVerticalScrollIndicator = NO;
+    self.collectionView.showsHorizontalScrollIndicator = NO;
 
     //DEBUG:
     isGroupConversation = NO;
     
-    self.title = self._senderTitleString;
+    self.title = self.senderTitleString;
 
     self.senderId = kJSQDemoAvatarIdDylan;
     self.senderDisplayName = kJSQDemoAvatarDisplayNameDylan;
@@ -131,7 +137,7 @@ typedef enum : NSUInteger {
     } else if (text.length > 0) {
         [JSQSystemSoundPlayer jsq_playMessageSentSound];
     
-        JSQTextMessage *message = [[JSQTextMessage alloc] initWithSenderId:senderId
+        JSQMessage *message = [[JSQMessage alloc] initWithSenderId:senderId
                                                      senderDisplayName:senderDisplayName
                                                                   date:date
                                                                   text:text];
@@ -235,25 +241,29 @@ typedef enum : NSUInteger {
     /**
      *  Override point for customizing cells
      */
-    JSQMessagesCollectionViewCell *cell = (JSQMessagesCollectionViewCell *)[super collectionView:collectionView cellForItemAtIndexPath:indexPath];
-    
-    
     JSQMessage *msg = [self.demoData.messages objectAtIndex:(NSUInteger)indexPath.item];
     
-    if ([msg isKindOfClass:[JSQTextMessage class]]) {
-        
-        if ([msg.senderId isEqualToString:self.senderId]) {
-            cell.textView.textColor = [UIColor whiteColor];
+    if ([msg isKindOfClass:[JSQMessage class]])
+    {
+        JSQMessagesCollectionViewCell *cell = (JSQMessagesCollectionViewCell *)[super collectionView:collectionView cellForItemAtIndexPath:indexPath];
+        if (!msg.isMediaMessage) {
+            if ([msg.senderId isEqualToString:self.senderId]) {
+                cell.textView.textColor = [UIColor whiteColor];
+            }
+            else {
+                cell.textView.textColor = [UIColor blackColor];
+            }
+            
+            cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
+                                                  NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
         }
-        else {
-            cell.textView.textColor = [UIColor blackColor];
-        }
         
-        cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
-                                              NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
+        return cell;
+        
+    } else {
+        JSQCallCollectionViewCell *cell = (JSQCallCollectionViewCell *)[super collectionView:collectionView cellForItemAtIndexPath:indexPath];
+        return cell;
     }
-    
-    return cell;
 }
 
 #pragma mark - Adjusting cell label heights
@@ -450,7 +460,7 @@ typedef enum : NSUInteger {
         __unused UIImage *snapshot                        = [[UIImage alloc] initWithCGImage:snapshotRef];
         
         JSQVideoMediaItem * videoItem = [[JSQVideoMediaItem alloc] initWithFileURL:videoURL isReadyToPlay:YES];
-        JSQMediaMessage * videoMessage = [JSQMediaMessage messageWithSenderId:kJSQDemoAvatarIdDylan
+        JSQMessage * videoMessage = [JSQMessage messageWithSenderId:kJSQDemoAvatarIdDylan
                                                                   displayName:kJSQDemoAvatarDisplayNameDylan
                                                                         media:videoItem];
         [self.demoData.messages addObject:videoMessage];
@@ -460,7 +470,7 @@ typedef enum : NSUInteger {
         //Is a photo
         
         JSQPhotoMediaItem *photoItem = [[JSQPhotoMediaItem alloc] initWithImage:picture_camera];
-        JSQMediaMessage *photoMessage = [JSQMediaMessage messageWithSenderId:kJSQDemoAvatarIdDylan
+        JSQMessage *photoMessage = [JSQMessage messageWithSenderId:kJSQDemoAvatarIdDylan
                                                                  displayName:kJSQDemoAvatarDisplayNameDylan
                                                                        media:photoItem];
         [self.demoData.messages addObject:photoMessage];

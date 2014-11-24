@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="kts-vO-ui1">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14C68k" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="kts-vO-ui1">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
@@ -24,7 +24,7 @@
                                 <color key="separatorColor" white="0.66666666666666663" alpha="0.5" colorSpace="calibratedWhite"/>
                                 <inset key="separatorInset" minX="20" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="bnD-Ld-pC4">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="showCell" id="bnD-Ld-pC4">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="bnD-Ld-pC4" id="9EM-iT-Acg">
                                             <autoresizingMask key="autoresizingMask"/>
@@ -120,7 +120,7 @@
                     </view>
                     <connections>
                         <segue destination="m2q-RS-sTo" kind="presentation" identifier="fullImage" id="vI3-mk-n1C"/>
-                        <segue destination="urv-62-RsD" kind="presentation" identifier="fingerprintSegue" modalPresentationStyle="overCurrentContext" id="Zjl-QX-tHE"/>
+                        <segue destination="urv-62-RsD" kind="presentation" identifier="fingerprintSegue" modalPresentationStyle="overCurrentContext" animates="NO" id="Zjl-QX-tHE"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yXZ-iE-5va" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1937,6 +1937,9 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                     </variation>
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <connections>
+                                    <outlet property="contactEmailLabel" destination="wyP-HL-Ljs" id="XuV-Uf-aw4"/>
+                                </connections>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="AnnexPhoneNumberCell" rowHeight="60" id="gGz-wn-6Ah" customClass="ContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>
@@ -1976,6 +1979,9 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                     </variation>
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <connections>
+                                    <outlet property="contactAnnexNumberLabel" destination="kD5-iI-vzc" id="LnK-Hn-Bfa"/>
+                                </connections>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="NotesCell" rowHeight="165" id="hWy-FH-ik2" customClass="ContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>
@@ -2237,7 +2243,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
         <scene sceneID="miN-Ma-3eR">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="tuk-0x-yCb" customClass="SignalsNavigationController" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="signals.png" id="jye-1e-hLH">
+                    <tabBarItem key="tabBarItem" title="" image="signals_tab.png" id="jye-1e-hLH">
                         <inset key="imageInsets" minX="0.0" minY="4" maxX="0.0" maxY="-4"/>
                     </tabBarItem>
                     <toolbarItems/>
@@ -2282,7 +2288,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
         <scene sceneID="8zg-9i-Ja1">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="hxR-Pc-Gxm" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" image="settings.png" id="39n-tG-6SH">
+                    <tabBarItem key="tabBarItem" image="settings_tab.png" id="39n-tG-6SH">
                         <inset key="imageInsets" minX="0.0" minY="4" maxX="0.0" maxY="-4"/>
                     </tabBarItem>
                     <toolbarItems/>
@@ -2313,11 +2319,24 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yD5-2a-WDn">
                                     <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="40" id="kAN-p0-AiW"/>
+                                    </constraints>
                                     <string key="text">Copyright ©OpenWhisperSystems
 Licensed under the GPLv3</string>
                                     <fontDescription key="fontDescription" type="system" pointSize="11"/>
                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                     <nil key="highlightedColor"/>
+                                    <variation key="default">
+                                        <mask key="constraints">
+                                            <exclude reference="kAN-p0-AiW"/>
+                                        </mask>
+                                    </variation>
+                                    <variation key="heightClass=regular-widthClass=compact">
+                                        <mask key="constraints">
+                                            <include reference="kAN-p0-AiW"/>
+                                        </mask>
+                                    </variation>
                                 </label>
                             </subviews>
                             <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
@@ -2345,7 +2364,7 @@ Licensed under the GPLv3</string>
                                 <mask key="constraints">
                                     <include reference="Gib-h9-eVO"/>
                                     <include reference="Jdi-o3-pGy"/>
-                                    <include reference="NRH-81-JZa"/>
+                                    <exclude reference="NRH-81-JZa"/>
                                     <include reference="SP2-Vt-nmY"/>
                                 </mask>
                             </variation>
@@ -3033,14 +3052,6 @@ Licensed under the GPLv3</string>
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="7mq-NT-L2U">
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="7mq-NT-L2U" id="KsQ-3g-29V">
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="Qga-41-bw2" id="dUq-5d-dub"/>
                             <outlet property="delegate" destination="Qga-41-bw2" id="vfF-Gh-noL"/>
@@ -3079,31 +3090,6 @@ Licensed under the GPLv3</string>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ukg-om-VX3">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ul8-NY-i4c">
-                                        <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="80" id="Fkg-iq-6Ap"/>
-                                            <constraint firstAttribute="width" constant="80" id="l0W-ug-b1c"/>
-                                        </constraints>
-                                        <state key="normal" image="photo.png">
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <variation key="default">
-                                            <mask key="constraints">
-                                                <exclude reference="Fkg-iq-6Ap"/>
-                                                <exclude reference="l0W-ug-b1c"/>
-                                            </mask>
-                                        </variation>
-                                        <variation key="heightClass=regular-widthClass=compact">
-                                            <mask key="constraints">
-                                                <include reference="Fkg-iq-6Ap"/>
-                                                <include reference="l0W-ug-b1c"/>
-                                            </mask>
-                                        </variation>
-                                        <connections>
-                                            <action selector="addGroupPhoto:" destination="bDi-2Q-XOC" eventType="touchUpInside" id="S3n-hS-Ac6"/>
-                                        </connections>
-                                    </button>
                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Name this group chat" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gbm-B5-gCc">
                                         <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
                                         <constraints>
@@ -3122,6 +3108,35 @@ Licensed under the GPLv3</string>
                                             </mask>
                                         </variation>
                                     </textField>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ul8-NY-i4c">
+                                        <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="80" id="Fkg-iq-6Ap">
+                                                <variation key="heightClass=regular-widthClass=compact" constant="60"/>
+                                            </constraint>
+                                            <constraint firstAttribute="width" constant="80" id="l0W-ug-b1c">
+                                                <variation key="heightClass=regular-widthClass=compact" constant="60"/>
+                                            </constraint>
+                                        </constraints>
+                                        <state key="normal" image="group_photo.png">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <variation key="default">
+                                            <mask key="constraints">
+                                                <exclude reference="Fkg-iq-6Ap"/>
+                                                <exclude reference="l0W-ug-b1c"/>
+                                            </mask>
+                                        </variation>
+                                        <variation key="heightClass=regular-widthClass=compact">
+                                            <mask key="constraints">
+                                                <include reference="Fkg-iq-6Ap"/>
+                                                <include reference="l0W-ug-b1c"/>
+                                            </mask>
+                                        </variation>
+                                        <connections>
+                                            <action selector="addGroupPhoto:" destination="bDi-2Q-XOC" eventType="touchUpInside" id="S3n-hS-Ac6"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -3129,13 +3144,17 @@ Licensed under the GPLv3</string>
                                     <constraint firstItem="gbm-B5-gCc" firstAttribute="top" secondItem="Ukg-om-VX3" secondAttribute="top" constant="35" id="3Zi-yw-cGM"/>
                                     <constraint firstAttribute="height" constant="100" id="GmE-Dd-5tf"/>
                                     <constraint firstItem="Ul8-NY-i4c" firstAttribute="leading" secondItem="Ukg-om-VX3" secondAttribute="leading" constant="8" id="Z82-gx-rVW"/>
-                                    <constraint firstItem="Ul8-NY-i4c" firstAttribute="top" secondItem="Ukg-om-VX3" secondAttribute="top" constant="10" id="ZIm-Uq-bM8"/>
-                                    <constraint firstItem="gbm-B5-gCc" firstAttribute="leading" secondItem="Ul8-NY-i4c" secondAttribute="trailing" constant="8" id="yn3-rt-mGC"/>
+                                    <constraint firstItem="Ul8-NY-i4c" firstAttribute="top" secondItem="Ukg-om-VX3" secondAttribute="top" constant="10" id="ZIm-Uq-bM8">
+                                        <variation key="heightClass=regular-widthClass=compact" constant="20"/>
+                                    </constraint>
+                                    <constraint firstItem="gbm-B5-gCc" firstAttribute="leading" secondItem="Ul8-NY-i4c" secondAttribute="trailing" constant="8" id="yn3-rt-mGC">
+                                        <variation key="heightClass=regular-widthClass=compact" constant="18"/>
+                                    </constraint>
                                 </constraints>
                                 <variation key="default">
                                     <mask key="subviews">
-                                        <exclude reference="Ul8-NY-i4c"/>
                                         <exclude reference="gbm-B5-gCc"/>
+                                        <exclude reference="Ul8-NY-i4c"/>
                                     </mask>
                                     <mask key="constraints">
                                         <exclude reference="GmE-Dd-5tf"/>
@@ -3148,8 +3167,8 @@ Licensed under the GPLv3</string>
                                 </variation>
                                 <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="subviews">
-                                        <include reference="Ul8-NY-i4c"/>
                                         <include reference="gbm-B5-gCc"/>
+                                        <include reference="Ul8-NY-i4c"/>
                                     </mask>
                                     <mask key="constraints">
                                         <include reference="GmE-Dd-5tf"/>
@@ -3270,17 +3289,17 @@ Licensed under the GPLv3</string>
         <image name="call_dark.png" width="50" height="50"/>
         <image name="contacts_tab.png" width="24" height="24"/>
         <image name="delete_history.png" width="50" height="50"/>
+        <image name="group_photo.png" width="100" height="100"/>
         <image name="keypad.png" width="25" height="25"/>
         <image name="lock_white.png" width="100" height="100"/>
         <image name="logo_intro.png" width="291" height="255"/>
-        <image name="photo.png" width="200" height="200"/>
         <image name="quit.png" width="50" height="50"/>
         <image name="savephoto.png" width="50" height="50"/>
-        <image name="settings.png" width="24" height="24"/>
+        <image name="settings_tab.png" width="24" height="24"/>
         <image name="share.png" width="50" height="50"/>
         <image name="shred.png" width="200" height="200"/>
         <image name="signal.png" width="50" height="50"/>
-        <image name="signals.png" width="24" height="24"/>
+        <image name="signals_tab.png" width="24" height="24"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="QK8-XK-Wd3"/>
