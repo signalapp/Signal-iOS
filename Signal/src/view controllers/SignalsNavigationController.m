@@ -39,9 +39,10 @@
 
 -(void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self forKeyPath:SocketOpenedNotification];
-    [[NSNotificationCenter defaultCenter] removeObserver:self forKeyPath:SocketClosedNotification];
-    [[NSNotificationCenter defaultCenter] removeObserver:self forKeyPath:SocketConnectingNotification];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketOpenedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketClosedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketConnectingNotification object:nil];
+
     
 }
 

@@ -173,7 +173,7 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 - (void)setupButtonBorders {
-
+    
     if (_potentiallyKnownContact) {
 
         if (_potentiallyKnownContact.image) {
@@ -208,6 +208,7 @@ static NSInteger connectingFlashCounter = 0;
 }
 -(void) handleIncomingDetails {
     [_callState.futureShortAuthenticationString thenDo:^(NSString* sas) {
+        _authenicationStringLabel.textColor = [UIColor colorWithRed:15.f/255.f green:103.f/255.f blue:253.f/255.f alpha:1.0f];
         _authenicationStringLabel.hidden = NO;
         _authenicationStringLabel.text = sas;
         [self performCallInSessionAnimation];
