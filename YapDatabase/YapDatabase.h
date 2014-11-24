@@ -140,12 +140,15 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 
 /**
  * Opens or creates a sqlite database with the given path.
- * The default serializer and deserializer are used.
+ * The defaults are used for everything.
+ * 
+ * In particular, the defaultSerializer and defaultDeserializer are used. (NSCoding)
  * No sanitizer is used.
  * The default options are used.
  *
  * @see defaultSerializer
  * @see defaultDeserializer
+ * @see YapDatabaseOptions
  *
  * Example code:
  * 
@@ -165,6 +168,16 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 - (id)initWithPath:(NSString *)path
         serializer:(YapDatabaseSerializer)serializer
       deserializer:(YapDatabaseDeserializer)deserializer;
+
+/**
+ * Opens or creates a sqlite database with the given path.
+ * The given serializer and deserializer are used for both objects and metadata.
+ * The given options are used instead of the default options.
+**/
+- (id)initWithPath:(NSString *)path
+        serializer:(YapDatabaseSerializer)serializer
+      deserializer:(YapDatabaseDeserializer)deserializer
+           options:(YapDatabaseOptions *)options;
 
 /**
  * Opens or creates a sqlite database with the given path.
