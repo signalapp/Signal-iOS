@@ -19,5 +19,8 @@
 @property (strong, nonatomic) IBOutlet UILabel *contactPhoneNumber;
 @property (strong, nonatomic) IBOutlet UITextView *contactNotesTextView;
 
+@property(nonatomic, strong) IBOutlet UILabel* contactAnnexNumberLabel;
+@property(nonatomic, strong) IBOutlet UILabel* contactEmailLabel;
+
 
 @end

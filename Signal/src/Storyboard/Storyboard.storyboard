@@ -1937,6 +1937,9 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                     </variation>
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <connections>
+                                    <outlet property="contactEmailLabel" destination="wyP-HL-Ljs" id="XuV-Uf-aw4"/>
+                                </connections>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="AnnexPhoneNumberCell" rowHeight="60" id="gGz-wn-6Ah" customClass="ContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>
@@ -1976,6 +1979,9 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                     </variation>
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <connections>
+                                    <outlet property="contactAnnexNumberLabel" destination="kD5-iI-vzc" id="LnK-Hn-Bfa"/>
+                                </connections>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="NotesCell" rowHeight="165" id="hWy-FH-ik2" customClass="ContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>

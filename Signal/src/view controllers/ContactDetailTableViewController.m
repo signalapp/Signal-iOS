@@ -12,18 +12,23 @@
 #import "UIUtil.h"
 #import "DJWActionSheet.h"
 
+#define kImageRadius 50.0f
+#define kMinRows 4
+#define kFirstAdaptableCellRow 2
 
-typedef enum {
-    kNameMainNumberCellIndexPath   = 0,
-    kActionCellIndexPath           = 1,
-    kShareCellIndexPath            = 2,
-    kEmailCellIndexPath            = 3,
-    kAnnexPhoneNumberCellIndexPath = 4,
-    kNotesCellIndexPath            = 5,
-} kCellIndexPath;
+
+typedef NS_ENUM(NSInteger, CellRow) {
+    kNameMainNumberCellIndexPath,
+    kActionCellIndexPath,
+    kShareCellIndexPath,
+    kEmailCellIndexPath,
+    kAnnexPhoneNumberCellIndexPath,
+    kNotesCellIndexPath,
+};
 
 typedef enum {
     kNameMainNumberCellHeight      = 180,
+    kNoImageCellHeight             = 87,
     kActionCellHeight              = 60,
     kShareCellHeight               = 60,
     kEmailCellHeight               = 60,
@@ -31,22 +36,20 @@ typedef enum {
     kNotesCellHeight               = 165,
 } kCellHeight;
 
-static NSString* const kNameMainNumberCell = @"NameMainNumberCell";
-static NSString* const kActionCell         = @"ActionCell";
-
-//Deprecated
+static NSString* const kNameMainNumberCell   = @"NameMainNumberCell";
+static NSString* const kActionCell           = @"ActionCell";
 static NSString* const kShareCell            = @"ShareCell";
 static NSString* const kEmailCell            = @"EmailCell";
 static NSString* const kAnnexPhoneNumberCell = @"AnnexPhoneNumberCell";
 static NSString *const kNotesCell            = @"NotesCell";
-//
 
-static NSString *const kContactDetailSegue = @"DetailSegue";
+static NSString *const kContactDetailSegue   = @"DetailSegue";
 
 
 
 @interface ContactDetailTableViewController () {
     BOOL doesImageExist;
+    NSInteger numberOfRows;
 }
 @end
 
@@ -62,6 +65,7 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
     [super didReceiveMemoryWarning];
 }
 
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -69,13 +73,13 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 6;
+    return (NSInteger)[self numberOfRowsForContact:_contact];
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell * cell;
-    
+
     switch (indexPath.row) {
         case kNameMainNumberCellIndexPath:
             cell = (ContactDetailCell*)[tableView dequeueReusableCellWithIdentifier:kNameMainNumberCell forIndexPath:indexPath];
@@ -87,22 +91,15 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
         case kShareCellIndexPath:
             cell = [tableView dequeueReusableCellWithIdentifier:kShareCell forIndexPath:indexPath];
             break;
-        case kEmailCellIndexPath:
-            cell = [tableView dequeueReusableCellWithIdentifier:kEmailCell forIndexPath:indexPath];
-            break;
-        case kAnnexPhoneNumberCellIndexPath:
-            cell = [tableView dequeueReusableCellWithIdentifier:kAnnexPhoneNumberCell forIndexPath:indexPath];
-            break;
-        case kNotesCellIndexPath:
-            cell = [tableView dequeueReusableCellWithIdentifier:kNotesCell forIndexPath:indexPath];
-            break;
-            
         default:
+            cell = [self adaptableCellAtIndexPath:indexPath];
             break;
     }
     
+    
     return cell;
 }
+
 
 
 -(void)setUpNameMainUserCell:(ContactDetailCell*)cell
@@ -120,11 +117,12 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
         doesImageExist = NO;
         
     }
-    [cell.contactImageView.layer setCornerRadius:50.0f];
+    [cell.contactImageView.layer setCornerRadius:kImageRadius];
     [cell.contactImageView.layer setMasksToBounds:YES];
 
     
 }
+
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -132,7 +130,7 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
     
     switch (indexPath.row) {
         case kNameMainNumberCellIndexPath:
-            cellHeight = doesImageExist ? kNameMainNumberCellHeight : 87.0f;
+            cellHeight = doesImageExist ? kNameMainNumberCellHeight : kNoImageCellHeight;
             break;
         case kActionCellIndexPath:
             cellHeight = kActionCellHeight;
@@ -140,16 +138,8 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
         case kShareCellIndexPath:
             cellHeight = kShareCellHeight;
             break;
-        case kEmailCellIndexPath:
-            cellHeight = kEmailCellHeight;
-            break;
-        case kAnnexPhoneNumberCellIndexPath:
-            cellHeight = kAnnexPhoneNumberCellHeight;
-            break;
-        case kNotesCellIndexPath:
-            cellHeight = kNotesCellHeight;
-            break;
         default:
+            cellHeight = [self heightForAdaptableCellAtIndexPath:indexPath];
             break;
     }
     return cellHeight;
@@ -180,5 +170,86 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
             
     }
 }
+
+#pragma mark - Utilities (Adaptable Cells)
+
+-(NSUInteger)numberOfRowsForContact:(Contact*)contact
+{
+    NSUInteger numEmails = contact.emails.count;
+    NSUInteger numPhoneNumbers = contact.userTextPhoneNumbers.count-1; //Don't count main
+    
+    return kMinRows + numEmails + numPhoneNumbers;
+}
+
+-(UITableViewCell*)adaptableCellAtIndexPath:(NSIndexPath*)idx
+{
+    NSInteger emailUpperBound = (NSInteger)(kFirstAdaptableCellRow+_contact.emails.count);
+    NSInteger phoneNumberUpperBound = emailUpperBound + (NSInteger)_contact.userTextPhoneNumbers.count;
+    
+    
+    ContactDetailCell * cell;
+    
+    if (idx.row > kFirstAdaptableCellRow && idx.row <= emailUpperBound)
+    {
+        cell = [self.tableView dequeueReusableCellWithIdentifier:kEmailCell forIndexPath:idx];
+        
+        cell.contactEmailLabel.text = [_contact.emails objectAtIndex:(NSUInteger)idx.row-_contact.emails.count];
+        
+        return cell;
+    }
+    
+    else if (idx.row > emailUpperBound  && idx.row < phoneNumberUpperBound)
+    {
+        cell = [self.tableView dequeueReusableCellWithIdentifier:kAnnexPhoneNumberCell forIndexPath:idx];
+        
+        NSInteger i = idx.row - emailUpperBound ;
+        
+        cell.contactAnnexNumberLabel.text = [_contact.userTextPhoneNumbers objectAtIndex:(NSUInteger)i];
+        
+        return cell;
+    }
+    
+    else if (idx.row == (NSInteger)[self numberOfRowsForContact:_contact]-1)
+    {
+        return [self.tableView dequeueReusableCellWithIdentifier:kNotesCell forIndexPath:idx];
+        
+    }
+    
+    else
+    {
+        NSLog(@"%s Problem at IndexPath %@", __PRETTY_FUNCTION__, idx);
+        return nil;
+    }
+}
+
+-(CGFloat)heightForAdaptableCellAtIndexPath:(NSIndexPath*)idx
+{
+    NSInteger emailUpperBound = (NSInteger)(kFirstAdaptableCellRow+_contact.emails.count);
+    NSInteger phoneNumberUpperBound = emailUpperBound + (NSInteger)_contact.userTextPhoneNumbers.count;
+    
+    if (idx.row > kFirstAdaptableCellRow && idx.row <= emailUpperBound)
+    {
+        return kEmailCellHeight;
+    }
+    
+    else if (idx.row > emailUpperBound && idx.row < phoneNumberUpperBound)
+    {
+        return kAnnexPhoneNumberCellHeight;
+    }
+    
+    else if (idx.row == (NSInteger)[self numberOfRowsForContact:_contact]-1)
+    {
+        return kNotesCellHeight;
+        
+    }
+    
+    else
+    {
+        NSLog(@"%s Problem at IndexPath %@", __PRETTY_FUNCTION__, idx);
+        return 44.0f;
+    }
+    
+}
+
 
 @end
