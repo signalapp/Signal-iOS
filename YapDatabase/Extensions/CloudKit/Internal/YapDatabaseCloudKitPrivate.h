@@ -11,8 +11,8 @@
 #import "YapDatabaseCloudKitTransaction.h"
 
 #import "YDBCKChangeQueue.h"
-#import "YDBCKDirtyRecordInfo.h"
-#import "YDBCKCleanRecordInfo.h"
+#import "YDBCKMappingTableInfo.h"
+#import "YDBCKRecordTableInfo.h"
 
 #import "YapDatabaseExtensionPrivate.h"
 #import "YapCache.h"
@@ -26,8 +26,10 @@
 **/
 #define YAP_DATABASE_CLOUD_KIT_CLASS_VERSION 1
 
-static NSString *const changeset_key_deletedRowids    = @"deletedRowids";    // Array: @(rowid)
-static NSString *const changeset_key_modifiedRecords  = @"modifiedRecords";  // Dict : @(rowid) -> sanitized CKRecord
+static NSString *const changeset_key_deletedRowids    = @"deletedRowids";    // Array: rowid
+static NSString *const changeset_key_deletedHashes    = @"deletedHashes";    // Array: string
+static NSString *const changeset_key_mappingTableInfo = @"mappingTableInfo"; // Dict : rowid -> CleanMappingTableInfo
+static NSString *const changeset_key_recordTableInfo  = @"recordTableInfo";  // Dict : string -> CleanRecordTableInfo
 static NSString *const changeset_key_reset            = @"reset";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +55,7 @@ static NSString *const changeset_key_reset            = @"reset";
 	
 	YapDatabaseCloudKitMergeBlock mergeBlock;
 	YapDatabaseCloudKitOperationErrorBlock opErrorBlock;
-	YapDatabaseCloudKitDatabaseBlock databaseBlock;
+	YapDatabaseCloudKitDatabaseIdentifierBlock databaseIdentifierBlock;
 	
 	NSString *versionTag;
 	id versionInfo;
@@ -63,6 +65,7 @@ static NSString *const changeset_key_reset            = @"reset";
 	YDBCKChangeQueue *masterQueue;
 }
 
+- (NSString *)mappingTableName;
 - (NSString *)recordTableName;
 - (NSString *)queueTableName;
 
@@ -84,17 +87,21 @@ static NSString *const changeset_key_reset            = @"reset";
 	__strong YapDatabaseCloudKit *parent;
 	__unsafe_unretained YapDatabaseConnection *databaseConnection;
 	
-	YapCache *cleanRecordInfo;
+	YapCache *cleanMappingTableInfoCache;
+	YapCache *cleanRecordTableInfoCache;
 	
-	NSMutableDictionary *dirtyRecordInfo;
+	NSMutableDictionary *dirtyMappingTableInfoDict;
+	NSMutableDictionary *dirtyRecordTableInfoDict;
 	BOOL reset;
 	BOOL isOperationCompletionTransaction;
 	BOOL isOperationPartialCompletionTransaction;
 	
 	NSMutableDictionary *pendingAttachRequests;
 	
-	NSMutableSet *deletedRowids;
-	NSMutableDictionary *modifiedRecords;
+	NSMutableSet *changeset_deletedRowids;
+	NSMutableSet *changeset_deletedHashes;
+	NSMutableDictionary *changeset_mappingTableInfo;
+	NSMutableDictionary *changeset_recordTableInfo;
 }
 
 - (id)initWithParent:(YapDatabaseCloudKit *)inCloudKit databaseConnection:(YapDatabaseConnection *)inDbC;
@@ -102,12 +109,21 @@ static NSString *const changeset_key_reset            = @"reset";
 - (void)postCommitCleanup;
 - (void)postRollbackCleanup;
 
+- (sqlite3_stmt *)mappingTable_insertStatement;
+- (sqlite3_stmt *)mappingTable_updateForRowidStatement;
+- (sqlite3_stmt *)mappingTable_getInfoForRowidStatement;
+- (sqlite3_stmt *)mappingTable_enumerateForHashStatement;
+- (sqlite3_stmt *)mappingTable_removeForRowidStatement;
+- (sqlite3_stmt *)mappingTable_removeAllStatement;
+
 - (sqlite3_stmt *)recordTable_insertStatement;
-- (sqlite3_stmt *)recordTable_updateForRowidStatement;
-- (sqlite3_stmt *)recordTable_getRowidForRecordStatement;
-- (sqlite3_stmt *)recordTable_getInfoForRowidStatement;
-- (sqlite3_stmt *)recordTable_getInfoForAllStatement;
-- (sqlite3_stmt *)recordTable_removeForRowidStatement;
+- (sqlite3_stmt *)recordTable_updateOwnerCountStatement;
+- (sqlite3_stmt *)recordTable_updateRecordStatement;
+- (sqlite3_stmt *)recordTable_getInfoForHashStatement;
+- (sqlite3_stmt *)recordTable_getOwnerCountForHashStatement;
+- (sqlite3_stmt *)recordTable_getCountForHashStatement;
+- (sqlite3_stmt *)recordTable_enumerateStatement;
+- (sqlite3_stmt *)recordTable_removeForHashStatement;
 - (sqlite3_stmt *)recordTable_removeAllStatement;
 
 - (sqlite3_stmt *)queueTable_insertStatement;
@@ -134,8 +150,8 @@ static NSString *const changeset_key_reset            = @"reset";
 		   databaseTransaction:(YapDatabaseReadTransaction *)databaseTransaction;
 
 - (void)handlePartiallyCompletedOperationWithChangeSet:(YDBCKChangeSet *)changeSet
-                                          savedRecords:(NSDictionary *)savedRecords
-                                      deletedRecordIDs:(NSSet *)deletedRecordIDs;
+                                          savedRecords:(NSArray *)savedRecords
+                                      deletedRecordIDs:(NSArray *)deletedRecordIDs;
 
 - (void)handleCompletedOperationWithChangeSet:(YDBCKChangeSet *)changeSet
                                  savedRecords:(NSArray *)savedRecords

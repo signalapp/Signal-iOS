@@ -83,8 +83,9 @@
 		DC007BC719E4C48600A5E9EF /* DatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DC007BC619E4C48600A5E9EF /* DatabaseManager.m */; };
 		DC007BD619E4C78C00A5E9EF /* MyDatabaseObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DC007BD519E4C78C00A5E9EF /* MyDatabaseObject.m */; };
 		DC007BD919E4C94E00A5E9EF /* MyTodo.m in Sources */ = {isa = PBXBuildFile; fileRef = DC007BD819E4C94E00A5E9EF /* MyTodo.m */; };
-		DC56CC4719EC640F009028DA /* YDBCKDirtyRecordInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DC56CC4619EC640F009028DA /* YDBCKDirtyRecordInfo.m */; };
-		DC56CC4A19EC686F009028DA /* YDBCKCleanRecordInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DC56CC4919EC686F009028DA /* YDBCKCleanRecordInfo.m */; };
+		DC38C4DC1A1ED8BF0073428F /* YDBCKAttachRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = DC38C4DB1A1ED8BF0073428F /* YDBCKAttachRequest.m */; };
+		DC49B21B1A1AC04A008507FE /* YDBCKMappingTableInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DC49B21A1A1AC04A008507FE /* YDBCKMappingTableInfo.m */; };
+		DC56CC4A19EC686F009028DA /* YDBCKRecordTableInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DC56CC4919EC686F009028DA /* YDBCKRecordTableInfo.m */; };
 		DC6043A219E5DE13007DEC53 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC6043A119E5DE13007DEC53 /* libsqlite3.dylib */; };
 		DC6043A519E64688007DEC53 /* YapMurmurHash.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6043A419E64688007DEC53 /* YapMurmurHash.m */; };
 		DC6043A819E65709007DEC53 /* YapDatabaseCKRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6043A719E65709007DEC53 /* YapDatabaseCKRecord.m */; };
@@ -98,6 +99,7 @@
 		DCCAD7B519E36A4300F914D5 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = DCCAD7B319E36A4300F914D5 /* LaunchScreen.xib */; };
 		DCCAD7C119E36A4300F914D5 /* YapDatabaseCloudKitTestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DCCAD7C019E36A4300F914D5 /* YapDatabaseCloudKitTestTests.m */; };
 		DCDAE36B19E467FB008B84E4 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDAE36A19E467FB008B84E4 /* CloudKit.framework */; };
+		DCDE36F41A19AB05000D3071 /* YapDebugDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE36F31A19AB05000D3071 /* YapDebugDictionary.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -280,10 +282,12 @@
 		DC007BD519E4C78C00A5E9EF /* MyDatabaseObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyDatabaseObject.m; sourceTree = "<group>"; };
 		DC007BD719E4C94E00A5E9EF /* MyTodo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyTodo.h; sourceTree = "<group>"; };
 		DC007BD819E4C94E00A5E9EF /* MyTodo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyTodo.m; sourceTree = "<group>"; };
-		DC56CC4519EC640F009028DA /* YDBCKDirtyRecordInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBCKDirtyRecordInfo.h; sourceTree = "<group>"; };
-		DC56CC4619EC640F009028DA /* YDBCKDirtyRecordInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKDirtyRecordInfo.m; sourceTree = "<group>"; };
-		DC56CC4819EC686F009028DA /* YDBCKCleanRecordInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBCKCleanRecordInfo.h; sourceTree = "<group>"; };
-		DC56CC4919EC686F009028DA /* YDBCKCleanRecordInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKCleanRecordInfo.m; sourceTree = "<group>"; };
+		DC38C4DA1A1ED8BE0073428F /* YDBCKAttachRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBCKAttachRequest.h; sourceTree = "<group>"; };
+		DC38C4DB1A1ED8BF0073428F /* YDBCKAttachRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKAttachRequest.m; sourceTree = "<group>"; };
+		DC49B2191A1AC04A008507FE /* YDBCKMappingTableInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBCKMappingTableInfo.h; sourceTree = "<group>"; };
+		DC49B21A1A1AC04A008507FE /* YDBCKMappingTableInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKMappingTableInfo.m; sourceTree = "<group>"; };
+		DC56CC4819EC686F009028DA /* YDBCKRecordTableInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBCKRecordTableInfo.h; sourceTree = "<group>"; };
+		DC56CC4919EC686F009028DA /* YDBCKRecordTableInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKRecordTableInfo.m; sourceTree = "<group>"; };
 		DC6043A119E5DE13007DEC53 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		DC6043A319E64688007DEC53 /* YapMurmurHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapMurmurHash.h; sourceTree = "<group>"; };
 		DC6043A419E64688007DEC53 /* YapMurmurHash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapMurmurHash.m; sourceTree = "<group>"; };
@@ -308,6 +312,8 @@
 		DCCAD7C019E36A4300F914D5 /* YapDatabaseCloudKitTestTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseCloudKitTestTests.m; sourceTree = "<group>"; };
 		DCCAD7CA19E4630700F914D5 /* YapDatabaseCloudKitTest.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = YapDatabaseCloudKitTest.entitlements; sourceTree = "<group>"; };
 		DCDAE36A19E467FB008B84E4 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		DCDE36F21A19AB05000D3071 /* YapDebugDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDebugDictionary.h; sourceTree = "<group>"; };
+		DCDE36F31A19AB05000D3071 /* YapDebugDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDebugDictionary.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -435,10 +441,12 @@
 				DC6043A719E65709007DEC53 /* YapDatabaseCKRecord.m */,
 				DC6043AC19E74F56007DEC53 /* YDBCKChangeQueue.h */,
 				DC6043AD19E74F56007DEC53 /* YDBCKChangeQueue.m */,
-				DC56CC4519EC640F009028DA /* YDBCKDirtyRecordInfo.h */,
-				DC56CC4619EC640F009028DA /* YDBCKDirtyRecordInfo.m */,
-				DC56CC4819EC686F009028DA /* YDBCKCleanRecordInfo.h */,
-				DC56CC4919EC686F009028DA /* YDBCKCleanRecordInfo.m */,
+				DC49B2191A1AC04A008507FE /* YDBCKMappingTableInfo.h */,
+				DC49B21A1A1AC04A008507FE /* YDBCKMappingTableInfo.m */,
+				DC56CC4819EC686F009028DA /* YDBCKRecordTableInfo.h */,
+				DC56CC4919EC686F009028DA /* YDBCKRecordTableInfo.m */,
+				DC38C4DA1A1ED8BE0073428F /* YDBCKAttachRequest.h */,
+				DC38C4DB1A1ED8BF0073428F /* YDBCKAttachRequest.m */,
 			);
 			path = Internal;
 			sourceTree = "<group>";
@@ -674,6 +682,8 @@
 				DC007B6F19E4C2D500A5E9EF /* YapRowidSet.mm */,
 				DC007B7019E4C2D500A5E9EF /* YapTouch.h */,
 				DC007B7119E4C2D500A5E9EF /* YapTouch.m */,
+				DCDE36F21A19AB05000D3071 /* YapDebugDictionary.h */,
+				DCDE36F31A19AB05000D3071 /* YapDebugDictionary.m */,
 			);
 			path = Internal;
 			sourceTree = "<group>";
@@ -901,7 +911,7 @@
 				DC007BD919E4C94E00A5E9EF /* MyTodo.m in Sources */,
 				DC6043AE19E74F56007DEC53 /* YDBCKChangeQueue.m in Sources */,
 				DC007BC719E4C48600A5E9EF /* DatabaseManager.m in Sources */,
-				DC56CC4A19EC686F009028DA /* YDBCKCleanRecordInfo.m in Sources */,
+				DC56CC4A19EC686F009028DA /* YDBCKRecordTableInfo.m in Sources */,
 				DC007BB819E4C2D500A5E9EF /* YapNull.m in Sources */,
 				DC007B8C19E4C2D500A5E9EF /* YapDatabaseFilteredViewTypes.m in Sources */,
 				DC007B9719E4C2D500A5E9EF /* YapDatabaseRelationshipEdge.m in Sources */,
@@ -923,6 +933,7 @@
 				DC007BA619E4C2D500A5E9EF /* YapDatabaseViewPageMetadata.m in Sources */,
 				DC007B9A19E4C2D500A5E9EF /* YapDatabaseSearchQueue.m in Sources */,
 				DC007BA919E4C2D500A5E9EF /* YapDatabaseViewMappings.m in Sources */,
+				DCDE36F41A19AB05000D3071 /* YapDebugDictionary.m in Sources */,
 				DC007B8F19E4C2D500A5E9EF /* YapDatabaseFullTextSearchHandler.m in Sources */,
 				DC007BA519E4C2D500A5E9EF /* YapDatabaseViewPage.mm in Sources */,
 				DC007AD419E4C2AD00A5E9EF /* CLIColor.m in Sources */,
@@ -943,7 +954,9 @@
 				DC007B8B19E4C2D500A5E9EF /* YapDatabaseFilteredViewTransaction.m in Sources */,
 				DC007BC019E4C2D500A5E9EF /* YapDatabase.m in Sources */,
 				DC007B8719E4C2D500A5E9EF /* YapDatabaseCloudKitTransaction.m in Sources */,
+				DC49B21B1A1AC04A008507FE /* YDBCKMappingTableInfo.m in Sources */,
 				DCCAD7A719E36A4300F914D5 /* main.m in Sources */,
+				DC38C4DC1A1ED8BF0073428F /* YDBCKAttachRequest.m in Sources */,
 				DC007BAB19E4C2D500A5E9EF /* YapDatabaseView.m in Sources */,
 				DC007BAD19E4C2D500A5E9EF /* YapDatabaseViewOptions.m in Sources */,
 				DC007AD919E4C2AD00A5E9EF /* DDLog.m in Sources */,
@@ -954,7 +967,6 @@
 				DC007B9919E4C2D500A5E9EF /* YapDatabaseRelationshipTransaction.m in Sources */,
 				DC007BB319E4C2D500A5E9EF /* YapDatabaseConnectionState.m in Sources */,
 				DC007BB919E4C2D500A5E9EF /* YapRowidSet.mm in Sources */,
-				DC56CC4719EC640F009028DA /* YDBCKDirtyRecordInfo.m in Sources */,
 				DC007B9319E4C2D500A5E9EF /* YapDatabaseExtensionConnection.m in Sources */,
 				DC007AD519E4C2AD00A5E9EF /* DDAbstractDatabaseLogger.m in Sources */,
 				DC007BBD19E4C2D500A5E9EF /* YapDatabaseQuery.m in Sources */,

@@ -17,12 +17,21 @@
 
 @implementation YapDatabaseCloudKitConnection
 {
+	sqlite3_stmt *mappingTable_insertStatement;
+	sqlite3_stmt *mappingTable_updateForRowidStatement;
+	sqlite3_stmt *mappingTable_getInfoForRowidStatement;
+	sqlite3_stmt *mappingTable_enumerateForHashStatement;
+	sqlite3_stmt *mappingTable_removeForRowidStatement;
+	sqlite3_stmt *mappingTable_removeAllStatement;
+	
 	sqlite3_stmt *recordTable_insertStatement;
-	sqlite3_stmt *recordTable_updateForRowidStatement;
-	sqlite3_stmt *recordTable_getRowidForRecordStatement;
-	sqlite3_stmt *recordTable_getInfoForRowidStatement;
-	sqlite3_stmt *recordTable_getInfoForAllStatement;
-	sqlite3_stmt *recordTable_removeForRowidStatement;
+	sqlite3_stmt *recordTable_updateOwnerCountStatement;
+	sqlite3_stmt *recordTable_updateRecordStatement;
+	sqlite3_stmt *recordTable_getInfoForHashStatement;
+	sqlite3_stmt *recordTable_getOwnerCountForHashStatement;
+	sqlite3_stmt *recordTable_getCountForHashStatement;
+	sqlite3_stmt *recordTable_enumerateStatement;
+	sqlite3_stmt *recordTable_removeForHashStatement;
 	sqlite3_stmt *recordTable_removeAllStatement;
 	
 	sqlite3_stmt *queueTable_insertStatement;
@@ -42,7 +51,8 @@
 		parent = inCloudKit;
 		databaseConnection = inDbC;
 		
-		cleanRecordInfo = [[YapCache alloc] initWithKeyClass:[NSNumber class] countLimit:100];
+		cleanMappingTableInfoCache = [[YapCache alloc] initWithKeyClass:[NSNumber class] countLimit:100];
+		cleanRecordTableInfoCache  = [[YapCache alloc] initWithKeyClass:[NSString class] countLimit:100];
 		
 		sharedKeySetForInternalChangeset = [NSDictionary sharedKeySetForKeys:[self internalChangesetKeys]];
 	}
@@ -56,12 +66,21 @@
 
 - (void)_flushStatements
 {
+	sqlite_finalize_null(&mappingTable_insertStatement);
+	sqlite_finalize_null(&mappingTable_updateForRowidStatement);
+	sqlite_finalize_null(&mappingTable_getInfoForRowidStatement);
+	sqlite_finalize_null(&mappingTable_enumerateForHashStatement);
+	sqlite_finalize_null(&mappingTable_removeForRowidStatement);
+	sqlite_finalize_null(&mappingTable_removeAllStatement);
+	
 	sqlite_finalize_null(&recordTable_insertStatement);
-	sqlite_finalize_null(&recordTable_updateForRowidStatement);
-	sqlite_finalize_null(&recordTable_getRowidForRecordStatement);
-	sqlite_finalize_null(&recordTable_getInfoForRowidStatement);
-	sqlite_finalize_null(&recordTable_getInfoForAllStatement);
-	sqlite_finalize_null(&recordTable_removeForRowidStatement);
+	sqlite_finalize_null(&recordTable_updateOwnerCountStatement);
+	sqlite_finalize_null(&recordTable_updateRecordStatement);
+	sqlite_finalize_null(&recordTable_getInfoForHashStatement);
+	sqlite_finalize_null(&recordTable_getOwnerCountForHashStatement);
+	sqlite_finalize_null(&recordTable_getCountForHashStatement);
+	sqlite_finalize_null(&recordTable_enumerateStatement);
+	sqlite_finalize_null(&recordTable_removeForHashStatement);
 	sqlite_finalize_null(&recordTable_removeAllStatement);
 	
 	sqlite_finalize_null(&queueTable_insertStatement);
@@ -79,7 +98,8 @@
 {
 	if (flags & YapDatabaseConnectionFlushMemoryFlags_Caches)
 	{
-		[cleanRecordInfo removeAllObjects];
+		[cleanMappingTableInfoCache removeAllObjects];
+		[cleanRecordTableInfoCache removeAllObjects];
 	}
 	
 	if (flags & YapDatabaseConnectionFlushMemoryFlags_Statements)
@@ -142,8 +162,11 @@
 **/
 - (void)prepareForReadWriteTransaction
 {
-	if (dirtyRecordInfo == nil)
-		dirtyRecordInfo = [[NSMutableDictionary alloc] init];
+	if (dirtyMappingTableInfoDict == nil)
+		dirtyMappingTableInfoDict = [[NSMutableDictionary alloc] init];
+	
+	if (dirtyRecordTableInfoDict == nil)
+		dirtyRecordTableInfoDict = [[NSMutableDictionary alloc] init];
 }
 
 /**
@@ -166,19 +189,27 @@
 		[parent->masterQueue resetFailedInFlightChangeSet];
 		[parent asyncMaybeDispatchNextOperation];
 	}
-	else if ([deletedRowids count] > 0 || [modifiedRecords count] > 0 || reset)
+	else if (changeset_deletedRowids.count    > 0 ||
+	         changeset_deletedHashes.count    > 0 ||
+	         changeset_mappingTableInfo.count > 0 ||
+	         changeset_recordTableInfo.count  > 0 ||
+	         reset)
 	{
 		[parent asyncMaybeDispatchNextOperation];
 	}
 	
-	dirtyRecordInfo = nil;
+	dirtyMappingTableInfoDict = nil;
+	dirtyRecordTableInfoDict = nil;
 	pendingAttachRequests = nil;
-	deletedRowids = nil;
-	modifiedRecords = nil;
 	
 	reset = NO;
 	isOperationCompletionTransaction = NO;
 	isOperationPartialCompletionTransaction = NO;
+	
+	changeset_deletedRowids = nil;
+	changeset_deletedHashes = nil;
+	changeset_mappingTableInfo = nil;
+	changeset_recordTableInfo = nil;
 }
 
 /**
@@ -188,22 +219,29 @@
 {
 	YDBLogAutoTrace();
 	
-	[cleanRecordInfo removeAllObjects];
+	[cleanMappingTableInfoCache removeAllObjects];
+	[cleanRecordTableInfoCache removeAllObjects];
 	
-	dirtyRecordInfo = nil;
+	dirtyMappingTableInfoDict = nil;
+	dirtyRecordTableInfoDict = nil;
 	pendingAttachRequests = nil;
-	deletedRowids = nil;
-	modifiedRecords = nil;
 	
 	reset = NO;
 	isOperationCompletionTransaction = NO;
 	isOperationPartialCompletionTransaction = NO;
+	
+	changeset_deletedRowids = nil;
+	changeset_deletedHashes = nil;
+	changeset_mappingTableInfo = nil;
+	changeset_recordTableInfo = nil;
 }
 
 - (NSArray *)internalChangesetKeys
 {
 	return @[ changeset_key_deletedRowids,
-	          changeset_key_modifiedRecords,
+	          changeset_key_deletedHashes,
+	          changeset_key_mappingTableInfo,
+	          changeset_key_recordTableInfo,
 	          changeset_key_reset ];
 }
 
@@ -222,18 +260,32 @@
 	if (isOperationCompletionTransaction || isOperationPartialCompletionTransaction)
 		hasDiskChanges = YES;
 	
-	if (([deletedRowids count] > 0) || ([modifiedRecords count] > 0) || reset)
+	if (changeset_deletedRowids.count    > 0 ||
+	    changeset_deletedHashes.count    > 0 ||
+	    changeset_mappingTableInfo.count > 0 ||
+	    changeset_recordTableInfo.count  > 0 ||
+	    reset)
 	{
 		internalChangeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
 		
-		if ([deletedRowids count] > 0)
+		if (changeset_deletedRowids.count > 0)
 		{
-			internalChangeset[changeset_key_deletedRowids] = deletedRowids;
+			internalChangeset[changeset_key_deletedRowids] = changeset_deletedRowids;
 		}
 		
-		if ([modifiedRecords count] > 0)
+		if (changeset_deletedHashes.count > 0)
 		{
-			internalChangeset[changeset_key_modifiedRecords] = modifiedRecords;
+			internalChangeset[changeset_key_deletedHashes] = changeset_deletedHashes;
+		}
+		
+		if (changeset_mappingTableInfo.count > 0)
+		{
+			internalChangeset[changeset_key_mappingTableInfo] = changeset_mappingTableInfo;
+		}
+		
+		if (changeset_recordTableInfo.count > 0)
+		{
+			internalChangeset[changeset_key_recordTableInfo] = changeset_recordTableInfo;
 		}
 		
 		if (reset)
@@ -253,28 +305,36 @@
 {
 	YDBLogAutoTrace();
 	
-	NSArray *changeset_deletedRowids = changeset[changeset_key_deletedRowids];
-	NSDictionary *changeset_modifiedRecords = changeset[changeset_key_modifiedRecords];
+	NSSet *in_changeset_deletedRowids = changeset[changeset_key_deletedRowids];
+	NSSet *in_changeset_deletedHashes = changeset[changeset_key_deletedHashes];
 	
-	BOOL changeset_reset = [changeset[changeset_key_reset] boolValue];
+	NSDictionary *in_changeset_mappingTableInfo = changeset[changeset_key_mappingTableInfo];
+	NSDictionary *in_changeset_recordTableInfo  = changeset[changeset_key_recordTableInfo];
 	
-	if (changeset_reset && ([changeset_modifiedRecords count] == 0))
+	BOOL in_changeset_reset = [changeset[changeset_key_reset] boolValue];
+	
+	// Update cleanMappingTableInfo
+	
+	if (in_changeset_reset && (in_changeset_mappingTableInfo.count == 0))
 	{
 		// Shortcut
 		
-		[cleanRecordInfo removeAllObjects];
+		[cleanMappingTableInfoCache removeAllObjects];
 	}
-	else if (changeset_reset || ([changeset_deletedRowids count] > 0) || ([changeset_modifiedRecords count] > 0))
+	else if (in_changeset_reset || (in_changeset_deletedRowids.count > 0) || (in_changeset_mappingTableInfo.count > 0))
 	{
 		// Enumerate the objects in the cache, and update them as needed
 		
-		NSUInteger removeCapacity = changeset_reset ? [cleanRecordInfo count] : [changeset_deletedRowids count];
-		NSUInteger updateCapacity = MIN([cleanRecordInfo count], [changeset_modifiedRecords count]);
+		NSUInteger removeCapacity;
+		NSUInteger updateCapacity;
+		
+		removeCapacity = in_changeset_reset ? cleanMappingTableInfoCache.count : in_changeset_deletedRowids.count;
+		updateCapacity = MIN(cleanMappingTableInfoCache.count, in_changeset_mappingTableInfo.count);
 		
 		NSMutableArray *keysToRemove = [NSMutableArray arrayWithCapacity:removeCapacity];
 		NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
 		
-		[cleanRecordInfo enumerateKeysWithBlock:^(id key, BOOL *stop) {
+		[cleanMappingTableInfoCache enumerateKeysWithBlock:^(id key, BOOL *stop) {
 			
 			// Order matters.
 			// Consider the following database change:
@@ -282,22 +342,70 @@
 			// [transaction removeAllObjects];
 			// [transaction setObject:obj forKey:key];
 			
-			if ([changeset_modifiedRecords objectForKey:key])
+			if ([in_changeset_mappingTableInfo objectForKey:key])
 				[keysToUpdate addObject:key];
-			else if (changeset_reset || [changeset_deletedRowids containsObject:key])
+			else if (in_changeset_reset || [in_changeset_deletedRowids containsObject:key])
 				[keysToRemove addObject:key];
 		}];
 		
-		[cleanRecordInfo removeObjectsForKeys:keysToRemove];
+		[cleanMappingTableInfoCache removeObjectsForKeys:keysToRemove];
 		
 		for (NSString *key in keysToUpdate)
 		{
-			YDBCKCleanRecordInfo *recordInfo = [changeset_modifiedRecords objectForKey:key];
+			YDBCKCleanMappingTableInfo *cleanMappingTableInfo = [in_changeset_mappingTableInfo objectForKey:key];
 			
-			if (recordInfo)
-				[cleanRecordInfo setObject:recordInfo forKey:key];
+			if (cleanMappingTableInfo)
+				[cleanMappingTableInfoCache setObject:cleanMappingTableInfo forKey:key];
 			else
-				[cleanRecordInfo removeObjectForKey:key];
+				[cleanMappingTableInfoCache removeObjectForKey:key];
+		}
+	}
+	
+	// Update cleanRecordTableInfo
+	
+	if (in_changeset_reset && (in_changeset_recordTableInfo.count == 0))
+	{
+		// Shortcut
+		
+		[cleanRecordTableInfoCache removeAllObjects];
+	}
+	else if (in_changeset_reset || (in_changeset_deletedHashes.count > 0) || (in_changeset_recordTableInfo.count > 0))
+	{
+		// Enumerate the objects in the cache, and update them as needed
+		
+		NSUInteger removeCapacity;
+		NSUInteger updateCapacity;
+		
+		removeCapacity = in_changeset_reset ? cleanRecordTableInfoCache.count : in_changeset_deletedHashes.count;
+		updateCapacity = MIN(cleanRecordTableInfoCache.count, in_changeset_recordTableInfo.count);
+		
+		NSMutableArray *keysToRemove = [NSMutableArray arrayWithCapacity:removeCapacity];
+		NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
+		
+		[cleanRecordTableInfoCache enumerateKeysWithBlock:^(id key, BOOL *stop) {
+			
+			// Order matters.
+			// Consider the following database change:
+			//
+			// [transaction removeAllObjects];
+			// [transaction setObject:obj forKey:key];
+			
+			if ([in_changeset_recordTableInfo objectForKey:key])
+				[keysToUpdate addObject:key];
+			else if (in_changeset_reset || [in_changeset_deletedHashes containsObject:key])
+				[keysToRemove addObject:key];
+		}];
+		
+		[cleanRecordTableInfoCache removeObjectsForKeys:keysToRemove];
+		
+		for (NSString *key in keysToRemove)
+		{
+			YDBCKCleanRecordTableInfo *cleanRecordTableInfo = [in_changeset_recordTableInfo objectForKey:key];
+			
+			if (cleanRecordTableInfo)
+				[cleanRecordTableInfoCache setObject:cleanRecordTableInfo forKey:key];
+			else
+				[cleanRecordTableInfoCache removeObjectForKey:key];
 		}
 	}
 }
@@ -322,14 +430,116 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Statements - MappingTable
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * CREATE TABLE IF NOT EXISTS "mappingTableName" (
+ *   "rowid" INTEGER PRIMARY KEY,
+ *   "recordTable_hash" TEXT NOT NULL
+ * );
+**/
+
+- (sqlite3_stmt *)mappingTable_insertStatement
+{
+	sqlite3_stmt **statement = &mappingTable_insertStatement;
+	if (*statement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"INSERT OR REPLACE INTO \"%@\""
+		  @" (\"rowid\", \"recordTable_hash\") VALUES (?, ?);",
+		  [parent mappingTableName]];
+		
+		[self prepareStatement:statement withString:string caller:_cmd];
+	}
+	
+	return *statement;
+}
+
+- (sqlite3_stmt *)mappingTable_updateForRowidStatement
+{
+	sqlite3_stmt **statement = &mappingTable_updateForRowidStatement;
+	if (*statement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"UPDATE \"%@\" SET \"recordTable_hash\" = ? WHERE \"rowid\" = ?;",
+		  [parent mappingTableName]];
+		
+		[self prepareStatement:statement withString:string caller:_cmd];
+	}
+	
+	return *statement;
+}
+
+- (sqlite3_stmt *)mappingTable_getInfoForRowidStatement
+{
+	sqlite3_stmt **statement = &mappingTable_getInfoForRowidStatement;
+	if (*statement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT \"recordTable_hash\" FROM \"%@\" WHERE \"rowid\" = ?;",
+		  [parent mappingTableName]];
+		
+		[self prepareStatement:statement withString:string caller:_cmd];
+	}
+	
+	return *statement;
+}
+
+- (sqlite3_stmt *)mappingTable_enumerateForHashStatement
+{
+	sqlite3_stmt **statement = &mappingTable_enumerateForHashStatement;
+	if (*statement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT \"rowid\" FROM \"%@\" WHERE \"recordTable_hash\" = ?;",
+		  [parent mappingTableName]];
+		
+		[self prepareStatement:statement withString:string caller:_cmd];
+	}
+	
+	return *statement;
+}
+
+- (sqlite3_stmt *)mappingTable_removeForRowidStatement
+{
+	sqlite3_stmt **statement = &mappingTable_removeForRowidStatement;
+	if (*statement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"DELETE FROM \"%@\" WHERE \"rowid\" = ?;",
+		  [parent mappingTableName]];
+		
+		[self prepareStatement:statement withString:string caller:_cmd];
+	}
+	
+	return *statement;
+}
+
+- (sqlite3_stmt *)mappingTable_removeAllStatement
+{
+	sqlite3_stmt **statement = &mappingTable_removeAllStatement;
+	if (*statement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"DELETE FROM \"%@\";",
+		  [parent mappingTableName]];
+		
+		[self prepareStatement:statement withString:string caller:_cmd];
+	}
+	
+	return *statement;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Statements - RecordTable
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * CREATE TABLE IF NOT EXISTS "recordTableName" (
- *   "rowid" INTEGER PRIMARY KEY,
- *   "recordIDHash" INTEGER NOT NULL,
+ *   "hash" TEXT PRIMARY KEY,
  *   "databaseIdentifier" TEXT,
+ *   "ownerCount" INTEGER,
  *   "record" BLOB
  * );
 **/
@@ -341,7 +551,7 @@
 	{
 		NSString *string = [NSString stringWithFormat:
 		  @"INSERT OR REPLACE INTO \"%@\""
-		  @" (\"rowid\", \"recordIDHash\", \"databaseIdentifier\", \"record\") VALUES (?, ?, ?, ?);",
+		  @" (\"hash\", \"databaseIdentifier\", \"ownerCount\", \"record\") VALUES (?, ?, ?, ?);",
 		  [parent recordTableName]];
 		
 		[self prepareStatement:statement withString:string caller:_cmd];
@@ -350,13 +560,13 @@
 	return *statement;
 }
 
-- (sqlite3_stmt *)recordTable_updateForRowidStatement
+- (sqlite3_stmt *)recordTable_updateOwnerCountStatement
 {
-	sqlite3_stmt **statement = &recordTable_updateForRowidStatement;
+	sqlite3_stmt **statement = &recordTable_updateOwnerCountStatement;
 	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		  @"UPDATE \"%@\" SET \"record\" = ? WHERE \"rowid\" = ?;",
+		  @"UPDATE \"%@\" SET \"ownerCount\" = ? WHERE \"hash\" = ?;",
 		  [parent recordTableName]];
 		
 		[self prepareStatement:statement withString:string caller:_cmd];
@@ -365,13 +575,13 @@
 	return *statement;
 }
 
-- (sqlite3_stmt *)recordTable_getRowidForRecordStatement
+- (sqlite3_stmt *)recordTable_updateRecordStatement
 {
-	sqlite3_stmt **statement = &recordTable_getRowidForRecordStatement;
+	sqlite3_stmt **statement = &recordTable_updateRecordStatement;
 	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		  @"SELECT \"rowid\" FROM \"%@\" WHERE \"recordIDHash\" = ? AND \"databaseIdentifier\" = ?;",
+		  @"UPDATE \"%@\" SET \"record\" = ? WHERE \"hash\" = ?;",
 		  [parent recordTableName]];
 		
 		[self prepareStatement:statement withString:string caller:_cmd];
@@ -380,13 +590,14 @@
 	return *statement;
 }
 
-- (sqlite3_stmt *)recordTable_getInfoForRowidStatement
+- (sqlite3_stmt *)recordTable_getInfoForHashStatement
 {
-	sqlite3_stmt **statement = &recordTable_getInfoForRowidStatement;
+	sqlite3_stmt **statement = &recordTable_getInfoForHashStatement;
 	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		  @"SELECT \"databaseIdentifier\", \"record\" FROM \"%@\" WHERE \"rowid\" = ?;", [parent recordTableName]];
+		  @"SELECT \"databaseIdentifier\", \"ownerCount\", \"record\" FROM \"%@\" WHERE \"hash\" = ?;",
+		  [parent recordTableName]];
 		
 		[self prepareStatement:statement withString:string caller:_cmd];
 	}
@@ -394,13 +605,14 @@
 	return *statement;
 }
 
-- (sqlite3_stmt *)recordTable_getInfoForAllStatement
+- (sqlite3_stmt *)recordTable_getOwnerCountForHashStatement
 {
-	sqlite3_stmt **statement = &recordTable_getInfoForAllStatement;
+	sqlite3_stmt **statement = &recordTable_getOwnerCountForHashStatement;
 	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		  @"SELECT \"rowid\", \"databaseIdentifier\", \"record\" FROM \"%@\";", [parent recordTableName]];
+		  @"SELECT \"ownerCount\" FROM \"%@\" WHERE \"hash\" = ?;",
+		  [parent recordTableName]];
 		
 		[self prepareStatement:statement withString:string caller:_cmd];
 	}
@@ -408,13 +620,43 @@
 	return *statement;
 }
 
-- (sqlite3_stmt *)recordTable_removeForRowidStatement
+- (sqlite3_stmt *)recordTable_getCountForHashStatement
 {
-	sqlite3_stmt **statement = &recordTable_removeForRowidStatement;
+	sqlite3_stmt **statement = &recordTable_getCountForHashStatement;
 	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		  @"DELETE FROM \"%@\" WHERE \"rowid\" = ?;", [parent recordTableName]];
+		  @"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" WHERE \"hash\" = ?;",
+		  [parent recordTableName]];
+		
+		[self prepareStatement:statement withString:string caller:_cmd];
+	}
+	
+	return *statement;
+}
+
+- (sqlite3_stmt *)recordTable_enumerateStatement
+{
+	sqlite3_stmt **statement = &recordTable_enumerateStatement;
+	if (*statement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT \"hash\", \"databaseIdentifier\", \"ownerCount\", \"record\" FROM \"%@\";",
+		  [parent recordTableName]];
+		
+		[self prepareStatement:statement withString:string caller:_cmd];
+	}
+	
+	return *statement;
+}
+
+- (sqlite3_stmt *)recordTable_removeForHashStatement
+{
+	sqlite3_stmt **statement = &recordTable_removeForHashStatement;
+	if (*statement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"DELETE FROM \"%@\" WHERE \"hash\" = ?;", [parent recordTableName]];
 		
 		[self prepareStatement:statement withString:string caller:_cmd];
 	}

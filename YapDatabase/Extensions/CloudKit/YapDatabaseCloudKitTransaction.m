@@ -1,12 +1,14 @@
 #import "YapDatabaseCloudKitPrivate.h"
 #import "YapDatabasePrivate.h"
 #import "YapDatabaseCKRecord.h"
+#import "YDBCKAttachRequest.h"
+
+#import "YapDatabaseString.h"
+#import "YapDatabaseLogging.h"
 
 #import "NSDictionary+YapDatabase.h"
 
-#import "YapMurmurHash.h"
-#import "YapDatabaseString.h"
-#import "YapDatabaseLogging.h"
+#import <CommonCrypto/CommonDigest.h>
 
 /**
  * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
@@ -22,6 +24,12 @@
 static NSString *const ExtKey_classVersion = @"classVersion";
 static NSString *const ExtKey_versionTag   = @"versionTag";
 
+typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
+	YDBCK_skipUploadRecord   = 1 << 0,
+	YDBCK_skipUploadDeletion = 1 << 1,
+	YDBCK_remoteDeletion     = 1 << 2,
+	YDBCK_remoteMerge        = 1 << 3,
+};
 
 @implementation YapDatabaseCloudKitTransaction
 
@@ -136,42 +144,64 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	
 	sqlite3 *db = databaseTransaction->connection->db;
 	
-	NSString *recordTableName = [self recordTableName];
-	NSString *queueTableName  = [self queueTableName];
+	NSString *mappingTableName = [self mappingTableName];
+	NSString *recordTableName  = [self recordTableName];
+	NSString *queueTableName   = [self queueTableName];
 	
 	int status;
 	
+	// Mapping Table
+	//
+	// | rowid | recordTable_hash |
+	
+	YDBLogVerbose(@"Creating cloudKit table for registeredName(%@): %@", [self registeredName], recordTableName);
+	
+	NSString *createMappingTable = [NSString stringWithFormat:
+	  @"CREATE TABLE IF NOT EXISTS \"%@\""
+	  @"(\"rowid\" INTEGER PRIMARY KEY,"
+	  @" \"recordTable_hash\" TEXT NOT NULL"
+	  @" );", mappingTableName];
+	
+	NSString *createMappingTableIndex = [NSString stringWithFormat:
+	  @"CREATE INDEX IF NOT EXISTS \"recordTable_hash\" ON \"%@\" (\"recordTable_hash\");", mappingTableName];
+	
+	YDBLogVerbose(@"Create table: %@", createMappingTable);
+	status = sqlite3_exec(db, [createMappingTable UTF8String], NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@ - Failed creating table (%@): %d %s",
+		            THIS_METHOD, mappingTableName, status, sqlite3_errmsg(db));
+		return NO;
+	}
+	
+	YDBLogVerbose(@"Create index: %@", createMappingTableIndex);
+	status = sqlite3_exec(db, [createMappingTableIndex UTF8String], NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@ - Failed creating index on table (%@): %d %s",
+					THIS_METHOD, mappingTableName, status, sqlite3_errmsg(db));
+		return NO;
+	}
+	
 	// Record Table
 	//
-	// | rowid | recordIDHash | record |
+	// | rowid | hash | ownerCount | databaseIdentifier | record |
 	
 	YDBLogVerbose(@"Creating cloudKit table for registeredName(%@): %@", [self registeredName], recordTableName);
 		
 	NSString *createRecordTable = [NSString stringWithFormat:
-	    @"CREATE TABLE IF NOT EXISTS \"%@\""
-	    @" (\"rowid\" INTEGER PRIMARY KEY,"         // rowid in 'database' table
-	    @"  \"recordIDHash\" INTEGER NOT NULL,"     // custom hash of CKRecordID (for lookups)
-		@"  \"databaseIdentifier\" TEXT,"           // user specified databaseIdentifier (null for default)
-	    @"  \"record\" BLOB"                        // serialized CKRecord (system fields only)
-	    @" );", recordTableName];
-	
-	NSString *createRecordTableIndex = [NSString stringWithFormat:
-	  @"CREATE INDEX IF NOT EXISTS \"recordIDHash\" ON \"%@\" (\"recordIDHash\");", recordTableName];
+	  @"CREATE TABLE IF NOT EXISTS \"%@\""
+	  @" (\"hash\" TEXT PRIMARY KEY,"         // custom hash of CKRecordID & databaseIdentifier (for lookups)
+	  @"  \"databaseIdentifier\" TEXT,"       // user specified databaseIdentifier (null for default)
+	  @"  \"ownerCount\" INTEGER,"            // used for mapped records
+	  @"  \"record\" BLOB"                    // CKRecord (system fields only for mapped records)
+	  @" );", recordTableName];
 	
 	YDBLogVerbose(@"Create table: %@", createRecordTable);
 	status = sqlite3_exec(db, [createRecordTable UTF8String], NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
 		YDBLogError(@"%@ - Failed creating table (%@): %d %s",
-		            THIS_METHOD, recordTableName, status, sqlite3_errmsg(db));
-		return NO;
-	}
-	
-	YDBLogVerbose(@"Create index: %@", createRecordTableIndex);
-	status = sqlite3_exec(db, [createRecordTableIndex UTF8String], NULL, NULL, NULL);
-	if (status != SQLITE_OK)
-	{
-		YDBLogError(@"%@ - Failed creating index on table (%@): %d %s",
 		            THIS_METHOD, recordTableName, status, sqlite3_errmsg(db));
 		return NO;
 	}
@@ -191,23 +221,11 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		@"  \"modifiedRecords\" BLOB"
 	    @" );", queueTableName];
 	
-	NSString *createQueueTableIndex = [NSString stringWithFormat:
-	  @"CREATE INDEX IF NOT EXISTS \"prev\" ON \"%@\" (\"prev\");", queueTableName];
-	
 	YDBLogVerbose(@"Create table: %@", createQueueTable);
 	status = sqlite3_exec(db, [createQueueTable UTF8String], NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
 		YDBLogError(@"%@ - Failed creating table (%@): %d %s",
-		            THIS_METHOD, queueTableName, status, sqlite3_errmsg(db));
-		return NO;
-	}
-	
-	YDBLogVerbose(@"Create index: %@", createQueueTableIndex);
-	status = sqlite3_exec(db, [createQueueTableIndex UTF8String], NULL, NULL, NULL);
-	if (status != SQLITE_OK)
-	{
-		YDBLogError(@"%@ - Failed creating index on table (%@): %d %s",
 		            THIS_METHOD, queueTableName, status, sqlite3_errmsg(db));
 		return NO;
 	}
@@ -481,15 +499,21 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	
 	[orderedChangeSets enumerateObjectsUsingBlock:^(YDBCKChangeSet *changeSet, NSUInteger idx, BOOL *stop) {
 		
-		recordInfo.databaseIdentifier = changeSet.databaseIdentifier;
-		[changeSet enumerateMissingRecordsWithBlock:^CKRecord *(int64_t rowid, NSArray *changedKeys) {
+		NSString *databaseIdentifier = changeSet.databaseIdentifier;
+		
+		recordInfo.databaseIdentifier = databaseIdentifier;
+		[changeSet enumerateMissingRecordsWithBlock:^CKRecord *(CKRecordID *recordID, NSArray *changedKeys) {
+			
+			NSString *hash = [self hashRecordID:recordID databaseIdentifier:databaseIdentifier];
+			YDBCKCleanRecordTableInfo *cleanRecordTableInfo = [self recordTableInfoForHash:hash cacheResult:YES];
+			
+			__block CKRecord *record = [cleanRecordTableInfo.record copy];
 			
 			recordInfo.changedKeysToRestore = changedKeys;
-			
-			YDBCKCleanRecordInfo *cleanRecordInfo = [self recordInfoForRowid:rowid cacheResult:NO];
-			CKRecord *record = cleanRecordInfo.record;
-			
-			RestoreRecordBlock(rowid, &record, recordInfo);
+			[self enumerateMappingTableRowidsForRecordTableHash:hash usingBlock:^(int64_t rowid, BOOL *stop) {
+				
+				RestoreRecordBlock(rowid, &record, recordInfo);
+			}];
 			
 			return record;
 		}];
@@ -514,16 +538,41 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	void (^InsertRecord)(NSString*, CKRecord*, int64_t rowid);
 	InsertRecord = ^(NSString *databaseIdentifier, CKRecord *record, int64_t rowid) {
 		
-		YDBCKDirtyRecordInfo *dirtyRecordInfo;
+		NSString *hash = [self hashRecordID:record.recordID databaseIdentifier:databaseIdentifier];
 		
-		dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
-		dirtyRecordInfo.clean_databaseIdentifier = nil;
-		dirtyRecordInfo.clean_recordID = nil;
-		dirtyRecordInfo.dirty_databaseIdentifier = databaseIdentifier;
-		dirtyRecordInfo.dirty_record = record;
+		// Add row for mapping table
 		
-		[parentConnection->cleanRecordInfo removeObjectForKey:@(rowid)];
-		[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:@(rowid)];
+		YDBCKDirtyMappingTableInfo *dirtyMappingTableInfo;
+		
+		dirtyMappingTableInfo = [[YDBCKDirtyMappingTableInfo alloc] initWithRecordTableHash:nil];
+		dirtyMappingTableInfo.dirty_recordTable_hash = hash;
+		
+		[parentConnection->cleanMappingTableInfoCache removeObjectForKey:@(rowid)];
+		[parentConnection->dirtyMappingTableInfoDict setObject:dirtyMappingTableInfo forKey:@(rowid)];
+		
+		// Add/Update row for record table
+		
+		YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo =
+		  [parentConnection->dirtyRecordTableInfoDict objectForKey:hash];
+		
+		if (dirtyRecordTableInfo == nil)
+		{
+			dirtyRecordTableInfo = [[YDBCKDirtyRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
+			                                                                            recordID:nil
+			                                                                          ownerCount:nil];
+			dirtyRecordTableInfo.dirty_ownerCount = @(1);
+			dirtyRecordTableInfo.dirty_record = record;
+		
+			[parentConnection->cleanRecordTableInfoCache removeObjectForKey:@(rowid)];
+			[parentConnection->dirtyRecordTableInfoDict setObject:dirtyRecordTableInfo forKey:@(rowid)];
+		}
+		else
+		{
+			[self mergeChangedValuesFromRecord:record intoRecord:dirtyRecordTableInfo.dirty_record];
+			
+			int64_t newOwnerCount = [dirtyRecordTableInfo.dirty_ownerCount longLongValue] + 1;
+			dirtyRecordTableInfo.dirty_ownerCount = @(newOwnerCount);
+		}
 	};
 	
 	YDBCKRecordInfo *recordInfo = [[YDBCKRecordInfo alloc] init];
@@ -671,25 +720,40 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 - (BOOL)repopulateTables
 {
 	YDBLogAutoTrace();
-
-	void (^UpdateRecord)(NSString*, CKRecordID*, NSString*, CKRecord*, int64_t);
-	UpdateRecord = ^(NSString *cleanDatabaseIdentifier, CKRecordID *cleanRecordID,
-	                 NSString *dirtyDatabaseIdentifier, CKRecord *dirtyRecord, int64_t rowid)
-	{
-		YDBCKDirtyRecordInfo *dirtyRecordInfo;
-		
-		dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
-		dirtyRecordInfo.clean_databaseIdentifier = cleanDatabaseIdentifier;
-		dirtyRecordInfo.clean_recordID = cleanRecordID;
-		dirtyRecordInfo.dirty_databaseIdentifier = dirtyDatabaseIdentifier;
-		dirtyRecordInfo.dirty_record = dirtyRecord;
-		
-		[parentConnection->cleanRecordInfo removeObjectForKey:@(rowid)];
-		[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:@(rowid)];
-	};
 	
 	YDBCKRecordInfo *recordInfo = [[YDBCKRecordInfo alloc] init];
 	recordInfo.versionInfo = parentConnection->parent->versionInfo;
+	
+	__block id <YDBCKMappingTableInfo> mappingTableInfo = nil;
+	__block id <YDBCKRecordTableInfo> recordTableInfo = nil;
+	__block CKRecord *record = nil;
+	
+	void (^enumHelperBlock)(int64_t) = ^(int64_t rowid)
+	{
+		mappingTableInfo = [self mappingTableInfoForRowid:rowid cacheResult:YES];
+		recordTableInfo = [self recordTableInfoForHash:mappingTableInfo.current_recordTable_hash cacheResult:YES];
+		
+		recordInfo.databaseIdentifier = recordTableInfo.databaseIdentifier;
+		
+		if ([recordTableInfo isKindOfClass:[YDBCKCleanRecordTableInfo class]])
+		{
+			__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
+			  (YDBCKCleanRecordTableInfo *)recordInfo;
+			
+			record = [cleanRecordTableInfo.record copy];
+		}
+		else if ([recordTableInfo isKindOfClass:[YDBCKDirtyRecordTableInfo class]])
+		{
+			__unsafe_unretained YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo =
+			  (YDBCKDirtyRecordTableInfo *)recordTableInfo;
+			
+			record = dirtyRecordTableInfo.dirty_record;
+		}
+		else
+		{
+			record = nil;
+		}
+	};
 	
 	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
 	YapWhitelistBlacklist *allowedCollections = parentConnection->parent->options.allowedCollections;
@@ -702,18 +766,15 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, BOOL *stop);
 		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, BOOL *stop) {
 			
-			YDBCKCleanRecordInfo *cleanRecordInfo = [self recordInfoForRowid:rowid cacheResult:NO];
-			CKRecordID *cleanRecordID = cleanRecordInfo.record.recordID;
-			
-			CKRecord *record = cleanRecordInfo.record;
-			recordInfo.databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-			
+			enumHelperBlock(rowid);
 			recordBlock(&record, recordInfo, collection, key);
 			
-			if (record) {
-				UpdateRecord(cleanRecordInfo.databaseIdentifier, cleanRecordID,
-				             recordInfo.databaseIdentifier, record, rowid);
-			}
+			[self processRecord:record databaseIdentifier:recordInfo.databaseIdentifier
+			                            preCalculatedHash:nil
+			                                     forRowid:rowid
+			                     withPrevMappingTableInfo:mappingTableInfo
+			                          prevRecordTableInfo:recordTableInfo
+			                                        flags:0];
 		};
 		
 		if (allowedCollections)
@@ -739,18 +800,15 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop);
 		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop) {
 			
-			YDBCKCleanRecordInfo *cleanRecordInfo = [self recordInfoForRowid:rowid cacheResult:NO];
-			CKRecordID *cleanRecordID = cleanRecordInfo.record.recordID;
-			
-			CKRecord *record = cleanRecordInfo.record;
-			recordInfo.databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-			
+			enumHelperBlock(rowid);
 			recordBlock(&record, recordInfo, collection, key, object);
 			
-			if (record) {
-				UpdateRecord(cleanRecordInfo.databaseIdentifier, cleanRecordID,
-							 recordInfo.databaseIdentifier, record, rowid);
-			}
+			[self processRecord:record databaseIdentifier:recordInfo.databaseIdentifier
+			                            preCalculatedHash:nil
+			                                     forRowid:rowid
+			                     withPrevMappingTableInfo:mappingTableInfo
+			                          prevRecordTableInfo:recordTableInfo
+			                                        flags:0];
 		};
 		
 		if (allowedCollections)
@@ -776,18 +834,15 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop);
 		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop) {
 			
-			YDBCKCleanRecordInfo *cleanRecordInfo = [self recordInfoForRowid:rowid cacheResult:NO];
-			CKRecordID *cleanRecordID = cleanRecordInfo.record.recordID;
-			
-			CKRecord *record = cleanRecordInfo.record;
-			recordInfo.databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-			
+			enumHelperBlock(rowid);
 			recordBlock(&record, recordInfo, collection, key, metadata);
 			
-			if (record) {
-				UpdateRecord(cleanRecordInfo.databaseIdentifier, cleanRecordID,
-							 recordInfo.databaseIdentifier, record, rowid);
-			}
+			[self processRecord:record databaseIdentifier:recordInfo.databaseIdentifier
+			                            preCalculatedHash:nil
+			                                     forRowid:rowid
+			                     withPrevMappingTableInfo:mappingTableInfo
+			                          prevRecordTableInfo:recordTableInfo
+			                                        flags:0];
 		};
 		
 		if (allowedCollections)
@@ -813,18 +868,15 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop);
 		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop) {
 			
-			YDBCKCleanRecordInfo *cleanRecordInfo = [self recordInfoForRowid:rowid cacheResult:NO];
-			CKRecordID *cleanRecordID = cleanRecordInfo.record.recordID;
-			
-			CKRecord *record = cleanRecordInfo.record;
-			recordInfo.databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-			
+			enumHelperBlock(rowid);
 			recordBlock(&record, recordInfo, collection, key, object, metadata);
 			
-			if (record) {
-				UpdateRecord(cleanRecordInfo.databaseIdentifier, cleanRecordID,
-							 recordInfo.databaseIdentifier, record, rowid);
-			}
+			[self processRecord:record databaseIdentifier:recordInfo.databaseIdentifier
+			                            preCalculatedHash:nil
+			                                     forRowid:rowid
+			                     withPrevMappingTableInfo:mappingTableInfo
+			                          prevRecordTableInfo:recordTableInfo
+			                                        flags:0];
 		};
 		
 		if (allowedCollections)
@@ -871,6 +923,11 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	return [parentConnection->parent registeredName];
 }
 
+- (NSString *)mappingTableName
+{
+	return [parentConnection->parent mappingTableName];
+}
+
 - (NSString *)recordTableName
 {
 	return [parentConnection->parent recordTableName];
@@ -885,122 +942,375 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 #pragma mark Utilities - General
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (int64_t)hashRecordID:(CKRecordID *)recordID
+/**
+ * This method hashes the given recordID & databaseIdentifier into a 160 bit hash,
+ * and then returns a base64 representation of the hash.
+**/
+- (NSString *)hashRecordID:(CKRecordID *)recordID databaseIdentifier:(NSString *)databaseIdentifier
 {
-	// It would be nice to simply use [recordID hash].
-	// But we don't have any control over this method,
-	// meaning that Apple may choose to change it in a later release.
+	// Edge case:
+	//   Same recordID, but different databaseIdentifier.
+	//   One is nil, the other is an empty string.
 	//
-	// We need to use a hashing technique that will remain constant
-	// because we are storing this hash value in the database (for quick lookup purposes).
-	// So we use our own technique.
+	// We should try to make collisions nearly impossible
+	// when using the same recordID across different databaseIdentifiers.
 	
-	NSString *str1 = recordID.recordName;
-	NSString *str2 = recordID.zoneID.zoneName;
-	NSString *str3 = recordID.zoneID.ownerName;
+	NSString *rcd1 = recordID.recordName;
+	NSString *rcd2 = recordID.zoneID.zoneName;
+	NSString *rcd3 = recordID.zoneID.ownerName;
 	
-	if (str1 == nil) str1 = @"";
-	if (str2 == nil) str2 = @"";
-	if (str3 == nil) str3 = @"";
+	__unsafe_unretained NSString *dbid = databaseIdentifier;
 	
-	NSUInteger len = 0;
+	if (rcd1 == nil) rcd1 = @"";
+	if (rcd2 == nil) rcd2 = @"";
+	if (rcd3 == nil) rcd3 = @"";
+	// If dbid is nil, it stays nil
 	
-	len += [str1 lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
-	len += [str2 lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
-	len += [str3 lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+	NSUInteger maxLen = 2;
 	
-	void *buffer = malloc((size_t)len);
+	maxLen = MAX(maxLen, [rcd1 lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+	maxLen = MAX(maxLen, [rcd2 lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+	maxLen = MAX(maxLen, [rcd3 lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+	maxLen = MAX(maxLen, [dbid lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
 	
-	NSUInteger available = len;
-	NSUInteger totalUsed = 0;
+	int maxStackSize = 1024 * 2;
+	
+	uint8_t bufferStack[maxStackSize];
+	void *buffer = NULL;
+	
+	if (maxLen <= maxStackSize)
+		buffer = bufferStack;
+	else
+		buffer = malloc((size_t)maxLen);
+	
+	CC_SHA1_CTX ctx;
+	CC_SHA1_Init(&ctx);
+	
 	NSUInteger used = 0;
 	
-	[str1 getBytes:buffer
-	     maxLength:available
+	[rcd1 getBytes:buffer
+	     maxLength:maxLen
 	    usedLength:&used
 	      encoding:NSUTF8StringEncoding
 	       options:0
-	         range:NSMakeRange(0, [str1 length]) remainingRange:NULL];
+	         range:NSMakeRange(0, [rcd1 length]) remainingRange:NULL];
 	
-	available -= used;
-	totalUsed += used;
+	CC_SHA1_Update(&ctx, buffer, used);
 	
-	[str2 getBytes:buffer
-	     maxLength:available
+	[rcd2 getBytes:buffer
+	     maxLength:maxLen
 	    usedLength:&used
 	      encoding:NSUTF8StringEncoding
 	       options:0
-	         range:NSMakeRange(0, [str2 length]) remainingRange:NULL];
+	         range:NSMakeRange(0, [rcd2 length]) remainingRange:NULL];
 	
-	available -= used;
-	totalUsed += used;
+	CC_SHA1_Update(&ctx, buffer, used);
 	
-	[str3 getBytes:buffer
-	     maxLength:available
+	[rcd3 getBytes:buffer
+	     maxLength:maxLen
 	    usedLength:&used
 	      encoding:NSUTF8StringEncoding
 	       options:0
-	         range:NSMakeRange(0, [str3 length]) remainingRange:NULL];
+	         range:NSMakeRange(0, [rcd3 length]) remainingRange:NULL];
 	
-	totalUsed += used;
+	CC_SHA1_Update(&ctx, buffer, used);
 	
-	NSData *data = [NSData dataWithBytesNoCopy:buffer length:totalUsed freeWhenDone:NO];
-	int64_t hash = YapMurmurHashData_64(data);
+	if (dbid)
+	{
+		memcpy(buffer, (void *)'_', 1); // prefix with underscore to differentiate between nil & empty-string
+		
+		[dbid getBytes:(buffer + 1)
+		     maxLength:(maxLen - 1)
+		    usedLength:&used
+		      encoding:NSUTF8StringEncoding
+		       options:0
+		         range:NSMakeRange(0, [dbid length]) remainingRange:NULL];
+		
+		CC_SHA1_Update(&ctx, buffer, (used + 1));
+	}
 	
-	free(buffer);
-	return hash;
+	unsigned char hashBytes[CC_SHA1_DIGEST_LENGTH];
+	CC_SHA1_Final(hashBytes, &ctx);
+	
+	NSData *hashData = [NSData dataWithBytesNoCopy:(void *)hashBytes length:CC_SHA1_DIGEST_LENGTH freeWhenDone:NO];
+	NSString *hashStr = [hashData base64EncodedStringWithOptions:0];
+	
+	if (maxLen > maxStackSize) {
+		free(buffer);
+	}
+	return hashStr;
+}
+
+- (void)mergeChangedValuesFromRecord:(CKRecord *)fromRecord intoRecord:(CKRecord *)toRecord
+{
+	for (NSString *key in fromRecord.changedKeys)
+	{
+		id value = [fromRecord objectForKey:key];
+		
+		// The value may be nil.
+		// This is ok, as it just means the modification was to remove the value.
+		
+		[toRecord setObject:value forKey:key];
+	}
+}
+
+- (void)processRecord:(CKRecord *)record databaseIdentifier:(NSString *)databaseIdentifier
+                                          preCalculatedHash:(NSString *)preCalculatedRecordTableHash
+                                                   forRowid:(int64_t)rowid
+                                   withPrevMappingTableInfo:(id <YDBCKMappingTableInfo>)prevMappingTableInfo
+                                        prevRecordTableInfo:(id <YDBCKRecordTableInfo>)prevRecordTableInfo
+                                                      flags:(YDBCKProcessRecordBitMask)flags
+{
+	// Scenarios:
+	//
+	// - Rowid was not previously associated with record, and still is not.
+	// - Rowid was not previously associated with record, but now it is.
+	// - Rowid was previously associated with record, but now it is not.
+	// - Rowid was previously associated with record, but is now associated with a different record.
+	// - Rowid was previously associated with record, is still associated with same record, and made changes to record.
+	
+	NSString *recordTableHash = prevMappingTableInfo.current_recordTable_hash;
+	
+	BOOL recordTableHashChangedForRowid = NO;
+	NSString *newRecordTableHash = nil;
+	
+	if (recordTableHash)
+	{
+		if (record)
+		{
+			// Is the rowid associated with a new/different {recordID, databaseIdentifier} tuple ?
+			
+			if (preCalculatedRecordTableHash)
+				newRecordTableHash = preCalculatedRecordTableHash;
+			else
+				newRecordTableHash = [self hashRecordID:record.recordID databaseIdentifier:databaseIdentifier];
+			
+			if ([newRecordTableHash isEqualToString:recordTableHash])
+			{
+				// Rowid is now associated with a different record.
+				recordTableHashChangedForRowid = YES;
+			}
+		}
+		else
+		{
+			// Rowid is no longer associated with a record.
+			recordTableHashChangedForRowid = YES;
+		}
+	}
+	else if (record)
+	{
+		// Rowid is now associated with a record. (previously was not)
+		
+		if (preCalculatedRecordTableHash)
+			newRecordTableHash = preCalculatedRecordTableHash;
+		else
+			newRecordTableHash = [self hashRecordID:record.recordID databaseIdentifier:databaseIdentifier];
+		
+		recordTableHashChangedForRowid = YES;
+	}
+	
+	if (recordTableHashChangedForRowid)
+	{
+		// Update mapping
+		
+		if ([prevMappingTableInfo isKindOfClass:[YDBCKDirtyMappingTableInfo class]])
+		{
+			__unsafe_unretained YDBCKDirtyMappingTableInfo *dirtyMappingTableInfo =
+			  (YDBCKDirtyMappingTableInfo *)prevMappingTableInfo;
+			
+			dirtyMappingTableInfo.dirty_recordTable_hash = newRecordTableHash;
+		}
+		else
+		{
+			YDBCKDirtyMappingTableInfo *dirtyMappingTableInfo;
+			
+			dirtyMappingTableInfo = [[YDBCKDirtyMappingTableInfo alloc] initWithRecordTableHash:recordTableHash];
+			dirtyMappingTableInfo.dirty_recordTable_hash = newRecordTableHash;
+			
+			[parentConnection->cleanMappingTableInfoCache removeObjectForKey:@(rowid)];
+			[parentConnection->dirtyMappingTableInfoDict setObject:dirtyMappingTableInfo forKey:@(rowid)];
+		}
+	}
+	
+	if (recordTableHashChangedForRowid && prevRecordTableInfo)
+	{
+		// Rowid is no longer associated with record.
+		// Need to decrement ownerCount.
+		// If ownerCount drops to zero, then the record will be removed during commit processing.
+		
+		BOOL remoteDeletion = (flags & YDBCK_remoteDeletion) ? YES : NO;
+		BOOL skipUploadDeletion = (flags & YDBCK_skipUploadDeletion) ? YES : NO;
+		
+		if ([prevRecordTableInfo isKindOfClass:[YDBCKDirtyRecordTableInfo class]])
+		{
+			__unsafe_unretained YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo =
+			  (YDBCKDirtyRecordTableInfo *)prevRecordTableInfo;
+			
+			[dirtyRecordTableInfo decrementOwnerCount];
+			
+			if (remoteDeletion)     dirtyRecordTableInfo.remoteDeletion = remoteDeletion;
+			if (skipUploadDeletion) dirtyRecordTableInfo.skipUploadDeletion = skipUploadDeletion;
+		}
+		else
+		{
+			__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
+			  (YDBCKCleanRecordTableInfo *)prevRecordTableInfo;
+			
+			YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = [cleanRecordTableInfo dirtyCopy];
+			[dirtyRecordTableInfo decrementOwnerCount];
+			
+			if (remoteDeletion)     dirtyRecordTableInfo.remoteDeletion = remoteDeletion;
+			if (skipUploadDeletion) dirtyRecordTableInfo.skipUploadDeletion = skipUploadDeletion;
+			
+			[parentConnection->cleanRecordTableInfoCache removeObjectForKey:recordTableHash];
+			[parentConnection->dirtyRecordTableInfoDict setObject:dirtyRecordTableInfo forKey:recordTableHash];
+		}
+	}
+	
+	if (recordTableHashChangedForRowid && newRecordTableHash)
+	{
+		// Rowid is associated with new record.
+		// Need to either create new entry in record table,
+		// or increment ownerCount of existing entry in record table (and merge any record changes).
+		
+		id newRecordTableInfo = [self recordTableInfoForHash:newRecordTableHash cacheResult:NO];
+		
+		BOOL recordHasChangedValues = ([record.changedKeys count] > 0);
+		
+		BOOL remoteMerge = (flags & YDBCK_remoteMerge) ? YES : NO;
+		BOOL skipUploadRecord = (flags & YDBCK_skipUploadRecord) ? YES : NO;
+		
+		if ([newRecordTableInfo isKindOfClass:[YDBCKDirtyRecordTableInfo class]])
+		{
+			__unsafe_unretained YDBCKDirtyRecordTableInfo *newDirtyRecordTableInfo =
+			  (YDBCKDirtyRecordTableInfo *)newRecordTableInfo;
+			
+			[self mergeChangedValuesFromRecord:record intoRecord:newDirtyRecordTableInfo.dirty_record];
+			[newDirtyRecordTableInfo incrementOwnerCount];
+			
+			if (remoteMerge) newDirtyRecordTableInfo.remoteMerge = YES;
+			
+			if (newDirtyRecordTableInfo.skipUploadRecord && recordHasChangedValues && !skipUploadRecord) {
+				newDirtyRecordTableInfo.skipUploadRecord = NO;
+			}
+		}
+		else if ([newRecordTableInfo isKindOfClass:[YDBCKCleanRecordTableInfo class]])
+		{
+			__unsafe_unretained YDBCKCleanRecordTableInfo *newCleanRecordTableInfo =
+			  (YDBCKCleanRecordTableInfo *)newRecordTableInfo;
+			
+			YDBCKDirtyRecordTableInfo *newDirtyRecordTableInfo = [newCleanRecordTableInfo dirtyCopy];
+			
+			[self mergeChangedValuesFromRecord:record intoRecord:newDirtyRecordTableInfo.dirty_record];
+			[newDirtyRecordTableInfo incrementOwnerCount];
+			
+			if (remoteMerge) newDirtyRecordTableInfo.remoteMerge = YES;
+			if (skipUploadRecord) newDirtyRecordTableInfo.skipUploadRecord = YES;
+			
+			if (!recordHasChangedValues) { // association only
+				newDirtyRecordTableInfo.skipUploadRecord = YES;
+			}
+			
+			[parentConnection->cleanRecordTableInfoCache removeObjectForKey:newRecordTableHash];
+			[parentConnection->dirtyRecordTableInfoDict setObject:newDirtyRecordTableInfo forKey:newRecordTableHash];
+		}
+		else
+		{
+			YDBCKDirtyRecordTableInfo *newDirtyRecordTableInfo;
+			
+			newDirtyRecordTableInfo = [[YDBCKDirtyRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
+			                                                                               recordID:nil
+			                                                                             ownerCount:nil];
+			newDirtyRecordTableInfo.dirty_ownerCount = @(1);
+			newDirtyRecordTableInfo.dirty_record = record;
+			
+			if (remoteMerge) newDirtyRecordTableInfo.remoteMerge = YES;
+			if (skipUploadRecord) newDirtyRecordTableInfo.skipUploadRecord = YES;
+			
+			[parentConnection->cleanRecordTableInfoCache removeObjectForKey:newRecordTableHash];
+			[parentConnection->dirtyRecordTableInfoDict setObject:newDirtyRecordTableInfo forKey:newRecordTableHash];
+		}
+	}
+	
+	if (!recordTableHashChangedForRowid && ([record.changedKeys count] > 0))
+	{
+		if ([prevRecordTableInfo isKindOfClass:[YDBCKDirtyMappingTableInfo class]])
+		{
+			__unsafe_unretained YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo =
+			  (YDBCKDirtyRecordTableInfo *)prevRecordTableInfo;
+			
+			[self mergeChangedValuesFromRecord:record intoRecord:dirtyRecordTableInfo.dirty_record];
+		}
+		else if ([prevRecordTableInfo isKindOfClass:[YDBCKCleanRecordTableInfo class]])
+		{
+			__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
+			  (YDBCKCleanRecordTableInfo *)prevRecordTableInfo;
+			
+			YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = [cleanRecordTableInfo dirtyCopy];
+			
+			[self mergeChangedValuesFromRecord:record intoRecord:dirtyRecordTableInfo.dirty_record];
+			
+			[parentConnection->cleanRecordTableInfoCache removeObjectForKey:newRecordTableHash];
+			[parentConnection->dirtyRecordTableInfoDict setObject:dirtyRecordTableInfo forKey:newRecordTableHash];
+		}
+		else
+		{
+			YDBCKDirtyRecordTableInfo *newDirtyRecordTableInfo;
+			
+			newDirtyRecordTableInfo = [[YDBCKDirtyRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
+			                                                                               recordID:nil
+			                                                                             ownerCount:nil];
+			newDirtyRecordTableInfo.dirty_ownerCount = @(1);
+			newDirtyRecordTableInfo.dirty_record = record;
+			
+			[parentConnection->cleanRecordTableInfoCache removeObjectForKey:newRecordTableHash];
+			[parentConnection->dirtyRecordTableInfoDict setObject:newDirtyRecordTableInfo forKey:newRecordTableHash];
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Utilities - RecordTable
+#pragma mark Utilities - MappingTable
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * This method returns one of the following instance types:
- *
- * - YDBCKDirtyRecordInfo
- * - YDBCKCleanRecordInfo
- * - nil  (if rowid doesn't have any CK info)
- * 
- * The caller must inspect the class type of the returned object.
-**/
-- (id)recordInfoForRowid:(int64_t)rowid cacheResult:(BOOL)cacheResult
+- (id <YDBCKMappingTableInfo>)mappingTableInfoForRowid:(int64_t)rowid cacheResult:(BOOL)cacheResult
 {
 	YDBLogAutoTrace();
 	
 	NSNumber *rowidNumber = @(rowid);
+	YDBCKDirtyMappingTableInfo *dirtyMappingTableInfo = nil;
+	YDBCKCleanMappingTableInfo *cleanMappingTableInfo = nil;
 	
-	// Check dirtyRecordInfo (modified records)
+	// Check dirtyMappingTableInfo (modified info)
 	
-	YDBCKDirtyRecordInfo *dirtyRecordInfo = [parentConnection->dirtyRecordInfo objectForKey:rowidNumber];
-	if (dirtyRecordInfo) {
-		return dirtyRecordInfo;
+	dirtyMappingTableInfo = [parentConnection->dirtyMappingTableInfoDict objectForKey:rowidNumber];
+	if (dirtyMappingTableInfo) {
+		return dirtyMappingTableInfo;
 	}
 	
-	// Check cleanRecordInfo (cache)
+	// Check cleanMappingTableInfo (cache)
 	
-	YDBCKCleanRecordInfo *cleanRecordInfo = [parentConnection->cleanRecordInfo objectForKey:rowidNumber];
-	if (cleanRecordInfo)
+	cleanMappingTableInfo = [parentConnection->cleanMappingTableInfoCache objectForKey:rowidNumber];
+	if (cleanMappingTableInfo)
 	{
-		if (cleanRecordInfo == (id)[NSNull null])
+		if (cleanMappingTableInfo == (id)[NSNull null])
 			return nil;
 		else
-			return cleanRecordInfo;
+			return cleanMappingTableInfo;
 	}
 	
 	// Fetch from disk
 	
-	sqlite3_stmt *statement = [parentConnection recordTable_getInfoForRowidStatement];
+	sqlite3_stmt *statement = [parentConnection mappingTable_getInfoForRowidStatement];
 	if (statement == NULL) {
 		return nil;
 	}
 	
-	// SELECT "databaseIdentifier", "record" FROM "recordTableName" WHERE "rowid" = ?;
+	// SELECT "recordTable_hash" FROM "mappingTableName" WHERE "rowid" = ?;
 	
 	sqlite3_bind_int64(statement, 1, rowid);
 	
-	NSString *databaseIdentifier = nil;
-	CKRecord *record = nil;
+	NSString *recordTable_hash = nil;
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
@@ -1010,43 +1320,31 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		{
 			const unsigned char *text = sqlite3_column_text(statement, 0);
 			
-			databaseIdentifier = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			recordTable_hash = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 		}
-		
-		const void *blob = sqlite3_column_blob(statement, 1);
-		int blobSize = sqlite3_column_bytes(statement, 1);
-		
-		// Performance tuning:
-		// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
-		
-		NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-		
-		record = [YapDatabaseCKRecord deserializeRecord:data];
 	}
 	else if (status == SQLITE_ERROR)
 	{
-		YDBLogError(@"Error executing 'getKeyCountForCollectionStatement': %d %s",
+		YDBLogError(@"Error executing 'mappingTable_getInfoForRowidStatement': %d %s",
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
 	
-	if (record)
+	if (recordTable_hash)
 	{
-		cleanRecordInfo = [[YDBCKCleanRecordInfo alloc] init];
-		cleanRecordInfo.databaseIdentifier = databaseIdentifier;
-		cleanRecordInfo.record = record;
+		cleanMappingTableInfo = [[YDBCKCleanMappingTableInfo alloc] initWithRecordTableHash:recordTable_hash];
 		
 		if (cacheResult){
-			[parentConnection->cleanRecordInfo setObject:cleanRecordInfo forKey:rowidNumber];
+			[parentConnection->cleanMappingTableInfoCache setObject:cleanMappingTableInfo forKey:rowidNumber];
 		}
-		return cleanRecordInfo;
+		return cleanMappingTableInfo;
 	}
 	else
 	{
 		if (cacheResult) {
-			[parentConnection->cleanRecordInfo setObject:[NSNull null] forKey:rowidNumber];
+			[parentConnection->cleanMappingTableInfoCache setObject:[NSNull null] forKey:rowidNumber];
 		}
 		return nil;
 	}
@@ -1054,35 +1352,53 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 
 /**
  * This method is called from handleRemoveObjectsForKeys:inCollection:withRowids:.
- * 
- * It's used to fetch all the recordInfo items for all the given rowids.
- * This information is used in order to determine which rowids have associated CKRecords,
- * and should be deleted (locally and possibly from the cloud too).
+ *
+ * It's used to fetch all the mappingTableInfo items for all the given rowids.
+ * This information is used in order to determine which rowids are mapped to a CKRecords (in the record table).
 **/
-- (NSDictionary *)recordInfoForRowids:(NSArray *)rowids
+- (NSDictionary *)mappingTableInfoForRowids:(NSArray *)rowids
 {
-	NSMutableDictionary *foundRowids = [NSMutableDictionary dictionaryWithCapacity:[rowids count]];
-	NSMutableArray *remainingRowids = [NSMutableArray arrayWithCapacity:[rowids count]];
+	YDBLogAutoTrace();
+	
+	NSUInteger rowidsCount = rowids.count;
+	
+	if (rowidsCount == 0) return nil;
+	if (rowidsCount == 1) {
+		
+		int64_t rowid = [[rowids firstObject] longLongValue];
+		id <YDBCKMappingTableInfo> mappingTableInfo = [self mappingTableInfoForRowid:rowid cacheResult:NO];
+		
+		if (mappingTableInfo)
+			return @{ @(rowid) : mappingTableInfo };
+		else
+			return nil;
+	}
+	
+	NSMutableDictionary *foundRowids = [NSMutableDictionary dictionaryWithCapacity:rowidsCount];
+	NSMutableArray *remainingRowids = [NSMutableArray arrayWithCapacity:rowidsCount];
 	
 	for (NSNumber *rowidNumber in rowids)
 	{
-		// Check dirtyRecordInfo (modified records)
+		YDBCKDirtyMappingTableInfo *dirtyMappingTableInfo = nil;
+		YDBCKCleanMappingTableInfo *cleanMappingTableInfo = nil;
 		
-		YDBCKDirtyRecordInfo *dirtyRecordInfo = [parentConnection->dirtyRecordInfo objectForKey:rowidNumber];
-		if (dirtyRecordInfo)
+		// Check dirtyMappingTableInfo (modified info)
+		
+		dirtyMappingTableInfo = [parentConnection->dirtyMappingTableInfoDict objectForKey:rowidNumber];
+		if (dirtyMappingTableInfo)
 		{
-			[foundRowids setObject:dirtyRecordInfo forKey:rowidNumber];
+			[foundRowids setObject:dirtyMappingTableInfo forKey:rowidNumber];
 			continue;
 		}
 		
-		// Check cleanRecordInfo (cache)
+		// Check cleanMappingTableInfo (cache)
 		
-		YDBCKCleanRecordInfo *cleanRecordInfo = [parentConnection->cleanRecordInfo objectForKey:rowidNumber];
-		if (cleanRecordInfo)
+		cleanMappingTableInfo = [parentConnection->cleanMappingTableInfoCache objectForKey:rowidNumber];
+		if (cleanMappingTableInfo)
 		{
-			if (cleanRecordInfo != (id)[NSNull null])
+			if (cleanMappingTableInfo != (id)[NSNull null])
 			{
-				[foundRowids setObject:cleanRecordInfo forKey:rowidNumber];
+				[foundRowids setObject:cleanMappingTableInfo forKey:rowidNumber];
 			}
 			
 			continue;
@@ -1104,13 +1420,13 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		//
 		// So we don't have to worry about sqlite's upper bound on host parameters.
 		
-		// SELECT "rowid", "databaseIdentifier", "record" FROM "recordTableName" WHERE "rowid" IN (?, ?, ...);
+		// SELECT "recordTable_hash" FROM "mappingTableName" WHERE "rowid" IN (?, ?, ...);
 		
-		NSUInteger capacity = 75 + (count * 3);
+		NSUInteger capacity = 100 + (count * 3);
 		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 		
-		[query appendString:@"SELECT \"rowid\", \"databaseIdentifier\", \"record\""];
-		[query appendFormat:@" FROM \"%@\" WHERE \"rowid\" IN (", [self recordTableName]];
+		[query appendString:@"SELECT \"rowid\", \"recordTable_hash\""];
+		[query appendFormat:@" FROM \"%@\" WHERE \"rowid\" IN (", [self mappingTableName]];
 		
 		for (NSUInteger i = 0; i < count; i++)
 		{
@@ -1145,35 +1461,22 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		
 		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 		{
-			int64_t rowid = sqlite3_column_int64(statement, 0);
+			int64_t rowid = 0;
+			NSString *recordTable_hash = nil;
 			
-			NSString *databaseIdentifier = nil;
+			rowid = sqlite3_column_int64(statement, 0);
 			
-			int textSize = sqlite3_column_bytes(statement, 1);
-			if (textSize > 1)
+			int textLen = sqlite3_column_bytes(statement, 1);
+			const unsigned char *text = sqlite3_column_text(statement, 1);
+			
+			recordTable_hash = [[NSString alloc] initWithBytes:text length:textLen encoding:NSUTF8StringEncoding];
+			
+			if (recordTable_hash)
 			{
-				const unsigned char *text = sqlite3_column_text(statement, 1);
+				YDBCKCleanMappingTableInfo *cleanMappingTableInfo =
+				  [[YDBCKCleanMappingTableInfo alloc] initWithRecordTableHash:recordTable_hash];
 				
-				databaseIdentifier = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-			}
-			
-			const void *blob = sqlite3_column_blob(statement, 2);
-			int blobSize = sqlite3_column_bytes(statement, 2);
-			
-			// Performance tuning:
-			// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
-			
-			NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-			
-			CKRecord *record = [YapDatabaseCKRecord deserializeRecord:data];
-			
-			if (record)
-			{
-				YDBCKCleanRecordInfo *cleanRecordInfo = [[YDBCKCleanRecordInfo alloc] init];
-				cleanRecordInfo.databaseIdentifier = databaseIdentifier;
-				cleanRecordInfo.record = record;
-				
-				[foundRowids setObject:cleanRecordInfo forKey:@(rowid)];
+				[foundRowids setObject:cleanMappingTableInfo forKey:@(rowid)];
 			}
 		}
 		
@@ -1189,54 +1492,231 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	return foundRowids;
 }
 
-- (NSDictionary *)recordInfoForAllRowids
+- (void)insertOrUpdateMappingTableRowWithRowid:(int64_t)rowid info:(YDBCKDirtyMappingTableInfo *)dirtyMappingTableInfo
 {
-	NSMutableDictionary *foundRowids = [NSMutableDictionary dictionary];
-	
-	[parentConnection->dirtyRecordInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+	if (dirtyMappingTableInfo.clean_recordTable_hash == nil)
+	{
+		// Insert row
 		
-		__unsafe_unretained NSNumber *rowidNumber = (NSNumber *)key;
-		__unsafe_unretained YDBCKDirtyRecordInfo *dirtyRecordInfo = (YDBCKDirtyRecordInfo *)obj;
+		NSAssert(dirtyMappingTableInfo.dirty_recordTable_hash != nil, @"Logic error");
 		
-		[foundRowids setObject:dirtyRecordInfo forKey:rowidNumber];
-	}];
-	
-	[parentConnection->cleanRecordInfo enumerateKeysAndObjectsWithBlock:^(id key, id obj, BOOL *stop) {
-		
-		__unsafe_unretained NSNumber *rowidNumber = (NSNumber *)key;
-		__unsafe_unretained YDBCKCleanRecordInfo *cleanRecordInfo = (YDBCKCleanRecordInfo *)obj;
-		
-		if (![foundRowids ydb_containsKey:rowidNumber])
-		{
-			[foundRowids setObject:cleanRecordInfo forKey:rowidNumber];
+		sqlite3_stmt *statement = [parentConnection mappingTable_insertStatement];
+		if (statement == NULL) {
+			return;
 		}
-	}];
-	
-	sqlite3_stmt *statement = [parentConnection recordTable_getInfoForAllStatement];
+		
+		// INSERT OR REPLACE INTO "mappingTableName" ("rowid", "recordTable_hash") VALUES (?, ?);
+		
+		sqlite3_bind_int64(statement, 1, rowid);
+		
+		YapDatabaseString _hash; MakeYapDatabaseString(&_hash, dirtyMappingTableInfo.dirty_recordTable_hash);
+		sqlite3_bind_text(statement, 2, _hash.str, _hash.length, SQLITE_STATIC);
+		
+		YDBLogVerbose(@"Inserting 1 row in mapping table with rowid(%lld)...", rowid);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_ERROR)
+		{
+			YDBLogError(@"%@ - Error executing statement (insert): %d %s", THIS_METHOD,
+						status, sqlite3_errmsg(databaseTransaction->connection->db));
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+		FreeYapDatabaseString(&_hash);
+		
+	}
+	else
+	{
+		// Update row
+		
+		NSAssert(dirtyMappingTableInfo.dirty_recordTable_hash != nil, @"Logic error");
+		
+		sqlite3_stmt *statement = [parentConnection mappingTable_updateForRowidStatement];
+		if (statement == NULL) {
+			return;
+		}
+		
+		// UPDATE "mappingTableName" SET "recordTable_hash" = ? WHERE "rowid" = ?;
+		
+		YapDatabaseString _hash; MakeYapDatabaseString(&_hash, dirtyMappingTableInfo.dirty_recordTable_hash);
+		sqlite3_bind_text(statement, 1, _hash.str, _hash.length, SQLITE_STATIC);
+		
+		sqlite3_bind_int64(statement, 2, rowid);
+		
+		YDBLogVerbose(@"Updating 1 row in mapping table with rowid(%lld)...", rowid);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_ERROR)
+		{
+			YDBLogError(@"%@ - Error executing statement (insert): %d %s", THIS_METHOD,
+						status, sqlite3_errmsg(databaseTransaction->connection->db));
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+		FreeYapDatabaseString(&_hash);
+	}
+}
+
+- (void)removeMappingTableRowWithRowid:(int64_t)rowid
+{
+	sqlite3_stmt *statement = [parentConnection mappingTable_removeForRowidStatement];
 	if (statement == NULL) {
-		return foundRowids;
+		return;
 	}
 	
-	// SELECT "rowid", "databaseIdentifier", "record" FROM "recordTableName";
+	// DELETE FROM "mappingTableName" WHERE "rowid" = ?;
+	
+	sqlite3_bind_int64(statement, 1, rowid);
+	
+	YDBLogVerbose(@"Deleting 1 row from mapping table with rowid(%lld)...", rowid);
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ERROR)
+	{
+		YDBLogError(@"%@ - Error executing statement (remove): %d %s", THIS_METHOD,
+					status, sqlite3_errmsg(databaseTransaction->connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+}
+
+- (void)removeAllMappingTableRows
+{
+	YDBLogAutoTrace();
+	
+	sqlite3_stmt *statement = [parentConnection mappingTable_removeAllStatement];
+	if (statement == NULL) {
+		return;
+	}
+	
+	// DELETE FROM "mappingTableName";
+	
+	YDBLogVerbose(@"Deleting all rows from mapping table...");
+	
+	int status = sqlite3_step(statement);
+	if (status != SQLITE_DONE)
+	{
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
+		            status, sqlite3_errmsg(databaseTransaction->connection->db));
+	}
+	
+	sqlite3_reset(statement);
+}
+
+/**
+ * Uses the index on the 'recordTable_hash' column to find associated rowids.
+**/
+- (void)enumerateMappingTableRowidsForRecordTableHash:(NSString *)hash
+                                           usingBlock:(void (^)(int64_t rowid, BOOL *stop))block
+{
+	if (block == NULL) return;
+	
+	sqlite3_stmt *statement = [parentConnection mappingTable_enumerateForHashStatement];
+	if (statement == NULL) {
+		return;
+	}
+	
+	__block BOOL stop = NO;
+	
+	// SELECT "rowid" FROM "mappingTableName" WHERE "recordTable_hash" = ?;
+	
+	YapDatabaseString _hash; MakeYapDatabaseString(&_hash, hash);
+	sqlite3_bind_text(statement, 1, _hash.str, _hash.length, SQLITE_STATIC);
 	
 	int status;
 	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
 		int64_t rowid = sqlite3_column_int64(statement, 0);
 		
-		if ([foundRowids ydb_containsKey:@(rowid)])
-		{
-			continue;
-		}
+		block(rowid, &stop);
 		
-		NSString *databaseIdentifier = nil;
-		
-		int textSize = sqlite3_column_bytes(statement, 1);
-		if (textSize > 1)
+		if (stop) break;
+	}
+	
+	if ((status != SQLITE_DONE) && !stop)
+	{
+		YDBLogError(@"Error executing 'getKeyCountForCollectionStatement': %d %s",
+		            status, sqlite3_errmsg(databaseTransaction->connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_hash);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Utilities - RecordTable
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * This method returns one of the following instance types:
+ *
+ * - YDBCKCleanRecordTableInfo
+ * - YDBCKDirtyRecordTableInfo
+ * - nil
+ *
+ * The caller must inspect the class type of the returned object.
+**/
+- (id <YDBCKRecordTableInfo>)recordTableInfoForHash:(NSString *)hash cacheResult:(BOOL)cacheResult
+{
+	YDBLogAutoTrace();
+	
+	if (hash == nil) return nil;
+	
+	YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = nil;
+	YDBCKCleanRecordTableInfo *cleanRecordTableInfo = nil;
+	
+	// Check dirtyRecordTableInfo (modified records)
+	
+	dirtyRecordTableInfo = [parentConnection->dirtyRecordTableInfoDict objectForKey:hash];
+	if (dirtyRecordTableInfo) {
+		return dirtyRecordTableInfo;
+	}
+	
+	// Check cleanRecordTableInfo (cache)
+	
+	cleanRecordTableInfo = [parentConnection->cleanRecordTableInfoCache objectForKey:hash];
+	if (cleanRecordTableInfo)
+	{
+		if (cleanRecordTableInfo == (id)[NSNull null])
+			return nil;
+		else
+			return cleanRecordTableInfo;
+	}
+	
+	// Fetch from disk
+	
+	sqlite3_stmt *statement = [parentConnection recordTable_getInfoForHashStatement];
+	if (statement == NULL) {
+		return nil;
+	}
+	
+	// SELECT "databaseIdentifier", "ownerCount", "record" FROM "recordTableName" WHERE "hash" = ?;
+	
+	YapDatabaseString _hash; MakeYapDatabaseString(&_hash, hash);
+	sqlite3_bind_text(statement, 1, _hash.str, _hash.length, SQLITE_STATIC);
+	
+	NSString *databaseIdentifier = nil;
+	NSNumber *ownerCountNumber = nil;
+	CKRecord *record = nil;
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		int textSize = sqlite3_column_bytes(statement, 0);
+		if (textSize > 0)
 		{
-			const unsigned char *text = sqlite3_column_text(statement, 1);
+			const unsigned char *text = sqlite3_column_text(statement, 0);
 			
 			databaseIdentifier = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+		}
+		
+		int64_t ownerCount = sqlite3_column_int64(statement, 1);
+		if (ownerCount > 0) {
+			ownerCountNumber = @(ownerCount);
 		}
 		
 		const void *blob = sqlite3_column_blob(statement, 2);
@@ -1247,60 +1727,307 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		
 		NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
 		
-		CKRecord *record = [YapDatabaseCKRecord deserializeRecord:data];
-		
-		if (record)
-		{
-			YDBCKCleanRecordInfo *cleanRecordInfo = [[YDBCKCleanRecordInfo alloc] init];
-			cleanRecordInfo.databaseIdentifier = databaseIdentifier;
-			cleanRecordInfo.record = record;
-			
-			[foundRowids setObject:cleanRecordInfo forKey:@(rowid)];
-		}
+		record = [YapDatabaseCKRecord deserializeRecord:data];
 	}
-	
-	if (status != SQLITE_DONE)
+	else if (status == SQLITE_ERROR)
 	{
-		YDBLogError(@"%@ (%@): Error executing statement: %d %s",
-		            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(databaseTransaction->connection->db));
+		YDBLogError(@"Error executing 'recordTable_getInfoForHashStatement': %d %s",
+		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
+	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_hash);
 	
-	return foundRowids;
+	if (record)
+	{
+		cleanRecordTableInfo = [[YDBCKCleanRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
+		                                                                          ownerCount:ownerCountNumber
+		                                                                              record:record];
+		if (cacheResult){
+			[parentConnection->cleanRecordTableInfoCache setObject:cleanRecordTableInfo forKey:hash];
+		}
+		return cleanRecordTableInfo;
+	}
+	else
+	{
+		if (cacheResult) {
+			[parentConnection->cleanRecordTableInfoCache setObject:[NSNull null] forKey:hash];
+		}
+		return nil;
+	}
 }
 
 /**
- * Inserts or Updates the row with the given rowid.
+ * This method is called from handleRemoveObjectsForKeys:inCollection:withRowids:.
  * 
- * This method returns a sanitized version of the record.
- * That is, a bare CKRecord with only the system fields in tact.
+ * It's used to fetch all the recordInfo items for all the given rowids.
+ * This information is used in order to determine which rowids have associated CKRecords,
+ * and should be deleted (locally and possibly from the cloud too).
 **/
-- (CKRecord *)setRecord:(CKRecord *)record databaseIdentfier:(NSString *)databaseIdentifier forRowid:(int64_t)rowid
+- (NSDictionary *)recordTableInfoForHashes:(NSArray *)hashes
+{
+	NSUInteger hashesCount = hashes.count;
+	
+	if (hashesCount == 0) return nil;
+	if (hashesCount == 1) {
+		
+		NSString *hash = [hashes firstObject];
+		id <YDBCKRecordTableInfo> recordTableInfo = [self recordTableInfoForHash:hash cacheResult:NO];
+		
+		if (recordTableInfo)
+			return @{ hash : recordTableInfo };
+		else
+			return nil;
+	}
+	
+	NSMutableDictionary *foundHashes = [NSMutableDictionary dictionaryWithCapacity:[hashes count]];
+	NSMutableArray *remainingHashes = [NSMutableArray arrayWithCapacity:[hashes count]];
+	
+	for (NSString *hash in hashes)
+	{
+		YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = nil;
+		YDBCKCleanRecordTableInfo *cleanRecordTableInfo = nil;
+		
+		// Check dirtyRecordTableInfo (modified records)
+		
+		dirtyRecordTableInfo = [parentConnection->dirtyRecordTableInfoDict objectForKey:hash];
+		if (dirtyRecordTableInfo)
+		{
+			[foundHashes setObject:dirtyRecordTableInfo forKey:hash];
+			continue;
+		}
+		
+		// Check cleanRecordTableInfo (cache)
+		
+		cleanRecordTableInfo = [parentConnection->cleanRecordTableInfoCache objectForKey:hash];
+		if (cleanRecordTableInfo)
+		{
+			if (cleanRecordTableInfo != (id)[NSNull null])
+			{
+				[foundHashes setObject:cleanRecordTableInfo forKey:hash];
+			}
+			
+			continue;
+		}
+		
+		// Need to fetch from disk
+		
+		[remainingHashes addObject:hash];
+	}
+	
+	NSUInteger count = [remainingHashes count];
+	if (count > 0)
+	{
+		sqlite3 *db = databaseTransaction->connection->db;
+		
+		// Note:
+		// The handleRemoveObjectsForKeys:inCollection:withRowids: has the following guarantee:
+		//     count <= (SQLITE_LIMIT_VARIABLE_NUMBER - 1)
+		//
+		// So we don't have to worry about sqlite's upper bound on host parameters.
+		
+		// SELECT "hash", "databaseIdentifier", "ownerCount", "record" FROM "recordTableName"
+		//  WHERE "hash" IN (?, ?, ...);
+		
+		NSUInteger capacity = 100 + (count * 3);
+		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
+		
+		[query appendString:@"SELECT \"hash\", \"databaseIdentifier\", \"ownerCount\", \"record\""];
+		[query appendFormat:@" FROM \"%@\" WHERE \"hash\" IN (", [self recordTableName]];
+		
+		for (NSUInteger i = 0; i < count; i++)
+		{
+			if (i == 0)
+				[query appendFormat:@"?"];
+			else
+				[query appendFormat:@", ?"];
+		}
+		
+		[query appendString:@");"];
+		
+		sqlite3_stmt *statement;
+		int status;
+		
+		status = sqlite3_prepare_v2(db, [query UTF8String], -1, &statement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@ (%@): Error creating statement\n"
+			            @" - status(%d), errmsg: %s\n"
+			            @" - query: %@",
+			            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db), query);
+			
+			return foundHashes;
+		}
+		
+		for (NSUInteger i = 0; i < count; i++)
+		{
+			NSString *hash = [remainingHashes objectAtIndex:i];
+			
+			sqlite3_bind_text(statement, (int)(i + 1), [hash UTF8String], -1, SQLITE_TRANSIENT);
+		}
+		
+		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+		{
+			NSString *hash = nil;
+			NSString *databaseIdentifier = nil;
+			int64_t ownerCount = 0;
+			CKRecord *record = nil;
+			
+			int textLen;
+			const unsigned char *text;
+			
+			textLen = sqlite3_column_bytes(statement, 0);
+			text = sqlite3_column_text(statement, 0);
+			
+			hash = [[NSString alloc] initWithBytes:text length:textLen encoding:NSUTF8StringEncoding];
+			
+			textLen = sqlite3_column_bytes(statement, 1);
+			if (textLen > 0)
+			{
+				text = sqlite3_column_text(statement, 1);
+				
+				databaseIdentifier = [[NSString alloc] initWithBytes:text length:textLen encoding:NSUTF8StringEncoding];
+			}
+			
+			ownerCount = sqlite3_column_int64(statement, 2);
+			
+			const void *blob = sqlite3_column_blob(statement, 3);
+			int blobSize = sqlite3_column_bytes(statement, 3);
+			
+			// Performance tuning:
+			// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+			
+			NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+			record = [YapDatabaseCKRecord deserializeRecord:data];
+			
+			if (record)
+			{
+				YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
+				  [[YDBCKCleanRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
+				                                                     ownerCount:@(ownerCount)
+				                                                         record:record];
+				
+				[foundHashes setObject:cleanRecordTableInfo forKey:hash];
+			}
+		}
+		
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"%@ (%@): Error executing statement: %d %s",
+						THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db));
+		}
+		
+		sqlite3_finalize(statement);
+	}
+	
+	return foundHashes;
+}
+
+- (void)insertRecordTableRowWithHash:(NSString *)hash
+                                info:(YDBCKDirtyRecordTableInfo *)dirtyRecordTableInfo
+                  outSanitizedRecord:(CKRecord **)outSanitizedRecord
 {
 	YDBLogAutoTrace();
 	
+	NSParameterAssert(hash != nil);
+	NSParameterAssert(dirtyRecordTableInfo != nil);
+	
+	NSAssert(dirtyRecordTableInfo.databaseIdentifier != nil, @"Logic error");
+	NSAssert(dirtyRecordTableInfo.dirty_ownerCount != nil, @"Logic error");
+	NSAssert(dirtyRecordTableInfo.dirty_record != nil, @"Logic error");
+	
 	sqlite3_stmt *statement = [parentConnection recordTable_insertStatement];
 	if (statement == NULL) {
-		return nil;
+		if (outSanitizedRecord) *outSanitizedRecord = nil;
+		return;
 	}
 	
 	// INSERT OR REPLACE INTO "recordTableName"
-	//   ("rowid", "ckRecordIDHash", "databaseIdentifier", "record") VALUES (?, ?, ?, ?);
+	//   ("hash", "databaseIdentifier", "ownerCount", "record") VALUES (?, ?, ?, ?);
 	
-	sqlite3_bind_int64(statement, 1, rowid);
+	YapDatabaseString _hash; MakeYapDatabaseString(&_hash, hash);
+	sqlite3_bind_text(statement, 1, _hash.str, _hash.length, SQLITE_STATIC);
 	
-	int64_t recordHash = [self hashRecordID:record.recordID];
-	sqlite3_bind_int64(statement, 2, recordHash);
-	
-	YapDatabaseString dbID; MakeYapDatabaseString(&dbID, databaseIdentifier);
-	if (databaseIdentifier)
-		sqlite3_bind_text(statement, 3, dbID.str, dbID.length, SQLITE_STATIC);
+	YapDatabaseString _dbID; MakeYapDatabaseString(&_dbID, dirtyRecordTableInfo.databaseIdentifier);
+	if (dirtyRecordTableInfo.databaseIdentifier)
+		sqlite3_bind_text(statement, 2, _dbID.str, _dbID.length, SQLITE_STATIC);
 	else
-		sqlite3_bind_null(statement, 3);
+		sqlite3_bind_null(statement, 2);
+	
+	sqlite3_bind_int64(statement, 3, [dirtyRecordTableInfo.dirty_ownerCount longLongValue]);
+	
+	__attribute__((objc_precise_lifetime)) NSData *recordBlob =
+	[YapDatabaseCKRecord serializeRecord:dirtyRecordTableInfo.dirty_record];
+	sqlite3_bind_blob(statement, 4, recordBlob.bytes, (int)recordBlob.length, SQLITE_STATIC);
+	
+	int status = sqlite3_step(statement);
+	if (status != SQLITE_DONE)
+	{
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
+					status, sqlite3_errmsg(databaseTransaction->connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_hash);
+	FreeYapDatabaseString(&_dbID);
+	
+	if (outSanitizedRecord) {
+		*outSanitizedRecord = [YapDatabaseCKRecord deserializeRecord:recordBlob];
+	}
+}
+
+- (void)updateRecordTableRowWithHash:(NSString *)hash ownerCount:(NSNumber *)ownerCount
+{
+	YDBLogAutoTrace();
+	
+	NSParameterAssert(hash != nil);
+	NSParameterAssert(ownerCount != nil);
+	
+	sqlite3_stmt *statement = [parentConnection recordTable_updateOwnerCountStatement];
+	if (statement == NULL) {
+		return;
+	}
+	
+	// UPDATE "recordTableName" SET "ownerCount" = ? WHERE "hash" = ?;
+	
+	sqlite3_bind_int64(statement, 1, [ownerCount longLongValue]);
+	
+	YapDatabaseString _hash; MakeYapDatabaseString(&_hash, hash);
+	sqlite3_bind_text(statement, 2, _hash.str, _hash.length, SQLITE_STATIC);
+	
+	int status = sqlite3_step(statement);
+	if (status != SQLITE_DONE)
+	{
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
+					status, sqlite3_errmsg(databaseTransaction->connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_hash);
+}
+
+- (void)updateRecordTableRowWithHash:(NSString *)hash
+                              record:(CKRecord *)record
+                  outSanitizedRecord:(CKRecord **)outSanitizedRecord
+{
+	YDBLogAutoTrace();
+	
+	sqlite3_stmt *statement = [parentConnection recordTable_updateRecordStatement];
+	if (statement == NULL) {
+		if (outSanitizedRecord) *outSanitizedRecord = nil;
+		return;
+	}
+	
+	// UPDATE "recordTableName" SET "record" = ? WHERE "hash" = ?;
 	
 	__attribute__((objc_precise_lifetime)) NSData *recordBlob = [YapDatabaseCKRecord serializeRecord:record];
-	sqlite3_bind_blob(statement, 4, recordBlob.bytes, (int)recordBlob.length, SQLITE_STATIC);
+	sqlite3_bind_blob(statement, 1, recordBlob.bytes, (int)recordBlob.length, SQLITE_STATIC);
+	
+	YapDatabaseString _hash; MakeYapDatabaseString(&_hash, hash);
+	sqlite3_bind_text(statement, 2, _hash.str, _hash.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
@@ -1311,25 +2038,33 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
-	FreeYapDatabaseString(&dbID);
+	FreeYapDatabaseString(&_hash);
 	
-	return [YapDatabaseCKRecord deserializeRecord:recordBlob];
+	if (outSanitizedRecord) {
+		*outSanitizedRecord = [YapDatabaseCKRecord deserializeRecord:recordBlob];
+	}
 }
 
-- (void)removeRecordForRowid:(int64_t)rowid
+- (void)removeRecordTableRowWithHash:(NSString *)hash
 {
 	YDBLogAutoTrace();
 	
-	sqlite3_stmt *statement = [parentConnection recordTable_removeForRowidStatement];
+	if (hash == nil) {
+		YDBLogWarn(@"%@ - Invalid parameter: hash == nil", THIS_METHOD);
+		return;
+	}
+	
+	sqlite3_stmt *statement = [parentConnection recordTable_removeForHashStatement];
 	if (statement == NULL) {
 		return;
 	}
 	
-	// DELETE FROM "recordTableName" WHERE "rowid" = ?;
+	// DELETE FROM "recordTableName" WHERE "hash" = ?;
 	
-	sqlite3_bind_int64(statement, 1, rowid);
+	YapDatabaseString _hash; MakeYapDatabaseString(&_hash, hash);
+	sqlite3_bind_text(statement, 1, _hash.str, _hash.length, SQLITE_STATIC);
 	
-	YDBLogVerbose(@"Deleting 1 row from records table...");
+	YDBLogVerbose(@"Deleting 1 row from record table with hash(%@)...", hash);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ERROR)
@@ -1340,24 +2075,24 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_hash);
 }
 
 /**
  * This method is invoked from flushPendingChangesToExtensionTables.
- * The given rowids are an summation of all the rowids that have been deleted throughout this tranaction.
+ * The given hashes are an summation of all the rows that have been deleted throughout this tranaction.
 **/
-- (void)removeRecordsForRowids:(NSArray *)rowids
+/*
+- (void)removeRecordTableRowsWithHashes:(NSArray *)hashes
 {
 	YDBLogAutoTrace();
 	
-	NSUInteger rowidsCount = [rowids count];
+	NSUInteger hashesCount = [hashes count];
 	
-	if (rowidsCount == 0) return;
-	if (rowidsCount == 1)
+	if (hashesCount == 0) return;
+	if (hashesCount == 1)
 	{
-		int64_t rowid = [[rowids firstObject] longLongValue];
-		[self removeRecordForRowid:rowid];
-		
+		[self removeRecordTableRowWithHash:[hashes firstObject]];
 		return;
 	}
 	
@@ -1368,10 +2103,10 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	NSUInteger offset = 0;
 	do
 	{
-		NSUInteger left = rowidsCount - offset;
+		NSUInteger left = hashesCount - offset;
 		NSUInteger numParams = MIN(left, maxHostParams);
 		
-		// DELETE FROM "recordTableName" WHERE "rowid" IN (?, ?, ...);
+		// DELETE FROM "recordTableName" WHERE "hash" IN (?, ?, ...);
 		
 		NSUInteger capacity = 60 + (numParams * 3);
 		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
@@ -1404,9 +2139,9 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		
 		for (NSUInteger i = 0; i < numParams; i++)
 		{
-			int64_t rowid = [[rowids objectAtIndex:i] longLongValue];
+			NSString *hash = [hashes objectAtIndex:i];
 			
-			sqlite3_bind_int64(statement, (int)(i + 1), rowid);
+			sqlite3_bind_text(statement, (int)(i + 1), [hash UTF8String], -1, SQLITE_TRANSIENT);
 		}
 		
 		YDBLogVerbose(@"Deleting %lu rows from records table...", (unsigned long)numParams);
@@ -1423,16 +2158,12 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		
 		offset += numParams;
 		
-	} while (offset < rowidsCount);
+	} while (offset < hashesCount);
 	
 }
+*/
 
-/**
- * This method is invoked from flushPendingChangesToExtensionTables.
- * It is only invoked if the user cleared the entire database at some point during this tranaction.
- * (And thus our handleRemoveAllObjectsInAllCollections method was invoked).
-**/
-- (void)removeRecordsForAllRowids
+- (void)removeAllRecordTableRows
 {
 	YDBLogAutoTrace();
 	
@@ -1455,55 +2186,41 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	sqlite3_reset(statement);
 }
 
-/**
- *
-**/
-- (BOOL)getRowid:(int64_t *)rowidPtr forRecordID:(CKRecordID *)recordID
-                              databaseIdentifier:(NSString *)databaseIdentifier
+- (NSNumber *)fetchOwnerCountFromDiskForHash:(NSString *)hash
 {
-	if (recordID == nil) {
-		if (rowidPtr) *rowidPtr = 0;
-		return NO;
-	}
+	if (hash == nil) return nil;
 	
-	sqlite3_stmt *statement = [parentConnection recordTable_getRowidForRecordStatement];
+	sqlite3_stmt *statement = [parentConnection recordTable_getOwnerCountForHashStatement];
 	if (statement == NULL) {
-		if (rowidPtr) *rowidPtr = 0;
-		return NO;
+		return nil;
 	}
 	
-	BOOL result = NO;
-	int64_t rowid = 0;
+	// SELECT "ownerCount" FROM "recordTableName" WHERE "hash" = ?;
 	
-	// SELECT "rowid" FROM "recordTableName" WHERE "recordIDHash" = ? AND "databaseIdentifier" = ?;
+	YapDatabaseString _hash; MakeYapDatabaseString(&_hash, hash);
+	sqlite3_bind_text(statement, 1, _hash.str, _hash.length, SQLITE_STATIC);
 	
-	int64_t recordHash = [self hashRecordID:recordID];
-	sqlite3_bind_int64(statement, 1, recordHash);
-	
-	YapDatabaseString _dbid; MakeYapDatabaseString(&_dbid, databaseIdentifier);
-	if (databaseIdentifier)
-		sqlite3_bind_text(statement, 2, _dbid.str, _dbid.length, SQLITE_STATIC);
-	else
-		sqlite3_bind_null(statement, 2);
+	int64_t ownerCount = 0;
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		rowid = sqlite3_column_int64(statement, 0);
-		result = YES;
+		ownerCount = sqlite3_column_int64(statement, 0);
 	}
-	else if (status != SQLITE_DONE)
+	else if (status == SQLITE_ERROR)
 	{
-		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
+		YDBLogError(@"Error executing 'recordTable_getInfoForHashStatement': %d %s",
 					status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_dbid);
+	FreeYapDatabaseString(&_hash);
 	
-	if (rowidPtr) *rowidPtr = rowid;
-	return result;
+	if (ownerCount > 0)
+		return @(ownerCount);
+	else
+		return nil;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1513,7 +2230,7 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 /**
  * Invoke this method with the NEW changeSets from the pendingQueue (pendingQueue.newChangeSets).
 **/
-- (void)insertRowWithChangeSet:(YDBCKChangeSet *)changeSet
+- (void)insertQueueTableRowWithChangeSet:(YDBCKChangeSet *)changeSet
 {
 	YDBLogAutoTrace();
 	
@@ -1566,7 +2283,7 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 /**
  * Invoke this method with OLDER changeSets from the pendingQueue that have changes we need to write to the DB.
 **/
-- (void)updateRowWithChangeSet:(YDBCKChangeSet *)changeSet
+- (void)updateQueueTableRowWithChangeSet:(YDBCKChangeSet *)changeSet
 {
 	YDBLogAutoTrace();
 	
@@ -1575,14 +2292,15 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	
 	if (changeSet.hasChangesToDeletedRecordIDs && !changeSet.hasChangesToModifiedRecords)
 	{
-		// Update "deletedRecordIDs" value
+		// Update column(s):
+		// - deletedRecordIDs
 		
 		sqlite3_stmt *statement = [parentConnection queueTable_updateDeletedRecordIDsStatement];
 		if (statement == NULL) {
 			return;
 		}
 		
-		// UPDATE "queueTqbleName" SET "deletedRecordIDs" = ? WHERE "uuid" = ?;
+		// UPDATE "queueTableName" SET "deletedRecordIDs" = ? WHERE "uuid" = ?;
 		
 		__attribute__((objc_precise_lifetime)) NSData *blob = [changeSet serializeDeletedRecordIDs];
 		if (blob)
@@ -1606,7 +2324,8 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	}
 	else if (!changeSet.hasChangesToDeletedRecordIDs && changeSet.hasChangesToModifiedRecords)
 	{
-		// Update "modifiedRecords" value
+		// Update column(s):
+		// - modifiedRecords
 		
 		sqlite3_stmt *statement = [parentConnection queueTable_updateModifiedRecordsStatement];
 		if (statement == NULL) {
@@ -1637,7 +2356,9 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	}
 	else if (changeSet.hasChangesToDeletedRecordIDs && changeSet.hasChangesToModifiedRecords)
 	{
-		// Update "deletedRecordIDs" && "modifiedRecords" value
+		// Update column(s):
+		// - deletedRecordIDs
+		// - modifiedRecords
 		
 		sqlite3_stmt *statement = [parentConnection queueTable_updateBothStatement];
 		if (statement == NULL) {
@@ -1674,150 +2395,10 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Completion
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (void)handlePartiallyCompletedOperationWithChangeSet:(YDBCKChangeSet *)changeSet
-                                          savedRecords:(NSDictionary *)savedRecords
-                                      deletedRecordIDs:(NSSet *)deletedRecordIDs
-{
-	YDBLogAutoTrace();
-	
-	// Proper API usage check
-	if (!databaseTransaction->isReadWriteTransaction)
-	{
-		@throw [self requiresReadWriteTransactionException:NSStringFromSelector(_cmd)];
-		return;
-	}
-	
-	// Mark this transaction as an operationPartialCompletionTransaction.
-	// This is handled a little differently from a regular (user-initiated) transaction.
-	
-	parentConnection->isOperationPartialCompletionTransaction = YES;
-	
-	// Update any records that were saved.
-	// We need to store the new system fields of the CKRecord.
-	
-	NSDictionary *mapping = [changeSet recordIDToRowidMapping];
-	for (CKRecord *record in savedRecords)
-	{
-		NSNumber *rowidNumber = [mapping objectForKey:record.recordID];
-		
-		[self updateRecord:record withDatabaseIdentifier:changeSet.databaseIdentifier
-			potentialRowid:rowidNumber];
-	}
-	
-	// Update other changeSets (if needed), including the
-	
-	YDBCKChangeQueue *masterQueue = parentConnection->parent->masterQueue;
-	YDBCKChangeQueue *pendingQueue = [masterQueue newPendingQueue];
-	
-	for (CKRecord *savedRecord in [savedRecords objectEnumerator])
-	{
-		NSNumber *rowidNumber = [mapping objectForKey:savedRecord.recordID];
-		
-		[masterQueue updatePendingQueue:pendingQueue
-						 withSavedRowid:rowidNumber
-								 record:savedRecord
-					 databaseIdentifier:changeSet.databaseIdentifier
-				  isOpPartialCompletion:YES];
-	}
-	
-	for (CKRecordID *deletedRecordID in deletedRecordIDs)
-	{
-		NSNumber *rowidNumber = [mapping objectForKey:deletedRecordID];
-		
-		[masterQueue updatePendingQueue:pendingQueue
-				  withSavedDeletedRowid:rowidNumber
-							   recordID:deletedRecordID
-					 databaseIdentifier:changeSet.databaseIdentifier];
-	}
-	
-	for (YDBCKChangeSet *oldChangeSet in pendingQueue.changeSetsFromPreviousCommits)
-	{
-		if (oldChangeSet.hasChangesToDeletedRecordIDs || oldChangeSet.hasChangesToModifiedRecords)
-		{
-			[self updateRowWithChangeSet:oldChangeSet];
-		}
-	}
-	
-	[masterQueue mergePendingQueue:pendingQueue];
-}
-
-- (void)handleCompletedOperationWithChangeSet:(YDBCKChangeSet *)changeSet
-                                 savedRecords:(NSArray *)savedRecords
-                             deletedRecordIDs:(NSArray *)deletedRecordIDs
-{
-	YDBLogAutoTrace();
-	
-	// Proper API usage check
-	if (!databaseTransaction->isReadWriteTransaction)
-	{
-		@throw [self requiresReadWriteTransactionException:NSStringFromSelector(_cmd)];
-		return;
-	}
-	
-	// Mark this transaction as an operationCompletionTransaction.
-	// This is handled a little differently from a regular (user-initiated) transaction.
-	
-	parentConnection->isOperationCompletionTransaction = YES;
-	
-	// Drop the row in the queue table that was storing all the information for this changeSet.
-	
-	[self removeQueueRowWithUUID:changeSet.uuid];
-	
-	// Update any records that were saved.
-	// We need to store the new system fields of the CKRecord.
-	
-	NSDictionary *mapping = [changeSet recordIDToRowidMapping];
-	for (CKRecord *record in savedRecords)
-	{
-		NSNumber *rowidNumber = [mapping objectForKey:record.recordID];
-		
-		[self updateRecord:record withDatabaseIdentifier:changeSet.databaseIdentifier
-		                                  potentialRowid:rowidNumber];
-	}
-	
-	// Update other changeSets (if needed)
-	
-	YDBCKChangeQueue *masterQueue = parentConnection->parent->masterQueue;
-	YDBCKChangeQueue *pendingQueue = [masterQueue newPendingQueue];
-	
-	for (CKRecord *savedRecord in savedRecords)
-	{
-		NSNumber *rowidNumber = [mapping objectForKey:savedRecord.recordID];
-		
-		[masterQueue updatePendingQueue:pendingQueue
-		                 withSavedRowid:rowidNumber
-		                         record:savedRecord
-		             databaseIdentifier:changeSet.databaseIdentifier
-		          isOpPartialCompletion:NO];
-	}
-	
-	// Note: No need to updatePendingQueue:withSavedDeletedRowid:::,
-	// because that method only handles updating the inFlight changeSet.
-	//
-	// But we already dropped the corresponding row from the database anyway,
-	// using the removeQueueRowWithUUID method.
-	
-	for (YDBCKChangeSet *oldChangeSet in pendingQueue.changeSetsFromPreviousCommits)
-	{
-		if (oldChangeSet.hasChangesToDeletedRecordIDs || oldChangeSet.hasChangesToModifiedRecords)
-		{
-			NSAssert(![oldChangeSet.uuid isEqualToString:changeSet.uuid], @"Logic error");
-			
-			[self updateRowWithChangeSet:oldChangeSet];
-		}
-	}
-	
-	[masterQueue mergePendingQueue:pendingQueue];
-}
-
 /**
  * This method is invoked by [YapDatabaseCloudKit handleCompletedOperation:withSavedRecords:].
 **/
-- (void)removeQueueRowWithUUID:(NSString *)uuid
+- (void)removeQueueTableRowWithUUID:(NSString *)uuid
 {
 	YDBLogAutoTrace();
 	
@@ -1845,78 +2426,201 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	FreeYapDatabaseString(&_uuid);
 }
 
-- (void)updateRecord:(CKRecord *)record withDatabaseIdentifier:(NSString *)databaseIdentifier
-                                                potentialRowid:(NSNumber *)rowidNumber
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Completion
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)handlePartiallyCompletedOperationWithChangeSet:(YDBCKChangeSet *)changeSet
+                                          savedRecords:(NSArray *)savedRecords
+                                      deletedRecordIDs:(NSArray *)deletedRecordIDs
 {
 	YDBLogAutoTrace();
 	
-	// Plan of action:
-	// - For each record, check to see what the original rowid is
-	// - Verify the rowid is still associated with the recordID & database
-	// - If so, write the updated CKRecord to the row (just the system fields)
-	// - If not, try to find the CKRecord elsewhere in the database
-	
-	YDBCKCleanRecordInfo *cleanRecordInfo = nil;
-	if (rowidNumber)
+	// Proper API usage check
+	if (!databaseTransaction->isReadWriteTransaction)
 	{
-		cleanRecordInfo = [parentConnection->cleanRecordInfo objectForKey:rowidNumber];
+		@throw [self requiresReadWriteTransactionException:NSStringFromSelector(_cmd)];
+		return;
+	}
+	
+	// Mark this transaction as an operationPartialCompletionTransaction.
+	// This is handled a little differently from a regular (user-initiated) transaction.
+	
+	parentConnection->isOperationPartialCompletionTransaction = YES;
+	
+	// Update any records that were saved.
+	// We need to store the new system fields of the CKRecord.
+	
+	if (parentConnection->changeset_deletedHashes == nil)
+		parentConnection->changeset_deletedHashes = [NSMutableSet set];
+	
+	if (parentConnection->changeset_recordTableInfo == nil)
+		parentConnection->changeset_recordTableInfo = [NSMutableDictionary dictionary];
+	
+	for (CKRecord *record in savedRecords)
+	{
+		NSString *hash = [self hashRecordID:record.recordID databaseIdentifier:changeSet.databaseIdentifier];
 		
-		if (cleanRecordInfo && (cleanRecordInfo != (id)[NSNull null]))
+		CKRecord *sanitizedRecord = nil;
+		[self updateRecordTableRowWithHash:hash record:record outSanitizedRecord:&sanitizedRecord];
+		
+		if (sanitizedRecord)
 		{
-			if (![databaseIdentifier isEqualToString:cleanRecordInfo.databaseIdentifier] ||
-				![record.recordID isEqual:cleanRecordInfo.record.recordID])
+			YDBCKCleanRecordTableInfo *cleanRecordTableInfo;
+			
+			cleanRecordTableInfo = [parentConnection->cleanRecordTableInfoCache objectForKey:hash];
+			if (cleanRecordTableInfo)
 			{
-				// The rowid is now associated with a different CKRecord.
-				// So we'll have to check the database to see if we can write it somewhere else.
+				cleanRecordTableInfo = [cleanRecordTableInfo cleanCopyWithSanitizedRecord:sanitizedRecord];
 				
-				rowidNumber = nil;
+				[parentConnection->cleanRecordTableInfoCache setObject:cleanRecordTableInfo forKey:hash];
 			}
+			else
+			{
+				NSNumber *ownerCount = [self fetchOwnerCountFromDiskForHash:hash];
+				cleanRecordTableInfo =
+				  [[YDBCKCleanRecordTableInfo alloc] initWithDatabaseIdentifier:changeSet.databaseIdentifier
+				                                                     ownerCount:ownerCount
+				                                                         record:sanitizedRecord];
+			}
+			
+			[parentConnection->changeset_recordTableInfo setObject:cleanRecordTableInfo forKey:hash];
+		}
+		else
+		{
+			[parentConnection->changeset_deletedHashes addObject:hash];
 		}
 	}
 	
-	if (rowidNumber == nil)
+	// Update other changeSets (if needed), including the
+	
+	YDBCKChangeQueue *masterQueue = parentConnection->parent->masterQueue;
+	YDBCKChangeQueue *pendingQueue = [masterQueue newPendingQueue];
+	
+	for (CKRecord *savedRecord in savedRecords)
 	{
-		int64_t rowid = 0;
-		if ([self getRowid:&rowid forRecordID:record.recordID databaseIdentifier:databaseIdentifier])
+		[masterQueue updatePendingQueue:pendingQueue
+		                withSavedRecord:savedRecord
+		             databaseIdentifier:changeSet.databaseIdentifier
+				  isOpPartialCompletion:YES];
+	}
+	
+	for (CKRecordID *deletedRecordID in deletedRecordIDs)
+	{
+		[masterQueue updatePendingQueue:pendingQueue
+		       withSavedDeletedRecordID:deletedRecordID
+		             databaseIdentifier:changeSet.databaseIdentifier];
+	}
+	
+	for (YDBCKChangeSet *oldChangeSet in pendingQueue.changeSetsFromPreviousCommits)
+	{
+		if (oldChangeSet.hasChangesToDeletedRecordIDs || oldChangeSet.hasChangesToModifiedRecords)
 		{
-			rowidNumber = @(rowid);
+			[self updateQueueTableRowWithChangeSet:oldChangeSet];
 		}
 	}
 	
-	if (rowidNumber)
+	[masterQueue mergePendingQueue:pendingQueue];
+}
+
+- (void)handleCompletedOperationWithChangeSet:(YDBCKChangeSet *)changeSet
+                                 savedRecords:(NSArray *)savedRecords
+                             deletedRecordIDs:(NSArray *)deletedRecordIDs
+{
+	YDBLogAutoTrace();
+	
+	// Proper API usage check
+	if (!databaseTransaction->isReadWriteTransaction)
 	{
-		sqlite3_stmt *statement = [parentConnection recordTable_updateForRowidStatement];
-		if (statement == NULL) {
-			return;
-		}
-		
-		// UPDATE "recordTableName" SET "record" = ? WHERE "rowid" = ?;
-		
-		__attribute__((objc_precise_lifetime)) NSData *recordBlob = [YapDatabaseCKRecord serializeRecord:record];
-		sqlite3_bind_blob(statement, 1, recordBlob.bytes, (int)recordBlob.length, SQLITE_STATIC);
-		
-		int64_t rowid = [rowidNumber longLongValue];
-		sqlite3_bind_int64(statement, 2, rowid);
-		
-		int status = sqlite3_step(statement);
-		if (status != SQLITE_DONE)
-		{
-			YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
-						status, sqlite3_errmsg(databaseTransaction->connection->db));
-		}
-		
-		sqlite3_clear_bindings(statement);
-		sqlite3_reset(statement);
-		
-		// Update information for the changeset architecture
-		
-		if (parentConnection->modifiedRecords == nil)
-			parentConnection->modifiedRecords = [[NSMutableDictionary alloc] init];
-		
-		CKRecord *sanitizedRecord = [YapDatabaseCKRecord deserializeRecord:recordBlob];
-		
-		[parentConnection->modifiedRecords setObject:sanitizedRecord forKey:rowidNumber];
+		@throw [self requiresReadWriteTransactionException:NSStringFromSelector(_cmd)];
+		return;
 	}
+	
+	// Mark this transaction as an operationCompletionTransaction.
+	// This is handled a little differently from a regular (user-initiated) transaction.
+	
+	parentConnection->isOperationCompletionTransaction = YES;
+	
+	// Drop the row in the queue table that was storing all the information for this changeSet.
+	
+	[self removeQueueTableRowWithUUID:changeSet.uuid];
+	
+	// Update any records that were saved.
+	// We need to store the new system fields of the CKRecord.
+	
+	for (CKRecord *record in savedRecords)
+	{
+		NSString *hash = [self hashRecordID:record.recordID databaseIdentifier:changeSet.databaseIdentifier];
+		
+		CKRecord *sanitizedRecord = nil;
+		[self updateRecordTableRowWithHash:hash record:record outSanitizedRecord:&sanitizedRecord];
+		
+		if (sanitizedRecord)
+		{
+			YDBCKCleanRecordTableInfo *cleanRecordTableInfo;
+			
+			cleanRecordTableInfo = [parentConnection->cleanRecordTableInfoCache objectForKey:hash];
+			if (cleanRecordTableInfo)
+			{
+				cleanRecordTableInfo = [cleanRecordTableInfo cleanCopyWithSanitizedRecord:sanitizedRecord];
+				
+				[parentConnection->cleanRecordTableInfoCache setObject:cleanRecordTableInfo forKey:hash];
+			}
+			else
+			{
+				NSNumber *ownerCount = [self fetchOwnerCountFromDiskForHash:hash];
+				
+				cleanRecordTableInfo =
+				  [[YDBCKCleanRecordTableInfo alloc] initWithDatabaseIdentifier:changeSet.databaseIdentifier
+				                                                     ownerCount:ownerCount
+				                                                         record:sanitizedRecord];
+			}
+			
+			if (parentConnection->changeset_recordTableInfo == nil)
+				parentConnection->changeset_recordTableInfo = [NSMutableDictionary dictionary];
+			
+			[parentConnection->changeset_recordTableInfo setObject:cleanRecordTableInfo forKey:hash];
+		}
+		else
+		{
+			if (parentConnection->changeset_deletedHashes == nil)
+				parentConnection->changeset_deletedHashes = [NSMutableSet set];
+			
+			[parentConnection->changeset_deletedHashes addObject:hash];
+		}
+
+	}
+	
+	// Update other changeSets (if needed)
+	
+	YDBCKChangeQueue *masterQueue = parentConnection->parent->masterQueue;
+	YDBCKChangeQueue *pendingQueue = [masterQueue newPendingQueue];
+	
+	for (CKRecord *savedRecord in savedRecords)
+	{
+		[masterQueue updatePendingQueue:pendingQueue
+		                withSavedRecord:savedRecord
+		             databaseIdentifier:changeSet.databaseIdentifier
+		          isOpPartialCompletion:NO];
+	}
+	
+	// Note: No need to updatePendingQueue:withSavedDeletedRecordID:::,
+	// because that method only handles updating the inFlight changeSet.
+	//
+	// But we already dropped the corresponding row from the database anyway,
+	// using the removeQueueTableRowWithUUID method.
+	
+	for (YDBCKChangeSet *oldChangeSet in pendingQueue.changeSetsFromPreviousCommits)
+	{
+		if (oldChangeSet.hasChangesToDeletedRecordIDs || oldChangeSet.hasChangesToModifiedRecords)
+		{
+			NSAssert(![oldChangeSet.uuid isEqualToString:changeSet.uuid], @"Logic error");
+			
+			[self updateQueueTableRowWithChangeSet:oldChangeSet];
+		}
+	}
+	
+	[masterQueue mergePendingQueue:pendingQueue];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1951,13 +2655,97 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		return;
 	}
 	
-	if ([parentConnection->dirtyRecordInfo count] == 0)
+	if ((parentConnection->dirtyMappingTableInfoDict.count == 0) &&
+	    (parentConnection->dirtyRecordTableInfoDict.count  == 0))
 	{
-		// No CKRecords were changed in this transaction.
+		// Nothing affecting YapDatabaseCloudKit was changed in this transaction.
 		return;
 	}
 	
-	// Step 1 of 5:
+	// Step 1 of 6:
+	//
+	// Update mapping table.
+	
+	[parentConnection->dirtyMappingTableInfoDict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		
+		__unsafe_unretained NSNumber *rowidNumber = (NSNumber *)key;
+		__unsafe_unretained YDBCKDirtyMappingTableInfo *dirtyMappingTableInfo = (YDBCKDirtyMappingTableInfo *)obj;
+		
+		if (dirtyMappingTableInfo.dirty_recordTable_hash == nil)
+		{
+			[self removeMappingTableRowWithRowid:[rowidNumber longLongValue]];
+			
+			if (parentConnection->changeset_deletedRowids == nil)
+				parentConnection->changeset_deletedRowids = [[NSMutableSet alloc] init];
+			
+			[parentConnection->changeset_deletedRowids addObject:rowidNumber];
+		}
+		else
+		{
+			[self insertOrUpdateMappingTableRowWithRowid:[rowidNumber longLongValue] info:dirtyMappingTableInfo];
+			
+			YDBCKCleanMappingTableInfo *cleanMappingTableInfo = [dirtyMappingTableInfo cleanCopy];
+			
+			if (parentConnection->changeset_mappingTableInfo == nil)
+				parentConnection->changeset_mappingTableInfo = [[NSMutableDictionary alloc] init];
+			
+			[parentConnection->changeset_mappingTableInfo setObject:cleanMappingTableInfo forKey:rowidNumber];
+			[parentConnection->cleanMappingTableInfoCache setObject:cleanMappingTableInfo forKey:rowidNumber];
+		}
+	}];
+	
+	// Step 2 of 6:
+	//
+	// Update record table.
+	
+	[parentConnection->dirtyRecordTableInfoDict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		
+		__unsafe_unretained NSString *hash = (NSString *)key;
+		__unsafe_unretained YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = (YDBCKDirtyRecordTableInfo *)obj;
+		
+		if ([dirtyRecordTableInfo hasNilRecordOrZeroOwnerCount])
+		{
+			[self removeRecordTableRowWithHash:hash];
+			
+			if (parentConnection->changeset_deletedHashes == nil)
+				parentConnection->changeset_deletedHashes = [[NSMutableSet alloc] init];
+			
+			[parentConnection->changeset_deletedHashes addObject:hash];
+		}
+		else
+		{
+			CKRecord *sanitizedRecord = nil;
+			
+			if (dirtyRecordTableInfo.clean_ownerCount == nil)
+			{
+				[self insertRecordTableRowWithHash:hash info:dirtyRecordTableInfo outSanitizedRecord:&sanitizedRecord];
+			}
+			else
+			{
+				// There's no use in us writing the record to the database right now.
+				// We only write the system fields anyway, and they have not changed yet.
+				// They won't be changed until the corresponding CKModifyRecordsOperation completes.
+				// And it's at that point that we'll write the updated record to the database.
+				
+				if ([dirtyRecordTableInfo ownerCountChanged]) {
+					[self updateRecordTableRowWithHash:hash ownerCount:dirtyRecordTableInfo.dirty_ownerCount];
+				}
+				
+				sanitizedRecord = [YapDatabaseCKRecord sanitizedRecord:dirtyRecordTableInfo.dirty_record];
+			}
+			
+			YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
+			  [dirtyRecordTableInfo cleanCopyWithSanitizedRecord:sanitizedRecord];
+			
+			if (parentConnection->changeset_recordTableInfo == nil)
+				parentConnection->changeset_recordTableInfo = [[NSMutableDictionary alloc] init];
+			
+			[parentConnection->changeset_recordTableInfo setObject:cleanRecordTableInfo forKey:hash];
+			[parentConnection->cleanRecordTableInfoCache setObject:cleanRecordTableInfo forKey:hash];
+		}
+	}];
+	
+	// Step 3 of 6:
 	//
 	// Create a pendingQueue,
 	// and lock the masterQueue so we can make changes to it.
@@ -1965,17 +2753,16 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	YDBCKChangeQueue *masterQueue = parentConnection->parent->masterQueue;
 	YDBCKChangeQueue *pendingQueue = [masterQueue newPendingQueue];
 	
-	// Step 1 of 4:
+	// Step 4 of 6:
 	//
 	// Use YDBCKChangeQueue tools to generate a list of updates for the queue table.
-	// Also, make a list of the deletedRowids.
 	
-	[parentConnection->dirtyRecordInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+	[parentConnection->dirtyRecordTableInfoDict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 		
-		__unsafe_unretained NSNumber *rowidNumber = (NSNumber *)key;
-		__unsafe_unretained YDBCKDirtyRecordInfo *dirtyRecordInfo = (YDBCKDirtyRecordInfo *)obj;
+	//	__unsafe_unretained NSString *hash = (NSString *)key;
+		__unsafe_unretained YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = (YDBCKDirtyRecordTableInfo *)obj;
 		
-		if (dirtyRecordInfo.dirty_record == nil)
+		if (dirtyRecordTableInfo.dirty_record == nil)
 		{
 			// The CKRecord has been deleted via one of the following:
 			//
@@ -1986,30 +2773,24 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 			// Note: In the detached scenario, the user wants us to "detach" the local row
 			// from its associated CKRecord, but not to actually delete the CKRecord from the cloud.
 			
-			if (dirtyRecordInfo.remoteDeletion)
+			if (dirtyRecordTableInfo.remoteDeletion)
 			{
 				[masterQueue updatePendingQueue:pendingQueue
-				         withRemoteDeletedRowid:rowidNumber
-				                       recordID:dirtyRecordInfo.clean_recordID
-				             databaseIdentifier:dirtyRecordInfo.clean_databaseIdentifier];
+				      withRemoteDeletedRecordID:dirtyRecordTableInfo.recordID
+				             databaseIdentifier:dirtyRecordTableInfo.databaseIdentifier];
 			}
-			else if (dirtyRecordInfo.skipUploadDeletion)
+			else if (dirtyRecordTableInfo.skipUploadDeletion)
 			{
 				[masterQueue updatePendingQueue:pendingQueue
-				              withDetachedRowid:rowidNumber];
+				           withDetachedRecordID:dirtyRecordTableInfo.recordID
+				             databaseIdentifier:dirtyRecordTableInfo.databaseIdentifier];
 			}
 			else
 			{
 				[masterQueue updatePendingQueue:pendingQueue
-				               withDeletedRowid:rowidNumber
-				                       recordID:dirtyRecordInfo.clean_recordID
-				             databaseIdentifier:dirtyRecordInfo.clean_databaseIdentifier];
+				            withDeletedRecordID:dirtyRecordTableInfo.recordID
+				             databaseIdentifier:dirtyRecordTableInfo.databaseIdentifier];
 			}
-			
-			if (parentConnection->deletedRowids == nil)
-				parentConnection->deletedRowids = [[NSMutableSet alloc] init];
-			
-			[parentConnection->deletedRowids addObject:rowidNumber];
 		}
 		else
 		{
@@ -2019,153 +2800,62 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 			// - [[transaction ext:ck] detachKey:inCollection:]
 			// - [[transaction ext:ck] attachRecord:forKey:inCollection:]
 			
-			if ([dirtyRecordInfo wasInserted])
+			if (dirtyRecordTableInfo.clean_ownerCount == nil)
 			{
-				// [dirtyRecordInfo wasInserted] => there wasn't a previously set record for this item.
+				// Newly inserted record
 				
-				if (dirtyRecordInfo.remoteMerge)
+				if (dirtyRecordTableInfo.remoteMerge)
 				{
 					[masterQueue updatePendingQueue:pendingQueue
-						                withMergedRowid:rowidNumber
-						                         record:dirtyRecordInfo.dirty_record
-						             databaseIdentifier:dirtyRecordInfo.dirty_databaseIdentifier];
+					               withMergedRecord:dirtyRecordTableInfo.dirty_record
+					             databaseIdentifier:dirtyRecordTableInfo.databaseIdentifier];
 				}
-				else if (dirtyRecordInfo.skipUploadRecord == NO)
+				else if (dirtyRecordTableInfo.skipUploadRecord == NO)
 				{
 					[masterQueue updatePendingQueue:pendingQueue
-					              withInsertedRowid:rowidNumber
-					                         record:dirtyRecordInfo.dirty_record
-					             databaseIdentifier:dirtyRecordInfo.dirty_databaseIdentifier];
+					             withInsertedRecord:dirtyRecordTableInfo.dirty_record
+					             databaseIdentifier:dirtyRecordTableInfo.databaseIdentifier];
 				}
 			}
 			else
 			{
-				if ([dirtyRecordInfo databaseIdentifierOrRecordIDChanged])
+				// Modified record
+				
+				if (dirtyRecordTableInfo.remoteMerge)
 				{
-					if (dirtyRecordInfo.skipUploadDeletion)
-					{
-						[masterQueue updatePendingQueue:pendingQueue
-						              withDetachedRowid:rowidNumber];
-					}
-					else
-					{
-						[masterQueue updatePendingQueue:pendingQueue
-						               withDeletedRowid:rowidNumber
-						                       recordID:dirtyRecordInfo.clean_recordID
-						             databaseIdentifier:dirtyRecordInfo.clean_databaseIdentifier];
-					}
-					
-					if (dirtyRecordInfo.remoteMerge)
-					{
-						[masterQueue updatePendingQueue:pendingQueue
-						                withMergedRowid:rowidNumber
-						                         record:dirtyRecordInfo.dirty_record
-						             databaseIdentifier:dirtyRecordInfo.dirty_databaseIdentifier];
-					}
-					else
-					{
-						[masterQueue updatePendingQueue:pendingQueue
-						              withInsertedRowid:rowidNumber
-						                         record:dirtyRecordInfo.dirty_record
-						             databaseIdentifier:dirtyRecordInfo.dirty_databaseIdentifier];
-					}
+					[masterQueue updatePendingQueue:pendingQueue
+					               withMergedRecord:dirtyRecordTableInfo.dirty_record
+					             databaseIdentifier:dirtyRecordTableInfo.databaseIdentifier];
 				}
-				else
+				else if (dirtyRecordTableInfo.skipUploadRecord == NO)
 				{
-					if (dirtyRecordInfo.remoteMerge)
-					{
-						[masterQueue updatePendingQueue:pendingQueue
-						                withMergedRowid:rowidNumber
-						                         record:dirtyRecordInfo.dirty_record
-						             databaseIdentifier:dirtyRecordInfo.dirty_databaseIdentifier];
-					}
-					else
-					{
-						[masterQueue updatePendingQueue:pendingQueue
-						              withModifiedRowid:rowidNumber
-						                         record:dirtyRecordInfo.dirty_record
-						             databaseIdentifier:dirtyRecordInfo.dirty_databaseIdentifier];
-					}
+					[masterQueue updatePendingQueue:pendingQueue
+					             withModifiedRecord:dirtyRecordTableInfo.dirty_record
+					             databaseIdentifier:dirtyRecordTableInfo.databaseIdentifier];
 				}
 			}
 		}
 	}];
 	
-	// Step 2 of 4:
-	//
-	// Update record table.
-	// This includes deleting removed rowids, as well as inserting new records & updating modified records.
-	
-	if (parentConnection->reset)
-	{
-		[self removeRecordsForAllRowids];
-	}
-	else if ([parentConnection->deletedRowids count] > 0)
-	{
-		[self removeRecordsForRowids:[parentConnection->deletedRowids allObjects]];
-	}
-	
-	[parentConnection->dirtyRecordInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-		
-		__unsafe_unretained NSNumber *rowidNumber = (NSNumber *)key;
-		__unsafe_unretained YDBCKDirtyRecordInfo *dirtyRecordInfo = (YDBCKDirtyRecordInfo *)obj;
-		
-		if (dirtyRecordInfo.dirty_record)
-		{
-			CKRecord *sanitizedRecord = nil;
-			
-			if ([dirtyRecordInfo wasInserted] || [dirtyRecordInfo databaseIdentifierOrRecordIDChanged])
-			{
-				sanitizedRecord = [self setRecord:dirtyRecordInfo.dirty_record
-				                databaseIdentfier:dirtyRecordInfo.dirty_databaseIdentifier
-				                         forRowid:[rowidNumber longLongValue]];
-			}
-			else
-			{
-				sanitizedRecord = [YapDatabaseCKRecord sanitizedRecord:dirtyRecordInfo.dirty_record];
-			}
-			
-			if (sanitizedRecord)
-			{
-				if (parentConnection->modifiedRecords == nil)
-					parentConnection->modifiedRecords = [[NSMutableDictionary alloc] init];
-				
-				[parentConnection->modifiedRecords setObject:sanitizedRecord forKey:rowidNumber];
-				
-				// The dirtyRecordInfo dictionary is going to disappear after this transaction completes.
-				// So we move the sanitized records back into the cleanRecordInfo cache.
-				
-				[parentConnection->cleanRecordInfo setObject:sanitizedRecord forKey:rowidNumber];
-			}
-			else
-			{
-				if (parentConnection->deletedRowids == nil)
-					parentConnection->deletedRowids = [[NSMutableSet alloc] init];
-				
-				[parentConnection->deletedRowids  addObject:rowidNumber];
-			}
-		}
-	}];
-	
-	// Step 3 of 4:
+	// Step 5 of 6:
 	//
 	// Update queue table.
-	// This includes any changes the pendingQueue table gives us.
+	// This includes any changes the pendingQueue gives us.
 	
 	for (YDBCKChangeSet *oldChangeSet in pendingQueue.changeSetsFromPreviousCommits)
 	{
 		if (oldChangeSet.hasChangesToDeletedRecordIDs || oldChangeSet.hasChangesToModifiedRecords)
 		{
-			[self updateRowWithChangeSet:oldChangeSet];
+			[self updateQueueTableRowWithChangeSet:oldChangeSet];
 		}
 	}
 	
 	for (YDBCKChangeSet *newChangeSet in pendingQueue.changeSetsFromCurrentCommit)
 	{
-		[self insertRowWithChangeSet:newChangeSet];
+		[self insertQueueTableRowWithChangeSet:newChangeSet];
 	}
 	
-	// Step 4 of 4:
+	// Step 6 of 6:
 	//
 	// Update the masterQueue,
 	// and unlock it so the next operation can be dispatched.
@@ -2238,27 +2928,33 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		return;
 	}
 	
-	// Check for pre-attached record
+	// Check for pending attach request
 	
-	YDBCKDirtyRecordInfo *dirtyRecordInfo = nil;
-	
-	dirtyRecordInfo = [parentConnection->pendingAttachRequests objectForKey:collectionKey];
-	if (dirtyRecordInfo)
+	YDBCKAttachRequest *attachRequest = [parentConnection->pendingAttachRequests objectForKey:collectionKey];
+	if (attachRequest)
 	{
-		[parentConnection->cleanRecordInfo removeObjectForKey:@(rowid)];
-		[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:@(rowid)];
+		CKRecord *record = attachRequest.record;
+		NSString *databaseIdentifier = attachRequest.databaseIdentifier;
+		
+		YDBCKProcessRecordBitMask flags = 0;
+		if (!attachRequest.shouldUploadRecord)
+			flags |= YDBCK_skipUploadRecord;
+		
+		[self processRecord:record databaseIdentifier:databaseIdentifier
+		                            preCalculatedHash:nil
+		                                     forRowid:rowid
+		                     withPrevMappingTableInfo:nil
+		                          prevRecordTableInfo:nil
+		                                        flags:flags];
 		
 		[parentConnection->pendingAttachRequests removeObjectForKey:collectionKey];
-		
 		return;
 	}
 	
-	// Invoke the recordBlock to find out if the row is associated with a CKRecord.
+	// Invoke the recordBlock.
 	
+	YDBCKRecordInfo *recordInfo = [[YDBCKRecordInfo alloc] init];
 	CKRecord *record = nil;
-	YDBCKRecordInfo *recordInfo = nil;
-	
-	recordInfo = [[YDBCKRecordInfo alloc] init];
 	
 	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
 	
@@ -2291,17 +2987,14 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		recordBlock(&record, recordInfo, collection, key, object, metadata);
 	}
 	
-	if (record)
-	{
-		dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
-		dirtyRecordInfo.clean_databaseIdentifier = nil;
-		dirtyRecordInfo.clean_recordID = nil;
-		dirtyRecordInfo.dirty_databaseIdentifier = recordInfo.databaseIdentifier;
-		dirtyRecordInfo.dirty_record = record;
-		
-		[parentConnection->cleanRecordInfo removeObjectForKey:@(rowid)];
-		[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:@(rowid)];
-	}
+	// Figure if anything changed, and schedule updates to the table(s) accordingly
+	
+	[self processRecord:record databaseIdentifier:recordInfo.databaseIdentifier
+	                            preCalculatedHash:nil
+	                                     forRowid:rowid
+	                     withPrevMappingTableInfo:nil
+	                          prevRecordTableInfo:nil
+	                                        flags:0];
 }
 
 /**
@@ -2325,33 +3018,36 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		return;
 	}
 	
-	// Invoke the recordBlock to find out if the row is associated with a CKRecord,
-	// and if that record has modifications that need to be sync'd to the cloud.
+	// Fetch current mappings & record information for the given rowid.
 	
-	YDBCKCleanRecordInfo *cleanRecordInfo = nil;
-	YDBCKDirtyRecordInfo *dirtyRecordInfo = nil;
-	CKRecordID *cleanRecordID = nil;
+	id <YDBCKMappingTableInfo> mappingTableInfo = nil;
+	id <YDBCKRecordTableInfo> recordTableInfo = nil;
 	
-	id cleanDirtyRecordInfo = [self recordInfoForRowid:rowid cacheResult:YES];
+	mappingTableInfo = [self mappingTableInfoForRowid:rowid cacheResult:YES];
+	if (mappingTableInfo) {
+		recordTableInfo = [self recordTableInfoForHash:mappingTableInfo.current_recordTable_hash cacheResult:YES];
+	}
+	
+	YDBCKRecordInfo *recordInfo = [[YDBCKRecordInfo alloc] init];
+	recordInfo.databaseIdentifier = recordTableInfo.databaseIdentifier;
 	
 	CKRecord *record = nil;
-	YDBCKRecordInfo *recordInfo = [[YDBCKRecordInfo alloc] init];
+	if ([recordTableInfo isKindOfClass:[YDBCKCleanRecordTableInfo class]])
+	{
+		__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
+		(YDBCKCleanRecordTableInfo *)recordInfo;
+		
+		record = [cleanRecordTableInfo.record copy];
+	}
+	else if ([recordTableInfo isKindOfClass:[YDBCKDirtyRecordTableInfo class]])
+	{
+		__unsafe_unretained YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo =
+		(YDBCKDirtyRecordTableInfo *)recordTableInfo;
+		
+		record = dirtyRecordTableInfo.dirty_record;
+	}
 	
-	if ([cleanDirtyRecordInfo isKindOfClass:[YDBCKCleanRecordInfo class]])
-	{
-		cleanRecordInfo = (YDBCKCleanRecordInfo *)cleanDirtyRecordInfo;
-		cleanRecordID = cleanRecordInfo.record.recordID;
-		
-		record = cleanRecordInfo.record;
-		recordInfo.databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-	}
-	else if ([cleanDirtyRecordInfo isKindOfClass:[YDBCKDirtyRecordInfo class]])
-	{
-		dirtyRecordInfo = (YDBCKDirtyRecordInfo *)cleanDirtyRecordInfo;
-		
-		record = dirtyRecordInfo.dirty_record;
-		recordInfo.databaseIdentifier = dirtyRecordInfo.dirty_databaseIdentifier;
-	}
+	// Invoke the recordBlock.
 	
 	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
 	
@@ -2384,45 +3080,14 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		recordBlock(&record, recordInfo, collection, key, object, metadata);
 	}
 	
-	if (cleanRecordInfo)
-	{
-		// record == nil;                   => User deleted CKRecord (even though local object stays)
-		// [record.changedKeys count] > 0;  => Changes were made to CKRecord
-		// [record.changedKeys count] == 0; => No changes were made
-		
-		if ((record == nil) || ([record.changedKeys count] > 0))
-		{
-			dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
-			dirtyRecordInfo.clean_databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-			dirtyRecordInfo.clean_recordID = cleanRecordID;
-			dirtyRecordInfo.dirty_databaseIdentifier = recordInfo.databaseIdentifier;
-			dirtyRecordInfo.dirty_record = record;
-			
-			[parentConnection->cleanRecordInfo removeObjectForKey:@(rowid)];
-			[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:@(rowid)];
-		}
-	}
-	else if (dirtyRecordInfo)
-	{
-		dirtyRecordInfo.dirty_record = record;
-		dirtyRecordInfo.dirty_databaseIdentifier = recordInfo.databaseIdentifier;
-		
-		if (dirtyRecordInfo.skipUploadRecord && ([record.changedKeys count] > 0))
-		{
-			dirtyRecordInfo.skipUploadRecord = NO;
-		}
-	}
-	else if (record)
-	{
-		dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
-		dirtyRecordInfo.clean_databaseIdentifier = nil;
-		dirtyRecordInfo.clean_recordID = nil;
-		dirtyRecordInfo.dirty_databaseIdentifier = recordInfo.databaseIdentifier;
-		dirtyRecordInfo.dirty_record = record;
-		
-		[parentConnection->cleanRecordInfo removeObjectForKey:@(rowid)];
-		[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:@(rowid)];
-	}
+	// Figure if anything changed, and schedule updates to the table(s) accordingly
+	
+	[self processRecord:record databaseIdentifier:recordInfo.databaseIdentifier
+	                            preCalculatedHash:nil
+	                                     forRowid:rowid
+	                     withPrevMappingTableInfo:mappingTableInfo
+	                          prevRecordTableInfo:recordTableInfo
+	                                        flags:0];
 }
 
 /**
@@ -2443,103 +3108,73 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		return;
 	}
 	
-	// Invoke the recordBlock to find out if the row is associated with a CKRecord,
-	// and if that record has modifications that need to be sync'd to the cloud.
-	
-	YDBCKCleanRecordInfo *cleanRecordInfo = nil;
-	YDBCKDirtyRecordInfo *dirtyRecordInfo = nil;
-	CKRecordID *cleanRecordID = nil;
-	
-	CKRecord *record = nil;
-	YDBCKRecordInfo *recordInfo = nil;
-	
 	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
 	
 	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithKey     ||
-		recordBlockType == YapDatabaseCloudKitBlockTypeWithMetadata )
+	    recordBlockType == YapDatabaseCloudKitBlockTypeWithMetadata )
 	{
 		// Nothing to do.
 		// The collection/key/metadata hasn't changed, so the CKRecord hasn't changed.
-	}
-	else
-	{
-		recordInfo = [[YDBCKRecordInfo alloc] init];
 		
-		id cleanDirtyRecordInfo = [self recordInfoForRowid:rowid cacheResult:YES];
-		
-		if ([cleanDirtyRecordInfo isKindOfClass:[YDBCKCleanRecordInfo class]])
-		{
-			cleanRecordInfo = (YDBCKCleanRecordInfo *)cleanDirtyRecordInfo;
-			cleanRecordID = cleanRecordInfo.record.recordID;
-			
-			record = cleanRecordInfo.record;
-			recordInfo.databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-		}
-		else if ([cleanDirtyRecordInfo isKindOfClass:[YDBCKDirtyRecordInfo class]])
-		{
-			dirtyRecordInfo = (YDBCKDirtyRecordInfo *)cleanDirtyRecordInfo;
-			
-			record = dirtyRecordInfo.dirty_record;
-			recordInfo.databaseIdentifier = dirtyRecordInfo.dirty_databaseIdentifier;
-		}
-		
-		if (recordBlockType == YapDatabaseCloudKitBlockTypeWithObject)
-		{
-			__unsafe_unretained YapDatabaseCloudKitRecordWithObjectBlock recordBlock =
-			  (YapDatabaseCloudKitRecordWithObjectBlock)parentConnection->parent->recordBlock;
-			
-			recordBlock(&record, recordInfo, collection, key, object);
-		}
-		else // if (recordBlockType == YapDatabaseCloudKitBlockTypeWithRow)
-		{
-			__unsafe_unretained YapDatabaseCloudKitRecordWithRowBlock recordBlock =
-			  (YapDatabaseCloudKitRecordWithRowBlock)parentConnection->parent->recordBlock;
-			
-			id metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
-			
-			recordBlock(&record, recordInfo, collection, key, object, metadata);
-		}
+		return;
 	}
 	
-	if (cleanRecordInfo)
-	{
-		// record == nil;                   => User deleted CKRecord (even though local object stays)
-		// [record.changedKeys count] > 0;  => Changes were made to CKRecord
-		// [record.changedKeys count] == 0; => No changes were made
-		
-		if ((record == nil) || ([record.changedKeys count] > 0))
-		{
-			dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
-			dirtyRecordInfo.clean_databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-			dirtyRecordInfo.clean_recordID = cleanRecordID;
-			dirtyRecordInfo.dirty_databaseIdentifier = recordInfo.databaseIdentifier;
-			dirtyRecordInfo.dirty_record = record;
-			
-			[parentConnection->cleanRecordInfo removeObjectForKey:@(rowid)];
-			[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:@(rowid)];
-		}
+	// Fetch current mappings & record information for the given rowid.
+	
+	id <YDBCKMappingTableInfo> mappingTableInfo = nil;
+	id <YDBCKRecordTableInfo> recordTableInfo = nil;
+	
+	mappingTableInfo = [self mappingTableInfoForRowid:rowid cacheResult:YES];
+	if (mappingTableInfo) {
+		recordTableInfo = [self recordTableInfoForHash:mappingTableInfo.current_recordTable_hash cacheResult:YES];
 	}
-	else if (dirtyRecordInfo)
+	
+	YDBCKRecordInfo *recordInfo = [[YDBCKRecordInfo alloc] init];
+	recordInfo.databaseIdentifier = recordTableInfo.databaseIdentifier;
+	
+	CKRecord *record = nil;
+	if ([recordTableInfo isKindOfClass:[YDBCKCleanRecordTableInfo class]])
 	{
-		dirtyRecordInfo.dirty_record = record;
-		dirtyRecordInfo.dirty_databaseIdentifier = recordInfo.databaseIdentifier;
+		__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
+		(YDBCKCleanRecordTableInfo *)recordInfo;
 		
-		if (dirtyRecordInfo.skipUploadRecord && ([record.changedKeys count] > 0))
-		{
-			dirtyRecordInfo.skipUploadRecord = NO;
-		}
+		record = [cleanRecordTableInfo.record copy];
 	}
-	else if (record)
+	else if ([recordTableInfo isKindOfClass:[YDBCKDirtyRecordTableInfo class]])
 	{
-		dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
-		dirtyRecordInfo.clean_databaseIdentifier = nil;
-		dirtyRecordInfo.clean_recordID = nil;
-		dirtyRecordInfo.dirty_databaseIdentifier = recordInfo.databaseIdentifier;
-		dirtyRecordInfo.dirty_record = record;
+		__unsafe_unretained YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo =
+		(YDBCKDirtyRecordTableInfo *)recordTableInfo;
 		
-		[parentConnection->cleanRecordInfo removeObjectForKey:@(rowid)];
-		[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:@(rowid)];
+		record = dirtyRecordTableInfo.dirty_record;
 	}
+	
+	// Invoke the recordBlock.
+	
+	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithObject)
+	{
+		__unsafe_unretained YapDatabaseCloudKitRecordWithObjectBlock recordBlock =
+		  (YapDatabaseCloudKitRecordWithObjectBlock)parentConnection->parent->recordBlock;
+		
+		recordBlock(&record, recordInfo, collection, key, object);
+	}
+	else // if (recordBlockType == YapDatabaseCloudKitBlockTypeWithRow)
+	{
+		__unsafe_unretained YapDatabaseCloudKitRecordWithRowBlock recordBlock =
+		  (YapDatabaseCloudKitRecordWithRowBlock)parentConnection->parent->recordBlock;
+		
+		id metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
+		
+		recordBlock(&record, recordInfo, collection, key, object, metadata);
+	}
+	
+	// Figure if anything changed, and schedule updates to the table(s) accordingly
+	
+	[self processRecord:record databaseIdentifier:recordInfo.databaseIdentifier
+	                            preCalculatedHash:nil
+	                                     forRowid:rowid
+	                     withPrevMappingTableInfo:mappingTableInfo
+	                          prevRecordTableInfo:recordTableInfo
+	                                        flags:0];
 }
 
 /**
@@ -2560,103 +3195,73 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		return;
 	}
 	
-	// Invoke the recordBlock to find out if the row is associated with a CKRecord,
-	// and if that record has modifications that need to be sync'd to the cloud.
-	
-	YDBCKCleanRecordInfo *cleanRecordInfo = nil;
-	YDBCKDirtyRecordInfo *dirtyRecordInfo = nil;
-	CKRecordID *cleanRecordID = nil;
-	
-	CKRecord *record = nil;
-	YDBCKRecordInfo *recordInfo = nil;
-	
 	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
 	
 	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithKey   ||
-	    recordBlockType == YapDatabaseCloudKitBlockTypeWithObject )
+		recordBlockType == YapDatabaseCloudKitBlockTypeWithObject )
 	{
 		// Nothing to do.
 		// The collection/key/object hasn't changed, so the CKRecord hasn't changed.
-	}
-	else
-	{
-		recordInfo = [[YDBCKRecordInfo alloc] init];
 		
-		id cleanDirtyRecordInfo = [self recordInfoForRowid:rowid cacheResult:YES];
-		
-		if ([cleanDirtyRecordInfo isKindOfClass:[YDBCKCleanRecordInfo class]])
-		{
-			cleanRecordInfo = (YDBCKCleanRecordInfo *)cleanDirtyRecordInfo;
-			cleanRecordID = cleanRecordInfo.record.recordID;
-			
-			record = cleanRecordInfo.record;
-			recordInfo.databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-		}
-		else if ([cleanDirtyRecordInfo isKindOfClass:[YDBCKDirtyRecordInfo class]])
-		{
-			dirtyRecordInfo = (YDBCKDirtyRecordInfo *)cleanDirtyRecordInfo;
-			
-			record = dirtyRecordInfo.dirty_record;
-			recordInfo.databaseIdentifier = dirtyRecordInfo.dirty_databaseIdentifier;
-		}
-		
-		if (recordBlockType == YapDatabaseCloudKitBlockTypeWithMetadata)
-		{
-			__unsafe_unretained YapDatabaseCloudKitRecordWithMetadataBlock recordBlock =
-			  (YapDatabaseCloudKitRecordWithMetadataBlock)parentConnection->parent->recordBlock;
-			
-			recordBlock(&record, recordInfo, collection, key, metadata);
-		}
-		else // if (recordBlockType == YapDatabaseCloudKitBlockTypeWithRow)
-		{
-			__unsafe_unretained YapDatabaseCloudKitRecordWithRowBlock recordBlock =
-			  (YapDatabaseCloudKitRecordWithRowBlock)parentConnection->parent->recordBlock;
-			
-			id object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
-			
-			recordBlock(&record, recordInfo, collection, key, object, metadata);
-		}
+		return;
 	}
 	
-	if (cleanRecordInfo)
-	{
-		// record == nil;                   => User deleted CKRecord (even though local object stays)
-		// [record.changedKeys count] > 0;  => Changes were made to CKRecord
-		// [record.changedKeys count] == 0; => No changes were made
-		
-		if ((record == nil) || ([record.changedKeys count] > 0))
-		{
-			dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
-			dirtyRecordInfo.clean_databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-			dirtyRecordInfo.clean_recordID = cleanRecordID;
-			dirtyRecordInfo.dirty_databaseIdentifier = recordInfo.databaseIdentifier;
-			dirtyRecordInfo.dirty_record = record;
-			
-			[parentConnection->cleanRecordInfo removeObjectForKey:@(rowid)];
-			[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:@(rowid)];
-		}
+	// Fetch current mappings & record information for the given rowid.
+	
+	id <YDBCKMappingTableInfo> mappingTableInfo = nil;
+	id <YDBCKRecordTableInfo> recordTableInfo = nil;
+	
+	mappingTableInfo = [self mappingTableInfoForRowid:rowid cacheResult:YES];
+	if (mappingTableInfo) {
+		recordTableInfo = [self recordTableInfoForHash:mappingTableInfo.current_recordTable_hash cacheResult:YES];
 	}
-	else if (dirtyRecordInfo)
+	
+	YDBCKRecordInfo *recordInfo = [[YDBCKRecordInfo alloc] init];
+	recordInfo.databaseIdentifier = recordTableInfo.databaseIdentifier;
+	
+	CKRecord *record = nil;
+	if ([recordTableInfo isKindOfClass:[YDBCKCleanRecordTableInfo class]])
 	{
-		dirtyRecordInfo.dirty_record = record;
-		dirtyRecordInfo.dirty_databaseIdentifier = recordInfo.databaseIdentifier;
+		__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
+		(YDBCKCleanRecordTableInfo *)recordInfo;
 		
-		if (dirtyRecordInfo.skipUploadRecord && ([record.changedKeys count] > 0))
-		{
-			dirtyRecordInfo.skipUploadRecord = NO;
-		}
+		record = [cleanRecordTableInfo.record copy];
 	}
-	else if (record)
+	else if ([recordTableInfo isKindOfClass:[YDBCKDirtyRecordTableInfo class]])
 	{
-		dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
-		dirtyRecordInfo.clean_databaseIdentifier = nil;
-		dirtyRecordInfo.clean_recordID = nil;
-		dirtyRecordInfo.dirty_databaseIdentifier = recordInfo.databaseIdentifier;
-		dirtyRecordInfo.dirty_record = record;
+		__unsafe_unretained YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo =
+		(YDBCKDirtyRecordTableInfo *)recordTableInfo;
 		
-		[parentConnection->cleanRecordInfo removeObjectForKey:@(rowid)];
-		[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:@(rowid)];
+		record = dirtyRecordTableInfo.dirty_record;
 	}
+	
+	// Invoke the recordBlock.
+	
+	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithMetadata)
+	{
+		__unsafe_unretained YapDatabaseCloudKitRecordWithMetadataBlock recordBlock =
+		  (YapDatabaseCloudKitRecordWithMetadataBlock)parentConnection->parent->recordBlock;
+		
+		recordBlock(&record, recordInfo, collection, key, metadata);
+	}
+	else // if (recordBlockType == YapDatabaseCloudKitBlockTypeWithRow)
+	{
+		__unsafe_unretained YapDatabaseCloudKitRecordWithRowBlock recordBlock =
+		  (YapDatabaseCloudKitRecordWithRowBlock)parentConnection->parent->recordBlock;
+		
+		id object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
+		
+		recordBlock(&record, recordInfo, collection, key, object, metadata);
+	}
+	
+	// Figure if anything changed, and schedule updates to the table(s) accordingly
+	
+	[self processRecord:record databaseIdentifier:recordInfo.databaseIdentifier
+	                            preCalculatedHash:nil
+	                                     forRowid:rowid
+	                     withPrevMappingTableInfo:mappingTableInfo
+	                          prevRecordTableInfo:recordTableInfo
+	                                        flags:0];
 }
 
 /**
@@ -2690,27 +3295,22 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 {
 	YDBLogAutoTrace();
 	
-	id cleanDirtyRecordInfo = [self recordInfoForRowid:rowid cacheResult:NO];
+	// Fetch current mappings & record information for the given rowid.
 	
-	if ([cleanDirtyRecordInfo isKindOfClass:[YDBCKCleanRecordInfo class]])
-	{
-		__unsafe_unretained YDBCKCleanRecordInfo *cleanRecordInfo = (YDBCKCleanRecordInfo *)cleanDirtyRecordInfo;
-		
-		YDBCKDirtyRecordInfo *dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
-		dirtyRecordInfo.clean_databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-		dirtyRecordInfo.clean_recordID = cleanRecordInfo.record.recordID;
-		dirtyRecordInfo.dirty_databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-		dirtyRecordInfo.dirty_record = nil;
-		
-		[parentConnection->cleanRecordInfo removeObjectForKey:@(rowid)];
-		[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:@(rowid)];
+	id <YDBCKMappingTableInfo> mappingTableInfo = nil;
+	id <YDBCKRecordTableInfo> recordTableInfo = nil;
+	
+	mappingTableInfo = [self mappingTableInfoForRowid:rowid cacheResult:YES];
+	if (mappingTableInfo) {
+		recordTableInfo = [self recordTableInfoForHash:mappingTableInfo.current_recordTable_hash cacheResult:YES];
 	}
-	else if ([cleanDirtyRecordInfo isKindOfClass:[YDBCKDirtyRecordInfo class]])
-	{
-		__unsafe_unretained YDBCKDirtyRecordInfo *dirtyRecordInfo = (YDBCKDirtyRecordInfo *)cleanDirtyRecordInfo;
-		
-		dirtyRecordInfo.dirty_record = nil;
-	}
+	
+	[self processRecord:nil databaseIdentifier:nil
+	                         preCalculatedHash:nil
+	                                  forRowid:rowid
+	                  withPrevMappingTableInfo:mappingTableInfo
+	                       prevRecordTableInfo:recordTableInfo
+	                                     flags:0];
 }
 
 /**
@@ -2724,31 +3324,34 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	// Fetch a dictionary of valid rowids with the format:
 	//
 	// key = rowid (NSNumber)
-	// value = YDBCKCleanRecordInfo || YDBCKDirtyRecordInfo
+	// value = id<YDBCKMappingTableInfo>  (YDBCKCleanMappingTableInfo || YDBCKDirtyMappingTableInfo)
 	
-	NSDictionary *recordInfoMap = [self recordInfoForRowids:rowids];
+	NSDictionary *mappingTableInfoDict = [self mappingTableInfoForRowids:rowids];
 	
-	[recordInfoMap enumerateKeysAndObjectsUsingBlock:^(NSNumber *rowidNumber, id cleanDirtyRecordInfo, BOOL *stop) {
+	NSMutableSet *hashes = [NSMutableSet setWithCapacity:[mappingTableInfoDict count]];
+	for (id <YDBCKMappingTableInfo> mappingTableInfo in [mappingTableInfoDict objectEnumerator])
+	{
+		[hashes addObject:mappingTableInfo.current_recordTable_hash];
+	}
+	
+	NSDictionary *recordTableInfoDict = [self recordTableInfoForHashes:[hashes allObjects]];
+	
+	[mappingTableInfoDict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 		
-		if ([cleanDirtyRecordInfo isKindOfClass:[YDBCKCleanRecordInfo class]])
-		{
-			__unsafe_unretained YDBCKCleanRecordInfo *cleanRecordInfo = (YDBCKCleanRecordInfo *)cleanDirtyRecordInfo;
-			
-			YDBCKDirtyRecordInfo *dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
-			dirtyRecordInfo.clean_databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-			dirtyRecordInfo.clean_recordID = cleanRecordInfo.record.recordID;
-			dirtyRecordInfo.dirty_databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-			dirtyRecordInfo.dirty_record = nil;
-			
-			[parentConnection->cleanRecordInfo removeObjectForKey:rowidNumber];
-			[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:rowidNumber];
-		}
-		else // if ([cleanDirtyRecordInfo isKindOfClass:[YDBCKDirtyRecordInfo class]])
-		{
-			__unsafe_unretained YDBCKDirtyRecordInfo *dirtyRecordInfo = (YDBCKDirtyRecordInfo *)cleanDirtyRecordInfo;
-			
-			dirtyRecordInfo.dirty_record = nil;
-		}
+		__unsafe_unretained NSNumber *rowidNumber = (NSNumber *)key;
+		__unsafe_unretained id <YDBCKMappingTableInfo> mappingTableInfo = (id <YDBCKMappingTableInfo>)obj;
+		
+		int64_t rowid = [rowidNumber longLongValue];
+		
+		id <YDBCKRecordTableInfo> recordTableInfo =
+		  [recordTableInfoDict objectForKey:mappingTableInfo.current_recordTable_hash];
+		
+		[self processRecord:nil databaseIdentifier:nil
+		                         preCalculatedHash:nil
+		                                  forRowid:rowid
+		                  withPrevMappingTableInfo:mappingTableInfo
+		                       prevRecordTableInfo:recordTableInfo
+		                                     flags:0];
 	}];
 }
 
@@ -2760,35 +3363,14 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 {
 	YDBLogAutoTrace();
 	
-	// Fetch a dictionary of valid rowids with the format:
-	//
-	// key = rowid (NSNumber)
-	// value = YDBCKCleanRecordInfo || YDBCKDirtyRecordInfo
+	[self removeAllMappingTableRows];
+	[self removeAllRecordTableRows];
 	
-	NSDictionary *recordInfoMap = [self recordInfoForAllRowids];
+	[parentConnection->cleanMappingTableInfoCache removeAllObjects];
+	[parentConnection->cleanRecordTableInfoCache removeAllObjects];
 	
-	[recordInfoMap enumerateKeysAndObjectsUsingBlock:^(NSNumber *rowidNumber, id cleanDirtyRecordInfo, BOOL *stop) {
-		
-		if ([cleanDirtyRecordInfo isKindOfClass:[YDBCKCleanRecordInfo class]])
-		{
-			__unsafe_unretained YDBCKCleanRecordInfo *cleanRecordInfo = (YDBCKCleanRecordInfo *)cleanDirtyRecordInfo;
-			
-			YDBCKDirtyRecordInfo *dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
-			dirtyRecordInfo.clean_databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-			dirtyRecordInfo.clean_recordID = cleanRecordInfo.record.recordID;
-			dirtyRecordInfo.dirty_databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-			dirtyRecordInfo.dirty_record = nil;
-			
-			[parentConnection->cleanRecordInfo removeObjectForKey:rowidNumber];
-			[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:rowidNumber];
-		}
-		else // if ([cleanDirtyRecordInfo isKindOfClass:[YDBCKDirtyRecordInfo class]])
-		{
-			__unsafe_unretained YDBCKDirtyRecordInfo *dirtyRecordInfo = (YDBCKDirtyRecordInfo *)cleanDirtyRecordInfo;
-			
-			dirtyRecordInfo.dirty_record = nil;
-		}
-	}];
+	[parentConnection->dirtyMappingTableInfoDict removeAllObjects];
+	[parentConnection->dirtyRecordTableInfoDict removeAllObjects];
 	
 	parentConnection->reset = YES;
 }
@@ -2798,70 +3380,69 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * This method is use to associate an existing CKRecord with a row in the database.
+ * This method is used to associate an existing CKRecord with a row in the database.
  * There are two primary use cases for this method.
- * 
- * 1. To associate a discovered/pulled CKRecord with a row in the database before we insert it.
+ *
+ * 1. To associate a discovered/pulled CKRecord with a row in the database before you insert it the row.
  *    In particular, for the following situation:
- *    
+ *
  *    - You're pulling record changes from the server via CKFetchRecordChangesOperation (or similar).
  *    - You discover a record that was inserted by another device.
  *    - You need to add a corresponding row to the database,
- *      but you somehow need to inform the YapDatabaseCloud extension about the existing record,
- *      and tell it not to bother invoking the recordHandler, or attempting to upload the existing record.
+ *      but you also need to inform the YapDatabaseCloudKit extension about the existing record,
+ *      so it won't bother invoking the recordHandler, or attempting to upload the existing record.
  *    - So you invoke this method FIRST.
  *    - And THEN you insert the corresponding object into the database via the
- *      normal setObject:forKey:inCollection method (or similar methods).
+ *      normal setObject:forKey:inCollection: method (or similar methods).
  *
  * 2. To assist in the migration process when switching to YapDatabaseCloudKit.
  *    In particular, for the following situation:
- * 
- *    - You have an existing object in the database that is associated with a CKRecord.
+ *
  *    - You've been handling CloudKit manually (not via YapDatabaseCloudKit).
- *    - You have an existing CKRecord that is up-to-date.
  *    - And you now want YapDatabaseCloudKit to manage the CKRecord for you.
- * 
- * Thus, this methods works as a simple "hand-off" of the CKRecord to the YapDatabaseCloudKit extension.
+ *    - So you can invoke this method for an object that already exists in the database,
+ *      OR you can invoke this method FIRST, and then insert the new object that you want linked to the record.
+ *
+ * Thus, this method works as a simple "hand-off" of the CKRecord to the YapDatabaseCloudKit extension.
  *
  * In other words, YapDatbaseCloudKit will write the system fields of the given CKRecord to its internal table,
  * and associate it with the given collection/key tuple.
- * 
+ *
  * @param record
  *   The CKRecord to associate with the collection/key tuple.
- * 
+ *
  * @param databaseIdentifer
  *   The identifying string for the CKDatabase.
- *   @see YapDatabaseCloudKitDatabaseBlock.
+ *   @see YapDatabaseCloudKitDatabaseIdentifierBlock.
  *
  * @param key
- *   The key of the row to associaed the record with.
- * 
+ *   The key of the row to associate the record with.
+ *
  * @param collection
  *   The collection of the row to associate the record with.
- * 
+ *
  * @param shouldUpload
  *   If NO, then the record is simply associated with the collection/key,
  *     and YapDatabaseCloudKit doesn't attempt to push the record to the cloud.
- *   If YES, then the record is associated with the collection/key ,
- *     and YapDatabaseCloutKit assumes the given record is dirty and attempts to push the record to the cloud.
- * 
+ *   If YES, then the record is associated with the collection/key,
+ *     and YapDatabaseCloutKit assumes the given record is dirty and will push the record to the cloud.
+ *
  * @return
  *   YES if the record was associated with the given collection/key.
  *   NO if one of the following errors occurred.
- * 
+ *
  * The following errors will prevent this method from succeeding:
  * - The given record is nil.
- * - The given collection/key is already associated with another record.
- * - The recordID/databaseIdentifier is already associated with another collection/key.
- * 
+ * - The given collection/key is already associated with a different record (so must detach it first).
+ *
  * Important: This method only works if within a readWriteTrasaction.
  * Invoking this method from within a read-only transaction will throw an exception.
 **/
-- (BOOL)attachRecord:(CKRecord *)record
+- (BOOL)attachRecord:(CKRecord *)inRecord
   databaseIdentifier:(NSString *)databaseIdentifier
               forKey:(NSString *)key
         inCollection:(NSString *)collection
-  shouldUploadRecord:(BOOL)shouldUpload
+  shouldUploadRecord:(BOOL)shouldUploadRecord
 {
 	YDBLogAutoTrace();
 	
@@ -2874,12 +3455,14 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	
 	// Sanity checks
 	
-	if (record == nil) {
+	if (inRecord == nil) {
 		return NO;
 	}
 	if (key == nil) {
 		return NO;
 	}
+	
+	CKRecord *record = shouldUploadRecord ? inRecord : [YapDatabaseCKRecord sanitizedRecord:inRecord];
 	
 	// Check for attachedRecord that hasn't been inserted into the database yet.
 	
@@ -2888,133 +3471,119 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	{
 		YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
-		CKRecord *dirtyRecord = shouldUpload ? record : [YapDatabaseCKRecord sanitizedRecord:record];
+		YDBCKAttachRequest *attachRequest;
 		
-		YDBCKDirtyRecordInfo *dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
-		dirtyRecordInfo.dirty_record = dirtyRecord;
-		dirtyRecordInfo.dirty_databaseIdentifier = databaseIdentifier;
-		dirtyRecordInfo.skipUploadRecord = !shouldUpload;
+		attachRequest = [[YDBCKAttachRequest alloc] init];
+		attachRequest.record = record;
+		attachRequest.databaseIdentifier = databaseIdentifier;
+		attachRequest.shouldUploadRecord = shouldUploadRecord;
 		
 		if (parentConnection->pendingAttachRequests == nil)
 			parentConnection->pendingAttachRequests = [[NSMutableDictionary alloc] initWithCapacity:1];
 		
-		[parentConnection->pendingAttachRequests setObject:dirtyRecordInfo forKey:collectionKey];
+		[parentConnection->pendingAttachRequests setObject:attachRequest forKey:collectionKey];
 		
 		return YES;
 	}
 	
-	// Handle other attach scenarios.
+	// Handle attach (but make sure we're not overwriting an existing association)
 	
-	YDBCKDirtyRecordInfo *dirtyRecordInfo = nil;
+	NSString *hash = [self hashRecordID:record.recordID databaseIdentifier:databaseIdentifier];
 	
-	id existingRecordInfo = [self recordInfoForRowid:rowid cacheResult:YES];
-	BOOL isAssociatedWithAnotherRecord = NO;
-	
-	if (existingRecordInfo)
+	id <YDBCKMappingTableInfo> mappingTableInfo = [self mappingTableInfoForRowid:rowid cacheResult:YES];
+	if (mappingTableInfo)
 	{
-		if ([existingRecordInfo isKindOfClass:[YDBCKCleanRecordInfo class]])
+		NSString *currentHash = mappingTableInfo.current_recordTable_hash;
+		
+		if (currentHash && ![currentHash isEqualToString:hash])
 		{
-			isAssociatedWithAnotherRecord = YES;
-		}
-		else
-		{
-			dirtyRecordInfo = (YDBCKDirtyRecordInfo *)existingRecordInfo;
-			if (dirtyRecordInfo.dirty_record)
-			{
-				isAssociatedWithAnotherRecord = YES;
-			}
+			// The collection/key is already associated with an existing record.
+			// You must detach it first.
+			//
+			// @see detachRecordForKey:inCollection:wasRemoteDeletion:shouldUploadDeletion:
+			
+			return NO;
 		}
 	}
 	
-	if (isAssociatedWithAnotherRecord)
-	{
-		// The collection/key is already associated with an existing record.
-		// You must detach it first.
-		return NO;
-	}
+	id <YDBCKRecordTableInfo> recordTableInfo = [self recordTableInfoForHash:hash cacheResult:YES];
 	
-	// Make the association
-	//
-	// shouldUpload == YES : Store record as-is for upload.
-	// shouldUpload ==  NO : Store sanitized version of the record.
-	//                       This allows for future modifications within this transaction.
+	YDBCKProcessRecordBitMask flags = 0;
+	if (!shouldUploadRecord) flags |= YDBCK_skipUploadRecord;
 	
-	CKRecord *dirtyRecord = shouldUpload ? record : [YapDatabaseCKRecord sanitizedRecord:record];
-	
-	if (dirtyRecordInfo == nil)
-	{
-		dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
-	}
-	
-	dirtyRecordInfo.dirty_record = dirtyRecord;
-	dirtyRecordInfo.dirty_databaseIdentifier = databaseIdentifier;
-	dirtyRecordInfo.skipUploadRecord = !shouldUpload;
-	
-	[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:@(rowid)];
+	[self processRecord:record databaseIdentifier:databaseIdentifier
+	                            preCalculatedHash:hash
+	                                     forRowid:rowid
+	                     withPrevMappingTableInfo:mappingTableInfo
+	                          prevRecordTableInfo:recordTableInfo
+	                                        flags:flags];
 	
 	return YES;
 }
 
 /**
- * This method is use to unassociate an existing CKRecord with a row in the database.
+ * This method is used to unassociate an existing CKRecord with a row in the database.
  * There are three primary use cases for this method.
- * 
+ *
  * 1. To properly handle CKRecordID's that are reported as deleted from the server.
  *    In particular, for the following situation:
- *    
+ *
  *    - You're pulling record changes from the server via CKFetchRecordChangesOperation (or similar).
  *    - You discover a recordID that was deleted by another device.
  *    - You need to remove the associated record from the database,
- *      but you also need to inform the YapDatabaseCloud extension that it was remotely deleted,
+ *      but you also need to inform the YapDatabaseCloudKit extension that it was remotely deleted,
  *      so it won't bother attempting to upload the already deleted recordID.
  *    - So you invoke this method FIRST.
- *    - And THEN you remove the corresponding object from the database via the
- *      normal remoteObjectForKey:inCollection: method (or similar methods).
- * 
+ *    - And THEN you can remove the corresponding object from the database via the
+ *      normal removeObjectForKey:inCollection: method (or similar methods) (if needed).
+ *
  * 2. To assist in various migrations, such as version migrations.
  *    For example:
- * 
+ *
  *    - In version 2 of your app, you need to move a few CKRecords into a new zone.
  *    - But you don't want to delete the items from the old zone,
  *      because you need to continue supporting v1.X for awhile.
- *    - So you invoke this method first in order to drop the previously associated record.
- *    - And then you can attach the new CKRecords,
+ *    - So you invoke this method first in order to drop the previous record association(s).
+ *    - And then you can attach the new CKRecord(s),
  *      and have YapDatabaseCloudKit upload the new records (to their new zone).
- * 
+ *
  * 3. To "move" an object from the cloud to "local-only".
  *    For example:
- * 
+ *
  *    - You're making a Notes app that allows user to stores notes locally, or in the cloud.
- *    - The user moves an existing note from the cloud, to local-storage only.
+ *    - The user moves an existing note from the cloud, to local-only storage.
  *    - This method can be used to delete the item from the cloud without deleting it locally.
- * 
+ *
  * @param key
  *   The key of the row associated with the record to detach.
- *   
+ *
  * @param collection
  *   The collection of the row associated with the record to detach.
- * 
+ *
  * @param wasRemoteDeletion
- *   If you're invoking this method because the server notified you of a deleted CKRecordID,
- *   then be sure to pass YES for this parameter. Doing so allows the extension to properly modify the
- *   changeSets that are still queued for upload so that it can remove potential modifications for this recordID.
- * 
+ *   Did the server notify you of a deleted CKRecordID?
+ *   Then make sure you set this parameter to YES.
+ *   This allows the extension to properly modify any changeSets that are still queued for upload
+ *   so that it can remove potential modifications for this recordID.
+ *
+ *   Note: If a record was deleted remotely, and the record was associated with MULTIPLE items in the database,
+ *   then you should be sure to invoke this method for each attached collection/key.
+ *
  * @param shouldUpload
  *   Whether or not the extension should push a deleted CKRecordID to the cloud.
- *   In use case #2 (from the discussion of this method, concerning migration), you'd pass NO.
- *   In use case #3 (from the discussion of this method, concerning moving), you'd pass YES.
- *   This parameter is ignored if wasRemoteDeletion is YES.
- * 
- * Note: If you're notified of a deleted CKRecordID from the server,
- *       and you're unsure of the associated local collection/key,
- *       then you can use the getKey:collection:forRecordID:databaseIdentifier: method.
- * 
+ *   In use case #2 (from the above discussion, concerning migration), you'd pass NO.
+ *   In use case #3 (from the above discussion, concerning moving), you'd pass YES.
+ *   This parameter is ignored if wasRemoteDeletion is YES (in which it will force shouldUpload to be NO).
+ *
+ * Important: This method only works if within a readWriteTrasaction.
+ * Invoking this method from within a read-only transaction will throw an exception.
+ *
  * @see getKey:collection:forRecordID:databaseIdentifier:
 **/
 - (void)detachRecordForKey:(NSString *)key
               inCollection:(NSString *)collection
          wasRemoteDeletion:(BOOL)wasRemoteDeletion
-      shouldUploadDeletion:(BOOL)shouldUpload
+      shouldUploadDeletion:(BOOL)shouldUploadDeletion
 {
 	YDBLogAutoTrace();
 	
@@ -3032,32 +3601,22 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		return;
 	}
 	
-	id recordInfo = [self recordInfoForRowid:rowid cacheResult:NO];
+	id <YDBCKMappingTableInfo> mappingTableInfo = nil;
+	id <YDBCKRecordTableInfo> recordTableInfo = nil;
 	
-	if ([recordInfo isKindOfClass:[YDBCKCleanRecordInfo class]])
-	{
-		YDBCKCleanRecordInfo *cleanRecordInfo = (YDBCKCleanRecordInfo *)recordInfo;
-		
-		YDBCKDirtyRecordInfo *dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
-		dirtyRecordInfo.clean_recordID = cleanRecordInfo.record.recordID;
-		dirtyRecordInfo.clean_databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-		dirtyRecordInfo.dirty_record = nil;
-		dirtyRecordInfo.dirty_databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-		dirtyRecordInfo.remoteDeletion = wasRemoteDeletion;
-		dirtyRecordInfo.skipUploadDeletion = !shouldUpload;
-		
-		[parentConnection->cleanRecordInfo removeObjectForKey:@(rowid)];
-		[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:@(rowid)];
-	}
-	else if ([recordInfo isKindOfClass:[YDBCKDirtyRecordInfo class]])
-	{
-		YDBCKDirtyRecordInfo *dirtyRecordInfo = (YDBCKDirtyRecordInfo *)recordInfo;
-		
-		dirtyRecordInfo.dirty_record = nil;
-		dirtyRecordInfo.dirty_databaseIdentifier = nil;
-		dirtyRecordInfo.remoteDeletion = wasRemoteDeletion;
-		dirtyRecordInfo.skipUploadDeletion = !shouldUpload;
-	}
+	mappingTableInfo = [self mappingTableInfoForRowid:rowid cacheResult:NO];
+	recordTableInfo = [self recordTableInfoForHash:mappingTableInfo.current_recordTable_hash cacheResult:NO];
+	
+	YDBCKProcessRecordBitMask flags = 0;
+	if (wasRemoteDeletion) flags |= YDBCK_remoteDeletion;
+	if (!shouldUploadDeletion) flags |= YDBCK_skipUploadDeletion;
+	
+	[self processRecord:nil databaseIdentifier:nil
+	                         preCalculatedHash:nil
+	                                  forRowid:rowid
+	                  withPrevMappingTableInfo:mappingTableInfo
+	                       prevRecordTableInfo:recordTableInfo
+	                                     flags:flags];
 }
 
 /**
@@ -3069,30 +3628,21 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
  * - You need to properly merge the changes with your own version of the object in the database,
  *   and you also need to inform YapDatabaseCloud extension about the merger
  *   so it can properly handle any changes that were pending a push to the cloud.
- * 
+ *
  * Thus, you should use this method, which will invoke your mergeBlock with the appropriate parameters.
- * 
- * @param record
+ *
+ * @param remoteRecord
  *   A record that was modified remotely, and discovered via CKFetchRecordChangesOperation (or similar).
- * 
+ *   This value will be passed as the remoteRecord parameter to the mergeBlock.
+ *
  * @param databaseIdentifier
  *   The identifying string for the CKDatabase.
- *   @see YapDatabaseCloudKitDatabaseBlock.
- * 
- * @param key (optional)
- *   If the key & collection of the corresponding object are known, then you should pass them.
- *   This allows the method to skip the overhead of doing the lookup itself.
- *   If unknown, then you can simply pass nil, and it will do the appropriate lookup.
- * 
- * @param collection (optional)
- *   If the key & collection of the corresponding object are known, then you should pass them.
- *   This allows the method to skip the overhead of doing the lookup itself.
- *   If unknown, then you can simply pass nil, and it will do the appropriate lookup.
+ *   @see YapDatabaseCloudKitDatabaseIdentifierBlock.
+ *
+ * Important: This method only works if within a readWriteTrasaction.
+ * Invoking this method from within a read-only transaction will throw an exception.
 **/
-- (void)mergeRecord:(CKRecord *)remoteRecord
- databaseIdentifier:(NSString *)databaseIdentifer
-             forKey:(NSString *)key
-       inCollection:(NSString *)collection
+- (void)mergeRecord:(CKRecord *)remoteRecord databaseIdentifier:(NSString *)databaseIdentifier
 {
 	YDBLogAutoTrace();
 	
@@ -3109,28 +3659,29 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		return;
 	}
 	
-	BOOL found = NO;
-	int64_t rowid = 0;
+	CKRecordID *recordID = remoteRecord.recordID;
+	NSString *hash = [self hashRecordID:recordID databaseIdentifier:databaseIdentifier];
 	
-	if (key == nil)
-	{
-		found = [self getKey:&key
-		          collection:&collection
-		         forRecordID:remoteRecord.recordID
-		  databaseIdentifier:databaseIdentifer];
-	}
-	else
-	{
-		found = [databaseTransaction getRowid:&rowid forKey:key inCollection:collection];
-	}
+	id <YDBCKRecordTableInfo> recordTableInfo = [self recordTableInfoForHash:hash cacheResult:YES];
 	
-	if (!found)
+	if (recordTableInfo == nil)
 	{
-		YDBLogWarn(@"%@ - Unable to merge record: No associated collection/key! Did you mean to attach the record?",
-		           THIS_METHOD);
+		// The given record is not managed by YapDatabseCloudKit.
 		return;
 	}
-	if (collection == nil) collection = @"";
+	
+	if ([recordTableInfo isKindOfClass:[YDBCKDirtyRecordTableInfo class]])
+	{
+		__unsafe_unretained YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo =
+		  (YDBCKDirtyRecordTableInfo *)recordTableInfo;
+		
+		if ([dirtyRecordTableInfo hasNilRecordOrZeroOwnerCount])
+		{
+			// The given record is no longer managed by YapDatabaseCloudKit.
+			// (scheduled for removal during commit processing)
+			return;
+		}
+	}
 	
 	// Make sanitized copies of the remoteRecord.
 	// Sanitized == copy of the system fields only, without any values.
@@ -3143,16 +3694,16 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	// First we start with any previous commits.
 	
 	BOOL hasPendingChanges =
-	  [parentConnection->parent->masterQueue mergeChangesForRowid:@(rowid) intoRecord:pendingLocalRecord];
+	  [parentConnection->parent->masterQueue mergeChangesForRecordID:recordID intoRecord:pendingLocalRecord];
 	
 	// And then we check changes from this readWriteTransaction, just in case.
 	
-	YDBCKDirtyRecordInfo *dirtyRecordInfo = [parentConnection->dirtyRecordInfo objectForKey:@(rowid)];
-	if (dirtyRecordInfo)
+	YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = [parentConnection->dirtyRecordTableInfoDict objectForKey:hash];
+	if (dirtyRecordTableInfo)
 	{
-		for (NSString *changedKey in dirtyRecordInfo.dirty_record.changedKeys)
+		for (NSString *changedKey in dirtyRecordTableInfo.dirty_record.changedKeys)
 		{
-			id value = [dirtyRecordInfo.dirty_record valueForKey:changedKey];
+			id value = [dirtyRecordTableInfo.dirty_record valueForKey:changedKey];
 			if (value) {
 				[pendingLocalRecord setValue:value forKey:changedKey];
 			}
@@ -3161,76 +3712,216 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 		hasPendingChanges = YES;
 	}
 	
-	CKRecordID *recordID = remoteRecord.recordID;
-	
-	// Invoke the mergeBlock
+	// Invoke the mergeBlock on any associated collection/key
 	
 	__unsafe_unretained YapDatabaseCloudKitMergeBlock mergeBlock = parentConnection->parent->mergeBlock;
 	__unsafe_unretained YapDatabaseReadWriteTransaction *rwTransaction =
 	  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 	
-	if (hasPendingChanges)
-		mergeBlock(rwTransaction, collection, key, remoteRecord, pendingLocalRecord, newLocalRecord);
-	else
-		mergeBlock(rwTransaction, collection, key, remoteRecord, nil, nil);
-	
-	// And store the results
-	
-	if (dirtyRecordInfo == nil)
+	NSArray *collectionKeys = [self collectionKeysForRecordID:recordID databaseIdentifier:databaseIdentifier];
+	for (YapCollectionKey *ck in collectionKeys)
 	{
-		dirtyRecordInfo = [[YDBCKDirtyRecordInfo alloc] init];
-		dirtyRecordInfo.clean_recordID = recordID;
-		dirtyRecordInfo.clean_databaseIdentifier = databaseIdentifer;
-		
-		[parentConnection->dirtyRecordInfo setObject:dirtyRecordInfo forKey:@(rowid)];
-		[parentConnection->cleanRecordInfo removeObjectForKey:@(rowid)];
+		if (hasPendingChanges)
+			mergeBlock(rwTransaction, ck.collection, ck.key, remoteRecord, pendingLocalRecord, newLocalRecord);
+		else
+			mergeBlock(rwTransaction, ck.collection, ck.key, remoteRecord, nil, nil);
 	}
 	
-	dirtyRecordInfo.dirty_record = hasPendingChanges ? newLocalRecord : newLocalRecord;
-	dirtyRecordInfo.dirty_databaseIdentifier = databaseIdentifer;
-	dirtyRecordInfo.remoteMerge = YES;
+	// Store the results
+	
+	if ([recordTableInfo isKindOfClass:[YDBCKCleanRecordTableInfo class]])
+	{
+		__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
+		  (YDBCKCleanRecordTableInfo *)recordTableInfo;
+		
+		YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = [cleanRecordTableInfo dirtyCopy];
+		
+		dirtyRecordTableInfo.dirty_record = newLocalRecord;
+		dirtyRecordTableInfo.remoteMerge = YES;
+		
+		[parentConnection->cleanRecordTableInfoCache removeObjectForKey:hash];
+		[parentConnection->dirtyRecordTableInfoDict setObject:dirtyRecordTableInfo forKey:hash];
+	}
+	else // if ([recordTableInfo isKindOfClass:[YDBCKDirtyRecordTableInfo class]])
+	{
+		__unsafe_unretained YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo =
+		  (YDBCKDirtyRecordTableInfo *)recordTableInfo;
+		
+		dirtyRecordTableInfo.dirty_record = newLocalRecord;
+		dirtyRecordTableInfo.remoteMerge = YES;
+	}
 }
 
 /**
- * If the given recordID & databaseIdentifier are associated with row in the database,
- * then this method will return YES, and set the collectionPtr/keyPtr with the collection/key of the associated row.
+ * This method allows you to manually modify a CKRecord.
  * 
+ * This is useful for tasks such as migrations, debugging, and various one-off tasks during the development lifecycle.
+ * For example, you added a property to some on of your model classes in the database,
+ * but you forgot to add the code that creates the corresponding property in the CKRecord.
+ * So you might whip up some code that uses this method, and forces that property to get uploaded to the server
+ * for all the corresponding model objects that you already updated.
+ * 
+ * Returns NO if the given recordID/databaseIdentifier is unknown.
+ * That is, such a record has not been given to YapDatabaseCloudKit (via the recordHandler),
+ * or has not previously been associated with a collection/key,
+ * or the record was deleted earlier in this transaction.
+ *
+ * Important: This method only works if within a readWriteTrasaction.
+ * Invoking this method from within a read-only transaction will throw an exception.
+**/
+- (BOOL)saveRecord:(CKRecord *)record databaseIdentifier:(NSString *)databaseIdentifier
+{
+	YDBLogAutoTrace();
+	
+	if (record == nil) return NO;
+	
+	NSString *hash = [self hashRecordID:record.recordID databaseIdentifier:databaseIdentifier];
+	
+	id <YDBCKRecordTableInfo> recordTableInfo = [self recordTableInfoForHash:hash cacheResult:YES];
+	
+	if (recordTableInfo == nil)
+	{
+		// The given record is not managed by YapDatabseCloudKit.
+		return NO;
+	}
+	
+	if ([recordTableInfo isKindOfClass:[YDBCKDirtyRecordTableInfo class]])
+	{
+		__unsafe_unretained YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo =
+		  (YDBCKDirtyRecordTableInfo *)recordTableInfo;
+		
+		if ([dirtyRecordTableInfo hasNilRecordOrZeroOwnerCount])
+		{
+			// The given record is no longer managed by YapDatabaseCloudKit.
+			// (scheduled for removal during commit processing)
+			return NO;
+		}
+	}
+	
+	// Store the results (if needed)
+	
+	if ([record.changedKeys count] > 0)
+	{
+		if ([recordTableInfo isKindOfClass:[YDBCKCleanRecordTableInfo class]])
+		{
+			__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
+			  (YDBCKCleanRecordTableInfo *)recordTableInfo;
+			
+			YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = [cleanRecordTableInfo dirtyCopy];
+			
+			[self mergeChangedValuesFromRecord:record intoRecord:dirtyRecordTableInfo.dirty_record];
+			
+			[parentConnection->cleanRecordTableInfoCache removeObjectForKey:hash];
+			[parentConnection->dirtyRecordTableInfoDict setObject:dirtyRecordTableInfo forKey:hash];
+		}
+		else // if ([recordTableInfo isKindOfClass:[YDBCKDirtyRecordTableInfo class]])
+		{
+			__unsafe_unretained YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo =
+			  (YDBCKDirtyRecordTableInfo *)recordTableInfo;
+			
+			[self mergeChangedValuesFromRecord:record intoRecord:dirtyRecordTableInfo.dirty_record];
+		}
+	}
+	
+	return YES;
+}
+
+/**
+ * If the given recordID & databaseIdentifier are associated with a row in the database,
+ * then this method will return YES, and set the collectionPtr/keyPtr with the collection/key of the associated row.
+ *
  * @param keyPtr (optional)
  *   If non-null, and this method returns YES, then the keyPtr will be set to the associated row's key.
- * 
+ *
  * @param collectionPtr (optional)
  *   If non-null, and this method returns YES, then the collectionPtr will be set to the associated row's collection.
- * 
+ *
  * @param recordID
  *   The CKRecordID to look for.
- * 
+ *
  * @param databaseIdentifier
  *   The identifying string for the CKDatabase.
- *   @see YapDatabaseCloudKitDatabaseBlock.
- * 
+ *   @see YapDatabaseCloudKitDatabaseIdentifierBlock.
+ *
  * @return
  *   YES if the given recordID & databaseIdentifier are associated with a row in the database.
  *   NO otherwise.
+ *
+ *
+ * Note:
+ *   It's possible to associate multiple items in the database with a single CKRecord/databaseIdentifier.
+ *   This is completely legal, and supported by YapDatabaseCloudKit extension.
+ *   However, if you do this keep in mind that this method will only return 1 of the associated items.
+ *   Further, which item it returns is not guaranteed, and may change between method invocations.
+ *   So, in this particular case, you likely should be using 'collectionKeysForRecordID:databaseIdentifier:'.
 **/
 - (BOOL)getKey:(NSString **)keyPtr collection:(NSString **)collectionPtr
                                   forRecordID:(CKRecordID *)recordID
                            databaseIdentifier:(NSString *)databaseIdentifier
 {
-	NSString *key = nil;
-	NSString *collection = nil;
+	YDBLogAutoTrace();
 	
-	int64_t rowid = 0;
-	if ([self getRowid:&rowid forRecordID:recordID databaseIdentifier:databaseIdentifier])
+	if (recordID == nil)
 	{
-		YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
-		key = ck.key;
-		collection = ck.collection;
+		if (keyPtr) *keyPtr = nil;
+		if (collectionPtr) *collectionPtr = nil;
+		return NO;
 	}
 	
-	if (keyPtr) *keyPtr = key;
-	if (collectionPtr) *collectionPtr = collection;
+	NSString *hash = [self hashRecordID:recordID databaseIdentifier:databaseIdentifier];
 	
-	return (key != nil);
+	__block int64_t associatedRowid = 0;
+	__block BOOL found = NO;
+	
+	[self enumerateMappingTableRowidsForRecordTableHash:hash usingBlock:^(int64_t rowid, BOOL *stop) {
+		
+		associatedRowid = rowid;
+		found = YES;
+		*stop = YES;
+	}];
+	
+	YapCollectionKey *ck = nil;
+	if (found)
+	{
+		ck = [databaseTransaction collectionKeyForRowid:associatedRowid];
+	}
+	
+	if (keyPtr) *keyPtr = ck.key;
+	if (collectionPtr) *collectionPtr = ck.collection;
+	
+	return (ck != nil);
+}
+
+/**
+ * It's possible to associate multiple items in the database with a single CKRecord/databaseIdentifier.
+ * This is completely legal, and supported by YapDatabaseCloudKit extension.
+ *
+ * This method returns an array of YapCollectionKey objects,
+ * each associated with the given recordID/databaseIdentifier.
+ *
+ * @see YapCollectionKey
+**/
+- (NSArray *)collectionKeysForRecordID:(CKRecordID *)recordID databaseIdentifier:(NSString *)databaseIdentifier
+{
+	YDBLogAutoTrace();
+	
+	if (recordID == nil) {
+		return nil;
+	}
+	
+	NSString *hash = [self hashRecordID:recordID databaseIdentifier:databaseIdentifier];
+	
+	NSMutableArray *collectionKeys = [NSMutableArray arrayWithCapacity:1];
+	
+	[self enumerateMappingTableRowidsForRecordTableHash:hash usingBlock:^(int64_t rowid, BOOL *stop) {
+		
+		YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
+		if (ck) {
+			[collectionKeys addObject:ck];
+		}
+	}];
+	
+	return collectionKeys;
 }
 
 /**
@@ -3266,21 +3957,17 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	int64_t rowid = 0;
 	if ([databaseTransaction getRowid:&rowid forKey:key inCollection:collection])
 	{
-		id recordInfo = [self recordInfoForRowid:rowid cacheResult:YES];
-		
-		if ([recordInfo isKindOfClass:[YDBCKCleanRecordInfo class]])
+		id <YDBCKMappingTableInfo> mappingTableInfo = [self mappingTableInfoForRowid:rowid cacheResult:YES];
+		if (mappingTableInfo)
 		{
-			YDBCKCleanRecordInfo *cleanRecordInfo = (YDBCKCleanRecordInfo *)recordInfo;
+			NSString *hash = mappingTableInfo.current_recordTable_hash;
 			
-			recordID = cleanRecordInfo.record.recordID;
-			databaseIdentifier = cleanRecordInfo.databaseIdentifier;
-		}
-		else if ([recordInfo isKindOfClass:[YDBCKDirtyRecordInfo class]])
-		{
-			YDBCKDirtyRecordInfo *dirtyRecordInfo = (YDBCKDirtyRecordInfo *)recordInfo;
-			
-			recordID = dirtyRecordInfo.dirty_record.recordID;
-			databaseIdentifier = dirtyRecordInfo.dirty_databaseIdentifier;
+			id <YDBCKRecordTableInfo> recordTableInfo = [self recordTableInfoForHash:hash cacheResult:YES];
+			if (recordTableInfo)
+			{
+				recordID = recordTableInfo.current_record.recordID;
+				databaseIdentifier = recordTableInfo.databaseIdentifier;
+			}
 		}
 	}
 	
@@ -3290,18 +3977,116 @@ static NSString *const ExtKey_versionTag   = @"versionTag";
 	return (recordID != nil);
 }
 
+/**
+ * Returns a copy of the CKRcord for the given recordID/databaseIdentifier.
+ * 
+ * Keep in mind that YapDatabaseCloudKit stores ONLY the system fields of a CKRecord.
+ * That is, it does NOT store any key/value pairs.
+ * It only stores "system fields", which is the internal metadata that CloudKit uses to handle sync state.
+ * 
+ * So if you invoke this method from within a read-only transaction,
+ * then you will receive a "base" CKRecord, which is really only useful for extracting "system field" metadata,
+ * such as the 'recordChangeTag'.
+ * 
+ * If you invoke this method from within a read-write transaction,
+ * then you will receive the "base" CKRecord, along with any modifications that have been made to the CKRecord
+ * during the current read-write transaction.
+ * 
+ * Also keep in mind that you are receiving a copy of the record which YapDatabaseCloudKit is using internally.
+ * If you intend to manually modify the CKRecord directly,
+ * then you need to save those changes back into YapDatabaseCloudKit via 'saveRecord:databaseIdentifier'.
+ * 
+ * @see saveRecord:databaseIdentifier:
+**/
+- (CKRecord *)recordForRecordID:(CKRecordID *)recordID databaseIdentifier:(NSString *)databaseIdentifier
+{
+	YDBLogAutoTrace();
+	
+	if (recordID == nil) return nil;
+	
+	NSString *hash = [self hashRecordID:recordID databaseIdentifier:databaseIdentifier];
+	
+	id <YDBCKRecordTableInfo> recordTableInfo = [self recordTableInfoForHash:hash cacheResult:YES];
+	
+	CKRecord *record = [recordTableInfo.current_record copy];
+	return record;
+}
+
+/**
+ * High performance lookup method, if you only need to know if YapDatabaseCloudKit has a
+ * record for the given recordID/databaseIdentifier.
+ *
+ * This method is much faster than invoking recordForRecordID:databaseIdentifier:,
+ * if you don't actually need the record.
+**/
+- (BOOL)containsRecordID:(CKRecordID *)recordID databaseIdentifier:(NSString *)databaseIdentifier
+{
+	YDBLogAutoTrace();
+	
+	if (recordID == nil) return NO;
+	
+	NSString *hash = [self hashRecordID:recordID databaseIdentifier:databaseIdentifier];
+	
+	YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = nil;
+	YDBCKCleanRecordTableInfo *cleanRecordTableInfo = nil;
+	
+	// Check dirtyRecordTableInfo (modified records)
+	
+	dirtyRecordTableInfo = [parentConnection->dirtyRecordTableInfoDict objectForKey:hash];
+	if (dirtyRecordTableInfo)
+	{
+		if ([dirtyRecordTableInfo hasNilRecordOrZeroOwnerCount])
+			return NO;
+		else
+			return YES;
+	}
+	
+	// Check cleanRecordTableInfo (cache)
+	
+	cleanRecordTableInfo = [parentConnection->cleanRecordTableInfoCache objectForKey:hash];
+	if (cleanRecordTableInfo)
+	{
+		if (cleanRecordTableInfo == (id)[NSNull null])
+			return NO;
+		else
+			return YES;
+	}
+	
+	// Fetch from disk
+	
+	sqlite3_stmt *statement = [parentConnection recordTable_getCountForHashStatement];
+	if (statement == NULL) {
+		return NO;
+	}
+	
+	// SELECT COUNT(*) AS NumberOfRows FROM "recordTableName" WHERE "hash" = ?;
+	
+	YapDatabaseString _hash; MakeYapDatabaseString(&_hash, hash);
+	sqlite3_bind_text(statement, 1, _hash.str, _hash.length, SQLITE_STATIC);
+	
+	int64_t count = 0;
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		count = sqlite3_column_int64(statement, 0);
+	}
+	else if (status == SQLITE_ERROR)
+	{
+		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
+					status, sqlite3_errmsg(databaseTransaction->connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_hash);
+	
+	return (count > 0);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Exceptions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (NSException *)missingDatabaseException:(NSString *)databaseIdentifier
-{
-	NSString *reason = [NSString stringWithFormat:
-	  @"The databaseBlock (YapDatabaseCloudKitDatabaseBlock) returned a nil database"
-	  @" for the databaseIdentifier: \"%@\"", databaseIdentifier];
-	
-	return [NSException exceptionWithName:@"YapDatabaseCloudKit" reason:reason userInfo:nil];
-}
 
 - (NSException *)requiresReadWriteTransactionException:(NSString *)methodName
 {

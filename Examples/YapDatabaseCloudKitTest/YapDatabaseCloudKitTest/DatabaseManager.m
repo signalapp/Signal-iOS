@@ -244,19 +244,11 @@ NSString *const CloudKitZoneName = @"zone1";
 			return; // from block
 		}
 		
-		// The YapDatabaseCloudKit extension handles storing the base CKRecord object.
+		// The CKRecord will be nil when we first insert an object into the database.
+		// Or if we've never included this item for syncing before.
 		//
-		// That is, a CKRecord object is composed of 2 types of properties:
-		// - the internal (system) properties such as the version and other such sync-specific info
-		// - the regular key/value properties that we set on the object
-		//
-		// We configured YapDatabaseCloudKit to store a bare version of the CKRecord,
-		// with only the internal (system) properties.
-		//
-		// So if we've ever handled this collection/key/object before,
-		// then YDBCK will hand us a bare CKRecord (with only the internal system info set).
-		//
-		// Otherwise it will pass a nil CKRecord, and it's our responsibility to create one.
+		// Otherwise we'll be handed a bare CKRecord, with only the proper CKRecordID
+		// and the sync metadata set.
 		
 		CKRecord *record = inOutRecordPtr ? *inOutRecordPtr : nil;
 		

@@ -99,7 +99,7 @@
  * 
  * Returns YES if there were any pending records in the pendingChangeSetsFromPreviousCommits.
 **/
-- (BOOL)mergeChangesForRowid:(NSNumber *)rowidNumber intoRecord:(CKRecord *)record;
+- (BOOL)mergeChangesForRecordID:(CKRecordID *)recordID intoRecord:(CKRecord *)record;
 
 #pragma mark Transaction Handling
 
@@ -112,8 +112,7 @@
  * - pendingQueue.changeSetsFromCurrentCommit
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
-         withInsertedRowid:(NSNumber *)rowidNumber
-                    record:(CKRecord *)record
+        withInsertedRecord:(CKRecord *)record
         databaseIdentifier:(NSString *)databaseIdentifier;
 
 /**
@@ -127,8 +126,7 @@
  * - pendingQueue.changeSetsFromCurrentCommit
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
-         withModifiedRowid:(NSNumber *)rowidNumber
-                    record:(CKRecord *)record
+        withModifiedRecord:(CKRecord *)record
         databaseIdentifier:(NSString *)databaseIdentifier;
 
 /**
@@ -139,7 +137,8 @@
  * - pendingQueue.changeSetsFromPreviousCommits
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
-         withDetachedRowid:(NSNumber *)rowidNumber;
+      withDetachedRecordID:(CKRecordID *)recordID
+        databaseIdentifier:(NSString *)databaseIdentifier;
 
 /**
  * This method:
@@ -152,8 +151,7 @@
  * - pendingQueue.changeSetsFromCurrentCommit
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
-          withDeletedRowid:(NSNumber *)rowidNumber
-                  recordID:(CKRecordID *)ckRecordID
+       withDeletedRecordID:(CKRecordID *)recordID
         databaseIdentifier:(NSString *)databaseIdentifier;
 
 /**
@@ -169,8 +167,7 @@
  * - pendingQueue.changeSetsFromCurrentCommit
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
-           withMergedRowid:(NSNumber *)rowidNumber
-                    record:(CKRecord *)mergedRecord
+          withMergedRecord:(CKRecord *)mergedRecord
         databaseIdentifier:(NSString *)databaseIdentifier;
 
 /**
@@ -181,16 +178,14 @@
  * - pendingQueue.changeSetsFromPreviousCommits
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
-    withRemoteDeletedRowid:(NSNumber *)rowidNumber
-                  recordID:(CKRecordID *)recordID
+ withRemoteDeletedRecordID:(CKRecordID *)recordID
         databaseIdentifier:(NSString *)databaseIdentifier;
 
 /**
  *
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
-            withSavedRowid:(NSNumber *)rowidNumber
-                    record:(CKRecord *)record
+           withSavedRecord:(CKRecord *)record
         databaseIdentifier:(NSString *)databaseIdentifier
      isOpPartialCompletion:(BOOL)isOpPartialCompletion;
 
@@ -202,8 +197,7 @@
  * - pendingQueue.changeSetsFromPreviousCommits
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
-     withSavedDeletedRowid:(NSNumber *)rowidNumber
-                  recordID:(CKRecordID *)recordID
+  withSavedDeletedRecordID:(CKRecordID *)recordID
         databaseIdentifier:(NSString *)databaseIdentifier;
 
 @end
@@ -246,8 +240,6 @@ databaseIdentifier:(NSString *)databaseIdentifier
 - (NSData *)serializeDeletedRecordIDs; // Blob to go in 'deletedRecordIDs' column of database row
 - (NSData *)serializeModifiedRecords;  // Blob to go in 'modifiedRecords' column of database row
 
-- (void)enumerateMissingRecordsWithBlock:(CKRecord* (^)(int64_t rowid, NSArray *changedKeys))block;
-
-- (NSDictionary *)recordIDToRowidMapping;
+- (void)enumerateMissingRecordsWithBlock:(CKRecord* (^)(CKRecordID *recordID, NSArray *changedKeys))block;
 
 @end

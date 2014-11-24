@@ -74,6 +74,11 @@
 	}
 }
 
++ (NSString *)mappingTableNameForRegisteredName:(NSString *)registeredName
+{
+	return [NSString stringWithFormat:@"cloudKit_mapping_%@", registeredName];
+}
+
 + (NSString *)recordTableNameForRegisteredName:(NSString *)registeredName
 {
 	return [NSString stringWithFormat:@"cloudKit_record_%@", registeredName];
@@ -106,7 +111,7 @@
 	return [self initWithRecordHandler:recordHandler
 	                        mergeBlock:inMergeBlock
 	               operationErrorBlock:inOpErrorBlock
-	                     databaseBlock:NULL
+	           databaseIdentifierBlock:NULL
 	                        versionTag:nil
 	                       versionInfo:nil
 	                           options:nil];
@@ -121,7 +126,7 @@
 	return [self initWithRecordHandler:recordHandler
 	                        mergeBlock:inMergeBlock
 	               operationErrorBlock:inOpErrorBlock
-	                     databaseBlock:NULL
+	           databaseIdentifierBlock:NULL
 	                        versionTag:inVersionTag
 	                       versionInfo:inVersionInfo
 	                           options:nil];
@@ -137,7 +142,7 @@
 	return [self initWithRecordHandler:recordHandler
 	                        mergeBlock:inMergeBlock
 	               operationErrorBlock:inOpErrorBlock
-	                     databaseBlock:NULL
+	           databaseIdentifierBlock:NULL
 	                        versionTag:inVersionTag
 	                       versionInfo:inVersionInfo
 	                           options:inOptions];
@@ -146,7 +151,7 @@
 - (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)recordHandler
                            mergeBlock:(YapDatabaseCloudKitMergeBlock)inMergeBlock
                   operationErrorBlock:(YapDatabaseCloudKitOperationErrorBlock)inOpErrorBlock
-                        databaseBlock:(YapDatabaseCloudKitDatabaseBlock)inDatabaseBlock
+              databaseIdentifierBlock:(YapDatabaseCloudKitDatabaseIdentifierBlock)inDatabaseIdentifierBlock
                            versionTag:(NSString *)inVersionTag
                           versionInfo:(id)inVersionInfo
                               options:(YapDatabaseCloudKitOptions *)inOptions
@@ -158,7 +163,7 @@
 		
 		mergeBlock = inMergeBlock;
 		opErrorBlock = inOpErrorBlock;
-		databaseBlock = inDatabaseBlock;
+		databaseIdentifierBlock = inDatabaseIdentifierBlock;
 		
 		versionTag = inVersionTag ? [inVersionTag copy] : @"";
 		versionInfo = inVersionInfo;
@@ -344,6 +349,11 @@
 #pragma mark Table Name
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+- (NSString *)mappingTableName
+{
+	return [[self class] mappingTableNameForRegisteredName:self.registeredName];
+}
+
 - (NSString *)recordTableName
 {
 	return [[self class] recordTableNameForRegisteredName:self.registeredName];
@@ -410,13 +420,13 @@
 		CKDatabase *database = [databaseCache objectForKey:databaseIdentifier];
 		if (database == nil)
 		{
-			if (databaseBlock == nil) {
-				@throw [self missingDatabaseBlockException:databaseIdentifier];
+			if (databaseIdentifierBlock == nil) {
+				@throw [self missingDatabaseIdentifierBlockException:databaseIdentifier];
 			}
 			
-			database = databaseBlock(databaseIdentifier);
+			database = databaseIdentifierBlock(databaseIdentifier);
 			if (database == nil) {
-				@throw [self missingDatabaseBlockException:databaseIdentifier];
+				@throw [self missingCKDatabaseException:databaseIdentifier];
 			}
 			
 			if (databaseCache == nil)
@@ -511,8 +521,8 @@
 }
 
 - (void)handlePartiallyFailedOperationWithChangeSet:(YDBCKChangeSet *)changeSet
-                                       savedRecords:(NSArray *)savedRecords
-                                   deletedRecordIDs:(NSArray *)deletedRecordIDs
+                                       savedRecords:(NSArray *)attempted_savedRecords
+                                   deletedRecordIDs:(NSArray *)attempted_deletedRecordIDs
                                               error:(NSError *)operationError
 {
 	// First, we suspend ourself.
@@ -521,32 +531,41 @@
 	[self suspend];
 	
 	// We need to figure out what succeeded.
-	// So first we make mutable versions of the original requests.
-	
-	NSMutableDictionary *success_savedRecords = [NSMutableDictionary dictionaryWithCapacity:[savedRecords count]];
-	NSMutableSet *success_deletedRecordIDs = [NSMutableSet setWithCapacity:[deletedRecordIDs count]];
-	
-	for (CKRecord *record in savedRecords)
-	{
-		CKRecordID *recordID = record.recordID;
-		if (recordID)
-			[success_savedRecords setObject:record forKey:recordID];
-	}
-	
-	[success_deletedRecordIDs addObjectsFromArray:deletedRecordIDs];
-	
-	// And then we remove those items that were indicated as failed.
+	// So first we get a set of the recordIDs that failed.
 	
 	NSDictionary *partialErrorsByItemIDKey = [operationError.userInfo objectForKey:CKPartialErrorsByItemIDKey];
+	NSMutableSet *failedRecordIDs = [NSMutableSet setWithCapacity:[partialErrorsByItemIDKey count]];
 	
 	[partialErrorsByItemIDKey enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 		
 		__unsafe_unretained CKRecordID *recordID = (CKRecordID *)key;
 	//	__unsafe_unretained NSError *recordError = (NSError *)obj;
 		
-		[success_savedRecords removeObjectForKey:recordID];
-		[success_deletedRecordIDs removeObject:recordID];
+		[failedRecordIDs addObject:recordID];
 	}];
+	
+	// Then we remove the failed items from the attempted items.
+	
+	NSUInteger sCapacity = attempted_savedRecords.count;
+	NSUInteger dCapacity = attempted_deletedRecordIDs.count;
+	
+	NSMutableArray *success_savedRecords     = [NSMutableArray arrayWithCapacity:sCapacity];
+	NSMutableArray *success_deletedRecordIDs = [NSMutableArray arrayWithCapacity:dCapacity];
+	
+	for (CKRecord *record in attempted_savedRecords)
+	{
+		if (![failedRecordIDs containsObject:record.recordID])
+		{
+			[success_savedRecords addObject:record];
+		}
+	}
+	for (CKRecordID *recordID in attempted_deletedRecordIDs)
+	{
+		if (![failedRecordIDs containsObject:recordID])
+		{
+			[success_deletedRecordIDs addObject:recordID];
+		}
+	}
 	
 	// Start the database transaction to update the queue(s) by removing those items that have succeeded.
 	
@@ -588,12 +607,23 @@
 #pragma mark Exceptions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (NSException *)missingDatabaseBlockException:(NSString *)databaseIdentifier
+- (NSException *)missingDatabaseIdentifierBlockException:(NSString *)databaseIdentifier
 {
 	NSString *reason = [NSString stringWithFormat:
-	  @"The YapDatabaseCloudKit instance was not configured with a databaseBlock (YapDatabaseCloudKitDatabaseBlock)."
-	  @" However, we encountered an object with a databaseIdentifier (%@)."
-	  @" The databaseBlock is required in order to discover the proper CKDatabase for the databaseIdentifier."
+	  @"The YapDatabaseCloudKit instance was not configured with a databaseIdentifierBlock."
+	  @" However, we encountered an object with a non-nil databaseIdentifier (%@)."
+	  @" The databaseIdentifierBlock is required in order to discover the proper CKDatabase for the databaseIdentifier."
+	  @" Without the CKDatabase, we don't know where to send the corresponding CKRecord/CKRecordID.",
+	  databaseIdentifier];
+	
+	return [NSException exceptionWithName:@"YapDatabaseCloudKit" reason:reason userInfo:nil];
+}
+
+- (NSException *)missingCKDatabaseException:(NSString *)databaseIdentifier
+{
+	NSString *reason = [NSString stringWithFormat:
+	  @"The databaseIdentifierBlock returned nil for databaseIdentifier (%@)."
+	  @" The databaseIdentifierBlock is required to return the proper CKDatabase for the databaseIdentifier."
 	  @" Without the CKDatabase, we don't know where to send the corresponding CKRecord/CKRecordID.",
 	  databaseIdentifier];
 	

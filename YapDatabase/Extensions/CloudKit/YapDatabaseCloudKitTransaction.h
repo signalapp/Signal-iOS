@@ -5,16 +5,16 @@
 @interface YapDatabaseCloudKitTransaction : YapDatabaseExtensionTransaction
 
 /**
- * This method is use to associate an existing CKRecord with a row in the database.
+ * This method is used to associate an existing CKRecord with a row in the database.
  * There are two primary use cases for this method.
  * 
- * 1. To associate a discovered/pulled CKRecord with a row in the database before we insert it.
+ * 1. To associate a discovered/pulled CKRecord with a row in the database before you insert it the row.
  *    In particular, for the following situation:
  *    
  *    - You're pulling record changes from the server via CKFetchRecordChangesOperation (or similar).
  *    - You discover a record that was inserted by another device.
  *    - You need to add a corresponding row to the database,
- *      but you also need to inform the YapDatabaseCloud extension about the existing record,
+ *      but you also need to inform the YapDatabaseCloudKit extension about the existing record,
  *      so it won't bother invoking the recordHandler, or attempting to upload the existing record.
  *    - So you invoke this method FIRST.
  *    - And THEN you insert the corresponding object into the database via the
@@ -22,12 +22,13 @@
  *
  * 2. To assist in the migration process when switching to YapDatabaseCloudKit.
  *    In particular, for the following situation:
- * 
- *    - You have an existing object in the database that is associated with a CKRecord.
- *    - But you've been handling CloudKit manually (not via YapDatabaseCloudKit).
+ *
+ *    - You've been handling CloudKit manually (not via YapDatabaseCloudKit).
  *    - And you now want YapDatabaseCloudKit to manage the CKRecord for you.
+ *    - So you can invoke this method for an object that already exists in the database,
+ *      OR you can invoke this method FIRST, and then insert the new object that you want linked to the record.
  * 
- * Thus, this methods works as a simple "hand-off" of the CKRecord to the YapDatabaseCloudKit extension.
+ * Thus, this method works as a simple "hand-off" of the CKRecord to the YapDatabaseCloudKit extension.
  *
  * In other words, YapDatbaseCloudKit will write the system fields of the given CKRecord to its internal table,
  * and associate it with the given collection/key tuple.
@@ -37,10 +38,10 @@
  * 
  * @param databaseIdentifer
  *   The identifying string for the CKDatabase.
- *   @see YapDatabaseCloudKitDatabaseBlock.
+ *   @see YapDatabaseCloudKitDatabaseIdentifierBlock.
  *
  * @param key
- *   The key of the row to associaed the record with.
+ *   The key of the row to associate the record with.
  * 
  * @param collection
  *   The collection of the row to associate the record with.
@@ -49,7 +50,7 @@
  *   If NO, then the record is simply associated with the collection/key,
  *     and YapDatabaseCloudKit doesn't attempt to push the record to the cloud.
  *   If YES, then the record is associated with the collection/key,
- *     and YapDatabaseCloutKit assumes the given record is dirty and attempts to push the record to the cloud.
+ *     and YapDatabaseCloutKit assumes the given record is dirty and will push the record to the cloud.
  * 
  * @return
  *   YES if the record was associated with the given collection/key.
@@ -57,8 +58,7 @@
  * 
  * The following errors will prevent this method from succeeding:
  * - The given record is nil.
- * - The given collection/key is already associated with another record (must detach it first).
- * - The recordID/databaseIdentifier is already associated with another collection/key (must detach it first).
+ * - The given collection/key is already associated with a different record (so must detach it first).
  * 
  * Important: This method only works if within a readWriteTrasaction.
  * Invoking this method from within a read-only transaction will throw an exception.
@@ -67,39 +67,39 @@
   databaseIdentifier:(NSString *)databaseIdentifier
               forKey:(NSString *)key
         inCollection:(NSString *)collection
-  shouldUploadRecord:(BOOL)shouldUpload;
+  shouldUploadRecord:(BOOL)shouldUploadRecord;
 
 /**
- * This method is use to unassociate an existing CKRecord with a row in the database.
+ * This method is used to unassociate an existing CKRecord with a row in the database.
  * There are three primary use cases for this method.
  * 
  * 1. To properly handle CKRecordID's that are reported as deleted from the server.
  *    In particular, for the following situation:
- *    
+ *
  *    - You're pulling record changes from the server via CKFetchRecordChangesOperation (or similar).
  *    - You discover a recordID that was deleted by another device.
  *    - You need to remove the associated record from the database,
- *      but you also need to inform the YapDatabaseCloud extension that it was remotely deleted,
+ *      but you also need to inform the YapDatabaseCloudKit extension that it was remotely deleted,
  *      so it won't bother attempting to upload the already deleted recordID.
  *    - So you invoke this method FIRST.
- *    - And THEN you remove the corresponding object from the database via the
- *      normal remoteObjectForKey:inCollection: method (or similar methods).
- * 
+ *    - And THEN you can remove the corresponding object from the database via the
+ *      normal removeObjectForKey:inCollection: method (or similar methods) (if needed).
+ *
  * 2. To assist in various migrations, such as version migrations.
  *    For example:
  * 
  *    - In version 2 of your app, you need to move a few CKRecords into a new zone.
  *    - But you don't want to delete the items from the old zone,
  *      because you need to continue supporting v1.X for awhile.
- *    - So you invoke this method first in order to drop the previously associated record.
- *    - And then you can attach the new CKRecords,
+ *    - So you invoke this method first in order to drop the previous record association(s).
+ *    - And then you can attach the new CKRecord(s),
  *      and have YapDatabaseCloudKit upload the new records (to their new zone).
  * 
  * 3. To "move" an object from the cloud to "local-only".
  *    For example:
  * 
  *    - You're making a Notes app that allows user to stores notes locally, or in the cloud.
- *    - The user moves an existing note from the cloud, to local-storage only.
+ *    - The user moves an existing note from the cloud, to local-only storage.
  *    - This method can be used to delete the item from the cloud without deleting it locally.
  * 
  * @param key
@@ -109,26 +109,29 @@
  *   The collection of the row associated with the record to detach.
  * 
  * @param wasRemoteDeletion
- *   If you're invoking this method because the server notified you of a deleted CKRecordID,
- *   then be sure to pass YES for this parameter. Doing so allows the extension to properly modify the
- *   changeSets that are still queued for upload so that it can remove potential modifications for this recordID.
+ *   Did the server notify you of a deleted CKRecordID? 
+ *   Then make sure you set this parameter to YES.
+ *   This allows the extension to properly modify any changeSets that are still queued for upload
+ *   so that it can remove potential modifications for this recordID.
+ * 
+ *   Note: If a record was deleted remotely, and the record was associated with MULTIPLE items in the database,
+ *   then you should be sure to invoke this method for each attached collection/key.
  * 
  * @param shouldUpload
  *   Whether or not the extension should push a deleted CKRecordID to the cloud.
- *   In use case #2 (from the discussion of this method, concerning migration), you'd pass NO.
- *   In use case #3 (from the discussion of this method, concerning moving), you'd pass YES.
- *   This parameter is ignored if wasRemoteDeletion is YES.
+ *   In use case #2 (from the above discussion, concerning migration), you'd pass NO.
+ *   In use case #3 (from the above discussion, concerning moving), you'd pass YES.
+ *   This parameter is ignored if wasRemoteDeletion is YES (in which it will force shouldUpload to be NO).
  * 
- * Note: If you're notified of a deleted CKRecordID from the server,
- *       and you're unsure of the associated local collection/key,
- *       then you can use the getKey:collection:forRecordID:databaseIdentifier: method.
+ * Important: This method only works if within a readWriteTrasaction.
+ * Invoking this method from within a read-only transaction will throw an exception.
  * 
  * @see getKey:collection:forRecordID:databaseIdentifier:
 **/
 - (void)detachRecordForKey:(NSString *)key
               inCollection:(NSString *)collection
          wasRemoteDeletion:(BOOL)wasRemoteDeletion
-      shouldUploadDeletion:(BOOL)shouldUpload;
+      shouldUploadDeletion:(BOOL)shouldUploadDeletion;
 
 /**
  * This method is used to merge a pulled record from the server with what's in the database.
@@ -148,25 +151,34 @@
  * 
  * @param databaseIdentifier
  *   The identifying string for the CKDatabase.
- *   @see YapDatabaseCloudKitDatabaseBlock.
+ *   @see YapDatabaseCloudKitDatabaseIdentifierBlock.
  * 
- * @param key (optional)
- *   If the key & collection of the corresponding object are known, then you should pass them.
- *   This allows the method to skip the overhead of doing the lookup itself.
- *   If unknown, then you can simply pass nil, and it will do the appropriate lookup.
- * 
- * @param collection (optional)
- *   If the key & collection of the corresponding object are known, then you should pass them.
- *   This allows the method to skip the overhead of doing the lookup itself.
- *   If unknown, then you can simply pass nil, and it will do the appropriate lookup.
+ * Important: This method only works if within a readWriteTrasaction.
+ * Invoking this method from within a read-only transaction will throw an exception.
 **/
-- (void)mergeRecord:(CKRecord *)remoteRecord
- databaseIdentifier:(NSString *)databaseIdentifer
-             forKey:(NSString *)key
-       inCollection:(NSString *)collection;
+- (void)mergeRecord:(CKRecord *)remoteRecord databaseIdentifier:(NSString *)databaseIdentifer;
 
 /**
- * If the given recordID & databaseIdentifier are associated with row in the database,
+ * This method allows you to manually modify a CKRecord.
+ * 
+ * This is useful for tasks such as migrations, debugging, and various one-off tasks during the development lifecycle.
+ * For example, you added a property to some on of your model classes in the database,
+ * but you forgot to add the code that creates the corresponding property in the CKRecord.
+ * So you might whip up some code that uses this method, and forces that property to get uploaded to the server
+ * for all the corresponding model objects that you already updated.
+ * 
+ * Returns NO if the given recordID/databaseIdentifier is unknown.
+ * That is, such a record has not been given to YapDatabaseCloudKit (via the recordHandler),
+ * or has not previously been associated with a collection/key,
+ * or the record was deleted earlier in this transaction.
+ *
+ * Important: This method only works if within a readWriteTrasaction.
+ * Invoking this method from within a read-only transaction will throw an exception.
+**/
+- (BOOL)saveRecord:(CKRecord *)record databaseIdentifier:(NSString *)databaseIdentifier;
+
+/**
+ * If the given recordID & databaseIdentifier are associated with a row in the database,
  * then this method will return YES, and set the collectionPtr/keyPtr with the collection/key of the associated row.
  * 
  * @param keyPtr (optional)
@@ -180,15 +192,34 @@
  * 
  * @param databaseIdentifier
  *   The identifying string for the CKDatabase.
- *   @see YapDatabaseCloudKitDatabaseBlock.
+ *   @see YapDatabaseCloudKitDatabaseIdentifierBlock.
  * 
  * @return
  *   YES if the given recordID & databaseIdentifier are associated with a row in the database.
  *   NO otherwise.
+ * 
+ *
+ * Note:
+ *   It's possible to associate multiple items in the database with a single CKRecord/databaseIdentifier.
+ *   This is completely legal, and supported by YapDatabaseCloudKit extension.
+ *   However, if you do this keep in mind that this method will only return 1 of the associated items.
+ *   Further, which item it returns is not guaranteed, and may change between method invocations.
+ *   So, in this particular case, you likely should be using 'collectionKeysForRecordID:databaseIdentifier:'.
 **/
 - (BOOL)getKey:(NSString **)keyPtr collection:(NSString **)collectionPtr
                                   forRecordID:(CKRecordID *)recordID
                            databaseIdentifier:(NSString *)databaseIdentifier;
+
+/**
+ * It's possible to associate multiple items in the database with a single CKRecord/databaseIdentifier.
+ * This is completely legal, and supported by YapDatabaseCloudKit extension.
+ * 
+ * This method returns an array of YapCollectionKey objects,
+ * each associated with the given recordID/databaseIdentifier.
+ * 
+ * @see YapCollectionKey
+**/
+- (NSArray *)collectionKeysForRecordID:(CKRecordID *)recordID databaseIdentifier:(NSString *)databaseIdentifier;
 
 /**
  * If the given key/collection tuple is associated with a record,
@@ -216,5 +247,37 @@
  databaseIdentifier:(NSString **)databaseIdentifierPtr
              forKey:(NSString *)key
        inCollection:(NSString *)collection;
+
+/**
+ * Returns a copy of the CKRcord for the given recordID/databaseIdentifier.
+ * 
+ * Keep in mind that YapDatabaseCloudKit stores ONLY the system fields of a CKRecord.
+ * That is, it does NOT store any key/value pairs.
+ * It only stores "system fields", which is the internal metadata that CloudKit uses to handle sync state.
+ * 
+ * So if you invoke this method from within a read-only transaction,
+ * then you will receive a "base" CKRecord, which is really only useful for extracting "system field" metadata,
+ * such as the 'recordChangeTag'.
+ * 
+ * If you invoke this method from within a read-write transaction,
+ * then you will receive the "base" CKRecord, along with any modifications that have been made to the CKRecord
+ * during the current read-write transaction.
+ * 
+ * Also keep in mind that you are receiving a copy of the record which YapDatabaseCloudKit is using internally.
+ * If you intend to manually modify the CKRecord directly,
+ * then you need to save those changes back into YapDatabaseCloudKit via 'saveRecord:databaseIdentifier'.
+ * 
+ * @see saveRecord:databaseIdentifier:
+**/
+- (CKRecord *)recordForRecordID:(CKRecordID *)recordID databaseIdentifier:(NSString *)databaseIdentifier;
+
+/**
+ * High performance lookup method, if you only need to know if YapDatabaseCloudKit has a
+ * record for the given recordID/databaseIdentifier.
+ * 
+ * This method is much faster than invoking recordForRecordID:databaseIdentifier:,
+ * if you don't actually need the record.
+**/
+- (BOOL)containsRecordID:(CKRecordID *)recordID databaseIdentifier:(NSString *)databaseIdentifier;
 
 @end

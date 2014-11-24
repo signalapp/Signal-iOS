@@ -74,13 +74,13 @@ typedef void (^YapDatabaseCloudKitOperationErrorBlock)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Database(ForIdentifier) Block.
+ * DatabaseIdentifier Block.
  * 
  * CloudKit supports multiple databases.
  * There is the privateCloudDatabase & publicCloudDatabase of the defaultContainer.
  * In addition to this, apps may be configured with access to other (non-default) containers.
  * 
- * In order to properly support multiple databases, the DatabaseForIdentifier block is used.
+ * In order to properly support multiple databases, the DatabaseIdentifier block is used.
  * Here's how it works:
  *
  * The recordHandler block is used to provide a CKRecord for a given row in the database.
@@ -88,12 +88,15 @@ typedef void (^YapDatabaseCloudKitOperationErrorBlock)
  * If you specify a databaseIdentifier, then this method will be used in order to get an appropriate
  * CKDatabase instance for the databaseIdentifier you specified.
  * 
- * This block is OPTIONAL if you ONLY use [[CKContainer defaultContainer] privateCloudDatabase].
+ * If you ONLY use  [[CKContainer defaultContainer] privateCloudDatabase],
+ * then you do NOT need to specify a DatabaseIdentifierBlock.
  *
- * That is, if you never specify a databaseIdentifier for any records (you leave databaseIdentifier nil),
+ * That is, if you never specify a databaseIdentifier for any records (you leave recordInfo.databaseIdentifier nil),
  * then YapDatabaseCloudKit will assume & use [[CKContainer defaultContainer] privateCloudDatabase] for every CKRecord.
+ * 
+ * However, if you intend to use any other CKDatabase, the you MUST provide a DatabaseIdentifierBlock.
 **/
-typedef CKDatabase* (^YapDatabaseCloudKitDatabaseBlock)(NSString *databaseIdentifier);
+typedef CKDatabase* (^YapDatabaseCloudKitDatabaseIdentifierBlock)(NSString *databaseIdentifier);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -

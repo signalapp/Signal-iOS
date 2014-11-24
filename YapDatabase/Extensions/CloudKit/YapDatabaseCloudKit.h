@@ -33,7 +33,7 @@
 - (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)recordHandler
                            mergeBlock:(YapDatabaseCloudKitMergeBlock)mergeBlock
                   operationErrorBlock:(YapDatabaseCloudKitOperationErrorBlock)opErrorBlock
-                        databaseBlock:(YapDatabaseCloudKitDatabaseBlock)databaseBlock
+              databaseIdentifierBlock:(YapDatabaseCloudKitDatabaseIdentifierBlock)databaseIdentifierBlock
                            versionTag:(NSString *)versionTag
                           versionInfo:(id)versionInfo
                               options:(YapDatabaseCloudKitOptions *)options;
