@@ -241,7 +241,7 @@ typedef enum : NSUInteger {
     /**
      *  Override point for customizing cells
      */
-    JSQMessage *msg = [self.demoData.messages objectAtIndex:indexPath.item];
+    JSQMessage *msg = [self.demoData.messages objectAtIndex:(NSUInteger)indexPath.item];
     
     if ([msg isKindOfClass:[JSQMessage class]])
     {
