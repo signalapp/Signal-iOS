@@ -53,7 +53,7 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 
 + (void)becomeActive {
     TSSocketManager *sharedInstance = [self sharedManager];
-    SRWebSocket *socket =[sharedInstance websocket];
+    SRWebSocket *socket             = [sharedInstance websocket];
     
     if (socket) {
         switch ([socket readyState]) {
@@ -76,8 +76,8 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
     
     NSString *webSocketConnect = [textSecureWebSocketAPI stringByAppendingString:[[self sharedManager] webSocketAuthenticationString]];
     NSURL *webSocketConnectURL = [NSURL URLWithString:webSocketConnect];
-    socket = [[SRWebSocket alloc] initWithURL:webSocketConnectURL];
-    socket.delegate = [self sharedManager];
+    socket                     = [[SRWebSocket alloc] initWithURL:webSocketConnectURL];
+    socket.delegate            = [self sharedManager];
     [socket open];
     [[self sharedManager] setWebsocket:socket];
 }
@@ -90,7 +90,7 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 #pragma mark - Delegate methods
 
 - (void) webSocketDidOpen:(SRWebSocket *)webSocket {
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:kWebSocketHeartBeat target:self selector:@selector(webSocketHeartBeat) userInfo:nil repeats:YES];
+    self.timer  = [NSTimer scheduledTimerWithTimeInterval:kWebSocketHeartBeat target:self selector:@selector(webSocketHeartBeat) userInfo:nil repeats:YES];
     self.status = kSocketStatusOpen;
 }
 
@@ -140,7 +140,6 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 }
 
 - (void)webSocketHeartBeat {
-    DDLogVerbose(@"WebSocket sent ping");
     [self.websocket sendPing:nil];
 }
 

@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 
 #import "TSInteraction.h"
-#import "TSContact.h"
 
 @interface TSCall : TSInteraction
 

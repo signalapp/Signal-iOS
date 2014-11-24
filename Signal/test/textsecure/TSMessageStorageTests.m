@@ -34,9 +34,11 @@
 - (void)setUp {
     [super setUp];
     
-    self.thread = [TSContactThread threadWithContactId:@"aStupidId"];
-    
-    [self.thread save];
+    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        self.thread = [TSContactThread threadWithContactId:@"aStupidId" transaction:transaction];
+        
+        [self.thread saveWithTransaction:transaction];
+    }];
     
     TSStorageManager *manager = [TSStorageManager sharedManager];
     [manager purgeCollection:[TSMessage collection]];
@@ -82,7 +84,7 @@
     
     
     
-    [[TSStorageManager sharedManager].databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (uint64_t i = timestamp; i<100; i++) {
             TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:timestamp] transaction:transaction];
             
@@ -97,7 +99,7 @@
     
     [self.thread remove];
     
-    [[TSStorageManager sharedManager].databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (uint64_t i = timestamp; i<1000; i++) {
             TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:timestamp] transaction:transaction];
             NSAssert(fetchedMessage == nil, @"Message should be deleted!");

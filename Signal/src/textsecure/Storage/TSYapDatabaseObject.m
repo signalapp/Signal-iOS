@@ -31,7 +31,7 @@
 }
 
 - (void)save{
-    [[TSStorageManager sharedManager].databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self saveWithTransaction:transaction];
     }];
 }
@@ -43,7 +43,7 @@
 
 
 - (void)remove{
-    [[TSStorageManager sharedManager].databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self removeWithTransaction:transaction];
     }];
 }
@@ -62,7 +62,7 @@
 + (instancetype) fetchObjectWithUniqueID:(NSString *)uniqueID{
     __block id object;
     
-    [[TSStorageManager sharedManager].databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         object = [transaction objectForKey:uniqueID inCollection:[self collection]];
     }];
     

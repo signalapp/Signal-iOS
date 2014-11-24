@@ -42,7 +42,7 @@
         success();
         
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        failureBlock(kTSRegistrationFailureNetwork);
+        failureBlock([TSAccountManager errorForRegistrationFailure:kTSRegistrationFailureNetwork HTTPStatusCode:0]);
     }];
     
 }

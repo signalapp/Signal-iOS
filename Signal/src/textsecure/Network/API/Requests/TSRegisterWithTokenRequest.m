@@ -21,7 +21,10 @@
     
     self.numberToValidate = number;
     
-    [self.parameters addEntriesFromDictionary:@{@"signalingKey": signalingKey, @"AuthKey": authKey, @"supportsSMS": @FALSE, @"registrationId": [NSString stringWithFormat:@"%i",[TSAccountManager getOrGenerateRegistrationId]]}];
+    [self.parameters addEntriesFromDictionary:@{@"signalingKey": signalingKey,
+                                                @"AuthKey": authKey,
+                                                @"supportsSMS": @"0",
+                                                @"registrationId": [NSString stringWithFormat:@"%i",[TSAccountManager getOrGenerateRegistrationId]]}];
     
     [self setHTTPMethod:@"PUT"];
     

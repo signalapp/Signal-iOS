@@ -34,7 +34,7 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
 }
 
 -(void) watchForContactUpdatesFrom:(ContactsManager*) contactManager untillCancelled:(TOCCancelToken*) cancelToken{
-    [contactManager.getObservableWhisperUsers watchLatestValue:^(NSArray* latestUsers) {
+    [contactManager.getObservableRedPhoneUsers watchLatestValue:^(NSArray* latestUsers) {
         for (RecentCall* recentCall in _allRecents) {
             if (![contactManager latestContactWithRecordId:recentCall.contactRecordID]) {
                 Contact* contact = [contactManager latestContactForPhoneNumber:recentCall.phoneNumber];

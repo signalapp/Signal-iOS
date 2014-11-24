@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "DemoDataModel.h"
 #import "NextResponderScrollView.h"
+#import "TSThread.h"
 
 typedef enum : NSUInteger {
     kArchiveState,
@@ -41,7 +42,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) IBOutlet UIImageView *archiveImageView;
 @property (nonatomic, assign) id<TableViewCellDelegate> delegate;
 
--(void)configureWithTestMessage:(DemoDataModel*)testMessage;
+-(void)configureWithThread:(TSThread*)thread;
 -(void)configureForState:(CellState)state;
 -(void)animateDisappear;
 

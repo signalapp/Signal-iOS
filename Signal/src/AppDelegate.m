@@ -12,6 +12,7 @@
 #import "PriorityQueue.h"
 #import "RecentCallManager.h"
 #import "Release.h"
+#import "TSStorageManager.h"
 #import "TSAccountManager.h"
 #import "Util.h"
 #import "VersionMigrations.h"
@@ -58,47 +59,6 @@
     }
 }
 
-/**
- *  Protects the preference and logs file with disk encryption and prevents them to leak to iCloud.
- */
-
-- (void)protectPreferenceFiles{
-    
-    NSMutableArray *pathsToExclude = [NSMutableArray array];
-    NSString *preferencesPath =[NSHomeDirectory() stringByAppendingString:@"/Library/Preferences/"];
-    
-    NSError *error;
-    
-    NSDictionary *attrs = @{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication};
-    [NSFileManager.defaultManager setAttributes:attrs ofItemAtPath:preferencesPath error:&error];
-    
-    [pathsToExclude addObject:[[preferencesPath stringByAppendingString:NSBundle.mainBundle.bundleIdentifier] stringByAppendingString:@".plist"]];
-    
-    NSString *logPath    = [NSHomeDirectory() stringByAppendingString:@"/Library/Caches/Logs/"];
-    NSArray  *logsFiles  = [NSFileManager.defaultManager contentsOfDirectoryAtPath:logPath error:&error];
-    
-    attrs = @{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication};
-    [NSFileManager.defaultManager setAttributes:attrs ofItemAtPath:logPath error:&error];
-    
-    for (NSString *logsFile in logsFiles) {
-        [pathsToExclude addObject:[logPath stringByAppendingString:logsFile]];
-    }
-    
-    for (NSString *pathToExclude in pathsToExclude) {
-        [[NSURL fileURLWithPath:pathToExclude] setResourceValue:@YES
-                                                             forKey:NSURLIsExcludedFromBackupKey
-                                                              error:&error];
-    }
-    
-    if (error) {
-        DDLogError(@"Error while removing log files from backup: %@", error.description);
-        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:NSLocalizedString(@"WARNING", @"") message:NSLocalizedString(@"DISABLING_BACKUP_FAILED", @"") delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil, nil];
-        [alert show];
-        return;
-    }
-    
-}
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     BOOL loggingIsEnabled;
@@ -121,8 +81,9 @@
         [DebugLogger.sharedInstance enableFileLogging];
     }
     
+    [[TSStorageManager sharedManager] setupDatabase];
+    
     [self performUpdateCheck];
-    [self protectPreferenceFiles];
     
     [self prepareScreenshotProtection];
     
@@ -141,6 +102,21 @@
         DDLogInfo(@"Application was launched by tapping a push notification.");
         [self application:application didReceiveRemoteNotification:remoteNotif];
     }
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:[NSBundle mainBundle]];
+    
+    UIViewController *viewController;
+    
+    if (![TSAccountManager isRegistered]) {
+        viewController = [storyboard instantiateViewControllerWithIdentifier:@"RegisterInitialViewController"];
+    } else{
+        viewController = [storyboard instantiateViewControllerWithIdentifier:@"UserInitialViewController"];
+    }
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.rootViewController = viewController;
+    
+    [self.window makeKeyAndVisible];
     
     [Environment.phoneManager.currentCallObservable watchLatestValue:^(CallState* latestCall) {
         if (latestCall == nil){
@@ -163,21 +139,6 @@
         [self.window.rootViewController dismissViewControllerAnimated:NO completion:nil];
         [self.window.rootViewController presentViewController:callViewController animated:NO completion:nil];
     } onThread:NSThread.mainThread untilCancelled:nil];
-    
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:[NSBundle mainBundle]];
-    
-    UIViewController *viewController;
-    
-    if (![TSAccountManager isRegistered]) {
-        viewController = [storyboard instantiateViewControllerWithIdentifier:@"RegisterInitialViewController"];
-    } else{
-        viewController = [storyboard instantiateViewControllerWithIdentifier:@"UserInitialViewController"];
-    }
-    
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.window.rootViewController = viewController;
-
-    [self.window makeKeyAndVisible];
     
     return YES;
 }

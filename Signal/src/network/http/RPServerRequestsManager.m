@@ -82,7 +82,6 @@ MacrosSingletonImplemention
     TOCFutureSource *requestFutureSource = [TOCFutureSource new];
     
     [self performRequest:apiCall success:^(NSURLSessionDataTask *task, id responseObject) {
-        NSLog(@"ResponseObject: %@", responseObject);
         [requestFutureSource trySetResult:task.response];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         [requestFutureSource trySetFailure:error];

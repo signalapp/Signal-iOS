@@ -1,11 +1,16 @@
 #import "PhoneNumberDirectoryFilterManager.h"
 
+#import "ContactsManager.h"
+#import "Cryptography.h"
 #import "Environment.h"
 #import "NotificationManifest.h"
 #import "PreferencesUtil.h"
 #import "RPServerRequestsManager.h"
 #import "SignalUtil.h"
 #import "ThreadManager.h"
+#import "TSContactsIntersectionRequest.h"
+#import "TSStorageManager.h"
+#import "TSRecipient.h"
 #import "Util.h"
 
 #define MINUTE (60.0)
@@ -18,13 +23,13 @@
 @private TOCCancelTokenSource* currentUpdateLifetime;
 }
 
--(id) init {
+- (id)init {
     if (self = [super init]) {
         phoneNumberDirectoryFilter = PhoneNumberDirectoryFilter.phoneNumberDirectoryFilterDefault;
     }
     return self;
 }
--(void) startUntilCancelled:(TOCCancelToken*)cancelToken {
+- (void)startUntilCancelled:(TOCCancelToken*)cancelToken {
     lifetimeToken = cancelToken;
     
     phoneNumberDirectoryFilter = [Environment.preferences tryGetSavedPhoneNumberDirectory];
@@ -35,21 +40,21 @@
     [self scheduleUpdate];
 }
 
--(PhoneNumberDirectoryFilter*) getCurrentFilter {
+- (PhoneNumberDirectoryFilter*)getCurrentFilter {
     @synchronized(self) {
         return phoneNumberDirectoryFilter;
     }
 }
--(void)forceUpdate {
+- (void)forceUpdate {
     [self scheduleUpdateAt:NSDate.date];
 }
--(void) scheduleUpdate {
+- (void)scheduleUpdate {
     return [self scheduleUpdateAt:self.getCurrentFilter.getExpirationDate];
 }
--(void) scheduleUpdateAt:(NSDate*)date {
+- (void)scheduleUpdateAt:(NSDate*)date {
     void(^doUpdate)(void) = ^{
         if (Environment.isRedPhoneRegistered) {
-            [self update];
+            [self updateRedPhone];
             
         }
     };
@@ -63,8 +68,10 @@
           unlessCancelled:currentUpdateLifetime.token];
 }
 
--(void) update {
-    [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall fetchBloomFilter] success:^(NSURLSessionDataTask *task, NSData *responseObject) {
+
+- (void) updateRedPhone {
+    
+    [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall fetchBloomFilter] success:^(NSURLSessionDataTask *task, id responseObject) {
         PhoneNumberDirectoryFilter *directory = [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterFromURLResponse:(NSHTTPURLResponse*)task.response body:responseObject];
         
         @synchronized(self) {
@@ -72,10 +79,9 @@
         }
         
         [Environment.preferences setSavedPhoneNumberDirectory:directory];
-        [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
-        [self scheduleUpdate];
-        
+        [self updateTextSecureWithRedPhoneSucces:YES];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        DDLogError(@"Error to fetch contact interesection: %@", error.debugDescription);
         NSString* desc = [NSString stringWithFormat:@"Failed to retrieve directory. Retrying in %f hours.",
                           DIRECTORY_UPDATE_RETRY_PERIOD/HOUR];
         Environment.errorNoter(desc, error, false);
@@ -84,11 +90,67 @@
                                                sinceDate:[NSDate date]];
         @synchronized(self) {
             phoneNumberDirectoryFilter = [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterWithBloomFilter:filter
-                                                                                            andExpirationDate:retryDate];
+                                                                                             andExpirationDate:retryDate];
         }
         
+        [self updateTextSecureWithRedPhoneSucces:NO];
+    }];
+}
+
+- (void)updateTextSecureWithRedPhoneSucces:(BOOL)redPhoneSuccess {
+    NSArray *allContacts = [[[Environment getCurrent] contactsManager] allContacts];
+    
+    NSMutableDictionary *contactsByPhoneNumber = [NSMutableDictionary dictionary];
+    NSMutableDictionary *phoneNumbersByHashes  = [NSMutableDictionary dictionary];
+    
+    for (Contact *contact in allContacts) {
+        for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
+            [phoneNumbersByHashes setObject:phoneNumber.toE164 forKey:[Cryptography truncatedSHA1Base64EncodedWithoutPadding:phoneNumber.toE164]];
+            [contactsByPhoneNumber setObject:contact forKey:phoneNumber.toE164];
+        }
+    }
+    
+    NSArray *hashes = [phoneNumbersByHashes allKeys];
+    
+    TSRequest *request = [[TSContactsIntersectionRequest alloc]initWithHashesArray:hashes];
+    
+    [[TSNetworkManager sharedManager] queueAuthenticatedRequest:request success:^(NSURLSessionDataTask *tsTask, id responseDict) {
+        NSMutableArray      *tsIdentifiers      = [NSMutableArray array];
+        NSMutableDictionary *relayForIdentifier = [NSMutableDictionary dictionary];
+        NSArray *contactsArray                  = [(NSDictionary*)responseDict objectForKey:@"contacts"];
+        
+        if (contactsArray) {
+            for (NSDictionary *dict in contactsArray) {
+                NSString *hash = [dict objectForKey:@"token"];
+                
+                if (hash) {
+                    [tsIdentifiers addObject:[phoneNumbersByHashes objectForKey:hash]];
+                    
+                    NSString *relay = [dict objectForKey:@"relay"];
+                    if (relay) {
+                        [relayForIdentifier setObject:relay forKey:[phoneNumbersByHashes objectForKey:hash]];
+                    }
+                }
+            }
+        }
+        
+        [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            for (NSString *identifier in tsIdentifiers) {
+                TSRecipient *recipient = [TSRecipient recipientWithTextSecureIdentifier:identifier withTransaction:transaction];
+                if (!recipient) {
+                    NSString *relay = [relayForIdentifier objectForKey:recipient];
+                    recipient = [[TSRecipient alloc] initWithTextSecureIdentifier:identifier relay:relay];
+                }
+                [recipient saveWithTransaction:transaction];
+            }
+        }];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
+        [self scheduleUpdate];
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
         [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_FAILED object:nil];
     }];
 }
+
 
 @end

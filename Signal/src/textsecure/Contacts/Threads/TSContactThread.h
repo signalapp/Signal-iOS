@@ -13,7 +13,7 @@
 
 @interface TSContactThread : TSThread
 
-+ (instancetype)threadWithContactId:(NSString*)contactId;
++ (instancetype)threadWithContactId:(NSString*)contactId transaction:(YapDatabaseReadWriteTransaction*)transaction;
 
 - (TSRecipient*)recipient;
 

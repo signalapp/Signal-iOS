@@ -11,17 +11,18 @@
 #import <YapDatabase/YapDatabaseView.h>
 
 #import "TSThread.h"
-#import "TSStorageManager.h"
 #import "TSInteraction.h"
+#import "TSStorageManager.h"
+#import "TSRecipient.h"
 
 NSString *TSThreadGroup = @"TSThreadGroup";
 
-NSString *TSThreadDatabaseViewExtensionName = @"TSThreadDatabaseViewExtensionName";
-NSString *TSMessageDatabaseViewExtensionName = @"TSMessageDatabaseViewExtensionName";
+NSString *TSThreadDatabaseViewExtensionName     = @"TSThreadDatabaseViewExtensionName";
+NSString *TSMessageDatabaseViewExtensionName    = @"TSMessageDatabaseViewExtensionName";
 
 @implementation TSDatabaseView
 
-+ (BOOL)registerThreadDatabaseView{
++ (BOOL)registerThreadDatabaseView {
     YapDatabaseView *threadView = [[TSStorageManager sharedManager].database registeredExtension:TSThreadDatabaseViewExtensionName];
     if (threadView) {
         return YES;
@@ -61,7 +62,7 @@ NSString *TSMessageDatabaseViewExtensionName = @"TSMessageDatabaseViewExtensionN
     return [[TSStorageManager sharedManager].database registerExtension:databaseView withName:TSThreadDatabaseViewExtensionName];
 }
 
-+ (BOOL)registerBuddyConversationDatabaseView{
++ (BOOL)registerBuddyConversationDatabaseView {
     if ([[TSStorageManager sharedManager].database registeredExtension:TSMessageDatabaseViewExtensionName]) {
         return YES;
     }

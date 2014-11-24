@@ -9,10 +9,10 @@
 #import "TSStorageManager+IdentityKeyStore.h"
 #import "TSRecipient.h"
 
-@interface TSRecipient (){
-    NSMutableSet *devices;
-    NSData *verifiedKey;
-}
+@interface TSRecipient ()
+
+@property (nonatomic, retain) NSMutableSet *devices;
+@property (nonatomic, copy)   NSData *verifiedKey;
 
 @end
 
@@ -22,48 +22,44 @@
     return @"TSRecipient";
 }
 
-- (instancetype)initWithTextSecureIdentifier:(NSString*)textSecureIdentifier{
+- (instancetype)initWithTextSecureIdentifier:(NSString*)textSecureIdentifier relay:(NSString *)relay{
     self = [super initWithUniqueId:textSecureIdentifier];
     
     if (self) {
-        devices     = [NSMutableSet setWithObject:[NSNumber numberWithInt:1]];
-        verifiedKey = nil;
+        _devices     = [NSMutableSet setWithObject:[NSNumber numberWithInt:1]];
+        _verifiedKey = nil;
+        _relay       = relay;
     }
     
     return self;
 }
 
 + (instancetype)recipientWithTextSecureIdentifier:(NSString*)textSecureIdentifier withTransaction:(YapDatabaseReadTransaction*)transaction{
-    TSRecipient *recipient = [self fetchObjectWithUniqueID:textSecureIdentifier transaction:transaction];
-    
-    if (!recipient) {
-        recipient = [[self alloc] initWithTextSecureIdentifier:textSecureIdentifier];
-    }
-    return recipient;
+    return [self fetchObjectWithUniqueID:textSecureIdentifier transaction:transaction];
 }
 
 - (NSSet*)devices{
-    return [devices copy];
+    return [_devices copy];
 }
 
 - (void)addDevices:(NSSet *)set{
-    [devices unionSet:set];
+    [_devices unionSet:set];
 }
 
 - (void)removeDevices:(NSSet *)set{
-    [devices minusSet:set];
+    [_devices minusSet:set];
 }
 
 #pragma mark Fingerprint verification
 
 - (BOOL)hasVerifiedFingerprint{
-    if (verifiedKey) {
-        BOOL equalsStoredValue = [verifiedKey isEqualToData:[[TSStorageManager sharedManager] identityKeyForRecipientId:self.uniqueId]];
+    if (self.verifiedKey) {
+        BOOL equalsStoredValue = [self.verifiedKey isEqualToData:[[TSStorageManager sharedManager] identityKeyForRecipientId:self.uniqueId]];
         
         if (equalsStoredValue) {
             return YES;
         } else{
-            verifiedKey = nil;
+            self.verifiedKey = nil;
             return NO;
         }
         
@@ -74,9 +70,9 @@
 
 - (void)setFingerPrintVerified:(BOOL)verified transaction:(YapDatabaseReadTransaction*)transaction{
     if (verified) {
-        verifiedKey = [[TSStorageManager sharedManager] identityKeyForRecipientId:self.uniqueId];
+        self.verifiedKey = [[TSStorageManager sharedManager] identityKeyForRecipientId:self.uniqueId];
     } else{
-        verifiedKey = nil;
+        self.verifiedKey = nil;
     }
 }
 

@@ -19,7 +19,14 @@
 @interface Cryptography (Test)
 +(NSData*) truncatedSHA256HMAC:(NSData*)dataToHMAC withHMACKey:(NSData*)HMACKey truncation:(int)bytes;
 +(NSData*)encryptCBCMode:(NSData*) dataToEncrypt withKey:(NSData*) key withIV:(NSData*) iv withVersion:(NSData*)version  withHMACKey:(NSData*) hmacKey withHMACType:(TSMACType)hmacType computedHMAC:(NSData**)hmac;
-+(NSData*) decryptCBCMode:(NSData*) dataToDecrypt withKey:(NSData*) key withIV:(NSData*) iv withVersion:(NSData*)version withHMACKey:(NSData*) hmacKey  withHMACType:(TSMACType)hmacType forHMAC:(NSData *)hmac;
+
++(NSData*)decryptCBCMode:(NSData*)dataToDecrypt
+                     key:(NSData*)key
+                      IV:(NSData*)iv
+                 version:(NSData*)version
+                 HMACKey:(NSData*) hmacKey
+                HMACType:(TSMACType)hmacType
+            matchingHMAC:(NSData *)hmac;
 @end
 
 @implementation CryptographyTests
@@ -48,7 +55,7 @@
     
     XCTAssertTrue([mac isEqualToData:expectedHmac], @"Hmac of encrypted data %@,  not equal to expected hmac %@", [mac base64EncodedString], [expectedHmac base64EncodedString]);
     
-    NSData* decryption=[Cryptography decryptCBCMode:encryption withKey:signalingKeyAESKeyMaterial withIV:iv withVersion:version withHMACKey:signalingKeyHMACKeyMaterial withHMACType:TSHMACSHA1Truncated10Bytes forHMAC:mac];
+    NSData* decryption=[Cryptography decryptCBCMode:encryption key:signalingKeyAESKeyMaterial IV:iv version:version HMACKey:signalingKeyHMACKeyMaterial HMACType:TSHMACSHA1Truncated10Bytes matchingHMAC:mac];
                         
     NSString* decryptedMessage = [[NSString alloc] initWithData:decryption encoding:NSUTF8StringEncoding];
     XCTAssertTrue([decryptedMessage isEqualToString:originalMessage],  @"Decrypted message: %@ is not equal to original: %@",decryptedMessage,originalMessage);

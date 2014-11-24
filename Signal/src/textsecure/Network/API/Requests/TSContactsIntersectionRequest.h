@@ -8,6 +8,8 @@
 
 #import "TSRequest.h"
 
+#import "TSNetworkManager.h"
+
 @interface TSContactsIntersectionRequest : TSRequest
 
 - (id)initWithHashesArray:(NSArray*)hashes;
