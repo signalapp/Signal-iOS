@@ -18,7 +18,6 @@
 @property (strong, nonatomic) NSString* senderTitleString;
 @property DemoDataModel *demoData;
 
-
 - (void)setupWithThread:(TSThread*)thread;
 
 @end

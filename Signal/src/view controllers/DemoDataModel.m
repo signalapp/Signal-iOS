@@ -11,6 +11,7 @@
 #import "RecentCall.h"
 #import "PhoneNumber.h"
 
+#import "JSQMessage.h"
 #import "JSQCall.h"
 
 enum {kDemoDataModelCase0, kDemoDataModelCase1,kDemoDataModelCase2, kDemoDataModelCase3, kDemoDataModelCase4};
