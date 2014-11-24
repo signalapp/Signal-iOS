@@ -32,7 +32,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     NSArray *searchResults;
 }
 
-
+@property (nonatomic, strong) UILabel *emptyViewLabel;
 @property NSArray *latestSortedAlphabeticalContactKeys;
 @property NSArray *latestContacts;
 @property (nonatomic, strong) UISearchController *searchController;
@@ -44,24 +44,16 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contactsDidRefresh) name:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contactRefreshFailed) name:NOTIFICATION_DIRECTORY_FAILED object:nil];
-    UIRefreshControl *refreshControl = [[UIRefreshControl alloc]
-                                        init];
-    [refreshControl addTarget:self action:@selector(refreshContacts) forControlEvents:UIControlEventValueChanged];
-    self.refreshControl = refreshControl;
-    [self.contactTableView addSubview:self.refreshControl];
-    
-    self.tableView.contentOffset = CGPointMake(0, 44);
-    
+    [self initializeObservers];
+    [self initializeRefreshControl];
+    [self initializeTableView];
     [self initializeSearch];
     
     [self setupContacts];
     
     [self.tableView reloadData];
 }
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -89,6 +81,27 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     
 }
 
+-(void)initializeRefreshControl
+{
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc]init];
+    [refreshControl addTarget:self action:@selector(refreshContacts) forControlEvents:UIControlEventValueChanged];
+    self.refreshControl = refreshControl;
+    [self.contactTableView addSubview:self.refreshControl];
+
+}
+
+-(void)initializeTableView
+{
+    self.tableView.contentOffset = CGPointMake(0, 44);
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+}
+
+-(void)initializeObservers
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contactsDidRefresh) name:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contactRefreshFailed) name:NOTIFICATION_DIRECTORY_FAILED object:nil];
+}
+
 #pragma mark - UISearchResultsUpdating
 
 -(void)updateSearchResultsForSearchController:(UISearchController *)searchController {
@@ -114,7 +127,9 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 {
     NSPredicate *resultPredicate = [NSPredicate predicateWithFormat:@"fullName contains[c] %@", searchText];
     searchResults = [self.latestContacts filteredArrayUsingPredicate:resultPredicate];
-    if (!searchResults.count && _searchController.searchBar.text.length == 0) searchResults = self.latestContacts;
+    if (!searchResults.count && _searchController.searchBar.text.length == 0) {
+        searchResults = self.latestContacts;
+    }
 }
 
 
@@ -138,32 +153,15 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     NSDictionary * dic;
     
     dic = @{
-            @"A": @[],
-            @"B": @[],
-            @"C": @[],
-            @"D": @[],
-            @"E": @[],
-            @"F": @[],
-            @"G": @[],
-            @"H": @[],
-            @"I": @[],
-            @"J": @[],
-            @"K": @[],
-            @"L": @[],
-            @"M": @[],
-            @"N": @[],
-            @"O": @[],
-            @"P": @[],
-            @"Q": @[],
-            @"R": @[],
-            @"S": @[],
-            @"T": @[],
-            @"U": @[],
-            @"V": @[],
-            @"W": @[],
-            @"X": @[],
-            @"Y": @[],
-            @"Z": @[]
+            @"A": @[], @"B": @[], @"C": @[],
+            @"D": @[], @"E": @[], @"F": @[],
+            @"G": @[], @"H": @[], @"I": @[],
+            @"J": @[], @"K": @[], @"L": @[],
+            @"M": @[], @"N": @[], @"O": @[],
+            @"P": @[], @"Q": @[], @"R": @[],
+            @"S": @[], @"T": @[], @"U": @[],
+            @"V": @[], @"W": @[], @"X": @[],
+            @"Y": @[], @"Z": @[]
             };
     
     return [dic mutableCopy];
@@ -193,7 +191,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 {
     UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
     [header.textLabel setTextColor:[UIColor blackColor]];
-    [header.textLabel setFont:[UIFont fontWithName:@"HelveticaNeue-Thin" size:14.0f]];
+    [header.textLabel setFont:[UIFont ows_thinFontWithSize:14.0f]];
     
 }
 
@@ -212,14 +210,14 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    ContactTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CONTACT_BROWSE_TABLE_CELL_IDENTIFIER];
     
+    ContactTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CONTACT_BROWSE_TABLE_CELL_IDENTIFIER];
+
     if (!cell) {
         cell = [[ContactTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                            reuseIdentifier:CONTACT_BROWSE_TABLE_CELL_IDENTIFIER];
     }
     
-    cell.shouldShowContactButtons = YES;
     
     [cell configureWithContact:[self contactForIndexPath:indexPath]];
     
@@ -317,6 +315,21 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 }
 
 - (void)contactsDidRefresh{
+    if (_latestContacts.count == 0)
+    {
+        CGRect r = CGRectMake(0, 60, 300, 70);
+        _emptyViewLabel = [[UILabel alloc]initWithFrame:r];
+        _emptyViewLabel.text = @"None of your contacts are Signal users yet.";
+        _emptyViewLabel.textColor = [UIColor grayColor];
+        _emptyViewLabel.font = [UIFont ows_thinFontWithSize:14.0f];
+        _emptyViewLabel.textAlignment = NSTextAlignmentCenter;
+        self.tableView.tableFooterView = _emptyViewLabel;
+        
+    } else {
+        self.tableView.tableFooterView = self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
+        [self.tableView reloadData];
+    }
+
     [self.refreshControl endRefreshing];
 }
 

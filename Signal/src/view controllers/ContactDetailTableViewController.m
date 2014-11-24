@@ -12,8 +12,8 @@
 #import "UIUtil.h"
 #import "DJWActionSheet.h"
 
-#define kImageRadius 50.0f
-#define kMinRows 4
+#define kImageRadius           50.0f
+#define kMinRows               3
 #define kFirstAdaptableCellRow 2
 
 
@@ -87,6 +87,7 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
             break;
         case kActionCellIndexPath:
             cell = (ActionContactDetailCell*)[tableView dequeueReusableCellWithIdentifier:kActionCell forIndexPath:indexPath];
+            [self setUpActionCell:(ActionContactDetailCell*)cell];
             break;
         case kShareCellIndexPath:
             cell = [tableView dequeueReusableCellWithIdentifier:kShareCell forIndexPath:indexPath];
@@ -98,27 +99,6 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
     
     
     return cell;
-}
-
-
-
--(void)setUpNameMainUserCell:(ContactDetailCell*)cell
-{
-    Contact* c = self.contact;
-    
-    cell.contactName.text = [c fullName];
-    
-    cell.contactPhoneNumber.text = [[c userTextPhoneNumbers] firstObject];
-    
-    if (c.image) {
-        cell.contactImageView.image = c.image;
-    } else {
-        [cell.contactImageView addConstraint:[NSLayoutConstraint constraintWithItem:cell.contactImageView attribute:NSLayoutAttributeHeight relatedBy:0 toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:0]];
-        doesImageExist = NO;
-        
-    }
-    [cell.contactImageView.layer setCornerRadius:kImageRadius];
-    [cell.contactImageView.layer setMasksToBounds:YES];
 }
 
 
@@ -156,98 +136,193 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
                                   [tableView deselectRowAtIndexPath:indexPath animated:YES];
                                   if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
                                       NSLog(@"User Cancelled");
-
+                                      
                                   } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
                                       NSLog(@"Destructive button tapped");
                                   }else {
                                       NSLog(@"The user tapped button at index: %li", (long)tappedButtonIndex);
                                   }
                               }];
-
+            
             break;
             
     }
 }
 
-#pragma mark - Utilities (Adaptable Cells)
 
--(NSUInteger)numberOfRowsForContact:(Contact*)contact
+#pragma mark - Set Up Cells
+
+-(void)setUpActionCell:(ActionContactDetailCell*)cell
 {
-    NSUInteger numEmails = contact.emails.count;
-    NSUInteger numPhoneNumbers = contact.userTextPhoneNumbers.count-1; //Don't count main
+    Contact * c = self.contact;
     
-    return kMinRows + numEmails + numPhoneNumbers;
+    UIImage *callImage = [[UIImage imageNamed:@"call_dark"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [cell.contactCallButton setImage:callImage forState:UIControlStateNormal];
+    
+    UIImage *messageImage = [[UIImage imageNamed:@"signals_tab"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [cell.contactTextButton setImage:messageImage forState:UIControlStateNormal];
+    
+    UIImage *clearImage = [[UIImage imageNamed:@"delete_history"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [cell.contactShredButton setImage:clearImage forState:UIControlStateNormal];
+    cell.contactShredButton.tintColor = [UIColor redColor];
+    
+    
+    if (c.isRedPhoneContact)
+    {
+        cell.contactCallButton.tintColor = [UIColor colorWithRed:0.f/255.f green:122.f/255.f blue:255.f/255.f alpha:1.0f];
+        
+    } else {
+        cell.contactCallButton.tintColor = [UIColor colorWithRed:81.f/255.f green:81.f/255.f blue:81.f/255.f alpha:1.0f];
+        cell.contactCallButton.enabled = NO;
+    }
+    
+    if (c.isTextSecureContact)
+    {
+        cell.contactTextButton.tintColor = [UIColor colorWithRed:0.f/255.f green:122.f/255.f blue:255.f/255.f alpha:1.0f];
+    } else {
+        cell.contactTextButton.tintColor = [UIColor colorWithRed:81.f/255.f green:81.f/255.f blue:81.f/255.f alpha:1.0f];
+        cell.contactTextButton.enabled = NO;
+    }
+    
+    
 }
 
--(UITableViewCell*)adaptableCellAtIndexPath:(NSIndexPath*)idx
+-(void)setUpNameMainUserCell:(ContactDetailCell*)cell
 {
-    NSInteger emailUpperBound = (NSInteger)(kFirstAdaptableCellRow+_contact.emails.count);
-    NSInteger phoneNumberUpperBound = emailUpperBound + (NSInteger)_contact.userTextPhoneNumbers.count;
+    Contact* c = self.contact;
     
+    cell.contactName.text = [c fullName];
     
+    cell.contactPhoneNumber.text = [[c userTextPhoneNumbers] firstObject];
+    
+    if (c.image) {
+        cell.contactImageView.image = c.image;
+    } else {
+        [cell.contactImageView addConstraint:[NSLayoutConstraint constraintWithItem:cell.contactImageView attribute:NSLayoutAttributeHeight relatedBy:0 toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:0]];
+        doesImageExist = NO;
+        
+    }
+    [cell.contactImageView.layer setCornerRadius:kImageRadius];
+    [cell.contactImageView.layer setMasksToBounds:YES];
+}
+
+-(void)setUpEmailCell:(ContactDetailCell*)cell forIndexPath:(NSIndexPath*)indexPath
+{
+    cell.contactEmailLabel.text = [_contact.emails objectAtIndex:(NSUInteger)indexPath.row-kMinRows];
+}
+
+-(void)setUpAnnexNumberCell:(ContactDetailCell*)cell forIndexPath:(NSIndexPath*)indexPath
+{
+    NSInteger i = indexPath.row - [self emailUpperBound] ;
+    
+    cell.contactAnnexNumberLabel.text = [_contact.userTextPhoneNumbers objectAtIndex:(NSUInteger)i];
+}
+
+-(void)setUpNotesCell:(ContactDetailCell*)cell
+{
+    cell.contactNotesTextView.text = _contact.notes;
+}
+
+#pragma mark - Utilities (Adaptable Cells)
+
+-(UITableViewCell*)adaptableCellAtIndexPath:(NSIndexPath*)indexPath
+{
     ContactDetailCell * cell;
     
-    if (idx.row > kFirstAdaptableCellRow && idx.row <= emailUpperBound)
+    if ([self isEmailIndexPath:indexPath])
     {
-        cell = [self.tableView dequeueReusableCellWithIdentifier:kEmailCell forIndexPath:idx];
-        
-        cell.contactEmailLabel.text = [_contact.emails objectAtIndex:(NSUInteger)idx.row-_contact.emails.count];
+        cell = [self.tableView dequeueReusableCellWithIdentifier:kEmailCell forIndexPath:indexPath];
+        [self setUpEmailCell:cell forIndexPath:indexPath];
         
         return cell;
     }
     
-    else if (idx.row > emailUpperBound  && idx.row < phoneNumberUpperBound)
+    else if ([self isAnnexNumberIndexPath:indexPath])
     {
-        cell = [self.tableView dequeueReusableCellWithIdentifier:kAnnexPhoneNumberCell forIndexPath:idx];
-        
-        NSInteger i = idx.row - emailUpperBound ;
-        
-        cell.contactAnnexNumberLabel.text = [_contact.userTextPhoneNumbers objectAtIndex:(NSUInteger)i];
+        cell = [self.tableView dequeueReusableCellWithIdentifier:kAnnexPhoneNumberCell forIndexPath:indexPath];
+        [self setUpAnnexNumberCell:cell forIndexPath:indexPath];
         
         return cell;
     }
     
-    else if (idx.row == (NSInteger)[self numberOfRowsForContact:_contact]-1)
+    else if ([self isNotesIndexPath:indexPath])
     {
-        return [self.tableView dequeueReusableCellWithIdentifier:kNotesCell forIndexPath:idx];
+        cell = [self.tableView dequeueReusableCellWithIdentifier:kNotesCell forIndexPath:indexPath];
+        [self setUpNotesCell:cell];
+        
+        return cell;
         
     }
     
     else
     {
-        NSLog(@"%s Problem at IndexPath %@", __PRETTY_FUNCTION__, idx);
         return nil;
     }
 }
 
--(CGFloat)heightForAdaptableCellAtIndexPath:(NSIndexPath*)idx
+-(CGFloat)heightForAdaptableCellAtIndexPath:(NSIndexPath*)indexPath
 {
-    NSInteger emailUpperBound = (NSInteger)(kFirstAdaptableCellRow+_contact.emails.count);
-    NSInteger phoneNumberUpperBound = emailUpperBound + (NSInteger)_contact.userTextPhoneNumbers.count;
-    
-    if (idx.row > kFirstAdaptableCellRow && idx.row <= emailUpperBound)
+    if ([self isEmailIndexPath:indexPath])
     {
         return kEmailCellHeight;
     }
     
-    else if (idx.row > emailUpperBound && idx.row < phoneNumberUpperBound)
+    else if ([self isAnnexNumberIndexPath:indexPath])
     {
         return kAnnexPhoneNumberCellHeight;
     }
     
-    else if (idx.row == (NSInteger)[self numberOfRowsForContact:_contact]-1)
+    else if ([self isNotesIndexPath:indexPath])
     {
         return kNotesCellHeight;
-        
     }
     
     else
     {
-        NSLog(@"%s Problem at IndexPath %@", __PRETTY_FUNCTION__, idx);
         return 44.0f;
     }
     
 }
+
+#pragma mark - IndexPaths
+
+-(BOOL)isEmailIndexPath:(NSIndexPath*)indexPath
+{
+    return indexPath.row > kFirstAdaptableCellRow && indexPath.row <= [self emailUpperBound];
+}
+
+-(BOOL)isAnnexNumberIndexPath:(NSIndexPath*)indexPath
+{
+    return indexPath.row > [self emailUpperBound]  && indexPath.row <  [self phoneNumberUpperBound];
+}
+
+-(BOOL)isNotesIndexPath:(NSIndexPath*)indexPath
+{
+    return indexPath.row == (NSInteger)[self numberOfRowsForContact:_contact]-1;
+}
+
+#pragma mark - Utilities (Bounds)
+
+-(NSInteger)emailUpperBound
+{
+    return (NSInteger)(kFirstAdaptableCellRow+_contact.emails.count);
+}
+
+-(NSInteger)phoneNumberUpperBound
+{
+    return [self emailUpperBound] + (NSInteger)_contact.userTextPhoneNumbers.count;
+}
+
+-(NSUInteger)numberOfRowsForContact:(Contact*)contact
+{
+    NSUInteger numNotes = contact.notes.length == 0 ? 0 : 1;
+    NSUInteger numEmails = contact.emails.count;
+    NSUInteger numPhoneNumbers = contact.userTextPhoneNumbers.count-1;
+    
+    return kMinRows + numEmails + numPhoneNumbers + numNotes;
+}
+
+
 
 
 @end

@@ -10,7 +10,7 @@
     
     self.layer.cornerRadius = CGRectGetHeight(self.layer.frame)/2.0f;
     
-    self.layer.borderColor = [[UIUtil darkBackgroundColor] CGColor];
+    self.layer.borderColor = [[UIColor ows_darkBackgroundColor] CGColor];
 }
 
 - (void)setSelected:(BOOL)isSelected {

@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "UIUtil.h"
 
 @interface ContactsTableViewController : UITableViewController
 

@@ -1818,6 +1818,11 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                     </variation>
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <connections>
+                                    <outlet property="contactCallButton" destination="yd5-y1-zqu" id="Lu1-fO-YK1"/>
+                                    <outlet property="contactShredButton" destination="jiU-kH-HN5" id="TCh-04-gXv"/>
+                                    <outlet property="contactTextButton" destination="cfo-cG-hLC" id="JKY-RT-mn6"/>
+                                </connections>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ShareCell" rowHeight="60" id="hSC-7F-dj5" customClass="ContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>
@@ -2020,10 +2025,14 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="9Lh-4T-usd" firstAttribute="leading" secondItem="ep9-kD-7xS" secondAttribute="leadingMargin" constant="15" id="AEY-2t-l6c"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="9Lh-4T-usd" secondAttribute="trailing" constant="25" id="NZf-g0-8kB"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="9Lh-4T-usd" secondAttribute="trailing" constant="25" id="NZf-g0-8kB">
+                                            <variation key="heightClass=regular-widthClass=compact" constant="15"/>
+                                        </constraint>
                                         <constraint firstItem="tp2-2C-q6U" firstAttribute="leading" secondItem="ep9-kD-7xS" secondAttribute="leadingMargin" constant="15" id="V9H-eI-eg6"/>
                                         <constraint firstItem="9Lh-4T-usd" firstAttribute="top" secondItem="ep9-kD-7xS" secondAttribute="topMargin" constant="24" id="oHG-jp-XMy"/>
-                                        <constraint firstAttribute="bottomMargin" secondItem="9Lh-4T-usd" secondAttribute="bottom" constant="-0.5" id="r5K-MP-uYB"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="9Lh-4T-usd" secondAttribute="bottom" constant="-0.5" id="r5K-MP-uYB">
+                                            <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
+                                        </constraint>
                                         <constraint firstItem="tp2-2C-q6U" firstAttribute="top" secondItem="ep9-kD-7xS" secondAttribute="topMargin" constant="2" id="vpL-Be-Nwq"/>
                                     </constraints>
                                     <variation key="default">
@@ -2056,6 +2065,9 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                     </variation>
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <connections>
+                                    <outlet property="contactNotesTextView" destination="9Lh-4T-usd" id="dqc-pd-luh"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>

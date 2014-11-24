@@ -16,6 +16,7 @@
 #import "DemoDataFactory.h"
 #import "GroupModel.h"
 
+#import "UIUtil.h"
 #import "DJWActionSheet.h"
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <AVFoundation/AVFoundation.h>
@@ -246,10 +247,10 @@
     UIFont *lastNameFont;
     
     if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
-        firstNameFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:cell.textLabel.font.pointSize];
+        firstNameFont = [UIFont ows_lightFontWithSize:cell.textLabel.font.pointSize];
         lastNameFont  = [UIFont systemFontOfSize:cell.textLabel.font.pointSize];
     } else{
-        firstNameFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:cell.textLabel.font.pointSize];
+        firstNameFont = [UIFont ows_lightFontWithSize:cell.textLabel.font.pointSize];
         lastNameFont  = [UIFont systemFontOfSize:cell.textLabel.font.pointSize];
     }
     [fullNameAttributedString addAttribute:NSFontAttributeName value:firstNameFont range:NSMakeRange(0, contact.firstName.length)];

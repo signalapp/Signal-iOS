@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
+#import "UIUtil.h"
 #import "DemoDataFactory.h"
 #import "InboxTableViewCell.h"
 
@@ -34,6 +35,7 @@ static NSString *const kSegueIndentifier = @"showSegue";
     NSUInteger numberOfCells;
     
 }
+@property (strong, nonatomic) UILabel * emptyViewLabel;
 @property (strong, nonatomic) DemoDataModel *demoData;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *threadMappings;
@@ -60,6 +62,27 @@ static NSString *const kSegueIndentifier = @"showSegue";
                                                object:nil];
     
     [TSSocketManager becomeActive];
+    
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    if ([self.threadMappings numberOfItemsInAllGroups]==0)
+    {
+        CGRect r = CGRectMake(0, 60, 300, 70);
+        _emptyViewLabel = [[UILabel alloc]initWithFrame:r];
+        _emptyViewLabel.text = @"You have no messages yet.";
+        _emptyViewLabel.textColor = [UIColor grayColor];
+        _emptyViewLabel.font = [UIFont ows_thinFontWithSize:14.0f];
+        _emptyViewLabel.textAlignment = NSTextAlignmentCenter;
+        self.tableView.tableHeaderView = _emptyViewLabel;
+    } else {
+        _emptyViewLabel = nil;
+        self.tableView.tableHeaderView = nil;
+    }
+    
 }
 
 - (void)didReceiveMemoryWarning {
