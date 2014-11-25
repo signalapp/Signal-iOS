@@ -13,7 +13,6 @@
 #import "Environment.h"
 
 #import "Contact.h"
-#import "DemoDataFactory.h"
 #import "GroupModel.h"
 
 #import "UIUtil.h"

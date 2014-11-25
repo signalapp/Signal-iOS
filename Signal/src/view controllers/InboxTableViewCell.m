@@ -101,7 +101,7 @@
 
     
     [attributedString addAttribute:NSFontAttributeName
-                             value:[UIUtil helveticaLightWithSize:TIME_LABEL_SIZE]
+                             value:[UIFont ows_lightFontWithSize:TIME_LABEL_SIZE]
                              range:NSMakeRange(0, timeString.length)];
 
     

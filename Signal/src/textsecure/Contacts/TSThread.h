@@ -43,6 +43,7 @@
 
 @property (getter=isBlocked) BOOL blocked;
 @property (nonatomic) uint64_t lastMessageId;
+
 - (NSDate*)lastMessageDate;
 
 @end

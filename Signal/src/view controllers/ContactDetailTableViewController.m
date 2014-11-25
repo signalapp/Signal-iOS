@@ -76,7 +76,7 @@ static NSString *const kContactDetailSegue   = @"DetailSegue";
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell * cell;
+    UITableViewCell *cell;
 
     switch (indexPath.row) {
         case kNameMainNumberCellIndexPath:

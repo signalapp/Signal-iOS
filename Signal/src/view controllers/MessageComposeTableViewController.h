@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "DemoDataFactory.h"
 #import "Contact.h"
 
 #import "JSQMessagesToolbarContentView.h"

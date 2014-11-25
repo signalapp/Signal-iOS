@@ -82,7 +82,7 @@ typedef enum : NSUInteger {
     self.title = self.senderTitleString;
     
     self.senderId = @"self";
-    self.senderDisplayName = kJSQDemoAvatarDisplayNameDylan;
+    self.senderDisplayName = @"self";
     
     self.automaticallyScrollsToMostRecentMessage = YES;
     
@@ -374,8 +374,8 @@ typedef enum : NSUInteger {
         __unused UIImage *snapshot                        = [[UIImage alloc] initWithCGImage:snapshotRef];
         
         JSQVideoMediaItem * videoItem = [[JSQVideoMediaItem alloc] initWithFileURL:videoURL isReadyToPlay:YES];
-        JSQMessage * videoMessage = [JSQMessage messageWithSenderId:kJSQDemoAvatarIdDylan
-                                                        displayName:kJSQDemoAvatarDisplayNameDylan
+        JSQMessage * videoMessage = [JSQMessage messageWithSenderId:self.senderId
+                                                        displayName:self.senderDisplayName
                                                               media:videoItem];
         
         [self finishSendingMessage];
@@ -384,8 +384,8 @@ typedef enum : NSUInteger {
         //Is a photo
         
         JSQPhotoMediaItem *photoItem = [[JSQPhotoMediaItem alloc] initWithImage:picture_camera];
-        JSQMessage *photoMessage = [JSQMessage messageWithSenderId:kJSQDemoAvatarIdDylan
-                                                       displayName:kJSQDemoAvatarDisplayNameDylan
+        JSQMessage *photoMessage = [JSQMessage messageWithSenderId:self.senderId
+                                                       displayName:self.senderDisplayName
                                                              media:photoItem];
         [self finishSendingMessage];
         
