@@ -140,8 +140,6 @@
 
     s.contactFromCompose = [self contactForIndexPath:indexPath];
 
-    [self.searchController dismissViewControllerAnimated:NO completion:nil];
-    
     [self dismissViewControllerAnimated:YES completion:^(){
         [s performSegueWithIdentifier:@"showSegue" sender:nil];
     }];

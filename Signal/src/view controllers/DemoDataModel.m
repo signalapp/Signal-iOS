@@ -25,10 +25,7 @@ enum {kDemoDataModelCase0, kDemoDataModelCase1,kDemoDataModelCase2, kDemoDataMod
     {
         [self loadFakeMessages];
         
-        JSQMessagesBubbleImageFactory *bubbleFactory = [[JSQMessagesBubbleImageFactory alloc] init];
-        
-        self.outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleBlueColor]];
-        self.incomingBubbleImageData = [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
+
     }
     return self;
 }

@@ -30,7 +30,7 @@
 
 #import <CocoaLumberjack/DDLog.h>
 
-#define ddLogLevel LOG_LEVEL_DEBUG
+#define ddLogLevel LOG_LEVEL_VERBOSE
 
 @implementation TSMessagesManager
 
@@ -53,21 +53,8 @@
     return self;
 }
 
-- (void)handleMessageSignal:(NSData*)signalData{
-    NSString *base64String   = [[NSString alloc] initWithData:signalData encoding:NSUTF8StringEncoding];
-    
-    NSData *encryptedSignal  = [NSData dataFromBase64String:base64String];
-    NSData *decryptedPayload = [Cryptography decryptAppleMessagePayload:encryptedSignal
-                                                       withSignalingKey:TSStorageManager.signalingKey];
-    
-    if (!decryptedPayload) {
-        DDLogWarn(@"Failed to decrypt incoming payload or bad HMAC");
-        return;
-    }
-    
+- (void)handleMessageSignal:(IncomingPushMessageSignal*)messageSignal{
     @try {
-        IncomingPushMessageSignal *messageSignal = [IncomingPushMessageSignal parseFromData:decryptedPayload];
-        
         switch (messageSignal.type) {
             case IncomingPushMessageSignalTypeCiphertext:
                 [self handleSecureMessage:messageSignal];
@@ -230,6 +217,11 @@
 
 - (void)processException:(NSException*)exception pushSignal:(IncomingPushMessageSignal*)signal{
     NSLog(@"Got exception: %@", exception.description);
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        TSErrorMessage *errorMessage = [[TSErrorMessage alloc] initWithTimestamp:signal.timestamp inThread:[TSContactThread threadWithContactId:signal.source transaction:transaction] failedMessageType:TSErrorMessageNoSession];
+        [errorMessage saveWithTransaction:transaction];
+    }];
+    
 }
 
 

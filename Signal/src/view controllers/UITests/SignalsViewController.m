@@ -15,6 +15,7 @@
 #import "TSStorageManager.h"
 #import "TSDatabaseView.h"
 #import "TSSocketManager.h"
+#import "TSContactThread.h"
 
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import "YapDatabaseViewTransaction.h"
@@ -164,14 +165,15 @@ static NSString *const kSegueIndentifier  = @"showSegue";
     
     if ([segue.identifier isEqualToString:kSegueIndentifier])
     {
-        MessagesViewController * vc = [segue destinationViewController];
+        MessagesViewController * vc    = [segue destinationViewController];
         NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
-        if (selectedIndexPath) {
-            vc.senderTitleString =  ((DemoDataModel*)_dataArray[(NSUInteger)selectedIndexPath.row])._sender;
-        } else if (_contactFromCompose) {
-            vc.senderTitleString = _contactFromCompose.fullName;
-        } else if (_groupFromCompose) {
-            vc.senderTitleString = _groupFromCompose.groupName;
+        vc.thread                      = [self threadForIndexPath:selectedIndexPath];
+        
+        if (!vc.thread) {
+            [TSStorageManager.sharedManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                vc.thread = [TSContactThread threadWithContactId:[self.contactFromCompose.userTextPhoneNumbers firstObject] transaction:transaction];
+                NSLog(@"Thread:%@", vc.thread);
+            }];
         }
         
     }

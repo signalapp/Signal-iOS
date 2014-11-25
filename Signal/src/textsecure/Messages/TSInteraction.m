@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import <chrono>
-
 #import "TSInteraction.h"
 
 const struct TSMessageRelationships TSMessageRelationships = {
@@ -31,7 +29,7 @@ const struct TSMessageEdges TSMessageEdges = {
 }
 
 
-#pragma - mark YapDatabaseRelationshipNode
+#pragma mark YapDatabaseRelationshipNode
 
 - (NSArray *)yapDatabaseRelationshipEdges
 {
@@ -53,7 +51,7 @@ const struct TSMessageEdges TSMessageEdges = {
 
 #pragma mark Date operations
 
-- (int64_t)identifierToTimestamp{
+- (uint64_t)identifierToTimestamp{
     NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
     [f setNumberStyle:NSNumberFormatterNoStyle];
     NSNumber * myNumber = [f numberFromString:self.uniqueId];
@@ -61,22 +59,17 @@ const struct TSMessageEdges TSMessageEdges = {
 }
 
 - (NSDate*)date{
-    int64_t milliseconds = [self identifierToTimestamp];
-    int64_t seconds      = milliseconds/1000;
+    uint64_t milliseconds = [self identifierToTimestamp];
+    uint64_t seconds      = milliseconds/1000;
     return [NSDate dateWithTimeIntervalSince1970:seconds];
 }
 
-- (uint64_t)timeStamp{
+- (UInt64)timeStamp{
     return [self identifierToTimestamp];
 }
 
 + (NSString*)stringFromTimeStamp:(uint64_t)timestamp{
     return [[NSNumber numberWithUnsignedLongLong:timestamp] stringValue];
-}
-
-- (NSNumber*)nowTimeStamp{
-    double milliseconds = std::chrono::system_clock::now().time_since_epoch()/std::chrono::milliseconds(1);
-    return [NSNumber numberWithDouble:milliseconds];
 }
 
 @end

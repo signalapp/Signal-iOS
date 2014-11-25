@@ -9,6 +9,7 @@
 #import "TSMessagesManager+sendMessages.h"
 
 #import <AxolotlKit/SessionCipher.h>
+#import <Mantle/Mantle.h>
 
 #import "IncomingPushMessageSignal.pb.h"
 #import "TSStorageManager.h"
@@ -32,8 +33,13 @@
         NSLog(@"Currently unsupported");
     } else if([thread isKindOfClass:[TSContactThread class]]){
         TSContactThread *contactThread = (TSContactThread*)thread;
+        __block TSRecipient     *recipient;
+        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            recipient = [contactThread recipientWithTransaction:transaction];
+        }];
+       
         [self sendMessage:message
-              toRecipient:contactThread.recipient
+              toRecipient:recipient
                  inThread:thread
               withAttemps:3];
     }
@@ -55,6 +61,8 @@
         [[TSNetworkManager sharedManager] queueAuthenticatedRequest:request success:^(NSURLSessionDataTask *task, id responseObject) {
             
             [self handleMessageSent:message inThread:thread];
+            NSLog(@"Message sent");
+            
             
         } failure:^(NSURLSessionDataTask *task, NSError *error) {
             NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
@@ -117,7 +125,9 @@
                                                                        destination:recipient.uniqueId
                                                                             device:[deviceNumber intValue]
                                                                               body:serializedMessage];
-            [messagesArray addObject:serverMessage];
+            
+            
+            [messagesArray addObject:[MTLJSONAdapter JSONDictionaryFromModel:serverMessage]];
             
         }@catch (NSException *exception) {
             [self processException:exception outgoingMessage:message];

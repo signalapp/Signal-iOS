@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "IncomingPushMessageSignal.pb.h"
 #import "TSOutgoingMessage.h"
 
 @interface TSMessagesManager : NSObject
@@ -16,7 +16,7 @@
 
 @property (readonly) YapDatabaseConnection *dbConnection;
 
-- (void)handleMessageSignal:(NSData*)signalData;
+- (void)handleMessageSignal:(IncomingPushMessageSignal*)messageSignal;
 
 - (void)processException:(NSException*)exception outgoingMessage:(TSOutgoingMessage*)message;
 

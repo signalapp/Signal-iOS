@@ -15,6 +15,7 @@
 
 + (instancetype)threadWithContactId:(NSString*)contactId transaction:(YapDatabaseReadWriteTransaction*)transaction;
 
-- (TSRecipient*)recipient;
+- (NSString*)contactIdentifier;
+- (TSRecipient *)recipientWithTransaction:(YapDatabaseReadTransaction*)transaction;
 
 @end

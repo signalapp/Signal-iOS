@@ -39,13 +39,13 @@
     [SignalKeyingStorage generateServerAuthPassword];
     RPAPICall *apiCall = [self defaultAPICall];
     apiCall.method = HTTP_GET;
-    apiCall.endPoint = @"/users/verification";
+    apiCall.endPoint = @"/users/verification/sms?client=ios";
     return apiCall;
 }
 
 + (RPAPICall*)requestVerificationCodeWithVoice {
     RPAPICall *apiCall = [self requestVerificationCode];
-    apiCall.endPoint   = [apiCall.endPoint stringByAppendingString:@"/voice"];
+    apiCall.endPoint   = @"/users/verification/voice?client=ios";
     return apiCall;
 }
 

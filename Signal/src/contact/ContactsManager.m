@@ -55,7 +55,7 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL*);
 }
 
 -(void) updatedDirectoryHandler:(NSNotification*) notification {
-    NSArray *currentUsers = [self getRedPhoneUsersFromContactsArray:latestContactsById.allValues];
+    NSArray *currentUsers = [self getSignalUsersFromContactsArray:latestContactsById.allValues];
     
     [observableRedPhoneUsersController updateValue:currentUsers];
  }
@@ -380,9 +380,9 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 #pragma mark - Whisper User Management
 
--(NSArray*) getRedPhoneUsersFromContactsArray:(NSArray*) contacts {
+-(NSArray*) getSignalUsersFromContactsArray:(NSArray*)contacts {
 	return [contacts filter:^int(Contact* contact) {
-        return [self isContactRegisteredWithRedPhone:contact];
+        return [self isContactRegisteredWithRedPhone:contact] || contact.isTextSecureContact;
     }];
 }
 
@@ -420,7 +420,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 	return NO;
 }
 
-- (BOOL)isPhoneNumberRegisteredWithRedPhone:(PhoneNumber *)phoneNumber {
+- (BOOL)isPhoneNumberRegisteredWithRedPhone:(PhoneNumber*)phoneNumber {
 	PhoneNumberDirectoryFilter* directory = Environment.getCurrent.phoneDirectoryManager.getCurrentFilter;
 	return phoneNumber != nil && [directory containsPhoneNumber:phoneNumber];
 }
