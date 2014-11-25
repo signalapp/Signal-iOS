@@ -16,13 +16,7 @@
     _contactPictureView.layer.masksToBounds = YES;
     self.selectionStyle = UITableViewCellSelectionStyleGray;
     
-    if (!_shouldShowContactButtons)
-    {
-        _callButton.hidden = YES;
-        _callButton.enabled = NO;
-        _messageButton.hidden = YES;
-        _callButton.enabled = NO;
-    }
+    _shouldShowContactButtons = YES;
     
     return self;
 }
@@ -31,7 +25,17 @@
     return NSStringFromClass(self.class);
 }
 
+-(void)showContactButtons:(BOOL)enabled
+{
+    _callButton.hidden = !enabled;
+    _callButton.enabled = enabled;
+    _messageButton.hidden = !enabled;
+    _callButton.enabled = enabled;
+}
+
 - (void)configureWithContact:(Contact *)contact {
+    
+    [self showContactButtons:_shouldShowContactButtons];
     
     _associatedContact = contact;
     
@@ -50,14 +54,16 @@
     
     if (contact.isRedPhoneContact && _shouldShowContactButtons)
     {
-        _callButton.imageView.image = [UIImage imageNamed:@"call_dark"];
+        _callButton.imageView.image = [[UIImage imageNamed:@"call_dark"]imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        _callButton.tintColor = [UIColor colorWithRed:0.f/255.f green:122.f/255.f blue:255.f/255.f alpha:1.0f];
     } else {
         [_callButton addConstraint:[NSLayoutConstraint constraintWithItem:_callButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0f constant:0]];
     }
     
     if (contact.isTextSecureContact && _shouldShowContactButtons)
     {
-        _messageButton.imageView.image = [UIImage imageNamed:@"signal"];
+        _messageButton.imageView.image = [[UIImage imageNamed:@"signal"]imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        _messageButton.tintColor = [UIColor colorWithRed:0.f/255.f green:122.f/255.f blue:255.f/255.f alpha:1.0f];
     } else {
         [_messageButton addConstraint:[NSLayoutConstraint constraintWithItem:_messageButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0f constant:0]];
     }

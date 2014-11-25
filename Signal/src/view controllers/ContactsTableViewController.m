@@ -212,14 +212,14 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    ContactTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CONTACT_BROWSE_TABLE_CELL_IDENTIFIER];
     
+    ContactTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CONTACT_BROWSE_TABLE_CELL_IDENTIFIER];
+
     if (!cell) {
         cell = [[ContactTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                            reuseIdentifier:CONTACT_BROWSE_TABLE_CELL_IDENTIFIER];
     }
     
-    cell.shouldShowContactButtons = YES;
     
     [cell configureWithContact:[self contactForIndexPath:indexPath]];
     
