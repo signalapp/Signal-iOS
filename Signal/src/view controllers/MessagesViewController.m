@@ -14,6 +14,7 @@
 #import "JSQCallCollectionViewCell.h"
 #import "JSQCall.h"
 
+#import "UIUtil.h"
 #import "DJWActionSheet.h"
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <AVFoundation/AVFoundation.h>
@@ -39,7 +40,7 @@ typedef enum : NSUInteger {
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
     
-    [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont fontWithName:@"HelveticaNeue-Light" size:16.0f]];
+    [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_lightFontWithSize:16.0f]];
     
     self.collectionView.showsVerticalScrollIndicator = NO;
     self.collectionView.showsHorizontalScrollIndicator = NO;

@@ -1,4 +1,5 @@
 #import "ContactTableViewCell.h"
+#import "UIUtil.h"
 
 #define CONTACT_TABLE_CELL_BORDER_WIDTH 1.0f
 
@@ -81,10 +82,10 @@
     UIFont *lastNameFont;
     
     if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
-        firstNameFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:_nameLabel.font.pointSize];
+        firstNameFont = [UIFont ows_thinFontWithSize:_nameLabel.font.pointSize];
         lastNameFont  = [UIFont systemFontOfSize:_nameLabel.font.pointSize];
     } else{
-        firstNameFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:_nameLabel.font.pointSize];
+        firstNameFont = [UIFont ows_thinFontWithSize:_nameLabel.font.pointSize];
         lastNameFont  = [UIFont systemFontOfSize:_nameLabel.font.pointSize];
     }
     [fullNameAttributedString addAttribute:NSFontAttributeName value:firstNameFont range:NSMakeRange(0, contact.firstName.length)];

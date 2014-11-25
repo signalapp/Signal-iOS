@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
+#import "UIUtil.h"
 #import "DemoDataFactory.h"
 #import "InboxTableViewCell.h"
 
@@ -77,7 +78,7 @@ static NSString *const kSegueIndentifier  = @"showSegue";
         _emptyViewLabel = [[UILabel alloc]initWithFrame:r];
         _emptyViewLabel.text = @"You have no messages yet.";
         _emptyViewLabel.textColor = [UIColor grayColor];
-        _emptyViewLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:14.0f];
+        _emptyViewLabel.font = [UIFont ows_thinFontWithSize:14.0f];
         _emptyViewLabel.textAlignment = NSTextAlignmentCenter;
         self.tableView.tableHeaderView = _emptyViewLabel;
     } else {
