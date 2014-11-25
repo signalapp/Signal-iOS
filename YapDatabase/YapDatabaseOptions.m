@@ -17,6 +17,9 @@
 @synthesize corruptAction = corruptAction;
 @synthesize pragmaSynchronous = pragmaSynchronous;
 @synthesize pragmaJournalSizeLimit = pragmaJournalSizeLimit;
+#ifdef SQLITE_HAS_CODEC
+@synthesize cipherKeyBlock = cipherKeyBlock;
+#endif
 
 - (id)init
 {
@@ -36,7 +39,7 @@
 	copy->pragmaSynchronous = pragmaSynchronous;
 	copy->pragmaJournalSizeLimit = pragmaJournalSizeLimit;
 #ifdef SQLITE_HAS_CODEC
-    copy.passphraseBlock = _passphraseBlock;
+    copy.cipherKeyBlock = cipherKeyBlock;
 #endif
 	return copy;
 }

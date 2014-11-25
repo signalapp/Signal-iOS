@@ -622,21 +622,18 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 {
 	int status;
     
-    NSAssert(options.passphraseBlock != nil, @"Passphrase block must not be nil when using SQLCipher!");
+    NSAssert(options.cipherKeyBlock != NULL, @"YapDatabaseOptions.cipherKeyBlock must be set when using SQLCipher!");
     
-    NSString *passphrase = options.passphraseBlock();
-    
-    NSAssert(passphrase != nil, @"SQLCipher passphrase cannot be nil!");
-    
-    const char *key = [passphrase UTF8String];
-    NSUInteger keyLength = [passphrase lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
-    status = sqlite3_key(sqlite, key, (int)keyLength);
-    if (status != SQLITE_OK)
+    NSData *keyData = options.cipherKeyBlock();
+    NSAssert(keyData != nil, @"SQLCipher key cannot be nil!");
+	
+	status = sqlite3_key(sqlite, [keyData bytes], (int)[keyData length]);
+	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"Error setting up sqlcipher key: %d %s", status, sqlite3_errmsg(sqlite));
+		YDBLogError(@"Error setting SQLCipher key: %d %s", status, sqlite3_errmsg(sqlite));
 		return NO;
 	}
-    return YES;
+	return YES;
 }
 #endif
 
