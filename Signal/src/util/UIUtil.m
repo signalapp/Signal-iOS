@@ -30,34 +30,6 @@ static NSString *const HELVETICA_LIGHT_NAME = @"Helvetica-Light";
     return [UIFont fontWithName:HELVETICA_LIGHT_NAME size:size];
 }
 
-+ (UIColor*)darkBackgroundColor {
-    return [UIColor colorWithRed:35.0f/255.0f green:31.0f/255.0f blue:32.0f/255.0f alpha:1.0f];
-}
-
-+ (UIColor*)blueColor {
-    return [UIColor colorWithRed:0.0f green:174.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
-}
-
-+ (UIColor*)yellowColor {
-    return [UIColor colorWithRed:1.0f green:221.0f/255.0f blue:170.0f/255.0f alpha:1.0f];
-}
-
-+ (UIColor*)redColor {
-    return [UIColor colorWithRed:237.0f/255.0f green:96.0f/255.0f blue:98.0f/255.0f alpha:1.0f];
-}
-
-+ (UIColor *)greenColor {
-    return [UIColor colorWithRed:0.0f green:199.0f/255.0f blue:149.0f/255.0f alpha:1.0f];
-}
-
-+ (UIColor*)whiteColor {
-    return [UIColor colorWithRed:0.8f green:0.8f blue:0.8f alpha:1.0f];
-}
-
-+ (UIColor*)transparentLightGrayColor {
-    return [UIColor colorWithRed:0.5f green:0.5f blue:0.5f alpha:0.7f];
-}
-
 + (void)applyRoundedBorderToImageView:(UIImageView *__strong*)imageView {
     [[*imageView layer] setBorderWidth:CONTACT_PICTURE_VIEW_BORDER_WIDTH];
     [[*imageView layer] setBorderColor:[[UIColor lightGrayColor] CGColor]];

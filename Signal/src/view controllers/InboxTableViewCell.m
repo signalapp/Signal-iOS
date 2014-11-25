@@ -81,7 +81,7 @@
         _lastActionImageView.image = nil;
         _snippetLabel.textColor = [UIColor blackColor];
         _nameLabel.font = [UIFont boldSystemFontOfSize:15];
-        _timeLabel.textColor = [UIColor colorWithRed:0 green:91/255.f blue:1.0f alpha:1.0f];
+        _timeLabel.textColor = [UIColor colorWithRed:0 green:122.f/255.f blue:1.0f alpha:1.0f];
     }
 
 }
