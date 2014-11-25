@@ -32,7 +32,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     NSArray *searchResults;
 }
 
-
+@property (nonatomic, strong) UILabel *emptyViewLabel;
 @property NSArray *latestSortedAlphabeticalContactKeys;
 @property NSArray *latestContacts;
 @property (nonatomic, strong) UISearchController *searchController;
@@ -62,6 +62,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     
     [self.tableView reloadData];
 }
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -317,6 +318,21 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 }
 
 - (void)contactsDidRefresh{
+    if (_latestContacts.count == 0)
+    {
+        CGRect r = CGRectMake(0, 60, 300, 70);
+        _emptyViewLabel = [[UILabel alloc]initWithFrame:r];
+        _emptyViewLabel.text = @"None of your contacts are Signal users yet.";
+        _emptyViewLabel.textColor = [UIColor grayColor];
+        _emptyViewLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:14.0f];
+        _emptyViewLabel.textAlignment = NSTextAlignmentCenter;
+        self.tableView.tableFooterView = _emptyViewLabel;
+        
+    } else {
+        self.tableView.tableFooterView = self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
+        [self.tableView reloadData];
+    }
+
     [self.refreshControl endRefreshing];
 }
 
