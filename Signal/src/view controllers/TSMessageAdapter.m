@@ -41,13 +41,21 @@
     
     if ([thread isKindOfClass:[TSContactThread class]]) {
         adapter.thread = (TSContactThread*)thread;
+        if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
+            NSString *contactId       = ((TSContactThread*)thread).contactIdentifier;
+            adapter.senderId          = contactId;
+            adapter.senderDisplayName = contactId;
+        } else{
+            adapter.senderId   = ME_MESSAGE_IDENTIFIER;
+            adapter.senderDisplayName = @"Me";
+        }
     } else if ([thread isKindOfClass:[TSGroupThread class]]){
         if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
             TSIncomingMessage *message = (TSIncomingMessage*)interaction;
             adapter.senderId   = message.authorId;
             adapter.senderDisplayName = message.authorId;
         } else{
-            adapter.senderId   = @"self";
+            adapter.senderId   = ME_MESSAGE_IDENTIFIER;
             adapter.senderDisplayName = @"Me";
         }
     }
@@ -68,7 +76,12 @@
 
 
 - (NSString*)senderId{
-    return self.thread.uniqueId;
+    if (_senderId) {
+        return _senderId;
+    }
+    else{
+        return ME_MESSAGE_IDENTIFIER;
+    }
 }
 
 - (NSString *)senderDisplayName{

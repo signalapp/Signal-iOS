@@ -46,4 +46,8 @@
 
 - (NSDate*)lastMessageDate;
 
+- (NSString*)lastMessageLabel;
+
+- (int)unreadMessages;
+
 @end

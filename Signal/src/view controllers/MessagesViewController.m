@@ -57,6 +57,8 @@ typedef enum : NSUInteger {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    isGroupConversation = NO; // TODO: Support Group Conversations
+    
     JSQMessagesBubbleImageFactory *bubbleFactory = [[JSQMessagesBubbleImageFactory alloc] init];
     
     self.outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleBlueColor]];
@@ -66,7 +68,6 @@ typedef enum : NSUInteger {
     
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
-        NSLog(@"Total messages: %lu", (unsigned long)[self.messageMappings numberOfItemsInAllGroups]);
     }];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
@@ -76,13 +77,10 @@ typedef enum : NSUInteger {
     self.collectionView.showsVerticalScrollIndicator = NO;
     self.collectionView.showsHorizontalScrollIndicator = NO;
     
-    //DEBUG:
-    isGroupConversation = NO;
+    self.title = self.thread.name;
     
-    self.title = self.senderTitleString;
-    
-    self.senderId = @"self";
-    self.senderDisplayName = @"self";
+    self.senderId = ME_MESSAGE_IDENTIFIER
+    self.senderDisplayName = ME_MESSAGE_IDENTIFIER;
     
     self.automaticallyScrollsToMostRecentMessage = YES;
     
@@ -142,8 +140,9 @@ typedef enum : NSUInteger {
 #pragma mark - JSQMessage custom methods
 
 -(void)updateMessageStatus:(JSQMessage*)message {
-    if ([message.senderId isEqualToString:self.senderId])
+    if ([message.senderId isEqualToString:self.senderId]){
         message.status = kMessageReceived;
+    }
 }
 
 #pragma mark - JSQMessagesViewController method overrides

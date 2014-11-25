@@ -436,4 +436,15 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return nil;
 }
 
+- (UIImage*)imageForPhoneIdentifier:(NSString*)identifier{
+    for (Contact *contact in self.textSecureContacts) {
+        for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
+            if ([phoneNumber.toE164 isEqualToString:identifier]) {
+                return contact.image;
+            }
+        }
+    }
+    return nil;
+}
+
 @end

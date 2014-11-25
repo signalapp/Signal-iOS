@@ -52,10 +52,7 @@ const struct TSMessageEdges TSMessageEdges = {
 #pragma mark Date operations
 
 - (uint64_t)identifierToTimestamp{
-    NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
-    [f setNumberStyle:NSNumberFormatterNoStyle];
-    NSNumber * myNumber = [f numberFromString:self.uniqueId];
-    return [myNumber unsignedLongLongValue];
+    return [[self class] timeStampFromString:self.uniqueId];
 }
 
 - (NSDate*)date{
@@ -70,6 +67,17 @@ const struct TSMessageEdges TSMessageEdges = {
 
 + (NSString*)stringFromTimeStamp:(uint64_t)timestamp{
     return [[NSNumber numberWithUnsignedLongLong:timestamp] stringValue];
+}
+
++ (uint64_t)timeStampFromString:(NSString*)string{
+    NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
+    [f setNumberStyle:NSNumberFormatterNoStyle];
+    NSNumber * myNumber = [f numberFromString:string];
+    return [myNumber unsignedLongLongValue];
+}
+
+- (NSString*)description{
+    return @"Interaction description";
 }
 
 @end

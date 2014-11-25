@@ -48,7 +48,8 @@ typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 - (BOOL)isContactRegisteredWithTextSecure:(Contact*)contact;
 
 -(void)doAfterEnvironmentInitSetup;
-- (NSString*)nameStringForPhoneIdentifier:(NSString*)identifier;
 
+- (NSString*)nameStringForPhoneIdentifier:(NSString*)identifier;
+- (UIImage*)imageForPhoneIdentifier:(NSString*)identifier;
 
 @end

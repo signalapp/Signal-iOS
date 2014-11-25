@@ -10,6 +10,8 @@
 
 #import "Environment.h"
 #import "ContactsManager.h"
+#import "TSInteraction.h"
+#import "TSStorageManager.h"
 #import "TSGroup.h"
 
 @implementation TSThread
@@ -22,7 +24,8 @@
     self = [super initWithUniqueId:uniqueId];
     
     if (self) {
-        _blocked = NO;
+        _blocked       = NO;
+        _lastMessageId = 0;
     }
     
     return self;
@@ -34,14 +37,40 @@
 }
 
 - (uint64_t)lastMessageId{
-    return 0;
+    return _lastMessageId;
 }
 
 - (NSDate*)lastMessageDate{
-    return [NSDate date];
+    __block NSDate *date;
+    [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        date = [TSInteraction fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:_lastMessageId] transaction:transaction].date;
+    }];
+    
+    if (date) {
+        return date;
+    } else{
+        return [NSDate date];
+    }
 }
 
 - (UIImage*)image{
+    return nil;
+}
+
+- (NSString*)lastMessageLabel{
+    __block TSInteraction *interaction;
+    [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        interaction = [TSInteraction fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:_lastMessageId] transaction:transaction];
+    }];
+    return interaction.description;
+}
+
+- (int)unreadMessages{
+    return 0;
+}
+
+- (NSString *)name{
+    NSAssert(FALSE, @"Should be implemented in subclasses");
     return nil;
 }
 

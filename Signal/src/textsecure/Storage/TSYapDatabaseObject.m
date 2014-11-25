@@ -36,8 +36,7 @@
     }];
 }
 
-- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
+- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction{
     [transaction removeObjectForKey:self.uniqueId inCollection:[[self class] collection]];
 }
 
@@ -45,6 +44,7 @@
 - (void)remove{
     [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self removeWithTransaction:transaction];
+        [[transaction ext:@"relationships"] flush];
     }];
 }
 

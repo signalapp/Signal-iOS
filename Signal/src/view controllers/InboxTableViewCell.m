@@ -43,10 +43,10 @@
 
 -(void)configureWithThread:(TSThread*)thread {
     _nameLabel.text           = thread.name;
-    _snippetLabel.text        = @"Missing implementation";
-    _contactPictureView.image = nil;
+    _snippetLabel.text        = thread.lastMessageLabel;
+    _contactPictureView.image = thread.image;
     _timeLabel.attributedText = [self dateAttributedString:thread.lastMessageDate];
-    self.separatorInset = UIEdgeInsetsMake(0,_contactPictureView.frame.size.width*1.5f, 0, 0);
+    self.separatorInset       = UIEdgeInsetsMake(0,_contactPictureView.frame.size.width*1.5f, 0, 0);
 
     [self setUpLastAction:@"read"]; // TODO: Change 
 }
