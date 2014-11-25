@@ -1818,6 +1818,11 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                     </variation>
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <connections>
+                                    <outlet property="contactCallButton" destination="yd5-y1-zqu" id="Lu1-fO-YK1"/>
+                                    <outlet property="contactShredButton" destination="jiU-kH-HN5" id="TCh-04-gXv"/>
+                                    <outlet property="contactTextButton" destination="cfo-cG-hLC" id="JKY-RT-mn6"/>
+                                </connections>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ShareCell" rowHeight="60" id="hSC-7F-dj5" customClass="ContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>

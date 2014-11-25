@@ -85,6 +85,7 @@ static NSString *const kContactDetailSegue   = @"DetailSegue";
             break;
         case kActionCellIndexPath:
             cell = (ActionContactDetailCell*)[tableView dequeueReusableCellWithIdentifier:kActionCell forIndexPath:indexPath];
+            [self setUpActionCell:(ActionContactDetailCell*)cell];
             break;
         case kShareCellIndexPath:
             cell = [tableView dequeueReusableCellWithIdentifier:kShareCell forIndexPath:indexPath];
@@ -98,7 +99,40 @@ static NSString *const kContactDetailSegue   = @"DetailSegue";
     return cell;
 }
 
-
+-(void)setUpActionCell:(ActionContactDetailCell*)cell
+{
+    Contact * c = self.contact;
+    
+    UIImage *callImage = [[UIImage imageNamed:@"call_dark"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [cell.contactCallButton setImage:callImage forState:UIControlStateNormal];
+    
+    UIImage *messageImage = [[UIImage imageNamed:@"signals_tab"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [cell.contactTextButton setImage:messageImage forState:UIControlStateNormal];
+    
+    UIImage *clearImage = [[UIImage imageNamed:@"delete_history"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [cell.contactShredButton setImage:clearImage forState:UIControlStateNormal];
+    cell.contactShredButton.tintColor = [UIColor redColor];
+    
+    
+    if (c.isRedPhoneContact)
+    {
+        cell.contactCallButton.tintColor = [UIColor colorWithRed:0.f/255.f green:122.f/255.f blue:255.f/255.f alpha:1.0f];
+        
+    } else {
+        cell.contactCallButton.tintColor = [UIColor colorWithRed:81.f/255.f green:81.f/255.f blue:81.f/255.f alpha:1.0f];
+        cell.contactCallButton.enabled = NO;
+    }
+    
+    if (c.isTextSecureContact)
+    {
+        cell.contactTextButton.tintColor = [UIColor colorWithRed:0.f/255.f green:122.f/255.f blue:255.f/255.f alpha:1.0f];
+    } else {
+        cell.contactTextButton.tintColor = [UIColor colorWithRed:81.f/255.f green:81.f/255.f blue:81.f/255.f alpha:1.0f];
+        cell.contactTextButton.enabled = NO;
+    }
+    
+    
+}
 
 -(void)setUpNameMainUserCell:(ContactDetailCell*)cell
 {
