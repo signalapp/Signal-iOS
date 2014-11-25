@@ -11,6 +11,7 @@
 #import "Environment.h"
 #import "TSStorageManager.h"
 #import "ContactsManager.h"
+#import "TSRecipient.h"
 
 #define TSContactThreadPrefix @"c"
 
@@ -37,7 +38,7 @@
     return thread;
 }
 
-- (NSString *)contactIdentifier{
+- (NSString*)contactIdentifier{
     return [[self class]contactIdFromThreadId:self.uniqueId];
 }
 
@@ -62,6 +63,10 @@
 
 + (NSString*)contactIdFromThreadId:(NSString*)threadId{
     return [threadId substringWithRange:NSMakeRange(1, threadId.length-1)];
+}
+
+- (TSRecipient *)recipientWithTransaction:(YapDatabaseReadTransaction*)transaction{
+    return [TSRecipient recipientWithTextSecureIdentifier:self.contactIdentifier withTransaction:transaction];
 }
 
 @end

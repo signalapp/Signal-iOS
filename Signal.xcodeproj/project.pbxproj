@@ -283,8 +283,10 @@
 		A1C32D5017A06538000A904E /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4F17A06537000A904E /* AddressBookUI.framework */; };
 		A1C32D5117A06544000A904E /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4D17A0652C000A904E /* AddressBook.framework */; };
 		AA0C8E498E2046B0B81EEE6E /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
+		B6019E971A2492AB001118DF /* NSDate+millisecondTimeStamp.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6019E961A2492AB001118DF /* NSDate+millisecondTimeStamp.mm */; };
 		B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */ = {isa = PBXBuildFile; fileRef = B60C16641988999D00E97A6C /* VersionMigrations.m */; };
 		B60EDE041A05A01700D73516 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60EDE031A05A01700D73516 /* AudioToolbox.framework */; };
+		B62D53F71A23CCAD009AAF82 /* TSMessageAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = B62D53F61A23CCAD009AAF82 /* TSMessageAdapter.m */; };
 		B633C5801A1D190B0059AC12 /* archive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C4FE1A1D190B0059AC12 /* archive@2x.png */; };
 		B633C5831A1D190B0059AC12 /* backspace.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5011A1D190B0059AC12 /* backspace.png */; };
 		B633C5841A1D190B0059AC12 /* backspace@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5021A1D190B0059AC12 /* backspace@2x.png */; };
@@ -370,7 +372,7 @@
 		B6B0966E1A1D25ED008BFAA6 /* TSGroupMessageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0960A1A1D25ED008BFAA6 /* TSGroupMessageManager.m */; };
 		B6B0966F1A1D25ED008BFAA6 /* TSIncomingMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0960C1A1D25ED008BFAA6 /* TSIncomingMessage.m */; };
 		B6B096701A1D25ED008BFAA6 /* TSInfoMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0960E1A1D25ED008BFAA6 /* TSInfoMessage.m */; };
-		B6B096711A1D25ED008BFAA6 /* TSInteraction.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6B096101A1D25ED008BFAA6 /* TSInteraction.mm */; };
+		B6B096711A1D25ED008BFAA6 /* TSInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096101A1D25ED008BFAA6 /* TSInteraction.m */; };
 		B6B096721A1D25ED008BFAA6 /* TSMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096121A1D25ED008BFAA6 /* TSMessage.m */; };
 		B6B096731A1D25ED008BFAA6 /* TSMessagesManager+sendMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096141A1D25ED008BFAA6 /* TSMessagesManager+sendMessages.m */; };
 		B6B096741A1D25ED008BFAA6 /* TSMessagesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096161A1D25ED008BFAA6 /* TSMessagesManager.m */; };
@@ -853,9 +855,13 @@
 		A1C32D4D17A0652C000A904E /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		A1C32D4F17A06537000A904E /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		A1FDCBEE16DAA6C300868894 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		B6019E951A2492AB001118DF /* NSDate+millisecondTimeStamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+millisecondTimeStamp.h"; sourceTree = "<group>"; };
+		B6019E961A2492AB001118DF /* NSDate+millisecondTimeStamp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSDate+millisecondTimeStamp.mm"; sourceTree = "<group>"; };
 		B60C16631988999D00E97A6C /* VersionMigrations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionMigrations.h; sourceTree = "<group>"; };
 		B60C16641988999D00E97A6C /* VersionMigrations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VersionMigrations.m; sourceTree = "<group>"; };
 		B60EDE031A05A01700D73516 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		B62D53F51A23CCAD009AAF82 /* TSMessageAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSMessageAdapter.h; sourceTree = "<group>"; };
+		B62D53F61A23CCAD009AAF82 /* TSMessageAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSMessageAdapter.m; sourceTree = "<group>"; };
 		B633C4FE1A1D190B0059AC12 /* archive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "archive@2x.png"; sourceTree = "<group>"; };
 		B633C5011A1D190B0059AC12 /* backspace.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = backspace.png; sourceTree = "<group>"; };
 		B633C5021A1D190B0059AC12 /* backspace@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "backspace@2x.png"; sourceTree = "<group>"; };
@@ -1020,7 +1026,7 @@
 		B6B0960D1A1D25ED008BFAA6 /* TSInfoMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSInfoMessage.h; sourceTree = "<group>"; };
 		B6B0960E1A1D25ED008BFAA6 /* TSInfoMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSInfoMessage.m; sourceTree = "<group>"; };
 		B6B0960F1A1D25ED008BFAA6 /* TSInteraction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSInteraction.h; sourceTree = "<group>"; };
-		B6B096101A1D25ED008BFAA6 /* TSInteraction.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TSInteraction.mm; sourceTree = "<group>"; };
+		B6B096101A1D25ED008BFAA6 /* TSInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSInteraction.m; sourceTree = "<group>"; };
 		B6B096111A1D25ED008BFAA6 /* TSMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSMessage.h; sourceTree = "<group>"; };
 		B6B096121A1D25ED008BFAA6 /* TSMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSMessage.m; sourceTree = "<group>"; };
 		B6B096131A1D25ED008BFAA6 /* TSMessagesManager+sendMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TSMessagesManager+sendMessages.h"; sourceTree = "<group>"; };
@@ -2090,6 +2096,15 @@
 			path = util;
 			sourceTree = "<group>";
 		};
+		B62D53F41A23CC8B009AAF82 /* TSMessageAdapters */ = {
+			isa = PBXGroup;
+			children = (
+				B62D53F51A23CCAD009AAF82 /* TSMessageAdapter.h */,
+				B62D53F61A23CCAD009AAF82 /* TSMessageAdapter.m */,
+			);
+			name = TSMessageAdapters;
+			sourceTree = "<group>";
+		};
 		B633C4FD1A1D190B0059AC12 /* Images */ = {
 			isa = PBXGroup;
 			children = (
@@ -2650,7 +2665,7 @@
 				B6B0960D1A1D25ED008BFAA6 /* TSInfoMessage.h */,
 				B6B0960E1A1D25ED008BFAA6 /* TSInfoMessage.m */,
 				B6B0960F1A1D25ED008BFAA6 /* TSInteraction.h */,
-				B6B096101A1D25ED008BFAA6 /* TSInteraction.mm */,
+				B6B096101A1D25ED008BFAA6 /* TSInteraction.m */,
 				B6B096111A1D25ED008BFAA6 /* TSMessage.h */,
 				B6B096121A1D25ED008BFAA6 /* TSMessage.m */,
 				B6B096131A1D25ED008BFAA6 /* TSMessagesManager+sendMessages.h */,
@@ -2723,6 +2738,8 @@
 				B6B0965E1A1D25ED008BFAA6 /* NSString+escape.m */,
 				B6B0965F1A1D25ED008BFAA6 /* NSURLSessionDataTask+StatusCode.h */,
 				B6B096601A1D25ED008BFAA6 /* NSURLSessionDataTask+StatusCode.m */,
+				B6019E951A2492AB001118DF /* NSDate+millisecondTimeStamp.h */,
+				B6019E961A2492AB001118DF /* NSDate+millisecondTimeStamp.mm */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -2971,6 +2988,7 @@
 		FC3196321A08142D0094C78E /* Signals */ = {
 			isa = PBXGroup;
 			children = (
+				B62D53F41A23CC8B009AAF82 /* TSMessageAdapters */,
 				FC3196281A067D8F0094C78E /* MessageComposeTableViewController.h */,
 				FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */,
 				FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */,
@@ -3445,6 +3463,7 @@
 				FC4FA0331A1D46AE00DA100A /* InitialViewController.m in Sources */,
 				B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */,
 				76EB05D618170B33006006FC /* ZrtpResponder.m in Sources */,
+				B62D53F71A23CCAD009AAF82 /* TSMessageAdapter.m in Sources */,
 				B63AF5C91A1F757900D01AAD /* TSRecipientPrekeyRequest.m in Sources */,
 				7095B7B018F46D35002C66E2 /* PhoneNumberUtil.m in Sources */,
 				B63AF5D81A1F889500D01AAD /* SubProtocol.pb.m in Sources */,
@@ -3513,6 +3532,7 @@
 				7038632818F70C0700D4A43F /* EvpSymetricUtil.m in Sources */,
 				76EB068618170B34006006FC /* ContactTableViewCell.m in Sources */,
 				B6B096921A1D25ED008BFAA6 /* NSData+hexString.m in Sources */,
+				B6019E971A2492AB001118DF /* NSDate+millisecondTimeStamp.mm in Sources */,
 				B63761ED19E1FBE8005735D1 /* HttpRequestOrResponse.m in Sources */,
 				B63AF5C81A1F757900D01AAD /* TSDeregisterAccountRequest.m in Sources */,
 				76EB05A018170B33006006FC /* IpAddress.m in Sources */,
@@ -3619,7 +3639,7 @@
 				76EB05E818170B33006006FC /* CallFailedServerMessage.m in Sources */,
 				76EB05FA18170B33006006FC /* CallConnectUtil_Responder.m in Sources */,
 				76EB05AE18170B33006006FC /* SrtpStream.m in Sources */,
-				B6B096711A1D25ED008BFAA6 /* TSInteraction.mm in Sources */,
+				B6B096711A1D25ED008BFAA6 /* TSInteraction.m in Sources */,
 				B6B0966D1A1D25ED008BFAA6 /* TSErrorMessage.m in Sources */,
 				B63AF5CF1A1F757900D01AAD /* TSRequestAttachmentId.m in Sources */,
 				E197B61318BBEC1A00F073E5 /* DesiredBufferDepthController.m in Sources */,

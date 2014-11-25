@@ -15,6 +15,10 @@
 #import "TSStorageManager+keyingMaterial.h"
 #import <CocoaLumberjack/DDLog.h>
 
+#import "NSData+Base64.h"
+#import "Cryptography.h"
+#import "IncomingPushMessageSignal.pb.h"
+
 #define kWebSocketHeartBeat 15
 
 NSString * const SocketOpenedNotification     = @"SocketOpenedNotification";
@@ -83,7 +87,7 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 }
 
 + (void)resignActivity{
-    SRWebSocket *socket =[[self sharedManager] websocket];
+    SRWebSocket *socket = [[self sharedManager] websocket];
     [socket close];
 }
 
@@ -115,8 +119,24 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 - (void)processWebSocketRequestMessage:(WebSocketRequestMessage*)message {
     DDLogInfo(@"Got message with verb: %@ and path: %@", message.verb, message.path);
     
+    [self sendWebSocketMessageAcknowledgement:message];
+    
     if ([message.path isEqualToString:@"/api/v1/message"] && [message.verb isEqualToString:@"PUT"]){
-        [[TSMessagesManager sharedManager] handleMessageSignal:message.body];
+        
+        NSString *base64String   = [[NSString alloc] initWithData:message.body encoding:NSUTF8StringEncoding];
+        
+        NSData *encryptedSignal  = [NSData dataFromBase64String:base64String];
+        NSData *decryptedPayload = [Cryptography decryptAppleMessagePayload:encryptedSignal
+                                                           withSignalingKey:TSStorageManager.signalingKey];
+        
+        if (!decryptedPayload) {
+            DDLogWarn(@"Failed to decrypt incoming payload or bad HMAC");
+            return;
+        }
+        
+        IncomingPushMessageSignal *messageSignal = [IncomingPushMessageSignal parseFromData:decryptedPayload];
+        
+        [[TSMessagesManager sharedManager] handleMessageSignal:messageSignal];
     } else{
         DDLogWarn(@"Unsupported WebSocket Request");
     }
@@ -126,10 +146,16 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
     DDLogWarn(@"Client should not receive WebSocket Respond messages");
 }
 
-- (void)sendWebSocketMessageAcknowledgement:(NSString*)messageId {
-    WebSocketResponseMessageBuilder *message = [WebSocketResponseMessage builder];
-    [message setStatus:200];
-    [message setMessage:messageId];
+- (void)sendWebSocketMessageAcknowledgement:(WebSocketRequestMessage*)request {
+    WebSocketResponseMessageBuilder *response = [WebSocketResponseMessage builder];
+    [response setStatus:200];
+    [response setMessage:@"OK"];
+    [response setId:request.id];
+    
+    WebSocketMessageBuilder *message = [WebSocketMessage builder];
+    [message setResponse:response.build];
+    [message setType:WebSocketMessageTypeResponse];
+    
     [self.websocket send:message.build.data];
 }
 

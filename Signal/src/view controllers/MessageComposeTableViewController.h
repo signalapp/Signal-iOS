@@ -17,8 +17,6 @@
 
 #import "JSQMessagesKeyboardController.h"
 
-
 @interface MessageComposeTableViewController : UITableViewController
-
 
 @end

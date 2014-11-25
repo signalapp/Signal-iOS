@@ -10,4 +10,14 @@
 
 @implementation TSErrorMessage
 
+- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread failedMessageType:(TSErrorMessageType)errorMessageType{
+    self = [super initWithTimestamp:timestamp inThread:thread messageBody:@"Error Message" attachements:nil];
+    
+    if (self) {
+        _errorType = errorMessageType;
+    }
+    
+    return self;
+}
+
 @end
