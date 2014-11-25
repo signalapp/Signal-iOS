@@ -411,7 +411,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 	return newSet.allObjects;
 }
 
-- (BOOL)isContactRegisteredWithRedPhone:(Contact*) contact {
+- (BOOL)isContactRegisteredWithRedPhone:(Contact*)contact {
 	for(PhoneNumber *phoneNumber in contact.parsedPhoneNumbers){
 		if ( [self isPhoneNumberRegisteredWithRedPhone:phoneNumber]) {
 			return YES;

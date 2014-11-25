@@ -7,7 +7,6 @@
 //
 
 #import "UIUtil.h"
-#import "DemoDataFactory.h"
 #import "InboxTableViewCell.h"
 
 #import "MessagesViewController.h"
@@ -36,8 +35,8 @@ static NSString *const kSegueIndentifier = @"showSegue";
     NSUInteger numberOfCells;
     
 }
+
 @property (strong, nonatomic) UILabel * emptyViewLabel;
-@property (strong, nonatomic) DemoDataModel *demoData;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *threadMappings;
 
@@ -141,15 +140,19 @@ static NSString *const kSegueIndentifier = @"showSegue";
 #pragma mark - HomeFeedTableViewCellDelegate
 
 - (void)tableViewCellTappedDelete:(InboxTableViewCell*)cell {
-    NSLog(@"Delete");
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    TSThread    *thread    = [self threadForIndexPath:indexPath];
+    
+    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [thread removeWithTransaction:transaction];
+    }];
 }
 
 - (void)tableViewCellTappedArchive:(InboxTableViewCell*)cell {
     NSLog(@"Archive");
 }
 
--(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath{
     [self performSegueWithIdentifier:kSegueIndentifier sender:self];
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
@@ -160,19 +163,16 @@ static NSString *const kSegueIndentifier = @"showSegue";
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
-    if ([segue.identifier isEqualToString:kSegueIndentifier])
-    {
+    if ([segue.identifier isEqualToString:kSegueIndentifier]){
         MessagesViewController * vc    = [segue destinationViewController];
         NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
         vc.thread                      = [self threadForIndexPath:selectedIndexPath];
         
         if (!vc.thread) {
             [TSStorageManager.sharedManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                vc.thread = [TSContactThread threadWithContactId:[self.contactFromCompose.userTextPhoneNumbers firstObject] transaction:transaction];
-                NSLog(@"Thread:%@", vc.thread);
+                vc.thread = [TSContactThread threadWithContactId:self.contactIdentifierFromCompose transaction:transaction];
             }];
         }
-        
     }
 }
 
@@ -211,18 +211,16 @@ static NSString *const kSegueIndentifier = @"showSegue";
 }
 
 - (void)yapDatabaseModified:(NSNotification *)notification {
-    NSArray *notifications = notification.userInfo[@"notifications"];
-    
+    NSArray *notifications  = [self.uiDatabaseConnection beginLongLivedReadTransaction];
     NSArray *sectionChanges = nil;
-    NSArray *rowChanges = nil;
-    
+    NSArray *rowChanges     = nil;
+
     [[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] getSectionChanges:&sectionChanges
                                                                               rowChanges:&rowChanges
                                                                         forNotifications:notifications
                                                                             withMappings:self.threadMappings];
     
     if ([sectionChanges count] == 0 && [rowChanges count] == 0){
-        
         return;
     }
     

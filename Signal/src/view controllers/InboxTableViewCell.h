@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "DemoDataModel.h"
 #import "NextResponderScrollView.h"
 #import "TSThread.h"
 

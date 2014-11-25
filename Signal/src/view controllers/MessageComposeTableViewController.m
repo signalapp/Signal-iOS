@@ -138,7 +138,7 @@
     UINavigationController* nav = (UINavigationController*)[tb.childViewControllers objectAtIndex:1];
     SignalsViewController* s = (SignalsViewController*)nav.topViewController;
 
-    s.contactFromCompose = [self contactForIndexPath:indexPath];
+    s.contactIdentifierFromCompose = [[[self contactForIndexPath:indexPath] textSecureIdentifiers] firstObject];
 
     [self dismissViewControllerAnimated:YES completion:^(){
         [s performSegueWithIdentifier:@"showSegue" sender:nil];

@@ -9,8 +9,6 @@
 #import "JSQMessagesViewController.h"
 #import "JSQMessages.h"
 
-#import "DemoDataModel.h"
-
 @class TSThread;
 
 @interface MessagesViewController : JSQMessagesViewController <UIImagePickerControllerDelegate,UINavigationControllerDelegate>

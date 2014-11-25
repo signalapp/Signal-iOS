@@ -29,6 +29,8 @@ typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 -(ObservableValue *) getObservableContacts;
 -(ObservableValue *) getObservableRedPhoneUsers;
 
+- (BOOL)isPhoneNumberRegisteredWithRedPhone:(PhoneNumber*)phoneNumber;
+
 -(NSArray*) getContactsFromAddressBook:(ABAddressBookRef)addressBook;
 -(Contact*) latestContactWithRecordId:(ABRecordID)recordId;
 -(Contact*) latestContactForPhoneNumber:(PhoneNumber *)phoneNumber;
@@ -38,13 +40,15 @@ typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 
 +(BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString;
 +(BOOL)phoneNumber:(PhoneNumber *)phoneNumber matchesQuery:(NSString *)queryString;
--(BOOL)isContactRegisteredWithRedPhone:(Contact*) contact;
-
--(void) doAfterEnvironmentInitSetup;
 
 - (NSArray*)allContacts;
 - (NSArray*)textSecureContacts;
 
+- (BOOL)isContactRegisteredWithRedPhone:(Contact*)contact;
+- (BOOL)isContactRegisteredWithTextSecure:(Contact*)contact;
+
+-(void)doAfterEnvironmentInitSetup;
 - (NSString*)nameStringForPhoneIdentifier:(NSString*)identifier;
+
 
 @end

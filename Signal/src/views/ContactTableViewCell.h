@@ -18,5 +18,4 @@
 
 - (void)configureWithContact:(Contact *)contact;
 
-
 @end

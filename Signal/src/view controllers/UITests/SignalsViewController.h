@@ -9,11 +9,12 @@
 #include "InboxTableViewCell.h"
 #import <UIKit/UIKit.h>
 
+#import "Contact.h"
 #import "GroupModel.h"
 
 @interface SignalsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, TableViewCellDelegate>
 
-@property (nonatomic) Contact    *contactFromCompose;
+@property (nonatomic) NSString   *contactIdentifierFromCompose;
 @property (nonatomic) GroupModel *groupFromCompose;
 
 @property (nonatomic, retain) IBOutlet UITableView *tableView;

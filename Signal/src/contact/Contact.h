@@ -38,4 +38,7 @@
 - (BOOL)isTextSecureContact;
 - (BOOL)isRedPhoneContact;
 
+- (NSArray*)textSecureIdentifiers;
+- (NSArray*)redPhoneIdentifiers;
+
 @end

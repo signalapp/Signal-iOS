@@ -97,8 +97,8 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="_tableView" destination="PaA-ol-uQT" id="XGR-5F-9H0"/>
                         <outlet property="segmentedControl" destination="3zh-Df-ewk" id="WwI-JF-Y2X"/>
+                        <outlet property="tableView" destination="PaA-ol-uQT" id="nQU-tR-wbL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dE8-zB-mtF" userLabel="First Responder" sceneMemberID="firstResponder"/>

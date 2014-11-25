@@ -95,9 +95,35 @@ static NSString *const DEFAULTS_KEY_DATE = @"DefaultsKeyDate";
     return isRecipient;
 }
 
+- (NSArray*)textSecureIdentifiers{
+    __block NSMutableArray *identifiers = [NSMutableArray array];
+    
+    [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        for (PhoneNumber *number in self.parsedPhoneNumbers) {
+            if ([TSRecipient recipientWithTextSecureIdentifier:number.toE164 withTransaction:transaction]) {
+                [identifiers addObject:number.toE164];
+            }
+        }
+    }];
+    return identifiers;
+}
+
 - (BOOL)isRedPhoneContact{
     ContactsManager *contactManager = [Environment getCurrent].contactsManager;
     return [contactManager isContactRegisteredWithRedPhone:self];
+}
+
+- (NSArray *)redPhoneIdentifiers{
+    __block NSMutableArray *identifiers = [NSMutableArray array];
+    
+    ContactsManager *contactManager = [Environment getCurrent].contactsManager;
+    for (PhoneNumber *number in self.parsedPhoneNumbers) {
+        if ([contactManager isPhoneNumberRegisteredWithRedPhone:number]) {
+            [identifiers addObject:number.toE164];
+        }
+    }
+    
+    return identifiers;
 }
 
 @end
