@@ -99,6 +99,57 @@ static NSString *const kContactDetailSegue   = @"DetailSegue";
     return cell;
 }
 
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CGFloat cellHeight = 44.0f;
+    
+    switch (indexPath.row) {
+        case kNameMainNumberCellIndexPath:
+            cellHeight = doesImageExist ? kNameMainNumberCellHeight : kNoImageCellHeight;
+            break;
+        case kActionCellIndexPath:
+            cellHeight = kActionCellHeight;
+            break;
+        case kShareCellIndexPath:
+            cellHeight = kShareCellHeight;
+            break;
+        default:
+            cellHeight = [self heightForAdaptableCellAtIndexPath:indexPath];
+            break;
+    }
+    return cellHeight;
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    switch (indexPath.row) {
+        case kShareCellIndexPath:
+            [DJWActionSheet showInView:self.tabBarController.view
+                             withTitle:nil
+                     cancelButtonTitle:@"Cancel"
+                destructiveButtonTitle:nil
+                     otherButtonTitles:@[@"Mail", @"Message", @"Airdrop", @"Other"]
+                              tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+                                  [tableView deselectRowAtIndexPath:indexPath animated:YES];
+                                  if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
+                                      NSLog(@"User Cancelled");
+                                      
+                                  } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
+                                      NSLog(@"Destructive button tapped");
+                                  }else {
+                                      NSLog(@"The user tapped button at index: %li", (long)tappedButtonIndex);
+                                  }
+                              }];
+            
+            break;
+            
+    }
+}
+
+
+#pragma mark - Set Up Cells
+
 -(void)setUpActionCell:(ActionContactDetailCell*)cell
 {
     Contact * c = self.contact;
@@ -153,138 +204,124 @@ static NSString *const kContactDetailSegue   = @"DetailSegue";
     [cell.contactImageView.layer setMasksToBounds:YES];
 }
 
-
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+-(void)setUpEmailCell:(ContactDetailCell*)cell forIndexPath:(NSIndexPath*)indexPath
 {
-    CGFloat cellHeight = 44.0f;
-    
-    switch (indexPath.row) {
-        case kNameMainNumberCellIndexPath:
-            cellHeight = doesImageExist ? kNameMainNumberCellHeight : kNoImageCellHeight;
-            break;
-        case kActionCellIndexPath:
-            cellHeight = kActionCellHeight;
-            break;
-        case kShareCellIndexPath:
-            cellHeight = kShareCellHeight;
-            break;
-        default:
-            cellHeight = [self heightForAdaptableCellAtIndexPath:indexPath];
-            break;
-    }
-    return cellHeight;
+    cell.contactEmailLabel.text = [_contact.emails objectAtIndex:(NSUInteger)indexPath.row-kMinRows];
 }
 
--(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+-(void)setUpAnnexNumberCell:(ContactDetailCell*)cell forIndexPath:(NSIndexPath*)indexPath
 {
-    switch (indexPath.row) {
-        case kShareCellIndexPath:
-            [DJWActionSheet showInView:self.tabBarController.view
-                             withTitle:nil
-                     cancelButtonTitle:@"Cancel"
-                destructiveButtonTitle:nil
-                     otherButtonTitles:@[@"Mail", @"Message", @"Airdrop", @"Other"]
-                              tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                                  [tableView deselectRowAtIndexPath:indexPath animated:YES];
-                                  if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                                      NSLog(@"User Cancelled");
+    NSInteger i = indexPath.row - [self emailUpperBound] ;
+    
+    cell.contactAnnexNumberLabel.text = [_contact.userTextPhoneNumbers objectAtIndex:(NSUInteger)i];
+}
 
-                                  } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                                      NSLog(@"Destructive button tapped");
-                                  }else {
-                                      NSLog(@"The user tapped button at index: %li", (long)tappedButtonIndex);
-                                  }
-                              }];
-
-            break;
-            
-    }
+-(void)setUpNotesCell:(ContactDetailCell*)cell
+{
+    cell.contactNotesTextView.text = _contact.notes;
 }
 
 #pragma mark - Utilities (Adaptable Cells)
+
+-(UITableViewCell*)adaptableCellAtIndexPath:(NSIndexPath*)indexPath
+{
+    ContactDetailCell * cell;
+    
+    if ([self isEmailIndexPath:indexPath])
+    {
+        cell = [self.tableView dequeueReusableCellWithIdentifier:kEmailCell forIndexPath:indexPath];
+        [self setUpEmailCell:cell forIndexPath:indexPath];
+        
+        return cell;
+    }
+    
+    else if ([self isAnnexNumberIndexPath:indexPath])
+    {
+        cell = [self.tableView dequeueReusableCellWithIdentifier:kAnnexPhoneNumberCell forIndexPath:indexPath];
+        [self setUpAnnexNumberCell:cell forIndexPath:indexPath];
+        
+        return cell;
+    }
+    
+    else if ([self isNotesIndexPath:indexPath])
+    {
+        cell = [self.tableView dequeueReusableCellWithIdentifier:kNotesCell forIndexPath:indexPath];
+        [self setUpNotesCell:cell];
+        
+        return cell;
+        
+    }
+    
+    else
+    {
+        return nil;
+    }
+}
+
+-(CGFloat)heightForAdaptableCellAtIndexPath:(NSIndexPath*)indexPath
+{
+    if ([self isEmailIndexPath:indexPath])
+    {
+        return kEmailCellHeight;
+    }
+    
+    else if ([self isAnnexNumberIndexPath:indexPath])
+    {
+        return kAnnexPhoneNumberCellHeight;
+    }
+    
+    else if ([self isNotesIndexPath:indexPath])
+    {
+        return kNotesCellHeight;
+    }
+    
+    else
+    {
+        return 44.0f;
+    }
+    
+}
+
+#pragma mark - IndexPaths
+
+-(BOOL)isEmailIndexPath:(NSIndexPath*)indexPath
+{
+    
+    return indexPath.row > kFirstAdaptableCellRow && indexPath.row <= [self emailUpperBound];
+}
+
+-(BOOL)isAnnexNumberIndexPath:(NSIndexPath*)indexPath
+{
+    return indexPath.row > [self emailUpperBound]  && indexPath.row <  [self phoneNumberUpperBound];
+}
+
+-(BOOL)isNotesIndexPath:(NSIndexPath*)indexPath
+{
+    return indexPath.row == (NSInteger)[self numberOfRowsForContact:_contact]-1;
+}
+
+#pragma mark - Utilities (Bounds)
+
+-(NSInteger)emailUpperBound
+{
+    return (NSInteger)(kFirstAdaptableCellRow+_contact.emails.count);
+}
+
+-(NSInteger)phoneNumberUpperBound
+{
+    return [self emailUpperBound] + (NSInteger)_contact.userTextPhoneNumbers.count;
+}
 
 -(NSUInteger)numberOfRowsForContact:(Contact*)contact
 {
     NSUInteger numNotes = contact.notes.length == 0 ? 0 : 1;
     NSUInteger numEmails = contact.emails.count;
-    NSUInteger numPhoneNumbers = contact.userTextPhoneNumbers.count-1; //Don't count main
+    NSUInteger numPhoneNumbers = contact.userTextPhoneNumbers.count-1;
     
     return kMinRows + numEmails + numPhoneNumbers + numNotes;
 }
 
--(UITableViewCell*)adaptableCellAtIndexPath:(NSIndexPath*)idx
-{
-    NSInteger emailUpperBound = (NSInteger)(kFirstAdaptableCellRow+_contact.emails.count);
-    NSInteger phoneNumberUpperBound = emailUpperBound + (NSInteger)_contact.userTextPhoneNumbers.count;
-    
-    
-    ContactDetailCell * cell;
-    
-    if (idx.row > kFirstAdaptableCellRow && idx.row <= emailUpperBound)
-    {
-        cell = [self.tableView dequeueReusableCellWithIdentifier:kEmailCell forIndexPath:idx];
-        
-        cell.contactEmailLabel.text = [_contact.emails objectAtIndex:(NSUInteger)idx.row-_contact.emails.count];
-        
-        return cell;
-    }
-    
-    else if (idx.row > emailUpperBound  && idx.row < phoneNumberUpperBound)
-    {
-        cell = [self.tableView dequeueReusableCellWithIdentifier:kAnnexPhoneNumberCell forIndexPath:idx];
-        
-        NSInteger i = idx.row - emailUpperBound ;
-        
-        cell.contactAnnexNumberLabel.text = [_contact.userTextPhoneNumbers objectAtIndex:(NSUInteger)i];
-        
-        return cell;
-    }
-    
-    else if (idx.row == (NSInteger)[self numberOfRowsForContact:_contact]-1)
-    {
-        cell = [self.tableView dequeueReusableCellWithIdentifier:kNotesCell forIndexPath:idx];
 
-        cell.contactNotesTextView.text = _contact.notes;
-        
-        return cell;
-        
-    }
-    
-    else
-    {
-        NSLog(@"%s Problem at IndexPath %@", __PRETTY_FUNCTION__, idx);
-        return nil;
-    }
-}
-
--(CGFloat)heightForAdaptableCellAtIndexPath:(NSIndexPath*)idx
-{
-    NSInteger emailUpperBound = (NSInteger)(kFirstAdaptableCellRow+_contact.emails.count);
-    NSInteger phoneNumberUpperBound = emailUpperBound + (NSInteger)_contact.userTextPhoneNumbers.count;
-    
-    if (idx.row > kFirstAdaptableCellRow && idx.row <= emailUpperBound)
-    {
-        return kEmailCellHeight;
-    }
-    
-    else if (idx.row > emailUpperBound && idx.row < phoneNumberUpperBound)
-    {
-        return kAnnexPhoneNumberCellHeight;
-    }
-    
-    else if (idx.row == (NSInteger)[self numberOfRowsForContact:_contact]-1)
-    {
-        return kNotesCellHeight;
-        
-    }
-    
-    else
-    {
-        NSLog(@"%s Problem at IndexPath %@", __PRETTY_FUNCTION__, idx);
-        return 44.0f;
-    }
-    
-}
 
 
 @end
