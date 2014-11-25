@@ -12,4 +12,6 @@
 
 @property(nonatomic, strong) IBOutlet UITextField* challengeTextField;
 
+- (IBAction)verifyChallengeAction:(id)sender;
+
 @end

@@ -299,6 +299,7 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 -(void) dismissViewWithOptionalDelay:(BOOL) useDelay {
+    [UIDevice.currentDevice setProximityMonitoringEnabled:NO];
     if(useDelay && UIApplicationStateActive == [UIApplication.sharedApplication applicationState]){
         [self dismissViewControllerAfterDelay:END_CALL_CLEANUP_DELAY];
     }else{

@@ -18,7 +18,7 @@
 #import "VersionMigrations.h"
 
 #import "InitialViewController.h"
-
+#import "CodeVerificationViewController.h"
 
 #import <PastelogKit/Pastelog.h>
 
@@ -153,6 +153,28 @@
 
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings{
     [PushManager.sharedManager.userNotificationFutureSource trySetResult:notificationSettings];
+}
+
+-(BOOL) application:(UIApplication*)application openURL:(NSURL*)url sourceApplication:(NSString*)sourceApplication annotation:(id)annotation {
+    if ([url.scheme isEqualToString:@"sgnl"]) {
+        if ([url.host hasPrefix:@"verify"] && ![TSAccountManager isRegistered]) {
+            UIViewController *controller = self.window.rootViewController.presentedViewController.presentedViewController;
+            if ([controller isKindOfClass:[CodeVerificationViewController class]]) {
+                CodeVerificationViewController *cvvc = (CodeVerificationViewController*)controller;
+                NSString *verificationCode           = [url.path substringFromIndex:1];
+                
+                cvvc.challengeTextField.text = verificationCode;
+                [cvvc verifyChallengeAction:nil];
+            } else{
+                DDLogWarn(@"Not the verification view controller we expected. Got %@ instead", NSStringFromClass(controller.class));
+            }
+        } else{
+            DDLogWarn(@"Application opened with an unknown URL action: %@", url.host);
+        }
+    } else {
+        DDLogWarn(@"Application opened with an unknown URL scheme: %@", url.scheme);
+    }
+    return NO;
 }
 
 -(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
