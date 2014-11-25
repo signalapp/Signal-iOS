@@ -12,8 +12,8 @@
 #import "UIUtil.h"
 #import "DJWActionSheet.h"
 
-#define kImageRadius 50.0f
-#define kMinRows 3
+#define kImageRadius           50.0f
+#define kMinRows               3
 #define kFirstAdaptableCellRow 2
 
 
@@ -286,7 +286,6 @@ static NSString *const kContactDetailSegue   = @"DetailSegue";
 
 -(BOOL)isEmailIndexPath:(NSIndexPath*)indexPath
 {
-    
     return indexPath.row > kFirstAdaptableCellRow && indexPath.row <= [self emailUpperBound];
 }
 

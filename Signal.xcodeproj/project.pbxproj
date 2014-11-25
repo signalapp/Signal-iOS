@@ -1334,6 +1334,7 @@
 		76EB03C118170B33006006FC /* src */ = {
 			isa = PBXGroup;
 			children = (
+				FCFA64B11A24F29E0007FB87 /* Categories */,
 				FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */,
 				FCAC963919FEF8A00046DFC5 /* UI Tests */,
 				76EB03C218170B33006006FC /* AppDelegate.h */,
@@ -3030,6 +3031,13 @@
 				FC3196311A08141D0094C78E /* Settings */,
 			);
 			name = ViewControllers;
+			sourceTree = "<group>";
+		};
+		FCFA64B11A24F29E0007FB87 /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Categories;
 			sourceTree = "<group>";
 		};
 		FCFD25791A1543D500F4C644 /* Signup */ = {

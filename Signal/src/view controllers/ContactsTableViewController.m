@@ -44,18 +44,9 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contactsDidRefresh) name:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contactRefreshFailed) name:NOTIFICATION_DIRECTORY_FAILED object:nil];
-    UIRefreshControl *refreshControl = [[UIRefreshControl alloc]
-                                        init];
-    [refreshControl addTarget:self action:@selector(refreshContacts) forControlEvents:UIControlEventValueChanged];
-    self.refreshControl = refreshControl;
-    [self.contactTableView addSubview:self.refreshControl];
-    
-    self.tableView.contentOffset = CGPointMake(0, 44);
-    
+    [self initializeObservers];
+    [self initializeRefreshControl];
+    [self initializeTableView];
     [self initializeSearch];
     
     [self setupContacts];
@@ -90,6 +81,27 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     
 }
 
+-(void)initializeRefreshControl
+{
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc]init];
+    [refreshControl addTarget:self action:@selector(refreshContacts) forControlEvents:UIControlEventValueChanged];
+    self.refreshControl = refreshControl;
+    [self.contactTableView addSubview:self.refreshControl];
+
+}
+
+-(void)initializeTableView
+{
+    self.tableView.contentOffset = CGPointMake(0, 44);
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+}
+
+-(void)initializeObservers
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contactsDidRefresh) name:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contactRefreshFailed) name:NOTIFICATION_DIRECTORY_FAILED object:nil];
+}
+
 #pragma mark - UISearchResultsUpdating
 
 -(void)updateSearchResultsForSearchController:(UISearchController *)searchController {
@@ -115,7 +127,9 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 {
     NSPredicate *resultPredicate = [NSPredicate predicateWithFormat:@"fullName contains[c] %@", searchText];
     searchResults = [self.latestContacts filteredArrayUsingPredicate:resultPredicate];
-    if (!searchResults.count && _searchController.searchBar.text.length == 0) searchResults = self.latestContacts;
+    if (!searchResults.count && _searchController.searchBar.text.length == 0) {
+        searchResults = self.latestContacts;
+    }
 }
 
 
@@ -139,32 +153,15 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     NSDictionary * dic;
     
     dic = @{
-            @"A": @[],
-            @"B": @[],
-            @"C": @[],
-            @"D": @[],
-            @"E": @[],
-            @"F": @[],
-            @"G": @[],
-            @"H": @[],
-            @"I": @[],
-            @"J": @[],
-            @"K": @[],
-            @"L": @[],
-            @"M": @[],
-            @"N": @[],
-            @"O": @[],
-            @"P": @[],
-            @"Q": @[],
-            @"R": @[],
-            @"S": @[],
-            @"T": @[],
-            @"U": @[],
-            @"V": @[],
-            @"W": @[],
-            @"X": @[],
-            @"Y": @[],
-            @"Z": @[]
+            @"A": @[], @"B": @[], @"C": @[],
+            @"D": @[], @"E": @[], @"F": @[],
+            @"G": @[], @"H": @[], @"I": @[],
+            @"J": @[], @"K": @[], @"L": @[],
+            @"M": @[], @"N": @[], @"O": @[],
+            @"P": @[], @"Q": @[], @"R": @[],
+            @"S": @[], @"T": @[], @"U": @[],
+            @"V": @[], @"W": @[], @"X": @[],
+            @"Y": @[], @"Z": @[]
             };
     
     return [dic mutableCopy];
