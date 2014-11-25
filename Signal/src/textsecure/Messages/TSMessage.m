@@ -29,5 +29,8 @@
     return self.attachements?(self.attachements.count>0):false;
 }
 
+- (NSString *)description{
+    return self.body;
+}
 
 @end

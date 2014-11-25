@@ -10,6 +10,8 @@
 #import "DJWActionSheet.h"
 #import "SettingsTableViewCell.h"
 
+#import "TSAccountManager.h"
+
 #define kProfileCellHeight      87.0f
 #define kStandardCellHeight     60.0f
 
@@ -38,7 +40,7 @@ typedef enum {
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
+    self.registeredNumber.text     = [TSAccountManager registeredNumber];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -12,7 +12,7 @@
 @implementation NSDate (millisecondTimeStamp)
 
 + (uint64_t)ows_millisecondTimeStamp{
-    uint64_t milliseconds = std::chrono::system_clock::now().time_since_epoch()/std::chrono::milliseconds(1);
+    uint64_t milliseconds = (uint64_t) (std::chrono::system_clock::now().time_since_epoch()/std::chrono::milliseconds(1));
     return milliseconds;
 }
 

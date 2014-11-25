@@ -10,4 +10,6 @@
 
 @interface SettingsTableViewController : UITableViewController
 
+@property IBOutlet UILabel *registeredNumber;
+
 @end
