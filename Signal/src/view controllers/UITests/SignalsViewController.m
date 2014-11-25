@@ -68,21 +68,7 @@ static NSString *const kSegueIndentifier = @"showSegue";
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    if ([self.threadMappings numberOfItemsInAllGroups]==0)
-    {
-        CGRect r = CGRectMake(0, 60, 300, 70);
-        _emptyViewLabel = [[UILabel alloc]initWithFrame:r];
-        _emptyViewLabel.text = @"You have no messages yet.";
-        _emptyViewLabel.textColor = [UIColor grayColor];
-        _emptyViewLabel.font = [UIFont ows_thinFontWithSize:14.0f];
-        _emptyViewLabel.textAlignment = NSTextAlignmentCenter;
-        self.tableView.tableHeaderView = _emptyViewLabel;
-    } else {
-        _emptyViewLabel = nil;
-        self.tableView.tableHeaderView = nil;
-    }
-    
+    [self  updateTableViewHeader];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -109,7 +95,7 @@ static NSString *const kSegueIndentifier = @"showSegue";
 - (InboxTableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath {
     
     InboxTableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:inboxTableViewCell];
-    TSThread *thread = [self threadForIndexPath:indexPath];
+    TSThread *thread         = [self threadForIndexPath:indexPath];
     
     if (!cell) {
         cell = [[InboxTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
@@ -143,9 +129,7 @@ static NSString *const kSegueIndentifier = @"showSegue";
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     TSThread    *thread    = [self threadForIndexPath:indexPath];
     
-    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [thread removeWithTransaction:transaction];
-    }];
+    [thread remove];
 }
 
 - (void)tableViewCellTappedArchive:(InboxTableViewCell*)cell {
@@ -282,5 +266,23 @@ static NSString *const kSegueIndentifier = @"showSegue";
     }
     
     [self.tableView endUpdates];
+    [self updateTableViewHeader];
 }
+
+- (void)updateTableViewHeader{
+    if ([self.threadMappings numberOfItemsInAllGroups]==0)
+    {
+        CGRect r = CGRectMake(0, 60, 300, 70);
+        _emptyViewLabel = [[UILabel alloc]initWithFrame:r];
+        _emptyViewLabel.text = @"You have no messages yet.";
+        _emptyViewLabel.textColor = [UIColor grayColor];
+        _emptyViewLabel.font = [UIFont ows_thinFontWithSize:14.0f];
+        _emptyViewLabel.textAlignment = NSTextAlignmentCenter;
+        self.tableView.tableHeaderView = _emptyViewLabel;
+    } else {
+        _emptyViewLabel = nil;
+        self.tableView.tableHeaderView = nil;
+    }
+}
+
 @end

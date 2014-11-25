@@ -13,6 +13,8 @@
 #import "TSInteraction.h"
 #import "TSThread.h"
 
+#define ME_MESSAGE_IDENTIFIER @"Me";
+
 @interface TSMessageAdapter : NSObject <JSQMessageData>
 
 + (instancetype)messageViewDataWithInteraction:(TSInteraction*)interaction inThread:(TSThread*)thread;

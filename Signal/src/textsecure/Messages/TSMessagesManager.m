@@ -211,6 +211,7 @@
         }
         
         [incomingMessage saveWithTransaction:transaction];
+        thread.lastMessageId = [TSInteraction timeStampFromString:incomingMessage.uniqueId];
         [thread saveWithTransaction:transaction];
     }];
 }

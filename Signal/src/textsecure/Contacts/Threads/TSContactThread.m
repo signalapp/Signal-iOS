@@ -57,6 +57,11 @@
     return name;
 }
 
+- (UIImage*)image{
+    UIImage *image = [[Environment getCurrent].contactsManager imageForPhoneIdentifier:self.contactIdentifier];
+    return image;
+}
+
 + (NSString*)threadIdFromContactId:(NSString*)contactId{
     return [TSContactThreadPrefix stringByAppendingString:contactId];
 }

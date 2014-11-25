@@ -94,6 +94,9 @@
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [message setMessageState:TSOutgoingMessageStateSent];
         [message saveWithTransaction:transaction];
+        TSThread *fetchedThread = [TSThread fetchObjectWithUniqueID:thread.uniqueId];
+        fetchedThread.lastMessageId = [TSInteraction timeStampFromString:message.uniqueId];
+        [thread saveWithTransaction:transaction];
     }];
 }
 
