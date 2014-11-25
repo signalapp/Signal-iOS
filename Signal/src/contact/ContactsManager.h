@@ -45,7 +45,6 @@ typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 - (NSArray*)textSecureContacts;
 
 - (BOOL)isContactRegisteredWithRedPhone:(Contact*)contact;
-- (BOOL)isContactRegisteredWithTextSecure:(Contact*)contact;
 
 -(void)doAfterEnvironmentInitSetup;
 

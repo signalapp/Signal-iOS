@@ -91,7 +91,7 @@
     @synchronized(self){
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
         NSString *recipientId            = secureMessage.source;
-        int  deviceId                    = secureMessage.sourceDevice;
+        int  deviceId                    = (int) secureMessage.sourceDevice;
         
         if (![storageManager containsSession:recipientId deviceId:deviceId]) {
             // Deal with failure
@@ -127,7 +127,7 @@
     @synchronized(self){
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
         NSString *recipientId            = preKeyMessage.source;
-        int  deviceId                    = preKeyMessage.sourceDevice;
+        int  deviceId                    = (int)preKeyMessage.sourceDevice;
         
         PushMessageContent *content;
         

@@ -19,14 +19,17 @@
 #import "Cryptography.h"
 #import "IncomingPushMessageSignal.pb.h"
 
-#define kWebSocketHeartBeat 15
+#define kWebSocketHeartBeat    15
+#define kWebSocketReconnectTry 5
 
 NSString * const SocketOpenedNotification     = @"SocketOpenedNotification";
 NSString * const SocketClosedNotification     = @"SocketClosedNotification";
 NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 
 @interface TSSocketManager ()
-@property (nonatomic, retain) NSTimer *timer;
+@property (nonatomic, retain) NSTimer *pingTimer;
+@property (nonatomic, retain) NSTimer *reconnectTimer;
+
 @property (nonatomic, retain) SRWebSocket *websocket;
 @property (nonatomic) NSUInteger status;
 @end
@@ -94,14 +97,18 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 #pragma mark - Delegate methods
 
 - (void) webSocketDidOpen:(SRWebSocket *)webSocket {
-    self.timer  = [NSTimer scheduledTimerWithTimeInterval:kWebSocketHeartBeat target:self selector:@selector(webSocketHeartBeat) userInfo:nil repeats:YES];
-    self.status = kSocketStatusOpen;
+    self.pingTimer  = [NSTimer scheduledTimerWithTimeInterval:kWebSocketHeartBeat target:self selector:@selector(webSocketHeartBeat) userInfo:nil repeats:YES];
+    self.status     = kSocketStatusOpen;
+    
+    [self.reconnectTimer invalidate];
+    self.reconnectTimer = nil;
 }
 
 - (void) webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
     DDLogError(@"Error connecting to socket %@", error);
-    [self.timer invalidate];
+    [self.pingTimer invalidate];
     self.status = kSocketStatusClosed;
+    [self scheduleRetry];
 }
 
 - (void) webSocket:(SRWebSocket *)webSocket didReceiveMessage:(NSData*)data {
@@ -161,8 +168,9 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
     DDLogVerbose(@"WebSocket did close");
-    [self.timer invalidate];
+    [self.pingTimer invalidate];
     self.status = kSocketStatusClosed;
+    [self scheduleRetry];
 }
 
 - (void)webSocketHeartBeat {
@@ -171,6 +179,12 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 
 - (NSString*)webSocketAuthenticationString{
     return [NSString stringWithFormat:@"?login=%@&password=%@", [[TSAccountManager registeredNumber] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],[TSStorageManager serverAuthToken]];
+}
+
+- (void)scheduleRetry{
+    if (!self.reconnectTimer || ![self.reconnectTimer isValid]) {
+        self.reconnectTimer = [NSTimer scheduledTimerWithTimeInterval:kWebSocketReconnectTry target:[self class] selector:@selector(becomeActive) userInfo:nil repeats:YES];
+    }
 }
 
 #pragma mark UI Delegates

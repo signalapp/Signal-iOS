@@ -172,12 +172,12 @@ typedef enum : NSUInteger {
 
 - (id<JSQMessageData>)collectionView:(JSQMessagesCollectionView *)collectionView messageDataForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [TSMessageAdapter messageViewDataWithInteraction:[self messageAtIndexPath:indexPath] inThread:_thread];
+    return [self messageAtIndexPath:indexPath];
 }
 
 - (id<JSQMessageBubbleImageDataSource>)collectionView:(JSQMessagesCollectionView *)collectionView messageBubbleImageDataForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    id<JSQMessageData> message = [TSMessageAdapter messageViewDataWithInteraction:[self messageAtIndexPath:indexPath] inThread:_thread];
+    id<JSQMessageData> message = [self messageAtIndexPath:indexPath];
     
     if ([message.senderId isEqualToString:self.senderId]) {
         return self.outgoingBubbleImageData;
@@ -198,7 +198,7 @@ typedef enum : NSUInteger {
     /**
      *  Override point for customizing cells
      */
-    id<JSQMessageData> msg = [TSMessageAdapter messageViewDataWithInteraction:[self messageAtIndexPath:indexPath] inThread:_thread];
+    id<JSQMessageData> msg = [self messageAtIndexPath:indexPath];
     
     
     JSQMessagesCollectionViewCell *cell = (JSQMessagesCollectionViewCell *)[super collectionView:collectionView cellForItemAtIndexPath:indexPath];
@@ -247,8 +247,8 @@ typedef enum : NSUInteger {
         showDate = YES;
     }
     else {
-        TSInteraction *currentMessage = [self messageAtIndexPath:indexPath];
-        TSInteraction *previousMessage = [self messageAtIndexPath:[NSIndexPath indexPathForItem:indexPath.row-1 inSection:indexPath.section]];
+        TSMessageAdapter *currentMessage =  [self messageAtIndexPath:indexPath];
+        TSMessageAdapter *previousMessage = [self messageAtIndexPath:[NSIndexPath indexPathForItem:indexPath.row-1 inSection:indexPath.section]];
         
         NSTimeInterval timeDifference = [currentMessage.date timeIntervalSinceDate:previousMessage.date];
         if (timeDifference > kTSMessageSentDateShowTimeInterval) {
@@ -433,7 +433,7 @@ typedef enum : NSUInteger {
     return numberOfMessages;
 }
 
-- (TSInteraction*)messageAtIndexPath:(NSIndexPath *)indexPath
+- (TSMessageAdapter*)messageAtIndexPath:(NSIndexPath *)indexPath
 {
     __block TSInteraction *message = nil;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -450,7 +450,7 @@ typedef enum : NSUInteger {
         message = [viewTransaction objectAtRow:row inSection:section withMappings:self.messageMappings];
         NSParameterAssert(message != nil);
     }];
-    return message;
+    return [TSMessageAdapter messageViewDataWithInteraction:message inThread:self.thread];
 }
 
 #pragma mark Accessory View
