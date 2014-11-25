@@ -211,6 +211,21 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 - (id)initWithPath:(NSString *)inPath
         serializer:(YapDatabaseSerializer)inSerializer
       deserializer:(YapDatabaseDeserializer)inDeserializer
+           options:(YapDatabaseOptions *)inOptions
+{
+	return [self initWithPath:inPath
+	         objectSerializer:inSerializer
+	       objectDeserializer:inDeserializer
+	       metadataSerializer:inSerializer
+	     metadataDeserializer:inDeserializer
+	          objectSanitizer:NULL
+	        metadataSanitizer:NULL
+	                  options:inOptions];
+}
+
+- (id)initWithPath:(NSString *)inPath
+        serializer:(YapDatabaseSerializer)inSerializer
+      deserializer:(YapDatabaseDeserializer)inDeserializer
          sanitizer:(YapDatabaseSanitizer)inSanitizer
 {
 	return [self initWithPath:inPath

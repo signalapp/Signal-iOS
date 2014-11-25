@@ -1,5 +1,6 @@
 #import "YapDatabaseSecondaryIndexConnection.h"
 #import "YapDatabaseSecondaryIndexPrivate.h"
+#import "YapDatabaseStatement.h"
 
 #import "YapDatabasePrivate.h"
 #import "YapDatabaseExtensionPrivate.h"
@@ -40,7 +41,9 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 		databaseConnection = inDatabaseConnection;
 		
 		queryCacheLimit = 10;
-		queryCache = [[YapCache alloc] initWithKeyClass:[NSString class] countLimit:queryCacheLimit];
+		queryCache = [[YapCache alloc] initWithCountLimit:queryCacheLimit];
+		queryCache.allowedKeyClasses = [NSSet setWithObject:[NSString class]];
+		queryCache.allowedObjectClasses = [NSSet setWithObject:[YapDatabaseStatement class]];
 	}
 	return self;
 }
@@ -115,7 +118,11 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 		if (queryCacheEnabled)
 		{
 			if (queryCache == nil)
-				queryCache = [[YapCache alloc] initWithKeyClass:[NSString class] countLimit:queryCacheLimit];
+			{
+				queryCache = [[YapCache alloc] initWithCountLimit:queryCacheLimit];
+				queryCache.allowedKeyClasses = [NSSet setWithObject:[NSString class]];
+				queryCache.allowedObjectClasses = [NSSet setWithObject:[YapDatabaseStatement class]];
+			}
 		}
 		else
 		{

@@ -71,8 +71,13 @@
 		view = inView;
 		databaseConnection = inDbC;
 		
-		mapCache = [[YapCache alloc] initWithKeyClass:[NSNumber class]];
-		pageCache = [[YapCache alloc] initWithKeyClass:[NSString class]];
+		mapCache = [[YapCache alloc] initWithCountLimit:100];
+		mapCache.allowedKeyClasses = [NSSet setWithObject:[NSNumber class]];
+		mapCache.allowedObjectClasses = [NSSet setWithObjects:[NSString class], [NSNull class], nil];
+		
+		pageCache = [[YapCache alloc] initWithCountLimit:40];
+		pageCache.allowedKeyClasses = [NSSet setWithObject:[NSString class]];
+		pageCache.allowedObjectClasses = [NSSet setWithObjects:[YapDatabaseViewPage class], nil];
 		
 		sharedKeySetForInternalChangeset = [NSDictionary sharedKeySetForKeys:[self internalChangesetKeys]];
 		sharedKeySetForExternalChangeset = [NSDictionary sharedKeySetForKeys:[self externalChangesetKeys]];
