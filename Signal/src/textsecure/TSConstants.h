@@ -29,9 +29,10 @@ typedef enum {
 
 #define textSecureHTTPTimeOut    10
 
-#define textSecureWebSocketAPI  @"wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
-//#define textSecureServerURL     @"https://textsecure-service.whispersystems.org/"
-#define textSecureServerURL     @"https://textsecure-service-staging.whispersystems.org/"
+#define textSecureWebSocketAPI  @"wss://textsecure-service.whispersystems.org/v1/websocket/"
+
+#define textSecureServerURL     @"https://textsecure-service.whispersystems.org/"
+//#define textSecureServerURL     @"https://textsecure-service-staging.whispersystems.org/"
 
 #define textSecureGeneralAPI     @"v1"
 #define textSecureAccountsAPI    @"v1/accounts"

@@ -51,8 +51,8 @@ static unsigned char DH3K_PRIME[]={
     return [Environment environmentWithLogging:logging
                                      andErrorNoter:errorNoter
                                      andServerPort:31337
-                           andMasterServerHostName:@"testing.whispersystems.org"
-                               andDefaultRelayName:@"testing"
+                           andMasterServerHostName:@"master.whispersystems.org"
+                               andDefaultRelayName:@"relay"
                       andRelayServerHostNameSuffix:@"whispersystems.org"
                                     andCertificate:[Certificate certificateFromResourcePath:@"whisperReal" ofType:@"cer"]
                andCurrentRegionCodeForPhoneNumbers:[(NSLocale*)NSLocale.currentLocale objectForKey:NSLocaleCountryCode]

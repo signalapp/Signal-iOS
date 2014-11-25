@@ -24,6 +24,19 @@
 	<string>2.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>org.whispersystems.signal</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>sgnl</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>2.0</string>
 	<key>LOGS_EMAIL</key>
