@@ -8,6 +8,5 @@
 
 #import "TSRequest.h"
 
-@interface TSDeregisterAccountRequest : TSRequest
-- (id)initWithUser:(NSString*)user;
+@interface TSUnregisterAccountRequest : TSRequest
 @end

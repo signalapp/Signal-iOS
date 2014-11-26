@@ -44,6 +44,7 @@ typedef enum : NSUInteger {
     BOOL isGroupConversation;
 }
 
+@property (nonatomic, retain) TSThread *thread;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *messageMappings;
 @property (nonatomic, retain) JSQMessagesBubbleImage *outgoingBubbleImageData;
@@ -52,6 +53,16 @@ typedef enum : NSUInteger {
 @end
 
 @implementation MessagesViewController
+
+- (void)setupWithTSIdentifier:(NSString *)identifier{
+    [[TSStorageManager sharedManager].newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        self.thread = [TSContactThread threadWithContactId:identifier transaction:transaction];
+    }];
+}
+
+- (void)setupWithThread:(TSThread *)thread{
+    self.thread = thread;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];

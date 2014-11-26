@@ -18,6 +18,7 @@
 #import "TSPreKeyManager.h"
 #import "TSRegisterForPushRequest.h"
 #import "TSRegisterWithTokenRequest.h"
+#import "TSUnregisterAccountRequest.h"
 
 @interface TSAccountManager ()
 
@@ -200,5 +201,13 @@
     return signalingKeyTokenPrint;
 }
 
++ (void)unregisterTextSecureWithSuccess:(successCompletionBlock)success failure:(failedVerificationBlock)failureBlock{
+    [[TSNetworkManager sharedManager] queueAuthenticatedRequest:[[TSUnregisterAccountRequest alloc] init] success:^(NSURLSessionDataTask *task, id responseObject) {
+        success();
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        failureBlock(error);
+    }];
+    
+}
 
 @end

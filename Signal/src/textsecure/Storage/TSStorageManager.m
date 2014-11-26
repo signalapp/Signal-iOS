@@ -8,6 +8,7 @@
 
 #import "TSStorageManager.h"
 #import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseRelationship.h>
 #import <CocoaLumberjack/DDLog.h>
 #import <UICKeyChainStore/UICKeyChainStore.h>
 #import "CryptoTools.h"
@@ -64,6 +65,7 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
 - (void)setupDatabase {
     [TSDatabaseView registerThreadDatabaseView];
     [TSDatabaseView registerBuddyConversationDatabaseView];
+    [self.database registerExtension:[[YapDatabaseRelationship alloc] init] withName:@"TSRelationships"];
 }
 
 /**

@@ -150,12 +150,13 @@ static NSString *const kSegueIndentifier = @"showSegue";
     if ([segue.identifier isEqualToString:kSegueIndentifier]){
         MessagesViewController * vc    = [segue destinationViewController];
         NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
-        vc.thread                      = [self threadForIndexPath:selectedIndexPath];
+        TSThread *thread               = [self threadForIndexPath:selectedIndexPath];
         
-        if (!vc.thread) {
-            [TSStorageManager.sharedManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                vc.thread = [TSContactThread threadWithContactId:self.contactIdentifierFromCompose transaction:transaction];
-            }];
+        if (thread) {
+            [vc setupWithThread:thread];
+        } else if (self.contactIdentifierFromCompose){
+            [vc setupWithTSIdentifier:self.contactIdentifierFromCompose];
+            self.contactIdentifierFromCompose = nil;
         }
     }
 }

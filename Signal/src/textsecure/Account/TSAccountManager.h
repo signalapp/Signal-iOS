@@ -72,6 +72,8 @@ typedef void(^failedVerificationBlock)(NSError *error);
 
 #endif
 
-+ (NSError *)errorForRegistrationFailure:(TSRegistrationFailure)failureType HTTPStatusCode:(long)HTTPStatus;
++ (NSError*)errorForRegistrationFailure:(TSRegistrationFailure)failureType HTTPStatusCode:(long)HTTPStatus;
+
++ (void)unregisterTextSecureWithSuccess:(successCompletionBlock)success failure:(failedVerificationBlock)failureBlock;
 
 @end

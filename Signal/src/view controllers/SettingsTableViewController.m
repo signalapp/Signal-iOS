@@ -12,18 +12,23 @@
 
 #import "TSAccountManager.h"
 
+#import "RPServerRequestsManager.h"
+
+#import <PastelogKit/Pastelog.h>
+
 #define kProfileCellHeight      87.0f
 #define kStandardCellHeight     60.0f
 
 #define kNumberOfSections       2
 
-#define kClearHistoryLogCellRow 4
-#define kSendDebugLogCellRow    6
+#define kClearHistoryLogCellRow 1
+#define kSendDebugLogCellRow    3
+#define kUnregisterCell         4
 
 
 typedef enum {
     kProfileRows  = 1,
-    kSecurityRows = 7,
+    kSecurityRows = 5,
 } kRowsForSection;
 
 typedef enum {
@@ -39,7 +44,7 @@ typedef enum {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
     self.registeredNumber.text     = [TSAccountManager registeredNumber];
 }
 
@@ -105,13 +110,23 @@ typedef enum {
                                           NSLog(@"The user tapped button at index: %li", (long)tappedButtonIndex);
                                       }
                                   }];
-
+                
                 break;
             }
                 
             case kSendDebugLogCellRow:
-                //Send debug Log
+                [Pastelog submitLogs];
                 break;
+                
+            case kUnregisterCell:
+                [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall unregister] success:^(NSURLSessionDataTask *task, id responseObject) {
+                    NSLog(@"YEAH!");
+                } failure:^(NSURLSessionDataTask *task, NSError *error) {
+                    NSLog(@"Fail");
+                    NSLog(@"error: %@ ", error.debugDescription);
+                }];
+                break;
+                
             default:
                 break;
         }
