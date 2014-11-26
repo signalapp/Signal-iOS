@@ -4184,23 +4184,23 @@
 	if (key == nil) return;
 	if (collection == nil) collection = @"";
 	
-	if (connection->database->objectSanitizer)
+	if (connection->database->objectPreSanitizer)
 	{
-		object = connection->database->objectSanitizer(collection, key, object);
+		object = connection->database->objectPreSanitizer(collection, key, object);
 		if (object == nil)
 		{
-			YDBLogWarn(@"Object sanitizer returned nil for key(%@) object: %@", key, object);
+			YDBLogWarn(@"The objectPreSanitizer returned nil for collection(%@) key(%@)", collection, key);
 			
 			[self removeObjectForKey:key inCollection:collection];
 			return;
 		}
 	}
-	if (metadata && connection->database->metadataSanitizer)
+	if (metadata && connection->database->metadataPreSanitizer)
 	{
-		metadata = connection->database->metadataSanitizer(collection, key, metadata);
+		metadata = connection->database->metadataPreSanitizer(collection, key, metadata);
 		if (metadata == nil)
 		{
-			YDBLogWarn(@"Metadata sanitizer returned nil for key(%@) metadata: %@", key, metadata);
+			YDBLogWarn(@"The metadataPresanitizer returned nil for collection(%@) key(%@)", collection, key);
 		}
 	}
 	
@@ -4387,6 +4387,15 @@
 			                      withMetadata:metadata
 			                             rowid:rowid];
 	}
+	
+	if (connection->database->objectPostSanitizer)
+	{
+		connection->database->objectPostSanitizer(collection, key, object);
+	}
+	if (metadata && connection->database->metadataPreSanitizer)
+	{
+		connection->database->metadataPostSanitizer(collection, key, metadata);
+	}
 }
 
 /**
@@ -4483,12 +4492,12 @@
 	NSAssert(key != nil, @"Internal error");
 	if (collection == nil) collection = @"";
 	
-	if (connection->database->objectSanitizer)
+	if (connection->database->objectPreSanitizer)
 	{
-		object = connection->database->objectSanitizer(collection, key, object);
+		object = connection->database->objectPreSanitizer(collection, key, object);
 		if (object == nil)
 		{
-			YDBLogWarn(@"Object sanitizer returned nil for key(%@) object: %@", key, object);
+			YDBLogWarn(@"The objectPreSanitizer returned nil for collection(%@) key(%@)", collection, key);
 			
 			[self removeObjectForKey:key inCollection:collection withRowid:rowid];
 			return;
@@ -4552,6 +4561,11 @@
 	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
 		[extTransaction handleReplaceObject:object forCollectionKey:cacheKey withRowid:rowid];
+	}
+	
+	if (connection->database->objectPostSanitizer)
+	{
+		connection->database->objectPostSanitizer(collection, key, object);
 	}
 }
 
@@ -4645,12 +4659,12 @@
 	NSAssert(key != nil, @"Internal error");
 	if (collection == nil) collection = @"";
 	
-	if (metadata && connection->database->metadataSanitizer)
+	if (metadata && connection->database->metadataPreSanitizer)
 	{
-		metadata = connection->database->metadataSanitizer(collection, key, metadata);
+		metadata = connection->database->metadataPreSanitizer(collection, key, metadata);
 		if (metadata == nil)
 		{
-			YDBLogWarn(@"Metadata sanitizer returned nil for key: %@", key);
+			YDBLogWarn(@"The metadataPreSanitizer returned nil for collection(%@) key(%@)", collection, key);
 		}
 	}
 	
@@ -4722,6 +4736,11 @@
 	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
 		[extTransaction handleReplaceMetadata:metadata forCollectionKey:cacheKey withRowid:rowid];
+	}
+	
+	if (metadata && connection->database->metadataPostSanitizer)
+	{
+		connection->database->metadataPostSanitizer(collection, key, metadata);
 	}
 }
 

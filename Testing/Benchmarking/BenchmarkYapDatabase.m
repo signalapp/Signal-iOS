@@ -244,12 +244,8 @@ static NSMutableArray *keys;
 //	options.pragmaSynchronous = YapDatabasePragmaSynchronous_Off;    // Use for fastest speed
 
 	database = [[YapDatabase alloc] initWithPath:databasePath
-	                            objectSerializer:NULL
-	                          objectDeserializer:NULL
-	                          metadataSerializer:NULL
-	                        metadataDeserializer:NULL
-	                             objectSanitizer:NULL
-	                           metadataSanitizer:NULL
+	                                  serializer:NULL
+	                                deserializer:NULL
 	                                     options:options];
 	
 	// Create database connection (can have multiple for concurrency)

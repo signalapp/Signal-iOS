@@ -71,14 +71,17 @@ extern NSString *const YapDatabaseNotificationKey;
 	
 	NSArray *previouslyRegisteredExtensionNames; // Only to be used by YapDatabaseConnection
 	
-	YapDatabaseSerializer objectSerializer;       // Read-only by transactions
-	YapDatabaseDeserializer objectDeserializer;   // Read-only by transactions
+	YapDatabaseSerializer objectSerializer;         // Read-only by transactions
+	YapDatabaseDeserializer objectDeserializer;     // Read-only by transactions
 	
-	YapDatabaseSerializer metadataSerializer;     // Read-only by transactions
-	YapDatabaseDeserializer metadataDeserializer; // Read-only by transactions
+	YapDatabaseSerializer metadataSerializer;       // Read-only by transactions
+	YapDatabaseDeserializer metadataDeserializer;   // Read-only by transactions
 	
-	YapDatabaseSanitizer objectSanitizer;         // Read-only by transactions
-	YapDatabaseSanitizer metadataSanitizer;       // Read-only by transactions
+	YapDatabasePreSanitizer objectPreSanitizer;     // Read-only by transactions
+	YapDatabasePostSanitizer objectPostSanitizer;   // Read-only by transactions
+	
+	YapDatabasePreSanitizer metadataPreSanitizer;   // Read-only by transactions
+	YapDatabasePostSanitizer metadataPostSanitizer; // Read-only by transactions
 }
 
 /**

@@ -166,10 +166,15 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 
 @synthesize objectSerializer = objectSerializer;
 @synthesize objectDeserializer = objectDeserializer;
+
 @synthesize metadataSerializer = metadataSerializer;
 @synthesize metadataDeserializer = metadataDeserializer;
-@synthesize objectSanitizer = objectSanitizer;
-@synthesize metadataSanitizer = metadataSanitizer;
+
+@synthesize objectPreSanitizer = objectPreSanitizer;
+@synthesize objectPostSanitizer = objectPostSanitizer;
+
+@synthesize metadataPreSanitizer = metadataPreSanitizer;
+@synthesize metadataPostSanitizer = metadataPostSanitizer;
 
 @dynamic options;
 
@@ -189,8 +194,10 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	       objectDeserializer:NULL
 	       metadataSerializer:NULL
 	     metadataDeserializer:NULL
-	          objectSanitizer:NULL
-	        metadataSanitizer:NULL
+	       objectPreSanitizer:NULL
+	      objectPostSanitizer:NULL
+	     metadataPreSanitizer:NULL
+	    metadataPostSanitizer:NULL
 	                  options:nil];
 }
 
@@ -203,9 +210,11 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	       objectDeserializer:inDeserializer
 	       metadataSerializer:inSerializer
 	     metadataDeserializer:inDeserializer
-	          objectSanitizer:NULL
-	        metadataSanitizer:NULL
-	                  options:nil];
+	        objectPreSanitizer:NULL
+	       objectPostSanitizer:NULL
+	      metadataPreSanitizer:NULL
+	     metadataPostSanitizer:NULL
+	                   options:nil];
 }
 
 - (id)initWithPath:(NSString *)inPath
@@ -218,24 +227,30 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	       objectDeserializer:inDeserializer
 	       metadataSerializer:inSerializer
 	     metadataDeserializer:inDeserializer
-	          objectSanitizer:NULL
-	        metadataSanitizer:NULL
+	        objectPreSanitizer:NULL
+	       objectPostSanitizer:NULL
+	      metadataPreSanitizer:NULL
+	     metadataPostSanitizer:NULL
 	                  options:inOptions];
 }
 
 - (id)initWithPath:(NSString *)inPath
         serializer:(YapDatabaseSerializer)inSerializer
       deserializer:(YapDatabaseDeserializer)inDeserializer
-         sanitizer:(YapDatabaseSanitizer)inSanitizer
+      preSanitizer:(YapDatabasePreSanitizer)inPreSanitizer
+     postSanitizer:(YapDatabasePostSanitizer)inPostSanitizer
+           options:(YapDatabaseOptions *)inOptions
 {
 	return [self initWithPath:inPath
 	         objectSerializer:inSerializer
 	       objectDeserializer:inDeserializer
 	       metadataSerializer:inSerializer
 	     metadataDeserializer:inDeserializer
-	          objectSanitizer:inSanitizer
-	        metadataSanitizer:inSanitizer
-	                  options:nil];
+	        objectPreSanitizer:inPreSanitizer
+	       objectPostSanitizer:inPostSanitizer
+	      metadataPreSanitizer:inPreSanitizer
+	     metadataPostSanitizer:inPostSanitizer
+	                  options:inOptions];
 }
 
 - (id)initWithPath:(NSString *)inPath objectSerializer:(YapDatabaseSerializer)inObjectSerializer
@@ -248,8 +263,10 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	       objectDeserializer:inObjectDeserializer
 	       metadataSerializer:inMetadataSerializer
 	     metadataDeserializer:inMetadataDeserializer
-	          objectSanitizer:NULL
-	        metadataSanitizer:NULL
+	       objectPreSanitizer:NULL
+	      objectPostSanitizer:NULL
+	     metadataPreSanitizer:NULL
+	    metadataPostSanitizer:NULL
 	                  options:nil];
 }
 
@@ -257,16 +274,17 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
                                     objectDeserializer:(YapDatabaseDeserializer)inObjectDeserializer
                                     metadataSerializer:(YapDatabaseSerializer)inMetadataSerializer
                                   metadataDeserializer:(YapDatabaseDeserializer)inMetadataDeserializer
-                                       objectSanitizer:(YapDatabaseSanitizer)inObjectSanitizer
-                                     metadataSanitizer:(YapDatabaseSanitizer)inMetadataSanitizer;
+                                               options:(YapDatabaseOptions *)inOptions
 {
 	return [self initWithPath:inPath
 	         objectSerializer:inObjectSerializer
 	       objectDeserializer:inObjectDeserializer
 	       metadataSerializer:inMetadataSerializer
 	     metadataDeserializer:inMetadataDeserializer
-	          objectSanitizer:inObjectSanitizer
-	        metadataSanitizer:inMetadataSanitizer
+	       objectPreSanitizer:NULL
+	      objectPostSanitizer:NULL
+	     metadataPreSanitizer:NULL
+	    metadataPostSanitizer:NULL
 	                  options:nil];
 }
 
@@ -274,8 +292,10 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
                                     objectDeserializer:(YapDatabaseDeserializer)inObjectDeserializer
                                     metadataSerializer:(YapDatabaseSerializer)inMetadataSerializer
                                   metadataDeserializer:(YapDatabaseDeserializer)inMetadataDeserializer
-                                       objectSanitizer:(YapDatabaseSanitizer)inObjectSanitizer
-                                     metadataSanitizer:(YapDatabaseSanitizer)inMetadataSanitizer
+                                    objectPreSanitizer:(YapDatabasePreSanitizer)inObjectPreSanitizer
+                                   objectPostSanitizer:(YapDatabasePostSanitizer)inObjectPostSanitizer
+                                  metadataPreSanitizer:(YapDatabasePreSanitizer)inMetadataPreSanitizer
+                                 metadataPostSanitizer:(YapDatabasePostSanitizer)inMetadataPostSanitizer
                                                options:(YapDatabaseOptions *)inOptions
 {
 	// First, standardize path.
@@ -441,8 +461,11 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		metadataSerializer = inMetadataSerializer ? inMetadataSerializer : defaultSerializer;
 		metadataDeserializer = inMetadataDeserializer ? inMetadataDeserializer : defaultDeserializer;
 		
-		objectSanitizer = inObjectSanitizer;
-		metadataSanitizer = inMetadataSanitizer;
+		objectPreSanitizer = inObjectPreSanitizer;
+		objectPostSanitizer = inObjectPostSanitizer;
+		
+		metadataPreSanitizer = inMetadataPreSanitizer;
+		metadataPostSanitizer = inMetadataPostSanitizer;
 		
 		// Mark the queues so we can identify them.
 		// There are several methods whose use is restricted to within a certain queue.

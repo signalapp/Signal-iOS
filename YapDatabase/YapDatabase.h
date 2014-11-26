@@ -60,17 +60,40 @@ typedef NSData* (^YapDatabaseSerializer)(NSString *collection, NSString *key, id
 typedef id (^YapDatabaseDeserializer)(NSString *collection, NSString *key, NSData *data);
 
 /**
- * Is it safe to store mutable objects in the database?
+ * The sanitizer block allows you to enforce desired behavior of the objects you put into the database.
  *
- * That question is answered extensively in the wiki article "Thread Safety":
- * https://github.com/yaptv/YapDatabase/wiki/Thread-Safety
+ * If set, the sanitizer block will be run on all items being input into the database via
+ * the setObject:forKey:inCollection: (and other setObject:XXX: methods).
+ * 
+ * You have 2 different hooks for running a sanitizer block:
  *
- * The sanitizer block can be run on all objects as they are being input into the database.
- * That is, it will be run on all objects passed to setObject:forKey:inCollection: before
- * being handed to the database internals.
+ * The PreSanitizer is run:
+ * - Before the object is serialized
+ * - Before the object is stored in the cache
+ * - Before the object is passed to extensions
+ * 
+ * The PostSanitizer is run:
+ * - After the object has been serialized
+ * - After the object has been stored in the cache
+ * - After the object has been passed to extensions
+ *
+ * The PreSanitizer is generally used validate the objects going into the database,
+ * and/or to enforce immutability of those objects.
+ *
+ * Enforcing immutability is a topic covered in the "Object Policy" wiki article:
+ * https://github.com/yapstudios/YapDatabase/wiki/Object-Policy
+ *
+ * The PostSanitizer is generally used to "clear flags" that are used by extensions.
+ * For example, your objects might have a "changedProperties" property that tells extensions exactly
+ * what properties where changed on a modified object. And the extension uses that information
+ * in order to automatically sync the changes to the cloud. Thus the PostSanitizer would be used
+ * to clear the "changedProperties" after the extension has processed the modified object.
+ * 
+ * An example of such a use for the PostSanitizer is discussed in the YapDatabaseCloudKit wiki article:
+ * https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseCloudKit
 **/
-typedef id (^YapDatabaseSanitizer)(NSString *collection, NSString *key, id object);
-
+typedef id (^YapDatabasePreSanitizer)(NSString *collection, NSString *key, id obj);
+typedef void (^YapDatabasePostSanitizer)(NSString *collection, NSString *key, id obj);
 
 /**
  * This notification is posted following a readwrite transaction where the database was modified.
@@ -187,7 +210,9 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 - (id)initWithPath:(NSString *)path
         serializer:(YapDatabaseSerializer)serializer
       deserializer:(YapDatabaseDeserializer)deserializer
-         sanitizer:(YapDatabaseSanitizer)sanitizer;
+      preSanitizer:(YapDatabasePreSanitizer)preSanitizer
+     postSanitizer:(YapDatabasePostSanitizer)postSanitizer
+           options:(YapDatabaseOptions *)options;
 
 /**
  * Opens or creates a sqlite database with the given path.
@@ -208,8 +233,7 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
                                   objectDeserializer:(YapDatabaseDeserializer)objectDeserializer
                                   metadataSerializer:(YapDatabaseSerializer)metadataSerializer
                                 metadataDeserializer:(YapDatabaseDeserializer)metadataDeserializer
-                                     objectSanitizer:(YapDatabaseSanitizer)objectSanitizer
-                                   metadataSanitizer:(YapDatabaseSanitizer)metadataSanitizer;
+                                             options:(YapDatabaseOptions *)options;
 
 /**
  * Opens or creates a sqlite database with the given path.
@@ -220,8 +244,10 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
                                   objectDeserializer:(YapDatabaseDeserializer)objectDeserializer
                                   metadataSerializer:(YapDatabaseSerializer)metadataSerializer
                                 metadataDeserializer:(YapDatabaseDeserializer)metadataDeserializer
-                                     objectSanitizer:(YapDatabaseSanitizer)objectSanitizer
-                                   metadataSanitizer:(YapDatabaseSanitizer)metadataSanitizer
+                                  objectPreSanitizer:(YapDatabasePreSanitizer)objectPreSanitizer
+                                 objectPostSanitizer:(YapDatabasePostSanitizer)objectPostSanitizer
+                                metadataPreSanitizer:(YapDatabasePreSanitizer)metadataPreSanitizer
+                               metadataPostSanitizer:(YapDatabasePostSanitizer)metadataPostSanitizer
                                              options:(YapDatabaseOptions *)options;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -236,8 +262,11 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 @property (nonatomic, strong, readonly) YapDatabaseSerializer metadataSerializer;
 @property (nonatomic, strong, readonly) YapDatabaseDeserializer metadataDeserializer;
 
-@property (nonatomic, strong, readonly) YapDatabaseSanitizer objectSanitizer;
-@property (nonatomic, strong, readonly) YapDatabaseSanitizer metadataSanitizer;
+@property (nonatomic, strong, readonly) YapDatabasePreSanitizer objectPreSanitizer;
+@property (nonatomic, strong, readonly) YapDatabasePostSanitizer objectPostSanitizer;
+
+@property (nonatomic, strong, readonly) YapDatabasePreSanitizer metadataPreSanitizer;
+@property (nonatomic, strong, readonly) YapDatabasePostSanitizer metadataPostSanitizer;
 
 @property (nonatomic, copy, readonly) YapDatabaseOptions *options;
 
