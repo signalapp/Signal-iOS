@@ -61,9 +61,6 @@
         [[TSNetworkManager sharedManager] queueAuthenticatedRequest:request success:^(NSURLSessionDataTask *task, id responseObject) {
             
             [self handleMessageSent:message inThread:thread];
-            NSLog(@"Message sent");
-            
-            
         } failure:^(NSURLSessionDataTask *task, NSError *error) {
             NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
             long statuscode = response.statusCode;
@@ -96,7 +93,7 @@
         [message saveWithTransaction:transaction];
         TSThread *fetchedThread = [TSThread fetchObjectWithUniqueID:thread.uniqueId];
         fetchedThread.lastMessageId = [TSInteraction timeStampFromString:message.uniqueId];
-        [thread saveWithTransaction:transaction];
+        [fetchedThread saveWithTransaction:transaction];
     }];
 }
 

@@ -64,7 +64,7 @@
                 [self handlePreKeyBundle:messageSignal];
                 break;
                 
-            // Other messages are just dismissed for now.
+                // Other messages are just dismissed for now.
                 
             case IncomingPushMessageSignalTypeKeyExchange:
                 DDLogWarn(@"Received Key Exchange Message, not supported");
@@ -74,6 +74,7 @@
                 break;
             case IncomingPushMessageSignalTypeReceipt:
                 DDLogInfo(@"Received a delivery receipt");
+                [self handleDeliveryReceipt:messageSignal];
                 break;
             case IncomingPushMessageSignalTypeUnknown:
                 DDLogWarn(@"Received an unknown message type");
@@ -87,6 +88,14 @@
     }
 }
 
+- (void)handleDeliveryReceipt:(IncomingPushMessageSignal*)signal{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        TSOutgoingMessage *message = [TSOutgoingMessage fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:signal.timestamp] transaction:transaction];
+        message.messageState = TSOutgoingMessageStateDelivered;
+        [message saveWithTransaction:transaction];
+    }];
+}
+
 - (void)handleSecureMessage:(IncomingPushMessageSignal*)secureMessage{
     @synchronized(self){
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
@@ -94,7 +103,10 @@
         int  deviceId                    = (int) secureMessage.sourceDevice;
         
         if (![storageManager containsSession:recipientId deviceId:deviceId]) {
-            // Deal with failure
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                TSErrorMessage *errorMessage = [TSErrorMessage missingSessionWithSignal:secureMessage];
+                [errorMessage saveWithTransaction:transaction];
+            }];
         }
         
         PushMessageContent *content;
