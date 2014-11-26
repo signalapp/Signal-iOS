@@ -67,6 +67,7 @@
 
 // Concept #2 - Tracking what changed
 
+@property (nonatomic, readonly) NSSet *allProperties;
 @property (nonatomic, readonly) NSSet *changedProperties;
 
 - (void)clearChangedProperties;

@@ -154,7 +154,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	//
 	// | rowid | recordTable_hash |
 	
-	YDBLogVerbose(@"Creating cloudKit table for registeredName(%@): %@", [self registeredName], recordTableName);
+	YDBLogVerbose(@"Creating cloudKit table for registeredName(%@): %@", [self registeredName], mappingTableName);
 	
 	NSString *createMappingTable = [NSString stringWithFormat:
 	  @"CREATE TABLE IF NOT EXISTS \"%@\""
@@ -165,7 +165,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	NSString *createMappingTableIndex = [NSString stringWithFormat:
 	  @"CREATE INDEX IF NOT EXISTS \"recordTable_hash\" ON \"%@\" (\"recordTable_hash\");", mappingTableName];
 	
-	YDBLogVerbose(@"Create table: %@", createMappingTable);
+	YDBLogVerbose(@"%@", createMappingTable);
 	status = sqlite3_exec(db, [createMappingTable UTF8String], NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
@@ -174,7 +174,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		return NO;
 	}
 	
-	YDBLogVerbose(@"Create index: %@", createMappingTableIndex);
+	YDBLogVerbose(@"%@", createMappingTableIndex);
 	status = sqlite3_exec(db, [createMappingTableIndex UTF8String], NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
@@ -191,13 +191,13 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		
 	NSString *createRecordTable = [NSString stringWithFormat:
 	  @"CREATE TABLE IF NOT EXISTS \"%@\""
-	  @" (\"hash\" TEXT PRIMARY KEY,"         // custom hash of CKRecordID & databaseIdentifier (for lookups)
-	  @"  \"databaseIdentifier\" TEXT,"       // user specified databaseIdentifier (null for default)
-	  @"  \"ownerCount\" INTEGER,"            // used for mapped records
-	  @"  \"record\" BLOB"                    // CKRecord (system fields only for mapped records)
+	  @" (\"hash\" TEXT PRIMARY KEY NOT NULL," // custom hash of CKRecordID & databaseIdentifier (for lookups)
+	  @"  \"databaseIdentifier\" TEXT,"        // user specified databaseIdentifier (null for default)
+	  @"  \"ownerCount\" INTEGER,"             // used for mapped records
+	  @"  \"record\" BLOB"                     // CKRecord (system fields only for mapped records)
 	  @" );", recordTableName];
 	
-	YDBLogVerbose(@"Create table: %@", createRecordTable);
+	YDBLogVerbose(@"%@", createRecordTable);
 	status = sqlite3_exec(db, [createRecordTable UTF8String], NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
@@ -221,7 +221,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		@"  \"modifiedRecords\" BLOB"
 	    @" );", queueTableName];
 	
-	YDBLogVerbose(@"Create table: %@", createQueueTable);
+	YDBLogVerbose(@"%@", createQueueTable);
 	status = sqlite3_exec(db, [createQueueTable UTF8String], NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
@@ -1933,7 +1933,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	NSParameterAssert(hash != nil);
 	NSParameterAssert(dirtyRecordTableInfo != nil);
 	
-	NSAssert(dirtyRecordTableInfo.databaseIdentifier != nil, @"Logic error");
 	NSAssert(dirtyRecordTableInfo.dirty_ownerCount != nil, @"Logic error");
 	NSAssert(dirtyRecordTableInfo.dirty_record != nil, @"Logic error");
 	

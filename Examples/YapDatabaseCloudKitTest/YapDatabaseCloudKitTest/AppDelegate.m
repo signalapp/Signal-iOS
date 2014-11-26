@@ -116,7 +116,7 @@
 - (void)startTest
 {
 	MyTodo *todo = [[MyTodo alloc] init];
-	todo.title = @"Send invoice";
+	todo.title = @"Search for apartments";
 	
 	YapDatabaseConnection *databaseConnection = [MyDatabaseManager.database newConnection];
 	[databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {

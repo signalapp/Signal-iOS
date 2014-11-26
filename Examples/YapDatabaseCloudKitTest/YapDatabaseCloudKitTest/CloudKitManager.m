@@ -234,13 +234,18 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 	operation.fetchRecordChangesCompletionBlock =
 	^(CKServerChangeToken *serverChangeToken, NSData *clientChangeTokenData, NSError *operationError){
 		
+		DDLogVerbose(@"CKFetchRecordChangesOperation.fetchRecordChangesCompletionBlock");
+		
+		DDLogVerbose(@"CKFetchRecordChangesOperation: serverChangeToken: %@", serverChangeToken);
+		DDLogVerbose(@"CKFetchRecordChangesOperation: clientChangeTokenData: %@", clientChangeTokenData);
+		
 		if (operationError)
 		{
 			// I've seen:
 			//
 			// - CKErrorNotAuthenticated - "CloudKit access was denied by user settings"; Retry after 3.0 seconds
 			
-			DDLogError(@"operationError: %@", operationError);
+			DDLogError(@"CKFetchRecordChangesOperation: operationError: %@", operationError);
 			
 			if (completionHandler) {
 				completionHandler(UIBackgroundFetchResultFailed);
@@ -250,9 +255,8 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		{
 			BOOL moreComing = weakOperation.moreComing;
 			
-			DDLogVerbose(@"fetchRecordChangesCompletionBlock:");
-			DDLogVerbose(@"deletedRecordIDs: %@", deletedRecordIDs);
-			DDLogVerbose(@"changedRecords: %@", changedRecords);
+			DDLogVerbose(@"CKFetchRecordChangesOperation: deletedRecordIDs: %@", deletedRecordIDs);
+			DDLogVerbose(@"CKFetchRecordChangesOperation: changedRecords: %@", changedRecords);
 			
 			[databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 				

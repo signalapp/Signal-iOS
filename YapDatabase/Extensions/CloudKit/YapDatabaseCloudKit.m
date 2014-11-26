@@ -289,10 +289,7 @@
 	}
 	
 	if (YDB_LOG_INFO && (suspendCountIncrement > 0)) {
-		if (newSuspendCount == 1)
-			YDBLogInfo(@"=> SUSPENDED");
-		else
-			YDBLogInfo(@"=> SUSPENDED : suspendCount++ => %lu", (unsigned long)newSuspendCount);
+		YDBLogInfo(@"=> SUSPENDED : incremented suspendCount == %lu", (unsigned long)newSuspendCount);
 	}
 	
 	return newSuspendCount;
@@ -322,7 +319,7 @@
 		if (newSuspendCount == 0)
 			YDBLogInfo(@"=> RESUMED");
 		else
-			YDBLogInfo(@"=> SUSPENDED : suspendCount-- => %lu", (unsigned long)newSuspendCount);
+			YDBLogInfo(@"=> SUSPENDED : decremented suspendCount == %lu", (unsigned long)newSuspendCount);
 	}
 	
 	if (newSuspendCount == 0 && !underflow) {

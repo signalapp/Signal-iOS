@@ -253,8 +253,10 @@ NSString *const CloudKitZoneName = @"zone1";
 	    ^(CKRecord *__autoreleasing *inOutRecordPtr, YDBCKRecordInfo *recordInfo,
 		  NSString *collection, NSString *key, MyTodo *todo)
 	{
+		CKRecord *record = inOutRecordPtr ? *inOutRecordPtr : nil;
+		
 		NSSet *changedProperties = todo.changedProperties;
-		if ((changedProperties.count == 0) && (recordInfo.changedKeysToRestore == nil))
+		if (record && (changedProperties.count == 0) && (recordInfo.changedKeysToRestore == nil))
 		{
 			return; // from block
 		}
@@ -265,7 +267,7 @@ NSString *const CloudKitZoneName = @"zone1";
 		// Otherwise we'll be handed a bare CKRecord, with only the proper CKRecordID
 		// and the sync metadata set.
 		
-		CKRecord *record = inOutRecordPtr ? *inOutRecordPtr : nil;
+		BOOL includeAllValues = NO;
 		
 		if (record == nil)
 		{
@@ -276,6 +278,8 @@ NSString *const CloudKitZoneName = @"zone1";
 			
 			record = [[CKRecord alloc] initWithRecordType:@"todo" recordID:recordID];
 			*inOutRecordPtr = record;
+			
+			includeAllValues = YES;
 		}
 		
 		if (recordInfo.changedKeysToRestore)
@@ -288,7 +292,8 @@ NSString *const CloudKitZoneName = @"zone1";
 		}
 		else
 		{
-			for (NSString *changedPropertyName in changedProperties)
+			NSSet *properties = includeAllValues ? todo.allProperties : changedProperties;
+			for (NSString *changedPropertyName in properties)
 			{
 				id value = [todo valueForKey:changedPropertyName];
 				[record setValue:value forKey:changedPropertyName];

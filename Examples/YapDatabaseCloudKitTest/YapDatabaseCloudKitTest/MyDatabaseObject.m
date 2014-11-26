@@ -102,6 +102,11 @@
 	}
 }
 
+- (NSSet *)allProperties
+{
+	return [[self class] immutableProperties];
+}
+
 - (NSSet *)changedProperties
 {
 	if ([changedProperties count] == 0) return nil;

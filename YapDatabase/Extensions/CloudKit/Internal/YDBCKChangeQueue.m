@@ -388,7 +388,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 #if DEBUG
 	if (currentChangeSet->moodifiedRecords == nil)
 		currentChangeSet->moodifiedRecords = [[YapDebugDictionary alloc] initWithKeyClass:[CKRecordID class]
-		                                                                      objectClass:[CKRecord class]];
+		                                                                      objectClass:[YDBCKChangeRecord class]];
 #else
 	if (currentChangeSet->moodifiedRecords == nil)
 		currentChangeSet->moodifiedRecords = [[NSMutableDictionary alloc] init];
@@ -489,7 +489,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 #if DEBUG
 	if (currentChangeSet->moodifiedRecords == nil)
 		currentChangeSet->moodifiedRecords = [[YapDebugDictionary alloc] initWithKeyClass:[CKRecordID class]
-		                                                                      objectClass:[CKRecord class]];
+		                                                                      objectClass:[YDBCKChangeRecord class]];
 #else
 	if (currentChangeSet->moodifiedRecords == nil)
 		currentChangeSet->moodifiedRecords = [[NSMutableDictionary alloc] init];
@@ -811,8 +811,9 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 		
 	#if DEBUG
 		if (currentChangeSet->moodifiedRecords == nil)
-			currentChangeSet->moodifiedRecords = [[YapDebugDictionary alloc] initWithKeyClass:[CKRecordID class]
-			                                                                      objectClass:[CKRecord class]];
+			currentChangeSet->moodifiedRecords =
+			  [[YapDebugDictionary alloc] initWithKeyClass:[CKRecordID class]
+			                                   objectClass:[YDBCKChangeRecord class]];
 	#else
 		if (currentChangeSet->modifiedRecords == nil)
 			currentChangeSet->modifiedRecords = [[NSMutableDictionary alloc] init];
@@ -1168,17 +1169,17 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 	
 #if DEBUG
 	moodifiedRecords = [[YapDebugDictionary alloc] initWithKeyClass:[CKRecordID class]
-	                                                    objectClass:[CKRecord class]
+	                                                    objectClass:[YDBCKChangeRecord class]
 	                                                       capacity:[modifiedRecordsArray count]];
 #else
 	moodifiedRecords = [[NSMutableDictionary alloc] initWithCapacity:[modifiedRecordsArray count]];
 #endif
 	
-	for (CKRecord *record in modifiedRecordsArray)
+	for (YDBCKChangeRecord *changeRecord in modifiedRecordsArray)
 	{
-		CKRecordID *recordID = record.recordID;
+		CKRecordID *recordID = changeRecord.recordID;
 		if (recordID) {
-			[moodifiedRecords setObject:record forKey:recordID];
+			[moodifiedRecords setObject:changeRecord forKey:recordID];
 		}
 	}
 }
