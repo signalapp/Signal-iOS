@@ -51,8 +51,15 @@
 		parent = inCloudKit;
 		databaseConnection = inDbC;
 		
-		cleanMappingTableInfoCache = [[YapCache alloc] initWithKeyClass:[NSNumber class] countLimit:100];
-		cleanRecordTableInfoCache  = [[YapCache alloc] initWithKeyClass:[NSString class] countLimit:100];
+		cleanMappingTableInfoCache = [[YapCache alloc] initWithCountLimit:100];
+		cleanMappingTableInfoCache.allowedKeyClasses = [NSSet setWithObject:[NSNumber class]];
+		cleanMappingTableInfoCache.allowedObjectClasses =
+		  [NSSet setWithObjects:[YDBCKCleanMappingTableInfo class], [NSNull class], nil];
+		
+		cleanRecordTableInfoCache  = [[YapCache alloc] initWithCountLimit:100];
+		cleanRecordTableInfoCache.allowedKeyClasses = [NSSet setWithObject:[NSString class]];
+		cleanRecordTableInfoCache.allowedObjectClasses =
+		  [NSSet setWithObjects:[YDBCKCleanRecordTableInfo class], [NSNull class], nil];
 		
 		sharedKeySetForInternalChangeset = [NSDictionary sharedKeySetForKeys:[self internalChangesetKeys]];
 	}

@@ -290,20 +290,12 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 						continue;
 					}
 					
-					NSString *key = nil;
-					NSString *collection = nil;
-					
-					BOOL exists = [[transaction ext:Ext_CloudKit] getKey:&key
-					                                          collection:&collection
-					                                         forRecordID:record.recordID
-					                                  databaseIdentifier:nil];
+					BOOL exists = [[transaction ext:Ext_CloudKit] containsRecordID:record.recordID
+					                                            databaseIdentifier:nil];
 					
 					if (exists)
 					{
-						[[transaction ext:Ext_CloudKit] mergeRecord:record
-												 databaseIdentifier:nil
-															 forKey:key
-													   inCollection:collection];
+						[[transaction ext:Ext_CloudKit] mergeRecord:record databaseIdentifier:nil];
 					}
 					else
 					{

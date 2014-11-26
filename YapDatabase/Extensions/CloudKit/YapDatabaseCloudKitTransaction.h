@@ -272,6 +272,17 @@
 - (CKRecord *)recordForRecordID:(CKRecordID *)recordID databaseIdentifier:(NSString *)databaseIdentifier;
 
 /**
+ * Convenience method.
+ * Combines the following two methods into a single call:
+ * 
+ * - getRecordID:databaseIdentifier:forKey:inCollection:
+ * - recordForRecordID:databaseIdentifier:
+ * 
+ * @see recordForRecordID:databaseIdentifier:
+**/
+- (CKRecord *)recordForKey:(NSString *)key inCollection:(NSString *)collection;
+
+/**
  * High performance lookup method, if you only need to know if YapDatabaseCloudKit has a
  * record for the given recordID/databaseIdentifier.
  * 

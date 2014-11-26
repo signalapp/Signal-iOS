@@ -81,7 +81,7 @@ NSString *const CloudKitZoneName = @"zone1";
 #pragma mark Setup
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (YapDatabaseSerializer)dbSerializer
+- (YapDatabaseSerializer)databaseSerializer
 {
 	// This is actually the default serializer.
 	// We just included it here for completeness.
@@ -94,7 +94,7 @@ NSString *const CloudKitZoneName = @"zone1";
 	return serializer;
 }
 
-- (YapDatabaseDeserializer)dbDeserializer
+- (YapDatabaseDeserializer)databaseDeserializer
 {
 	// Pretty much the default serializer,
 	// but it also ensures that objects coming out of the database are immutable.
@@ -114,9 +114,9 @@ NSString *const CloudKitZoneName = @"zone1";
 	return deserializer;
 }
 
-- (YapDatabaseSanitizer)dbSanitizer
+- (YapDatabasePreSanitizer)databasePreSanitizer
 {
-	YapDatabaseSanitizer sanitizer = ^(NSString *collection, NSString *key, id object){
+	YapDatabasePreSanitizer preSanitizer = ^(NSString *collection, NSString *key, id object){
 		
 		if ([object isKindOfClass:[MyDatabaseObject class]])
 		{
@@ -126,7 +126,20 @@ NSString *const CloudKitZoneName = @"zone1";
 		return object;
 	};
 	
-	return sanitizer;
+	return preSanitizer;
+}
+
+- (YapDatabasePostSanitizer)databasePostSanitizer
+{
+	YapDatabasePostSanitizer postSanitizer = ^(NSString *collection, NSString *key, id object){
+		
+		if ([object isKindOfClass:[MyDatabaseObject class]])
+		{
+			[object clearChangedProperties];
+		}
+	};
+	
+	return postSanitizer;
 }
 
 - (void)setupDatabase
@@ -142,9 +155,11 @@ NSString *const CloudKitZoneName = @"zone1";
 	// Create the database
 	
 	database = [[YapDatabase alloc] initWithPath:databasePath
-									  serializer:[self dbSerializer]
-									deserializer:[self dbDeserializer]
-									   sanitizer:[self dbSanitizer]];
+	                                  serializer:[self databaseSerializer]
+	                                deserializer:[self databaseDeserializer]
+	                                preSanitizer:[self databasePreSanitizer]
+	                               postSanitizer:[self databasePostSanitizer]
+	                                     options:nil];
 	
 	// FOR ADVANCED USERS ONLY
 	//

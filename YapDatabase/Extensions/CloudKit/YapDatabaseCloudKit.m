@@ -429,8 +429,11 @@
 				@throw [self missingCKDatabaseException:databaseIdentifier];
 			}
 			
-			if (databaseCache == nil)
-				databaseCache = [[YapCache alloc] initWithKeyClass:[NSString class] countLimit:4];
+			if (databaseCache == nil) {
+				databaseCache = [[YapCache alloc] initWithCountLimit:4];
+				databaseCache.allowedKeyClasses = [NSSet setWithObject:[NSString class]];
+				databaseCache.allowedObjectClasses = [NSSet setWithObject:[CKDatabase class]];
+			}
 			
 			[databaseCache setObject:database forKey:databaseIdentifier];
 		}

@@ -4013,6 +4013,30 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 }
 
 /**
+ * Convenience method.
+ * Combines the following two methods into a single call:
+ * 
+ * - getRecordID:databaseIdentifier:forKey:inCollection:
+ * - recordForRecordID:databaseIdentifier:
+ * 
+ * @see recordForRecordID:databaseIdentifier:
+**/
+- (CKRecord *)recordForKey:(NSString *)key inCollection:(NSString *)collection
+{
+	YDBLogAutoTrace();
+	
+	CKRecordID *recordID = nil;
+	NSString *databaseIdentifier = nil;
+	
+	if ([self getRecordID:&recordID databaseIdentifier:&databaseIdentifier forKey:key inCollection:collection])
+	{
+		return [self recordForRecordID:recordID databaseIdentifier:databaseIdentifier];
+	}
+	
+	return nil;
+}
+
+/**
  * High performance lookup method, if you only need to know if YapDatabaseCloudKit has a
  * record for the given recordID/databaseIdentifier.
  *
