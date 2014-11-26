@@ -87,8 +87,8 @@
 
 + (RPAPICall*)unregister {
     RPAPICall *apiCall         = [self defaultAPICall];
-    apiCall.method             = HTTP_GET;
-    apiCall.endPoint           = @"/users/directory";
+    apiCall.method             = HTTP_DELETE;
+    apiCall.endPoint           = @"/apn";
     apiCall.requestSerializer  = [self otpAuthenticationSerializer];
     return apiCall;
 }

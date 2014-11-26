@@ -139,7 +139,6 @@
     SignalsViewController* s = (SignalsViewController*)nav.topViewController;
 
     s.contactIdentifierFromCompose = [[[self contactForIndexPath:indexPath] textSecureIdentifiers] firstObject];
-
     [self dismissViewControllerAnimated:YES completion:^(){
         [s performSegueWithIdentifier:@"showSegue" sender:nil];
     }];

@@ -328,7 +328,7 @@
 		B63761EE19E1FBE8005735D1 /* HttpRequestUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E919E1FBE8005735D1 /* HttpRequestUtil.m */; };
 		B63761EF19E1FBE8005735D1 /* HttpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761EB19E1FBE8005735D1 /* HttpResponse.m */; };
 		B63AF5C71A1F757900D01AAD /* TSContactsIntersectionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5AD1A1F757900D01AAD /* TSContactsIntersectionRequest.m */; };
-		B63AF5C81A1F757900D01AAD /* TSDeregisterAccountRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5AF1A1F757900D01AAD /* TSDeregisterAccountRequest.m */; };
+		B63AF5C81A1F757900D01AAD /* TSUnregisterAccountRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5AF1A1F757900D01AAD /* TSUnregisterAccountRequest.m */; };
 		B63AF5C91A1F757900D01AAD /* TSRecipientPrekeyRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5B11A1F757900D01AAD /* TSRecipientPrekeyRequest.m */; };
 		B63AF5CA1A1F757900D01AAD /* TSRegisterForPushRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5B31A1F757900D01AAD /* TSRegisterForPushRequest.m */; };
 		B63AF5CB1A1F757900D01AAD /* TSRegisterPrekeysRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5B51A1F757900D01AAD /* TSRegisterPrekeysRequest.m */; };
@@ -395,6 +395,7 @@
 		B6B1013C196D213F007E3930 /* SignalKeyingStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SignalKeyingStorage.m */; };
 		B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B9ECFB198B31BA00C620D3 /* PushManager.m */; };
 		B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C93C4D199567AD00EDF894 /* DebugLogger.m */; };
+		B6CBF53F1A254BD1000D4184 /* ContactDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CBF53E1A254BD1000D4184 /* ContactDetailCell.m */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B90418E7183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B96A3100187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf in Resources */ = {isa = PBXBuildFile; fileRef = B96A30FE187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf */; };
@@ -906,8 +907,8 @@
 		B63761EB19E1FBE8005735D1 /* HttpResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpResponse.m; sourceTree = "<group>"; };
 		B63AF5AC1A1F757900D01AAD /* TSContactsIntersectionRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSContactsIntersectionRequest.h; sourceTree = "<group>"; };
 		B63AF5AD1A1F757900D01AAD /* TSContactsIntersectionRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSContactsIntersectionRequest.m; sourceTree = "<group>"; };
-		B63AF5AE1A1F757900D01AAD /* TSDeregisterAccountRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSDeregisterAccountRequest.h; sourceTree = "<group>"; };
-		B63AF5AF1A1F757900D01AAD /* TSDeregisterAccountRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSDeregisterAccountRequest.m; sourceTree = "<group>"; };
+		B63AF5AE1A1F757900D01AAD /* TSUnregisterAccountRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSUnregisterAccountRequest.h; sourceTree = "<group>"; };
+		B63AF5AF1A1F757900D01AAD /* TSUnregisterAccountRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSUnregisterAccountRequest.m; sourceTree = "<group>"; };
 		B63AF5B01A1F757900D01AAD /* TSRecipientPrekeyRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRecipientPrekeyRequest.h; sourceTree = "<group>"; };
 		B63AF5B11A1F757900D01AAD /* TSRecipientPrekeyRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRecipientPrekeyRequest.m; sourceTree = "<group>"; };
 		B63AF5B21A1F757900D01AAD /* TSRegisterForPushRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRegisterForPushRequest.h; sourceTree = "<group>"; };
@@ -1070,6 +1071,8 @@
 		B6B9ECFB198B31BA00C620D3 /* PushManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushManager.m; sourceTree = "<group>"; };
 		B6C93C4C199567AD00EDF894 /* DebugLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugLogger.h; sourceTree = "<group>"; };
 		B6C93C4D199567AD00EDF894 /* DebugLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugLogger.m; sourceTree = "<group>"; };
+		B6CBF53D1A254BD1000D4184 /* ContactDetailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContactDetailCell.h; path = "Signal/src/view controllers/ContactDetailCell.h"; sourceTree = SOURCE_ROOT; };
+		B6CBF53E1A254BD1000D4184 /* ContactDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactDetailCell.m; path = "Signal/src/view controllers/ContactDetailCell.m"; sourceTree = SOURCE_ROOT; };
 		B90418E4183E9DD40038554A /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
 		B90418E5183E9DD40038554A /* DateUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtil.m; sourceTree = "<group>"; };
 		B96A30FE187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HelveticaNeueLTStd-Bd.otf"; sourceTree = "<group>"; };
@@ -1876,6 +1879,8 @@
 		76EB052B18170B33006006FC /* views */ = {
 			isa = PBXGroup;
 			children = (
+				B6CBF53D1A254BD1000D4184 /* ContactDetailCell.h */,
+				B6CBF53E1A254BD1000D4184 /* ContactDetailCell.m */,
 				FCAC963D19FEF99A0046DFC5 /* InboxTableViewCell.h */,
 				FCAC963E19FEF99A0046DFC5 /* InboxTableViewCell.m */,
 				FCAFC33D1A0F948F00AE5136 /* ActionContactDetailCell.h */,
@@ -2177,8 +2182,8 @@
 			children = (
 				B63AF5AC1A1F757900D01AAD /* TSContactsIntersectionRequest.h */,
 				B63AF5AD1A1F757900D01AAD /* TSContactsIntersectionRequest.m */,
-				B63AF5AE1A1F757900D01AAD /* TSDeregisterAccountRequest.h */,
-				B63AF5AF1A1F757900D01AAD /* TSDeregisterAccountRequest.m */,
+				B63AF5AE1A1F757900D01AAD /* TSUnregisterAccountRequest.h */,
+				B63AF5AF1A1F757900D01AAD /* TSUnregisterAccountRequest.m */,
 				B63AF5B01A1F757900D01AAD /* TSRecipientPrekeyRequest.h */,
 				B63AF5B11A1F757900D01AAD /* TSRecipientPrekeyRequest.m */,
 				B63AF5B21A1F757900D01AAD /* TSRegisterForPushRequest.h */,
@@ -3408,6 +3413,7 @@
 				B6B0968B1A1D25ED008BFAA6 /* TSStorageManager+SignedPreKeyStore.m in Sources */,
 				B6B0966E1A1D25ED008BFAA6 /* TSGroupMessageManager.m in Sources */,
 				76EB05AC18170B33006006FC /* SrtpSocket.m in Sources */,
+				B6CBF53F1A254BD1000D4184 /* ContactDetailCell.m in Sources */,
 				FCB11D931A12A4AA002F93FB /* FullImageViewController.m in Sources */,
 				B6B096871A1D25ED008BFAA6 /* TSStorageManager+IdentityKeyStore.m in Sources */,
 				B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */,
@@ -3500,7 +3506,7 @@
 				B6B096921A1D25ED008BFAA6 /* NSData+hexString.m in Sources */,
 				B6019E971A2492AB001118DF /* NSDate+millisecondTimeStamp.mm in Sources */,
 				B63761ED19E1FBE8005735D1 /* HttpRequestOrResponse.m in Sources */,
-				B63AF5C81A1F757900D01AAD /* TSDeregisterAccountRequest.m in Sources */,
+				B63AF5C81A1F757900D01AAD /* TSUnregisterAccountRequest.m in Sources */,
 				76EB05A018170B33006006FC /* IpAddress.m in Sources */,
 				B6B096651A1D25ED008BFAA6 /* TSGroupThread.m in Sources */,
 				FCAC965119FF0A6E0046DFC5 /* MessagesViewController.m in Sources */,

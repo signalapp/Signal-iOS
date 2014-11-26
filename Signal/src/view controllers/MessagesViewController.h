@@ -12,8 +12,8 @@
 @class TSThread;
 
 @interface MessagesViewController : JSQMessagesViewController <UIImagePickerControllerDelegate,UINavigationControllerDelegate>
-@property TSThread *thread;
 
 - (void)setupWithThread:(TSThread*)thread;
+- (void)setupWithTSIdentifier:(NSString*)identifier;
 
 @end

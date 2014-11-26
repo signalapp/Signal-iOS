@@ -7,16 +7,14 @@
 //
 
 #import "TSConstants.h"
-#import "TSDeregisterAccountRequest.h"
+#import "TSUnregisterAccountRequest.h"
 
-@implementation TSDeregisterAccountRequest
+@implementation TSUnregisterAccountRequest
 
 
-- (id)initWithUser:(NSString*)userPushId {
+- (id)init {
     self = [super initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", textSecureAccountsAPI, @"apn"]]];
     self.HTTPMethod = @"DELETE";
-    self.parameters = [NSMutableDictionary dictionaryWithObjects:@[userPushId] forKeys:@[@"apnRegistrationId"]];
     return self;
-    
 }
 @end
