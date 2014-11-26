@@ -9,6 +9,7 @@
 #import "UIUtil.h"
 #import "InboxTableViewCell.h"
 
+#import "Environment.h"
 #import "MessagesViewController.h"
 #import "SignalsViewController.h"
 #import "TSStorageManager.h"
@@ -45,6 +46,10 @@ static NSString *const kSegueIndentifier  = @"showSegue";
 
 @implementation SignalsViewController
 
+- (void)awakeFromNib{
+    [[Environment getCurrent] setSignalsViewController:self];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -63,9 +68,6 @@ static NSString *const kSegueIndentifier  = @"showSegue";
                                              selector:@selector(yapDatabaseModified:)
                                                  name:TSUIDatabaseConnectionDidUpdateNotification
                                                object:nil];
-    
-    [TSSocketManager becomeActive];
-    
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -143,8 +145,6 @@ static NSString *const kSegueIndentifier  = @"showSegue";
     [self performSegueWithIdentifier:kSegueIndentifier sender:self];
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
-
-
 
 #pragma mark - Navigation
 

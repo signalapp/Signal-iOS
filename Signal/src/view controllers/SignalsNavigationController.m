@@ -19,6 +19,7 @@
     // Do any additional setup after loading the view.
     [self initializeSocketStatusBar];
     [self initializeObserver];
+    [TSSocketManager sendNotification];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -42,8 +43,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketOpenedNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketClosedNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketConnectingNotification object:nil];
-
-    
 }
 
 #pragma mark - Socket Status Notifications

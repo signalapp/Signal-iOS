@@ -119,7 +119,7 @@ static NSString *const DEFAULTS_KEY_DATE = @"DefaultsKeyDate";
     ContactsManager *contactManager = [Environment getCurrent].contactsManager;
     for (PhoneNumber *number in self.parsedPhoneNumbers) {
         if ([contactManager isPhoneNumberRegisteredWithRedPhone:number]) {
-            [identifiers addObject:number.toE164];
+            [identifiers addObject:number];
         }
     }
     

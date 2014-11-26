@@ -25,5 +25,6 @@ extern NSString * const SocketConnectingNotification;
 
 + (void)becomeActive;
 + (void)resignActivity;
++ (void)sendNotification;
 
 @end

@@ -10,6 +10,7 @@
 #import "PreferencesUtil.h"
 #import "PhoneNumberDirectoryFilterManager.h"
 #import "SignalKeyingStorage.h"
+#import "SignalsViewController.h"
 
 #define isRegisteredUserDefaultString @"isRegistered"
 
@@ -161,7 +162,30 @@ phoneDirectoryManager;
     return [PropertyListPreferences new];
 }
 
-+(void)resetAppData{
+
+- (void)setSignalsViewController:(SignalsViewController *)signalsViewController{
+    _signalsViewController = signalsViewController;
+}
+
++ (void)messageIdentifier:(NSString*)identifier{
+    Environment *env          = [self getCurrent];
+    SignalsViewController *vc = env.signalsViewController;
+    
+    if (vc.presentedViewController) {
+        [vc.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+    }
+    
+    [vc.navigationController popToRootViewControllerAnimated:YES];
+    vc.contactIdentifierFromCompose = identifier;
+    [vc performSegueWithIdentifier:@"showSegue" sender:nil];
+    
+    UITabBarController *tabBarController = (UITabBarController*)vc.parentViewController.parentViewController;
+    if ([tabBarController respondsToSelector:@selector(selectedIndex)]) {
+        tabBarController.selectedIndex = 1;
+    }
+}
+
++ (void)resetAppData{
     [SignalKeyingStorage wipeKeychain];
     [Environment.preferences clear];
     if (self.preferences.loggingIsEnabled) {

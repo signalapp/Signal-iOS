@@ -132,15 +132,10 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //HACK: This is horrible due to the view hierarchy, but gets the job done. Gets a reference to the SignalsVC so we can present the conversation from it.
+    NSString *identifier = [[[self contactForIndexPath:indexPath] textSecureIdentifiers] firstObject];
     
-    UITabBarController * tb = (UITabBarController*)self.parentViewController.presentingViewController;
-    UINavigationController* nav = (UINavigationController*)[tb.childViewControllers objectAtIndex:1];
-    SignalsViewController* s = (SignalsViewController*)nav.topViewController;
-
-    s.contactIdentifierFromCompose = [[[self contactForIndexPath:indexPath] textSecureIdentifiers] firstObject];
     [self dismissViewControllerAnimated:YES completion:^(){
-        [s performSegueWithIdentifier:@"showSegue" sender:nil];
+        [Environment messageIdentifier:identifier];
     }];
 }
     

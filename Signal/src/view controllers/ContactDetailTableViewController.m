@@ -11,6 +11,8 @@
 #import "ActionContactDetailCell.h"
 #import "UIUtil.h"
 #import "DJWActionSheet.h"
+#import "Environment.h"
+#import "PhoneManager.h"
 
 #define kImageRadius           50.0f
 #define kMinRows               3
@@ -168,7 +170,7 @@ static NSString *const kContactDetailSegue   = @"DetailSegue";
     if (c.isRedPhoneContact)
     {
         cell.contactCallButton.tintColor = [UIColor colorWithRed:0.f/255.f green:122.f/255.f blue:255.f/255.f alpha:1.0f];
-        
+        [cell.contactCallButton addTarget:self action:@selector(initiateRedPhoneCall) forControlEvents:UIControlEventTouchUpInside];
     } else {
         cell.contactCallButton.tintColor = [UIColor colorWithRed:81.f/255.f green:81.f/255.f blue:81.f/255.f alpha:1.0f];
         cell.contactCallButton.enabled = NO;
@@ -177,12 +179,66 @@ static NSString *const kContactDetailSegue   = @"DetailSegue";
     if (c.isTextSecureContact)
     {
         cell.contactTextButton.tintColor = [UIColor colorWithRed:0.f/255.f green:122.f/255.f blue:255.f/255.f alpha:1.0f];
+        [cell.contactTextButton addTarget:self action:@selector(openTextSecureConversation) forControlEvents:UIControlEventTouchUpInside];
     } else {
         cell.contactTextButton.tintColor = [UIColor colorWithRed:81.f/255.f green:81.f/255.f blue:81.f/255.f alpha:1.0f];
         cell.contactTextButton.enabled = NO;
     }
+}
+
+- (void)openTextSecureConversation{
+    NSArray *textSecureIdentifiers = [self.contact textSecureIdentifiers];
     
+    if (textSecureIdentifiers.count > 1) {
+        [DJWActionSheet showInView:self.tabBarController.view
+                         withTitle:@"What number would you like to message?"
+                 cancelButtonTitle:@"Cancel"
+            destructiveButtonTitle:nil
+                 otherButtonTitles:textSecureIdentifiers
+                          tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+                              if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
+                                  DDLogVerbose(@"User Cancelled Call");
+                              } else {
+                                  [Environment messageIdentifier:[textSecureIdentifiers objectAtIndex:(NSUInteger)tappedButtonIndex]];
+                              }
+                          }];
+        
+    } else if (textSecureIdentifiers.count == 1){
+        [Environment messageIdentifier:[textSecureIdentifiers firstObject]];
+    } else{
+        DDLogWarn(@"Tried to intiate a call but contact has no RedPhone identifier");
+    }
+}
+
+- (void)initiateRedPhoneCall{
+    NSArray *redPhoneIdentifiers = [self.contact redPhoneIdentifiers];
     
+    if (redPhoneIdentifiers.count > 1) {
+        
+        NSMutableArray *e164 = [NSMutableArray array];
+        
+        for (PhoneNumber *phoneNumber in redPhoneIdentifiers) {
+            [e164 addObject:phoneNumber.toE164];
+        }
+        
+        [DJWActionSheet showInView:self.tabBarController.view
+                         withTitle:@"What number would you like to dial?"
+                 cancelButtonTitle:@"Cancel"
+            destructiveButtonTitle:nil
+                 otherButtonTitles:e164
+                          tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+                              if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
+                                  DDLogVerbose(@"User Cancelled Call");
+                              } else {
+                                  [Environment.phoneManager initiateOutgoingCallToContact:self.contact atRemoteNumber:[redPhoneIdentifiers objectAtIndex:(NSUInteger)tappedButtonIndex]];
+                              }
+                          }];
+        
+    } else if (redPhoneIdentifiers.count == 1){
+        [Environment.phoneManager initiateOutgoingCallToContact:self.contact atRemoteNumber:[redPhoneIdentifiers firstObject]];
+    } else{
+        DDLogWarn(@"Tried to intiate a call but contact has no RedPhone identifier");
+    }
 }
 
 -(void)setUpNameMainUserCell:(ContactDetailCell*)cell
@@ -319,8 +375,5 @@ static NSString *const kContactDetailSegue   = @"DetailSegue";
     
     return kMinRows + numEmails + numPhoneNumbers + numNotes;
 }
-
-
-
 
 @end
