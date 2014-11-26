@@ -12,6 +12,7 @@
 #import "PriorityQueue.h"
 #import "RecentCallManager.h"
 #import "Release.h"
+#import "TSSocketManager.h"
 #import "TSStorageManager.h"
 #import "TSAccountManager.h"
 #import "Util.h"
@@ -122,10 +123,10 @@
         if (latestCall == nil){
             return;
         }
-        
+
         InCallViewController *callViewController = [InCallViewController inCallViewControllerWithCallState:latestCall
                                                                                  andOptionallyKnownContact:latestCall.potentiallySpecifiedContact];
-        
+
         if (latestCall.initiatedLocally == false){
             [self.callPickUpFuture.future thenDo:^(NSNumber *accept) {
                 if ([accept isEqualToNumber:@YES]) {
@@ -135,10 +136,12 @@
                 }
             }];
         }
-    
+
         [self.window.rootViewController dismissViewControllerAnimated:NO completion:nil];
         [self.window.rootViewController presentViewController:callViewController animated:NO completion:nil];
     } onThread:NSThread.mainThread untilCancelled:nil];
+    
+    [TSSocketManager becomeActive];
     
     return YES;
 }

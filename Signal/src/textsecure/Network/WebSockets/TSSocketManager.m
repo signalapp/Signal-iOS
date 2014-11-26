@@ -31,7 +31,7 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 @property (nonatomic, retain) NSTimer *reconnectTimer;
 
 @property (nonatomic, retain) SRWebSocket *websocket;
-@property (nonatomic) NSUInteger status;
+@property (nonatomic) SocketStatus status;
 @end
 
 @implementation TSSocketManager
@@ -192,23 +192,30 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if (context == kSocketStatusObservationContext)
     {
-        switch (self.status) {
-            case kSocketStatusOpen:
-                [[NSNotificationCenter defaultCenter] postNotificationName:SocketOpenedNotification object:self];
-                break;
-            case kSocketStatusClosed:
-                [[NSNotificationCenter defaultCenter] postNotificationName:SocketClosedNotification object:self];
-                break;
-            case kSocketStatusConnecting:
-                [[NSNotificationCenter defaultCenter] postNotificationName:SocketConnectingNotification object:self];
-                break;
-            default:
-                break;
-        }
+        [self notifyStatusChange];
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
 
+- (void)notifyStatusChange{
+    switch (self.status) {
+        case kSocketStatusOpen:
+            [[NSNotificationCenter defaultCenter] postNotificationName:SocketOpenedNotification object:self];
+            break;
+        case kSocketStatusClosed:
+            [[NSNotificationCenter defaultCenter] postNotificationName:SocketClosedNotification object:self];
+            break;
+        case kSocketStatusConnecting:
+            [[NSNotificationCenter defaultCenter] postNotificationName:SocketConnectingNotification object:self];
+            break;
+        default:
+            break;
+    }
+}
+
++ (void)sendNotification{
+    [[self sharedManager] notifyStatusChange];
+}
 
 @end
