@@ -49,6 +49,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) YapDatabaseViewMappings *messageMappings;
 @property (nonatomic, retain) JSQMessagesBubbleImage *outgoingBubbleImageData;
 @property (nonatomic, retain) JSQMessagesBubbleImage *incomingBubbleImageData;
+@property (nonatomic, retain) JSQMessagesBubbleImage *outgoingMessageFailedImageData;
 
 @end
 
@@ -74,6 +75,7 @@ typedef enum : NSUInteger {
     
     self.outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleBlueColor]];
     self.incomingBubbleImageData = [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
+    self.outgoingMessageFailedImageData = [bubbleFactory outgoingMessageFailedBubbleImageWithColor:[UIColor ows_fadedBlueColor]];
     
     self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[self.thread.uniqueId] view:TSMessageDatabaseViewExtensionName];
     
@@ -191,6 +193,9 @@ typedef enum : NSUInteger {
     id<JSQMessageData> message = [self messageAtIndexPath:indexPath];
     
     if ([message.senderId isEqualToString:self.senderId]) {
+        if (message.messageState == TSOutgoingMessageStateUnsent || message.messageState == TSOutgoingMessageStateAttemptingOut) {
+            return self.outgoingMessageFailedImageData;
+        } 
         return self.outgoingBubbleImageData;
     }
     
