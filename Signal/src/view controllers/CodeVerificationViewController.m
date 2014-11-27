@@ -45,7 +45,6 @@
     
     [_challengeButton setEnabled:NO];
     [_challengeTextField resignFirstResponder];
-    //TODO: Lock UI interactions
     
     [self registerWithSuccess:^{
         [Environment.getCurrent.phoneDirectoryManager forceUpdate];

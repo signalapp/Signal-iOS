@@ -83,7 +83,6 @@
         [self performSegueWithIdentifier:@"codeSent" sender:self];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         
-        //TODO: Re-enable button
         DDLogError(@"Registration failed with information %@", error.description);
         
         UIAlertView *registrationErrorAV = [[UIAlertView alloc]initWithTitle:REGISTER_ERROR_ALERT_VIEW_TITLE
