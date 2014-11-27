@@ -20,4 +20,7 @@
 //Phone number
 @property(nonatomic, strong) IBOutlet UITextField* phoneNumberTextField;
 
+//Button
+@property(nonatomic, strong) IBOutlet UIButton* sendCodeButton;
+
 @end
