@@ -3090,4 +3090,7 @@ Licensed under the GPLv3</string>
         <image name="signal.png" width="50" height="50"/>
         <image name="signals_tab.png" width="24" height="24"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="qCk-gl-KCX"/>
+    </inferredMetricsTieBreakers>
 </document>
