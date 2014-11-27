@@ -42,6 +42,13 @@
     [self initializeKeyboardHandlers];
 }
 
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [_sendCodeButton setEnabled:YES];
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -67,10 +74,8 @@
     PhoneNumber* localNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
     if(localNumber==nil){ return; }
     
-    //TO:DO Disable button
-    
+    [_sendCodeButton setEnabled:NO];
     [_phoneNumberTextField resignFirstResponder];
-    
     [SignalKeyingStorage setLocalNumberTo:localNumber];
     
     [[RPServerRequestsManager sharedInstance]performRequest:[RPAPICall requestVerificationCode] success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -87,6 +92,8 @@
                                                            otherButtonTitles:nil, nil];
         
         [registrationErrorAV show];
+        
+        [_sendCodeButton setEnabled:YES];
     }];
     
 }
