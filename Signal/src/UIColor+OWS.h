@@ -8,10 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIColor (UIColor_OWS)
+@interface UIColor (OWS)
 
-+(UIColor*) ows_blueColor;
-+(UIColor*) ows_darkBackgroundColor;
-+(UIColor*) ows_darkGrayColor;
++ (UIColor *) ows_blueColor;
+
++ (UIColor *) ows_fadedBlueColor;
+
++ (UIColor *) ows_darkBackgroundColor;
+
++ (UIColor *) ows_darkGrayColor;
+
 
 @end

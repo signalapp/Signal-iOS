@@ -30,6 +30,7 @@
 @property (nonatomic, retain) NSString *messageBody;
 
 @property NSUInteger identifier;
+@property NSInteger outgoingMessageStatus;
 
 @end
 
@@ -74,6 +75,10 @@
         adapter.messageBody = @"Placeholder for ErrorMessage";
     }
     
+    if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
+        adapter.outgoingMessageStatus = ((TSOutgoingMessage*)interaction).messageState;
+    }
+    
     return adapter;
 }
 
@@ -107,6 +112,10 @@
 
 - (NSUInteger)hash{
     return self.identifier;
+}
+
+- (NSInteger)messageState{
+    return self.outgoingMessageStatus;
 }
 
 @end
