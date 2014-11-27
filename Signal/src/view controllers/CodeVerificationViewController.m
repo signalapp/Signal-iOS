@@ -29,6 +29,12 @@
     [self initializeKeyboardHandlers];
 }
 
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [_challengeButton setEnabled:YES];
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -37,6 +43,7 @@
 
 - (IBAction)verifyChallengeAction:(id)sender {
     
+    [_challengeButton setEnabled:NO];
     [_challengeTextField resignFirstResponder];
     //TODO: Lock UI interactions
     
@@ -47,6 +54,7 @@
        // TODO: Unlock UI
         NSLog(@"Failed to register");
         [self showAlertForError:error];
+        [_challengeButton setEnabled:YES];
     }];
 }
 
