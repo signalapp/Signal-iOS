@@ -22,13 +22,11 @@ typedef NS_ENUM(int32_t, TSErrorMessageType){
     TSErrorMessageInvalidVersion
 };
 
-+ (instancetype)invalidProtocolBufferWithException:(NSException*)exception;
-+ (instancetype)duplicateMessageWithSignal:(IncomingPushMessageSignal*)preKeyMessage;
-+ (instancetype)invalidVersionWithSignal:(IncomingPushMessageSignal*)preKeyMessage;
-+ (instancetype)missingKeyIdWithSignal:(IncomingPushMessageSignal*)preKeyMessage;
-+ (instancetype)invalidKeyExceptionWithSignal:(IncomingPushMessageSignal*)preKeyMessage;
-+ (instancetype)untrustedKeyWithSignal:(IncomingPushMessageSignal*)preKeyMessage;
-+ (instancetype)missingSessionWithSignal:(IncomingPushMessageSignal*)preKeyMessage;
++ (instancetype)invalidVersionWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction;
++ (instancetype)missingKeyIdWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction;
++ (instancetype)invalidKeyExceptionWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction;
++ (instancetype)untrustedKeyWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction;
++ (instancetype)missingSessionWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread failedMessageType:(TSErrorMessageType)errorMessageType;
 

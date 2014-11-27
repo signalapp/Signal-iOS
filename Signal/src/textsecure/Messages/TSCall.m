@@ -10,15 +10,18 @@
 
 @implementation TSCall
 
-- (instancetype)initWithTimestamp:(uint64_t)timeStamp inThread:(TSThread*)thread
+- (instancetype)initWithTimestamp:(uint64_t)timeStamp
+                   withCallNumber:(NSString*)contactNumber
                         wasCaller:(BOOL)caller callType:(TSCallType)callType
-                         duration:(NSNumber*)duration{
-    self = [super initWithTimestamp:timeStamp inThread:thread];
+                         duration:(NSNumber*)duration
+{
+    self  = [super initWithTimestamp:timeStamp inThread:nil];
     
     if (self) {
-        _wasCaller = caller;
-        _callType  = callType;
-        _duration  = duration;
+        _wasCaller      = caller;
+        _callType       = callType;
+        _duration       = duration;
+        _redPhoneNumber = contactNumber;
     }
     
     return self;

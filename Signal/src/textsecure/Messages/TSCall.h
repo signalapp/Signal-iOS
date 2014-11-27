@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #import "TSInteraction.h"
+#import "Contact.h"
 
 @interface TSCall : TSInteraction
 
@@ -22,9 +23,11 @@ typedef NS_ENUM(NSInteger, TSCallType) {
 @property (nonatomic, readonly) NSNumber     *duration;
 @property (nonatomic, readonly) BOOL         wasCaller;
 @property (nonatomic, readonly) TSCallType   callType;
+@property (nonatomic) NSString *redPhoneNumber;
 
-- (instancetype)initWithTimestamp:(uint64_t)timeStamp inThread:(TSThread*)thread
-                       wasCaller:(BOOL)caller callType:(TSCallType)callType
-                        duration:(NSNumber*)duration;
+- (instancetype)initWithTimestamp:(uint64_t)timeStamp
+                   withCallNumber:(NSString*)contactNumber
+                        wasCaller:(BOOL)caller callType:(TSCallType)callType
+                         duration:(NSNumber*)duration;
 
 @end

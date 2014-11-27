@@ -8,6 +8,8 @@
 
 #import "CodeVerificationViewController.h"
 
+#import "Environment.h"
+#import "PhoneNumberDirectoryFilterManager.h"
 #import "RPServerRequestsManager.h"
 #import "LocalizableText.h"
 #import "PushManager.h"
@@ -39,11 +41,11 @@
     //TODO: Lock UI interactions
     
     [self registerWithSuccess:^{
+        [Environment.getCurrent.phoneDirectoryManager forceUpdate];
         [self performSegueWithIdentifier:@"verifiedSegue" sender:self];
     } failure:^(NSError *error) {
        // TODO: Unlock UI
         NSLog(@"Failed to register");
-        
         [self showAlertForError:error];
     }];
 }

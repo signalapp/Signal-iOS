@@ -17,6 +17,5 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType){
 @property TSInfoMessageType messageType;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSContactThread *)contact messageType:(TSInfoMessageType)infoMessage;
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSGroupThread *)thread authorId:(NSString *)authorId messageType:(TSInfoMessageType)infoMessage;
 
 @end

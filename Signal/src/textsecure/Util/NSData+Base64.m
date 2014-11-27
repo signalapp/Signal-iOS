@@ -16,7 +16,17 @@
 // returns the NSData representation of the base64 string
 //
 + (NSData *)dataFromBase64String:(NSString *)aString {
-    return [[NSData alloc] initWithBase64EncodedString:aString options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    int padding = aString.length%4;
+    
+    NSMutableString *strResult = [aString mutableCopy];
+    if (padding != 0) {
+        int charsToAdd = 4 - padding;
+        for (int i = 0; i < charsToAdd; i++) {
+            [strResult appendString:@"="];
+        }
+    }
+    
+    return [[NSData alloc] initWithBase64EncodedString:strResult options:NSDataBase64DecodingIgnoreUnknownCharacters];
 }
 
 //

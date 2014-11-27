@@ -104,9 +104,10 @@
         
         if (![storageManager containsSession:recipientId deviceId:deviceId]) {
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                TSErrorMessage *errorMessage = [TSErrorMessage missingSessionWithSignal:secureMessage];
+                TSErrorMessage *errorMessage = [TSErrorMessage missingSessionWithSignal:secureMessage withTransaction:transaction];
                 [errorMessage saveWithTransaction:transaction];
             }];
+            return;
         }
         
         PushMessageContent *content;
@@ -237,9 +238,12 @@
     
 }
 
-
 - (void)processException:(NSException*)exception outgoingMessage:(TSOutgoingMessage*)message{
-    NSLog(@"Got exception: %@", exception.description);
+    DDLogWarn(@"Got exception: %@", exception.description);
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [message setMessageState:TSOutgoingMessageStateUnsent];
+        [message saveWithTransaction:transaction];
+    }];
 }
 
 @end
