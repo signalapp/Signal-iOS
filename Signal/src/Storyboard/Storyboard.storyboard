@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="kts-vO-ui1">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14C68k" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="kts-vO-ui1">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
@@ -1161,6 +1161,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                         <outlet property="countryCodeLabel" destination="TiF-CF-7WU" id="a8o-pE-QzV"/>
                         <outlet property="countryNameLabel" destination="4o4-Xj-5JG" id="dFh-dM-mgC"/>
                         <outlet property="phoneNumberTextField" destination="tTJ-pq-Z9L" id="gPX-pu-twz"/>
+                        <outlet property="sendCodeButton" destination="7IK-hd-tli" id="zj7-3u-4OR"/>
                         <segue destination="3Uo-Ow-qOD" kind="show" identifier="codeSent" id="KhC-MI-Evx"/>
                     </connections>
                 </viewController>
