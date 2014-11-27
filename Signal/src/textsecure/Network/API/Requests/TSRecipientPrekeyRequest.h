@@ -9,5 +9,7 @@
 #import "TSRequest.h"
 @class TSContact;
 @interface TSRecipientPrekeyRequest : TSRequest
--(TSRequest*) initWithRecipient:(TSContact*) contact;
+
+-(TSRequest*) initWithRecipient:(NSString*)recipientNumber deviceId:(NSString*)deviceId;
+
 @end

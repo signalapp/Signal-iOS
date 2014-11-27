@@ -43,4 +43,5 @@ extern NSString *const TSUIDatabaseConnectionDidUpdateNotification;
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
+- (void)wipe;
 @end

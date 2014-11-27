@@ -75,11 +75,7 @@ static NSString *const DEFAULTS_KEY_DATE = @"DefaultsKeyDate";
 }
 
 - (UIImage *)image {
-	if (Environment.preferences.getContactImagesEnabled) {
-		return image;
-	} else {
-		return nil;
-	}
+    return image;
 }
 
 - (BOOL)isTextSecureContact{

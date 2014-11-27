@@ -136,7 +136,7 @@
                 }
             }];
         }
-
+   
         [self.window.rootViewController dismissViewControllerAnimated:NO completion:nil];
         [self.window.rootViewController presentViewController:callViewController animated:NO completion:nil];
     } onThread:NSThread.mainThread untilCancelled:nil];

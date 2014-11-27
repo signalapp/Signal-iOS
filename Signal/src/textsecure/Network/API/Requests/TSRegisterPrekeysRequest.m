@@ -20,8 +20,8 @@
     self = [super initWithURL:[NSURL URLWithString:textSecureKeysAPI]];
     self.HTTPMethod = @"PUT";
     
-    NSString *publicIdentityKey                              = [[identityKeyPublic prependKeyType] base64EncodedStringWithOptions:0];
-    NSMutableArray *serializedPrekeyList                     = [NSMutableArray array];
+    NSString *publicIdentityKey          = [[identityKeyPublic prependKeyType] base64EncodedStringWithOptions:0];
+    NSMutableArray *serializedPrekeyList = [NSMutableArray array];
     
     for (PreKeyRecord *preKey in prekeys) {
         [serializedPrekeyList addObject:[self dictionaryFromPreKey:preKey]];

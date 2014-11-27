@@ -81,7 +81,7 @@
     RPAPICall *apiCall        = [self defaultAPICall];
     apiCall.method            = HTTP_GET;
     apiCall.endPoint          = @"/users/directory";
-    apiCall.requestSerializer = [self otpAuthenticationSerializer];
+    apiCall.requestSerializer = [self basicAuthenticationSerializer];
     return apiCall;
 }
 
@@ -89,7 +89,6 @@
     RPAPICall *apiCall         = [self defaultAPICall];
     apiCall.method             = HTTP_DELETE;
     apiCall.endPoint           = @"/apn";
-    apiCall.requestSerializer  = [self otpAuthenticationSerializer];
     return apiCall;
 }
 

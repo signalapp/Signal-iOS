@@ -29,6 +29,8 @@
 @property (nonatomic, copy)   NSDate   *messageDate;
 @property (nonatomic, retain) NSString *messageBody;
 
+@property NSUInteger identifier;
+
 @end
 
 
@@ -38,7 +40,8 @@
     
     TSMessageAdapter *adapter = [[TSMessageAdapter alloc] init];
     adapter.messageDate = interaction.date;
-    
+    adapter.identifier  = (NSUInteger)interaction.uniqueId;
+
     if ([thread isKindOfClass:[TSContactThread class]]) {
         adapter.thread = (TSContactThread*)thread;
         if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
@@ -60,7 +63,7 @@
         }
     }
     
-    if ([interaction isKindOfClass:[TSMessage class]]) {
+    if ([interaction isKindOfClass:[TSIncomingMessage class]] || [interaction isKindOfClass:[TSOutgoingMessage class]]) {
         TSMessage *message = (TSMessage*)interaction;
         adapter.messageBody = message.body;
     } else if ([interaction isKindOfClass:[TSCall class]]){
@@ -73,7 +76,6 @@
     
     return adapter;
 }
-
 
 - (NSString*)senderId{
     if (_senderId) {
@@ -101,6 +103,10 @@
 
 - (NSString *)text{
     return self.messageBody;
+}
+
+- (NSUInteger)hash{
+    return self.identifier;
 }
 
 @end

@@ -156,6 +156,7 @@
     [NSUserDefaults.standardUserDefaults setObject:[NSString stringWithFormat:@"%@", NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"]]
                                             forKey:kSignalVersionKey];
     [NSUserDefaults.standardUserDefaults synchronize];
+    
     return lastVersion;
 }
 

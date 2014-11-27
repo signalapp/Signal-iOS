@@ -10,4 +10,14 @@
 
 @implementation TSInfoMessage
 
+- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSContactThread *)contact messageType:(TSInfoMessageType)infoMessage{
+    self = [super initWithTimestamp:timestamp inThread:contact messageBody:nil attachements:nil];
+    
+    if (self) {
+        _messageType = infoMessage;
+    }
+    
+    return self;
+}
+
 @end

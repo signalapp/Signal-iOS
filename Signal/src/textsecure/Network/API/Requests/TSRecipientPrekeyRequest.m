@@ -11,14 +11,14 @@
 
 @implementation TSRecipientPrekeyRequest
 
--(TSRequest*) initWithRecipient:(NSString*)recipientNumber {
-  NSString* recipientInformation = recipientNumber;
-  
-  self = [super initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/*", textSecureKeysAPI, recipientInformation]]];
+-(TSRequest*) initWithRecipient:(NSString*)recipientNumber deviceId:(NSString*)deviceId{
+    NSString* recipientInformation = recipientNumber;
     
-  [self setHTTPMethod:@"GET"];
-  
-  return self;
+    self = [super initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/%@", textSecureKeysAPI, recipientInformation, deviceId]]];
+    
+    [self setHTTPMethod:@"GET"];
+    
+    return self;
 }
 
 @end

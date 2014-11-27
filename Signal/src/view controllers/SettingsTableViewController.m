@@ -11,6 +11,7 @@
 #import "SettingsTableViewCell.h"
 
 #import "TSAccountManager.h"
+#import "TSStorageManager.h"
 
 #import "RPServerRequestsManager.h"
 
@@ -119,11 +120,11 @@ typedef enum {
                 break;
                 
             case kUnregisterCell:
-                [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall unregister] success:^(NSURLSessionDataTask *task, id responseObject) {
-                    NSLog(@"YEAH!");
-                } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                    NSLog(@"Fail");
-                    NSLog(@"error: %@ ", error.debugDescription);
+                [TSAccountManager unregisterTextSecureWithSuccess:^{
+                    [[TSStorageManager sharedManager] wipe];
+                    exit(0);
+                } failure:^(NSError *error) {
+                    SignalAlertView(@"Failed to unregister", @"");
                 }];
                 break;
                 
@@ -132,7 +133,5 @@ typedef enum {
         }
     }
 }
-
-
 
 @end
