@@ -23,7 +23,6 @@
     }
     
     NSData *identityKey = [NSData dataFromBase64String:identityKeyString];
-    NSLog(@"IDentityKey %@", identityKey);
     
     for (NSDictionary *deviceDict in devicesArray) {
         NSNumber *registrationIdString = [deviceDict objectForKey:@"registrationId"];

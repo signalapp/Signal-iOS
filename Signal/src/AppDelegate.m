@@ -208,6 +208,7 @@
 }
 
 -(void) applicationDidBecomeActive:(UIApplication *)application {
+    [TSSocketManager becomeActive];
     [AppAudioManager.sharedInstance awake];
     
     // Hacky way to clear notification center after processed push
@@ -231,8 +232,8 @@
     completionHandler();
 }
 
-- (void)applicationWillResignActive:(UIApplication *)application{
-    [self protectScreen];
+- (void)applicationDidEnterBackground:(UIApplication *)application{
+    [TSSocketManager resignActivity];
 }
 
 - (void)prepareScreenshotProtection{
