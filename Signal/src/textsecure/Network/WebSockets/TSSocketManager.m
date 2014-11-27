@@ -163,7 +163,12 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
     [message setResponse:response.build];
     [message setType:WebSocketMessageTypeResponse];
     
-    [self.websocket send:message.build.data];
+    @try {
+        [self.websocket send:message.build.data];
+    }
+    @catch (NSException *exception) {
+        DDLogWarn(@"Caught exception while trying to write on the socket %@", exception.debugDescription);
+    }
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
@@ -174,7 +179,12 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 }
 
 - (void)webSocketHeartBeat {
-    [self.websocket sendPing:nil];
+    @try {
+        [self.websocket sendPing:nil];
+    }
+    @catch (NSException *exception) {
+        DDLogWarn(@"Caught exception while trying to write on the socket %@", exception.debugDescription);
+    }
 }
 
 - (NSString*)webSocketAuthenticationString{
