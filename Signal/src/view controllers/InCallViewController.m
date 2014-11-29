@@ -292,7 +292,7 @@ static NSInteger connectingFlashCounter = 0;
         message = [message stringByAppendingString:[serverMessage text]];
     }
     
-    _callStatusLabel.textColor = [UIColor redColor];
+    _callStatusLabel.textColor = [UIColor ows_redColor];
     
     [self showConnectingError];
     _callStatusLabel.text = message;

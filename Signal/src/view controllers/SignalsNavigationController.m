@@ -8,6 +8,8 @@
 
 #import "SignalsNavigationController.h"
 
+#import "UIUtil.h"
+
 @interface SignalsNavigationController ()
 
 @end
@@ -33,7 +35,7 @@
     
     CGRect bar = self.navigationBar.frame;
     _socketStatusView.frame = CGRectMake(0, bar.size.height-1.0f, self.view.frame.size.width, 1.0f);
-    _socketStatusView.progressTintColor = [UIColor redColor];
+    _socketStatusView.progressTintColor = [UIColor ows_redColor];
     _socketStatusView.progress = 1.0f;
     [self.navigationBar addSubview:_socketStatusView];
 }
@@ -56,18 +58,18 @@
 
 -(void)socketDidOpen
 {
-    _socketStatusView.progressTintColor = [UIColor greenColor];
+    _socketStatusView.progressTintColor = [UIColor ows_greenColor];
 }
 
 -(void)socketDidClose
 {
-    _socketStatusView.progressTintColor = [UIColor redColor];
+    _socketStatusView.progressTintColor = [UIColor ows_redColor];
     
 }
 
 -(void)socketIsConnecting
 {
-    _socketStatusView.progressTintColor = [UIColor yellowColor];
+    _socketStatusView.progressTintColor = [UIColor ows_yellowColor];
 }
 
 

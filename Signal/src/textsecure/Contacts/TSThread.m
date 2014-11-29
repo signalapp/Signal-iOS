@@ -14,6 +14,10 @@
 #import "TSStorageManager.h"
 #import "TSGroup.h"
 
+#import "TSCall.h"
+#import "TSOutgoingMessage.h"
+#import "TSIncomingMessage.h"
+
 @implementation TSThread
 
 + (NSString *)collection{
@@ -63,6 +67,69 @@
         interaction = [TSInteraction fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:_lastMessageId] transaction:transaction];
     }];
     return interaction.description;
+}
+
+- (TSLastActionType)lastAction
+{
+    __block TSInteraction *interaction;
+    [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        interaction = [TSInteraction fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:_lastMessageId] transaction:transaction];
+    }];
+    
+    return [self lastActionForInteraction:interaction];
+}
+
+- (TSLastActionType)lastActionForInteraction:(TSInteraction*)interaction
+{
+    if ([interaction isKindOfClass:[TSCall class]])
+    {
+        TSCall * callInteraction = (TSCall*)interaction;
+        BOOL isOutgoing = callInteraction.wasCaller;
+        
+        switch (callInteraction.callType) {
+            case TSCallTypeSuccess:
+                return isOutgoing ? TSLastActionCallOutgoing : TSLastActionCallIncoming;
+                break;
+            case TSCallTypeMissed:
+                return isOutgoing ? TSLastActionCallOutgoingMissed : TSLastActionCallIncomingMissed;
+                break;
+            case TSCallTypeBusy:
+                return isOutgoing ? TSLastActionCallOutgoingMissed : TSLastActionCallIncomingMissed;
+                break;
+            case TSCallTypeFailed:
+                return isOutgoing ? TSLastActionCallOutgoingFailed : TSLastActionNone;
+                break;
+            default:
+                return TSLastActionNone;
+                break;
+        }
+        
+    } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
+        TSOutgoingMessage * outgoingMessageInteraction = (TSOutgoingMessage*)interaction;
+        
+        switch (outgoingMessageInteraction.messageState) {
+            case TSOutgoingMessageStateAttemptingOut:
+                return TSLastActionNone;
+                break;
+            case TSOutgoingMessageStateUnsent:
+                return TSLastActionMessageUnsent;
+                break;
+            case TSOutgoingMessageStateSent:
+                return TSLastActionMessageSent;
+                break;
+            case TSOutgoingMessageStateDelivered:
+                return TSLastActionMessageDelivered;
+                break;
+            default:
+                return TSLastActionNone;
+                break;
+        }
+        
+    } else if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
+        return TSLastActionNone;
+    } else {
+        return TSLastActionNone;
+    }
 }
 
 - (int)unreadMessages{

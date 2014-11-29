@@ -164,24 +164,24 @@ static NSString *const kContactDetailSegue   = @"DetailSegue";
     
     UIImage *clearImage = [[UIImage imageNamed:@"delete_history"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     [cell.contactShredButton setImage:clearImage forState:UIControlStateNormal];
-    cell.contactShredButton.tintColor = [UIColor redColor];
+    cell.contactShredButton.tintColor = [UIColor ows_redColor];
     
     
     if (c.isRedPhoneContact)
     {
-        cell.contactCallButton.tintColor = [UIColor colorWithRed:0.f/255.f green:122.f/255.f blue:255.f/255.f alpha:1.0f];
+        cell.contactCallButton.tintColor = [UIColor ows_blueColor];
         [cell.contactCallButton addTarget:self action:@selector(initiateRedPhoneCall) forControlEvents:UIControlEventTouchUpInside];
     } else {
-        cell.contactCallButton.tintColor = [UIColor colorWithRed:81.f/255.f green:81.f/255.f blue:81.f/255.f alpha:1.0f];
+        cell.contactCallButton.tintColor = [UIColor ows_darkGrayColor];
         cell.contactCallButton.enabled = NO;
     }
     
     if (c.isTextSecureContact)
     {
-        cell.contactTextButton.tintColor = [UIColor colorWithRed:0.f/255.f green:122.f/255.f blue:255.f/255.f alpha:1.0f];
+        cell.contactTextButton.tintColor = [UIColor ows_blueColor];
         [cell.contactTextButton addTarget:self action:@selector(openTextSecureConversation) forControlEvents:UIControlEventTouchUpInside];
     } else {
-        cell.contactTextButton.tintColor = [UIColor colorWithRed:81.f/255.f green:81.f/255.f blue:81.f/255.f alpha:1.0f];
+        cell.contactTextButton.tintColor = [UIColor ows_darkGrayColor];
         cell.contactTextButton.enabled = NO;
     }
 }

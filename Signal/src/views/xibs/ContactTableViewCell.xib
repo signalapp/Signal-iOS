@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14A388a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14C68k" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
@@ -59,7 +59,10 @@
                     <constraint firstItem="U3p-TB-rKO" firstAttribute="leading" secondItem="ecr-fm-JY4" secondAttribute="trailing" constant="7" id="7Ud-iJ-x8c">
                         <variation key="heightClass=regular-widthClass=compact" constant="14"/>
                     </constraint>
+                    <constraint firstItem="ecr-fm-JY4" firstAttribute="centerY" secondItem="3" secondAttribute="centerY" constant="0.5" id="7ZG-hL-NmI"/>
+                    <constraint firstItem="ecr-fm-JY4" firstAttribute="centerY" secondItem="U3p-TB-rKO" secondAttribute="centerY" id="AHF-1d-aoL"/>
                     <constraint firstItem="3" firstAttribute="top" secondItem="Ibd-RS-koG" secondAttribute="topMargin" constant="-4" id="H8v-R2-KWU"/>
+                    <constraint firstItem="10" firstAttribute="centerY" secondItem="3" secondAttribute="centerY" id="Zfc-We-RZP"/>
                     <constraint firstAttribute="trailingMargin" secondItem="U3p-TB-rKO" secondAttribute="trailing" constant="5" id="beE-ap-SdR">
                         <variation key="heightClass=regular-widthClass=compact" constant="-2"/>
                     </constraint>
@@ -70,6 +73,13 @@
                     <constraint firstAttribute="bottomMargin" secondItem="3" secondAttribute="bottom" constant="-4.5" id="vDP-VK-QhQ"/>
                     <constraint firstItem="ecr-fm-JY4" firstAttribute="top" secondItem="Ibd-RS-koG" secondAttribute="topMargin" constant="2" id="y3o-zx-jLL"/>
                 </constraints>
+                <variation key="default">
+                    <mask key="constraints">
+                        <exclude reference="3s2-cu-KLN"/>
+                        <exclude reference="y3o-zx-jLL"/>
+                        <exclude reference="qcJ-E0-XzW"/>
+                    </mask>
+                </variation>
             </tableViewCellContentView>
             <connections>
                 <outlet property="callButton" destination="ecr-fm-JY4" id="zQa-g1-xnt"/>

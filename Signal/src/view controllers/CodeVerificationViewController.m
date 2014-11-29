@@ -50,7 +50,6 @@
         [Environment.getCurrent.phoneDirectoryManager forceUpdate];
         [self performSegueWithIdentifier:@"verifiedSegue" sender:self];
     } failure:^(NSError *error) {
-        NSLog(@"Failed to register");
         [self showAlertForError:error];
         [_challengeButton setEnabled:YES];
     }];
