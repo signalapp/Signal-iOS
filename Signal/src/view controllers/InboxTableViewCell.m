@@ -48,7 +48,7 @@
     _timeLabel.attributedText = [self dateAttributedString:thread.lastMessageDate];
     self.separatorInset       = UIEdgeInsetsMake(0,_contactPictureView.frame.size.width*1.5f, 0, 0);
 
-    [self setUpLastAction:@"read"]; // TODO: Change 
+    [self setUpLastActionForThread:thread];
 }
 
 -(void)configureForState:(CellState)state
@@ -66,24 +66,48 @@
     }
 }
 
--(void)setUpLastAction:(NSString*)lastAction {
+-(void)setUpLastActionForThread:(TSThread*)thread
+{
+    TSLastActionType lastAction = [thread lastAction];
     
-    //TODO: Set up KVO
-    if ([lastAction isEqualToString:@"read"]) {
-        _lastActionImageView.image = [UIImage imageNamed:@"checkmark"];
-    } else if ([lastAction isEqualToString:@"replied"]) {
-        _lastActionImageView.image = [UIImage imageNamed:@"reply"];
-    } else if ([lastAction isEqualToString:@"missedCall"]) {
-        _lastActionImageView.image = [UIImage imageNamed:@"missed"];
-    } else if ([lastAction isEqualToString:@"outgoingCall"]) {
-        _lastActionImageView.image = [UIImage imageNamed:@"received"];
-    } else if ([lastAction isEqualToString:@"unread"]) {
-        _lastActionImageView.image = nil;
-        _snippetLabel.textColor = [UIColor blackColor];
-        _nameLabel.font = [UIFont boldSystemFontOfSize:15];
-        _timeLabel.textColor = [UIColor colorWithRed:0 green:122.f/255.f blue:1.0f alpha:1.0f];
+    switch (lastAction) {
+        case TSLastActionNone:
+            _lastActionImageView.image = nil;
+            break;
+        case TSLastActionCallIncoming:
+            _lastActionImageView.image = [UIImage imageNamed:@"call_incoming"];
+            break;
+        case TSLastActionCallIncomingMissed:
+            _lastActionImageView.image = [UIImage imageNamed:@"call_missed"];
+            break;
+        case TSLastActionCallOutgoing:
+            _lastActionImageView.image = [UIImage imageNamed:@"call_outgoing"];
+            break;
+        case TSLastActionCallOutgoingMissed:
+            _lastActionImageView.image = [UIImage imageNamed:@"call_canceled"];
+            break;
+        case TSLastActionCallOutgoingFailed:
+            _lastActionImageView.image = [UIImage imageNamed:@"call_failed"];
+            break;
+        case TSLastActionMessageAttemptingOut:
+            _lastActionImageView.image = nil;
+            break;
+        case TSLastActionMessageUnsent:
+            _lastActionImageView.image = [UIImage imageNamed:@"message_error"];
+            break;
+        case TSLastActionMessageSent:
+            _lastActionImageView.image = [UIImage imageNamed:@"reply"];
+            break;
+        case TSLastActionMessageDelivered:
+            _lastActionImageView.image = [UIImage imageNamed:@"checkmark_light"];
+            break;
+        case TSLastActionMessageIncoming:
+            _lastActionImageView.image = nil;
+            break;
+        default:
+            _lastActionImageView.image = nil;
+            break;
     }
-
 }
 
 #pragma mark - Date formatting
@@ -95,7 +119,7 @@
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:timeString];
     
     [attributedString addAttribute:NSForegroundColorAttributeName
-                             value:[UIColor darkGrayColor]
+                             value:[UIColor ows_darkGrayColor]
                              range:NSMakeRange(0, timeString.length)];
     
 

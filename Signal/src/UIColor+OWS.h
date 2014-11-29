@@ -18,5 +18,11 @@
 
 + (UIColor *) ows_darkGrayColor;
 
++ (UIColor *) ows_yellowColor;
+
++ (UIColor *) ows_greenColor;
+
++ (UIColor *) ows_redColor;
+
 
 @end

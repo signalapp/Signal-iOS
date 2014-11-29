@@ -11,6 +11,24 @@
 
 #import "TSYapDatabaseObject.h"
 
+typedef NS_ENUM(NSInteger, TSLastActionType) {
+    TSLastActionNone,
+    
+    TSLastActionCallIncoming,
+    TSLastActionCallIncomingMissed,
+
+    TSLastActionCallOutgoing,
+    TSLastActionCallOutgoingMissed,
+    TSLastActionCallOutgoingFailed,
+    
+    TSLastActionMessageAttemptingOut,
+    TSLastActionMessageUnsent,
+    TSLastActionMessageSent,
+    TSLastActionMessageDelivered,
+    
+    TSLastActionMessageIncoming
+};
+
 /**
  *  TSThread is the superclass of TSContactThread and TSGroupThread
  */
@@ -47,6 +65,8 @@
 - (NSDate*)lastMessageDate;
 
 - (NSString*)lastMessageLabel;
+
+- (TSLastActionType)lastAction;
 
 - (int)unreadMessages;
 
