@@ -20,6 +20,7 @@
 
 #import "InitialViewController.h"
 #import "CodeVerificationViewController.h"
+#import "UIViewController+ErrorHandling.h"
 
 #import <PastelogKit/Pastelog.h>
 
@@ -218,7 +219,9 @@
     [self removeScreenProtection];
     
     if (Environment.isRedPhoneRegistered) {
-        [PushManager.sharedManager verifyPushPermissions];
+        [PushManager.sharedManager verifyPushPermissions:nil failure:^(NSError *error) {
+            [self.window.rootViewController ows_showAlertForError:error];
+        }];
         [AppAudioManager.sharedInstance requestRequiredPermissionsIfNeeded];
     }
 }

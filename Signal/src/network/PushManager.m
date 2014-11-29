@@ -15,8 +15,6 @@
 
 @property TOCFutureSource *registerWithServerFutureSource;
 
-@property UIAlertView *missingPermissionsAlertView;
-
 @end
 
 @implementation PushManager
@@ -33,26 +31,25 @@
 - (instancetype)init{
     self = [super init];
     if (self) {
-        self.missingPermissionsAlertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
-                                                                      message:NSLocalizedString(@"PUSH_SETTINGS_MESSAGE", @"")
-                                                                     delegate:nil
-                                                            cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                                            otherButtonTitles:nil, nil];
     }
     return self;
 }
 
-- (void)verifyPushPermissions{
+- (void)verifyPushPermissions:(void (^)())success failure:(void (^)(NSError *error))failure {
     if (self.isMissingMandatoryNotificationTypes || self.needToRegisterForRemoteNotifications){
         [self registrationWithSuccess:^{
             DDLogError(@"Re-enabled push succesfully");
-        } failure:^{
+            if (success != nil) success();
+        } failure:^(NSError *error) {
             DDLogError(@"Failed to re-enable push.");
+            if (failure != nil) failure(error);
         }];
+    } else {
+        if (success != nil) success();
     }
 }
 
-- (void)registrationWithSuccess:(void (^)())success failure:(void (^)())failure{
+- (void)registrationWithSuccess:(void (^)())success failure:(void (^)(NSError *error))failure {
     
     if (!self.wantRemoteNotifications) {
         success();
@@ -60,9 +57,8 @@
     }
     
     [self registrationForPushWithSuccess:^(NSData* pushToken){
-        [self registrationForUserNotificationWithSuccess:success failure:^{
-            [self.missingPermissionsAlertView show];
-            failure();
+        [self registrationForUserNotificationWithSuccess:success failure:^(NSError *error) {
+            failure(error);
         }];
     } failure:failure];
 }
@@ -110,26 +106,19 @@
     return self.userNotificationFutureSource.future;
 }
 
-- (void)registrationForPushWithSuccess:(void (^)(NSData* pushToken))success failure:(void (^)())failure{
+- (void)registrationForPushWithSuccess:(void (^)(NSData* pushToken))success failure:(void (^)(NSError *error))failure{
     TOCFuture       *requestPushTokenFuture = [self registerPushNotificationFuture];
     
     [requestPushTokenFuture catchDo:^(id failureObj) {
-        failure();
-        [self.missingPermissionsAlertView show];
         DDLogError(@"This should not happen on iOS8. No push token was provided");
+        failure([self missingPermissionsError]);
     }];
     
     [requestPushTokenFuture thenDo:^(NSData* pushToken) {
         TOCFuture *registerPushTokenFuture = [self registerForPushFutureWithToken:pushToken];
         
         [registerPushTokenFuture catchDo:^(id failureObj) {
-            UIAlertView *failureToRegisterWithServerAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"REGISTRATION_ERROR", @"")
-                                                                                       message:NSLocalizedString(@"REGISTRATION_BODY", nil)
-                                                                                      delegate:nil
-                                                                             cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                                                                             otherButtonTitles:nil, nil];
-            [failureToRegisterWithServerAlert show];
-            failure();
+            failure([self registrationError]);
         }];
         
         [registerPushTokenFuture thenDo:^(id value) {
@@ -139,7 +128,7 @@
 }
 
 
-- (void)registrationAndRedPhoneTokenRequestWithSuccess:(void (^)(NSData* pushToken, NSString* signupToken))success failure:(void (^)())failure{
+- (void)registrationAndRedPhoneTokenRequestWithSuccess:(void (^)(NSData* pushToken, NSString* signupToken))success failure:(void (^)(NSError *error))failure{
     [self registrationForPushWithSuccess:^(NSData *pushToken) {        
         [RPServerRequestsManager.sharedInstance performRequest:[RPAPICall requestTextSecureVerificationCode] success:^(NSURLSessionDataTask *task, id responseObject) {
             NSError *error;
@@ -148,32 +137,30 @@
             NSString* tsToken = [dictionary objectForKey:@"token"];
             
             if (!tsToken || !pushToken || error) {
-                failure();
+                failure([self registrationError]);
                 return;
             }
             
             success(pushToken, tsToken);
         } failure:^(NSURLSessionDataTask *task, NSError *error) {
-            failure();
+            failure([self registrationError]);
         }];
-    } failure:^{
-        failure();
+    } failure:^(NSError *error) {
+        failure(error);
     }];
     
 }
 
-- (void)registrationForUserNotificationWithSuccess:(void (^)())success failure:(void (^)())failure{
+- (void)registrationForUserNotificationWithSuccess:(void (^)())success failure:(void (^)(NSError *error))failure{
     TOCFuture *registrerUserNotificationFuture = [self registerForUserNotificationsFuture];
     
     [registrerUserNotificationFuture catchDo:^(id failureObj) {
-        [self.missingPermissionsAlertView show];
-        failure();
+        failure([self missingPermissionsError]);
     }];
     
     [registrerUserNotificationFuture thenDo:^(id types) {
         if (self.isMissingMandatoryNotificationTypes) {
-            [self.missingPermissionsAlertView show];
-            failure();
+            failure([self missingPermissionsError]);
         } else{
             success();
         }
@@ -231,6 +218,28 @@
 
 -(int)mandatoryNotificationTypes{
     return UIUserNotificationTypeAlert | UIUserNotificationTypeSound;
+}
+
+#pragma mark Errors
+
+- (NSError *)missingPermissionsError {
+    
+    NSError *error = [NSError errorWithDomain:PushManagerErrorDomain code:PushManagerErrorMissingPermissions userInfo:@{
+        NSLocalizedDescriptionKey:              NSLocalizedString(@"ACTION_REQUIRED_TITLE", @""),
+        NSLocalizedRecoverySuggestionErrorKey:  NSLocalizedString(@"PUSH_SETTINGS_MESSAGE", @""),
+    }];
+                      
+    return error;
+}
+
+- (NSError *)registrationError {
+    
+    NSError *error = [NSError errorWithDomain:PushManagerErrorDomain code:PushManagerErrorRegistration userInfo:@{
+        NSLocalizedDescriptionKey:              NSLocalizedString(@"REGISTRATION_ERROR", @""),
+        NSLocalizedFailureReasonErrorKey:       NSLocalizedString(@"REGISTRATION_BODY", nil),
+    }];
+                      
+    return error;
 }
 
 @end

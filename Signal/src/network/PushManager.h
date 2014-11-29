@@ -12,6 +12,14 @@
 #define Signal_Accept_Identifier  @"Signal_Call_Accept"
 #define Signal_Decline_Identifier @"Signal_Call_Decline"
 
+static NSString *const PushManagerErrorDomain = @"PushManagerErrorDomain";
+
+typedef enum
+{
+    PushManagerErrorMissingPermissions,
+    PushManagerErrorRegistration,
+} PushManagerError;
+
 /**
  *  The Push Manager is responsible for registering the device for Signal push notifications.
  */
@@ -25,7 +33,7 @@
  *  Therefore, we check on startup if mandatory permissions are granted.
  */
 
-- (void)verifyPushPermissions;
+- (void)verifyPushPermissions:(void (^)())success failure:(void (^)(NSError *error))failure;
 
 /**
  *  Push notification registration method
@@ -34,7 +42,7 @@
  *  @param failure Block to executre if push notification registration fails
  */
 
-- (void)registrationWithSuccess:(void (^)())success failure:(void (^)())failure;
+- (void)registrationWithSuccess:(void (^)())success failure:(void (^)(NSError *error))failure;
 
 /**
  *  Registers the push token with the RedPhone server, then returns the push token and a signup token to be used to register with TextSecure.
@@ -43,7 +51,7 @@
  *  @param failure Failure completion block
  */
 
-- (void)registrationAndRedPhoneTokenRequestWithSuccess:(void (^)(NSData* pushToken, NSString* signupToken))success failure:(void (^)())failure;
+- (void)registrationAndRedPhoneTokenRequestWithSuccess:(void (^)(NSData* pushToken, NSString* signupToken))success failure:(void (^)(NSError *error))failure;
 
 /**
  *  The pushNotification and userNotificationFutureSource are accessed by the App Delegate after requested permissions.

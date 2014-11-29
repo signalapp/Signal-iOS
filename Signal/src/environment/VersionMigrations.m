@@ -45,8 +45,8 @@
         
         [PushManager.sharedManager registrationWithSuccess:^{
             
-        } failure:^{
-            DDLogError(@"Error re-registering on migration from 1.0.2");
+        } failure:^(NSError *pushError) {
+            DDLogError(@"Error re-registering on migration from 1.0.2: %@", pushError.userInfo);
         }];
         
         [NSFileManager.defaultManager removeItemAtPath:path error:&error];

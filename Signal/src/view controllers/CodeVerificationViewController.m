@@ -15,6 +15,7 @@
 #import "PushManager.h"
 #import "SignalKeyingStorage.h"
 #import "TSAccountManager.h"
+#import "UIViewController+ErrorHandling.h"
 
 @interface CodeVerificationViewController ()
 
@@ -52,14 +53,14 @@
     } failure:^(NSError *error) {
        // TODO: Unlock UI
         NSLog(@"Failed to register");
-        [self showAlertForError:error];
+        [self ows_showAlertForError:error];
         [_challengeButton setEnabled:YES];
     }];
 }
 
 
 - (void)registerWithSuccess:(void(^)())success failure:(void(^)(NSError *))failure{
-    //TODO: Refactor this to use futures? Better error handling needed. Good enough for PoC
+    //TODO: Refactor this to use futures?
     
     [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall verifyVerificationCode:_challengeTextField.text] success:^(NSURLSessionDataTask *task, id responseObject) {
         
@@ -69,9 +70,8 @@
             } failure:^(NSError *error) {
                 failure(error);
             }];
-        } failure:^{
-            // PushManager shows its own error alerts, so we don't want to show a second one
-            failure(nil);
+        } failure:^(NSError *error) {
+            failure(error);
         }];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         NSHTTPURLResponse* badResponse = (NSHTTPURLResponse*)task.response;
@@ -79,28 +79,6 @@
         
         failure(responseError);
     }];
-}
-
-
-// TODO: If useful, this could possibly go in a less-specific class
-- (void)showAlertForError:(NSError *)error {
-    
-    if (error == nil) {
-        NSLog(@"%@: Error condition, but no NSError to display", self.class);
-        return;
-    } else if (error.localizedDescription.length == 0) {
-        NSLog(@"%@: Unable to display error because localizedDescription was not set: %@", self.class, error);
-        return;
-    }
-    
-    NSString *alertBody = nil;
-    if (error.localizedFailureReason.length > 0) {
-        alertBody = error.localizedFailureReason;
-    } else if (error.localizedRecoverySuggestion.length > 0) {
-        alertBody = error.localizedRecoverySuggestion;
-    }
-    
-    SignalAlertView(error.localizedDescription, alertBody);
 }
 
 
