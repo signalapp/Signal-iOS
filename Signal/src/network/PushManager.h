@@ -9,8 +9,14 @@
 #import <CollapsingFutures.h>
 #import <Foundation/Foundation.h>
 
-#define Signal_Accept_Identifier  @"Signal_Call_Accept"
-#define Signal_Decline_Identifier @"Signal_Call_Decline"
+#define Signal_Call_Accept_Identifier        @"Signal_Call_Accept"
+#define Signal_Call_Decline_Identifier       @"Signal_Call_Decline"
+
+#define Signal_Call_Category                 @"Signal_IncomingCall"
+#define Signal_Message_Category              @"Signal_Message"
+
+#define Signal_Message_View_Identifier       @"Signal_Message_Read"
+#define Signal_Message_MarkAsRead_Identifier @"Signal_Message_MarkAsRead"
 
 /**
  *  The Push Manager is responsible for registering the device for Signal push notifications.
