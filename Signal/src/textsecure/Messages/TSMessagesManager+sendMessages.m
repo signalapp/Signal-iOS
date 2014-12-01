@@ -80,11 +80,14 @@ dispatch_queue_t sendingQueue() {
             TSSubmitMessageRequest *request = [[TSSubmitMessageRequest alloc] initWithRecipient:recipient.uniqueId messages:messages relay:recipient.relay timeStamp:message.timeStamp];
             
             [[TSNetworkManager sharedManager] queueAuthenticatedRequest:request success:^(NSURLSessionDataTask *task, id responseObject) {
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [recipient saveWithTransaction:transaction];
+                }];
                 [self handleMessageSent:message inThread:thread];
+                
             } failure:^(NSURLSessionDataTask *task, NSError *error) {
                 NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
                 long statuscode = response.statusCode;
-                
                 switch (statuscode) {
                     case 404:
                         // Recipient not found
@@ -99,6 +102,10 @@ dispatch_queue_t sendingQueue() {
                         DDLogWarn(@"Stale devices");
                         break;
                     default:
+                        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                            [message setMessageState:TSOutgoingMessageStateUnsent];
+                            [message saveWithTransaction:transaction];
+                        }];
                         break;
                 }
             }];
@@ -110,9 +117,6 @@ dispatch_queue_t sendingQueue() {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [message setMessageState:TSOutgoingMessageStateSent];
         [message saveWithTransaction:transaction];
-        TSThread *fetchedThread = [TSThread fetchObjectWithUniqueID:thread.uniqueId];
-        fetchedThread.lastMessageId = [TSInteraction timeStampFromString:message.uniqueId];
-        [fetchedThread saveWithTransaction:transaction];
     }];
 }
 

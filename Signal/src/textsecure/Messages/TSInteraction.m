@@ -80,4 +80,16 @@ const struct TSMessageEdges TSMessageEdges = {
     return @"Interaction description";
 }
 
+- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction{
+    [super saveWithTransaction:transaction];
+    TSThread *fetchedThread     = [TSThread fetchObjectWithUniqueID:self.uniqueThreadId];
+    uint64_t timeStamp          = [TSInteraction timeStampFromString:self.uniqueId];
+    
+    if (timeStamp > fetchedThread.lastMessageId) {
+        fetchedThread.lastMessageId = timeStamp;
+    }
+    [fetchedThread saveWithTransaction:transaction];
+}
+
+
 @end

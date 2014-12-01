@@ -71,7 +71,11 @@
 }
 
 - (TSRecipient *)recipientWithTransaction:(YapDatabaseReadTransaction*)transaction{
-    return [TSRecipient recipientWithTextSecureIdentifier:self.contactIdentifier withTransaction:transaction];
+    TSRecipient *recipient = [TSRecipient recipientWithTextSecureIdentifier:self.contactIdentifier withTransaction:transaction];
+    if (!recipient){
+        recipient = [[TSRecipient alloc] initWithTextSecureIdentifier:self.contactIdentifier relay:nil];
+    }
+    return recipient;
 }
 
 @end

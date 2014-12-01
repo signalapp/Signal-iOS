@@ -1,6 +1,7 @@
 "ACTION_REQUIRED_TITLE" = "Action Required";
 "ANSWER_CALL_BUTTON_TITLE" = "Answer";
 "APN" = "Incoming Call";
+"APN_Message" = "You got a new message!";
 "AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can restore the permission in the Settings app >> Privacy >> Microphone >> Signal";
 "CALL_BUTTON_TITLE" = "Call";
 "CHALLENGE_CODE_BUTTON_TITLE" = "VERIFY";

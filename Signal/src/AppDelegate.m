@@ -199,12 +199,34 @@
 }
 
 -(void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-    if([self.notificationTracker shouldProcessNotification:userInfo]){
-        [self application:application didReceiveRemoteNotification:userInfo];
-    } else{
-        DDLogDebug(@"Push already processed. Skipping.");
+    
+    if ([self isRedPhonePush:userInfo]) {
+        if ([self.notificationTracker shouldProcessNotification:userInfo]){
+            [self application:application didReceiveRemoteNotification:userInfo];
+        } else{
+            DDLogDebug(@"Push already processed. Skipping.");
+            completionHandler(UIBackgroundFetchResultNewData);
+        }
+    } else {
+        [TSSocketManager becomeActive];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC),
+                       dispatch_get_main_queue(), ^{
+                           // Check result of your operation and call completion block with the result
+                           NSLog(@"Hello");
+                           completionHandler(UIBackgroundFetchResultNewData);
+                       });
     }
-    completionHandler(UIBackgroundFetchResultNewData);
+}
+
+- (BOOL)isRedPhonePush:(NSDictionary*)pushDict {
+    NSDictionary *aps  = [pushDict objectForKey:@"aps"];
+    NSString *category = [aps      objectForKey:@"category"];
+    
+    if ([category isEqualToString:Signal_Call_Category]) {
+        return YES;
+    } else{
+        return NO;
+    }
 }
 
 -(void) applicationDidBecomeActive:(UIApplication *)application {
@@ -224,10 +246,14 @@
 }
 
 - (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void (^)())completionHandler{
-    if ([identifier isEqualToString:Signal_Accept_Identifier]) {
+    if ([identifier isEqualToString:Signal_Call_Accept_Identifier]) {
         [self.callPickUpFuture trySetResult:@YES];
-    } else if ([identifier isEqualToString:Signal_Decline_Identifier]){
+    } else if ([identifier isEqualToString:Signal_Call_Decline_Identifier]){
         [self.callPickUpFuture trySetResult:@NO];
+    } else if ([identifier isEqualToString:Signal_Message_MarkAsRead_Identifier]){
+        //TODO
+    } else if ([identifier isEqualToString:Signal_Message_View_Identifier]){
+        //TODO
     }
     completionHandler();
 }

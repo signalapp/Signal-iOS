@@ -14,6 +14,8 @@
 #import "IncomingPushMessageSignal.pb.h"
 #import "NSData+Base64.h"
 
+#import "PushManager.h"
+
 #import "TSIncomingMessage.h"
 #import "TSErrorMessage.h"
 #import "TSInfoMessage.h"
@@ -222,10 +224,9 @@
             incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:cThread messageBody:body attachements:nil];
             thread = cThread;
         }
-        
         [incomingMessage saveWithTransaction:transaction];
-        thread.lastMessageId = [TSInteraction timeStampFromString:incomingMessage.uniqueId];
-        [thread saveWithTransaction:transaction];
+        NSString *name = [thread name];
+        [self notifyUserForIncomingMessage:incomingMessage from:name];
     }];
 }
 
@@ -244,6 +245,14 @@
         [message setMessageState:TSOutgoingMessageStateUnsent];
         [message saveWithTransaction:transaction];
     }];
+}
+
+- (void)notifyUserForIncomingMessage:(TSIncomingMessage*)message from:(NSString*)name{
+    UILocalNotification *notification = [[UILocalNotification alloc] init];
+    notification.alertBody = [NSString stringWithFormat:@"%@: %@", name, message.body];
+    notification.soundName = @"default";
+    notification.category  = Signal_Message_Category;
+    [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
 }
 
 @end
