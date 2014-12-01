@@ -1,6 +1,9 @@
 #import "YDBCKChangeQueue.h"
+#import "YDBCKChangeSet.h"
+#import "YDBCKChangeRecord.h"
 #import "YapDatabaseCKRecord.h"
-#import "YapDebugDictionary.h"
+#import "YapDatabaseCloudKitPrivate.h"
+//#import "YapDebugDictionary.h"
 
 
 @interface YDBCKChangeQueue ()
@@ -9,44 +12,6 @@
 
 @end
 
-@interface YDBCKChangeSet () {
-@public
-	
-	NSMutableArray *deletedRecordIDs;
-	
-#if DEBUG
-	YapDebugDictionary *moodifiedRecords;
-#else
-	NSMutableDictionary *moodifiedRecords;
-#endif
-}
-
-- (instancetype)initWithDatabaseIdentifier:(NSString *)databaseIdentifier;
-- (instancetype)emptyCopy;
-- (instancetype)fullCopy;
-
-@property (nonatomic, readwrite) NSString *uuid;
-@property (nonatomic, readwrite) NSString *prev;
-
-@property (nonatomic, readwrite) BOOL hasChangesToDeletedRecordIDs;
-@property (nonatomic, readwrite) BOOL hasChangesToModifiedRecords;
-
-@end
-
-
-@interface YDBCKChangeRecord : NSObject <NSCoding, NSCopying>
-
-- (instancetype)initWithRecord:(CKRecord *)record;
-
-@property (nonatomic, strong, readwrite) CKRecord *record;
-@property (nonatomic, assign, readwrite) BOOL canStoreOnlyChangedKeys;
-
-@property (nonatomic, strong, readonly) CKRecordID *recordID;
-@property (nonatomic, strong, readonly) NSArray *changedKeys;
-
-@property (nonatomic, readonly) NSSet *changedKeysSet;
-
-@end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
@@ -255,9 +220,20 @@
 **/
 - (NSArray *)changeSetsFromPreviousCommits
 {
-	NSAssert(self.isPendingQueue, @"Method can only be invoked on pendingQueue");
-	
-	return [oldChangeSets copy];
+	if (self.isMasterQueue)
+	{
+		NSArray *oldChangeSetsCopy = nil;
+		
+		[masterQueueLock lock];
+		oldChangeSetsCopy = [oldChangeSets copy];
+		[masterQueueLock unlock];
+		
+		return oldChangeSetsCopy;
+	}
+	else // if (self.isPendingQueue)
+	{
+		return [oldChangeSets copy];
+	}
 }
 - (NSArray *)changeSetsFromCurrentCommit
 {
@@ -1034,278 +1010,6 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 		[pqInFlightChangeSet->deletedRecordIDs removeObjectAtIndex:index];
 		pqInFlightChangeSet.hasChangesToDeletedRecordIDs = YES;
 	}
-}
-
-@end
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-@implementation YDBCKChangeSet
-
-@synthesize uuid = uuid;
-@synthesize prev = prev;
-
-@synthesize databaseIdentifier = databaseIdentifier;
-
-@dynamic recordIDsToDelete;
-@dynamic recordsToSave;
-
-@synthesize hasChangesToDeletedRecordIDs;
-@synthesize hasChangesToModifiedRecords;
-
-- (id)initWithUUID:(NSString *)inUuid
-              prev:(NSString *)inPrev
-databaseIdentifier:(NSString *)inDatabaseIdentifier
-  deletedRecordIDs:(NSData *)serializedDeletedRecordIDs
-   modifiedRecords:(NSData *)serializedModifiedRecords
-{
-	if ((self = [super init]))
-	{
-		uuid = inUuid;
-		prev = inPrev;
-		
-		databaseIdentifier = inDatabaseIdentifier;
-		
-		[self deserializeDeletedRecordIDs:serializedDeletedRecordIDs];
-		[self deserializeModifiedRecords:serializedModifiedRecords];
-	}
-	return self;
-}
-
-- (instancetype)initWithDatabaseIdentifier:(NSString *)inDatabaseIdentifier
-{
-	if ((self = [super init]))
-	{
-		databaseIdentifier = inDatabaseIdentifier;
-		
-		uuid = nil; // Will be set later when the changeSets are ordered
-		prev = nil; // Will be set later when the changeSets are ordered
-	}
-	return self;
-}
-
-- (instancetype)emptyCopy
-{
-	YDBCKChangeSet *emptyCopy = [[YDBCKChangeSet alloc] init];
-	emptyCopy->uuid = uuid;
-	emptyCopy->prev = prev;
-	emptyCopy->databaseIdentifier = databaseIdentifier;
-	
-	return emptyCopy;
-}
-
-- (instancetype)fullCopy
-{
-	YDBCKChangeSet *fullCopy = [self emptyCopy];
-	fullCopy->deletedRecordIDs = [deletedRecordIDs mutableCopy];
-	
-#if DEBUG
-	fullCopy->moodifiedRecords = [[YapDebugDictionary alloc] initWithDictionary:moodifiedRecords copyItems:YES];
-#else
-	fullCopy->moodifiedRecords = [[NSMutableDictionary alloc] initWithDictionary:moodifiedRecords copyItems:YES];
-#endif
-	
-	return fullCopy;
-}
-
-- (NSArray *)recordIDsToDelete
-{
-	return [deletedRecordIDs copy];
-}
-
-- (NSArray *)recordsToSave
-{
-	NSMutableArray *array = [NSMutableArray arrayWithCapacity:[moodifiedRecords count]];
-	
-	for (YDBCKChangeRecord *changeRecord in [moodifiedRecords objectEnumerator])
-	{
-		[array addObject:changeRecord.record];
-	}
-	
-	return array;
-}
-
-- (NSData *)serializeDeletedRecordIDs
-{
-	if ([deletedRecordIDs count] > 0)
-		return [NSKeyedArchiver archivedDataWithRootObject:deletedRecordIDs];
-	else
-		return nil;
-}
-
-- (void)deserializeDeletedRecordIDs:(NSData *)serializedDeletedRecordIDs
-{
-	if (serializedDeletedRecordIDs)
-		deletedRecordIDs = [NSKeyedUnarchiver unarchiveObjectWithData:serializedDeletedRecordIDs];
-	else
-		deletedRecordIDs = nil;
-	
-	if (deletedRecordIDs) {
-		NSAssert([deletedRecordIDs isKindOfClass:[NSMutableArray class]], @"Deserialized object is wrong class");
-	}
-}
-
-- (NSData *)serializeModifiedRecords
-{
-	if ([moodifiedRecords count] > 0)
-		return [NSKeyedArchiver archivedDataWithRootObject:[moodifiedRecords allValues]];
-	else
-		return nil;
-}
-
-- (void)deserializeModifiedRecords:(NSData *)serializedModifiedRecords
-{
-	NSArray *modifiedRecordsArray = nil;
-	
-	if (serializedModifiedRecords) {
-		modifiedRecordsArray = [NSKeyedUnarchiver unarchiveObjectWithData:serializedModifiedRecords];
-	}
-	
-	if (modifiedRecordsArray) {
-		NSAssert([modifiedRecordsArray isKindOfClass:[NSArray class]], @"Deserialized object is wrong class");
-	}
-	
-#if DEBUG
-	moodifiedRecords = [[YapDebugDictionary alloc] initWithKeyClass:[CKRecordID class]
-	                                                    objectClass:[YDBCKChangeRecord class]
-	                                                       capacity:[modifiedRecordsArray count]];
-#else
-	moodifiedRecords = [[NSMutableDictionary alloc] initWithCapacity:[modifiedRecordsArray count]];
-#endif
-	
-	for (YDBCKChangeRecord *changeRecord in modifiedRecordsArray)
-	{
-		CKRecordID *recordID = changeRecord.recordID;
-		if (recordID) {
-			[moodifiedRecords setObject:changeRecord forKey:recordID];
-		}
-	}
-}
-
-- (void)enumerateMissingRecordsWithBlock:(CKRecord* (^)(CKRecordID *recordID, NSArray *changedKeys))block
-{
-	for (YDBCKChangeRecord *changeRecord in [moodifiedRecords objectEnumerator])
-	{
-		if (changeRecord.record == nil)
-		{
-			CKRecord *record = block(changeRecord.recordID, changeRecord.changedKeys);
-			
-			changeRecord.record = record;
-		}
-	}
-}
-
-@end
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-static NSString *const k_record      = @"record";
-static NSString *const k_recordID    = @"recordID";
-static NSString *const k_changedKeys = @"changedKeys";
-
-
-@implementation YDBCKChangeRecord
-{
-	CKRecordID *recordID;
-	NSArray *changedKeys;
-	NSSet *changedKeysSet;
-}
-
-@synthesize record = record;
-@synthesize canStoreOnlyChangedKeys = canStoreOnlyChangedKeys;
-
-@dynamic recordID;
-@dynamic changedKeys;
-@dynamic changedKeysSet;
-
-- (instancetype)initWithRecord:(CKRecord *)inRecord
-{
-	if ((self = [super init]))
-	{
-		record = inRecord;
-	}
-	return self;
-}
-
-- (instancetype)copyWithZone:(NSZone *)zone
-{
-	YDBCKChangeRecord *copy = [[YDBCKChangeRecord alloc] init];
-	
-	copy->record = record;
-	copy->canStoreOnlyChangedKeys = canStoreOnlyChangedKeys;
-	
-	copy->recordID = recordID;
-	copy->changedKeys = changedKeys;
-	
-	return copy;
-}
-
-- (instancetype)initWithCoder:(NSCoder *)decoder
-{
-	if ((self = [super init]))
-	{
-		record = [decoder decodeObjectForKey:k_record];
-		recordID = [decoder decodeObjectForKey:k_recordID];
-		changedKeys = [decoder decodeObjectForKey:k_changedKeys];
-		
-		if (recordID || changedKeys)
-			canStoreOnlyChangedKeys = YES;
-		else
-			canStoreOnlyChangedKeys = NO;
-	}
-	return self;
-}
-
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-	if (canStoreOnlyChangedKeys)
-	{
-		[coder encodeObject:self.recordID forKey:k_recordID];
-		[coder encodeObject:self.changedKeys forKey:k_changedKeys];
-	}
-	else
-	{
-		[coder encodeObject:record forKey:k_record];
-	}
-}
-
-- (void)setRecord:(CKRecord *)inRecord
-{
-	recordID = nil;
-	changedKeys = nil;
-	changedKeysSet = nil;
-	
-	record = inRecord;
-}
-
-- (CKRecordID *)recordID
-{
-	if (recordID)
-		return recordID;
-	else
-		return record.recordID;
-}
-
-- (NSArray *)changedKeys
-{
-	if (changedKeys)
-		return changedKeys;
-	else
-		return record.changedKeys;
-}
-
-- (NSSet *)changedKeysSet
-{
-	if (changedKeysSet == nil) // Generated on-demand (if needed)
-	{
-		changedKeysSet = [[NSSet alloc] initWithArray:self.changedKeys];
-	}
-	
-	return changedKeysSet;
 }
 
 @end

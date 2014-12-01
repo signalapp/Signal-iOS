@@ -16,6 +16,7 @@
 
 #import "YapDatabaseExtensionPrivate.h"
 #import "YapCache.h"
+#import "YapDebugDictionary.h"
 
 #import "sqlite3.h"
 
@@ -158,3 +159,63 @@ static NSString *const changeset_key_reset            = @"reset";
                              deletedRecordIDs:(NSArray *)deletedRecordIDs;
 
 @end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * This class represents a row in the queue table.
+ * Every row contains the following columns:
+ * 
+ * - uuid : The unique primary key
+ * - prev : The previous row, representing the commit prior to this one (reverse linked-list style)
+ *
+ * - databaseIdentifier : The databaseIdentifier for all deleted CKRecordIDs & modified CKRecords
+ * 
+ * - deletedRecordIDs   : A blob of the CKRecordIDs that are to be marked as deleted.
+ * - modifiedRecords    : A blob represending the rowid & modified info (either CKRecord or just changedKeys array).
+**/
+@interface YDBCKChangeSet () {
+@public
+	
+	NSMutableArray *deletedRecordIDs;
+	
+#if DEBUG
+	YapDebugDictionary *moodifiedRecords;
+#else
+	NSMutableDictionary *moodifiedRecords;
+#endif
+}
+
+// Inherited:
+//
+// @property (nonatomic, strong, readonly) NSString *databaseIdentifier;
+//
+// @property (nonatomic, readonly) NSArray *recordIDsToDelete;    // Array of CKRecordID's for CKModifyRecordsOperation
+// @property (nonatomic, readonly) NSArray *recordsToSave_noCopy; // Array of CKRecord's for CKModifyRecordsOperation
+
+- (instancetype)initWithUUID:(NSString *)uuid
+                        prev:(NSString *)prev
+          databaseIdentifier:(NSString *)databaseIdentifier
+            deletedRecordIDs:(NSData *)serializedRecordIDs
+             modifiedRecords:(NSData *)serializedModifiedRecords;
+
+- (instancetype)initWithDatabaseIdentifier:(NSString *)databaseIdentifier;
+
+- (instancetype)emptyCopy;
+- (instancetype)fullCopy;
+
+@property (nonatomic, strong, readwrite) NSString *uuid;
+@property (nonatomic, strong, readwrite) NSString *prev;
+
+@property (nonatomic, readwrite) BOOL hasChangesToDeletedRecordIDs;
+@property (nonatomic, readwrite) BOOL hasChangesToModifiedRecords;
+
+- (NSData *)serializeDeletedRecordIDs; // Blob to go in 'deletedRecordIDs' column of database row
+- (NSData *)serializeModifiedRecords;  // Blob to go in 'modifiedRecords' column of database row
+
+- (void)enumerateMissingRecordsWithBlock:(CKRecord* (^)(CKRecordID *recordID, NSArray *changedKeys))block;
+
+@end
+

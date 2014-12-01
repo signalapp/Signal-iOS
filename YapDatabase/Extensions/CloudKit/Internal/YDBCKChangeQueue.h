@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <CloudKit/CloudKit.h>
 
-@class YDBCKChangeSet;
+#import "YDBCKChangeSet.h"
 
 
 @interface YDBCKChangeQueue : NSObject
@@ -199,47 +199,5 @@
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
   withSavedDeletedRecordID:(CKRecordID *)recordID
         databaseIdentifier:(NSString *)databaseIdentifier;
-
-@end
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * This class represents a row in the queue table.
- * Every row contains the following columns:
- * 
- * - uuid : The unique primary key
- * - prev : The previous row, representing the commit prior to this one (reverse linked-list style)
- *
- * - databaseIdentifier : The databaseIdentifier for all deleted CKRecordIDs & modified CKRecords
- * 
- * - deletedRecordIDs   : A blob of the CKRecordIDs that are to be marked as deleted.
- * - modifiedRecords    : A blob represending the rowid & modified info (either CKRecord or just changedKeys array).
-**/
-@interface YDBCKChangeSet : NSObject
-
-- (id)initWithUUID:(NSString *)uuid
-              prev:(NSString *)prev
-databaseIdentifier:(NSString *)databaseIdentifier
-  deletedRecordIDs:(NSData *)serializedRecordIDs
-   modifiedRecords:(NSData *)serializedModifiedRecords;
-
-@property (nonatomic, strong, readonly) NSString *uuid;
-@property (nonatomic, strong, readonly) NSString *prev;
-
-@property (nonatomic, strong, readonly) NSString *databaseIdentifier;
-
-@property (nonatomic, readonly) NSArray *recordIDsToDelete; // Array of CKRecordID's for CKModifyRecordsOperation
-@property (nonatomic, readonly) NSArray *recordsToSave;     // Array of CKRecord's for CKModifyRecordsOperation
-
-@property (nonatomic, readonly) BOOL hasChangesToDeletedRecordIDs;
-@property (nonatomic, readonly) BOOL hasChangesToModifiedRecords;
-
-- (NSData *)serializeDeletedRecordIDs; // Blob to go in 'deletedRecordIDs' column of database row
-- (NSData *)serializeModifiedRecords;  // Blob to go in 'modifiedRecords' column of database row
-
-- (void)enumerateMissingRecordsWithBlock:(CKRecord* (^)(CKRecordID *recordID, NSArray *changedKeys))block;
 
 @end

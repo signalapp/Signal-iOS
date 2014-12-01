@@ -89,10 +89,6 @@
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
 	DDLogVerbose(@"Registered for Push notifications with token: %@", deviceToken);
-	
-	// Push registration complete.
-	// Decrement suspend count.
-	[MyDatabaseManager.cloudKitExtension resume];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
@@ -106,7 +102,22 @@
 {
 	DDLogVerbose(@"Push received: %@", userInfo);
 	
-	completionHandler(UIBackgroundFetchResultNoData);
+	__block UIBackgroundFetchResult combinedFetchResult = UIBackgroundFetchResultNoData;
+	
+	[[CloudKitManager sharedInstance] fetchRecordChangesWithCompletionHandler:
+	    ^(UIBackgroundFetchResult fetchResult, BOOL moreComing)
+	{
+		if (fetchResult == UIBackgroundFetchResultNewData) {
+			combinedFetchResult = UIBackgroundFetchResultNewData;
+		}
+		else if (fetchResult == UIBackgroundFetchResultFailed && combinedFetchResult == UIBackgroundFetchResultNoData) {
+			combinedFetchResult = UIBackgroundFetchResultFailed;
+		}
+		
+		if (!moreComing) {
+			completionHandler(combinedFetchResult);
+		}
+	}];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -115,16 +126,16 @@
 
 - (void)startTest
 {
-	MyTodo *todo = [[MyTodo alloc] init];
-	todo.title = @"Search for apartments";
-	
-	YapDatabaseConnection *databaseConnection = [MyDatabaseManager.database newConnection];
-	[databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-		
-		DDLogVerbose(@"Adding new todo...");
-		
-		[transaction setObject:todo forKey:todo.uuid inCollection:Collection_Todos];
-	}];
+//	MyTodo *todo = [[MyTodo alloc] init];
+//	todo.title = @"Search for apartments";
+//	
+//	YapDatabaseConnection *databaseConnection = [MyDatabaseManager.database newConnection];
+//	[databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+//		
+//		DDLogVerbose(@"Adding new todo...");
+//		
+//		[transaction setObject:todo forKey:todo.uuid inCollection:Collection_Todos];
+//	}];
 }
 
 @end

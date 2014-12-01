@@ -41,7 +41,7 @@
  * https://github.com/yapstudios/YapDatabase/wiki/Object-Policy
  * 
  * But here's a 10,000 foot summary:
- * - Your model objects extend this one (or you "rip off" this class - feel free)
+ * - Your model objects extend this one (or you rip off this class - feel free)
  * - You simply call [object makeImmutable]
  * - Voilà, you've got yourself an immutable thread-safe object,
  *   ready to go in the database and be passed around from thread-to-thread like a ... well behaved object.
@@ -49,13 +49,15 @@
  * ***** Concept #2 *****
  * 
  * Tracking which properties of an object have been changed.
- * More information coming soon.
+ *
+ * The most obvious use of this is for syncing changes to a cloud based service such as CloudKit.
+ * https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseCloudKit
 **/
 
 
 @interface MyDatabaseObject : NSObject <NSCopying>
 
-// Concept #1 - Immutability
+// Immutability
 
 @property (nonatomic, readonly) BOOL isImmutable;
 
@@ -63,13 +65,24 @@
 
 - (NSException *)immutableExceptionForKey:(NSString *)key;
 
-+ (NSMutableSet *)immutableProperties;
++ (NSMutableSet *)monitoredProperties;
 
-// Concept #2 - Tracking what changed
+// Tracking what changed
 
-@property (nonatomic, readonly) NSSet *allProperties;
+@property (nonatomic, readonly) NSSet *monitoredProperties;
+
 @property (nonatomic, readonly) NSSet *changedProperties;
+@property (nonatomic, readonly) BOOL hasChangedProperties;
 
 - (void)clearChangedProperties;
+
+// Tracking what changed (the sync-able subset)
+
++ (NSMutableDictionary *)syncablePropertyMappings;
+
+@property (nonatomic, readonly) NSSet *allSyncableProperties;
+
+@property (nonatomic, readonly) NSSet *changedSyncableProperties;
+@property (nonatomic, readonly) BOOL hasChangedSyncableProperties;
 
 @end

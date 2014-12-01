@@ -103,8 +103,8 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 			}];
 		}
 		
-		// We're ready to fetch any changes (from other devices)
-		[self fetchRecordChangesWithCompletionHandler:NULL];
+		// We're ready for the initial fetchRecordChanges post app-launch.
+		[self fetchRecordChangesAfterAppLaunch];
 	};
 	
 	CKModifyRecordZonesOperation *modifyRecordZonesOperation = nil;
@@ -188,13 +188,30 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 }
 
 /**
+ * This method is invoked after
+**/
+- (void)fetchRecordChangesAfterAppLaunch
+{
+	[self fetchRecordChangesWithCompletionHandler:^(UIBackgroundFetchResult result, BOOL moreComing) {
+		
+		if (!moreComing)
+		{
+			// Initial fetchRecordChanges operation complete.
+			// Decrement suspend count.
+			[MyDatabaseManager.cloudKitExtension resume];
+		}
+	}];
+}
+
+/**
  * This method uses CKFetchRecordChangesOperation to fetch changes.
  * It continues fetching until its reported that we're caught up.
  *
  * This method is invoked once automatically, when the CloudKitManager is initialized.
  * After that, one should invoke it anytime a corresponding push notification is received.
 **/
-- (void)fetchRecordChangesWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
+- (void)fetchRecordChangesWithCompletionHandler:
+        (void (^)(UIBackgroundFetchResult result, BOOL moreComing))completionHandler
 {
 	__block CKServerChangeToken *serverChangeToken = nil;
 	
@@ -248,7 +265,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 			DDLogError(@"CKFetchRecordChangesOperation: operationError: %@", operationError);
 			
 			if (completionHandler) {
-				completionHandler(UIBackgroundFetchResultFailed);
+				completionHandler(UIBackgroundFetchResultFailed, NO);
 			}
 		}
 		else
@@ -263,24 +280,20 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 				// Remove the items that were deleted (by another device)
 				for (CKRecordID *recordID in deletedRecordIDs)
 				{
-					NSString *key = nil;
-					NSString *collection = nil;
+					NSArray *collectionKeys =
+					  [[transaction ext:Ext_CloudKit] collectionKeysForRecordID:recordID
+					                                         databaseIdentifier:nil];
 					
-					BOOL exists = [[transaction ext:Ext_CloudKit] getKey:&key
-					                                          collection:&collection
-					                                         forRecordID:recordID
-					                                  databaseIdentifier:nil];
-					
-					if (exists)
+					for (YapCollectionKey *ck in collectionKeys)
 					{
 						// This MUST go FIRST
-						[[transaction ext:Ext_CloudKit] detachRecordForKey:key
-						                                      inCollection:collection
+						[[transaction ext:Ext_CloudKit] detachRecordForKey:ck.key
+						                                      inCollection:ck.collection
 						                                 wasRemoteDeletion:YES
 						                              shouldUploadDeletion:NO];
 						
 						// This MUST go SECOND
-						[transaction removeObjectForKey:key inCollection:collection];
+						[transaction removeObjectForKey:ck.key inCollection:ck.collection];
 					}
 				}
 				
@@ -303,7 +316,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 					}
 					else
 					{
-						MyTodo *newTodo = [CloudKitManager todoFromRecord:record];
+						MyTodo *newTodo = [[MyTodo alloc] initWithRecord:record];
 						
 						NSString *key = newTodo.uuid;
 						NSString *collection = Collection_Todos;
@@ -320,20 +333,20 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 					}
 				}
 				
-				// And save the serverChangeToken. (in the same atomic transaction)
+				// And save the serverChangeToken (in the same atomic transaction)
 				[transaction setObject:serverChangeToken
 				                forKey:Key_ServerChangeToken
 				          inCollection:Collection_CloudKit];
 				
 			} completionBlock:^{
 				
-				if (!moreComing && completionHandler)
+				if (completionHandler)
 				{
 					if (([deletedRecordIDs count] > 0) || ([changedRecords count] > 0)) {
-						completionHandler(UIBackgroundFetchResultNewData);
+						completionHandler(UIBackgroundFetchResultNewData, moreComing);
 					}
 					else {
-						completionHandler(UIBackgroundFetchResultNoData);
+						completionHandler(UIBackgroundFetchResultNoData, moreComing);
 					}
 				}
 			}];
@@ -346,29 +359,6 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 	};
 	
 	[[[CKContainer defaultContainer] privateCloudDatabase] addOperation:operation];
-}
-
-+ (MyTodo *)todoFromRecord:(CKRecord *)record
-{
-	if (![record.recordType isEqualToString:@"todo"])
-	{
-		NSAssert(NO, @"Attempting to create todo from non-todo record"); // For debug builds
-		return nil;                                                      // For release builds
-	}
-	
-	NSString *uuid = record.recordID.recordName;
-	
-	MyTodo *newTodo = [[MyTodo alloc] initWithUUID:uuid];
-	
-	newTodo.title = [record valueForKey:@"title"];
-	newTodo.notes = [record valueForKey:@"notes"];
-	
-	newTodo.isDone = [[record valueForKey:@"isDone"] boolValue];
-	
-	newTodo.created = [record valueForKey:@"created"];
-	newTodo.lastModified = [record valueForKey:@"lastModified"];
-	
-	return newTodo;
 }
 
 @end

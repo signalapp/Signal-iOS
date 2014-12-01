@@ -227,7 +227,7 @@ NSString *const CloudKitZoneName = @"zone1";
 		//
 		// This is descending order (opposite of "standard" in Cocoa) so we swap the normal comparison.
 		
-		NSComparisonResult cmp = [todo1.created compare:todo2.created];
+		NSComparisonResult cmp = [todo1.creationDate compare:todo2.creationDate];
 		
 		if (cmp == NSOrderedAscending) return NSOrderedDescending;
 		if (cmp == NSOrderedDescending) return NSOrderedAscending;
@@ -254,11 +254,12 @@ NSString *const CloudKitZoneName = @"zone1";
 		  NSString *collection, NSString *key, MyTodo *todo)
 	{
 		CKRecord *record = inOutRecordPtr ? *inOutRecordPtr : nil;
-		
-		NSSet *changedProperties = todo.changedProperties;
-		if (record && (changedProperties.count == 0) && (recordInfo.changedKeysToRestore == nil))
+		if (record &&                                 // not a newly inserted object
+		    (todo.hasChangedProperties == NO) &&      // nothing was changed in the todo object
+		    (recordInfo.changedKeysToRestore == nil)) // and we don't need to restore "truth" values
 		{
-			return; // from block
+			// Thus we don't have any changes we need to push to the cloud
+			return;
 		}
 		
 		// The CKRecord will be nil when we first insert an object into the database.
@@ -267,7 +268,7 @@ NSString *const CloudKitZoneName = @"zone1";
 		// Otherwise we'll be handed a bare CKRecord, with only the proper CKRecordID
 		// and the sync metadata set.
 		
-		BOOL includeAllValues = NO;
+		BOOL isNewRecord = NO;
 		
 		if (record == nil)
 		{
@@ -277,27 +278,42 @@ NSString *const CloudKitZoneName = @"zone1";
 			CKRecordID *recordID = [[CKRecordID alloc] initWithRecordName:todo.uuid zoneID:zoneID];
 			
 			record = [[CKRecord alloc] initWithRecordType:@"todo" recordID:recordID];
-			*inOutRecordPtr = record;
 			
-			includeAllValues = YES;
+			*inOutRecordPtr = record;
+			isNewRecord = YES;
 		}
+		
+		id <NSFastEnumeration> properties = nil;
 		
 		if (recordInfo.changedKeysToRestore)
 		{
-			for (NSString *changedPropertyName in recordInfo.changedKeysToRestore)
-			{
-				id value = [todo valueForKey:changedPropertyName];
-				[record setValue:value forKey:changedPropertyName];
-			}
+			// We need to restore "truth" values for YapDatabaseCloudKit.
+			// This happens when the extension is restarted,
+			// and it needs to restore its change-set queue (to pick up where it left off).
+			
+			properties = recordInfo.changedKeysToRestore;
+		}
+		else if (isNewRecord)
+		{
+			// This is a CKRecord for a newly inserted todo item.
+			// So we want to get every single property,
+			// including those that are read-only, and may have been set directly via the init method.
+			
+			properties = todo.allSyncableProperties;
 		}
 		else
 		{
-			NSSet *properties = includeAllValues ? todo.allProperties : changedProperties;
-			for (NSString *changedPropertyName in properties)
-			{
-				id value = [todo valueForKey:changedPropertyName];
-				[record setValue:value forKey:changedPropertyName];
-			}
+			// We changed one or more properties of our Todo item.
+			// So we need to copy only these changed values into the CKRecord.
+			// That way YapDatabaseCloudKit can handle syncing it to the cloud.
+			
+			properties = todo.changedSyncableProperties;
+		}
+		
+		for (NSString *propertyName in properties)
+		{
+			id value = [todo valueForKey:propertyName];
+			[record setValue:value forKey:propertyName];
 		}
 	}];
 	
@@ -307,12 +323,6 @@ NSString *const CloudKitZoneName = @"zone1";
 	{
 		if ([remoteRecord.recordType isEqualToString:@"todo"])
 		{
-			if (collection == nil)
-				collection = Collection_Todos;
-			
-			if (key == nil)
-				key = remoteRecord.recordID.recordName;
-			
 			MyTodo *todo = [transaction objectForKey:key inCollection:collection];
 			
 			NSSet *remoteChangedKeys = [NSSet setWithArray:remoteRecord.changedKeys];
@@ -366,9 +376,9 @@ NSString *const CloudKitZoneName = @"zone1";
 	                                                           versionInfo:nil
 	                                                               options:options];
 	
-	[cloudKitExtension suspend]; // Push registration
 	[cloudKitExtension suspend]; // Create zone(s)
 	[cloudKitExtension suspend]; // Create zone subscription(s)
+	[cloudKitExtension suspend]; // Initial fetchRecordChanges operation
 	
 	[database asyncRegisterExtension:cloudKitExtension withName:Ext_CloudKit completionBlock:^(BOOL ready) {
 		if (!ready) {

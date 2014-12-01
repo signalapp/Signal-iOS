@@ -449,7 +449,7 @@
 	{
 		CKDatabase *database = [self databaseForIdentifier:changeSet.databaseIdentifier];
 		
-		NSArray *recordsToSave = changeSet.recordsToSave;
+		NSArray *recordsToSave = changeSet.recordsToSave_noCopy;
 		NSArray *recordIDsToDelete = changeSet.recordIDsToDelete;
 		
 		CKModifyRecordsOperation *modifyRecordsOperation =
@@ -460,40 +460,39 @@
 		    ^(NSArray *savedRecords, NSArray *deletedRecordIDs, NSError *operationError)
 		{
 			__strong YapDatabaseCloudKit *strongSelf = weakSelf;
-			if (strongSelf)
+			if (strongSelf == nil) return;
+			
+			if (operationError)
 			{
-				if (operationError)
+				if (operationError.code == CKErrorPartialFailure)
 				{
-					if (operationError.code == CKErrorPartialFailure)
-					{
-						YDBLogInfo(@"CKModifyRecordsOperation partial error: databaseIdentifier = %@\n"
-						           @"  error = %@", changeSet.databaseIdentifier, operationError);
-						
-						[strongSelf handlePartiallyFailedOperationWithChangeSet:changeSet
-						                                           savedRecords:savedRecords
-						                                       deletedRecordIDs:deletedRecordIDs
-						                                                  error:operationError];
-					}
-					else
-					{
-						YDBLogInfo(@"CKModifyRecordsOperation error: databaseIdentifier = %@\n"
-						           @"  error = %@", changeSet.databaseIdentifier, operationError);
-						
-						[strongSelf handleFailedOperationWithChangeSet:changeSet
-						                                         error:operationError];
-					}
+					YDBLogInfo(@"CKModifyRecordsOperation partial error: databaseIdentifier = %@\n"
+					           @"  error = %@", changeSet.databaseIdentifier, operationError);
+					
+					[strongSelf handlePartiallyFailedOperationWithChangeSet:changeSet
+					                                           savedRecords:savedRecords
+					                                       deletedRecordIDs:deletedRecordIDs
+					                                                  error:operationError];
 				}
 				else
 				{
-					YDBLogVerbose(@"CKModifyRecordsOperation complete: databaseIdentifier = %@:\n"
-					              @"  savedRecords: %@\n"
-					              @"  deletedRecordIDs: %@",
-					              changeSet.databaseIdentifier, savedRecords, deletedRecordIDs);
+					YDBLogInfo(@"CKModifyRecordsOperation error: databaseIdentifier = %@\n"
+					           @"  error = %@", changeSet.databaseIdentifier, operationError);
 					
-					[strongSelf handleCompletedOperationWithChangeSet:changeSet
-					                                     savedRecords:savedRecords
-					                                 deletedRecordIDs:deletedRecordIDs];
+					[strongSelf handleFailedOperationWithChangeSet:changeSet
+					                                         error:operationError];
 				}
+			}
+			else
+			{
+				YDBLogVerbose(@"CKModifyRecordsOperation complete: databaseIdentifier = %@:\n"
+				              @"  savedRecords: %@\n"
+				              @"  deletedRecordIDs: %@",
+				              changeSet.databaseIdentifier, savedRecords, deletedRecordIDs);
+				
+				[strongSelf handleCompletedOperationWithChangeSet:changeSet
+				                                     savedRecords:savedRecords
+				                                 deletedRecordIDs:deletedRecordIDs];
 			}
 		};
 		

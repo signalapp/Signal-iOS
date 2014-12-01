@@ -88,18 +88,20 @@
 		DC56CC4A19EC686F009028DA /* YDBCKRecordTableInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DC56CC4919EC686F009028DA /* YDBCKRecordTableInfo.m */; };
 		DC6043A219E5DE13007DEC53 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC6043A119E5DE13007DEC53 /* libsqlite3.dylib */; };
 		DC6043A519E64688007DEC53 /* YapMurmurHash.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6043A419E64688007DEC53 /* YapMurmurHash.m */; };
-		DC6043A819E65709007DEC53 /* YapDatabaseCKRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6043A719E65709007DEC53 /* YapDatabaseCKRecord.m */; };
 		DC6043AE19E74F56007DEC53 /* YDBCKChangeQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6043AD19E74F56007DEC53 /* YDBCKChangeQueue.m */; };
 		DC6F7A0619F76E4B00372050 /* CloudKitManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6F7A0519F76E4B00372050 /* CloudKitManager.m */; };
 		DCCAD7A719E36A4300F914D5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DCCAD7A619E36A4300F914D5 /* main.m */; };
 		DCCAD7AA19E36A4300F914D5 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DCCAD7A919E36A4300F914D5 /* AppDelegate.m */; };
-		DCCAD7AD19E36A4300F914D5 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCCAD7AC19E36A4300F914D5 /* ViewController.m */; };
+		DCCAD7AD19E36A4300F914D5 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCCAD7AC19E36A4300F914D5 /* RootViewController.m */; };
 		DCCAD7B019E36A4300F914D5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DCCAD7AE19E36A4300F914D5 /* Main.storyboard */; };
 		DCCAD7B219E36A4300F914D5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DCCAD7B119E36A4300F914D5 /* Images.xcassets */; };
 		DCCAD7B519E36A4300F914D5 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = DCCAD7B319E36A4300F914D5 /* LaunchScreen.xib */; };
 		DCCAD7C119E36A4300F914D5 /* YapDatabaseCloudKitTestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DCCAD7C019E36A4300F914D5 /* YapDatabaseCloudKitTestTests.m */; };
 		DCDAE36B19E467FB008B84E4 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDAE36A19E467FB008B84E4 /* CloudKit.framework */; };
 		DCDE36F41A19AB05000D3071 /* YapDebugDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE36F31A19AB05000D3071 /* YapDebugDictionary.m */; };
+		DCE859B21A2A753300530151 /* YapDatabaseCKRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE859B11A2A753300530151 /* YapDatabaseCKRecord.m */; };
+		DCE859B51A2A778700530151 /* YDBCKChangeSet.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE859B41A2A778700530151 /* YDBCKChangeSet.m */; };
+		DCE859B81A2C1BB500530151 /* YDBCKChangeRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE859B71A2C1BB500530151 /* YDBCKChangeRecord.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -291,8 +293,6 @@
 		DC6043A119E5DE13007DEC53 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		DC6043A319E64688007DEC53 /* YapMurmurHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapMurmurHash.h; sourceTree = "<group>"; };
 		DC6043A419E64688007DEC53 /* YapMurmurHash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapMurmurHash.m; sourceTree = "<group>"; };
-		DC6043A619E65709007DEC53 /* YapDatabaseCKRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseCKRecord.h; sourceTree = "<group>"; };
-		DC6043A719E65709007DEC53 /* YapDatabaseCKRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseCKRecord.m; sourceTree = "<group>"; };
 		DC6043AC19E74F56007DEC53 /* YDBCKChangeQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBCKChangeQueue.h; sourceTree = "<group>"; };
 		DC6043AD19E74F56007DEC53 /* YDBCKChangeQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKChangeQueue.m; sourceTree = "<group>"; };
 		DC6F7A0419F76E4B00372050 /* CloudKitManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloudKitManager.h; sourceTree = "<group>"; };
@@ -302,8 +302,8 @@
 		DCCAD7A619E36A4300F914D5 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		DCCAD7A819E36A4300F914D5 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		DCCAD7A919E36A4300F914D5 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		DCCAD7AB19E36A4300F914D5 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		DCCAD7AC19E36A4300F914D5 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		DCCAD7AB19E36A4300F914D5 /* RootViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
+		DCCAD7AC19E36A4300F914D5 /* RootViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
 		DCCAD7AF19E36A4300F914D5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		DCCAD7B119E36A4300F914D5 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		DCCAD7B419E36A4300F914D5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -314,6 +314,12 @@
 		DCDAE36A19E467FB008B84E4 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		DCDE36F21A19AB05000D3071 /* YapDebugDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDebugDictionary.h; sourceTree = "<group>"; };
 		DCDE36F31A19AB05000D3071 /* YapDebugDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDebugDictionary.m; sourceTree = "<group>"; };
+		DCE859B01A2A753300530151 /* YapDatabaseCKRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseCKRecord.h; sourceTree = "<group>"; };
+		DCE859B11A2A753300530151 /* YapDatabaseCKRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseCKRecord.m; sourceTree = "<group>"; };
+		DCE859B31A2A778700530151 /* YDBCKChangeSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBCKChangeSet.h; sourceTree = "<group>"; };
+		DCE859B41A2A778700530151 /* YDBCKChangeSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKChangeSet.m; sourceTree = "<group>"; };
+		DCE859B61A2C1BB500530151 /* YDBCKChangeRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBCKChangeRecord.h; sourceTree = "<group>"; };
+		DCE859B71A2C1BB500530151 /* YDBCKChangeRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKChangeRecord.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -418,6 +424,7 @@
 		DC007AE219E4C2D500A5E9EF /* CloudKit */ = {
 			isa = PBXGroup;
 			children = (
+				DCE859AF1A2A753300530151 /* Utilities */,
 				DC007AE319E4C2D500A5E9EF /* Internal */,
 				DC007AED19E4C2D500A5E9EF /* YapDatabaseCloudKitTypes.h */,
 				DC007AEE19E4C2D500A5E9EF /* YapDatabaseCloudKitTypes.m */,
@@ -437,10 +444,10 @@
 			isa = PBXGroup;
 			children = (
 				DC007AE419E4C2D500A5E9EF /* YapDatabaseCloudKitPrivate.h */,
-				DC6043A619E65709007DEC53 /* YapDatabaseCKRecord.h */,
-				DC6043A719E65709007DEC53 /* YapDatabaseCKRecord.m */,
 				DC6043AC19E74F56007DEC53 /* YDBCKChangeQueue.h */,
 				DC6043AD19E74F56007DEC53 /* YDBCKChangeQueue.m */,
+				DCE859B61A2C1BB500530151 /* YDBCKChangeRecord.h */,
+				DCE859B71A2C1BB500530151 /* YDBCKChangeRecord.m */,
 				DC49B2191A1AC04A008507FE /* YDBCKMappingTableInfo.h */,
 				DC49B21A1A1AC04A008507FE /* YDBCKMappingTableInfo.m */,
 				DC56CC4819EC686F009028DA /* YDBCKRecordTableInfo.h */,
@@ -747,8 +754,8 @@
 				DC007BC619E4C48600A5E9EF /* DatabaseManager.m */,
 				DC6F7A0419F76E4B00372050 /* CloudKitManager.h */,
 				DC6F7A0519F76E4B00372050 /* CloudKitManager.m */,
-				DCCAD7AB19E36A4300F914D5 /* ViewController.h */,
-				DCCAD7AC19E36A4300F914D5 /* ViewController.m */,
+				DCCAD7AB19E36A4300F914D5 /* RootViewController.h */,
+				DCCAD7AC19E36A4300F914D5 /* RootViewController.m */,
 				DCCAD7AE19E36A4300F914D5 /* Main.storyboard */,
 				DC007BC419E4C44200A5E9EF /* Model */,
 				DCCAD7B119E36A4300F914D5 /* Images.xcassets */,
@@ -791,6 +798,17 @@
 				DCDAE36A19E467FB008B84E4 /* CloudKit.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DCE859AF1A2A753300530151 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				DCE859B01A2A753300530151 /* YapDatabaseCKRecord.h */,
+				DCE859B11A2A753300530151 /* YapDatabaseCKRecord.m */,
+				DCE859B31A2A778700530151 /* YDBCKChangeSet.h */,
+				DCE859B41A2A778700530151 /* YDBCKChangeSet.m */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -902,7 +920,6 @@
 				DC007AD619E4C2AD00A5E9EF /* DDASLLogCapture.m in Sources */,
 				DC007B8619E4C2D500A5E9EF /* YapDatabaseCloudKitOptions.m in Sources */,
 				DC007BBA19E4C2D500A5E9EF /* YapTouch.m in Sources */,
-				DC6043A819E65709007DEC53 /* YapDatabaseCKRecord.m in Sources */,
 				DC007BA819E4C2D500A5E9EF /* YapDatabaseViewChange.m in Sources */,
 				DC007B8819E4C2D500A5E9EF /* YapDatabaseCloudKitTypes.m in Sources */,
 				DC007ADA19E4C2AD00A5E9EF /* DDTTYLogger.m in Sources */,
@@ -940,7 +957,7 @@
 				DC007B9B19E4C2D500A5E9EF /* YapDatabaseSearchResultsView.m in Sources */,
 				DC007BA119E4C2D500A5E9EF /* YapDatabaseSecondaryIndexHandler.m in Sources */,
 				DC007BB219E4C2D500A5E9EF /* YapDatabaseConnectionDefaults.m in Sources */,
-				DCCAD7AD19E36A4300F914D5 /* ViewController.m in Sources */,
+				DCCAD7AD19E36A4300F914D5 /* RootViewController.m in Sources */,
 				DCCAD7AA19E36A4300F914D5 /* AppDelegate.m in Sources */,
 				DC007B9019E4C2D500A5E9EF /* YapDatabaseFullTextSearchSnippetOptions.m in Sources */,
 				DC007BBE19E4C2D500A5E9EF /* YapSet.m in Sources */,
@@ -949,7 +966,9 @@
 				DC007BB619E4C2D500A5E9EF /* YapDatabaseStatement.m in Sources */,
 				DC007ADD19E4C2AD00A5E9EF /* DDMultiFormatter.m in Sources */,
 				DC007BA719E4C2D500A5E9EF /* YapDatabaseViewState.m in Sources */,
+				DCE859B81A2C1BB500530151 /* YDBCKChangeRecord.m in Sources */,
 				DC007BC319E4C2D500A5E9EF /* YapDatabaseTransaction.m in Sources */,
+				DCE859B51A2A778700530151 /* YDBCKChangeSet.m in Sources */,
 				DC007B8B19E4C2D500A5E9EF /* YapDatabaseFilteredViewTransaction.m in Sources */,
 				DC007BC019E4C2D500A5E9EF /* YapDatabase.m in Sources */,
 				DC007B8719E4C2D500A5E9EF /* YapDatabaseCloudKitTransaction.m in Sources */,
@@ -981,6 +1000,7 @@
 				DC007BAA19E4C2D500A5E9EF /* YapDatabaseViewRangeOptions.m in Sources */,
 				DC007BD619E4C78C00A5E9EF /* MyDatabaseObject.m in Sources */,
 				DC007B9F19E4C2D500A5E9EF /* YapDatabaseSecondaryIndex.m in Sources */,
+				DCE859B21A2A753300530151 /* YapDatabaseCKRecord.m in Sources */,
 				DC007B8519E4C2D500A5E9EF /* YapDatabaseCloudKitConnection.m in Sources */,
 				DC007ADC19E4C2AD00A5E9EF /* DDDispatchQueueLogFormatter.m in Sources */,
 				DC007BC219E4C2D500A5E9EF /* YapDatabaseOptions.m in Sources */,

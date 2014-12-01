@@ -102,24 +102,73 @@
 	}
 }
 
-- (NSSet *)allProperties
+- (NSSet *)monitoredProperties
 {
-	return [[self class] immutableProperties];
+	return [[self class] monitoredProperties];
 }
 
 - (NSSet *)changedProperties
 {
 	if ([changedProperties count] == 0) return nil;
 	
-	// We may have tracked changes to properties that are excluded from the list.
-	// For example, temp properties used for caching transformed values.
-	//
-	// @see [MyDatabaseObject immutableProperties]
-	//
-	[changedProperties intersectSet:[[self class] immutableProperties]];
+	// Remove untracked properties from the list.
+	[changedProperties intersectSet:[[self class] monitoredProperties]];
 	
-	// And return immutable NSSet
+	// And return immutable copy
 	return [changedProperties copy];
+}
+
+- (BOOL)hasChangedProperties
+{
+	return ([changedProperties count] > 0);
+}
+
+- (NSSet *)allSyncableProperties
+{
+	NSMutableDictionary *syncablePropertyMappings = [[self class] syncablePropertyMappings];
+	NSMutableSet *allSyncableProperties = [NSMutableSet setWithCapacity:syncablePropertyMappings.count];
+	
+	for (NSString *syncablePropertyName in [syncablePropertyMappings objectEnumerator])
+	{
+		[allSyncableProperties addObject:syncablePropertyName];
+	}
+	
+	return allSyncableProperties;
+}
+
+- (NSSet *)changedSyncableProperties
+{
+	if ([changedProperties count] == 0) return nil;
+	
+	NSMutableSet *changedSyncableProperties = [NSMutableSet setWithCapacity:changedProperties.count];
+	NSMutableDictionary *syncablePropertyMappings = [[self class] syncablePropertyMappings];
+	
+	for (NSString *propertyName in changedProperties)
+	{
+		NSString *syncablePropertyName = [syncablePropertyMappings objectForKey:propertyName];
+		if (syncablePropertyName) {
+			[changedSyncableProperties addObject:syncablePropertyName];
+		}
+	}
+	
+	return changedSyncableProperties;
+}
+
+- (BOOL)hasChangedSyncableProperties
+{
+	if ([changedProperties count] == 0) return NO;
+	
+	NSMutableDictionary *syncablePropertyMappings = [[self class] syncablePropertyMappings];
+	
+	for (NSString *propertyName in changedProperties)
+	{
+		NSString *syncablePropertyName = [syncablePropertyMappings objectForKey:propertyName];
+		if (syncablePropertyName) {
+			return YES;
+		}
+	}
+	
+	return NO;
 }
 
 - (void)clearChangedProperties
@@ -142,7 +191,7 @@
 + (NSSet *)keyPathsForValuesAffectingIsImmutable
 {
 	// In order for the KVO magic to work, we specify that the isImmutable property is dependent
-	// upon all other properties in the class that should become immutable..
+	// upon all other properties in the class that should become immutable.
 	//
 	// The code below ** attempts ** to do this automatically.
 	// It does so by creating a list of all the properties in the class.
@@ -161,70 +210,10 @@
 	//         @throw [self immutableExceptionForKey:@"foo"];
 	//     }
 	//
-	//     // ... normal code ...
+	//     // ... normal code that modifies foo ivar ...
 	// }
 	
-	return [self immutableProperties];
-}
-
-+ (NSMutableSet *)immutableProperties
-{
-	// This method returns a list of all properties that should be considered immutable once
-	// the makeImmutable method has been invoked.
-	//
-	// By default this method returns a list of all properties in each subclass in the
-	// hierarchy leading to "[self class]".
-	//
-	// However, this is not always exactly what you want.
-	// For example, if you have any properties which are simply used for caching.
-	//
-	// @property (nonatomic, strong, readwrite) UIImage *avatarImage;
-	// @property (nonatomic, strong, readwrite) UIImage *cachedTransformedAvatarImage;
-	//
-	// In this example, you store the user's plain avatar image.
-	// However, your code transforms the avatar in various ways for display in the UI.
-	// So to reduce overhead, you'd like to cache these transformed images in the user object.
-	// Thus the 'cachedTransformedAvatarImage' property doesn't actually mutate the user object. It's just temporary.
-	//
-	// So your subclass would override this method like so:
-	//
-	// + (NSMutableSet *)immutableProperties
-	// {
-	//     NSMutableSet *immutableProperties = [super immutableProperties];
-	//     [immutableProperties removeObject:@"cachedTransformedAvatarImage"];
-	//
-	//     return immutableProperties;
-	// }
-	
-	NSMutableSet *dependencies = nil;
-	
-	Class rootClass = [MyDatabaseObject class];
-	Class subClass = [self class];
-	
-	while (subClass != rootClass)
-	{
-		unsigned int count = 0;
-		objc_property_t *properties = class_copyPropertyList(subClass, &count);
-		if (properties)
-		{
-			if (dependencies == nil)
-				dependencies = [NSMutableSet setWithCapacity:count];
-			
-			for (unsigned int i = 0; i < count; i++)
-			{
-				const char *name = property_getName(properties[i]);
-				NSString *property = [NSString stringWithUTF8String:name];
-				
-				[dependencies addObject:property];
-			}
-			
-			free(properties);
-		}
-		
-		subClass = [subClass superclass];
-	}
-	
-	return dependencies;
+	return [self monitoredProperties];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -232,7 +221,7 @@
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-	// Nothing to do
+	// Nothing to do (but method is required to exist)
 }
 
 - (void)willChangeValueForKey:(NSString *)key
@@ -252,6 +241,120 @@
 	
 	[changedProperties addObject:key];
 	[super didChangeValueForKey:key];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Class Configuration
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
++ (NSMutableSet *)monitoredProperties
+{
+	// This method returns a list of all properties that should be monitored.
+	// That is, they should show up in the changedProperties set if they are modified..
+	// And they should be considered immutable once the makeImmutable method has been invoked.
+	//
+	// By default this method returns a list of all properties in each subclass in the
+	// hierarchy leading to "[self class]".
+	//
+	// However, this is not always exactly what you want.
+	// For example, if you have any properties which are simply used for caching.
+	//
+	// @property (nonatomic, strong, readwrite) UIImage *avatarImage;
+	// @property (nonatomic, strong, readwrite) UIImage *cachedTransformedAvatarImage;
+	//
+	// In this example, you store the user's plain avatar image.
+	// However, your code transforms the avatar in various ways for display in the UI.
+	// So to reduce overhead, you'd like to cache these transformed images in the user object.
+	// Thus the 'cachedTransformedAvatarImage' property doesn't actually mutate the user object. It's just temporary.
+	//
+	// So your subclass would override this method like so:
+	//
+	// + (NSMutableSet *)monitoredProperties
+	// {
+	//     NSMutableSet *monitoredProperties = [super immutableProperties];
+	//     [monitoredProperties removeObject:@"cachedTransformedAvatarImage"];
+	//
+	//     return monitoredProperties;
+	// }
+	
+	NSMutableSet *properties = nil;
+	
+	Class rootClass = [MyDatabaseObject class];
+	Class subClass = [self class];
+	
+	while (subClass != rootClass)
+	{
+		unsigned int count = 0;
+		objc_property_t *propertyList = class_copyPropertyList(subClass, &count);
+		if (propertyList)
+		{
+			if (properties == nil)
+				properties = [NSMutableSet setWithCapacity:count];
+			
+			for (unsigned int i = 0; i < count; i++)
+			{
+				const char *name = property_getName(propertyList[i]);
+				NSString *property = [NSString stringWithUTF8String:name];
+				
+				[properties addObject:property];
+			}
+			
+			free(propertyList);
+		}
+		
+		subClass = [subClass superclass];
+	}
+	
+	return properties;
+}
+
++ (NSMutableDictionary *)syncablePropertyMappings
+{
+	// This method returns a mapping from localPropertyName to ckRecordPropertyName.
+	//
+	// By default this method returns a dictionary including everything in [self immutableProperties],
+	// where the key is equal to the value for every item.
+	//
+	// For example:
+	// @{ @"title" = @"title",
+	//    @"isCompleted" = @"isCompleted",
+	//    @"creationDate" = @"creationDate",
+	//    @"lastModified" = @"lastModified",
+	//    @"isSeen" = @"isSeen"
+	// }
+	//
+	// However, this is not always exactly what you want.
+	// For example, you may not want to sync the 'isSeen' property because its device-specific.
+	//
+	// Additionally you discover that CKRecord has a built-in creationDate property,
+	// and so CKRecord doesn't allow you to use that key for your own purposes. (It's reserved.)
+	//
+	// You can still name your own property "creationDate",
+	// but you'll be forced to use a different name for the CKRecord.
+	// So let's say we decide to use "created" as the corresponding key in the CKRecord.
+	//
+	// Thus your subclass overrides this method like so:
+	//
+	// + (NSMutableDictionary *)syncablePropertyMappings
+	// {
+	//     NSMutableDictionary *syncablePropertyMappings = [super syncablePropertyMappings];
+	//
+	//     [syncablePropertyMappings removeObjectForKey:@"isSeen"];
+	//     [syncablePropertyMappings setObject:@"created" forKey:@"creationDate"];
+	//
+	//     return syncablePropertyMappings;
+	// }
+	
+	NSMutableSet *properties = [self monitoredProperties];
+	
+	NSMutableDictionary *syncablePropertyMappings = [NSMutableDictionary dictionaryWithCapacity:properties.count];
+	
+	for (NSString *propertyName in properties)
+	{
+		[syncablePropertyMappings setObject:propertyName forKey:propertyName];
+	}
+	
+	return syncablePropertyMappings;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

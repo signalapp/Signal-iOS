@@ -1957,7 +1957,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	sqlite3_bind_int64(statement, 3, [dirtyRecordTableInfo.dirty_ownerCount longLongValue]);
 	
 	__attribute__((objc_precise_lifetime)) NSData *recordBlob =
-	[YapDatabaseCKRecord serializeRecord:dirtyRecordTableInfo.dirty_record];
+	  [YapDatabaseCKRecord serializeRecord:dirtyRecordTableInfo.dirty_record];
 	sqlite3_bind_blob(statement, 4, recordBlob.bytes, (int)recordBlob.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);

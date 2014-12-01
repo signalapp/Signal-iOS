@@ -8,7 +8,7 @@ static NSString *const k_uuid         = @"uuid";
 static NSString *const k_title        = @"title";
 static NSString *const k_notes        = @"notes";
 static NSString *const k_isDone       = @"isDone";
-static NSString *const k_created      = @"created";
+static NSString *const k_creationDate = @"created";
 static NSString *const k_lastModified = @"lastModified";
 
 
@@ -18,7 +18,7 @@ static NSString *const k_lastModified = @"lastModified";
 @synthesize title = title;
 @synthesize notes = notes;
 @synthesize isDone = isDone;
-@synthesize created = created;
+@synthesize creationDate = creationDate;
 @synthesize lastModified = lastModified;
 
 - (instancetype)init
@@ -31,7 +31,32 @@ static NSString *const k_lastModified = @"lastModified";
 	if ((self = [super init]))
 	{
 		uuid = [inUUID copy];
-		created = [NSDate date];
+		creationDate = [NSDate date];
+	}
+	return self;
+}
+
+- (instancetype)initWithRecord:(CKRecord *)record
+{
+	if (![record.recordType isEqualToString:@"todo"])
+	{
+		NSAssert(NO, @"Attempting to create todo from non-todo record"); // For debug builds
+		return nil;                                                      // For release builds
+	}
+	
+	
+	
+	if ((self = [super init]))
+	{
+		uuid = record.recordID.recordName;
+		
+		title = [record objectForKey:@"title"];
+		notes = [record objectForKey:@"notes"];
+		
+		isDone = [[record objectForKey:@"isDone"] boolValue];
+		
+		creationDate = [record objectForKey:@"created"];
+		lastModified = [record objectForKey:@"lastModified"];
 	}
 	return self;
 }
@@ -51,7 +76,7 @@ static NSString *const k_lastModified = @"lastModified";
 		title = [decoder decodeObjectForKey:k_title];
 		notes = [decoder decodeObjectForKey:k_notes];
 		isDone = [decoder decodeBoolForKey:k_isDone];
-		created = [decoder decodeObjectForKey:k_created];
+		creationDate = [decoder decodeObjectForKey:k_creationDate];
 		lastModified = [decoder decodeObjectForKey:k_lastModified];
 	}
 	return self;
@@ -65,7 +90,7 @@ static NSString *const k_lastModified = @"lastModified";
 	[coder encodeObject:title forKey:k_title];
 	[coder encodeObject:notes forKey:k_notes];
 	[coder encodeBool:isDone forKey:k_isDone];
-	[coder encodeObject:created forKey:k_created];
+	[coder encodeObject:creationDate forKey:k_creationDate];
 	[coder encodeObject:lastModified forKey:k_lastModified];
 }
 
@@ -78,25 +103,49 @@ static NSString *const k_lastModified = @"lastModified";
 	copy->title = title;
 	copy->notes = notes;
 	copy->isDone = isDone;
-	copy->created = created;
+	copy->creationDate = creationDate;
 	copy->lastModified = lastModified;
 	
 	return copy;
+}
+
+#pragma mark MyDatabaseObject overrides
+
++ (NSMutableDictionary *)syncablePropertyMappings
+{
+	NSMutableDictionary *syncablePropertyMappings = [super syncablePropertyMappings];
+	[syncablePropertyMappings setObject:@"created" forKey:@"creationDate"];
+	
+	return syncablePropertyMappings;
 }
 
 #pragma mark KVO
 
 - (void)setValue:(id)value forUndefinedKey:(NSString *)key
 {
-	// May be invoked if the corresponding CKRecord has:
-	//
-	// - Old/deprecated keys that are no longer available in this newer version.
-	//   Likely the object was created/modified by an older version of the application.
-	//   We should properly handle this case here.
-	//
-	// - New keys that aren't available in this older version.
-	//   Likely the object was created/modified by a newer version of the application.
-	//   We must silently ignore / handle the case here.
+	if ([key isEqualToString:@"created"]) {
+		[self setValue:value forKey:@"creationDate"];
+	}
+	else
+	{
+		// May also be invoked if the corresponding CKRecord has:
+		//
+		// - Old/deprecated keys that are no longer available in this newer version.
+		//   Likely the object was created/modified by an older version of the application.
+		//   We should properly handle this case here.
+		//
+		// - New keys that aren't available in this older version.
+		//   Likely the object was created/modified by a newer version of the application.
+		//   We must silently ignore / handle the case here.
+	}
+}
+
+- (id)valueForUndefinedKey:(NSString *)key
+{
+	if ([key isEqualToString:@"created"])
+		return creationDate;
+	else
+		return [super valueForUndefinedKey:key];
 }
 
 @end

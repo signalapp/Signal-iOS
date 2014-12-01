@@ -25,6 +25,7 @@ extern CloudKitManager *MyCloudKitManager;
  * This method is invoked once automatically, when the CloudKitManager is initialized.
  * After that, one should invoke it anytime a corresponding push notification is received.
 **/
-- (void)fetchRecordChangesWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler;
+- (void)fetchRecordChangesWithCompletionHandler:
+                            (void (^)(UIBackgroundFetchResult result, BOOL moreComing))completionHandler;
 
 @end

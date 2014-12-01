@@ -114,7 +114,7 @@ typedef CKDatabase* (^YapDatabaseCloudKitDatabaseIdentifierBlock)(NSString *data
  * 
  * Important:
  * If you specify a databaseIdentifier here,
- * you must also configure the YapDatabaseCloudKit instance with a Database(ForIdentifier) block.
+ * you must also configure the YapDatabaseCloudKit instance with a databaseIdentifier block.
 **/
 @property (nonatomic, copy, readwrite) NSString *databaseIdentifier;
 
