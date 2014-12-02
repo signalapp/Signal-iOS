@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import "YapCollectionKey.h"
 
 @class YapDatabase;
 @class YapDatabaseReadTransaction;
@@ -528,6 +529,61 @@ __attribute((deprecated("Use method asyncReadWriteWithBlock:completionQueue:comp
 - (BOOL)hasMetadataChangeForAnyKeys:(NSSet *)keys
                        inCollection:(NSString *)collection
                     inNotifications:(NSArray *)notifications;
+
+// Advanced query techniques
+
+/**
+ * Returns YES if [transaction removeAllObjectsInCollection:] was invoked on the collection,
+ * or if [transaction removeAllObjectsInAllCollections] was invoked
+ * during any of the commits represented by the given notifications.
+ * 
+ * If this was the case then YapDatabase may not have tracked every single key within the collection.
+ * And thus a key that was removed via clearing the collection may not show up while enumerating changedKeys.
+ *
+ * This method is designed to be used in conjunction with the enumerateChangedKeys.... methods (below).
+ * The hasChange... methods (above) already take this into account.
+**/
+- (BOOL)didClearCollection:(NSString *)collection inNotifications:(NSArray *)notifications;
+
+/**
+ * Returns YES if [transaction removeAllObjectsInAllCollections] was invoked
+ * during any of the commits represented by the given notifications.
+ *
+ * If this was the case then YapDatabase may not have tracked every single key within every single collection.
+ * And thus a key that was removed via clearing the database may not show up while enumerating changedKeys.
+ *
+ * This method is designed to be used in conjunction with the enumerateChangedKeys.... methods (below).
+ * The hasChange... methods (above) already take this into account.
+**/
+- (BOOL)didClearAllCollectionsInNotifications:(NSArray *)notifications;
+
+/**
+ * Allows you to enumerate all the changed keys in the given collection, for the given commits.
+ * 
+ * Keep in mind that if [transaction removeAllObjectsInCollection:] was invoked on the given collection
+ * or [transaction removeAllObjectsInAllCollections] was invoked
+ * during any of the commits represented by the given notifications,
+ * then the key may not be included in the enumeration.
+ * You must use didClearCollection:inNotifications: if you need to handle that case.
+ * 
+ * @see didClearCollection:inNotifications:
+**/
+- (void)enumerateChangedKeysInCollection:(NSString *)collection
+                         inNotifications:(NSArray *)notifications
+                              usingBlock:(void (^)(NSString *key, BOOL *stop))block;
+
+/**
+ * Allows you to enumerate all the changed collection/key tuples for the given commits.
+ * 
+ * Keep in mind that if [transaction removeAllObjectsInAllCollections] was invoked
+ * during any of the commits represented by the given notifications,
+ * then the collection/key tuple may not be included in the enumeration.
+ * You must use didClearAllCollectionsInNotifications: if you need to handle that case.
+ * 
+ * @see didClearAllCollectionsInNotifications:
+**/
+- (void)enumerateChangedCollectionKeysInNotifications:(NSArray *)notifications
+                                           usingBlock:(void (^)(YapCollectionKey *ck, BOOL *stop))block;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Extensions

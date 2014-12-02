@@ -3821,6 +3821,187 @@ NS_INLINE BOOL YDBIsMainThread()
 	                 metadataChanges:YES];
 }
 
+// Advanced query techniques
+
+/**
+ * Returns YES if [transaction removeAllObjectsInCollection:] was invoked on the collection,
+ * or if [transaction removeAllObjectsInAllCollections] was invoked
+ * during any of the commits represented by the given notifications.
+ * 
+ * If this was the case then YapDatabase may not have tracked every single key within the collection.
+ * And thus a key that was removed via clearing the collection may not show up while enumerating changedKeys.
+ *
+ * This method is designed to be used in conjunction with the enumerateChangedKeys.... methods (below).
+ * The hasChange... methods (above) already take this into account.
+**/
+- (BOOL)didClearCollection:(NSString *)collection inNotifications:(NSArray *)notifications
+{
+	if (collection == nil)
+		collection = @"";
+	
+	for (NSNotification *notification in notifications)
+	{
+		if (![notification isKindOfClass:[NSNotification class]])
+		{
+			YDBLogWarn(@"%@ - notifications parameter contains non-NSNotification object", THIS_METHOD);
+			continue;
+		}
+		
+		NSDictionary *changeset = notification.userInfo;
+		
+		YapSet *changeset_removedCollections = [changeset objectForKey:YapDatabaseRemovedCollectionsKey];
+		if ([changeset_removedCollections containsObject:collection])
+			return YES;
+	}
+	
+	return NO;
+}
+
+/**
+ * Returns YES if [transaction removeAllObjectsInAllCollections] was invoked
+ * during any of the commits represented by the given notifications.
+ *
+ * If this was the case then YapDatabase may not have tracked every single key within every single collection.
+ * And thus a key that was removed via clearing the database may not show up while enumerating changedKeys.
+ *
+ * This method is designed to be used in conjunction with the enumerateChangedKeys.... methods (below).
+ * The hasChange... methods (above) already take this into account.
+**/
+- (BOOL)didClearAllCollectionsInNotifications:(NSArray *)notifications
+{
+	for (NSNotification *notification in notifications)
+	{
+		if (![notification isKindOfClass:[NSNotification class]])
+		{
+			YDBLogWarn(@"%@ - notifications parameter contains non-NSNotification object", THIS_METHOD);
+			continue;
+		}
+		
+		NSDictionary *changeset = notification.userInfo;
+		
+		BOOL changeset_allKeysRemoved = [[changeset objectForKey:YapDatabaseAllKeysRemovedKey] boolValue];
+		if (changeset_allKeysRemoved)
+			return YES;
+	}
+	
+	return NO;
+}
+
+/**
+ * Allows you to enumerate all the changed keys in the given collection, for the given commits.
+ * 
+ * Keep in mind that if [transaction removeAllObjectsInCollection:] was invoked on the given collection
+ * or [transaction removeAllObjectsInAllCollections] was invoked
+ * during any of the commits represented by the given notifications,
+ * then the key may not be included in the enumeration.
+ * You must use didClearCollection:inNotifications: if you need to handle that case.
+ * 
+ * @see didClearCollection:inNotifications:
+**/
+- (void)enumerateChangedKeysInCollection:(NSString *)collection
+                         inNotifications:(NSArray *)notifications
+                              usingBlock:(void (^)(NSString *key, BOOL *stop))block
+{
+	if (block == NULL) return;
+	if (collection == nil)
+		collection = @"";
+	
+	BOOL stop = NO;
+	NSMutableSet *keys = [NSMutableSet set];
+	
+	for (NSNotification *notification in notifications)
+	{
+		if (![notification isKindOfClass:[NSNotification class]])
+		{
+			YDBLogWarn(@"%@ - notifications parameter contains non-NSNotification object", THIS_METHOD);
+			continue;
+		}
+		
+		NSDictionary *changeset = notification.userInfo;
+		
+		YapSet *changeset_objectChanges = [changeset objectForKey:YapDatabaseObjectChangesKey];
+		for (YapCollectionKey *ck in changeset_objectChanges)
+		{
+			if ([ck.collection isEqualToString:collection])
+			{
+				if (![keys containsObject:ck.key])
+				{
+					block(ck.key, &stop);
+					if (stop) return;
+					
+					[keys addObject:ck.key];
+				}
+			}
+		}
+		
+		YapSet *changeset_metadataChanges = [changeset objectForKey:YapDatabaseMetadataChangesKey];
+		for (YapCollectionKey *ck in changeset_metadataChanges)
+		{
+			if ([ck.collection isEqualToString:collection])
+			{
+				if (![keys containsObject:ck.key])
+				{
+					block(ck.key, &stop);
+					if (stop) return;
+					
+					[keys addObject:ck.key];
+				}
+			}
+		}
+	}
+}
+
+/**
+ * Allows you to enumerate all the changed collection/key tuples for the given commits.
+ * 
+ * Keep in mind that if [transaction removeAllObjectsInAllCollections] was invoked
+ * during any of the commits represented by the given notifications,
+ * then the collection/key tuple may not be included in the enumeration.
+ * You must use didClearAllCollectionsInNotifications: if you need to handle that case.
+ * 
+ * @see didClearAllCollectionsInNotifications:
+**/
+- (void)enumerateChangedCollectionKeysInNotifications:(NSArray *)notifications
+                                           usingBlock:(void (^)(YapCollectionKey *ck, BOOL *stop))block
+{
+	if (block == NULL) return;
+	
+	BOOL stop = NO;
+	NSMutableSet *collectionKeys = [NSMutableSet set];
+	
+	for (NSNotification *notification in notifications)
+	{
+		if (![notification isKindOfClass:[NSNotification class]])
+		{
+			YDBLogWarn(@"%@ - notifications parameter contains non-NSNotification object", THIS_METHOD);
+			continue;
+		}
+		
+		NSDictionary *changeset = notification.userInfo;
+		
+		YapSet *changeset_objectChanges = [changeset objectForKey:YapDatabaseObjectChangesKey];
+		for (YapCollectionKey *ck in changeset_objectChanges)
+		{
+			if (![collectionKeys containsObject:ck])
+			{
+				block(ck, &stop);
+				if (stop) return;
+				
+				[collectionKeys addObject:ck];
+			}
+		}
+		
+		YapSet *changeset_metadataChanges = [changeset objectForKey:YapDatabaseMetadataChangesKey];
+		for (YapCollectionKey *ck in changeset_metadataChanges)
+		{
+			block(ck, &stop);
+			if (stop) return;
+			
+			[collectionKeys addObject:ck];
+		}
+	}
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Extensions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
