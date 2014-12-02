@@ -102,6 +102,7 @@
 		DCE859B21A2A753300530151 /* YapDatabaseCKRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE859B11A2A753300530151 /* YapDatabaseCKRecord.m */; };
 		DCE859B51A2A778700530151 /* YDBCKChangeSet.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE859B41A2A778700530151 /* YDBCKChangeSet.m */; };
 		DCE859B81A2C1BB500530151 /* YDBCKChangeRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE859B71A2C1BB500530151 /* YDBCKChangeRecord.m */; };
+		DCE859BF1A2D9DFD00530151 /* EditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE859BE1A2D9DFD00530151 /* EditViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -320,6 +321,8 @@
 		DCE859B41A2A778700530151 /* YDBCKChangeSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKChangeSet.m; sourceTree = "<group>"; };
 		DCE859B61A2C1BB500530151 /* YDBCKChangeRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBCKChangeRecord.h; sourceTree = "<group>"; };
 		DCE859B71A2C1BB500530151 /* YDBCKChangeRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKChangeRecord.m; sourceTree = "<group>"; };
+		DCE859BD1A2D9DFD00530151 /* EditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditViewController.h; sourceTree = "<group>"; };
+		DCE859BE1A2D9DFD00530151 /* EditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -756,6 +759,8 @@
 				DC6F7A0519F76E4B00372050 /* CloudKitManager.m */,
 				DCCAD7AB19E36A4300F914D5 /* RootViewController.h */,
 				DCCAD7AC19E36A4300F914D5 /* RootViewController.m */,
+				DCE859BD1A2D9DFD00530151 /* EditViewController.h */,
+				DCE859BE1A2D9DFD00530151 /* EditViewController.m */,
 				DCCAD7AE19E36A4300F914D5 /* Main.storyboard */,
 				DC007BC419E4C44200A5E9EF /* Model */,
 				DCCAD7B119E36A4300F914D5 /* Images.xcassets */,
@@ -981,6 +986,7 @@
 				DC007BC119E4C2D500A5E9EF /* YapDatabaseConnection.m in Sources */,
 				DC007B9619E4C2D500A5E9EF /* YapDatabaseRelationshipConnection.m in Sources */,
 				DC007BBC19E4C2D500A5E9EF /* YapCollectionKey.m in Sources */,
+				DCE859BF1A2D9DFD00530151 /* EditViewController.m in Sources */,
 				DC007AD719E4C2AD00A5E9EF /* DDASLLogger.m in Sources */,
 				DC007B9919E4C2D500A5E9EF /* YapDatabaseRelationshipTransaction.m in Sources */,
 				DC007BB319E4C2D500A5E9EF /* YapDatabaseConnectionState.m in Sources */,

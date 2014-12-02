@@ -7,10 +7,30 @@
 @class DatabaseManager;
 
 /**
- * You can use this as an alternative to the sharedInstance:
- * [[DatabaseManager sharedInstance] uiDatabaseConnection] -> STDatabaseManager.uiDatabaseConnection
+ * The following notifications are automatically posted for the uiDatabaseConnection:
+ *
+ * - UIDatabaseConnectionWillUpdateNotification
+ * - UIDatabaseConnectionDidUpdateNotification
+ *
+ * The notifications correspond with the longLivedReadTransaction of the uiDatabaseConnection.
+ * The DatabaseManager class listens for YapDatabaseModifiedNotification's.
+ *
+ * The UIDatabaseConnectionWillUpdateNotification is posted immediately before the uiDatabaseConnection
+ * is moved to the latest commit. And the UIDatabaseConnectionDidUpdateNotification is posted immediately after
+ * the uiDatabaseConnection was moved to the latest commit.
+ *
+ * These notifications are always posted to the main thread.
+ *
+ * The UIDatabaseConnectionDidUpdateNotification will always contain a userInfo dictionary with:
+ *
+ * - kNotificationsKey
+ *     Contains the NSArray returned by [uiDatabaseConnection beginLongLivedReadTransaction].
+ *     That is, the array of commit info from each commit the connection jumped.
+ *     This is the information that is fed into the various YapDatabase API's to figure out what changed.
 **/
-extern DatabaseManager *MyDatabaseManager;
+extern NSString *const UIDatabaseConnectionWillUpdateNotification;
+extern NSString *const UIDatabaseConnectionDidUpdateNotification;
+extern NSString *const kNotificationsKey;
 
 /**
  * The following constants are the database collection names.
@@ -32,6 +52,12 @@ extern NSString *const Ext_CloudKit;
  * The following constants are the CloudKit zone names.
 **/
 extern NSString *const CloudKitZoneName;
+
+/**
+ * You can use this as an alternative to the sharedInstance:
+ * [[DatabaseManager sharedInstance] uiDatabaseConnection] -> STDatabaseManager.uiDatabaseConnection
+**/
+extern DatabaseManager *MyDatabaseManager;
 
 
 @interface DatabaseManager : NSObject

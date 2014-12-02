@@ -188,13 +188,6 @@ static NSString *const changeset_key_reset            = @"reset";
 #endif
 }
 
-// Inherited:
-//
-// @property (nonatomic, strong, readonly) NSString *databaseIdentifier;
-//
-// @property (nonatomic, readonly) NSArray *recordIDsToDelete;    // Array of CKRecordID's for CKModifyRecordsOperation
-// @property (nonatomic, readonly) NSArray *recordsToSave_noCopy; // Array of CKRecord's for CKModifyRecordsOperation
-
 - (instancetype)initWithUUID:(NSString *)uuid
                         prev:(NSString *)prev
           databaseIdentifier:(NSString *)databaseIdentifier
@@ -206,8 +199,21 @@ static NSString *const changeset_key_reset            = @"reset";
 - (instancetype)emptyCopy;
 - (instancetype)fullCopy;
 
+// Inherited:
+//
+// @property (atomic, readonly) BOOL isInFlight;
+//
+// @property (nonatomic, readonly) NSString *databaseIdentifier;
+//
+// @property (nonatomic, readonly) NSArray *recordIDsToDelete; // Array of CKRecordID's for CKModifyRecordsOperation
+// @property (nonatomic, readonly) NSArray *recordsToSave;     // Array of CKRecord's for CKModifyRecordsOperation
+
+@property (atomic, readwrite) BOOL isInFlight;
+
 @property (nonatomic, strong, readwrite) NSString *uuid;
 @property (nonatomic, strong, readwrite) NSString *prev;
+
+@property (nonatomic, readonly) NSArray *recordsToSave_noCopy;
 
 @property (nonatomic, readwrite) BOOL hasChangesToDeletedRecordIDs;
 @property (nonatomic, readwrite) BOOL hasChangesToModifiedRecords;

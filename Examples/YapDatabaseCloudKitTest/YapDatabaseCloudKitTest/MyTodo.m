@@ -30,8 +30,12 @@ static NSString *const k_lastModified = @"lastModified";
 {
 	if ((self = [super init]))
 	{
-		uuid = [inUUID copy];
-		creationDate = [NSDate date];
+		if (inUUID)
+			uuid = [inUUID copy];
+		else
+			uuid = [[NSUUID UUID] UUIDString];
+		
+		creationDate = lastModified = [NSDate date];
 	}
 	return self;
 }

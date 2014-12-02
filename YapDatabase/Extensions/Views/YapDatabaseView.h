@@ -22,9 +22,6 @@
  *
  * For the full documentation on Views, please see the related wiki article:
  * https://github.com/yapstudios/YapDatabase/wiki/Views
- * 
- * Just in case you don't have Internet access,
- * see the quick overview in YapDatabaseView.h.
 **/
 @interface YapDatabaseView : YapDatabaseExtension
 

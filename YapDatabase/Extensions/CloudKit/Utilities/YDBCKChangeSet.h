@@ -14,9 +14,14 @@
 **/
 @interface YDBCKChangeSet : NSObject
 
-@property (nonatomic, strong, readonly) NSString *databaseIdentifier;
+@property (nonatomic, readonly) NSString *databaseIdentifier;
 
-@property (nonatomic, readonly) NSArray *recordIDsToDelete;    // Array of CKRecordID's for CKModifyRecordsOperation
-@property (nonatomic, readonly) NSArray *recordsToSave_noCopy; // Array of CKRecord's for CKModifyRecordsOperation
+@property (nonatomic, readonly) BOOL isInFlight;
+
+@property (nonatomic, readonly) NSArray *recordIDsToDelete; // Array of CKRecordID's for CKModifyRecordsOperation
+@property (nonatomic, readonly) NSArray *recordsToSave;     // Array of CKRecord's for CKModifyRecordsOperation
+
+@property (nonatomic, readonly) NSUInteger recordIDsToDeleteCount; // shortcut if you just want the count
+@property (nonatomic, readonly) NSUInteger recordsToSaveCount;     // shortcut if you just want the count
 
 @end

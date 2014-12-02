@@ -14,7 +14,9 @@
   static const int ddLogLevel = LOG_LEVEL_ALL;
 #endif
 
-DatabaseManager *MyDatabaseManager;
+NSString *const UIDatabaseConnectionWillUpdateNotification = @"UIDatabaseConnectionWillUpdateNotification";
+NSString *const UIDatabaseConnectionDidUpdateNotification  = @"UIDatabaseConnectionDidUpdateNotification";
+NSString *const kNotificationsKey = @"notifications";
 
 NSString *const Collection_Todos    = @"todos";
 NSString *const Collection_CloudKit = @"cloudKit";
@@ -23,6 +25,8 @@ NSString *const Ext_View_Order = @"order";
 NSString *const Ext_CloudKit   = @"ck";
 
 NSString *const CloudKitZoneName = @"zone1";
+
+DatabaseManager *MyDatabaseManager;
 
 
 @implementation DatabaseManager
@@ -187,8 +191,18 @@ NSString *const CloudKitZoneName = @"zone1";
 	#endif
 	
 	bgDatabaseConnection = [database newConnection];
-	uiDatabaseConnection.objectCacheLimit = 400;
-	uiDatabaseConnection.metadataCacheEnabled = NO;
+	bgDatabaseConnection.objectCacheLimit = 400;
+	bgDatabaseConnection.metadataCacheEnabled = NO;
+	
+	// Start the longLivedReadTransaction on the UI connection.
+	
+	[uiDatabaseConnection enableExceptionsForImplicitlyEndingLongLivedReadTransaction];
+	[uiDatabaseConnection beginLongLivedReadTransaction];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+	                                         selector:@selector(yapDatabaseModified:)
+	                                             name:YapDatabaseModifiedNotification
+	                                           object:database];
 }
 
 - (void)setupOrderViewExtension
@@ -385,6 +399,33 @@ NSString *const CloudKitZoneName = @"zone1";
 			DDLogError(@"Error registering %@ !!!", Ext_CloudKit);
 		}
 	}];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Notifications
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)yapDatabaseModified:(NSNotification *)ignored
+{
+	// Notify observers we're about to update the database connection
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:UIDatabaseConnectionWillUpdateNotification
+	                                                    object:self];
+	
+	// Move uiDatabaseConnection to the latest commit.
+	// Do so atomically, and fetch all the notifications for each commit we jump.
+	
+	NSArray *notifications = [uiDatabaseConnection beginLongLivedReadTransaction];
+	
+	// Notify observers that the uiDatabaseConnection was updated
+	
+	NSDictionary *userInfo = @{
+	  kNotificationsKey : notifications,
+	};
+
+	[[NSNotificationCenter defaultCenter] postNotificationName:UIDatabaseConnectionDidUpdateNotification
+	                                                    object:self
+	                                                  userInfo:userInfo];
 }
 
 @end

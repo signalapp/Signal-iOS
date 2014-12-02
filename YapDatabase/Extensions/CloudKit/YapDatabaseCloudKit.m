@@ -330,6 +330,31 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Change-Sets
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Returns an array of YDBCKChangeSet objects, which represent the pending (and in-flight) change-sets.
+ * The array is ordered, such that:
+ * - the first item in the array is either in-flight or the next to be uploaded
+ * - the last item in the array represents the most recent change-set
+ *
+ * From this array you'll be able to see exactly what YapDatabaseCloudKit is uploading (or intends to upload).
+ *
+ * This is also useful if you want to perform a "dry run" test.
+ * You can simply run a few tests with a debug database,
+ * and keep the YapDatabaseCloudKit extension suspended the whole time.
+ * Then just inspect the change-sets to ensure that everything is working as you expect.
+**/
+- (NSArray *)pendingChangeSets
+{
+	// Implementation Note:
+	// The changeSetsFromPreviousCommits method is thread-safe,
+	// and also creates fullCopies of all the change-sets so the user receives immutable copies.
+	return [masterQueue changeSetsFromPreviousCommits];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark YapDatabaseExtension Protocol
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

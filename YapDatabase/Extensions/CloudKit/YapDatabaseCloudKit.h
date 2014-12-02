@@ -7,12 +7,25 @@
 #import "YapDatabaseCloudKitConnection.h"
 #import "YapDatabaseCloudKitTransaction.h"
 
-
-@interface YapDatabaseCloudKit : YapDatabaseExtension
+#import "YDBCKChangeSet.h"
 
 /**
- * 
+ * Welcome to YapDatabase!
+ *
+ * https://github.com/yapstudios/YapDatabase
+ *
+ * The project wiki has a wealth of documentation if you have any questions.
+ * https://github.com/yapstudios/YapDatabase/wiki
+ *
+ * YapDatabaseCloudKit is an extension that allows you to sync
+ * objects in YapDatabase with Apple's CloudKit service.
+ *
+ * For the full documentation on Views, please see the related wiki article:
+ * https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseCloudKit
 **/
+@interface YapDatabaseCloudKit : YapDatabaseExtension
+
+
 - (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)recordHandler
                            mergeBlock:(YapDatabaseCloudKitMergeBlock)mergeBlock
                   operationErrorBlock:(YapDatabaseCloudKitOperationErrorBlock)opErrorBlock;
@@ -120,5 +133,20 @@
  *   and you just decremented the suspend count.
 **/
 - (NSUInteger)resume;
+
+/**
+ * Returns an array of YDBCKChangeSet objects, which represent the pending (and in-flight) change-sets.
+ * The array is ordered, such that:
+ * - the first item in the array is either in-flight or the next to be uploaded
+ * - the last item in the array represents the most recent change-set
+ * 
+ * From this array you'll be able to see exactly what YapDatabaseCloudKit is uploading (or intends to upload).
+ * 
+ * This is also useful if you want to perform a "dry run" test.
+ * You can simply run a few tests with a debug database,
+ * and keep the YapDatabaseCloudKit extension suspended the whole time.
+ * Then just inspect the change-sets to ensure that everything is working as you expect.
+**/
+- (NSArray *)pendingChangeSets;
 
 @end

@@ -7,22 +7,14 @@
 
 
 @interface YDBCKChangeQueue ()
-
 @property (atomic, readwrite, strong) NSString *lockUUID;
-
 @end
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @implementation YDBCKChangeQueue
 {
 	BOOL isMasterQueue;
 	NSLock *masterQueueLock;
 	
-	BOOL hasInFlightChangeSet;
 	NSMutableArray *oldChangeSets;
 	
 	NSArray *newChangeSets;
@@ -78,10 +70,12 @@
 	// Get lock for access to 'oldChangeSets'
 	[masterQueueLock lock];
 	{
-		if (!hasInFlightChangeSet && (oldChangeSets.count > 0))
+		YDBCKChangeSet *nextChangeSet = [oldChangeSets firstObject];
+		
+		if (nextChangeSet && !nextChangeSet.isInFlight)
 		{
-			inFlightChangeSet = [[oldChangeSets objectAtIndex:0] fullCopy];
-			hasInFlightChangeSet = YES;
+			nextChangeSet.isInFlight = YES;
+			inFlightChangeSet = [nextChangeSet fullCopy];
 		}
 	}
 	[masterQueueLock unlock];
@@ -98,12 +92,11 @@
 	// Get lock for access to 'oldChangeSets'
 	[masterQueueLock lock];
 	{
-		if (hasInFlightChangeSet)
+		YDBCKChangeSet *firstChangeSet = [oldChangeSets firstObject];
+		if (firstChangeSet.isInFlight)
 		{
-			NSAssert(oldChangeSets.count > 0, @"Logic error");
-			
+			firstChangeSet.isInFlight = NO;
 			[oldChangeSets removeObjectAtIndex:0];
-			hasInFlightChangeSet = NO;
 		}
 	}
 	[masterQueueLock unlock];
@@ -118,11 +111,10 @@
 	// Get lock for access to 'oldChangeSets'
 	[masterQueueLock lock];
 	{
-		if (hasInFlightChangeSet)
+		YDBCKChangeSet *firstChangeSet = [oldChangeSets firstObject];
+		if (firstChangeSet.isInFlight)
 		{
-			NSAssert(oldChangeSets.count > 0, @"Logic error");
-			
-			hasInFlightChangeSet = NO;
+			firstChangeSet.isInFlight = NO;
 		}
 	}
 	[masterQueueLock unlock];
@@ -222,10 +214,13 @@
 {
 	if (self.isMasterQueue)
 	{
-		NSArray *oldChangeSetsCopy = nil;
+		NSMutableArray *oldChangeSetsCopy = nil;
 		
 		[masterQueueLock lock];
-		oldChangeSetsCopy = [oldChangeSets copy];
+		for (YDBCKChangeSet *changeSet in oldChangeSets)
+		{
+			[oldChangeSetsCopy addObject:[changeSet fullCopy]];
+		}
 		[masterQueueLock unlock];
 		
 		return oldChangeSetsCopy;
@@ -876,7 +871,6 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 	NSAssert(pendingQueue.isPendingQueue, @"Bad parameter: 'pendingQueue' is not a pendingQueue");
 	NSAssert(pendingQueue->newChangeSets == nil, @"Cannot modify pendingQueue after newChangeSets has been fetched");
 	NSAssert([self.lockUUID isEqualToString:pendingQueue.lockUUID], @"Bad state: Not locked for pendingQueue");
-	NSAssert(hasInFlightChangeSet, @"Bad state: hasInFlightChangeSet == NO");
 	
 	__unsafe_unretained typeof(self) masterQueue = self;
 	CKRecordID *recordID = record.recordID;
@@ -989,7 +983,6 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 	NSAssert(pendingQueue.isPendingQueue, @"Bad parameter: 'pendingQueue' is not a pendingQueue");
 	NSAssert(pendingQueue->newChangeSets == nil, @"Cannot modify pendingQueue after newChangeSets has been fetched");
 	NSAssert([self.lockUUID isEqualToString:pendingQueue.lockUUID], @"Bad state: Not locked for pendingQueue");
-	NSAssert(hasInFlightChangeSet, @"Bad state: hasInFlightChangeSet == NO");
 	
 	__unsafe_unretained typeof(self) masterQueue = self;
 	

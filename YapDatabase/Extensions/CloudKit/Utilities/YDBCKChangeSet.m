@@ -9,9 +9,14 @@
 @synthesize prev = prev;
 
 @synthesize databaseIdentifier = databaseIdentifier;
+@synthesize isInFlight = isInFlight;
 
 @dynamic recordIDsToDelete;
+@dynamic recordsToSave;
 @dynamic recordsToSave_noCopy;
+
+@dynamic recordIDsToDeleteCount;
+@dynamic recordsToSaveCount;
 
 @synthesize hasChangesToDeletedRecordIDs;
 @synthesize hasChangesToModifiedRecords;
@@ -28,6 +33,7 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 		prev = inPrev;
 		
 		databaseIdentifier = inDatabaseIdentifier;
+		isInFlight = NO;
 		
 		[self deserializeDeletedRecordIDs:serializedDeletedRecordIDs];
 		[self deserializeModifiedRecords:serializedModifiedRecords];
@@ -40,6 +46,7 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 	if ((self = [super init]))
 	{
 		databaseIdentifier = inDatabaseIdentifier;
+		isInFlight = NO;
 		
 		uuid = nil; // Will be set later when the changeSets are ordered
 		prev = nil; // Will be set later when the changeSets are ordered
@@ -53,6 +60,7 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 	emptyCopy->uuid = uuid;
 	emptyCopy->prev = prev;
 	emptyCopy->databaseIdentifier = databaseIdentifier;
+	emptyCopy->isInFlight = isInFlight;
 	
 	return emptyCopy;
 }
@@ -76,6 +84,18 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 	return [deletedRecordIDs copy];
 }
 
+- (NSArray *)recordsToSave
+{
+	NSMutableArray *array = [NSMutableArray arrayWithCapacity:[moodifiedRecords count]];
+	
+	for (YDBCKChangeRecord *changeRecord in [moodifiedRecords objectEnumerator])
+	{
+		[array addObject:[changeRecord.record copy]];
+	}
+	
+	return array;
+}
+
 - (NSArray *)recordsToSave_noCopy
 {
 	NSMutableArray *array = [NSMutableArray arrayWithCapacity:[moodifiedRecords count]];
@@ -86,6 +106,16 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 	}
 	
 	return array;
+}
+
+- (NSUInteger)recordIDsToDeleteCount
+{
+	return [deletedRecordIDs count];
+}
+
+- (NSUInteger)recordsToSaveCount
+{
+	return [moodifiedRecords count];
 }
 
 - (NSData *)serializeDeletedRecordIDs
