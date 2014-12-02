@@ -9,10 +9,10 @@
  * Welcome to YapDatabase!
  *
  * The project page has a wealth of documentation if you have any questions.
- * https://github.com/yaptv/YapDatabase
+ * https://github.com/yapstudios/YapDatabase
  *
  * If you're new to the project you may want to visit the wiki.
- * https://github.com/yaptv/YapDatabase/wiki
+ * https://github.com/yapstudios/YapDatabase/wiki
  *
  * From a single YapDatabase instance you can create multiple connections.
  * Each connection is thread-safe and may be used concurrently with other connections.
@@ -114,7 +114,7 @@ typedef NS_OPTIONS(NSUInteger, YapDatabaseConnectionFlushMemoryFlags) {
  * @see YapDatabase defaultObjectCacheLimit
  * 
  * Also see the wiki for a bit more info:
- * https://github.com/yaptv/YapDatabase/wiki/Cache
+ * https://github.com/yapstudios/YapDatabase/wiki/Cache
 **/
 @property (atomic, assign, readwrite) BOOL objectCacheEnabled;
 @property (atomic, assign, readwrite) NSUInteger objectCacheLimit;
@@ -139,7 +139,7 @@ typedef NS_OPTIONS(NSUInteger, YapDatabaseConnectionFlushMemoryFlags) {
  * @see YapDatabase defaultMetadataCacheLimit
  *
  * Also see the wiki for a bit more info:
- * https://github.com/yaptv/YapDatabase/wiki/Cache
+ * https://github.com/yapstudios/YapDatabase/wiki/Cache
 **/
 @property (atomic, assign, readwrite) BOOL metadataCacheEnabled;
 @property (atomic, assign, readwrite) NSUInteger metadataCacheLimit;
@@ -158,7 +158,7 @@ typedef NS_OPTIONS(NSUInteger, YapDatabaseConnectionFlushMemoryFlags) {
  * The other policies require a little more work, and little deeper understanding.
  *
  * These optimizations are discussed extensively in the wiki article "Performance Pro":
- * https://github.com/yaptv/YapDatabase/wiki/Performance-Pro
+ * https://github.com/yapstudios/YapDatabase/wiki/Performance-Pro
 **/
 @property (atomic, assign, readwrite) YapDatabasePolicy objectPolicy;
 @property (atomic, assign, readwrite) YapDatabasePolicy metadataPolicy;
@@ -455,7 +455,7 @@ __attribute((deprecated("Use method asyncReadWriteWithBlock:completionQueue:comp
  * This is most often used for connections that service the main thread for UI data.
  * 
  * For a complete discussion, please see the wiki page:
- * https://github.com/yaptv/YapDatabase/wiki/LongLivedReadTransactions
+ * https://github.com/yapstudios/YapDatabase/wiki/LongLivedReadTransactions
 **/
 - (NSArray *)beginLongLivedReadTransaction;
 - (NSArray *)endLongLivedReadTransaction;
@@ -472,7 +472,7 @@ __attribute((deprecated("Use method asyncReadWriteWithBlock:completionQueue:comp
  * So its better to have an early warning system to help you fix the bug before it occurs.
  *
  * For a complete discussion, please see the wiki page:
- * https://github.com/yaptv/YapDatabase/wiki/LongLivedReadTransactions
+ * https://github.com/yapstudios/YapDatabase/wiki/LongLivedReadTransactions
  *
  * In debug mode (#if DEBUG), these exceptions are turned ON by default.
  * In non-debug mode (#if !DEBUG), these exceptions are turned OFF by default.
@@ -493,7 +493,7 @@ __attribute((deprecated("Use method asyncReadWriteWithBlock:completionQueue:comp
  * This is most often used in conjunction with longLivedReadTransactions.
  *
  * For more information on longLivedReadTransaction, see the following wiki article:
- * https://github.com/yaptv/YapDatabase/wiki/LongLivedReadTransactions
+ * https://github.com/yapstudios/YapDatabase/wiki/LongLivedReadTransactions
 **/
 
 // Query for any change to a collection

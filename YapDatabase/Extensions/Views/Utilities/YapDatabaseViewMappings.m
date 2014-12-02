@@ -353,7 +353,7 @@
 			@" YapDatabaseModifiedNotifications. This ensures that the data-source for your UI remains in a steady"
 			@" state at all times, and that updates are properly handled using the appropriate update mechanisms"
 			@" (and properly animated if desired)."
-			@" For example code, please see the wiki: https://github.com/yaptv/YapDatabase/wiki/Views";
+			@" For example code, please see the wiki: https://github.com/yapstudios/YapDatabase/wiki/Views";
 			
 		NSString *suggestion =
 		    @"You must invoke [databaseConnection beginLongLivedReadTransaction] before you initialize the mappings";
@@ -1503,12 +1503,12 @@
  *
  *     for (YapDatabaseViewSectionChange *sectionChange in sectionChanges)
  *     {
- *         // ... (see https://github.com/yaptv/YapDatabase/wiki/Views )
+ *         // ... (see https://github.com/yapstudios/YapDatabase/wiki/Views )
  *     }
  *
  *     for (YapDatabaseViewRowChange *rowChange in rowChanges)
  *     {
- *         // ... (see https://github.com/yaptv/YapDatabase/wiki/Views )
+ *         // ... (see https://github.com/yapstudios/YapDatabase/wiki/Views )
  *     }
  *
  *     [self.tableView endUpdates];

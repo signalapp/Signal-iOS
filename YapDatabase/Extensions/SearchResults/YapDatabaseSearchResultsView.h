@@ -8,10 +8,10 @@
 /**
  * Welcome to YapDatabase!
  *
- * https://github.com/yaptv/YapDatabase
+ * https://github.com/yapstudios/YapDatabase
  *
  * The project wiki has a wealth of documentation if you have any questions.
- * https://github.com/yaptv/YapDatabase/wiki
+ * https://github.com/yapstudios/YapDatabase/wiki
  *
  * YapDatabaseSearchResults allows you to pipe search results from YapDatabaseFullTextSearch into a YapDatabaseView.
  * This makes it easy to display search results in a tableView or collectionView.

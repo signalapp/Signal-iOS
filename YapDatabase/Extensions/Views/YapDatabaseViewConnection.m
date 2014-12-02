@@ -527,7 +527,7 @@
 			@" You need to invoke [mappings updateWithTransaction:transaction] once in order to initialize"
 			@" the mappings object. You should do this after invoking"
 			@" [databaseConnection beginLongLivedReadTransaction]. For example code, please see"
-			@" YapDatabaseViewMappings.h, or see the wiki: https://github.com/yaptv/YapDatabase/wiki/Views"};
+			@" YapDatabaseViewMappings.h, or see the wiki: https://github.com/yapstudios/YapDatabase/wiki/Views"};
 	
 		@throw [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
 	}
@@ -623,7 +623,7 @@
 		// then you need to follow the instructions for setting up your connection, mappings, & notifications.
 		//
 		// For complete code samples, check out the wiki:
-		// https://github.com/yaptv/YapDatabase/wiki/Views
+		// https://github.com/yapstudios/YapDatabase/wiki/Views
 		//
 		// You may be tempted to simply comment out the exception below.
 		// If you do, you're not fixing the root cause of your problem.
@@ -637,7 +637,7 @@
 		            exception, failureReason, suggestion);
 		
 		// For more help, go here:
-		// https://github.com/yaptv/YapDatabase/wiki/Views#managing-mappings
+		// https://github.com/yapstudios/YapDatabase/wiki/Views#managing-mappings
 		@throw exception;
 	}
 	

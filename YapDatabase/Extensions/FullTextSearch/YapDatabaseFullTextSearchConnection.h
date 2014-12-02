@@ -6,10 +6,10 @@
 /**
  * Welcome to YapDatabase!
  *
- * https://github.com/yaptv/YapDatabase
+ * https://github.com/yapstudios/YapDatabase
  *
  * The project wiki has a wealth of documentation if you have any questions.
- * https://github.com/yaptv/YapDatabase/wiki
+ * https://github.com/yapstudios/YapDatabase/wiki
  *
  * YapDatabaseFullTextSearch is an extension for performing text based search.
  * Internally it uses sqlite's FTS module which was contributed by Google.

@@ -4057,7 +4057,7 @@
  * as opposed to broadcasting your own separate notification.
  * 
  * For more information, and code samples, please see the wiki article:
- * https://github.com/yaptv/YapDatabase/wiki/YapDatabaseModifiedNotification
+ * https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseModifiedNotification
 **/
 @synthesize yapDatabaseModifiedNotificationCustomObject = customObjectForNotification;
 

@@ -6,10 +6,10 @@
  * Welcome to YapDatabase!
  *
  * The project page has a wealth of documentation if you have any questions.
- * https://github.com/yaptv/YapDatabase
+ * https://github.com/yapstudios/YapDatabase
  *
  * If you're new to the project you may want to visit the wiki.
- * https://github.com/yaptv/YapDatabase/wiki
+ * https://github.com/yapstudios/YapDatabase/wiki
  * 
  * Transactions represent atomic access to a database.
  * There are two types of transactions:
@@ -458,7 +458,7 @@
  * as opposed to broadcasting your own separate notification.
  * 
  * For more information, and code samples, please see the wiki article:
- * https://github.com/yaptv/YapDatabase/wiki/YapDatabaseModifiedNotification
+ * https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseModifiedNotification
 **/
 @property (nonatomic, strong, readwrite) id yapDatabaseModifiedNotificationCustomObject;
 

@@ -9,10 +9,10 @@
 
 /**
  * Welcome to YapDatabase!
- * https://github.com/yaptv/YapDatabase
+ * https://github.com/yapstudios/YapDatabase
  *
  * The project wiki has a wealth of documentation if you have any questions.
- * https://github.com/yaptv/YapDatabase/wiki
+ * https://github.com/yapstudios/YapDatabase/wiki
  *
  * YapDatabaseSecondaryIndex is an extension which allows you to add additional indexes for fast searching.
  *
@@ -24,7 +24,7 @@
  * - find the contact where: email == "johndoe@domain.com"
  *
  * For more information, see the wiki article about secondary indexes:
- * https://github.com/yaptv/YapDatabase/wiki/Secondary-Indexes
+ * https://github.com/yapstudios/YapDatabase/wiki/Secondary-Indexes
 **/
 @interface YapDatabaseSecondaryIndex : YapDatabaseExtension
 

@@ -36,6 +36,6 @@
 // It is designed to expose them in the form of a set.
 //
 // If you make improvements, feel free to submit a patch to the github project and get some good karma for it!
-// https://github.com/yaptv/YapDatabase
+// https://github.com/yapstudios/YapDatabase
 
 @end

@@ -6,19 +6,19 @@
 /**
  * Welcome to YapDatabase!
  *
- * https://github.com/yaptv/YapDatabase
+ * https://github.com/yapstudios/YapDatabase
  *
  * The project wiki has a wealth of documentation if you have any questions.
- * https://github.com/yaptv/YapDatabase/wiki
+ * https://github.com/yapstudios/YapDatabase/wiki
  *
  * YapDatabaseView is an extension designed to work with YapDatabase.
  * It gives you a persistent sorted "view" of a configurable subset of your data.
  *
  * For the full documentation on Views, please see the related wiki article:
- * https://github.com/yaptv/YapDatabase/wiki/Views
+ * https://github.com/yapstudios/YapDatabase/wiki/Views
  * 
  * There is also an entire section that details YapDatabaseViewMappings:
- * https://github.com/yaptv/YapDatabase/wiki/Views#mappings
+ * https://github.com/yapstudios/YapDatabase/wiki/Views#mappings
  * 
  * YapDatabaseViewMappings helps you map from groups to sections.
  * Let's take a look at a concrete example:
@@ -117,12 +117,12 @@
  *     
  *     for (YapDatabaseViewSectionChange *sectionChange in sectionChanges)
  *     {
- *         // ... (see https://github.com/yaptv/YapDatabase/wiki/Views )
+ *         // ... (see https://github.com/yapstudios/YapDatabase/wiki/Views )
  *     }
  *     
  *     for (YapDatabaseViewRowChange *rowChange in rowChanges)
  *     {
- *         // ... (see https://github.com/yaptv/YapDatabase/wiki/Views )
+ *         // ... (see https://github.com/yapstudios/YapDatabase/wiki/Views )
  *     }
  *
  *     [self.tableView endUpdates];
@@ -831,12 +831,12 @@ typedef NSComparisonResult (^YapDatabaseViewMappingGroupSort)(NSString *group1, 
  *
  *     for (YapDatabaseViewSectionChange *sectionChange in sectionChanges)
  *     {
- *         // ... (see https://github.com/yaptv/YapDatabase/wiki/Views )
+ *         // ... (see https://github.com/yapstudios/YapDatabase/wiki/Views )
  *     }
  *
  *     for (YapDatabaseViewRowChange *rowChange in rowChanges)
  *     {
- *         // ... (see https://github.com/yaptv/YapDatabase/wiki/Views )
+ *         // ... (see https://github.com/yapstudios/YapDatabase/wiki/Views )
  *     }
  *
  *     [self.tableView endUpdates];

@@ -9,10 +9,10 @@
  * Welcome to YapDatabase!
  *
  * The project page has a wealth of documentation if you have any questions.
- * https://github.com/yaptv/YapDatabase
+ * https://github.com/yapstudios/YapDatabase
  *
  * If you're new to the project you may want to visit the wiki.
- * https://github.com/yaptv/YapDatabase/wiki
+ * https://github.com/yapstudios/YapDatabase/wiki
  *
  * The YapDatabase class is the top level class used to initialize the database.
  * It largely represents the immutable aspects of the database such as:
@@ -30,7 +30,7 @@
  * How does YapDatabase store my objects to disk?
  *
  * That question is answered extensively in the wiki article "Storing Objects":
- * https://github.com/yaptv/YapDatabase/wiki/Storing-Objects
+ * https://github.com/yapstudios/YapDatabase/wiki/Storing-Objects
  *
  * Here's the intro from the wiki article:
  *
@@ -99,7 +99,7 @@ typedef void (^YapDatabasePostSanitizer)(NSString *collection, NSString *key, id
  * This notification is posted following a readwrite transaction where the database was modified.
  * 
  * It is documented in more detail in the wiki article "YapDatabaseModifiedNotification":
- * https://github.com/yaptv/YapDatabase/wiki/YapDatabaseModifiedNotification
+ * https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseModifiedNotification
  *
  * The notification object will be the database instance itself.
  * That is, it will be an instance of YapDatabase.
@@ -648,7 +648,7 @@ __attribute((deprecated("Use method asyncUnregisterExtensionWithName:completionQ
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * As recommended in the "Performance Primer" ( https://github.com/yaptv/YapDatabase/wiki/Performance-Primer )
+ * As recommended in the "Performance Primer" ( https://github.com/yapstudios/YapDatabase/wiki/Performance-Primer )
  * 
  * > You should consider connections to be relatively heavy weight objects.
  * >

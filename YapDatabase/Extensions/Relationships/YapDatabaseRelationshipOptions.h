@@ -3,16 +3,16 @@
 
 /**
  * Welcome to YapDatabase!
- * https://github.com/yaptv/YapDatabase
+ * https://github.com/yapstudios/YapDatabase
  *
  * If you're new to the project you may want to visit the wiki.
- * https://github.com/yaptv/YapDatabase/wiki
+ * https://github.com/yapstudios/YapDatabase/wiki
  *
  * The YapDatabaseRelationship extension allow you to create relationships between objects,
  * and configure automatic deletion rules.
  *
  * For tons of information about this extension, see the wiki article:
- * https://github.com/yaptv/YapDatabase/wiki/Relationships
+ * https://github.com/yapstudios/YapDatabase/wiki/Relationships
 **/
 
 typedef NSData* (^YapDatabaseRelationshipFilePathEncryptor)(NSString *dstFilePath);
