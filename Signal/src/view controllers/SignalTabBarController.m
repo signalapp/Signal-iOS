@@ -24,16 +24,18 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    if (![TSAccountManager isRegistered]){
-        [self performSegueWithIdentifier:@"showSignupFlow" sender:self];
-    }
-    
     self.dbConnection = [TSStorageManager sharedManager].newDatabaseConnection;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
                                                object:nil];
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    if (![TSAccountManager isRegistered]){
+        [self performSegueWithIdentifier:@"showSignupFlow" sender:self];
+    }
 }
 
 - (void)yapDatabaseModified:(NSNotification *)notification {
