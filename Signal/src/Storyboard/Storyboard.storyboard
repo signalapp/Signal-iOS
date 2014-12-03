@@ -35,6 +35,9 @@
                                     </tableViewCell>
                                 </prototypes>
                                 <sections/>
+                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="0.0" y="-44" width="410" height="844"/>
+                                </variation>
                                 <connections>
                                     <outlet property="dataSource" destination="MY2-bB-USa" id="kop-Y6-6DR"/>
                                     <outlet property="delegate" destination="MY2-bB-USa" id="vmj-PA-2Od"/>
@@ -1184,6 +1187,10 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                     <view key="view" contentMode="scaleToFill" id="Zgb-Uj-73M">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <userGuides>
+                            <userLayoutGuide location="199" affinity="minX"/>
+                            <userLayoutGuide location="199" affinity="minX"/>
+                        </userGuides>
                         <subviews>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Code" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yK6-ad-ihc">
                                 <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
@@ -1316,11 +1323,47 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <include reference="EoB-jn-bwV"/>
                                     </mask>
                                 </variation>
+                                <connections>
+                                    <action selector="sendCodeSMSAction:" destination="3Uo-Ow-qOD" eventType="touchUpInside" id="jWS-dh-jsO"/>
+                                </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2I5-tm-rMi">
+                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="200" id="UiP-hG-L0t"/>
+                                    <constraint firstAttribute="height" constant="30" id="UzF-a6-vRO"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="19"/>
+                                <state key="normal" title="Call me instead">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="UiP-hG-L0t"/>
+                                        <exclude reference="UzF-a6-vRO"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=regular-widthClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="UiP-hG-L0t"/>
+                                        <include reference="UzF-a6-vRO"/>
+                                    </mask>
+                                </variation>
+                                <connections>
+                                    <action selector="sendCodeVoiceAction:" destination="3Uo-Ow-qOD" eventType="touchUpInside" id="YWt-aa-RUW"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" enabled="NO" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="80G-wF-Ki5">
+                                <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="16"/>
+                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="centerX" secondItem="49d-7m-0k6" secondAttribute="centerX" id="601-ZF-xlq"/>
+                            <constraint firstAttribute="centerX" secondItem="80G-wF-Ki5" secondAttribute="centerX" id="9Ob-8g-gcU"/>
                             <constraint firstAttribute="centerX" secondItem="PHu-da-Fan" secondAttribute="centerX" id="9hL-iF-RZL"/>
                             <constraint firstAttribute="centerX" secondItem="yK6-ad-ihc" secondAttribute="centerX" id="AIw-5F-Lfj"/>
                             <constraint firstItem="HYX-Cr-u0w" firstAttribute="top" secondItem="49d-7m-0k6" secondAttribute="bottom" constant="8" id="J0Z-pe-1GZ"/>
@@ -1329,9 +1372,12 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                             <constraint firstItem="PHu-da-Fan" firstAttribute="top" secondItem="yK6-ad-ihc" secondAttribute="bottom" constant="67" id="M8V-ht-k2s"/>
                             <constraint firstAttribute="centerX" secondItem="260-Dq-fnd" secondAttribute="centerX" id="Mb0-Wd-GVx"/>
                             <constraint firstItem="MHI-1c-yZH" firstAttribute="top" secondItem="IVn-LE-fmp" secondAttribute="bottom" constant="8" id="StQ-SP-FMd"/>
+                            <constraint firstAttribute="centerX" secondItem="2I5-tm-rMi" secondAttribute="centerX" id="Wkv-S5-yMl"/>
                             <constraint firstItem="yK6-ad-ihc" firstAttribute="leading" secondItem="Zgb-Uj-73M" secondAttribute="leadingMargin" constant="84" id="c47-uE-awH"/>
+                            <constraint firstAttribute="bottom" secondItem="2I5-tm-rMi" secondAttribute="bottom" constant="75" id="cJz-3Q-q4i"/>
                             <constraint firstItem="49d-7m-0k6" firstAttribute="top" secondItem="OuY-yn-ZQb" secondAttribute="bottom" constant="36" id="dP3-9o-eNP"/>
                             <constraint firstItem="260-Dq-fnd" firstAttribute="leading" secondItem="Zgb-Uj-73M" secondAttribute="leadingMargin" constant="84" id="dvC-Xu-1F4"/>
+                            <constraint firstAttribute="bottom" secondItem="80G-wF-Ki5" secondAttribute="bottom" constant="46" id="eco-TD-FoN"/>
                             <constraint firstAttribute="trailingMargin" secondItem="260-Dq-fnd" secondAttribute="trailing" constant="84" id="mNE-hX-tgd"/>
                             <constraint firstAttribute="centerX" secondItem="HYX-Cr-u0w" secondAttribute="centerX" id="oPh-8d-yYT"/>
                             <constraint firstItem="49d-7m-0k6" firstAttribute="leading" secondItem="Zgb-Uj-73M" secondAttribute="leadingMargin" id="oSp-IH-lVa"/>
@@ -1349,17 +1395,23 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 <exclude reference="PHu-da-Fan"/>
                                 <exclude reference="IVn-LE-fmp"/>
                                 <exclude reference="HYX-Cr-u0w"/>
+                                <exclude reference="2I5-tm-rMi"/>
+                                <exclude reference="80G-wF-Ki5"/>
                             </mask>
                             <mask key="constraints">
                                 <exclude reference="601-ZF-xlq"/>
                                 <exclude reference="JFF-KZ-h6I"/>
                                 <exclude reference="dP3-9o-eNP"/>
                                 <exclude reference="oSp-IH-lVa"/>
+                                <exclude reference="9Ob-8g-gcU"/>
+                                <exclude reference="eco-TD-FoN"/>
                                 <exclude reference="StQ-SP-FMd"/>
                                 <exclude reference="AIw-5F-Lfj"/>
                                 <exclude reference="LsW-Pq-PRZ"/>
                                 <exclude reference="c47-uE-awH"/>
                                 <exclude reference="yuF-1t-XeW"/>
+                                <exclude reference="Wkv-S5-yMl"/>
+                                <exclude reference="cJz-3Q-q4i"/>
                                 <exclude reference="J0Z-pe-1GZ"/>
                                 <exclude reference="oPh-8d-yYT"/>
                                 <exclude reference="rmZ-rb-JoP"/>
@@ -1379,17 +1431,23 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 <include reference="PHu-da-Fan"/>
                                 <include reference="IVn-LE-fmp"/>
                                 <include reference="HYX-Cr-u0w"/>
+                                <include reference="2I5-tm-rMi"/>
+                                <include reference="80G-wF-Ki5"/>
                             </mask>
                             <mask key="constraints">
                                 <include reference="601-ZF-xlq"/>
                                 <include reference="JFF-KZ-h6I"/>
                                 <include reference="dP3-9o-eNP"/>
                                 <include reference="oSp-IH-lVa"/>
+                                <include reference="9Ob-8g-gcU"/>
+                                <include reference="eco-TD-FoN"/>
                                 <include reference="StQ-SP-FMd"/>
                                 <include reference="AIw-5F-Lfj"/>
                                 <include reference="LsW-Pq-PRZ"/>
                                 <include reference="c47-uE-awH"/>
                                 <include reference="yuF-1t-XeW"/>
+                                <include reference="Wkv-S5-yMl"/>
+                                <include reference="cJz-3Q-q4i"/>
                                 <include reference="J0Z-pe-1GZ"/>
                                 <include reference="oPh-8d-yYT"/>
                                 <include reference="rmZ-rb-JoP"/>
@@ -1406,6 +1464,10 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                     <connections>
                         <outlet property="challengeButton" destination="PHu-da-Fan" id="hd0-4C-XqL"/>
                         <outlet property="challengeTextField" destination="yK6-ad-ihc" id="cnh-li-Z6O"/>
+                        <outlet property="phoneNumberEntered" destination="80G-wF-Ki5" id="rRv-vj-0Eo"/>
+                        <outlet property="sendCodeViaSMSAgainButton" destination="HYX-Cr-u0w" id="80C-tQ-khX"/>
+                        <outlet property="sendCodeViaVoiceButton" destination="2I5-tm-rMi" id="h8C-UP-pj7"/>
+                        <segue destination="QKN-cj-wuH" kind="show" identifier="verifiedSegue" id="Wd2-mW-FfR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WLS-Zq-ncm" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1470,7 +1532,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
             <objects>
                 <tableViewController id="0XE-hu-8cu" customClass="ContactDetailTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="150" sectionHeaderHeight="22" sectionFooterHeight="22" id="RoU-YO-d5P">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
@@ -2875,7 +2937,8 @@ Licensed under the GPLv3</string>
                                         <exclude reference="ZIm-Uq-bM8"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
+                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="0.0" y="20" width="400" height="100"/>
                                     <mask key="subviews">
                                         <include reference="gbm-B5-gCc"/>
                                         <include reference="Ul8-NY-i4c"/>
@@ -2929,6 +2992,9 @@ Licensed under the GPLv3</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </prototypes>
+                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="0.0" y="128" width="400" height="672"/>
+                                </variation>
                                 <connections>
                                     <outlet property="dataSource" destination="bDi-2Q-XOC" id="VPO-ms-bH1"/>
                                     <outlet property="delegate" destination="bDi-2Q-XOC" id="rKM-jX-C39"/>
