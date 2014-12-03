@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14C68k" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="kts-vO-ui1">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="kts-vO-ui1">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -1826,86 +1826,6 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                     <outlet property="contactTextButton" destination="cfo-cG-hLC" id="JKY-RT-mn6"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ShareCell" rowHeight="60" id="hSC-7F-dj5" customClass="ContactDetailCell">
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="hSC-7F-dj5" id="lvR-BE-4Mx">
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="share.png" translatesAutoresizingMaskIntoConstraints="NO" id="aSe-xF-b09">
-                                            <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="25" id="2Jh-ad-KNx"/>
-                                                <constraint firstAttribute="width" constant="25" id="IAV-2c-d2w"/>
-                                            </constraints>
-                                            <variation key="default">
-                                                <mask key="constraints">
-                                                    <exclude reference="2Jh-ad-KNx"/>
-                                                    <exclude reference="IAV-2c-d2w"/>
-                                                </mask>
-                                            </variation>
-                                            <variation key="heightClass=regular-widthClass=compact">
-                                                <mask key="constraints">
-                                                    <include reference="2Jh-ad-KNx"/>
-                                                    <include reference="IAV-2c-d2w"/>
-                                                </mask>
-                                            </variation>
-                                        </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Share Contact" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YNM-Jz-XEj">
-                                            <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="21" id="3DG-5I-upG"/>
-                                                <constraint firstAttribute="width" constant="111" id="xEg-aq-ZX9"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <nil key="highlightedColor"/>
-                                            <variation key="default">
-                                                <mask key="constraints">
-                                                    <exclude reference="3DG-5I-upG"/>
-                                                    <exclude reference="xEg-aq-ZX9"/>
-                                                </mask>
-                                            </variation>
-                                            <variation key="heightClass=regular-widthClass=compact">
-                                                <mask key="constraints">
-                                                    <include reference="3DG-5I-upG"/>
-                                                    <include reference="xEg-aq-ZX9"/>
-                                                </mask>
-                                            </variation>
-                                        </label>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="YNM-Jz-XEj" firstAttribute="leading" secondItem="lvR-BE-4Mx" secondAttribute="leadingMargin" constant="15" id="4se-Xh-1PH"/>
-                                        <constraint firstItem="aSe-xF-b09" firstAttribute="top" secondItem="lvR-BE-4Mx" secondAttribute="topMargin" constant="9" id="NO6-s6-3y9"/>
-                                        <constraint firstItem="YNM-Jz-XEj" firstAttribute="top" secondItem="lvR-BE-4Mx" secondAttribute="topMargin" constant="11" id="h7u-8P-pkI"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="aSe-xF-b09" secondAttribute="trailing" constant="23" id="vxa-Nc-UvT"/>
-                                    </constraints>
-                                    <variation key="default">
-                                        <mask key="subviews">
-                                            <exclude reference="aSe-xF-b09"/>
-                                            <exclude reference="YNM-Jz-XEj"/>
-                                        </mask>
-                                        <mask key="constraints">
-                                            <exclude reference="4se-Xh-1PH"/>
-                                            <exclude reference="h7u-8P-pkI"/>
-                                            <exclude reference="NO6-s6-3y9"/>
-                                            <exclude reference="vxa-Nc-UvT"/>
-                                        </mask>
-                                    </variation>
-                                    <variation key="heightClass=regular-widthClass=compact">
-                                        <mask key="subviews">
-                                            <include reference="aSe-xF-b09"/>
-                                            <include reference="YNM-Jz-XEj"/>
-                                        </mask>
-                                        <mask key="constraints">
-                                            <include reference="4se-Xh-1PH"/>
-                                            <include reference="h7u-8P-pkI"/>
-                                            <include reference="NO6-s6-3y9"/>
-                                            <include reference="vxa-Nc-UvT"/>
-                                        </mask>
-                                    </variation>
-                                </tableViewCellContentView>
-                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                            </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="EmailCell" rowHeight="60" id="fWm-EM-av7" customClass="ContactDetailCell">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="fWm-EM-av7" id="yVD-4a-A9L">
@@ -3115,7 +3035,6 @@ Licensed under the GPLv3</string>
         <image name="quit.png" width="50" height="50"/>
         <image name="savephoto.png" width="50" height="50"/>
         <image name="settings_tab.png" width="24" height="24"/>
-        <image name="share.png" width="50" height="50"/>
         <image name="shred.png" width="200" height="200"/>
         <image name="signal.png" width="50" height="50"/>
         <image name="signals_tab.png" width="24" height="24"/>

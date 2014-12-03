@@ -15,14 +15,13 @@
 #import "PhoneManager.h"
 
 #define kImageRadius           50.0f
-#define kMinRows               3
-#define kFirstAdaptableCellRow 2
+#define kMinRows               2
+#define kFirstAdaptableCellRow 1
 
 
 typedef NS_ENUM(NSInteger, CellRow) {
     kNameMainNumberCellIndexPath,
     kActionCellIndexPath,
-    kShareCellIndexPath,
     kEmailCellIndexPath,
     kAnnexPhoneNumberCellIndexPath,
     kNotesCellIndexPath,
@@ -32,7 +31,6 @@ typedef enum {
     kNameMainNumberCellHeight      = 180,
     kNoImageCellHeight             = 87,
     kActionCellHeight              = 60,
-    kShareCellHeight               = 60,
     kEmailCellHeight               = 60,
     kAnnexPhoneNumberCellHeight    = 60,
     kNotesCellHeight               = 165,
@@ -40,7 +38,6 @@ typedef enum {
 
 static NSString* const kNameMainNumberCell   = @"NameMainNumberCell";
 static NSString* const kActionCell           = @"ActionCell";
-static NSString* const kShareCell            = @"ShareCell";
 static NSString* const kEmailCell            = @"EmailCell";
 static NSString* const kAnnexPhoneNumberCell = @"AnnexPhoneNumberCell";
 static NSString *const kNotesCell            = @"NotesCell";
@@ -49,7 +46,6 @@ static NSString *const kContactDetailSegue   = @"DetailSegue";
 
 @interface ContactDetailTableViewController () {
     BOOL doesImageExist;
-    NSInteger numberOfRows;
 }
 @end
 
@@ -89,9 +85,6 @@ static NSString *const kContactDetailSegue   = @"DetailSegue";
             cell = (ActionContactDetailCell*)[tableView dequeueReusableCellWithIdentifier:kActionCell forIndexPath:indexPath];
             [self setUpActionCell:(ActionContactDetailCell*)cell];
             break;
-        case kShareCellIndexPath:
-            cell = [tableView dequeueReusableCellWithIdentifier:kShareCell forIndexPath:indexPath];
-            break;
         default:
             cell = [self adaptableCellAtIndexPath:indexPath];
             break;
@@ -113,42 +106,12 @@ static NSString *const kContactDetailSegue   = @"DetailSegue";
         case kActionCellIndexPath:
             cellHeight = kActionCellHeight;
             break;
-        case kShareCellIndexPath:
-            cellHeight = kShareCellHeight;
-            break;
         default:
             cellHeight = [self heightForAdaptableCellAtIndexPath:indexPath];
             break;
     }
     return cellHeight;
 }
-
--(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    switch (indexPath.row) {
-        case kShareCellIndexPath:
-            [DJWActionSheet showInView:self.tabBarController.view
-                             withTitle:nil
-                     cancelButtonTitle:@"Cancel"
-                destructiveButtonTitle:nil
-                     otherButtonTitles:@[@"Mail", @"Message", @"Airdrop", @"Other"]
-                              tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                                  [tableView deselectRowAtIndexPath:indexPath animated:YES];
-                                  if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                                      NSLog(@"User Cancelled");
-                                      
-                                  } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                                      NSLog(@"Destructive button tapped");
-                                  }else {
-                                      NSLog(@"The user tapped button at index: %li", (long)tappedButtonIndex);
-                                  }
-                              }];
-            
-            break;
-            
-    }
-}
-
 
 #pragma mark - Set Up Cells
 
