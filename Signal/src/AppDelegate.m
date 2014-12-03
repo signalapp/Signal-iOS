@@ -213,8 +213,6 @@
         [TSSocketManager becomeActive];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC),
                        dispatch_get_main_queue(), ^{
-                           // Check result of your operation and call completion block with the result
-                           NSLog(@"Hello");
                            completionHandler(UIBackgroundFetchResultNewData);
                        });
     }
