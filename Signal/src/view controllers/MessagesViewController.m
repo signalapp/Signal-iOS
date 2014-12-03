@@ -10,6 +10,7 @@
 
 #import "MessagesViewController.h"
 #import "FullImageViewController.h"
+#import "FingerprintViewController.h"
 
 #import "JSQCallCollectionViewCell.h"
 #import "JSQCall.h"
@@ -194,6 +195,7 @@ typedef enum : NSUInteger {
 {
     [self performSegueWithIdentifier:@"fingerprintSegue" sender:self];
 }
+
 
 #pragma mark - Calls
 
@@ -508,6 +510,12 @@ typedef enum : NSUInteger {
         FullImageViewController* dest = [segue destinationViewController];
         dest.image = tappedImage;
         
+    } else if ([segue.identifier isEqualToString:@"fingerprintSegue"]){
+        FingerprintViewController *vc = [segue destinationViewController];
+        TSContactThread *thread = (TSContactThread*) self.thread;
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [vc configWithThread:self.thread];
+        }];
     }
 }
 

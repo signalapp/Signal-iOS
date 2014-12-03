@@ -7,8 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TSContactThread.h"
 
 @interface FingerprintViewController : UIViewController
+
+- (void)configWithThread:(TSThread*)thread;
 
 @property (nonatomic, strong) IBOutlet UILabel     * presentationLabel;
 
