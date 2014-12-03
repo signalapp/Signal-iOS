@@ -643,6 +643,22 @@ __attribute((deprecated("Use method asyncUnregisterExtensionWithName:completionQ
 **/
 - (NSDictionary *)registeredExtensions;
 
+/**
+ * Allows you to fetch the registered extension names from the last time the database was run.
+ * Typically this means from the last time the app was run.
+ * 
+ * This may be used to assist in various tasks, such as cleanup or upgrade tasks.
+ * 
+ * If you need this information, you should fetch it early on because YapDatabase only maintains this information
+ * until it sees you are done registering all your initial extensions. That is, after one initializes the database
+ * they then immediately register any needed initial extensions before they begin to use the database. Once a 
+ * readWriteTransaction modifies the database, YapDatabase will take this opportunity to look for orphaned extensions.
+ * These are extensions that were registered at the end of the last database session,
+ * but which are no longer registered. YapDatabase will automatically cleanup these orphaned extensions,
+ * and also clear the previouslyRegisteredExtensionNames information at this point.
+**/
+- (NSArray *)previouslyRegisteredExtensionNames;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Connection Pooling
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1119,9 +1119,6 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Optional override hook.
- * Don't forget to invoke [super prepare] so super can prepare too.
- *
  * This method is run asynchronously on the snapshotQueue.
 **/
 - (void)prepare
@@ -1138,8 +1135,8 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		YDBLogVerbose(@"sqlite version = %@", [YapDatabase sqliteVersionUsing:db]);
 		#endif
 		
-		[self writeSnapshot];
 		[self fetchPreviouslyRegisteredExtensionNames];
+		[self writeSnapshot];
 	}
 	[self commitTransaction];
 }
@@ -1921,6 +1918,37 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
 	
 	return extensionDependencies;
+}
+
+/**
+ * Allows you to fetch the registered extension names from the last time the database was run.
+ * Typically this means from the last time the app was run.
+ *
+ * This may be used to assist in various tasks, such as cleanup or upgrade tasks.
+ *
+ * If you need this information, you should fetch it early on because YapDatabase only maintains this information
+ * until it sees you are done registering all your initial extensions. That is, after one initializes the database
+ * they then immediately register any needed initial extensions before they begin to use the database. Once a
+ * readWriteTransaction modifies the database, YapDatabase will take this opportunity to look for orphaned extensions.
+ * These are extensions that were registered at the end of the last database session,
+ * but which are no longer registered. YapDatabase will automatically cleanup these orphaned extensions,
+ * and also clear the previouslyRegisteredExtensionNames information at this point.
+**/
+- (NSArray *)previouslyRegisteredExtensionNames
+{
+	__block NSArray *result = nil;
+	
+	dispatch_block_t block = ^{
+		
+		result = [previouslyRegisteredExtensionNames copy];
+	};
+	
+	if (dispatch_get_specific(IsOnSnapshotQueueKey))
+		block();
+	else
+		dispatch_sync(snapshotQueue, block);
+	
+	return result;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

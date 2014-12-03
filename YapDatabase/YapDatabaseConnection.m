@@ -2267,7 +2267,9 @@ NS_INLINE BOOL YDBIsMainThread()
 	// - At the end of a readwrite transaction that has made modifications to the database
 	// - Only if the modifications weren't dedicated to registering/unregistring an extension
 	
-	if (database->previouslyRegisteredExtensionNames && changeset && !registeredExtensionsChanged)
+	BOOL clearPreviouslyRegisteredExtensionNames = NO;
+	
+	if (changeset && !registeredExtensionsChanged && database->previouslyRegisteredExtensionNames)
 	{
 		for (NSString *prevExtensionName in database->previouslyRegisteredExtensionNames)
 		{
@@ -2277,7 +2279,7 @@ NS_INLINE BOOL YDBIsMainThread()
 			}
 		}
 		
-		database->previouslyRegisteredExtensionNames = nil;
+		clearPreviouslyRegisteredExtensionNames = YES;
 	}
 	
 	// Post-Write-Transaction: Step 4 of 11
@@ -2350,6 +2352,12 @@ NS_INLINE BOOL YDBIsMainThread()
 				if (changeset)
 				{
 					[database notePendingChanges:changeset fromConnection:self];
+				}
+				
+				if (clearPreviouslyRegisteredExtensionNames)
+				{
+					// It's only safe to clear this ivar within the snapshot queue
+					database->previouslyRegisteredExtensionNames = nil;
 				}
 			}
 			

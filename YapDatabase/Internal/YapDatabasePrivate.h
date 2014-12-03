@@ -69,7 +69,7 @@ extern NSString *const YapDatabaseNotificationKey;
 	
 	NSMutableArray *connectionStates; // Only to be used by YapDatabaseConnection
 	
-	NSArray *previouslyRegisteredExtensionNames; // Only to be used by YapDatabaseConnection
+	NSArray *previouslyRegisteredExtensionNames; // Writeable only within snapshot queue
 	
 	YapDatabaseSerializer objectSerializer;         // Read-only by transactions
 	YapDatabaseDeserializer objectDeserializer;     // Read-only by transactions
