@@ -126,7 +126,7 @@
         <!--Edit View Controller-->
         <scene sceneID="Edl-TL-NCx">
             <objects>
-                <viewController id="Djq-af-TVZ" customClass="EditViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="EditViewController" id="Djq-af-TVZ" customClass="EditViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="W48-CL-qfT"/>
                         <viewControllerLayoutGuide type="bottom" id="AGR-ke-4LO"/>

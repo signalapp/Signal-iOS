@@ -1,4 +1,5 @@
 #import "RootViewController.h"
+#import "EditViewController.h"
 #import "DatabaseManager.h"
 #import "CloudKitManager.h"
 #import "MyTodo.h"
@@ -43,6 +44,10 @@
 	                                             name:UIDatabaseConnectionDidUpdateNotification
 	                                           object:nil];
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Database Stuff
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)initializeMappings
 {
@@ -123,6 +128,17 @@
 	[self.tableView endUpdates];
 }
 
+- (MyTodo *)todoAtIndexPath:(NSIndexPath *)indexPath
+{
+	__block MyTodo *todo = nil;
+	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		todo = [[transaction ext:Ext_View_Order] objectAtIndexPath:indexPath withMappings:mappings];
+	}];
+	
+	return todo;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Actions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -163,15 +179,49 @@
 		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"id"];
 	}
 	
-	__block MyTodo *todo = nil;
-	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-		
-		todo = [[transaction ext:Ext_View_Order] objectAtIndexPath:indexPath withMappings:mappings];
-	}];
+	MyTodo *todo = [self todoAtIndexPath:indexPath];
 	
 	cell.textLabel.text = todo.title;
 	
 	return cell;
+}
+
+- (void)tableView:(UITableView *)sender didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	MyTodo *todo = [self todoAtIndexPath:indexPath];
+	
+	UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+	EditViewController *evc = [storyboard instantiateViewControllerWithIdentifier:@"EditViewController"];
+	
+	evc.todoID = todo.uuid;
+	
+	[self.navigationController pushViewController:evc animated:YES];
+	[self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (NSArray *)tableView:(UITableView *)sender editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	UITableViewRowAction *deleteAction =
+	  [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive
+	                                     title:@"Delete"
+	                                   handler:^(UITableViewRowAction *action, NSIndexPath *indexPath)
+	{
+		MyTodo *todo = [self todoAtIndexPath:indexPath];
+		
+		YapDatabaseConnection *rwDatabaseConnection = MyDatabaseManager.bgDatabaseConnection;
+		[rwDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+			
+			[transaction removeObjectForKey:todo.uuid inCollection:Collection_Todos];
+		}];
+	}];
+	
+	return @[ deleteAction ];
+}
+
+- (void)tableView:(UITableView *)sender commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
+                                         forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	// No statement or algorithm is needed in here. Just the implementation
 }
 
 @end

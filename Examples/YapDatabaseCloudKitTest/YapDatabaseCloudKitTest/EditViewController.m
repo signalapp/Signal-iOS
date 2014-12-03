@@ -4,6 +4,9 @@
 
 
 @implementation EditViewController
+{
+	YapDatabaseConnection *databaseConnection;
+}
 
 @synthesize todoID = todoID;
 
@@ -27,29 +30,41 @@
 	  [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
 	                                                target:self
 	                                                action:@selector(saveButtonTapped:)];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-	[super viewWillAppear:animated];
 	
-	if (todoID == nil) {
-		[self updateViews];
-	}
+	databaseConnection = MyDatabaseManager.uiDatabaseConnection;
+	[[NSNotificationCenter defaultCenter] addObserver:self
+	                                         selector:@selector(databaseConnectionDidUpdate:)
+	                                             name:UIDatabaseConnectionDidUpdateNotification
+	                                           object:nil];
+	
+	[self updateView];
 }
 
 - (void)setTodoID:(NSString *)newTodoID
 {
 	todoID = newTodoID;
-	[self updateViews];
+	
+	if (self.isViewLoaded) {
+		[self updateView];
+	}
 }
 
-- (void)updateViews
+- (void)databaseConnectionDidUpdate:(NSNotification *)notification
+{
+	NSArray *notifications = [notification.userInfo objectForKey:kNotificationsKey];
+	
+	if ([databaseConnection hasChangeForKey:todoID inCollection:Collection_Todos inNotifications:notifications])
+	{
+		[self updateView];
+	}
+}
+
+- (void)updateView
 {
 	__block MyTodo *todo = nil;
 	if (todoID)
 	{
-		[MyDatabaseManager.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 			
 			todo = [transaction objectForKey:todoID inCollection:Collection_Todos];
 		}];
@@ -67,8 +82,13 @@
 			priority.selectedSegmentIndex = 1;
 		
 		uuidLabel.text = todo.uuid;
-		creationDateLabel.text = [todo.creationDate descriptionWithLocale:[NSLocale currentLocale]];
-		lastModifiedLabel.text = [todo.lastModified descriptionWithLocale:[NSLocale currentLocale]];
+		
+		NSDateFormatter *df = [[NSDateFormatter alloc] init];
+		df.dateStyle = NSDateFormatterMediumStyle;
+		df.timeStyle = NSDateFormatterMediumStyle;
+		
+		creationDateLabel.text = [df stringFromDate:todo.creationDate];
+		lastModifiedLabel.text = [df stringFromDate:todo.lastModified];
 	}
 	else
 	{
@@ -88,33 +108,30 @@
 
 - (void)saveButtonTapped:(id)sender
 {
-	__block MyTodo *todo = nil;
-	if (todoID)
-	{
-		[MyDatabaseManager.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-			
-			todo = [transaction objectForKey:todoID inCollection:Collection_Todos];
-		}];
-	}
+	NSString *newTitle = titleField.text;
 	
-	if (todo == nil) {
-		todo = [[MyTodo alloc] initWithUUID:uuidLabel.text];
-	}
-	else {
-		todo = [todo copy]; // mutable copy
-		todo.lastModified = [NSDate date];
-	}
-	
-	todo.title = titleField.text;
-	
+	TodoPriority newPriority;
 	if (priority.selectedSegmentIndex == 0)
-		todo.priority = TodoPriorityLow;
+		newPriority = TodoPriorityLow;
 	else if (priority.selectedSegmentIndex == 2)
-		todo.priority = TodoPriorityHigh;
+		newPriority = TodoPriorityHigh;
 	else
-		todo.priority = TodoPriorityNormal;
+		newPriority = TodoPriorityNormal;
 	
 	[MyDatabaseManager.bgDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		MyTodo *todo = [transaction objectForKey:todoID inCollection:Collection_Todos];
+		
+		if (todo == nil) {
+			todo = [[MyTodo alloc] initWithUUID:uuidLabel.text];
+		}
+		else {
+			todo = [todo copy]; // mutable copy
+			todo.lastModified = [NSDate date];
+		}
+		
+		todo.title = newTitle;
+		todo.priority = newPriority;
 		
 		[transaction setObject:todo forKey:todo.uuid inCollection:Collection_Todos];
 	}];

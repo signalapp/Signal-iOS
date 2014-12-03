@@ -3034,14 +3034,14 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	if ([recordTableInfo isKindOfClass:[YDBCKCleanRecordTableInfo class]])
 	{
 		__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
-		(YDBCKCleanRecordTableInfo *)recordInfo;
+		  (YDBCKCleanRecordTableInfo *)recordTableInfo;
 		
 		record = [cleanRecordTableInfo.record copy];
 	}
 	else if ([recordTableInfo isKindOfClass:[YDBCKDirtyRecordTableInfo class]])
 	{
 		__unsafe_unretained YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo =
-		(YDBCKDirtyRecordTableInfo *)recordTableInfo;
+		  (YDBCKDirtyRecordTableInfo *)recordTableInfo;
 		
 		record = dirtyRecordTableInfo.dirty_record;
 	}
