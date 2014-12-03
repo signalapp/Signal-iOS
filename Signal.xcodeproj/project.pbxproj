@@ -1074,9 +1074,6 @@
 		D24B5BD4169F568C00681372 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = ../../../../../../System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<group>"; };
 		D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		E108ED13187E34FD0045AEA3 /* iTunesArtwork@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iTunesArtwork@2x.png"; sourceTree = "<group>"; };
-		E1370BDA18A066F600826894 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		E1370BDB18A066F600826894 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
-		E1370BDC18A066F600826894 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		E16E5BE818AAC40200B7C403 /* EC25KeyAgreementParticipant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EC25KeyAgreementParticipant.h; sourceTree = "<group>"; };
 		E16E5BE918AAC40200B7C403 /* EC25KeyAgreementParticipant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EC25KeyAgreementParticipant.m; sourceTree = "<group>"; };
 		E16E5BEA18AAC40200B7C403 /* EC25KeyAgreementProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EC25KeyAgreementProtocol.h; sourceTree = "<group>"; };
@@ -2462,9 +2459,6 @@
 			children = (
 				B6B6C3C419193F5B00C0B76B /* Translations */,
 				E18AB40618A05754001A532A /* AudioFiles */,
-				E1370BDA18A066F600826894 /* Default-568h@2x.png */,
-				E1370BDB18A066F600826894 /* Default.png */,
-				E1370BDC18A066F600826894 /* Default@2x.png */,
 				E18AB3F318A05734001A532A /* Icons */,
 				E108ED13187E34FD0045AEA3 /* iTunesArtwork@2x.png */,
 				D221A099169C9E5E00537ABF /* main.m */,

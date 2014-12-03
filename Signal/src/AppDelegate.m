@@ -12,6 +12,7 @@
 #import "PriorityQueue.h"
 #import "RecentCallManager.h"
 #import "Release.h"
+#import "SignalsViewController.h"
 #import "TSSocketManager.h"
 #import "TSStorageManager.h"
 #import "TSAccountManager.h"
@@ -136,9 +137,10 @@
                 }
             }];
         }
-   
-        [self.window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-        [self.window.rootViewController presentViewController:callViewController animated:NO completion:nil];
+        
+        SignalsViewController *vc = [[Environment getCurrent] signalsViewController];
+        [vc dismissViewControllerAnimated:NO completion:nil];
+        [vc presentViewController:callViewController animated:NO completion:nil];
     } onThread:NSThread.mainThread untilCancelled:nil];
     
     [TSSocketManager becomeActive];
