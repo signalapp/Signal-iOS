@@ -42,7 +42,6 @@
 @property (nonatomic, retain) NSString *messageBody;
 
 @property NSUInteger identifier;
-@property NSInteger outgoingMessageStatus;
 
 @end
 
