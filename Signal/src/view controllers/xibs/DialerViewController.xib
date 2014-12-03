@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14C68k" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
@@ -109,7 +109,7 @@
                         <constraint firstItem="rKW-B9-eAC" firstAttribute="bottom" secondItem="z0U-dT-qTX" secondAttribute="bottom" constant="-4" id="xru-yK-ID7"/>
                     </constraints>
                 </view>
-                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="UNK-zX-eBo" userLabel="Button 1" customClass="DialerButtonView">
+                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UNK-zX-eBo" userLabel="Button 1" customClass="DialerButtonView">
                     <rect key="frame" x="33" y="75" width="75" height="77"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LNY-2Q-z2w">
@@ -164,7 +164,7 @@
                         <outlet property="numberLabel" destination="roV-EL-ndH" id="hVU-9n-kbu"/>
                     </connections>
                 </view>
-                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="nH4-4u-iep" userLabel="Button 3" customClass="DialerButtonView">
+                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nH4-4u-iep" userLabel="Button 3" customClass="DialerButtonView">
                     <rect key="frame" x="211" y="75" width="76" height="77"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dew-Iu-sVI">
@@ -219,7 +219,7 @@
                         <outlet property="numberLabel" destination="F6Z-OF-f5h" id="ppZ-dj-PFh"/>
                     </connections>
                 </view>
-                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="82K-Nd-cmI" userLabel="Button 2" customClass="DialerButtonView">
+                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="82K-Nd-cmI" userLabel="Button 2" customClass="DialerButtonView">
                     <rect key="frame" x="123" y="75" width="74" height="77"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1XT-Tr-yuE">
@@ -765,23 +765,23 @@
                     </connections>
                 </view>
                 <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="gJH-91-Zx5">
-                    <rect key="frame" x="0.0" y="403" width="320" height="8.5"/>
+                    <rect key="frame" x="0.0" y="403" width="320" height="9"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
-                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="8db-9r-Y2f">
-                    <rect key="frame" x="0.0" y="320" width="320" height="7.5"/>
+                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8db-9r-Y2f">
+                    <rect key="frame" x="0.0" y="320" width="320" height="8"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
                 <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="DOT-fb-PK3">
                     <rect key="frame" x="0.0" y="237" width="320" height="8"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
-                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="m52-xI-oom">
-                    <rect key="frame" x="0.0" y="151" width="320" height="7.5"/>
+                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="m52-xI-oom">
+                    <rect key="frame" x="0.0" y="151" width="320" height="8"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
                 <view contentMode="scaleToFill" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="dAV-fN-l7c">
-                    <rect key="frame" x="0.0" y="67" width="320" height="7.5"/>
+                    <rect key="frame" x="0.0" y="67" width="320" height="8"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstAttribute="height" relation="lessThanOrEqual" priority="1" constant="19" id="Nr1-Ta-njj"/>
@@ -799,7 +799,6 @@
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                     <connections>
-                        <action selector="callButtonTapped" destination="-1" eventType="touchUpInside" id="gf3-h4-p0f"/>
                         <action selector="cancelButtonTapped:" destination="-1" eventType="touchUpInside" id="gn3-TB-hhv"/>
                     </connections>
                 </button>
