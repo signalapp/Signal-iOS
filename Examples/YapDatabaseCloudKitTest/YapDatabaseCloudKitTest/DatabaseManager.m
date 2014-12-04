@@ -268,9 +268,9 @@ DatabaseManager *MyDatabaseManager;
 		  NSString *collection, NSString *key, MyTodo *todo)
 	{
 		CKRecord *record = inOutRecordPtr ? *inOutRecordPtr : nil;
-		if (record &&                                 // not a newly inserted object
-		    (todo.hasChangedProperties == NO) &&      // nothing was changed in the todo object
-		    (recordInfo.changedKeysToRestore == nil)) // and we don't need to restore "truth" values
+		if (record &&                                    // not a newly inserted object
+		    (todo.hasChangedSyncableProperties == NO) && // no sync'd properties changed in the todo
+		    (recordInfo.changedKeysToRestore == nil))    // and we don't need to restore "truth" values
 		{
 			// Thus we don't have any changes we need to push to the cloud
 			return;
