@@ -54,7 +54,7 @@ static unsigned char DH3K_PRIME[]={
                            andMasterServerHostName:@"master.whispersystems.org"
                                andDefaultRelayName:@"relay"
                       andRelayServerHostNameSuffix:@"whispersystems.org"
-                                    andCertificate:[Certificate certificateFromResourcePath:@"whisperReal" ofType:@"cer"]
+                                    andCertificate:[Certificate certificateFromResourcePath:@"redphone" ofType:@"cer"]
                andCurrentRegionCodeForPhoneNumbers:[(NSLocale*)NSLocale.currentLocale objectForKey:NSLocaleCountryCode]
                  andSupportedKeyAgreementProtocols:[self supportedKeyAgreementProtocols]
                                    andPhoneManager:[PhoneManager phoneManagerWithErrorHandler:errorNoter]
@@ -78,7 +78,7 @@ static unsigned char DH3K_PRIME[]={
                            andMasterServerHostName:@"master.whispersystems.org"
                                andDefaultRelayName:@"relay"
                       andRelayServerHostNameSuffix:@"whispersystems.org"
-                                    andCertificate:[Certificate certificateFromResourcePath:@"whisperReal" ofType:@"cer"]
+                                    andCertificate:[Certificate certificateFromResourcePath:@"redphone" ofType:@"cer"]
                andCurrentRegionCodeForPhoneNumbers:@"US"
                  andSupportedKeyAgreementProtocols:keyAgreementProtocols
                                    andPhoneManager:nil

@@ -39,9 +39,9 @@
     if (self = [super init]) {
         NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
         self.operationManager = [[AFHTTPSessionManager alloc] initWithBaseURL:[[NSURL alloc] initWithString:textSecureServerURL] sessionConfiguration:sessionConf];
-        AFSecurityPolicy *policy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeNone]; //TODO: pinging cert
+        AFSecurityPolicy *policy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModePublicKey];
         policy.allowInvalidCertificates = YES;
-        NSString *certPath = [NSBundle.mainBundle pathForResource:@"whisperReal" ofType:@"cer"];
+        NSString *certPath = [NSBundle.mainBundle pathForResource:@"textsecure" ofType:@"cer"];
         NSData *certData = [NSData dataWithContentsOfFile:certPath];
         SecCertificateRef cert = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certData));
         policy.pinnedCertificates = @[(__bridge_transfer NSData *)SecCertificateCopyData(cert)];

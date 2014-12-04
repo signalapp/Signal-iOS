@@ -10,9 +10,14 @@
 
 #import "MessagesViewController.h"
 #import "FullImageViewController.h"
+#import "FingerprintViewController.h"
 
 #import "JSQCallCollectionViewCell.h"
 #import "JSQCall.h"
+
+#import "JSQDisplayedMessageCollectionViewCell.h"
+#import "JSQInfoMessage.h"
+#import "JSQErrorMessage.h"
 
 #import "UIUtil.h"
 #import "DJWActionSheet.h"
@@ -31,6 +36,11 @@
 
 #import "TSMessagesManager+sendMessages.h"
 #import "NSDate+millisecondTimeStamp.h"
+
+#import "PhoneNumber.h"
+#import "Environment.h"
+#import "PhoneManager.h"
+#import "ContactsManager.h"
 
 static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
 
@@ -67,15 +77,10 @@ typedef enum : NSUInteger {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     
     isGroupConversation = NO; // TODO: Support Group Conversations
     
-    JSQMessagesBubbleImageFactory *bubbleFactory = [[JSQMessagesBubbleImageFactory alloc] init];
-    
-    self.outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleBlueColor]];
-    self.incomingBubbleImageData = [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
-    self.outgoingMessageFailedImageData = [bubbleFactory outgoingMessageFailedBubbleImageWithColor:[UIColor ows_fadedBlueColor]];
+    [self initializeBubbles];
     
     self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[self.thread.uniqueId] view:TSMessageDatabaseViewExtensionName];
     
@@ -83,33 +88,15 @@ typedef enum : NSUInteger {
         [self.messageMappings updateWithTransaction:transaction];
     }];
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
-    
-    [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_lightFontWithSize:16.0f]];
-    
-    self.collectionView.showsVerticalScrollIndicator = NO;
-    self.collectionView.showsHorizontalScrollIndicator = NO;
-    
-    self.title = self.thread.name;
+    [self initializeNavigationBar];
+    [self initializeCollectionViewLayout];
     
     self.senderId = ME_MESSAGE_IDENTIFIER
-    self.senderDisplayName = ME_MESSAGE_IDENTIFIER;
-    
-    self.automaticallyScrollsToMostRecentMessage = YES;
-    
-    self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
-    self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
+    self.senderDisplayName = ME_MESSAGE_IDENTIFIER
     
     if (!isGroupConversation)
     {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(keyboardWillShow:)
-                                                     name:UIKeyboardWillShowNotification
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(keyboardWillHide:)
-                                                     name:UIKeyboardWillHideNotification
-                                                   object:nil];
+        [self initializeObservers];
     }
     
 }
@@ -131,6 +118,65 @@ typedef enum : NSUInteger {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
 }
 
+#pragma mark - Initiliazers
+
+-(void)initializeNavigationBar
+{
+    
+    self.title = self.thread.name;
+    
+    UIBarButtonItem * lockButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
+    
+    if (!isGroupConversation && [self isRedPhoneReachable]) {
+        
+        UIBarButtonItem * callButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"call_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
+        [callButton setImageInsets:UIEdgeInsetsMake(0, -10, 0, -50)];
+        UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+        negativeSeparator.width = -8;
+    
+        self.navigationItem.rightBarButtonItems = @[negativeSeparator, lockButton, callButton];
+    } else {
+        self.navigationItem.rightBarButtonItem = lockButton;
+    }
+}
+
+-(void)initializeBubbles
+{
+    JSQMessagesBubbleImageFactory *bubbleFactory = [[JSQMessagesBubbleImageFactory alloc] init];
+    
+    self.outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_blueColor]];
+    self.incomingBubbleImageData = [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
+    self.outgoingMessageFailedImageData = [bubbleFactory outgoingMessageFailedBubbleImageWithColor:[UIColor ows_fadedBlueColor]];
+
+}
+
+-(void)initializeCollectionViewLayout
+{
+    [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_lightFontWithSize:16.0f]];
+    
+    self.collectionView.showsVerticalScrollIndicator = NO;
+    self.collectionView.showsHorizontalScrollIndicator = NO;
+    
+    self.automaticallyScrollsToMostRecentMessage = YES;
+    
+    self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
+    self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
+
+}
+
+-(void)initializeObservers
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillHide:)
+                                                 name:UIKeyboardWillHideNotification
+                                               object:nil];
+
+}
+
 #pragma mark - Keyboard Handlers
 
 -(void)keyboardWillShow:(id)sender
@@ -148,6 +194,30 @@ typedef enum : NSUInteger {
 -(void)showFingerprint
 {
     [self performSegueWithIdentifier:@"fingerprintSegue" sender:self];
+}
+
+
+#pragma mark - Calls
+
+-(BOOL)isRedPhoneReachable
+{
+   return [[Environment getCurrent].contactsManager isPhoneNumberRegisteredWithRedPhone:[self phoneNumberForThread]];
+}
+
+-(PhoneNumber*)phoneNumberForThread
+{
+    NSString * contactId = [(TSContactThread*)self.thread contactIdentifier];
+    PhoneNumber * phoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:contactId];
+    return phoneNumber;
+}
+
+-(void)callAction
+{
+    if ([self isRedPhoneReachable]) {
+        [Environment.phoneManager initiateOutgoingCallToRemoteNumber:[self phoneNumberForThread]];
+    } else {
+        DDLogWarn(@"Tried to initiate a call but contact has no RedPhone identifier");
+    }
 }
 
 #pragma mark - JSQMessage custom methods
@@ -211,27 +281,77 @@ typedef enum : NSUInteger {
 
 - (UICollectionViewCell *)collectionView:(JSQMessagesCollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    /**
-     *  Override point for customizing cells
-     */
-    id<JSQMessageData> msg = [self messageAtIndexPath:indexPath];
+    TSMessageAdapter * msg = [self messageAtIndexPath:indexPath];
     
-    
-    JSQMessagesCollectionViewCell *cell = (JSQMessagesCollectionViewCell *)[super collectionView:collectionView cellForItemAtIndexPath:indexPath];
-    if (!msg.isMediaMessage) {
-        if ([msg.senderId isEqualToString:self.senderId]) {
-            cell.textView.textColor = [UIColor whiteColor];
-        }
-        else {
-            cell.textView.textColor = [UIColor blackColor];
-        }
-        
+    switch (msg.messageType) {
+        case TSIncomingMessageAdapter:
+            return [self loadIncomingMessageCellForMessage:msg atIndexPath:indexPath];
+            break;
+        case TSOutgoingMessageAdapter:
+            return [self loadOutgoingCellForMessage:msg atIndexPath:indexPath];
+            break;
+        case TSCallAdapter:
+            return [self loadCallCellForCall:msg atIndexPath:indexPath];
+            break;
+        case TSInfoMessageAdapter:
+            return [self loadInfoMessageCellForMessage:msg atIndexPath:indexPath];
+            break;
+        case TSErrorMessageAdapter:
+            return [self loadErrorMessageCellForMessage:msg atIndexPath:indexPath];
+            break;
+            
+        default:
+            NSLog(@"Something went wrong");
+            return nil;
+            break;
+    }
+}
+
+#pragma mark - Loading message cells
+
+-(JSQMessagesCollectionViewCell*)loadIncomingMessageCellForMessage:(id<JSQMessageData>)message atIndexPath:(NSIndexPath*)indexPath
+{
+    JSQMessagesCollectionViewCell *cell = (JSQMessagesCollectionViewCell *)[super collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
+    if (!message.isMediaMessage)
+    {
+        cell.textView.textColor = [UIColor blackColor];
         cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
                                               NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
     }
     
     return cell;
+}
+
+-(JSQMessagesCollectionViewCell*)loadOutgoingCellForMessage:(id<JSQMessageData>)message atIndexPath:(NSIndexPath*)indexPath
+{
+    JSQMessagesCollectionViewCell *cell = (JSQMessagesCollectionViewCell *)[super collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
+    if (!message.isMediaMessage)
+    {
+        cell.textView.textColor = [UIColor whiteColor];
+        cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
+                                              NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
+    }
     
+    return cell;
+
+}
+
+-(JSQCallCollectionViewCell*)loadCallCellForCall:(id<JSQMessageData>)call atIndexPath:(NSIndexPath*)indexPath
+{
+    JSQCallCollectionViewCell *cell = (JSQCallCollectionViewCell *)[super collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
+    return cell;
+}
+
+-(JSQDisplayedMessageCollectionViewCell *)loadInfoMessageCellForMessage:(id<JSQMessageData>)message atIndexPath:(NSIndexPath*)indexPath
+{
+    JSQDisplayedMessageCollectionViewCell * cell = (JSQDisplayedMessageCollectionViewCell *)[super collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
+    return cell;
+}
+
+-(JSQDisplayedMessageCollectionViewCell *)loadErrorMessageCellForMessage:(id<JSQMessageData>)message atIndexPath:(NSIndexPath*)indexPath
+{
+    JSQDisplayedMessageCollectionViewCell * cell = (JSQDisplayedMessageCollectionViewCell *)[super collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
+    return cell;
 }
 
 #pragma mark - Adjusting cell label heights
@@ -239,16 +359,6 @@ typedef enum : NSUInteger {
 - (CGFloat)collectionView:(JSQMessagesCollectionView *)collectionView
                    layout:(JSQMessagesCollectionViewFlowLayout *)collectionViewLayout heightForCellTopLabelAtIndexPath:(NSIndexPath *)indexPath
 {
-    /**
-     *  Each label in a cell has a `height` delegate method that corresponds to its text dataSource method
-     */
-    
-    /**
-     *  This logic should be consistent with what you return from `attributedTextForCellTopLabelAtIndexPath:`
-     *  The other label height delegate methods should follow similarly
-     *
-     *  Show a timestamp for every 3rd message
-     */
     if ([self showDateAtIndexPath:indexPath]) {
         return kJSQMessagesCollectionViewCellLabelHeightDefault;
     }
@@ -274,10 +384,64 @@ typedef enum : NSUInteger {
     return showDate;
 }
 
+-(NSAttributedString*)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellTopLabelAtIndexPath:(NSIndexPath *)indexPath
+{
+    TSMessageAdapter * msg = [self messageAtIndexPath:indexPath];
+    if ([self showDateAtIndexPath:indexPath])
+    {
+        return [[JSQMessagesTimestampFormatter sharedFormatter] attributedTimestampForDate:msg.date];
+    }
+    
+    return nil;
+}
+
+-(BOOL)shouldShowMessageStatusAtIndexPath:(NSIndexPath*)indexPath
+{
+
+    TSMessageAdapter * currentMessage = [self messageAtIndexPath:indexPath];
+    
+    if (indexPath.item == [self.collectionView numberOfItemsInSection:indexPath.section]-1)
+    {
+        return [self isMessageOutgoingAndDelivered:currentMessage];
+        
+    }
+        
+    TSMessageAdapter * nextMessage = [self messageAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row+1 inSection:indexPath.section]];
+    return ![self isMessageOutgoingAndDelivered:nextMessage] && [self isMessageOutgoingAndDelivered:currentMessage];
+}
+
+-(BOOL)isMessageOutgoingAndDelivered:(TSMessageAdapter*)message
+{
+    return message.messageType == TSOutgoingMessageAdapter && message.messageState == TSOutgoingMessageStateDelivered;
+}
+
+
+-(NSAttributedString*)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([self shouldShowMessageStatusAtIndexPath:indexPath])
+    {
+        NSTextAttachment *textAttachment = [[NSTextAttachment alloc] init];
+        textAttachment.bounds = CGRectMake(0, 0, 11.0f, 10.0f);
+        NSMutableAttributedString * attrStr = [[NSMutableAttributedString alloc]initWithString:@"Delivered"];
+        [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
+        
+        return (NSAttributedString*)attrStr;
+    }
+    
+    return nil;
+}
+
 - (CGFloat)collectionView:(JSQMessagesCollectionView *)collectionView
                    layout:(JSQMessagesCollectionViewFlowLayout *)collectionViewLayout heightForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 16.0f;
+    TSMessageAdapter * msg = [self messageAtIndexPath:indexPath];
+    
+    if (msg.messageType == TSOutgoingMessageAdapter)
+    {
+        return 16.0f;
+    }
+    
+    return 0.0f;
 }
 
 
@@ -285,9 +449,11 @@ typedef enum : NSUInteger {
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView didTapMessageBubbleAtIndexPath:(NSIndexPath *)indexPath
 {
-    id<JSQMessageData> messageItem = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
+    TSMessageAdapter * messageItem = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
     
-    BOOL isMediaMessage = [messageItem isMediaMessage];
+    BOOL isMessage = (messageItem.messageType == TSIncomingMessageAdapter) || (messageItem.messageType == TSOutgoingMessageAdapter);
+    
+    BOOL isMediaMessage = isMessage ? [messageItem isMediaMessage] : NO;
     
     if (isMediaMessage) {
         id<JSQMessageMediaData> messageMedia = [messageItem media];
@@ -300,7 +466,38 @@ typedef enum : NSUInteger {
         } else if ([messageMedia isKindOfClass:JSQVideoMediaItem.class]) {
             //is a video
         }
-        
+    }
+    
+    BOOL isUnsent = messageItem.messageState == TSOutgoingMessageStateUnsent || messageItem.messageState == TSOutgoingMessageStateAttemptingOut;
+    
+    if (isMessage && isUnsent)
+    {
+        [DJWActionSheet showInView:self.tabBarController.view withTitle:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:@[@"Send again"] tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+            if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
+                NSLog(@"User Cancelled");
+            } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
+                
+                [self.uiDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+                    TSOutgoingMessage * message = (TSOutgoingMessage*)messageItem;
+                    [message removeWithTransaction:transaction];
+                    [self finishSendingMessage];
+                }];
+                
+            }else {
+                switch (tappedButtonIndex) {
+                    case 0:
+                    {
+                        TSOutgoingMessage * message = (TSOutgoingMessage*)messageItem;
+                        [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
+                        [self finishSendingMessage];
+                        break;
+                    }
+                        
+                    default:
+                        break;
+                }
+            }
+        }];
     }
     
 }
@@ -313,6 +510,12 @@ typedef enum : NSUInteger {
         FullImageViewController* dest = [segue destinationViewController];
         dest.image = tappedImage;
         
+    } else if ([segue.identifier isEqualToString:@"fingerprintSegue"]){
+        FingerprintViewController *vc = [segue destinationViewController];
+        TSContactThread *thread = (TSContactThread*) self.thread;
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [vc configWithThread:self.thread];
+        }];
     }
 }
 
@@ -366,8 +569,9 @@ typedef enum : NSUInteger {
 }
 
 /*
- *  Fetch data from UIImagePickerController
+ *  Fetching data from UIImagePickerController
  */
+
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     UIImage *picture_camera = [info objectForKey:UIImagePickerControllerOriginalImage];
@@ -380,7 +584,6 @@ typedef enum : NSUInteger {
         NSURL* videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
         AVURLAsset *asset1                       = [[AVURLAsset alloc] initWithURL:videoURL options:nil];
         //Create a snapshot image
-        //NOTE: Might not be necessary as JSQMessages might do this automtically
         AVAssetImageGenerator *generate1         = [[AVAssetImageGenerator alloc] initWithAsset:asset1];
         generate1.appliesPreferredTrackTransform = YES;
         NSError *err                             = NULL;

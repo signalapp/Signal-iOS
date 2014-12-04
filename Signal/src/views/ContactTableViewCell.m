@@ -1,6 +1,10 @@
 #import "ContactTableViewCell.h"
 #import "UIUtil.h"
 
+#import "Environment.h"
+#import "PhoneManager.h"
+#import "DJWActionSheet.h"
+
 #define CONTACT_TABLE_CELL_BORDER_WIDTH 1.0f
 
 @interface ContactTableViewCell() {
@@ -53,18 +57,20 @@
     
     if (contact.isRedPhoneContact && _shouldShowContactButtons)
     {
-        _callButton.imageView.image = [[UIImage imageNamed:@"call_dark"]imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _callButton.tintColor = [UIColor colorWithRed:0.f/255.f green:122.f/255.f blue:255.f/255.f alpha:1.0f];
+        UIImage * callImage = [[UIImage imageNamed:@"call_dark"]imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        [_callButton setImage:callImage forState:UIControlStateNormal];
+        _callButton.tintColor = [UIColor ows_blueColor];
     } else {
-        _callButton.hidden = YES;
+        [_callButton setImage:[UIImage imageNamed:@"call_dotted"] forState:UIControlStateNormal];
     }
     
     if (contact.isTextSecureContact && _shouldShowContactButtons)
     {
-        _messageButton.imageView.image = [[UIImage imageNamed:@"signal"]imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _messageButton.tintColor = [UIColor colorWithRed:0.f/255.f green:122.f/255.f blue:255.f/255.f alpha:1.0f];
+        UIImage * messageImage = [[UIImage imageNamed:@"signal"]imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        [_messageButton setImage:messageImage forState:UIControlStateNormal];
+        _messageButton.tintColor = [UIColor ows_blueColor];
     } else {
-        _messageButton.hidden = YES;
+        [_messageButton setImage:[UIImage imageNamed:@"signal_dotted"] forState:UIControlStateNormal];
     }
 }
 
@@ -95,12 +101,23 @@
 
 -(IBAction)callContact:(id)sender
 {
-    //Initiate Call to _associatedContact
+    if (_associatedContact.isRedPhoneContact) {
+        NSArray *redPhoneIdentifiers = [_associatedContact redPhoneIdentifiers];
+        [Environment.phoneManager initiateOutgoingCallToContact:_associatedContact atRemoteNumber:[redPhoneIdentifiers firstObject]];
+    } else{
+        DDLogWarn(@"Tried to intiate a call but contact has no RedPhone identifier");
+    }
 }
 
 -(IBAction)messageContact:(id)sender
 {
-    //Load messages to _associatedContact
+    if (_associatedContact.isTextSecureContact) {
+        NSArray *textSecureIdentifiers = [_associatedContact textSecureIdentifiers];
+        [Environment messageIdentifier:[textSecureIdentifiers firstObject]];
+    } else{
+        DDLogWarn(@"Tried to intiate a call but contact has no RedPhone identifier");
+    }
+
 }
 
 @end

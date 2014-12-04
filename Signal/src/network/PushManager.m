@@ -106,7 +106,10 @@
 
 -(TOCFuture*)registerForUserNotificationsFuture{
     self.userNotificationFutureSource = [TOCFutureSource new];
-    [UIApplication.sharedApplication registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationType)[self allNotificationTypes] categories:[NSSet setWithObject:[self userNotificationsCallCategory]]]];
+    NSSet *setOfCategories = [NSSet setWithArray:@[[self userNotificationsCallCategory], [self userNotificationsMessageCategory]]];
+    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
+                                                                             categories:setOfCategories];
+    [UIApplication.sharedApplication registerUserNotificationSettings:settings];
     return self.userNotificationFutureSource.future;
 }
 
@@ -195,23 +198,47 @@
     return YES;
 }
 
--(UIUserNotificationCategory*)userNotificationsCallCategory{
+- (UIUserNotificationCategory*)userNotificationsMessageCategory{
+    UIMutableUserNotificationAction *action_accept  = [UIMutableUserNotificationAction new];
+    action_accept.identifier                        = Signal_Message_View_Identifier;
+    action_accept.title                             = NSLocalizedString(@"View", @"");
+    action_accept.activationMode                    = UIUserNotificationActivationModeForeground;
+    action_accept.destructive                       = NO;
+    action_accept.authenticationRequired            = YES;
+
+    UIMutableUserNotificationAction *action_decline = [UIMutableUserNotificationAction new];
+    action_decline.identifier                       = Signal_Message_MarkAsRead_Identifier;
+    action_decline.title                            = NSLocalizedString(@"Mark as read", @"");
+    action_decline.activationMode                   = UIUserNotificationActivationModeBackground;
+    action_decline.destructive                      = NO;
+    action_decline.authenticationRequired           = NO;
+    
+    UIMutableUserNotificationCategory *messageCategory = [UIMutableUserNotificationCategory new];
+    messageCategory.identifier = Signal_Call_Category;
+    [messageCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextMinimal];
+    [messageCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextDefault];
+    
+    return messageCategory;
+
+}
+
+- (UIUserNotificationCategory*)userNotificationsCallCategory{
     UIMutableUserNotificationAction *action_accept = [UIMutableUserNotificationAction new];
-    action_accept.identifier = Signal_Accept_Identifier;
+    action_accept.identifier = Signal_Call_Accept_Identifier;
     action_accept.title      = NSLocalizedString(@"ANSWER_CALL_BUTTON_TITLE", @"");
     action_accept.activationMode = UIUserNotificationActivationModeForeground;
     action_accept.destructive    = NO;
     action_accept.authenticationRequired = NO;
     
     UIMutableUserNotificationAction *action_decline = [UIMutableUserNotificationAction new];
-    action_decline.identifier = Signal_Decline_Identifier;
+    action_decline.identifier = Signal_Call_Decline_Identifier;
     action_decline.title      = NSLocalizedString(@"REJECT_CALL_BUTTON_TITLE", @"");
     action_decline.activationMode = UIUserNotificationActivationModeBackground;
     action_decline.destructive    = NO;
     action_decline.authenticationRequired = NO;
     
     UIMutableUserNotificationCategory *callCategory = [UIMutableUserNotificationCategory new];
-    callCategory.identifier = @"Signal_IncomingCall";
+    callCategory.identifier = Signal_Call_Category;
     [callCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextMinimal];
     [callCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextDefault];
     

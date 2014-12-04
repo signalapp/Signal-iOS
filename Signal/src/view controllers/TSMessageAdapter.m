@@ -24,6 +24,18 @@
 @property (nonatomic, retain) NSString *senderId;
 @property (nonatomic, retain) NSString *senderDisplayName;
 
+// for InfoMessages
+
+@property NSInteger infoMessageType;
+
+// for ErrorMessages
+
+@property NSInteger errorMessageType;
+
+// for outgoing Messages only
+
+@property NSInteger outgoingMessageStatus;
+
 // ---
 
 @property (nonatomic, copy)   NSDate   *messageDate;
@@ -49,16 +61,18 @@
             NSString *contactId       = ((TSContactThread*)thread).contactIdentifier;
             adapter.senderId          = contactId;
             adapter.senderDisplayName = contactId;
-        } else{
+            adapter.messageType = TSIncomingMessageAdapter;
+        } else {
             adapter.senderId   = ME_MESSAGE_IDENTIFIER;
             adapter.senderDisplayName = @"Me";
+            adapter.messageType = TSOutgoingMessageAdapter;
         }
     } else if ([thread isKindOfClass:[TSGroupThread class]]){
         if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
             TSIncomingMessage *message = (TSIncomingMessage*)interaction;
             adapter.senderId   = message.authorId;
             adapter.senderDisplayName = message.authorId;
-        } else{
+        } else {
             adapter.senderId   = ME_MESSAGE_IDENTIFIER;
             adapter.senderDisplayName = @"Me";
         }
@@ -69,10 +83,21 @@
         adapter.messageBody = message.body;
     } else if ([interaction isKindOfClass:[TSCall class]]){
         adapter.messageBody = @"Placeholder for TSCalls";
+        adapter.messageType = TSCallAdapter;
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]){
+        TSInfoMessage * infoMessage = (TSInfoMessage*)interaction;
+        adapter.infoMessageType = infoMessage.messageType;
         adapter.messageBody = @"Placeholder for InfoMessage";
-    } else{
+        adapter.messageType = TSInfoMessageAdapter;
+    } else {
+        TSErrorMessage * errorMessage = (TSErrorMessage*)interaction;
+        adapter.infoMessageType = errorMessage.errorType;
         adapter.messageBody = @"Placeholder for ErrorMessage";
+        adapter.messageType = TSErrorMessageAdapter;
+    }
+    
+    if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
+        adapter.outgoingMessageStatus = ((TSOutgoingMessage*)interaction).messageState;
     }
     
     if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {

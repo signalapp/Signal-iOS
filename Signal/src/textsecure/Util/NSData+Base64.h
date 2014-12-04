@@ -2,8 +2,9 @@
 
 @interface NSData (Base64)
 
-+ (NSData *)dataFromBase64String:(NSString *)aString;
++ (NSData*)dataFromBase64StringNoPadding:(NSString*)aString;
++ (NSData*)dataFromBase64String:(NSString*)aString;
 
-- (NSString *)base64EncodedString;
+- (NSString*)base64EncodedString;
 
 @end

@@ -21,6 +21,10 @@
     return self;
 }
 
++ (instancetype)userNotRegisteredErrorMessageInThread:(TSThread*)thread{
+    return [[self alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread];
+}
+
 + (instancetype)invalidVersionWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction{
     TSContactThread *contactThread = [TSContactThread threadWithContactId:preKeyMessage.source transaction:transaction];
     TSErrorMessage *errorMessage = [[self alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:contactThread failedMessageType:TSErrorMessageInvalidVersion];

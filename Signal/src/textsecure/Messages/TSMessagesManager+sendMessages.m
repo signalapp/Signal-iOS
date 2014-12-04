@@ -28,6 +28,8 @@
 #import "TSSubmitMessageRequest.h"
 #import "TSRecipientPrekeyRequest.h"
 
+#import "TSErrorMessage.h"
+
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "TSRecipient.h"
@@ -80,16 +82,25 @@ dispatch_queue_t sendingQueue() {
             TSSubmitMessageRequest *request = [[TSSubmitMessageRequest alloc] initWithRecipient:recipient.uniqueId messages:messages relay:recipient.relay timeStamp:message.timeStamp];
             
             [[TSNetworkManager sharedManager] queueAuthenticatedRequest:request success:^(NSURLSessionDataTask *task, id responseObject) {
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [recipient saveWithTransaction:transaction];
+                }];
                 [self handleMessageSent:message inThread:thread];
+                
             } failure:^(NSURLSessionDataTask *task, NSError *error) {
                 NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
                 long statuscode = response.statusCode;
                 
                 switch (statuscode) {
-                    case 404:
-                        // Recipient not found
+                    case 404:{
                         DDLogError(@"Recipient not found");
+                        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                            [recipient removeWithTransaction:transaction];
+                            [message setMessageState:TSOutgoingMessageStateUnsent];
+                            [[TSErrorMessage userNotRegisteredErrorMessageInThread:thread] saveWithTransaction:transaction];
+                        }];
                         break;
+                    }
                     case 409:
                         // Mismatched devices
                         DDLogError(@"Missing some devices");
@@ -99,9 +110,15 @@ dispatch_queue_t sendingQueue() {
                         DDLogWarn(@"Stale devices");
                         break;
                     default:
+                        [self sendMessage:message toRecipient:recipient inThread:thread withAttemps:remainingAttempts];
                         break;
                 }
             }];
+        }];
+    } else{
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [message setMessageState:TSOutgoingMessageStateUnsent];
+            [message saveWithTransaction:transaction];
         }];
     }
 }
@@ -110,9 +127,6 @@ dispatch_queue_t sendingQueue() {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [message setMessageState:TSOutgoingMessageStateSent];
         [message saveWithTransaction:transaction];
-        TSThread *fetchedThread = [TSThread fetchObjectWithUniqueID:thread.uniqueId];
-        fetchedThread.lastMessageId = [TSInteraction timeStampFromString:message.uniqueId];
-        [fetchedThread saveWithTransaction:transaction];
     }];
 }
 

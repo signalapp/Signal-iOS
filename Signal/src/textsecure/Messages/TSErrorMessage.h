@@ -28,6 +28,8 @@ typedef NS_ENUM(int32_t, TSErrorMessageType){
 + (instancetype)untrustedKeyWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction;
 + (instancetype)missingSessionWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction;
 
++ (instancetype)userNotRegisteredErrorMessageInThread:(TSThread*)thread;
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread failedMessageType:(TSErrorMessageType)errorMessageType;
 
 - (NSData*)retryBody;
