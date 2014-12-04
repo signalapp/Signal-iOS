@@ -4,6 +4,19 @@
 
 @implementation NSData (Base64)
 
++ (NSData*)dataFromBase64StringNoPadding:(NSString*)aString{
+    int padding = aString.length%4;
+    
+    NSMutableString *strResult = [aString mutableCopy];
+    if (padding != 0) {
+        int charsToAdd = 4 - padding;
+        for (int i = 0; i < charsToAdd; i++) {
+            [strResult appendString:@"="];
+        }
+    }
+    return [self dataFromBase64String:strResult];
+}
+
 //
 // dataFromBase64String:
 //
@@ -15,18 +28,9 @@
 //
 // returns the NSData representation of the base64 string
 //
+
 + (NSData *)dataFromBase64String:(NSString *)aString {
-    int padding = aString.length%4;
-    
-    NSMutableString *strResult = [aString mutableCopy];
-    if (padding != 0) {
-        int charsToAdd = 4 - padding;
-        for (int i = 0; i < charsToAdd; i++) {
-            [strResult appendString:@"="];
-        }
-    }
-    
-    return [[NSData alloc] initWithBase64EncodedString:strResult options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    return [[NSData alloc] initWithBase64EncodedString:aString options:NSDataBase64DecodingIgnoreUnknownCharacters];
 }
 
 //

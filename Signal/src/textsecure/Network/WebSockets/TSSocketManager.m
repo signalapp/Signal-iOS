@@ -81,10 +81,19 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
         }
     }
     
-    NSString *webSocketConnect = [textSecureWebSocketAPI stringByAppendingString:[[self sharedManager] webSocketAuthenticationString]];
-    NSURL *webSocketConnectURL = [NSURL URLWithString:webSocketConnect];
-    socket                     = [[SRWebSocket alloc] initWithURL:webSocketConnectURL];
-    socket.delegate            = [self sharedManager];
+    NSString* webSocketConnect   = [textSecureWebSocketAPI stringByAppendingString:[[self sharedManager] webSocketAuthenticationString]];
+    NSURL* webSocketConnectURL   = [NSURL URLWithString:webSocketConnect];
+    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:webSocketConnectURL];
+    NSString* cerPath            = [[NSBundle mainBundle] pathForResource:@"textsecure" ofType:@"cer"];
+    NSData* certData             = [[NSData alloc] initWithContentsOfFile:cerPath];
+    CFDataRef certDataRef        = (__bridge CFDataRef)certData;
+    SecCertificateRef certRef    = SecCertificateCreateWithData(NULL, certDataRef);
+    id certificate               = (__bridge id)certRef;
+    [request setSR_SSLPinnedCertificates:@[ certificate ]];
+    
+    socket                       = [[SRWebSocket alloc] initWithURLRequest:request];
+    socket.delegate              = [self sharedManager];
+    
     [socket open];
     [[self sharedManager] setWebsocket:socket];
 }

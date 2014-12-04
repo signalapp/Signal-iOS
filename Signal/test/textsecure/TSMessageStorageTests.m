@@ -58,8 +58,9 @@
                                                                         inThread:self.thread
                                                                      messageBody:body
                                                                     attachements:nil];
-    [newMessage save];
-    
+    [[TSStorageManager sharedManager].newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [newMessage saveWithTransaction:transaction];
+    }];
     
     TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:timestamp]];
     
