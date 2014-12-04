@@ -9,6 +9,8 @@
 
 #import "YDBCKChangeSet.h"
 
+extern NSString *const YapDatabaseCloudKitSuspendCountChangedNotification;
+
 /**
  * Welcome to YapDatabase!
  *

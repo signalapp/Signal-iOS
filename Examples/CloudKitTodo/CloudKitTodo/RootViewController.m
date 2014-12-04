@@ -43,6 +43,18 @@
 	                                         selector:@selector(databaseConnectionDidUpdate:)
 	                                             name:UIDatabaseConnectionDidUpdateNotification
 	                                           object:nil];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+	                                         selector:@selector(cloudKitSuspendCountChanged:)
+	                                             name:YapDatabaseCloudKitSuspendCountChangedNotification
+	                                           object:nil];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+	[super viewWillAppear:animated];
+	
+	[self updateStatusLabels];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -68,7 +80,7 @@
 
 - (void)databaseConnectionDidUpdate:(NSNotification *)notification
 {
-	NSArray *notifications = [notification.userInfo objectForKey:kNotificationsKey];
+	[self updateStatusLabels];
 	
 	if (mappings == nil)
 	{
@@ -77,6 +89,8 @@
 		
 		return;
 	}
+	
+	NSArray *notifications = [notification.userInfo objectForKey:kNotificationsKey];
 	
 	NSArray *rowChanges = nil;
 	[[databaseConnection ext:Ext_View_Order] getSectionChanges:NULL
@@ -128,6 +142,11 @@
 	[self.tableView endUpdates];
 }
 
+- (void)cloudKitSuspendCountChanged:(NSNotification *)notification
+{
+	[self updateStatusLabels];
+}
+
 - (MyTodo *)todoAtIndexPath:(NSIndexPath *)indexPath
 {
 	__block MyTodo *todo = nil;
@@ -137,6 +156,34 @@
 	}];
 	
 	return todo;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Status
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)updateStatusLabels
+{
+	NSUInteger suspendCount = [MyDatabaseManager.cloudKitExtension suspendWithCount:0];
+	if (suspendCount > 0)
+	{
+		self.ckTopStatusLabel.text =
+		  [NSString stringWithFormat:@"Status: Suspended (suspendCount = %lu)", (unsigned long)suspendCount];
+	}
+	else
+	{
+		self.ckTopStatusLabel.text = @"Status: Resumed";
+	}
+	
+	NSArray *changeSets = MyDatabaseManager.cloudKitExtension.pendingChangeSets;
+	
+	YDBCKChangeSet *nextChangeSet = [changeSets firstObject];
+	NSUInteger inFlightCount = nextChangeSet.isInFlight ? 1 : 0;
+	
+	self.ckBottomStatusLabel.text =
+	  [NSString stringWithFormat:@"Queue: InFlight(%lu), Pending(%lu)",
+	   (unsigned long)inFlightCount,
+	   (unsigned long)(changeSets.count - inFlightCount)];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -212,6 +259,10 @@
 		[rwDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 			
 			[transaction removeObjectForKey:todo.uuid inCollection:Collection_Todos];
+			
+		} completionBlock:^{
+			
+			[self updateStatusLabels];
 		}];
 	}];
 	

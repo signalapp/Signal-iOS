@@ -8,6 +8,7 @@
 #import "DDTTYLogger.h"
 
 #import <CloudKit/CloudKit.h>
+#import <Reachability/Reachability.h>
 
 #if DEBUG
   static const int ddLogLevel = LOG_LEVEL_ALL;
@@ -15,16 +16,29 @@
   static const int ddLogLevel = LOG_LEVEL_ALL;
 #endif
 
+AppDelegate *MyAppDelegate;
+
 
 @implementation AppDelegate
+
+@synthesize reachability = reachability;
+
+- (id)init
+{
+	if ((self = [super init]))
+	{
+		// Store global reference
+		MyAppDelegate = self;
+		
+		// Configure logging
+		[DDLog addLogger:[DDTTYLogger sharedInstance]];
+	}
+	return self;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 	DDLogVerbose(@"application:didFinishLaunchingWithOptions: %@", launchOptions);
-	
-	// Configure logging
-	
-	[DDLog addLogger:[DDTTYLogger sharedInstance]];
 	
 	// Start database & cloudKit (in that order)
 	
@@ -38,13 +52,10 @@
 
 	[application registerUserNotificationSettings:notificationSettings];
 	
-	// Start test
+	// Start reachability
  
-	dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC));
-	dispatch_after(delay, dispatch_get_main_queue(), ^{
-		
-		[self startTest];
-	});
+	reachability = [Reachability reachabilityForInternetConnection];
+	[reachability startNotifier];
 	
 	return YES;
 }
@@ -118,24 +129,6 @@
 			completionHandler(combinedFetchResult);
 		}
 	}];
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Test
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (void)startTest
-{
-//	MyTodo *todo = [[MyTodo alloc] init];
-//	todo.title = @"Search for apartments";
-//	
-//	YapDatabaseConnection *databaseConnection = [MyDatabaseManager.database newConnection];
-//	[databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-//		
-//		DDLogVerbose(@"Adding new todo...");
-//		
-//		[transaction setObject:todo forKey:todo.uuid inCollection:Collection_Todos];
-//	}];
 }
 
 @end

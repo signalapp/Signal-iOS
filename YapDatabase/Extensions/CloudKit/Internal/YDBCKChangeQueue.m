@@ -215,14 +215,19 @@
 	if (self.isMasterQueue)
 	{
 		NSMutableArray *oldChangeSetsCopy = nil;
-		
 		[masterQueueLock lock];
-		for (YDBCKChangeSet *changeSet in oldChangeSets)
-		{
-			[oldChangeSetsCopy addObject:[changeSet fullCopy]];
-		}
-		[masterQueueLock unlock];
 		
+		if (oldChangeSets.count)
+		{
+			oldChangeSetsCopy = [NSMutableArray arrayWithCapacity:oldChangeSets.count];
+			
+			for (YDBCKChangeSet *changeSet in oldChangeSets)
+			{
+				[oldChangeSetsCopy addObject:[changeSet fullCopy]];
+			}
+		}
+		
+		[masterQueueLock unlock];
 		return oldChangeSetsCopy;
 	}
 	else // if (self.isPendingQueue)

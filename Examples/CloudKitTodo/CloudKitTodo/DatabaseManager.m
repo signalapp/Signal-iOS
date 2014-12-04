@@ -1,10 +1,13 @@
 #import "DatabaseManager.h"
 #import "CloudKitManager.h"
+#import "AppDelegate.h"
 
 #import "MyDatabaseObject.h"
 #import "MyTodo.h"
 
 #import "DDLog.h"
+
+#import <Reachability/Reachability.h>
 
 // Log Levels: off, error, warn, info, verbose
 // Log Flags : trace
@@ -30,6 +33,10 @@ DatabaseManager *MyDatabaseManager;
 
 
 @implementation DatabaseManager
+{
+	BOOL cloudKitExtensionNeedsResume;
+	BOOL cloudKitExtensionNeedsFetchRecordChanges;
+}
 
 + (void)initialize
 {
@@ -77,6 +84,11 @@ DatabaseManager *MyDatabaseManager;
 	if ((self = [super init]))
 	{
 		[self setupDatabase];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+		                                         selector:@selector(reachabilityChanged:)
+		                                             name:kReachabilityChangedNotification
+		                                           object:nil];
 	}
 	return self;
 }
@@ -357,6 +369,8 @@ DatabaseManager *MyDatabaseManager;
 		}
 	};
 	
+	__weak typeof(self) weakSelf = self;
+	
 	YapDatabaseCloudKitOperationErrorBlock opErrorBlock =
 	  ^(NSString *databaseIdentifier, NSError *operationError)
 	{
@@ -364,16 +378,16 @@ DatabaseManager *MyDatabaseManager;
 		
 		if (ckErrorCode == CKErrorPartialFailure)
 		{
-			[MyCloudKitManager fetchRecordChangesWithCompletionHandler:NULL];
+			[weakSelf cloudKit_handlePartialFailure];
 		}
 		else if (ckErrorCode == CKErrorNetworkUnavailable ||
 		         ckErrorCode == CKErrorNetworkFailure)
 		{
-			// Todo: Network monitoring...
+			[weakSelf cloudKit_handleNetworkError];
 		}
 		else
 		{
-			// Todo: Better error handling !
+			// You'll want to add more error handling here.
 		}
 	};
 	
@@ -402,6 +416,50 @@ DatabaseManager *MyDatabaseManager;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark CloudKit Error Handling
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)cloudKit_handlePartialFailure
+{
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
+	[MyCloudKitManager fetchRecordChangesWithCompletionHandler:^(UIBackgroundFetchResult result, BOOL moreComing) {
+		
+		if (result == UIBackgroundFetchResultFailed)
+		{
+			if (MyAppDelegate.reachability.isReachable) {
+				[self cloudKit_handlePartialFailure]; // try again
+			}
+			else {
+				cloudKitExtensionNeedsFetchRecordChanges = YES;
+			}
+		}
+		else if (!moreComing)
+		{
+			cloudKitExtensionNeedsResume = NO;
+			cloudKitExtensionNeedsFetchRecordChanges = NO;
+			
+			[cloudKitExtension resume];
+		}
+	}];
+}
+
+- (void)cloudKit_handleNetworkError
+{
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
+	if (MyAppDelegate.reachability.isReachable)
+	{
+		[cloudKitExtension resume];
+	}
+	else
+	{
+		// Wait for notification
+		cloudKitExtensionNeedsResume = YES;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Notifications
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -426,6 +484,23 @@ DatabaseManager *MyDatabaseManager;
 	[[NSNotificationCenter defaultCenter] postNotificationName:UIDatabaseConnectionDidUpdateNotification
 	                                                    object:self
 	                                                  userInfo:userInfo];
+}
+
+- (void)reachabilityChanged:(NSNotification *)notification
+{
+	Reachability *reachability = notification.object;
+	if (reachability.isReachable)
+	{
+		if (cloudKitExtensionNeedsResume)
+		{
+			cloudKitExtensionNeedsResume = NO;
+			[cloudKitExtension resume];
+		}
+		else if (cloudKitExtensionNeedsFetchRecordChanges)
+		{
+			[self cloudKit_handlePartialFailure];
+		}
+	}
 }
 
 @end

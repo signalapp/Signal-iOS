@@ -41,7 +41,7 @@
                                 </connections>
                             </tableView>
                             <view alpha="0.84999999999999987" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TqX-YI-hcf">
-                                <rect key="frame" x="0.0" y="525" width="600" height="75"/>
+                                <rect key="frame" x="0.0" y="505" width="600" height="95"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="YapDatabaseCloudKit" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="muy-ee-zR0">
                                         <rect key="frame" x="74" y="8" width="457" height="17"/>
@@ -69,10 +69,16 @@
                                             <action selector="suspendButtonTapped:" destination="ZMP-7o-CDj" eventType="touchUpInside" id="agt-dv-yPe"/>
                                         </connections>
                                     </button>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="OaA-1V-vVR">
-                                        <rect key="frame" x="8" y="46" width="584" height="21"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status: Unknown (suspendCount = X)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="OaA-1V-vVR" userLabel="TopStatusLabel">
+                                        <rect key="frame" x="8" y="39" width="584" height="20"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                        <color key="textColor" red="0.94117647058823528" green="0.94117647058823528" blue="0.94117647058823528" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Queue: InFlight(X), Pending(Y)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="5fa-al-XJj" userLabel="BottomStatusLabel">
+                                        <rect key="frame" x="8" y="67" width="584" height="20"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                        <color key="textColor" red="0.94117647058823528" green="0.94117647058823528" blue="0.94117647058823528" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
@@ -81,11 +87,17 @@
                                     <constraint firstItem="muy-ee-zR0" firstAttribute="top" secondItem="TqX-YI-hcf" secondAttribute="top" constant="8" id="4BI-IS-9nP"/>
                                     <constraint firstItem="KjR-xN-kmG" firstAttribute="top" secondItem="TqX-YI-hcf" secondAttribute="top" constant="4" id="4sW-fT-l7G"/>
                                     <constraint firstItem="muy-ee-zR0" firstAttribute="leading" secondItem="TNj-1O-PFd" secondAttribute="trailing" constant="8" id="5aj-cJ-XsL"/>
+                                    <constraint firstItem="5fa-al-XJj" firstAttribute="leading" secondItem="TqX-YI-hcf" secondAttribute="leading" constant="8" id="65z-hg-ftU"/>
+                                    <constraint firstItem="OaA-1V-vVR" firstAttribute="leading" secondItem="TqX-YI-hcf" secondAttribute="leading" constant="8" id="8dy-8l-gcv"/>
+                                    <constraint firstAttribute="trailing" secondItem="5fa-al-XJj" secondAttribute="trailing" constant="8" id="AUe-6l-Vjc"/>
                                     <constraint firstAttribute="trailing" secondItem="KjR-xN-kmG" secondAttribute="trailing" constant="8" id="BBo-LR-THi"/>
                                     <constraint firstItem="TNj-1O-PFd" firstAttribute="top" secondItem="TqX-YI-hcf" secondAttribute="top" constant="4" id="Cle-Jt-lbO"/>
-                                    <constraint firstAttribute="height" constant="75" id="QQb-T0-Jzw"/>
+                                    <constraint firstAttribute="bottom" secondItem="5fa-al-XJj" secondAttribute="bottom" constant="8" id="Gc8-aZ-ijr"/>
+                                    <constraint firstItem="5fa-al-XJj" firstAttribute="top" secondItem="OaA-1V-vVR" secondAttribute="bottom" constant="8" id="Jrt-C4-i3n"/>
+                                    <constraint firstAttribute="height" constant="95" id="QQb-T0-Jzw"/>
                                     <constraint firstItem="KjR-xN-kmG" firstAttribute="leading" secondItem="muy-ee-zR0" secondAttribute="trailing" constant="8" id="eeR-BQ-hsV"/>
                                     <constraint firstItem="TNj-1O-PFd" firstAttribute="leading" secondItem="TqX-YI-hcf" secondAttribute="leading" constant="8" id="gZz-8R-fHA"/>
+                                    <constraint firstAttribute="trailing" secondItem="OaA-1V-vVR" secondAttribute="trailing" constant="8" id="sdL-QQ-2Vf"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -114,8 +126,9 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="ckStatusLabel" destination="OaA-1V-vVR" id="6ob-2m-Sqx"/>
+                        <outlet property="ckBottomStatusLabel" destination="5fa-al-XJj" id="XcZ-c8-tMa"/>
                         <outlet property="ckStatusView" destination="TqX-YI-hcf" id="605-us-SxD"/>
+                        <outlet property="ckTopStatusLabel" destination="OaA-1V-vVR" id="lik-XF-cIr"/>
                         <outlet property="tableView" destination="Yft-Qg-2YH" id="7hC-jh-ZYc"/>
                     </connections>
                 </viewController>

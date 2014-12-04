@@ -4,6 +4,7 @@
 #import "DDLog.h"
 
 #import <CloudKit/CloudKit.h>
+#import <Reachability/Reachability.h>
 
 // Log Levels: off, error, warn, info, verbose
 // Log Flags : trace
@@ -18,6 +19,14 @@ CloudKitManager *MyCloudKitManager;
 static NSString *const Key_HasZone             = @"hasZone";
 static NSString *const Key_HasZoneSubscription = @"hasZoneSubscription";
 static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
+
+@interface CloudKitManager ()
+
+@property (atomic, readwrite) BOOL needsCreateZone;
+@property (atomic, readwrite) BOOL needsCreateZoneSubscription;
+@property (atomic, readwrite) BOOL needsFetchRecordChangesAfterAppLaunch;
+
+@end
 
 @implementation CloudKitManager
 {
@@ -42,6 +51,10 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 #pragma mark Instance
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+@synthesize needsCreateZone;
+@synthesize needsCreateZoneSubscription;
+@synthesize needsFetchRecordChangesAfterAppLaunch;
+
 - (id)init
 {
 	NSAssert(MyCloudKitManager == nil, @"Must use sharedInstance singleton (global MyCloudKitManager)");
@@ -52,31 +65,62 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		// But our needs are pretty basic, so we're just going to use the generic background connection.
 		databaseConnection = MyDatabaseManager.bgDatabaseConnection;
 		
+		self.needsCreateZone = YES;
+		self.needsCreateZoneSubscription = YES;
+		self.needsFetchRecordChangesAfterAppLaunch = YES;
+		
 		[self configureCloudKit];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+		                                         selector:@selector(reachabilityChanged:)
+		                                             name:kReachabilityChangedNotification
+		                                           object:nil];
 	}
 	return self;
 }
 
+- (void)reachabilityChanged:(NSNotification *)notification
+{
+	Reachability *reachability = notification.object;
+	if (reachability.isReachable)
+	{
+		if (self.needsCreateZone || self.needsCreateZoneSubscription)
+		{
+			[self configureCloudKit];
+		}
+		else if (self.needsFetchRecordChangesAfterAppLaunch)
+		{
+			[self fetchRecordChangesAfterAppLaunch];
+		}
+	}
+}
+
 - (void)configureCloudKit
 {
-	__block BOOL needsCreateZone = YES;
-	__block BOOL needsCreateZoneSubscription = YES;
-	
 	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		if ([transaction hasObjectForKey:Key_HasZone inCollection:Collection_CloudKit]) {
-			needsCreateZone = NO;
+			self.needsCreateZone = NO;
 		}
 		if ([transaction hasObjectForKey:Key_HasZoneSubscription inCollection:Collection_CloudKit]) {
-			needsCreateZoneSubscription = NO;
+			self.needsCreateZoneSubscription = NO;
 		}
 	}];
+	
+	//
+	// Create CKRecordZone (if needed)
+	//
+	
+	CKModifyRecordZonesOperation *modifyRecordZonesOperation = nil;
 	
 	void (^ContinueAfterCreateZone)(BOOL updateDatabase) = ^(BOOL updateDatabase){
 		
 		// Create zone complete.
 		// Decrement suspend count.
 		[MyDatabaseManager.cloudKitExtension resume];
+		
+		// Unflag property
+		self.needsCreateZone = NO;
 		
 		if (updateDatabase)
 		{
@@ -87,6 +131,46 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 			}];
 		}
 	};
+	
+	if (self.needsCreateZone)
+	{
+		CKRecordZone *recordZone = [[CKRecordZone alloc] initWithZoneName:CloudKitZoneName];
+		
+		modifyRecordZonesOperation =
+		  [[CKModifyRecordZonesOperation alloc] initWithRecordZonesToSave:@[ recordZone ]
+		                                            recordZoneIDsToDelete:nil];
+		
+		modifyRecordZonesOperation.modifyRecordZonesCompletionBlock =
+		^(NSArray *savedRecordZones, NSArray *deletedRecordZoneIDs, NSError *operationError)
+		{
+			if (operationError)
+			{
+				DDLogError(@"Error creating zone: %@", operationError);
+			}
+			else
+			{
+				DDLogInfo(@"Successfully created zones: %@", savedRecordZones);
+				
+				self.needsCreateZone = NO;
+				
+				BOOL shouldUpdateDatabase = YES;
+				ContinueAfterCreateZone(shouldUpdateDatabase);
+			}
+		};
+		
+		[[[CKContainer defaultContainer] privateCloudDatabase] addOperation:modifyRecordZonesOperation];
+	}
+	else
+	{
+		BOOL shouldUpdateDatabase = NO;
+		ContinueAfterCreateZone(shouldUpdateDatabase);
+	}
+	
+	//
+	// Create CKSubscription (if needed)
+	//
+	
+	CKModifySubscriptionsOperation *modifySubscriptionsOperation = nil;
 	
 	void (^ContinueAfterCreateZoneSubscription)(BOOL updateDatabase) = ^(BOOL updateDatabase) {
 		
@@ -107,46 +191,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		[self fetchRecordChangesAfterAppLaunch];
 	};
 	
-	CKModifyRecordZonesOperation *modifyRecordZonesOperation = nil;
-	CKModifySubscriptionsOperation *modifySubscriptionsOperation = nil;
-	
-	// Create CKRecordZone (if needed)
-	
-	if (needsCreateZone)
-	{
-		CKRecordZone *recordZone = [[CKRecordZone alloc] initWithZoneName:CloudKitZoneName];
-		
-		modifyRecordZonesOperation =
-		  [[CKModifyRecordZonesOperation alloc] initWithRecordZonesToSave:@[ recordZone ]
-		                                            recordZoneIDsToDelete:nil];
-		
-		modifyRecordZonesOperation.modifyRecordZonesCompletionBlock =
-		^(NSArray *savedRecordZones, NSArray *deletedRecordZoneIDs, NSError *operationError)
-		{
-			if (operationError)
-			{
-				DDLogError(@"Error creating zone: %@", operationError);
-			}
-			else
-			{
-				DDLogInfo(@"Successfully created zones: %@", savedRecordZones);
-				
-				BOOL shouldUpdateDatabase = YES;
-				ContinueAfterCreateZone(shouldUpdateDatabase);
-			}
-		};
-		
-		[[[CKContainer defaultContainer] privateCloudDatabase] addOperation:modifyRecordZonesOperation];
-	}
-	else
-	{
-		BOOL shouldUpdateDatabase = NO;
-		ContinueAfterCreateZone(shouldUpdateDatabase);
-	}
-	
-	// Create CKSubscription (if needed)
-	
-	if (needsCreateZoneSubscription)
+	if (self.needsCreateZoneSubscription)
 	{
 		CKRecordZoneID *recordZoneID =
 		  [[CKRecordZoneID alloc] initWithZoneName:CloudKitZoneName ownerName:CKOwnerDefaultName];
@@ -168,6 +213,8 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 			else
 			{
 				DDLogInfo(@"Successfully created subscription: %@", savedSubscriptions);
+				
+				self.needsCreateZoneSubscription = NO;
 				
 				BOOL shouldUpdateDatabase = YES;
 				ContinueAfterCreateZoneSubscription(shouldUpdateDatabase);
@@ -192,10 +239,14 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 **/
 - (void)fetchRecordChangesAfterAppLaunch
 {
+	if (self.needsFetchRecordChangesAfterAppLaunch == NO) return;
+	
 	[self fetchRecordChangesWithCompletionHandler:^(UIBackgroundFetchResult result, BOOL moreComing) {
 		
-		if (!moreComing)
+		if ((result != UIBackgroundFetchResultFailed) && !moreComing)
 		{
+			self.needsFetchRecordChangesAfterAppLaunch = NO;
+			
 			// Initial fetchRecordChanges operation complete.
 			// Decrement suspend count.
 			[MyDatabaseManager.cloudKitExtension resume];

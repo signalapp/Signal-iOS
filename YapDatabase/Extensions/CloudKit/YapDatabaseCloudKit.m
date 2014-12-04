@@ -15,6 +15,8 @@
 #endif
 #pragma unused(ydbLogLevel)
 
+NSString *const YapDatabaseCloudKitSuspendCountChangedNotification = @"YapDatabaseCloudKitSuspendCountChanged";
+
 
 @implementation YapDatabaseCloudKit
 {
@@ -284,12 +286,15 @@
 	}
 	OSSpinLockUnlock(&suspendCountLock);
 	
-	if (overflow) {
+	if (overflow)
+	{
 		YDBLogWarn(@"%@ - The suspendCount has reached NSUIntegerMax!", THIS_METHOD);
 	}
-	
-	if (YDB_LOG_INFO && (suspendCountIncrement > 0)) {
+	else if (suspendCountIncrement > 0)
+	{
 		YDBLogInfo(@"=> SUSPENDED : incremented suspendCount == %lu", (unsigned long)newSuspendCount);
+		
+		[self postSuspendCountChangedNotification];
 	}
 	
 	return newSuspendCount;
@@ -311,15 +316,18 @@
 	}
 	OSSpinLockUnlock(&suspendCountLock);
 	
-	if (underflow) {
+	if (underflow)
+	{
 		YDBLogWarn(@"%@ - Attempting to resume with suspendCount already at zero.", THIS_METHOD);
 	}
-	
-	if (YDB_LOG_INFO) {
+	else
+	{
 		if (newSuspendCount == 0)
 			YDBLogInfo(@"=> RESUMED");
 		else
 			YDBLogInfo(@"=> SUSPENDED : decremented suspendCount == %lu", (unsigned long)newSuspendCount);
+		
+		[self postSuspendCountChangedNotification];
 	}
 	
 	if (newSuspendCount == 0 && !underflow) {
@@ -327,6 +335,20 @@
 	}
 	
 	return newSuspendCount;
+}
+
+- (void)postSuspendCountChangedNotification
+{
+	dispatch_block_t block = ^{ @autoreleasepool {
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:YapDatabaseCloudKitSuspendCountChangedNotification
+		                                                    object:self];
+	}};
+	
+	if ([NSThread isMainThread])
+		block();
+	else
+		dispatch_async(dispatch_get_main_queue(), block);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
