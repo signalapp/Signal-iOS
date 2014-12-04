@@ -1,9 +1,9 @@
 //
 //  main.m
-//  YapDatabaseCloudKitTest
+//  CloudKitTodo
 //
-//  Created by Robbie Hanson on 10/6/14.
-//  Copyright (c) 2014 Robbie Hanson. All rights reserved.
+//  Created by Robbie Hanson on 12/3/14.
+//  Copyright (c) 2014 Deusty LLC. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
