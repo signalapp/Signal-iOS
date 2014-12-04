@@ -806,6 +806,7 @@ A0 09 9A FF A8 8A 09 99</string>
             <objects>
                 <tableViewController id="JeZ-9g-U61" customClass="ShowGroupMembersViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Fdx-Zk-e27">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
@@ -3072,6 +3073,95 @@ Licensed under the GPLv3</string>
                                             </variation>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" rowHeight="60" id="PJJ-QW-SVN">
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="PJJ-QW-SVN" id="WKr-Kw-POd">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Share Fingerprint" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Isc-5e-9wS">
+                                                    <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="307" id="STc-5Y-3O1"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                    <variation key="default">
+                                                        <mask key="constraints">
+                                                            <exclude reference="STc-5Y-3O1"/>
+                                                        </mask>
+                                                    </variation>
+                                                    <variation key="heightClass=regular-widthClass=compact">
+                                                        <mask key="constraints">
+                                                            <include reference="STc-5Y-3O1"/>
+                                                        </mask>
+                                                    </variation>
+                                                </label>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="twitter.png" translatesAutoresizingMaskIntoConstraints="NO" id="X9f-FA-r0E">
+                                                    <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="30" id="1Gh-JL-Aw5"/>
+                                                        <constraint firstAttribute="height" constant="30" id="uJT-pA-QPp"/>
+                                                    </constraints>
+                                                    <variation key="default">
+                                                        <mask key="constraints">
+                                                            <exclude reference="1Gh-JL-Aw5"/>
+                                                            <exclude reference="uJT-pA-QPp"/>
+                                                        </mask>
+                                                    </variation>
+                                                    <variation key="heightClass=regular-widthClass=compact">
+                                                        <mask key="constraints">
+                                                            <include reference="1Gh-JL-Aw5"/>
+                                                            <include reference="uJT-pA-QPp"/>
+                                                        </mask>
+                                                    </variation>
+                                                </imageView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="Isc-5e-9wS" firstAttribute="leading" secondItem="WKr-Kw-POd" secondAttribute="leadingMargin" id="2mI-eK-MSj">
+                                                    <variation key="heightClass=regular-widthClass=compact" constant="7"/>
+                                                </constraint>
+                                                <constraint firstItem="Isc-5e-9wS" firstAttribute="leading" secondItem="X9f-FA-r0E" secondAttribute="trailing" constant="9" id="36G-Jr-Gqt"/>
+                                                <constraint firstItem="Isc-5e-9wS" firstAttribute="centerY" secondItem="X9f-FA-r0E" secondAttribute="centerY" constant="-0.75" id="MtU-PY-R19"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="Isc-5e-9wS" secondAttribute="trailing" constant="70" id="OEp-cY-Gp3"/>
+                                                <constraint firstItem="X9f-FA-r0E" firstAttribute="leading" secondItem="WKr-Kw-POd" secondAttribute="leadingMargin" constant="8" id="eni-Cn-6m6"/>
+                                                <constraint firstItem="Isc-5e-9wS" firstAttribute="top" secondItem="WKr-Kw-POd" secondAttribute="topMargin" constant="3" id="uXT-IG-VvM">
+                                                    <variation key="heightClass=regular-widthClass=compact" constant="11"/>
+                                                </constraint>
+                                                <constraint firstItem="X9f-FA-r0E" firstAttribute="top" secondItem="WKr-Kw-POd" secondAttribute="topMargin" constant="7" id="uhI-4g-8rH"/>
+                                            </constraints>
+                                            <variation key="default">
+                                                <mask key="subviews">
+                                                    <exclude reference="Isc-5e-9wS"/>
+                                                    <exclude reference="X9f-FA-r0E"/>
+                                                </mask>
+                                                <mask key="constraints">
+                                                    <exclude reference="2mI-eK-MSj"/>
+                                                    <exclude reference="36G-Jr-Gqt"/>
+                                                    <exclude reference="MtU-PY-R19"/>
+                                                    <exclude reference="OEp-cY-Gp3"/>
+                                                    <exclude reference="uXT-IG-VvM"/>
+                                                    <exclude reference="eni-Cn-6m6"/>
+                                                    <exclude reference="uhI-4g-8rH"/>
+                                                </mask>
+                                            </variation>
+                                            <variation key="heightClass=regular-widthClass=compact">
+                                                <mask key="subviews">
+                                                    <include reference="Isc-5e-9wS"/>
+                                                    <include reference="X9f-FA-r0E"/>
+                                                </mask>
+                                                <mask key="constraints">
+                                                    <exclude reference="2mI-eK-MSj"/>
+                                                    <include reference="36G-Jr-Gqt"/>
+                                                    <include reference="MtU-PY-R19"/>
+                                                    <exclude reference="OEp-cY-Gp3"/>
+                                                    <include reference="uXT-IG-VvM"/>
+                                                    <include reference="eni-Cn-6m6"/>
+                                                    <include reference="uhI-4g-8rH"/>
+                                                </mask>
+                                            </variation>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="60" id="xqr-ce-rni">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="xqr-ce-rni" id="b4l-um-jXd">
@@ -3783,6 +3873,7 @@ Licensed under the GPLv3</string>
         <image name="shred.png" width="200" height="200"/>
         <image name="signal.png" width="50" height="50"/>
         <image name="signals_tab.png" width="24" height="24"/>
+        <image name="twitter.png" width="50" height="50"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="gZ1-lh-srF"/>

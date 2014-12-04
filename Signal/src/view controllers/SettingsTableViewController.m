@@ -14,9 +14,18 @@
 #import "TSStorageManager.h"
 #import "Environment.h"
 #import "PreferencesUtil.h"
+#import <Social/Social.h>
+
 #import "RPServerRequestsManager.h"
 
 #import <PastelogKit/Pastelog.h>
+
+#import "Cryptography.h"
+#import <AxolotlKit/NSData+keyVersionByte.h>
+#import <25519/Curve25519.h>
+#import "NSData+hexString.h"
+#import "TSStorageManager.h"
+#import "TSStorageManager+IdentityKeyStore.h"
 
 #define kProfileCellHeight      87.0f
 #define kStandardCellHeight     60.0f
@@ -26,13 +35,13 @@
 #define kMessageDisplayCellRow  1
 #define kImageQualitySettingRow 2
 #define kClearHistoryLogCellRow 3
-#define kSendDebugLogCellRow    5
-#define kUnregisterCell         6
-
+#define kShareFingerpintCellRow 4
+#define kSendDebugLogCellRow    6
+#define kUnregisterCell         7
 
 typedef enum {
     kProfileRows  = 1,
-    kSecurityRows = 7,
+    kSecurityRows = 8,
 } kRowsForSection;
 
 typedef enum {
@@ -157,7 +166,24 @@ typedef enum {
                                   }];
                 break;
             }
-                
+            case kShareFingerpintCellRow: {
+                if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter])
+                {
+                    SLComposeViewController *tweetSheet = [SLComposeViewController
+                                                           composeViewControllerForServiceType:SLServiceTypeTwitter];
+                    NSData *myPublicKey = [[TSStorageManager sharedManager] identityKeyPair].publicKey;
+                    NSString * tweetString = [NSString stringWithFormat:@"Verifying myself on Signal : %@", [self getFingerprintForTweet:myPublicKey]];
+                    [tweetSheet setInitialText:tweetString];
+                    [tweetSheet addURL:[NSURL URLWithString:@"https://whispersystems.org/signal/install/"]];
+                    tweetSheet.completionHandler = ^(SLComposeViewControllerResult result) {
+                        if (result == SLComposeViewControllerResultCancelled) {
+                            [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+                        }
+                    };
+                    [self presentViewController:tweetSheet animated:YES completion:nil];
+                }
+                break;
+            }
             case kSendDebugLogCellRow:
                 [Pastelog submitLogs];
                 break;
@@ -176,5 +202,27 @@ typedef enum {
         }
     }
 }
+
+#pragma mark - Fingerprint Util
+
+- (NSString*)getFingerprintForTweet:(NSData*)identityKey {
+    // idea here is to insert a space every six characters. there is probably a cleverer/more native way to do this.
+    
+    identityKey = [identityKey prependKeyType];
+    NSString *fingerprint = [identityKey hexadecimalString];
+    __block NSString*  formattedFingerprint = @"";
+    
+    [fingerprint enumerateSubstringsInRange:NSMakeRange(0, [fingerprint length])
+                                    options:NSStringEnumerationByComposedCharacterSequences
+                                 usingBlock:
+     ^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+         if (substringRange.location % 5 == 0 && substringRange.location != [fingerprint length]-1&& substringRange.location != 0) {
+             substring = [substring stringByAppendingString:@" "];
+         }
+         formattedFingerprint = [formattedFingerprint stringByAppendingString:substring];
+     }];
+    return formattedFingerprint;
+}
+
 
 @end

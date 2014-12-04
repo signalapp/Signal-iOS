@@ -497,6 +497,9 @@
 		FC3196301A0814130094C78E /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC31962F1A0814130094C78E /* SettingsTableViewController.m */; };
 		FC3BD97B1A2CD385005B96BB /* call_dotted@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC3BD9791A2CD385005B96BB /* call_dotted@2x.png */; };
 		FC3BD97C1A2CD385005B96BB /* signal_dotted@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC3BD97A1A2CD385005B96BB /* signal_dotted@2x.png */; };
+		FC3BD9841A306483005B96BB /* signals_error@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC3BD9831A306483005B96BB /* signals_error@2x.png */; };
+		FC3BD9861A30A62D005B96BB /* twitter@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC3BD9851A30A62D005B96BB /* twitter@2x.png */; };
+		FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC3BD9871A30A790005B96BB /* Social.framework */; };
 		FC4FA0261A1B9DC600DA100A /* SignalsNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC4FA0251A1B9DC600DA100A /* SignalsNavigationController.m */; };
 		FC4FA0331A1D46AE00DA100A /* InitialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC4FA0321A1D46AE00DA100A /* InitialViewController.m */; };
 		FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF371A3393DD00B47253 /* error_white@2x.png */; };
@@ -1195,6 +1198,9 @@
 		FC31962F1A0814130094C78E /* SettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsTableViewController.m; sourceTree = "<group>"; };
 		FC3BD9791A2CD385005B96BB /* call_dotted@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "call_dotted@2x.png"; sourceTree = "<group>"; };
 		FC3BD97A1A2CD385005B96BB /* signal_dotted@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "signal_dotted@2x.png"; sourceTree = "<group>"; };
+		FC3BD9831A306483005B96BB /* signals_error@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "signals_error@2x.png"; sourceTree = "<group>"; };
+		FC3BD9851A30A62D005B96BB /* twitter@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "twitter@2x.png"; sourceTree = "<group>"; };
+		FC3BD9871A30A790005B96BB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		FC4FA0241A1B9DC600DA100A /* SignalsNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalsNavigationController.h; sourceTree = "<group>"; };
 		FC4FA0251A1B9DC600DA100A /* SignalsNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalsNavigationController.m; sourceTree = "<group>"; };
 		FC4FA0311A1D46AE00DA100A /* InitialViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InitialViewController.h; sourceTree = "<group>"; };
@@ -1255,6 +1261,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */,
 				FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */,
 				70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */,
 				70B800AF190C548D0042E3F0 /* libspeex.a in Frameworks */,
@@ -2148,6 +2155,8 @@
 		B633C4FD1A1D190B0059AC12 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FC3BD9851A30A62D005B96BB /* twitter@2x.png */,
+				FC3BD9831A306483005B96BB /* signals_error@2x.png */,
 				B633C4FE1A1D190B0059AC12 /* archive@2x.png */,
 				FCB626B11A3B067900FDB504 /* ArrowBottom@2x.png */,
 				FCB626B21A3B067900FDB504 /* ArrowBottom@3x.png */,
@@ -2523,6 +2532,8 @@
 		D221A08C169C9E5E00537ABF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FC3BD9871A30A790005B96BB /* Social.framework */,
+				B60EDE031A05A01700D73516 /* AudioToolbox.framework */,
 				FCB11D8B1A129A76002F93FB /* CoreMedia.framework */,
 				B69CD25019773E79005CE69A /* XCTest.framework */,
 				70377AAA1918450100CAF501 /* MobileCoreServices.framework */,
@@ -2990,7 +3001,9 @@
 				B633C5961A1D190B0059AC12 /* DefaultContactImage.png in Resources */,
 				E148751218A06AFD002CC4F3 /* HelveticaNeueLTStd-Bd.otf in Resources */,
 				FCA52AE61A2B676C00CCADFA /* call_canceled@2x.png in Resources */,
+				FC3BD9861A30A62D005B96BB /* twitter@2x.png in Resources */,
 				E148751318A06AFD002CC4F3 /* HelveticaNeueLTStd-Th.otf in Resources */,
+				FC3BD9841A306483005B96BB /* signals_error@2x.png in Resources */,
 				E148751418A06AFD002CC4F3 /* HelveticaNeueLTStd-Lt.otf in Resources */,
 				E148751518A06AFD002CC4F3 /* HelveticaNeueLTStd-Md.otf in Resources */,
 				FC3BD97B1A2CD385005B96BB /* call_dotted@2x.png in Resources */,
