@@ -403,11 +403,28 @@ typedef enum : NSUInteger {
     if (indexPath.item == [self.collectionView numberOfItemsInSection:indexPath.section]-1)
     {
         return [self isMessageOutgoingAndDelivered:currentMessage];
-        
+    }
+    
+    if (![self isMessageOutgoingAndDelivered:currentMessage])
+    {
+        return NO;
     }
         
+    TSMessageAdapter * nextMessage = [self nextOutgoingMessage:indexPath];
+    return ![self isMessageOutgoingAndDelivered:nextMessage];
+}
+
+-(TSMessageAdapter*)nextOutgoingMessage:(NSIndexPath*)indexPath
+{
     TSMessageAdapter * nextMessage = [self messageAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row+1 inSection:indexPath.section]];
-    return ![self isMessageOutgoingAndDelivered:nextMessage] && [self isMessageOutgoingAndDelivered:currentMessage];
+    int i = 1;
+    
+    while (indexPath.item+i < [self.collectionView numberOfItemsInSection:indexPath.section]-1 && ![self isMessageOutgoingAndDelivered:nextMessage]) {
+        i++;
+        nextMessage = [self messageAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row+i inSection:indexPath.section]];
+    }
+    
+    return nextMessage;
 }
 
 -(BOOL)isMessageOutgoingAndDelivered:(TSMessageAdapter*)message
