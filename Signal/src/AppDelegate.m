@@ -87,8 +87,6 @@
     
     [self performUpdateCheck];
 
-    [self prepareScreenshotProtection];
-    
     self.notificationTracker = [NotificationTracker notificationTracker];
     
     CategorizingLogger* logger = [CategorizingLogger categorizingLogger];
@@ -119,6 +117,8 @@
     self.window.rootViewController = viewController;
     
     [self.window makeKeyAndVisible];
+    
+    [self prepareScreenshotProtection];
     
     [Environment.phoneManager.currentCallObservable watchLatestValue:^(CallState* latestCall) {
         if (latestCall == nil){
@@ -245,6 +245,10 @@
     }
 }
 
+- (void)applicationWillResignActive:(UIApplication *)application{
+    [self protectScreen];
+}
+
 - (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void (^)())completionHandler{
     if ([identifier isEqualToString:Signal_Call_Accept_Identifier]) {
         [self.callPickUpFuture trySetResult:@YES];
@@ -276,12 +280,9 @@
 - (void)protectScreen{
     if (Environment.preferences.screenSecurityIsEnabled) {
         self.blankWindow.rootViewController = [UIViewController new];
+
         UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.blankWindow.bounds];
-        if (self.blankWindow.bounds.size.height == 568) {
-            imageView.image = [UIImage imageNamed:@"Default-568h"];
-        } else {
-            imageView.image = [UIImage imageNamed:@"Default"];
-        }
+        imageView.backgroundColor = [UIColor whiteColor];
         imageView.opaque = YES;
         [self.blankWindow.rootViewController.view addSubview:imageView];
         self.blankWindow.hidden = NO;
