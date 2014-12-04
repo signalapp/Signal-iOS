@@ -2761,7 +2761,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	//	__unsafe_unretained NSString *hash = (NSString *)key;
 		__unsafe_unretained YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = (YDBCKDirtyRecordTableInfo *)obj;
 		
-		if (dirtyRecordTableInfo.dirty_record == nil)
+		if ([dirtyRecordTableInfo hasNilRecordOrZeroOwnerCount])
 		{
 			// The CKRecord has been deleted via one of the following:
 			//
