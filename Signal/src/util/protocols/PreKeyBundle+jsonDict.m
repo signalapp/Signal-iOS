@@ -22,7 +22,7 @@
         return nil;
     }
     
-    NSData *identityKey = [NSData dataFromBase64String:identityKeyString];
+    NSData *identityKey = [NSData dataFromBase64StringNoPadding:identityKeyString];
     
     for (NSDictionary *deviceDict in devicesArray) {
         NSNumber *registrationIdString = [deviceDict objectForKey:@"registrationId"];
@@ -50,7 +50,7 @@
         } else{
             prekeyId                     = [[preKey objectForKey:@"keyId"] intValue];
             NSString *preKeyPublicString = [preKey objectForKey:@"publicKey"];
-            preKeyPublic                 = [NSData dataFromBase64String:preKeyPublicString];
+            preKeyPublic                 = [NSData dataFromBase64StringNoPadding:preKeyPublicString];
         }
         
         NSDictionary *signedPrekey = [deviceDict objectForKey:@"signedPreKey"];
@@ -71,8 +71,8 @@
             return nil;
         }
         
-        NSData *signedPrekeyPublic    = [NSData dataFromBase64String:signedPublicKeyString];
-        NSData *signedPreKeySignature = [NSData dataFromBase64String:signedSignatureString];
+        NSData *signedPrekeyPublic    = [NSData dataFromBase64StringNoPadding:signedPublicKeyString];
+        NSData *signedPreKeySignature = [NSData dataFromBase64StringNoPadding:signedSignatureString];
         
         if (!(signedPrekeyPublic && signedPreKeySignature)) {
             DDLogError(@"Failed to parse signed keying material");

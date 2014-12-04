@@ -93,12 +93,6 @@ typedef enum : NSUInteger {
     
     self.senderId = ME_MESSAGE_IDENTIFIER
     self.senderDisplayName = ME_MESSAGE_IDENTIFIER
-    
-    if (!isGroupConversation)
-    {
-        [self initializeObservers];
-    }
-    
 }
 
 - (void)didPressBack{
@@ -110,12 +104,6 @@ typedef enum : NSUInteger {
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-}
-
--(void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
 }
 
 #pragma mark - Initiliazers
@@ -162,31 +150,6 @@ typedef enum : NSUInteger {
     self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
     self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
 
-}
-
--(void)initializeObservers
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillShow:)
-                                                 name:UIKeyboardWillShowNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillHide:)
-                                                 name:UIKeyboardWillHideNotification
-                                               object:nil];
-
-}
-
-#pragma mark - Keyboard Handlers
-
--(void)keyboardWillShow:(id)sender
-{
-    [self.inputToolbar.contentView setRightBarButtonItem:[JSQMessagesToolbarButtonFactory defaultSendButtonItem]];
-}
-
--(void)keyboardWillHide:(id)sender
-{
-    [self.inputToolbar.contentView setRightBarButtonItem:[JSQMessagesToolbarButtonFactory signalCallButtonItem]];
 }
 
 #pragma mark - Fingerprints
@@ -236,11 +199,7 @@ typedef enum : NSUInteger {
          senderDisplayName:(NSString *)senderDisplayName
                       date:(NSDate *)date
 {
-    if ([button.titleLabel.text isEqualToString:@"Call"])
-    {
-        NSLog(@"Let's call !");
-        
-    } else if (text.length > 0) {
+    if (text.length > 0) {
         [JSQSystemSoundPlayer jsq_playMessageSentSound];
         
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:text attachements:nil];

@@ -392,6 +392,8 @@
 		B6B096951A1D25ED008BFAA6 /* NSURLSessionDataTask+StatusCode.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096601A1D25ED008BFAA6 /* NSURLSessionDataTask+StatusCode.m */; };
 		B6B1013C196D213F007E3930 /* SignalKeyingStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SignalKeyingStorage.m */; };
 		B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B9ECFB198B31BA00C620D3 /* PushManager.m */; };
+		B6C6AE551A305ED1006BAF8F /* redphone.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6C6AE531A305ED1006BAF8F /* redphone.cer */; };
+		B6C6AE561A305ED1006BAF8F /* textsecure.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6C6AE541A305ED1006BAF8F /* textsecure.cer */; };
 		B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C93C4D199567AD00EDF894 /* DebugLogger.m */; };
 		B6CBF53F1A254BD1000D4184 /* ContactDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CBF53E1A254BD1000D4184 /* ContactDetailCell.m */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
@@ -444,7 +446,6 @@
 		E1370BF018A0689000826894 /* AppIcon60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E18AB3FA18A05734001A532A /* AppIcon60x60@2x.png */; };
 		E1370BF118A0689000826894 /* AppIcon76x76.png in Resources */ = {isa = PBXBuildFile; fileRef = E18AB3FB18A05734001A532A /* AppIcon76x76.png */; };
 		E1370BF218A0689000826894 /* AppIcon76x76@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E18AB3FC18A05734001A532A /* AppIcon76x76@2x.png */; };
-		E1370BF618A068A600826894 /* whisperReal.cer in Resources */ = {isa = PBXBuildFile; fileRef = E1C407C117F0C246007BEE65 /* whisperReal.cer */; };
 		E14874F818A06951002CC4F3 /* ContactTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB053A18170B33006006FC /* ContactTableViewCell.xib */; };
 		E14874F918A06951002CC4F3 /* CountryCodeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B97CBFB018861023008E0DE9 /* CountryCodeTableViewCell.xib */; };
 		E148750018A06966002CC4F3 /* CallAudioManagerDemo.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB051D18170B33006006FC /* CallAudioManagerDemo.xib */; };
@@ -1040,6 +1041,8 @@
 		B6B1013B196D213F007E3930 /* SignalKeyingStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalKeyingStorage.m; sourceTree = "<group>"; };
 		B6B9ECFA198B31BA00C620D3 /* PushManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PushManager.h; sourceTree = "<group>"; };
 		B6B9ECFB198B31BA00C620D3 /* PushManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushManager.m; sourceTree = "<group>"; };
+		B6C6AE531A305ED1006BAF8F /* redphone.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = redphone.cer; sourceTree = "<group>"; };
+		B6C6AE541A305ED1006BAF8F /* textsecure.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = textsecure.cer; sourceTree = "<group>"; };
 		B6C93C4C199567AD00EDF894 /* DebugLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugLogger.h; sourceTree = "<group>"; };
 		B6C93C4D199567AD00EDF894 /* DebugLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugLogger.m; sourceTree = "<group>"; };
 		B6CBF53D1A254BD1000D4184 /* ContactDetailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContactDetailCell.h; path = "Signal/src/view controllers/ContactDetailCell.h"; sourceTree = SOURCE_ROOT; };
@@ -1145,7 +1148,6 @@
 		E197B62618BBF63B00F073E5 /* SoundBoard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundBoard.m; sourceTree = "<group>"; };
 		E1A0AD8B16E13FDD0071E604 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		E1B3DC731885EFA100B7F794 /* NotificationManifest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationManifest.h; sourceTree = "<group>"; };
-		E1C407C117F0C246007BEE65 /* whisperReal.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperReal.cer; sourceTree = "<group>"; };
 		E1CD329418BCFF9900B1A496 /* SoundInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundInstance.h; sourceTree = "<group>"; };
 		E1CD329518BCFF9900B1A496 /* SoundInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundInstance.m; sourceTree = "<group>"; };
 		FC15B7BE1A1F80F200F59801 /* defaultConctact_light@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "defaultConctact_light@2x.png"; sourceTree = "<group>"; };
@@ -2403,6 +2405,15 @@
 			name = Translations;
 			sourceTree = "<group>";
 		};
+		B6C6AE521A305ED1006BAF8F /* Certificates */ = {
+			isa = PBXGroup;
+			children = (
+				B6C6AE531A305ED1006BAF8F /* redphone.cer */,
+				B6C6AE541A305ED1006BAF8F /* textsecure.cer */,
+			);
+			path = Certificates;
+			sourceTree = "<group>";
+		};
 		BF8C3D8119CE3B6A008F644C /* call */ = {
 			isa = PBXGroup;
 			children = (
@@ -2478,6 +2489,7 @@
 		D221A094169C9E5E00537ABF /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				B6C6AE521A305ED1006BAF8F /* Certificates */,
 				B6B6C3C419193F5B00C0B76B /* Translations */,
 				E18AB40618A05754001A532A /* AudioFiles */,
 				E18AB3F318A05734001A532A /* Icons */,
@@ -2486,7 +2498,6 @@
 				D221A095169C9E5E00537ABF /* Signal-Info.plist */,
 				D221A09B169C9E5E00537ABF /* Signal-Prefix.pch */,
 				B661C211198EE2EA00548CA1 /* iOSVersions.h */,
-				E1C407C117F0C246007BEE65 /* whisperReal.cer */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -2717,6 +2728,7 @@
 				ORGANIZATIONNAME = "Open Whisper Systems";
 				TargetAttributes = {
 					D221A088169C9E5E00537ABF = {
+						DevelopmentTeam = U68MSDN6DR;
 						SystemCapabilities = {
 							com.apple.DataProtection = {
 								enabled = 1;
@@ -2846,6 +2858,7 @@
 				B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */,
 				B633C5B41A1D190B0059AC12 /* keypad@2x.png in Resources */,
 				B633C5DA1A1D190B0059AC12 /* settings_dark@2x.png in Resources */,
+				B6C6AE561A305ED1006BAF8F /* textsecure.cer in Resources */,
 				FCA52AEC1A2B676C00CCADFA /* message_error@2x.png in Resources */,
 				E14874F818A06951002CC4F3 /* ContactTableViewCell.xib in Resources */,
 				B633C5BC1A1D190B0059AC12 /* message_bubble@2x.png in Resources */,
@@ -2892,6 +2905,7 @@
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
 				E1370BE418A0686C00826894 /* outring.mp3 in Resources */,
 				B633C5841A1D190B0059AC12 /* backspace@2x.png in Resources */,
+				B6C6AE551A305ED1006BAF8F /* redphone.cer in Resources */,
 				B633C5B71A1D190B0059AC12 /* logo_intro@2x.png in Resources */,
 				E1370BE518A0686C00826894 /* r.caf in Resources */,
 				B633C5981A1D190B0059AC12 /* delete_history@2x.png in Resources */,
@@ -2906,7 +2920,6 @@
 				E148751418A06AFD002CC4F3 /* HelveticaNeueLTStd-Lt.otf in Resources */,
 				E148751518A06AFD002CC4F3 /* HelveticaNeueLTStd-Md.otf in Resources */,
 				FC3BD97B1A2CD385005B96BB /* call_dotted@2x.png in Resources */,
-				E1370BF618A068A600826894 /* whisperReal.cer in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
