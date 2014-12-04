@@ -30,9 +30,7 @@
 
 -(void)toggleSetting:(id)sender
 {
-    if ([self.reuseIdentifier isEqualToString:@"enableScreenSecurity"])
-    {
-        self.state.text = self.toggle.isOn ? @"Yes" : @"No";
+    if ([self.reuseIdentifier isEqualToString:@"enableScreenSecurity"]) {
         [Environment.preferences setScreenSecurity:self.toggle.isOn];
     }
 }

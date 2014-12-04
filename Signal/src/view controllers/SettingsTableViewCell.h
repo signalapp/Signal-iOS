@@ -12,7 +12,5 @@
 
 //Regular cell
 @property(nonatomic, strong) IBOutlet UISwitch* toggle;
-@property(nonatomic, strong) IBOutlet UILabel* state;
-
 
 @end
