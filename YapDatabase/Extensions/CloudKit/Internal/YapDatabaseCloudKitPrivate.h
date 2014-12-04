@@ -182,9 +182,9 @@ static NSString *const changeset_key_reset            = @"reset";
 	NSMutableArray *deletedRecordIDs;
 	
 #if DEBUG
-	YapDebugDictionary *moodifiedRecords;
+	YapDebugDictionary *modifiedRecords;
 #else
-	NSMutableDictionary *moodifiedRecords;
+	NSMutableDictionary *modifiedRecords;
 #endif
 }
 

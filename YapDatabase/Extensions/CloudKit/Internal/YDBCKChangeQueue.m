@@ -172,7 +172,7 @@
 				master_oldChangeSet->deletedRecordIDs = pending_oldChangeSet->deletedRecordIDs;
 			
 			if (pending_oldChangeSet.hasChangesToModifiedRecords)
-				master_oldChangeSet->moodifiedRecords = pending_oldChangeSet->moodifiedRecords;
+				master_oldChangeSet->modifiedRecords = pending_oldChangeSet->modifiedRecords;
 		}
 	}
 	
@@ -299,7 +299,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 	{
 		for (YDBCKChangeSet *prevChangeSet in oldChangeSets)
 		{
-			YDBCKChangeRecord *prevRecord = [prevChangeSet->moodifiedRecords objectForKey:recordID];
+			YDBCKChangeRecord *prevRecord = [prevChangeSet->modifiedRecords objectForKey:recordID];
 			if (prevRecord)
 			{
 				for (NSString *changedKey in prevRecord.record.changedKeys)
@@ -357,15 +357,15 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 	}
 	
 #if DEBUG
-	if (currentChangeSet->moodifiedRecords == nil)
-		currentChangeSet->moodifiedRecords = [[YapDebugDictionary alloc] initWithKeyClass:[CKRecordID class]
-		                                                                      objectClass:[YDBCKChangeRecord class]];
+	if (currentChangeSet->modifiedRecords == nil)
+		currentChangeSet->modifiedRecords = [[YapDebugDictionary alloc] initWithKeyClass:[CKRecordID class]
+		                                                                     objectClass:[YDBCKChangeRecord class]];
 #else
-	if (currentChangeSet->moodifiedRecords == nil)
-		currentChangeSet->moodifiedRecords = [[NSMutableDictionary alloc] init];
+	if (currentChangeSet->modifiedRecords == nil)
+		currentChangeSet->modifiedRecords = [[NSMutableDictionary alloc] init];
 #endif
 	
-	[currentChangeSet->moodifiedRecords setObject:currentRecord forKey:recordID];
+	[currentChangeSet->modifiedRecords setObject:currentRecord forKey:recordID];
 }
 
 /**
@@ -402,7 +402,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 	{
 		if (CompareDatabaseIdentifiers(databaseIdentifier, mqPrevChangeSet.databaseIdentifier))
 		{
-			YDBCKChangeRecord *mqPrevRecord = [mqPrevChangeSet->moodifiedRecords objectForKey:recordID];
+			YDBCKChangeRecord *mqPrevRecord = [mqPrevChangeSet->modifiedRecords objectForKey:recordID];
 			if (mqPrevRecord)
 			{
 				if (mqPrevRecord.canStoreOnlyChangedKeys &&
@@ -422,22 +422,22 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 					// as opposed to just the changedKeys.
 					
 					YDBCKChangeSet *pqPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
-					if (pqPrevChangeSet->moodifiedRecords == nil)
+					if (pqPrevChangeSet->modifiedRecords == nil)
 					{
 					#if DEBUG
-						pqPrevChangeSet->moodifiedRecords =
-						  [[YapDebugDictionary alloc] initWithDictionary:mqPrevChangeSet->moodifiedRecords
+						pqPrevChangeSet->modifiedRecords =
+						  [[YapDebugDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords
 						                                       copyItems:YES];
 					#else
-						pqPrevChangeSet->moodifiedRecords =
-						  [[NSMutableDictionary alloc] initWithDictionary:mqPrevChangeSet->moodifiedRecords
+						pqPrevChangeSet->modifiedRecords =
+						  [[NSMutableDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords
 						                                        copyItems:YES];
 					#endif
 						
 						pqPrevChangeSet.hasChangesToModifiedRecords = YES;
 					}
 					
-					YDBCKChangeRecord *pqPrevRecord = [pqPrevChangeSet->moodifiedRecords objectForKey:recordID];
+					YDBCKChangeRecord *pqPrevRecord = [pqPrevChangeSet->modifiedRecords objectForKey:recordID];
 					pqPrevRecord.canStoreOnlyChangedKeys = NO;
 				}
 			}
@@ -458,15 +458,15 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 	}
 	
 #if DEBUG
-	if (currentChangeSet->moodifiedRecords == nil)
-		currentChangeSet->moodifiedRecords = [[YapDebugDictionary alloc] initWithKeyClass:[CKRecordID class]
-		                                                                      objectClass:[YDBCKChangeRecord class]];
+	if (currentChangeSet->modifiedRecords == nil)
+		currentChangeSet->modifiedRecords = [[YapDebugDictionary alloc] initWithKeyClass:[CKRecordID class]
+		                                                                     objectClass:[YDBCKChangeRecord class]];
 #else
-	if (currentChangeSet->moodifiedRecords == nil)
-		currentChangeSet->moodifiedRecords = [[NSMutableDictionary alloc] init];
+	if (currentChangeSet->modifiedRecords == nil)
+		currentChangeSet->modifiedRecords = [[NSMutableDictionary alloc] init];
 #endif
 	
-	[currentChangeSet->moodifiedRecords setObject:currentRecord forKey:recordID];
+	[currentChangeSet->modifiedRecords setObject:currentRecord forKey:recordID];
 }
 
 /**
@@ -494,7 +494,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 	{
 		if (CompareDatabaseIdentifiers(databaseIdentifier, mqPrevChangeSet.databaseIdentifier))
 		{
-			YDBCKChangeRecord *mqPrevRecord = [mqPrevChangeSet->moodifiedRecords objectForKey:recordID];
+			YDBCKChangeRecord *mqPrevRecord = [mqPrevChangeSet->modifiedRecords objectForKey:recordID];
 			if (mqPrevRecord)
 			{
 				if (mqPrevRecord.canStoreOnlyChangedKeys)
@@ -510,22 +510,22 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 					// as opposed to just the changedKeys.
 					
 					YDBCKChangeSet *pqPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
-					if (pqPrevChangeSet->moodifiedRecords == nil)
+					if (pqPrevChangeSet->modifiedRecords == nil)
 					{
 					#if DEBUG
-						pqPrevChangeSet->moodifiedRecords =
-						  [[YapDebugDictionary alloc] initWithDictionary:mqPrevChangeSet->moodifiedRecords
+						pqPrevChangeSet->modifiedRecords =
+						  [[YapDebugDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords
 						                                       copyItems:YES];
 					#else
-						pqPrevChangeSet->moodifiedRecords =
-						  [[NSMutableDictionary alloc] initWithDictionary:mqPrevChangeSet->moodifiedRecords
+						pqPrevChangeSet->modifiedRecords =
+						  [[NSMutableDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords
 						                                        copyItems:YES];
 					#endif
 						
 						pqPrevChangeSet.hasChangesToModifiedRecords = YES;
 					}
 					
-					YDBCKChangeRecord *pqPrevRecord = [pqPrevChangeSet->moodifiedRecords objectForKey:recordID];
+					YDBCKChangeRecord *pqPrevRecord = [pqPrevChangeSet->modifiedRecords objectForKey:recordID];
 					pqPrevRecord.canStoreOnlyChangedKeys = NO;
 				}
 			}
@@ -563,7 +563,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 	{
 		if (CompareDatabaseIdentifiers(databaseIdentifier, mqPrevChangeSet.databaseIdentifier))
 		{
-			YDBCKChangeRecord *mqPrevRecord = [mqPrevChangeSet->moodifiedRecords objectForKey:recordID];
+			YDBCKChangeRecord *mqPrevRecord = [mqPrevChangeSet->modifiedRecords objectForKey:recordID];
 			if (mqPrevRecord)
 			{
 				if (mqPrevRecord.canStoreOnlyChangedKeys)
@@ -582,22 +582,22 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 					// as opposed to just the changedKeys.
 					
 					YDBCKChangeSet *pqPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
-					if (pqPrevChangeSet->moodifiedRecords == nil)
+					if (pqPrevChangeSet->modifiedRecords == nil)
 					{
 					#if DEBUG
-						pqPrevChangeSet->moodifiedRecords =
-						  [[YapDebugDictionary alloc] initWithDictionary:mqPrevChangeSet->moodifiedRecords
+						pqPrevChangeSet->modifiedRecords =
+						  [[YapDebugDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords
 						                                       copyItems:YES];
 					#else
-						pqPrevChangeSet->moodifiedRecords =
-						  [[NSMutableDictionary alloc] initWithDictionary:mqPrevChangeSet->moodifiedRecords
+						pqPrevChangeSet->modifiedRecords =
+						  [[NSMutableDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords
 						                                        copyItems:YES];
 					#endif
 						
 						pqPrevChangeSet.hasChangesToModifiedRecords = YES;
 					}
 					
-					YDBCKChangeRecord *pqPrevRecord = [pqPrevChangeSet->moodifiedRecords objectForKey:recordID];
+					YDBCKChangeRecord *pqPrevRecord = [pqPrevChangeSet->modifiedRecords objectForKey:recordID];
 					pqPrevRecord.canStoreOnlyChangedKeys = NO;
 				}
 			}
@@ -617,7 +617,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 		[pendingQueue->newChangeSetsDict setObject:currentChangeSet forKey:key];
 	}
 	
-	[currentChangeSet->moodifiedRecords removeObjectForKey:recordID];
+	[currentChangeSet->modifiedRecords removeObjectForKey:recordID];
 	
 	if (currentChangeSet->deletedRecordIDs == nil) {
 		currentChangeSet->deletedRecordIDs = [[NSMutableArray alloc] init];
@@ -664,7 +664,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 	{
 		if (CompareDatabaseIdentifiers(databaseIdentifier, mqPrevChangeSet.databaseIdentifier))
 		{
-			YDBCKChangeRecord *mqPrevRecord = [mqPrevChangeSet->moodifiedRecords objectForKey:recordID];
+			YDBCKChangeRecord *mqPrevRecord = [mqPrevChangeSet->modifiedRecords objectForKey:recordID];
 			if (mqPrevRecord)
 			{
 				CKRecord *localRecord = mqPrevRecord.record;
@@ -722,22 +722,22 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 					}
 					
 					YDBCKChangeSet *pqPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
-					if (pqPrevChangeSet->moodifiedRecords == nil)
+					if (pqPrevChangeSet->modifiedRecords == nil)
 					{
 					#if DEBUG
-						pqPrevChangeSet->moodifiedRecords =
-						  [[YapDebugDictionary alloc] initWithDictionary:mqPrevChangeSet->moodifiedRecords
+						pqPrevChangeSet->modifiedRecords =
+						  [[YapDebugDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords
 						                                       copyItems:YES];
 					#else
-						pqPrevChangeSet->moodifiedRecords =
-						  [[NSMutableDictionary alloc] initWithDictionary:mqPrevChangeSet->moodifiedRecords
+						pqPrevChangeSet->modifiedRecords =
+						  [[NSMutableDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords
 						                                        copyItems:YES];
 					#endif
 						
 						pqPrevChangeSet.hasChangesToModifiedRecords = YES;
 					}
 					
-					YDBCKChangeRecord *pqPrevRecord = [pqPrevChangeSet->moodifiedRecords objectForKey:recordID];
+					YDBCKChangeRecord *pqPrevRecord = [pqPrevChangeSet->modifiedRecords objectForKey:recordID];
 					pqPrevRecord.record = newLocalRecord;
 				}
 			
@@ -781,8 +781,8 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 		}
 		
 	#if DEBUG
-		if (currentChangeSet->moodifiedRecords == nil)
-			currentChangeSet->moodifiedRecords =
+		if (currentChangeSet->modifiedRecords == nil)
+			currentChangeSet->modifiedRecords =
 			  [[YapDebugDictionary alloc] initWithKeyClass:[CKRecordID class]
 			                                   objectClass:[YDBCKChangeRecord class]];
 	#else
@@ -790,7 +790,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 			currentChangeSet->modifiedRecords = [[NSMutableDictionary alloc] init];
 	#endif
 		
-		[currentChangeSet->moodifiedRecords setObject:currentRecord forKey:recordID];
+		[currentChangeSet->modifiedRecords setObject:currentRecord forKey:recordID];
 	}
 }
 
@@ -821,24 +821,24 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 		{
 			// Check to see if we have queued modifications to push for this item
 			
-			YDBCKChangeRecord *mqPrevRecord = [mqPrevChangeSet->moodifiedRecords objectForKey:recordID];
+			YDBCKChangeRecord *mqPrevRecord = [mqPrevChangeSet->modifiedRecords objectForKey:recordID];
 			if (mqPrevRecord)
 			{
 				YDBCKChangeSet *pqPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
-				if (pqPrevChangeSet->moodifiedRecords == nil)
+				if (pqPrevChangeSet->modifiedRecords == nil)
 				{
 				#if DEBUG
-					pqPrevChangeSet->moodifiedRecords =
-					  [[YapDebugDictionary alloc] initWithDictionary:mqPrevChangeSet->moodifiedRecords copyItems:YES];
+					pqPrevChangeSet->modifiedRecords =
+					  [[YapDebugDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords copyItems:YES];
 				#else
-					pqPrevChangeSet->moodifiedRecords =
-					  [[NSMutableDictionary alloc] initWithDictionary:mqPrevChangeSet->moodifiedRecords copyItems:YES];
+					pqPrevChangeSet->modifiedRecords =
+					  [[NSMutableDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords copyItems:YES];
 				#endif
 					
 					pqPrevChangeSet.hasChangesToModifiedRecords = YES;
 				}
 				
-				[pqPrevChangeSet->moodifiedRecords removeObjectForKey:recordID];
+				[pqPrevChangeSet->modifiedRecords removeObjectForKey:recordID];
 			}
 			
 			// Check to see if we have queued deletion for this item
@@ -881,22 +881,35 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 	{
 		YDBCKChangeSet *pqInFlightChangeSet = [pendingQueue->oldChangeSets firstObject];
 		
-		if (pqInFlightChangeSet->moodifiedRecords == nil)
+		if (pqInFlightChangeSet->modifiedRecords == nil)
 		{
 			YDBCKChangeSet *mqInFlightChangeSet = [masterQueue->oldChangeSets firstObject];
 			
-		#if DEBUG
-			pqInFlightChangeSet->moodifiedRecords =
-			  [[YapDebugDictionary alloc] initWithDictionary:mqInFlightChangeSet->moodifiedRecords copyItems:YES];
-		#else
-			pqInFlightChangeSet->modifiedRecords =
-			  [[NSMutableDictionary alloc] initWithDictionary:mqInFlightChangeSet->modifiedRecords copyItems:YES];
-		#endif
+			if (mqInFlightChangeSet->modifiedRecords)
+			{
+			#if DEBUG
+				pqInFlightChangeSet->modifiedRecords =
+				  [[YapDebugDictionary alloc] initWithDictionary:mqInFlightChangeSet->modifiedRecords copyItems:YES];
+			#else
+				pqInFlightChangeSet->modifiedRecords =
+				  [[NSMutableDictionary alloc] initWithDictionary:mqInFlightChangeSet->modifiedRecords copyItems:YES];
+			#endif
+			}
+			else
+			{
+			#if DEBUG
+				pqInFlightChangeSet->modifiedRecords =
+				  [[YapDebugDictionary alloc] initWithKeyClass:[CKRecordID class]
+				                                   objectClass:[YDBCKChangeRecord class]];
+			#else
+				pqInFlightChangeSet->modifiedRecords = [[NSMutableDictionary alloc] init];
+			#endif
+			}
 			
 			pqInFlightChangeSet.hasChangesToModifiedRecords = YES;
 		}
 		
-		[pqInFlightChangeSet->moodifiedRecords removeObjectForKey:recordID];
+		[pqInFlightChangeSet->modifiedRecords removeObjectForKey:recordID];
 	}
 	
 	// Update previous changeSets (if needed)
@@ -916,15 +929,15 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 
 		if (CompareDatabaseIdentifiers(databaseIdentifier, mqPrevChangeSet.databaseIdentifier))
 		{
-			if ([mqPrevChangeSet->moodifiedRecords objectForKey:recordID])
+			if ([mqPrevChangeSet->modifiedRecords objectForKey:recordID])
 			{
 				YDBCKChangeSet *pqPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:i];
 				
-				if (pqPrevChangeSet->moodifiedRecords == nil)
+				if (pqPrevChangeSet->modifiedRecords == nil)
 				{
 				#if DEBUG
-					pqPrevChangeSet->moodifiedRecords =
-					  [[YapDebugDictionary alloc] initWithDictionary:mqPrevChangeSet->moodifiedRecords copyItems:YES];
+					pqPrevChangeSet->modifiedRecords =
+					  [[YapDebugDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords copyItems:YES];
 				#else
 					pqPrevChangeSet->modifiedRecords =
 					  [[NSMutableDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords copyItems:YES];
@@ -938,7 +951,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 					sanitizedRecord = [YapDatabaseCKRecord sanitizedRecord:record];
 				}
 				
-				YDBCKChangeRecord *pqChangeRecord = [pqPrevChangeSet->moodifiedRecords objectForKey:recordID];
+				YDBCKChangeRecord *pqChangeRecord = [pqPrevChangeSet->modifiedRecords objectForKey:recordID];
 				
 				CKRecord *originalRecord = pqChangeRecord.record;
 				CKRecord *mergedRecord = [sanitizedRecord copy];
@@ -961,7 +974,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 				
 				pqChangeRecord.record = mergedRecord;
 				
-			} // end if ([mqPrevChangeSet->moodifiedRecords objectForKey:recordID])
+			} // end if ([mqPrevChangeSet->modifiedRecords objectForKey:recordID])
 		} // end if (CompareDatabaseIdentifiers(databaseIdentifier, mqPrevChangeSet.databaseIdentifier))
 		
 		i++;

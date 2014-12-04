@@ -68,13 +68,19 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 - (instancetype)fullCopy
 {
 	YDBCKChangeSet *fullCopy = [self emptyCopy];
-	fullCopy->deletedRecordIDs = [deletedRecordIDs mutableCopy];
 	
-#if DEBUG
-	fullCopy->moodifiedRecords = [[YapDebugDictionary alloc] initWithDictionary:moodifiedRecords copyItems:YES];
-#else
-	fullCopy->moodifiedRecords = [[NSMutableDictionary alloc] initWithDictionary:moodifiedRecords copyItems:YES];
-#endif
+	if (deletedRecordIDs)
+	{
+		fullCopy->deletedRecordIDs = [deletedRecordIDs mutableCopy];
+	}
+	if (modifiedRecords)
+	{
+	#if DEBUG
+		fullCopy->modifiedRecords = [[YapDebugDictionary alloc] initWithDictionary:modifiedRecords copyItems:YES];
+	#else
+		fullCopy->modifiedRecords = [[NSMutableDictionary alloc] initWithDictionary:modifiedRecords copyItems:YES];
+	#endif
+	}
 	
 	return fullCopy;
 }
@@ -86,9 +92,11 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 
 - (NSArray *)recordsToSave
 {
-	NSMutableArray *array = [NSMutableArray arrayWithCapacity:[moodifiedRecords count]];
+	if (modifiedRecords.count == 0) return nil;
 	
-	for (YDBCKChangeRecord *changeRecord in [moodifiedRecords objectEnumerator])
+	NSMutableArray *array = [NSMutableArray arrayWithCapacity:[modifiedRecords count]];
+	
+	for (YDBCKChangeRecord *changeRecord in [modifiedRecords objectEnumerator])
 	{
 		[array addObject:[changeRecord.record copy]];
 	}
@@ -98,9 +106,11 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 
 - (NSArray *)recordsToSave_noCopy
 {
-	NSMutableArray *array = [NSMutableArray arrayWithCapacity:[moodifiedRecords count]];
+	if (modifiedRecords.count == 0) return nil;
 	
-	for (YDBCKChangeRecord *changeRecord in [moodifiedRecords objectEnumerator])
+	NSMutableArray *array = [NSMutableArray arrayWithCapacity:[modifiedRecords count]];
+	
+	for (YDBCKChangeRecord *changeRecord in [modifiedRecords objectEnumerator])
 	{
 		[array addObject:changeRecord.record];
 	}
@@ -115,7 +125,7 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 
 - (NSUInteger)recordsToSaveCount
 {
-	return [moodifiedRecords count];
+	return [modifiedRecords count];
 }
 
 - (NSData *)serializeDeletedRecordIDs
@@ -140,8 +150,8 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 
 - (NSData *)serializeModifiedRecords
 {
-	if ([moodifiedRecords count] > 0)
-		return [NSKeyedArchiver archivedDataWithRootObject:[moodifiedRecords allValues]];
+	if ([modifiedRecords count] > 0)
+		return [NSKeyedArchiver archivedDataWithRootObject:[modifiedRecords allValues]];
 	else
 		return nil;
 }
@@ -159,25 +169,25 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 	}
 	
 #if DEBUG
-	moodifiedRecords = [[YapDebugDictionary alloc] initWithKeyClass:[CKRecordID class]
-	                                                    objectClass:[YDBCKChangeRecord class]
-	                                                       capacity:[modifiedRecordsArray count]];
+	modifiedRecords = [[YapDebugDictionary alloc] initWithKeyClass:[CKRecordID class]
+	                                                   objectClass:[YDBCKChangeRecord class]
+	                                                      capacity:[modifiedRecordsArray count]];
 #else
-	moodifiedRecords = [[NSMutableDictionary alloc] initWithCapacity:[modifiedRecordsArray count]];
+	modifiedRecords = [[NSMutableDictionary alloc] initWithCapacity:[modifiedRecordsArray count]];
 #endif
 	
 	for (YDBCKChangeRecord *changeRecord in modifiedRecordsArray)
 	{
 		CKRecordID *recordID = changeRecord.recordID;
 		if (recordID) {
-			[moodifiedRecords setObject:changeRecord forKey:recordID];
+			[modifiedRecords setObject:changeRecord forKey:recordID];
 		}
 	}
 }
 
 - (void)enumerateMissingRecordsWithBlock:(CKRecord* (^)(CKRecordID *recordID, NSArray *changedKeys))block
 {
-	for (YDBCKChangeRecord *changeRecord in [moodifiedRecords objectEnumerator])
+	for (YDBCKChangeRecord *changeRecord in [modifiedRecords objectEnumerator])
 	{
 		if (changeRecord.record == nil)
 		{
